@@ -176,6 +176,7 @@ SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
   - `RadHasOwner`, if set to true, makes damage dealt by the radiation count as having been dealt by the house that fired the projectile that created the radiation field. This means that Warhead controls such as `AffectsAllies` will be respected and any units killed will count towards that player's destroyed units count.
   - `RadHasInvoker`, if set to true, makes the damage dealt by the radiation count as having been dealt by the TechnoType (the 'invoker') that fired the projectile that created the radiation field. In addition to the effects of `RadHasOwner`, this will also grant experience from units killed by the radiation to the invoker. Note that if the invoker dies at any point during the radiation's lifetime it continues to behave as if not having an invoker.
 - By default `UseGlobalRadApplicationDelay` is set to true. This makes game always use `RadApplicationDelay` and `RadApplicationDelay.Building` from `[Radiation]` rather than specific radiation types. This is a performance-optimizing measure that should be disabled if a radiation type declares different application delay.
+- Setting `DisableRadDamageOnBuildings` to true under `[Radiation]` fully disables functionality of `RadApplicationDelay.Building`, which otherwise affects game performance even if not used. Note that this option cannot be set or changed in map files.
 
 In `rulesmd.ini`:
 ```ini
@@ -184,10 +185,11 @@ In `rulesmd.ini`:
 
 [Radiation]
 UseGlobalRadApplicationDelay=true  ; boolean
+DisableRadDamageOnBuildings=false  ; boolean
 
 [SOMEWEAPON]                       ; WeaponType
 RadType=Radiation                  ; RadType to use instead of default of [Radiation]
-
+                                   
 [SOMERADTYPE]                      ; RadType
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
