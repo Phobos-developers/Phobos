@@ -305,7 +305,7 @@ msgstr "10010"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "Closer, higher threat"
-msgstr "较近，威胁较高"
+msgstr "较近且威胁较高"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "10011"
@@ -325,7 +325,7 @@ msgstr "10014"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "Farther, higher threat"
-msgstr "较远，威胁较高"
+msgstr "较远且威胁较高"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "10015"

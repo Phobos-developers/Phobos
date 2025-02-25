@@ -1371,8 +1371,8 @@ Promote.EliteAnimation=           ; AnimationType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                ; TechnoType
-Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType
+Convert.HumanToComputer=    ; TechnoType
+Convert.ComputerToHuman=    ; TechnoType
 ```
 
 ## Terrain

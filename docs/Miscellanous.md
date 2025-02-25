@@ -31,16 +31,16 @@ Due to technical incompatibilities, enabling this feature disables [Ares' Custom
 
 - Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
 
+### Display Damage Numbers
+
+- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+
 ### Dump Object Info
 
 ![image](_static/images/objectinfo-01.png)
 *Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - There's a [new hotkey](User-Interface.md#dump-object-info) to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
-
-### Display Damage Numbers
-
-- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 
 ### Frame Step In
 
@@ -66,7 +66,7 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 - It's now possible to write locomotor aliases instead of their CLSIDs in the `Locomotor` tag value. Use the table below to find the needed alias for a locomotor.
 
 | *Alias* | *CLSID*                                  |
-| ------: | :--------------------------------------: |
+|--------:|:----------------------------------------:|
 |Drive    | `{4A582741-9839-11d1-B709-00A024DDAFD1}` |
 |Jumpjet  | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
 |Hover    | `{4A582742-9839-11d1-B709-00A024DDAFD1}` |
