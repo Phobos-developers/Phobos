@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -84,6 +85,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AISuperWeaponDelay.Read(exINI, GameStrings::General, "AISuperWeaponDelay");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
+	this->DisableRadDamageOnBuildings.Read(exINI, GameStrings::Radiation, "DisableRadDamageOnBuildings");
 	this->RadBuildingDamageMaxCount.Read(exINI, GameStrings::Radiation, "RadBuildingDamageMaxCount");
 	this->RadSiteWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
 	this->RadSiteWarhead_Detonate_Full.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate.Full");
@@ -292,6 +294,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AISuperWeaponDelay)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
+		.Process(this->DisableRadDamageOnBuildings)
 		.Process(this->RadBuildingDamageMaxCount)
 		.Process(this->RadSiteWarhead_Detonate)
 		.Process(this->RadSiteWarhead_Detonate_Full)
@@ -573,3 +576,15 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 // skip vanilla JumpjetControls and make it earlier load
 // DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
+
+// After rulesmd.ini has been parsed, before anything else like maps and only once on game init.
+DEFINE_HOOK(0x6876B1, ReadScenarioINI_Optimizations, 0x5)
+{
+	auto const pRulesExt = RulesExt::Global();
+
+	// Disable BuildingClass_AI_Radiation
+	if (pRulesExt->DisableRadDamageOnBuildings)
+		Patch::Apply_RAW(0x43FB23, { 0x53, 0x55, 0x56, 0x8B, 0xF1 });
+
+	return 0;
+}
