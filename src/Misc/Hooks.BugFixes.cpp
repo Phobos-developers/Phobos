@@ -1225,7 +1225,37 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
 
-DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensorsAt, 0x5)
+DEFINE_HOOK(0x54BA1A, JumpjetLocomotionClass_ProcessGrounded_AddSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+		pLinkedTo->AddSensorsAt(pLinkedTo->GetMapCoords());
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54C9D7, JumpjetLocomotionClass_ProcessDescending_RemoveSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, ECX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastFlightMapCoords);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastFlightMapCoords);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
 {
 	enum { SkipGameCode = 0x4DB37C };
 
@@ -1239,17 +1269,7 @@ DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensorsAt, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensorsAt, 0x5)
-{
-	GET(FootClass*, pLinkedTo, EAX);
-
-	if (pLinkedTo->GetTechnoType()->SensorsSight)
-		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastFlightMapCoords);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensorsAt, 0x6)
+DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
 {
 	enum { SkipGameCode = 0x4DBF01 };
 
