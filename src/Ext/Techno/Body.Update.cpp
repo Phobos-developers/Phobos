@@ -207,10 +207,13 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActive(pThis))
+	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActiveIgnoreEMP(pThis))
 		return;
 
 	auto pDelType = pTypeExt->PassengerDeletionType.get();
+
+	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+		return;
 
 	if (pTypeExt && (pDelType->Rate > 0 || pDelType->UseCostAsRate))
 	{
@@ -499,6 +502,27 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				}
 
 				pFoot->MoveSoundDelay = 0;
+			}
+		}
+
+		if (auto pInf = specific_cast<InfantryClass*>(pFoot))
+		{
+			// It's still not recommended to have such idea, please avoid using this
+			if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
+			{
+				switch (pInf->SequenceAnim)
+				{
+				case Sequence::Deploy:
+				case Sequence::Deployed:
+				case Sequence::DeployedIdle:
+					pInf->PlayAnim(Sequence::Ready, true);
+					break;
+				case Sequence::DeployedFire:
+					pInf->PlayAnim(Sequence::FireUp, true);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 

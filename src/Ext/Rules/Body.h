@@ -117,6 +117,8 @@ public:
 		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
 
+		Valueable<bool> AllowWeaponSelectAgainstWalls;
+
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
@@ -152,12 +154,28 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<double> DamageOwnerMultiplier;
+		Valueable<double> DamageAlliesMultiplier;
+		Valueable<double> DamageEnemiesMultiplier;
+
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
+
+		Valueable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_Default;
+		Valueable<bool> CombatAlert_IgnoreBuilding;
+		Valueable<bool> CombatAlert_SuppressIfInScreen;
+		Valueable<int> CombatAlert_Interval;
+		Valueable<bool> CombatAlert_SuppressIfAllyDamage;
+		Valueable<bool> CombatAlert_MakeAVoice;
+		Valueable<bool> CombatAlert_UseFeedbackVoice;
+		Valueable<bool> CombatAlert_UseAttackVoice;
+		Valueable<bool> CombatAlert_UseEVA;
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -168,6 +186,9 @@ public:
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
+
+		Valueable<bool> BuildingWaypoints;
+		Valueable<bool> BuildingTypeSelectable;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -248,6 +269,7 @@ public:
 			, ForceShield_KillOrganicsWarhead { }
 			, IronCurtain_ExtraTintIntensity { 0.0 }
 			, ForceShield_ExtraTintIntensity { 0.0 }
+			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
@@ -279,11 +301,26 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, DamageOwnerMultiplier { 1.0 }
+			, DamageAlliesMultiplier { 1.0 }
+			, DamageEnemiesMultiplier { 1.0 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+
+			, CombatAlert { false }
+			, CombatAlert_Default {}
+			, CombatAlert_IgnoreBuilding { true }
+			, CombatAlert_SuppressIfInScreen { true }
+			, CombatAlert_Interval { 150 }
+			, CombatAlert_SuppressIfAllyDamage { true }
+			, CombatAlert_MakeAVoice { true }
+			, CombatAlert_UseFeedbackVoice { true }
+			, CombatAlert_UseAttackVoice { true }
+			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
@@ -292,6 +329,8 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, BuildingWaypoints { false }
+			, BuildingTypeSelectable { false }
 		{ }
 
 		virtual ~ExtData() = default;

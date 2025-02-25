@@ -31,10 +31,11 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	AnimExt::InvalidateTechnoPointers(pThis);
+	if (this->AnimRefCount > 0)
+		AnimExt::InvalidateTechnoPointers(pThis);
 }
 
-bool TechnoExt::IsActive(TechnoClass* pThis)
+bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 {
 	return pThis
 		&& pThis->IsAlive
@@ -42,6 +43,13 @@ bool TechnoExt::IsActive(TechnoClass* pThis)
 		&& !pThis->InLimbo
 		&& !pThis->TemporalTargetingMe
 		&& !pThis->BeingWarpedOut
+		;
+}
+
+bool TechnoExt::IsActive(TechnoClass* pThis)
+{
+	return TechnoExt::IsActiveIgnoreEMP(pThis)
+		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
 }
@@ -478,6 +486,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
+		.Process(this->AnimRefCount)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
