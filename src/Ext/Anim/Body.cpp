@@ -482,7 +482,7 @@ DEFINE_HOOK(0x4226F6, AnimClass_CTOR, 0x6)
 	GET(AnimClass*, pItem, ESI);
 
 	// Do this here instead of using a duplicate hook in SyncLogger.cpp
-	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+	if (!Phobos::Optimizations::DisableSyncLogging && pItem->UniqueID != -2)
 		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, CTORTemp::callerAddress);
 
 	AnimExt::ExtMap.Allocate(pItem);
