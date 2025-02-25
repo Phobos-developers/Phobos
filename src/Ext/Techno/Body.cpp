@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -33,6 +34,12 @@ TechnoExt::ExtData::~ExtData()
 
 	if (this->AnimRefCount > 0)
 		AnimExt::InvalidateTechnoPointers(pThis);
+
+	if (this->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
 }
 
 bool TechnoExt::IsActive(TechnoClass* pThis)
@@ -52,8 +59,9 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (!TechnoExt::IsActive(pThis))
 		return false;
 
-	auto slave = pThis->SlaveManager;
-	if (slave && slave->State != SlaveManagerStatus::Ready)
+	auto const pSlaveManager = pThis->SlaveManager;
+
+	if (pSlaveManager && pSlaveManager->State != SlaveManagerStatus::Ready)
 		return true;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
@@ -64,12 +72,33 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		switch (pThis->GetCurrentMission())
 		{
 		case Mission::Harvest:
-		case Mission::Unload:
-		case Mission::Enter:
+			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			{
+				if (pUnit->HasAnyLink() && !TechnoExt::HasRadioLinkWithDock(pUnit)) // Probably still in factory.
+					return false;
+
+				if (pUnit->IsUseless) // Harvesters currently sitting without purpose are idle even if they are on harvest mission.
+					return false;
+			}
 			return true;
-		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
+		case Mission::Unload:
+			return true;
+		case Mission::Enter:
+			if (pThis->HasAnyLink())
+			{
+				auto const pLink = pThis->GetNthLink(0);
+
+				if (pLink->WhatAmI() != AbstractType::Building) // Enter mission + non-building link = not trying to unload
+					return false;
+			}
+			return true;
+		case Mission::Guard:
 			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
-				return pUnit->IsHarvesting || pUnit->Locomotor->Is_Really_Moving_Now() || pUnit->HasAnyLink();
+			{
+				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
+					return true;
+			}
+			return false;
 		default:
 			return false;
 		}
@@ -83,6 +112,19 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	for (auto pBld : pThis->GetTechnoType()->Dock)
 	{
 		if (pThis->Owner->CountOwnedAndPresent(pBld))
+			return true;
+	}
+
+	return false;
+}
+
+bool TechnoExt::HasRadioLinkWithDock(TechnoClass* pThis)
+{
+	if (pThis->HasAnyLink())
+	{
+		auto const pLink = abstract_cast<BuildingClass*>(pThis->GetNthLink(0));
+
+		if (pLink && pThis->GetTechnoType()->Dock.FindItemIndex(pLink->Type) >= 0)
 			return true;
 	}
 

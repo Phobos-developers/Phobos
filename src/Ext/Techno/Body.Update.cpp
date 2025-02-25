@@ -440,6 +440,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
+	// Remove from harvesters list if no longer a harvester.
+	if (pOldTypeExt->Harvester_Counted && !!this->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
+
 	// Remove from limbo reloaders if no longer applicable
 	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{

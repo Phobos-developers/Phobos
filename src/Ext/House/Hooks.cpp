@@ -208,6 +208,14 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
+	if (pExt->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = pOwnerExt->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+
+		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
+	}
+
 	if (auto pMe = generic_cast<FootClass*>(pThis))
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();

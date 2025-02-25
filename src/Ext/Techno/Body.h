@@ -144,6 +144,7 @@ public:
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);
+	static bool HasRadioLinkWithDock(TechnoClass* pThis);
 
 	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 
