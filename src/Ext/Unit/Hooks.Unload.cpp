@@ -3,6 +3,7 @@
 #include <TechnoClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Building/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
@@ -22,7 +23,8 @@ void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 
 	const bool canDeploy = pThis->CanDeploySlashUnload();
 	R->AL(canDeploy);
-	if (!canDeploy)
+
+	if (!canDeploy || pThis->BunkerLinkedItem)
 		return;
 
 	const bool skipMinimum = pThisType->Ammo_DeployUnlockMinimumAmount < 0;
@@ -45,7 +47,7 @@ void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
 	GET(UnitClass*, pThis, ECX);
 	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->Deployed && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
+	if (pThis->Deployed && !pThis->BunkerLinkedItem && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
 	{
 		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
 		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
@@ -59,13 +61,27 @@ void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
 	GET(UnitClass*, pThis, ESI);
 	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->Type->IsSimpleDeployer && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
+	if (pThis->Type->IsSimpleDeployer && !pThis->BunkerLinkedItem && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
 	{
 		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
 		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
 	}
 
 	R->AL(pThis->Deployed);
+}
+
+DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
+{
+	GET(UnitClass*, pUnit, EBP);
+	GET(BuildingClass*, pStructure, EBX);
+
+	if (pUnit->Type->DeployToFire && pUnit->Target)
+		pStructure->LastTarget = pUnit->Target;
+
+	if (auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
+		pStructureExt->DeployedTechno = true;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73FFE6, UnitClass_WhatAction_RemoveDeploying, 0xA)
@@ -184,20 +200,16 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+		auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
 			pThis->Location, 0, 1, 0x600, 0,
-			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false))
-		{
-			pThis->DeployAnim = pAnim;
-			pAnim->SetOwnerObject(pThis);
+			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false);
 
-			if (pExt->DeployingAnim_UseUnitDrawer)
-				return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
-		}
-		else
-		{
-			pThis->DeployAnim = nullptr;
-		}
+		pThis->DeployAnim = pAnim;
+		pAnim->SetOwnerObject(pThis);
+
+		if (pExt->DeployingAnim_UseUnitDrawer)
+			return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
+
 	}
 
 	return isDeploying ? Deploy : Undeploy;

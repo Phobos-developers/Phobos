@@ -164,8 +164,14 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	const auto pThis = this->OwnerObject();
 
 	// check whether the optional aux building exists
-	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
-		return false;
+	if (pThis->AuxBuilding)
+	{
+		if ((BuildingTypeExt::ExtMap.Find(pThis->AuxBuilding)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pThis->AuxBuilding->PowersUpBuilding))
+			&& BuildingTypeExt::GetUpgradesAmount(pThis->AuxBuilding, pHouse) <= 0)
+			return false;
+		else if (pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+			return false;
+	}
 
 	// allow only certain houses, disallow forbidden houses
 	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
@@ -175,9 +181,17 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 
 	// check that any aux building exist and no neg building
 	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
-	{
-		return pType && pHouse->CountOwnedAndPresent(pType) > 0;
-	};
+		{
+			if (pType)
+			{
+				if (BuildingTypeExt::ExtMap.Find(pType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pType->PowersUpBuilding))
+					return BuildingTypeExt::GetUpgradesAmount(pType, pHouse) > 0;
+				else
+					return pHouse->CountOwnedAndPresent(pType) > 0;
+			}
+
+			return false;
+		};
 
 	const auto& Aux = this->SW_AuxBuildings;
 
@@ -190,4 +204,67 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 		return false;
 
 	return true;
+}
+
+std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const
+{
+	std::vector<BuildingClass*> emCannons;
+
+	for (auto const& pBuilding : pOwner->Buildings)
+	{
+		bool eligible = false;
+
+		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pBuilding->Type) && pBuilding->IsAlive
+			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
+		{
+			eligible = true;
+		}
+		else if (pBuilding->Type->EMPulseCannon && this->IsLaunchSite(pBuilding))
+		{
+			eligible = true;
+		}
+
+		if (eligible)
+		{
+			auto range = this->GetEMPulseCannonRange(pBuilding);
+			auto const& minRange = range.first;
+			auto const& maxRange = range.second;
+			auto const center = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
+			auto const distance = cell.DistanceFrom(center);
+
+			if ((minRange < 0.0 || distance >= minRange)
+				&& (maxRange < 0.0 || distance <= maxRange))
+			{
+				emCannons.push_back(pBuilding);
+			}
+		}
+	}
+
+	return emCannons;
+}
+
+std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClass* pBuilding) const
+{
+	if (this->EMPulse_TargetSelf)
+		return std::make_pair(-1.0, -1.0);
+
+	if (!pBuilding)
+		return std::make_pair(0.0, 0.0);
+
+	if (auto pWeapon = pBuilding->GetWeapon(0)->WeaponType)
+	{
+		double maxRange = this->SW_RangeMaximum;
+		if (maxRange < 0.0)
+			maxRange = pWeapon->Range / 256.0;
+
+		double minRange = this->SW_RangeMinimum;
+		if (minRange < 0.0)
+		{
+			minRange = pWeapon->MinimumRange / 256.0;
+		}
+
+		return std::make_pair(minRange, maxRange);
+	}
+
+	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
 }
