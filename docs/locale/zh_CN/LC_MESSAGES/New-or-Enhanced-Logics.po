@@ -704,6 +704,19 @@ msgstr ""
 "`RadApplicationDelay` 和 `RadApplicationDelay.Building` "
 "而不是特定辐射类型的。这是个性能优化措施，如果你需要给辐射类型使用不同的间隔那么应当禁用该设置。"
 
+#: ../../New-or-Enhanced-Logics.md:211
+msgid ""
+"Due to performance concerns, unless any radiation type has "
+"`RadApplicationDelay.Building` set to above 0, all functionality related "
+"to it is completely disabled in game. This decision is made at earliest "
+"available opportunity (at end of initial scenario start or after loading "
+"saved game) and will **not** update with further scenario changes or save"
+" game loadings during same game session."
+msgstr ""
+"出于性能方面的考虑，除非存在 `RadApplicationDelay.Building` 高于 0 "
+"的辐射类型否则与之相关的所有功能在游戏内都将被完全禁用。这在其最早的可用时机（地图初始场景启动结束或存档加载后）就会进行判定，并且 **不会** "
+"随着后续场景的改变或存档的加载而更新。"
+
 #: ../../New-or-Enhanced-Logics.md:210 ../../New-or-Enhanced-Logics.md:212
 msgid "Laser Trails"
 msgstr "激光尾焰"

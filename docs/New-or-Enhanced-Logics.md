@@ -187,7 +187,7 @@ UseGlobalRadApplicationDelay=true  ; boolean
 
 [SOMEWEAPON]                       ; WeaponType
 RadType=Radiation                  ; RadType to use instead of default of [Radiation]
-                                   
+
 [SOMERADTYPE]                      ; RadType
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
