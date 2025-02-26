@@ -1314,21 +1314,4 @@ DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
-{
-	GET(FootClass*, pLinkedTo, EAX);
-	auto const* pType = pLinkedTo->GetTechnoType();
-
-	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
-
-	if (pType->SensorsSight)
-	{
-		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
-		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
-		pLinkedTo->AddSensorsAt(CellStruct::Empty);
-	}
-
-	return 0;
-}
-
 #pragma endregion
