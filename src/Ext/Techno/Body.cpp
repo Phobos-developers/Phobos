@@ -560,6 +560,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
+		.Process(this->LastSensorsMapCoords)
 		;
 }
 
