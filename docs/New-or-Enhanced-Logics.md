@@ -187,7 +187,7 @@ UseGlobalRadApplicationDelay=true  ; boolean
 
 [SOMEWEAPON]                       ; WeaponType
 RadType=Radiation                  ; RadType to use instead of default of [Radiation]
-
+                                   
 [SOMERADTYPE]                      ; RadType
 RadDurationMultiple=1              ; integer
 RadApplicationDelay=16             ; integer
@@ -205,6 +205,10 @@ RadSiteWarhead.Detonate=false      ; boolean
 RadSiteWarhead.Detonate.Full=true  ; boolean
 RadHasOwner=false                  ; boolean
 RadHasInvoker=false                ; boolean
+```
+
+```{warning}
+Due to performance concerns, unless any radiation type has `RadApplicationDelay.Building` set to above 0, all functionality related to it is completely disabled in game. This decision is made at earliest available opportunity (at end of initial scenario start or after loading saved game) and will **not** update with further scenario changes or save game loadings during same game session.
 ```
 
 ### Laser Trails
@@ -1499,7 +1503,7 @@ Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; BuildingType or UnitType
+[SOMETECHNO]    ; BuildingType or VehicleType
 EVA.Sold=       ; EVA entry
 SellSound=      ; Sound entry
 ```
@@ -1514,7 +1518,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 IsVoiceCreatedGlobal=false   ; boolean
 
-[SOMETECHNO]                 ; UnitType
+[SOMETECHNO]                 ; TechnoType
 VoiceCreated=                ; Sound entry
 ```
 
@@ -1583,8 +1587,8 @@ CombatAlert.Suppress=                  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                ; TechnoType
-Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType
+Convert.HumanToComputer=    ; TechnoType
+Convert.ComputerToHuman=    ; TechnoType
 ```
 
 ## Terrain
@@ -1870,7 +1874,7 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 
 ### Damage multiplier for different houses
 
-- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `DamageXXMultiplier` are not set, these will default to respective `[CombatDamage]` -> `DamageXXMultiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did, and this function will not affect damage with ignore defenses like `Suicide`.etc .
+- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did, and this function will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini

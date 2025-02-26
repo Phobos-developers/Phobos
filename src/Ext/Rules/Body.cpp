@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -300,7 +301,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
-		.Process(this->HarvesterTypes)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)

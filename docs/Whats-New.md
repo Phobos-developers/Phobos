@@ -326,11 +326,11 @@ New:
 - Bunkerable checks dehardcode (by TaranDahl)
 - No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Damage multiplier for different houses (by CrimRecya)
+- Customizable duration for electric bolts (by Starkku)
 - Several new Infotypes, no display in specific status and a new single frame display method (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)

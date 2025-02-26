@@ -285,8 +285,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_Counted.Read(exINI, pSection, "Harvester.Counted");
 	if (!this->Harvester_Counted.isset() && pThis->Enslaves)
 		this->Harvester_Counted = true;
-	if (this->Harvester_Counted.Get())
-		RulesExt::Global()->HarvesterTypes.AddUnique(pThis);
 
 	this->Promote_IncludeSpawns.Read(exINI, pSection, "Promote.IncludeSpawns");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -956,10 +954,7 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pItem))
 	{
 		if (!pTypeExt->Harvester_Counted.isset() && pItem->Harvester)
-		{
 			pTypeExt->Harvester_Counted = true;
-			RulesExt::Global()->HarvesterTypes.AddUnique(pItem);
-		}
 	}
 
 	return 0;
