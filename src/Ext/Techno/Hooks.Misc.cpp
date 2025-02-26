@@ -143,60 +143,44 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	GET(AircraftClass* const, pSpawner, EDI);
 	GET(CellStruct* const, pCarrierMapCrd, EBP);
 
-	if (!pThis)
-		return 0;
+	auto const pCarrier = pThis->Owner;
+	auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+	auto const spawnerCrd = pSpawner->GetCoords();
 
-	auto pCarrier = pThis->Owner;
-
-	if (!pCarrier || !pSpawner)
-		return 0;
-
-	auto const pCarrierType = pCarrier->GetTechnoType();
-	auto spawnerMapCrd = pSpawner->GetMapCoords();
-
-	if (!pCarrierType)
-		return 0;
-
-	auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrierType);
-
-	if (!pCarrierTypeExt)
-		return 0;
-
-	auto spawnerCrd = pSpawner->GetCoords();
-	auto recycleCrd = TechnoExt::GetFLHAbsoluteCoords(pCarrier, pCarrierTypeExt->Spawner_RecycleFLH, pCarrierTypeExt->Spawner_RecycleOnTurret);
-	auto deltaCrd = spawnerCrd - recycleCrd;
-	bool shouldRecycleSpawned = false;
-	int recycleRange = pCarrierTypeExt->Spawner_RecycleRange;
-
-	if (recycleRange < 0)
+	auto shouldRecycleSpawned = [&]()
 	{
-		// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
-		// 182 is √2/2 * 256. 20 is same to vanilla behavior.
-		if (pCarrier->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
-			shouldRecycleSpawned = true;
+		auto const recycleCrd = TechnoExt::GetFLHAbsoluteCoords(pCarrier, pCarrierTypeExt->Spawner_RecycleFLH, pCarrierTypeExt->Spawner_RecycleOnTurret);
+		auto const deltaCrd = spawnerCrd - recycleCrd;
+		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange;
 
-		if (pCarrier->WhatAmI() != AbstractType::Building && spawnerMapCrd == *pCarrierMapCrd && deltaCrd.Z < 20)
-			shouldRecycleSpawned = true;
-	}
-	else
-	{
-		if (deltaCrd.Magnitude() <= recycleRange)
-			shouldRecycleSpawned = true;
-	}
+		if (recycleRange < 0)
+		{
+			// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
+			// 182 is √2/2 * 256. 20 is same to vanilla behavior.
+			if (pCarrier->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
+				return true;
 
-	if (!shouldRecycleSpawned)
-	{
-		return 0;
-	}
-	else
+			if (pCarrier->WhatAmI() != AbstractType::Building && pSpawner->GetMapCoords() == *pCarrierMapCrd && deltaCrd.Z < 20)
+				return true;
+		}
+		else if (deltaCrd.Magnitude() <= recycleRange)
+		{
+			return true;
+		}
+
+		return false;
+	};
+
+	if (shouldRecycleSpawned())
 	{
 		if (pCarrierTypeExt->Spawner_RecycleAnim)
 			GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
 
 		pSpawner->SetLocation(pCarrier->GetCoords());
 		R->EAX(pCarrierMapCrd);
-		return 0;
 	}
+
+	return 0;
 }
 
 // Change destination to RecycleFLH.
