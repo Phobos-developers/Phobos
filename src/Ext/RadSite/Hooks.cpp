@@ -60,6 +60,9 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 	GET(InfantryClass*, pInf, ESI);
 	GET(int, weaponRadLevel, EBX);
 
+	if (!pInf->GetCell()->GetRadLevel())
+		return FireCheck;
+
 	auto const pWeapon = pInf->GetDeployWeapon()->WeaponType;
 	int radLevel = 0;
 
@@ -68,7 +71,7 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto const pRadType = pWeaponExt->RadType;
 		auto const warhead = pWeapon->Warhead;
-		auto currentCoord = pInf->GetCell()->MapCoords;
+		auto currentCoord = pInf->GetMapCoords();
 
 		for (auto const pRadSite : *RadSiteClass::Array)
 		{
@@ -84,8 +87,7 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 
 	}
 
-	return (!radLevel || (radLevel < weaponRadLevel / 3)) ?
-		FireCheck : SetMissionRate;
+	return (radLevel < weaponRadLevel / 3) ? FireCheck : SetMissionRate;
 }
 
 // Fix for desolator unable to fire his deploy weapon when cloaked
@@ -136,6 +138,9 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
+
+		if (!MapClass::Instance->GetCellAt(nCurrentCoord)->GetRadLevel())
+			continue;
 
 		for (auto const pRadSite : *RadSiteClass::Array)
 		{
@@ -191,10 +196,10 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 	GET(FootClass* const, pFoot, ESI);
 
-	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
+	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe && pFoot->GetCell()->GetRadLevel() &&
 		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
-		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
+		CellStruct CurrentCoord = pFoot->GetMapCoords();
 
 		// Loop for each different radiation stored in the RadSites container
 		for (auto const pRadSite : *RadSiteClass::Array)
