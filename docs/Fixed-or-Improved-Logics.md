@@ -1305,7 +1305,7 @@ DrawTurretShadow=false  ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEUNIT]      ; UnitType
+[SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
 ```
 
@@ -1358,6 +1358,19 @@ Ammo.AddOnDeploy=0      ; integer
 
 ```{warning}
 Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
+```
+
+### Unit Without Turret Always Turn To Target
+
+- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoTurret.TrackTarget=false   ; boolean
+
+[SOMEVEHICLE]                ; VehicleType
+NoTurret.TrackTarget=        ; boolean, defaults to [General] -> NoTurret.TrackTarget
 ```
 
 ## Veinholes & Weeds
@@ -1639,6 +1652,29 @@ In `rulesmd.ini`:
 FireOnce.ResetSequence=true  ; boolean
 ```
 
+### Electric bolt customizations
+
+![image](_static/images/ebolt.gif)
+*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
+
+- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
+- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
+- `Bolt.Duration` can be specified to explicitly set the overall duration of the visual electric bolt effect. Only values in range of 1 to 31 are accepted, values outside this range are clamped into it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]           ; WeaponType
+Bolt.Disable1=false    ; boolean
+Bolt.Disable2=false    ; boolean
+Bolt.Disable3=false    ; boolean
+Bolt.Arcs=8            ; integer
+Bolt.Duration=17       ; integer, game frames
+```
+
+```{note}
+Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
@@ -1650,39 +1686,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
-```
-
-### Toggle-able ElectricBolt visuals
-
-![image](_static/images/ebolt.gif)
-*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
-
-- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Disable1=false    ; boolean
-Bolt.Disable2=false    ; boolean
-Bolt.Disable3=false    ; boolean
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
-```
-
-### Customizable ElectricBolt Arcs
-
-- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Arcs=8            ; integer, number of arcs in a bolt
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
 ```
 
 ## RadialIndicator visibility
@@ -1731,20 +1734,20 @@ DropPod properties can now be customized on a per-InfantryType basis.
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]                ; InfantryType
-DropPod.Angle =               ; double, default to [General] -> DropPodAngle, measured in radians
-DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual] -> AtmosphereEntry
-DropPod.GroundAnim =          ; 2 anims, default to [General] -> DropPod
-DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
-DropPod.Height =              ; int, default to [General] -> DropPodHeight
-DropPod.Puff =                ; anim, default to [AudioVisual] -> DropPodPuff
-DropPod.Speed =               ; int, default to [General] -> DropPodSpeed
-DropPod.Trailer =             ; anim, default to [General] -> DropPodTrailer, which by default is SMOKEY
-DropPod.Trailer.Attached =    ; boolean, default to no
-DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
-DropPod.Weapon =              ; weapon, default to [General] -> DropPodWeapon
-DropPod.Weapon.HitLandOnly =  ; boolean, default to no
+DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
+DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
+DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
+DropPod.AirImage=             ; SHP file, the pod's shape, default to POD
+DropPod.Height=               ; int, default to [General] -> DropPodHeight
+DropPod.Puff=                 ; anim, default to [AudioVisual] -> DropPodPuff
+DropPod.Speed=                ; int, default to [General] -> DropPodSpeed
+DropPod.Trailer=              ; anim, default to [General] -> DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached=     ; boolean, default to no
+DropPod.Trailer.SpawnDelay=   ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon=               ; weapon, default to [General] -> DropPodWeapon
+DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
 ```{note}
-`[General] -> DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+`[General] -> DropPodTrailer` is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```

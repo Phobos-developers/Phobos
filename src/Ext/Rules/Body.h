@@ -30,7 +30,6 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
-		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
@@ -156,6 +155,10 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<double> DamageOwnerMultiplier;
+		Valueable<double> DamageAlliesMultiplier;
+		Valueable<double> DamageEnemiesMultiplier;
+
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
 
@@ -173,6 +176,7 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -300,6 +304,9 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, DamageOwnerMultiplier { 1.0 }
+			, DamageAlliesMultiplier { 1.0 }
+			, DamageEnemiesMultiplier { 1.0 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -316,6 +323,7 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
@@ -375,5 +383,4 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
 };

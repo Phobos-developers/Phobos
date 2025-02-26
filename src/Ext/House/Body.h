@@ -32,6 +32,7 @@ public:
 	public:
 		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoClass*> OwnedCountedHarvesters;
 
 		std::vector<UnitClass*> OwnedDeployingUnits;
 		PlacingBuildingStruct Common;
@@ -79,6 +80,7 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedCountedHarvesters {}
 			, OwnedDeployingUnits {}
 			, Common { nullptr, nullptr, 0 }
 			, Combat { nullptr, nullptr, 0 }

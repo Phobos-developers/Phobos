@@ -324,6 +324,9 @@ New:
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
 - Bunkerable checks dehardcode (by TaranDahl)
+- No turret unit turn to the target (by CrimRecya & TaranDahl)
+- Damage multiplier for different houses (by CrimRecya)
+- Customizable duration for electric bolts (by Starkku)
 - Building placing and deploying logic enhancement (by CrimRecya)
 
 Vanilla fixes:
@@ -638,6 +641,7 @@ Phobos fixes:
 - Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
 - Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 - Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
+- Fix `Insignia.Weapon` failing to parse in map (by Ollerus)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.

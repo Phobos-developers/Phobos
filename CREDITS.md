@@ -388,6 +388,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix for sidebar not updating queued unit numbers when on hold
   - New Parabola trajectory
   - Enhanced Bombard trajectory
+  - No turret unit turn to the target
+  - Damage multiplier for different houses
   - Building placing and deploying logic enhancement
 - **Ollerus**
   - Build limit group enhancement
@@ -408,6 +410,7 @@ This page lists all the individual contributions to the project by their author.
   - Parasite returning bug fix
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
+  - No turret unit turn to the target
 - **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
