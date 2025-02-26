@@ -556,6 +556,7 @@ Vanilla fixes:
 - Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
 - Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
+- Fix the bug that destroyed unit may leaves sensors (by tyuah8)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

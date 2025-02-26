@@ -3,6 +3,7 @@
 #include <Utilities/Macro.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 
 // Misc jumpjet facing, turning, drawing fix -- Author: Trsdy
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
@@ -136,28 +137,6 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 	return 0;
 }
 
-// Bugfix: Jumpjet detect cloaked objects beneath
-DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
-{
-	GET(FootClass* const, pLinkedTo, ECX);
-	GET(CellStruct const, currentCell, EAX);
-
-	// Copied from FootClass::UpdatePosition
-	if (pLinkedTo->GetTechnoType()->SensorsSight)
-	{
-		CellStruct const lastCell = pLinkedTo->LastFlightMapCoords;
-
-		if (lastCell != currentCell)
-		{
-			pLinkedTo->RemoveSensorsAt(lastCell);
-			pLinkedTo->AddSensorsAt(currentCell);
-		}
-	}
-	// Something more may be missing
-
-	return 0;
-}
-
 DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
@@ -187,6 +166,23 @@ FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 
 DEFINE_JUMP(VTABLE, 0x7ECDF4, GET_OFFSET(JumpjetLocomotionClass_Can_Fire));
 
+DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+	auto const* pType = pLinkedTo->GetTechnoType();
+
+	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
+
+	if (pType->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pLinkedTo->AddSensorsAt(CellStruct::Empty);
+	}
+
+	return 0;
+}
+
 // Fix initial facing when jumpjet locomotor is being attached
 DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
 {
@@ -212,20 +208,3 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
-
-DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
-{
-	GET(FootClass*, pLinked, EAX);
-	auto const* pType = pLinked->GetTechnoType();
-
-	pLinked->PrimaryFacing.SetROT(pType->ROT);
-
-	if (pType->SensorsSight)
-	{
-		pLinked->RemoveSensorsAt(pLinked->LastFlightMapCoords);
-		pLinked->RemoveSensorsAt(pLinked->GetMapCoords());
-		pLinked->AddSensorsAt(pLinked->GetMapCoords());
-	}
-
-	return 0;
-}
