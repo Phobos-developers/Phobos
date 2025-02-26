@@ -1150,6 +1150,10 @@ msgid ""
 "uncrushable unit and self destruct."
 msgstr "修复了一个单位被超时空传送超武传送到一个不可碾压的单位上并自爆时会在原地留下空气墙的问题。"
 
+#: ../../Fixed-or-Improved-Logics.md:190
+msgid "Fix the bug that destroyed unit may leaves sensors."
+msgstr "修复了单位被摧毁仍会遗留反隐形探测效果的问题。"
+
 #: ../../Fixed-or-Improved-Logics.md:191
 msgid "Fixes / interactions with other extensions"
 msgstr "修复或与其他扩展的交互"
