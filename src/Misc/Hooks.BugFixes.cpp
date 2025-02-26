@@ -1225,22 +1225,33 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
 
-DEFINE_HOOK(0x54C9D7, JumpjetLocomotionClass_ProcessDescending_RemoveSensors, 0x5)
+#pragma region Sensors
+
+DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
 {
-	GET(FootClass*, pLinkedTo, ECX);
+	enum { SkipGameCode = 0x4D8627 };
 
-	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	GET(FootClass*, pThis, ESI);
+	const auto currentCell = pThis->GetMapCoords();
+
+	if (pThis->LastFlightMapCoords != CellStruct::Empty)
 	{
-		const auto currentCell = pLinkedTo->GetMapCoords();
-
-		if (pLinkedTo->LastFlightMapCoords != currentCell)
+		if (pThis->LastFlightMapCoords != currentCell)
 		{
-			pLinkedTo->RemoveSensorsAt(pLinkedTo->LastFlightMapCoords);
-			pLinkedTo->AddSensorsAt(currentCell);
+			pThis->RemoveSensorsAt(pThis->LastFlightMapCoords);
+			pThis->AddSensorsAt(currentCell);
+		}
+	}
+	else
+	{
+		if (pThis->LastMapCoords != currentCell)
+		{
+			pThis->RemoveSensorsAt(pThis->LastMapCoords);
+			pThis->AddSensorsAt(currentCell);
 		}
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
@@ -1280,3 +1291,5 @@ DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
 
 	return SkipGameCode;
 }
+
+#pragma endregion
