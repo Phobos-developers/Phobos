@@ -36,6 +36,9 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 		isWater ? SpeedType::Float : SpeedType::Track,
 		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
 
+	if (cell == CellStruct::Empty)
+		return SkipSpawn;
+
 	R->EAX(&cell);
 
 	return SpawnCrate;

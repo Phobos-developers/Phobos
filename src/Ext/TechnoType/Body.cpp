@@ -124,22 +124,26 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	HouseClass* decidedOwner = pOwner && !pOwner->Defeated
 		? pOwner : HouseClass::FindCivilianSide();
 
-	auto pCell = MapClass::Instance->GetCellAt(location);
+	auto pCell = MapClass::Instance->TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
 	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
 	bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0;
-	bool isBridge = allowBridges && pCell->ContainsBridge();
+	bool isBridge = allowBridges && pCell && pCell->ContainsBridge();
 	int baseHeight = location.Z;
 	bool inAir = location.Z >= Unsorted::CellHeight * 2;
 
 	if (checkPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
 	{
-		auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location),
-			speedType, -1, mZone, isBridge, 1, 1, true,
-			false, false, isBridge, CellStruct::Empty, false, false);
+		auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location), speedType, -1, mZone,
+			isBridge, 1, 1, true, false, false, isBridge, CellStruct::Empty, false, false);
 
-		pCell = MapClass::Instance->TryGetCellAt(nCell);
-		location = pCell->GetCoords();
+		if (nCell != CellStruct::Empty)
+		{
+			pCell = MapClass::Instance->TryGetCellAt(nCell);
+
+			if (pCell)
+				location = pCell->GetCoords();
+		}
 	}
 
 	if (pCell)

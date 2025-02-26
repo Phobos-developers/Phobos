@@ -555,14 +555,9 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 		if (pThis->CloakState == CloakState::Cloaked)
 		{
 			if (trail.Type->CloakVisible && trail.Type->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
-			{
-				auto const pCell = pThis->GetCell();
-				trail.Cloaked = !pCell || !pCell->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
-			}
+				trail.Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
 			else if (!trail.Type->CloakVisible)
-			{
 				trail.Cloaked = true;
-			}
 		}
 
 		if (!this->IsInTunnel)
