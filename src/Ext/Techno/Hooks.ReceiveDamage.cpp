@@ -21,32 +21,46 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	int nDamageLeft = *args->Damage;
+	const auto pTypeExt = pExt->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+	const auto pSourceHouse = args->SourceHouse;
+	const auto pTargetHouse = pThis->Owner;
+
+	// Calculate Damage Multiplier
+	if (!args->IgnoreDefenses && *args->Damage)
+	{
+		double multiplier = 1.0;
+
+		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
+			multiplier = pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier);
+		else if (pSourceHouse != pTargetHouse)
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier);
+		else
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
+
+		if (multiplier != 1.0)
+		{
+			const auto sgnDamage = *args->Damage > 0 ? 1 : -1;
+			const auto calculateDamage = static_cast<int>(*args->Damage * multiplier);
+			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+		}
+	}
 
 	// Raise Combat Alert
-	if (pRules->CombatAlert && nDamageLeft > 1)
+	if (pRules->CombatAlert && *args->Damage > 1)
 	{
 		auto raiseCombatAlert = [&]()
 		{
-			const auto pHouse = pThis->Owner;
-
-			if (!pHouse->IsControlledByCurrentPlayer() || (pRules->CombatAlert_SuppressIfAllyDamage && pHouse->IsAlliedWith(args->SourceHouse)))
+			if (!pTargetHouse->IsControlledByCurrentPlayer() || (pRules->CombatAlert_SuppressIfAllyDamage && pTargetHouse->IsAlliedWith(pSourceHouse)))
 				return;
 
-			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+			const auto pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
 
-			if (pHouseExt->CombatAlertTimer.HasTimeLeft())
+			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
-
-			const auto pTypeExt = pExt->TypeExtData;
-			const auto pType = pTypeExt->OwnerObject();
-
-			if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
-				return;
-
-			const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
-			if (pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
+			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
 			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
@@ -93,7 +107,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!pShieldData->IsActive())
 				return 0;
 
-			nDamageLeft = pShieldData->ReceiveDamage(args);
+			int nDamageLeft = pShieldData->ReceiveDamage(args);
 
 			if (nDamageLeft >= 0)
 			{

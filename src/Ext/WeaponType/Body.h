@@ -29,6 +29,7 @@ public:
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
+		Valueable<int> Bolt_Duration;
 		Nullable<bool> Strafing;
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
@@ -76,6 +77,7 @@ public:
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
+			, Bolt_Duration { 17 }
 			, Strafing { }
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
