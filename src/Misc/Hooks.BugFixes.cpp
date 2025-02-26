@@ -1227,41 +1227,31 @@ DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
 
 #pragma region Sensors
 
+DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x34, 0x4));
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LastSensorsMapCoords = *cell;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
 {
 	enum { SkipGameCode = 0x4D8627 };
 
 	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto currentCell = pThis->GetMapCoords();
 
-	if (pThis->LastFlightMapCoords != CellStruct::Empty)
+	if (pExt->LastSensorsMapCoords != currentCell)
 	{
-		if (pThis->LastFlightMapCoords != currentCell)
-		{
-			pThis->RemoveSensorsAt(pThis->LastFlightMapCoords);
-			pThis->AddSensorsAt(currentCell);
-		}
-	}
-	else
-	{
-		if (pThis->LastMapCoords != currentCell)
-		{
-			pThis->RemoveSensorsAt(pThis->LastMapCoords);
-			pThis->AddSensorsAt(currentCell);
-		}
+		pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pThis->AddSensorsAt(currentCell);
 	}
 
 	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
-{
-	GET(FootClass*, pLinkedTo, EAX);
-
-	if (pLinkedTo->GetTechnoType()->SensorsSight)
-		pLinkedTo->RemoveSensorsAt(pLinkedTo->LastFlightMapCoords);
-
-	return 0;
 }
 
 DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
@@ -1269,11 +1259,9 @@ DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
 	enum { SkipGameCode = 0x4DB37C };
 
 	GET(FootClass*, pThis, EDI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pThis->LastFlightMapCoords != CellStruct::Empty)
-		pThis->RemoveSensorsAt(pThis->LastFlightMapCoords);
-	else
-		pThis->RemoveSensorsAt(pThis->LastMapCoords);
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 
 	return SkipGameCode;
 }
@@ -1283,13 +1271,64 @@ DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
 	enum { SkipGameCode = 0x4DBF01 };
 
 	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pThis->LastFlightMapCoords != CellStruct::Empty)
-		pThis->RemoveSensorsAt(pThis->LastFlightMapCoords);
-	else
-		pThis->RemoveSensorsAt(pThis->LastMapCoords);
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
 
 	return SkipGameCode;
+}
+
+// Bugfix: Jumpjet detect cloaked objects beneath
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
+{
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(CellStruct const, currentCell, EAX);
+
+	// Copied from FootClass::UpdatePosition
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		CellStruct const lastCell = pExt->LastSensorsMapCoords;
+
+		if (lastCell != currentCell)
+		{
+			pLinkedTo->RemoveSensorsAt(lastCell);
+			pLinkedTo->AddSensorsAt(currentCell);
+		}
+	}
+	// Something more may be missing
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+	auto const* pType = pLinkedTo->GetTechnoType();
+
+	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
+
+	if (pType->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pLinkedTo->AddSensorsAt(CellStruct::Empty);
+	}
+
+	return 0;
 }
 
 #pragma endregion
