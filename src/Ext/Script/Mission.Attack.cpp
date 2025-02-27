@@ -2,6 +2,7 @@
 
 #include <Ext/Building/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
 
@@ -421,6 +422,12 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if (!object)
 			continue;
 
+		// Discard invisible structures
+		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
+
+		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
+			continue;
+
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
 		int weaponIndex = pTechno->SelectWeapon(object);
 		auto weaponType = pTechno->GetWeapon(weaponIndex)->WeaponType;
@@ -704,8 +711,8 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 			// Then check if this possible target is too near of the Team Leader
 			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0;
 
-			bool primaryCheck = pWeaponPrimary && distanceToTarget <= (pWeaponPrimary->Range / 256.0 * 4.0);
-			bool secondaryCheck = pWeaponSecondary && distanceToTarget <= (pWeaponSecondary->Range / 256.0 * 4.0);
+			bool primaryCheck = pWeaponPrimary && distanceToTarget <= (WeaponTypeExt::GetRangeWithModifiers(pWeaponPrimary, pTechno) / 256.0 * 4.0);
+			bool secondaryCheck = pWeaponSecondary && distanceToTarget <= (WeaponTypeExt::GetRangeWithModifiers(pWeaponSecondary, pTechno) / 256.0 * 4.0);
 			bool guardRangeCheck = pTeamLeader->GetTechnoType()->GuardRange > 0 && distanceToTarget <= (pTeamLeader->GetTechnoType()->GuardRange / 256.0 * 2.0);
 
 			if (!pTechno->Owner->IsNeutral() && (primaryCheck || secondaryCheck || guardRangeCheck))

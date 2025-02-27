@@ -27,8 +27,9 @@ public:
 		bool DetonateOnInterception;
 		std::vector<LaserTrailClass> LaserTrails;
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
+		int DamageNumberOffset;
 
-		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
+		TrajectoryPointer Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -40,14 +41,12 @@ public:
 			, LaserTrails {}
 			, Trajectory { nullptr }
 			, SnappedToTarget { false }
+			, DamageNumberOffset { INT32_MIN }
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(FirerHouse, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -66,19 +65,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::House:
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;

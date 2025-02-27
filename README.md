@@ -10,11 +10,18 @@
 > The project is currently not maintained actively enough and thus we are looking for active maintainers at the moment. Please message us [in Discord channel](https://discord.gg/sZeMzz6qVg) (or PM Kerbiter directly).
 
 # Phobos
+
 ...is a community engine extension project providing a set of new features and fixes for Yuri's Revenge based on [modified YRpp](https://github.com/Metadorius/YRpp) and [Syringe](https://github.com/Ares-Developers/Syringe) to allow injecting code. It's meant to accompany [Ares](https://github.com/Ares-Developers/Ares) rather than replace it, thus it won't introduce incompatibilities.
 
 While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
-You can discuss the project at a dedicated [channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg).
+Community
+---------
+
+As the project is international and English is currently studied the most commonly as a second language, it's the main project language. We do not limit the creation of language-specific community groups though, because we understand that many may not know English as well as their native language and/or may have trouble accessing Discord.
+
+- **[🌐 International Discord channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**
+- [🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)(630590659)
 
 Downloads
 ---------
@@ -47,8 +54,10 @@ Documentation
 -------------
 
 - [Official docs](https://phobos.readthedocs.io) (also available in [Chinese](https://phobos.readthedocs.io/zh_CN/latest))
+- [Community Chinese docs](https://docs.qq.com/doc/p/dc3da1ce39a6e787b6e133f7d33d6aebef581cb4)
+  - Because the Chinese translation of the official docs is currently underdeveloped, at the time it is recommended to use the community docs for Chinese users.
 
-You can switch between versions (displays latest develop nightly version by default) in the bottom left corner, as well as download a PDF version.
+You can switch between versions (displays latest develop nightly version by default) in the bottom right corner, as well as download a PDF version.
 
 The documentation is split by a few major categories, each represented with a page on the sidebar. Each page has its contents grouped into multiple subcategories, be it buildings, technotypes, infantries, superweapons or something else.
 
@@ -61,6 +70,9 @@ The documentation is split by a few major categories, each represented with a pa
 [SOMENAME]           ; BuildingType
 ; KeyName=DefaultValue ; accepted type with optional explanation
 ; if there's nothing to the right of equals sign - the default value is empty/absent
+; if these keys have had their value set, they can only be set to their default
+; unset state again by setting the value to <default>, <none> or none
+; for list of values only <default> clears the entire list
 ; if the default value is not static - it's written and explained in a comment
 UIDescription=<none> ; CSF entry key
 ```
@@ -81,9 +93,9 @@ Credits
 
 ### Developers
 - **Belonit (Gluk-v48)** - project author
-- **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer (semi-active for the time being; [Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
+- **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer ([Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
 - **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
-- **Uranusian (Thrifinesma)** - retired developer, CN community ambassador ([Patreon](https://www.patreon.com/uranusian), [AliPay](http://tiebapic.baidu.com/forum/w%3D580/sign=4b04b953307f9e2f70351d002f31e962/b3f89909b3de9c823bd7f23a7b81800a18d84371.jpg))
+- **Uranusian (Thrifinesma)** - developer, CN community ambassador
 - **secsome (SEC-SOME)** - developer
 - **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
 - **FS-21** - developer

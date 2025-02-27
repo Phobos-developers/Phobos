@@ -3,6 +3,79 @@
 #include <TiberiumClass.h>
 #include "Body.h"
 
+DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pTypeData->HealthBar_Hide)
+		return 0x6F6AB6;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+	GET(int, length, EBX);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+			pShieldData->DrawShieldBar_Building(length, pBound);
+	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
+{
+	GET(FootClass*, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	UNREFERENCED_PARAMETER(pLocation);
+	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pShieldData = pExt->Shield.get())
+	{
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		{
+			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
+			pShieldData->DrawShieldBar_Other(length, pBound);
+		}
+	}
+
+	TechnoExt::ProcessDigitalDisplays(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
+{
+	enum { SkipGameCode = 0x6F5388 };
+
+	GET(TechnoClass*, pThis, EBP);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
+	GET(RectangleStruct*, pBounds, ESI);
+
+	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
+	{
+		if (RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get() && !pThis->IsSelected && !pThis->IsMouseHovering)
+			return SkipGameCode;
+		else
+			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+	}
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -162,44 +235,99 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	GET(int, yOffset, ESI);
 
 	Point2D position = { offset->X, offset->Y };
-	int totalStorage = pThis->GetTechnoType()->Storage;
+	const int totalStorage = pThis->GetTechnoType()->Storage;
 
-	std::vector<int> tiberiumCounts(TiberiumClass::Array.get()->Count);
+	std::vector<int> pipsToDraw;
 
-	for (size_t i = 0; i < tiberiumCounts.size(); i++)
+	bool isWeeder = false;
+
+	switch (pThis->WhatAmI())
 	{
-		tiberiumCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
+	case AbstractType::Building:
+		isWeeder = static_cast<BuildingClass*>(pThis)->Type->Weeder;
+		break;
+	case AbstractType::Unit:
+		isWeeder = static_cast<UnitClass*>(pThis)->Type->Weeder;
+		break;
+	default:
+		break;
 	}
 
-	auto const orders = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.GetElements(std::vector<int>{0, 2, 3, 1});
-	auto const& tibFrames = RulesExt::Global()->Pips_Tiberiums_Frames;
-
-	for (int i = 0; i < maxPips; i++)
+	if (isWeeder)
 	{
-		int frame = 0;
+		const int fullWeedFrames = pThis->WhatAmI() == AbstractType::Building ?
+			static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5) :
+			static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
 
-		for (size_t c = 0; c < tiberiumCounts.size(); c++)
+		for (int i = 0; i < maxPips; i++)
 		{
-			size_t index = c;
+			if (i < fullWeedFrames)
+				pipsToDraw.push_back(RulesExt::Global()->Pips_Tiberiums_WeedFrame);
+			else
+				pipsToDraw.push_back(RulesExt::Global()->Pips_Tiberiums_WeedEmptyFrame);
+		}
+	}
+	else
+	{
+		std::vector<int> tiberiumPipCounts(TiberiumClass::Array->Count);
 
-			if (c < orders.size())
-				index = orders.at(c);
+		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
+		{
+			tiberiumPipCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
+		}
 
-			if (tiberiumCounts[index] > 0)
+		auto const rawPipOrder = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : RulesExt::Global()->Pips_Tiberiums_DisplayOrder;
+		auto const& pipFrames = RulesExt::Global()->Pips_Tiberiums_Frames;
+		int const emptyFrame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
+
+		std::vector<int> pipOrder;
+
+		// First make a new vector, removing all the duplicate and invalid tiberiums
+		for (int index : rawPipOrder)
+		{
+			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
+				index >= 0 && index < TiberiumClass::Array->Count)
 			{
-				tiberiumCounts[index]--;
-
-				if (index >= tibFrames.size())
-					frame = index == 1 ? 5 : 2;
-				else
-					frame = tibFrames.at(index);
-
-				break;
+				pipOrder.push_back(index);
 			}
 		}
 
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, frame,
-			&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		// Then add any tiberium types that are missing
+		for (int i = 0; i < TiberiumClass::Array->Count; i++)
+		{
+			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
+			{
+				pipOrder.push_back(i);
+			}
+		}
+
+		for (int i = 0; i < maxPips; i++)
+		{
+			for (const int index : pipOrder)
+			{
+				if (tiberiumPipCounts[index] > 0)
+				{
+					tiberiumPipCounts[index]--;
+
+					if (static_cast<size_t>(index) >= pipFrames.size())
+						pipsToDraw.push_back(index == 1 ? 5 : 2);
+					else
+						pipsToDraw.push_back(pipFrames.at(index));
+
+					break;
+				}
+			}
+
+			if (pipsToDraw.size() <= static_cast<size_t>(i))
+				pipsToDraw.push_back(emptyFrame);
+		}
+	}
+
+	for (int pip : pipsToDraw)
+	{
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, pip,
+			&position, rect, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0,
+			ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
 		position.X += offset->Width;
 		position.Y += yOffset;

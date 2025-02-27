@@ -59,6 +59,5 @@ public:
 		Global()->InvalidatePointer(ptr, removed);
 	}
 
-	static bool LoadGlobals(PhobosStreamReader& Stm);
-	static bool SaveGlobals(PhobosStreamWriter& Stm);
+	static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem);
 };
