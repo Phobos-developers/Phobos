@@ -238,6 +238,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	const int totalStorage = pThis->GetTechnoType()->Storage;
 
 	std::vector<int> pipsToDraw;
+	pipsToDraw.reserve(maxPips);
 
 	bool isWeeder = false;
 
@@ -262,9 +263,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		for (int i = 0; i < maxPips; i++)
 		{
 			if (i < fullWeedFrames)
-				pipsToDraw.push_back(RulesExt::Global()->Pips_Tiberiums_WeedFrame);
+				pipsToDraw.emplace_back(RulesExt::Global()->Pips_Tiberiums_WeedFrame);
 			else
-				pipsToDraw.push_back(RulesExt::Global()->Pips_Tiberiums_WeedEmptyFrame);
+				pipsToDraw.emplace_back(RulesExt::Global()->Pips_Tiberiums_WeedEmptyFrame);
 		}
 	}
 	else
@@ -281,6 +282,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		int const emptyFrame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
 
 		std::vector<int> pipOrder;
+		pipOrder.reserve(TiberiumClass::Array->Count);
 
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
@@ -288,7 +290,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
 				index >= 0 && index < TiberiumClass::Array->Count)
 			{
-				pipOrder.push_back(index);
+				pipOrder.emplace_back(index);
 			}
 		}
 
@@ -297,7 +299,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{
-				pipOrder.push_back(i);
+				pipOrder.emplace_back(i);
 			}
 		}
 
@@ -310,16 +312,16 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 					tiberiumPipCounts[index]--;
 
 					if (static_cast<size_t>(index) >= pipFrames.size())
-						pipsToDraw.push_back(index == 1 ? 5 : 2);
+						pipsToDraw.emplace_back(index == 1 ? 5 : 2);
 					else
-						pipsToDraw.push_back(pipFrames.at(index));
+						pipsToDraw.emplace_back(pipFrames.at(index));
 
 					break;
 				}
 			}
 
 			if (pipsToDraw.size() <= static_cast<size_t>(i))
-				pipsToDraw.push_back(emptyFrame);
+				pipsToDraw.emplace_back(emptyFrame);
 		}
 	}
 

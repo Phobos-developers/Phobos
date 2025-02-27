@@ -419,7 +419,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		this->LaserTrails.clear();
 
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
-
 	this->UpdateSelfOwnedAttachEffects();
 
 	// Recreate Laser Trails
