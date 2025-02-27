@@ -40,20 +40,24 @@ void EventExt::RespondToManualReloadEvent()
 		if (pTechno->Ammo > 0 && pTechno->IsAlive && !pTechno->Berzerk)
 		{
 			const auto pType = pTechno->GetTechnoType();
-			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-			if (pType && pTechno->Ammo != pType->Ammo && pTypeExt->CanManualReload)
+			if (pTechno->Ammo != pType->Ammo)
 			{
-				if (pTypeExt->CanManualReload_DetonateWarhead && pTypeExt->CanManualReload_DetonateConsume <= pTechno->Ammo)
-					WarheadTypeExt::DetonateAt(pTypeExt->CanManualReload_DetonateWarhead.Get(), pTechno->GetCoords(), pTechno, 1, pTechno->Owner, pTechno->Target);
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-				if (pTypeExt->CanManualReload_ResetROF)
-					pTechno->RearmTimer.Stop();
+				if (pTypeExt->CanManualReload)
+				{
+					if (pTypeExt->CanManualReload_DetonateWarhead && pTypeExt->CanManualReload_DetonateConsume <= pTechno->Ammo)
+						WarheadTypeExt::DetonateAt(pTypeExt->CanManualReload_DetonateWarhead.Get(), pTechno->GetCoords(), pTechno, 1, pTechno->Owner, pTechno->Target);
 
-				pTechno->Ammo = 0;
+					if (pTypeExt->CanManualReload_ResetROF)
+						pTechno->RearmTimer.Stop();
 
-				if (pTechno->WhatAmI() != AbstractType::Aircraft)
-					pTechno->StartReloading();
+					pTechno->Ammo = 0;
+
+					if (pTechno->WhatAmI() != AbstractType::Aircraft)
+						pTechno->StartReloading();
+				}
 			}
 		}
 	}
