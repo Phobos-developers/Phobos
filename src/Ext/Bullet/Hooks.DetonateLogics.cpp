@@ -68,7 +68,8 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		auto const originalLocation = pThis->Location;
 		auto const pOriginalTarget = pThis->Target;
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
-		auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+		auto const isFull = pWHExt->DetonateOnAllMapObjects_Full;
 
 		auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 		{
@@ -77,23 +78,21 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			return vec;
 		};
 
-		std::function<void(TechnoClass*)> tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
+		auto tryDetonate = [pThis, pWHExt, pOwner, isFull](TechnoClass* pTechno)
 			{
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
-					pThis->Target = pTechno;
-					pThis->Location = pTechno->GetCoords();
-					pThis->Detonate(pTechno->GetCoords());
-				}
-			};
-
-		if (!pWHExt->DetonateOnAllMapObjects_Full)
-			tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
-			{
-				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
-				{
-					int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
-					pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
+					if (isFull)
+					{
+						pThis->Target = pTechno;
+						pThis->Location = pTechno->GetCoords();
+						pThis->Detonate(pTechno->GetCoords());
+					}
+					else
+					{
+						int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
+						pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
+					}
 				}
 			};
 
@@ -101,7 +100,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		{
 			auto const aircraft = copy_dvc(*AircraftClass::Array);
 
-			for (auto pAircraft : aircraft)
+			for (auto const pAircraft : aircraft)
 				tryDetonate(pAircraft);
 		}
 
@@ -109,7 +108,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		{
 			auto const buildings = copy_dvc(*BuildingClass::Array);
 
-			for (auto pBuilding : buildings)
+			for (auto const pBuilding : buildings)
 				tryDetonate(pBuilding);
 		}
 
@@ -117,7 +116,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		{
 			auto const infantry = copy_dvc(*InfantryClass::Array);
 
-			for (auto pInf : infantry)
+			for (auto const pInf : infantry)
 				tryDetonate(pInf);
 		}
 
