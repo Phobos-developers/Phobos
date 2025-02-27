@@ -190,11 +190,7 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo)
 		return;
 
-	const auto mission = pBuilding->CurrentMission;
-
-	if (mission == Mission::Construction || mission == Mission::Selling)
-		return;
-
+	// Higher priority for selling
 	if (this->BuildingSell)
 	{
 		if ((pBuilding->CanBeSold() && !pBuilding->IsStrange()) || this->BuildingSell_IgnoreUnsellable)
@@ -202,6 +198,12 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 
 		return;
 	}
+
+	// CanBeSold() will also check this
+	const auto mission = pBuilding->CurrentMission;
+
+	if (mission == Mission::Construction || mission == Mission::Selling)
+		return;
 
 	const auto pType = pBuilding->Type;
 
@@ -212,6 +214,7 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	const auto width = pType->GetFoundationWidth();
 	const auto height = pType->GetFoundationHeight(false);
 
+	// Offset of undeployment on large-scale buildings
 	if (width > 2 || height > 2)
 		cell += CellStruct { 1, 1 };
 
@@ -243,7 +246,7 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 			// And the lowest value being 0 times in the opposite direction
 			// The greater difference between positive direction to both sides, the lower value it is
 			for (int j = -7; j < 8; ++j)
-				newCosts += ((8 - abs(j)) * record[(i + j) & 15]);
+				newCosts += ((8 - std::abs(j)) * record[(i + j) & 15]);
 
 			// Record the direction with the highest weight
 			if (newCosts > costs)
