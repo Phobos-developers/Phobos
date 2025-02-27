@@ -15,7 +15,11 @@ DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 	GET(EBolt*, pBolt, EAX);
 
 	if (pWeapon)
-		BoltTemp::boltWeaponTypeExt[pBolt] = WeaponTypeExt::ExtMap.Find(pWeapon);
+	{
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		BoltTemp::boltWeaponTypeExt[pBolt] = pWeaponExt;
+		pBolt->Lifetime = 1 << (Math::clamp(pWeaponExt->Bolt_Duration, 1, 31) - 1);
+	}
 
 	return 0;
 }

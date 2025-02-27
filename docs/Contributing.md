@@ -26,9 +26,6 @@ To distribute the workload and make the project more manageable, we have establi
 - Unhardcodings/customizations - contributions that only make something customizable through the INI or other way (by the modder usually), without adding too much code to handle the customization
   - `T1` complexity by default
 - New features
-  ```{important}
-  Modders are highly encouraged to submit feedback reusability of added features in order to not bloat the project with one-off features.
-  ```
   - Extensions of existing systems - add logic to existing systems, doesn't warrant it's own entity or type classes generally, but may introduce new hooks
     - Examples: feedback weapon logic, superweapon launch warhead logic, a new type of trajectory that uses existing custom trajectory framework, etc.
     - `T1` or `T2` complexity by default, depending on judgement of the one who assigns the PR
@@ -38,7 +35,11 @@ To distribute the workload and make the project more manageable, we have establi
 - Contributions to project infrastructure - changes to the project's build system, CI, documentation, etc.
   - `T2` complexity by default
 - Project policy changes - changes to the project's guidelines, contributing guidelines, etc.
-  - `T3` complexity by default (has to be reviewed by leads).
+  - `T3` complexity by default (has to be reviewed by leads)
+
+```{hint}
+Modders are highly encouraged to submit feedback on reusability of added features (preferably most important takeaways should be tracked in pull requests, discussions and issues) in order to not bloat the project with one-off features.
+```
 
 The list is not exhaustive, you are welcome to propose/submit changes to it (or to any project policies in order to improve how the project is maintained).
 
