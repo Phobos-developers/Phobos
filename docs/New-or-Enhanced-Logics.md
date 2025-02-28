@@ -1577,6 +1577,22 @@ Convert.HumanToComputer=    ; TechnoType
 Convert.ComputerToHuman=    ; TechnoType
 ```
 
+### Extended gattling rate down logic
+
+- Now you can customize some effects of RateDown.
+  - `RateDown.Delay` controls the delay before using `RateDown` to reduce the gattling value.
+  - `RateDown.Reset` controls whether to reset the gattling value directly when the techno has no target or changes targets.
+  - `RateDown.Cover.Value` replaces the original `RateDown` when techno's ammo is lower than `RateDown.Cover.AmmoBelow`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                  ; TechnoType, `IsGattling=yes`
+RateDown.Delay=0              ; integer, game frames
+RateDown.Reset=false          ; boolean
+RateDown.Cover.Value=0        ; integer
+RateDown.Cover.AmmoBelow=-2   ; integer
+```
+
 ## Terrain
 
 ### Destroy animation & sound
