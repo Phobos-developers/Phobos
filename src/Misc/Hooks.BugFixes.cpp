@@ -1045,7 +1045,7 @@ DEFINE_HOOK(0x74364C, UnitClass_ReadFromINI_Follower2, 0x8)
 	if (!UnitParseTemp::WasCreated)
 	{
 		followers.AddItem(-1);
-		UnitParseTemp::ParsedUnits.push_back(nullptr);
+		UnitParseTemp::ParsedUnits.emplace_back(nullptr);
 	}
 
 	UnitParseTemp::WasCreated = false;

@@ -370,7 +370,7 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 
 		for (auto i = occupyHeight; i > 0; --i)
 		{
-			foundationCells.push_back(actualCell);
+			foundationCells.emplace_back(actualCell);
 			--actualCell.X;
 			--actualCell.Y;
 		}

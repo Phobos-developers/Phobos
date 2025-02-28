@@ -52,7 +52,7 @@ std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 	result.reserve(static_cast<int>(std::round((range + 0.5) * (range + 0.5) * 3.15))); // roughly calculate its area as capacity
 
 	for (CellSpreadEnumerator it(range); it; ++it)
-		result.push_back(*it);
+		result.emplace_back(*it);
 
 	return result;
 }

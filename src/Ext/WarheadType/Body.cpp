@@ -348,7 +348,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SpawnsCrate_Types.size() < i)
 			this->SpawnsCrate_Types[i] = crateType;
 		else
-			this->SpawnsCrate_Types.push_back(crateType);
+			this->SpawnsCrate_Types.emplace_back(crateType);
 
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SpawnsCrate%u.Weight", i);
 		weight.Read(exINI, pSection, tempBuffer);
@@ -362,7 +362,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SpawnsCrate_Weights.size() < i)
 			this->SpawnsCrate_Weights[i] = weight;
 		else
-			this->SpawnsCrate_Weights.push_back(weight);
+			this->SpawnsCrate_Weights.emplace_back(weight);
 	}
 }
 

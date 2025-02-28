@@ -85,7 +85,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 	for (auto pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
-			waypoints.push_back(pair.first);
+			waypoints.emplace_back(pair.first);
 
 	if (waypoints.size() > 0)
 	{

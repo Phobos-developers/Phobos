@@ -193,7 +193,7 @@ std::vector<CellClass*> PhobosTrajectoryType::GetCellsInProximityRadius(BulletCl
 	for (const auto& pCells : recCells)
 	{
 		if (CellClass* pRecCell = MapClass::Instance->TryGetCellAt(pCells))
-			recCellClass.push_back(pRecCell);
+			recCellClass.emplace_back(pRecCell);
 	}
 
 	return recCellClass;
@@ -205,7 +205,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 	std::vector<CellStruct> recCells;
 	const auto cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
 	recCells.reserve(cellNums);
-	recCells.push_back(bottomStaCell);
+	recCells.emplace_back(bottomStaCell);
 
 	if (bottomStaCell == leftMidCell || bottomStaCell == rightMidCell) // A straight line
 	{
@@ -222,24 +222,24 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 			{
 				mTheCurN -= middleThePace.X;
 				middleCurCell.Y += middleTheUnit.Y;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 			}
 			else if (mTheCurN < 0)
 			{
 				mTheCurN += middleThePace.Y;
 				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 			}
 			else
 			{
 				mTheCurN += middleThePace.Y - middleThePace.X;
 				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 				middleCurCell.X -= middleTheUnit.X;
 				middleCurCell.Y += middleTheUnit.Y;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 			}
 		}
 	}
@@ -293,7 +293,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 						}
 						else
 						{
-							recCells.push_back(leftCurCell);
+							recCells.emplace_back(leftCurCell);
 							break;
 						}
 					}
@@ -333,7 +333,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				}
 
 				if (leftCurCell != rightCurCell) // Avoid double counting cells.
-					recCells.push_back(leftCurCell);
+					recCells.emplace_back(leftCurCell);
 			}
 
 			while (rightCurCell != topEndCell) // Right
@@ -351,7 +351,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 						}
 						else
 						{
-							recCells.push_back(rightCurCell);
+							recCells.emplace_back(rightCurCell);
 							break;
 						}
 					}
@@ -391,7 +391,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				}
 
 				if (rightCurCell != leftCurCell) // Avoid double counting cells.
-					recCells.push_back(rightCurCell);
+					recCells.emplace_back(rightCurCell);
 			}
 
 			middleCurCell = leftCurCell;
@@ -399,7 +399,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 
 			while (middleCurCell.X < rightCurCell.X) // Center
 			{
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 				middleCurCell.X += 1;
 			}
 
@@ -408,7 +408,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				leftContinue = false;
 				left2ndCurN -= left2ndPace.X;
 				leftCurCell.Y += left2ndUnit.Y;
-				recCells.push_back(leftCurCell);
+				recCells.emplace_back(leftCurCell);
 			}
 
 			if (rightContinue) // Continue Top Right Side
@@ -416,7 +416,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				rightContinue = false;
 				right2ndCurN -= right2ndPace.X;
 				rightCurCell.Y += right2ndUnit.Y;
-				recCells.push_back(rightCurCell);
+				recCells.emplace_back(rightCurCell);
 			}
 		}
 	}
