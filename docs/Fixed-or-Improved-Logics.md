@@ -181,7 +181,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Aircraft with `AirportBound=no` continue moving forward.
 - Now in air team members will use the 2D distance instead of the 3D distance to judge whether have reached the mission destination, so as to prevent the problem that the mission is stuck and cannot continue in some cases (such as when the jumpjet stops on the building).
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
-- `AirburstWeapon` now supports `IsLaser` (with Ares `LaserThickness`), `IsElectricBolt` (with Phobos `Bolt.Disable1`, `Bolt.Disable2`, `Bolt.Disable3`, `Bolt.Arcs`, without Ares `Bolt.Color1` 、`Bolt.Color2` 、`Bolt.Color3`), `IsRadBeam` (with Ares `Beam.Color` 、`Beam.Duration` 、`Beam.Amplitude` 、`Beam.IsHouseColor`), and `AttachedParticleSystem`.
+- `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1` 、`Bolt.Color2` 、`Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
 - Allowed `AuxBuilding` to count building upgrades.
