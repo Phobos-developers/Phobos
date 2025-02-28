@@ -250,6 +250,9 @@ void SWSidebarClass::RecheckCameo()
 			removeButtons.push_back(button->SuperIndex);
 		}
 
+		if (removeButtons.size())
+			HouseClass::CurrentPlayer->RecheckTechTree = true;
+
 		for (const auto& index : removeButtons)
 			column->RemoveButton(index);
 	}
@@ -272,24 +275,16 @@ void SWSidebarClass::RecheckCameo()
 
 // Hooks
 
-DEFINE_HOOK(0x4F92DD, HouseClass_UpdateTechTree_ReorderFunctions, 0x5)
+DEFINE_HOOK(0x4F92FB, HouseClass_UpdateTechTree_SWSidebar, 0x7)
 {
 	enum { SkipGameCode = 0x4F9302 };
 
-	GET(HouseClass*, pHouse, ESI); // Only HouseClass::CurrentPlayer
+	GET(HouseClass*, pHouse, ESI);
 
-	// Mark redraw
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
-
-	// Update SWs
-	reinterpret_cast<void(__thiscall*)(HouseClass*)>(0x50AF10)(pHouse);
 	pHouse->AISupers();
 
-	// Recheck SWSidebar Cameo
-	SWSidebarClass::RecheckCameo();
-
-	// Recheck YRSidebar Cameo
-	reinterpret_cast<void(__thiscall*)(SidebarClass*)>(0x6A7D20)(SidebarClass::Instance());
+	if (pHouse->IsCurrentPlayer())
+		SWSidebarClass::RecheckCameo();
 
 	return SkipGameCode;
 }
