@@ -31,7 +31,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 		.Process(this->TolerantTime)
 		.Process(this->ROT)
 		.Process(this->BulletSpin)
-		.Process(this->PeacefullyVanish)
+		.Process(this->PeacefulVanish)
 		.Process(this->TraceTheTarget)
 		.Process(this->CreateAtTarget)
 		.Process(this->CreateCoord)
@@ -39,6 +39,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 		.Process(this->WeaponCoord)
 		.Process(this->UseDisperseCoord)
 		.Process(this->AllowFirerTurning)
+		.Process(this->WeaponFromFirer)
 		.Process(this->Weapons)
 		.Process(this->WeaponCount)
 		.Process(this->WeaponDelay)
@@ -89,7 +90,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->TolerantTime.Read(exINI, pSection, "Trajectory.Tracing.TolerantTime");
 	this->ROT.Read(exINI, pSection, "Trajectory.Tracing.ROT");
 	this->BulletSpin.Read(exINI, pSection, "Trajectory.Tracing.BulletSpin");
-	this->PeacefullyVanish.Read(exINI, pSection, "Trajectory.Tracing.PeacefullyVanish");
+	this->PeacefulVanish.Read(exINI, pSection, "Trajectory.Tracing.PeacefulVanish");
 	this->TraceTheTarget.Read(exINI, pSection, "Trajectory.Tracing.TraceTheTarget");
 	this->CreateAtTarget.Read(exINI, pSection, "Trajectory.Tracing.CreateAtTarget");
 	this->CreateCoord.Read(exINI, pSection, "Trajectory.Tracing.CreateCoord");
@@ -97,6 +98,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->WeaponCoord.Read(exINI, pSection, "Trajectory.Tracing.WeaponCoord");
 	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.Tracing.UseDisperseCoord");
 	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.Tracing.AllowFirerTurning");
+	this->WeaponFromFirer.Read(exINI, pSection, "Trajectory.Tracing.WeaponFromFirer");
 	this->Weapons.Read(exINI, pSection, "Trajectory.Tracing.Weapons");
 	this->WeaponCount.Read(exINI, pSection, "Trajectory.Tracing.WeaponCount");
 	this->WeaponDelay.Read(exINI, pSection, "Trajectory.Tracing.WeaponDelay");
@@ -196,7 +198,7 @@ bool TracingTrajectory::OnAI(BulletClass* pBullet)
 
 void TracingTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
-	if (this->Type->PeacefullyVanish)
+	if (this->Type->PeacefulVanish)
 	{
 		pBullet->Health = 0;
 		pBullet->Limbo();
@@ -455,7 +457,7 @@ bool TracingTrajectory::CheckFireFacing(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 
-	if (!pType->WeaponCheck || !pType->Synchronize || pType->TraceTheTarget || pType->ROT < 0 || pType->BulletSpin)
+	if (!pType->WeaponCheck || !pType->Synchronize || pType->WeaponFromFirer || pType->ROT < 0 || pType->BulletSpin)
 		return true;
 
 	const auto& theBullet = pBullet->Location;
@@ -603,7 +605,7 @@ AbstractClass* TracingTrajectory::GetBulletTarget(BulletClass* pBullet, TechnoCl
 {
 	const auto pType = this->Type;
 
-	if (pType->TraceTheTarget)
+	if (pType->WeaponFromFirer)
 		return pBullet;
 
 	if (pType->Synchronize)
@@ -647,7 +649,7 @@ CoordStruct TracingTrajectory::GetWeaponFireCoord(BulletClass* pBullet, TechnoCl
 {
 	const auto pType = this->Type;
 
-	if (pType->TraceTheTarget)
+	if (pType->WeaponFromFirer)
 	{
 		for (auto pTrans = pTechno->Transporter; pTrans; pTrans = pTrans->Transporter)
 			pTechno = pTrans;
@@ -785,7 +787,7 @@ void TracingTrajectory::CreateTracingBullets(BulletClass* pBullet, WeaponTypeCla
 			}*/
 		}
 
-		const auto pAttach = pType->TraceTheTarget ? (!this->NotMainWeapon ? static_cast<ObjectClass*>(pTechno) : nullptr) : pBullet;
+		const auto pAttach = pType->WeaponFromFirer ? (this->NotMainWeapon ? nullptr : static_cast<ObjectClass*>(pTechno)) : pBullet;
 		BulletExt::SimulatedFiringEffects(pCreateBullet, pOwner, pAttach, true, true);
 	}
 }

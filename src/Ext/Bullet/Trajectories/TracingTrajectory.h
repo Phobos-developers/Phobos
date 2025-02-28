@@ -21,7 +21,7 @@ public:
 		, TolerantTime { -1 }
 		, ROT { -1 }
 		, BulletSpin { false }
-		, PeacefullyVanish { false }
+		, PeacefulVanish { false }
 		, TraceTheTarget { true }
 		, CreateAtTarget { false }
 		, CreateCoord { { 0, 0, 0 } }
@@ -29,6 +29,7 @@ public:
 		, WeaponCoord { { 0, 0, 0 } }
 		, UseDisperseCoord { false }
 		, AllowFirerTurning { true }
+		, WeaponFromFirer { true }
 		, Weapons {}
 		, WeaponCount {}
 		, WeaponDelay {}
@@ -51,7 +52,7 @@ public:
 	Valueable<int> TolerantTime;
 	Valueable<int> ROT;
 	Valueable<bool> BulletSpin;
-	Valueable<bool> PeacefullyVanish;
+	Valueable<bool> PeacefulVanish;
 	Valueable<bool> TraceTheTarget;
 	Valueable<bool> CreateAtTarget;
 	Valueable<CoordStruct> CreateCoord;
@@ -59,6 +60,7 @@ public:
 	Valueable<CoordStruct> WeaponCoord;
 	Valueable<bool> UseDisperseCoord;
 	Valueable<bool> AllowFirerTurning;
+	Valueable<bool> WeaponFromFirer;
 	ValueableVector<WeaponTypeClass*> Weapons;
 	ValueableVector<int> WeaponCount;
 	ValueableVector<int> WeaponDelay;
