@@ -43,6 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateGattlingRateDownReset();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -558,14 +559,9 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 		if (pThis->CloakState == CloakState::Cloaked)
 		{
 			if (trail.Type->CloakVisible && trail.Type->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
-			{
-				auto const pCell = pThis->GetCell();
-				trail.Cloaked = !pCell || !pCell->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
-			}
+				trail.Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
 			else if (!trail.Type->CloakVisible)
-			{
 				trail.Cloaked = true;
-			}
 		}
 
 		if (!this->IsInTunnel)
@@ -616,6 +612,25 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	else if (this->MindControlRingAnimType)
 	{
 		this->MindControlRingAnimType = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::UpdateGattlingRateDownReset()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (pTypeExt->OwnerObject()->IsGattling)
+	{
+		const auto pThis = this->OwnerObject();
+
+		if (pTypeExt->RateDown_Reset && (!pThis->Target || this->LastTargetID != pThis->Target->UniqueID))
+		{
+			this->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
+			pThis->GattlingValue = 0;
+			pThis->CurrentGattlingStage = 0;
+			this->AccumulatedGattlingValue = 0;
+			this->ShouldUpdateGattlingValue = false;
+		}
 	}
 }
 
