@@ -2,6 +2,7 @@
 
 #include <TacticalClass.h>
 #include <LaserDrawClass.h>
+#include <AircraftTrackerClass.h>
 
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -42,7 +43,9 @@ void EngraveTrajectoryType::Serialize(T& Stm)
 		.Process(this->ProximityDirect)
 		.Process(this->ProximityMedial)
 		.Process(this->ProximityAllies)
+		.Process(this->ProximityFlight)
 		.Process(this->ProximitySuicide)
+		.Process(this->ConfineOnGround)
 		;
 }
 
@@ -94,7 +97,9 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->ProximityDirect.Read(exINI, pSection, "Trajectory.Engrave.ProximityDirect");
 	this->ProximityMedial.Read(exINI, pSection, "Trajectory.Engrave.ProximityMedial");
 	this->ProximityAllies.Read(exINI, pSection, "Trajectory.Engrave.ProximityAllies");
+	this->ProximityFlight.Read(exINI, pSection, "Trajectory.Engrave.ProximityFlight");
 	this->ProximitySuicide.Read(exINI, pSection, "Trajectory.Engrave.ProximitySuicide");
+	this->ConfineOnGround.Read(exINI, pSection, "Trajectory.Engrave.ConfineOnGround");
 }
 
 template<typename T>
@@ -276,7 +281,9 @@ void EngraveTrajectory::SetEngraveDirection(BulletClass* pBullet, double rotateA
 		theSource.Y += static_cast<int>(this->SourceCoord.X * Math::sin(rotateAngle) - this->SourceCoord.Y * Math::cos(rotateAngle));
 	}
 
-	theSource.Z = this->GetFloorCoordHeight(pBullet, theSource);
+	if (this->Type->ConfineOnGround)
+		theSource.Z = this->GetFloorCoordHeight(pBullet, theSource);
+
 	this->StartCoord = theSource;
 	pBullet->SetLocation(theSource);
 
@@ -318,13 +325,16 @@ int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, const CoordStru
 {
 	const auto pCell = MapClass::Instance->GetCellAt(coord);
 	const auto onFloor = MapClass::Instance->GetCellFloorHeight(coord);
-	const auto onBridge = pCell->GetCoordsWithBridge().Z;
+	const auto onBridge = pCell->ContainsBridge() ? onFloor + CellClass::BridgeHeight : onFloor;
 
 	return (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge) ? onBridge : onFloor;
 }
 
 bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 {
+	if (!this->Type->ConfineOnGround)
+		return false;
+
 	auto bulletCoords = pBullet->Location;
 	CoordStruct futureCoords
 	{
@@ -446,6 +456,7 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 		static_cast<int>(pBullet->Velocity.Z)
 	};
 	const auto velocitySq = velocityCrd.MagnitudeSquared();
+	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(vectSize);
@@ -468,7 +479,7 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 				continue;
 
 			// Not directly harming friendly forces
-			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pBullet->Target)
+			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
 				continue;
 
 			// Check distance
@@ -501,7 +512,53 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 		}
 	}
 
-	// Step 2: Record each target without repetition.
+	// Step 2: Find valid targets in the air within range if necessary.
+	if (pType->ProximityFlight)
+	{
+		const auto airTracker = &AircraftTrackerClass::Instance;
+		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5),
+			Game::F2I(sqrt(radius * radius + (velocitySq / 4)) / Unsorted::LeptonsPerCell));
+
+		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
+		{
+			if (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)
+				continue;
+
+			// Not directly harming friendly forces
+			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
+				continue;
+
+			// Check distance
+			const auto targetCrd = pTechno->GetCoords();
+			const auto pathCrd = targetCrd - this->StartCoord;
+
+			if (pathCrd * velocityCrd < 0) // In front of the techno
+				continue;
+
+			const auto distanceCrd = targetCrd - pBullet->Location;
+			const auto nextDistanceCrd = distanceCrd - velocityCrd;
+
+			if (nextDistanceCrd * velocityCrd > 0) // Behind the bullet
+				continue;
+
+			const auto cross = distanceCrd.CrossProduct(nextDistanceCrd).MagnitudeSquared();
+			const auto distance = (velocitySq > 1e-10) ? sqrt(cross / velocitySq) : distanceCrd.Magnitude();
+
+			if (distance > radius) // In the cylinder
+				continue;
+
+			if (thisSize >= vectSize)
+			{
+				vectSize += cellSize;
+				validTechnos.reserve(vectSize);
+			}
+
+			validTechnos.push_back(pTechno);
+			thisSize += 1;
+		}
+	}
+
+	// Step 3: Record each target without repetition.
 	std::vector<int> casualtyChecked;
 	casualtyChecked.reserve(std::max(validTechnos.size(), this->TheCasualty.size()));
 
@@ -531,7 +588,7 @@ void EngraveTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* p
 		this->TheCasualty[pTechno->UniqueID] = 20;
 	}
 
-	// Step 3: Detonate warheads in sequence based on distance.
+	// Step 4: Detonate warheads in sequence based on distance.
 	const auto targetsSize = validTargets.size();
 
 	if (this->ProximityImpact > 0 && static_cast<int>(targetsSize) > this->ProximityImpact)

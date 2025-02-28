@@ -31,7 +31,9 @@ public:
 		, ProximityDirect { false }
 		, ProximityMedial { false }
 		, ProximityAllies { false }
+		, ProximityFlight { false }
 		, ProximitySuicide { false }
+		, ConfineOnGround { true }
 	{ }
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -65,7 +67,9 @@ public:
 	Valueable<bool> ProximityDirect;
 	Valueable<bool> ProximityMedial;
 	Valueable<bool> ProximityAllies;
+	Valueable<bool> ProximityFlight;
 	Valueable<bool> ProximitySuicide;
+	Valueable<bool> ConfineOnGround;
 
 private:
 	template <typename T>

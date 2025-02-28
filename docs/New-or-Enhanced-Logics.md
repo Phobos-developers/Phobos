@@ -727,7 +727,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - The speed of the projectile is defined by `Trajectory.Speed`, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
     - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile and it has no restrictions.
     - In `Trajectory=Bombard`, it refers to the initial speed of the projectile and it has no restrictions.
-    - In `Trajectory=Engrave`, it refers to the engrave speed of the projectile and it cannot exceed 128. Recommend set as about 40.
+    - In `Trajectory=Engrave`, it refers to the horizontal engrave speed of the projectile and it cannot exceed 128. Recommend set as about 40.
     - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes 0, 3, or 5 and it has no restrictions.
 
 In `rulesmd.ini`:
@@ -921,8 +921,8 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 #### Engrave trajectory
 
 - Visually, like the thermal lance. Calling it 'trajectory' may not be appropriate. It does not read the settings on the weapon.
-  - `Trajectory.Engrave.SourceCoord` controls the starting point of engraving line segment. Taking the target as the coordinate center. Specifically, it will start from the firing position when set to 0,0 . The height of the point will always at ground level.
-  - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. Taking the target as the coordinate center. The height of the point will always at ground level.
+  - `Trajectory.Engrave.SourceCoord` controls the starting point of engraving line segment. Taking the target as the coordinate center. Specifically, it will start from the firing position when set to 0,0 . The height of the point will always at ground level, unless `Trajectory.Engrave.ConfineOnGround` is set to false.
+  - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. Taking the target as the coordinate center. The height of the point will always at ground level, unless `Trajectory.Engrave.ConfineOnGround` is set to false.
     - `Trajectory.Engrave.MirrorCoord` controls whether `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` need to mirror the lateral value to adapt to the current FLH.
   - `Trajectory.Engrave.UseDisperseCoord` controls whether the emission position of the engrave laser need to replaced with the FLH of its superior's dispersed trajectory, which set `Trajectory.Disperse.RecordSourceCoord` to true.
   - `Trajectory.Engrave.ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the engrave process.
@@ -945,7 +945,10 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
     - `Trajectory.Engrave.ProximityDirect` controls whether let the target receive damage instead of detonating the warhead.
     - `Trajectory.Engrave.ProximityMedial` controls whether to detonate `Trajectory.Engrave.ProximityWarhead` at the bullet's location rather than the proximity target's location.
     - `Trajectory.Engrave.ProximityAllies` controls whether allies will also trigger the proximity fuse.
+    - `Trajectory.Engrave.ProximityFlight` controls whether to count units in the air.
     - `Trajectory.Engrave.ProximitySuicide` controls whether the projectile will self destruct after the number of proximity fuse times has been exhausted. If `Trajectory.Engrave.ProximityImpact` set to 0, this will not be enabled.
+  - `Trajectory.Engrave.ConfineOnGround` controls whether the height of the projectile will always at ground level.
+
 
 In `rulesmd.ini`:
 ```ini
@@ -976,11 +979,14 @@ Trajectory.Engrave.ProximityRadius=0.7         ; floating point value
 Trajectory.Engrave.ProximityDirect=false       ; boolean
 Trajectory.Engrave.ProximityMedial=false       ; boolean
 Trajectory.Engrave.ProximityAllies=false       ; boolean
+Trajectory.Engrave.ProximityFlight=false       ; boolean
 Trajectory.Engrave.ProximitySuicide=false      ; boolean
+Trajectory.Engrave.ConfineOnGround=true        ; boolean
 ```
 
 ```{note}
 - It's best not to let it be intercepted.
+- Make sure you set a low `Trajectory.Engrave.ProximityRadius` value unless necessary.
 ```
 
 ### Shrapnel enhancements
