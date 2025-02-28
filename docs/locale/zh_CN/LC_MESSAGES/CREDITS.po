@@ -1582,6 +1582,10 @@ msgid "Damage multiplier for different houses"
 msgstr ""
 
 #: ../../../CREDITS.md:394
+msgid "Extended gattling rate down logic"
+msgstr "拓展的盖特掉档逻辑"
+
+#: ../../../CREDITS.md:394
 msgid "**Ollerus**"
 msgstr ""
 

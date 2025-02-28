@@ -1360,7 +1360,7 @@ msgstr "动画"
 
 #: ../../New-or-Enhanced-Logics.md:435
 msgid "Anim-to-Unit"
-msgstr "动画生产单位"
+msgstr "动画生成单位"
 
 #: ../../New-or-Enhanced-Logics.md:437
 msgid "![image](_static/images/animToUnit.gif)"
@@ -2862,7 +2862,7 @@ msgstr "默认情况下 `Level=true` 的抛射体在非水域的地块上爆炸�
 
 #: ../../New-or-Enhanced-Logics.md:951
 msgid "Return weapon"
-msgstr "反馈武器"
+msgstr "归返武器"
 
 #: ../../New-or-Enhanced-Logics.md:953
 msgid ""
@@ -3660,7 +3660,7 @@ msgstr "`NoAmmoWeapon=1` 的单位在 `Ammo` 大于 0 且当前弹药数量小�
 
 #: ../../New-or-Enhanced-Logics.md:1275
 msgid ""
-"Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or "
+"Deployed `IsSimpleDeployer=true` units with `DeployFireWeapon=1` set or "
 "omitted."
 msgstr "拥有 `DeployFireWeapon=1` 的 `IsSimpleDeployer=true` 单位处于部署状态。"
 
@@ -4303,6 +4303,26 @@ msgid ""
 "You can now change a unit's type when changing ownership from human to "
 "computer or from computer to human."
 msgstr "现在你可以在操作者从人类改为 AI 玩家或从 AI 玩家改为人类玩家时执行单位转换。"
+
+#: ../../New-or-Enhanced-Logics.md:1580
+msgid "Extended gattling rate down logic"
+msgstr "拓展的盖特掉档逻辑"
+
+#: ../../New-or-Enhanced-Logics.md:1582
+msgid "Now you can customize some effects of `RateDown`."
+msgstr "现在你可以自定义 `RateDown` 的一些效果。"
+
+#: ../../New-or-Enhanced-Logics.md:1583
+msgid "`RateDown.Delay` controls the delay before using `RateDown` to reduce the gattling value."
+msgstr "`RateDown.Delay` 控制使用 `RateDown` 减少盖特计时器的间隔。"
+
+#: ../../New-or-Enhanced-Logics.md:1584
+msgid "`RateDown.Reset` controls whether to reset the gattling value directly when the techno has no target or changes targets."
+msgstr "`RateDown.Reset` 控制当技术类型失去目标或更换目标时是否立即清空盖特计时器。"
+
+#: ../../New-or-Enhanced-Logics.md:1585
+msgid "`RateDown.Cover.Value` replaces the original `RateDown` when techno's ammo is lower than `RateDown.Cover.AmmoBelow`."
+msgstr "`RateDown.Cover.Value` 用于在技术类型的弹药低于 `RateDown.Cover.AmmoBelow` 时替代 `RateDown` 使用。"
 
 #: ../../New-or-Enhanced-Logics.md:1580
 msgid "Terrain"
