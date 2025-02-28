@@ -15,6 +15,8 @@
 
 While Phobos is independent of Ares and does NOT require Ares specifically to function, Phobos complements some of the features found in Ares and vice versa.
 
+EA has not endorsed and does not support this product.
+
 Community
 ---------
 
