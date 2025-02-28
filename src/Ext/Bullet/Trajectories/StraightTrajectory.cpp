@@ -917,7 +917,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		if (remainTime > 0)
 			this->TheCasualty[ID] = remainTime - 1;
 		else
-			casualtyChecked.push_back(ID);
+			casualtyChecked.emplace_back(ID);
 	}
 
 	for (const auto& ID : casualtyChecked)

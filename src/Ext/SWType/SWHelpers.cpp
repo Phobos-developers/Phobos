@@ -29,7 +29,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		// If modder provides more weights than there are objects and we hit one of these, ignore it
 		// otherwise add
 		if (size_t(index) < size)
-			indices.push_back(index);
+			indices.emplace_back(index);
 	}
 	return indices;
 }

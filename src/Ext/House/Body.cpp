@@ -111,7 +111,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 			cBestChoices->clear();
 		}
 
-		cBestChoices->push_back(static_cast<int>(i));
+		cBestChoices->emplace_back(static_cast<int>(i));
 
 		int* cEarliestTypeNameIndex = !isNaval ? &earliestTypenameIndex : &earliestTypenameIndexNaval;
 		int* cEarliestFrame = !isNaval ? &earliestFrame : &earliestFrameNaval;

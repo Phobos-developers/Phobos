@@ -13,6 +13,8 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
+		this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
+
 		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
 			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
