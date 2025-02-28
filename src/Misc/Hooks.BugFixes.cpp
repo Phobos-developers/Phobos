@@ -1089,6 +1089,21 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+#pragma region TeleportLocomotionOccupationFix
+
+DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
+{
+	enum { SkipMarkOccupation = 0x71878F };
+
+	GET(const LocomotionClass* const, pLoco, EBP);
+
+	const auto pFoot = pLoco->LinkedTo;
+
+	return (pFoot && pFoot->IsAlive && !pFoot->InLimbo && pFoot->Health > 0 && !pFoot->IsSinking) ? 0 : SkipMarkOccupation;
+}
+
+#pragma endregion
+
 #pragma region StopEventFix
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
@@ -1209,3 +1224,94 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 }
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
+
+#pragma region Sensors
+
+DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x34, 0x4));
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LastSensorsMapCoords = *cell;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
+{
+	enum { SkipGameCode = 0x4D8627 };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto currentCell = pThis->GetMapCoords();
+
+	if (pExt->LastSensorsMapCoords != currentCell)
+	{
+		pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pThis->AddSensorsAt(currentCell);
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
+{
+	enum { SkipGameCode = 0x4DB37C };
+
+	GET(FootClass*, pThis, EDI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
+{
+	enum { SkipGameCode = 0x4DBF01 };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+
+	return SkipGameCode;
+}
+
+// Bugfix: Jumpjet detect cloaked objects beneath
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
+{
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(CellStruct const, currentCell, EAX);
+
+	// Copied from FootClass::UpdatePosition
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		CellStruct const lastCell = pExt->LastSensorsMapCoords;
+
+		if (lastCell != currentCell)
+		{
+			pLinkedTo->RemoveSensorsAt(lastCell);
+			pLinkedTo->AddSensorsAt(currentCell);
+		}
+	}
+	// Something more may be missing
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+	}
+
+	return 0;
+}
+
+#pragma endregion

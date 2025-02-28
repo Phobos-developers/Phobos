@@ -440,6 +440,29 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 
 #pragma endregion
 
+#pragma region NoTurretUnitAlwaysTurnToTarget
+
+DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
+{
+	enum { NoNeedToCheck = 0x74132B, ContinueCheck = 0x7410C3 };
+
+	GET(const FireError, fireError, EAX);
+
+	if (fireError == FireError::OK)
+		return ContinueCheck;
+
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pType = pThis->Type;
+
+	if (!TechnoTypeExt::ExtMap.Find(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+		return NoNeedToCheck;
+
+	return (fireError == FireError::REARM && !pType->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;
+}
+
+#pragma endregion
+
 #pragma region Misc
 
 // I must not regroup my forces.
@@ -531,4 +554,30 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
+bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
+{
+	auto const loco = pType->Locomotor;
+
+	// These locomotors either cause the game to crash or fail to enter the tank bunker properly.
+	return loco != LocomotionClass::CLSIDs::Hover
+		&& loco != LocomotionClass::CLSIDs::Mech
+		&& loco != LocomotionClass::CLSIDs::Fly
+		&& loco != LocomotionClass::CLSIDs::Droppod
+		&& loco != LocomotionClass::CLSIDs::Rocket
+		&& loco != LocomotionClass::CLSIDs::Ship;
+}
+
+DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
+{
+	enum { CanEnter = 0x70FBAF, NoEnter = 0x70FB7D };
+
+	GET(TechnoTypeClass*, pType, EAX);
+	GET(FootClass*, pThis, ESI);
+
+	if (!LocomotorCheckForBunkerable(pType) || pThis->ParasiteEatingMe)
+		return NoEnter;
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
+}
 #pragma endregion

@@ -182,7 +182,7 @@ public:
 		Nullable<bool> Insignia_ShowEnemy;
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
-		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
+		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
 
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
 		Nullable<bool> TiltsWhenCrushes_Overlays;
@@ -238,10 +238,13 @@ public:
 		Valueable<int> RateDown_Cover_Value;
 		Valueable<int> RateDown_Cover_AmmoBelow;
 
+		Nullable<bool> NoTurret_TrackTarget;
+
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
@@ -478,10 +481,13 @@ public:
 			, RateDown_Cover_Value { 0 }
 			, RateDown_Cover_AmmoBelow { -2 }
 
+			, NoTurret_TrackTarget {}
+
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
