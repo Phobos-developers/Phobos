@@ -12,6 +12,7 @@
 #include "Ext/WarheadType/Body.h"
 #include "Ext/WeaponType/Body.h"
 #include <Ext/Scenario/Body.h>
+#include <unordered_set>
 
 // ============= New SuperWeapon Effects================
 
@@ -164,7 +165,53 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 {
-	for (int limboKillID : this->LimboKill_IDs)
+	if (this->LimboKill_IDs.empty())
+        return;
+
+	const std::unordered_set<int> limboIDs(
+        this->LimboKill_IDs.begin(),
+        this->LimboKill_IDs.end()
+    );
+
+	std::vector<HouseClass*> validHouses;
+    validHouses.reserve(HouseClass::Array->Count);
+
+    for (HouseClass* pTargetHouse : *HouseClass::Array)
+	{
+        if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
+            validHouses.emplace_back(pTargetHouse);
+    }
+
+	for (size_t i = 0; i < validHouses.size(); ++i)
+    {
+        auto pHouseExt = HouseExt::ExtMap.Find(validHouses[i]);
+        auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
+        std::vector<BuildingClass*> killBuildings;
+        killBuildings.reserve(vec.size());
+
+        for (auto pBuilding : vec)
+		{
+            if (limboIDs.count(BuildingExt::ExtMap.Find(pBuilding)->LimboID))
+                killBuildings.emplace_back(pBuilding);
+        }
+
+        for (auto pBuilding : killBuildings)
+        {
+            if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+                HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+
+            pBuilding->Stun();
+            pBuilding->Limbo();
+            pBuilding->RegisterDestruction(nullptr);
+            pBuilding->UnInit();
+        }
+
+        vec.erase(std::remove_if(vec.begin(), vec.end(), [&](BuildingClass* pBld) {
+            return std::find(killBuildings.begin(), killBuildings.end(), pBld) != killBuildings.end();
+        }), vec.end());
+    }
+
+	/* for (int limboKillID : this->LimboKill_IDs)
 	{
 		for (HouseClass* pTargetHouse : *HouseClass::Array)
 		{
@@ -198,7 +245,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 				}
 			}
 		}
-	}
+	}*/
 }
 
 #pragma endregion
