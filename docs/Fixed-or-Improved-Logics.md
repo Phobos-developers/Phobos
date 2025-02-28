@@ -291,7 +291,7 @@ ExtraShadow=true              ; boolean
     - `SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual] -> SmallFire` (single animation).
     - `SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise.
     - `SmallFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `0.25,0.625` for `Flamer=true`, `0.0` otherwise.
-  - `LargeFireCount` determines number of large fire animations to spawn by`Flamer=true` animations only.
+  - `LargeFireCount` determines number of large fire animations to spawn by `Flamer=true` animations only.
     - `LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual] -> LargeFire` (single animation).
     - `LargeFireChances` is a list of probabilities for the animations to spawn, up to `LargeFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
     - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `LargeFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.

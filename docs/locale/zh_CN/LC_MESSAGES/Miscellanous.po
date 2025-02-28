@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-21 22:51+0800\n"
+"POT-Creation-Date: 2025-03-01 00:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -96,36 +96,10 @@ msgid ""
 msgstr "当发生不同步时 Phobos 会将例如随机数生成函数的调用、朝向、目标、目的地的更改等额外信息写入 `SYNC#.txt` 日志文件中。"
 
 #: ../../Miscellanous.md:34
-msgid "Dump Object Info"
-msgstr "输出对象信息"
-
-#: ../../Miscellanous.md:36
-msgid ""
-"![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
-"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
-msgstr ""
-"![image](_static/images/objectinfo-01.png) *[CnC: "
-"Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果*"
-
-#: ../../Miscellanous.md:36
-msgid "image"
-msgstr "图像"
-
-#: ../../Miscellanous.md:39
-msgid ""
-"There's a [new hotkey](User-Interface.md#dump-object-info) to dump "
-"selected/hovered object info on press. Available only if "
-"`DebugKeysEnabled` under `[GlobalControls]` is set to true in "
-"`rulesmd.ini`."
-msgstr ""
-"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当"
-" `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
-
-#: ../../Miscellanous.md:41
 msgid "Display Damage Numbers"
 msgstr "显示伤害数字"
 
-#: ../../Miscellanous.md:43
+#: ../../Miscellanous.md:36
 msgid ""
 "There's a [new hotkey](User-Interface.md#display-damage-numbers) to show "
 "exact numbers of damage dealt on units & buildings. The numbers are shown"
@@ -136,6 +110,32 @@ msgid ""
 msgstr ""
 "有一个[新的热键](User-Interface.md#display-damage-"
 "numbers)可以开关是否显示对单位与建筑造成的精确伤害数字。伤害数字以红色显示（对护盾为蓝色），治疗性质的伤害以绿色显示（对护盾为青色）。这些数字会显示在受影响的单位上，并在出现后向上移动。仅当"
+" `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
+
+#: ../../Miscellanous.md:38
+msgid "Dump Object Info"
+msgstr "输出对象信息"
+
+#: ../../Miscellanous.md:40
+msgid ""
+"![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+msgstr ""
+"![image](_static/images/objectinfo-01.png) *[CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果*"
+
+#: ../../Miscellanous.md:40
+msgid "image"
+msgstr "图像"
+
+#: ../../Miscellanous.md:43
+msgid ""
+"There's a [new hotkey](User-Interface.md#dump-object-info) to dump "
+"selected/hovered object info on press. Available only if "
+"`DebugKeysEnabled` under `[GlobalControls]` is set to true in "
+"`rulesmd.ini`."
+msgstr ""
+"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当"
 " `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
 #: ../../Miscellanous.md:45
@@ -451,10 +451,13 @@ msgstr "由于技术问题，包含文件的<b><em>第一行有可能会被跳�
 
 #: ../../Miscellanous.md:201
 msgid ""
-"When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities."
+"When this feature is enabled, `[#include]` (equivalent [Ares "
+"feature](https://ares-developers.github.io/Ares-"
+"docs/new/misc/include.html)) is disabled because of technical "
+"incompatibilities."
 msgstr ""
-"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-developers.github.io/Ares-"
-"docs/new/misc/include.html) 将被禁用。"
+"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-"
+"developers.github.io/Ares-docs/new/misc/include.html) 将被禁用。"
 
 #: ../../Miscellanous.md:204
 msgid "Section inheritance"
@@ -505,27 +508,31 @@ msgid ""
 "size of game rules and used hardware."
 msgstr "此功能可能显著增大游戏加载时间，具体取决于游戏规则的大小和硬件环境。"
 
-#: ../../Miscellanous.md:234
-msgid "Turning off/on in-game exception handling"
-msgstr "游戏内异常处理开关"
+#~ msgid "Turning off/on in-game exception handling"
+#~ msgstr "游戏内异常处理开关"
 
-#: ../../Miscellanous.md:236
-msgid ""
-"You can turn on/off the exception handler of the game's main loop using "
-"the following command line arg: `-ExceptionHandler=boolean` where "
-"`boolean` is `(true|false|yes|no|1|0)`."
-msgstr "你可以使用以下命令行参数来开启/关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是 `(true|false|yes|no|1|0)`。"
+#~ msgid ""
+#~ "You can turn on/off the exception "
+#~ "handler of the game's main loop "
+#~ "using the following command line arg:"
+#~ " `-ExceptionHandler=boolean` where `boolean` is"
+#~ " `(true|false|yes|no|1|0)`."
+#~ msgstr ""
+#~ "你可以使用以下命令行参数来开启/关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 "
+#~ "`boolean` 是 `(true|false|yes|no|1|0)`。"
 
-#: ../../Miscellanous.md:239
-msgid ""
-"In **debug** builds the in-game exception handler is **turned off** by "
-"default."
-msgstr "在 **debug** 版本中默认情况下游戏内异常处理程序是 **关闭** 的。"
+#~ msgid ""
+#~ "In **debug** builds the in-game "
+#~ "exception handler is **turned off** by"
+#~ " default."
+#~ msgstr "在 **debug** 版本中默认情况下游戏内异常处理程序是 **关闭** 的。"
 
-#: ../../Miscellanous.md:243
-msgid ""
-"The CnCNet 5 spawner uses the main loop exception handler for fixes. If "
-"you get any issues (crashes, bugs) in combination with that then please "
-"first test with the exception handler enabled."
-msgstr "CNCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
+#~ msgid ""
+#~ "The CnCNet 5 spawner uses the main"
+#~ " loop exception handler for fixes. If"
+#~ " you get any issues (crashes, bugs)"
+#~ " in combination with that then please"
+#~ " first test with the exception "
+#~ "handler enabled."
+#~ msgstr "CNCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
 
