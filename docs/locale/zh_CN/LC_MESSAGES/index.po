@@ -152,6 +152,10 @@ msgstr ""
 "虽然 Phobos 独立于 Ares 并且不需要 Ares 即可运行，但 Phobos 补充了 Ares 的一些功能，反"
 "之亦然。"
 
+#: ../../../README.md:19
+msgid "EA has not endorsed and does not support this product."
+msgstr "此产品不受 EA 官方认可及支持。"
+
 #: ../../README.md:19
 msgid "Community"
 msgstr "社区"

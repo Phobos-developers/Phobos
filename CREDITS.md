@@ -330,6 +330,7 @@ This page lists all the individual contributions to the project by their author.
    - Turret/Barrel/NoSpawnAlt/Multi-section voxel shadow, dynamic voxel shadow
    - Skip units' turret rotation and jumpjets' wobbling under EMP
    - Droppod properties dehardcode
+   - `Deployer = yes->no` infantry conversion sequence fix
    - Waypoint entering building together with engineer/agent bug fix
    - Skippable game save on scenario start
    - `InfDeath=9` versus jumpjet infantry 0 damage fix
@@ -349,6 +350,7 @@ This page lists all the individual contributions to the project by their author.
    - Disguised units not using the correct palette if target has custom palette bugfix
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
    - Assign Super Weapon cameo to any sidebar tab
+   - Fix impassable invisible barrier created by chronosphere on uncrushable unit.
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**
    - Customizable ShowTimer priority of superweapons
@@ -386,6 +388,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix for sidebar not updating queued unit numbers when on hold
   - New Parabola trajectory
   - Enhanced Bombard trajectory
+  - No turret unit turn to the target
+  - Damage multiplier for different houses
+  - Extended gattling rate down logic
   - New Disperse trajectory
 - **Ollerus**
   - Build limit group enhancement
@@ -393,8 +398,7 @@ This page lists all the individual contributions to the project by their author.
   - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
-- **NaotoYuuki**
-  - Vertical & meteor trajectory projectile prototypes
+- **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to jump back to previous script
 - **TaranDahl (航味麻酱)**
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
@@ -407,8 +411,12 @@ This page lists all the individual contributions to the project by their author.
   - Parasite returning bug fix
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
-- **tyuah8** - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+  - No turret unit turn to the target
+- **tyuah8**
+  - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+  - Destroyed unit leaves sensors bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
+- **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
 - **Ares developers**
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
@@ -434,7 +442,8 @@ This page lists all the individual contributions to the project by their author.
 - **thomassneddon** - general assistance, knowledge about voxel lighting model
 - **Xkein** - general assistance, YRpp edits
 - **mevitar** - honorary shield tester *triple* award
-- **Phobos CN Tester Group (Reedom, Mantis, Swim Wing, Takitoru, Examon, AKB, Pusheen, ZQ, Claptrap, BunkerGeneral, Big J, Skywalker, ChickEmperor, Shifty, Mikain, Tobiichi Origami, Feiron, W_S502, Ailink, AbrahamMikhail, Tide, Fnfalsc, Yumeri_Rei, Nacho, Zhuzi, Ika_Aru)** - extensive and thorough testing
+- **Mentalmeisters Team (Speeder, Ollerus, mevitar, Reedom, Takitoru, Terumasa, Zhelin)** - extensive and thorough testing
+- **Phobos CN Tester Group (Mantis, Swim Wing, Examon, AKB, Pusheen, ZQ, Claptrap, BunkerGeneral, Big J, Skywalker, ChickEmperor, Shifty, Mikain, Tobiichi Origami, Feiron, W_S502, Ailink, AbrahamMikhail, Tide, Fnfalsc, Yumeri_Rei, Nacho, Zhuzi, Ika_Aru, EUSiegfried, HanpiBaozi, Nxusbot, TientsinWind)** - extensive and thorough testing
 - **Damfoos** - extensive and thorough testing
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features

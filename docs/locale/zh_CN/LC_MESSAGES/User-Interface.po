@@ -49,8 +49,8 @@ msgid "Fixed position and layer of info tip and reveal production cameo on selec
 msgstr "修复了被选中建筑上信息提示和显示生产图标的位置和图层问题。"
 
 #: ../../User-Interface.md:12
-msgid "Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual]` -> `TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`."
-msgstr "可以通过设置 `[AudioVisual]` -> `TimerBlinkColorScheme` 来自定义计时器（超级武器、任务计时等）交替闪烁的配色方案。默认使用 `[Colors]` 中列出的第三种配色方案。"
+msgid "Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual] -> TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`."
+msgstr "可以通过设置 `[AudioVisual] -> TimerBlinkColorScheme` 来自定义计时器（超级武器、任务计时等）交替闪烁的配色方案。默认使用 `[Colors]` 中列出的第三种配色方案。"
 
 #: ../../User-Interface.md:15
 msgid "You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one."
@@ -114,12 +114,12 @@ msgid "image"
 msgstr "图像"
 
 #: ../../User-Interface.md:38
-msgid "You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points."
-msgstr "现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值。"
+msgid "You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display)."
+msgstr "现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-display)开启或关闭。"
 
 #: ../../User-Interface.md:39
 msgid "`Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead."
-msgstr "`Anchor.Horizontal` 和 `Anchor.Vertical` 设置显示位置相对于单位中心/选择框的锚点（取决于 `Align`）。对于建筑，使用 `Anchor.Building`。"
+msgstr "`Anchor.Horizontal` 和 `Anchor.Vertical` 设置显示位置相对于单位中心/选择框的锚点（取决于 `Align`）。建筑使用 `Anchor.Building`。"
 
 #: ../../User-Interface.md:40
 msgid "`Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position."
@@ -178,27 +178,27 @@ msgstr "在 `RA2MD.INI`："
 
 #: ../../User-Interface.md:98
 msgid "An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)."
-msgstr "可以在 [Phobos 补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries)找到数字化显示的示例 Shape 文件。"
+msgstr "可以在 [Phobos 补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 找到数字化显示的示例 Shape 文件。"
 
 #: ../../User-Interface.md:101
 msgid "Show designator & inhibitor range"
 msgstr "显示指示者和抑制者范围"
 
 #: ../../User-Interface.md:103
-msgid "It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon]->SW.Designators` will display a circle with radius set in `[TechnoType]->DesignatorRange` or `Sight`."
-msgstr "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon]->SW.Designators` 中的技术类型将显示一个半径由 `[TechnoType]->DesignatorRange` 或 `Sight` 设置的圆。"
+msgid "It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`."
+msgstr "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators` 中的技术类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:104
-msgid "In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon]->SW.Inhibitors` will display a circle with radius set in `[TechnoType]->InhibitorRange` or `Sight`."
-msgstr "类似的，每个敌方拥有的、列在 `[SuperWeapon]->SW.Inhibitors` 中的技术类型将显示一个半径由 `[TechnoType]->InhibitorRange` 或 `Sight` 设置的圆。"
+msgid "In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`."
+msgstr "类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的技术类型将显示一个半径由 `[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:105
-msgid "This feature can be disabled globally with `[AudioVisual]->ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon]->ShowDesignatorRange=false`."
-msgstr "可以通过全局的 `[AudioVisual]->ShowDesignatorRange=false` 或超级武器类型上的 `[SuperWeapon]->ShowDesignatorRange=false` 来禁用此功能。"
+msgid "This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`."
+msgstr "可以通过全局的 `[AudioVisual] -> ShowDesignatorRange=false` 或超级武器类型上的 `[SuperWeapon] -> ShowDesignatorRange=false` 来禁用此功能。"
 
 #: ../../User-Interface.md:106
-msgid "This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with \"Toggle Designator Range\" hotkey in \"Interface\" category."
-msgstr "此功能可以*由玩家*通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` 或“界面”类别中的“开启指示者范围显示”热键来切换（如果在 mod 中启用）。"
+msgid "This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\" hotkey](#toggle-designator-range) in \"Interface\" category."
+msgstr "此功能可以*由玩家*通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` 或“界面”类别中的[“开启指示者范围显示”热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
 
 #: ../../User-Interface.md:123
 msgid "Hide health bars"
@@ -225,12 +225,12 @@ msgid "Combat light effects (`Bright=true`) and everything that uses same functi
 msgstr "战斗闪光效果（`Bright=true`）以及使用相同逻辑的所有效果，例如铁幕 / 力场护盾受击闪光。"
 
 #: ../../User-Interface.md:140
-msgid "Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former."
-msgstr "如果 `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` 或弹头 `Particle.AlphaImageIsLightFlash` 设为 true，那么计入那些附加在由弹头 `Particle` 生成的粒子系统或粒子上的 AlphaImage 光效。"
+msgid "Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former."
+msgstr "如果 `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` 或弹头 `Particle.AlphaImageIsLightFlash` 设为 true，那么计入那些附加在由弹头 `Particle` 生成的粒子系统或粒子上的 AlphaImage 光效。"
 
 #: ../../User-Interface.md:141
-msgid "Additionally these alpha images are not created if `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting."
-msgstr "此外如果 `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` 高于当前画质级别，那么无论 `HideLightFlashEffects` 设置如何，这些 AlphaImage 都不会被创建。"
+msgid "Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting."
+msgstr "此外如果 `[AudioVisual] -> LightFlashAlphaImageDetailLevel` 高于当前画质级别，那么无论 `HideLightFlashEffects` 设置如何，这些 AlphaImage 都不会被创建。"
 
 #: ../../User-Interface.md:159
 msgid "Low priority for box selection"
@@ -275,12 +275,12 @@ msgid "If you don't want players to see how AI cheats with `VirtualPurifiers` fo
 msgstr "例如如果你不希望玩家看到 AI 如何通过 `VirtualPurifiers` 作弊，可以将 `DisplayIncome.AllowAI` 设为 false 以禁用。覆盖上一条选项。"
 
 #: ../../User-Interface.md:186
-msgid "`DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center."
-msgstr "`DisplayIncome.Offset` 是资金点数显示中心以像素为单位的额外偏移，默认（0,0）即建筑的中心。"
+msgid "`DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at building's center."
+msgstr "`DisplayIncome.Offset` 是资金点数显示中心以像素为单位的额外偏移，默认 `0,0` 即建筑的中心。"
 
 #: ../../User-Interface.md:187
-msgid "`[AudioVisual]->DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay."
-msgstr "`[AudioVisual]->DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
+msgid "`[AudioVisual] -> DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay."
+msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
 
 #: ../../User-Interface.md:202
 msgid "Placement preview"
@@ -295,8 +295,8 @@ msgid "placepreview"
 msgstr "放置预览"
 
 #: ../../User-Interface.md:207
-msgid "Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`."
-msgstr "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual]->PlacementPreview` 和每个建筑上设置 `[SOMEBUILDING]->PlacementPreview` 来进一步自定义开启。"
+msgid "Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`."
+msgstr "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual] -> PlacementPreview` 和每个建筑上设置 `[BuildingType] -> PlacementPreview` 来进一步自定义开启。"
 
 #: ../../User-Interface.md:208
 msgid "The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled."
@@ -456,7 +456,7 @@ msgstr "`[ ]` 切换指示范围"
 
 #: ../../User-Interface.md:336
 msgid "Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details."
-msgstr "切换超级武器"
+msgstr "切换超级武器指示者范围指示器开关。参见 [此处](#show-designator--inhibitor-range) 以了解。"
 
 #: ../../User-Interface.md:337
 msgid "For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file."
@@ -499,12 +499,12 @@ msgid "You can specify custom loadscreen with Ares tag `File.LoadScreen`."
 msgstr "你可以使用 Ares 标签 `File.LoadScreen` 指定自定义载入图。"
 
 #: ../../User-Interface.md:353
-msgid "Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image."
-msgstr "战役载入图（`missionmd.ini->[LS800BkgdName]`) 也可以使用 PCX 图像。"
+msgid "Campaign loading screen (`missionmd.ini -> [LS800BkgdName]`) can also use PCX image."
+msgstr "战役载入图（`missionmd.ini -> [LS800BkgdName]`) 也可以使用 PCX 图像。"
 
 #: ../../User-Interface.md:354
 msgid "Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature."
-msgstr "观察者载入图可以使用 `ls800obs.pcx`（当屏幕宽度为640时使用 `ls640obs.pcx`）。"
+msgstr "观察者载入图可以使用 `ls800obs.pcx`（当屏幕宽度为 640 时使用 `ls640obs.pcx`）。"
 
 #: ../../User-Interface.md:355
 msgid "The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped."
@@ -515,8 +515,8 @@ msgid "This feature works in conjunction with CnCNet5 spawner DLL which resizes 
 msgstr "此功能与 CnCNet5 的 -spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5 -spanwer，那么载入分辨率将被锁定为 `800x600`。"
 
 #: ../../User-Interface.md:357
-msgid "Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`)."
-msgstr "同样适用于战役载入图（`missionmd.ini->[LS800BkgdName]`)。"
+msgid "Same applies to campaign loading screen (`missionmd.ini -> [LS800BkgdName]`)."
+msgstr "同样适用于战役载入图（`missionmd.ini -> [LS800BkgdName]`)。"
 
 #: ../../User-Interface.md:358
 msgid "You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead."
@@ -736,7 +736,7 @@ msgstr "超级武器类型的工具提示将显示其名称、成本和 CD（如
 
 #: ../../User-Interface.md:573
 msgid "If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`."
-msgstr "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf 中自定义。如果使用双参数格式（例如 `%d/%d shots left`），第二个整数是 `SW.Shots`。"
+msgstr "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf 中自定义。如果使用双参数格式（例如 `还剩 `%d/%d 发`），第二个整数是 `SW.Shots`。"
 
 #: ../../User-Interface.md:574
 msgid "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default."
