@@ -30,7 +30,7 @@ RepairBaseNodes=false              ; boolean
 In map file:
 ```ini
 [Country House]
-RepairBaseNodes=                   ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+RepairBaseNodes=                   ; List of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
 ### Default loading screen and briefing offsets
@@ -133,7 +133,7 @@ x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*             | *Repeats* | *Target Priority*      | *Description*                                      |
-| :------: | :--------------------: | :-------: | :--------------------: | :------------------------------------------------: |
+|:--------:|:----------------------:|:---------:|:-----------------------|:--------------------------------------------------:|
 | 10000    | Target Type#           | Yes       | Closer                 |                                                    |
 | 10001    | Target Type#           | No        | Closer                 | Ends when a team member kill the designated target |
 | 10002    | `AITargetTypes` index# | Yes       | Closer                 |                                                    |
@@ -157,7 +157,7 @@ x=i,n             ; For i values check the next table
   - 'Buildings considered as vehicles' means buildings with both `UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or buildings with `ConsideredVehicle=true`.
 
 | *Value* | *Target Type*            | *Description*                                 |
-| :-----: | :----------------------: | :-------------------------------------------: |
+|:-------:|:------------------------:|:----------------------------------------------|
 | 1       | Anything                 | Any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` |
 | 2       | Structures               | Any enemy `BuildingTypes` that are not considered as vehicles |
 | 3       | Ore Miners               | Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `ResourceGatherer=yes` |
@@ -203,7 +203,7 @@ In `rulesmd.ini`:
 [AITargetTypes]  ; List of TechnoType lists
 0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
 1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
-; ...
+...
 ```
 
 #### `10050-10099` Move Team to Techno Location actions
@@ -217,7 +217,7 @@ x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*              | *Target Owner* | *Target Priority*      | *Description*                                |
-| :------: | :---------------------: | :------------: | :--------------------: | :------------------------------------------: |
+|:--------:|:----------------------:|:---------:|:-----------------------|:--------------------------------------------------:|
 | 10050    | Target Type#            | Enemy          | Closer, higher threat  |                                              |
 | 10051    | `[AITargetType]` index# | Enemy          | Closer, higher threat  |                                              |
 | 10052    | `[AITargetType]` index# | Enemy          | Closer                 | Picks 1 random target from the selected list |
@@ -240,7 +240,7 @@ x=i,n             ; For i values check the next table
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=10100,n            ; integer, time in ingame seconds
+x=10100,n         ; integer, time in ingame seconds
 ```
 
 ##### `10101` Wait Until Ammo is Full
@@ -292,7 +292,7 @@ x=10104,n         ; integer, additional distance in cells
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=12000,n            ; integer n=0
+x=12000,n         ; integer n=0
 ```
 
 #### `12001` Modify Target Distance
@@ -318,7 +318,7 @@ x=12002,n
 - The possible argument values are:
 
 | *Argument* | *Action ends when...*                         |
-| :--------: | :-------------------------------------------: |
+|:----------:|:---------------------------------------------:|
 | 0          | Team Leader reaches the minimum distance      |
 | 1          | One unit reaches the minimum distance         |
 | 2          | All team members reached the minimum distance |
@@ -374,7 +374,7 @@ x=14003,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16000,n           ; integer n=0, in ingame seconds
+x=16000,n         ; integer n=0, in ingame seconds
 ```
 
 #### `16001` Start a Timed Jump to the Next Line
@@ -384,7 +384,7 @@ x=16000,n           ; integer n=0, in ingame seconds
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16001,n           ; integer n=0, in ingame seconds
+x=16001,n         ; integer n=0, in ingame seconds
 ```
 
 #### `16002` Stop the Timed Jumps
@@ -404,7 +404,7 @@ x=16002,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16003,n           ; where 0 > n <= 100
+x=16003,n         ; where 0 > n <= 100
 ```
 
 #### `16004` Pick a Random Script
@@ -424,10 +424,10 @@ In `rulesmd.ini`:
 [AIScriptsList]  ; List of ScriptType lists
 0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE
 1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE
-; ...
+...
 ```
 
-### `16005` Jump Back To Previous Script
+#### `16005` Jump Back To Previous Script
 
 - Used in a Random Script picked by action `94`. It can jump back to the previous script, and continue in the line after `x=94,n`.
 
@@ -441,7 +441,7 @@ x=16005,0
 
 #### `18000-18023` Edit Variable
 
-- Operate a variable's value
+- Operate a variable's value.
 - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
 - **Any numbers exceeding this limit will lead to unexpected results!**
 
@@ -496,7 +496,7 @@ ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 
 ### `501` Edit Variable
 
-- Operate a variable's value
+- Operate a variable's value.
 - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
 - **Any numbers exceeding this limit will lead to unexpected results!**
 
@@ -509,7 +509,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 ```
 
 | *Operation* | *Description*                                 |
-| :---------: | :-------------------------------------------: |
+|------------:|:----------------------------------------------|
 | 0           | CurrentValue = Number                         |
 | 1           | CurrentValue = CurrentValue + Number          |
 | 2           | CurrentValue = CurrentValue - Number          |
@@ -525,7 +525,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 
 ### `502` Generate random number
 
-- Generate a random integer ranged in [Min, Max] and store it in a given variable
+- Generate a random integer ranged in [Min, Max] and store it in a given variable.
 
 In `mycampaign.map`:
 ```ini
@@ -537,7 +537,7 @@ ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,
 
 ### `503` Print variable value
 
-- Print a variable value to the message list
+- Print a variable value to the message list.
 
 In `mycampaign.map`:
 ```ini
@@ -549,8 +549,8 @@ ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[Actio
 
 ### `504` Binary Operation
 
-- Operate a variable's value with another variable's value
-- Similar to `501`, but the operation number is read from another variable
+- Operate a variable's value with another variable's value.
+- Similar to `501`, but the operation number is read from another variable.
 
 In `mycampaign.map`:
 ```ini
@@ -560,7 +560,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 ...
 ```
 
-`Operation` can be looked up at action `501`
+`Operation` can be looked up at action `501`.
 
 ### `505` Fire Super Weapon at specified location
 
@@ -569,7 +569,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 - `HouseIndex` can take various values:
 
 | *House Index* | *Description*                             |
-| :-----------: | :---------------------------------------: |
+|:-------------:|:------------------------------------------|
 | >= 0          | The index of the current House in the map |
 | 4475-4482     | Like in the index range 0-7               |
 | -1            | Pick a random House that isn't Neutral    |
@@ -615,7 +615,7 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 
 ### `500-511` Variable comparation
 
-- Compares the variable's value with given number
+- Compares the variable's value with given number.
 
 In `mycampaign.map`:
 ```ini
@@ -626,7 +626,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 ```
 
 | *Event ID* | *Description*          | *Global* |
-| :--------: | :--------------------: | :------: |
+|:----------:|:-----------------------|:--------:|
 | 500        | CurrentValue > Number  | No       |
 | 501        | CurrentValue < Number  | No       |
 | 502        | CurrentValue = Number  | No       |
@@ -642,7 +642,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 
 ### `512-523` Variable comparation with local variable
 
-- Compares the variable's value with given local variable value
+- Compares the variable's value with given local variable value.
 
 In `mycampaign.map`:
 ```ini
@@ -653,7 +653,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 ```
 
 | *Event ID* | *Description*                      | *Global* |
-| :--------: | :--------------------------------: | :------: |
+|:----------:|:-----------------------------------|:--------:|
 | 512        | CurrentValue > LocalVariableValue  | No       |
 | 513        | CurrentValue < LocalVariableValue  | No       |
 | 514        | CurrentValue = LocalVariableValue  | No       |
@@ -669,7 +669,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 
 ### `524-535` Variable comparation with global variable
 
-- Compares the variable's value with given global variable value
+- Compares the variable's value with given global variable value.
 
 In `mycampaign.map`:
 ```ini
@@ -680,7 +680,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 ```
 
 | *Event ID* | *Description*                       | *Global* |
-| :--------: | :---------------------------------: | :------: |
+|:----------:|:------------------------------------|:--------:|
 | 524        | CurrentValue > GlobalVariableValue  | No       |
 | 525        | CurrentValue < GlobalVariableValue  | No       |
 | 526        | CurrentValue = GlobalVariableValue  | No       |
@@ -738,7 +738,7 @@ ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
 ```
 
 | *House Index* | *Description*                              |
-| :-----------: | :----------------------------------------: |
+|:-------------:|:------------------------------------------:|
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |

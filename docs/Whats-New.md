@@ -12,8 +12,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - `PowersUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUp1DamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add.
 - `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
-- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General] -> FixTransparencyBlitters=no`.
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
+- Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
 - The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
@@ -64,14 +64,14 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From 0.2.2.2
 
-- Keys `rulesmd.ini->[SOMEWARHEAD] -> PenetratesShield` and `rulesmd.ini->[SOMEWARHEAD] -> BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
+- Keys `rulesmd.ini -> [WarheadType] -> PenetratesShield` and `rulesmd.ini -> [WarheadType] -> BreaksShield` have been changed to `Shield.Penetrate` and `Shield.Break`, respectively.
 - `Rad.NoOwner` on weapons is deprecated. This has been replaced by `RadHasOwner` key on radiation types itself. It also defaults to no, so radiation once again has no owner house by default.
 - `RadApplicationDelay` and `RadApplicationDelay.Building` on custom radiation types are now only used if `[Radiation] -> UseGlobalRadApplicationDelay` is explicitly set to false, otherwise values from `[Radiation]` are used.
 - Existing script actions were renumbered, please use the migration utility to change the numbers to the correct ones.
 
 #### From 0.1.1
 
-- Key `rulesmd.ini->[SOMETECHNOTYPE] -> Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
+- Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is deprecated and can be removed now, the bugfix for `DeployToFire` deployers is now always on.
 
 ### New user settings in RA2MD.INI
 
@@ -324,6 +324,10 @@ New:
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
 - Bunkerable checks dehardcode (by TaranDahl)
+- No turret unit turn to the target (by CrimRecya & TaranDahl)
+- Damage multiplier for different houses (by CrimRecya)
+- Customizable duration for electric bolts (by Starkku)
+- Extended gattling rate down logic (by CrimRecya)
 - Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
 
 Vanilla fixes:
@@ -590,6 +594,7 @@ Vanilla fixes:
 - Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
 - Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
+- Fix the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -639,6 +644,7 @@ Phobos fixes:
 - Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
 - Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 - Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
+- Fix `Insignia.Weapon` failing to parse in map (by Ollerus)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
