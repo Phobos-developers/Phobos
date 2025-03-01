@@ -887,11 +887,10 @@ void TechnoExt::ExtData::UpdateTemporal()
 	}
 
 	auto& attachEffects = this->AttachedEffects;
-	auto const* pEffectsData = attachEffects.data();
 
 	for (size_t i = 0; i < attachEffects.size(); ++i)
 	{
-		auto* attachEffect = pEffectsData[i].get();
+		auto* attachEffect = attachEffects[i].get();
 		attachEffects[i]->AI_Temporal();
 	}
 }
@@ -909,51 +908,53 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 
 	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	expireWeapons.reserve(attachEffects.size());
 
-	auto checkAE = std::remove_if(attachEffects.begin(), attachEffects.end(),
-	   [&](std::unique_ptr<AttachEffectClass>& pAE)
+	for (it = attachEffects.begin(); it != attachEffects.end(); )
+	{
+		auto const attachEffect = it->get();
+
+		if (!inTunnel)
+			attachEffect->SetAnimationTunnelState(true);
+
+		attachEffect->AI();
+		bool hasExpired = attachEffect->HasExpired();
+		bool shouldDiscard = attachEffect->IsActive() && attachEffect->ShouldBeDiscardedNow();
+
+		if (hasExpired || shouldDiscard)
 		{
-			auto const attachEffect = pAE.get();
+			auto const pType = attachEffect->GetType();
+			attachEffect->ShouldBeDiscarded = false;
 
-			if (!inTunnel)
-				attachEffect->SetAnimationTunnelState(true);
+			if (pType->HasTint())
+				markForRedraw = true;
 
-			attachEffect->AI();
-			bool hasExpired = attachEffect->HasExpired();
-			bool shouldDiscard = attachEffect->IsActive() && attachEffect->ShouldBeDiscardedNow();
+			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+				this->UpdateCumulativeAttachEffects(attachEffect->GetType(), attachEffect);
 
-			if (hasExpired || shouldDiscard)
+			if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
+				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
 			{
-				auto const pType = attachEffect->GetType();
-				attachEffect->ShouldBeDiscarded = false;
-
-				if (pType->HasTint())
-					markForRedraw = true;
-
-				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-					this->UpdateCumulativeAttachEffects(pType, attachEffect);
-
-				if (pType->ExpireWeapon && ((hasExpired && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
-					|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
-				{
-					if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-						expireWeapons.emplace_back(pType->ExpireWeapon);
-				}
-
-				if (shouldDiscard && attachEffect->ResetIfRecreatable())
-					return false;
-
-				return true;
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+					expireWeapons.push_back(pType->ExpireWeapon);
 			}
-			else
+
+			if (shouldDiscard && attachEffect->ResetIfRecreatable())
 			{
-				return false;
+				++it;
+				continue;
 			}
-		});
 
-	attachEffects.erase(checkAE, attachEffects.end());
+			it = attachEffects.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+
 	this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -989,35 +990,37 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 		return;
 	}
 
+	// Delete ones on old type and not on current.
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	expireWeapons.reserve(attachEffects.size());
 	bool markForRedraw = false;
+	auto& typeAttachEffects = pTypeExt->AttachEffects;
 
 	// Delete ones on old type and not on current.
-	auto checkAE = std::remove_if(attachEffects.begin(), attachEffects.end(),
-	   [&](std::unique_ptr<AttachEffectClass>& pAE)
+	for (it = attachEffects.begin(); it != attachEffects.end(); )
+	{
+		auto const attachEffect = it->get();
+		auto const pType = attachEffect->GetType();
+		bool selfOwned = attachEffect->IsSelfOwned();
+		bool remove = selfOwned && !typeAttachEffects.AttachTypes.Contains(pType);
+
+		if (remove)
 		{
-			auto const attachEffect = pAE.get();
-			auto const pType = attachEffect->GetType();
-			bool selfOwned = attachEffect->IsSelfOwned();
-			bool remove = selfOwned && !pTypeExt->AttachEffects.AttachTypes.Contains(pType);
-
-			if (remove)
+			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
-				if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
-				{
-					if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-						expireWeapons.emplace_back(pType->ExpireWeapon);
-				}
-
-				markForRedraw |= pType->HasTint();
-				return true;
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
+					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
-			return false;
-		});
-
-	attachEffects.erase(checkAE, attachEffects.end());
+			markForRedraw |= pType->HasTint();
+			it = attachEffects.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
 
 	if (expireWeapons.size())
 	{
@@ -1031,7 +1034,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	}
 
 	// Add new ones.
-	int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+	int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, typeAttachEffects);
 
 	if (!count)
 		this->RecalculateStatMultipliers();
@@ -1051,11 +1054,10 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
-	auto const* pEffectsData = attachEffects.data();
 
 	for (size_t i = 0; i < attachEffects.size(); ++i)
 	{
-		auto* attachEffect = pEffectsData[i].get();
+		auto* attachEffect = attachEffects[i].get();
 
 		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
@@ -1095,8 +1097,6 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 {
 	auto const pThis = this->OwnerObject();
 	auto const& attachEffects = this->AttachedEffects;
-	const size_t count = attachEffects.size();
-	auto const* pEffectsData = attachEffects.data();
 
 	double firepower = 1.0;
 	double armor = 1.0;
@@ -1111,9 +1111,9 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 
-	for (size_t i = 0; i < count; ++i)
+	for (size_t i = 0; i < attachEffects.size(); ++i)
 	{
-		auto* attachEffect = pEffectsData[i].get();
+		auto* attachEffect = attachEffects[i].get();
 
 		if (!attachEffect->IsActive())
 			continue;

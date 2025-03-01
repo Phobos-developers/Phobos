@@ -215,11 +215,10 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 	if (pExt->AE.HasTint)
 	{
 		auto& attachEffects = pExt->AttachedEffects;
-		auto const* pEffectsData = attachEffects.data();
 
 		for (size_t i = 0; i < attachEffects.size(); ++i)
 		{
-			auto* attachEffect = pEffectsData[i].get();
+			auto* attachEffect = attachEffects[i].get();
 			auto const type = attachEffect->GetType();
 
 			if (!attachEffect->IsActive() || !type->HasTint())

@@ -147,11 +147,12 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
 	{
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
-		this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
+		auto const& laserTrail = pTypeExt->LaserTrail_Types;
+		this->LaserTrails.reserve(laserTrail.size());
 
-		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+		for (size_t i = 0; i < laserTrail.size(); i++)
 		{
-			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
+			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[laserTrail[i]].get(), pOwner);
 		}
 	}
 }

@@ -96,6 +96,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (index != -1)
 				VoxClass::PlayIndex(index);
 		};
+
 		raiseCombatAlert();
 	}
 
@@ -198,6 +199,7 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pTypeExt = pExt->TypeExtData;
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+		auto const& attachEffects = pExt->AttachedEffects;
 		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
 		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
@@ -206,8 +208,10 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
 
-		for (auto& attachEffect : pExt->AttachedEffects)
+		for (size_t i = 0; i < attachEffects.size(); i++)
 		{
+			auto const attachEffect = attachEffects[i].get();
+
 			if (!attachEffect->IsActive())
 				continue;
 
@@ -264,13 +268,14 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& attachEffects = pExt->AttachedEffects;
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
 	std::vector<WeaponTypeClass*> expireWeapons;
-	expireWeapons.reserve(pExt->AttachedEffects.size());
+	expireWeapons.reserve(attachEffects.size());
 
-	for (auto const& attachEffect : pExt->AttachedEffects)
+	for (size_t i = 0; i < attachEffects.size(); i++)
 	{
-		auto const pType = attachEffect->GetType();
+		auto const pType = attachEffects[i]->GetType();
 
 		if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Death) != ExpireWeaponCondition::None)
 		{
@@ -284,12 +289,15 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 		}
 	}
 
-	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
-
-	for (auto const& pWeapon : expireWeapons)
+	if (expireWeapons.size())
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const coords = pThis->GetCoords();
+		auto const pOwner = pThis->Owner;
+
+		for (size_t i = 0; i < expireWeapons.size(); i++)
+		{
+			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pThis, pOwner, pThis);
+		}
 	}
 
 	return 0;
@@ -303,16 +311,20 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Reflected)
 		return 0;
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const& attachEffects = pExt->AttachedEffects;
+
 	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
 	{
-		for (auto& attachEffect : pExt->AttachedEffects)
+		for (size_t i = 0; i < attachEffects.size(); i++)
 		{
+			auto const attachEffect = attachEffects[i].get();
+
 			if (!attachEffect->IsActive())
 				continue;
 
@@ -325,17 +337,18 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 				continue;
 
 			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
+			auto const pOwner = pThis->Owner;
 
-			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pOwner, pSourceHouse))
 			{
 				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 				pWHExtRef->Reflected = true;
+				int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
 
 				if (pType->ReflectDamage_Warhead_Detonate)
-					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pThis->Owner);
+					WarheadTypeExt::DetonateAt(pWH, pSource, pThis, damage, pOwner);
 				else
-					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pThis->Owner);
+					pSource->ReceiveDamage(&damage, 0, pWH, pThis, false, false, pOwner);
 
 				pWHExtRef->Reflected = false;
 			}

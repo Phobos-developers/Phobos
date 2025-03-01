@@ -8,16 +8,17 @@ VoxelAnimExt::ExtContainer VoxelAnimExt::ExtMap;
 void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 {
 	auto pThisExt = VoxelAnimExt::ExtMap.Find(pThis);
-	auto pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pThisExt->LaserTrails.size())
 		return;
 
-	pThisExt->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
+	auto pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const& laserTrail = pTypeExt->LaserTrail_Types;
+	pThisExt->LaserTrails.reserve(laserTrail.size());
 
-	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+	for (size_t i = 0; i < laserTrail.size(); i++)
 	{
-		pThisExt->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pThis->OwnerHouse);
+		pThisExt->LaserTrails.emplace_back(LaserTrailTypeClass::Array[laserTrail[i]].get(), pThis->OwnerHouse);
 	}
 }
 

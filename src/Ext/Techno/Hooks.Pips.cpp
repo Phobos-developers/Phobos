@@ -271,11 +271,11 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 	else
 	{
-		const size_t tiberiumCount = TiberiumClass::Array->Count;
+		const int tiberiumCount = TiberiumClass::Array->Count;
 		std::vector<int> tiberiumPipCounts;
 		tiberiumPipCounts.reserve(tiberiumCount);
 
-		for (size_t i = 0; i < tiberiumCount; i++)
+		for (int i = 0; i < tiberiumCount; i++)
 		{
 			tiberiumPipCounts.emplace_back(static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5));
 		}
