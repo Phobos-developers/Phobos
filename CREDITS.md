@@ -351,6 +351,9 @@ This page lists all the individual contributions to the project by their author.
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
    - Assign Super Weapon cameo to any sidebar tab
    - Fix impassable invisible barrier created by chronosphere on uncrushable unit.
+   - 修复初始船只可能生成在陆地上的bug.
+   - 解除FreeUnit生成寻路的Wheel_SpeedType硬编码.
+   - 建筑反部署时使用目标载具的寻路方式.
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons

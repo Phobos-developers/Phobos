@@ -188,6 +188,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
 - Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
 - Fix the bug that destroyed unit may leaves sensors.
+- 修复初始船只可能生成在陆地上的bug.
+- 解除FreeUnit生成寻路的Wheel_SpeedType硬编码.
+- 建筑反部署时使用目标载具的寻路方式.
 
 ## Fixes / interactions with other extensions
 
