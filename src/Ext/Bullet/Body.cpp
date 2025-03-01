@@ -227,6 +227,7 @@ inline void BulletExt::SimulatedFiringReport(BulletClass* pBullet)
 // Make sure pBullet and pBullet->WeaponType is not empty before call
 inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pHouse)
 {
+	// Can not use 0x6FD210 because the firer may die
 	const auto pWeapon = pBullet->WeaponType;
 
 	if (!pWeapon->IsLaser)
@@ -254,6 +255,7 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 // Make sure pBullet and pBullet->WeaponType is not empty before call
 inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 {
+	// Can not use 0x6FD460 because the firer may die
 	const auto pWeapon = pBullet->WeaponType;
 
 	if (!pWeapon->IsElectricBolt)
