@@ -604,6 +604,9 @@ bool DisperseTrajectory::BulletRetargetTechno(BulletClass* pBullet)
 		pBullet->SetTarget(pNewTechno);
 		pBullet->TargetCoords = pNewTechno->GetCoords();
 		this->LastTargetCoord = pBullet->TargetCoords;
+
+		if (pType->CruiseEnable)
+			this->CruiseEnable = true;
 	}
 
 	return false;
@@ -828,6 +831,7 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, const CoordS
 	else
 	{
 		pBullet->Velocity = targetVelocity;
+		this->InStraight = true;
 	}
 
 	this->LastDotProduct = dotProduct;
