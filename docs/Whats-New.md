@@ -593,9 +593,9 @@ Vanilla fixes:
 - Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 - Fix the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
-- 修复初始船只可能生成在陆地上的bug (by NetsuNegi)
-- 解除FreeUnit生成寻路的Wheel_SpeedType硬编码 (by NetsuNegi)
-- 建筑反部署时使用目标载具的寻路方式 (by NetsuNegi)
+- `FreeUnit` uses the unit's own `SpeedType` to find the spawn location (by NetsuNegi)
+- The bug where naval ships as `StartUnit` might spawn on land has been fixed (by NetsuNegi)
+- Fix the pathfinding issue when a building performs undeploy (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
