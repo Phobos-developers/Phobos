@@ -228,13 +228,9 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 void TechnoExt::ExtData::EatPassengers()
 {
 	auto const pThis = this->OwnerObject();
-
-	if (!TechnoExt::IsActiveIgnoreEMP(pThis))
-		return;
-
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!pTypeExt->PassengerDeletionType)
+	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActiveIgnoreEMP(pThis))
 		return;
 
 	auto pDelType = pTypeExt->PassengerDeletionType.get();
@@ -398,11 +394,12 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
-	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
 	if (pTypeExt->Spawner_LimitRange)
 	{
+		auto const pThis = this->OwnerObject();
+
 		if (auto const pManager = pThis->SpawnManager)
 		{
 			auto pTechnoType = pThis->GetTechnoType();
@@ -440,11 +437,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	this->TypeExtData = pNewTypeExt;
 	this->UpdateSelfOwnedAttachEffects();
-	this->LaserTrails.reserve(pNewTypeExt->LaserTrailData.size());
+	auto const& laserTrailData = pNewTypeExt->LaserTrailData;
+	this->LaserTrails.reserve(laserTrailData.size());
 
 	// Recreate Laser Trails
-	for (auto const& entry : pNewTypeExt->LaserTrailData)
+	for (size_t i = 0; i < laserTrailData.size(); i++)
 	{
+		auto const& entry = laserTrailData[i];
 		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
 	}
 
@@ -887,8 +886,14 @@ void TechnoExt::ExtData::UpdateTemporal()
 			pShieldData->AI_Temporal();
 	}
 
-	for (auto const& ae : this->AttachedEffects)
-		ae->AI_Temporal();
+	auto& attachEffects = this->AttachedEffects;
+	auto const* pEffectsData = attachEffects.data();
+
+	for (size_t i = 0; i < attachEffects.size(); ++i)
+	{
+		auto* attachEffect = pEffectsData[i].get();
+		attachEffects[i]->AI_Temporal();
+	}
 }
 
 // Updates state of all AttachEffects on techno.
@@ -934,7 +939,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 					|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
 				{
 					if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-						expireWeapons.push_back(pType->ExpireWeapon);
+						expireWeapons.emplace_back(pType->ExpireWeapon);
 				}
 
 				if (shouldDiscard && attachEffect->ResetIfRecreatable())
@@ -960,9 +965,9 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		auto const coords = pThis->GetCoords();
 		auto const pOwner = pThis->Owner;
 
-		for (auto const& pWeapon : expireWeapons)
+		for (size_t i = 0; i < expireWeapons.size(); i++)
 		{
-			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pThis, pOwner, pThis);
 		}
 	}
 }
@@ -1002,7 +1007,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 				if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 				{
 					if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-						expireWeapons.push_back(pType->ExpireWeapon);
+						expireWeapons.emplace_back(pType->ExpireWeapon);
 				}
 
 				markForRedraw |= pType->HasTint();
@@ -1019,9 +1024,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 		auto const coords = pThis->GetCoords();
 		auto const pOwner = pThis->Owner;
 
-		for (auto const& pWeapon : expireWeapons)
+		for (size_t i = 0; i < expireWeapons.size(); i++)
 		{
-			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pThis, pOwner, pThis);
 		}
 	}
 
@@ -1039,9 +1044,8 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved)
 {
 	auto const& attachEffects = this->AttachedEffects;
-	const size_t count = attachEffects.size();
 
-	if (!count)
+	if (!attachEffects.size())
 		return;
 
 	AttachEffectClass* pAELargestDuration = nullptr;
@@ -1049,7 +1053,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	int duration = 0;
 	auto const* pEffectsData = attachEffects.data();
 
-	for (size_t i = 0; i < count; ++i)
+	for (size_t i = 0; i < attachEffects.size(); ++i)
 	{
 		auto* attachEffect = pEffectsData[i].get();
 

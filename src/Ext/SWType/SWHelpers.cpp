@@ -237,7 +237,7 @@ std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pO
 			if ((minRange < 0.0 || distance >= minRange)
 				&& (maxRange < 0.0 || distance <= maxRange))
 			{
-				emCannons.push_back(pBuilding);
+				emCannons.emplace_back(pBuilding);
 			}
 		}
 	}

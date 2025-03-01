@@ -97,7 +97,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		{
 			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
 			{
-				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
+				pOwnerExt->RestrictedFactoryPlants.emplace_back(pBuilding);
 			}
 			else
 			{
@@ -113,7 +113,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuildingExt->LimboID = ID;
 
 		// Add building to list of owned limbo buildings
-		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+		pOwnerExt->OwnedLimboDeliveredBuildings.emplace_back(pBuilding);
 
 		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
 			pOwnerExt->AddToLimboTracking(pBuilding->Type);
@@ -123,7 +123,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
+			ScenarioExt::Global()->AutoDeathObjects.emplace_back(pTechnoExt);
 
 			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
 				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
@@ -385,7 +385,7 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 				pSuper->IsSuspended = true;
 
 				if (pHouseExt->SuspendedEMPulseSWs.count(pSW->Type->ArrayIndex))
-					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].push_back(pSuper->Type->ArrayIndex);
+					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].emplace_back(pSuper->Type->ArrayIndex);
 				else
 					pHouseExt->SuspendedEMPulseSWs.insert({ pSW->Type->ArrayIndex, std::vector<int>{pSuper->Type->ArrayIndex} });
 			}

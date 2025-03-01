@@ -290,7 +290,7 @@ DEFINE_HOOK(0x441501, BuildingClass_Unlimbo_FactoryPlant, 0x6)
 	if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 || pTypeExt->FactoryPlant_DisallowTypes.size() > 0)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
-		pHouseExt->RestrictedFactoryPlants.push_back(pThis);
+		pHouseExt->RestrictedFactoryPlants.emplace_back(pThis);
 
 		return Skip;
 	}
@@ -334,7 +334,7 @@ DEFINE_HOOK(0x449149, BuildingClass_Captured_FactoryPlant2, 0x6)
 	if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 || pTypeExt->FactoryPlant_DisallowTypes.size() > 0)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pNewOwner);
-		pHouseExt->RestrictedFactoryPlants.push_back(pThis);
+		pHouseExt->RestrictedFactoryPlants.emplace_back(pThis);
 
 		return Skip;
 	}

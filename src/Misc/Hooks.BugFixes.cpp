@@ -1031,7 +1031,7 @@ DEFINE_HOOK(0x7435DE, UnitClass_ReadFromINI_Follower1, 0x6)
 {
 	GET(UnitClass*, pUnit, ESI);
 
-	UnitParseTemp::ParsedUnits.push_back(pUnit);
+	UnitParseTemp::ParsedUnits.emplace_back(pUnit);
 	UnitParseTemp::WasCreated = true;
 
 	return 0;

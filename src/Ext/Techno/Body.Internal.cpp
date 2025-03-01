@@ -13,10 +13,12 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
-		this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
+		auto const& laserTrailData = pTypeExt->LaserTrailData;
+		this->LaserTrails.reserve(laserTrailData.size());
 
-		for (auto const& entry : pTypeExt->LaserTrailData)
+		for (size_t i = 0; i < laserTrailData.size(); i++)
 		{
+			auto const& entry = laserTrailData[i];
 			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 		}
 	}
@@ -40,7 +42,6 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 // reversed from 6F3D60
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
-	auto const pType = pThis->GetTechnoType();
 	auto const pFoot = abstract_cast<FootClass*>(pThis);
 	Matrix3D mtx;
 
@@ -53,7 +54,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 	// Steps 2-3: turret offset and rotation
 	if (isOnTurret && pThis->HasTurret())
 	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
+		TechnoTypeExt::ApplyTurretOffset(pThis->GetTechnoType(), &mtx);
 
 		double turretRad = pThis->TurretFacing().GetRadian<32>();
 		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
@@ -69,9 +70,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 
 	// Step 5: apply as an offset to global object coords
 	// Resulting coords are mirrored along X axis, so we mirror it back
-	auto location = pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
-
-	return location;
+	return pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 }
 
 CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound)
@@ -100,6 +99,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 		else if (pInf && pInf->Crawling)
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
+
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
@@ -214,8 +214,12 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 
 	if (pExt->AE.HasTint)
 	{
-		for (auto const& attachEffect : pExt->AttachedEffects)
+		auto& attachEffects = pExt->AttachedEffects;
+		auto const* pEffectsData = attachEffects.data();
+
+		for (size_t i = 0; i < attachEffects.size(); ++i)
 		{
+			auto* attachEffect = pEffectsData[i].get();
 			auto const type = attachEffect->GetType();
 
 			if (!attachEffect->IsActive() || !type->HasTint())

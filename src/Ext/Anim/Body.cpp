@@ -48,7 +48,7 @@ void AnimExt::ExtData::CreateAttachedSystem()
 	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
 		this->AttachedSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr);
-		AnimExt::AnimsWithAttachedParticles.push_back(pThis);
+		AnimExt::AnimsWithAttachedParticles.emplace_back(pThis);
 	}
 }
 
@@ -417,7 +417,7 @@ void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 	this->Serialize(Stm);
 
 	if (this->AttachedSystem)
-		AnimExt::AnimsWithAttachedParticles.push_back(this->OwnerObject());
+		AnimExt::AnimsWithAttachedParticles.emplace_back(this->OwnerObject());
 }
 
 void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

@@ -230,7 +230,7 @@ DEFINE_HOOK(0x6F6D85, TechnoClass_Unlimbo_RemoveTracking, 0x6)
 		pExt->HasBeenPlacedOnMap = true;
 
 		if (pExt->TypeExtData->AutoDeath_Behavior.isset())
-			ScenarioExt::Global()->AutoDeathObjects.push_back(pExt);
+			ScenarioExt::Global()->AutoDeathObjects.emplace_back(pExt);
 	}
 
 	return 0;
@@ -257,7 +257,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		auto& vec = pOwnerExt->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 
-		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
+		pNewOwnerExt->OwnedCountedHarvesters.emplace_back(pThis);
 	}
 
 	if (auto pMe = generic_cast<FootClass*>(pThis))

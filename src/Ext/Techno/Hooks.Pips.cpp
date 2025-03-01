@@ -271,7 +271,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 	else
 	{
-		const int tiberiumCount = TiberiumClass::Array->Count;
+		const size_t tiberiumCount = TiberiumClass::Array->Count;
 		std::vector<int> tiberiumPipCounts;
 		tiberiumPipCounts.reserve(tiberiumCount);
 

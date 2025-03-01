@@ -86,7 +86,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
-			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
+			ScenarioExt::Global()->TransportReloaders.emplace_back(pExt);
 		}
 	}
 

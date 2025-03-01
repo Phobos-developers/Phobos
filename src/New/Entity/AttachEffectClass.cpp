@@ -678,9 +678,11 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 	std::vector<AttachEffectTypeClass*> types;
 	types.reserve(attachEffects.size());
 
-	for (size_t i = 0; i < attachEffects.size(); i++)
+	auto const* pEffectsData = attachEffects.data();
+
+	for (size_t i = 0; i < attachEffects.size(); ++i)
 	{
-		auto const pType = attachEffects[i]->Type;
+		auto const pType = pEffectsData[i].get()->Type;
 
 		if (pType->HasGroups(groups, false))
 			types.emplace_back(pType);
@@ -845,10 +847,11 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			int currentTypeCount = 0;
 			AttachEffectClass* match = nullptr;
 			AttachEffectClass* sourceMatch = nullptr;
+			auto const* pEffectsData = targetAttachEffects.data();
 
-			for (size_t i = 0; i < targetAttachEffects.size(); i++)
+			for (size_t i = 0; i < targetAttachEffects.size(); ++i)
 			{
-				auto const targetAttachEffect = targetAttachEffects[i].get();
+				auto* targetAttachEffect = pEffectsData[i].get();
 
 				if (targetAttachEffect->GetType() == type)
 				{
