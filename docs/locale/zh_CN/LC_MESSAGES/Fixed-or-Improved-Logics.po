@@ -1626,7 +1626,7 @@ msgstr ""
 #: ../../Fixed-or-Improved-Logics.md:318
 msgid ""
 "`LargeFireCount` determines number of large fire animations to spawn "
-"by`Flamer=true` animations only."
+"by `Flamer=true` animations only."
 msgstr "`LargeFireCount` 决定仅由 `Flamer=true` 动画生成的大火焰动画的数量。"
 
 #: ../../Fixed-or-Improved-Logics.md:319
@@ -2441,7 +2441,7 @@ msgid ""
 " precedence over it if Phobos is used together with Ares."
 msgstr ""
 "除了使用 `InsigniaFrames` 简写外，自定义军衔功能类似于 Ares 引入的相应功能，并且如果 Phobos 与 Ares "
-"一起使用优先于 Ares 的。"
+"一起使用则优先于 Ares 的。"
 
 #: ../../Fixed-or-Improved-Logics.md:723
 msgid "Customizable harvester ore gathering animation"
@@ -2871,7 +2871,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:974
 msgid "Skirmish AI behavior dehardcode"
-msgstr "遭遇战 AI 行为解编码"
+msgstr "遭遇战 AI 行为去硬编码"
 
 #: ../../Fixed-or-Improved-Logics.md:976
 msgid ""
@@ -3142,7 +3142,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1105
 msgid "Customizable ore spawners"
-msgstr "自定义矿石生成者"
+msgstr "自定义矿柱"
 
 #: ../../Fixed-or-Improved-Logics.md:1107
 msgid ""
@@ -3150,7 +3150,7 @@ msgid ""
 "the East](https://www.moddb.com/mods/riseoftheeast)*"
 msgstr ""
 "![image](_static/images/ore-01.png) "
-"*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中不同的矿石生成者（矿柱）*"
+"*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中不同的矿柱*"
 
 #: ../../Fixed-or-Improved-Logics.md:1110
 msgid "You can now specify which type of ore certain TerrainType would generate."
