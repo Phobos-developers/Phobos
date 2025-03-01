@@ -13,12 +13,10 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 	if (auto pTypeExt = this->TypeExtData)
 	{
-		auto const& laserTrailData = pTypeExt->LaserTrailData;
-		this->LaserTrails.reserve(laserTrailData.size());
+		this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
 
-		for (size_t i = 0; i < laserTrailData.size(); i++)
+		for (auto const& entry : pTypeExt->LaserTrailData)
 		{
-			auto const& entry = laserTrailData[i];
 			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 		}
 	}
@@ -214,11 +212,8 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 
 	if (pExt->AE.HasTint)
 	{
-		auto& attachEffects = pExt->AttachedEffects;
-
-		for (size_t i = 0; i < attachEffects.size(); ++i)
+		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
-			auto* attachEffect = attachEffects[i].get();
 			auto const type = attachEffect->GetType();
 
 			if (!attachEffect->IsActive() || !type->HasTint())

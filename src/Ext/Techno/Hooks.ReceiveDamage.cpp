@@ -199,7 +199,6 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 		auto const pExt = TechnoExt::ExtMap.Find(pThis);
 		auto const pTypeExt = pExt->TypeExtData;
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-		auto const& attachEffects = pExt->AttachedEffects;
 		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
 		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
@@ -208,10 +207,8 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 		}
 
-		for (size_t i = 0; i < attachEffects.size(); i++)
+		for (auto& attachEffect : pExt->AttachedEffects)
 		{
-			auto const attachEffect = attachEffects[i].get();
-
 			if (!attachEffect->IsActive())
 				continue;
 
@@ -269,13 +266,17 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const& attachEffects = pExt->AttachedEffects;
+
+	if (!attachEffects.size())
+		return 0;
+
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	expireWeapons.reserve(attachEffects.size());
 
-	for (size_t i = 0; i < attachEffects.size(); i++)
+	for (auto const& attachEffect : attachEffects)
 	{
-		auto const pType = attachEffects[i]->GetType();
+		auto const pType = attachEffect->GetType();
 
 		if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Death) != ExpireWeaponCondition::None)
 		{
@@ -294,9 +295,9 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 		auto const coords = pThis->GetCoords();
 		auto const pOwner = pThis->Owner;
 
-		for (size_t i = 0; i < expireWeapons.size(); i++)
+		for (auto const& pWeapon : expireWeapons)
 		{
-			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pThis, pOwner, pThis);
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 		}
 	}
 
@@ -317,14 +318,11 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	auto const& attachEffects = pExt->AttachedEffects;
 
 	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
 	{
-		for (size_t i = 0; i < attachEffects.size(); i++)
+		for (auto& attachEffect : pExt->AttachedEffects)
 		{
-			auto const attachEffect = attachEffects[i].get();
-
 			if (!attachEffect->IsActive())
 				continue;
 

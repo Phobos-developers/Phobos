@@ -572,9 +572,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	std::vector<AttachEffectClass*> cumulativeMatches;
 	cumulativeMatches.reserve(targetAEs.size());
 
-	for (size_t i = 0; i < targetAEs.size(); i++)
+	for (auto const& aePtr : targetAEs)
 	{
-		auto const attachEffect = targetAEs[i].get();
+		auto const attachEffect = aePtr.get();
 
 		if (attachEffect->GetType() == pType)
 		{
@@ -592,9 +592,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		{
 			if (attachParams.CumulativeRefreshAll)
 			{
-				for (size_t i = 0; i < cumulativeMatches.size(); i++)
+				for (auto const& ae : cumulativeMatches)
 				{
-					cumulativeMatches[i]->RefreshDuration(attachParams.DurationOverride);
+					ae->RefreshDuration(attachParams.DurationOverride);
 				}
 			}
 			else
@@ -603,10 +603,8 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				{
 					AttachEffectClass* best = nullptr;
 
-					for (size_t i = 0; i < cumulativeMatches.size(); i++)
+					for (auto const& ae : cumulativeMatches)
 					{
-						auto const& ae = cumulativeMatches[i];
-
 						if (!best || ae->Duration < best->Duration)
 							best = ae;
 					}
@@ -619,9 +617,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 		else if (attachParams.CumulativeRefreshAll && attachParams.CumulativeRefreshAll_OnAttach)
 		{
-			for (size_t i = 0; i < cumulativeMatches.size(); i++)
+			for (auto const& ae : cumulativeMatches)
 			{
-				cumulativeMatches[i]->RefreshDuration(attachParams.DurationOverride);
+				ae->RefreshDuration(attachParams.DurationOverride);
 			}
 		}
 	}
@@ -678,9 +676,9 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 	std::vector<AttachEffectTypeClass*> types;
 	types.reserve(attachEffects.size());
 
-	for (size_t i = 0; i < attachEffects.size(); ++i)
+	for (auto const& attachEffect : attachEffects)
 	{
-		auto const pType = attachEffects[i].get()->Type;
+		auto const pType = attachEffect->Type;
 
 		if (pType->HasGroups(groups, false))
 			types.emplace_back(pType);
@@ -707,9 +705,8 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	auto const& maxCounts = attachEffectInfo.CumulativeRemoveMaxCounts;
 	size_t index = 0, minSize = minCounts.size(), maxSize = maxCounts.size();
 
-	for (size_t i = 0; i < types.size(); i++)
+	for (auto const pType : types)
 	{
-		auto const pType = types[i];
 		int minCount = minSize > 0 ? (index < minSize ? minCounts.at(index) : minCounts.at(minSize - 1)) : -1;
 		int maxCount = maxSize > 0 ? (index < maxSize ? maxCounts.at(index) : maxCounts.at(maxSize - 1)) : -1;
 
@@ -798,9 +795,9 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		auto const coords = pTarget->GetCoords();
 		auto const pOwner = pTarget->Owner;
 
-		for (size_t i = 0; i < expireWeapons.size(); i++)
+		for (auto const& pWeapon : expireWeapons)
 		{
-			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pTarget, pOwner, pTarget);
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
 		}
 	}
 
@@ -837,9 +834,9 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		AttachEffectClass* match = nullptr;
 		AttachEffectClass* sourceMatch = nullptr;
 
-		for (size_t i = 0; i < targetAttachEffects.size(); ++i)
+		for (auto const& aePtr : targetAttachEffects)
 		{
-			auto* targetAttachEffect = targetAttachEffects[i].get();
+			auto const targetAttachEffect = aePtr.get();
 
 			if (targetAttachEffect->GetType() == type)
 			{

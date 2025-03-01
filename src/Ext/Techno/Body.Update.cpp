@@ -437,13 +437,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	this->TypeExtData = pNewTypeExt;
 	this->UpdateSelfOwnedAttachEffects();
-	auto const& laserTrailData = pNewTypeExt->LaserTrailData;
-	this->LaserTrails.reserve(laserTrailData.size());
+	this->LaserTrails.reserve(pNewTypeExt->LaserTrailData.size());
 
 	// Recreate Laser Trails
-	for (size_t i = 0; i < laserTrailData.size(); i++)
+	for (auto const& entry : pNewTypeExt->LaserTrailData)
 	{
-		auto const& entry = laserTrailData[i];
 		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
 	}
 
@@ -586,22 +584,15 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 {
 	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
 
-	if (!pThis)
-		return;
-
-	const size_t numTrails = this->LaserTrails.size();
-
-	if (!numTrails)
+	if (!pThis || !this->LaserTrails.size())
 		return;
 
 	const auto cloakState = pThis->CloakState;
 	const bool isDroppodLoco = VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278;
-	auto* pTrails = this->LaserTrails.data();
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
-	for (size_t i = 0; i < numTrails; ++i)
+	for (auto& trail : this->LaserTrails)
 	{
-		auto& trail = pTrails[i];
 		// @Kerbiter if you want to limit it to certain locos you do it here
 		// with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
 		if (trail.Type->DroppodOnly && isDroppodLoco)
@@ -886,13 +877,8 @@ void TechnoExt::ExtData::UpdateTemporal()
 			pShieldData->AI_Temporal();
 	}
 
-	auto& attachEffects = this->AttachedEffects;
-
-	for (size_t i = 0; i < attachEffects.size(); ++i)
-	{
-		auto* attachEffect = attachEffects[i].get();
-		attachEffects[i]->AI_Temporal();
-	}
+	for (auto const& ae : this->AttachedEffects)
+		ae->AI_Temporal();
 }
 
 // Updates state of all AttachEffects on techno.
@@ -966,9 +952,9 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		auto const coords = pThis->GetCoords();
 		auto const pOwner = pThis->Owner;
 
-		for (size_t i = 0; i < expireWeapons.size(); i++)
+		for (auto const& pWeapon : expireWeapons)
 		{
-			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pThis, pOwner, pThis);
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 		}
 	}
 }
@@ -1027,9 +1013,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 		auto const coords = pThis->GetCoords();
 		auto const pOwner = pThis->Owner;
 
-		for (size_t i = 0; i < expireWeapons.size(); i++)
+		for (auto const& pWeapon : expireWeapons)
 		{
-			WeaponTypeExt::DetonateAt(expireWeapons[i], coords, pThis, pOwner, pThis);
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
 		}
 	}
 
@@ -1055,16 +1041,14 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
 
-	for (size_t i = 0; i < attachEffects.size(); ++i)
+	for (auto const& attachEffect : attachEffects)
 	{
-		auto* attachEffect = attachEffects[i].get();
-
 		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
 
 		if (attachEffect->HasCumulativeAnim)
 		{
-			pAEWithAnim = attachEffect;
+			pAEWithAnim = attachEffect.get();
 		}
 		else if (attachEffect->CanShowAnim())
 		{
@@ -1072,7 +1056,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 
 			if (currentDuration < 0 || currentDuration > duration)
 			{
-				pAELargestDuration = attachEffect;
+				pAELargestDuration = attachEffect.get();
 				duration = currentDuration;
 			}
 		}
@@ -1096,7 +1080,6 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 void TechnoExt::ExtData::RecalculateStatMultipliers()
 {
 	auto const pThis = this->OwnerObject();
-	auto const& attachEffects = this->AttachedEffects;
 
 	double firepower = 1.0;
 	double armor = 1.0;
@@ -1111,10 +1094,8 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasOnFireDiscardables = false;
 	bool hasRestrictedArmorMultipliers = false;
 
-	for (size_t i = 0; i < attachEffects.size(); ++i)
+	for (const auto& attachEffect : this->AttachedEffects)
 	{
-		auto* attachEffect = attachEffects[i].get();
-
 		if (!attachEffect->IsActive())
 			continue;
 
