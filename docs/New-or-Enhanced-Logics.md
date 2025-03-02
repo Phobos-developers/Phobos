@@ -1614,6 +1614,19 @@ NoReload.UnderEMP=       ; boolean
 NoReload.Temporal=       ; boolean
 ```
 
+### Recount burst index
+
+- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets. Defaults to `[General] -> RecountBurst`, which defaults to false.
+
+In `rulesmd.ini`:
+```ini
+[General]
+RecountBurst=false  ; boolean
+
+[SOMETECHNO]        ; TechnoType
+RecountBurst=       ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound

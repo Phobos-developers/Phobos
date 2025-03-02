@@ -394,6 +394,7 @@ This page lists all the individual contributions to the project by their author.
   - Extended gattling rate down logic
   - Sell or undeploy building on impact
   - Draw visual effects for airburst weapons
+  - Technos recount current burst index when change the firing weapon
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
