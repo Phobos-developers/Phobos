@@ -145,10 +145,19 @@ public:
 		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
 
+		Nullable<double> DamageOwnerMultiplier;
+		Nullable<double> DamageAlliesMultiplier;
+		Nullable<double> DamageEnemiesMultiplier;
+
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+
+		Valueable<bool> BuildingSell;
+		Valueable<bool> BuildingSell_IgnoreUnsellable;
+		Valueable<bool> BuildingUndeploy;
+		Valueable<bool> BuildingUndeploy_Leave;
 
 		Nullable<bool> CombatAlert_Suppress;
 
@@ -300,10 +309,19 @@ public:
 		    , CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
 
+			, DamageOwnerMultiplier {}
+			, DamageAlliesMultiplier {}
+			, DamageEnemiesMultiplier {}
+
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
+
+			, BuildingSell { false }
+			, BuildingSell_IgnoreUnsellable { false }
+			, BuildingUndeploy { false }
+			, BuildingUndeploy_Leave { false }
 
 			, CombatAlert_Suppress {}
 
@@ -355,6 +373,7 @@ public:
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
+		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

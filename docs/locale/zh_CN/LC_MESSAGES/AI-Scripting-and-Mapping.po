@@ -30,7 +30,7 @@ msgstr "Bug 修复与杂项"
 
 #: ../../AI-Scripting-and-Mapping.md:7
 msgid "Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)"
-msgstr "动作脚本 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 `128 * Y + X`）"
+msgstr "脚本动作 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 `128 * Y + X`）"
 
 #: ../../AI-Scripting-and-Mapping.md:8
 msgid "The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])"
@@ -100,7 +100,7 @@ msgstr "现在可以为单人战役地图的载入图像素偏移值和载入图
 
 #: ../../AI-Scripting-and-Mapping.md:39
 msgid "Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does."
-msgstr "注意尽管键名为 `DefaultLS800BkgdPal`，但实际上就像原本游戏中的 `LS800BkgdPal` 那样适用于两种情况。"
+msgstr "注意尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游戏中的 `LS800BkgdPal` 那样适用于两种情况。"
 
 #: ../../AI-Scripting-and-Mapping.md:41
 #: ../../AI-Scripting-and-Mapping.md:67
@@ -154,7 +154,7 @@ msgstr "在 `RA2MD.INI`："
 
 #: ../../AI-Scripting-and-Mapping.md:118
 msgid "Script Actions"
-msgstr "动作脚本"
+msgstr "脚本动作"
 
 #: ../../AI-Scripting-and-Mapping.md:120
 msgid "`10000-10999` Ingame Actions"
@@ -305,7 +305,7 @@ msgstr "10010"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "Closer, higher threat"
-msgstr "较近，威胁较高"
+msgstr "较近且威胁较高"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "10011"
@@ -325,7 +325,7 @@ msgstr "10014"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "Farther, higher threat"
-msgstr "较远，威胁较高"
+msgstr "较远且威胁较高"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "10015"
@@ -930,7 +930,7 @@ msgstr "`12000` 无目标情况下等待"
 
 #: ../../AI-Scripting-and-Mapping.md:290
 msgid "When executed before a new Attack ScriptType actions like `Generic Target Type Attack` actions  and `AITargetTypes Attack` actions  the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries."
-msgstr "当在例如新的`通用目标类型攻击`动作和 `AITargetTypes 攻击` 动作脚本执行前小队类型会考虑如果未选择目标则必须等待 1 秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击脚本动作并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
+msgstr "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 脚本动作执行前小队类型会考虑如果未选择目标则必须等待 1 秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击脚本动作并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
 
 #: ../../AI-Scripting-and-Mapping.md:298
 msgid "`12001` Modify Target Distance"
@@ -982,7 +982,7 @@ msgstr "`14000` 设置小队权重奖励"
 
 #: ../../AI-Scripting-and-Mapping.md:330
 msgid "When executed before a new Attack ScriptType actions like `Generic Target Type Attack` actions and `AITargetTypes Attack` actions the TeamType will remember that must be rewarded increasing the current weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current weight will never surprass the minimum weight and maximum weight limits of the AI Trigger. The second parameter is a positive value."
-msgstr "当在例如新的`通用目标类型攻击`动作和 `AITargetTypes 攻击` 动作脚本执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI 触发的当前权重。当前权重不会超过AI触发最小权重和最大权重的限制。第二个参数是一个正整数。"
+msgstr "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 脚本动作执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI 触发的当前权重。当前权重不会超过AI触发最小权重和最大权重的限制。第二个参数是一个正整数。"
 
 #: ../../AI-Scripting-and-Mapping.md:338
 msgid "`14001` Increase AI Trigger Current Weight"
@@ -1074,8 +1074,8 @@ msgstr "`18000-18023` 编辑变量"
 
 #: ../../AI-Scripting-and-Mapping.md:444
 #: ../../AI-Scripting-and-Mapping.md:499
-msgid "Operate a variable's value"
-msgstr "计算一个变量值"
+msgid "Operate a variable's value."
+msgstr "计算一个变量值。"
 
 #: ../../AI-Scripting-and-Mapping.md:445
 msgid "The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1."
@@ -1224,32 +1224,32 @@ msgid "`502` Generate random number"
 msgstr "`502` 生成随机数"
 
 #: ../../AI-Scripting-and-Mapping.md:528
-msgid "Generate a random integer ranged in [Min, Max] and store it in a given variable"
-msgstr "在 [Min, Max] 范围内生成一个随机整数并存入给定变量"
+msgid "Generate a random integer ranged in [Min, Max] and store it in a given variable."
+msgstr "在 [Min, Max] 范围内生成一个随机整数并存入给定变量。"
 
 #: ../../AI-Scripting-and-Mapping.md:538
 msgid "`503` Print variable value"
 msgstr "`503` 输出变量的值"
 
 #: ../../AI-Scripting-and-Mapping.md:540
-msgid "Print a variable value to the message list"
-msgstr "输出变量值至消息列表"
+msgid "Print a variable value to the message list."
+msgstr "输出变量值至消息列表。"
 
 #: ../../AI-Scripting-and-Mapping.md:550
 msgid "`504` Binary Operation"
 msgstr "`504` 变量间计算"
 
 #: ../../AI-Scripting-and-Mapping.md:552
-msgid "Operate a variable's value with another variable's value"
-msgstr "将两个变量的值进行计算"
+msgid "Operate a variable's value with another variable's value."
+msgstr "将两个变量的值进行计算。"
 
 #: ../../AI-Scripting-and-Mapping.md:553
-msgid "Similar to `501`, but the operation number is read from another variable"
-msgstr "类似 `501`，但计算数值读取自另一变量"
+msgid "Similar to `501`, but the operation number is read from another variable."
+msgstr "类似 `501`，但计算数值读取自另一变量。"
 
 #: ../../AI-Scripting-and-Mapping.md:563
-msgid "`Operation` can be looked up at action `501`"
-msgstr "`Operation` 可以见上 `501` 号动作"
+msgid "`Operation` can be looked up at action `501`."
+msgstr "`Operation` 可以见上 `501` 号动作。"
 
 #: ../../AI-Scripting-and-Mapping.md:565
 msgid "`505` Fire Super Weapon at specified location"
@@ -1327,7 +1327,7 @@ msgstr "`506` 在路径点释放超级武器"
 
 #: ../../AI-Scripting-and-Mapping.md:592
 msgid "Launch a Super Weapon from `[SuperWeaponTypes]` list at a specified waypoint."
-msgstr "在指定路径点发射 `[SuperWeaponTypes]` 列表中的超级武器"
+msgstr "在指定路径点发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 
 #: ../../AI-Scripting-and-Mapping.md:602
 msgid "`510` Toggle MCV redeployablility"
@@ -1346,8 +1346,8 @@ msgid "`500-511` Variable comparation"
 msgstr "`500-511` 变量比较"
 
 #: ../../AI-Scripting-and-Mapping.md:618
-msgid "Compares the variable's value with given number"
-msgstr "比较变量值与给定值"
+msgid "Compares the variable's value with given number."
+msgstr "比较变量值与给定值。"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "*Event ID*"
@@ -1430,8 +1430,8 @@ msgid "`512-523` Variable comparation with local variable"
 msgstr "`512-523` 变量与局部变量比较"
 
 #: ../../AI-Scripting-and-Mapping.md:645
-msgid "Compares the variable's value with given local variable value"
-msgstr "比较变量值与给定局部变量值"
+msgid "Compares the variable's value with given local variable value."
+msgstr "比较变量值与给定局部变量值。"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "512"
@@ -1510,8 +1510,8 @@ msgid "`524-535` Variable comparation with global variable"
 msgstr "`524-535` 变量与全局变量比较"
 
 #: ../../AI-Scripting-and-Mapping.md:672
-msgid "Compares the variable's value with given global variable value"
-msgstr "比较变量值与给定全局变量值"
+msgid "Compares the variable's value with given global variable value."
+msgstr "比较变量值与给定全局变量值。"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "524"
