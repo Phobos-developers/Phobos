@@ -238,6 +238,7 @@ void EngraveTrajectory::GetTechnoFLHCoord(BulletClass* pBullet, TechnoClass* pTe
 	}
 	else if (pTechno->WhatAmI() == AbstractType::Building)
 	{
+		// The difference between the building and other units here comes from the difference between its GetCoords() and GetRenderCoords()
 		const auto pBuilding = static_cast<BuildingClass*>(pTechno);
 		Matrix3D mtx;
 		mtx.MakeIdentity();
@@ -315,9 +316,10 @@ bool EngraveTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* 
 	const auto rotateAngle = Math::atan2(TargetCrd.Y - SourceCrd.Y , TargetCrd.X - SourceCrd.X);
 	const auto tgtDir = DirStruct(-rotateAngle);
 
-	const auto& face = pTechno->HasTurret() ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
+	const auto& face = pTechno->HasTurret() && pTechno->WhatAmI() == AbstractType::Unit ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
 	const auto curDir = face.Current();
 
+	// Similar to the vanilla 45 degree turret facing check design
 	return (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 4096);
 }
 
@@ -327,6 +329,7 @@ int EngraveTrajectory::GetFloorCoordHeight(BulletClass* pBullet, const CoordStru
 	const auto onFloor = MapClass::Instance->GetCellFloorHeight(coord);
 	const auto onBridge = pCell->ContainsBridge() ? onFloor + CellClass::BridgeHeight : onFloor;
 
+	// Take the higher position
 	return (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge) ? onBridge : onFloor;
 }
 
@@ -352,6 +355,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		if (pBullet->Type->SubjectToCliffs)
 			return true;
 
+		// Move from low altitude to high altitude
 		if (checkDifference > 0)
 		{
 			bulletCoords.Z += checkDifference;
@@ -361,6 +365,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 		{
 			const auto nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(pBullet, bulletCoords);
 
+			// Less than 384 and greater than the maximum difference that can be achieved between two non cliffs
 			if (nowDifference >= 256)
 			{
 				bulletCoords.Z -= nowDifference;
@@ -390,6 +395,7 @@ void EngraveTrajectory::DrawEngraveLaser(BulletClass* pBullet, TechnoClass* pTec
 	{
 		if (pTechno->WhatAmI() != AbstractType::Building)
 		{
+			// The building turret uses PrimaryFacing and GetRenderCoords() to calculate the actual position, so this function is not available
 			fireCoord = TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
 		}
 		else
