@@ -346,7 +346,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight(BulletClass* pBullet)
 	// Calculate where will be located in the next frame
 	const auto checkDifference = this->GetFloorCoordHeight(pBullet, futureCoords) - futureCoords.Z;
 
-	// When crossing the cliff, directly move the position of the bullet, otherwise change the vertical velocity
+	// When crossing the cliff, directly move the position of the bullet, otherwise change the vertical velocity (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (std::abs(checkDifference) >= 384)
 	{
 		if (pBullet->Type->SubjectToCliffs)
