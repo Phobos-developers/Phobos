@@ -286,9 +286,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
+	auto const absType = pThis->WhatAmI();
 
 	// Different types prohibited
-	switch (pThis->WhatAmI())
+	switch (absType)
 	{
 	case AbstractType::Infantry:
 		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<InfantryClass*>(pThis)->Type));
@@ -315,6 +316,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	// Detach CLEG targeting
 	auto tempUsing = pThis->TemporalImUsing;
+
 	if (tempUsing && tempUsing->Target)
 		tempUsing->Detach();
 
@@ -323,6 +325,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Remove tracking of old techno
 	if (!pThis->InLimbo)
 		pOwner->RegisterLoss(pThis, false);
+
 	pOwner->RemoveTracking(pThis);
 
 	int oldHealth = pThis->Health;
@@ -337,8 +340,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	// Add tracking of new techno
 	pOwner->AddTracking(pThis);
+
 	if (!pThis->InLimbo)
 		pOwner->RegisterGain(pThis, false);
+
 	pOwner->RecheckTechTree = true;
 
 	// Update Ares AttachEffects -- skipped
@@ -440,57 +445,80 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource,
 	TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const
 {
+	size_t typeCount = attachEffectTypes.size();
+
+	if (!typeCount)
+		return requireAll;
+
 	unsigned int foundCount = 0;
-	unsigned int typeCounter = 1;
+	unsigned int minSize = minCounts ? minCounts->size() : 0;
+	unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
+	std::unordered_map<AttachEffectTypeClass*, std::vector<AttachEffectClass*>> typeMap;
 
-	for (auto const& type : attachEffectTypes)
+	for (const auto& attachEffect : this->AttachedEffects)
 	{
-		for (auto const& attachEffect : this->AttachedEffects)
+		if (attachEffect->IsActive())
 		{
-			if (attachEffect->GetType() == type && attachEffect->IsActive())
+			typeMap[attachEffect->GetType()].emplace_back(attachEffect.get());
+		}
+	}
+
+	for (size_t i = 0; i < typeCount; ++i)
+	{
+		auto type = attachEffectTypes[i];
+		auto attachEffect = typeMap.find(type);
+
+		if (attachEffect == typeMap.end())
+		{
+			if (requireAll)
+				return false;
+
+			continue;
+		}
+
+		int validCount = 0;
+
+		if (checkSource)
+		{
+			for (auto effect : attachEffect->second)
 			{
-				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
-					continue;
+				if (!effect->IsFromSource(pInvoker, pSource))
+					++validCount;
+			}
+		}
+		else
+		{
+			validCount = attachEffect->second.size();
+		}
 
-				unsigned int minSize = minCounts ? minCounts->size() : 0;
-				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
-
-				if (type->Cumulative && (minSize > 0 || maxSize > 0))
+		if (type->Cumulative)
+		{
+			if (minSize > 0 && i < minSize)
+			{
+				if (validCount < (*minCounts)[i])
 				{
-					int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
-
-					if (minSize > 0)
-					{
-						if (cumulativeCount < minCounts->at(typeCounter - 1 >= minSize ? minSize - 1 : typeCounter - 1))
-							continue;
-					}
-					if (maxSize > 0)
-					{
-						if (cumulativeCount > maxCounts->at(typeCounter - 1 >= maxSize ? maxSize - 1 : typeCounter - 1))
-							continue;
-					}
+					if (requireAll) return false;
+					continue;
 				}
-
-				// Only need to find one match, can stop here.
-				if (!requireAll)
-					return true;
-
-				foundCount++;
-				break;
+			}
+			if (maxSize > 0 && i < maxSize)
+			{
+				if (validCount > (*maxCounts)[i])
+				{
+					if (requireAll) return false;
+					continue;
+				}
 			}
 		}
 
-		// One of the required types was not found, can stop here.
-		if (requireAll && foundCount < typeCounter)
-			return false;
+		if (!requireAll)
+			return true;
 
-		typeCounter++;
+		foundCount++;
 	}
 
-	if (requireAll && foundCount == attachEffectTypes.size())
-		return true;
-
-	return false;
+	return requireAll ? (foundCount == typeCount) : false;
 }
 
 /// <summary>
@@ -507,12 +535,13 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
 
 			foundCount++;
