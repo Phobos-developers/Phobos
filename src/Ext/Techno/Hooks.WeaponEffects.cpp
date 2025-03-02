@@ -7,6 +7,7 @@
 
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -20,6 +21,13 @@ namespace FireAtTemp
 	CellClass* pObstacleCell = nullptr;
 	AbstractClass* pOriginalTarget = nullptr;
 	AbstractClass* pWaveOwnerTarget = nullptr;
+}
+
+DEFINE_HOOK(0x6FF08B, TechnoClass_Fire_RecordBullet, 0x6)
+{
+	GET(BulletClass*, pBullet, EBX);
+	FireAtTemp::FireBullet = pBullet;
+	return 0;
 }
 
 // Set obstacle cell.
@@ -191,13 +199,6 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FF08B, TechnoClass_Fire_RecordBullet, 0x6)
-{
-	GET(BulletClass*, pBullet, EBX);
-	FireAtTemp::FireBullet = pBullet;
-	return 0;
-}
-
 DEFINE_HOOK_AGAIN(0x6FD70D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x6) // CreateRBeam
 DEFINE_HOOK_AGAIN(0x6FD514, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateEBolt
 DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateLaser
@@ -208,15 +209,16 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 	{
 		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
 
+		// pBullet->Data.Location (0x4E1130) -> pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords
 		if (pWeaponExt && pWeaponExt->VisualScatter)
 		{
 			const auto& pRulesExt = RulesExt::Global();
 			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
-			*pTargetCoords = MapClass::GetRandomCoordsNear(pBullet->Data.Location, radius, false);
+			*pTargetCoords = MapClass::GetRandomCoordsNear(BulletExt::ExtMap.Find(pBullet)->Trajectory ? pBullet->TargetCoords : pBullet->Data.Location, radius, false);
 		}
 		else
 		{
-			*pTargetCoords = pBullet->Data.Location;
+			*pTargetCoords = BulletExt::ExtMap.Find(pBullet)->Trajectory ? pBullet->TargetCoords : pBullet->Data.Location;
 		}
 	}
 	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)
@@ -225,12 +227,6 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 	}
 
 	R->EAX(pTargetCoords);
-	return 0;
-}
-
-DEFINE_HOOK(0x6FF743, TechnoClass_Fire_ResetBullet, 0x6)
-{
-	FireAtTemp::FireBullet = nullptr;
 	return 0;
 }
 
@@ -264,6 +260,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 	R->EDI(FireAtTemp::pOriginalTarget);
 
 	// Reset temp values
+	FireAtTemp::FireBullet = nullptr;
 	FireAtTemp::originalTargetCoords = CoordStruct::Empty;
 	FireAtTemp::pObstacleCell = nullptr;
 	FireAtTemp::pOriginalTarget = nullptr;
