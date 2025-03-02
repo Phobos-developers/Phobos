@@ -234,7 +234,7 @@ msgstr "此外如果 `[AudioVisual] -> LightFlashAlphaImageDetailLevel` 高于�
 
 #: ../../User-Interface.md:159
 msgid "Low priority for box selection"
-msgstr "低优先权框选"
+msgstr "低优先级框选"
 
 #: ../../User-Interface.md:161
 msgid "![smartvesters](_static/images/lowpriority-01.gif) *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
