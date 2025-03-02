@@ -327,7 +327,7 @@ bool TracingTrajectory::InvalidFireCondition(BulletClass* pBullet, TechnoClass* 
 	const auto rotateAngle = Math::atan2(TargetCrd.Y - SourceCrd.Y , TargetCrd.X - SourceCrd.X);
 	const auto tgtDir = DirStruct(-rotateAngle);
 
-	const auto& face = pTechno->HasTurret() ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
+	const auto& face = pTechno->HasTurret() && pTechno->WhatAmI() == AbstractType::Unit ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
 	const auto curDir = face.Current();
 
 	return (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 4096);
