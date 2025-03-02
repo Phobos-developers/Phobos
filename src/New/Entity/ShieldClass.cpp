@@ -947,7 +947,9 @@ ArmorType ShieldClass::GetArmorType() const
 
 		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
 			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+		{
 			return pTechnoType->Armor;
+		}
 	}
 
 	return pShieldType->Armor.Get();
