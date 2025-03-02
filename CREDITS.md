@@ -392,6 +392,7 @@ This page lists all the individual contributions to the project by their author.
   - Damage multiplier for different houses
   - Extended gattling rate down logic
   - Sell or undeploy building on impact
+  - Draw visual effects for airburst weapons
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

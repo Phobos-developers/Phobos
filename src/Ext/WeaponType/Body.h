@@ -2,6 +2,7 @@
 #include <BulletClass.h>
 #include <WeaponTypeClass.h>
 #include <DiskLaserClass.h>
+#include <EBolt.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -62,6 +63,12 @@ public:
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
 		Valueable<bool> KickOutPassengers;
 
+		Nullable<ColorStruct> Beam_Color;
+		Valueable<int> Beam_Duration;
+		Valueable<double> Beam_Amplitude;
+		Valueable<bool> Beam_IsHouseColor;
+		Valueable<int> LaserThickness;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -103,6 +110,11 @@ public:
 			, AttachEffect_CheckOnFirer { false }
 			, AttachEffect_IgnoreFromSameSource { false }
 			, KickOutPassengers { true }
+			, Beam_Color {}
+			, Beam_Duration { 15 }
+			, Beam_Amplitude { 40.0 }
+			, Beam_IsHouseColor { false }
+			, LaserThickness { 3 }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
@@ -138,6 +150,8 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static double OldRadius;
+	static PhobosMap<EBolt*, const WeaponTypeExt::ExtData*> BoltWeaponMap;
+	static const WeaponTypeExt::ExtData* BoltWeaponType;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
