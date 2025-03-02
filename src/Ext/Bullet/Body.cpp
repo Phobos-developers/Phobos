@@ -1,9 +1,9 @@
 #include "Body.h"
 
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Misc/FlyingStrings.h>
@@ -19,6 +19,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	auto pTypeExt = this->TypeExtData;
 	bool canAffect = false;
 	bool isIntercepted = false;
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
 
 	if (pTypeExt->Armor.isset())
 	{
@@ -27,8 +29,11 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 		if (versus != 0.0)
 		{
 			canAffect = true;
+			int damage = static_cast<int>(pWeapon->Damage * versus);
 
-			int damage = static_cast<int>(pWeapon->Damage * versus * pSource->FirepowerMultiplier);
+			if (pInterceptorType->ApplyFirepowerMult)
+				damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
+
 			this->CurrentStrength -= damage;
 
 			if (Phobos::DisplayDamageNumbers && damage != 0)
@@ -46,8 +51,6 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 	if (canAffect)
 	{
-		const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
-		const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
 		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride);
 		bool detonate = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
