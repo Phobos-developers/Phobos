@@ -1883,6 +1883,22 @@ In `rulesmd.ini`:
 NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
+### Sell or undeploy building on impact
+
+- Warheads with `BuildingSell` can now sell buildings with build up image. It has a higher priority than `BuildingUndeploy`.
+  - `BuildingSell.IgnoreUnsellable` controls whether to ignore all possible situations where sales may be disabled except for build up image.
+- Warheads with `BuildingUndeploy` can now undeploy buildings with `UndeploysInto`.
+  - `BuildingUndeploy.Leave` controls whether need to let them move to low threat locations nearby. The threat degree here is calculated using the technos' cost. If a nearby techno has no primary weapons or is owned by your allies, it will not be included.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                        ; Warhead
+BuildingSell=false                   ; boolean
+BuildingSell.IgnoreUnsellable=false  ; boolean
+BuildingUndeploy=false               ; boolean
+BuildingUndeploy.Leave=false         ; boolean
+```
+
 ### Damage multiplier for different houses
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did, and this function will not affect damage with ignore defenses like `Suicide`.etc .

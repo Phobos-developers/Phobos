@@ -270,6 +270,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 
+	this->BuildingSell.Read(exINI, pSection, "BuildingSell");
+	this->BuildingSell_IgnoreUnsellable.Read(exINI, pSection, "BuildingSell.IgnoreUnsellable");
+	this->BuildingUndeploy.Read(exINI, pSection, "BuildingUndeploy");
+	this->BuildingUndeploy_Leave.Read(exINI, pSection, "BuildingUndeploy.Leave");
+
 	this->CombatAlert_Suppress.Read(exINI, pSection, "CombatAlert.Suppress");
 
 	// Convert.From & Convert.To
@@ -325,6 +330,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
+		|| this->BuildingSell
+		|| this->BuildingUndeploy
 	);
 
 	char tempBuffer[32];
@@ -500,8 +507,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CLIsBlack)
 		.Process(this->Particle_AlphaImageIsLightFlash)
 
+		.Process(this->BuildingSell)
+		.Process(this->BuildingSell_IgnoreUnsellable)
+		.Process(this->BuildingUndeploy)
+		.Process(this->BuildingUndeploy_Leave)
+
 		.Process(this->CombatAlert_Suppress)
-		
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)

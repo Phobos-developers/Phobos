@@ -391,6 +391,7 @@ This page lists all the individual contributions to the project by their author.
   - No turret unit turn to the target
   - Damage multiplier for different houses
   - Extended gattling rate down logic
+  - Sell or undeploy building on impact
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
