@@ -146,11 +146,11 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	if (const auto pWeapon = pBullet->WeaponType)
 		this->CountOfBurst = pWeapon->Burst;
 
-	if (const auto pOwner = pBullet->Owner)
+	if (const auto pFirer = pBullet->Owner)
 	{
-		this->CurrentBurst = pOwner->CurrentBurstIndex;
+		this->CurrentBurst = pFirer->CurrentBurstIndex;
 
-		if (pType->MirrorCoord && pOwner->CurrentBurstIndex % 2 == 1)
+		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
@@ -973,7 +973,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(BulletClass* pBullet, C
 	const auto bulletHeight = pBullet->Location.Z;
 	const auto lastCellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location - velocityCoords);
 
-	// Check if it has hit a cliff
+	// Check if it has hit a cliff (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 	{
 		auto cell = pCell->MapCoords;
@@ -1030,6 +1030,7 @@ bool ParabolaTrajectory::CheckBulletHitCliff(short X, short Y, int bulletHeight,
 	{
 		const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
 
+		// (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 		if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 			return true;
 	}
