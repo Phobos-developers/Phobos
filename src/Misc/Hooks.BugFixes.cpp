@@ -52,6 +52,31 @@ DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 // to proper techno but to their transports
 DEFINE_PATCH(0x707CF2, 0x55);
 
+//Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
+{
+	GET(bool, isReturnSuccess, EAX);
+	GET(ParasiteClass* const, pParasite, ESI);
+
+	const auto pParasiteTechno = pParasite->Owner;
+
+	if (isReturnSuccess || !pParasiteTechno)
+		return 0;
+
+	const auto pType = pParasiteTechno->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
+	const auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords, pType->SpeedType, -1,
+		pType->MovementZone, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	if (cell != CellStruct::Empty) // Cell2Coord makes X/Y values of CoordStruct non-zero, additional checks are required
+		R->AL(pParasiteTechno->Unlimbo(CellClass::Cell2Coord(cell), DirType::North));
+
+	return 0;
+}
+
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
 DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
@@ -719,7 +744,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 {
-	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+	enum { SkipGameCode = 0x7410B7, MustDeploy = 0x7410A8 };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -1064,6 +1089,21 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 
 #pragma endregion
 
+#pragma region TeleportLocomotionOccupationFix
+
+DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
+{
+	enum { SkipMarkOccupation = 0x71878F };
+
+	GET(const LocomotionClass* const, pLoco, EBP);
+
+	const auto pFoot = pLoco->LinkedTo;
+
+	return (pFoot && pFoot->IsAlive && !pFoot->InLimbo && pFoot->Health > 0 && !pFoot->IsSinking) ? 0 : SkipMarkOccupation;
+}
+
+#pragma endregion
+
 #pragma region StopEventFix
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
@@ -1121,6 +1161,14 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 		const auto pFoot = abstract_cast<FootClass*>(pTechno);
 		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
 
+		// Clear archive target for infantries and vehicles like receive a mega mission
+		if (pFoot && !pAircraft)
+			pTechno->SetArchiveTarget(nullptr);
+
+		// To avoid foots stuck in Mission::Area_Guard
+		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+			pTechno->QueueMission(Mission::Guard, true);
+
 		// To avoid jumpjets falling into a state of standing idly by
 		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
 			pTechno->SetDestination(nullptr, true);
@@ -1133,6 +1181,21 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	return SkipGameCode;
 }
+
+#pragma endregion
+
+#pragma region TeamCloseRangeFix
+
+int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
+{
+	// At present, it seems that aircraft use their own mapcoords and the team destination's mapcoords to check.
+    // During the previous test, it was found that if the aircraft uses this and needs to return to the airport
+	// with the script first, it will interrupt the remaining tasks for unknown reasons - CrimRecya
+	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
+		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
+		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
+}
+DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
 
 #pragma endregion
 
@@ -1161,3 +1224,94 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 }
 DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
 DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
+
+#pragma region Sensors
+
+DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x34, 0x4));
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LastSensorsMapCoords = *cell;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
+{
+	enum { SkipGameCode = 0x4D8627 };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto currentCell = pThis->GetMapCoords();
+
+	if (pExt->LastSensorsMapCoords != currentCell)
+	{
+		pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pThis->AddSensorsAt(currentCell);
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
+{
+	enum { SkipGameCode = 0x4DB37C };
+
+	GET(FootClass*, pThis, EDI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
+{
+	enum { SkipGameCode = 0x4DBF01 };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+
+	return SkipGameCode;
+}
+
+// Bugfix: Jumpjet detect cloaked objects beneath
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
+{
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(CellStruct const, currentCell, EAX);
+
+	// Copied from FootClass::UpdatePosition
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		CellStruct const lastCell = pExt->LastSensorsMapCoords;
+
+		if (lastCell != currentCell)
+		{
+			pLinkedTo->RemoveSensorsAt(lastCell);
+			pLinkedTo->AddSensorsAt(currentCell);
+		}
+	}
+	// Something more may be missing
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+	}
+
+	return 0;
+}
+
+#pragma endregion

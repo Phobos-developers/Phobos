@@ -422,6 +422,12 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		if (!object)
 			continue;
 
+		// Discard invisible structures
+		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
+
+		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
+			continue;
+
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
 		int weaponIndex = pTechno->SelectWeapon(object);
 		auto weaponType = pTechno->GetWeapon(weaponIndex)->WeaponType;
