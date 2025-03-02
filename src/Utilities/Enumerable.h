@@ -12,13 +12,17 @@
 template <typename T> class Enumerable
 {
 public:
-	inline static std::vector<T> Array;
+	// The array gets eventually expanded due to multiple ini parsing
+	// non-index references in other classes become dangling pointers
+	// therefore we need to prevent reallocation of the instances
+	// + contigous storage of type classes has virtually no performance improvement
+	inline static std::vector<std::unique_ptr<T>> Array;
 
 	static int FindIndex(const char* Title)
 	{
-		auto result = std::find_if(Array.begin(), Array.end(), [Title](const T& Item)
+		auto result = std::find_if(Array.begin(), Array.end(), [Title](const std::unique_ptr<T>& Item)
 			{
-				return !_strcmpi(Item.Name, Title);
+				return !_strcmpi(Item->Name, Title);
 			});
 
 		if (result == Array.end())
@@ -30,17 +34,15 @@ public:
 	static T* Find(const char* Title)
 	{
 		auto result = FindIndex(Title);
-		return (result < 0) ? nullptr : &Array[static_cast<size_t>(result)];
+		return (result < 0) ? nullptr : Array[static_cast<size_t>(result)].get();
 	}
 
 	static T* FindOrAllocate(const char* Title)
 	{
 		if (T* found = Find(Title))
 			return found;
-		static_assert(std::constructible_from<T, const char*>);
-		Array.emplace_back(Title);
-
-		return &Array.back();
+		Array.emplace_back(std::make_unique<T>(Title));
+		return Array.back().get();
 	}
 
 	static void Clear()
@@ -59,8 +61,8 @@ public:
 				FindOrAllocate(Phobos::readBuffer);
 		}
 
-		for (auto& item : Array)
-			item.LoadFromINI(pINI);
+		for (auto const& item : Array)
+			item->LoadFromINI(pINI);
 	}
 
 	static bool LoadGlobals(PhobosStreamReader& Stm)
@@ -71,7 +73,7 @@ public:
 		if (!Stm.Load(Count))
 			return false;
 
-
+		Array.reserve(Count);
 		for (size_t i = 0; i < Count; ++i)
 		{
 			void* oldPtr = nullptr;
@@ -93,12 +95,12 @@ public:
 	{
 		Stm.Save(Array.size());
 
-		for (auto& item : Array)
+		for (auto const& item : Array)
 		{
 			// write old pointer and name, then delegate
-			Stm.Save(&item);
-			Stm.Save(item.Name);
-			item.SaveToStream(Stm);
+			Stm.Save(item.get());
+			Stm.Save(item->Name);
+			item->SaveToStream(Stm);
 		}
 
 		return true;

@@ -84,6 +84,13 @@ public:
 		NullableIdx<VocClass> SellSound;
 		NullableIdx<VoxClass> EVA_Sold;
 
+		Nullable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_NotBuilding;
+		Nullable<bool> CombatAlert_UseFeedbackVoice;
+		Nullable<bool> CombatAlert_UseAttackVoice;
+		Nullable<bool> CombatAlert_UseEVA;
+		NullableIdx<VoxClass> CombatAlert_EVA;
+
 		NullableIdx<VocClass> VoiceCreated;
 		NullableIdx<VocClass> VoicePickup; // Used by carryalls instead of VoiceMove if set.
 
@@ -103,6 +110,7 @@ public:
 		Valueable<WeaponTypeClass*> WarpOutWeapon;
 		Valueable<bool> WarpInWeapon_UseDistanceAsDamage;
 
+		int SubterraneanSpeed;
 		Nullable<int> SubterraneanHeight;
 
 		ValueableVector<AnimTypeClass*> OreGathering_Anims;
@@ -174,7 +182,7 @@ public:
 		Nullable<bool> Insignia_ShowEnemy;
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
-		std::vector<Vector3D<int>> InsigniaFrames_Weapon;
+		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
 
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
 		Nullable<bool> TiltsWhenCrushes_Overlays;
@@ -227,16 +235,33 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Valueable<int> RateDown_Delay;
+		Valueable<bool> RateDown_Reset;
+		Valueable<int> RateDown_Cover_Value;
+		Valueable<int> RateDown_Cover_AmmoBelow;
+
+		Nullable<bool> NoRearm_UnderEMP;
+		Nullable<bool> NoRearm_Temporal;
+		Nullable<bool> NoReload_UnderEMP;
+		Nullable<bool> NoReload_Temporal;
+		Nullable<bool> NoTurret_TrackTarget;
+
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+
+		Valueable<bool> BunkerableAnyway;
+		Valueable<bool> KeepTargetOnMove;
+		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
+
+		Valueable<int> Power;
 
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
 			Valueable<CoordStruct> FLH;
 			Valueable<bool> IsOnTurret;
-			LaserTrailTypeClass* GetType() const { return &LaserTrailTypeClass::Array[idxType]; }
+			LaserTrailTypeClass* GetType() const { return LaserTrailTypeClass::Array[idxType].get(); }
 		};
 
 		std::vector<LaserTrailDataEntry> LaserTrailData;
@@ -249,7 +274,6 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
-
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -299,6 +323,7 @@ public:
 			, WarpOutWeapon {}
 			, WarpInWeapon_UseDistanceAsDamage { false }
 
+			, SubterraneanSpeed { -1 }
 			, SubterraneanHeight {}
 
 			, OreGathering_Anims {}
@@ -356,6 +381,14 @@ public:
 			, SlavesFreeSound {}
 			, SellSound {}
 			, EVA_Sold {}
+
+			, CombatAlert {}
+			, CombatAlert_NotBuilding {}
+			, CombatAlert_UseFeedbackVoice {}
+			, CombatAlert_UseAttackVoice {}
+			, CombatAlert_UseEVA {}
+			, CombatAlert_EVA {}
+
 			, EnemyUIName {}
 
 			, VoiceCreated {}
@@ -451,9 +484,26 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
+			, RateDown_Delay { 0 }
+			, RateDown_Reset { false }
+			, RateDown_Cover_Value { 0 }
+			, RateDown_Cover_AmmoBelow { -2 }
+
+			, NoRearm_UnderEMP {}
+			, NoRearm_Temporal {}
+			, NoReload_UnderEMP {}
+			, NoReload_Temporal {}
+			, NoTurret_TrackTarget {}
+
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, BunkerableAnyway { false }
+			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
+
+			, Power { }
 		{ }
 
 		virtual ~ExtData() = default;

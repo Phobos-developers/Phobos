@@ -1,18 +1,16 @@
 #pragma once
 
-#include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
 #include <Utilities/Savegame.h>
 
 #include <BulletClass.h>
-
-class BulletTypeExt;
 
 enum class TrajectoryFlag : int
 {
 	Invalid = -1,
 	Straight = 0,
 	Bombard = 1,
+	Parabola = 4
 };
 
 enum class TrajectoryCheckReturnType : int
@@ -33,8 +31,13 @@ public:
 	virtual bool Save(PhobosStreamWriter& Stm) const;
 	virtual TrajectoryFlag Flag() const = 0;
 	virtual void Read(CCINIClass* const pINI, const char* pSection) = 0;
-	virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
+	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance() const = 0;
 
+	static std::vector<CellClass*> GetCellsInProximityRadius(BulletClass* pBullet, Leptons trajectoryProximityRange);
+private:
+	static std::vector<CellStruct> GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell);
+
+public:
 	Valueable<double> Trajectory_Speed { 100.0 };
 };
 
