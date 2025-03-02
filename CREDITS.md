@@ -383,6 +383,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Stop` command not working so well in some cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
+  - No rearm and reload in EMP or temporal
   - Enhanced Straight trajectory
   - Enable Building Production Queue
   - Fix for sidebar not updating queued unit numbers when on hold
@@ -391,6 +392,9 @@ This page lists all the individual contributions to the project by their author.
   - No turret unit turn to the target
   - Damage multiplier for different houses
   - Extended gattling rate down logic
+  - Sell or undeploy building on impact
+  - Draw visual effects for airburst weapons
+  - Technos recount current burst index when change the firing weapon
   - New Disperse trajectory
 - **Ollerus**:
   - Build limit group enhancement

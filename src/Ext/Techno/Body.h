@@ -127,6 +127,9 @@ public:
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
+		void UpdateRecountBurst();
+		void UpdateRearmInEMPState();
+		void UpdateRearmInTemporal();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
 		void UpdateSelfOwnedAttachEffects();
