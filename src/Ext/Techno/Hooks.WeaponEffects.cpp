@@ -15,6 +15,7 @@
 
 namespace FireAtTemp
 {
+	BulletClass* FireBullet = nullptr;
 	CoordStruct originalTargetCoords;
 	CellClass* pObstacleCell = nullptr;
 	AbstractClass* pOriginalTarget = nullptr;
@@ -190,18 +191,46 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 	return 0;
 }
 
-// Adjust target coordinates for laser drawing.
-DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
+DEFINE_HOOK(0x6FF08B, TechnoClass_Fire_RecordBullet, 0x6)
+{
+	GET(BulletClass*, pBullet, EBX);
+	FireAtTemp::FireBullet = pBullet;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6FD70D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x6) // CreateRBeam
+DEFINE_HOOK_AGAIN(0x6FD514, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateEBolt
+DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateLaser
 {
 	GET(CoordStruct*, pTargetCoords, EAX);
 
-	auto coords = *pTargetCoords;
-	auto const pObstacleCell = FireAtTemp::pObstacleCell;
+	if (const auto pBullet = FireAtTemp::FireBullet)
+	{
+		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
 
-	if (pObstacleCell)
-		coords = pObstacleCell->GetCoordsWithBridge();
+		if (pWeaponExt && pWeaponExt->VisualScatter)
+		{
+			const auto& pRulesExt = RulesExt::Global();
+			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
+			*pTargetCoords = MapClass::GetRandomCoordsNear(pBullet->Data.Location, radius, false);
+		}
+		else
+		{
+			*pTargetCoords = pBullet->Data.Location;
+		}
+	}
+	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)
+	{
+		*pTargetCoords = pObstacleCell->GetCoordsWithBridge();
+	}
 
-	R->EAX(&coords);
+	R->EAX(pTargetCoords);
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF743, TechnoClass_Fire_ResetBullet, 0x6)
+{
+	FireAtTemp::FireBullet = nullptr;
 	return 0;
 }
 

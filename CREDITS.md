@@ -391,6 +391,8 @@ This page lists all the individual contributions to the project by their author.
   - No turret unit turn to the target
   - Damage multiplier for different houses
   - Extended gattling rate down logic
+  - Laser, electric bolt and rad beam scatter
+  - Fix the bug that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
