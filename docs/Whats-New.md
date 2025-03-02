@@ -327,6 +327,7 @@ New:
 - No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Damage multiplier for different houses (by CrimRecya)
 - Customizable duration for electric bolts (by Starkku)
+- Extended gattling rate down logic (by CrimRecya)
 - Sell or undeploy building on impact (by CrimRecya)
 
 Vanilla fixes:

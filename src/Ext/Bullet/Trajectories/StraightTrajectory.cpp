@@ -530,8 +530,8 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	if (!pType->PassThrough && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
-	// Below ground level?
-	if (pType->SubjectToGround && MapClass::Instance->GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
+	// Below ground level? (16 ->error range)
+	if (pType->SubjectToGround && MapClass::Instance->GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 16))
 		return true;
 
 	// Out of map?
@@ -566,7 +566,7 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 	}
 	else if (checkThrough || checkSubject) // When in high speed, it's necessary to check each cell on the path that the next frame will pass through
 	{
-		const auto theSourceCoords = pBullet->Location;
+		const auto& theSourceCoords = pBullet->Location;
 		const CoordStruct theTargetCoords
 		{
 			pBullet->Location.X + static_cast<int>(pBullet->Velocity.X),
@@ -587,24 +587,9 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 
 		for (size_t i = 0; i < largePace; ++i)
 		{
-			// Below ground level?
-			if (pType->SubjectToGround && (curCoord.Z + 15) < MapClass::Instance->GetCellFloorHeight(curCoord))
-			{
-				velocityCheck = true;
-				cellDistance = curCoord.DistanceFrom(theSourceCoords);
-				break;
-			}
-
-			// Impact on the wall?
-			if (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall)
-			{
-				velocityCheck = true;
-				cellDistance = curCoord.DistanceFrom(theSourceCoords);
-				break;
-			}
-
-			// Blocked by obstacles?
-			if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
+			if ((pType->SubjectToGround && (curCoord.Z + 16) < MapClass::Instance->GetCellFloorHeight(curCoord)) // Below ground level? (16 ->error range)
+				|| (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall) // Impact on the wall?
+				|| (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))) // Blocked by obstacles?
 			{
 				velocityCheck = true;
 				cellDistance = curCoord.DistanceFrom(theSourceCoords);
@@ -1057,7 +1042,7 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 			checkDifference = differenceOnBridge;
 	}
 
-	// The height does not exceed the cliff, or the cliff can be ignored?
+	// The height does not exceed the cliff, or the cliff can be ignored? (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (std::abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
 	{
 		const auto pType = this->Type;

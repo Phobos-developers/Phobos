@@ -1272,7 +1272,7 @@ OpenTopped.ShareTransportTarget=true      ; boolean
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
   - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
   - `NoAmmoWeapon=1` on an unit with `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
-  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
+  - Deployed `IsSimpleDeployer=true` units with `DeployFireWeapon=1` set or omitted.
   - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
   - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
   - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
@@ -1575,6 +1575,22 @@ In `rulesmd.ini`:
 [SOMETECHNO]                ; TechnoType
 Convert.HumanToComputer=    ; TechnoType
 Convert.ComputerToHuman=    ; TechnoType
+```
+
+### Extended gattling rate down logic
+
+- Now you can customize some effects of `RateDown`.
+  - `RateDown.Delay` controls the delay before using `RateDown` to reduce the gattling value.
+  - `RateDown.Reset` controls whether to reset the gattling value directly when the techno has no target or changes targets.
+  - `RateDown.Cover.Value` replaces the original `RateDown` when techno's ammo is lower than `RateDown.Cover.AmmoBelow`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                  ; TechnoType, `IsGattling=yes`
+RateDown.Delay=0              ; integer, game frames
+RateDown.Reset=false          ; boolean
+RateDown.Cover.Value=0        ; integer
+RateDown.Cover.AmmoBelow=-2   ; integer
 ```
 
 ## Terrain
