@@ -331,6 +331,7 @@ New:
 - Sell or undeploy building on impact (by CrimRecya)
 - No rearm and reload in EMP or temporal (by CrimRecya)
 - Draw visual effects for airburst weapons (by CrimRecya)
+- Technos recount current burst index when change the firing weapon (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -456,7 +457,6 @@ New:
 - Allow explicitly setting the superweapons AI uses for Chronoshift script actions (by Starkku)
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
-- Technos recount current burst index when change the firing weapon (by CrimRecya)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
 - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
 - Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
