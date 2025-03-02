@@ -19,14 +19,14 @@ msgstr ""
 
 #: ../License.md:1
 msgid "License"
-msgstr "许可证"
+msgstr "许可证，汉化可参阅[此处](http://www.thebigfly.com/gnu/lgpl/lgpl-v3.php)。"
 
 #: ../../LICENSE.md:4
 msgid ""
 "Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>  "
 "Everyone is permitted to copy and distribute verbatim copies  of this "
 "license document, but changing it is not allowed."
-msgstr "关于许可证的汉化，请参阅[此处](http://www.thebigfly.com/gnu/lgpl/lgpl-v3.php)。\n"
+msgstr ""
 "Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>  "
 "Everyone is permitted to copy and distribute verbatim copies  of this "
 "license document, but changing it is not allowed."

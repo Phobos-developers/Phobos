@@ -79,8 +79,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
-
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
+	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 
 	this->RadType.Read<true>(exINI, pSection, "RadType");
 
@@ -119,6 +119,12 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
 	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
+
+	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
+	this->Beam_Duration.Read(exINI, pSection, "Beam.Duration");
+	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
+	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
+	this->LaserThickness.Read(exINI, pSection, "LaserThickness");
 }
 
 template <typename T>
@@ -131,6 +137,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Bolt_Arcs)
+		.Process(this->Bolt_Duration)
 		.Process(this->Strafing)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
@@ -167,6 +174,11 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepRange_AllowAI)
 		.Process(this->KeepRange_AllowPlayer)
 		.Process(this->KickOutPassengers)
+		.Process(this->Beam_Color)
+		.Process(this->Beam_Duration)
+		.Process(this->Beam_Amplitude)
+		.Process(this->Beam_IsHouseColor)
+		.Process(this->LaserThickness)
 		;
 };
 

@@ -26,9 +26,7 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 	if (pType->HideIfNoOre)
 	{
 		auto nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
-		auto pCell = pThis->GetCell();
-
-		pThis->Invisible = !pCell || pCell->GetContainedTiberiumValue() <= nThreshold;
+		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
 	return 0x423BBF;
@@ -204,7 +202,8 @@ DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
 {
 	GET(ParticleSystemClass*, pParticleSystem, EDI);
 
-	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
+	if (pParticleSystem->Owner && pParticleSystem->Owner->WhatAmI() == AbstractType::Anim)
+		AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
 
 	return 0;
 }
@@ -386,12 +385,10 @@ DEFINE_HOOK(0x423061, AnimClass_DrawIt_Visibility, 0x6)
 
 	if (pTypeExt->RestrictVisibilityIfCloaked && !HouseClass::IsCurrentPlayerObserver()
 		&& pTechno && (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
-		&& !pTechno->Owner->IsAlliedWith(pCurrentHouse))
+		&& !pTechno->Owner->IsAlliedWith(pCurrentHouse)
+		&& !pTechno->GetCell()->Sensors_InclHouse(pCurrentHouse->ArrayIndex))
 	{
-		auto const pCell = pTechno->GetCell();
-
-		if (pCell && !pCell->Sensors_InclHouse(pCurrentHouse->ArrayIndex))
-			return SkipDrawing;
+		return SkipDrawing;
 	}
 
 	auto pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : pThis->Owner;
