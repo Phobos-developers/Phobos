@@ -24,7 +24,8 @@ void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 
 	const bool canDeploy = pThis->CanDeploySlashUnload();
 	R->AL(canDeploy);
-	if (!canDeploy)
+
+	if (!canDeploy || pThis->BunkerLinkedItem)
 		return;
 
 	const bool skipMinimum = pThisType->Ammo_DeployUnlockMinimumAmount < 0;
@@ -47,7 +48,7 @@ void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
 	GET(UnitClass*, pThis, ECX);
 	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->Deployed && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
+	if (pThis->Deployed && !pThis->BunkerLinkedItem && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
 	{
 		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
 		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
@@ -61,7 +62,7 @@ void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
 	GET(UnitClass*, pThis, ESI);
 	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pThis->Type->IsSimpleDeployer && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
+	if (pThis->Type->IsSimpleDeployer && !pThis->BunkerLinkedItem && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
 	{
 		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
 		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);

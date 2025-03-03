@@ -9,6 +9,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
+#include <PlanningTokenClass.h>
 
 #pragma region Update
 
@@ -247,6 +248,7 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 
 	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 	pAnimExt->ParentBuilding = pThis;
+	TechnoExt::ExtMap.Find(pThis)->AnimRefCount++;
 
 	return 0;
 }
@@ -691,6 +693,20 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x54BC99, JumpjetLocomotionClass_Ascending_BarracksExitCell, 0x6)
+{
+	enum { Continue = 0x54BCA3 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->BarracksExitCell.isset())
+		return Continue;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region BuildingFiring
@@ -701,6 +717,31 @@ DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
 	GET(BuildingClass* const, pThis, ESI);
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	return (pTypeExt && !pTypeExt->IsAnimDelayedBurst && pThis->CurrentBurstIndex != 0) ? JustFire : VanillaCheck;
+}
+
+#pragma endregion
+
+#pragma region BuildingWaypoints
+
+bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
+{
+	return RulesExt::Global()->BuildingWaypoints;
+}
+DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
+
+DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning, 0x5)
+{
+	enum { SkipGameCode = 0x4AE982 };
+
+	GET(ObjectClass* const, pObject, ECX);
+	LEA_STACK(CellStruct*, pCell, STACK_OFFSET(0x20, 0x8));
+
+	auto action = pObject->MouseOverCell(pCell);
+
+	if (!PlanningNodeClass::PlanningModeActive || pObject->WhatAmI() != AbstractType::Building || action == Action::Attack)
+		pObject->CellClickedAction(action, pCell, pCell, false);
+
+	return SkipGameCode;
 }
 
 #pragma endregion

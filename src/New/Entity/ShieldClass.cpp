@@ -945,10 +945,20 @@ int ShieldClass::DrawShieldBar_PipAmount(int length) const
 
 ArmorType ShieldClass::GetArmorType() const
 {
-	if (this->Techno && this->Type->InheritArmorFromTechno)
-		return this->Techno->GetTechnoType()->Armor;
+	const auto pShieldType = this->Type;
 
-	return this->Type->Armor.Get();
+	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	{
+		const auto pTechnoType = this->Techno->GetTechnoType();
+
+		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
+			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+		{
+			return pTechnoType->Armor;
+		}
+	}
+
+	return pShieldType->Armor.Get();
 }
 
 int ShieldClass::GetFramesSinceLastBroken() const

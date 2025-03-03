@@ -43,6 +43,9 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateRecountBurst();
+	this->UpdateRearmInEMPState();
+	this->UpdateGattlingRateDownReset();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -207,10 +210,13 @@ void TechnoExt::ExtData::EatPassengers()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActive(pThis))
+	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActiveIgnoreEMP(pThis))
 		return;
 
 	auto pDelType = pTypeExt->PassengerDeletionType.get();
+
+	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
+		return;
 
 	if (pTypeExt && (pDelType->Rate > 0 || pDelType->UseCostAsRate))
 	{
@@ -441,6 +447,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
+	// Remove from harvesters list if no longer a harvester.
+	if (pOldTypeExt->Harvester_Counted && !!this->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
+
 	// Remove from limbo reloaders if no longer applicable
 	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{
@@ -503,6 +516,27 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			}
 		}
 
+		if (auto pInf = specific_cast<InfantryClass*>(pFoot))
+		{
+			// It's still not recommended to have such idea, please avoid using this
+			if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
+			{
+				switch (pInf->SequenceAnim)
+				{
+				case Sequence::Deploy:
+				case Sequence::Deployed:
+				case Sequence::DeployedIdle:
+					pInf->PlayAnim(Sequence::Ready, true);
+					break;
+				case Sequence::DeployedFire:
+					pInf->PlayAnim(Sequence::FireUp, true);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
 		if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
 			this->HasRemainingWarpInDelay = true;
 	}
@@ -528,14 +562,9 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 		if (pThis->CloakState == CloakState::Cloaked)
 		{
 			if (trail.Type->CloakVisible && trail.Type->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
-			{
-				auto const pCell = pThis->GetCell();
-				trail.Cloaked = !pCell || !pCell->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
-			}
+				trail.Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
 			else if (!trail.Type->CloakVisible)
-			{
 				trail.Cloaked = true;
-			}
 		}
 
 		if (!this->IsInTunnel)
@@ -581,6 +610,49 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 	else if (this->MindControlRingAnimType)
 	{
 		this->MindControlRingAnimType = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::UpdateRecountBurst()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->CurrentBurstIndex && !pThis->Target && this->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
+	{
+		const auto pWeapon = this->LastWeaponType;
+
+		if (pWeapon && pWeapon->Burst && pThis->LastFireBulletFrame + std::max(pWeapon->ROF, 30) <= Unsorted::CurrentFrame)
+		{
+			const auto ratio = static_cast<double>(pThis->CurrentBurstIndex) / pWeapon->Burst;
+			const auto rof = static_cast<int>(ratio * pWeapon->ROF * this->AE.ROFMultiplier) - std::max(pWeapon->ROF, 30);
+
+			if (rof > 0)
+			{
+				pThis->ChargeTurretDelay = rof;
+				pThis->RearmTimer.Start(rof);
+			}
+
+			pThis->CurrentBurstIndex = 0;
+		}
+	}
+}
+
+void TechnoExt::ExtData::UpdateGattlingRateDownReset()
+{
+	const auto pTypeExt = this->TypeExtData;
+
+	if (pTypeExt->OwnerObject()->IsGattling)
+	{
+		const auto pThis = this->OwnerObject();
+
+		if (pTypeExt->RateDown_Reset && (!pThis->Target || this->LastTargetID != pThis->Target->UniqueID))
+		{
+			this->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
+			pThis->GattlingValue = 0;
+			pThis->CurrentGattlingStage = 0;
+			this->AccumulatedGattlingValue = 0;
+			this->ShouldUpdateGattlingValue = false;
+		}
 	}
 }
 
@@ -805,6 +877,36 @@ void TechnoExt::ExtData::UpdateTemporal()
 
 	for (auto const& ae : this->AttachedEffects)
 		ae->AI_Temporal();
+
+	this->UpdateRearmInTemporal();
+}
+
+void TechnoExt::ExtData::UpdateRearmInEMPState()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (!pThis->IsUnderEMP() && !pThis->Deactivated)
+		return;
+
+	const auto pTypeExt = this->TypeExtData;
+
+	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_UnderEMP.Get(RulesExt::Global()->NoRearm_UnderEMP))
+		pThis->RearmTimer.StartTime++;
+
+	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
+		pThis->ReloadTimer.StartTime++;
+}
+
+void TechnoExt::ExtData::UpdateRearmInTemporal()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+
+	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_Temporal.Get(RulesExt::Global()->NoRearm_Temporal))
+		pThis->RearmTimer.StartTime++;
+
+	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_Temporal.Get(RulesExt::Global()->NoReload_Temporal))
+		pThis->ReloadTimer.StartTime++;
 }
 
 // Updates state of all AttachEffects on techno.
