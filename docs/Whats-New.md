@@ -594,6 +594,9 @@ Vanilla fixes:
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 - Fix the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
 
+Ares fixes:
+- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
+
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
