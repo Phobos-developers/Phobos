@@ -15,6 +15,8 @@ public:
 	Nullable<double> ConditionRed;
 	Valueable<ArmorType> Armor;
 	Valueable<bool> InheritArmorFromTechno;
+	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
+	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -31,6 +33,12 @@ public:
 	Damageable<AnimTypeClass*> IdleAnimDamaged;
 	Valueable<AnimTypeClass*> BreakAnim;
 	Valueable<AnimTypeClass*> HitAnim;
+	Valueable<bool> HitFlash;
+	Nullable<int> HitFlash_FixedSize;
+	Valueable<bool> HitFlash_Red;
+	Valueable<bool> HitFlash_Green;
+	Valueable<bool> HitFlash_Blue;
+	Valueable<bool> HitFlash_Black;
 	Valueable<WeaponTypeClass*> BreakWeapon;
 	Valueable<double> AbsorbPercent;
 	Valueable<double> PassPercent;
@@ -58,6 +66,8 @@ public:
 		, ConditionRed { }
 		, Armor { Armor::None }
 		, InheritArmorFromTechno { false }
+		, InheritArmor_Allowed { }
+		, InheritArmor_Disallowed { }
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
@@ -73,6 +83,12 @@ public:
 		, IdleAnimDamaged { }
 		, BreakAnim { }
 		, HitAnim { }
+		, HitFlash { false }
+		, HitFlash_FixedSize {}
+		, HitFlash_Red { true }
+		, HitFlash_Green { true }
+		, HitFlash_Blue { true }
+		, HitFlash_Black { false }
 		, BreakWeapon { }
 		, AbsorbPercent { 1.0 }
 		, PassPercent { 0.0 }
@@ -90,15 +106,18 @@ public:
 		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };
 
-	virtual ~ShieldTypeClass() override = default;
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	bool HasTint() const
+	{
+		return this->Tint_Color.isset() || this->Tint_Intensity != 0.0;
+	}
 
-	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio);
-	double GetConditionYellow();
-	double GetConditionRed();
+	AnimTypeClass* GetIdleAnimType(bool isDamaged, double healthRatio) const;
+	double GetConditionYellow() const;
+	double GetConditionRed() const;
 
 private:
 	template <typename T>

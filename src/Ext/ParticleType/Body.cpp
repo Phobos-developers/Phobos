@@ -24,6 +24,13 @@ void ParticleTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->Gas_MaxDriftSpeed.Read(exINI, pSection, "Gas.MaxDriftSpeed");
+
+	if (pThis->StateAIAdvance == 0 && pThis->StartStateAI < pThis->EndStateAI)
+	{
+		Debug::FatalErrorAndExit(Debug::ExitCode::BadINIUsage,
+			"[%s] has StateAIAdvance=0 in conjunction with StartStateAI value less than EndStateAI.\n", pSection);
+		pThis->StateAIAdvance = 1;
+	}
 }
 
 void ParticleTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

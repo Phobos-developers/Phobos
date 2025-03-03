@@ -1,19 +1,12 @@
-#include <AnimClass.h>
-#include <BuildingClass.h>
-#include <BuildingTypeClass.h>
+#include <Ext/Anim/Body.h>
+
 #include <GameOptionsClass.h>
-#include <GeneralDefinitions.h>
 #include <IonBlastClass.h>
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
-#include <TeleportLocomotionClass.h>
 #include <UnitClass.h>
 #include <VeinholeMonsterClass.h>
 
-#include <Ext/Anim/Body.h>
-#include <Ext/Rules/Body.h>
-
-#include <Utilities/Macro.h>
 
 ///
 /// Veinhole Monster
@@ -65,11 +58,7 @@ DEFINE_HOOK(0x5349A5, Map_ClearVectors_Veinhole, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5)
-{
-	VeinholeMonsterClass::UpdateAllVeinholes();
-	return 0;
-}
+// DEFINE_HOOK(0x55B4E1, LogicClass_Update_Veinhole, 0x5) // Goto ScenarioExt
 
 // Handles the veins' attack animation
 DEFINE_HOOK(0x4243BC, AnimClass_Update_VeinholeAttack, 0x6)
@@ -279,25 +268,7 @@ DEFINE_HOOK(0x446EAD, BuildingClass_GrandOpening_FreeWeeder_Mission, 0x6)
 }
 
 // Teleport cooldown for weeders
-DEFINE_HOOK(0x719580, TeleportLocomotion_Weeder, 0x6)
-{
-	enum
-	{
-		Skip = 0x7195A0,
-		TeleportChargeTimer = 0x7195BC
-	};
-
-	GET(TeleportLocomotionClass*, pTeleport, ESI);
-
-	if (pTeleport->Owner->WhatAmI() == AbstractType::Unit)
-	{
-		UnitClass* pUnit = (UnitClass*)pTeleport->Owner;
-		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
-			return Skip;
-	}
-
-	return TeleportChargeTimer;
-}
+// DEFINE_HOOK(0x719580, TeleportLocomotion_Weeder, 0x6) //Goto Hooks.Teleport.cpp
 
 // DockUnload bypass for Weeders when teleporting
 DEFINE_HOOK(0x7424BD, UnitClass_AssignDestination_Weeder_Teleport, 0x6)
@@ -337,7 +308,7 @@ DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 
 	if ((pUnit->Type->Harvester || pUnit->Type->Weeder) && pUnit->GetStoragePercentage() == 1.0)
 	{
-		return StopHarvesting;	
+		return StopHarvesting;
 	}
 
 	return Skip;

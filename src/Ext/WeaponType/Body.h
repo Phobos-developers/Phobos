@@ -2,6 +2,7 @@
 #include <BulletClass.h>
 #include <WeaponTypeClass.h>
 #include <DiskLaserClass.h>
+#include <EBolt.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -22,13 +23,17 @@ public:
 	public:
 
 		Valueable<double> DiskLaser_Radius;
+		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
 		Valueable<bool> Bolt_Disable1;
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
-		Valueable<int> Strafing_Shots;
+		Valueable<int> Bolt_Duration;
+		Nullable<bool> Strafing;
+		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
+		Valueable<bool> Strafing_UseAmmoPerShot;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
@@ -37,10 +42,13 @@ public:
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
+		ValueableVector<int> ChargeTurret_Delays;
 		Valueable<bool> OmniFire_TurnToTarget;
+		Valueable<bool> FireOnce_ResetSequence;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
+		ValueableVector<bool> ExtraWarheads_FullDetonation;
 		Nullable<WarheadTypeClass*> AmbientDamage_Warhead;
 		Valueable<bool> AmbientDamage_IgnoreTarget;
 		ValueableVector<AttachEffectTypeClass*> AttachEffect_RequiredTypes;
@@ -51,17 +59,29 @@ public:
 		ValueableVector<int> AttachEffect_RequiredMaxCounts;
 		ValueableVector<int> AttachEffect_DisallowedMinCounts;
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
+		Valueable<bool> AttachEffect_CheckOnFirer;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
+		Valueable<bool> KickOutPassengers;
+
+		Nullable<ColorStruct> Beam_Color;
+		Valueable<int> Beam_Duration;
+		Valueable<double> Beam_Amplitude;
+		Valueable<bool> Beam_IsHouseColor;
+		Valueable<int> LaserThickness;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
+			, ProjectileRange { Leptons(100000) }
 			, RadType {}
 			, Bolt_Disable1 { false }
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
-			, Strafing_Shots { 5 }
+			, Bolt_Duration { 17 }
+			, Strafing { }
+			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
+			, Strafing_UseAmmoPerShot { false }
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
@@ -70,10 +90,13 @@ public:
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
+			, ChargeTurret_Delays {}
 			, OmniFire_TurnToTarget { false }
+			, FireOnce_ResetSequence { true }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
+			, ExtraWarheads_FullDetonation {}
 			, AmbientDamage_Warhead {}
 			, AmbientDamage_IgnoreTarget { false }
 			, AttachEffect_RequiredTypes {}
@@ -84,7 +107,14 @@ public:
 			, AttachEffect_RequiredMaxCounts {}
 			, AttachEffect_DisallowedMinCounts {}
 			, AttachEffect_DisallowedMaxCounts {}
+			, AttachEffect_CheckOnFirer { false }
 			, AttachEffect_IgnoreFromSameSource { false }
+			, KickOutPassengers { true }
+			, Beam_Color {}
+			, Beam_Duration { 15 }
+			, Beam_Amplitude { 40.0 }
+			, Beam_IsHouseColor { false }
+			, LaserThickness { 3 }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
@@ -120,10 +150,13 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static double OldRadius;
+	static PhobosMap<EBolt*, const WeaponTypeExt::ExtData*> BoltWeaponMap;
+	static const WeaponTypeExt::ExtData* BoltWeaponType;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
-	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
-	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
+	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
+	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 };

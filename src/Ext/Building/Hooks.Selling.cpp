@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <GameStrings.h>
 
 // SellSound and EVA dehardcode
 DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
@@ -36,14 +35,15 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 	if (pType->ConstructionYard)
 	{
 		// Conyards can't undeploy if MCVRedeploy=no
-		if(!GameModeOptionsClass::Instance->MCVRedeploy)
+		if (!GameModeOptionsClass::Instance->MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
-		if (pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
+		if (pThis->MindControlledBy)
 			return false;
 	}
-	// Move Focus check outside Conyard check to allow generic Unsellable=no buildings to be sold
-	return pThis->Focus;
+
+	// Move ArchiveTarget check outside Conyard check to allow generic Unsellable=no buildings to be sold
+	return pThis->ArchiveTarget;
 }
 
 // Skip SessionClass::IsCampaign() checks, where inlined not exactly the function above but sth similar
@@ -58,7 +58,7 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mi_Selling_EVASold_UndeploysInto, 0x6)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	// Fix Conyards can't play EVA_StructureSold
-	if (pThis->IsOwnedByCurrentPlayer && (!pThis->Focus || !pThis->Type->UndeploysInto))
+	if (pThis->IsOwnedByCurrentPlayer && (!pThis->ArchiveTarget || !pThis->Type->UndeploysInto))
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
 
 	return BuildingExt::CanUndeployOnSell(pThis) ? CreateUnit : SkipTheEntireShit;

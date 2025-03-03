@@ -57,26 +57,18 @@ DEFINE_HOOK(0x6FF189, TechnoClass_FireAt_SparkFireTargetSet, 0x5)
 }
 
 // Fix fire particle target coordinates potentially differing from actual target coords.
-DEFINE_HOOK(0x62FA20, ParticleSystemClass_FireAI_TargetCoords, 0x6)
+DEFINE_HOOK(0x62FA41, ParticleSystemClass_FireAI_TargetCoords, 0x6)
 {
-	enum { SkipGameCode = 0x62FA51, Continue = 0x62FBAF };
+	enum { SkipGameCode = 0x62FBAF };
 
 	GET(ParticleSystemClass*, pThis, ESI);
-	GET(TechnoClass*, pOwner, EBX);
 
-	if (pOwner->PrimaryFacing.IsRotating())
-	{
-		auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = ParticleSystemTypeExt::ExtMap.Find(pThis->Type);
 
-		if (!pTypeExt->AdjustTargetCoordsOnRotation)
-			return Continue;
-
-		auto coords = pThis->TargetCoords;
-		R->EAX(&coords);
+	if (!pTypeExt->AdjustTargetCoordsOnRotation)
 		return SkipGameCode;
-	}
 
-	return Continue;
+	return 0;
 }
 
 // Fix fire particles being disallowed from going upwards.
@@ -170,13 +162,15 @@ DEFINE_HOOK(0x70CA8B, TechnoClass_Railgun_AmbientDamageIgnoreTarget2, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x70CBE0, TechnoClass_Railgun_AmbientDamageWarhead, 0x5)
+DEFINE_HOOK(0x70CBDA, TechnoClass_Railgun_AmbientDamageWarhead, 0x6)
 {
+	enum { SkipGameCode = 0x70CBE0 };
+
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
 	R->EDX(WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_Warhead.Get(pWeapon->Warhead));
 
-	return 0;
+	return SkipGameCode;
 }
 
 // Do not adjust map coordinates for railgun or fire stream particles that are below cell coordinates.

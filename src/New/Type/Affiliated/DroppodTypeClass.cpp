@@ -24,7 +24,7 @@ void DroppodTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->Trailer.Read(exINI, pSection, "DropPod.Trailer");
 	this->Trailer_SpawnDelay.Read(exINI, pSection, "DropPod.Trailer.SpawnDelay");
 	this->Trailer_Attached.Read(exINI, pSection, "DropPod.Trailer.Attached");
-	this->Weapon.Read(exINI, pSection, "DropPod.Weapon");
+	this->Weapon.Read<true>(exINI, pSection, "DropPod.Weapon");
 	this->Weapon_HitLandOnly.Read(exINI, pSection, "DropPod.Weapon.HitLandOnly");
 }
 
@@ -173,7 +173,7 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	const auto podType= TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
+	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
 
 	if (!podType)
 		return 0;
