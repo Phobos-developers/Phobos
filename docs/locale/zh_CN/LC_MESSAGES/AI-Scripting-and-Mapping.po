@@ -802,7 +802,7 @@ msgstr "在 `rulesmd.ini`："
 
 #: ../../AI-Scripting-and-Mapping.md:209
 msgid "`10050-10099` Move Team to Techno Location actions"
-msgstr "`10050-10099` 移动小队至技术类型位置行为"
+msgstr "`10050-10099` 移动小队至科技类型位置行为"
 
 #: ../../AI-Scripting-and-Mapping.md:211
 msgid "These actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible actions (first parameter value)."
@@ -938,7 +938,7 @@ msgstr "`12001` 修改目标距离"
 
 #: ../../AI-Scripting-and-Mapping.md:300
 msgid "By default `Move Team to Techno Location` actions ends when the Team Leader reaches a distance declared in `rulesmd.ini` called `CloseEnough`. When this action is executed before the actions `Move Team to Techno Location` overwrites `CloseEnough` value. This action works only the first time and `CloseEnough` will be used again the next Movement action."
-msgstr "默认情况下，`移动小队至技术类型位置`在队长抵达 `rulesmd.ini` 中声明的`CloseEnough` 距离时结束。当该行为在`移动小队至技术类型位置`前执行时会覆盖 `CloseEnough` 值。这一行为仅对接下来的第一次执行效果有影响而之后再下一次移动时仍会继续使用 `CloseEnough`。"
+msgstr "默认情况下，`移动小队至科技类型位置`在队长抵达 `rulesmd.ini` 中声明的`CloseEnough` 距离时结束。当该行为在`移动小队至科技类型位置`前执行时会覆盖 `CloseEnough` 值。这一行为仅对接下来的第一次执行效果有影响而之后再下一次移动时仍会继续使用 `CloseEnough`。"
 
 #: ../../AI-Scripting-and-Mapping.md:308
 msgid "`12002` Set Move Action End Mode"
@@ -1591,15 +1591,15 @@ msgstr "`600` 对象护盾被摧毁"
 
 #: ../../AI-Scripting-and-Mapping.md:707
 msgid "`601-602` House owns/doesn't own Techno Type"
-msgstr "`601-602` 检查所属方是否有/无技术类型"
+msgstr "`601-602` 检查所属方是否有/无科技类型"
 
 #: ../../AI-Scripting-and-Mapping.md:709
 msgid "`601`: Springs when specified house owns at least 1 instance of set TechnoType."
-msgstr "`601`：当指定所属方至少拥有一个设定的技术类型时触发。"
+msgstr "`601`：当指定所属方至少拥有一个设定的科技类型时触发。"
 
 #: ../../AI-Scripting-and-Mapping.md:710
 msgid "`602`: Springs when specified house doesn't own a single instance of set TechnoType."
-msgstr "`602`：当指定所属方没有任何一个设定的技术类型时触发。"
+msgstr "`602`：当指定所属方没有任何一个设定的科技类型时触发。"
 
 #: ../../AI-Scripting-and-Mapping.md:711
 msgid "Multiplayer houses (indices 4475 through 4482) are supported."
@@ -1611,15 +1611,15 @@ msgstr "与 [Ares 的 `81` & `82` 号条件](https://ares-developers.github.io/A
 
 #: ../../AI-Scripting-and-Mapping.md:725
 msgid "`604-605` Checking if a specific Techno enters in a cell"
-msgstr "`604-605` 检查特定技术类型进入单元格"
+msgstr "`604-605` 检查特定科技类型进入单元格"
 
 #: ../../AI-Scripting-and-Mapping.md:727
 msgid "`604`: Checks if the techno that entered in the cell has the same ID specified in the event."
-msgstr "`604`：检查进入单元格的技术类型是否与条件中指定的 ID相同。"
+msgstr "`604`：检查进入单元格的科技类型是否与条件中指定的 ID相同。"
 
 #: ../../AI-Scripting-and-Mapping.md:728
 msgid "`605`: Checks if the techno that entered in the cell appears in the selected list in `AITargetTypes`."
-msgstr "`605`：检查进入单元格的技术类型是否出现在选定的 `AITargetTypes` 列表中。"
+msgstr "`605`：检查进入单元格的科技类型是否出现在选定的 `AITargetTypes` 列表中。"
 
 #: ../../AI-Scripting-and-Mapping.md:729
 msgid "`HouseIndex` can be customized to focus in a specified house."
