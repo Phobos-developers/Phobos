@@ -784,7 +784,7 @@ void ShieldClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
 
 		pAnim->SetOwnerObject(this->Techno);
-		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		pAnim->Owner = this->Techno->Owner;
 		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
