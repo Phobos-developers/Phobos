@@ -141,6 +141,18 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 #pragma region WakeAnims
 
+DEFINE_HOOK_AGAIN(0x69FEDC, Locomotion_Process_Wake, 0x6)  // Ship
+DEFINE_HOOK_AGAIN(0x4B0814, Locomotion_Process_Wake, 0x6)  // Drive
+DEFINE_HOOK(0x514AB4, Locomotion_Process_Wake, 0x6)  // Hover
+{
+	GET(ILocomotion* const, iloco, ESI);
+	__assume(iloco != nullptr);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(static_cast<LocomotionClass*>(iloco)->LinkedTo->GetTechnoType());
+	R->EDX(pTypeExt->Wake.Get(RulesClass::Instance->Wake));
+
+	return R->Origin() + 0xC;
+}
+
 namespace GrappleUpdateTemp
 {
 	TechnoClass* pThis;
@@ -314,7 +326,7 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
-	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	if (pThis->Deactivated || pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
@@ -322,6 +334,131 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 	}
 
 	return 0x746931;
+}
+
+#pragma endregion
+
+#pragma region ExtendedGattlingRateDown
+
+DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
+{
+	enum { Return = 0x70DE62 };
+
+	GET(BuildingClass* const, pThis, ECX);
+	GET_STACK(int, rateDown, STACK_OFFSET(0x0, 0x4));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->RateDown_Delay < 0)
+		return Return;
+
+	++pExt->AccumulatedGattlingValue;
+	auto remain = pExt->AccumulatedGattlingValue;
+
+	if (!pExt->ShouldUpdateGattlingValue)
+		remain -= pTypeExt->RateDown_Delay;
+
+	if (remain <= 0)
+		return Return;
+
+	// Time's up
+	pExt->AccumulatedGattlingValue = 0;
+	pExt->ShouldUpdateGattlingValue = true;
+
+	if (pThis->Ammo <= pTypeExt->RateDown_Cover_AmmoBelow)
+		rateDown = pTypeExt->RateDown_Cover_Value;
+
+	if (!rateDown)
+	{
+		pThis->GattlingValue = 0;
+		return Return;
+	}
+
+	auto newValue = pThis->GattlingValue;
+	newValue -= (rateDown * remain);
+	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
+	return Return;
+}
+
+DEFINE_HOOK(0x70DE70, TechnoClass_sub_70DE70_GattlingRateDownReset, 0x5)
+{
+	GET(TechnoClass* const, pThis, ECX);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->AccumulatedGattlingValue = 0;
+	pExt->ShouldUpdateGattlingValue = false;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
+{
+	enum { SkipGameCode = 0x70E04D };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+
+	if (pTypeExt->RateDown_Delay < 0)
+		return SkipGameCode;
+
+	pExt->AccumulatedGattlingValue += rateMult;
+	auto remain = pExt->AccumulatedGattlingValue;
+
+	if (!pExt->ShouldUpdateGattlingValue)
+		remain -= pTypeExt->RateDown_Delay;
+
+	if (remain <= 0 && rateMult)
+		return SkipGameCode;
+
+	// Time's up
+	pExt->AccumulatedGattlingValue = 0;
+	pExt->ShouldUpdateGattlingValue = true;
+
+	if (!rateMult)
+	{
+		pThis->GattlingValue = 0;
+		return SkipGameCode;
+	}
+
+	const auto rateDown = (pThis->Ammo <= pTypeExt->RateDown_Cover_AmmoBelow) ? pTypeExt->RateDown_Cover_Value.Get() : pTypeExt->OwnerObject()->RateDown;
+
+	if (!rateDown)
+	{
+		pThis->GattlingValue = 0;
+		return SkipGameCode;
+	}
+
+	auto newValue = pThis->GattlingValue;
+	newValue -= (rateDown * remain);
+	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
+	return SkipGameCode;
+}
+
+#pragma endregion
+
+#pragma region NoTurretUnitAlwaysTurnToTarget
+
+DEFINE_HOOK(0x7410BB, UnitClass_GetFireError_CheckFacingError, 0x8)
+{
+	enum { NoNeedToCheck = 0x74132B, ContinueCheck = 0x7410C3 };
+
+	GET(const FireError, fireError, EAX);
+
+	if (fireError == FireError::OK)
+		return ContinueCheck;
+
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pType = pThis->Type;
+
+	if (!TechnoTypeExt::ExtMap.Find(pType)->NoTurret_TrackTarget.Get(RulesExt::Global()->NoTurret_TrackTarget))
+		return NoNeedToCheck;
+
+	return (fireError == FireError::REARM && !pType->Turret && !pThis->IsWarpingIn()) ? ContinueCheck : NoNeedToCheck;
 }
 
 #pragma endregion
@@ -357,7 +494,7 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
-	if (RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+	if (Phobos::Config::ShowFlashOnSelecting && RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
 
 	return 0;
@@ -417,4 +554,30 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	return Continue;
 }
 
+bool __fastcall LocomotorCheckForBunkerable(TechnoTypeClass* pType)
+{
+	auto const loco = pType->Locomotor;
+
+	// These locomotors either cause the game to crash or fail to enter the tank bunker properly.
+	return loco != LocomotionClass::CLSIDs::Hover
+		&& loco != LocomotionClass::CLSIDs::Mech
+		&& loco != LocomotionClass::CLSIDs::Fly
+		&& loco != LocomotionClass::CLSIDs::Droppod
+		&& loco != LocomotionClass::CLSIDs::Rocket
+		&& loco != LocomotionClass::CLSIDs::Ship;
+}
+
+DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
+{
+	enum { CanEnter = 0x70FBAF, NoEnter = 0x70FB7D };
+
+	GET(TechnoTypeClass*, pType, EAX);
+	GET(FootClass*, pThis, ESI);
+
+	if (!LocomotorCheckForBunkerable(pType) || pThis->ParasiteEatingMe)
+		return NoEnter;
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	return pTypeExt->BunkerableAnyway ? CanEnter : 0;
+}
 #pragma endregion
