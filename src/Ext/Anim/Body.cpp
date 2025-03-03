@@ -432,7 +432,12 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 		}
 
 		if (pExt->AttachedSystem == pParticleSystem)
+		{
 			pExt->AttachedSystem = nullptr;
+
+			auto& vec = AnimExt::AnimsWithAttachedParticles;
+			vec.erase(std::remove(vec.begin(), vec.end(), pAnim), vec.end());
+		}
 	}
 }
 
