@@ -61,7 +61,7 @@ msgstr "扩展工具条"
 
 #: ../../../CREDITS.md:14 ../../../CREDITS.md:30
 msgid "Building upgrades enhancement"
-msgstr "建筑加载雾逻辑增强"
+msgstr "建筑加载物逻辑增强"
 
 #: ../../../CREDITS.md:15
 msgid "Option to hide health bar"
@@ -194,8 +194,8 @@ msgid "Voxel light source position customization"
 msgstr "自定义 Voxel 光源"
 
 #: ../../../CREDITS.md:51
-msgid "Voxel light source position and tilting fix"
-msgstr "倾斜 Voxel 光的源修复"
+msgid "`UseFixedVoxelLighting`"
+msgstr "`UseFixedVoxelLighting`"
 
 #: ../../../CREDITS.md:52
 msgid "**Uranusian (Thrifinesma)**:"
@@ -391,7 +391,7 @@ msgstr "可开关的 EBolt 特效"
 
 #: ../../../CREDITS.md:103
 msgid "Customizable Chrono Locomotor properties per TechnoClass"
-msgstr "技术类型自定义超时空运动模式属性"
+msgstr "科技类型自定义超时空运动模式属性"
 
 #: ../../../CREDITS.md:104
 msgid "Building Placement Preview"
@@ -427,7 +427,7 @@ msgstr "驻军建筑 `MuzzleFlashX` bug 修复"
 
 #: ../../../CREDITS.md:112
 msgid "`EnemyUIName` for other TechnoTypes"
-msgstr "其他技术类型的 `EnemyUIName`"
+msgstr "其他科技类型的 `EnemyUIName`"
 
 #: ../../../CREDITS.md:113
 msgid "TerrainType `DestroyAnim` & `DestroySound`"
@@ -527,7 +527,7 @@ msgstr "克隆步兵的初始血量"
 
 #: ../../../CREDITS.md:137
 msgid "Map Events 604 & 605 for checking if a specific Techno enters in a cell"
-msgstr "用于检查特定技术类型是否进入单元格的 604 与 605 号地图触发条件"
+msgstr "用于检查特定科技类型是否进入单元格的 604 与 605 号地图触发条件"
 
 #: ../../../CREDITS.md:138
 msgid "**Starkku**:"
@@ -567,7 +567,7 @@ msgstr "Burst 逻辑改进"
 
 #: ../../../CREDITS.md:147
 msgid "TechnoType auto-firing weapons"
-msgstr "技术类型自动发射武器"
+msgstr "科技类型自动发射武器"
 
 #: ../../../CREDITS.md:148
 msgid "Secondary weapon fallback customization"
@@ -949,7 +949,7 @@ msgstr "`FactoryPlant` 的黑白名单"
 
 #: ../../../CREDITS.md:244
 msgid "Forbidding parallel AI queues for specific TechnoTypes"
-msgstr "禁止特定技术类型的 AI 克隆生产效果"
+msgstr "禁止特定科技类型的 AI 克隆生产效果"
 
 #: ../../../CREDITS.md:245
 msgid "Nonprovocative Warheads"
@@ -1059,7 +1059,7 @@ msgstr "在场景结束／按下热键时将变量输出至文件"
 msgid ""
 "`601 House owns TechnoType` and `602 House doesn't own TechnoType` "
 "trigger events"
-msgstr "`601 所属方存在技术类型...` 与 `602 所属方不·存在技术类型...` 触发条件"
+msgstr "`601 所属方存在科技类型...` 与 `602 所属方不·存在科技类型...` 触发条件"
 
 #: ../../../CREDITS.md:275
 msgid ""
@@ -1264,7 +1264,7 @@ msgstr "当建筑被不同所属方占领时停止播放需电动画的修复"
 
 #: ../../../CREDITS.md:324
 msgid "TechnoType conversion upon ownership change"
-msgstr "技术类型根据操作者改变而变形"
+msgstr "科技类型根据操作者改变而变形"
 
 #: ../../../CREDITS.md:325
 msgid "EIP 00529A14 crash fix on Linux"
@@ -1348,7 +1348,7 @@ msgstr "战役 PCX 载入图支持"
 msgid ""
 "New condition for automatic self-destruction logic when TechnoTypes "
 "exist/don't exist"
-msgstr "新的自毁条件：若技术类型存在／不存在"
+msgstr "新的自毁条件：若科技类型存在／不存在"
 
 #: ../../../CREDITS.md:345
 msgid "**NetsuNegi**:"
@@ -1452,7 +1452,7 @@ msgstr "根据弹药自动部署 / 阻止部署"
 
 #: ../../../CREDITS.md:371
 msgid "Flashing Technos on selecting"
-msgstr "闪烁选中的技术类型"
+msgstr "闪烁选中的科技类型"
 
 #: ../../../CREDITS.md:372
 msgid "Promotion animation"
@@ -1686,7 +1686,7 @@ msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 #~ msgstr "载具在移动命令中保持目标"
 
 #~ msgid "Extending `Power` to all TechnoTypes"
-#~ msgstr "将 `Power` 扩展到所有技术类型"
+#~ msgstr "将 `Power` 扩展到所有科技类型"
 
 #~ msgid "Initial effort on optimization for crates' random distribution"
 #~ msgstr "对箱子随机分布的初步优化"
@@ -1746,7 +1746,7 @@ msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 #~ msgstr "建筑的类型选择（代码）"
 
 #~ msgid "Raise alert when technos are taking damage"
-#~ msgstr "当技术类型受到伤害时发出警报"
+#~ msgstr "当科技类型受到伤害时发出警报"
 
 #~ msgid "Toggle waypoint for building"
 #~ msgstr "建筑路径点开关"

@@ -50,7 +50,7 @@ msgstr ""
 msgid ""
 "`Duration` determines how long the effect lasts for. It can be overriden "
 "by `DurationOverrides` on TechnoTypes and Warheads."
-msgstr "`Duration` 决定了 AE 的持续时长。它可以被技术类型和弹头上的 `DurationOverrides` 覆盖。"
+msgstr "`Duration` 决定了 AE 的持续时长。它可以被科技类型和弹头上的 `DurationOverrides` 覆盖。"
 
 #: ../../New-or-Enhanced-Logics.md:11
 msgid ""
@@ -175,7 +175,7 @@ msgid ""
 " animation's owner & invoker instead of the object the effect is attached"
 " to."
 msgstr ""
-"`Animation.UseInvokerAsOwner` 可以设置赋予 AE 的所属方和技术类型（例如武器的发射者）为 AE "
+"`Animation.UseInvokerAsOwner` 可以设置赋予 AE 的所属方和科技类型（例如武器的发射者）为 AE "
 "的所有者和调用者而不是 AE 所附加的对象。"
 
 #: ../../New-or-Enhanced-Logics.md:28
@@ -184,7 +184,7 @@ msgid ""
 "that if attached to same techno as the current one, will hide this "
 "effect's animation."
 msgstr ""
-"`Animation.HideIfAttachedWith` 包含一个如果与此 AE 附加到同一个技术类型时会导致此 AE 动画隐藏的 AE "
+"`Animation.HideIfAttachedWith` 包含一个如果与此 AE 附加到同一个科技类型时会导致此 AE 动画隐藏的 AE "
 "类型列表。"
 
 #: ../../New-or-Enhanced-Logics.md:29
@@ -321,7 +321,7 @@ msgid ""
 "`OpenTopped.UseTransportRangeModifiers` can be set to true to make "
 "passengers firing out use the transport's active range bonuses instead."
 msgstr ""
-"对于拥有 `OpenTopped=true` 的技术类型，`OpenTopped.UseTransportRangeModifiers` 可以设为"
+"对于拥有 `OpenTopped=true` 的科技类型，`OpenTopped.UseTransportRangeModifiers` 可以设为"
 " true 以使载员同步获得运输工具所获得的射程加成。"
 
 #: ../../New-or-Enhanced-Logics.md:44
@@ -395,7 +395,7 @@ msgid ""
 "passengers not be able to fire out if transport's weapons are disabled by"
 " `DisableWeapons`."
 msgstr ""
-"在拥有 `OpenTopped=true` 的技术类型上，`OpenTopped.CheckTransportDisableWeapons` "
+"在拥有 `OpenTopped=true` 的科技类型上，`OpenTopped.CheckTransportDisableWeapons` "
 "可设为 true 以使载员在运输工具受 `DisableWeapons` 影响期间同步禁言效果。"
 
 #: ../../New-or-Enhanced-Logics.md:52
@@ -414,7 +414,7 @@ msgstr "组别可用于在移除 AE 和武器过滤时替代类型参与计算�
 msgid ""
 "AttachEffectTypes can be attached to TechnoTypes using "
 "`AttachEffect.AttachTypes`."
-msgstr "AE 可以通过 `AttachEffect.AttachTypes` 在技术类型上赋予。"
+msgstr "AE 可以通过 `AttachEffect.AttachTypes` 在科技类型上赋予。"
 
 #: ../../New-or-Enhanced-Logics.md:56 ../../New-or-Enhanced-Logics.md:62
 msgid ""
@@ -433,7 +433,7 @@ msgid ""
 "position in `AttachTypes` is used for that type, or the last listed delay"
 " if not available."
 msgstr ""
-"`AttachEffect.Delays` 可用于设置 AE 在技术类型上自然结束后重新创建所需的时间间隔。默认 0（立即），负值表示 AE "
+"`AttachEffect.Delays` 可用于设置 AE 在科技类型上自然结束后重新创建所需的时间间隔。默认 0（立即），负值表示 AE "
 "不会被重新创建。该列表中的值与 `AttachTypes` 中的 AE 类型一一对应，如果一个 AE 类型没有对应的项目则使用该列表中的最后一个。"
 
 #: ../../New-or-Enhanced-Logics.md:58
@@ -443,7 +443,7 @@ msgid ""
 "matching the position in `AttachTypes` is used for that type, or the last"
 " listed delay if not available."
 msgstr ""
-"`AttachEffect.InitialDelays` 可用于设置 AE 在技术类型上首次创建所需的初始间隔。默认 0（立即）。该列表中的值与 "
+"`AttachEffect.InitialDelays` 可用于设置 AE 在科技类型上首次创建所需的初始间隔。默认 0（立即）。该列表中的值与 "
 "`AttachTypes` 中的 AE 类型一一对应，如果一个 AE 类型没有对应的项目则使用该列表中的最后一个。"
 
 #: ../../New-or-Enhanced-Logics.md:59
@@ -555,7 +555,7 @@ msgid ""
 " `Cumulative=true` types (ignored for other types) respectively."
 msgstr ""
 "`AttachEffect.(Required|Disallowed)MinCounts & "
-"(Required|Disallowed)MaxCounts` 可用于设置技术类型上必须存在/禁止存在的 `Cumulative=true` "
+"(Required|Disallowed)MaxCounts` 可用于设置科技类型上必须存在/禁止存在的 `Cumulative=true` "
 "类（对其他类型无效） AE 的最小/最大数量。"
 
 #: ../../New-or-Enhanced-Logics.md:74
@@ -686,7 +686,7 @@ msgid ""
 "any point during the radiation's lifetime it continues to behave as if "
 "not having an invoker."
 msgstr ""
-"`RadHasInvoker` 如果设为 true 则辐射造成的伤害会被视为由发射用于创建辐射区域的抛射体的技术类型（即“调用者”）造成的。除 "
+"`RadHasInvoker` 如果设为 true 则辐射造成的伤害会被视为由发射用于创建辐射区域的抛射体的科技类型（即“调用者”）造成的。除 "
 "`RadHasOwner` "
 "的效果外这还将使调用者从被辐射击杀的单位中获得经验。注意如果调用者在辐射生命周期中的任何时刻死亡那么它将继续变得如同没有调用者一样。"
 
@@ -732,14 +732,14 @@ msgid ""
 "Technos, Projectiles, and VoxelAnims can now have colorful trails of "
 "different transparency, thickness and color, which are drawn via laser "
 "drawing code."
-msgstr "技术类型、抛射体和 Voxel 碎片现在都可以拥有不同透明度、宽度和颜色的彩色尾焰，这些尾焰是通过激光绘制代码完成的。"
+msgstr "科技类型、抛射体和 Voxel 碎片现在都可以拥有不同透明度、宽度和颜色的彩色尾焰，这些尾焰是通过激光绘制代码完成的。"
 
 #: ../../New-or-Enhanced-Logics.md:220
 msgid ""
 "Technos, Projectiles, and VoxelAnims can have multiple laser trails. For "
 "technos each trail can have custom laser trail type and FLH offset "
 "relative to turret and body."
-msgstr "技术类型、抛射体和 Voxel 碎片可以拥有多个尾焰。对于技术类型的每个激光尾焰都可以自定义其相对于炮塔或车体的 FLH 偏移值。"
+msgstr "科技类型、抛射体和 Voxel 碎片可以拥有多个尾焰。对于科技类型的每个激光尾焰都可以自定义其相对于炮塔或车体的 FLH 偏移值。"
 
 #: ../../New-or-Enhanced-Logics.md:222 ../../New-or-Enhanced-Logics.md:453
 #: ../../New-or-Enhanced-Logics.md:481 ../../New-or-Enhanced-Logics.md:495
@@ -788,7 +788,7 @@ msgstr ""
 msgid ""
 "Now you can have a shield for any TechnoType. It serves as a second "
 "health pool with independent `Armor` and `Strength` values."
-msgstr "现在你可以给予任何技术类型护盾。它作为一个独立的第二血量池拥有独立的 `Armor` 和 `Strength` 值。"
+msgstr "现在你可以给予任何科技类型护盾。它作为一个独立的第二血量池拥有独立的 `Armor` 和 `Strength` 值。"
 
 #: ../../New-or-Enhanced-Logics.md:369
 msgid ""
@@ -797,7 +797,7 @@ msgid ""
 " or if it has `TypeImmune=true` and the damage source is another instance"
 " of same TechnoType belonging to same house."
 msgstr ""
-"如果技术类型处于 `Temporal` 弹头的效果中、处于铁幕 / 力场护盾保护中、拥有 `Immune=true` 或者拥有 "
+"如果科技类型处于 `Temporal` 弹头的效果中、处于铁幕 / 力场护盾保护中、拥有 `Immune=true` 或者拥有 "
 "`TypeImmune=true` 并且伤害来自相同所属的同类单位，那么护盾将不会受到伤害。"
 
 #: ../../New-or-Enhanced-Logics.md:370
@@ -821,7 +821,7 @@ msgid ""
 "replace `[TechnoType] -> Armor` for targeting and damage calculation "
 "purposes."
 msgstr ""
-"当一个技术类型拥有未被击碎的护盾时，`[ShieldType] -> Armor` 将替代 `[TechnoType] -> Armor` "
+"当一个科技类型拥有未被击碎的护盾时，`[ShieldType] -> Armor` 将替代 `[TechnoType] -> Armor` "
 "用于参与索敌和杀伤计算。"
 
 #: ../../New-or-Enhanced-Logics.md:373
@@ -859,8 +859,8 @@ msgid ""
 "will be preserved until converted back."
 msgstr ""
 "当执行 `DeploysInto` 或 `UndeploysInto` "
-"时，如果两个技术类型都拥有护盾，转换后的单位/建筑将保持相对（百分比）的护盾值，类似 "
-"`Strength`。如果其中一个技术类型没有护盾，其护盾状态会被保留直到转换回来。"
+"时，如果两个科技类型都拥有护盾，转换后的单位/建筑将保持相对（百分比）的护盾值，类似 "
+"`Strength`。如果其中一个科技类型没有护盾，其护盾状态会被保留直到转换回来。"
 
 #: ../../New-or-Enhanced-Logics.md:377
 msgid "This also works with Ares' `Convert.*`."
@@ -876,7 +876,7 @@ msgstr "`Powered` 控制当前单位电力不足或受 EMP 影响时护盾是否
 msgid ""
 "Attention, if TechnoType itself is not `Powered`, then the shield won't "
 "be offline when low power."
-msgstr "注意，如果技术类型自身不受制于  `Powered`，那么护盾在电力不足时也不会罢工。"
+msgstr "注意，如果科技类型自身不受制于  `Powered`，那么护盾在电力不足时也不会罢工。"
 
 #: ../../New-or-Enhanced-Logics.md:380
 msgid ""
@@ -1002,7 +1002,7 @@ msgstr ""
 msgid ""
 "`BreakWeapon`, if set, will be fired at the TechnoType once the shield "
 "breaks."
-msgstr "`BreakWeapon` 如果设置则将在护盾被击碎时向技术类型发射。"
+msgstr "`BreakWeapon` 如果设置则将在护盾被击碎时向科技类型发射。"
 
 #: ../../New-or-Enhanced-Logics.md:395
 msgid ""
@@ -1029,7 +1029,7 @@ msgid ""
 msgstr ""
 "`ReceivedDamage.Minimum` 和 `ReceivedDamage.Maximum` "
 "控制单次攻击中对护盾造成的最小和最大伤害量。这在应用护甲类型和 `AbsorbPercent` 百分比之后生效。如果 "
-"`AbsorbOverDamage=false`，则对技术类型造成的剩余伤害仍基于原始伤害受此范围调整前的值。"
+"`AbsorbOverDamage=false`，则对科技类型造成的剩余伤害仍基于原始伤害受此范围调整前的值。"
 
 #: ../../New-or-Enhanced-Logics.md:398
 msgid ""
@@ -1038,7 +1038,7 @@ msgid ""
 "conversion). If not set, defaults to true if shield was attached via "
 "`Shield.AttachTypes`, otherwise false."
 msgstr ""
-"`AllowTransfer` 控制如果技术类型发生变化（例如 `(Un)DeploysInto` 或 Ares "
+"`AllowTransfer` 控制如果科技类型发生变化（例如 `(Un)DeploysInto` 或 Ares "
 "的单位转换）时护盾能否转移。如果未设置，通过 `Shield.AttachTypes` 被赋予来的护盾默认 true 其他默认 false。"
 
 #: ../../New-or-Enhanced-Logics.md:399
@@ -1058,7 +1058,7 @@ msgid ""
 "`Psychedelic=true` Warheads can be applied to TechnoTypes with shields by"
 " setting `Tint.Color` and/or `Tint Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的技术类型使用类似于铁幕/力场护盾或 "
+"通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕/力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:401 ../../New-or-Enhanced-Logics.md:1319
@@ -1078,7 +1078,7 @@ msgid ""
 "A TechnoType with a shield will show its shield Strength. An empty shield"
 " strength bar will be left after destroyed if it is respawnable. Several "
 "customizations are available for the shield strength pips."
-msgstr "拥有护盾的技术类型将显示其护盾值。若护盾可以重生则会在被击碎后留下一个空的胡盾条。对于护盾条的 pip 有多种自定义选项可选。"
+msgstr "拥有护盾的科技类型将显示其护盾值。若护盾可以重生则会在被击碎后留下一个空的胡盾条。对于护盾条的 pip 有多种自定义选项可选。"
 
 #: ../../New-or-Enhanced-Logics.md:404
 msgid ""
@@ -1154,13 +1154,13 @@ msgid ""
 "`Shield.Penetrate` allows the warhead ignore the shield and always deal "
 "full damage to the TechnoType itself. It also allows targeting the "
 "TechnoType as if shield doesn't exist."
-msgstr "`Shield.Penetrate` 允许弹头无视这些护盾始终对技术类型本体造成全额伤害。并允许忽略护盾直接锁定技术类型。"
+msgstr "`Shield.Penetrate` 允许弹头无视这些护盾始终对科技类型本体造成全额伤害。并允许忽略护盾直接锁定科技类型。"
 
 #: ../../New-or-Enhanced-Logics.md:412
 msgid ""
 "`Shield.Break` allows the warhead to always break shields of TechnoTypes."
 " This is done before damage is dealt."
-msgstr "`Shield.Break` 允许弹头总是会击碎技术类型上的这些护盾。此效果在结算伤害前生效。"
+msgstr "`Shield.Break` 允许弹头总是会击碎科技类型上的这些护盾。此效果在结算伤害前生效。"
 
 #: ../../New-or-Enhanced-Logics.md:413
 msgid ""
@@ -1516,7 +1516,7 @@ msgid ""
 "for some."
 msgstr ""
 "`VisibleTo.ConsiderInvokerAsOwner` 如果设置则动画调用者的所属方将被视为 `VisibleTo` "
-"的所有者而不是它所附着技术类型或动画的的所属方。大多动画中它们是相同的但部分动画可能不同。"
+"的所有者而不是它所附着科技类型或动画的的所属方。大多动画中它们是相同的但部分动画可能不同。"
 
 #: ../../New-or-Enhanced-Logics.md:491
 msgid ""
@@ -1861,10 +1861,10 @@ msgid ""
 "it sits at 0 or below after interception, the projectile is detonated."
 msgstr ""
 "现在可以通过在一些抛射体上设置 `Interceptable=true` "
-"来使它们能够被特定的技术类型拦截。如果该技术类型没有其他目标那么它将扫描范围内的可拦截抛射体并使用它的一个武器进行射击。抛射体可以定义 "
+"来使它们能够被特定的科技类型拦截。如果该科技类型没有其他目标那么它将扫描范围内的可拦截抛射体并使用它的一个武器进行射击。抛射体可以定义 "
 "`Armor` 和 `Strength`。无法对该抛射体护甲类型发起攻击的武器不会尝试拦截。在拦截时如果抛射体设置了 `Armor` "
 "那么从抛射体的当前血量中扣除一个等于拦截武器 `Damage` 经弹头 `Verses` "
-"和技术类型火力加成调整后的数值。无论当前抛射体血量是否被减少若拦截后其血量为 0 或更低那么抛射体将被引爆。"
+"和科技类型火力加成调整后的数值。无论当前抛射体血量是否被减少若拦截后其血量为 0 或更低那么抛射体将被引爆。"
 
 #: ../../New-or-Enhanced-Logics.md:689
 msgid ""
@@ -2179,7 +2179,7 @@ msgid ""
 "Warheads can now change TechnoTypes of affected units to other Types in "
 "the same category (infantry to infantry, vehicles to vehicles, aircraft "
 "to aircraft)."
-msgstr "现在弹头可以将受影响单位的技术类型更改为同大类的其他技术类型（步兵到步兵，车辆到车辆，战机到战机）。"
+msgstr "现在弹头可以将受影响单位的科技类型更改为同大类的其他科技类型（步兵到步兵，车辆到车辆，战机到战机）。"
 
 #: ../../New-or-Enhanced-Logics.md:833 ../../New-or-Enhanced-Logics.md:1461
 msgid ""
@@ -2189,11 +2189,11 @@ msgid ""
 "conversion will affect all valid targets."
 msgstr ""
 "`ConvertN.From`（此处 N 为 0, 1, "
-"2...）指定哪些技术类型可用于转换。此条目可以列出许多类型以一次全部转换。当没有包含任何类型时将影响所有有效目标。"
+"2...）指定哪些科技类型可用于转换。此条目可以列出许多类型以一次全部转换。当没有包含任何类型时将影响所有有效目标。"
 
 #: ../../New-or-Enhanced-Logics.md:834 ../../New-or-Enhanced-Logics.md:1462
 msgid "`ConvertN.To` specifies the TechnoType which is the result of conversion."
-msgstr "`ConvertN.To` 指定转换后的技术类型。"
+msgstr "`ConvertN.To` 指定转换后的科技类型。"
 
 #: ../../New-or-Enhanced-Logics.md:835 ../../New-or-Enhanced-Logics.md:1463
 msgid "`ConvertN.AffectedHouses` specifies whose units can be converted."
@@ -2214,7 +2214,7 @@ msgid ""
 " units in: transports, occupied buildings, buildings with "
 "`InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`."
 msgstr ""
-"转换影响被指定的 *所有* 当前存在的技术类型，包括处于运输工具中的、驻扎在建筑内的、处于 `InfantryAbsorb=yes` 或 "
+"转换影响被指定的 *所有* 当前存在的科技类型，包括处于运输工具中的、驻扎在建筑内的、处于 `InfantryAbsorb=yes` 或 "
 "`UnitAbsorb=yes` 的建筑中的、正在 `Bunker=yes` 建筑里的。"
 
 #: ../../New-or-Enhanced-Logics.md:839
@@ -2521,7 +2521,7 @@ msgstr "有效值为：0（建筑栏）、1（防御栏）、2（步兵栏）、
 
 #: ../../New-or-Enhanced-Logics.md:975
 msgid "Technos"
-msgstr "技术类型"
+msgstr "科技类型"
 
 #: ../../New-or-Enhanced-Logics.md:977
 msgid "Aircraft spawner customizations"
@@ -2712,7 +2712,7 @@ msgid ""
 "rules and are respected) depending on if `AutoFire.TargetSelf` is set or "
 "not."
 msgstr ""
-"现在你可以设置 `AutoFire` 使技术类型根据 `AutoFire.TargetSelf` "
+"现在你可以设置 `AutoFire` 使科技类型根据 `AutoFire.TargetSelf` "
 "选择当前单元格或开火者自身自动发射其武器而无需检索一个合适的目标。"
 
 #: ../../New-or-Enhanced-Logics.md:1057
@@ -2721,7 +2721,7 @@ msgstr "建造限制组"
 
 #: ../../New-or-Enhanced-Logics.md:1059
 msgid "You can now make different technos share build limit in a group."
-msgstr "现在你可以使不同的技术类型在一个组内共享建造限制。"
+msgstr "现在你可以使不同的科技类型在一个组内共享建造限制。"
 
 #: ../../New-or-Enhanced-Logics.md:1060
 msgid ""
@@ -2731,7 +2731,7 @@ msgid ""
 "define the limit per techno."
 msgstr ""
 "`BuildLimitGroup.Types` "
-"决定了将用于所选技术类型建造条件的其他技术类型。注意该语句并不提供任何限制效果。要实现这点你需要手动位每个技术类型设置建造限制。"
+"决定了将用于所选科技类型建造条件的其他科技类型。注意该语句并不提供任何限制效果。要实现这点你需要手动位每个科技类型设置建造限制。"
 
 #: ../../New-or-Enhanced-Logics.md:1061
 msgid ""
@@ -2742,8 +2742,8 @@ msgid ""
 "build limit per techno with value matching the position in "
 "`BuildLimitGroup.Types` is used for that type."
 msgstr ""
-"`BuildLimitGroup.Nums` 决定了将达到建造限制的数量。如果使用单个整数，则使用组内所有技术类型的数量来计算建造限制。如果使用与"
-" `BuildLimitGroup.Types` 数量相同的整数列表，则会为每个技术类型计算建造限制，其值的位置与 "
+"`BuildLimitGroup.Nums` 决定了将达到建造限制的数量。如果使用单个整数，则使用组内所有科技类型的数量来计算建造限制。如果使用与"
+" `BuildLimitGroup.Types` 数量相同的整数列表，则会为每个科技类型计算建造限制，其值的位置与 "
 "`BuildLimitGroup.Types` 中的位置对应。"
 
 #: ../../New-or-Enhanced-Logics.md:1062
@@ -2751,7 +2751,7 @@ msgid ""
 "`BuildLimitGroup.Factor` determines each of this techno instance will "
 "count as what value when calculating build limit."
 msgstr ""
-"`BuildLimitGroup.Factor` 决定了每个此类技术类型在计算建造限制时将被视为多少来进行计算（类似一个用于 "
+"`BuildLimitGroup.Factor` 决定了每个此类科技类型在计算建造限制时将被视为多少来进行计算（类似一个用于 "
 "`BuildLimit` 的 `Size`）。"
 
 #: ../../New-or-Enhanced-Logics.md:1063
@@ -2769,8 +2769,8 @@ msgid ""
 "technos in the group reached."
 msgstr ""
 "`BuildLimitGroup.ContentIfAnyMatch` 决定其建造限制的计算规则。如果设置为 "
-"true，则当组内任意技术类型的数量达到其 `BuildLimitGroup.Nums` 值时视为全组达到建造限制。如果设置为 "
-"false，则只有当组内所有技术类型的数量达到时建造限制才有效。"
+"true，则当组内任意科技类型的数量达到其 `BuildLimitGroup.Nums` 值时视为全组达到建造限制。如果设置为 "
+"false，则只有当组内所有科技类型的数量达到时建造限制才有效。"
 
 #: ../../New-or-Enhanced-Logics.md:1065
 msgid ""
@@ -2780,20 +2780,20 @@ msgid ""
 "production queue. If set to false, it'll only be stopped when the "
 "condition is content by real technos."
 msgstr ""
-"`BuildLimitGroup.NotBuildableIfQueueMatch` 决定了禁用技术类型生产的时刻，如果设为 true "
-"则已存在的技术类型与处于生产序列中的技术类型只和满足条件就会停止生产。如果设为 false 则只有地图上实际存在的技术类型满足条件才会停止生产。"
+"`BuildLimitGroup.NotBuildableIfQueueMatch` 决定了禁用科技类型生产的时刻，如果设为 true "
+"则已存在的科技类型与处于生产序列中的科技类型只和满足条件就会停止生产。如果设为 false 则只有地图上实际存在的科技类型满足条件才会停止生产。"
 
 #: ../../New-or-Enhanced-Logics.md:1066
 msgid ""
 "You can also add an extra value into `BuildLimitGroup.Nums`, determined "
 "by the amount of specific technos owned by its house."
-msgstr "你还可以根据其所属方拥有的特定技术类型数量向 `BuildLimitGroup.Nums` 添加一个额外调整值。"
+msgstr "你还可以根据其所属方拥有的特定科技类型数量向 `BuildLimitGroup.Nums` 添加一个额外调整值。"
 
 #: ../../New-or-Enhanced-Logics.md:1067
 msgid ""
 "`BuildLimitGroup.ExtraLimit.Types` determines the technos that'll be used"
 " for extra value calculation."
-msgstr "`BuildLimitGroup.ExtraLimit.Types` 决定了将用于额外值计算的技术类型。"
+msgstr "`BuildLimitGroup.ExtraLimit.Types` 决定了将用于额外值计算的科技类型。"
 
 #: ../../New-or-Enhanced-Logics.md:1068
 msgid ""
@@ -2805,7 +2805,7 @@ msgid ""
 msgstr ""
 "`BuildLimitGroup.ExtraLimit.Nums` 决定了其额外值的增量。与 "
 "`BuildLimitGroup.ExtraLimit.Types` "
-"中对应位置的技术类型一一对应。每个列表中的技术类型会使建造限制增加其场上存在的数量 * 该列表中对应值。"
+"中对应位置的科技类型一一对应。每个列表中的科技类型会使建造限制增加其场上存在的数量 * 该列表中对应值。"
 
 #: ../../New-or-Enhanced-Logics.md:1069
 msgid ""
@@ -2815,8 +2815,8 @@ msgid ""
 " If not set or set to a value below 1, it'll be considered as no maximum "
 "count."
 msgstr ""
-"`BuildLimitGroup.ExtraLimit.MaxCount` 决定了会被用于计算额外值的技术类型会被计入的最大数量。与 "
-"`BuildLimitGroup.ExtraLimit.Types` 中对应位置的技术类型一一对应。如果未设置或设为小于 1 "
+"`BuildLimitGroup.ExtraLimit.MaxCount` 决定了会被用于计算额外值的科技类型会被计入的最大数量。与 "
+"`BuildLimitGroup.ExtraLimit.Types` 中对应位置的科技类型一一对应。如果未设置或设为小于 1 "
 "的值，则视为无最大数量限制。"
 
 #: ../../New-or-Enhanced-Logics.md:1070
@@ -2836,7 +2836,7 @@ msgstr "自定义 `OpenTopped` 属性"
 msgid ""
 "You can now override global `OpenTopped` transport properties per "
 "TechnoType."
-msgstr "现在你可以为每个技术类型微观设定全局 `OpenTopped` 运输工具的属性。"
+msgstr "现在你可以为每个科技类型微观设定全局 `OpenTopped` 运输工具的属性。"
 
 #: ../../New-or-Enhanced-Logics.md:1089
 msgid ""
@@ -2985,7 +2985,7 @@ msgid ""
 msgstr ""
 "现在你可以通过使用 "
 "`(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` "
-"标签为拥有 `Burst` 的武器指定每个连发单独的开火坐标，具体取决于你的技术类型使用哪些武器。`BurstN` 中的 *N* 是从 0 "
+"标签为拥有 `Burst` 的武器指定每个连发单独的开火坐标，具体取决于你的科技类型使用哪些武器。`BurstN` 中的 *N* 是从 0 "
 "开始的连发索引，这些值将按顺序解析，直到没有常规或精英武器的值为止，如果精英武器缺少值则默认使用常规武器的 "
 "FLH。如果特定连发索引缺少值，则使用基础标签（例如 `PrimaryFireFLH`）的值。"
 
@@ -3057,7 +3057,7 @@ msgstr "建议 Jumpjet 的 `ROT` 和 `JumpjetTurnRate` 相同。"
 
 #: ../../New-or-Enhanced-Logics.md:1178
 msgid "Initial strength for TechnoTypes and cloned infantry"
-msgstr "技术类型与克隆步兵的初始血量"
+msgstr "科技类型与克隆步兵的初始血量"
 
 #: ../../New-or-Enhanced-Logics.md:1180
 msgid ""
@@ -3072,7 +3072,7 @@ msgstr ""
 msgid ""
 "`InitialStrength` can be used to set how many hitpoints a TechnoType "
 "starts with."
-msgstr "`InitialStrength` 可用于设置技术类型的初始血量。"
+msgstr "`InitialStrength` 可用于设置科技类型的初始血量。"
 
 #: ../../New-or-Enhanced-Logics.md:1184
 msgid ""
@@ -3113,19 +3113,19 @@ msgstr "`AfterDelay`：如果倒计时（以帧为单位）达到 0 则对象死
 msgid ""
 "`TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes "
 "exist or do not exist, respectively."
-msgstr "`TechnosExist` / `TechnosDontExist`：如果技术类型分辨存在或不存在则对象死亡。"
+msgstr "`TechnosExist` / `TechnosDontExist`：如果科技类型分辨存在或不存在则对象死亡。"
 
 #: ../../New-or-Enhanced-Logics.md:1205
 msgid ""
 "`Technos(Dont)Exist.Any` controls whether or not a single listed "
 "TechnoType is enough to satisfy the requirement or if all are required."
-msgstr "`Technos(Dont)Exist.Any` 控制需要列出的单个技术类型还是所有技术类型来满足条件。"
+msgstr "`Technos(Dont)Exist.Any` 控制需要列出的单个科技类型还是所有科技类型来满足条件。"
 
 #: ../../New-or-Enhanced-Logics.md:1206
 msgid ""
 "`Technos(Dont)Exist.AllowLimboed` controls whether or not limboed "
 "TechnoTypes (f.ex those in transports) are counted."
-msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的技术类型（例如在运输工具中的那些）。"
+msgstr "`Technos(Dont)Exist.AllowLimboed` 控制是否计入虚拟的科技类型（例如在运输工具中的那些）。"
 
 #: ../../New-or-Enhanced-Logics.md:1207
 msgid "`Technos(Dont)Exist.Houses` controls which houses are checked."
@@ -3221,7 +3221,7 @@ msgstr "禁止手动改移动"
 msgid ""
 "You can now specify whether a TechnoType is unable to receive move "
 "command."
-msgstr "现在你可以指定一个技术类型是否无法接收移动指令。"
+msgstr "现在你可以指定一个科技类型是否无法接收移动指令。"
 
 #: ../../New-or-Enhanced-Logics.md:1270
 msgid "Promoted Spawns"
@@ -3252,7 +3252,7 @@ msgid ""
 "will not be fired."
 msgstr ""
 "类似于 "
-"`DeathWeapon`，它在技术类型被击杀后发射，但不同的是它将发射给造成伤害并杀死技术类型的人。如果技术类型不是由于其他技术类型造成的直接伤害而死亡，那么"
+"`DeathWeapon`，它在科技类型被击杀后发射，但不同的是它将发射给造成伤害并杀死科技类型的人。如果科技类型不是由于其他科技类型造成的直接伤害而死亡，那么"
 " `RevengeWeapon` 将不会被发射。"
 
 #: ../../New-or-Enhanced-Logics.md:1286
@@ -3288,7 +3288,7 @@ msgid ""
 "It is now possible to add weapons that are fired on a teleporting "
 "TechnoType when it warps in or out. They are at the same time as the "
 "appropriate animations (`WarpIn` / `WarpOut`) are displayed."
-msgstr "现在可以在技术类型传送来/去时发射武器。它们会与相应的 (`WarpIn` / `WarpOut`) 动画一起显示。"
+msgstr "现在可以在科技类型传送来/去时发射武器。它们会与相应的 (`WarpIn` / `WarpOut`) 动画一起显示。"
 
 #: ../../New-or-Enhanced-Logics.md:1304
 msgid ""
@@ -3320,7 +3320,7 @@ msgid ""
 "`Psychedelic=true` Warheads can be applied to TechnoTypes naturally by "
 "setting `Tint.Color` and/or `Tint Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的技术类型使用类似于铁幕/力场护盾或 "
+"通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕/力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1321
@@ -3580,7 +3580,7 @@ msgstr ""
 msgid ""
 "`ImmuneToCrit` can be set on TechnoTypes and ShieldTypes to make them "
 "immune to critical hits."
-msgstr "`ImmuneToCrit` 可以设置在技术类型和护盾类型上以使它们免疫暴击。"
+msgstr "`ImmuneToCrit` 可以设置在科技类型和护盾类型上以使它们免疫暴击。"
 
 #: ../../New-or-Enhanced-Logics.md:1455
 msgid ""
@@ -3658,7 +3658,7 @@ msgid ""
 "performance-heavy."
 msgstr ""
 "`DetonateOnAllMapObjects.AffectTargets` 用于在非 `none` "
-"时筛选哪些类型的目标（技术类型）可被视为有效。仅 `none`、`all`、`aircraft`、`buildings`、`infantry` 和"
+"时筛选哪些类型的目标（科技类型）可被视为有效。仅 `none`、`all`、`aircraft`、`buildings`、`infantry` 和"
 " `units` 是有效值。默认为 `none`，因为包含所有对象类型可能会影响性能。"
 
 #: ../../New-or-Enhanced-Logics.md:1513
@@ -3681,7 +3681,7 @@ msgid ""
 "`DetonateOnAllMapObjects.AffectHouses` take priority over this setting."
 msgstr ""
 "`DetonateOnAllMapObjects.AffectTypes` "
-"可用于列出特定的技术类型作为有效目标。如果列出了任何有效技术类型，则只有匹配的对象才会被作为目标。注意 "
+"可用于列出特定的科技类型作为有效目标。如果列出了任何有效科技类型，则只有匹配的对象才会被作为目标。注意 "
 "`DetonateOnAllMapObjects.AffectTargets` 和 "
 "`DetonateOnAllMapObjects.AffectHouses` 的优先级高于此设置。"
 
@@ -3689,7 +3689,7 @@ msgstr ""
 msgid ""
 "`DetonateOnAllMapObjects.IgnoreTypes` can be used to list specific "
 "TechnoTypes to be never considered as valid targets."
-msgstr "`DetonateOnAllMapObjects.IgnoreTypes` 可用于列出特定的技术类型不得作为目标。"
+msgstr "`DetonateOnAllMapObjects.IgnoreTypes` 可用于列出特定的科技类型不得作为目标。"
 
 #: ../../New-or-Enhanced-Logics.md:1516
 msgid ""
@@ -4247,7 +4247,7 @@ msgid ""
 "Note that `CanTarget` explicitly requires either `all` or `empty` to be "
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
-msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何技术类型的单元格开火。"
+msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
 
 #~ msgid "In `rulesmd.ini`"
 #~ msgstr "在 `rulesmd.ini`："
@@ -5229,7 +5229,7 @@ msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包�
 #~ "so you can respond to the combats"
 #~ " in time."
 #~ msgstr ""
-#~ "在原版，非建筑技术类型在收到攻击时不会生成雷达事件或 EVA "
+#~ "在原版，非建筑科技类型在收到攻击时不会生成雷达事件或 EVA "
 #~ "播报，因此它们很难在被摧毁前被玩家注意到。现在当你的单位受到攻击时可以收到雷达事件（以及可选的声音效果），以便及时应战。"
 
 #~ msgid ""
@@ -5252,9 +5252,9 @@ msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包�
 #~ " `Spawned=yes`."
 #~ msgstr ""
 #~ "你可以通过将 `[TechnoType] -> CombatAlert` 设置为 "
-#~ "`false` 来为特定技术类型禁用此逻辑，默认为 `[AudioVisual] -> "
+#~ "`false` 来为特定科技类型禁用此逻辑，默认为 `[AudioVisual] -> "
 #~ "CombatAlert.Default`。如果 `CombatAlert.Default` 也为空，则默认为对"
-#~ " `Insignificant=yes` 或 `Spawned=yes` 的技术类型禁用。"
+#~ " `Insignificant=yes` 或 `Spawned=yes` 的科技类型禁用。"
 
 #~ msgid ""
 #~ "`[AudioVisual] -> CombatAlert.IgnoreBuilding` will"
@@ -5302,7 +5302,7 @@ msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包�
 #~ "`[WarheadType] -> Malicious` and "
 #~ "`[WarheadType] -> Nonprovocative`."
 #~ msgstr ""
-#~ "技术类型被拥有 `[WarheadType] -> CombatAlert.Suppress` "
+#~ "科技类型被拥有 `[WarheadType] -> CombatAlert.Suppress` "
 #~ "设置为 `true` 的弹头击中将不会触发雷达事件或 EVA。此标签默认为 Ares "
 #~ "标签 `[WarheadType] -> Malicious` 的相反值和 "
 #~ "`[WarheadType] -> Nonprovocative` 的值。"
@@ -5362,7 +5362,7 @@ msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包�
 #~ "per techno."
 #~ msgstr ""
 #~ "声音效果 **依次** 被使用，首先是反馈，然后是攻击，最后是 EVA。在 "
-#~ "`[AudioVisual]` 中的标签控制是否全局检查，可以为每个技术类型单独指定。"
+#~ "`[AudioVisual]` 中的标签控制是否全局检查，可以为每个科技类型单独指定。"
 
 #~ msgid ""
 #~ "An example: You set "

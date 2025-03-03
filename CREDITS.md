@@ -47,7 +47,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable ElectricBolt Arcs
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
-  - Voxel light source position and tilting fix
+  - `UseFixedVoxelLighting`
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list

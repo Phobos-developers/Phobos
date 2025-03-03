@@ -145,7 +145,7 @@ msgid ""
 " points and can be turned on or off via a [new hotkey](#toggle-digital-"
 "display)."
 msgstr ""
-"现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-"
+"现在你可以配置各种类型的数字化计数器来显示科技类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-"
 "display)开启或关闭。"
 
 #: ../../User-Interface.md:37
@@ -253,7 +253,7 @@ msgid ""
 "with radius set in `[TechnoType] -> DesignatorRange` or `Sight`."
 msgstr ""
 "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators`"
-" 中的技术类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
+" 中的科技类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:102
 msgid ""
@@ -261,7 +261,7 @@ msgid ""
 "`[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in"
 " `[TechnoType] -> InhibitorRange` or `Sight`."
 msgstr ""
-"类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的技术类型将显示一个半径由 "
+"类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的科技类型将显示一个半径由 "
 "`[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:103
@@ -533,7 +533,7 @@ msgstr "现在你可以根据给定的优先级数值将超级武器的计时器
 
 #: ../../User-Interface.md:269
 msgid "Flashing Technos on selecting"
-msgstr "闪烁选中的技术类型"
+msgstr "闪烁选中的科技类型"
 
 #: ../../User-Interface.md:271
 msgid ""
@@ -660,7 +660,7 @@ msgstr "`[ ]` 下一个空闲矿车"
 msgid ""
 "Selects and centers the camera on the next TechnoType that is counted via"
 " the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的技术类型。"
+msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的科技类型。"
 
 #: ../../User-Interface.md:314
 msgid ""
@@ -774,7 +774,7 @@ msgid ""
 "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. "
 "Vanilla sorting rules are "
 "[here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
-msgstr "现在你可以为任何技术类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
+msgstr "现在你可以为任何科技类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
 #: ../../User-Interface.md:345
 msgid ""
@@ -826,7 +826,7 @@ msgid ""
 "`Harvester.Counted`. If not set, the techno with `Harvester=yes` or "
 "`Enslaves=SOMESLAVE` will be counted."
 msgstr ""
-"你可以使用 `Harvester.Counted` 指定哪些技术类型被视为矿车。若未设置，带有 `Harvester=yes` 或 "
+"你可以使用 `Harvester.Counted` 指定哪些科技类型被视为矿车。若未设置，带有 `Harvester=yes` 或 "
 "`Enslaves=SOMESLAVE` 的单位将被计入。"
 
 #: ../../User-Interface.md:380
@@ -1048,14 +1048,14 @@ msgid ""
 "character limit is lifted when the feature is enabled via the "
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr ""
-"现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于技术类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
+"现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
 " 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
 
 #: ../../User-Interface.md:527
 msgid ""
 "TechnoType's tooltip would display it's name, cost, power, build time and"
 " description (when applicable)."
-msgstr "技术类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
+msgstr "科技类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
 #: ../../User-Interface.md:528
 msgid ""

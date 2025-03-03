@@ -28,7 +28,6 @@ msgid ""
 msgstr "本页面介绍了如何帮助或为火卫一做出贡献，以及所有的实现方法。"
 
 #: ../../Contributing.md:5
-#, fuzzy
 msgid "Guidelines for contributors"
 msgstr "对贡献者的指导"
 
@@ -177,7 +176,6 @@ msgid "We use tabs instead of spaces to indent code."
 msgstr "我们使用制表符而非空格作为缩进符号。"
 
 #: ../../Contributing.md:33
-#, fuzzy
 msgid ""
 "Curly braces are always to be placed on a new line ([Allman indentation "
 "style](https://en.wikipedia.org/wiki/Indentation_style#Allman_style)). "
@@ -292,7 +290,6 @@ msgid ""
 msgstr "通过声明一个以`pThis`作为第一个参数的静态方法来伪造的非静态类扩展方法只能放置在`pThis`所在的类实例的扩展类中。"
 
 #: ../../Contributing.md:149
-#, fuzzy
 msgid ""
 "If it's crucial to fake `__thiscall` you may use `__fastcall` and use "
 "`void*` or `void* _` as a second argument to discard value passed through"
@@ -310,7 +307,6 @@ msgid ""
 msgstr "钩子以以下方案命名：`钩上的函数_钩子的功能`或`类名_钩上的方法_钩子的功能`。由于无法为同一钩子定义不同的名称，再次定义（DEFINE_HOOK_AGAIN）的钩子不受此方案的约束。"
 
 #: ../../Contributing.md:151
-#, fuzzy
 msgid ""
 "Return addresses should use anonymous enums to make it clear what address"
 " means what, if applicable. The enum has to be placed right at the "
@@ -351,7 +347,6 @@ msgid "Git branching model"
 msgstr "Git分支模型"
 
 #: ../../Contributing.md:171
-#, fuzzy
 msgid ""
 "Couple of notes regarding the Git practices. We use [git-"
 "flow](https://nvie.com/posts/a-successful-git-branching-model/)-like "
@@ -361,7 +356,6 @@ msgstr ""
 "model/)之类的工作流:"
 
 #: ../../Contributing.md:172
-#, fuzzy
 msgid ""
 "`master` is for stable releases, can have hotfixes pushed to it or "
 "branched off like a feature branch with the requirement of version "
@@ -373,7 +367,6 @@ msgid "`develop` is the main development branch;"
 msgstr "`develop`使主要开发分支；"
 
 #: ../../Contributing.md:174
-#, fuzzy
 msgid ""
 "`feature/`-prefixed branches (sometimes the prefix may be different if "
 "appropriate, like for big fixes or changes) are so called \"feature "
@@ -384,7 +377,6 @@ msgid ""
 msgstr "`feature/`前缀的分支（有时前缀可能会有所不同，比如大的修复或更改）被称为“功能分支”——这些分支从`develop`分离出来，以引入每个新功能，然后合并回来。我们使用压缩合并将它们合并回来。"
 
 #: ../../Contributing.md:175
-#, fuzzy
 msgid ""
 "`hotfix/`-prefixed branches may be used in a same manner as `feature/`, "
 "but with `master` branch, with a requirement of `master` being merged "
@@ -392,7 +384,6 @@ msgid ""
 msgstr "如果需要，`hotfix/`前缀的分支可以与`master`分支以相同的方式使用，要求在`hotfix/`分支被压缩合并到`master`之后将`master`合并到`develop`中。"
 
 #: ../../Contributing.md:176
-#, fuzzy
 msgid ""
 "`release/`-prefixed branches are branched off `develop` when a new stable"
 " release is slated to allow working on features for a next release and "
