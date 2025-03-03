@@ -344,13 +344,14 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 	return true;
 }
 
+// For unit's weapons factory only
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
 	if (const auto pTechno = pThis->GetNthLink())
 	{
 		if (const auto pUnit = abstract_cast<UnitClass*>(pTechno))
 		{
-			if (!pUnit->unknown_bool_418 && pUnit->GetCurrentSpeed() <= 0)
+			if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
 			{
 				if (const auto pTeam = pUnit->Team)
 					pTeam->LiberateMember(pUnit);
@@ -372,7 +373,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 		{
 			if (const auto pUnit = abstract_cast<UnitClass*>(pObject))
 			{
-				if (pThis->Owner != pUnit->Owner || pUnit->unknown_bool_418)
+				if (pThis->Owner != pUnit->Owner || pUnit->IsTether)
 					continue;
 
 				const auto height = pUnit->GetHeight();
@@ -392,6 +393,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 		if (++i >= 2)
 			return; // no stuck
 
+		// Continue checking towards the bottom right corner
 		pCell = pCell->GetNeighbourCell(FacingType::East);
 	}
 }

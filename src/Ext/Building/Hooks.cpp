@@ -209,7 +209,7 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	if (!(Unsorted::CurrentFrame % 15))
+	if (!(Unsorted::CurrentFrame() % 15)) // Check every 15 frames for factories
 	{
 		const auto pType = pThis->Type;
 
@@ -217,7 +217,7 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 		{
 			const auto mission = pThis->CurrentMission;
 
-			if (mission == Mission::Guard || (mission == Mission::Unload && pThis->MissionStatus == 1))
+			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 1) // Unloading but stuck
 				BuildingExt::KickOutStuckUnits(pThis);
 		}
 	}
