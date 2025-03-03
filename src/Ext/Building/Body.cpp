@@ -347,19 +347,16 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 // For unit's weapons factory only
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (const auto pTechno = pThis->GetNthLink())
+	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
-		if (const auto pUnit = abstract_cast<UnitClass*>(pTechno))
+		if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
 		{
-			if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
-			{
-				if (const auto pTeam = pUnit->Team)
-					pTeam->LiberateMember(pUnit);
+			if (const auto pTeam = pUnit->Team)
+				pTeam->LiberateMember(pUnit);
 
-				pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
-				pUnit->QueueMission(Mission::Guard, false);
-				return; // one after another
-			}
+			pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
+			pUnit->QueueMission(Mission::Guard, false);
+			return; // one after another
 		}
 	}
 
@@ -371,8 +368,10 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	{
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (const auto pUnit = abstract_cast<UnitClass*>(pObject))
+			if (pObject->WhatAmI() == AbstractType::Unit)
 			{
+				const auto pUnit = static_cast<UnitClass*>(pObject);
+
 				if (pThis->Owner != pUnit->Owner || pUnit->IsTether)
 					continue;
 
