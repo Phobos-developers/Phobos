@@ -1073,6 +1073,9 @@ msgstr ""
 "现在单位的 `Speed` 设置接受小数。内部解析的值被限制为最大 100，乘以 256 并除以 100，结果（此时转换为整数）被限制为最大 "
 "255，从而获得有效内部速度值范围 0 到 255，例如以 leptons 为单位每帧移动的距离。"
 
+msgid "`AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`."
+msgstr "现在 `AirburstWeapon` 可以支持绘制 `IsLaser`、`IsElectricBolt`（暂不支持 Ares 的 `Bolt.Color1`、`Bolt.Color2`、`Bolt.Color3`）、`IsRadBeam` 等视觉效果并允许粒子武器正常创建 `AttachedParticleSystem` 的粒子系统。"
+
 #: ../../Fixed-or-Improved-Logics.md:176
 msgid ""
 "Subterranean movement now benefits from speed multipliers from all "

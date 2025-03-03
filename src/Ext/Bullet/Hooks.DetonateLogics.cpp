@@ -442,7 +442,15 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 	if ((pType->Airburst || pTypeExt->Splits) && pWeapon)
 	{
 		auto const pSource = pThis->Owner;
-		auto const pOwner = pSource ? pSource->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		auto pOwner = pSource ? pSource->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+
+		if (!pOwner || pOwner->Defeated)
+		{
+			if (const auto pNeutral = HouseClass::FindNeutral())
+				pOwner = pNeutral;
+			else
+				return SkipGameCode;
+		}
 
 		auto& random = ScenarioClass::Instance->Random;
 		int clusterCount = pType->Cluster;
@@ -530,12 +538,11 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			}
 		}
 
-		int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
 		auto const pTypeSplits = pWeapon->Projectile;
 		int damage = pWeapon->Damage;
 
-		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pThis->Owner)
-			damage = static_cast<int>(damage * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis->Owner)->AE.FirepowerMultiplier);
+		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pSource)
+			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
 
 		for (int i = 0; i < clusterCount; ++i)
 		{
@@ -550,7 +557,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				int index = random.RandomRanged(0, targets.Count - 1);
 				pTarget = targets.GetItem(index);
 
-				if (pTarget == pThis->Owner)
+				if (pTarget == pSource)
 				{
 					if (random.RandomDouble() > pTypeExt->RetargetSelf_Probability)
 					{
@@ -564,28 +571,10 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 			if (pTarget)
 			{
-
-				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pThis->Owner, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pOwner;
-					pBullet->WeaponType = pWeapon;
-					pBullet->Range = projectileRange;
-
-					DirStruct dir;
-					dir.SetValue<5>(random.RandomRanged(0, 31));
-
-					auto const radians = dir.GetRadian<32>();
-					auto const sin_rad = Math::sin(radians);
-					auto const cos_rad = Math::cos(radians);
-					auto const cos_factor = -2.44921270764e-16; // cos(1.5 * Math::Pi * 1.00001)
-					auto const flatSpeed = cos_factor * pBullet->Speed;
-
-					BulletVelocity velocity;
-					velocity.X = cos_rad * flatSpeed;
-					velocity.Y = sin_rad * flatSpeed;
-					velocity.Z = -pBullet->Speed;
-
-					pBullet->MoveTo(pThis->Location, velocity);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 				}
 			}
 		}

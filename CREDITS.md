@@ -376,6 +376,7 @@ This page lists all the individual contributions to the project by their author.
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
+  - Draw visual effects for airburst weapons
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

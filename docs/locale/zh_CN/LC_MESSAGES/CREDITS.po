@@ -1486,6 +1486,9 @@ msgstr "修复 `LimboKill` 未能可靠工作的问题"
 msgid "Fix aircraft `MovementZone` and `SpeedType` inconsistencies"
 msgstr "修复战机自身设置的 `MovementZone` 和 `SpeedType` 与寻路所用的这两项不一致的问题"
 
+msgid "Draw visual effects for airburst weapons"
+msgstr "空爆武器正常绘制武器特效"
+
 #: ../../../CREDITS.md:380
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
