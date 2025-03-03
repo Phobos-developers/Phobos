@@ -95,34 +95,29 @@ bool SWColumnClass::AddButton(int superIdx)
 
 	if (buttonCount >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
 	{
-		std::vector<int> vec_SW;
-		vec_SW.reserve(buttonCount + 1);
+		auto Compare = [ownerBits](const int left, const int right)
+		{
+			const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(left));
+			const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(right));
 
-		for (const auto button : buttons)
-			vec_SW.emplace_back(button->SuperIndex);
+			if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
+				return false;
 
-		vec_SW.emplace_back(superIdx);
-		std::stable_sort(vec_SW.begin(), vec_SW.end(), [ownerBits](const int left, const int right)
-			{
-				const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(left));
-				const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(right));
+			if ((!pExtB || !(pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits)) && pExtA && (pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits))
+				return true;
 
-				if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
-					return false;
+			return BuildType::SortsBefore(AbstractType::Special, left, AbstractType::Special, right);
+		};
 
-				if ((!pExtB || !(pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits)) && pExtA && (pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits))
-					return true;
+		const int backIdx = buttons.back()->SuperIndex;
 
-				return BuildType::SortsBefore(AbstractType::Special, left, AbstractType::Special, right);
-			}
-		);
-
-		if (vec_SW.back() == superIdx)
+		if (!Compare(superIdx, backIdx))
 			return false;
 
-		this->RemoveButton(vec_SW.back());
+		this->RemoveButton(backIdx);
 		sidebar.DisableEntry = true;
-		SidebarClass::Instance->AddCameo(AbstractType::Special, vec_SW.back());
+		SidebarClass::Instance->AddCameo(AbstractType::Special, backIdx);
+		SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(AbstractType::Super, backIdx, false));
 		sidebar.DisableEntry = false;
 	}
 
