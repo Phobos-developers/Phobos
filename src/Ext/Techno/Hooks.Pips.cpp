@@ -238,7 +238,8 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	const int totalStorage = pThis->GetTechnoType()->Storage;
 	const auto pRuleExt = RulesExt::Global();
 
-	std::vector<int> pipsToDraw(maxPips);
+	std::vector<int> pipsToDraw;
+	pipsToDraw.reserve(maxPips);
 
 	bool isWeeder = false;
 
@@ -263,27 +264,28 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		for (int i = 0; i < maxPips; i++)
 		{
 			if (i < fullWeedFrames)
-				pipsToDraw[i] = pRuleExt->Pips_Tiberiums_WeedFrame;
+				pipsToDraw.emplace_back(pRuleExt->Pips_Tiberiums_WeedFrame);
 			else
-				pipsToDraw[i] = pRuleExt->Pips_Tiberiums_WeedEmptyFrame;
+				pipsToDraw.emplace_back(pRuleExt->Pips_Tiberiums_WeedEmptyFrame);
 		}
 	}
 	else
 	{
 		const int tiberiumCount = TiberiumClass::Array->Count;
-		std::vector<int> tiberiumPipCounts(tiberiumCount);
+		std::vector<int> tiberiumPipCounts;
+		tiberiumPipCounts.reserve(tiberiumCount);
 
-		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
+		for (int i = 0; i < tiberiumCount; i++)
 		{
-			tiberiumPipCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
+			tiberiumPipCounts.emplace_back(static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5));
 		}
 
 		auto const rawPipOrder = pRuleExt->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : pRuleExt->Pips_Tiberiums_DisplayOrder;
 		auto const& pipFrames = pRuleExt->Pips_Tiberiums_Frames;
 		int const emptyFrame = pRuleExt->Pips_Tiberiums_EmptyFrame;
 
-		std::vector<int> pipOrder(tiberiumCount);
-		int lastIndex = 0;
+		std::vector<int> pipOrder;
+		pipOrder.reserve(tiberiumCount);
 
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
@@ -291,8 +293,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			if (index >= 0 && index < tiberiumCount &&
 				std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end())
 			{
-				pipOrder[lastIndex] = index;
-				lastIndex++;
+				pipOrder.emplace_back(index);
 			}
 		}
 
@@ -301,8 +302,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{
-				pipOrder[lastIndex] = i;
-				lastIndex++;
+				pipOrder.emplace_back(i);
 			}
 		}
 
@@ -317,9 +317,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 					tiberiumPipCounts[index]--;
 
 					if (static_cast<size_t>(index) >= pipFrames.size())
-						pipsToDraw[i] = (index == 1 ? 5 : 2);
+						pipsToDraw.emplace_back(index == 1 ? 5 : 2);
 					else
-						pipsToDraw[i] = pipFrames.at(index);
+						pipsToDraw.emplace_back(pipFrames.at(index));
 
 					addPip = true;
 					break;
@@ -327,7 +327,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			}
 
 			if (!addPip)
-				pipsToDraw[i] = emptyFrame;
+				pipsToDraw.emplace_back(emptyFrame);
 		}
 	}
 

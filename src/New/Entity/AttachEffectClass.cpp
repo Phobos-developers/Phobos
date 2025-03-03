@@ -488,9 +488,12 @@ bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSour
 /// <returns>Number of AttachEffect instances created and attached.</returns>
 int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker, AbstractClass* pSource, AEAttachInfoTypeClass const& attachEffectInfo)
 {
+	if (!pTarget)
+		return false;
+
 	auto const& types = attachEffectInfo.AttachTypes;
 
-	if (types.size() < 1 || !pTarget)
+	if (types.size() < 1)
 		return false;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
@@ -579,7 +582,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			match = attachEffect;
 
 			if (pType->Cumulative && (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker)))
-				cumulativeMatches.push_back(attachEffect);
+				cumulativeMatches.emplace_back(attachEffect);
 		}
 	}
 
@@ -627,7 +630,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	}
 	else
 	{
-		targetAEs.push_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
+		targetAEs.emplace_back(std::make_unique<AttachEffectClass>(pType, pTarget, pInvokerHouse, pInvoker, pSource, attachParams.DurationOverride, attachParams.Delay, attachParams.InitialDelay, attachParams.RecreationDelay));
 		auto const pAE = targetAEs.back().get();
 
 		if (!currentTypeCount && pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -661,21 +664,24 @@ int AttachEffectClass::Detach(TechnoClass* pTarget, AEAttachInfoTypeClass const&
 /// <returns>Number of AttachEffect instances removed.</returns>
 int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo)
 {
-	auto const& groups = attachEffectInfo.RemoveGroups;
-
-	if (groups.size() < 1 || !pTarget)
+	if (!pTarget)
 		return 0;
 
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	std::vector<AttachEffectTypeClass*> types;
-	types.reserve(pTargetExt->AttachedEffects.size());
+	auto const& groups = attachEffectInfo.RemoveGroups;
 
-	for (auto const& attachEffect : pTargetExt->AttachedEffects)
+	if (groups.size() < 1)
+		return 0;
+
+	auto const& attachEffects = TechnoExt::ExtMap.Find(pTarget)->AttachedEffects;
+	std::vector<AttachEffectTypeClass*> types;
+	types.reserve(attachEffects.size());
+
+	for (auto const& attachEffect : attachEffects)
 	{
 		auto const pType = attachEffect->Type;
 
 		if (pType->HasGroups(groups, false))
-			types.push_back(pType);
+			types.emplace_back(pType);
 	}
 
 	return DetachTypes(pTarget, attachEffectInfo, types);
@@ -690,7 +696,9 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 /// <returns>Number of AttachEffect instances removed.</returns>
 int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types)
 {
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	if (!types.size())
+		return 0;
+
 	int detachedCount = 0;
 	bool markForRedraw = false;
 	auto const& minCounts = attachEffectInfo.CumulativeRemoveMinCounts;
@@ -712,7 +720,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	}
 
 	if (detachedCount > 0)
-		pTargetExt->RecalculateStatMultipliers();
+		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
 
 	if (markForRedraw)
 		pTarget->MarkForRedraw();
@@ -734,7 +742,6 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		return 0;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	int detachedCount = 0;
 	int stackCount = -1;
 
 	if (pType->Cumulative)
@@ -744,51 +751,54 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		return 0;
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
+	int detachedCount = 0;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	expireWeapons.reserve(targetAEs->size());
 
-	for (it = targetAEs->begin(); it != targetAEs->end(); )
+	if (maxCount <= 0 || detachedCount < maxCount)
 	{
-		if (maxCount > 0 && detachedCount >= maxCount)
-			break;
-
-		auto const attachEffect = it->get();
-
-		if (pType == attachEffect->Type)
+		for (it = targetAEs->begin(); it != targetAEs->end(); )
 		{
-			detachedCount++;
+			auto const attachEffect = it->get();
 
-			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+			if (pType == attachEffect->Type)
 			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
-					expireWeapons.push_back(pType->ExpireWeapon);
+				detachedCount++;
+
+				if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
+				{
+					if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
+						expireWeapons.push_back(pType->ExpireWeapon);
+				}
+
+				if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
+					pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
+
+				if (attachEffect->ResetIfRecreatable())
+				{
+					++it;
+					continue;
+				}
+
+				it = targetAEs->erase(it);
 			}
-
-			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
-				pTargetExt->UpdateCumulativeAttachEffects(pType, attachEffect);
-
-			if (attachEffect->ResetIfRecreatable())
+			else
 			{
 				++it;
-				continue;
 			}
-
-			it = targetAEs->erase(it);
-		}
-		else
-		{
-			++it;
 		}
 	}
 
-
-	auto const coords = pTarget->GetCoords();
-	auto const pOwner = pTarget->Owner;
-
-	for (auto const& pWeapon : expireWeapons)
+	if (expireWeapons.size())
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
+		auto const coords = pTarget->GetCoords();
+		auto const pOwner = pTarget->Owner;
+
+		for (auto const& pWeapon : expireWeapons)
+		{
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
+		}
 	}
 
 	return detachedCount;
@@ -801,11 +811,15 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 /// <param name="pTarget">Target techno.</param>
 void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClass* pTarget)
 {
-	const auto pSourceExt = TechnoExt::ExtMap.Find(pSource);
-	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto& attachEffects = TechnoExt::ExtMap.Find(pSource)->AttachedEffects;
+
+	if (!attachEffects.size())
+		return;
+
+	auto& targetAttachEffects = TechnoExt::ExtMap.Find(pTarget)->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
-	for (it = pSourceExt->AttachedEffects.begin(); it != pSourceExt->AttachedEffects.end(); )
+	for (it = attachEffects.begin(); it != attachEffects.end(); )
 	{
 		auto const attachEffect = it->get();
 
@@ -820,7 +834,7 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 		AttachEffectClass* match = nullptr;
 		AttachEffectClass* sourceMatch = nullptr;
 
-		for (auto const& aePtr : pTargetExt->AttachedEffects)
+		for (auto const& aePtr : targetAttachEffects)
 		{
 			auto const targetAttachEffect = aePtr.get();
 
@@ -847,11 +861,11 @@ void AttachEffectClass::TransferAttachedEffects(TechnoClass* pSource, TechnoClas
 			AEAttachParams info {};
 			info.DurationOverride = attachEffect->DurationOverride;
 
-			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, pTargetExt->AttachedEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
+			if (auto const pAE = AttachEffectClass::CreateAndAttach(type, pTarget, targetAttachEffects, attachEffect->InvokerHouse, attachEffect->Invoker, attachEffect->Source, info))
 				pAE->Duration = attachEffect->Duration;
 		}
 
-		it = pSourceExt->AttachedEffects.erase(it);
+		it = attachEffects.erase(it);
 	}
 }
 
