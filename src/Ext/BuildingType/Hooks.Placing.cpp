@@ -106,7 +106,7 @@ DEFINE_HOOK(0x4A904E, MapClass_PassesProximityCheck_RestoreResult, 0x5)
 			{
 				const auto pTechno = pExt->OwnerObject();
 
-				if (!TechnoExt::IsActive(pTechno) || pTechno->Deactivated)
+				if (!TechnoExt::IsActive(pTechno))
 					continue;
 
 				const auto technoMapCell = pTechno->GetMapCoords();
@@ -114,11 +114,11 @@ DEFINE_HOOK(0x4A904E, MapClass_PassesProximityCheck_RestoreResult, 0x5)
 				if (technoMapCell.X < minX || technoMapCell.Y < minY || technoMapCell.X >= maxX || technoMapCell.Y >= maxY)
 					continue;
 
-				const auto pOwner = pTechno->Owner;
 				const auto pTypeExt = pExt->TypeExtData;
-
 				auto canBeBaseNormal = [&]()
 				{
+					const auto pOwner = pTechno->Owner;
+
 					if (pOwner->ArrayIndex == idxHouse)
 						return pTypeExt->ExtraBaseNormal.Get();
 					else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]))
