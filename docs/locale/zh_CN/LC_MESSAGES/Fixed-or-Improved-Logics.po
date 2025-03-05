@@ -1154,6 +1154,18 @@ msgid ""
 "uncrushable unit and self destruct."
 msgstr "修复了一个单位被超时空传送超武传送到一个不可碾压的单位上并自爆时会在原地留下空气墙的问题。"
 
+#: ../../Fixed-or-Improved-Logics.md:191
+msgid "`FreeUnit` uses the unit's own `SpeedType` to find the spawn location."
+msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置。"
+
+#: ../../Fixed-or-Improved-Logics.md:192
+msgid "The bug where naval ships as StartUnit might spawn on land has been fixed."
+msgstr "修复初始船只可能生成在陆地上的 Bug。"
+
+#: ../../Fixed-or-Improved-Logics.md:193
+msgid "When a building undeploy, it will normally use the target VehicleType's pathfinding method to decide whether it can move to the target cell."
+msgstr "建筑反部署时使用目标载具的寻路方式来决定能否向目标单元格移动。"
+
 #: ../../Fixed-or-Improved-Logics.md:190
 msgid "Fix the bug that destroyed unit may leaves sensors."
 msgstr "修复了单位被摧毁仍会遗留反隐形探测效果的问题。"
