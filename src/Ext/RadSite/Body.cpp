@@ -1,8 +1,10 @@
 #include "Body.h"
-#include <New/Type/RadTypeClass.h>
-#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
 #include <Notifications.h>
+
+#include <New/Type/RadTypeClass.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/Cell/Body.h>
 
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
@@ -60,6 +62,10 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadSite->SetSpread(spread);
 	pRadExt->SetRadLevel(amount);
 	pRadExt->CreateLight();
+
+	const auto pCell = MapClass::Instance->TryGetCellAt(location);
+	const auto pCellExt = CellExt::ExtMap.Find(pCell);
+	pCellExt->RadSites.emplace_back(pRadSite);
 }
 
 //RadSiteClass Activate , Rewritten
@@ -210,6 +216,29 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
+
+	const auto pBaseCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
+
+	if (pBaseCell)
+	{
+		const auto pBaseCellExt = CellExt::ExtMap.Find(pBaseCell);
+		const auto it_Rad = std::find(pBaseCellExt->RadSites.begin(), pBaseCellExt->RadSites.end(), pThis);
+
+		if (it_Rad != pBaseCellExt->RadSites.end())
+			pBaseCellExt->RadSites.erase(it_Rad);
+	}
+
+	for (CellRangeEnumerator it(pThis->BaseCell, pThis->Spread + 0.5); it; it++)
+	{
+		if (const auto pCell = MapClass::Instance->TryGetCellAt(*it))
+		{
+			const auto pCellExt = CellExt::ExtMap.Find(pCell);
+			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](std::pair<RadSiteClass*, int> const& item) { return item.first == pThis; });
+
+			if (it_Rad != pCellExt->RadLevels.end())
+				pCellExt->RadLevels.erase(it_Rad);
+		}
+	}
 
 	RadSiteExt::ExtMap.Remove(pThis);
 	PointerExpiredNotification::NotifyInvalidObject->Remove(pThis);

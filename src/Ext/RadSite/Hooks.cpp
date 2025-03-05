@@ -11,6 +11,7 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Cell/Body.h>
 
 #include <Utilities/Macro.h>
 /*
@@ -57,31 +58,29 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 {
 	enum { FireCheck = 0x5213F4, SetMissionRate = 0x521484 };
 
-	GET(InfantryClass*, pInf, ESI);
+	GET(InfantryClass*, pInfantry, ESI);
 	GET(int, weaponRadLevel, EBX);
-
-	auto const pWeapon = pInf->GetDeployWeapon()->WeaponType;
+	auto const pCell = pInfantry->GetCell();
+	auto const pCellExt = CellExt::ExtMap.Find(pCell);
 	int radLevel = 0;
 
-	if (RadSiteClass::Array->Count > 0 && pWeapon)
+	if (!pCellExt->RadSites.empty())
 	{
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		auto const pRadType = pWeaponExt->RadType;
-		auto const warhead = pWeapon->Warhead;
-		auto currentCoord = pInf->GetCell()->MapCoords;
-
-		for (auto const pRadSite : *RadSiteClass::Array)
+		if (auto const pWeapon = pInfantry->GetDeployWeapon()->WeaponType)
 		{
-			if (pRadSite->BaseCell == currentCoord &&
-				pRadSite->Spread == (int)warhead->CellSpread &&
-				RadSiteExt::ExtMap.Find(pRadSite)->Type == pRadType
-				)
+			auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			auto const pRadType = pWeaponExt->RadType;
+			auto const warhead = pWeapon->Warhead;
+
+			for (const auto radSite : pCellExt->RadSites)
 			{
-				radLevel = pRadSite->GetRadLevel();
-				break;
+				if (radSite->Spread == static_cast<int>(warhead->CellSpread) && RadSiteExt::ExtMap.Find(radSite)->Type == pRadType)
+				{
+					radLevel = radSite->GetRadLevel();
+					break;
+				}
 			}
 		}
-
 	}
 
 	return (!radLevel || (radLevel < weaponRadLevel / 3)) ?
@@ -136,9 +135,18 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
+		const auto pCell = MapClass::Instance->TryGetCellAt(nCurrentCoord);
 
-		for (auto const pRadSite : *RadSiteClass::Array)
+		if (!pCell)
+			continue;
+
+		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+
+		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
+			if (radLevel <= 0)
+				continue;
+
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 			RadTypeClass* pType = pRadExt->Type;
 			int maxDamageCount = pType->GetBuildingDamageMaxCount();
@@ -146,10 +154,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			if (maxDamageCount > 0 && damageCounts[pRadSite] >= maxDamageCount)
 				continue;
 
-			// Check the distance, if not in range, just skip this one
-			double orDistance = pRadSite->BaseCell.DistanceFrom(nCurrentCoord);
-
-			if (pRadSite->Spread < orDistance - 0.5)
+			if (!pType->GetWarhead())
 				continue;
 
 			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
@@ -160,11 +165,6 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 					continue;
 			}
 
-			double radLevel = pRadExt->GetRadLevelAt(nCurrentCoord);
-
-			if (radLevel <= 0.0 || !pType->GetWarhead())
-				continue;
-
 			if (pBuilding->IsAlive) // simple fix for previous issues
 			{
 				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
@@ -172,7 +172,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 				if (maxDamageCount > 0)
 					damageCounts[pRadSite]++;
 
-				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage, Game::F2I(orDistance)))
+				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage, 0))
 					break;
 			}
 		}
@@ -194,40 +194,36 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
 		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
-		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
-
-		// Loop for each different radiation stored in the RadSites container
-		for (auto const pRadSite : *RadSiteClass::Array)
+		if (auto const pCell = pFoot->GetCell())
 		{
-			auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-			// Check the distance, if not in range, just skip this one
-			double orDistance = pRadSite->BaseCell.DistanceFrom(CurrentCoord);
+			auto const pCellExt = CellExt::ExtMap.Find(pCell);
 
-			if (pRadSite->Spread < orDistance - 0.7)
-				continue;
-
-			RadTypeClass* pType = pRadExt->Type;
-
-			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 			{
-				int delay = pType->GetApplicationDelay();
-
-				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+				if (radLevel <= 0)
 					continue;
-			}
 
-			// for more precise dmg calculation
-			double radLevel = pRadExt->GetRadLevelAt(CurrentCoord);
+				auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
+				RadTypeClass* pType = pRadExt->Type;
 
-			if (radLevel <= 0.0 || !pType->GetWarhead())
-				continue;
+				if (!pType->GetWarhead())
+					continue;
 
-			if (pFoot->IsAlive || !pFoot->IsSinking)
-			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+				if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+				{
+					int delay = pType->GetApplicationDelay();
 
-				if (!pRadExt->ApplyRadiationDamage(pFoot, damage, Game::F2I(orDistance)))
-					break;
+					if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+						continue;
+				}
+
+				if (pFoot->IsAlive || !pFoot->IsSinking)
+				{
+					int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+
+					if (!pRadExt->ApplyRadiationDamage(pFoot, damage, 0))
+						break;
+				}
 			}
 		}
 	}
@@ -332,4 +328,97 @@ DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 	R->EDX(val % output);
 
 	return 0x65BB6D;
+}
+
+DEFINE_HOOK(0x65BAC1, RadSiteClass_Radiate_Increase, 0x8)
+{
+	enum { SkipGameCode = 0x65BB11 };
+
+	GET(RadSiteClass*, pThis, EDX);
+	GET(int, distance, EAX);
+	const int max = pThis->SpreadInLeptons;
+
+	if (distance > max)
+		return SkipGameCode;
+
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x60, -0x4C));
+	const auto pCell = MapClass::Instance->TryGetCellAt(*cell);
+
+	if (!pCell)
+		return SkipGameCode;
+
+	const auto pCellExt = CellExt::ExtMap.Find(pCell);
+	auto& radLevels = pCellExt->RadLevels;
+
+	const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](std::pair<RadSiteClass*, int> const& item) { return item.first == pThis; });
+	const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
+
+	if (it != radLevels.end())
+		it->second += amount;
+	else
+		radLevels.emplace_back(pThis, amount);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x65BC6E, RadSiteClass_Deactivate_Decrease, 0x6)
+{
+	enum { SkipGameCode = 0x65BCBD };
+
+	GET(RadSiteClass*, pThis, EDX);
+	GET(int, distance, EAX);
+	const int max = pThis->SpreadInLeptons;
+
+	if (distance > max)
+		return SkipGameCode;
+
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x70, -0x5C));
+	const auto pCell = MapClass::Instance->TryGetCellAt(*cell);
+
+	if (!pCell)
+		return SkipGameCode;
+
+	const auto pCellExt = CellExt::ExtMap.Find(pCell);
+	auto& radLevels = pCellExt->RadLevels;
+
+	const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](std::pair<RadSiteClass*, int> const& item) { return item.first == pThis; });
+
+	if (it != radLevels.end())
+	{
+		const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
+		it->second -= amount;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x65BE01, RadSiteClass_DecreaseRadiation_Decrease, 0x6)
+{
+	enum { SkipGameCode = 0x65BE4C };
+
+	GET(RadSiteClass*, pThis, EDX);
+	GET(int, distance, EAX);
+	const int max = pThis->SpreadInLeptons;
+
+	if (distance > max)
+		return SkipGameCode;
+
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x60, -0x50));
+	const auto pCell = MapClass::Instance->TryGetCellAt(*cell);
+
+	if (!pCell)
+		return SkipGameCode;
+
+	const auto pCellExt = CellExt::ExtMap.Find(pCell);
+	auto& radLevels = pCellExt->RadLevels;
+
+	const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](std::pair<RadSiteClass*, int> const& item) { return item.first == pThis; });
+
+	if (it != radLevels.end())
+	{
+		const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
+		it->second -= amount;
+	}
+
+	return SkipGameCode;
 }

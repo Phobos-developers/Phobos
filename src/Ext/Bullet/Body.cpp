@@ -5,6 +5,7 @@
 #include <Ext/RadSite/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Cell/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Misc/FlyingStrings.h>
 
@@ -94,28 +95,25 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
+	const auto pCell = MapClass::Instance->TryGetCellAt(Cell);
+
+	if (!pCell)
+		return;
+
 	auto const pThis = this->OwnerObject();
 
 	auto const pWeapon = pThis->GetWeaponType();
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
+	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 
-	auto const it = std::find_if(RadSiteClass::Array->begin(), RadSiteClass::Array->end(),
+	auto const it = std::find_if(pCellExt->RadSites.cbegin(), pCellExt->RadSites.cend(),
 		[=](auto const pSite)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
 
-			if (pRadExt->Type != pRadType)
-				return false;
-
-			if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
-				return false;
-
-			if (Spread != pSite->Spread)
-				return false;
-
-			if (pWeapon != pRadExt->Weapon)
+			if (pRadExt->Type != pRadType || pWeapon != pRadExt->Weapon)
 				return false;
 
 			if (pRadExt->RadInvoker && pThis->Owner)
@@ -125,12 +123,10 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		}
 	);
 
-	if (it != RadSiteClass::Array->end())
+	if (it != pCellExt->RadSites.cend())
 	{
 		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
-		{
 			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
-		}
 
 		auto const pRadExt = RadSiteExt::ExtMap.Find((*it));
 		// Handle It
