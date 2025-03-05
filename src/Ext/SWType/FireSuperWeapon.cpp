@@ -173,18 +173,17 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
         this->LimboKill_IDs.end()
     );
 
-	std::vector<HouseClass*> validHouses;
-    validHouses.reserve(HouseClass::Array->Count);
+	std::unordered_set<HouseClass*> validHouses;
 
     for (HouseClass* pTargetHouse : *HouseClass::Array)
 	{
         if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
-            validHouses.emplace_back(pTargetHouse);
+            validHouses.insert(pTargetHouse);
     }
 
-	for (size_t i = 0; i < validHouses.size(); ++i)
+	for (HouseClass* pValidHouse : validHouses)
     {
-        auto pHouseExt = HouseExt::ExtMap.Find(validHouses[i]);
+        auto pHouseExt = HouseExt::ExtMap.Find(pValidHouse);
         auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
         std::vector<BuildingClass*> killBuildings;
         killBuildings.reserve(vec.size());

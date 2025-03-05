@@ -286,10 +286,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
-	auto const absType = pThis->WhatAmI();
 
 	// Different types prohibited
-	switch (absType)
+	switch (pThis->WhatAmI())
 	{
 	case AbstractType::Infantry:
 		nowTypePtr = reinterpret_cast<TechnoTypeClass**>(&(static_cast<InfantryClass*>(pThis)->Type));
@@ -498,15 +497,20 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 			{
 				if (validCount < (*minCounts)[i])
 				{
-					if (requireAll) return false;
+					if (requireAll)
+						return false;
+
 					continue;
 				}
 			}
+
 			if (maxSize > 0 && i < maxSize)
 			{
 				if (validCount > (*maxCounts)[i])
 				{
-					if (requireAll) return false;
+					if (requireAll)
+						return false;
+
 					continue;
 				}
 			}

@@ -176,9 +176,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	if (frameIndex != -1 && pShapeFile)
 	{
 		Point2D offset = *pLocation;
-		auto const absType = pThis->WhatAmI();
 
-		switch (absType)
+		switch (pThis->WhatAmI())
 		{
 		case AbstractType::Infantry:
 			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry;
@@ -287,7 +286,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		return;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto absType = pThis->WhatAmI();
+	auto const absType = pThis->WhatAmI();
 	int length = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
 

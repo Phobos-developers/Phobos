@@ -495,7 +495,33 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		}
 		else
 		{
-			for (auto const pTechno : *TechnoClass::Array)
+			const auto targetDistance = pTypeExt->Splits_TargetingDistance.Get();
+			const auto radial = pTypeExt->Splits_TargetingDistance.Get() / Unsorted::LeptonsPerCell;
+			std::vector<CellClass*> targetCells;
+			targetCells.reserve(static_cast<int>((radial * 2 + 1) * (radial * 2 + 1)));
+
+			CellRangeIterator<CellClass>{}(cellTarget, targetDistance, [&targetCells](CellClass* pCell) -> bool
+			{
+				targetCells.emplace_back(pCell);
+				return true;
+			});
+
+			for (auto& pCell : targetCells)
+			{
+				for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+				{
+					if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+					{
+						if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
+						{
+							if ((pType->AA || !pTechno->IsInAir()) && IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
+								targets.AddItem(pTechno);
+						}
+					}
+				}
+			}
+
+			/*for (auto const pTechno : *TechnoClass::Array)
 			{
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
 				{
@@ -508,7 +534,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						targets.AddItem(pTechno);
 					}
 				}
-			}
+			}*/
 
 			int range = pTypeExt->Splits_TargetCellRange;
 

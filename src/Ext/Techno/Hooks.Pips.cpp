@@ -236,7 +236,6 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	Point2D position = { offset->X, offset->Y };
 	const int totalStorage = pThis->GetTechnoType()->Storage;
-	const auto pRuleExt = RulesExt::Global();
 
 	std::vector<int> pipsToDraw;
 	pipsToDraw.reserve(maxPips);
@@ -264,9 +263,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		for (int i = 0; i < maxPips; i++)
 		{
 			if (i < fullWeedFrames)
-				pipsToDraw.emplace_back(pRuleExt->Pips_Tiberiums_WeedFrame);
+				pipsToDraw.emplace_back(RulesExt::Global()->Pips_Tiberiums_WeedFrame);
 			else
-				pipsToDraw.emplace_back(pRuleExt->Pips_Tiberiums_WeedEmptyFrame);
+				pipsToDraw.emplace_back(RulesExt::Global()->Pips_Tiberiums_WeedEmptyFrame);
 		}
 	}
 	else
@@ -280,9 +279,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			tiberiumPipCounts.emplace_back(static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5));
 		}
 
-		auto const rawPipOrder = pRuleExt->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : pRuleExt->Pips_Tiberiums_DisplayOrder;
-		auto const& pipFrames = pRuleExt->Pips_Tiberiums_Frames;
-		int const emptyFrame = pRuleExt->Pips_Tiberiums_EmptyFrame;
+		auto const rawPipOrder = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : RulesExt::Global()->Pips_Tiberiums_DisplayOrder;
+		auto const& pipFrames = RulesExt::Global()->Pips_Tiberiums_Frames;
+		int const emptyFrame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
 
 		std::vector<int> pipOrder;
 		pipOrder.reserve(tiberiumCount);

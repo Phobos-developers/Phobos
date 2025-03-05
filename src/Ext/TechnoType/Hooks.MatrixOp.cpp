@@ -329,14 +329,13 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	// This is the very reason I need to do this here, there's no less hacky way to get this Type from those inner calls
 
 	const auto uTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
 	if (RulesExt::Global()->HeightShadowScaling && height > 0)
 	{
 		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-		if (jjloco)
+		if (const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco))
 		{
 			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
 

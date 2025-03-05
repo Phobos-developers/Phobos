@@ -170,13 +170,13 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 {
 	auto const pTechnoType = pThis->GetTechnoType();
 	int weaponIndex = -1;
-	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
 
 	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall || !RulesExt::Global()->AllowWeaponSelectAgainstWalls)
 		return weaponIndex;
 	else if (weaponIndex == -1)
 		return 0;
 
+	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	bool aeForbidsPrimary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
