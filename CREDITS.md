@@ -351,9 +351,9 @@ This page lists all the individual contributions to the project by their author.
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
    - Assign Super Weapon cameo to any sidebar tab
    - Fix impassable invisible barrier created by chronosphere on uncrushable unit
-   - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location
-   - The bug where naval ships as StartUnit might spawn on land has been fixed
-   - Fix the pathfinding issue when a building performs undeploy
+   - `FreeUnit` uses its own `SpeedType` to determine where to spawn
+   - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
+   - Fix the bug where pathfinding issues occur when a building performs undeploy
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
