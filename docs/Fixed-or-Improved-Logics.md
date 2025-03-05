@@ -181,7 +181,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fix the bug that destroyed unit may leaves sensors.
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
-- When a building undeploy, it will normally use the target VehicleType's pathfinding method to decide whether it can move to the target cell.
+- When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
 
 ## Fixes / interactions with other extensions
 

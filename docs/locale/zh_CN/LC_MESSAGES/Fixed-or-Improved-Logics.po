@@ -1111,8 +1111,8 @@ msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置。"
 msgid "The bug where naval ships as StartUnit might spawn on land has been fixed."
 msgstr "修复初始船只可能生成在陆地上的 Bug。"
 
-msgid "When a building undeploy, it will normally use the target VehicleType's pathfinding method to decide whether it can move to the target cell."
-msgstr "建筑反部署时使用目标载具的寻路方式来决定能否向目标单元格移动。"
+msgid "When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell."
+msgstr "建筑通过 `UndeploysInto` 反部署时使用目标载具的 `SpeedType` 和 `MovementZone` 来决定能否向目标单元格移动。"
 
 #: ../../Fixed-or-Improved-Logics.md:180
 msgid "Fix the bug that destroyed unit may leaves sensors."
