@@ -582,7 +582,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			match = attachEffect;
 
 			if (pType->Cumulative && (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker)))
-				cumulativeMatches.emplace_back(attachEffect);
+				cumulativeMatches.push_back(attachEffect);
 		}
 	}
 
@@ -681,7 +681,7 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 		auto const pType = attachEffect->Type;
 
 		if (pType->HasGroups(groups, false))
-			types.emplace_back(pType);
+			types.push_back(pType);
 	}
 
 	return DetachTypes(pTarget, attachEffectInfo, types);

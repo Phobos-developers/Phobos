@@ -419,7 +419,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 							|| (!pickAllies
 								&& !pTeam->FirstUnit->Owner->IsAlliedWith(pTechno))))
 					{
-						validIndexes.emplace_back(j);
+						validIndexes.push_back(j);
 						found = true;
 					}
 				}

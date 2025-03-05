@@ -285,7 +285,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 				if (pType->Cumulative && pType->ExpireWeapon_CumulativeOnlyOnce)
 					cumulativeTypes.insert(pType);
 
-				expireWeapons.emplace_back(pType->ExpireWeapon);
+				expireWeapons.push_back(pType->ExpireWeapon);
 			}
 		}
 	}

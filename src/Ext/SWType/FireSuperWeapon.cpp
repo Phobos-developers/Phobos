@@ -97,7 +97,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		{
 			if (pBuildingExt->TypeExtData->FactoryPlant_AllowTypes.size() > 0 || pBuildingExt->TypeExtData->FactoryPlant_DisallowTypes.size() > 0)
 			{
-				pOwnerExt->RestrictedFactoryPlants.emplace_back(pBuilding);
+				pOwnerExt->RestrictedFactoryPlants.push_back(pBuilding);
 			}
 			else
 			{
@@ -113,7 +113,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuildingExt->LimboID = ID;
 
 		// Add building to list of owned limbo buildings
-		pOwnerExt->OwnedLimboDeliveredBuildings.emplace_back(pBuilding);
+		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
 
 		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
 			pOwnerExt->AddToLimboTracking(pBuilding->Type);
@@ -123,7 +123,7 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		if (pTechnoTypeExt->AutoDeath_Behavior.isset())
 		{
-			ScenarioExt::Global()->AutoDeathObjects.emplace_back(pTechnoExt);
+			ScenarioExt::Global()->AutoDeathObjects.push_back(pTechnoExt);
 
 			if (pTechnoTypeExt->AutoDeath_AfterDelay > 0)
 				pTechnoExt->AutoDeathTimer.Start(pTechnoTypeExt->AutoDeath_AfterDelay);
@@ -191,7 +191,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
         for (auto pBuilding : vec)
 		{
             if (limboIDs.count(BuildingExt::ExtMap.Find(pBuilding)->LimboID))
-                killBuildings.emplace_back(pBuilding);
+                killBuildings.push_back(pBuilding);
         }
 
         for (auto pBuilding : killBuildings)
@@ -384,7 +384,7 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 				pSuper->IsSuspended = true;
 
 				if (pHouseExt->SuspendedEMPulseSWs.count(pSW->Type->ArrayIndex))
-					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].emplace_back(pSuper->Type->ArrayIndex);
+					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].push_back(pSuper->Type->ArrayIndex);
 				else
 					pHouseExt->SuspendedEMPulseSWs.insert({ pSW->Type->ArrayIndex, std::vector<int>{pSuper->Type->ArrayIndex} });
 			}

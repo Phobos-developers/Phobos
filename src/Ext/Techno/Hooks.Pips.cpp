@@ -263,9 +263,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		for (int i = 0; i < maxPips; i++)
 		{
 			if (i < fullWeedFrames)
-				pipsToDraw.emplace_back(RulesExt::Global()->Pips_Tiberiums_WeedFrame);
+				pipsToDraw.push_back(RulesExt::Global()->Pips_Tiberiums_WeedFrame);
 			else
-				pipsToDraw.emplace_back(RulesExt::Global()->Pips_Tiberiums_WeedEmptyFrame);
+				pipsToDraw.push_back(RulesExt::Global()->Pips_Tiberiums_WeedEmptyFrame);
 		}
 	}
 	else
@@ -276,7 +276,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 		for (int i = 0; i < tiberiumCount; i++)
 		{
-			tiberiumPipCounts.emplace_back(static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5));
+			tiberiumPipCounts.push_back(static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5));
 		}
 
 		auto const rawPipOrder = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : RulesExt::Global()->Pips_Tiberiums_DisplayOrder;
@@ -292,7 +292,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			if (index >= 0 && index < tiberiumCount &&
 				std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end())
 			{
-				pipOrder.emplace_back(index);
+				pipOrder.push_back(index);
 			}
 		}
 
@@ -301,7 +301,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{
-				pipOrder.emplace_back(i);
+				pipOrder.push_back(i);
 			}
 		}
 
@@ -316,9 +316,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 					tiberiumPipCounts[index]--;
 
 					if (static_cast<size_t>(index) >= pipFrames.size())
-						pipsToDraw.emplace_back(index == 1 ? 5 : 2);
+						pipsToDraw.push_back(index == 1 ? 5 : 2);
 					else
-						pipsToDraw.emplace_back(pipFrames.at(index));
+						pipsToDraw.push_back(pipFrames.at(index));
 
 					addPip = true;
 					break;
@@ -326,7 +326,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			}
 
 			if (!addPip)
-				pipsToDraw.emplace_back(emptyFrame);
+				pipsToDraw.push_back(emptyFrame);
 		}
 	}
 

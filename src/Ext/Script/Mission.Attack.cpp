@@ -1177,7 +1177,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 						&& IsUnitAvailable(pTechno, true)
 						&& (!pFirstUnit->Owner->IsAlliedWith(pTechno) || IsUnitMindControlledFriendly(pFirstUnit->Owner, pTechno)))
 					{
-						validIndexes.emplace_back(j);
+						validIndexes.push_back(j);
 						found = true;
 					}
 				}

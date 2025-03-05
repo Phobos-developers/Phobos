@@ -31,7 +31,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		// If modder provides more weights than there are objects and we hit one of these, ignore it
 		// otherwise add
 		if (size_t(index) < size)
-			indices.emplace_back(index);
+			indices.push_back(index);
 	}
 	return indices;
 }
@@ -237,7 +237,7 @@ std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pO
 			if ((minRange < 0.0 || distance >= minRange)
 				&& (maxRange < 0.0 || distance <= maxRange))
 			{
-				emCannons.emplace_back(pBuilding);
+				emCannons.push_back(pBuilding);
 			}
 		}
 	}

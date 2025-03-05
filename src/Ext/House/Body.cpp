@@ -34,17 +34,8 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
 	auto const count = static_cast<unsigned int>(UnitTypeClass::Array->Count);
-
-	if (creationFrames.size() < count)
-	{
-    	creationFrames.resize(count, 0x7FFFFFFF);
-    	values.resize(count, 0);
-	}
-	else
-	{
-    	std::fill(creationFrames.begin(), creationFrames.end(), 0x7FFFFFFF);
-    	std::fill(values.begin(), values.end(), 0);
-	}
+	creationFrames.assign(count, 0x7FFFFFFF);
+	values.assign(count, 0);
 
 	for (auto currentTeam : *TeamClass::Array)
 	{
@@ -53,8 +44,8 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 
 		int teamCreationFrame = currentTeam->CreationFrame;
 
-		if (!currentTeam->Type->Reinforce && currentTeam->IsFullStrength
-    		&& (currentTeam->IsForcedActive || currentTeam->IsHasBeen))
+		if ((!currentTeam->Type->Reinforce || currentTeam->IsFullStrength)
+			&& (currentTeam->IsForcedActive || currentTeam->IsHasBeen))
 		{
 			continue;
 		}
@@ -119,7 +110,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 			cBestChoices->clear();
 		}
 
-		cBestChoices->emplace_back(static_cast<int>(i));
+		cBestChoices->push_back(static_cast<int>(i));
 
 		int* cEarliestTypeNameIndex = !isNaval ? &earliestTypenameIndex : &earliestTypenameIndexNaval;
 		int* cEarliestFrame = !isNaval ? &earliestFrame : &earliestFrameNaval;
