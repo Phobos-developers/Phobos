@@ -84,28 +84,28 @@ Duration=0                                         ; integer - game frames or ne
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
-DiscardOn=none                                     ; list of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
 DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
-Animation=                                         ; Animation
+Animation=                                         ; AnimationType
 Animation.ResetOnReapply=false                     ; boolean
 Animation.OfflineAction=Hides                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.TemporalAction=None                      ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 Animation.UseInvokerAsOwner=false                  ; boolean
 Animation.HideIfAttachedWith=                      ; List of AttachEffectTypes
-CumulativeAnimations=                              ; list of animations
+CumulativeAnimations=                              ; List of AnimationTypes
 CumulativeAnimations.RestartOnChange=true          ; boolean
 ExpireWeapon=                                      ; WeaponType
 ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
-Tint.VisibleToHouses=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 FirepowerMultiplier=1.0                            ; floating point value
 ArmorMultiplier=1.0                                ; floating point value
-ArmorMultiplier.AllowWarheads=                     ; list of WarheadTypes
-ArmorMultiplier.DisallowWarheads=                  ; list of WarheadTypes
+ArmorMultiplier.AllowWarheads=                     ; List of WarheadTypes
+ArmorMultiplier.DisallowWarheads=                  ; List of WarheadTypes
 SpeedMultiplier=1.0                                ; floating point value
 ROFMultiplier=1.0                                  ; floating point value
 ROFMultiplier.ApplyOnCurrentTimer=true             ; boolean
@@ -113,19 +113,19 @@ Cloakable=false                                    ; boolean
 ForceDecloak=false                                 ; boolean
 WeaponRange.Multiplier=1.0                         ; floating point value
 WeaponRange.ExtraRange=0.0                         ; floating point value
-WeaponRange.AllowWeapons=                          ; list of WeaponTypes
-WeaponRange.DisallowWeapons=                       ; list of WeaponTypes
+WeaponRange.AllowWeapons=                          ; List of WeaponTypes
+WeaponRange.DisallowWeapons=                       ; List of WeaponTypes
 Crit.Multiplier=1.0                                ; floating point value
 Crit.ExtraChance=0.0                               ; floating point value
-Crit.AllowWarheads=                                ; list of WarheadTypes
-Crit.DisallowWarheads=                             ; list of WarheadTypes
+Crit.AllowWarheads=                                ; List of WarheadTypes
+Crit.DisallowWarheads=                             ; List of WarheadTypes
 RevengeWeapon=                                     ; WeaponType
-RevengeWeapon.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisableWeapons=false                               ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
@@ -150,7 +150,7 @@ AttachEffect.DisallowedMaxCounts=                  ; integer - maximum disallowe
 AttachEffect.IgnoreFromSameSource=false            ; boolean
 AttachEffect.CheckOnFirer=false                    ; boolean
 
-[SOMEWARHEAD]
+[SOMEWARHEAD]                                      ; WarheadType
 AttachEffect.AttachTypes=                          ; List of AttachEffectTypes
 AttachEffect.CumulativeRefreshAll=false            ; boolean
 AttachEffect.CumulativeRefreshAll.OnAttach=false   ; boolean
@@ -207,6 +207,10 @@ RadHasOwner=false                  ; boolean
 RadHasInvoker=false                ; boolean
 ```
 
+```{warning}
+Due to performance concerns, unless any radiation type has `RadApplicationDelay.Building` set to above 0, all functionality related to it is completely disabled in game. This decision is made at earliest available opportunity (at end of initial scenario start or after loading saved game) and will **not** update with further scenario changes or save game loadings during same game session.
+```
+
 ### Laser Trails
 
 ![Laser Trails](_static/images/lasertrails.gif)
@@ -231,8 +235,8 @@ IsIntense=false                  ; boolean, whether the laser is "supported" (AK
 CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
 CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
 
-[SOMEPROJECTILE]                 ; BulletType Image
-LaserTrail.Types=SOMETRAIL       ; list of LaserTrailTypes
+[SOMEPROJECTILE]                 ; Projectile Image
+LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
 
 [SOMETECHNO]                     ; TechnoType Image
 LaserTrailN.Type=SOMETRAIL       ; LaserTrailType
@@ -244,7 +248,7 @@ LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 In `rulesmd.ini`:
 ```ini
 [SOMEVOXELANIM]             ; VoxelAnim
-LaserTrail.Types=SOMETRAIL  ; list of LaserTrailTypes
+LaserTrail.Types=SOMETRAIL  ; List of LaserTrailTypes
 ```
 
 ```{warning}
@@ -279,6 +283,8 @@ ConditionYellow=                            ; floating point value, percents or 
 ConditionRed=                               ; floating point value, percents or absolute
 Armor=none                                  ; ArmorType
 InheritArmorFromTechno=false                ; boolean
+InheritArmor.Allowed=                       ; list of TechnoTypes
+InheritArmor.Disallowed=                    ; list of TechnoTypes
 Powered=false                               ; boolean
 AbsorbOverDamage=false                      ; boolean
 SelfHealing=0.0                             ; floating point value, percents or absolute
@@ -292,16 +298,16 @@ Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Background=                            ; filename - including the .shp/.pcx extension
 Pips.Building.Empty=                        ; integer, frame of pips.shp (zero-based) for empty building pip
-IdleAnim=                                   ; Animation
-IdleAnim.ConditionYellow=                   ; Animation
-IdleAnim.ConditionRed=                      ; Animation
-IdleAnimDamaged=                            ; Animation
-IdleAnimDamaged.ConditionYellow=            ; Animation
-IdleAnimDamaged.ConditionRed=               ; Animation
+IdleAnim=                                   ; AnimationType
+IdleAnim.ConditionYellow=                   ; AnimationType
+IdleAnim.ConditionRed=                      ; AnimationType
+IdleAnimDamaged=                            ; AnimationType
+IdleAnimDamaged.ConditionYellow=            ; AnimationType
+IdleAnimDamaged.ConditionRed=               ; AnimationType
 IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-BreakAnim=                                  ; Animation
-HitAnim=                                    ; Animation
+BreakAnim=                                  ; AnimationType
+HitAnim=                                    ; AnimationType
 HitFlash=false                              ; boolean
 HitFlash.FixedSize=                         ; integer
 HitFlash.Red=true                           ; boolean
@@ -318,7 +324,7 @@ ImmuneToBerserk=no                          ; boolean
 ImmuneToCrit=no                             ; boolean
 Tint.Color=                                 ; integer - R,G,B
 Tint.Intensity=0.0                          ; floating point value
-Tint.VisibleToHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Tint.VisibleToHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                                ; TechnoType
 ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
@@ -326,8 +332,8 @@ ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
 [SOMEWARHEAD]                               ; WarheadType
 Shield.Penetrate=false                      ; boolean
 Shield.Break=false                          ; boolean
-Shield.BreakAnim=                           ; Animation
-Shield.HitAnim=                             ; Animation
+Shield.BreakAnim=                           ; AnimationType
+Shield.HitAnim=                             ; AnimationType
 Shield.SkipHitAnim=false                    ; boolean
 Shield.HitFlash=true                        ; boolean
 Shield.BreakWeapon=                         ; WeaponType
@@ -347,13 +353,13 @@ Shield.SelfHealing.Rate=-1.0                ; floating point value, ingame minut
 Shield.SelfHealing.RestartInCombat=         ; boolean
 Shield.SelfHealing.RestartInCombatDelay=-1  ; integer, game frames
 Shield.SelfHealing.RestartTimer=false       ; boolean
-Shield.AffectTypes=                         ; List of ShieldType names
-Shield.Penetrate.Types=                     ; List of ShieldType names
-Shield.Break.Types=                         ; List of ShieldType names
-Shield.Respawn.Types=                       ; List of ShieldType names
-Shield.SelfHealing.Types=                   ; List of ShieldType names
-Shield.AttachTypes=                         ; List of ShieldType names
-Shield.RemoveTypes=                         ; List of ShieldType names
+Shield.AffectTypes=                         ; List of ShieldTypes
+Shield.Penetrate.Types=                     ; List of ShieldTypes
+Shield.Break.Types=                         ; List of ShieldTypes
+Shield.Respawn.Types=                       ; List of ShieldTypes
+Shield.SelfHealing.Types=                   ; List of ShieldTypes
+Shield.AttachTypes=                         ; List of ShieldTypes
+Shield.RemoveTypes=                         ; List of ShieldTypes
 Shield.RemoveAll=false                      ; boolean
 Shield.ReplaceOnly=false                    ; boolean
 Shield.ReplaceNonRespawning=false           ; boolean
@@ -367,6 +373,8 @@ Shield.InheritStateOnReplace=false          ; boolean
     - Negative damage weapons will consider targets with active, but not at full health shields in need of healing / repairing unless the Warhead has `Shield.Penetrate=true`, in which case only object health is considered.
   - When a TechnoType has an unbroken shield, `[ShieldType] -> Armor` will replace `[TechnoType] -> Armor` for targeting and damage calculation purposes.
     - `InheritArmorFromTechno` can be set to true to override this so that `[TechnoType] -> Armor` is used even if shield is active and `[ShieldType] -> Armor` is ignored.
+    - `InheritArmor.Allowed` lists TechnoTypes whose armor can be overridden. If empty, any TechnoType not listed in `InheritArmor.Disallowed` is okay.
+    - `InheritArmor.Disallowed` lists TechnoTypes whose armor can't be overridden. If empty, any TechnoTypes are okay as long as `InheritArmor.Allowed` is empty or they are listed on it.
   - `InitialStrength` can be used to set a different initial strength value from maximum.
   - `ConditionYellow` and `ConditionRed` can be used to set the thresholds for shield damage states, defaulting to `[AudioVisual] -> Shield.ConditionYellow & Shield.ConditionRed` respectively which in turn default to just `ConditionYellow & ConditionRed`.
 - When executing `DeploysInto` or `UndeploysInto`, if both of the TechnoTypes have shields, the transformed unit/building would keep relative shield health (in percents), same as with `Strength`. If one of the TechnoTypes doesn't have shields, it's shield's state on conversion will be preserved until converted back.
@@ -393,7 +401,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 - `ReceivedDamage.Minimum` & `ReceivedDamage.Maximum` control the minimum and maximum amount of damage that can be dealt to shield in a single hit. This is applied after armor type and `AbsorbPercent` adjustments. If `AbsorbOverDamage=false`, the residual damage dealt to the TechnoType is still based on the original damage before the clamping to the range.
 - `AllowTransfer` controls whether or not the shield can be transferred if the TechnoType changes (such as `(Un)DeploysInto` or Ares type conversion). If not set, defaults to true if shield was attached via `Shield.AttachTypes`, otherwise false.
 - `ImmuneToBerserk` gives the immunity against `Psychedelic=yes` warhead. Otherwise the berserk effect penetrates shields by default. Note that this shouldn't prevent the unit from targeting at the shielded object. `Versus.shieldArmor=0%` is still required in this case.
-- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`.
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes with shields by setting `Tint.Color` and/or `Tint Intensity`.
   - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
   - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
 - A TechnoType with a shield will show its shield Strength. An empty shield strength bar will be left after destroyed if it is respawnable. Several customizations are available for the shield strength pips.
@@ -461,7 +469,7 @@ CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.SpawnParachutedInAir=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
-CreateUnit.SpawnAnim=                  ; Animation
+CreateUnit.SpawnAnim=                  ; AnimationType
 CreateUnit.SpawnHeight=-1              ; integer, height in leptons
 ```
 
@@ -477,7 +485,7 @@ Due to technical constraints, infantry death animations including Ares' `InfDeat
 In `artmd.ini`:
 ```ini
 [SOMEANIM]       ; AnimationType
-AttachedSystem=  ; ParticleSystem
+AttachedSystem=  ; ParticleSystemType
 ```
 
 ### Customizable animation visibility settings
@@ -491,7 +499,7 @@ AttachedSystem=  ; ParticleSystem
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                              ; AnimationType
-VisibleTo=all                           ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleTo=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleTo.ConsiderInvokerAsOwner=false  ; boolean
 RestrictVisibilityIfCloaked=false       ; boolean
 DetachOnCloak=true                      ; boolean
@@ -504,7 +512,7 @@ DetachOnCloak=true                      ; boolean
 In `artmd.ini`:
 ```ini
 [SOMEANIM]       ; AnimationType
-DetachedReport=  ; sound entry
+DetachedReport=  ; Sound entry
 ```
 
 ## Buildings
@@ -519,8 +527,8 @@ DetachedReport=  ; sound entry
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]              ; BuildingType
-Adjacent.Allowed=           ; list of BuildingTypes
-Adjacent.Disallowed=        ; list of BuildingTypes
+Adjacent.Allowed=           ; List of BuildingTypes
+Adjacent.Disallowed=        ; List of BuildingTypes
 NoBuildAreaOnBuildup=false  ; boolean
 ```
 
@@ -539,9 +547,9 @@ Due to technical limitations, with Ares, upgrades placed through `PowersUp.Build
 
 In `rulesmd.ini`:
 ```ini
-[UPGRADENAME]       ; BuildingType
-PowersUp.Owner=Self ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-PowersUp.Buildings= ; list of BuildingTypes
+[SOMEBUILDING]      ; BuildingType, as an upgrade
+PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+PowersUp.Buildings= ; List of BuildingTypes
 ```
 
 ### Destroyable pathfinding obstacles
@@ -563,7 +571,7 @@ IsDestroyableObstacle=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-PowerPlantEnhancer.PowerPlants=    ; list of BuildingTypes
+PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
@@ -630,24 +638,6 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
-### Shared Ammo
-
-- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
-In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
-- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
-- Transports must have ammo and should be able to reload ammo.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
-Ammo.Shared=no        ; boolean
-Ammo.Shared.Group=-1  ; integer
-
-[SOMETECHNO2]         ; TechnoType, passenger
-Ammo.Shared=no        ; boolean
-Ammo.Shared.Group=-1  ; integer
-```
-
 ### Slaves' house decision customization when owner is killed
 
 - You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
@@ -656,9 +646,9 @@ Ammo.Shared.Group=-1  ; integer
   - `neutral`: The slaves belong to civilian house.
   - `killer`: Free the slaves and give them to the house of the slave miner's killer. (vanilla behavior)
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                       ; Slave type
+[SOMEINFANTRY]                       ; InfantryType
 Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
 ```
@@ -667,18 +657,19 @@ Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | 
 
 - `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 
 ```ini
-[SOMEINFANTRY]        ; Slave type
-SlavesFreeSound=      ; sound entry
+[SOMEINFANTRY]        ; InfantryType
+Slaved=yes
+SlavesFreeSound=      ; Sound entry
 ```
 
 ### Use land sequences even in water
 
 - Setting `OnlyUseLandSequences` to true will make infantry display only the regular sequences used on land even if it is in water.
 
-In `artmd.ini`
+In `artmd.ini`:
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
 OnlyUseLandSequences=false  ; boolean
@@ -691,12 +682,13 @@ OnlyUseLandSequences=false  ; boolean
 ![image](_static/images/projectile-interception-01.gif)
 *Interception logic used in [Tiberium Crisis](https://www.moddb.com/mods/tiberium-crisis)*
 
-- Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` and the TechnoType's firepower multipliers is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
+- Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated.
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
-  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
-  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
+  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
     - On interceptors, `Interceptor.WeaponReplaceProjectile` can be set to true to make `Interceptor.WeaponOverride` also replace the intercepted projectile's type (including `Image` and other projectile characteristics) and `Speed` with its own. Does not replace particle systems (`AttachedSystem`, *Ares feature*).
@@ -715,18 +707,19 @@ Interceptor.EliteGuardRange=               ; floating point value
 Interceptor.MinimumGuardRange=0.0          ; floating point value
 Interceptor.VeteranMinimumGuardRange=      ; floating point value
 Interceptor.EliteMinimumGuardRange=        ; floating point value
+Interceptor.ApplyFirepowerMult=true        ; boolean
 Interceptor.DeleteOnIntercept=false        ; boolean
 Interceptor.WeaponOverride=                ; WeaponType
 Interceptor.WeaponReplaceProjectile=false  ; boolean
 Interceptor.WeaponCumulativeDamage=false   ; boolean
 Interceptor.KeepIntact=false               ; boolean
 
-[SOMEPROJECTILE] ; Projectile
-Interceptable=false                    ; boolean
-Interceptable.DeleteOnIntercept=false  ; boolean
-Interceptable.WeaponOverride=          ; WeaponType
-Strength=0                             ; integer
-Armor=                                 ; ArmorType
+[SOMEPROJECTILE]                           ; Projectile
+Interceptable=false                        ; boolean
+Interceptable.DeleteOnIntercept=false      ; boolean
+Interceptable.WeaponOverride=              ; WeaponType
+Strength=0                                 ; integer
+Armor=                                     ; ArmorType
 ```
 
 ```{note}
@@ -863,7 +856,7 @@ Trajectory.Bombard.DetonationDistance=0.4     ; floating point value
 Trajectory.Bombard.DetonationHeight=-1        ; integer
 Trajectory.Bombard.EarlyDetonation=false      ; boolean
 Trajectory.Bombard.TargetSnapDistance=0.5     ; floating point value
-Trajectory.Bombard.TurningPointAnims=         ; list of Animation
+Trajectory.Bombard.TurningPointAnims=         ; List of AnimationTypes
 Trajectory.Bombard.LeadTimeCalculate=false    ; boolean
 Trajectory.Bombard.OffsetCoord=0,0,0          ; integer - Forward,Lateral,Height
 Trajectory.Bombard.RotateCoord=0              ; floating point value
@@ -998,7 +991,7 @@ AISuperWeaponDelay=  ; integer, game frames
 
 In example, this superweapon would convert all owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
-[SOMESW]
+[ExampleSW]
 Convert.From=SOLDIERA,SOLDIERB
 Convert.To=NEWSOLDIER
 Convert.AffectedHouses=team
@@ -1006,15 +999,15 @@ Convert.AffectedHouses=team
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; SuperWeapon
-ConvertN.From=                  ; list of TechnoTypes
+[SOMESW]                        ; SuperWeaponType
+ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
-ConvertN.AffectedHouses=owner   ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ConvertN.AffectedHouses=owner   ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
-Convert.From=                   ; list of TechnoTypes
+Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
-Convert.AffectedHouses=owner    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.AffectedHouses=owner    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ```{warning}
@@ -1034,7 +1027,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                     ; SuperWeapon
+[SOMESW]                     ; SuperWeaponType
 EMPulse.WeaponIndex=0        ; integer, weapon slot index
 EMPulse.SuspendOthers=false  ; boolean
 ```
@@ -1071,7 +1064,7 @@ EMPulse.SuspendOthers=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; Superweapon
+[SOMESW]                        ; SuperWeaponType
 LimboDelivery.Types=            ; List of BuildingTypes
 LimboDelivery.IDs=              ; List of numeric IDs. -1 cannot be used.
 LimboDelivery.RollChances=      ; List of percentages.
@@ -1093,8 +1086,8 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                        ; Super Weapon
-SW.Next=                        ; List of Superweapons
+[SOMESW]                        ; SuperWeaponType
+SW.Next=                        ; List of SuperWeaponTypes
 SW.Next.RealLaunch=true         ; boolean
 SW.Next.IgnoreInhibitors=false  ; boolean
 SW.Next.IgnoreDesignators=true  ; boolean
@@ -1113,7 +1106,7 @@ SW.Next.RandomWeightsN=         ; List of integers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                    ; Super Weapon
+[SOMESW]                    ; SuperWeaponType
 Detonate.Warhead=           ; WarheadType
 Detonate.Warhead.Full=true  ; boolean
 Detonate.Weapon=            ; WeaponType
@@ -1128,7 +1121,7 @@ Detonate.AtFirer=false      ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]    ; Super Weapon
+[SOMESW]    ; SuperWeaponType
 TabIndex=1  ; integer
 ```
 
@@ -1151,6 +1144,24 @@ Spawner.LimitRange=false         ; boolean
 Spawner.ExtraLimitRange=0        ; integer, range in cells
 Spawner.DelayFrames=             ; integer, game frames
 Spawner.AttackImmediately=false  ; boolean
+```
+
+### Shared Ammo
+
+- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
+In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
+- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
+- Transports must have ammo and should be able to reload ammo.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
+Ammo.Shared=no        ; boolean
+Ammo.Shared.Group=-1  ; integer
+
+[SOMETECHNO2]         ; TechnoType, passenger
+Ammo.Shared=no        ; boolean
+Ammo.Shared.Group=-1  ; integer
 ```
 
 ### Automatic passenger deletion
@@ -1186,8 +1197,8 @@ PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (no
 PassengerDeletion.DisplaySoylent=false          ; boolean
 PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
-PassengerDeletion.ReportSound=                  ; Sound
-PassengerDeletion.Anim=                         ; Animation
+PassengerDeletion.ReportSound=                  ; Sound entry
+PassengerDeletion.Anim=                         ; AnimationType
 PassengerDeletion.UnderEMP=false                ; boolean
 ```
 
@@ -1234,14 +1245,14 @@ AutoFire.TargetSelf=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
-BuildLimitGroup.Types=                          ; list of TechnoType names
+BuildLimitGroup.Types=                          ; List of TechnoTypes
 BuildLimitGroup.Nums=                           ; integer, or a list of integers
 BuildLimitGroup.Factor=1                        ; integer
 BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
 BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
-BuildLimitGroup.ExtraLimit.Types=               ; list of TechnoType names
-BuildLimitGroup.ExtraLimit.Nums=                ; list of integers
-BuildLimitGroup.ExtraLimit.MaxCount=            ; list of integers
+BuildLimitGroup.ExtraLimit.Types=               ; List of TechnoTypes
+BuildLimitGroup.ExtraLimit.Nums=                ; List of integers
+BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
 BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 ```
 
@@ -1266,8 +1277,8 @@ OpenTopped.ShareTransportTarget=true      ; boolean
 
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
   - `OpenTransportWeapon=1` on an unit firing from inside `OpenTopped=true` transport.
-  - `NoAmmoWeapon=1` on an unit with  `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
-  - Deployed `IsSimpleDeployer=true` units with`DeployFireWeapon=1` set or omitted.
+  - `NoAmmoWeapon=1` on an unit with `Ammo` value higher than 0 and current ammo count lower or  equal to `NoAmmoAmount`.
+  - Deployed `IsSimpleDeployer=true` units with `DeployFireWeapon=1` set or omitted.
   - `DrainWeapon=true` weapons against enemy `Drainable=yes` buildings.
   - Units with `IsLocomotor=true` set on `Warhead` of `(Elite)Primary` weapon against buildings.
   - Weapons with `ElectricAssault=true` set on `Warhead` against `Overpowerable=true` buildings belonging to owner or allies.
@@ -1290,7 +1301,7 @@ NoSecondaryWeaponFallback.AllowAA=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-DisguiseBlinkingVisibility=owner  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisguiseBlinkingVisibility=owner  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                      ; TechnoType
 UseDisguiseMovementSpeed=false    ; boolean
@@ -1323,18 +1334,6 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-```
-
-### Make units try turning to target when firing with `OmniFire=yes`
-
-- The unit will try to turn the body to target even firing with `OmniFire=yes`.
-  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPONTYPE]          ; WeaponType
-OmniFire=yes
-OmniFire.TurnToTarget=no  ; boolean
 ```
 
 ### Initial strength for TechnoTypes and cloned infantry
@@ -1385,14 +1384,14 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation                      ; Animation
+AutoDeath.VanishAnimation                      ; AnimationType
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
-AutoDeath.TechnosDontExist=                    ; list of TechnoType names
+AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
 AutoDeath.TechnosDontExist.Any=false           ; boolean
 AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
 AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-AutoDeath.TechnosExist=                        ; list of TechnoType names
+AutoDeath.TechnosExist=                        ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                ; boolean
 AutoDeath.TechnosExist.AllowLimboed=false       ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -1414,9 +1413,6 @@ In `rulesmd.ini`:
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
 MultiMindControl.ReleaseVictim=false  ; boolean
-
-[SOMEWARHEAD]                         ; Warhead
-MindControl.Anim=                     ; Animation, defaults to ControlledAnimationType
 ```
 
 ### No Manual Move
@@ -1453,7 +1449,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                    ; TechnoType
 RevengeWeapon=                  ; WeaponType
-RevengeWeapon.AffectsHouses=all ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMEWARHEAD]                   ; WarheadType
 SuppressRevengeWeapons=false    ; boolean
@@ -1487,7 +1483,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]              ; TechnoType
 Tint.Color=               ; integer - R,G,B
 Tint.Intensity=0.0        ; floating point value
-Tint.VisibleToHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Customize EVA voice and `SellSound` when selling units
@@ -1498,9 +1494,9 @@ Tint.VisibleToHouses=all  ; list of Affected House Enumeration (none|owner/self|
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; BuildingType or UnitType
+[SOMETECHNO]    ; BuildingType or VehicleType
 EVA.Sold=       ; EVA entry
-SellSound=      ; sound entry
+SellSound=      ; Sound entry
 ```
 
 ### Sound entry on unit's creation
@@ -1513,21 +1509,22 @@ In `rulesmd.ini`:
 [AudioVisual]
 IsVoiceCreatedGlobal=false   ; boolean
 
-[SOMETECHNO]                 ; UnitType
-VoiceCreated=                ; sound entry
+[SOMETECHNO]                 ; TechnoType
+VoiceCreated=                ; Sound entry
 ```
 
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
   - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Promote.VeteranAnimation=         ; Animation
-Promote.EliteAnimation=           ; Animation
+Promote.VeteranAnimation=         ; AnimationType
+Promote.EliteAnimation=           ; AnimationType
 ```
 
 ### Raise alert when technos are taking damage
@@ -1535,44 +1532,44 @@ Promote.EliteAnimation=           ; Animation
 - In Vanilla, non-building technos will not generate radar events or EVAs when attacked, so players can hardly notice them until they are destroyed. You can now receive a radar event (and optionally a sound effect) when your units is attacked, so you can respond to the combats in time.
 - `[AudioVisual] -> CombatAlert` is a global switch, set it to `true` to enable the entire logic.
 - These flags controlls when to trigger a combat alert.
-  - You can disable this logic on specific techno by setting `[SOMETECHNO] -> CombatAlert` to `false`, which default to `[AudioVisual] -> CombatAlert.Default`. If `CombatAlert.Default` is also empty, it is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`.
-  - `[AudioVisual] -> CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[SOMETECHNO] -> CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
+  - You can disable this logic on specific techno by setting `[TechnoType] -> CombatAlert` to `false`, which default to `[AudioVisual] -> CombatAlert.Default`. If `CombatAlert.Default` is also empty, it is defaultly disabled for technos with `Insignificant=yes` or `Spawned=yes`.
+  - `[AudioVisual] -> CombatAlert.IgnoreBuilding` will turn the logic off on buildings. You can override it for specific building by setting `[TechnoType] -> CombatAlert.NotBuilding` to true. You may hope to use it on veh-buildings.
   - `[AudioVisual] -> CombatAlert.SuppressIfInScreen` decides whether to disable the logic for the units in the current screen.
   - `[AudioVisual] -> CombatAlert.Interval` decides the time interval (in frames) between alerts, to prevent the alert from being anonying. It is default to 150 frames.
   - `[AudioVisual] -> CombatAlert.SuppressIfAllyDamage` decides whether to disable the logic for the damage from allys.
-  - Technos hitted by a warhead with `[SOMEWARHEAD] -> CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the logical or of inverse value of ares flag `[SOMEWARHEAD] -> Malicious` and `[SOMEWARHEAD] -> Nonprovocative`.
+  - Technos hitted by a warhead with `[WarheadType] -> CombatAlert.Suppress` setted to `true` will not raise a radar event or EVA. This flag is default to the logical or of inverse value of ares flag `[WarheadType] -> Malicious` and `[WarheadType] -> Nonprovocative`.
 - And the following flags controlls the effect of a combat alert.
   - `[AudioVisual] -> CombatAlert.MakeAVoice` decides whether to play some sound effect with the combat alert. Set it to `true` will enable the following flags, otherwise they will be ignored.
-  - `[SOMETECHNO] -> CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual] -> CombatAlert.UseFeedbackVoice`.
-  - `[SOMETECHNO] -> CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual] -> CombatAlert.UseAttackVoice`.
-  - `[SOMETECHNO] -> CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual] -> CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[SOMETECHNO] -> CombatAlert.EVA`.
+  - `[TechnoType] -> CombatAlert.UseFeedbackVoice` decides whether to use the sound defined by `VoiceFeedback`. Default to `[AudioVisual] -> CombatAlert.UseFeedbackVoice`.
+  - `[TechnoType] -> CombatAlert.UseAttackVoice` decides whether to use the sound defined by `VoiceAttack`. Default to `[AudioVisual] -> CombatAlert.UseAttackVoice`.
+  - `[TechnoType] -> CombatAlert.UseEVA` decides whether to play an EVA. Default to `[AudioVisual] -> CombatAlert.UseEVA`. The EVA to play is default to `EVA_UnitsInCombat`, and can be specified through `[TechnoType] -> CombatAlert.EVA`.
   - The sound effect is taken **at order**, feedback first, attack then, eva finally. The flags in `[AudioVisual]` controlls whether to check it globally, and can be specify per techno.
   - An example: You set `CombatAlert.UseFeedbackVoice` and `CombatAlert.UseEVA` to `true` and `CombatAlert.UseAttackVoice` to `false`. A unit with `VoiceFeedback` `VoiceAttack` and `CombatAlert.EVA` are all set will play `VoiceFeedback`. A unit with `VoiceAttack` set will play `EVA_UnitsInCombat`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-CombatAlert=false                      ;boolean
-CombatAlert.Default=                   ;boolean
-CombatAlert.IgnoreBuilding=true        ;boolean
-CombatAlert.SuppressIfInScreen=true    ;boolean
-CombatAlert.Interval=150               ;integer, game frames
-CombatAlert.SuppressIfAllyDamage=true  ;boolean
-CombatAlert.MakeAVoice=true            ;boolean
-CombatAlert.UseFeedbackVoice=true      ;boolean
-CombatAlert.UseAttackVoice=true        ;boolean
-CombatAlert.UseEVA=true                ;boolean
+CombatAlert=false                      ; boolean
+CombatAlert.Default=                   ; boolean
+CombatAlert.IgnoreBuilding=true        ; boolean
+CombatAlert.SuppressIfInScreen=true    ; boolean
+CombatAlert.Interval=150               ; integer, game frames
+CombatAlert.SuppressIfAllyDamage=true  ; boolean
+CombatAlert.MakeAVoice=true            ; boolean
+CombatAlert.UseFeedbackVoice=true      ; boolean
+CombatAlert.UseAttackVoice=true        ; boolean
+CombatAlert.UseEVA=true                ; boolean
 
-[SOMETECHNO]
-CombatAlert=                           ;boolean
-CombatAlert.NotBuilding=false          ;boolean
-CombatAlert.UseFeedbackVoice=true      ;boolean
-CombatAlert.UseAttackVoice=true        ;boolean
-CombatAlert.UseEVA=true                ;boolean
-CombatAlert.EVA=EVA_UnitsInCombat      ;EVA entry
+[SOMETECHNO]                           ; TechnoType
+CombatAlert=                           ; boolean
+CombatAlert.NotBuilding=false          ; boolean
+CombatAlert.UseFeedbackVoice=true      ; boolean
+CombatAlert.UseAttackVoice=true        ; boolean
+CombatAlert.UseEVA=true                ; boolean
+CombatAlert.EVA=EVA_UnitsInCombat      ; EVA entry
 
-[SOMEWARHEAD]
-CombatAlert.Suppress=   ;boolean
+[SOMEWARHEAD]                          ; WarheadType
+CombatAlert.Suppress=                  ; boolean
 ```
 
 ### Convert TechnoType on owner house change
@@ -1581,9 +1578,57 @@ CombatAlert.Suppress=   ;boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]
-Convert.HumanToComputer =   ; TechnoType
-Convert.ComputerToHuman =   ; TechnoType
+[SOMETECHNO]                ; TechnoType
+Convert.HumanToComputer=    ; TechnoType
+Convert.ComputerToHuman=    ; TechnoType
+```
+
+### Extended gattling rate down logic
+
+- Now you can customize some effects of `RateDown`.
+  - `RateDown.Delay` controls the delay before using `RateDown` to reduce the gattling value.
+  - `RateDown.Reset` controls whether to reset the gattling value directly when the techno has no target or changes targets.
+  - `RateDown.Cover.Value` replaces the original `RateDown` when techno's ammo is lower than `RateDown.Cover.AmmoBelow`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                  ; TechnoType, `IsGattling=yes`
+RateDown.Delay=0              ; integer, game frames
+RateDown.Reset=false          ; boolean
+RateDown.Cover.Value=0        ; integer
+RateDown.Cover.AmmoBelow=-2   ; integer
+```
+
+### No rearm and reload in EMP or temporal
+
+- Now you can make technos unable to rearm and reload when they are in EMP or locked by a temporal weapon. Defaults to values in `[General]`. This will not affect the reloading of the airport aircraft.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoRearm.UnderEMP=false   ; boolean
+NoRearm.Temporal=false   ; boolean
+NoReload.UnderEMP=false  ; boolean
+NoReload.Temporal=false  ; boolean
+
+[SOMETECHNO]             ; TechnoType
+NoRearm.UnderEMP=        ; boolean
+NoRearm.Temporal=        ; boolean
+NoReload.UnderEMP=       ; boolean
+NoReload.Temporal=       ; boolean
+```
+
+### Recount burst index
+
+- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets. Defaults to `[General] -> RecountBurst`, which defaults to false.
+
+In `rulesmd.ini`:
+```ini
+[General]
+RecountBurst=false  ; boolean
+
+[SOMETECHNO]        ; TechnoType
+RecountBurst=       ; boolean
 ```
 
 ## Terrain
@@ -1595,8 +1640,8 @@ Convert.ComputerToHuman =   ; TechnoType
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
-DestroyAnim=       ; Animation
-DestroySound=      ; Sound
+DestroyAnim=       ; AnimationType
+DestroySound=      ; Sound entry
 ```
 
 ## Warheads
@@ -1608,6 +1653,15 @@ All new Warhead effects
 - Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
 ```
 
+### Custom Mind Control Animation
+- Allows Warheads to play custom `MindControl.Anim` which defaults to `[CombatDamage] -> ControlledAnimationType`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+MindControl.Anim=                     ; Animation, defaults to [CombatDamage] -> ControlledAnimationType
+```
+
 ### Break Mind Control on impact
 
 ![image](_static/images/remove-mc.gif)
@@ -1617,7 +1671,7 @@ All new Warhead effects
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; Warhead
+[SOMEWARHEAD]            ; WarheadType
 RemoveMindControl=false  ; boolean
 ```
 
@@ -1638,19 +1692,19 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                       ; Warhead
+[SOMEWARHEAD]                       ; WarheadType
 Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
 Crit.ApplyChancePerTarget=false     ; boolean
 Crit.ExtraDamage=0                  ; integer
-Crit.Warhead=                       ; Warhead
+Crit.Warhead=                       ; WarheadType
 Crit.Warhead.FullDetonation=true    ; boolean
-Crit.Affects=all                    ; list of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all              ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.Affects=all                    ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                      ; list of animations
+Crit.AnimList=                      ; List of AnimationTypes
 Crit.AnimList.PickRandom=           ; boolean
 Crit.AnimList.CreateAll=            ; boolean
-Crit.ActiveChanceAnims=             ; list of animations
+Crit.ActiveChanceAnims=             ; List of AnimationTypes
 Crit.AnimOnAffectedTargets=false    ; boolean
 Crit.SuppressWhenIntercepted=false  ; boolean
 
@@ -1672,7 +1726,7 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 
 In example, this warhead would convert all affected owned and friendly `SOLDIERA` and `SOLDIERB` to `NEWSOLDIER`:
 ```ini
-[SOMEWARHEAD]
+[ExampleWH]
 Convert.From=SOLDIERA,SOLDIERB
 Convert.To=NEWSOLDIER
 Convert.AffectedHouses=team
@@ -1680,15 +1734,15 @@ Convert.AffectedHouses=team
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                   ; Warhead
-ConvertN.From=                  ; list of TechnoTypes
+[SOMEWARHEAD]                   ; WarheadType
+ConvertN.From=                  ; List of TechnoTypes
 ConvertN.To=                    ; TechnoType
-ConvertN.AffectedHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ConvertN.AffectedHouses=all     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ; where N = 0, 1, 2, ...
 ; or
-Convert.From=                   ; list of TechnoTypes
+Convert.From=                   ; List of TechnoTypes
 Convert.To=                     ; TechnoType
-Convert.AffectedHouses=all      ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Convert.AffectedHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ```{warning}
@@ -1706,8 +1760,8 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                ; Warhead
-SplashList=<none>            ; list of animations
+[SOMEWARHEAD]                ; WarheadType
+SplashList=<none>            ; List of AnimationTypes
 SplashList.PickRandom=false  ; boolean
 ```
 
@@ -1723,13 +1777,13 @@ SplashList.PickRandom=false  ; boolean
 
  In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                                ; Warhead
+[SOMEWARHEAD]                                ; WarheadType
 DetonateOnAllMapObjects=false                ; boolean
 DetonateOnAllMapObjects.Full=true            ; boolean
-DetonateOnAllMapObjects.AffectTargets=none   ; list of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
-DetonateOnAllMapObjects.AffectHouses=none    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DetonateOnAllMapObjects.AffectTypes=         ; list of TechnoType names
-DetonateOnAllMapObjects.IgnoreTypes=         ; list of TechnoType names
+DetonateOnAllMapObjects.AffectTargets=none   ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+DetonateOnAllMapObjects.AffectHouses=none    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DetonateOnAllMapObjects.AffectTypes=         ; List of TechnoTypes
+DetonateOnAllMapObjects.IgnoreTypes=         ; List of TechnoTypes
 DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 ```
 
@@ -1750,7 +1804,7 @@ While this feature can provide better performance than a large `CellSpread` valu
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; Warhead
+[SOMEWARHEAD]                        ; WarheadType
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean
@@ -1765,7 +1819,7 @@ TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                ; Warhead
+[SOMEWARHEAD]                ; WarheadType
 PenetratesIronCurtain=false  ; boolean
 PenetratesForceShield=       ; boolean
 ```
@@ -1791,8 +1845,8 @@ PenetratesForceShield=       ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                     ; Warhead
-LaunchSW=                         ; list of superweapons
+[SOMEWARHEAD]                     ; WarheadType
+LaunchSW=                         ; List of SuperWeaponTypes
 LaunchSW.RealLaunch=true          ; boolean
 LaunchSW.IgnoreInhibitors=false   ; boolean
 LaunchSW.IgnoreDesignators=true   ; boolean
@@ -1807,8 +1861,8 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]     ; Warhead
-RemoveParasite=  ; boolean
+[SOMEWARHEAD]     ; WarheadType
+RemoveParasite=   ; boolean
 ```
 
 ### Remove disguise on impact
@@ -1817,7 +1871,7 @@ RemoveParasite=  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]         ; Warhead
+[SOMEWARHEAD]         ; WarheadType
 RemoveDisguise=false  ; boolean
 ```
 
@@ -1828,7 +1882,7 @@ RemoveDisguise=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]  ; Warhead
+[SOMEWARHEAD]  ; WarheadType
 SpySat=false   ; boolean
 ```
 
@@ -1839,20 +1893,20 @@ SpySat=false   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]  ; Warhead
+[SOMEWARHEAD]  ; WarheadType
 BigGap=false   ; boolean
 ```
 
 ### Spawn powerup crate
 
-- Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action 108 ('Create Crate').
+- Warheads can now spawn powerup crates of specified type(s) on their impact cells (if free, or nearby cells if occupied something other than a crate) akin to map trigger action `108 Create Crate`.
   - `SpawnsCrateN` where N is a number starting from 0, parsed until no key is found can be used to define the type of crate spawned.
   - `SpawnsCrateN.Weight` is a number that determines relative weighting of spawning corresponding crate type vs. other listed ones (0 is no chance, higher means higher probability) defaulting to 1 if not defined.
   - `SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if latter is not set.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; Warhead
+[SOMEWARHEAD]            ; WarheadType
 SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)
 SpawnsCrate(N).Weight=1  ; integer
 ```
@@ -1863,8 +1917,41 @@ SpawnsCrate(N).Weight=1  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]            ; Warhead
+[SOMEWARHEAD]            ; WarheadType
 NotHuman.DeathSequence=  ; integer (1 to 5)
+```
+
+### Sell or undeploy building on impact
+
+- Warheads with `BuildingSell` can now sell buildings with build up image. It has a higher priority than `BuildingUndeploy`.
+  - `BuildingSell.IgnoreUnsellable` controls whether to ignore all possible situations where sales may be disabled except for build up image.
+- Warheads with `BuildingUndeploy` can now undeploy buildings with `UndeploysInto`.
+  - `BuildingUndeploy.Leave` controls whether need to let them move to low threat locations nearby. The threat degree here is calculated using the technos' cost. If a nearby techno has no primary weapons or is owned by your allies, it will not be included.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                        ; Warhead
+BuildingSell=false                   ; boolean
+BuildingSell.IgnoreUnsellable=false  ; boolean
+BuildingUndeploy=false               ; boolean
+BuildingUndeploy.Leave=false         ; boolean
+```
+
+### Damage multiplier for different houses
+
+- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did, and this function will not affect damage with ignore defenses like `Suicide`.etc .
+
+In `rulesmd.ini`:
+```ini
+[CombatDamage]
+DamageOwnerMultiplier=1.0     ; floating point value
+DamageAlliesMultiplier=1.0    ; floating point value
+DamageEnemiesMultiplier=1.0   ; floating point value
+
+[SOMEWARHEAD]                 ; Warhead
+DamageOwnerMultiplier=        ; floating point value
+DamageAlliesMultiplier=       ; floating point value
+DamageEnemiesMultiplier=      ; floating point value
 ```
 
 ## Weapons
@@ -1879,6 +1966,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 AreaFire.Target=base ; AreaFire Target Enumeration (base|self|random)
+```
+
+### Make units try turning to target when firing with `OmniFire=yes`
+
+- The unit will try to turn the body to target even firing with `OmniFire=yes`.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]              ; WeaponType
+OmniFire=yes
+OmniFire.TurnToTarget=no  ; boolean
 ```
 
 ### Burst delay customizations
@@ -1909,10 +2008,10 @@ Burst.FireWithinSequence=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                      ; WeaponType
-ExtraWarheads=                    ; list of WarheadTypes
-ExtraWarheads.DamageOverrides=    ; list of integers
-ExtraWarheads.DetonationChances=  ; list of floating-point values (percentage or absolute)
-ExtraWarheads.FullDetonation=     ; list of booleans
+ExtraWarheads=                    ; List of WarheadTypes
+ExtraWarheads.DamageOverrides=    ; List of integers
+ExtraWarheads.DetonationChances=  ; List of floating-point values (percentage or absolute)
+ExtraWarheads.FullDetonation=     ; List of booleans
 ```
 
 ### Feedback weapon
@@ -1965,6 +2064,6 @@ Strafing.UseAmmoPerShot=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
-CanTarget=all        ; list of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all  ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```

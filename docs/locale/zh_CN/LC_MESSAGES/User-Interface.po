@@ -115,7 +115,7 @@ msgstr "图像"
 
 #: ../../User-Interface.md:38
 msgid "You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display)."
-msgstr "现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-display)开启或关闭。"
+msgstr "现在你可以配置各种类型的数字化计数器来显示科技类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-display)开启或关闭。"
 
 #: ../../User-Interface.md:39
 msgid "`Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead."
@@ -178,7 +178,7 @@ msgstr "在 `RA2MD.INI`："
 
 #: ../../User-Interface.md:98
 msgid "An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)."
-msgstr "可以在 [Phobos 补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries)找到数字化显示的示例 Shape 文件。"
+msgstr "可以在 [Phobos 补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 找到数字化显示的示例 Shape 文件。"
 
 #: ../../User-Interface.md:101
 msgid "Show designator & inhibitor range"
@@ -186,11 +186,11 @@ msgstr "显示指示者和抑制者范围"
 
 #: ../../User-Interface.md:103
 msgid "It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`."
-msgstr "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators` 中的技术类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
+msgstr "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators` 中的科技类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:104
 msgid "In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`."
-msgstr "类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的技术类型将显示一个半径由 `[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
+msgstr "类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的科技类型将显示一个半径由 `[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:105
 msgid "This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`."
@@ -234,7 +234,7 @@ msgstr "此外如果 `[AudioVisual] -> LightFlashAlphaImageDetailLevel` 高于�
 
 #: ../../User-Interface.md:159
 msgid "Low priority for box selection"
-msgstr "低优先权框选"
+msgstr "低优先级框选"
 
 #: ../../User-Interface.md:161
 msgid "![smartvesters](_static/images/lowpriority-01.gif) *Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
@@ -295,8 +295,8 @@ msgid "placepreview"
 msgstr "放置预览"
 
 #: ../../User-Interface.md:207
-msgid "Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[SOMEBUILDING] -> PlacementPreview`."
-msgstr "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual] -> PlacementPreview` 和每个建筑上设置 `[SOMEBUILDING] -> PlacementPreview` 来进一步自定义开启。"
+msgid "Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`."
+msgstr "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual] -> PlacementPreview` 和每个建筑上设置 `[BuildingType] -> PlacementPreview` 来进一步自定义开启。"
 
 #: ../../User-Interface.md:208
 msgid "The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled."
@@ -368,7 +368,7 @@ msgstr "由于技术限制，没有 Ares 的情况此功能将被强制禁用。
 
 #: ../../User-Interface.md:288
 msgid "Flashing Technos on selecting"
-msgstr "闪烁选中的技术类型"
+msgstr "闪烁选中的科技类型"
 
 #: ../../User-Interface.md:290
 msgid "Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0."
@@ -412,7 +412,7 @@ msgstr "`[ ]` 下一个空闲矿车"
 
 #: ../../User-Interface.md:319
 msgid "Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的技术类型。"
+msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的科技类型。"
 
 #: ../../User-Interface.md:320
 msgid "For localization add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file."
@@ -499,12 +499,12 @@ msgid "You can specify custom loadscreen with Ares tag `File.LoadScreen`."
 msgstr "你可以使用 Ares 标签 `File.LoadScreen` 指定自定义载入图。"
 
 #: ../../User-Interface.md:353
-msgid "Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image."
-msgstr "战役载入图（`missionmd.ini->[LS800BkgdName]`) 也可以使用 PCX 图像。"
+msgid "Campaign loading screen (`missionmd.ini -> [LS800BkgdName]`) can also use PCX image."
+msgstr "战役载入图（`missionmd.ini -> [LS800BkgdName]`) 也可以使用 PCX 图像。"
 
 #: ../../User-Interface.md:354
 msgid "Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature."
-msgstr "观察者载入图可以使用 `ls800obs.pcx`（当屏幕宽度为640时使用 `ls640obs.pcx`）。"
+msgstr "观察者载入图可以使用 `ls800obs.pcx`（当屏幕宽度为 640 时使用 `ls640obs.pcx`）。"
 
 #: ../../User-Interface.md:355
 msgid "The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped."
@@ -515,8 +515,8 @@ msgid "This feature works in conjunction with CnCNet5 spawner DLL which resizes 
 msgstr "此功能与 CnCNet5 的 -spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5 -spanwer，那么载入分辨率将被锁定为 `800x600`。"
 
 #: ../../User-Interface.md:357
-msgid "Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`)."
-msgstr "同样适用于战役载入图（`missionmd.ini->[LS800BkgdName]`)。"
+msgid "Same applies to campaign loading screen (`missionmd.ini -> [LS800BkgdName]`)."
+msgstr "同样适用于战役载入图（`missionmd.ini -> [LS800BkgdName]`)。"
 
 #: ../../User-Interface.md:358
 msgid "You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead."
@@ -559,7 +559,7 @@ msgstr "图标排序"
 
 #: ../../User-Interface.md:388
 msgid "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
-msgstr "现在你可以为任何技术类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
+msgstr "现在你可以为任何科技类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
 #: ../../User-Interface.md:389
 msgid "The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins."
@@ -595,7 +595,7 @@ msgstr "可以在资金示数器附近添加一个额外的计数器用于显示
 
 #: ../../User-Interface.md:423
 msgid "You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted."
-msgstr "你可以使用 `Harvester.Counted` 指定哪些技术类型被视为矿车。若未设置，带有 `Harvester=yes` 或 `Enslaves=SOMESLAVE` 的单位将被计入。"
+msgstr "你可以使用 `Harvester.Counted` 指定哪些科技类型被视为矿车。若未设置，带有 `Harvester=yes` 或 `Enslaves=SOMESLAVE` 的单位将被计入。"
 
 #: ../../User-Interface.md:424
 msgid "Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits."
@@ -724,11 +724,11 @@ msgstr "![image](_static/images/tooltips-01.png) *[CnC: Final War](https://www.m
 
 #: ../../User-Interface.md:570
 msgid "Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips."
-msgstr "现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于技术类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
+msgstr "现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
 
 #: ../../User-Interface.md:571
 msgid "TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable)."
-msgstr "技术类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
+msgstr "科技类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
 #: ../../User-Interface.md:572
 msgid "SWType's tooltip would display it's name, cost,  and recharge time (when applicable)."
