@@ -1109,14 +1109,19 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
-	REF_STACK(SpeedType, speedType, STACK_OFFSET(0xA0, -0x98));
-	REF_STACK(int, currentZoneType, STACK_OFFSET(0xA0, -0x94));
-	REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xA0, -0x90));
 
 	const auto pType = pThis->Type;
-	speedType = pType->SpeedType;
-	movementZone = pType->MovementZone;
-	currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+
+	if (!pType->Teleporter)
+	{
+		REF_STACK(SpeedType, speedType, STACK_OFFSET(0xA0, -0x98));
+		REF_STACK(int, currentZoneType, STACK_OFFSET(0xA0, -0x94));
+		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xA0, -0x90));
+
+		speedType = pType->SpeedType;
+		movementZone = pType->MovementZone;
+		currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+	}
 
 	return 0;
 }
