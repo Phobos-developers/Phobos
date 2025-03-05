@@ -1315,3 +1315,78 @@ DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
+{
+	enum { NotUsableArea = 0x688FB9 };
+
+	GET(TechnoClass*, pTechno, EBX);
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
+
+	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pTechnoType = pTechno->GetTechnoType();
+
+	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+}
+
+DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
+{
+	enum { NotUsableArea = 0x689295 };
+
+	GET(TechnoClass*, pTechno, EDI);
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
+
+	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pTechnoType = pTechno->GetTechnoType();
+
+	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+}
+
+DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
+{
+	enum { SkipGameCode = 0x446CD2 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(UnitClass*, pFreeUnit, EDI);
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
+	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
+	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
+{
+	enum { SkipGameCode = 0x446E15 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(UnitClass*, pFreeUnit, EDI);
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
+	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
+	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
+{
+	enum { SkipGameCode = 0x449487 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+	LEA_STACK(CellStruct*, pDest, 0x4);
+	const auto pCell = MapClass::Instance->GetCellAt(*pDest);
+	const auto pUndeploysInto = pType->UndeploysInto;
+
+	R->AL(pCell->IsClearToMove(pUndeploysInto->SpeedType, false, false, -1, pUndeploysInto->MovementZone, -1, 1));
+	return SkipGameCode;
+}
