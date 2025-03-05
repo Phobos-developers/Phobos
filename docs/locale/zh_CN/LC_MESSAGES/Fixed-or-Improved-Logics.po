@@ -1082,13 +1082,6 @@ msgid ""
 "sources such as veterancy, AttachEffect etc."
 msgstr "现在钻地移动受益于所有来源的速度加成例如升级、AttachEffect 等。"
 
-#: ../../Fixed-or-Improved-Logics.md:177
-msgid ""
-"Fix an issue where a unit will leave an impassable invisible barrier in "
-"its original position when it is teleported by ChronoSphere onto an "
-"uncrushable unit and self destruct."
-msgstr "修复了一个单位被超时空传送超武传送到一个不可碾压的单位上并自爆时会在原地留下空气墙的问题。"
-
 #: ../../Fixed-or-Improved-Logics.md:178
 msgid ""
 "Fix the bug that parasite will vanish if it missed its target when its "
@@ -1104,6 +1097,22 @@ msgid ""
 msgstr ""
 "战机现在会根据其 `MovementZone` 和 `SpeedType` "
 "在移动到不同地形上时表现得像预期一样。特别是，这修复了原版中战机被命令移动到水面却将移动命令改为附近的岸边这一异常行为。"
+
+#: ../../Fixed-or-Improved-Logics.md:177
+msgid ""
+"Fix an issue where a unit will leave an impassable invisible barrier in "
+"its original position when it is teleported by ChronoSphere onto an "
+"uncrushable unit and self destruct."
+msgstr "修复了一个单位被超时空传送超武传送到一个不可碾压的单位上并自爆时会在原地留下空气墙的问题。"
+
+msgid "`FreeUnit` uses the unit's own `SpeedType` to find the spawn location."
+msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置。"
+
+msgid "The bug where naval ships as StartUnit might spawn on land has been fixed."
+msgstr "修复初始船只可能生成在陆地上的 Bug。"
+
+msgid "When a building undeploy, it will normally use the target VehicleType's pathfinding method to decide whether it can move to the target cell."
+msgstr "建筑反部署时使用目标载具的寻路方式来决定能否向目标单元格移动。"
 
 #: ../../Fixed-or-Improved-Logics.md:180
 msgid "Fix the bug that destroyed unit may leaves sensors."
