@@ -1375,8 +1375,17 @@ msgstr "自定义超级武器所在栏"
 #: ../../../CREDITS.md:351
 msgid ""
 "Fix impassable invisible barrier created by chronosphere on uncrushable "
-"unit."
-msgstr "超时空传送超武在不可碾压单位上创建空气墙问题的修复"
+"unit"
+msgstr "修复了超时空传送超武将单位传送到一个不可碾压目标上并摧毁时在原位置创建空气墙的问题"
+
+msgid "`FreeUnit` uses the unit's own `SpeedType` to find the spawn location"
+msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置"
+
+msgid "The bug where naval ships as StartUnit might spawn on land has been fixed"
+msgstr "修复初始船只可能生成在陆地上的 Bug"
+
+msgid "Fix the pathfinding issue when a building performs undeploy"
+msgstr "修复建筑执行 `UndeploysInto` 时的寻路问题"
 
 #: ../../../CREDITS.md:352
 msgid "**Apollo** - Translucent SHP drawing patches"

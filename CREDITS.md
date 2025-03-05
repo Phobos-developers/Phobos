@@ -347,7 +347,10 @@ This page lists all the individual contributions to the project by their author.
    - Disguised units not using the correct palette if target has custom palette bugfix
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
    - Assign Super Weapon cameo to any sidebar tab
-   - Fix impassable invisible barrier created by chronosphere on uncrushable unit.
+   - Fix impassable invisible barrier created by chronosphere on uncrushable unit
+   - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location
+   - The bug where naval ships as StartUnit might spawn on land has been fixed
+   - Fix the pathfinding issue when a building performs undeploy
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
