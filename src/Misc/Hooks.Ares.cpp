@@ -36,6 +36,11 @@ ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, House
 	return instance;
 }
 
+void __fastcall LetGo(TemporalClass* pTemporal)
+{
+	pTemporal->LetGo();
+}
+
 void Apply_Ares3_0_Patches()
 {
 	// Abductor fix:
@@ -48,6 +53,9 @@ void Apply_Ares3_0_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
+	
+	// Replace the TemporalClass::Detach call by LetGo in convert function:
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -64,4 +72,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
+	
+	// Replace the TemporalClass::Detach call by LetGo in convert function:
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
 }

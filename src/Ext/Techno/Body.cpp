@@ -309,7 +309,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Detach CLEG targeting
 	auto tempUsing = pThis->TemporalImUsing;
 	if (tempUsing && tempUsing->Target)
-		tempUsing->Detach();
+		tempUsing->LetGo();
 
 	HouseClass* const pOwner = pThis->Owner;
 
