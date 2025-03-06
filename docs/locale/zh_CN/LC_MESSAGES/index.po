@@ -47,7 +47,7 @@ msgstr "修复或改进的逻辑"
 
 #: ../../index.md:11
 msgid "AI Scripting and Mapping"
-msgstr "触发和动作脚本"
+msgstr "AI 脚本与触发"
 
 #: ../../index.md:11
 msgid "User Interface"
@@ -63,11 +63,11 @@ msgstr "扩展文档"
 
 #: ../../README.md:2
 msgid "![Phobos YR Engine Extension](logo.png)"
-msgstr ""
+msgstr "![Phobos YR Engine Extension](logo.png)"
 
 #: ../../README.md:2
 msgid "Phobos YR Engine Extension"
-msgstr "火卫一——尤里的复仇引擎扩展"
+msgstr "Phobos——尤里的复仇引擎扩展"
 
 #: ../../README.md:4
 msgid ""
@@ -127,7 +127,7 @@ msgstr ""
 
 #: ../../README.md:13
 msgid "Phobos"
-msgstr "火卫一"
+msgstr "Phobos"
 
 #: ../../README.md:15
 msgid ""
@@ -138,9 +138,9 @@ msgid ""
 "Ares-Developers/Ares) rather than replace it, thus it won't introduce "
 "incompatibilities."
 msgstr ""
-"...社区引擎扩展项目，基于[修改后的 YRpp](https://github.com/Metadorius/YRpp)"
-"与[Syringe](https://github.com/Ares-Developers/Syringe)为《尤里的复仇》提供一"
-"系列新功能和Bug修复。它旨在与[Ares](https://github.com/Ares-Developers/Ares)"
+"...是一个社区引擎扩展项目，基于[修改后的 YRpp](https://github.com/Metadorius/YRpp)"
+" 与 [Syringe](https://github.com/Ares-Developers/Syringe) 为《尤里的复仇》提供一"
+"系列新功能和 Bug 修复。它旨在与 [Ares](https://github.com/Ares-Developers/Ares) "
 "引擎配套使用，而非取而代之，因此不会带来不兼容问题。"
 
 #: ../../README.md:17
@@ -149,8 +149,12 @@ msgid ""
 "to function, Phobos complements some of the features found in Ares and vice "
 "versa."
 msgstr ""
-"虽然火卫一独立于Ares并且不需要Ares即可运行，但火卫一补充了Ares的一些功能，反"
+"虽然 Phobos 独立于 Ares 并且不需要 Ares 即可运行，但 Phobos 补充了 Ares 的一些功能，反"
 "之亦然。"
+
+#: ../../../README.md:19
+msgid "EA has not endorsed and does not support this product."
+msgstr "此产品不受 EA 官方认可及支持。"
 
 #: ../../README.md:19
 msgid "Community"
@@ -166,14 +170,14 @@ msgid ""
 msgstr ""
 "由于该项目是国际性的，而英语是目前最常用的第二语言，因此英语是该项目的主要语"
 "言。 但我们并不限制创建特定语言的社区群组，因为我们知道很多人的英语可能不如母"
-"语好，而且/或者在访问 Discord 时可能会遇到困难。"
+"语好，而且／或者在访问 Discord 时可能会遇到困难。"
 
 #: ../../README.md:24
 msgid ""
 "**[🌐 International Discord channel on C&C Mod Haven](https://discord.gg/"
 "sZeMzz6qVg)**"
 msgstr ""
-"**[🌐C&C Mod Haven 的国际 Discord频道](https://discord.gg/sZeMzz6qVg)**"
+"**[🌐C&C Mod Haven 的国际 Discord 频道](https://discord.gg/sZeMzz6qVg)**"
 
 #: ../../README.md:25
 msgid ""
@@ -181,7 +185,7 @@ msgid ""
 "com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
 "ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)(630590659)"
 msgstr ""
-"[Phobos 中文用户QQ群](http://qm.qq.com/cgi-bin/qm/qr?"
+"[Phobos 中文用户 QQ群](http://qm.qq.com/cgi-bin/qm/qr?"
 "_wv=1027&k=f_h7TZoVX_8--"
 "ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)（630590659）"
 
@@ -199,7 +203,7 @@ msgid ""
 "releases/latest) (most bug-free release but very slow on new features)"
 msgstr ""
 "[最新的稳定发布版本](https://github.com/Phobos-developers/Phobos/releases/"
-"latest) （Bug最少的版本，但功能更新上非常缓慢）"
+"latest) （Bug 最少的版本，但功能更新上非常缓慢）"
 
 #: ../../README.md:32
 msgid ""
@@ -208,7 +212,7 @@ msgid ""
 "when they are finished)"
 msgstr ""
 "[最新的开发分支版本](https://github.com/Phobos-developers/Phobos/releases) "
-"（Bug相对较少的版本，开发构建会在新功能**完成后**立即更新）"
+"（Bug 相对较少的版本，开发构建会在新功能**完成后**立即更新）"
 
 #: ../../README.md:33
 msgid ""
@@ -248,7 +252,7 @@ msgid ""
 "authorized users only."
 msgstr ""
 "后两个版本是前瞻版本（不要在测试之外重新分发它们！），并且在游戏中显示了版本"
-"构建信息（提交和分支/标签），无法关闭。你可以通过自动机器人的评论获取任何最新"
+"构建信息（提交和分支／标签），无法关闭。你可以通过自动机器人的评论获取任何最新"
 "拉取请求的开发分支版本（上面的链接），这些评论会出现在对应页面中，并包含该分"
 "支最新一次成功编译的 Phobos 版本。此外，你可以手动从 GitHub Actions 运行中获"
 "取工件。你可以获取一个通过 GitHub Actions 工作流自动构建的特定提交的工件，只"
@@ -267,10 +271,10 @@ msgid ""
 "Ares** too to get full Phobos feature set, just drop all the files from the "
 "archive except documentation folder into your game folder."
 msgstr ""
-"如果您的 mod 中还没有安装 Syringe，可以连同[最新版Ares软件包](https://"
-"launchpad.net/ares/+download)一同下载。安装时，只需将`Syringe.exe`拖入游戏根"
-"目录（即您的`gamemd.exe`所在的位置）。强烈建议同时**安装 Ares** 以获得完整的 "
-"Phobos 功能体验，只需将压缩包中除`Documentation`目录之外的所有文件放入游戏根"
+"如果您的 mod 中还没有安装 Syringe，可以连同[最新版 Ares 软件包](https://"
+"launchpad.net/ares/+download)一同下载。安装时，只需将 `Syringe.exe` 拖入游戏根"
+"目录（即您的 `gamemd.exe` 所在的位置）。强烈建议同时**安装 Ares** 以获得完整的 "
+"Phobos 功能体验，只需将压缩包中除 `Documentation` 目录之外的所有文件放入游戏根"
 "目录即可。"
 
 #: ../../README.md:44
@@ -282,12 +286,12 @@ msgid ""
 msgstr ""
 "获取 Phobos “软件包”（可在[发布页面](https://github.com/Phobos-developers/"
 "Phobos/releases)找到官方构建版；阅读下文了解如何获取每夜构建版本）。最终会生"
-"成两个文件：`Phobos.dll`和`Phobos.pdb`。"
+"成两个文件：`Phobos.dll` 和 `Phobos.pdb`。"
 
 #: ../../README.md:45
 msgid ""
 "Place those files in the game folder (where your `gamemd.exe` is located)."
-msgstr "将这些文件放入游戏根目录（即您的`gamemd.exe`所在的位置）。"
+msgstr "将这些文件放入游戏根目录（即您的 `gamemd.exe` 所在的位置）。"
 
 #: ../../README.md:46
 msgid ""
@@ -299,7 +303,7 @@ msgid ""
 msgstr ""
 "要使用 Phobos（以及所有其他已安装且兼容的 Syringe 拓展引擎，包括 Ares）启动游"
 "戏，你需要在命令行中执行 `Syringe.exe \"gamemd.exe\" [gamemd.exe 的命令行参"
-"数]`（如果不需要参数，请省略）。Ares 软件包中的`RunAres.bat`也有相同的功能，"
+"数]`（如果不需要参数，请省略）。Ares 软件包中的 `RunAres.bat` 也有相同的功能，"
 "因此也可以使用。"
 
 #: ../../README.md:48
@@ -347,6 +351,14 @@ msgid ""
 msgstr ""
 "[官方文档](https://phobos.readthedocs.io/zh_CN/latest) （也支持 [英文]"
 "(https://phobos.readthedocs.io)）"
+
+#: ../../../README.md:58
+msgid "[Community Chinese docs](https://docs.qq.com/doc/p/dc3da1ce39a6e787b6e133f7d33d6aebef581cb4)"
+msgstr "[社区中文文档](https://docs.qq.com/doc/p/dc3da1ce39a6e787b6e133f7d33d6aebef581cb4)"
+
+#: ../../../README.md:59
+msgid "Because the Chinese translation of the official docs is currently underdeveloped, at the time it is recommended to use the community docs for Chinese users."
+msgstr "由于官方文档的中文翻译尚不完善，目前建议中国用户使用社区文档"
 
 #: ../../README.md:59
 msgid ""
@@ -405,7 +417,7 @@ msgid ""
 "in Visual Studio: open the solution file in VS and build it (`Debug` build "
 "config is recommended);"
 msgstr ""
-"在 Visual Studio 中：在 VS 中打开解决方案文件并构建（建议使用`Debug`构建配"
+"在 Visual Studio 中：在 VS 中打开解决方案文件并构建（建议使用 `Debug` 构建配"
 "置；"
 
 #: ../../README.md:86
@@ -416,14 +428,14 @@ msgstr "在 VSCode 中：打开项目目录，点击`运行构建任务…`（`C
 
 #: ../../README.md:87
 msgid "barebones: run `scripts/build_debug.bat`."
-msgstr "其他：运行`scripts/build_debug.bat`。"
+msgstr "其他：运行 `scripts/build_debug.bat`。"
 
 #: ../../README.md:88
 msgid ""
 "Upon build completion the resulting `Phobos.dll` and `Phobos.pdb` would be "
 "placed in the subfolder identical to the name of the buildconfig executed."
 msgstr ""
-"构建完成后，生成的`Phobos.dll`和`Phobos.pdb`将被放置在与执行的构建配置名称相"
+"构建完成后，生成的 `Phobos.dll` 和 `Phobos.pdb` 将被放置在与执行的构建配置名称相"
 "同的子目录中。"
 
 #: ../../README.md:93
@@ -491,7 +503,7 @@ msgid ""
 "page for extra fanciness), linking to Phobos repository, contributing or "
 "donating to us via the links above."
 msgstr ""
-"感谢所有使用 Phobos、测试更改和报告Bug的人！ 您可以在您的客户端/启动器中展示"
+"感谢所有使用 Phobos、测试更改和报告Bug的人！ 您可以在您的客户端／启动器中展示"
 "我们的 Logo（单色版本可在 [此处](https://github.com/Phobos-developers/Phobos/"
 "blob/develop/logo-mono.png)）来表达您的感谢并助力项目（可以让它能够点击打开 "
 "Phobos GitHub 页面以显得更豪华），或者通过链接到 Phobos 的仓库、通过上方的链"
@@ -528,7 +540,7 @@ msgid ""
 "modding guidelines - the rules imposed by guidelines shall take precedence "
 "(for example, the project should not be commercial or used to make money)."
 msgstr ""
-"作为修改，该项目符合[EA C&C 修改指南](https://www.ea.com/games/command-and-"
+"作为修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-"
 "conquer/command-and-conquer-remastered/modding-faq)；如果项目许可与修改指南之"
 "间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
 
