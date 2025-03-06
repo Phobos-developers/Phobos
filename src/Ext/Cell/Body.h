@@ -10,8 +10,8 @@ class CellExt
 public:
 	using base_type = CellClass;
 
-	static constexpr DWORD Canary = 0xFDC49191;
-	static constexpr size_t ExtPointerOffset = 0x18;
+	static constexpr DWORD Canary = 0x13371337;
+	// static constexpr size_t ExtPointerOffset = 0x144;
 
 	class ExtData final : public Extension<CellClass>
 	{
