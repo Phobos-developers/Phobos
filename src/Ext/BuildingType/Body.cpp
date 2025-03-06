@@ -223,6 +223,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
+	
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -333,6 +335,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
+		.Process(this->Refinery_UseNormalActiveAnim)
 		;
 }
 
