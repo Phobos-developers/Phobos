@@ -1858,25 +1858,11 @@ msgstr ""
 "*[泰伯利亚危机](https://www.moddb.com/mods/tiberium-crisis) 中的拦截抛射体*"
 
 #: ../../New-or-Enhanced-Logics.md:685
-#, fuzzy
 msgid ""
-"Projectiles can now be made interceptable by certain TechnoTypes by "
-"setting `Interceptable=true` on them. The TechnoType scans for "
-"interceptable projectiles within a range if it has no other target and "
-"will use one of its weapons to shoot at them. Projectiles can define "
-"`Armor` and `Strength`. Weapons that cannot target the projectile's armor"
-" type will not attempt to intercept it. On interception, if the "
-"projectile has `Armor` set, an amount equaling to the intercepting "
-"weapon's `Damage` adjusted by Warhead `Verses` is deducted from the "
-"projectile's current strength. Regardless of if the current projectile "
-"strength was reduced or not, if it sits at 0 or below after interception,"
-" the projectile is detonated."
+"Projectiles can now be made interceptable by certain TechnoTypes by setting `Interceptable=true` on them. The TechnoType scans for interceptable projectiles within a range if it has no other target and will use one of its weapons to shoot at them. Projectiles can define `Armor` and `Strength`. Weapons that cannot target the projectile's armor type will not attempt to intercept it. On interception, if the projectile has `Armor` set, an amount equaling to the intercepting weapon's `Damage` adjusted by Warhead `Verses` is deducted from the projectile's current strength. Regardless of if the current projectile strength was reduced or not, if it sits at 0 or below after interception, the projectile is detonated."
 msgstr ""
 "现在可以通过在一些抛射体上设置 `Interceptable=true` "
-"来使它们能够被特定的科技类型拦截。如果该科技类型没有其他目标那么它将扫描范围内的可拦截抛射体并使用它的一个武器进行射击。抛射体可以定义 "
-"`Armor` 和 `Strength`。无法对该抛射体护甲类型发起攻击的武器不会尝试拦截。在拦截时如果抛射体设置了 `Armor` "
-"那么从抛射体的当前血量中扣除一个等于拦截武器 `Damage` 经弹头 `Verses` "
-"和科技类型火力加成调整后的数值。无论当前抛射体血量是否被减少若拦截后其血量为 0 或更低那么抛射体将被引爆。"
+"来使它们能够被特定的科技类型拦截。如果该科技类型没有其他目标那么它将扫描范围内的可拦截抛射体并使用它的一个武器进行射击。抛射体可以定义 `Armor` 和 `Strength`。无法对该抛射体护甲类型发起攻击的武器不会尝试拦截。在拦截时如果抛射体设置了 `Armor` 那么从抛射体的当前血量中扣除一个等于拦截武器 `Damage` 经弹头 `Verses` 和科技类型火力加成调整后的数值。无论当前抛射体血量是否被减少若拦截后其血量为 0 或更低那么抛射体将被引爆。"
 
 #: ../../New-or-Enhanced-Logics.md:686
 msgid ""
@@ -3980,15 +3966,6 @@ msgid ""
 "first controlled unit when they have reached the control limit and are "
 "ordered to control a new target."
 msgstr "多重心控单位现在可以达到控制上限而又要控制一个新目标时释放第一个被控制的单位。"
-
-#: ../../New-or-Enhanced-Logics.md:1409
-#, fuzzy
-msgid ""
-"Allows Warheads to play custom `MindControl.Anim` which defaults to "
-"`ControlledAnimationType`."
-msgstr ""
-"允许弹头播放自定义的 `MindControl.Anim`，默认值取自 `[CombatDamage] -> "
-"ControlledAnimationType`。"
 
 #: ../../New-or-Enhanced-Logics.md:1418
 msgid "No Manual Move"
