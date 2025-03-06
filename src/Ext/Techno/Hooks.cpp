@@ -532,6 +532,15 @@ DEFINE_HOOK(0x4437B3, BuildingClass_CellClickedAction_NoManualMove, 0x6)
 	return TechnoTypeExt::ExtMap.Find(pType)->NoManualMove ? 0x44384E : 0;
 }
 
+DEFINE_HOOK(0x44F62B, BuildingClass_CanPlayerMove_NoManualMove, 0x6)
+{
+	GET(BuildingTypeClass*, pType, EDX);
+
+	R->ECX(TechnoTypeExt::ExtMap.Find(pType)->NoManualMove ? 0 : pType->UndeploysInto);
+
+	return 0x44F631;
+}
+
 #pragma endregion
 
 DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
