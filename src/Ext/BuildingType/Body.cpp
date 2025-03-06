@@ -223,7 +223,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Art
-	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
+	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
+	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
