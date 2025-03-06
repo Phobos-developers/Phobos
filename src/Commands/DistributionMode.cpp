@@ -6,94 +6,126 @@
 
 #include <HouseClass.h>
 
-int DistributionMode1CommandClass::Mode = 0;
-int DistributionMode2CommandClass::Mode = 0;
-bool DistributionMode3CommandClass::Enabled = false;
-int DistributionMode3CommandClass::ShowTime = 0;
+bool DistributionModeHoldDownCommandClass::Enabled = false;
+bool DistributionModeHoldDownCommandClass::OnMessageShowed = false;
+bool DistributionModeHoldDownCommandClass::OffMessageShowed = false;
+int DistributionModeHoldDownCommandClass::ShowTime = 0;
 
-const char* DistributionMode1CommandClass::GetName() const
+const char* DistributionModeSpreadCommandClass::GetName() const
 {
 	return "Distribution Mode Spread";
 }
 
-const wchar_t* DistributionMode1CommandClass::GetUIName() const
+const wchar_t* DistributionModeSpreadCommandClass::GetUIName() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_SPREAD", L"Distribution spread");
 }
 
-const wchar_t* DistributionMode1CommandClass::GetUICategory() const
+const wchar_t* DistributionModeSpreadCommandClass::GetUICategory() const
 {
 	return CATEGORY_CONTROL;
 }
 
-const wchar_t* DistributionMode1CommandClass::GetUIDescription() const
+const wchar_t* DistributionModeSpreadCommandClass::GetUIDescription() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_SPREAD_DESC", L"Automatically and averagely select similar targets around the original target. This is for changing the search range");
 }
 
-void DistributionMode1CommandClass::Execute(WWKey eInput) const
+void DistributionModeSpreadCommandClass::Execute(WWKey eInput) const
 {
-	DistributionMode1CommandClass::Mode = ((DistributionMode1CommandClass::Mode + 1) & 3);
-	DistributionMode3CommandClass::ShowTime = SystemTimer::GetTime();
+	Phobos::Config::DistributionSpreadMode = ((Phobos::Config::DistributionSpreadMode + 1) & 3);
+	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
 
-const char* DistributionMode2CommandClass::GetName() const
+const char* DistributionModeFilterCommandClass::GetName() const
 {
 	return "Distribution Mode Filter";
 }
 
-const wchar_t* DistributionMode2CommandClass::GetUIName() const
+const wchar_t* DistributionModeFilterCommandClass::GetUIName() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER", L"Distribution filter");
 }
 
-const wchar_t* DistributionMode2CommandClass::GetUICategory() const
+const wchar_t* DistributionModeFilterCommandClass::GetUICategory() const
 {
 	return CATEGORY_CONTROL;
 }
 
-const wchar_t* DistributionMode2CommandClass::GetUIDescription() const
+const wchar_t* DistributionModeFilterCommandClass::GetUIDescription() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_FILTER_DESC", L"Automatically and averagely select similar targets around the original target. This is for changing the filter criteria");
 }
 
-void DistributionMode2CommandClass::Execute(WWKey eInput) const
+void DistributionModeFilterCommandClass::Execute(WWKey eInput) const
 {
-	DistributionMode2CommandClass::Mode = ((DistributionMode2CommandClass::Mode + 1) & 3);
-	DistributionMode3CommandClass::ShowTime = SystemTimer::GetTime();
+	Phobos::Config::DistributionFilterMode = ((Phobos::Config::DistributionFilterMode + 1) & 3);
+	DistributionModeHoldDownCommandClass::ShowTime = SystemTimer::GetTime();
 }
 
-const char* DistributionMode3CommandClass::GetName() const
+const char* DistributionModeHoldDownCommandClass::GetName() const
 {
 	return "Distribution Mode Hold Down";
 }
 
-const wchar_t* DistributionMode3CommandClass::GetUIName() const
+const wchar_t* DistributionModeHoldDownCommandClass::GetUIName() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_HOLDDOWN", L"Distribution hold down");
 }
 
-const wchar_t* DistributionMode3CommandClass::GetUICategory() const
+const wchar_t* DistributionModeHoldDownCommandClass::GetUICategory() const
 {
 	return CATEGORY_CONTROL;
 }
 
-const wchar_t* DistributionMode3CommandClass::GetUIDescription() const
+const wchar_t* DistributionModeHoldDownCommandClass::GetUIDescription() const
 {
 	return GeneralUtils::LoadStringUnlessMissing("TXT_DISTR_HOLDDOWN_DESC", L"Automatically and averagely select similar targets around the original target. This is for holding down to toggle on/off");
 }
 
-bool DistributionMode3CommandClass::ExtraTriggerCondition(WWKey eInput) const
+bool DistributionModeHoldDownCommandClass::ExtraTriggerCondition(WWKey eInput) const
 {
 	return true;
 }
 
-void DistributionMode3CommandClass::Execute(WWKey eInput) const
+void DistributionModeHoldDownCommandClass::Execute(WWKey eInput) const
 {
 	if (eInput & WWKey::Release)
-		DistributionMode3CommandClass::Enabled = false;
-	else
-		DistributionMode3CommandClass::Enabled = true;
+	{
+		DistributionModeHoldDownCommandClass::Enabled = false;
+
+		if (HouseClass::IsCurrentPlayerObserver() || SessionClass::Instance->MultiplayerObserver)
+			return;
+
+		VocClass::PlayGlobal(RulesExt::Global()->EndDistributionModeSound, 0x2000, 1.0);
+
+		if (!DistributionModeHoldDownCommandClass::OffMessageShowed)
+		{
+			DistributionModeHoldDownCommandClass::OffMessageShowed = true;
+			MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOff", L"Distribution mode unabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		}
+	}
+	else if (!HouseClass::IsCurrentPlayerObserver() && !SessionClass::Instance->MultiplayerObserver)
+	{
+		DistributionModeHoldDownCommandClass::Enabled = true;
+		VocClass::PlayGlobal(RulesExt::Global()->StartDistributionModeSound, 0x2000, 1.0);
+
+		if (!DistributionModeHoldDownCommandClass::OnMessageShowed)
+		{
+			DistributionModeHoldDownCommandClass::OnMessageShowed = true;
+			MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOn", L"Distribution mode enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		}
+	}
+}
+
+void DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand()
+{
+	Phobos::Config::DistributionSpreadMode = std::min(3, Phobos::Config::DistributionSpreadMode + 1);
+}
+
+void DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce()
+{
+	Phobos::Config::DistributionSpreadMode = std::max(0, Phobos::Config::DistributionSpreadMode - 1);
 }
 
 DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
@@ -107,13 +139,14 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 
 	if (count > 0)
 	{
-		const auto mode1 = DistributionMode1CommandClass::Mode;
-		const auto mode2 = DistributionMode2CommandClass::Mode;
+		const auto mode1 = Phobos::Config::DistributionSpreadMode;
+		const auto mode2 = Phobos::Config::DistributionFilterMode;
 
 		// Distribution mode main
-		if (DistributionMode3CommandClass::Enabled && mode1 && count > 1 && mouseAction != Action::NoMove && !PlanningNodeClass::PlanningModeActive
+		if (DistributionModeHoldDownCommandClass::Enabled && mode1 && count > 1 && mouseAction != Action::NoMove && !PlanningNodeClass::PlanningModeActive
 			&& (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None && !pTarget->IsInAir())
 		{
+			VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 			const auto pSpecial = HouseClass::FindSpecial();
 			const auto pCivilian = HouseClass::FindCivilianSide();
 			const auto pNeutral = HouseClass::FindNeutral();
@@ -218,11 +251,11 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 
 DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRange, 0x7)
 {
-	if (!DistributionMode3CommandClass::Enabled && SystemTimer::GetTime() - DistributionMode3CommandClass::ShowTime > 30)
+	if (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)
 		return 0;
 
-	const auto mode1 = DistributionMode1CommandClass::Mode;
-	const auto mode2 = DistributionMode2CommandClass::Mode;
+	const auto mode1 = Phobos::Config::DistributionSpreadMode;
+	const auto mode2 = Phobos::Config::DistributionFilterMode;
 
 	if (mode1 || mode2)
 	{

@@ -93,6 +93,8 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static bool AllowDistributionCommand;
+		static int DistributionSpreadMode;
+		static int DistributionFilterMode;
 	};
 
 	class Misc

@@ -2,11 +2,9 @@
 
 #include "Commands.h"
 
-class DistributionMode1CommandClass : public CommandClass
+class DistributionModeSpreadCommandClass : public CommandClass
 {
 public:
-	static int Mode;
-
 	virtual const char* GetName() const override;
 	virtual const wchar_t* GetUIName() const override;
 	virtual const wchar_t* GetUICategory() const override;
@@ -14,11 +12,9 @@ public:
 	virtual void Execute(WWKey eInput) const override;
 };
 
-class DistributionMode2CommandClass : public CommandClass
+class DistributionModeFilterCommandClass : public CommandClass
 {
 public:
-	static int Mode;
-
 	virtual const char* GetName() const override;
 	virtual const wchar_t* GetUIName() const override;
 	virtual const wchar_t* GetUICategory() const override;
@@ -26,10 +22,12 @@ public:
 	virtual void Execute(WWKey eInput) const override;
 };
 
-class DistributionMode3CommandClass : public CommandClass
+class DistributionModeHoldDownCommandClass : public CommandClass
 {
 public:
 	static bool Enabled;
+	static bool OnMessageShowed;
+	static bool OffMessageShowed;
 	static int ShowTime;
 
 	virtual const char* GetName() const override;
@@ -38,4 +36,7 @@ public:
 	virtual const wchar_t* GetUIDescription() const override;
 	virtual bool ExtraTriggerCondition(WWKey eInput) const override;
 	virtual void Execute(WWKey eInput) const override;
+
+	static void DistributionSpreadModeExpand();
+	static void DistributionSpreadModeReduce();
 };
