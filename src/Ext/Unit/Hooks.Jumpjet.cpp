@@ -3,6 +3,7 @@
 #include <Utilities/Macro.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 
 // Misc jumpjet facing, turning, drawing fix -- Author: Trsdy
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
@@ -12,6 +13,9 @@
 DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
+
+	if (TechnoExt::HasAttachmentLoco(pThis))
+		return 0;
 
 	auto pType = pThis->Type;
 	CoordStruct& source = pThis->Location;
