@@ -157,18 +157,12 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 		{
 			// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
 			// 182 is √2/2 * 256. 20 is same to vanilla behavior.
-			if (pCarrier->WhatAmI() == AbstractType::Building && deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
-				return true;
-
-			if (pCarrier->WhatAmI() != AbstractType::Building && pSpawner->GetMapCoords() == *pCarrierMapCrd && deltaCrd.Z < 20)
-				return true;
-		}
-		else if (deltaCrd.Magnitude() <= recycleRange)
-		{
-			return true;
+			return (pCarrier->WhatAmI() == AbstractType::Building)
+				? (deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
+				: (pSpawner->GetMapCoords() == *pCarrierMapCrd && deltaCrd.Z < 20);
 		}
 
-		return false;
+		return deltaCrd.Magnitude() <= recycleRange;
 	};
 
 	if (shouldRecycleSpawned())
