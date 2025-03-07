@@ -204,11 +204,14 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 
 #pragma endregion
 
-// Kick out stuck units when the factory building is not busy
+// Kick out stuck units when the factory building is not busy, only factory buildings can enter this hook
 DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
+	// This is not a solution to the problem at its root. Currently
+	// The root cause of the problem is not located
+	// So the idle weapon factory is asked to search every second for any units that are stuck
 	if (!(Unsorted::CurrentFrame() % 15)) // Check every 15 frames for factories
 	{
 		const auto pType = pThis->Type;
