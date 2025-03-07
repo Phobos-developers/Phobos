@@ -47,7 +47,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable ElectricBolt Arcs
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
-  - Voxel light source position and tilting fix
+  - `UseFixedVoxelLighting`
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -350,7 +350,11 @@ This page lists all the individual contributions to the project by their author.
    - Disguised units not using the correct palette if target has custom palette bugfix
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
    - Assign Super Weapon cameo to any sidebar tab
-   - Fix impassable invisible barrier created by chronosphere on uncrushable unit.
+   - Fix impassable invisible barrier created by chronosphere on uncrushable unit
+   - `FreeUnit` uses its own `SpeedType` to determine where to spawn
+   - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
+   - Fix the bug where pathfinding issues occur when a building performs undeploy
+   - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -394,6 +398,7 @@ This page lists all the individual contributions to the project by their author.
   - Extended gattling rate down logic
   - Sell or undeploy building on impact
   - Draw visual effects for airburst weapons
+  - Technos recount current burst index when change the firing weapon
   - Projectile subject to ground check before firing
 - **Ollerus**:
   - Build limit group enhancement
@@ -401,6 +406,7 @@ This page lists all the individual contributions to the project by their author.
   - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
+  - Shield armor inheritance customization
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

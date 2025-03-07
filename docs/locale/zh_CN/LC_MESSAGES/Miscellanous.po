@@ -39,7 +39,7 @@ msgstr "无限制遭遇战颜色"
 msgid ""
 "It is now possible to have an unlimited number of skirmish/multiplayer "
 "player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares."
-msgstr "现在可以拥有无限数量的遭遇战/多人游戏玩家颜色，而《尤里的复仇》中仅有 8 种，Ares 下仅有 16 种。"
+msgstr "现在可以拥有无限数量的遭遇战／多人游戏玩家颜色，而《尤里的复仇》中仅有 8 种，Ares 下仅有 16 种。"
 
 #: ../../Miscellanous.md:10
 msgid ""
@@ -68,7 +68,7 @@ msgid ""
 "This feature should only be used if you use a spawner/outside client "
 "(i.e. CNCNet client). Using it in the original YR launcher will produce "
 "undesireable effects."
-msgstr "此功能仅在使用 spanwer / 外部客户端（例如 XNA CNCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
+msgstr "此功能仅在使用 spanwer／外部客户端（例如 XNA CNCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
 
 #: ../../Miscellanous.md:25
 msgid ""
@@ -118,7 +118,7 @@ msgid ""
 "`DebugKeysEnabled` under `[GlobalControls]` is set to true in "
 "`rulesmd.ini`."
 msgstr ""
-"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当"
+"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中／鼠标悬停于其上的对象的信息。仅当"
 " `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
 #: ../../Miscellanous.md:41
@@ -191,7 +191,7 @@ msgstr "变量将以键值对的形式写入，例如 `MyVariable=1`。"
 msgid ""
 "If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't "
 "exist, it will be created. If it exists, all sections will be preserved."
-msgstr "如果同名的 INI 文件（`locals.ini`/`globals.ini`）不存在那么将会被创建。如果存在，所有小节都将被保留。"
+msgstr "如果同名的 INI 文件（`locals.ini`／`globals.ini`）不存在那么将会被创建。如果存在，所有小节都将被保留。"
 
 #: ../../Miscellanous.md:64
 msgid "Semantic locomotor aliases"
@@ -327,7 +327,7 @@ msgstr "单人游戏速度"
 msgid ""
 "It is now possible to change the default (GS4/Fast/30FPS) campaign game "
 "speed with `CampaignDefaultGameSpeed`."
-msgstr "现在可以使用 `CampaignDefaultGameSpeed` 更改默认的（游戏速度 4 / 快 / 30FPS）战役游戏速度。"
+msgstr "现在可以使用 `CampaignDefaultGameSpeed` 更改默认的（游戏速度 4／快／30FPS）战役游戏速度。"
 
 #: ../../Miscellanous.md:93
 msgid ""
@@ -352,7 +352,7 @@ msgid ""
 "frames\" etc. Increase of speedup/slowdown is approximately logarithmic."
 msgstr ""
 "`CustomGSN.ChangeInterval` 设置应用该效果的帧间隔。值为 2 表示“每**隔**一帧执行一次”，3 表示“每 3 "
-"帧**中**执行一次”等。加速/减速的改动大致呈对数关系。"
+"帧**中**执行一次”等。加速／减速的改动大致呈对数关系。"
 
 #: ../../Miscellanous.md:96
 msgid ""
@@ -514,7 +514,7 @@ msgid ""
 "You can turn on/off the exception handler of the game's main loop using "
 "the following command line arg: `-ExceptionHandler=boolean` where "
 "`boolean` is `(true|false|yes|no|1|0)`."
-msgstr "你可以使用以下命令行参数来开启/关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是 `(true|false|yes|no|1|0)`。"
+msgstr "你可以使用以下命令行参数来开启／关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是 `(true|false|yes|no|1|0)`。"
 
 #: ../../Miscellanous.md:239
 msgid ""
