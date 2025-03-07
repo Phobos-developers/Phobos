@@ -51,7 +51,7 @@ void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, discard_t, Coo
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
 	if(pExt->AltOccupation.has_value())
 	{
-		int lastAlt = pExt->AltOccupation ? obAlt : obNormal;
+		int lastAlt = pExt->AltOccupation.value() ? obAlt : obNormal;
 		alt |= lastAlt;
 		pExt->AltOccupation.reset();
 	}
