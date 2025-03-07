@@ -1174,7 +1174,7 @@ msgstr "自定义奴隶矿场被毁后的奴隶所有者"
 
 #: ../../../CREDITS.md:302
 msgid "Trigger Action spawned team IFV/OpenTopped logic fix"
-msgstr "触发结果所生成小队中 IFV/OpenTopped 逻辑的修复"
+msgstr "触发结果所生成小队中 IFV／OpenTopped 逻辑的修复"
 
 #: ../../../CREDITS.md:303
 msgid ""
@@ -1457,7 +1457,7 @@ msgstr "单位创建时的音效条目"
 
 #: ../../../CREDITS.md:370
 msgid "Auto-deploy/Deploy block on ammo change"
-msgstr "根据弹药自动部署 / 阻止部署"
+msgstr "根据弹药自动部署／阻止部署"
 
 #: ../../../CREDITS.md:371
 msgid "Flashing Technos on selecting"

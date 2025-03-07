@@ -115,7 +115,7 @@ msgstr "在 `rulesmd.ini`："
 
 #: ../../User-Interface.md:29
 msgid "Battle screen UI/UX"
-msgstr "战斗界面 UI/UX"
+msgstr "战斗界面 UI／UX"
 
 #: ../../User-Interface.md:31
 msgid "Digital display"
@@ -154,7 +154,7 @@ msgid ""
 " the display is drawn (depending on `Align`) relative to unit's "
 "center/selection box. For buildings, `Anchor.Building` is used instead."
 msgstr ""
-"`Anchor.Horizontal` 和 `Anchor.Vertical` 设置显示位置相对于单位中心/选择框的锚点（取决于 "
+"`Anchor.Horizontal` 和 `Anchor.Vertical` 设置显示位置相对于单位中心／选择框的锚点（取决于 "
 "`Align`）。建筑使用 `Anchor.Building`。"
 
 #: ../../User-Interface.md:38
@@ -166,12 +166,12 @@ msgstr "`Offset` 和 `Offset.ShieldDelta`（后者在护盾激活时使用）可
 #: ../../User-Interface.md:39
 msgid ""
 "By default, values are displayed in `current/maximum` format (i.e. "
-"20/40). `HideMaxValue=yes` will make the counter show only the current "
-"value (i.e. 20). `Percentage=yes` changes the format to `percent%` (i.e. "
-"50%)."
+"`20/40`). `HideMaxValue=yes` will make the counter show only the current "
+"value (i.e. `20`). `Percentage=yes` changes the format to `percent%` (i.e. "
+"`50%`)."
 msgstr ""
-"默认情况下，值以 `当前值/最大值` 的格式显示（例如 20/40）。`HideMaxValue=yes` 将使计数器仅显示当前值（例如 "
-"20）。`Percentage=yes` 将格式更改为 `百分比 %`（例如 50%）。"
+"默认情况下，值以 `当前值/最大值` 的格式显示（例如 `20/40`）。`HideMaxValue=yes` 将使计数器仅显示当前值（例如 "
+"`20`）。`Percentage=yes` 将格式更改为 `百分比 %`（例如 `50%`）。"
 
 #: ../../User-Interface.md:40
 msgid "`CanSee` and `CanSee.Observer` can limit visibility to specific players."
@@ -314,7 +314,7 @@ msgstr "可以关闭某些闪光效果。这些闪光效果包括："
 msgid ""
 "Combat light effects (`Bright=true`) and everything that uses same "
 "functionality e.g Iron Curtain / Force Field impact flashes."
-msgstr "战斗闪光效果（`Bright=true`）以及使用相同逻辑的所有效果，例如铁幕 / 力场护盾受击闪光。"
+msgstr "战斗闪光效果（`Bright=true`）以及使用相同逻辑的所有效果，例如铁幕／力场护盾受击闪光。"
 
 #: ../../User-Interface.md:138
 msgid ""
@@ -556,7 +556,7 @@ msgstr "`[ ]` 显示伤害数字"
 msgid ""
 "Switches on/off floating numbers when dealing damage. See "
 "[this](Miscellanous.md#display-damage-numbers) for details."
-msgstr "切换在造成杀伤时显示/隐藏浮动数字。详见 [此处](Miscellanous.md#display-damage-numbers) 以了解。"
+msgstr "切换在造成杀伤时显示／隐藏浮动数字。详见 [此处](Miscellanous.md#display-damage-numbers) 以了解。"
 
 #: ../../User-Interface.md:284
 msgid ""
@@ -763,7 +763,7 @@ msgstr "在 `uimd.ini`："
 
 #: ../../User-Interface.md:340
 msgid "Sidebar / Battle UI"
-msgstr "侧边栏 / 战斗界面 UI"
+msgstr "侧边栏／战斗界面 UI"
 
 #: ../../User-Interface.md:342
 msgid "Cameo Sorting"
@@ -774,7 +774,7 @@ msgid ""
 "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. "
 "Vanilla sorting rules are "
 "[here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
-msgstr "现在你可以为任何科技类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
+msgstr "现在你可以为任何科技类型／超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
 #: ../../User-Interface.md:345
 msgid ""
@@ -800,7 +800,7 @@ msgstr "自定义缺省图标（`XXICON.SHP`）"
 
 #: ../../User-Interface.md:365
 msgid "You can now specify any SHP/PCX file as `XXICON.SHP` for missing cameo."
-msgstr "现在你可以指定任何 SHP/PCX 文件作为缺省图标使用的 `XXICON.SHP` 。"
+msgstr "现在你可以指定任何 SHP／PCX 文件作为缺省图标使用的 `XXICON.SHP` 。"
 
 #: ../../User-Interface.md:373
 msgid "Harvester counter"
@@ -818,7 +818,7 @@ msgstr ""
 msgid ""
 "An additional counter for your active / total harvesters can be added "
 "near the credits indicator."
-msgstr "可以在资金示数器附近添加一个额外的计数器用于显示你的活动（工作中）矿车的数量/总矿车数量。"
+msgstr "可以在资金示数器附近添加一个额外的计数器用于显示你的活动（工作中）矿车的数量／总矿车数量。"
 
 #: ../../User-Interface.md:379
 msgid ""
@@ -845,7 +845,7 @@ msgstr "计数器以 `标签(活动矿车数/总矿车数)` 的格式显示，�
 msgid ""
 "You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, "
 "negative means left/up, positive means right/down."
-msgstr "你可以通过 `Sidebar.HarvesterCounter.Offset` 调整计数器位置，负数表示左/上，正数表示右/下。"
+msgstr "你可以通过 `Sidebar.HarvesterCounter.Offset` 调整计数器位置，负数表示左／上，正数表示右／下。"
 
 #: ../../User-Interface.md:383
 msgid ""
@@ -924,7 +924,7 @@ msgstr ""
 msgid ""
 "You can adjust counter position by `Sidebar.PowerDelta.Offset`, negative "
 "means left/up, positive means right/down."
-msgstr "你可以通过 `Sidebar.PowerDelta.Offset` 调整计数器位置，负数表示左/上，正数表示右/下。"
+msgstr "你可以通过 `Sidebar.PowerDelta.Offset` 调整计数器位置，负数表示左／上，正数表示右／下。"
 
 #: ../../User-Interface.md:427
 msgid ""
@@ -932,7 +932,7 @@ msgid ""
 "acceptable values are left, right, center/centre."
 msgstr ""
 "你可以通过 `Sidebar.PowerDelta.Align` "
-"调整计数器对齐方式，可接受的值为左对齐（`left`）、右对齐（`right`）或居中对齐（`center`/`centre`）。"
+"调整计数器对齐方式，可接受的值为左对齐（`left`）、右对齐（`right`）或居中对齐（`center`／`centre`）。"
 
 #: ../../User-Interface.md:428
 msgid ""
@@ -973,7 +973,7 @@ msgstr ""
 msgid ""
 "You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-"
 "side setting), negative means left/up, positive means right/down."
-msgstr "你可以通过 `Sidebar.WeedsCounter.Offset`（每个阵营的设置）调整计数器位置，负数表示左/上，正数表示右/下。"
+msgstr "你可以通过 `Sidebar.WeedsCounter.Offset`（每个阵营的设置）调整计数器位置，负数表示左／上，正数表示右／下。"
 
 #: ../../User-Interface.md:465
 msgid ""
@@ -1048,7 +1048,7 @@ msgid ""
 "character limit is lifted when the feature is enabled via the "
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr ""
-"现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
+"现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
 " 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
 
 #: ../../User-Interface.md:527

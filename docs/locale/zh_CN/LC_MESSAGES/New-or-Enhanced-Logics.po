@@ -221,7 +221,7 @@ msgstr ""
 msgid ""
 "Attached effect can fire off a weapon when expired / removed / object "
 "dies by setting `ExpireWeapon`."
-msgstr "AE 可以在自然结束/被移除/对象死亡时通过设置 `ExpireWeapon` 发射一个武器。"
+msgstr "AE 可以在自然结束／被移除／对象死亡时通过设置 `ExpireWeapon` 发射一个武器。"
 
 #: ../../New-or-Enhanced-Logics.md:32
 msgid ""
@@ -313,7 +313,7 @@ msgid ""
 "that are not allowed to, respectively."
 msgstr ""
 "`WeaponRange.AllowWeapons` 和 `WeaponRange.DisallowWeapons` "
-"分别设定哪些武器可以/不可以获得上述射程加成。"
+"分别设定哪些武器可以／不可以获得上述射程加成。"
 
 #: ../../New-or-Enhanced-Logics.md:43
 msgid ""
@@ -339,7 +339,7 @@ msgid ""
 "`Crit.AllowWarheads` can be used to list only Warheads that can benefit "
 "from this critical hit chance multiplier and `Crit.DisallowWarheads` "
 "weapons that are not allowed to, respectively."
-msgstr "`Crit.AllowWarheads` 和 `Crit.DisallowWarheads` 可分别列出哪些弹头可以/不可以获得上述暴击概率加成。"
+msgstr "`Crit.AllowWarheads` 和 `Crit.DisallowWarheads` 可分别列出哪些弹头可以／不可以获得上述暴击概率加成。"
 
 #: ../../New-or-Enhanced-Logics.md:46
 msgid ""
@@ -555,8 +555,8 @@ msgid ""
 " `Cumulative=true` types (ignored for other types) respectively."
 msgstr ""
 "`AttachEffect.(Required|Disallowed)MinCounts & "
-"(Required|Disallowed)MaxCounts` 可用于设置科技类型上必须存在/禁止存在的 `Cumulative=true` "
-"类（对其他类型无效） AE 的最小/最大数量。"
+"(Required|Disallowed)MaxCounts` 可用于设置科技类型上必须存在／禁止存在的 `Cumulative=true` "
+"类（对其他类型无效） AE 的最小／最大数量。"
 
 #: ../../New-or-Enhanced-Logics.md:74
 msgid ""
@@ -569,7 +569,7 @@ msgid ""
 "`AttachEffect.CheckOnFirer` is set to true makes it so that the required "
 "/ disallowed attached effects are checked from the firer of the weapon "
 "instead of the target."
-msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在/禁止存在 AE 的检查对象更改为武器发射者而不是目标。"
+msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止存在 AE 的检查对象更改为武器发射者而不是目标。"
 
 #: ../../New-or-Enhanced-Logics.md:77 ../../New-or-Enhanced-Logics.md:180
 #: ../../New-or-Enhanced-Logics.md:248 ../../New-or-Enhanced-Logics.md:266
@@ -797,8 +797,8 @@ msgid ""
 " or if it has `TypeImmune=true` and the damage source is another instance"
 " of same TechnoType belonging to same house."
 msgstr ""
-"如果科技类型处于 `Temporal` 弹头的效果中、处于铁幕 / 力场护盾保护中、拥有 `Immune=true` 或者拥有 "
-"`TypeImmune=true` 并且伤害来自相同所属的同类单位，那么护盾将不会受到伤害。"
+"如果科技类型处于 `Temporal` 弹头的效果中、处于铁幕／力场护盾保护中、拥有 `Immune=true` 或者拥有 "
+"`TypeImmune=true` 并且伤害来自相同所属的同种科技类型，那么护盾将不会受到伤害。"
 
 #: ../../New-or-Enhanced-Logics.md:370
 msgid ""
@@ -812,7 +812,7 @@ msgid ""
 "full health shields in need of healing / repairing unless the Warhead has"
 " `Shield.Penetrate=true`, in which case only object health is considered."
 msgstr ""
-"负值伤害武器将认为拥有一个激活但不满血护盾的目标需要治疗/维修，除非弹头具有 "
+"负值伤害武器将认为拥有一个激活但不满血护盾的目标需要治疗／维修，除非弹头具有 "
 "`Shield.Penetrate=true`，这种情况下只会考虑对象的血量。"
 
 #: ../../New-or-Enhanced-Logics.md:372
@@ -859,7 +859,7 @@ msgid ""
 "will be preserved until converted back."
 msgstr ""
 "当执行 `DeploysInto` 或 `UndeploysInto` "
-"时，如果两个科技类型都拥有护盾，转换后的单位/建筑将保持相对（百分比）的护盾值，类似 "
+"时，如果两个科技类型都拥有护盾，转换后的单位／建筑将保持相对（百分比）的护盾值，类似 "
 "`Strength`。如果其中一个科技类型没有护盾，其护盾状态会被保留直到转换回来。"
 
 #: ../../New-or-Enhanced-Logics.md:377
@@ -893,13 +893,13 @@ msgid ""
 "`SelfHealing` with a negative number deducts the shield strength."
 msgstr ""
 "`SelfHealing` 和 `Respawn` 遵循以下设置：0.0 禁用该功能，1%-100% "
-"按百分比恢复/重生护盾值，其他数字直接恢复/重生指定护盾值。特别的一点是 `SelfHealing` 为负数代表扣除护盾值。"
+"按百分比恢复／重生护盾值，其他数字直接恢复／重生指定护盾值。特别的一点是 `SelfHealing` 为负数代表扣除护盾值。"
 
 #: ../../New-or-Enhanced-Logics.md:382
 msgid ""
 "If you want shield recovers/respawns 1 HP per time, currently you need to"
 " set tag value to any number between 1 and 2, like `1.1`."
-msgstr "如果你想让护盾每次恢复/重生 1 点 HP，目前你需要将标签值设为 1 到 2 之间的任意数字，比如 `1.1`。"
+msgstr "如果你想让护盾每次恢复／重生 1 点 HP，目前你需要将标签值设为 1 到 2 之间的任意数字，比如 `1.1`。"
 
 #: ../../New-or-Enhanced-Logics.md:383
 msgid ""
@@ -917,7 +917,7 @@ msgid ""
 "shield recovers/respawns in ingame minutes."
 msgstr ""
 "`SelfHealing.Rate` 和 `Respawn.Rate` 遵循以下设置：0.0 "
-"立即恢复护盾，其他值表示护盾恢复/重生间隔（单位：分）。"
+"立即恢复护盾，其他值表示护盾恢复／重生间隔（单位：分）。"
 
 #: ../../New-or-Enhanced-Logics.md:385
 msgid ""
@@ -929,12 +929,12 @@ msgstr "`IdleAnim` 如果设置则会在护盾完好时播放。该动画会自�
 msgid ""
 "`IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set"
 " different animations for when shield health is at or below the "
-"percentage defined in `[AudioVisual] -> ConditionYellow`/`ConditionRed`, "
+"percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, "
 "respectively. If `IdleAnim.ConditionRed` is not set it falls back to "
 "`IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`."
 msgstr ""
 "`IdleAnim.ConditionYellow` 和 `IdleAnim.ConditionRed` 可用于设置当护盾值达到 "
-"`[AudioVisual] -> ConditionYellow`/`ConditionRed` 的百分比时使用的不同动画。如果未设置 "
+"`[AudioVisual] -> ConditionYellow/ConditionRed` 的百分比时使用的不同动画。如果未设置 "
 "`IdleAnim.ConditionRed` 则会回退到 `IdleAnim.ConditionYellow`，而后者则会回退到 "
 "`IdleAnim`。"
 
@@ -1049,7 +1049,7 @@ msgid ""
 "`Versus.shieldArmor=0%` is still required in this case."
 msgstr ""
 "`ImmuneToBerserk` 给予对 `Psychedelic=yes` "
-"弹头的免疫能力。否则混乱默认可以穿过护盾。注意这不应组织单位对护盾所保护对象进行索敌。在这种情况下 `Versus.shieldArmor=0%`"
+"弹头的免疫能力。否则混乱默认可以穿过护盾。注意这不应阻止单位对护盾所保护对象进行索敌。在这种情况下 `Versus.shieldArmor=0%`"
 " 仍然是必需的。"
 
 #: ../../New-or-Enhanced-Logics.md:400
@@ -1058,14 +1058,14 @@ msgid ""
 "`Psychedelic=true` Warheads can be applied to TechnoTypes with shields by"
 " setting `Tint.Color` and/or `Tint Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕/力场护盾或 "
+"通过设置 `Tint.Color` 和／或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:401 ../../New-or-Enhanced-Logics.md:1319
 msgid ""
 "`Tint.Intensity` is additive lighting increase/decrease - 1.0 is the "
 "default object lighting."
-msgstr "`Tint.Intensity` 是增加/减少的光照，1.0 是默认的对象光照。"
+msgstr "`Tint.Intensity` 是增加／减少的光照，1.0 是默认的对象光照。"
 
 #: ../../New-or-Enhanced-Logics.md:402 ../../New-or-Enhanced-Logics.md:1320
 msgid ""
@@ -1096,9 +1096,9 @@ msgid ""
 "value will use the default frame, whether it is fallback to first value "
 "or the aforementioned hardcoded defaults."
 msgstr ""
-"`Pips.Shield` 可用于指定使用哪个 pip 帧作为护盾值。如果仅设为 1 位数字则使用显示该帧；如果设置 3 位数字，则当护盾值达到 "
-"`[AudioVisual] -> ConditionYellow`/`ConditionRed` "
-"时使用该值。`Pips.Shield.Building` 用于 BuildingTypes。-1 "
+"`Pips.Shield` 可用于指定使用哪个 pip 帧作为护盾值。如果仅设为 1 位数字则始终显示该帧；如果设置 3 位数字，则它们会根据护盾值达到 "
+"`ConditionYellow` 和 `ConditionRed` "
+"与否分别使用。`Pips.Shield.Building` 用于 BuildingTypes。-1 "
 "作为值将使用默认帧，无论是否回退到第一个值或上述硬编码的默认值。"
 
 #: ../../New-or-Enhanced-Logics.md:406
@@ -1146,7 +1146,7 @@ msgid ""
 "`EffectsRequireVerses` is set to false on the Warhead."
 msgstr ""
 "弹头拥有与护盾交互的新选项。注意，所有这些本身并不需要能够对护盾进行目标选择（例如像 `Shield.Break` "
-"或移除/附加护盾这样的修改）的选项仍然需要弹头的 `Verses` 才能影响目标，除非在弹头上将 `EffectsRequireVerses` "
+"或移除／附加护盾这样的修改）的选项仍然需要弹头的 `Verses` 才能影响目标，除非在弹头上将 `EffectsRequireVerses` "
 "设置为 false。"
 
 #: ../../New-or-Enhanced-Logics.md:411
@@ -1549,14 +1549,14 @@ msgstr "以独立声音事件播放声音"
 msgid ""
 "It is now possible for animation to play a sound that is not attached to "
 "an audio event handler by using `DetachedReport`. By default animation "
-"`Report/StartSound` is played by an audio event handler, which allows the"
+"`Report` / `StartSound` is played by an audio event handler, which allows the"
 " sound to loop and play at correct location even if it changes after its "
 "initial creation. This can also cause issues with animations that chain "
 "different types through `Next`, as the audio event handler resets when "
 "the animation restarts."
 msgstr ""
 "现在可以通过 `DetachedReport` 让动画播放一个未附加到音频事件处理器的声音。默认情况下动画的 "
-"`Report/StartSound` 由音频事件处理器播放，这允许即使它在初始创建后发生了变化声音也会循环和在正确的位置播放。这也导致通过 "
+"`Report`／`StartSound` 由音频事件处理器播放，这允许即使它在初始创建后发生了变化声音也会循环和在正确的位置播放。这也导致通过 "
 "`Next` 链接不同的动画类型时出现问题，因为动画重新开始时音频事件处理器会重置。"
 
 #: ../../New-or-Enhanced-Logics.md:514
@@ -1879,7 +1879,7 @@ msgid ""
 "from ground. If you don't set those then the weapon won't be able to "
 "target low-flying or high-flying projectiles respectively."
 msgstr ""
-"拦截武器可能需要在其抛射体上将 `AG` 和/或 `AA` 设为 true "
+"拦截武器可能需要在其抛射体上将 `AG` 和／或 `AA` 设为 true "
 "以使其能够根据抛射体相对地面的高度来瞄准。如果你不设置这些那么武器将无法分别瞄准低空或高空飞行的抛射体。"
 
 #: ../../New-or-Enhanced-Logics.md:691
@@ -2263,11 +2263,11 @@ msgstr "注意如果在同一个建筑发射第一种武器前发射另一种具
 #: ../../New-or-Enhanced-Logics.md:872
 msgid ""
 "Additionally, due to technical limitations the targeting constraints will"
-" always default to primary weapon's `Range/MinimumRange` unless "
-"`SW.RangeMinimum/SW.RangeMaximum` are explicitly set."
+" always default to primary weapon's `Range` / `MinimumRange` unless "
+"`SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set."
 msgstr ""
-"此外由于技术限制目前除非手动列出了 `SW.RangeMinimum/SW.RangeMaximum` 否则始终默认使用主武器的 "
-"`Range/MinimumRange` 执行瞄准限制。"
+"此外由于技术限制目前除非手动列出了 `SW.RangeMinimum`／`SW.RangeMaximum` 否则始终默认使用主武器的 "
+"`Range`／`MinimumRange` 执行瞄准限制。"
 
 #: ../../New-or-Enhanced-Logics.md:873
 msgid ""
@@ -2439,15 +2439,15 @@ msgid ""
 "each superweapon, otherwise only non-inhibited superweapons are launched."
 msgstr ""
 "`SW.Next.IgnoreInhibitors` 设置是否忽略每个超级武器的 "
-"`SW.Inhibitors`/`SW.AnyInhibitor`，否则只有未被抑制的超级武器会被发射。"
+"`SW.Inhibitors`／`SW.AnyInhibitor`，否则只有未被抑制的超级武器会被发射。"
 
 #: ../../New-or-Enhanced-Logics.md:932
 msgid ""
-"`SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` "
+"`SW.Next.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` "
 "respectively."
 msgstr ""
 "`SW.Next.IgnoreDesignators` 设置是否忽略每个超级武器的 "
-"`SW.Designators`/`SW.AnyDesignator`。"
+"`SW.Designators`／`SW.AnyDesignator`。"
 
 #: ../../New-or-Enhanced-Logics.md:945
 msgid "Warhead or Weapon detonation at target cell"
@@ -3113,7 +3113,7 @@ msgstr "`AfterDelay`：如果倒计时（以帧为单位）达到 0 则对象死
 msgid ""
 "`TechnosExist` / `TechnosDontExist`: The object will die if TechnoTypes "
 "exist or do not exist, respectively."
-msgstr "`TechnosExist` / `TechnosDontExist`：如果科技类型分辨存在或不存在则对象死亡。"
+msgstr "`TechnosExist`／`TechnosDontExist`：如果科技类型分别存在或不存在则对象死亡。"
 
 #: ../../New-or-Enhanced-Logics.md:1205
 msgid ""
@@ -3288,7 +3288,7 @@ msgid ""
 "It is now possible to add weapons that are fired on a teleporting "
 "TechnoType when it warps in or out. They are at the same time as the "
 "appropriate animations (`WarpIn` / `WarpOut`) are displayed."
-msgstr "现在可以在科技类型传送来/去时发射武器。它们会与相应的 (`WarpIn` / `WarpOut`) 动画一起显示。"
+msgstr "现在可以在科技类型传送来/去时发射武器。它们会与相应的 (`WarpIn`／`WarpOut`) 动画一起显示。"
 
 #: ../../New-or-Enhanced-Logics.md:1304
 msgid ""
@@ -3320,7 +3320,7 @@ msgid ""
 "`Psychedelic=true` Warheads can be applied to TechnoTypes naturally by "
 "setting `Tint.Color` and/or `Tint Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和/或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕/力场护盾或 "
+"通过设置 `Tint.Color` 和／或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1321
@@ -3501,14 +3501,18 @@ msgstr ""
 "`Crit.ExtraDamage` 决定暴击造成的额外伤害，如果设置了 "
 "`Crit.Warhead`，那么伤害将用于在每个受影响的目标上引爆指定的弹头，否则伤害将基于当前弹头的 `Verses` 设置直接造成伤害。"
 
-#: ../../New-or-Enhanced-Logics.md:1422
 msgid ""
 "`Crit.Warhead` can be used to set a Warhead to detonate instead of using "
-"current Warhead. `Crit.Warhead.FullDetonation` controls whether or not "
+"current Warhead."
+msgstr ""
+"`Crit.Warhead` 可用于设置一个用于替代当前弹头引爆的弹头。"
+
+msgid ""
+"`Crit.Warhead.FullDetonation` controls whether or not "
 "the Warhead is detonated fully on the targets (as part of a dummy weapon)"
 " or simply deals area damage and applies Phobos' Warhead effects."
 msgstr ""
-"`Crit.Warhead` 可用于设置一个用于替代当前弹头引爆的弹头。`Crit.Warhead.FullDetonation` "
+"`Crit.Warhead.FullDetonation` "
 "控制弹头是否在目标上完全引爆（作为虚拟武器的一部分）或者只能对所在区域造成杀伤并应用 Phobos 的弹头效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1423
@@ -3756,7 +3760,7 @@ msgstr "`TransactMoney.Display.Houses` 决定哪些所属方可以看到资金�
 msgid ""
 "`TransactMoney.Display.Offset` is additional pixel offset for the center "
 "of the credits display, by default `0,0` at target's/firer's center."
-msgstr "`TransactMoney.Display.Offset` 是资金显示中心的额外像素偏移量，默认为 `0,0` 即目标/开火者的中心。"
+msgstr "`TransactMoney.Display.Offset` 是资金显示中心的额外像素偏移量，默认为 `0,0` 即目标／开火者的中心。"
 
 #: ../../New-or-Enhanced-Logics.md:1555
 msgid "Iron Curtain & Force Shield damage penetration"
@@ -3768,7 +3772,7 @@ msgid ""
 "Curtained and/or Force Shielded objects. `PenetratesForceShield` defaults"
 " to value of `PenetratesIronCurtain`."
 msgstr ""
-"现在可以让弹头对被铁幕和/或力场护盾保护的对象造成伤害。`PenetratesForceShield` 默认为 "
+"现在可以让弹头对被铁幕和／或力场护盾保护的对象造成伤害。`PenetratesForceShield` 默认为 "
 "`PenetratesIronCurtain` 的值。"
 
 #: ../../New-or-Enhanced-Logics.md:1558
@@ -3809,15 +3813,15 @@ msgid ""
 "each superweapon, otherwise only non-inhibited superweapons are launched."
 msgstr ""
 "`LaunchSW.IgnoreInhibitors` 设置是否忽略每个超级武器的 "
-"`SW.Inhibitors`/`SW.AnyInhibitor`，否则只有未被抑制的超级武器会被发射。"
+"`SW.Inhibitors`／`SW.AnyInhibitor`，否则只有未被抑制的超级武器会被发射。"
 
 #: ../../New-or-Enhanced-Logics.md:1573
 msgid ""
-"`LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` "
+"`LaunchSW.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` "
 "respectively."
 msgstr ""
 "`LaunchSW.IgnoreDesignators` 设置是否忽略每个超级武器的 "
-"`SW.Designators`/`SW.AnyDesignator`。"
+"`SW.Designators`／`SW.AnyDesignator`。"
 
 #: ../../New-or-Enhanced-Logics.md:1574
 msgid ""
@@ -3845,7 +3849,7 @@ msgstr "`LaunchSW.DisplayMoney.Offset` 是资金显示中心的额外像素偏�
 msgid ""
 "For animation warheads/weapons to take effect, `Damage.DealtByInvoker` "
 "must be set."
-msgstr "为使动画弹头/武器上的此逻辑生效必须设置 `Damage.DealtByInvoker`。"
+msgstr "为使动画弹头／武器上的此逻辑生效必须设置 `Damage.DealtByInvoker`。"
 
 #: ../../New-or-Enhanced-Logics.md:1581
 msgid ""

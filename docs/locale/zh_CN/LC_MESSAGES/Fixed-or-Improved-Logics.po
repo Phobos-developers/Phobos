@@ -326,7 +326,7 @@ msgid ""
 "of turning and/or `DeployingAnim`."
 msgstr ""
 "现在 `IsSimpleDeployer` 的单位只会在（反）部署时播放一次 `DeploySound` 和 `UndeploySound` "
-"而不再是转向和/或播放 `DeployingAnim` 期间持续播放。"
+"而不再是转向和／或播放 `DeployingAnim` 期间持续播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:60
 msgid "AITrigger can now recognize Building Upgrades as legal condition."
@@ -345,7 +345,7 @@ msgid ""
 "Crates / AttachEffect *(Ares feature)*."
 msgstr ""
 "现在战机与 Jumpjet 单位正常受国家设置中的 "
-"`SpeedAircraft/Infantry/UnitsMult`、`VeteranSpeed` 和箱子 / AttachEffect "
+"`SpeedAircraft/Infantry/UnitsMult`、`VeteranSpeed` 和箱子／AttachEffect "
 "中速度加成效果影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:66
@@ -585,7 +585,7 @@ msgid ""
 "Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still "
 "targeting TerrainTypes (trees etc.) on land with `Primary` weapon."
 msgstr ""
-"修复了 `NavalTargeting=7` 和/或 `LandTargeting=2` 导致在陆地上仍然使用 `Primary` "
+"修复了 `NavalTargeting=7` 和／或 `LandTargeting=2` 导致在陆地上仍然使用 `Primary` "
 "武器来瞄准地形对象（树木等）的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:105
@@ -786,9 +786,9 @@ msgstr "现在飞行单位上所附加的动画会紧随其父单位之后立即
 
 #: ../../Fixed-or-Improved-Logics.md:130
 msgid ""
-"Fixed the issue where the powered anims of `Powered`/`PoweredSpecial` "
+"Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` "
 "buildings cease to update when being captured by enemies."
-msgstr "修复了 `Powered`/`PoweredSpecial` 的建筑在被敌人占领时其受电力影响的动画不再更新的问题。"
+msgstr "修复了 `Powered`／`PoweredSpecial` 的建筑在被敌人占领时其受电力影响的动画不再更新的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:131
 msgid "Fix a glitch related to incorrect target setting for missiles."
@@ -861,8 +861,8 @@ msgstr "现在生成的子机在降落时会与其母舰的朝向对正。"
 msgid ""
 "Fixed the bug that waypointing unarmed infantries with "
 "agent/engineer/occupier to a spyable/capturable/occupiable building "
-"triggers EnteredBy event by executing capture mission."
-msgstr "修复了在路径点中为间谍/工程师/需要驻军的无武装步兵设置目标为可渗透/占领/驻军的建筑执行行为时会触发`被...进入`条件的 Bug。"
+"triggers `EnteredBy` event by executing capture mission."
+msgstr "修复了在路径点中为间谍／工程师／需要驻军的无武装步兵设置目标为可渗透／占领／驻军的建筑执行行为时会触发 `被...进入` 条件的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:145
 msgid ""
@@ -1032,7 +1032,7 @@ msgstr ""
 msgid ""
 "Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being "
 "displayed in water instead of `WetAttack`."
-msgstr "修复了步兵在水中显示 `SecondaryFire` / `SecondaryProne` 序列而不是 `WetAttack` 的问题。"
+msgstr "修复了步兵在水中显示 `SecondaryFire`／`SecondaryProne` 序列而不是 `WetAttack` 的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:171
 msgid ""
@@ -1114,7 +1114,7 @@ msgstr "修复初始船只可能生成在陆地上的 Bug。"
 msgid "When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell."
 msgstr "建筑通过 `UndeploysInto` 反部署时使用目标载具的 `SpeedType` 和 `MovementZone` 来决定能否向目标单元格移动。"
 
-#: ../../Fixed-or-Improved-Logics.md:180
+#: ../../Fixed-or-Improved-Logics.md:190
 msgid "Fix the bug that destroyed unit may leaves sensors."
 msgstr "修复了单位被摧毁仍会遗留反隐形探测效果的问题。"
 
@@ -1288,7 +1288,7 @@ msgid ""
 "edge of the map by setting `SpawnDistanceFromTarget`."
 msgstr ""
 "现在可以通过设置 `SpawnDistanceFromTarget` 来让由 `(Elite)AirstrikeTeamType` 或 "
-"`Type=SpyPlane` 超级武器生成的战机在与目标/目的地固定距离处生成而不再是地图边界。"
+"`Type=SpyPlane` 超级武器生成的战机在与目标／目的地固定距离处生成而不再是地图边界。"
 
 #: ../../Fixed-or-Improved-Logics.md:212
 msgid ""
@@ -1417,7 +1417,7 @@ msgid ""
 " or used to deal damage / generate light flash."
 msgstr ""
 "`Warhead.Detonate` 设置为 true 可以使动画在与水面接触时爆炸。`ExpireAnim` 将被触发，`Warhead` "
-"将被引爆或用于造成伤害/产生闪光。"
+"将被引爆或用于造成伤害／产生闪光。"
 
 #: ../../Fixed-or-Improved-Logics.md:267
 msgid ""
@@ -1596,7 +1596,7 @@ msgid ""
 " to have animation with `HideIfNoOre` displayed. Cells with growth stage "
 "less than specified value won't allow the anim to display."
 msgstr ""
-"现在你可以自定义一个矿石/泰伯利亚所在的单元格至少需要到哪个生长阶段才能显示带有 `HideIfNoOre` "
+"现在你可以自定义一个矿石／泰伯利亚所在的单元格至少需要到哪个生长阶段才能显示带有 `HideIfNoOre` "
 "的动画。生长阶段低于指定值的单元格将不允许动画显示。"
 
 #: ../../Fixed-or-Improved-Logics.md:339
@@ -1698,7 +1698,7 @@ msgid ""
 " a `FactoryPlant=true` building by listing them on "
 "`FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`."
 msgstr ""
-"现在可以通过在 `FactoryPlant.AllowTypes` 和/或 `FactoryPlant.DisallowTypes` "
+"现在可以通过在 `FactoryPlant.AllowTypes` 和／或 `FactoryPlant.DisallowTypes` "
 "中列出有哪些科技类型受到 `FactoryPlant=true` 建筑的加成。"
 
 #: ../../Fixed-or-Improved-Logics.md:382
@@ -2114,7 +2114,7 @@ msgid ""
 "the pixel offsets for the displayed pips, individually for infantry, "
 "units and buildings."
 msgstr ""
-"`Pips.SelfHeal.Infantry/Units/Buildings.Offset` 可以被用于分辨自定义步兵、载具和建筑显示 pip "
+"`Pips.SelfHeal.Infantry/Units/Buildings.Offset` 可以被用于分别自定义步兵、载具和建筑显示 pip "
 "使用的像素偏移量。"
 
 #: ../../Fixed-or-Improved-Logics.md:567
@@ -2222,7 +2222,7 @@ msgid ""
 "file, optionally for each veterancy stage. Like the original / default "
 "file, `pips.shp`, they are drawn using `palette.pal` as palette."
 msgstr ""
-"`Insignia.(Rookie|Veteran|Elite)` 可用于为每个等级设置一个自定义军衔文件。与原本/默认的文件 "
+"`Insignia.(Rookie|Veteran|Elite)` 可用于为每个等级设置一个自定义军衔文件。与原本／默认的文件 "
 "`pips.shp` 一样，它们使用 `palette.pal` 作为色盘进行绘制。"
 
 #: ../../Fixed-or-Improved-Logics.md:627
@@ -2436,7 +2436,7 @@ msgid ""
 "It is now possible to customize how air units are affected by level "
 "lighting, separately for AircraftTypes and infantry/vehicles with Jumpjet"
 " `Locomotor`."
-msgstr "现在可以分别针战机类型和使用 `Locomotor=Jumpjet` 的步兵/载具自定义空中单位所受光照等级影响的方式。"
+msgstr "现在可以分别针战机类型和使用 `Locomotor=Jumpjet` 的步兵／载具自定义空中单位所受光照等级影响的方式。"
 
 #: ../../Fixed-or-Improved-Logics.md:765
 msgid ""
@@ -2574,8 +2574,8 @@ msgid ""
 " in turn for ammo pips, split similarly between non-building technos and "
 "buildings."
 msgstr ""
-"`Pips.Generic.(Buildings.)Size` 用于非建筑科技类型/建筑的非弹药 "
-"pip，相应的，`Pips.Ammo.(Buildings.)Size` 则是针对弹药 pip，同样分别对应非建筑科技类型/建筑。"
+"`Pips.Generic.(Buildings.)Size` 用于非建筑科技类型／建筑的非弹药 "
+"pip，相应的，`Pips.Ammo.(Buildings.)Size` 则是针对弹药 pip，同样分别对应非建筑科技类型／建筑。"
 
 #: ../../Fixed-or-Improved-Logics.md:852
 msgid ""
@@ -3157,7 +3157,7 @@ msgid ""
 "default to `TiltsWhenCrushes`."
 msgstr ""
 "拥有 `Crusher=true` 和 `OmniCrusher=true` / `MovementZone=CrusherAll` "
-"的载具在碾压载具/围墙时原版被硬编码进行倾斜。现在这遵守 `TiltsWhenCrushes`，并且可以对 "
+"的载具在碾压载具／围墙时原版被硬编码进行倾斜。现在这遵守 `TiltsWhenCrushes`，并且可以对 "
 "`TiltsWhenCrusher.Vehicles` 和 `TiltsWhenCrusher.Overlays` "
 "对两种情况分别进行定义，它们都默认为 `TiltsWhenCrushes`。"
 
@@ -3203,7 +3203,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1157
 msgid "Preserve Iron Curtain / Force Shield status on type conversion"
-msgstr "在单位转换时保留铁幕/力场护盾状态"
+msgstr "在单位转换时保留铁幕／力场护盾状态"
 
 #: ../../Fixed-or-Improved-Logics.md:1159
 msgid "![image](_static/images/preserve-ic.gif) *Bugfix in action*"
@@ -3212,19 +3212,19 @@ msgstr "![image](_static/images/preserve-ic.gif) *Bug 修复后的行为*"
 #: ../../Fixed-or-Improved-Logics.md:1162
 msgid ""
 "Iron Curtain status is now preserved by default when converting between "
-"TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status "
+"TechnoTypes via `DeploysInto` / `UndeploysInto`. Force Shield status "
 "preservation is turned off by default."
-msgstr "通过 `DeploysInto`/`UndeploysInto` 在科技类型之间的转换现在默认保留铁幕状态。力场护盾则默认不保留。"
+msgstr "通过 `DeploysInto`／`UndeploysInto` 在科技类型之间的转换现在默认保留铁幕状态。力场护盾则默认不保留。"
 
 #: ../../Fixed-or-Improved-Logics.md:1163
 msgid "This behavior can be turned on/off per-TechnoType and on global basis."
-msgstr "这一行为可以对每个科技类型和全局进行开启/关闭。"
+msgstr "这一行为可以对每个科技类型和全局进行开启／关闭。"
 
 #: ../../Fixed-or-Improved-Logics.md:1164
 msgid ""
 "`IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable)"
 " is re-applied upon type conversion."
-msgstr "`IronCurtain.Modifier` / `ForceShield.Modifier`（视情况而定）将在单位转换时刷新。"
+msgstr "`IronCurtain.Modifier`／`ForceShield.Modifier`（视情况而定）将在单位转换时刷新。"
 
 #: ../../Fixed-or-Improved-Logics.md:1177
 msgid "Stationary vehicles"
@@ -3287,7 +3287,7 @@ msgstr "`DeployingAnim.UseUnitDrawer` 控制动画使用 unit 色盘以及所属
 
 #: ../../Fixed-or-Improved-Logics.md:1213
 msgid "`IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change"
-msgstr "`IsSimpleDeployer` 的载具根据弹药自动部署 / 阻止部署"
+msgstr "`IsSimpleDeployer` 的载具根据弹药自动部署／阻止部署"
 
 #: ../../Fixed-or-Improved-Logics.md:1215
 msgid "Vehicle deployment can now be affected by ammo count."
@@ -3682,7 +3682,7 @@ msgid ""
 "They will not spring 'attacked' / 'attacked by' events. Note that if the "
 "Warhead deals actual damage, events that check for that can still be "
 "sprung."
-msgstr "它们不会触发“受到攻击”/“被...攻击”事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
+msgstr "它们不会触发“受到攻击”／“被...攻击”事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
 
 #: ../../Fixed-or-Improved-Logics.md:1423
 msgid ""

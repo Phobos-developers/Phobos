@@ -74,7 +74,7 @@ msgstr "基地节点修复"
 
 #: ../../AI-Scripting-and-Mapping.md:21
 msgid "In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW *(Ares feature)*."
-msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点/建筑。"
+msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点／建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:22
 msgid "You can control it globally by setting `[Basic] -> RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set."
@@ -922,7 +922,7 @@ msgstr "使用第一个可用的 `Type=ChronoSphere` 超级武器将小队类型
 
 #: ../../AI-Scripting-and-Mapping.md:286
 msgid "`12000-12999` Suplementary/Setup Pre-actions"
-msgstr "`12000-12999` 补充/设定预设动作。"
+msgstr "`12000-12999` 补充／设定预设动作。"
 
 #: ../../AI-Scripting-and-Mapping.md:288
 msgid "`12000` Wait if No Target Found"
@@ -1112,7 +1112,7 @@ msgstr "类似于 `18000-18023`，但用于操作值的数字是从全局变量�
 
 #: ../../AI-Scripting-and-Mapping.md:476
 msgid "`19000-19999` Miscellanous/Uncategorized"
-msgstr "`19000-19999` 杂项/未分类"
+msgstr "`19000-19999` 杂项／未分类"
 
 #: ../../AI-Scripting-and-Mapping.md:478
 msgid "This category is empty for now."
@@ -1189,7 +1189,7 @@ msgstr "当前值 = 当前值 * 数字"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "CurrentValue = CurrentValue / Number"
-msgstr "当前值 = 当前值 / 数字"
+msgstr "当前值 = 当前值／数字"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "CurrentValue = CurrentValue % Number"
@@ -1591,7 +1591,7 @@ msgstr "`600` 对象护盾被摧毁"
 
 #: ../../AI-Scripting-and-Mapping.md:707
 msgid "`601-602` House owns/doesn't own Techno Type"
-msgstr "`601-602` 检查所属方是否有/无科技类型"
+msgstr "`601-602` 检查所属方是否有／无科技类型"
 
 #: ../../AI-Scripting-and-Mapping.md:709
 msgid "`601`: Springs when specified house owns at least 1 instance of set TechnoType."
