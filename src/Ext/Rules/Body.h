@@ -30,7 +30,6 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
-		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
@@ -157,12 +156,34 @@ public:
 		Valueable<bool> JumpjetClimbPredictHeight;
 		Valueable<bool> JumpjetClimbWithoutCutOut;
 
+		Valueable<double> DamageOwnerMultiplier;
+		Valueable<double> DamageAlliesMultiplier;
+		Valueable<double> DamageEnemiesMultiplier;
+
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
+
+		Valueable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_Default;
+		Valueable<bool> CombatAlert_IgnoreBuilding;
+		Valueable<bool> CombatAlert_SuppressIfInScreen;
+		Valueable<int> CombatAlert_Interval;
+		Valueable<bool> CombatAlert_SuppressIfAllyDamage;
+		Valueable<bool> CombatAlert_MakeAVoice;
+		Valueable<bool> CombatAlert_UseFeedbackVoice;
+		Valueable<bool> CombatAlert_UseAttackVoice;
+		Valueable<bool> CombatAlert_UseEVA;
 
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> RecountBurst;
+		Valueable<bool> NoRearm_UnderEMP;
+		Valueable<bool> NoRearm_Temporal;
+		Valueable<bool> NoReload_UnderEMP;
+		Valueable<bool> NoReload_Temporal;
+		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -173,6 +194,9 @@ public:
 		Valueable<bool> WarheadParticleAlphaImageIsLightFlash;
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
+
+		Valueable<bool> BuildingWaypoints;
+		Valueable<bool> BuildingTypeSelectable;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -287,11 +311,31 @@ public:
 			, PodImage { }
 			, JumpjetClimbPredictHeight { false }
 			, JumpjetClimbWithoutCutOut { false }
+			, DamageOwnerMultiplier { 1.0 }
+			, DamageAlliesMultiplier { 1.0 }
+			, DamageEnemiesMultiplier { 1.0 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+
+			, CombatAlert { false }
+			, CombatAlert_Default {}
+			, CombatAlert_IgnoreBuilding { true }
+			, CombatAlert_SuppressIfInScreen { true }
+			, CombatAlert_Interval { 150 }
+			, CombatAlert_SuppressIfAllyDamage { true }
+			, CombatAlert_MakeAVoice { true }
+			, CombatAlert_UseFeedbackVoice { true }
+			, CombatAlert_UseAttackVoice { true }
+			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, RecountBurst { false }
+			, NoRearm_UnderEMP { false }
+			, NoRearm_Temporal { false }
+			, NoReload_UnderEMP { false }
+			, NoReload_Temporal { false }
+			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
@@ -300,6 +344,8 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, BuildingWaypoints { false }
+			, BuildingTypeSelectable { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -349,5 +395,4 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
 };

@@ -7,6 +7,7 @@
 
 #include "StraightTrajectory.h"
 #include "BombardTrajectory.h"
+#include "ParabolaTrajectory.h"
 
 TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 {
@@ -17,6 +18,9 @@ TrajectoryTypePointer::TrajectoryTypePointer(TrajectoryFlag flag)
 		return;
 	case TrajectoryFlag::Bombard:
 		_ptr = std::make_unique<BombardTrajectoryType>();
+		return;
+	case TrajectoryFlag::Parabola:
+		_ptr = std::make_unique<ParabolaTrajectoryType>();
 		return;
 	}
 	_ptr.reset();
@@ -33,6 +37,7 @@ namespace detail
 			{
 				{"Straight", TrajectoryFlag::Straight},
 				{"Bombard" ,TrajectoryFlag::Bombard},
+				{"Parabola", TrajectoryFlag::Parabola},
 			};
 			for (auto [name, flag] : FlagNames)
 			{
@@ -110,6 +115,9 @@ bool TrajectoryPointer::Load(PhobosStreamReader& Stm, bool registerForChange)
 			break;
 		case TrajectoryFlag::Bombard:
 			_ptr = std::make_unique<BombardTrajectory>(noinit_t {});
+			break;
+		case TrajectoryFlag::Parabola:
+			_ptr = std::make_unique<ParabolaTrajectory>(noinit_t {});
 			break;
 		default:
 			_ptr.reset();
