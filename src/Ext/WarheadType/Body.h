@@ -55,6 +55,7 @@ public:
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<int> Crit_ExtraDamage;
+		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 		Valueable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<bool> Crit_Warhead_FullDetonation;
 		Valueable<AffectedTarget> Crit_Affects;
@@ -154,6 +155,11 @@ public:
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
+		Valueable<bool> BuildingSell;
+		Valueable<bool> BuildingSell_IgnoreUnsellable;
+		Valueable<bool> BuildingUndeploy;
+		Valueable<bool> BuildingUndeploy_Leave;
+
 		Nullable<bool> CombatAlert_Suppress;
 
 		// Ares tags
@@ -214,6 +220,7 @@ public:
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
 			, Crit_ExtraDamage { 0 }
+			, Crit_ExtraDamage_ApplyFirepowerMult { false }
 			, Crit_Warhead {}
 			, Crit_Warhead_FullDetonation { true }
 			, Crit_Affects { AffectedTarget::All }
@@ -313,6 +320,11 @@ public:
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
 
+			, BuildingSell { false }
+			, BuildingSell_IgnoreUnsellable { false }
+			, BuildingUndeploy { false }
+			, BuildingUndeploy_Leave { false }
+
 			, CombatAlert_Suppress {}
 
 			, AffectsEnemies { true }
@@ -363,6 +375,7 @@ public:
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
+		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

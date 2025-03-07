@@ -30,7 +30,7 @@ msgstr "Bug 修复与杂项"
 
 #: ../../AI-Scripting-and-Mapping.md:7
 msgid "Script action `Move to cell` now obeys YR cell calculation now. Using `1000 * Y + X` as its cell value. (was `128 * Y + X` as it's a RA1 leftover)"
-msgstr "动作脚本 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 `128 * Y + X`）"
+msgstr "脚本动作 `移动到单元格` 现在遵守 YR 的单元格计算规则。使用 `1000 * Y + X` 获取单元格值。（先前使用遗留自 RA1 的 `128 * Y + X`）"
 
 #: ../../AI-Scripting-and-Mapping.md:8
 msgid "The game now can reads waypoints ranges in [0, 2147483647]. (was [0,701])"
@@ -74,7 +74,7 @@ msgstr "基地节点修复"
 
 #: ../../AI-Scripting-and-Mapping.md:21
 msgid "In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW *(Ares feature)*."
-msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点/建筑。"
+msgstr "在单人战役中你可以决定 AI 是否修复由 Deliver 超武（*Ares 功能*）提供的基地节点／建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:22
 msgid "You can control it globally by setting `[Basic] -> RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set."
@@ -154,7 +154,7 @@ msgstr "在 `RA2MD.INI`："
 
 #: ../../AI-Scripting-and-Mapping.md:118
 msgid "Script Actions"
-msgstr "动作脚本"
+msgstr "脚本动作"
 
 #: ../../AI-Scripting-and-Mapping.md:120
 msgid "`10000-10999` Ingame Actions"
@@ -802,7 +802,7 @@ msgstr "在 `rulesmd.ini`："
 
 #: ../../AI-Scripting-and-Mapping.md:209
 msgid "`10050-10099` Move Team to Techno Location actions"
-msgstr "`10050-10099` 移动小队至技术类型位置行为"
+msgstr "`10050-10099` 移动小队至科技类型位置行为"
 
 #: ../../AI-Scripting-and-Mapping.md:211
 msgid "These actions instructs the TeamType to use the TaskForce to approach the target specified by the second parameter. Look at the tables below for the possible actions (first parameter value)."
@@ -922,7 +922,7 @@ msgstr "使用第一个可用的 `Type=ChronoSphere` 超级武器将小队类型
 
 #: ../../AI-Scripting-and-Mapping.md:286
 msgid "`12000-12999` Suplementary/Setup Pre-actions"
-msgstr "`12000-12999` 补充/设定预设动作。"
+msgstr "`12000-12999` 补充／设定预设动作。"
 
 #: ../../AI-Scripting-and-Mapping.md:288
 msgid "`12000` Wait if No Target Found"
@@ -930,7 +930,7 @@ msgstr "`12000` 无目标情况下等待"
 
 #: ../../AI-Scripting-and-Mapping.md:290
 msgid "When executed before a new Attack ScriptType actions like `Generic Target Type Attack` actions  and `AITargetTypes Attack` actions  the TeamType will remember that must wait 1 second if no target was selected. The second parameter is a positive value that specifies how much retries the Attack will do when no target was found before new Attack ScriptType Action is discarded & the script execution jumps to the next line. The value `0` means infinite retries."
-msgstr "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 动作脚本执行前小队类型会考虑如果未选择目标则必须等待 1 秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击脚本动作并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
+msgstr "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 脚本动作执行前小队类型会考虑如果未选择目标则必须等待 1 秒。第二个参数是一个用于指定未找到目标时充实多少次然后才放弃新的攻击脚本动作并跳转到下一行的参数。默认值 `0` 表示无限次重试。"
 
 #: ../../AI-Scripting-and-Mapping.md:298
 msgid "`12001` Modify Target Distance"
@@ -938,7 +938,7 @@ msgstr "`12001` 修改目标距离"
 
 #: ../../AI-Scripting-and-Mapping.md:300
 msgid "By default `Move Team to Techno Location` actions ends when the Team Leader reaches a distance declared in `rulesmd.ini` called `CloseEnough`. When this action is executed before the actions `Move Team to Techno Location` overwrites `CloseEnough` value. This action works only the first time and `CloseEnough` will be used again the next Movement action."
-msgstr "默认情况下，`移动小队至技术类型位置`在队长抵达 `rulesmd.ini` 中声明的`CloseEnough` 距离时结束。当该行为在`移动小队至技术类型位置`前执行时会覆盖 `CloseEnough` 值。这一行为仅对接下来的第一次执行效果有影响而之后再下一次移动时仍会继续使用 `CloseEnough`。"
+msgstr "默认情况下，`移动小队至科技类型位置`在队长抵达 `rulesmd.ini` 中声明的`CloseEnough` 距离时结束。当该行为在`移动小队至科技类型位置`前执行时会覆盖 `CloseEnough` 值。这一行为仅对接下来的第一次执行效果有影响而之后再下一次移动时仍会继续使用 `CloseEnough`。"
 
 #: ../../AI-Scripting-and-Mapping.md:308
 msgid "`12002` Set Move Action End Mode"
@@ -982,7 +982,7 @@ msgstr "`14000` 设置小队权重奖励"
 
 #: ../../AI-Scripting-and-Mapping.md:330
 msgid "When executed before a new Attack ScriptType actions like `Generic Target Type Attack` actions and `AITargetTypes Attack` actions the TeamType will remember that must be rewarded increasing the current weight of the AI Trigger when the TeamType Target was killed by any of the Team members. The current weight will never surprass the minimum weight and maximum weight limits of the AI Trigger. The second parameter is a positive value."
-msgstr "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 动作脚本执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI 触发的当前权重。当前权重不会超过AI触发最小权重和最大权重的限制。第二个参数是一个正整数。"
+msgstr "当在例如新的 `通用目标类型攻击` 动作和 `AITargetTypes 攻击` 脚本动作执行前小队类型会考虑如果小队目标被小队成员杀死则必须奖励增加 AI 触发的当前权重。当前权重不会超过AI触发最小权重和最大权重的限制。第二个参数是一个正整数。"
 
 #: ../../AI-Scripting-and-Mapping.md:338
 msgid "`14001` Increase AI Trigger Current Weight"
@@ -1112,7 +1112,7 @@ msgstr "类似于 `18000-18023`，但用于操作值的数字是从全局变量�
 
 #: ../../AI-Scripting-and-Mapping.md:476
 msgid "`19000-19999` Miscellanous/Uncategorized"
-msgstr "`19000-19999` 杂项/未分类"
+msgstr "`19000-19999` 杂项／未分类"
 
 #: ../../AI-Scripting-and-Mapping.md:478
 msgid "This category is empty for now."
@@ -1189,7 +1189,7 @@ msgstr "当前值 = 当前值 * 数字"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "CurrentValue = CurrentValue / Number"
-msgstr "当前值 = 当前值 / 数字"
+msgstr "当前值 = 当前值／数字"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "CurrentValue = CurrentValue % Number"
@@ -1591,15 +1591,15 @@ msgstr "`600` 对象护盾被摧毁"
 
 #: ../../AI-Scripting-and-Mapping.md:707
 msgid "`601-602` House owns/doesn't own Techno Type"
-msgstr "`601-602` 检查所属方是否有/无技术类型"
+msgstr "`601-602` 检查所属方是否有／无科技类型"
 
 #: ../../AI-Scripting-and-Mapping.md:709
 msgid "`601`: Springs when specified house owns at least 1 instance of set TechnoType."
-msgstr "`601`：当指定所属方至少拥有一个设定的技术类型时触发。"
+msgstr "`601`：当指定所属方至少拥有一个设定的科技类型时触发。"
 
 #: ../../AI-Scripting-and-Mapping.md:710
 msgid "`602`: Springs when specified house doesn't own a single instance of set TechnoType."
-msgstr "`602`：当指定所属方没有任何一个设定的技术类型时触发。"
+msgstr "`602`：当指定所属方没有任何一个设定的科技类型时触发。"
 
 #: ../../AI-Scripting-and-Mapping.md:711
 msgid "Multiplayer houses (indices 4475 through 4482) are supported."
@@ -1611,15 +1611,15 @@ msgstr "与 [Ares 的 `81` & `82` 号条件](https://ares-developers.github.io/A
 
 #: ../../AI-Scripting-and-Mapping.md:725
 msgid "`604-605` Checking if a specific Techno enters in a cell"
-msgstr "`604-605` 检查特定技术类型进入单元格"
+msgstr "`604-605` 检查特定科技类型进入单元格"
 
 #: ../../AI-Scripting-and-Mapping.md:727
 msgid "`604`: Checks if the techno that entered in the cell has the same ID specified in the event."
-msgstr "`604`：检查进入单元格的技术类型是否与条件中指定的 ID相同。"
+msgstr "`604`：检查进入单元格的科技类型是否与条件中指定的 ID相同。"
 
 #: ../../AI-Scripting-and-Mapping.md:728
 msgid "`605`: Checks if the techno that entered in the cell appears in the selected list in `AITargetTypes`."
-msgstr "`605`：检查进入单元格的技术类型是否出现在选定的 `AITargetTypes` 列表中。"
+msgstr "`605`：检查进入单元格的科技类型是否出现在选定的 `AITargetTypes` 列表中。"
 
 #: ../../AI-Scripting-and-Mapping.md:729
 msgid "`HouseIndex` can be customized to focus in a specified house."
