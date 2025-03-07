@@ -193,6 +193,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
 - Fix an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
+- Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
 
 ## Fixes / interactions with other extensions
 

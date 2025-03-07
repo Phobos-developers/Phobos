@@ -399,6 +399,7 @@ This page lists all the individual contributions to the project by their author.
   - Sell or undeploy building on impact
   - Draw visual effects for airburst weapons
   - Technos recount current burst index when change the firing weapon
+  - Units will not always stuck in the factory
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -420,6 +421,7 @@ This page lists all the individual contributions to the project by their author.
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
   - No turret unit turn to the target
+  - Units are now unable to kick out from a factory that is in construction process
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
