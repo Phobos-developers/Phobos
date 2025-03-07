@@ -123,7 +123,7 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 	return false;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E2268, GET_OFFSET(AircraftClass_IFlyControl_IsStrafe));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2268, AircraftClass_IFlyControl_IsStrafe);
 
 DEFINE_HOOK(0x418403, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0x8)
 {
@@ -191,13 +191,13 @@ WeaponStruct* __fastcall AircraftClass_GetWeapon_Wrapper(AircraftClass* pThis, v
 		return pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
 }
 
-DEFINE_JUMP(CALL6, 0x4180F9, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x4184E3, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x41852B, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418893, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x4189A2, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418AB1, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418B9A, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL6, 0x4180F9, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x4184E3, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x41852B, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x418893, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x4189A2, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x418AB1, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x418B9A, AircraftClass_GetWeapon_Wrapper);
 
 void __fastcall AircraftClass_SetTarget_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
@@ -205,7 +205,7 @@ void __fastcall AircraftClass_SetTarget_Wrapper(AircraftClass* pThis, void* _, A
 	TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex = -1;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E266C, GET_OFFSET(AircraftClass_SetTarget_Wrapper));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E266C, AircraftClass_SetTarget_Wrapper);
 
 #pragma endregion
 
@@ -272,7 +272,7 @@ DirType _fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
 	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
 }
 
-DEFINE_JUMP(CALL, 0x446F67, GET_OFFSET(AircraftClass_PoseDir_Wrapper)); // BuildingClass_GrandOpening
+DEFINE_FUNCTION_JUMP(CALL, 0x446F67, AircraftClass_PoseDir_Wrapper); // BuildingClass_GrandOpening
 
 DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
 {
