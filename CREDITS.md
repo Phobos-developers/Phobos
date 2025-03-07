@@ -260,6 +260,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
+  - Airstrike flare visual customizations
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

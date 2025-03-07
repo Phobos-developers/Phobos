@@ -374,6 +374,7 @@ New:
 - [Make harvesters do addtional scan after unload](Fixed-or-Improved-Logics.md#make-harvesters-do-addtional-scan-after-unload) (by TaranDahl)
 - [Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-veterancy-insignias) (by Ollerus)
 - [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
+- [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -393,6 +394,7 @@ Vanilla fixes:
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

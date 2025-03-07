@@ -58,6 +58,8 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+		Nullable<int> LaserTargetColor;
+		Nullable<ColorStruct> AirstrikeLineColor;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
@@ -382,6 +384,8 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, LaserTargetColor {}
+			, AirstrikeLineColor {}
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
