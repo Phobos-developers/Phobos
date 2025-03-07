@@ -3,11 +3,13 @@
 #include <Utilities/Macro.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Techno/Body.h>
 
 // Misc jumpjet facing, turning, drawing fix -- Author: Trsdy
 // Jumpjets stuck at FireError::FACING because Jumpjet has its own facing just for JumpjetTurnRate
 // We should not touch the linked unit's PrimaryFacing when it's moving and just let the loco sync this shit in 54D692
 // The body facing never actually turns, it just syncs
+// Whatever, now let's totally forget PrimaryFacing and only use that loco facing
 DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
@@ -102,7 +104,7 @@ DEFINE_HOOK(0x54D208, JumpjetLocomotionClass_MovementAI_EMPWobble, 0x5)
 	GET(JumpjetLocomotionClass* const, pThis, ESI);
 	enum { ZeroWobble = 0x54D22C };
 
-	if (pThis->LinkedTo->IsUnderEMP())
+	if (pThis->LinkedTo->Deactivated || pThis->LinkedTo->IsUnderEMP())
 		return ZeroWobble;
 
 	return 0;
@@ -135,28 +137,6 @@ DEFINE_HOOK(0x736BA3, UnitClass_UpdateRotation_TurretFacing_Jumpjet, 0x6)
 	return 0;
 }
 
-// Bugfix: Jumpjet detect cloaked objects beneath
-DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
-{
-	GET(FootClass* const, pLinkedTo, ECX);
-	GET(CellStruct const, currentCell, EAX);
-
-	// Copied from FootClass::UpdatePosition
-	if (pLinkedTo->GetTechnoType()->SensorsSight)
-	{
-		CellStruct const lastCell = pLinkedTo->LastFlightMapCoords;
-
-		if (lastCell != currentCell)
-		{
-			pLinkedTo->RemoveSensorsAt(lastCell);
-			pLinkedTo->AddSensorsAt(currentCell);
-		}
-	}
-	// Something more may be missing
-
-	return 0;
-}
-
 DEFINE_HOOK(0x54CB0E, JumpjetLocomotionClass_State5_CrashSpin, 0x7)
 {
 	GET(JumpjetLocomotionClass*, pThis, EDI);
@@ -175,54 +155,6 @@ DEFINE_HOOK(0x70B649, TechnoClass_RigidBodyDynamics_NoTiltCrashBlyat, 0x6)
 	return 0;
 }
 
-// Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
-{
-	__assume(iloco != nullptr);
-	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
-	auto linked = pThis->LinkedTo;
-	// no more TiltCrashJumpjet, do that above svp
-	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
-	// Man, what can I say, you don't want to stick your rotor into the ground
-	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
-
-	if (onGround && pIndex && pIndex->Is_Valid_Key())
-		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
-
-	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0] * pThis->LocomotionClass::Draw_Matrix(pIndex);
-
-	float arf = linked->AngleRotatedForwards;
-	float ars = linked->AngleRotatedSideways;
-
-	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
-	{
-		if (pIndex)
-			pIndex->Invalidate();
-
-		if (onGround)
-		{
-			double scalex = linked->GetTechnoType()->VoxelScaleX;
-			double scaley = linked->GetTechnoType()->VoxelScaleY;
-			Matrix3D pre = Matrix3D::GetIdentity();
-			pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
-			ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
-			ret->TranslateY(float(Math::sgn(-ars) * (scalex * (1 - Math::cos(ars)))));
-			ret->RotateX(ars);
-			ret->RotateY(arf);
-			*ret = pre * *ret;
-		}
-		else
-		{
-			// No more translation because I don't like it
-			ret->RotateX(ars);
-			ret->RotateY(arf);
-		}
-	}
-	return ret;
-}
-
-DEFINE_JUMP(VTABLE, 0x7ECD8C, GET_OFFSET(JumpjetLocomotionClass_Draw_Matrix));
-
 FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 {
 	__assume(pThis != nullptr);
@@ -233,6 +165,23 @@ FireError __stdcall JumpjetLocomotionClass_Can_Fire(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDF4, GET_OFFSET(JumpjetLocomotionClass_Can_Fire));
+
+DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+	auto const* pType = pLinkedTo->GetTechnoType();
+
+	pLinkedTo->PrimaryFacing.SetROT(pType->ROT);
+
+	if (pType->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pLinkedTo->AddSensorsAt(CellStruct::Empty);
+	}
+
+	return 0;
+}
 
 // Fix initial facing when jumpjet locomotor is being attached
 DEFINE_HOOK(0x54AE44, JumpjetLocomotionClass_LinkToObject_FixFacing, 0x7)
@@ -259,20 +208,3 @@ void __stdcall JumpjetLocomotionClass_Unlimbo(ILocomotion* pThis)
 }
 
 DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
-
-DEFINE_HOOK(0x54DAC4, JumpjetLocomotionClass_EndPiggyback_Blyat, 0x6)
-{
-	GET(FootClass*, pLinked, EAX);
-	auto const* pType = pLinked->GetTechnoType();
-
-	pLinked->PrimaryFacing.SetROT(pType->ROT);
-
-	if (pType->SensorsSight)
-	{
-		pLinked->RemoveSensorsAt(pLinked->LastFlightMapCoords);
-		pLinked->RemoveSensorsAt(pLinked->GetMapCoords());
-		pLinked->AddSensorsAt(pLinked->GetMapCoords());
-	}
-
-	return 0;
-}

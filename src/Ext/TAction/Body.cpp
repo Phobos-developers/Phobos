@@ -277,8 +277,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 	if (SuperWeaponTypeClass::Array->Count > 0)
 	{
 		int swIdx = pThis->Param3;
-		int houseIdx = -1;
-		std::vector<int> housesListIdx;
+		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
+		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
 
 		do
@@ -291,48 +291,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		}
 		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
 
-		// Only valid House indexes
-		if ((pThis->Param4 >= HouseClass::Array->Count
-			&& pThis->Param4 < HouseClass::PlayerAtA)
-			|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		{
-			return true;
-		}
-
 		switch (pThis->Param4)
 		{
-		case HouseClass::PlayerAtA:
-			houseIdx = 0;
-			break;
-
-		case HouseClass::PlayerAtB:
-			houseIdx = 1;
-			break;
-
-		case HouseClass::PlayerAtC:
-			houseIdx = 2;
-			break;
-
-		case HouseClass::PlayerAtD:
-			houseIdx = 3;
-			break;
-
-		case HouseClass::PlayerAtE:
-			houseIdx = 4;
-			break;
-
-		case HouseClass::PlayerAtF:
-			houseIdx = 5;
-			break;
-
-		case HouseClass::PlayerAtG:
-			houseIdx = 6;
-			break;
-
-		case HouseClass::PlayerAtH:
-			houseIdx = 7;
-			break;
-
 		case -1:
 			// Random non-neutral
 			for (auto pHouse : *HouseClass::Array)
@@ -341,12 +301,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					&& !pHouse->IsObserver()
 					&& !pHouse->Type->MultiplayPassive)
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -358,13 +318,10 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
-					houseIdx = pHouseNeutral->ArrayIndex;
+					pExecuteHouse = pHouseNeutral;
 					break;
 				}
 			}
-
-			if (houseIdx < 0)
-				return true;
 
 			break;
 
@@ -376,12 +333,12 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 					&& !pHouse->Defeated
 					&& !pHouse->IsObserver())
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -389,25 +346,22 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		default:
 			if (pThis->Param4 >= 0)
-				houseIdx = pThis->Param4;
+				pExecuteHouse = HouseClass::Index_IsMP(pThis->Param4) ? HouseClass::FindByIndex(pThis->Param4) : HouseClass::FindByCountryIndex(pThis->Param4);
 			else
 				return true;
 
 			break;
 		}
 
-		if (HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx))
+		if (pExecuteHouse)
 		{
-			if (auto const pSuper = pHouse->Supers.GetItem(swIdx))
-			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
-				pSuper->SetReadiness(true);
-				pSuper->Launch(targetLocation, false);
-				pSuper->Reset();
-				pSuper->RechargeTimer.StartTime = oldstart;
-				pSuper->RechargeTimer.TimeLeft = oldleft;
-			}
+			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
+	
+			CDTimerClass old_timer = pSuper->RechargeTimer;
+			pSuper->SetReadiness(true);
+			pSuper->Launch(targetLocation, false);
+			pSuper->Reset();
+			pSuper->RechargeTimer = old_timer;
 		}
 	}
 

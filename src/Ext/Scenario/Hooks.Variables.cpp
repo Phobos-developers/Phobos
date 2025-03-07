@@ -126,8 +126,8 @@ DEFINE_HOOK(0x685A38, ScenarioClass_sub_685670_SetNextScenario, 0x6)
 	{
 		if (strcmp(ScenarioClass::Instance->AltNextScenario, ""))
 		{
-			auto const LocalVariables = ScenarioExt::Global()->Variables[false];
-			auto const GlobalVariables = ScenarioExt::Global()->Variables[true];
+			auto const& LocalVariables = ScenarioExt::Global()->Variables[false];
+			auto const& GlobalVariables = ScenarioExt::Global()->Variables[true];
 
 			if (!LocalVariables.empty())
 			{

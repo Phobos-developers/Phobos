@@ -27,6 +27,7 @@ public:
 		HouseClass* InvokerHouse;
 		ParticleSystemClass* AttachedSystem;
 		BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
+		bool IsTechnoTrailerAnim;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -37,6 +38,7 @@ public:
 			, InvokerHouse {}
 			, AttachedSystem {}
 			, ParentBuilding {}
+			, IsTechnoTrailerAnim { false }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);
@@ -44,10 +46,7 @@ public:
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
 
-		virtual ~ExtData()
-		{
-			this->DeleteAttachedSystem();
-		}
+		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
@@ -68,6 +67,12 @@ public:
 		~ExtContainer();
 	};
 
+	static void Clear()
+	{
+		AnimExt::AnimsWithAttachedParticles.clear();
+	}
+
+	static std::vector<AnimClass*> AnimsWithAttachedParticles;
 	static ExtContainer ExtMap;
 
 	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = true, bool defaultToInvokerOwner = false);
@@ -77,6 +82,9 @@ public:
 	static void HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom);
 
+	static void SpawnFireAnims(AnimClass* pThis);
+
 	static void InvalidateTechnoPointers(TechnoClass* pTechno);
 	static void InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem);
+	static void CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, CoordStruct coords, TechnoClass* pTechno = nullptr, HouseClass* pHouse = nullptr, bool invoker = false, bool ownedObject = false);
 };

@@ -14,7 +14,8 @@
 
 std::vector<ShieldClass*> ShieldClass::Array;
 
-ShieldClass::ShieldClass() : Techno { nullptr }
+ShieldClass::ShieldClass()
+	: Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
 	, AreAnimsHidden { false }
@@ -22,7 +23,8 @@ ShieldClass::ShieldClass() : Techno { nullptr }
 	ShieldClass::Array.emplace_back(this);
 }
 
-ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
+ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
+	: Techno { pTechno }
 	, IdleAnim { nullptr }
 	, Timers { }
 	, Cloak { false }
@@ -219,7 +221,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 			}
 		}
 
-		this->ResponseAttack();
+		if (!pWHExt->Nonprovocative)
+			this->ResponseAttack();
 
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);
@@ -434,7 +437,7 @@ void ShieldClass::AI()
 		if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
 			UpdateIdleAnim();
 
-		if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
+		if (!this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
 			this->CreateAnim();
 	}
 
@@ -454,7 +457,7 @@ void ShieldClass::CloakCheck()
 	const auto cloakState = this->Techno->CloakState;
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
-	if (this->Cloak)
+	if (this->Cloak && this->IdleAnim && AnimTypeExt::ExtMap.Find(this->IdleAnim->Type)->DetachOnCloak)
 		this->KillAnim();
 }
 
@@ -663,9 +666,9 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 		return 0;
 
 	if (iStatus >= -1.0 && iStatus <= 1.0)
-		return (int)round(this->Type->Strength * iStatus);
+		return (int)std::round(this->Type->Strength * iStatus);
 
-	return (int)trunc(iStatus);
+	return (int)std::trunc(iStatus);
 }
 
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
@@ -684,11 +687,10 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 		if (pAnimType)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
-			{
-				pAnim->SetOwnerObject(this->Techno);
-				pAnim->Owner = this->Techno->Owner;
-			}
+			auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
+
+			pAnim->SetOwnerObject(this->Techno);
+			pAnim->Owner = this->Techno->Owner;
 		}
 	}
 
@@ -769,15 +771,17 @@ void ShieldClass::CreateAnim()
 {
 	auto idleAnimType = this->GetIdleAnimType();
 
+	if (this->Cloak && (!idleAnimType || AnimTypeExt::ExtMap.Find(idleAnimType)->DetachOnCloak))
+		return;
+
 	if (!this->IdleAnim && idleAnimType)
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location))
-		{
-			pAnim->SetOwnerObject(this->Techno);
-			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
-			pAnim->RemainingIterations = 0xFFu;
-			this->IdleAnim = pAnim;
-		}
+		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
+
+		pAnim->SetOwnerObject(this->Techno);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		pAnim->RemainingIterations = 0xFFu;
+		this->IdleAnim = pAnim;
 	}
 }
 
@@ -815,17 +819,6 @@ AnimTypeClass* ShieldClass::GetIdleAnimType()
 	return this->Type->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
-void ShieldClass::DrawShieldBar(int length, Point2D* pLocation, RectangleStruct* pBound)
-{
-	if (this->HP > 0 || this->Type->Respawn)
-	{
-		if (this->Techno->WhatAmI() == AbstractType::Building)
-			this->DrawShieldBar_Building(length, pLocation, pBound);
-		else
-			this->DrawShieldBar_Other(length, pLocation, pBound);
-	}
-}
-
 bool ShieldClass::IsGreenSP()
 {
 	return this->Type->GetConditionYellow() * this->Type->Strength.Get() < this->HP;
@@ -841,12 +834,8 @@ bool ShieldClass::IsRedSP()
 	return this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
 }
 
-void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
-	Point2D vLoc = *pLocation;
-	vLoc.X -= 5;
-	vLoc.Y -= 3;
-
 	Point2D position = { 0, 0 };
 	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
@@ -884,7 +873,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, Point2D* pLocation, R
 	}
 }
 
-void ShieldClass::DrawShieldBar_Other(const int length, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
 	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
 	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
@@ -948,57 +937,27 @@ int ShieldClass::DrawShieldBar_PipAmount(int length) const
 		: 0;
 }
 
-double ShieldClass::GetHealthRatio() const
-{
-	return static_cast<double>(this->HP) / this->Type->Strength;
-}
-
-int ShieldClass::GetHP() const
-{
-	return this->HP;
-}
-
-void ShieldClass::SetHP(int amount)
-{
-	this->HP = amount;
-	if (this->HP > this->Type->Strength)
-		this->HP = this->Type->Strength;
-}
-
-ShieldTypeClass* ShieldClass::GetType() const
-{
-	return this->Type;
-}
-
 ArmorType ShieldClass::GetArmorType() const
 {
-	if (this->Techno && this->Type->InheritArmorFromTechno)
-		return this->Techno->GetTechnoType()->Armor;
+	const auto pShieldType = this->Type;
 
-	return this->Type->Armor.Get();
+	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	{
+		const auto pTechnoType = this->Techno->GetTechnoType();
+
+		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
+			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+		{
+			return pTechnoType->Armor;
+		}
+	}
+
+	return pShieldType->Armor.Get();
 }
 
 int ShieldClass::GetFramesSinceLastBroken() const
 {
 	return Unsorted::CurrentFrame - this->LastBreakFrame;
-}
-
-bool ShieldClass::IsActive() const
-{
-	return
-		this->Available &&
-		this->HP > 0 &&
-		this->Online;
-}
-
-bool ShieldClass::IsAvailable() const
-{
-	return this->Available;
-}
-
-bool ShieldClass::IsBrokenAndNonRespawning() const
-{
-	return this->HP <= 0 && !this->Type->Respawn;
 }
 
 void ShieldClass::SetAnimationVisibility(bool visible)

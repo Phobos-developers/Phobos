@@ -103,13 +103,12 @@ DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 	GET(BulletClass*, pThis, EBP);
 	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
 
-	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
-	{
-		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
-		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
-		pTrailerAnimExt->SetInvoker(pThis->Owner);
-	}
+	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
+
+	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
+	pTrailerAnimExt->SetInvoker(pThis->Owner);
 
 	return SkipGameCode;
 }
@@ -291,6 +290,14 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	return SkipGameCode;
 }
 
+constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
+{
+	return flag != TrajectoryFlag::Invalid;
+/*	return flag == TrajectoryFlag::Straight
+		|| flag == TrajectoryFlag::Bombard
+		|| flag == TrajectoryFlag::Parabola;*/
+}
+
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 {
 	enum { SkipChecks = 0x467CDE };
@@ -305,13 +312,10 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (pExt->Trajectory)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-			{
-				R->EAX(pThis->Type);
-				return SkipChecks;
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -336,7 +340,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		{
 			R->EAX(pThis->Type);
 			return SkipChecks;
@@ -367,7 +371,7 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight && !pExt->SnappedToTarget)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 			return SkipSetCoordinate;
 	}
 
@@ -382,7 +386,7 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory && pExt->Trajectory->Flag == TrajectoryFlag::Straight)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
 			return SkipCheck;
 	}
 
@@ -445,6 +449,19 @@ DEFINE_HOOK(0x44D23C, BuildingClass_Mission_Missile_ArcingFix, 0x7)
 		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
 			R->EAX(targetHeight);
 	}
+
+	return 0;
+}
+
+// Vanilla inertia effect only for bullets with ROT=0
+DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
+{
+	enum { SkipCheck = 0x4160BC };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
+		return SkipCheck;
 
 	return 0;
 }
