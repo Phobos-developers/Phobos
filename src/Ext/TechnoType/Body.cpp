@@ -539,8 +539,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
-	char tempBuffer[32];
-
 	if (this->OwnerObject()->Gunner)
 	{
 		size_t weaponCount = this->OwnerObject()->WeaponCount;
