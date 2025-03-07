@@ -1390,13 +1390,13 @@ msgid ""
 "unit"
 msgstr "修复了超时空传送超武将单位传送到一个不可碾压目标上并摧毁时在原位置创建空气墙的问题"
 
-msgid "`FreeUnit` uses the unit's own `SpeedType` to find the spawn location"
+msgid "`FreeUnit` uses its own `SpeedType` to determine where to spawn"
 msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置"
 
-msgid "The bug where naval ships as StartUnit might spawn on land has been fixed"
-msgstr "修复初始船只可能生成在陆地上的 Bug"
+msgid "Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land"
+msgstr "修复海军舰船设为 `AllowedToStartInMultiplayer=yes` 可能生成在陆地上的 Bug"
 
-msgid "Fix the pathfinding issue when a building performs undeploy"
+msgid "Fix the bug where pathfinding issues occur when a building performs undeploy"
 msgstr "修复建筑执行 `UndeploysInto` 时的寻路问题"
 
 #: ../../../CREDITS.md:355
