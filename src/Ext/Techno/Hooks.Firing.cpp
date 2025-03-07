@@ -11,6 +11,12 @@
 #include <Utilities/EnumFunctions.h>
 
 #pragma region TechnoClass_SelectWeapon
+
+namespace ForceWeaponInRangeTemp
+{
+	bool SelectWeaponByRange = false;
+}
+
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 {
 	enum { SkipGameCode = 0x6F3341, ReturnValue = 0x6F3406 };
@@ -75,6 +81,9 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
+	if (ForceWeaponInRangeTemp::SelectWeaponByRange)
+		return UseWeaponIndex;
+
 	if (!pThis)
 		return 0;
 
@@ -108,8 +117,9 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		}
 		else if (!pTypeExt->ForceWeapon_InRange.empty())
 		{
-			int currentDistance = pThis->DistanceFrom(pTarget);
-			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTarget, currentDistance);
+			ForceWeaponInRangeTemp::SelectWeaponByRange = true;
+			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange();
+			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
 		}
 	}
 

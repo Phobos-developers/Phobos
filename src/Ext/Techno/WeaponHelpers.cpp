@@ -199,17 +199,19 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	return weaponIndex;
 }
 
-int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget, int currentDistance)
+int TechnoExt::ExtData::ApplyForceWeaponInRange()
 {
 	int forceWeaponIndex = -1;
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
+	auto const pTarget = pThis->Target;
 	
 	auto const& weaponIndices = pTypeExt->ForceWeapon_InRange;
 	auto const& rangeOverrides = pTypeExt->ForceWeapon_InRange_Overrides;
 	const bool applyRangeModifiers = pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
 
 	const int defaultWeaponIndex = pThis->SelectWeapon(pTarget);
+	const int currentDistance = pThis->DistanceFrom(pTarget);
 	auto const pDefaultWeapon = pThis->GetWeapon(defaultWeaponIndex)->WeaponType;
 
 	for (size_t i = 0; i < weaponIndices.size(); i++)
