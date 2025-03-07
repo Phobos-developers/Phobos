@@ -152,5 +152,23 @@ typedef _VTABLE _OFFSET;
 	_ALLOCATE_DYNAMIC_PATCH(name, offset, sizeof(data), &data);
 #pragma endregion Dynamic Patch
 
+#pragma region Thiscall Patch
+#define _GET_FUNCTION_ADDRESS(function, getterName)               \
+	static constexpr __forceinline uintptr_t getterName()         \
+	{                                                             \
+		uintptr_t addr;                                           \
+		{ _asm mov eax, function }                                \
+		{ _asm mov addr, eax }                                    \
+		return addr;                                              \
+	}
+
+#define DEFINE_FUNCTION_JUMP(jumpType, offset, function)          \
+	namespace NAMESPACE_THISCALL_JUMP##offset                     \
+	{                                                             \
+		_GET_FUNCTION_ADDRESS(function, GetAddr)                  \
+		DEFINE_JUMP(jumpType, offset, GetAddr())                  \
+	}
+#pragma endregion
+
 #pragma endregion Macros
 #pragma endregion Patch Macros
