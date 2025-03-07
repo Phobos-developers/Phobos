@@ -85,7 +85,7 @@ void RadSiteExt::ExtData::CreateLight()
 	auto nTintFactor = this->Type->GetTintFactor();
 
 	//=========Red
-	auto red = ((1000 * nRadcolor.R) / 255)* nTintFactor;
+	auto red = ((1000 * nRadcolor.R) / 255) * nTintFactor;
 	red = Math::min(red, 2000.0);
 	//=========Green
 	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
@@ -94,26 +94,23 @@ void RadSiteExt::ExtData::CreateLight()
 	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
 	blue = Math::min(blue, 2000.0);;
 
-	TintStruct nTintBuffer{ Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
+	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;
 	bool update = false;
 
 	if (pThis->LightSource)
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
-		pThis->Radiate();
 	}
-	else
+	else if (auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
-		if (auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer))
-		{
-			pThis->LightSource = pLight;
-			pLight->DetailLevel = 0;
-			pLight->Activate(update);
-			pThis->Radiate();
-		}
+		auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
+		pThis->LightSource = pLight;
+		pLight->DetailLevel = 0;
+		pLight->Activate(update);
 	}
+
+	pThis->Radiate();
 }
 
 // Rewrite because of crashing craziness

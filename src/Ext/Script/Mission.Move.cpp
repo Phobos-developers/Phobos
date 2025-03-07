@@ -242,6 +242,12 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		if (enemyHouse && enemyHouse != object->Owner)
 			continue;
 
+		// Discard invisible structures
+		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
+
+		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
+			continue;
+
 		// Stealth ground unit check
 		if (object->CloakState == CloakState::Cloaked && !objectType->Naval)
 			continue;

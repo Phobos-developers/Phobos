@@ -24,7 +24,7 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 			if (pExt->PowerPlantEnhancer_Buildings.size() &&
 				(pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
 			{
-				++pHouseExt->PowerPlantEnhancers[pExt];
+				++pHouseExt->PowerPlantEnhancers[pBld->Type->ArrayIndex];
 			}
 		}
 	}
@@ -41,6 +41,50 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
 	return 0x508D07;
+}
+
+// Trigger power recalculation on gain/loss of any techno, not just buildings.
+DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
+DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
+{
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
+	GET(HouseClass*, pThis, ECX);
+
+	pThis->RecheckPower = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
+{
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
+	GET(HouseClass*, pThis, ESI);
+
+	auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+	{
+			const int count = pThis->CountOwnedAndPresent(pType);
+			if (count == 0)
+				return;
+			const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+			if (pExt->Power > 0)
+				pThis->PowerOutput += pExt->Power * count;
+			else
+				pThis->PowerDrain -= pExt->Power * count;
+	};
+
+	for (const auto pType : *InfantryTypeClass::Array)
+		updateDrainForThisType(pType);
+	for (const auto pType : *UnitTypeClass::Array)
+		updateDrainForThisType(pType);
+	for (const auto pType : *AircraftTypeClass::Array)
+		updateDrainForThisType(pType);
+	// Don't do this for buildings, they've already been counted.
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
@@ -208,6 +252,14 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
+	if (pExt->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = pOwnerExt->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+
+		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
+	}
+
 	if (auto pMe = generic_cast<FootClass*>(pThis))
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();
@@ -257,7 +309,42 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
 
-DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
+// Vanilla and Ares all only hardcoded to find factory with BuildCat::DontCare...
+static inline bool CheckShouldDisableDefensesCameo(HouseClass* pHouse, TechnoTypeClass* pType)
+{
+	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	{
+		if (pBuildingType->BuildCat == BuildCat::Combat)
+		{
+			auto count = 0;
+
+			if (const auto pFactory = pHouse->Primary_ForDefenses)
+			{
+				count = pFactory->CountTotal(pBuildingType);
+
+				if (pFactory->Object && pFactory->Object->GetType() == pBuildingType && pBuildingType->BuildLimit > 0)
+					--count;
+			}
+
+			auto buildLimitRemaining = [](HouseClass* pHouse, BuildingTypeClass* pBldType)
+			{
+				const auto BuildLimit = pBldType->BuildLimit;
+
+				if (BuildLimit >= 0)
+					return BuildLimit - BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(pBldType, pHouse);
+				else
+					return -BuildLimit - pHouse->CountOwnedEver(pBldType);
+			};
+
+			if (buildLimitRemaining(pHouse, pBuildingType) - count <= 0)
+				return true;
+		}
+	}
+
+	return false;
+}
+
+DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
@@ -266,7 +353,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo, 0x5)
 	if (aresDisable || !pType)
 		return 0;
 
-	if (HouseExt::ReachedBuildLimit(pThis, pType, false))
+	if (CheckShouldDisableDefensesCameo(pThis, pType) || HouseExt::ReachedBuildLimit(pThis, pType, false))
 		R->EAX(true);
 
 	return 0;
@@ -336,4 +423,36 @@ DEFINE_HOOK(0x500910, HouseClass_GetFactoryCount, 0x5)
 	R->EAX(pExt->GetFactoryCountWithoutNonMFB(rtti, isNaval));
 
 	return SkipGameCode;
+}
+
+// Sell all and all in.
+DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
+{
+	enum { ret = 0x4FD907 };
+
+	GET(HouseClass*, pThis, EBX);
+
+	auto const pRules = RulesExt::Global();
+
+	if (pRules->AIFireSale)
+	{
+		auto const pExt = HouseExt::ExtMap.Find(pThis);
+
+		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
+			pExt->AIFireSaleDelayTimer.Completed())
+		{
+			pThis->Fire_Sale();
+		}
+		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
+		{
+			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
+		}
+	}
+
+	if (pRules->AIAllToHunt)
+	{
+		pThis->All_To_Hunt();
+	}
+
+	return ret;
 }
