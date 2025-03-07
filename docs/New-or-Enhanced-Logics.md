@@ -1426,6 +1426,10 @@ In `rulesmd.ini`:
 NoManualMove=false  ; boolean
 ```
 
+```{note}
+Note that you can still undeploy the building by using a `BuildingUndeploy=true` warhead or by setting a rally point and selling it.
+```
+
 ### Promoted Spawns
 
 ![image](_static/images/promotedspawns-01.gif)
