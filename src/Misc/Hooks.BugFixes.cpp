@@ -1104,6 +1104,30 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 
 #pragma endregion
 
+#pragma region AmphibiousHarvester
+
+DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pType = pThis->Type;
+
+	if (!pType->Teleporter)
+	{
+		REF_STACK(SpeedType, speedType, STACK_OFFSET(0xA0, -0x98));
+		REF_STACK(int, currentZoneType, STACK_OFFSET(0xA0, -0x94));
+		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xA0, -0x90));
+
+		speedType = pType->SpeedType;
+		movementZone = pType->MovementZone;
+		currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region StopEventFix
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
