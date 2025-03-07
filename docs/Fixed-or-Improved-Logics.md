@@ -182,6 +182,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
+- Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
 
 ## Fixes / interactions with other extensions
 

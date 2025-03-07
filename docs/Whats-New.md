@@ -561,6 +561,7 @@ Vanilla fixes:
 - `FreeUnit` uses its own `SpeedType` to determine where to spawn (by NetsuNegi)
 - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land (by NetsuNegi)
 - Fix the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
+- Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

@@ -380,6 +380,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `LimboKill` not working reliably
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Draw visual effects for airburst weapons
+  - Units will not always stuck in the factory
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -389,6 +390,7 @@ This page lists all the individual contributions to the project by their author.
   - Skirmish AI "gather when MCV deploy" behavior dehardcode
   - Global value of `RepairBaseNodes`
   - Parasite returning bug fix
+  - Units are now unable to kick out from a factory that is in construction process
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
