@@ -28,8 +28,8 @@ public:
 		, RetargetAllies { false }
 		, RetargetRadius { 0 }
 		, TargetSnapDistance { Leptons(128) }
-		, SuicideAboveRange { 0 }
-		, SuicideShortOfROT { true }
+		, SuicideAboveRange { -3 }
+		, SuicideShortOfROT { false }
 		, SuicideIfNoWeapon { true }
 		, Weapons {}
 		, WeaponBurst {}
@@ -107,7 +107,7 @@ public:
 		, PreAimCoord { trajType->PreAimCoord.Get() }
 		, UseDisperseBurst { trajType->UseDisperseBurst }
 		, CruiseEnable { trajType->CruiseEnable }
-		, SuicideAboveRange { trajType->SuicideAboveRange * Unsorted::LeptonsPerCell }
+		, SuicideAboveRange { 0 }
 		, WeaponCount { trajType->WeaponCount }
 		, WeaponTimer {}
 		, InStraight { false }

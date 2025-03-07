@@ -227,6 +227,11 @@ void DisperseTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	}
 	else // Under normal circumstances, the trajectory is similar to ROT projectile with an initial launch direction
 	{
+		if (pType->SuicideAboveRange < 0)
+			this->SuicideAboveRange = this->OriginalDistance * (-pType->SuicideAboveRange);
+		else if (pType->SuicideAboveRange > 0)
+			this->SuicideAboveRange = Unsorted::LeptonsPerCell * pType->SuicideAboveRange;
+
 		// Without setting an initial direction, it will be launched directly towards the target
 		if (this->PreAimCoord == CoordStruct::Empty)
 		{
@@ -828,7 +833,8 @@ bool DisperseTrajectory::StandardVelocityChange(BulletClass* pBullet)
 			const auto ratio = this->Speed / horizontalDistance;
 			targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
 			targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
-			targetLocation.Z = pType->CruiseAltitude + (pType->CruiseAlongLevel ? MapClass::Instance->GetCellFloorHeight(pBullet->Location) : pBullet->SourceCoords.Z);
+			const auto altitude = pType->CruiseAltitude + (pType->CruiseAlongLevel ? MapClass::Instance->GetCellFloorHeight(pBullet->Location) : pBullet->SourceCoords.Z);
+			targetLocation.Z = (altitude + pBullet->Location.Z) / 2;
 		}
 		else
 		{
@@ -867,11 +873,8 @@ bool DisperseTrajectory::ChangeBulletVelocity(BulletClass* pBullet, const CoordS
 		pBullet->Velocity = this->RotateAboutTheAxis(bulletVelocity, rotationAxis, (radian < 0 ? turningRadius : -turningRadius));
 
 		// Check if the steering ability is insufficient
-		if (!pType->UniqueCurve && pType->SuicideShortOfROT && !this->CruiseEnable && dotProduct <= 0
-			&& (this->InStraight || (this->LastDotProduct > 0 && this->PreAimDistance <= 0)))
-		{
+		if (!pType->UniqueCurve && pType->SuicideShortOfROT && dotProduct <= 0 && (this->InStraight || this->LastDotProduct > 0))
 			return true;
-		}
 	}
 	else // When the angle is small, aim directly at the target
 	{

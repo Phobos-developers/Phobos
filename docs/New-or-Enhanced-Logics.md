@@ -948,7 +948,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
   - `Trajectory.Disperse.RetargetAllies` controls whether the projectile chooses allies as its target when searching for new targets after losing its original target.
   - `Trajectory.Disperse.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. If it hasn't arrived `Trajectory.Disperse.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will directly self explode in place.
   - `Trajectory.Disperse.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
-  - `Trajectory.Disperse.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide.
+  - `Trajectory.Disperse.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide. When set to a negative number, its absolute value represents a multiple of the initial distance.
   - `Trajectory.Disperse.SuicideShortOfROT` controls whether the projectile will explode when it detected its insufficient turning ability.
   - `Trajectory.Disperse.SuicideIfNoWeapon` controls whether the projectile will self destruct after the number of times it spreads the weapon has been exhausted. If `Trajectory.Disperse.WeaponCount` set to 0, this will not be enabled.
   - `Trajectory.Disperse.Weapons` defines the dispersal weapons of the projectile.
@@ -991,8 +991,8 @@ Trajectory.Disperse.RecordSourceCoord=false     ; boolean
 Trajectory.Disperse.RetargetAllies=false        ; boolean
 Trajectory.Disperse.RetargetRadius=0            ; floating point value
 Trajectory.Disperse.TargetSnapDistance=0.5      ; floating point value
-Trajectory.Disperse.SuicideAboveRange=0         ; floating point value
-Trajectory.Disperse.SuicideShortOfROT=true      ; boolean
+Trajectory.Disperse.SuicideAboveRange=-3.0      ; floating point value
+Trajectory.Disperse.SuicideShortOfROT=false     ; boolean
 Trajectory.Disperse.SuicideIfNoWeapon=true      ; boolean
 Trajectory.Disperse.Weapons=                    ; list of WeaponTypes
 Trajectory.Disperse.WeaponBurst=                ; list of integers
