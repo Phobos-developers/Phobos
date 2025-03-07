@@ -115,7 +115,7 @@ msgstr "图像"
 
 #: ../../User-Interface.md:38
 msgid "You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display)."
-msgstr "现在你可以配置各种类型的数字化计数器来显示技术类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-display)开启或关闭。"
+msgstr "现在你可以配置各种类型的数字化计数器来显示科技类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-display)开启或关闭。"
 
 #: ../../User-Interface.md:39
 msgid "`Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead."
@@ -186,11 +186,11 @@ msgstr "显示指示者和抑制者范围"
 
 #: ../../User-Interface.md:103
 msgid "It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`."
-msgstr "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators` 中的技术类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
+msgstr "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators` 中的科技类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:104
 msgid "In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`."
-msgstr "类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的技术类型将显示一个半径由 `[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
+msgstr "类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的科技类型将显示一个半径由 `[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
 
 #: ../../User-Interface.md:105
 msgid "This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`."
@@ -368,7 +368,7 @@ msgstr "由于技术限制，没有 Ares 的情况此功能将被强制禁用。
 
 #: ../../User-Interface.md:288
 msgid "Flashing Technos on selecting"
-msgstr "闪烁选中的技术类型"
+msgstr "闪烁选中的科技类型"
 
 #: ../../User-Interface.md:290
 msgid "Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0."
@@ -412,7 +412,7 @@ msgstr "`[ ]` 下一个空闲矿车"
 
 #: ../../User-Interface.md:319
 msgid "Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的技术类型。"
+msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的科技类型。"
 
 #: ../../User-Interface.md:320
 msgid "For localization add `TXT_NEXT_IDLE_HARVESTER` and `TXT_NEXT_IDLE_HARVESTER_DESC` into your `.csf` file."
@@ -559,7 +559,7 @@ msgstr "图标排序"
 
 #: ../../User-Interface.md:388
 msgid "You can now specify Cameo Priority for any TechnoType/SuperWeaponType. Vanilla sorting rules are [here](https://modenc.renegadeprojects.com/Cameo_Sorting)."
-msgstr "现在你可以为任何技术类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
+msgstr "现在你可以为任何科技类型/超级武器类型指定图标优先级。原版排序规则可见[此处](https://modenc.renegadeprojects.com/Cameo_Sorting)。"
 
 #: ../../User-Interface.md:389
 msgid "The Cameo Priority is checked just before evevything vanilla. Greater `CameoPriority` wins."
@@ -595,7 +595,7 @@ msgstr "可以在资金示数器附近添加一个额外的计数器用于显示
 
 #: ../../User-Interface.md:423
 msgid "You can specify which TechnoType should be counted as a Harvester with `Harvester.Counted`. If not set, the techno with `Harvester=yes` or `Enslaves=SOMESLAVE` will be counted."
-msgstr "你可以使用 `Harvester.Counted` 指定哪些技术类型被视为矿车。若未设置，带有 `Harvester=yes` 或 `Enslaves=SOMESLAVE` 的单位将被计入。"
+msgstr "你可以使用 `Harvester.Counted` 指定哪些科技类型被视为矿车。若未设置，带有 `Harvester=yes` 或 `Enslaves=SOMESLAVE` 的单位将被计入。"
 
 #: ../../User-Interface.md:424
 msgid "Can be set to true on buildings with `ProduceCashAmount` to count them as active 'harvesters' while generating credits."
@@ -724,11 +724,11 @@ msgstr "![image](_static/images/tooltips-01.png) *[CnC: Final War](https://www.m
 
 #: ../../User-Interface.md:570
 msgid "Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips."
-msgstr "现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于技术类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
+msgstr "现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型/超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
 
 #: ../../User-Interface.md:571
 msgid "TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable)."
-msgstr "技术类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
+msgstr "科技类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
 #: ../../User-Interface.md:572
 msgid "SWType's tooltip would display it's name, cost,  and recharge time (when applicable)."

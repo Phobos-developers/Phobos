@@ -180,6 +180,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ApplyChancePerTarget.Read(exINI, pSection, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
+	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
@@ -411,6 +412,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
 		.Process(this->Crit_ExtraDamage)
+		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
 		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Warhead_FullDetonation)
 		.Process(this->Crit_Affects)

@@ -253,7 +253,7 @@ msgid ""
 "`TurretOffset=F,L,H`, which means turret location can be adjusted in all "
 "three axes."
 msgstr ""
-"用于技术类型 Voxel 炮塔的 `TurretOffset` 标签现在接受像 FLH（前，侧，高）那样的值，例如 "
+"用于科技类型 Voxel 炮塔的 `TurretOffset` 标签现在接受像 FLH（前，侧，高）那样的值，例如 "
 "`TurretOffset=F,L` 或 `TurretOffset=F,L,H`，这意味着炮塔的位置可以在三个轴上进行调整。"
 
 #: ../../Fixed-or-Improved-Logics.md:47
@@ -443,7 +443,7 @@ msgid ""
 "house but without a known source TechnoType (f.ex animation warhead "
 "damage) to not be recorded as killed correctly and thus not spring map "
 "trigger events etc."
-msgstr "修复了只有所属方但没有开火者技术类型造成的伤害击杀（例如来自动画弹头伤害）未能正确记录为被击杀而无法触发地图事件等问题。"
+msgstr "修复了只有所属方但没有开火者科技类型造成的伤害击杀（例如来自动画弹头伤害）未能正确记录为被击杀而无法触发地图事件等问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:80
 msgid ""
@@ -1072,11 +1072,11 @@ msgstr "Jumpjet 单位不再进入空闲站立状态。"
 
 #: ../../Fixed-or-Improved-Logics.md:177
 msgid "Technos are no longer unable to stop the attack move mission."
-msgstr "技术类型现在可以停止移动攻击任务。"
+msgstr "科技类型现在可以停止移动攻击任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:178
 msgid "Technos are no longer unable to stop the area guard mission."
-msgstr "技术类型现在可以停止区域警戒任务。"
+msgstr "科技类型现在可以停止区域警戒任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:179
 msgid "Aircraft no longer find airport twice and overlap."
@@ -1110,6 +1110,10 @@ msgid ""
 msgstr ""
 "现在单位的 `Speed` 设置接受小数。内部解析的值被限制为最大 100，乘以 256 并除以 100，结果（此时转换为整数）被限制为最大 "
 "255，从而获得有效内部速度值范围 0 到 255，例如以 leptons 为单位每帧移动的距离。"
+
+#: ../../Fixed-or-Improved-Logics.md:184
+msgid "`AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`."
+msgstr "现在 `AirburstWeapon` 可以支持绘制 `IsLaser`、`IsElectricBolt`（暂不支持 Ares 的 `Bolt.Color1`、`Bolt.Color2`、`Bolt.Color3`）、`IsRadBeam` 等视觉效果并允许粒子武器正常创建 `AttachedParticleSystem` 的粒子系统。"
 
 #: ../../Fixed-or-Improved-Logics.md:184
 msgid ""
@@ -1149,6 +1153,18 @@ msgid ""
 "its original position when it is teleported by ChronoSphere onto an "
 "uncrushable unit and self destruct."
 msgstr "修复了一个单位被超时空传送超武传送到一个不可碾压的单位上并自爆时会在原地留下空气墙的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:191
+msgid "`FreeUnit` uses the unit's own `SpeedType` to find the spawn location."
+msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置。"
+
+#: ../../Fixed-or-Improved-Logics.md:192
+msgid "The bug where naval ships as StartUnit might spawn on land has been fixed."
+msgstr "修复初始船只可能生成在陆地上的 Bug。"
+
+#: ../../Fixed-or-Improved-Logics.md:193
+msgid "When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell."
+msgstr "建筑通过 `UndeploysInto` 反部署时使用目标载具的 `SpeedType` 和 `MovementZone` 来决定能否向目标单元格移动。"
 
 #: ../../Fixed-or-Improved-Logics.md:190
 msgid "Fix the bug that destroyed unit may leaves sensors."
@@ -1733,7 +1749,7 @@ msgid ""
 "`FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`."
 msgstr ""
 "现在可以通过在 `FactoryPlant.AllowTypes` 和/或 `FactoryPlant.DisallowTypes` "
-"中列出有哪些技术类型受到 `FactoryPlant=true` 建筑的加成。"
+"中列出有哪些科技类型受到 `FactoryPlant=true` 建筑的加成。"
 
 #: ../../Fixed-or-Improved-Logics.md:388
 msgid ""
@@ -2085,7 +2101,7 @@ msgid ""
 "cells if not enough TechnoType targets were found nearby."
 msgstr ""
 "`Splits.TargetCellRange` "
-"是以完整单元格数为单位的距离，用于附近没有发现足够的技术类型目标时分裂的抛射体从该范围选取新的目标单元格。"
+"是以完整单元格数为单位的距离，用于附近没有发现足够的科技类型目标时分裂的抛射体从该范围选取新的目标单元格。"
 
 #: ../../Fixed-or-Improved-Logics.md:546
 msgid ""
@@ -2217,7 +2233,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:609
 msgid "Technos"
-msgstr "技术类型"
+msgstr "科技类型"
 
 #: ../../Fixed-or-Improved-Logics.md:611
 msgid "Building-provided self-healing customization"
@@ -2267,7 +2283,7 @@ msgid ""
 "`InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can "
 "now be controlled by setting `SelfHealGainType`."
 msgstr ""
-"通过设置 `SelfHealGainType` 可以控制技术类型是否受到 `InfantryGainSelfHeal` 或 "
+"通过设置 `SelfHealGainType` 可以控制科技类型是否受到 `InfantryGainSelfHeal` 或 "
 "`UnitsGainSelfHeal` 建筑的增益效果或者对两者都不享有。"
 
 #: ../../Fixed-or-Improved-Logics.md:618
@@ -2341,7 +2357,7 @@ msgid ""
 "It is now possible to customize (globally and per TechnoType) the warp-in"
 " delay for units teleporting through `Type=ChronoSphere/Warp` "
 "Superweapon, both before and after the jump."
-msgstr "现在可以自定义（全局和所有技术类型）单位通过 `Type=ChronoSphere/Warp` 超级武器传送前后的延迟。"
+msgstr "现在可以自定义（全局和所有科技类型）单位通过 `Type=ChronoSphere/Warp` 超级武器传送前后的延迟。"
 
 #: ../../Fixed-or-Improved-Logics.md:670
 msgid ""
@@ -2358,7 +2374,7 @@ msgstr "自定义等级军衔"
 
 #: ../../Fixed-or-Improved-Logics.md:675
 msgid "You can now customize veterancy insignia of TechnoTypes."
-msgstr "现在可以自定义技术类型的等级军衔。"
+msgstr "现在可以自定义科技类型的等级军衔。"
 
 #: ../../Fixed-or-Improved-Logics.md:676
 msgid ""
@@ -2480,11 +2496,11 @@ msgid ""
 "You can now specify Teleport/Chrono Locomotor settings per TechnoType to "
 "override default rules values. Unfilled values default to values in "
 "`[General]`."
-msgstr "现在你可以为每个技术类型指定其超时空运动方式设置以覆盖默认规则的值。未填充值则默认使用 `[General]` 中的值。"
+msgstr "现在你可以为每个科技类型指定其超时空运动方式设置以覆盖默认规则的值。未填充值则默认使用 `[General]` 中的值。"
 
 #: ../../Fixed-or-Improved-Logics.md:744
 msgid "Only applicable to Techno that have Teleport/Chrono Locomotor attached."
-msgstr "仅对使用超时空运动方式的技术类型有效。"
+msgstr "仅对使用超时空运动方式的科技类型有效。"
 
 #: ../../Fixed-or-Improved-Logics.md:759
 msgid "Customizable target evaluation map zone check behaviour"
@@ -2515,7 +2531,7 @@ msgid ""
 "`Image` tag in art INI is no longer limited to AnimationTypes and "
 "BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, "
 "VehicleTypes, AircraftTypes, BuildingTypes)."
-msgstr "art INI 中的 `Image` 标签不再局限于动画类型和建筑类型，而是作用于所有技术类型（步兵类型、载具类型、战机类型、建筑类型）。"
+msgstr "art INI 中的 `Image` 标签不再局限于动画类型和建筑类型，而是作用于所有科技类型（步兵类型、载具类型、战机类型、建筑类型）。"
 
 #: ../../Fixed-or-Improved-Logics.md:772
 msgid ""
@@ -2523,7 +2539,7 @@ msgid ""
 " that replaces TechnoType's graphics. If the name in `Image` is also an "
 "entry in the art INI, **no tags will be read from it**."
 msgstr ""
-"这个标签**仅**指定替代技术类型图像的文件名（不带扩展名）。如果 `Image` 中的名称也是 art INI "
+"这个标签**仅**指定替代科技类型图像的文件名（不带扩展名）。如果 `Image` 中的名称也是 art INI "
 "中的一个条目，那么**不会从中读取任何标签**。"
 
 #: ../../Fixed-or-Improved-Logics.md:773
@@ -2563,13 +2579,13 @@ msgstr "自定义水波动画"
 msgid ""
 "You can now specify the `Wake` anim per TechnoType to override default "
 "rules value."
-msgstr "现在你可以为每个技术类型指定 `Wake` 动画以覆盖默认规则值。"
+msgstr "现在你可以为每个科技类型指定 `Wake` 动画以覆盖默认规则值。"
 
 #: ../../Fixed-or-Improved-Logics.md:802
 msgid ""
 "`Wake.Grapple` and `Wake.Sinking` can be used to further customize wake "
 "anim when the techno is being parasited or sunken."
-msgstr "`Wake.Grapple` 和 `Wake.Sinking` 可用于在技术类型被寄生或沉没时进一步自定义水波动画。"
+msgstr "`Wake.Grapple` 和 `Wake.Sinking` 可用于在科技类型被寄生或沉没时进一步自定义水波动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:812
 msgid "Customizing effect of level lighting on air units"
@@ -2601,7 +2617,7 @@ msgid ""
 "killed when they are destroyed. This behaviour can now be disabled by "
 "setting `Explodes.KillPassengers=false`."
 msgstr ""
-"默认情况下 `Explodes=true` 的技术类型被摧毁时它们的所有乘客都会被击杀。现在可以通过设置 "
+"默认情况下 `Explodes=true` 的科技类型被摧毁时它们的所有乘客都会被击杀。现在可以通过设置 "
 "`Explodes.KillPassengers=false` 禁用此行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:827
@@ -2628,7 +2644,7 @@ msgid ""
 "`IronCurtain.Effect`. Following values are respected:"
 msgstr ""
 "在原本的游戏中，当铁幕效果应用于例如巨型乌贼和步兵这种 `Organic=true` 的单位时，它们只能被 `C4Warhead` "
-"瞬间击杀。现在此行为已被解除硬编码，并且可以通过全局的 `IronCurtain.EffectOnOrganics` 和每个技术类型的 "
+"瞬间击杀。现在此行为已被解除硬编码，并且可以通过全局的 `IronCurtain.EffectOnOrganics` 和每个科技类型的 "
 "`IronCurtain.Effect` 属性来自定义。可接受的值如下："
 
 #: ../../Fixed-or-Improved-Logics.md:841
@@ -2656,7 +2672,7 @@ msgid ""
 "former defaulting to `[CombatDamage] -> C4Warhead`."
 msgstr ""
 "`IronCurtain.KillOrganicsWarhead` 和 `IronCurtain.KillWarhead` "
-"可用于自定义击杀单位的弹头，前者用于全局设置，后者用于单独的技术类型基础设置，后者默认为前者，前者默认为 `[CombatDamage] -> "
+"可用于自定义击杀单位的弹头，前者用于全局设置，后者用于单独的科技类型基础设置，后者默认为前者，前者默认为 `[CombatDamage] -> "
 "C4Warhead`。"
 
 #: ../../Fixed-or-Improved-Logics.md:845
@@ -2718,14 +2734,14 @@ msgid ""
 " in turn for ammo pips, split similarly between non-building technos and "
 "buildings."
 msgstr ""
-"`Pips.Generic.(Buildings.)Size` 用于非建筑技术类型/建筑的非弹药 "
-"pip，相应的，`Pips.Ammo.(Buildings.)Size` 则是针对弹药 pip，同样分别对应非建筑技术类型/建筑。"
+"`Pips.Generic.(Buildings.)Size` 用于非建筑科技类型/建筑的非弹药 "
+"pip，相应的，`Pips.Ammo.(Buildings.)Size` 则是针对弹药 pip，同样分别对应非建筑科技类型/建筑。"
 
 #: ../../Fixed-or-Improved-Logics.md:902
 msgid ""
 "Ammo pip size can also be overridden on per TechnoType-basis using "
 "`AmmoPipSize`."
-msgstr "还可以通过 `AmmoPipSize` 为每个技术类型重写弹药 pip 的大小。"
+msgstr "还可以通过 `AmmoPipSize` 为每个科技类型重写弹药 pip 的大小。"
 
 #: ../../Fixed-or-Improved-Logics.md:903
 msgid "Ammo pip frames can now also be customized."
@@ -2756,7 +2772,7 @@ msgstr "`AmmoPipOffset` 可用于移动弹药 pip 的起始位置。"
 
 #: ../../Fixed-or-Improved-Logics.md:907
 msgid "Pips for TechnoTypes with `Spawns` can now also be customized."
-msgstr "现在带有 `Spawns` 的技术类型的 pip 也可以进行自定义。"
+msgstr "现在带有 `Spawns` 的科技类型的 pip 也可以进行自定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:908
 msgid ""
@@ -2825,7 +2841,7 @@ msgid ""
 "with `Weeder=yes`, takes a (zero-based) index of a frame in `pips.shp` "
 "(for buildings) or `pips2.shp` (for others). Defaults to 1."
 msgstr ""
-"`Pips.Tiberiums.WeedFrame` 控制在 `Weeder=yes` 技术类型上显示的帧，使用 "
+"`Pips.Tiberiums.WeedFrame` 控制在 `Weeder=yes` 科技类型上显示的帧，使用 "
 "`pips.shp`（用于建筑）或 `pips2.shp`（用于其他）中（从 0 开始的）索引，默认 1。"
 
 #: ../../Fixed-or-Improved-Logics.md:917
@@ -2922,7 +2938,7 @@ msgstr "钻地单位移动高度和速度"
 msgid ""
 "It is now possible to control the height at which units with subterranean"
 " (Tunnel) `Locomotor` travel, globally or per TechnoType."
-msgstr "现在可以控制拥有钻地（Tunnel）`Locomotor` 的单位移动的高度，可以在全局和每个技术类型上定义。"
+msgstr "现在可以控制拥有钻地（Tunnel）`Locomotor` 的单位移动的高度，可以在全局和每个科技类型上定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:995
 msgid ""
@@ -3045,7 +3061,7 @@ msgid ""
 "to be offset when putting in the game with with fixed voxel lighting."
 msgstr ""
 "请注意该工具目前尚未考虑 `UseFixedVoxelLighting=true` "
-"的情况，因此在将值放入使用该设置的游戏中时需要对工具中显示的值进行调整。"
+"的情况，因此工具中显示的值在启用该修复项的游戏中需要进行调整。"
 
 #: ../../Fixed-or-Improved-Logics.md:1053
 msgid "Voxel shadow scaling in air"
@@ -3099,7 +3115,7 @@ msgstr "如果 `AllowParallelAIQueues=no`（*Ares 功能*）被设置，该标�
 msgid ""
 "You can also exclude specific TechnoTypes from being built in parallel by"
 " AI by setting `ForbidParallelAIQueues` to true on a TechnoType."
-msgstr "你还可以通过在技术类型上将 `ForbidParallelAIQueues` 设为 true 来禁止特定技术类型被 AI 克隆生产。"
+msgstr "你还可以通过在科技类型上将 `ForbidParallelAIQueues` 设为 true 来禁止特定科技类型被 AI 克隆生产。"
 
 #: ../../Fixed-or-Improved-Logics.md:1089
 msgid "Terrains"
@@ -3179,7 +3195,7 @@ msgstr "自定义色盘"
 msgid ""
 "You can now specify custom palette for TerrainTypes in similar manner as "
 "TechnoTypes can."
-msgstr "现在你可以像为技术类型那样为地形对象指定自定义色盘。"
+msgstr "现在你可以像为科技类型那样为地形对象指定自定义色盘。"
 
 #: ../../Fixed-or-Improved-Logics.md:1126
 msgid ""
@@ -3403,11 +3419,11 @@ msgid ""
 "Iron Curtain status is now preserved by default when converting between "
 "TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status "
 "preservation is turned off by default."
-msgstr "通过 `DeploysInto`/`UndeploysInto` 在技术类型之间的转换现在默认保留铁幕状态。力场护盾则默认不保留。"
+msgstr "通过 `DeploysInto`/`UndeploysInto` 在科技类型之间的转换现在默认保留铁幕状态。力场护盾则默认不保留。"
 
 #: ../../Fixed-or-Improved-Logics.md:1243
 msgid "This behavior can be turned on/off per-TechnoType and on global basis."
-msgstr "这一行为可以对每个技术类型和全局进行开启/关闭。"
+msgstr "这一行为可以对每个科技类型和全局进行开启/关闭。"
 
 #: ../../Fixed-or-Improved-Logics.md:1244
 msgid ""
@@ -3920,11 +3936,11 @@ msgid ""
 "They will not evoke defense response from AI players when used to attack "
 "base buildings, `ToProtect=true` TechnoTypes or members of TeamTypes with"
 " `Whiner=true`."
-msgstr "它们不会在攻击基地建筑、`ToProtect=true` 的技术类型或具有 `Whiner=true` 的小队的成员时引发 AI 玩家的防御反应。"
+msgstr "它们不会在攻击基地建筑、`ToProtect=true` 的科技类型或具有 `Whiner=true` 的小队的成员时引发 AI 玩家的防御反应。"
 
 #: ../../Fixed-or-Improved-Logics.md:1531
 msgid "They will not evoke retaliation from TechnoTypes hit by the Warhead."
-msgstr "它们不会引发弹头所命中技术类型的反击。"
+msgstr "它们不会引发弹头所命中科技类型的反击。"
 
 #: ../../Fixed-or-Improved-Logics.md:1540
 msgid ""

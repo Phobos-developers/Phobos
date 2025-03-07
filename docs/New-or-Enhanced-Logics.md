@@ -686,8 +686,8 @@ OnlyUseLandSequences=false  ; boolean
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
-  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
-  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
+  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
   - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
@@ -1406,7 +1406,6 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1592,7 +1591,7 @@ Convert.ComputerToHuman=    ; TechnoType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                  ; TechnoType, `IsGattling=yes`
+[SOMETECHNO]                  ; TechnoType, with IsGattling=yes
 RateDown.Delay=0              ; integer, game frames
 RateDown.Reset=false          ; boolean
 RateDown.Cover.Value=0        ; integer
@@ -1679,7 +1678,7 @@ RemoveMindControl=false  ; boolean
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
-  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
+  - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings. `Crit.ExtraDamage.ApplyFirepowerMult` determines whether or not the critical hit damage should multiply the TechnoType's firepower multipliers.
   - `Crit.Warhead` can be used to set a Warhead to detonate instead of using current Warhead. `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
@@ -1692,24 +1691,25 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                       ; WarheadType
-Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false     ; boolean
-Crit.ExtraDamage=0                  ; integer
-Crit.Warhead=                       ; WarheadType
-Crit.Warhead.FullDetonation=true    ; boolean
-Crit.Affects=all                    ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                      ; List of AnimationTypes
-Crit.AnimList.PickRandom=           ; boolean
-Crit.AnimList.CreateAll=            ; boolean
-Crit.ActiveChanceAnims=             ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false    ; boolean
-Crit.SuppressWhenIntercepted=false  ; boolean
+[SOMEWARHEAD]                               ; WarheadType
+Crit.Chance=0.0                             ; floating point value, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false             ; boolean
+Crit.ExtraDamage=0                          ; integer
+Crit.ExtraDamage.ApplyFirepowerMult=false   ; boolean
+Crit.Warhead=                               ; WarheadType
+Crit.Warhead.FullDetonation=true            ; boolean
+Crit.Affects=all                            ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectBelowPercent=1.0                 ; floating point value, percents or absolute (0.0-1.0)
+Crit.AnimList=                              ; List of AnimationTypes
+Crit.AnimList.PickRandom=                   ; boolean
+Crit.AnimList.CreateAll=                    ; boolean
+Crit.ActiveChanceAnims=                     ; List of AnimationTypes
+Crit.AnimOnAffectedTargets=false            ; boolean
+Crit.SuppressWhenIntercepted=false          ; boolean
 
-[SOMETECHNO]                        ; TechnoType
-ImmuneToCrit=no                     ; boolean
+[SOMETECHNO]                                ; TechnoType
+ImmuneToCrit=false                          ; boolean
 ```
 
 ```{warning}
