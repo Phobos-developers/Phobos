@@ -81,10 +81,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	if (ForceWeaponInRangeTemp::SelectWeaponByRange)
-		return UseWeaponIndex;
-
-	if (!pThis)
+	if (ForceWeaponInRangeTemp::SelectWeaponByRange || !pThis)
 		return 0;
 
 	int forceWeaponIndex = -1;
