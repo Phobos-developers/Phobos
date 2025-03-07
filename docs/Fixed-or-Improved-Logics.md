@@ -189,6 +189,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
 - Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
 - Fix the bug that destroyed unit may leaves sensors.
+- `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
+- The bug where naval ships as StartUnit might spawn on land has been fixed.
+- When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
+- Fix an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
 
 ## Fixes / interactions with other extensions
 
