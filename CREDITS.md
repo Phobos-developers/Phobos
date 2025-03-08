@@ -402,6 +402,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
   - Fix a jumpjet crash related to voxel shadow drawing
+  - Replace `BLOWFISH.DLL` using Red Alert source code
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
