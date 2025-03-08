@@ -285,7 +285,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 
 			auto const loopCount = ScenarioClass::Instance->Random.RandomRanged(1, 2);
 			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
-			pAnim->Owner = pThis->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
 			pExtNew->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 
