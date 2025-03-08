@@ -387,7 +387,7 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 
 bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
 {
-	return pThis->IsObserver() || pOther->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
+	return pThis->IsObserver() || pThis->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
