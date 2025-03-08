@@ -1351,6 +1351,10 @@ msgid ""
 msgstr "新的自毁条件：若科技类型存在／不存在"
 
 #: ../../../CREDITS.md:345
+msgid "Fix `AltNextScenario` not taking effect"
+msgstr "修复了 `AltNextScenario` 无法生效的问题"
+
+#: ../../../CREDITS.md:345
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 
@@ -1498,6 +1502,10 @@ msgstr "修复战机自身设置的 `MovementZone` 和 `SpeedType` 与寻路所�
 msgid "Draw visual effects for airburst weapons"
 msgstr "空爆武器正常绘制武器特效"
 
+#: ../../../CREDITS.md:385
+msgid "Units will not always stuck in the factory"
+msgstr "单位将不再会被卡在工厂内"
+
 #: ../../../CREDITS.md:380
 msgid "**Ollerus**:"
 msgstr "**Ollerus**："
@@ -1531,6 +1539,10 @@ msgstr "`RepairBaseNodes` 的全局值"
 #: ../../../CREDITS.md:388
 msgid "Parasite returning bug fix"
 msgstr "寄生返回 bug 修复"
+
+#: ../../../CREDITS.md:395
+msgid "Units are now unable to kick out from a factory that is in construction process"
+msgstr "单位现在不会再从正在建造的工厂中驶出"
 
 #: ../../../CREDITS.md:389
 msgid "**tyuah8**:"

@@ -165,17 +165,26 @@ msgstr "`Offset` 和 `Offset.ShieldDelta`（后者在护盾激活时使用）可
 
 #: ../../User-Interface.md:39
 msgid ""
-"By default, values are displayed in `current/maximum` format (i.e. "
-"`20/40`). `HideMaxValue=yes` will make the counter show only the current "
-"value (i.e. `20`). `Percentage=yes` changes the format to `percent%` (i.e. "
-"`50%`)."
+"By default, values are displayed in `current/maximum` format (i.e. `20/40`)."
 msgstr ""
-"默认情况下，值以 `当前值/最大值` 的格式显示（例如 `20/40`）。`HideMaxValue=yes` 将使计数器仅显示当前值（例如 "
-"`20`）。`Percentage=yes` 将格式更改为 `百分比 %`（例如 `50%`）。"
+"默认情况下，值以 `当前值/最大值` 的格式显示（例如 `20/40`）。"
+
+#: ../../User-Interface.md:39
+msgid ""
+"`HideMaxValue=yes` will make the counter show only the current "
+"value (i.e. `20`), default to whether the techno is infantry or not."
+msgstr ""
+"`HideMaxValue=yes` 将使计数器仅显示当前值（例如 `20`），默认值取决于科技类型是否为步兵。"
+
+#: ../../User-Interface.md:39
+msgid ""
+"`Percentage=yes` changes the format to `percent%` (i.e. `50%`)."
+msgstr ""
+"`Percentage=yes` 将格式更改为 `百分比 %`（例如 `50%`）。"
 
 #: ../../User-Interface.md:40
-msgid "`CanSee` and `CanSee.Observer` can limit visibility to specific players."
-msgstr "`CanSee` 和 `CanSee.Observer` 可以限定特定玩家可见。"
+msgid "`VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players."
+msgstr "`VisibleToHouses` 和 `VisibleToHouses.Observer` 可以限定特定玩家可见。"
 
 #: ../../User-Interface.md:41
 msgid ""

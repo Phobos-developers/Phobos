@@ -2664,6 +2664,10 @@ msgstr ""
 "`PassengerDeletion.ReportSound` 和 `PassengerDeletion.Anim` "
 "可用于分别指定在删除乘客时播放的声音和动画。"
 
+#: ../../New-or-Enhanced-Logics.md:1011
+msgid "If `PassengerDeletion.UnderEMP` is set to true, the deletion will be processed when the transport is under EMP or deactivated."
+msgstr "如果 `PassengerDeletion.UnderEMP` 设为 true 则在运输工具受 EMP 影响或瘫痪时继续执行删除操作。"
+
 #: ../../New-or-Enhanced-Logics.md:1032
 msgid "Automatic passenger owner change to match transport owner"
 msgstr "自动同步载员所属方"

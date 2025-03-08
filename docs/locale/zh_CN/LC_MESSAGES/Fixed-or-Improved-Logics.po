@@ -1114,6 +1114,10 @@ msgstr "修复初始船只可能生成在陆地上的 Bug。"
 msgid "When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell."
 msgstr "建筑通过 `UndeploysInto` 反部署时使用目标载具的 `SpeedType` 和 `MovementZone` 来决定能否向目标单元格移动。"
 
+#: ../../Fixed-or-Improved-Logics.md:185
+msgid "Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory."
+msgstr "单位现在不会再从正在建造的工厂中驶出，并且将不再会被卡在工厂内。"
+
 #: ../../Fixed-or-Improved-Logics.md:190
 msgid "Fix the bug that destroyed unit may leaves sensors."
 msgstr "修复了单位被摧毁仍会遗留反隐形探测效果的问题。"
