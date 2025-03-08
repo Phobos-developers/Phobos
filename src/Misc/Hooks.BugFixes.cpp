@@ -52,6 +52,31 @@ DEFINE_JUMP(LJMP, 0x546C23, 0x546C8B) //Phobos_BugFixes_Tileset255_RefNonMMArray
 // to proper techno but to their transports
 DEFINE_PATCH(0x707CF2, 0x55);
 
+//Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
+{
+	GET(bool, isReturnSuccess, EAX);
+	GET(ParasiteClass* const, pParasite, ESI);
+
+	const auto pParasiteTechno = pParasite->Owner;
+
+	if (isReturnSuccess || !pParasiteTechno)
+		return 0;
+
+	const auto pType = pParasiteTechno->GetTechnoType();
+
+	if (!pType)
+		return 0;
+
+	const auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords, pType->SpeedType, -1,
+		pType->MovementZone, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	if (cell != CellStruct::Empty) // Cell2Coord makes X/Y values of CoordStruct non-zero, additional checks are required
+		R->AL(pParasiteTechno->Unlimbo(CellClass::Cell2Coord(cell), DirType::North));
+
+	return 0;
+}
+
 // WWP's shit code! Wrong check.
 // To avoid units dying when they are already dead.
 DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
@@ -542,7 +567,7 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 }
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
-DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 
 // BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
@@ -719,7 +744,7 @@ DEFINE_HOOK(0x4D580B, FootClass_ApproachTarget_DeployToFire, 0x6)
 
 DEFINE_HOOK(0x741050, UnitClass_CanFire_DeployToFire, 0x6)
 {
-	enum { SkipGameCode = 0x741086, MustDeploy = 0x7410A8 };
+	enum { SkipGameCode = 0x7410B7, MustDeploy = 0x7410A8 };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -771,7 +796,7 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 	return res;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
 DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
 DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
 
@@ -898,12 +923,14 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 // which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
 // even at high speeds - NetsuNegi
 
-DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8)
 {
 	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
 
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
-	GET(int const, distance, EAX);
+
+	auto& currLoc = pLoco->LinkedTo->Location;
+	int distance = (int) CoordStruct{currLoc.X - pLoco->Coords.X, currLoc.Y - pLoco->Coords.Y,0}.Magnitude() ;
 
 	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however - Starkku
@@ -918,9 +945,14 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	speed = pLoco->LinkedTo->GetCurrentSpeed();
 	pType->Speed = maxSpeed;
 
-	TunnelLocomotionClass::TunnelMovementSpeed = speed;
-
-	return distance >= speed + 1 ? KeepMoving : CloseEnough;
+	if (distance > speed)
+	{
+		REF_STACK(CoordStruct, newLoc, STACK_OFFSET(0x40, -0xC));
+		double angle = -Math::atan2(currLoc.Y - pLoco->Coords.Y, pLoco->Coords.X - currLoc.X);
+		newLoc = currLoc + CoordStruct { int((double)speed * Math::cos(angle)), int((double)speed * Math::sin(angle)), 0 };
+		return 0x7298D3;
+	}
+	return 0x7295CE;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
@@ -963,8 +995,18 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 	return 0;
 }
 
-// Patch tileset parsing to not reset certain tileset indices for Lunar theater.
-DEFINE_JUMP(LJMP, 0x546C8B, 0x546CBF);
+// Fix tileset parsing to not reset certain tileset indices for Lunar theater if the fix is enabled.
+DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
+{
+	enum { SkipGameCode = 0x546CBF };
+
+	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0xA10, -0x9D8));
+
+	if (pINI->ReadBool(GameStrings::General, "ApplyLunarFixes", false))
+		return SkipGameCode;
+
+	return 0;
+}
 
 // Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
@@ -1052,6 +1094,142 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 	return SkipGameCode;
 }
 
+#pragma endregion
+
+#pragma region TeleportLocomotionOccupationFix
+
+DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
+{
+	enum { SkipMarkOccupation = 0x71878F };
+
+	GET(const LocomotionClass* const, pLoco, EBP);
+
+	const auto pFoot = pLoco->LinkedTo;
+
+	return (pFoot && pFoot->IsAlive && !pFoot->InLimbo && pFoot->Health > 0 && !pFoot->IsSinking) ? 0 : SkipMarkOccupation;
+}
+
+#pragma endregion
+
+#pragma region AmphibiousHarvester
+
+DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pType = pThis->Type;
+
+	if (!pType->Teleporter)
+	{
+		REF_STACK(SpeedType, speedType, STACK_OFFSET(0xA0, -0x98));
+		REF_STACK(int, currentZoneType, STACK_OFFSET(0xA0, -0x94));
+		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xA0, -0x90));
+
+		speedType = pType->SpeedType;
+		movementZone = pType->MovementZone;
+		currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region StopEventFix
+
+DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
+{
+	enum { SkipGameCode = 0x4C762A };
+
+	GET(TechnoClass* const, pTechno, ESI);
+
+	// Check aircraft
+	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const auto mission = pTechno->CurrentMission;
+
+	// To avoid aircraft overlap by keep link if is returning or is in airport now.
+	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter)
+		|| !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	{
+		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
+
+	// To avoid technos being unable to stop in attack move mega mission
+	if (pTechno->MegaMissionIsAttackMove())
+		pTechno->ClearMegaMissionData();
+
+	// Clearing the current target should still be necessary for all technos
+	pTechno->SetTarget(nullptr);
+
+	if (commonAircraft)
+	{
+		if (pAircraft->Type->AirportBound)
+		{
+			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
+			if (pAircraft->Ammo)
+				pTechno->SetDestination(nullptr, true);
+
+			// To avoid `AirportBound=yes` aircraft pausing in the air and let they returning to air base immediately.
+			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
+				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (pAircraft->Ammo)
+		{
+			// To avoid `AirportBound=no` aircraft ignoring the stop task or directly return to the airport.
+			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
+		}
+		else if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		{
+			pAircraft->EnterIdleMode(false, true);
+		}
+		// Otherwise landing or idling normally without answering the stop command
+	}
+	else
+	{
+		// Check Jumpjets
+		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+		// Clear archive target for infantries and vehicles like receive a mega mission
+		if (pFoot && !pAircraft)
+			pTechno->SetArchiveTarget(nullptr);
+
+		// To avoid foots stuck in Mission::Area_Guard
+		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+			pTechno->QueueMission(Mission::Guard, true);
+
+		// To avoid jumpjets falling into a state of standing idly by
+		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+			pTechno->SetDestination(nullptr, true);
+		else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+			pTechno->QueueMission(Mission::Guard, true);
+		else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+			pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+		// Otherwise landing or idling normally without answering the stop command
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
+#pragma region TeamCloseRangeFix
+
+int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
+{
+	// At present, it seems that aircraft use their own mapcoords and the team destination's mapcoords to check.
+    // During the previous test, it was found that if the aircraft uses this and needs to return to the airport
+	// with the script first, it will interrupt the remaining tasks for unknown reasons - CrimRecya
+	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
+		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
+		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
+}
+DEFINE_FUNCTION_JUMP(CALL, 0x6EBCC9, Check2DDistanceInsteadOf3D);
+
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
@@ -1075,5 +1253,171 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
-DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
-DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
+DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
+DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
+
+#pragma region Sensors
+
+DEFINE_HOOK(0x4DE839, FootClass_AddSensorsAt_Record, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x34, 0x4));
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LastSensorsMapCoords = *cell;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4D8606, FootClass_UpdatePosition_Sensors, 0x6)
+{
+	enum { SkipGameCode = 0x4D8627 };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto currentCell = pThis->GetMapCoords();
+
+	if (pExt->LastSensorsMapCoords != currentCell)
+	{
+		pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+		pThis->AddSensorsAt(currentCell);
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DB36C, FootClass_Limbo_RemoveSensors, 0x5)
+{
+	enum { SkipGameCode = 0x4DB37C };
+
+	GET(FootClass*, pThis, EDI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
+{
+	enum { SkipGameCode = 0x4DBF01 };
+
+	GET(FootClass*, pThis, ESI);
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	pThis->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+
+	return SkipGameCode;
+}
+
+// Bugfix: Jumpjet detect cloaked objects beneath
+DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
+{
+	GET(FootClass* const, pLinkedTo, ECX);
+	GET(CellStruct const, currentCell, EAX);
+
+	// Copied from FootClass::UpdatePosition
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		CellStruct const lastCell = pExt->LastSensorsMapCoords;
+
+		if (lastCell != currentCell)
+		{
+			pLinkedTo->RemoveSensorsAt(lastCell);
+			pLinkedTo->AddSensorsAt(currentCell);
+		}
+	}
+	// Something more may be missing
+
+	return 0;
+}
+
+DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
+{
+	GET(FootClass*, pLinkedTo, EAX);
+
+	if (pLinkedTo->GetTechnoType()->SensorsSight)
+	{
+		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
+		pLinkedTo->RemoveSensorsAt(pExt->LastSensorsMapCoords);
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
+{
+	enum { NotUsableArea = 0x688FB9 };
+
+	GET(TechnoClass*, pTechno, EBX);
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
+
+	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pTechnoType = pTechno->GetTechnoType();
+
+	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+}
+
+DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
+{
+	enum { NotUsableArea = 0x689295 };
+
+	GET(TechnoClass*, pTechno, EDI);
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
+
+	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pTechnoType = pTechno->GetTechnoType();
+
+	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+}
+
+DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
+{
+	enum { SkipGameCode = 0x446CD2 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(UnitClass*, pFreeUnit, EDI);
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
+	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
+	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
+{
+	enum { SkipGameCode = 0x446E15 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(UnitClass*, pFreeUnit, EDI);
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
+	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
+	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
+{
+	enum { SkipGameCode = 0x449487 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+	LEA_STACK(CellStruct*, pDest, 0x4);
+	const auto pCell = MapClass::Instance->GetCellAt(*pDest);
+	const auto pUndeploysInto = pType->UndeploysInto;
+
+	R->AL(pCell->IsClearToMove(pUndeploysInto->SpeedType, false, false, -1, pUndeploysInto->MovementZone, -1, 1));
+	return SkipGameCode;
+}

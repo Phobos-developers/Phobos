@@ -48,16 +48,30 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array->Items[bTypeIdx]);
+		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += pExt->PowerPlantEnhancer_Amount * nCount;
+			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+}
+
+int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
+{
+	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (upgrades != -1)
+		return upgrades;
+
+	if (const auto pUndeploy = pType->UndeploysInto)
+		return pHouse->CountOwnedNow(pType) + pHouse->CountOwnedNow(pUndeploy);
+
+	return pHouse->CountOwnedNow(pType);
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
@@ -161,6 +175,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
 
+	this->BarracksExitCell.Read(exINI, pSection, "BarracksExitCell");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -222,7 +238,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Art
-	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
+	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
+	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -275,6 +292,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
+		.Process(this->IsAnimDelayedBurst)
 		.Process(this->IsDestroyableObstacle)
 		.Process(this->Units_RepairRate)
 		.Process(this->Units_RepairStep)
@@ -283,6 +301,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->BarracksExitCell)
 		;
 }
 

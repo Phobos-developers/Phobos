@@ -344,6 +344,59 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 	return true;
 }
 
+// For unit's weapons factory only
+void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
+{
+	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
+	{
+		if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
+		{
+			if (const auto pTeam = pUnit->Team)
+				pTeam->LiberateMember(pUnit);
+
+			pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
+			pUnit->QueueMission(Mission::Guard, false);
+			return; // one after another
+		}
+	}
+
+	auto buffer = CoordStruct::Empty;
+	auto pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
+	int i = 0;
+
+	while (true)
+	{
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->WhatAmI() == AbstractType::Unit)
+			{
+				const auto pUnit = static_cast<UnitClass*>(pObject);
+
+				if (pThis->Owner != pUnit->Owner || pUnit->IsTether)
+					continue;
+
+				const auto height = pUnit->GetHeight();
+
+				if (height < 0 || height > Unsorted::CellHeight)
+					continue;
+
+				if (const auto pTeam = pUnit->Team)
+					pTeam->LiberateMember(pUnit);
+
+				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+				pThis->QueueMission(Mission::Unload, false);
+				return; // one after another
+			}
+		}
+
+		if (++i >= 2)
+			return; // no stuck
+
+		// Continue checking towards the bottom right corner
+		pCell = pCell->GetNeighbourCell(FacingType::East);
+	}
+}
+
 // Get all cells covered by the building, optionally including those covered by OccupyHeight.
 const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* const pThis, CellStruct const baseCoords, bool includeOccupyHeight)
 {
@@ -516,4 +569,4 @@ void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*,
 	BuildingExt::ExtMap.Find(pThis)->HandleInfiltrate(pInfiltratorHouse, oldBalance);
 }
 
-DEFINE_JUMP(CALL, 0x51A00B, GET_OFFSET(BuildingClass_InfiltratedBy_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);
