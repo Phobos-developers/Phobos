@@ -358,6 +358,7 @@ New:
 - Forcing specific weapon by range (by Ollerus)
 - Jumpjet Tilts While Moving (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
+- Removed dependency on `blowfish.dll` (by ZivDero)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
