@@ -344,6 +344,7 @@ This page lists all the individual contributions to the project by their author.
 - **FlyStar**:
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
+   - Fix `AltNextScenario` not taking effect
 - **NetsuNegi**:
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
