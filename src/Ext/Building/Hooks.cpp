@@ -204,6 +204,46 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 
 #pragma endregion
 
+#pragma region KickOutStuckUnits
+
+// Kick out stuck units when the factory building is not busy, only factory buildings can enter this hook
+DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// This is not a solution to the problem at its root
+	// Currently the root cause of the problem is not located
+	// So the idle weapon factory is asked to search every second for any units that are stuck
+	if (!(Unsorted::CurrentFrame() % 15)) // Check every 15 frames for factories
+	{
+		const auto pType = pThis->Type;
+
+		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		{
+			const auto mission = pThis->CurrentMission;
+
+			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 1) // Unloading but stuck
+				BuildingExt::KickOutStuckUnits(pThis);
+		}
+	}
+
+	return 0;
+}
+
+// Should not kick out units if the factory building is in construction process
+DEFINE_HOOK(0x4444A0, BuildingClass_KickOutUnit_NoKickOutInConstruction, 0xA)
+{
+	enum { ThisIsOK = 0x444565, ThisIsNotOK = 0x4444B3};
+
+	GET(BuildingClass* const, pThis, ESI);
+
+	const auto mission = pThis->GetCurrentMission();
+
+	return (mission == Mission::Unload || mission == Mission::Construction) ? ThisIsNotOK : ThisIsOK;
+}
+
+#pragma endregion
+
 // Ares didn't have something like 0x7397E4 in its UnitDelivery code
 DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 {

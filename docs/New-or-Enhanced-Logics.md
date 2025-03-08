@@ -387,7 +387,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
+  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
   - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
   - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
@@ -507,7 +507,7 @@ DetachOnCloak=true                      ; boolean
 
 ### Play sound as a detached sound event
 
-- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
+- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report` / `StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
 
 In `artmd.ini`:
 ```ini
@@ -1022,7 +1022,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 - It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.
   - Note that if you fire another `Type=EMPulse` superweapon with different weapon index that the same building is capable of launching before the first weapon was fired, the latter superweapon's settings will take precedence.
-  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum/SW.RangeMaximum` are explicitly set.
+  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set.
 - Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
 
 In `rulesmd.ini`:
@@ -1082,7 +1082,7 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
-  - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `SW.Next.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` respectively.
 
 In `rulesmd.ini`:
 ```ini
@@ -1406,7 +1406,6 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1592,7 +1591,7 @@ Convert.ComputerToHuman=    ; TechnoType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                  ; TechnoType, `IsGattling=yes`
+[SOMETECHNO]                  ; TechnoType, with IsGattling=yes
 RateDown.Delay=0              ; integer, game frames
 RateDown.Reset=false          ; boolean
 RateDown.Cover.Value=0        ; integer
@@ -1680,7 +1679,9 @@ RemoveMindControl=false  ; boolean
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
-  - `Crit.Warhead` can be used to set a Warhead to detonate instead of using current Warhead. `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
+  - `Crit.ExtraDamage.ApplyFirepowerMult` determines whether or not the critical hit damage should multiply the TechnoType's firepower multipliers.
+  - `Crit.Warhead` can be used to set a Warhead to detonate instead of using current Warhead.
+  - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
@@ -1692,24 +1693,25 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                       ; WarheadType
-Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false     ; boolean
-Crit.ExtraDamage=0                  ; integer
-Crit.Warhead=                       ; WarheadType
-Crit.Warhead.FullDetonation=true    ; boolean
-Crit.Affects=all                    ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                      ; List of AnimationTypes
-Crit.AnimList.PickRandom=           ; boolean
-Crit.AnimList.CreateAll=            ; boolean
-Crit.ActiveChanceAnims=             ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false    ; boolean
-Crit.SuppressWhenIntercepted=false  ; boolean
+[SOMEWARHEAD]                               ; WarheadType
+Crit.Chance=0.0                             ; floating point value, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false             ; boolean
+Crit.ExtraDamage=0                          ; integer
+Crit.ExtraDamage.ApplyFirepowerMult=false   ; boolean
+Crit.Warhead=                               ; WarheadType
+Crit.Warhead.FullDetonation=true            ; boolean
+Crit.Affects=all                            ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectBelowPercent=1.0                 ; floating point value, percents or absolute (0.0-1.0)
+Crit.AnimList=                              ; List of AnimationTypes
+Crit.AnimList.PickRandom=                   ; boolean
+Crit.AnimList.CreateAll=                    ; boolean
+Crit.ActiveChanceAnims=                     ; List of AnimationTypes
+Crit.AnimOnAffectedTargets=false            ; boolean
+Crit.SuppressWhenIntercepted=false          ; boolean
 
-[SOMETECHNO]                        ; TechnoType
-ImmuneToCrit=no                     ; boolean
+[SOMETECHNO]                                ; TechnoType
+ImmuneToCrit=false                          ; boolean
 ```
 
 ```{warning}
@@ -1830,7 +1832,7 @@ PenetratesForceShield=       ; boolean
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated. If superweapon has negative `Money.Amount`, the firing house must have enough credits in order for it to be fired.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons. Otherwise they will be launched out of nowhere.
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
-  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` respectively.
   - `LaunchSW.DisplayMoney` can be set to display the amount of credits given or deducted by the launched superweapon by `Money.Amount`. The number is displayed in green if given, red if deducted and will move upwards after appearing.
     - `LaunchSW.DisplayMoney.Houses` determines which houses can see the credits display.
     - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at superweapon's target cell.

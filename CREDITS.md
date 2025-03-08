@@ -352,9 +352,10 @@ This page lists all the individual contributions to the project by their author.
    - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
    - Assign Super Weapon cameo to any sidebar tab
    - Fix impassable invisible barrier created by chronosphere on uncrushable unit
-   - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location
-   - The bug where naval ships as StartUnit might spawn on land has been fixed
-   - Fix the pathfinding issue when a building performs undeploy
+   - `FreeUnit` uses its own `SpeedType` to determine where to spawn
+   - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
+   - Fix the bug where pathfinding issues occur when a building performs undeploy
+   - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -399,6 +400,7 @@ This page lists all the individual contributions to the project by their author.
   - Sell or undeploy building on impact
   - Draw visual effects for airburst weapons
   - Technos recount current burst index when change the firing weapon
+  - Units will not always stuck in the factory
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -420,6 +422,7 @@ This page lists all the individual contributions to the project by their author.
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
   - No turret unit turn to the target
+  - Units are now unable to kick out from a factory that is in construction process
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

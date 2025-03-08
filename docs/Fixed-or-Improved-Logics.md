@@ -127,7 +127,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
-- Fixed the issue where the powered anims of `Powered`/`PoweredSpecial` buildings cease to update when being captured by enemies.
+- Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fix a glitch related to incorrect target setting for missiles.
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
@@ -191,7 +191,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fix the bug that destroyed unit may leaves sensors.
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
-- When a building undeploy, it will normally use the target VehicleType's pathfinding method to decide whether it can move to the target cell.
+- When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
+- Fix an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
+- Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
 
 ## Fixes / interactions with other extensions
 
@@ -1244,7 +1246,7 @@ DestroyAnim.Random=true                ; boolean
 ![image](_static/images/preserve-ic.gif)
 *Bugfix in action*
 
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status preservation is turned off by default.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. Force Shield status preservation is turned off by default.
   - This behavior can be turned on/off per-TechnoType and on global basis.
   - `IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable) is re-applied upon type conversion.
 
