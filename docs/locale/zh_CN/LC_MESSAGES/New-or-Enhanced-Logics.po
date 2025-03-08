@@ -5825,6 +5825,16 @@ msgstr ""
 "允许弹头播放自定义的 `MindControl.Anim`，默认值取自 `[CombatDamage] -> "
 "ControlledAnimationType`。"
 
+#: ../../New-or-Enhanced-Logics.md:1659
+msgid ""
+"[SOMEWARHEAD]                         ; WarheadType\n"
+"MindControl.Anim=                     ; Animation, defaults to "
+"[CombatDamage] -> ControlledAnimationType\n"
+msgstr ""
+"[SOMEWARHEAD]                         ; WarheadType\n"
+"MindControl.Anim=                     ; Animation, defaults to "
+"[CombatDamage] -> ControlledAnimationType\n"
+
 #: ../../New-or-Enhanced-Logics.md:1664
 msgid "Break Mind Control on impact"
 msgstr "解除心控"

@@ -20,7 +20,7 @@ msgstr "概况"
 
 #: ../../index.md:1
 msgid "What's New"
-msgstr "最新消息"
+msgstr "版本更新说明"
 
 #: ../../index.md:1
 msgid "Contributing"
@@ -395,6 +395,21 @@ msgid ""
 "comment\n"
 "UIDescription=<none> ; CSF entry key\n"
 msgstr ""
+"; which section the entries should be in\n"
+"; can be a freeform name - in this case the comment would explain what it"
+" is\n"
+"; if no comment to be found - then it's a precise name\n"
+"[SOMENAME]           ; BuildingType\n"
+"; KeyName=DefaultValue ; accepted type with optional explanation\n"
+"; if there's nothing to the right of equals sign - the default value is "
+"empty/absent\n"
+"; if these keys have had their value set, they can only be set to their "
+"default\n"
+"; unset state again by setting the value to <default>, <none> or none\n"
+"; for list of values only <default> clears the entire list\n"
+"; if the default value is not static - it's written and explained in a "
+"comment\n"
+"UIDescription=<none> ; CSF entry key\n"
 
 #: ../../../README.md:83
 msgid "Building manually"

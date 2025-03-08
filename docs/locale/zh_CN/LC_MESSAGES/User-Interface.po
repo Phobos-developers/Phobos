@@ -95,7 +95,7 @@ msgid ""
 "developers/PhobosSupplementaries) which has way more Unicode character "
 "coverage than the default one."
 msgstr ""
-"你可在 [Phobos 补充仓库](https://github.com/Phobos-"
+"你可在 [Phobos 补充资源库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 中找到并使用相对原本那个而言拥有更多 Unicode 字符的改进版原版字体。"
 
 #: ../../User-Interface.md:19
