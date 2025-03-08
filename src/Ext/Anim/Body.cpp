@@ -370,7 +370,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 
 	auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
 
-	if (!pAnim || !pTechno)
+	if (!pTechno)
 		return;
 
 	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse ? pHouse : pTechno->Owner, nullptr, false, true);
@@ -381,9 +381,6 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 	if (invoker)
 	{
 		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-
-		if (!pAnimExt)
-			return;
 
 		if (pHouse)
 			pAnimExt->SetInvoker(pTechno, pHouse);
