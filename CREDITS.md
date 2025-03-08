@@ -356,6 +356,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
+   - Fix a crash caused by electric bolt not invalidating Owner
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -428,6 +429,7 @@ This page lists all the individual contributions to the project by their author.
   - Destroyed unit leaves sensors bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
+- **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
 - **Ares developers**:
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code
