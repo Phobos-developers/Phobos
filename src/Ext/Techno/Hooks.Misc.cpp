@@ -139,6 +139,8 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 
 DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 {
+	enum { Recycle = 0x6B77FF, NoRecycle = 0x6B7838 };
+
 	GET(SpawnManagerClass* const, pThis, ESI);
 	GET(AircraftClass* const, pSpawner, EDI);
 	GET(CellStruct* const, pCarrierMapCrd, EBP);
@@ -174,10 +176,10 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 			GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
 
 		pSpawner->SetLocation(pCarrier->GetCoords());
-		R->EAX(pCarrierMapCrd);
+		return Recycle;
 	}
 
-	return 0;
+	return NoRecycle;
 }
 
 // Change destination to RecycleFLH.
