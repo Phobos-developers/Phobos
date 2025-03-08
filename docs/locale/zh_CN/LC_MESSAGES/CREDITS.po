@@ -1391,7 +1391,9 @@ msgstr "修复海军舰船设为 `AllowedToStartInMultiplayer=yes` 可能生成�
 msgid "Fix the bug where pathfinding issues occur when a building performs undeploy"
 msgstr "修复建筑执行 `UndeploysInto` 时的寻路问题"
 
-#: ../../../CREDITS.md:352
+msgid "Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt"
+msgstr "修复了 EBolt 相关的 [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19)"
+
 msgid "**Apollo** - Translucent SHP drawing patches"
 msgstr "**Apollo** - 半透明 SHP 绘制补丁"
 
@@ -1563,6 +1565,11 @@ msgid ""
 "**Aephiex** - initial fix for Ares academy not working on the initial "
 "payloads of vehicles built from a war factory"
 msgstr "**Aephiex** - 对于 Ares 训练所逻辑在产自重工的载具其初始载员上不生效问题初始的修复方式"
+
+msgid ""
+"**hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow "
+"drawing"
+msgstr "**hejiajun107, Xkein** - 修复与 Voxel 阴影绘制相关的 Jumpjet 崩溃问题"
 
 #: ../../../CREDITS.md:393
 msgid "**Ares developers**:"

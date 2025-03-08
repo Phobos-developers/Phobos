@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../Whats-New.md:1
 msgid "What's New"
-msgstr "新东西"
+msgstr "版本更新说明"
 
 #: ../../Whats-New.md:3
 #, fuzzy
@@ -27,7 +27,7 @@ msgid ""
 "This page lists the history of changes across stable Phobos releases and "
 "also all the stuff that requires modders to change something in their "
 "mods to accommodate."
-msgstr "此页面列出了项目的更新日志以及所有modder需要对mod做的必要改动。"
+msgstr "此页面列出了 Phobos 稳定版本的历史更改以及 modder 们为适应当前版本对其 mod 所需要做的必要改动。"
 
 #: ../../Whats-New.md:5
 msgid "Migrating"
@@ -39,75 +39,46 @@ msgid ""
 "supplementaries repo](https://github.com/Phobos-"
 "developers/PhobosSupplementaries)) to apply most of the changes "
 "automatically using a corresponding sed script file."
-msgstr ""
-"你可以使用[火卫一组件库](https://github.com/Phobos-"
-"developers/PhobosSupplementaries)中的迁移工具来自动应用更改。"
+msgstr "你可以使用迁移工具（可以在 [Phobos 补充资源库](https://github.com/Phobos-"
+"developers/PhobosSupplementaries) 中找到）通过相应的 sed 脚本文件自动应用大多数更改。"
 
 #: ../../Whats-New.md:11
 msgid "From vanilla"
 msgstr "由原版"
 
 #: ../../Whats-New.md:13
-msgid ""
-"`PowersUpNAnim` is now used instead of the upgrade building's image file "
-"for upgrade animation if set. Note that displaying a damaged version will"
-" still require setting `PowerUp1DamagedAnim` explicitly in all cases, as "
-"the fallback to upgrade building image does not extend to it, nor would "
-"it be safe to add."
-msgstr ""
+msgid "`PowersUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpXDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add."
+msgstr "现在如果设置了加载物动画那么将会使用 `PowersUpNAnim` 替代加载物建筑的图像文件。注意你仍需明确设置 `PowerUpXDamagedAnim` 来启用伤残版本的加载物动画，因为并没有将自动回退到加载物图像的逻辑扩展到它，并且那也不是一个安全的做法。"
 
 #: ../../Whats-New.md:14
-msgid ""
-"`[CrateRules] -> FreeMCV` now controls whether or not player is forced to"
-" receive unit from `[General] -> BaseUnit` from goodie crate if they own "
-"no buildings or any existing `BaseUnit` vehicles and own more than "
-"`[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits."
-msgstr ""
+msgid "`[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits."
+msgstr "现在 `[CrateRules] -> FreeMCV` 可以控制玩家是否会在他们没有任何建筑物或任何 `BaseUnit` 中的载具且资金超过 `[CrateRules] -> FreeMCV.CreditsThreshold`（默认为 1500）时强制获得一个 `[General] -> BaseUnit` 中的单位。"
 
 #: ../../Whats-New.md:15
-msgid ""
-"Translucent RLE SHPs will now be drawn using a more precise and "
-"performant algorithm that has no green tint and banding. Can be disabled "
-"with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`."
-msgstr ""
-"绘制半透明的RLE SHP时，现在会使用更精确更高效的算法，此算法没有绿色偏移和条纹，可通过`rulesmd.ini -> [General] "
-"-> FixTransparencyBlitters=no`关闭"
+msgid "Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`."
+msgstr "现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹。可以通过 `rulesmd.ini -> "
+"[General] -> FixTransparencyBlitters=no` 来禁用。"
 
 #: ../../Whats-New.md:16
-msgid ""
-"Iron Curtain status is now preserved by default when converting between "
-"TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be "
-"turned off per-TechnoType and global basis using "
-"`[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`."
-msgstr ""
-"铁幕状态现在可以在单位通过`DeploysInto`/`UndeploysInto`转换时保留。此行为可以被标签关闭`[TechnoType]/[CombatDamage]"
-" -> IronCurtain.KeptOnDeploy=no`。"
+msgid "Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`."
+msgstr "现在铁幕效果会默认在科技类型通过 `DeploysInto`／`UndeploysInto` 转换时保留。这一行为可以通过每个科技类型和全局设置的 `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no` 来关闭。"
 
 #: ../../Whats-New.md:17
-msgid ""
-"The obsolete `[General] -> WarpIn` has been enabled for the default anim "
-"type when technos are warping in. If you want to restore the vanilla "
-"behavior, use the same anim type as `WarpOut`."
-msgstr ""
+msgid "The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`."
+msgstr "原本废弃的 `[General] -> WarpIn` 已启用于科技类型传送来时的默认动画类型。如果想要恢复原版行为，请为其设置一个与 `[General] -> WarpOut` 相同的动画类型。"
 
 #: ../../Whats-New.md:18
-msgid ""
-"Vehicles with `Crusher=true` + `OmniCrusher=true` / "
-"`MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles /"
-" walls respectively. This now obeys `TiltsWhenCrushes` but can be "
-"customized individually for these two scenarios using "
-"`TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both "
-"default to `TiltsWhenCrushes`."
-msgstr ""
+msgid "Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`."
+msgstr "拥有 `Crusher=true` 和 `OmniCrusher=true`／`MovementZone=CrusherAll` 的载具类型硬编码在其碾压载具／围墙时会掀起而倾斜。现在此行为遵循 `TiltsWhenCrushes` 设置，但可以使用 `TiltsWhenCrusher.Vehicles` 和 `TiltsWhenCrusher.Overlays` 分别定义这两种情况，它们都默认为 `TiltsWhenCrushes`。"
 
 #: ../../Whats-New.md:20
 msgid "From older Phobos versions"
-msgstr "由旧版本火卫一"
+msgstr "由旧版本 Phobos"
 
 #: ../../Whats-New.md:22
 #, fuzzy
 msgid "From post-0.3 devbuilds"
-msgstr "由pre-0.3开发版"
+msgstr "由 post-0.3 开发版"
 
 #: ../../Whats-New.md:24
 msgid ""
@@ -210,7 +181,7 @@ msgstr ""
 #: ../../Whats-New.md:39
 #, fuzzy
 msgid "From 0.3"
-msgstr "由0.1.1"
+msgstr "由 0.3"
 
 #: ../../Whats-New.md:41
 msgid ""
@@ -300,7 +271,7 @@ msgstr ""
 
 #: ../../Whats-New.md:54
 msgid "From pre-0.3 devbuilds"
-msgstr "由pre-0.3开发版"
+msgstr "由 pre-0.3 开发版"
 
 #: ../../Whats-New.md:56
 msgid "`Trajectory.Speed` is now defined on projectile instead of weapon."
@@ -362,7 +333,7 @@ msgstr ""
 
 #: ../../Whats-New.md:65
 msgid "From 0.2.2.2"
-msgstr "由0.2.2.2"
+msgstr "由 0.2.2.2"
 
 #: ../../Whats-New.md:67
 msgid ""
@@ -390,7 +361,7 @@ msgstr ""
 
 #: ../../Whats-New.md:72
 msgid "From 0.1.1"
-msgstr "由0.1.1"
+msgstr "由 0.1.1"
 
 #: ../../Whats-New.md:74
 msgid ""
@@ -403,7 +374,7 @@ msgstr ""
 
 #: ../../Whats-New.md:76
 msgid "New user settings in RA2MD.INI"
-msgstr ""
+msgstr "RA2MD.INI 中新增的用户设置项"
 
 #: ../../Whats-New.md:78
 msgid ""
@@ -411,23 +382,23 @@ msgid ""
 " of them can be found in either in [user inteface](User-Interface.md) or "
 "[miscellaneous](Miscellanous.md) sections. Search functionality can be "
 "used to find them quickly if needed."
-msgstr ""
+msgstr "这些是由 Phobos 各种功能所新添加的用户设置标签。大多数可以在 [用户界面特性](User-Interface.md) 或 [杂项内容](Miscellanous.md) 部分找到。如果有必要你可以使用搜索功能快速找到它们。"
 
 #: ../../Whats-New.md:98
 msgid "For Map Editor (Final Alert 2)"
-msgstr "对地图编辑器（Final Alert 2）"
+msgstr "对地图编辑器（Final Alert 2）的更改"
 
 #: ../../Whats-New.md:103
 msgid "In `FAData.ini`:"
-msgstr "在`FAData.ini`中："
+msgstr "在 `FAData.ini`："
 
 #: ../../Whats-New.md:306
 msgid "Changelog"
 msgstr "更新日志"
 
 #: ../../Whats-New.md:308
-msgid "0.4"
-msgstr ""
+msgid "Version TBD (develop branch nightly builds)"
+msgstr "待定版本（开发分支每夜构建）"
 
 #: ../../Whats-New.md:313 ../../Whats-New.md:632 ../../Whats-New.md:663
 #: ../../Whats-New.md:869 ../../Whats-New.md:899 ../../Whats-New.md:916
@@ -3433,7 +3404,7 @@ msgstr "新的弹头特效可以与Ares的通用弹头（`GenericWarhead`）超�
 
 #: ../../Whats-New.md:961
 msgid "0.1.1"
-msgstr ""
+msgstr "0.1.1"
 
 #: ../../Whats-New.md:967
 msgid "Fixed an occasional crash when selecting units with a selection box"

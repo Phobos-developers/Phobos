@@ -19,7 +19,7 @@ msgstr "概况"
 
 #: ../../index.md:1
 msgid "What's New"
-msgstr "最新消息"
+msgstr "版本更新说明"
 
 #: ../../index.md:1
 msgid "Contributing"

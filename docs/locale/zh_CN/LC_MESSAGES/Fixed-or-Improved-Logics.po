@@ -948,7 +948,7 @@ msgstr "修复了伪装单位在目标具有自定义调色盘时未使用正确
 msgid ""
 "Building upgrades now consistently use building's `PowerUpN` animation "
 "settings corresponding to the upgrade's `PowersUpToLevel` where possible."
-msgstr "现在建筑加载物尽可能一致地使用与加载的 `PowersUpToLevel` 相对应的建筑 `PowerUpN` 动画设置。"
+msgstr "现在建筑加载物将尽可能一致地使用与加载物 `PowersUpToLevel` 相对应的建筑 `PowerUpN` 动画设置。"
 
 #: ../../Fixed-or-Improved-Logics.md:159
 msgid ""

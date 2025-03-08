@@ -352,7 +352,7 @@ This page lists all the individual contributions to the project by their author.
    - `FreeUnit` uses its own `SpeedType` to determine where to spawn
    - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
    - Fix the bug where pathfinding issues occur when a building performs undeploy
-   - Fix a crash caused by electric bolt not invalidating Owner
+   - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
