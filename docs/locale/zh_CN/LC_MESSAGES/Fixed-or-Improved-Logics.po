@@ -196,7 +196,7 @@ msgstr "修复了 Jumpjet 单位总是在停止移动时朝向右下方向的 Bu
 msgid "Fixed the bug when jumpjet objects are unable to use `Sensors`."
 msgstr "修复了 Jumpjet 对象无法使用 `Sensors` 的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:35 ../../Fixed-or-Improved-Logics.md:62
+#: ../../Fixed-or-Improved-Logics.md:35
 msgid ""
 "Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` "
 "buildings. The keys will now make the building only accept appropriate "
@@ -205,13 +205,13 @@ msgstr ""
 "修复了 `UnitAbsorb` 和 `InfantryAbsorb` 与 `Grinding` "
 "建筑的交互。现在这些标签将使建筑只接受对应类型的对象。"
 
-#: ../../Fixed-or-Improved-Logics.md:36 ../../Fixed-or-Improved-Logics.md:63
+#: ../../Fixed-or-Improved-Logics.md:36
 msgid ""
-"Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a "
+"Fixed missing `No Enter` cursor for VehicleTypes being unable to enter a "
 "`Grinding` building."
-msgstr "修复了缺少 `no enter` 光标的载具无法进入 `Grinding` 建筑的问题。"
+msgstr "修复了缺少 `No Enter` 光标的载具无法进入 `Grinding` 建筑的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:37 ../../Fixed-or-Improved-Logics.md:64
+#: ../../Fixed-or-Improved-Logics.md:37
 msgid ""
 "Fixed Engineers being able to enter `Grinding` buildings even when they "
 "shouldn't (such as ally building at full HP)."
@@ -341,11 +341,11 @@ msgstr "现在 `EWGates` 和 `NSGates` 可以像 `xxGateOne` 和 `xxGateTwo` 那
 #: ../../Fixed-or-Improved-Logics.md:65
 msgid ""
 "Aircraft & jumpjet units are now affected by speed modifiers such as "
-"`SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and "
+"`Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and "
 "Crates / AttachEffect *(Ares feature)*."
 msgstr ""
 "现在战机与 Jumpjet 单位正常受国家设置中的 "
-"`SpeedAircraft/Infantry/UnitsMult`、`VeteranSpeed` 和箱子／AttachEffect "
+"`Speed(Aircraft/Infantry/Units)Mult`、`VeteranSpeed` 和箱子／AttachEffect "
 "中速度加成效果影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:66
@@ -757,7 +757,7 @@ msgid ""
 msgstr ""
 "现在如果 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设置为 true，假设 "
 "`Primary` 武器的弹头拥有 `Wall=false`，而 `Secondary` 武器拥有 `Wall=true` 且开火者没有将 "
-"`NoSecondaryWeaponFallback` 设为 true 那么在 `Secondary` 将在应对墙时被使用。"
+"`NoSecondaryWeaponFallback` 设为 true 那么 `Secondary` 将在应对墙时被使用。"
 
 #: ../../Fixed-or-Improved-Logics.md:127
 msgid ""
@@ -4946,7 +4946,7 @@ msgid ""
 "Warhead even if it does not have `DamageSelf=true`."
 msgstr ""
 "现在即使对象没有 `DamageSelf=true` 你也可以允许弹头对被视为开火者的对象造成杀伤（并使用诸如 `KillDriver` 和 "
-"`DisableWeapons/Sonar/Flash.Duration`（*Ares 功能*）这些与杀伤相关的效果。））"
+"`DisableWeapons/Sonar/Flash.Duration`（*Ares 功能*）这些与杀伤相关的效果。）"
 
 #: ../../Fixed-or-Improved-Logics.md:1497
 msgid ""
