@@ -554,14 +554,16 @@ Vanilla fixes:
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers (by Starkku)
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
-- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
+- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
-- Fix the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
+- Fixed the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
 - `FreeUnit` uses its own `SpeedType` to determine where to spawn (by NetsuNegi)
-- Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land (by NetsuNegi)
-- Fix the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
+- Fixed the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land (by NetsuNegi)
+- Fixed the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
+- Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
+- Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107 & Xkein)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -603,7 +605,7 @@ Phobos fixes:
 - Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
-- Fix `LimboKill` not working reliably (by CrimRecya)
+- Fixed `LimboKill` not working reliably (by CrimRecya)
 - Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by Starkku)
 - Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
 - Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
@@ -611,8 +613,8 @@ Phobos fixes:
 - Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
 - Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 - Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
-- Fix `Insignia.Weapon` failing to parse in map (by Ollerus)
-- Fix `AltNextScenario` not taking effect (by FlyStar)
+- Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)
+- Fixed `AltNextScenario` not taking effect (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
