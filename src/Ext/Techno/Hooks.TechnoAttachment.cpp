@@ -274,12 +274,12 @@ DEFINE_HOOK(0x47C432, CellClass_CellTechno_HandleAttachments, 0x0)
 }
 
 // skip building placement occupation checks for virtuals
-DEFINE_JUMP(CALL, 0x47C805, GET_OFFSET(CellTechno_NoVirtual));
-DEFINE_JUMP(CALL, 0x47C738, GET_OFFSET(CellTechno_NoVirtual));
+DEFINE_FUNCTION_JUMP(CALL, 0x47C805, CellTechno_NoVirtual);
+DEFINE_FUNCTION_JUMP(CALL, 0x47C738, CellTechno_NoVirtual);
 
 // skip building attachments in bib check
-DEFINE_JUMP(CALL, 0x4495F2, GET_OFFSET(CellTechno_NoVirtualOrRelatives));
-DEFINE_JUMP(CALL, 0x44964E, GET_OFFSET(CellTechno_NoVirtualOrRelatives));
+DEFINE_FUNCTION_JUMP(CALL, 0x4495F2, CellTechno_NoVirtualOrRelatives);
+DEFINE_FUNCTION_JUMP(CALL, 0x44964E, CellTechno_NoVirtualOrRelatives);
 
 DEFINE_HOOK(0x4495F7, BuildingClass_ClearFactoryBib_SkipCreatedUnitAttachments, 0x0)
 {
@@ -387,8 +387,8 @@ void __fastcall CargoClass_Attach_##mode(PassengersClass* pThis, discard_t, Foot
 DEFINE_ATTACH_WRAPPER(SingleObject);
 DEFINE_ATTACH_WRAPPER(ObjectChain);
 
-DEFINE_JUMP(CALL, 0x65DF88, GET_OFFSET(CargoClass_Attach_ObjectChain));  // Create_Group
-DEFINE_JUMP(CALL, 0x65DCF0, GET_OFFSET(CargoClass_Attach_ObjectChain));  // Do_Reinforcements, paradrop loading
+DEFINE_FUNCTION_JUMP(CALL, 0x65DF88, CargoClass_Attach_ObjectChain);  // Create_Group
+DEFINE_FUNCTION_JUMP(CALL, 0x65DCF0, CargoClass_Attach_ObjectChain);  // Do_Reinforcements, paradrop loading
 
 DEFINE_HOOK(0x4733BD, CargoClass_Attach_HandleCurrentAttachMode, 0x6)
 {
@@ -431,29 +431,29 @@ bool __fastcall TechnoClass_IsSurfaced(TechnoClass* pThis)
 }
 
 // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F49B0, GET_OFFSET(TechnoClass_OnGround));
-DEFINE_JUMP(VTABLE, 0x7F49B4, GET_OFFSET(TechnoClass_InAir));
-DEFINE_JUMP(VTABLE, 0x7F49DC, GET_OFFSET(TechnoClass_IsSurfaced));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F49B0, TechnoClass_OnGround);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F49B4, TechnoClass_InAir);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F49DC, TechnoClass_IsSurfaced);
 
 // BuildingClass
-DEFINE_JUMP(VTABLE, 0x7E3F0C, GET_OFFSET(TechnoClass_OnGround));
-DEFINE_JUMP(VTABLE, 0x7E3F10, GET_OFFSET(TechnoClass_InAir));
-DEFINE_JUMP(VTABLE, 0x7E3F38, GET_OFFSET(TechnoClass_IsSurfaced));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3F0C, TechnoClass_OnGround);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3F10, TechnoClass_InAir);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3F38, TechnoClass_IsSurfaced);
 
 // FootClass
-DEFINE_JUMP(VTABLE, 0x7E8CE4, GET_OFFSET(TechnoClass_OnGround));
-DEFINE_JUMP(VTABLE, 0x7E8CE8, GET_OFFSET(TechnoClass_InAir));
-DEFINE_JUMP(VTABLE, 0x7E8D10, GET_OFFSET(TechnoClass_IsSurfaced));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8CE4, TechnoClass_OnGround);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8CE8, TechnoClass_InAir);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8D10, TechnoClass_IsSurfaced);
 
 // UnitClass
-DEFINE_JUMP(VTABLE, 0x7F5CC0, GET_OFFSET(TechnoClass_OnGround));
-DEFINE_JUMP(VTABLE, 0x7F5CC4, GET_OFFSET(TechnoClass_InAir));
-DEFINE_JUMP(VTABLE, 0x7F5CEC, GET_OFFSET(TechnoClass_IsSurfaced));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CC0, TechnoClass_OnGround);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CC4, TechnoClass_InAir);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CEC, TechnoClass_IsSurfaced);
 
 // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7EB0A8, GET_OFFSET(TechnoClass_OnGround));
-DEFINE_JUMP(VTABLE, 0x7EB0AC, GET_OFFSET(TechnoClass_InAir));
-DEFINE_JUMP(VTABLE, 0x7EB0D4, GET_OFFSET(TechnoClass_IsSurfaced));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0A8, TechnoClass_OnGround);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0AC, TechnoClass_InAir);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0D4, TechnoClass_IsSurfaced);
 
 // AircraftClass has it's own logic, who would want to attach aircrafts anyways
 
@@ -754,7 +754,7 @@ Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, C
 // MouseOverObject for entering bunkers, grinder, buildings etc
 // is handled along with the shield logics in another file
 
-DEFINE_JUMP(VTABLE, 0x7F5CE0, GET_OFFSET(UnitClass_MouseOverCell_Wrapper))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE0, UnitClass_MouseOverCell_Wrapper)
 
 // YSort for attachments
 int __fastcall TechnoClass_SortY_Wrapper(ObjectClass* pThis)
@@ -782,10 +782,10 @@ int __fastcall TechnoClass_SortY_Wrapper(ObjectClass* pThis)
 	return pThis->ObjectClass::GetYSort();
 }
 
-DEFINE_JUMP(CALL, 0x449413, GET_OFFSET(TechnoClass_SortY_Wrapper))   // BuildingClass
-DEFINE_JUMP(VTABLE, 0x7E235C, GET_OFFSET(TechnoClass_SortY_Wrapper)) // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7EB110, GET_OFFSET(TechnoClass_SortY_Wrapper)) // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F5D28, GET_OFFSET(TechnoClass_SortY_Wrapper)) // UnitClass
+DEFINE_FUNCTION_JUMP(CALL, 0x449413, TechnoClass_SortY_Wrapper)   // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E235C, TechnoClass_SortY_Wrapper) // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB110, TechnoClass_SortY_Wrapper) // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D28, TechnoClass_SortY_Wrapper) // UnitClass
 
 DEFINE_JUMP(LJMP, 0x568831, 0x568841); // Skip locomotion layer check in MapClass::PickUp
 DEFINE_JUMP(LJMP, 0x4D37A2, 0x4D37AE); // Skip locomotion layer check in FootClass::Mark

@@ -33,7 +33,7 @@ void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, discard_t, Coord
 	}
 }
 
-DEFINE_JUMP(VTABLE, 0x7F5D60, GET_OFFSET(UnitClass_SetOccupyBit_Reimpl));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D60, UnitClass_SetOccupyBit_Reimpl);
 
 void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, discard_t, CoordStruct* pCrd)
 {
@@ -71,6 +71,6 @@ void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, discard_t, Coo
 	}
 }
 
-DEFINE_JUMP(VTABLE, 0x7F5D64, GET_OFFSET(UnitClass_ClearOccupyBit_Reimpl));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D64, UnitClass_ClearOccupyBit_Reimpl);
 
 // TODO ^ same for TA for non-UnitClass, not needed so cba for now
