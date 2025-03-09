@@ -353,6 +353,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
+   - Fix `DefaultDisguise` showing wrong house colors for different players
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -386,6 +387,8 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
+  - Fix `DefaultDisguise` showing wrong house colors for different players
+- **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
   - Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode
