@@ -148,7 +148,7 @@ void TechnoExt::ExtData::InitializeDisplayInfo()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
-	pThis->RearmTimer.Start(0);
+	pThis->RearmTimer.StartTime = 0;
 
 	if (pPrimary && pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK)
 		pThis->RearmTimer.TimeLeft = pPrimary->ROF;
