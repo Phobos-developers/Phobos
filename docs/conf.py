@@ -38,6 +38,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 locale_dirs = ['locale/']
 gettext_compact = False
+gettext_additional_targets = ["literal-block"]
 
 # -- Options for HTML output -------------------------------------------------
 

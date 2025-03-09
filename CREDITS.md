@@ -344,6 +344,7 @@ This page lists all the individual contributions to the project by their author.
 - **FlyStar**:
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
+   - Fix `AltNextScenario` not taking effect
 - **NetsuNegi**:
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
@@ -355,6 +356,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
+   - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -399,6 +401,7 @@ This page lists all the individual contributions to the project by their author.
   - Sell or undeploy building on impact
   - Draw visual effects for airburst weapons
   - Technos recount current burst index when change the firing weapon
+  - Units will not always stuck in the factory
   - Several new Infotypes, no display in specific status and a new single frame display method
 - **Ollerus**:
   - Build limit group enhancement
@@ -421,11 +424,13 @@ This page lists all the individual contributions to the project by their author.
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
   - No turret unit turn to the target
+  - Units are now unable to kick out from a factory that is in construction process
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
+- **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
 - **Ares developers**:
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

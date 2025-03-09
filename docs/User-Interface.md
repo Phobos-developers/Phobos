@@ -37,7 +37,10 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display).
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
-  - By default, values are displayed in `current/maximum` format (i.e. `20/40`). `HideMaxValue=yes` will make the counter show only the current value (i.e. `20`), the default value is whether the techno is infantry or not. `Percentage=yes` changes the format to `percent%` (i.e. `50%`). `ValueAsTimer` controls whether the value will be displayed in the form of a timer (i.e. `0:30`, `5:00` or `1:00:00`).
+  - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
+    - `HideMaxValue=yes` will make the counter show only the current value (i.e. `20`), default to whether the techno is infantry or not.
+    - `Percentage=yes` changes the format to `percent%` (i.e. `50%`).
+    - `ValueAsTimer` controls whether the value will be displayed in the form of a timer (i.e. `0:30`, `5:00` or `1:00:00`).
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
     - `VisibleInSpecialState` controls whether this display type will show when the owner is in ironcurtain or is attacked by a temporal weapon.
   - The digits can be either a custom shape (.shp) or text drawn using the game font. This depends on whether `Shape` is set.

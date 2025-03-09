@@ -567,7 +567,7 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 }
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
-DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 
 // BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
@@ -796,7 +796,7 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 	return res;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
 DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
 DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
 
@@ -923,12 +923,14 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 // which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
 // even at high speeds - NetsuNegi
 
-DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8)
 {
 	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
 
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
-	GET(int const, distance, EAX);
+
+	auto& currLoc = pLoco->LinkedTo->Location;
+	int distance = (int) CoordStruct{currLoc.X - pLoco->Coords.X, currLoc.Y - pLoco->Coords.Y,0}.Magnitude() ;
 
 	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however - Starkku
@@ -943,9 +945,14 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	speed = pLoco->LinkedTo->GetCurrentSpeed();
 	pType->Speed = maxSpeed;
 
-	TunnelLocomotionClass::TunnelMovementSpeed = speed;
-
-	return distance >= speed + 1 ? KeepMoving : CloseEnough;
+	if (distance > speed)
+	{
+		REF_STACK(CoordStruct, newLoc, STACK_OFFSET(0x40, -0xC));
+		double angle = -Math::atan2(currLoc.Y - pLoco->Coords.Y, pLoco->Coords.X - currLoc.X);
+		newLoc = currLoc + CoordStruct { int((double)speed * Math::cos(angle)), int((double)speed * Math::sin(angle)), 0 };
+		return 0x7298D3;
+	}
+	return 0x7295CE;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
@@ -1219,7 +1226,7 @@ int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, Abstrac
 		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
 		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
 }
-DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
+DEFINE_FUNCTION_JUMP(CALL, 0x6EBCC9, Check2DDistanceInsteadOf3D);
 
 #pragma endregion
 
@@ -1246,8 +1253,8 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
-DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
-DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
+DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
+DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
 #pragma region Sensors
 

@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -83,8 +84,12 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 		else if (RulesExt::Global()->Promote_EliteAnimation)
 			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
 
-		if(promAnim)
+		if (promAnim)
+		{
 			promAnim->SetOwnerObject(pThis);
+			AnimExt::SetAnimOwnerHouseKind(promAnim, pThis->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(promAnim)->SetInvoker(pThis);
+		}
 	}
 
 	return aresProcess();
@@ -258,9 +263,9 @@ bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	return pThis->TechnoClass::Limbo();
 }
 
-DEFINE_JUMP(VTABLE, 0x7F4A34, GET_OFFSET(TechnoClass_Limbo_Wrapper)); // TechnoClass
-DEFINE_JUMP(CALL, 0x4DB3B1, GET_OFFSET(TechnoClass_Limbo_Wrapper));   // FootClass
-DEFINE_JUMP(CALL, 0x445DDA, GET_OFFSET(TechnoClass_Limbo_Wrapper))    // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4A34, TechnoClass_Limbo_Wrapper); // TechnoClass
+DEFINE_FUNCTION_JUMP(CALL, 0x4DB3B1, TechnoClass_Limbo_Wrapper);   // FootClass
+DEFINE_FUNCTION_JUMP(CALL, 0x445DDA, TechnoClass_Limbo_Wrapper)    // BuildingClass
 
 #pragma endregion
 
@@ -383,7 +388,7 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 
 bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
 {
-	return pThis->IsObserver() || pOther->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
+	return pThis->IsObserver() || pThis->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
@@ -402,10 +407,10 @@ bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 	return pCurrent->IsObserver() || EnumFunctions::CanTargetHouse(visibilityFlags, pCurrent, pThis);
 }
 
-DEFINE_JUMP(CALL, 0x4DEDD2, GET_OFFSET(IsAlly_Wrapper));                      // FootClass_GetImage
-DEFINE_JUMP(CALL, 0x70EE5D, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
-DEFINE_JUMP(CALL, 0x70EE70, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
-DEFINE_JUMP(CALL, 0x7062FB, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_DrawObject
+DEFINE_FUNCTION_JUMP(CALL, 0x4DEDD2, IsAlly_Wrapper);                      // FootClass_GetImage
+DEFINE_FUNCTION_JUMP(CALL, 0x70EE5D, IsControlledByCurrentPlayer_Wrapper); // TechnoClass_ClearlyVisibleTo
+DEFINE_FUNCTION_JUMP(CALL, 0x70EE70, IsControlledByCurrentPlayer_Wrapper); // TechnoClass_ClearlyVisibleTo
+DEFINE_FUNCTION_JUMP(CALL, 0x7062FB, IsControlledByCurrentPlayer_Wrapper); // TechnoClass_DrawObject
 
 DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 {

@@ -326,7 +326,8 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
-	if (pThis->Deactivated || pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	// Deactivated mirage should still be able to keep disguise
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
@@ -528,8 +529,8 @@ void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, Object
 		TechnoExt::UpdateAttachedAnimLayers(pTechno);
 }
 
-DEFINE_JUMP(CALL, 0x54B18E, GET_OFFSET(DisplayClass_Submit_Wrapper));  // JumpjetLocomotionClass_Process
-DEFINE_JUMP(CALL, 0x4CD4E7, GET_OFFSET(DisplayClass_Submit_Wrapper));  // FlyLocomotionClass_Update
+DEFINE_FUNCTION_JUMP(CALL, 0x54B18E, DisplayClass_Submit_Wrapper);  // JumpjetLocomotionClass_Process
+DEFINE_FUNCTION_JUMP(CALL, 0x4CD4E7, DisplayClass_Submit_Wrapper);  // FlyLocomotionClass_Update
 
 // Fixes SecondaryFire / SecondaryProne sequences not remapping to WetAttack in water.
 // Ideally there would be WetAttackSecondary but adding new sequences would be a big undertaking.
