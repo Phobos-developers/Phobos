@@ -1630,24 +1630,6 @@ RecountBurst=false  ; boolean
 RecountBurst=       ; boolean
 ```
 
-### Damaged unit image changes
-
-- When a unit is damaged (health points percentage is lower than `ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` UnitType. Similar, `Image.ConditionRed` is used as image if unit health points percentage is lower than `ConditionRed` percentage.
-- It is also works on water by setting `WaterImage.ConditionYellow` and `WaterImage.ConditionRed` UnitType, similar to Ares' `WaterImage`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEUNIT]                                   ; UnitType
-Image.ConditionYellow=                ; UnitType entry
-Image.ConditionRed=                   ; UnitType entry
-WaterImage.ConditionYellow=           ; UnitType entry
-WaterImage.ConditionRed=              ; UnitType entry
-```
-
-```{warning}
-Note that the UnitTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -1659,6 +1641,27 @@ In `rulesmd.ini`:
 [SOMETERRAINTYPE]  ; TerrainType
 DestroyAnim=       ; AnimationType
 DestroySound=      ; Sound entry
+```
+
+## Vehicles
+
+### Damaged unit image changes
+
+- When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` VehicleType.
+- Similar, `Image.ConditionRed` is used as image if unit health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
+- It is also works on water by setting `WaterImage.ConditionYellow` and `WaterImage.ConditionRed` VehicleType, similar to Ares' `WaterImage`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                         ; VehicleType
+Image.ConditionYellow=                ; VehicleType entry
+Image.ConditionRed=                   ; VehicleType entry
+WaterImage.ConditionYellow=           ; VehicleType entry
+WaterImage.ConditionRed=              ; VehicleType entry
+```
+
+```{warning}
+Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
 ## Warheads
