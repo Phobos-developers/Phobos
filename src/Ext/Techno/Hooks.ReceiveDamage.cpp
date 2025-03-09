@@ -266,6 +266,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
 	std::vector<WeaponTypeClass*> expireWeapons;
+	expireWeapons.reserve(pExt->AttachedEffects.size());
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{

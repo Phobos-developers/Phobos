@@ -19,7 +19,6 @@ std::vector<int> HouseExt::AIProduction_BestChoicesNaval;
 void HouseExt::ExtData::UpdateVehicleProduction()
 {
 	auto pThis = this->OwnerObject();
-	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
 	bool skipGround = pThis->ProducingUnitTypeIndex != -1;
 	bool skipNaval = this->ProducingNavalUnitTypeIndex != -1;
 
@@ -29,6 +28,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	if (!skipGround && this->UpdateHarvesterProduction())
 		return;
 
+	auto const AIDifficulty = static_cast<int>(pThis->GetAIDifficultyIndex());
 	auto& creationFrames = HouseExt::AIProduction_CreationFrames;
 	auto& values = HouseExt::AIProduction_Values;
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;

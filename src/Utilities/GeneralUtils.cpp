@@ -49,6 +49,7 @@ const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wcha
 std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
+	result.reserve((2 * range + 1) * (2 * range + 1));
 
 	for (CellSpreadEnumerator it(range); it; ++it)
 		result.push_back(*it);

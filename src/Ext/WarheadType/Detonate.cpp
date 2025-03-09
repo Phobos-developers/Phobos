@@ -147,7 +147,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || pTarget->Health > 0 || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
 
 	TechnoExt::ExtData* pTargetExt = nullptr;
@@ -472,7 +472,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
 {
-	if (!pOwner || !pWeapon)
+	if (!pWeapon)
 		return;
 
 	float cellSpread = this->OwnerObject()->CellSpread;
@@ -566,9 +566,6 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget
 
 void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker)
 {
-	if (!pTarget)
-		return;
-
 	std::vector<int> dummy = std::vector<int>();
 	auto const& info = this->AttachEffects;
 	AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), info);

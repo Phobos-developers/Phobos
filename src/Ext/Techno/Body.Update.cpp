@@ -11,7 +11,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
-
+#include <unordered_set>
 
 // TechnoClass_AI_0x6F9E50
 // It's not recommended to do anything more here it could have a better place for performance consideration
@@ -56,15 +56,16 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
+		const auto pInterceptorType = pTypeExt->InterceptorType.get();
+		const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
+		const auto& minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+		// Interceptor weapon is always fixed
+		const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
 
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
 		for (auto const& pBullet : *BulletClass::Array())
 		{
-			const auto pInterceptorType = pTypeExt->InterceptorType.get();
-			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
-			const auto& minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
 			if (distance > guardRange || distance < minguardRange)
@@ -73,13 +74,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
-			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
+			if (!pBulletTypeExt->Interceptable)
 				continue;
 
 			if (pBulletTypeExt->Armor.isset())
 			{
-				int weaponIndex = pThis->SelectWeapon(pBullet);
-				auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
 				if (versus == 0.0)
@@ -161,20 +160,18 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		}
 	}
 
-	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo)
+	auto existTechnoTypes = [pThis](const ValueableVector<TechnoTypeClass*>& vTypes, std::unordered_set<HouseClass*> validHouses, bool any, bool allowLimbo)
 		{
-			auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
+			auto existSingleType = [pThis, validHouses, allowLimbo](TechnoTypeClass* pType)
 				{
-					for (HouseClass* pHouse : *HouseClass::Array)
+					for (HouseClass* pHouse : validHouses)
 					{
-						if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
-							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
+						if (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0)
 							return true;
 					}
 
 					return false;
 				};
-
 			return any
 				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
@@ -183,7 +180,15 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos don't exist
 	if (!pTypeExt->AutoDeath_TechnosDontExist.empty())
 	{
-		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, pTypeExt->AutoDeath_TechnosDontExist_Houses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
+		std::unordered_set<HouseClass*> validHouses;
+
+		for (auto pHouse : *HouseClass::Array)
+		{
+			if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosDontExist_Houses, pThis->Owner, pHouse))
+				validHouses.insert(pHouse);
+		}
+
+		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, validHouses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
@@ -194,7 +199,15 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	// death if listed technos exist
 	if (!pTypeExt->AutoDeath_TechnosExist.empty())
 	{
-		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, pTypeExt->AutoDeath_TechnosExist_Houses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
+		std::unordered_set<HouseClass*> validHouses;
+
+		for (auto pHouse : *HouseClass::Array)
+		{
+			if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosExist_Houses, pThis->Owner, pHouse))
+				validHouses.insert(pHouse);
+		}
+
+		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, validHouses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
 
@@ -321,14 +334,7 @@ void TechnoExt::ExtData::EatPassengers()
 							pFoot->RemoveGunner(pPassenger);
 
 							if (pThis->Passengers.NumPassengers > 0)
-							{
-								FootClass* pGunner = nullptr;
-
-								for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
-									pGunner = pNext;
-
-								pFoot->ReceiveGunner(pGunner);
-							}
+								pFoot->ReceiveGunner(pLastPassenger ? abstract_cast<FootClass*>(pLastPassenger) : pPreviousPassenger);
 						}
 					}
 
@@ -423,8 +429,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		this->LaserTrails.clear();
 
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
-
 	this->UpdateSelfOwnedAttachEffects();
+	this->LaserTrails.reserve(this->TypeExtData->LaserTrailData.size());
 
 	// Recreate Laser Trails
 	for (auto const& entry : this->TypeExtData->LaserTrailData)
@@ -461,32 +467,49 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	// Update open topped state of potential passengers if transport's OpenTopped value changes.
-	bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
-
-	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)) && pThis->Passengers.NumPassengers > 0)
+	if (pThis->Passengers.NumPassengers > 0)
 	{
-		auto pPassenger = pThis->Passengers.FirstPassenger;
+		const bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
+		const bool fromOpenTopped = !pCurrentType->OpenTopped && pOldType->OpenTopped;
+		const bool addGunner = pCurrentType->Gunner && !pOldType->Gunner;
+		const bool removeGunner = !pCurrentType->Gunner && pOldType->Gunner;
 
-		while (pPassenger)
+		if (toOpenTopped || fromOpenTopped || addGunner || removeGunner)
 		{
-			if (toOpenTopped)
+			auto pPassenger = pThis->Passengers.FirstPassenger;
+			FootClass* pLastPassenger = nullptr;
+
+			// Update open topped state of potential passengers if transport's OpenTopped value changes.
+			while (pPassenger)
 			{
-				pThis->EnteredOpenTopped(pPassenger);
+				if (toOpenTopped)
+				{
+					pThis->EnteredOpenTopped(pPassenger);
+				}
+				else if (fromOpenTopped)
+				{
+					pThis->ExitedOpenTopped(pPassenger);
+
+					// Lose target & destination
+					pPassenger->Guard();
+
+					// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
+					// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
+					LogicClass::Instance->RemoveObject(pPassenger);
+				}
+
+				pLastPassenger = pPassenger;
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			}
-			else
+
+			// Update Gunner
+			if (auto const pFoot = abstract_cast<FootClass*>(pThis))
 			{
-				pThis->ExitedOpenTopped(pPassenger);
-
-				// Lose target & destination
-				pPassenger->Guard();
-
-				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
-				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				LogicClass::Instance->RemoveObject(pPassenger);
+				if (addGunner)
+					pFoot->ReceiveGunner(pLastPassenger);
+				else if (removeGunner)
+					pFoot->RemoveGunner(pLastPassenger);
 			}
-
-			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
 
@@ -549,12 +572,14 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 	if (!pThis)
 		return;
 
+	const bool isDroppodLoco = VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278;
+
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (auto& trail : this->LaserTrails)
 	{
 		// @Kerbiter if you want to limit it to certain locos you do it here
 		// with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
-		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
+		if (isDroppodLoco && trail.Type->DroppodOnly)
 			continue;
 
 		trail.Cloaked = false;
@@ -704,7 +729,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 				applyHeal = true;
 		}
 
-		if (applyHeal && amount)
+		if (applyHeal)
 		{
 			if (amount >= healthDeficit)
 				amount = healthDeficit;
@@ -917,6 +942,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	bool markForRedraw = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
+	expireWeapons.reserve(this->AttachedEffects.size());
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -983,6 +1009,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	bool markForRedraw = false;
+	expireWeapons.reserve(this->AttachedEffects.size());
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )

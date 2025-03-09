@@ -1473,7 +1473,7 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		{
 			value_type buffer = value_type();
 			Savegame::ReadPhobosStream(Stm, buffer, false);
-			this->push_back(std::move(buffer));
+			this->emplace_back(std::move(buffer));
 
 			if (RegisterForChange)
 				Swizzle swizzle(this->back());
@@ -1492,7 +1492,8 @@ inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerFo
 	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
 	{
 		this->clear();
-
+		this->reserve(size);
+;
 		for (size_t i = 0; i < size; ++i)
 		{
 			bool value;

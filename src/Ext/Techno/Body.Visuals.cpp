@@ -10,15 +10,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	bool drawPip = false;
-	bool isInfantryHeal = false;
-	int selfHealFrames = 0;
-
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
 		return;
 
+	bool drawPip = false;
+	bool isInfantryHeal = false;
+	int selfHealFrames = 0;
 	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
 	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 	bool isOrganic = false;
@@ -93,11 +92,6 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
-	Point2D offset = *pLocation;
-
-	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
-	int defaultFrameIndex = -1;
-
 	auto pTechnoType = pThis->GetTechnoType();
 	auto pOwner = pThis->Owner;
 
@@ -120,6 +114,9 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	if (!isVisibleToPlayer)
 		return;
 
+	Point2D offset = *pLocation;
+	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
+	int defaultFrameIndex = -1;
 	bool isCustomInsignia = false;
 
 	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))

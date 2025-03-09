@@ -238,6 +238,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	const int totalStorage = pThis->GetTechnoType()->Storage;
 
 	std::vector<int> pipsToDraw;
+	pipsToDraw.reserve(maxPips);
 
 	bool isWeeder = false;
 
@@ -281,6 +282,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		int const emptyFrame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
 
 		std::vector<int> pipOrder;
+		pipOrder.reserve(TiberiumClass::Array->Count);
 
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
