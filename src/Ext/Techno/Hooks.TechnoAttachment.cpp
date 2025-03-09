@@ -331,6 +331,38 @@ DEFINE_HOOK(0x73A5EA, UnitClass_PerCellProcess_EntryLoopTechnos, 0x0)
 	return SkipEntry;
 }
 
+DEFINE_HOOK(0x51A0DA, InfantryClass_PerCellProcess_EntryLoopTechnos, 0x0)
+{
+	enum { SkipEntry = 0x51A4BF, TryEnterTarget = 0x51A258 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	if (pThis->GetCurrentMission() != Mission::Enter)
+		return SkipEntry;
+
+	CellClass* pCell = pThis->GetCell();
+	ObjectClass*& pFirst = pThis->OnBridge
+		? pCell->AltObject : pCell->FirstObject;
+
+	for (ObjectClass* pObject = pFirst; pObject; pObject = pObject->NextObject)
+	{
+		auto pEntryTarget = abstract_cast<TechnoClass*>(pObject);
+
+		// TODO additional priority checks (original code gets technos in certain order) because may backfire
+
+		if (pEntryTarget && pEntryTarget != pThis
+			&& (pThis->Target == pEntryTarget || pThis->Destination == pEntryTarget
+				|| pThis->OnBridge && pCell == pEntryTarget->GetCell()))
+		{
+			R->EDI<TechnoClass*>(pEntryTarget);
+			R->EBP<size_t>(0);
+			return TryEnterTarget;
+		}
+	}
+
+	return SkipEntry;
+}
+
 enum class AttachCargoMode
 {
 	SingleObject,
