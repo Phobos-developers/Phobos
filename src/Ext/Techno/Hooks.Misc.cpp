@@ -313,6 +313,7 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 	if (pExt->DefaultDisguise)
 	{
 		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
 		return 0x5227BF;
 	}

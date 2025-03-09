@@ -656,6 +656,7 @@ Phobos fixes:
 - Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
 - Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)
 - Fixed `AltNextScenario` not taking effect (by FlyStar)
+- Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.

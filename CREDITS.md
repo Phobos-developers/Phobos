@@ -357,6 +357,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
+   - Fixed `DefaultDisguise` showing wrong house colors for different players
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -409,6 +410,7 @@ This page lists all the individual contributions to the project by their author.
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
+  - Fixed `DefaultDisguise` showing wrong house colors for different players
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
