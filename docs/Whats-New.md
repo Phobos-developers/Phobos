@@ -333,6 +333,7 @@ New:
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Technos recount current burst index when change the firing weapon (by CrimRecya)
 - Shield armor inheritance customization (by Ollerus)
+- Damaged unit image changes (by Fryone)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)

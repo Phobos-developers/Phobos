@@ -557,6 +557,43 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73B4E0 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			R->EBX<ObjectTypeClass *>(pCustomType);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73C608 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			if (SHPStruct* Image = pCustomType->GetImage())
+				R->EAX<SHPStruct *>(Image);
+		}
+	}
+
+	R->ECX(pThis->GetType());
+	return Continue;
+}
 
 #pragma region KeepTargetOnMove
 
