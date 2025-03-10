@@ -3,6 +3,8 @@
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
+
 #pragma region SlaveManagerClass
 
 // Issue #601
@@ -173,7 +175,14 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	if (shouldRecycleSpawned())
 	{
 		if (pCarrierTypeExt->Spawner_RecycleAnim)
-			GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
+		{
+			if (auto pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd))
+			{
+				auto pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
+				pAnimExt->SetInvoker(pSpawner);
+				AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawner->Owner, pSpawner->Owner, false, true);
+			}
+		}
 
 		pSpawner->SetLocation(pCarrier->GetCoords());
 		return Recycle;
