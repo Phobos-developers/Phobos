@@ -197,7 +197,7 @@ DEFINE_HOOK(0x51C251, InfantryClass_CanEnterCell_SkipChildren, 0x0)
 	return IsOccupierIgnorable(pThis, pOccupier, occupyFlags, isVehicleFlagSet)
 		? IgnoreOccupier : Continue;
 }
-/*
+
 DEFINE_HOOK(0x51C78F, InfantryClass_CanEnterCell_CheckMovingInto, 0x6)
 {
 	GET_STACK(CellClass*, into, STACK_OFFSET(0x34, 0x4));
@@ -211,7 +211,7 @@ DEFINE_HOOK(0x51C78F, InfantryClass_CanEnterCell_CheckMovingInto, 0x6)
 
 	return 0;
 }
-*/
+
 enum class CellTechnoMode
 {
 	NoAttachments,
