@@ -191,7 +191,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
 - Fix an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
-- Spawners, projectiles and C4 will now give the owner EXP correctly after the owner cloaks.
+- Fixed some bug that caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain EXP from previously launched missiles/C4/projectiles).
 
 ## Fixes / interactions with other extensions
 

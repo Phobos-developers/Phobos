@@ -1422,7 +1422,9 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
-// Fix the bug that the owner can't get EXP if they cloak before the spawner / projectile hit the target.
+#pragma region PointerExpired
+
+// Fixed incorrect process in PointerExpired.
 // Add checks for bRemoved.
 DEFINE_HOOK(0x7077FD, TechnoClass_PointerExpired_SpawnOwnerFix, 0x6)
 {
@@ -1445,6 +1447,8 @@ DEFINE_HOOK(0x44E904, BuildingClass_PointerExpired_C4ExpFix, 0x6)
 	return removed ? 0 : 0x44E916;
 }
 
+// Changed the bRemoved arg in AbstractClass::AnnounceExpiredPointer calling.
+// It should be false in most case.
 namespace Disappear
 {
 	bool removed = false;
@@ -1475,3 +1479,5 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 	Disappear::removed = false;
 	return 0x5F5311;
 }
+
+#pragma endregion
