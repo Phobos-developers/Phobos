@@ -1422,6 +1422,8 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
+#pragma region XSurfaceFix
+
 // Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.
 class XSurfaceFake final : public XSurface
 {
@@ -1456,3 +1458,5 @@ DEFINE_FUNCTION_JUMP(CALL, 0x6423D6, XSurfaceFake::_GetPixel);
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2098, XSurfaceFake::_GetPixel);
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E212C, XSurfaceFake::_GetPixel);
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E85FC, XSurfaceFake::_GetPixel);
+
+#pragma endregion
