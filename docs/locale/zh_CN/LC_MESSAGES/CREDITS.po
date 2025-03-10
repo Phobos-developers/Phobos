@@ -1426,7 +1426,7 @@ msgstr ""
 "004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19)"
 
 #: ../../../CREDITS.md:361 ../../../CREDITS.md:415
-msgid "Fixed `DefaultDisguise` showing wrong house colors for different players"
+msgid "Fix `DefaultDisguise` showing wrong house colors for different players"
 msgstr "修复了 `DefaultDisguise` 为不同玩家显示不同所属方颜色的问题"
 
 #: ../../../CREDITS.md:362
@@ -1492,6 +1492,14 @@ msgstr "自定义水波动画"
 #: ../../../CREDITS.md:377
 msgid "Initial effort on optimization for crates' random distribution"
 msgstr "对箱子随机分布的初步优化"
+
+#: ../../../CREDITS.md:378
+msgid "Customizable spawns queue"
+msgstr "自定义子机序列"
+
+#: ../../../CREDITS.md:379
+msgid "Initial spawns number"
+msgstr "初始子机数量"
 
 #: ../../../CREDITS.md:378
 msgid "**Fryone**:"
@@ -1561,7 +1569,7 @@ msgstr "使用 2D 而不是 3D 距离来检查空中的小队成员是否抵达�
 
 #: ../../../CREDITS.md:395
 msgid "No rearm and reload in EMP or temporal"
-msgstr "EMP 或超时空停止CD"
+msgstr "EMP 或超时空停止 CD"
 
 #: ../../../CREDITS.md:396
 msgid "Enhanced Straight trajectory"
