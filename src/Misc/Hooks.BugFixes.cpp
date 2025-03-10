@@ -1437,3 +1437,10 @@ DEFINE_HOOK(0x4684F7, BulletClass_PointerExpired_OwnerFix, 0x6)
 	// Skip the reset for Owner if !removed.
 	return removed ? 0 : 0x468509;
 }
+
+DEFINE_HOOK(0x44E904, BuildingClass_PointerExpired_C4ExpFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0xC, 0x8));
+	// Skip the reset for C4AppliedBy if !removed.
+	return removed ? 0 : 0x44E916;
+}

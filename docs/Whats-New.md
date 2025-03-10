@@ -340,7 +340,7 @@ New:
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
-- Fixed a bug where the owner could not gain experience from the spawner and the projectile after the owner cloaks (by TaranDahl)
+- Fixed several reference invalidation bugs that occurred during non-removal PointerExpired (f.ex. enter cloaking state) calls (by TaranDahl)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
