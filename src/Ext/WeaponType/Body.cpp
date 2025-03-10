@@ -78,8 +78,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
-
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
+	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 
 	this->RadType.Read<true>(exINI, pSection, "RadType");
 
@@ -95,6 +95,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
 	this->ROF_RandomDelay.Read(exINI, pSection, "ROF.RandomDelay");
+	this->ChargeTurret_Delays.Read(exINI, pSection, "ChargeTurret.Delays");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
 	this->FireOnce_ResetSequence.Read(exINI, pSection, "FireOnce.ResetSequence");
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
@@ -114,6 +115,12 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
+
+	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
+	this->Beam_Duration.Read(exINI, pSection, "Beam.Duration");
+	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
+	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
+	this->LaserThickness.Read(exINI, pSection, "LaserThickness");
 }
 
 template <typename T>
@@ -126,6 +133,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Bolt_Arcs)
+		.Process(this->Bolt_Duration)
 		.Process(this->Strafing)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
@@ -139,6 +147,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
 		.Process(this->ROF_RandomDelay)
+		.Process(this->ChargeTurret_Delays)
 		.Process(this->OmniFire_TurnToTarget)
 		.Process(this->FireOnce_ResetSequence)
 		.Process(this->ExtraWarheads)
@@ -158,6 +167,11 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
 		.Process(this->KickOutPassengers)
+		.Process(this->Beam_Color)
+		.Process(this->Beam_Duration)
+		.Process(this->Beam_Amplitude)
+		.Process(this->Beam_IsHouseColor)
+		.Process(this->LaserThickness)
 		;
 };
 

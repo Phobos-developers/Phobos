@@ -30,6 +30,8 @@ public:
 		Valueable<bool> SW_AnyDesignator;
 		Valueable<double> SW_RangeMinimum;
 		Valueable<double> SW_RangeMaximum;
+		Valueable<int> SW_Shots;
+
 		DWORD SW_RequiredHouses;
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
@@ -93,6 +95,7 @@ public:
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
+			, SW_Shots { -1 }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}

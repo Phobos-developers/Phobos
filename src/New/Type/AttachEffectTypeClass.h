@@ -21,6 +21,20 @@ enum class DiscardCondition : unsigned char
 
 MAKE_ENUM_FLAGS(DiscardCondition);
 
+// AE expire weapon condition
+enum class ExpireWeaponCondition : unsigned char
+{
+	None = 0x0,
+	Expire = 0x1,
+	Remove = 0x2,
+	Death = 0x4,
+	Discard = 0x8,
+
+	All = 0xFF,
+};
+
+MAKE_ENUM_FLAGS(ExpireWeaponCondition);
+
 class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 {
 	static std::unordered_map<std::string, std::set<AttachEffectTypeClass*>> GroupsMap;
@@ -50,6 +64,8 @@ public:
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
 	Valueable<double> SpeedMultiplier;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
@@ -99,6 +115,8 @@ public:
 		, Tint_VisibleToHouses { AffectedHouse::All }
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
+		, ArmorMultiplier_AllowWarheads {}
+		, ArmorMultiplier_DisallowWarheads {}
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
@@ -187,7 +205,7 @@ public:
 	ValueableVector<int> DurationOverrides;
 	ValueableVector<int> Delays;
 	ValueableVector<int> InitialDelays;
-	NullableVector<int> RecreationDelays;
+	ValueableVector<int> RecreationDelays;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

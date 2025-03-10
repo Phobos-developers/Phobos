@@ -51,19 +51,19 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 
 // Replaces the vanilla vtable calls & calls function from wrapper to retain compatibility with Ares.
 // The vanilla functions are completely overwritten by Ares.
-DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7E8F34, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // FootClass
-DEFINE_JUMP(VTABLE, 0x7EB2F8, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
-DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2544, TechnoClass_IsReadyToCloak_Wrapper); // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8F34, TechnoClass_IsReadyToCloak_Wrapper); // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB2F8, TechnoClass_IsReadyToCloak_Wrapper); // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4C00, TechnoClass_IsReadyToCloak_Wrapper); // TechnoClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F10, TechnoClass_IsReadyToCloak_Wrapper); // UnitClass
+DEFINE_FUNCTION_JUMP(CALL, 0x457779, TechnoClass_IsReadyToCloak_Wrapper)    // BuildingClass
 
-DEFINE_JUMP(VTABLE, 0x7E2548, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7E8F38, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // FootClass
-DEFINE_JUMP(VTABLE, 0x7EB2FC, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
-DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2548, TechnoClass_ShouldNotCloak_Wrapper); // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8F38, TechnoClass_ShouldNotCloak_Wrapper); // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB2FC, TechnoClass_ShouldNotCloak_Wrapper); // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4C04, TechnoClass_ShouldNotCloak_Wrapper); // TechnoClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F14, TechnoClass_ShouldNotCloak_Wrapper); // UnitClass
+DEFINE_FUNCTION_JUMP(CALL, 0x4578C9, TechnoClass_ShouldNotCloak_Wrapper);   // BuildingClass
 
 
 // Allow units with DecloakToFire=no weapons to cloak even when about to fire on target.

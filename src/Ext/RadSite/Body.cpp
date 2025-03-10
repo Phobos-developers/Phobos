@@ -101,19 +101,16 @@ void RadSiteExt::ExtData::CreateLight()
 	if (pThis->LightSource)
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
-		pThis->Radiate();
 	}
-	else
+	else if (auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
-		if (auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer))
-		{
-			pThis->LightSource = pLight;
-			pLight->DetailLevel = 0;
-			pLight->Activate(update);
-			pThis->Radiate();
-		}
+		auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
+		pThis->LightSource = pLight;
+		pLight->DetailLevel = 0;
+		pLight->Activate(update);
 	}
+
+	pThis->Radiate();
 }
 
 // Rewrite because of crashing craziness

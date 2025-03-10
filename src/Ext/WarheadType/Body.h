@@ -43,6 +43,7 @@ public:
 		Valueable<bool> Conventional_IgnoreUnits;
 		Valueable<bool> RemoveDisguise;
 		Valueable<bool> RemoveMindControl;
+		Nullable<bool> RemoveParasite;
 		Valueable<bool> DecloakDamagedTargets;
 		Valueable<bool> ShakeIsLocal;
 		Valueable<bool> ApplyModifiersOnNegativeDamage;
@@ -54,12 +55,14 @@ public:
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<int> Crit_ExtraDamage;
+		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 		Valueable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<bool> Crit_Warhead_FullDetonation;
 		Valueable<AffectedTarget> Crit_Affects;
 		Valueable<AffectedHouse> Crit_AffectsHouses;
 		ValueableVector<AnimTypeClass*> Crit_AnimList;
 		Nullable<bool> Crit_AnimList_PickRandom;
+		Nullable<bool> Crit_AnimList_CreateAll;
 		ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
@@ -140,18 +143,31 @@ public:
 
 		Nullable<int> CombatLightDetailLevel;
 		Valueable<double> CombatLightChance;
+		Valueable<bool> CLIsBlack;
 		Nullable<bool> Particle_AlphaImageIsLightFlash;
+
+		Nullable<double> DamageOwnerMultiplier;
+		Nullable<double> DamageAlliesMultiplier;
+		Nullable<double> DamageEnemiesMultiplier;
 
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
 
+		Valueable<bool> BuildingSell;
+		Valueable<bool> BuildingSell_IgnoreUnsellable;
+		Valueable<bool> BuildingUndeploy;
+		Valueable<bool> BuildingUndeploy_Leave;
+
+		Nullable<bool> CombatAlert_Suppress;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
 		Nullable<bool> AffectsOwner;
 		Valueable<bool> EffectsRequireVerses;
+		Valueable<bool> Malicious;
 
 		double Crit_RandomBuffer;
 		double Crit_CurrentChance;
@@ -192,6 +208,7 @@ public:
 			, Conventional_IgnoreUnits { false }
 			, RemoveDisguise { false }
 			, RemoveMindControl { false }
+			, RemoveParasite {}
 			, DecloakDamagedTargets { true }
 			, ShakeIsLocal { false }
 			, ApplyModifiersOnNegativeDamage { false }
@@ -203,12 +220,14 @@ public:
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
 			, Crit_ExtraDamage { 0 }
+			, Crit_ExtraDamage_ApplyFirepowerMult { false }
 			, Crit_Warhead {}
 			, Crit_Warhead_FullDetonation { true }
 			, Crit_Affects { AffectedTarget::All }
 			, Crit_AffectsHouses { AffectedHouse::All }
 			, Crit_AnimList {}
 			, Crit_AnimList_PickRandom {}
+			, Crit_AnimList_CreateAll {}
 			, Crit_ActiveChanceAnims {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
@@ -289,16 +308,29 @@ public:
 
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }
+		    , CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
+
+			, DamageOwnerMultiplier {}
+			, DamageAlliesMultiplier {}
+			, DamageEnemiesMultiplier {}
 
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
 
+			, BuildingSell { false }
+			, BuildingSell_IgnoreUnsellable { false }
+			, BuildingUndeploy { false }
+			, BuildingUndeploy_Leave { false }
+
+			, CombatAlert_Suppress {}
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
+			, Malicious { true }
 
 			, Crit_RandomBuffer { 0.0 }
 			, Crit_CurrentChance { 0.0 }
@@ -339,10 +371,11 @@ public:
 	private:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
-		void ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget);
+		void ApplyRemoveMindControl(TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
+		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 
