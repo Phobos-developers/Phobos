@@ -1422,11 +1422,18 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
-// Fix the bug that Bombers can't get EXP if they cloak before the missiles hit the target.
+// Fix the bug that the owner can't get EXP if they cloak before the spawner / projectile hit the target.
 // Add checks for bRemoved.
 DEFINE_HOOK(0x7077FD, TechnoClass_PointerExpired_SpawnOwnerFix, 0x6)
 {
 	GET_STACK(bool, removed, STACK_OFFSET(0x20, 0x8));
 	// Skip the reset for SpawnOwner if !removed.
 	return removed ? 0 : 0x707803;
+}
+
+DEFINE_HOOK(0x4684F7, BulletClass_PointerExpired_OwnerFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x1C, 0x8));
+	// Skip the reset for Owner if !removed.
+	return removed ? 0 : 0x468509;
 }

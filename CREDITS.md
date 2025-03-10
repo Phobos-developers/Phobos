@@ -429,7 +429,7 @@ This page lists all the individual contributions to the project by their author.
   - Prevent the units with locomotors that cause problems from entering the tank bunker
   - No turret unit turn to the target
   - Units are now unable to kick out from a factory that is in construction process
-  - Fixed a bug where the owner could not gain experience from the spawner after the owner cloaks.
+  - Fixed a bug where the owner could not gain experience from the spawner and the projectile after the owner cloaks.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
