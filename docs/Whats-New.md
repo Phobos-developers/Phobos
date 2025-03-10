@@ -334,6 +334,8 @@ New:
 - Technos recount current burst index when change the firing weapon (by CrimRecya)
 - Shield armor inheritance customization (by Ollerus)
 - Damaged unit image changes (by Fryone)
+- Customizable spawns queue (by TwinkleStar)
+- Initial spawns number (by TwinkleStar)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
