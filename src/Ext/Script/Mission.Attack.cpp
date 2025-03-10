@@ -208,7 +208,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 			for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 			{
-				if (pFoot->IsAlive && !pFoot->InLimbo)
+				if (pFoot->IsAlive && pFoot->Health > 0 && !pFoot->InLimbo)
 				{
 					auto const pTechnoType = pFoot->GetTechnoType();
 

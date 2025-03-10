@@ -170,7 +170,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			if (radLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			if (pBuilding->IsAlive) // simple fix for previous issues
+			if (pBuilding->IsAlive && pBuilding->Health > 0) // simple fix for previous issues
 			{
 				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
 
@@ -227,7 +227,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			if (radLevel <= 0.0 || !pType->GetWarhead())
 				continue;
 
-			if (pFoot->IsAlive || !pFoot->IsSinking)
+			if ((pFoot->IsAlive && pFoot->Health > 0) || !pFoot->IsSinking)
 			{
 				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
 
@@ -237,7 +237,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 		}
 	}
 
-	return pFoot->IsAlive ? Continue : ReturnFromFunction;
+	return (pFoot->IsAlive && pFoot->Health > 0) ? Continue : ReturnFromFunction;
 }
 
 #define GET_RADSITE(reg, value)\

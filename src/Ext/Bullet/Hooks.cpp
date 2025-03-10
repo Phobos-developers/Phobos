@@ -280,7 +280,7 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	{
 		pThis->Detonate(coords);
 
-		if (!pThis->IsAlive)
+		if (!pThis->IsAlive || pThis->Health <= 0)
 			break;
 
 		int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);

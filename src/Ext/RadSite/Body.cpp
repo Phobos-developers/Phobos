@@ -32,7 +32,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
 		}
 
-		if (!pTarget->IsAlive)
+		if (!pTarget->IsAlive || pTarget->Health <= 0)
 			return false;
 	}
 

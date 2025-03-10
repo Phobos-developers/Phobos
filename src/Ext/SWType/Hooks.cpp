@@ -58,6 +58,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 		const auto pOwner = pCurrentTechno->Owner;
 
 		if (!pCurrentTechno->IsAlive
+			|| pCurrentTechno->Health <= 0
 			|| pCurrentTechno->InLimbo
 			|| (pOwner != HouseClass::CurrentPlayer && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))                  // Ally objects are never designators or inhibitors
 			|| (pOwner == HouseClass::CurrentPlayer && !pExt->SW_Designators.Contains(pCurrentTechnoType))               // Only owned objects can be designators
