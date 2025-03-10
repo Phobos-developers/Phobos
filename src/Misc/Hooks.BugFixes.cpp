@@ -1421,3 +1421,38 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	R->AL(pCell->IsClearToMove(pUndeploysInto->SpeedType, false, false, -1, pUndeploysInto->MovementZone, -1, 1));
 	return SkipGameCode;
 }
+
+// Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.
+class XSurfaceFake final : public XSurface
+{
+	int _GetPixel(Point2D const& point) const;
+};
+
+int XSurfaceFake::_GetPixel(Point2D const& point) const
+{
+	int color = 0;
+
+	Point2D finalPoint = point;
+	if (finalPoint.X > Width || finalPoint.Y > Height)
+		finalPoint = Point2D::Empty;
+
+	void* pointer = ((Surface*)this)->Lock(finalPoint.X, finalPoint.Y);
+	if (pointer != nullptr)
+	{
+		if (BytesPerPixel == 2)
+			color = *static_cast<unsigned short*>(pointer);
+		else
+			color = *static_cast<unsigned char*>(pointer);
+		((Surface*)this)->Unlock();
+	}
+	return color;
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x4A3E8A, XSurfaceFake::_GetPixel)
+DEFINE_FUNCTION_JUMP(CALL, 0x4A3EB7, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(CALL, 0x4A3F7C, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(CALL, 0x642213, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(CALL, 0x6423D6, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2098, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E212C, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E85FC, XSurfaceFake::_GetPixel);
