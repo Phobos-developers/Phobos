@@ -23,29 +23,20 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
 	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
-
-	// Update tunnel state on exit, TechnoClass::AI is only called when not in tunnel.
-	if (this->IsInTunnel)
-	{
-		this->IsInTunnel = false;
-
-		if (const auto pShieldData = this->Shield.get())
-			pShieldData->SetAnimationVisibility(true);
-	}
+	else if (this->PreviousType)
+		this->PreviousType = nullptr;
 
 	if (this->CheckDeathConditions())
 		return;
 
+	this->UpdateShield();
+	this->UpdateAttachEffects();
 	this->ApplyInterceptor();
 	this->EatPassengers();
-	this->UpdateShield();
 	this->ApplySpawnLimitRange();
-	this->UpdateLaserTrails();
-	this->DepletedAmmoActions();
-	this->UpdateAttachEffects();
+	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
-	this->UpdateGattlingRateDownReset();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -107,11 +98,11 @@ void TechnoExt::ExtData::ApplyInterceptor()
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
-	if (!pThis || (pThis->Type->Ammo <= 0) || !pThis->Type->IsSimpleDeployer)
+
+	if (pThis->Type->Ammo <= 0 || !pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
-
 	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
 
@@ -381,6 +372,14 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 	}
 }
 
+void TechnoExt::ExtData::UpdateOnTunnelExit()
+{
+	this->IsInTunnel = false;
+
+	if (const auto pShieldData = this->Shield.get())
+		pShieldData->SetAnimationVisibility(true);
+}
+
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
 	auto const pThis = this->OwnerObject();
@@ -413,24 +412,15 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
-void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
+void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pOldType)
 {
 	auto const pThis = this->OwnerObject();
-	auto const pOldTypeExt = this->TypeExtData;
-	auto const pOldType = this->TypeExtData->OwnerObject();
-
-	if (this->LaserTrails.size())
-		this->LaserTrails.clear();
-
+	auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
+	auto const pCurrentType = pThis->GetTechnoType();
+	this->PreviousType = pOldType;
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
 	this->UpdateSelfOwnedAttachEffects();
-
-	// Recreate Laser Trails
-	for (auto const& entry : this->TypeExtData->LaserTrailData)
-	{
-		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
-	}
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
@@ -460,8 +450,73 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
+}
+
+void TechnoExt::ExtData::UpdateTypeData_Foot(TechnoTypeClass* pOldType)
+{
+	auto const pThis = static_cast<FootClass*>(this->OwnerObject());
+	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
+	auto const pCurrentType = pThis->GetTechnoType();
+
+	// Recreate Laser Trails
+	if (this->LaserTrails.size())
+		this->LaserTrails.clear();
+
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	{
+		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
+	}
+
+	// Update movement sound if still moving while type changed.
+	if (pThis->Locomotor->Is_Moving_Now() && pThis->IsMoveSoundPlaying)
+	{
+		if (pCurrentType->MoveSound != pOldType->MoveSound)
+		{
+			// End the old sound.
+			pThis->MoveSoundAudioController.End();
+
+			if (auto const count = pCurrentType->MoveSound.Count)
+			{
+				// Play a new sound.
+				int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+				VocClass::PlayAt(soundIndex, pThis->Location, &pThis->MoveSoundAudioController);
+				pThis->IsMoveSoundPlaying = true;
+			}
+			else
+			{
+				pThis->IsMoveSoundPlaying = false;
+			}
+
+			pThis->MoveSoundDelay = 0;
+		}
+	}
+
+	if (auto const pInf = specific_cast<InfantryClass*>(pThis))
+	{
+		// It's still not recommended to have such idea, please avoid using this
+		if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
+		{
+			switch (pInf->SequenceAnim)
+			{
+			case Sequence::Deploy:
+			case Sequence::Deployed:
+			case Sequence::DeployedIdle:
+				pInf->PlayAnim(Sequence::Ready, true);
+				break;
+			case Sequence::DeployedFire:
+				pInf->PlayAnim(Sequence::FireUp, true);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
+		this->HasRemainingWarpInDelay = true;
 
 	// Update open topped state of potential passengers if transport's OpenTopped value changes.
+	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
 	bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
 
 	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)) && pThis->Passengers.NumPassengers > 0)
@@ -483,71 +538,17 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				LogicClass::Instance.RemoveObject(pPassenger);
+				LogicClass::Instance->RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
-	}
-
-	// Update movement sound if still moving while type changed.
-	if (auto const pFoot = abstract_cast<FootClass*>(pThis))
-	{
-		if (pFoot->Locomotor->Is_Moving_Now() && pFoot->IsMoveSoundPlaying)
-		{
-			if (pCurrentType->MoveSound != pOldType->MoveSound)
-			{
-				// End the old sound.
-				pFoot->MoveSoundAudioController.End();
-
-				if (auto const count = pCurrentType->MoveSound.Count)
-				{
-					// Play a new sound.
-					int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
-					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
-					pFoot->IsMoveSoundPlaying = true;
-				}
-				else
-				{
-					pFoot->IsMoveSoundPlaying = false;
-				}
-
-				pFoot->MoveSoundDelay = 0;
-			}
-		}
-
-		if (auto pInf = specific_cast<InfantryClass*>(pFoot))
-		{
-			// It's still not recommended to have such idea, please avoid using this
-			if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
-			{
-				switch (pInf->SequenceAnim)
-				{
-				case Sequence::Deploy:
-				case Sequence::Deployed:
-				case Sequence::DeployedIdle:
-					pInf->PlayAnim(Sequence::Ready, true);
-					break;
-				case Sequence::DeployedFire:
-					pInf->PlayAnim(Sequence::FireUp, true);
-					break;
-				default:
-					break;
-				}
-			}
-		}
-
-		if (pOldType->Locomotor == LocomotionClass::CLSIDs::Teleport && pCurrentType->Locomotor != LocomotionClass::CLSIDs::Teleport && pThis->WarpingOut)
-			this->HasRemainingWarpInDelay = true;
 	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
 	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
-
-	if (!pThis)
-		return;
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (auto& trail : this->LaserTrails)
@@ -733,8 +734,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	return;
 }
 
-void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
+void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 {
+	auto const pThis = this->OwnerObject();
+
 	if (auto pCapturer = pThis->MindControlledBy)
 	{
 		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
@@ -907,6 +910,29 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 
 	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_Temporal.Get(RulesExt::Global()->NoReload_Temporal))
 		pThis->ReloadTimer.StartTime++;
+}
+
+// Resets target if KeepTargetOnMove unit moves beyond weapon range.
+void TechnoExt::ExtData::UpdateKeepTargetOnMove()
+{
+	auto const pThis = this->OwnerObject();
+
+	if (this->KeepTargetOnMove && this->TypeExtData->KeepTargetOnMove && pThis->Target && pThis->CurrentMission == Mission::Move)
+	{
+		int weaponIndex = pThis->SelectWeapon(pThis->Target);
+
+		if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+		{
+			int extraDistance = static_cast<int>(this->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
+			int range = pWeapon->Range;
+			pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
+
+			if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
+				pThis->SetTarget(nullptr);
+
+			pWeapon->Range = range;
+		}
+	}
 }
 
 // Updates state of all AttachEffects on techno.
