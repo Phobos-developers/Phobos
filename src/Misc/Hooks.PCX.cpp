@@ -114,15 +114,3 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 
 	return 0;
 }
-
-// Fix 0x007BAEA1 crash
-DEFINE_HOOK(0x7BAE60, BSurface_GetPixel, 0x5)
-{
-	GET(BSurface*, pSurface, ECX);
-	GET_STACK(Point2D*, pPoint, 0x4);
-
-	if (pPoint->X > pSurface->Width || pPoint->Y > pSurface->Height)
-		*pPoint = Point2D::Empty;
-
-	return 0;
-}
