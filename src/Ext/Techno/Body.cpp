@@ -316,7 +316,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Detach CLEG targeting
 	auto tempUsing = pThis->TemporalImUsing;
 	if (tempUsing && tempUsing->Target)
-		tempUsing->Detach();
+		tempUsing->LetGo();
 
 	HouseClass* const pOwner = pThis->Owner;
 
@@ -522,6 +522,23 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
+
+	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	{
+		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		{
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
+				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
+			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
+				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+		}
+	}
+	return nullptr;
+}
+
 // =============================
 // load / save
 
@@ -553,6 +570,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastRearmWasFullDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->LastWeaponType)
 		.Process(this->FiringObstacleCell)
 		.Process(this->IsDetachingForCloak)
 		.Process(this->LastTargetID)

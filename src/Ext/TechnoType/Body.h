@@ -223,6 +223,8 @@ public:
 
 		AEAttachInfoTypeClass AttachEffects;
 
+		Nullable<bool> RecountBurst;
+
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
 		Valueable<int> BuildLimitGroup_Factor;
@@ -238,6 +240,10 @@ public:
 		Valueable<int> RateDown_Cover_Value;
 		Valueable<int> RateDown_Cover_AmmoBelow;
 
+		Nullable<bool> NoRearm_UnderEMP;
+		Nullable<bool> NoRearm_Temporal;
+		Nullable<bool> NoReload_UnderEMP;
+		Nullable<bool> NoReload_Temporal;
 		Nullable<bool> NoTurret_TrackTarget;
 
 		Nullable<AnimTypeClass*> Wake;
@@ -249,6 +255,11 @@ public:
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
+
+    	Nullable<UnitTypeClass*> Image_ConditionYellow;
+		Nullable<UnitTypeClass*> Image_ConditionRed;
+		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
+		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
 
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
@@ -469,6 +480,8 @@ public:
 
 			, AttachEffects {}
 
+			, RecountBurst {}
+
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}
 			, BuildLimitGroup_Factor { 1 }
@@ -484,6 +497,10 @@ public:
 			, RateDown_Cover_Value { 0 }
 			, RateDown_Cover_AmmoBelow { -2 }
 
+			, NoRearm_UnderEMP {}
+			, NoRearm_Temporal {}
+			, NoReload_UnderEMP {}
+			, NoReload_Temporal {}
 			, NoTurret_TrackTarget {}
 
 			, Wake { }
@@ -495,6 +512,11 @@ public:
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }
+
+      		, Image_ConditionYellow { }
+			, Image_ConditionRed { }
+			, WaterImage_ConditionYellow { }
+			, WaterImage_ConditionRed { }
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }

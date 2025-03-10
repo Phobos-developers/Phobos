@@ -187,13 +187,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 
 				if (pSpawnAnimType)
 				{
-					if (auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location))
-					{
-						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-
-						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-							pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
-					}
+					auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
+					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
 				}
 
 				if (!pTechno->InLimbo)
@@ -454,6 +450,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 
+	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
+
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
 	this->BuildLimitGroup_Factor.Read(exINI, pSection, "BuildLimitGroup.Factor");
@@ -469,6 +467,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RateDown_Cover_Value.Read(exINI, pSection, "RateDown.Cover.Value");
 	this->RateDown_Cover_AmmoBelow.Read(exINI, pSection, "RateDown.Cover.AmmoBelow");
 
+	this->NoRearm_UnderEMP.Read(exINI, pSection, "NoRearm.UnderEMP");
+	this->NoRearm_Temporal.Read(exINI, pSection, "NoRearm.Temporal");
+	this->NoReload_UnderEMP.Read(exINI, pSection, "NoReload.UnderEMP");
+	this->NoReload_Temporal.Read(exINI, pSection, "NoReload.Temporal");
 	this->NoTurret_TrackTarget.Read(exINI, pSection, "NoTurret.TrackTarget");
 
 	this->Wake.Read(exINI, pSection, "Wake");
@@ -480,6 +482,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
 	this->Power.Read(exINI, pSection, "Power");
+
+	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
+	this->Image_ConditionRed.Read(exINI, pSection, "Image.ConditionRed");
+	this->WaterImage_ConditionYellow.Read(exINI, pSection, "WaterImage.ConditionYellow");
+	this->WaterImage_ConditionRed.Read(exINI, pSection, "WaterImage.ConditionRed");
 
 	this->InitialSpawnsNumber.Read(exINI, pSection, "InitialSpawnsNumber");
 	this->Spawns_Queue.Read(exINI, pSection, "Spawns.Queue");
@@ -847,6 +854,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AttachEffects)
 
+		.Process(this->RecountBurst)
+
 		.Process(this->BuildLimitGroup_Types)
 		.Process(this->BuildLimitGroup_Nums)
 		.Process(this->BuildLimitGroup_Factor)
@@ -862,6 +871,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RateDown_Cover_Value)
 		.Process(this->RateDown_Cover_AmmoBelow)
 
+		.Process(this->NoRearm_UnderEMP)
+		.Process(this->NoRearm_Temporal)
+		.Process(this->NoReload_UnderEMP)
+		.Process(this->NoReload_Temporal)
 		.Process(this->NoTurret_TrackTarget)
 
 		.Process(this->Wake)
@@ -873,6 +886,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 
 		.Process(this->Power)
+
+    	.Process(this->Image_ConditionYellow)
+		.Process(this->Image_ConditionRed)
+		.Process(this->WaterImage_ConditionYellow)
+		.Process(this->WaterImage_ConditionRed)
 
 		.Process(this->InitialSpawnsNumber)
 		.Process(this->Spawns_Queue)
