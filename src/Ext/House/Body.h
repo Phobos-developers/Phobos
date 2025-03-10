@@ -23,6 +23,7 @@ public:
 	public:
 		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoClass*> OwnedCountedHarvesters;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -66,6 +67,7 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedCountedHarvesters {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
