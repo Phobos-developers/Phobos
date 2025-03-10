@@ -1454,9 +1454,9 @@ namespace Disappear
 	bool removed = false;
 }
 
-DEFINE_HOOK_AGAIN(0x543A5E, SetDisappearContext, 0x6) // IsometricTileClass_Limbo
+DEFINE_HOOK_AGAIN(0x543A5E, SetDisappearContext, 0x6); // IsometricTileClass_Limbo
 DEFINE_HOOK_AGAIN(0x6FCD95, SetDisappearContext, 0x6); // TechnoClass_PreUninit
-DEFINE_HOOK(0x5F57A9, SetDisappearContext, 0x6); // ObjectClass_ReceiveDamage_NowDead
+DEFINE_HOOK(0x5F57A9, SetDisappearContext, 0x6) // ObjectClass_ReceiveDamage_NowDead
 {
 	Disappear::removed = true;
 	return 0;
