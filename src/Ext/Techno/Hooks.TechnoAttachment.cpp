@@ -590,10 +590,10 @@ DEFINE_HOOK(0x6FFE4F, TechnoClass_ClickedEvent_HandleChildren, 0x6)
 				if (!pAttachment->Child)
 					continue;
 
-				if (pAttachment->GetType()->InheritCommands_StopCommand)
+				if (TechnoAttachmentTemp::stopPressed && pAttachment->GetType()->InheritCommands_StopCommand)
 					pAttachment->Child->ClickedEvent(EventType::Idle);
 
-				if (pAttachment->GetType()->InheritCommands_DeployCommand)
+				if (TechnoAttachmentTemp::deployPressed && pAttachment->GetType()->InheritCommands_DeployCommand)
 					pAttachment->Child->ClickedEvent(EventType::Deploy);
 			}
 		}
