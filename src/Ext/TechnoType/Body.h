@@ -265,10 +265,10 @@ public:
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
-		Valueable<int> Spawner_RecycleRange;
+		Valueable<double> Spawner_RecycleRange;
 		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
-		Valueable<CoordStruct> Spawner_RecycleFLH;
-		Valueable<bool> Spawner_RecycleOnTurret;
+		Valueable<CoordStruct> RecycleCoords;
+		Valueable<bool> RecycleOnTurret;
 		
 		struct LaserTrailDataEntry
 		{
@@ -529,9 +529,9 @@ public:
 			, Spawns_Queue { }
 			
 			, Spawner_RecycleRange { -1 }
-			, Spawner_RecycleAnim { nullptr }
-			, Spawner_RecycleFLH { {0,0,0} }
-			, Spawner_RecycleOnTurret { false }
+			, Spawner_RecycleAnim { }
+			, RecycleCoords { {0,0,0} }
+			, RecycleOnTurret { false }
 		{ }
 
 		virtual ~ExtData() = default;

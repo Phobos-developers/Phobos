@@ -494,8 +494,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Spawner_RecycleRange.Read(exINI, pSection, "Spawner.RecycleRange");
 	this->Spawner_RecycleAnim.Read(exINI, pSection, "Spawner.RecycleAnim");
-	this->Spawner_RecycleFLH.Read(exINI, pSection, "Spawner.RecycleFLH");
-	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -610,6 +608,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->AlternateFLHs.push_back(alternateFLH);
 	}
+
+	this->RecycleCoords.Read(exArtINI, pArtSection, "RecycleCoords");
+	this->RecycleOnTurret.Read(exArtINI, pArtSection, "RecycleOnTurret");
 
 	// Parasitic types
 	this->AttachEffects.LoadFromINI(pINI, pSection);
@@ -904,8 +905,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		
 		.Process(this->Spawner_RecycleRange)
 		.Process(this->Spawner_RecycleAnim)
-		.Process(this->Spawner_RecycleFLH)
-		.Process(this->Spawner_RecycleOnTurret)
+		.Process(this->RecycleCoords)
+		.Process(this->RecycleOnTurret)
 
 		;
 }
