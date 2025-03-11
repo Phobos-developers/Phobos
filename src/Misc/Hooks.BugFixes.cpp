@@ -1460,3 +1460,70 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E212C, XSurfaceFake::_GetPixel);
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E85FC, XSurfaceFake::_GetPixel);
 
 #pragma endregion
+
+#pragma region PointerExpired
+
+// Fixed incorrect process in PointerExpired.
+// Add checks for bRemoved.
+DEFINE_HOOK(0x7077FD, TechnoClass_PointerExpired_SpawnOwnerFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x20, 0x8));
+	// Skip the reset for SpawnOwner if !removed.
+	return removed ? 0 : 0x707803;
+}
+
+DEFINE_HOOK(0x468503, BulletClass_PointerExpired_OwnerFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x1C, 0x8));
+	// Skip the reset for Owner if !removed.
+	return removed ? 0 : 0x468509;
+}
+
+DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0xC, 0x8));
+	// Skip the reset for C4AppliedBy if !removed.
+	return removed ? 0 : 0x44E916;
+}
+
+DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
+{
+	GET(bool, removed, EDI);
+	// Skip the call of BombListClass::PointerExpired if !removed.
+	return removed ? 0 : 0x72596C;
+}
+
+// Changed the bRemoved arg in AbstractClass::AnnounceExpiredPointer calling.
+// It should be false in most case.
+namespace Disappear
+{
+	bool removed = false;
+}
+
+DEFINE_HOOK_AGAIN(0x543A5E, SetDisappearContext, 0x6); // IsometricTileClass_Limbo
+DEFINE_HOOK_AGAIN(0x6FCD95, SetDisappearContext, 0x6); // TechnoClass_PreUninit
+DEFINE_HOOK(0x5F57A9, SetDisappearContext, 0x6) // ObjectClass_ReceiveDamage_NowDead
+{
+	Disappear::removed = true;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x71C6D8, DisappearWithContextSet, 0xA); // TerrainClass_Extinguish
+DEFINE_HOOK(0x75F996, DisappearWithContextSet, 0xA) // WaveClass_Limbo
+{
+	GET(ObjectClass*, pThis, ESI);
+	Disappear::removed = true;
+	pThis->Disappear(true);
+	return R->Origin() + 0xA;
+}
+
+DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
+{
+	GET(ObjectClass*, pThis, ESI);
+	R->ECX(pThis);
+	R->EDX(Disappear::removed);
+	Disappear::removed = false;
+	return 0x5F5311;
+}
+
+#pragma endregion
