@@ -102,6 +102,11 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
+		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
+			pTarget->IsUnderEMP())
+		{
+			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
+		}
 
 		if (forceWeaponIndex >= 0)
 		{

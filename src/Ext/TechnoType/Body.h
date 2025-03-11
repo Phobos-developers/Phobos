@@ -157,6 +157,7 @@ public:
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
+		Valueable<int> ForceWeapon_UnderEMP;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -405,6 +406,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+			, ForceWeapon_UnderEMP { -1 }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }

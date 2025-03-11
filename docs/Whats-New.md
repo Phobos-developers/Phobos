@@ -359,6 +359,7 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
+- Override target under EMP attack behavior (By FS-21)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable DieSound when grinding (by Trsdy)
