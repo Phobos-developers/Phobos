@@ -1154,6 +1154,10 @@ Spawner.RecycleFLH=              ; integer - Forward,Lateral,Height.
 Spawner.RecycleOnTurret=false    ; boolean
 ```
 
+```{note}
+If you set recycle FLH, it is best to set a recycle range of at least 128 at the same time. Otherwise, the spawner may not recycle correctly.
+```
+
 ### Shared Ammo
 
 - Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
