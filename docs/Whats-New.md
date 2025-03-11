@@ -336,11 +336,11 @@ New:
 - Damaged unit image changes (by Fryone)
 - Customizable spawns queue (by TwinkleStar)
 - Initial spawns number (by TwinkleStar)
+- Override target under EMP attack behavior (By FS-21)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
-- Fixed some bug that caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain EXP from previously launched missiles/C4/projectiles) (by TaranDahl)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -359,7 +359,6 @@ New:
 - Building airstrike target eligibility customization (by Starkku)
 - IvanBomb detonation & image display centered on buildings (by Starkku)
 - Forcing specific weapon against cloaked or disguised targets (by Starkku)
-- Override target under EMP attack behavior (By FS-21)
 - Customizable ROF random delay (by Starkku)
 - Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)
 - Toggleable DieSound when grinding (by Trsdy)
@@ -610,6 +609,7 @@ Vanilla fixes:
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
