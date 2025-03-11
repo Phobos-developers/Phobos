@@ -1447,6 +1447,13 @@ DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
 	return removed ? 0 : 0x44E916;
 }
 
+DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
+{
+	GET(bool, removed, EDI);
+	// Skip the call of BombListClass::PointerExpired if !removed.
+	return removed ? 0 : 0x72596C;
+}
+
 // Changed the bRemoved arg in AbstractClass::AnnounceExpiredPointer calling.
 // It should be false in most case.
 namespace Disappear
