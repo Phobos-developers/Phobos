@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-21 22:51+0800\n"
+"POT-Creation-Date: 2025-03-08 13:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgstr "无限制遭遇战颜色"
 msgid ""
 "It is now possible to have an unlimited number of skirmish/multiplayer "
 "player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares."
-msgstr "现在可以拥有无限数量的遭遇战/多人游戏玩家颜色，而《尤里的复仇》中仅有 8 种，Ares 下仅有 16 种。"
+msgstr "现在可以拥有无限数量的遭遇战／多人游戏玩家颜色，而《尤里的复仇》中仅有 8 种，Ares 下仅有 16 种。"
 
 #: ../../Miscellanous.md:10
 msgid ""
@@ -63,12 +63,20 @@ msgstr "例如，在原本的规则中，索引 6 将对应颜色 `Orange=25,230
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
+#: ../../Miscellanous.md:15
+msgid ""
+"[General]\n"
+"SkirmishUnlimitedColors=false  ; boolean\n"
+msgstr ""
+"[General]\n"
+"SkirmishUnlimitedColors=false  ; boolean\n"
+
 #: ../../Miscellanous.md:21
 msgid ""
 "This feature should only be used if you use a spawner/outside client "
 "(i.e. CNCNet client). Using it in the original YR launcher will produce "
 "undesireable effects."
-msgstr "此功能仅在使用 spanwer / 外部客户端（例如 XNA CNCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
+msgstr "此功能仅在使用 spanwer／外部客户端（例如 XNA CNCNet Client）时使用。在原本的 YR 启动器下使用会产生不良效果。"
 
 #: ../../Miscellanous.md:25
 msgid ""
@@ -96,36 +104,10 @@ msgid ""
 msgstr "当发生不同步时 Phobos 会将例如随机数生成函数的调用、朝向、目标、目的地的更改等额外信息写入 `SYNC#.txt` 日志文件中。"
 
 #: ../../Miscellanous.md:34
-msgid "Dump Object Info"
-msgstr "输出对象信息"
-
-#: ../../Miscellanous.md:36
-msgid ""
-"![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
-"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
-msgstr ""
-"![image](_static/images/objectinfo-01.png) *[CnC: "
-"Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果*"
-
-#: ../../Miscellanous.md:36
-msgid "image"
-msgstr "图像"
-
-#: ../../Miscellanous.md:39
-msgid ""
-"There's a [new hotkey](User-Interface.md#dump-object-info) to dump "
-"selected/hovered object info on press. Available only if "
-"`DebugKeysEnabled` under `[GlobalControls]` is set to true in "
-"`rulesmd.ini`."
-msgstr ""
-"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中/鼠标悬停于其上的对象的信息。仅当"
-" `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
-
-#: ../../Miscellanous.md:41
 msgid "Display Damage Numbers"
 msgstr "显示伤害数字"
 
-#: ../../Miscellanous.md:43
+#: ../../Miscellanous.md:36
 msgid ""
 "There's a [new hotkey](User-Interface.md#display-damage-numbers) to show "
 "exact numbers of damage dealt on units & buildings. The numbers are shown"
@@ -136,6 +118,32 @@ msgid ""
 msgstr ""
 "有一个[新的热键](User-Interface.md#display-damage-"
 "numbers)可以开关是否显示对单位与建筑造成的精确伤害数字。伤害数字以红色显示（对护盾为蓝色），治疗性质的伤害以绿色显示（对护盾为青色）。这些数字会显示在受影响的单位上，并在出现后向上移动。仅当"
+" `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
+
+#: ../../Miscellanous.md:38
+msgid "Dump Object Info"
+msgstr "输出对象信息"
+
+#: ../../Miscellanous.md:40
+msgid ""
+"![image](_static/images/objectinfo-01.png) *Object info dump from [CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/)*"
+msgstr ""
+"![image](_static/images/objectinfo-01.png) *[CnC: "
+"Reloaded](https://www.moddb.com/mods/cncreloaded/) 中的对象信息输出效果*"
+
+#: ../../Miscellanous.md:40
+msgid "image"
+msgstr "图像"
+
+#: ../../Miscellanous.md:43
+msgid ""
+"There's a [new hotkey](User-Interface.md#dump-object-info) to dump "
+"selected/hovered object info on press. Available only if "
+"`DebugKeysEnabled` under `[GlobalControls]` is set to true in "
+"`rulesmd.ini`."
+msgstr ""
+"有一个[新的热键](User-Interface.md#dump-object-info)可以在按下时输出被选中／鼠标悬停于其上的对象的信息。仅当"
 " `rulesmd.ini` 中 `[GlobalControls]` 下的 `DebugKeysEnabled` 设为 true 时可用。"
 
 #: ../../Miscellanous.md:45
@@ -191,7 +199,15 @@ msgstr "变量将以键值对的形式写入，例如 `MyVariable=1`。"
 msgid ""
 "If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't "
 "exist, it will be created. If it exists, all sections will be preserved."
-msgstr "如果同名的 INI 文件（`locals.ini`/`globals.ini`）不存在那么将会被创建。如果存在，所有小节都将被保留。"
+msgstr "如果同名的 INI 文件（`locals.ini`／`globals.ini`）不存在那么将会被创建。如果存在，所有小节都将被保留。"
+
+#: ../../Miscellanous.md:59
+msgid ""
+"[General]\n"
+"SaveVariablesOnScenarioEnd=false    ; boolean\n"
+msgstr ""
+"[General]\n"
+"SaveVariablesOnScenarioEnd=false    ; boolean\n"
 
 #: ../../Miscellanous.md:64
 msgid "Semantic locomotor aliases"
@@ -327,7 +343,7 @@ msgstr "单人游戏速度"
 msgid ""
 "It is now possible to change the default (GS4/Fast/30FPS) campaign game "
 "speed with `CampaignDefaultGameSpeed`."
-msgstr "现在可以使用 `CampaignDefaultGameSpeed` 更改默认的（游戏速度 4 / 快 / 30FPS）战役游戏速度。"
+msgstr "现在可以使用 `CampaignDefaultGameSpeed` 更改默认的（游戏速度 4／快／30FPS）战役游戏速度。"
 
 #: ../../Miscellanous.md:93
 msgid ""
@@ -352,7 +368,7 @@ msgid ""
 "frames\" etc. Increase of speedup/slowdown is approximately logarithmic."
 msgstr ""
 "`CustomGSN.ChangeInterval` 设置应用该效果的帧间隔。值为 2 表示“每**隔**一帧执行一次”，3 表示“每 3 "
-"帧**中**执行一次”等。加速/减速的改动大致呈对数关系。"
+"帧**中**执行一次”等。加速／减速的改动大致呈对数关系。"
 
 #: ../../Miscellanous.md:96
 msgid ""
@@ -378,9 +394,33 @@ msgstr ""
 msgid "**However, the resulting FPS may vary on different machines.**"
 msgstr "**然而实际的 FPS 可能在不同的机器上有所不同。**"
 
+#: ../../Miscellanous.md:102
+msgid ""
+"[General]\n"
+"CustomGS=false              ; boolean\n"
+"CustomGSN.ChangeInterval=-1 ; integer >= 1\n"
+"CustomGSN.ChangeDelay=N     ; integer between 0 and 6\n"
+"CustomGSN.DefaultDelay=N    ; integer between 0 and 6\n"
+"; where N = 0, 1, 2, 3, 4, 5, 6\n"
+msgstr ""
+"[General]\n"
+"CustomGS=false              ; boolean\n"
+"CustomGSN.ChangeInterval=-1 ; integer >= 1\n"
+"CustomGSN.ChangeDelay=N     ; integer between 0 and 6\n"
+"CustomGSN.DefaultDelay=N    ; integer between 0 and 6\n"
+"; where N = 0, 1, 2, 3, 4, 5, 6\n"
+
 #: ../../Miscellanous.md:111
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
+
+#: ../../Miscellanous.md:112
+msgid ""
+"[Phobos]\n"
+"CampaignDefaultGameSpeed=4  ; integer\n"
+msgstr ""
+"[Phobos]\n"
+"CampaignDefaultGameSpeed=4  ; integer\n"
 
 #: ../../Miscellanous.md:118
 msgid ""
@@ -442,6 +482,14 @@ msgstr "此功能可以用于任何 INI 文件，无论 `rulesmd.ini`、`artmd.i
 msgid "In any file:"
 msgstr "在任何文件中："
 
+#: ../../Miscellanous.md:191
+msgid ""
+"[$Include]\n"
+"0=somefile.ini\t; file name\n"
+msgstr ""
+"[$Include]\n"
+"0=somefile.ini\t; file name\n"
+
 #: ../../Miscellanous.md:197
 msgid ""
 "Due to a technical issue, there is a chance that ***the first line of a "
@@ -451,10 +499,13 @@ msgstr "由于技术问题，包含文件的<b><em>第一行有可能会被跳�
 
 #: ../../Miscellanous.md:201
 msgid ""
-"When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities."
+"When this feature is enabled, `[#include]` (equivalent [Ares "
+"feature](https://ares-developers.github.io/Ares-"
+"docs/new/misc/include.html)) is disabled because of technical "
+"incompatibilities."
 msgstr ""
-"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-developers.github.io/Ares-"
-"docs/new/misc/include.html) 将被禁用。"
+"当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-"
+"developers.github.io/Ares-docs/new/misc/include.html) 将被禁用。"
 
 #: ../../Miscellanous.md:204
 msgid "Section inheritance"
@@ -491,6 +542,22 @@ msgid ""
 "parent, check if the current parent has parents)."
 msgstr "继承可以递归嵌套（父节可以有自己的父节）。递归是深度优先的（在下一个父节继承之前，检查当前父节是否有父节）。"
 
+#: ../../Miscellanous.md:217
+msgid ""
+"[PARENT1SECTION]\n"
+"\n"
+"[PARENT2SECTION]\n"
+"\n"
+"[CHILDSECTION]\n"
+"$Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names\n"
+msgstr ""
+"[PARENT1SECTION]\n"
+"\n"
+"[PARENT2SECTION]\n"
+"\n"
+"[CHILDSECTION]\n"
+"$Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names\n"
+
 #: ../../Miscellanous.md:227
 msgid ""
 "When this feature is enabled, the Ares equivalent of `$Inherits` "
@@ -514,7 +581,9 @@ msgid ""
 "You can turn on/off the exception handler of the game's main loop using "
 "the following command line arg: `-ExceptionHandler=boolean` where "
 "`boolean` is `(true|false|yes|no|1|0)`."
-msgstr "你可以使用以下命令行参数来开启/关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是 `(true|false|yes|no|1|0)`。"
+msgstr ""
+"你可以使用以下命令行参数来开启／关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是"
+" `(true|false|yes|no|1|0)`。"
 
 #: ../../Miscellanous.md:239
 msgid ""

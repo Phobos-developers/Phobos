@@ -240,6 +240,13 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
 
+	// Fix EBolt Owner not being invalidated
+	for (auto const pBolt : *EBolt::Array)
+	{
+		if (pBolt->Owner == pInvalid)
+			pBolt->Owner = nullptr;
+	}
+
 	return 0;
 }
 
