@@ -1343,10 +1343,14 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 ![image](_static/images/underwater-new-attack-tag.gif)
 *Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
+![image](_static/images/forceweapon_emp.gif)
+*Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
   - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
+  - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
 
 In `rulesmd.ini`:
 ```ini
@@ -1354,6 +1358,7 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.UnderEMP=-1         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
 ### Initial spawns number

@@ -129,6 +129,7 @@ This page lists all the individual contributions to the project by their author.
   - Kill Object Automatically logic prototype
   - Customizable resource storage
   - Override uncloaked underwater attack behavior
+  - Override target under EMP attack behavior
   - AI Aircraft docks fix
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
@@ -429,6 +430,7 @@ This page lists all the individual contributions to the project by their author.
   - Prevent the units with locomotors that cause problems from entering the tank bunker
   - No turret unit turn to the target
   - Units are now unable to kick out from a factory that is in construction process
+  - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
   - Recycle spawner in long-range
   - Play an anim when recycling a spawner
   - Recycle the spawner on other FLH

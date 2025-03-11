@@ -182,15 +182,16 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
 - Allowed `AuxBuilding` to count building upgrades.
-- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
-- Fix the bug that destroyed unit may leaves sensors.
+- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
+- Fixed the bug that destroyed unit may leaves sensors.
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
-- Fix an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
+- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
 - Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
 
 ## Fixes / interactions with other extensions
