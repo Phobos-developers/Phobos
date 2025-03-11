@@ -2480,7 +2480,7 @@ msgstr "当它存在时可以增加电厂产生的电量。"
 msgid ""
 "When enchancing structures are sold or destroyed, the power amount "
 "returns to normal."
-msgstr "当结构被出售或摧毁时电量将恢复到正常水平。"
+msgstr "当增幅器被出售或摧毁时电量将复原。"
 
 #: ../../New-or-Enhanced-Logics.md:572
 msgid ""
