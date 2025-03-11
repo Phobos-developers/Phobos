@@ -128,6 +128,7 @@ public:
 		void UpdateAttachEffects();
 		void UpdateGattlingRateDownReset();
 		void UpdateKeepTargetOnMove();
+		void UpdateWarpInDelay();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();

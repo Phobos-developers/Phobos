@@ -17,11 +17,11 @@
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::ExtData::OnEarlyUpdate()
 {
-	auto pType = this->OwnerObject()->GetTechnoType();
+	auto pType = this->TypeExtData->OwnerObject();
 
 	// Set only if unset or type is changed
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
-	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
+	if (!this->TypeExtData || this->OwnerObject()->GetTechnoType() != pType)
 		this->UpdateTypeData(pType);
 	else if (this->PreviousType)
 		this->PreviousType = nullptr;
@@ -97,7 +97,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
+	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
 
 	if (pThis->Type->Ammo <= 0 || !pThis->Type->IsSimpleDeployer)
 		return;
@@ -931,6 +931,23 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 				pThis->SetTarget(nullptr);
 
 			pWeapon->Range = range;
+		}
+	}
+}
+
+void TechnoExt::ExtData::UpdateWarpInDelay()
+{
+	if (this->HasRemainingWarpInDelay)
+	{
+		if (this->LastWarpInDelay)
+		{
+			this->LastWarpInDelay--;
+		}
+		else
+		{
+			this->HasRemainingWarpInDelay = false;
+			this->IsBeingChronoSphered = false;
+			this->OwnerObject()->WarpingOut = false;
 		}
 	}
 }
