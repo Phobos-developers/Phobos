@@ -172,10 +172,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
-- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
-- Fix the bug that destroyed unit may leaves sensors.
+- Fixed the bug that destroyed unit may leaves sensors.
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
