@@ -881,7 +881,7 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; TechnoType
+[SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
 ```
 

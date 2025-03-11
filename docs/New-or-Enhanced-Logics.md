@@ -624,7 +624,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=E2  ; InfantryType
+DefaultDisguise=    ; InfantryType
 ```
 
 ### Random death animaton for NotHuman Infantry
@@ -1282,7 +1282,7 @@ OpenTopped.ShareTransportTarget=true      ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
-Spawns.Queue=       ; list of aircrafts in order
+Spawns.Queue=       ; List of AircraftTypes, in order
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon

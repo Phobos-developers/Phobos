@@ -608,7 +608,7 @@ Vanilla fixes:
 - Fixed the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
-- Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107 & Xkein)
+- Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
