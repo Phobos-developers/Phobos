@@ -564,6 +564,7 @@ Vanilla fixes:
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

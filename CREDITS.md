@@ -396,7 +396,7 @@ This page lists all the individual contributions to the project by their author.
   - Global value of `RepairBaseNodes`
   - Parasite returning bug fix
   - Units are now unable to kick out from a factory that is in construction process
-  - Fixed some bug that caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain EXP from previously launched missiles/C4/projectiles).
+  - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
