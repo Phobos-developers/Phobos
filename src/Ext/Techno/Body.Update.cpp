@@ -40,6 +40,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->EatPassengers();
 	this->UpdateShield();
 	this->ApplySpawnLimitRange();
+	this->ApplyMindControlRangeLimit();
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
@@ -53,7 +54,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
+	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !pThis->RearmTimer.HasTimeLeft() && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
 		const auto pInterceptorType = pTypeExt->InterceptorType.get();
@@ -106,7 +107,8 @@ void TechnoExt::ExtData::ApplyInterceptor()
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
-	if (!pThis || (pThis->Type->Ammo <= 0) || !pThis->Type->IsSimpleDeployer)
+
+	if (pThis->Type->Ammo <= 0 || !pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
@@ -568,10 +570,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
 	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
-
-	if (!pThis)
-		return;
-
 	const bool isDroppodLoco = VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278;
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
@@ -607,6 +605,7 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 void TechnoExt::ExtData::UpdateMindControlAnim()
 {
 	auto const pThis = this->OwnerObject();
+
 	if (pThis->IsMindControlled())
 	{
 		if (pThis->MindControlRingAnim && !this->MindControlRingAnimType)
@@ -758,8 +757,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	return;
 }
 
-void TechnoExt::ApplyMindControlRangeLimit(TechnoClass* pThis)
+void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 {
+	auto const pThis = this->OwnerObject();
+
 	if (auto pCapturer = pThis->MindControlledBy)
 	{
 		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
@@ -852,42 +853,37 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
-	if (!pThis)
-		return;
+	const auto pType = pThis->GetTechnoType();
 
-	if (const auto pType = pThis->GetTechnoType())
+	if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
 	{
-		if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pExt->Ammo_Shared && pType->Ammo > 0)
 		{
-			if (const auto pExt = TechnoTypeExt::ExtMap.Find(pType))
+			auto passenger = pThis->Passengers.FirstPassenger;
+			TechnoTypeClass* passengerType;
+
+			do
 			{
-				if (pExt->Ammo_Shared && pType->Ammo > 0)
+				passengerType = passenger->GetTechnoType();
+				auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+
+				if (pPassengerExt && pPassengerExt->Ammo_Shared)
 				{
-					auto passenger = pThis->Passengers.FirstPassenger;
-					TechnoTypeClass* passengerType;
-
-					do
+					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
-						passengerType = passenger->GetTechnoType();
-						auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
-
-						if (pPassengerExt && pPassengerExt->Ammo_Shared)
+						if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
 						{
-							if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
-							{
-								if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
-								{
-									pThis->Ammo--;
-									passenger->Ammo++;
-								}
-							}
+							pThis->Ammo--;
+							passenger->Ammo++;
 						}
-
-						passenger = static_cast<FootClass*>(passenger->NextObject);
 					}
-					while (passenger);
 				}
+
+				passenger = static_cast<FootClass*>(passenger->NextObject);
 			}
+			while (passenger);
 		}
 	}
 }
@@ -937,12 +933,16 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 // Updates state of all AttachEffects on techno.
 void TechnoExt::ExtData::UpdateAttachEffects()
 {
+	if (!this->AttachedEffects.size())
+		return;
+
 	auto const pThis = this->OwnerObject();
 	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	expireWeapons.reserve(this->AttachedEffects.size());
+	bool altered = false;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -980,6 +980,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			}
 
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -987,7 +988,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		}
 	}
 
-	this->RecalculateStatMultipliers();
+	if (altered)
+		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
 		pThis->MarkForRedraw();
@@ -1010,6 +1012,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	std::vector<WeaponTypeClass*> expireWeapons;
 	bool markForRedraw = false;
 	expireWeapons.reserve(this->AttachedEffects.size());
+	bool altered = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1029,6 +1032,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 			markForRedraw |= pType->HasTint();
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -1047,7 +1051,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	// Add new ones.
 	int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (!count)
+	if (altered && !count)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)

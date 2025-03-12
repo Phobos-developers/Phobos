@@ -8,17 +8,6 @@
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)
 {
-	CellClass* pTargetCell = nullptr;
-
-	// Ignore target cell for airborne target technos.
-	if (!pTargetTechno || !pTargetTechno->IsInAir())
-	{
-		if (auto const pCell = abstract_cast<CellClass*>(pTarget))
-			pTargetCell = pCell;
-		else if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
-			pTargetCell = pObject->GetCell();
-	}
-
 	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
 	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
 
@@ -31,6 +20,17 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 
 	auto const pWeaponOne = pWeaponStructOne->WeaponType;
 	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
+
+	CellClass* pTargetCell = nullptr;
+
+	// Ignore target cell for airborne target technos.
+	if (!pTargetTechno || !pTargetTechno->IsInAir())
+	{
+		if (auto const pCell = abstract_cast<CellClass*>(pTarget))
+			pTargetCell = pCell;
+		else if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
+			pTargetCell = pObject->GetCell();
+	}
 
 	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
 	{
