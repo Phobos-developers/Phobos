@@ -164,6 +164,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
 	{
 		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
 		return 0x6F4277;
 	}
@@ -386,9 +387,9 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 
 #pragma region Disguise
 
-bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
+bool __fastcall IsAlly_Wrapper(HouseClass* pTechnoOwner, void* _, HouseClass* pCurrentPlayer)
 {
-	return pThis->IsObserver() || pThis->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
+	return pCurrentPlayer->IsObserver() || pTechnoOwner->IsAlliedWith(pCurrentPlayer) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
@@ -557,6 +558,43 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73B4E0 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			R->EBX<ObjectTypeClass *>(pCustomType);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73C608 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			if (SHPStruct* Image = pCustomType->GetImage())
+				R->EAX<SHPStruct *>(Image);
+		}
+	}
+
+	R->ECX(pThis->GetType());
+	return Continue;
+}
 
 #pragma region KeepTargetOnMove
 
