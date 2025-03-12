@@ -267,7 +267,7 @@ public:
 
 		Valueable<Leptons> Spawner_RecycleRange;
 		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
-		Valueable<CoordStruct> Spawner_RecycleCoords;
+		Valueable<CoordStruct> Spawner_RecycleCoord;
 		Valueable<bool> Spawner_RecycleOnTurret;
 		
 		struct LaserTrailDataEntry
@@ -530,7 +530,7 @@ public:
 			
 			, Spawner_RecycleRange { Leptons(-1) }
 			, Spawner_RecycleAnim { }
-			, Spawner_RecycleCoords { {0,0,0} }
+			, Spawner_RecycleCoord { {0,0,0} }
 			, Spawner_RecycleOnTurret { false }
 		{ }
 

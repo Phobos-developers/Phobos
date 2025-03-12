@@ -494,7 +494,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Spawner_RecycleRange.Read(exINI, pSection, "Spawner.RecycleRange");
 	this->Spawner_RecycleAnim.Read(exINI, pSection, "Spawner.RecycleAnim");
-	this->Spawner_RecycleCoords.Read(exINI, pSection, "Spawner.RecycleCoords");
+	this->Spawner_RecycleCoord.Read(exINI, pSection, "Spawner.RecycleCoords");
 	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
 
 	// Ares 0.2
@@ -904,7 +904,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		
 		.Process(this->Spawner_RecycleRange)
 		.Process(this->Spawner_RecycleAnim)
-		.Process(this->Spawner_RecycleCoords)
+		.Process(this->Spawner_RecycleCoord)
 		.Process(this->Spawner_RecycleOnTurret)
 
 		;
