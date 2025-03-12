@@ -206,12 +206,12 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 
 	auto shouldRecycleSpawned = [&]()
 	{
-		auto const& FLH = pCarrierTypeExt->RecycleCoords;
+		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoords;
 		auto const recycleCrd = FLH != CoordStruct::Empty
-			? TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->RecycleOnTurret)
+			? TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret)
 			: pCarrier->GetCoords();
 		auto const deltaCrd = spawnerCrd - recycleCrd;
-		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange * Unsorted::LeptonsPerCell;
+		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange.Get();
 
 		if (recycleRange < 0)
 		{
@@ -253,10 +253,10 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
 	{
 		auto pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
-		auto const& FLH = pCarrierTypeExt->RecycleCoords;
+		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoords;
 
 		if (FLH != CoordStruct::Empty)
-			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->RecycleOnTurret) - pCarrier->GetCoords();
+			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 	}
 
 	return 0;
