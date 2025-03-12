@@ -148,12 +148,13 @@ void TechnoExt::ExtData::InitializeDisplayInfo()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
-	pThis->RearmTimer.StartTime = 0;
 
 	if (pPrimary && pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK)
 		pThis->RearmTimer.TimeLeft = pPrimary->ROF;
 	else if (const auto pSecondary = pThis->GetWeapon(1)->WeaponType)
 		pThis->RearmTimer.TimeLeft = pSecondary->ROF;
+
+	pThis->RearmTimer.StartTime = -pThis->RearmTimer.TimeLeft;
 }
 
 void TechnoExt::ExtData::InitializeAttachEffects()
