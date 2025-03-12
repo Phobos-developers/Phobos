@@ -22,7 +22,7 @@ BEGIN
   BEGIN
    VALUE "ProductName", "Phobos\0"
    VALUE "CompanyName", "The Phobos Contributors\0"
-   VALUE "LegalCopyright", "© The Phobos Contributors 2023\0"
+   VALUE "LegalCopyright", "© The Phobos Contributors 2024\0"
    VALUE "FileDescription", FILE_DESCRIPTION "\0"
    VALUE "FileVersion", FILE_VERSION_STR "\0"
    VALUE "ProductVersion", PRODUCT_VERSION "\0"

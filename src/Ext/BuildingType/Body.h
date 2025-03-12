@@ -62,11 +62,25 @@ public:
 		Nullable<bool> ConsideredVehicle;
 		Valueable<bool> ZShapePointMove_OnBuildup;
 		Valueable<int> SellBuildupLength;
+		Valueable<bool> IsDestroyableObstacle;
 
-		std::vector<OptionalStruct<DirType, true>> AircraftDockingDirs;
+		Valueable<bool> IsAnimDelayedBurst;
+
+		std::vector<std::optional<DirType>> AircraftDockingDirs;
 
 		ValueableVector<TechnoTypeClass*> FactoryPlant_AllowTypes;
 		ValueableVector<TechnoTypeClass*> FactoryPlant_DisallowTypes;
+
+		Nullable<double> Units_RepairRate;
+		Nullable<int> Units_RepairStep;
+		Nullable<double> Units_RepairPercent;
+		Nullable<bool> Units_UseRepairCost;
+
+		Valueable<bool> NoBuildAreaOnBuildup;
+		ValueableVector<BuildingTypeClass*> Adjacent_Allowed;
+		ValueableVector<BuildingTypeClass*> Adjacent_Disallowed;
+
+		Nullable<Point2D> BarracksExitCell;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -108,6 +122,16 @@ public:
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
+			, IsAnimDelayedBurst { true }
+			, IsDestroyableObstacle { false }
+			, Units_RepairRate {}
+			, Units_RepairStep {}
+			, Units_RepairPercent {}
+			, Units_UseRepairCost {}
+			, NoBuildAreaOnBuildup { false }
+			, Adjacent_Allowed {}
+			, Adjacent_Disallowed {}
+			, BarracksExitCell {}
 		{ }
 
 		// Ares 0.A functions
@@ -146,5 +170,6 @@ public:
 
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
+	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 	static int GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse);
 };

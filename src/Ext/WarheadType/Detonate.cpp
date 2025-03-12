@@ -9,11 +9,12 @@
 #include <BitFont.h>
 #include <SuperClass.h>
 
-#include <Utilities/Helpers.Alex.h>
+#include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Misc/FlyingStrings.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
@@ -76,7 +77,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 				if (pHouse->CanTransactMoney(pSWExt->Money_Amount) && (!this->LaunchSW_RealLaunch || (pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended)))
 				{
-					if (this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell)
+					if ((this->LaunchSW_IgnoreInhibitors || !pSWExt->HasInhibitor(pHouse, cell))
 					&& (this->LaunchSW_IgnoreDesignators || pSWExt->HasDesignator(pHouse, cell)))
 					{
 						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
@@ -102,19 +103,20 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		}
 	}
 
+	this->Crit_Active = false;
 	this->Crit_CurrentChance = this->GetCritChance(pOwner);
 
 	if (this->PossibleCellSpreadDetonate || this->Crit_CurrentChance > 0.0)
 	{
-		this->Crit_Active = false;
-
 		if (!this->Crit_ApplyChancePerTarget)
 			this->Crit_RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
 		{
 			int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_ActiveChanceAnims.size() - 1);
-			GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
+			auto const pAnim = GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 
 		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
@@ -145,7 +147,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
 
 	TechnoExt::ExtData* pTargetExt = nullptr;
@@ -159,7 +161,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyRemoveDisguise(pHouse, pTarget);
 
 	if (this->RemoveMindControl)
-		this->ApplyRemoveMindControl(pHouse, pTarget);
+		this->ApplyRemoveMindControl(pTarget);
 
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
 		this->ApplyCrit(pHouse, pTarget, pOwner, pTargetExt);
@@ -167,8 +169,11 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
 
-	if (this->AttachEffect_AttachTypes.size() > 0 || this->AttachEffect_RemoveTypes.size() > 0 || this->AttachEffect_RemoveGroups.size() > 0)
+	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
+
+	if (this->BuildingSell || this->BuildingUndeploy)
+		this->ApplyBuildingUndeploy(pTarget);
 
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
@@ -178,6 +183,105 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyLocomotorInflictionReset(pTarget);
 #endif
 
+}
+
+void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
+{
+	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo)
+		return;
+
+	// Higher priority for selling
+	if (this->BuildingSell)
+	{
+		if ((pBuilding->CanBeSold() && !pBuilding->IsStrange()) || this->BuildingSell_IgnoreUnsellable)
+			pBuilding->Sell(1);
+
+		return;
+	}
+
+	// CanBeSold() will also check this
+	const auto mission = pBuilding->CurrentMission;
+
+	if (mission == Mission::Construction || mission == Mission::Selling)
+		return;
+
+	const auto pType = pBuilding->Type;
+
+	if (!pType->UndeploysInto || (pType->ConstructionYard && !GameModeOptionsClass::Instance->MCVRedeploy))
+		return;
+
+	auto cell = pBuilding->GetMapCoords();
+	const auto width = pType->GetFoundationWidth();
+	const auto height = pType->GetFoundationHeight(false);
+
+	// Offset of undeployment on large-scale buildings
+	if (width > 2 || height > 2)
+		cell += CellStruct { 1, 1 };
+
+	if (this->BuildingUndeploy_Leave)
+	{
+		const auto pHouse = pBuilding->Owner;
+		const auto pItems = Helpers::Alex::getCellSpreadItems(pBuilding->GetCoords(), 20);
+
+		// Divide the surrounding units into 16 directions and record their costs
+		int record[16] = {0};
+
+		for (const auto& pItem : pItems)
+		{
+			// Only armed units that are not considered allies will be recorded
+			if ((!pHouse || !pHouse->IsAlliedWith(pItem)) && pItem->IsArmed())
+				record[pBuilding->GetTargetDirection(pItem).GetValue<4>()] += pItem->GetTechnoType()->Cost;
+		}
+
+		int costs = 0;
+		int dir = 0;
+
+		// Starting from 16, prevent negative numbers
+		for (int i = 16; i < 32; ++i)
+		{
+			int newCosts = 0;
+
+			// Assign weights to values in the direction
+			// The highest value being 8 times in the positive direction
+			// And the lowest value being 0 times in the opposite direction
+			// The greater difference between positive direction to both sides, the lower value it is
+			for (int j = -7; j < 8; ++j)
+				newCosts += ((8 - std::abs(j)) * record[(i + j) & 15]);
+
+			// Record the direction with the highest weight
+			if (newCosts > costs)
+			{
+				dir = (i - 16);
+				costs = newCosts;
+			}
+		}
+
+		// If there is no threat in the surrounding area, randomly select one side
+		if (!costs)
+			dir = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
+		// Reverse the direction and convert it into radians
+		const double radian = -(((dir - 4) / 16.0) * Math::TwoPi);
+
+		// Base on a location about 14 grids away
+		cell.X -= static_cast<short>(14 * cos(radian));
+		cell.Y += static_cast<short>(14 * sin(radian));
+
+		// Find a location where the conyard can be deployed
+		const auto newCell = MapClass::Instance->NearByLocation(cell, pType->UndeploysInto->SpeedType, -1, pType->UndeploysInto->MovementZone,
+			false, (width + 2), (height + 2), false, false, false, false, CellStruct::Empty, false, false);
+
+		// If it can find a more suitable location, go to the new one
+		if (newCell != CellStruct::Empty)
+			cell = newCell;
+	}
+
+	if (const auto pCell = MapClass::Instance->TryGetCellAt(cell))
+		pBuilding->SetArchiveTarget(pCell);
+
+	pBuilding->Sell(1);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
@@ -244,12 +348,9 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 		// Apply other modifiers.
 		if (pTargetExt->Shield)
 		{
-			auto isShieldTypeEligible = [pTargetExt](Iterator<ShieldTypeClass*> elements) -> bool
+			auto isShieldTypeEligible = [pTargetExt](Iterator<ShieldTypeClass*> pShieldTypeList) -> bool
 				{
-				if (elements.size() > 0 && !elements.contains(pTargetExt->Shield->GetType()))
-						return false;
-
-					return true;
+					return !(pShieldTypeList.size() > 0 && !pShieldTypeList.contains(pTargetExt->Shield->GetType()));
 				};
 
 			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
@@ -273,12 +374,6 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoE
 	}
 }
 
-void WarheadTypeExt::ExtData::ApplyRemoveMindControl(HouseClass* pHouse, TechnoClass* pTarget)
-{
-	if (auto pController = pTarget->MindControlledBy)
-		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
-}
-
 void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	if (pTarget->IsDisguised())
@@ -288,6 +383,12 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
 			pMirage->ClearDisguise();
 	}
+}
+
+void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
+{
+	if (auto pController = pTarget->MindControlledBy)
+		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt = nullptr)
@@ -333,13 +434,30 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 
 	if (this->Crit_AnimOnAffectedTargets && this->Crit_AnimList.size())
 	{
-		int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(this->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+		if (!this->Crit_AnimList_CreateAll.Get(false))
+		{
+			int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false) ?
+				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
-		GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+		}
+		else
+		{
+			for (auto const& pType : this->Crit_AnimList)
+			{
+				auto const pAnim = GameCreate<AnimClass>(pType, pTarget->Location);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
+				AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
+			}
+		}
 	}
 
 	auto damage = this->Crit_ExtraDamage.Get();
+
+	if (this->Crit_ExtraDamage_ApplyFirepowerMult && pOwner)
+		damage = static_cast<int>(damage * pOwner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pOwner)->AE.FirepowerMultiplier);
 
 	if (this->Crit_Warhead)
 	{
@@ -375,7 +493,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const pBullet: *BulletClass::Array)
+		for (auto const pBullet : *BulletClass::Array)
 		{
 			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
 				continue;
@@ -452,10 +570,10 @@ void WarheadTypeExt::ExtData::ApplyAttachEffects(TechnoClass* pTarget, HouseClas
 		return;
 
 	std::vector<int> dummy = std::vector<int>();
-
-	AttachEffectClass::Attach(this->AttachEffect_AttachTypes, pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), this->AttachEffect_DurationOverrides, dummy, dummy, dummy);
-	AttachEffectClass::Detach(this->AttachEffect_RemoveTypes, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
-	AttachEffectClass::DetachByGroups(this->AttachEffect_RemoveGroups, pTarget, this->AttachEffect_CumulativeRemoveMinCounts, this->AttachEffect_CumulativeRemoveMaxCounts);
+	auto const& info = this->AttachEffects;
+	AttachEffectClass::Attach(pTarget, pInvokerHouse, pInvoker, this->OwnerObject(), info);
+	AttachEffectClass::Detach(pTarget, info);
+	AttachEffectClass::DetachByGroups(pTarget, info);
 }
 
 double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
@@ -490,4 +608,3 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 
 	return critChance + extraChance;
 }
-

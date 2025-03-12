@@ -15,6 +15,8 @@ public:
 	Nullable<double> ConditionRed;
 	Valueable<ArmorType> Armor;
 	Valueable<bool> InheritArmorFromTechno;
+	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
+	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -66,6 +68,8 @@ public:
 		, ConditionRed { }
 		, Armor { Armor::None }
 		, InheritArmorFromTechno { false }
+		, InheritArmor_Allowed { }
+		, InheritArmor_Disallowed { }
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
@@ -105,11 +109,9 @@ public:
 		, ArmorBonus { 0 }
 	{ };
 
-	virtual ~ShieldTypeClass() override = default;
-
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 	bool HasTint() const
 	{
