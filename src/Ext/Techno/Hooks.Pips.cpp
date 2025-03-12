@@ -269,7 +269,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 	else
 	{
-		std::vector<int> tiberiumPipCounts(TiberiumClass::Array->Count);
+		std::vector<int> tiberiumPipCounts(TiberiumClass::Array.Count);
 
 		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
 		{
@@ -286,14 +286,14 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		for (int index : rawPipOrder)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
-				index >= 0 && index < TiberiumClass::Array->Count)
+				index >= 0 && index < TiberiumClass::Array.Count)
 			{
 				pipOrder.push_back(index);
 			}
 		}
 
 		// Then add any tiberium types that are missing
-		for (int i = 0; i < TiberiumClass::Array->Count; i++)
+		for (int i = 0; i < TiberiumClass::Array.Count; i++)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{

@@ -490,7 +490,7 @@ bool BombardTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	// Ground, must be checked when free fall
 	if (pType->SubjectToGround || (this->IsFalling && pType->FreeFallOnTarget))
 	{
-		if (MapClass::Instance->GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
+		if (MapClass::Instance.GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
 			return true;
 	}
 

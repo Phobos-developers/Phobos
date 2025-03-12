@@ -35,7 +35,7 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 	if (pType->ConstructionYard)
 	{
 		// Conyards can't undeploy if MCVRedeploy=no
-		if (!GameModeOptionsClass::Instance->MCVRedeploy)
+		if (!GameModeOptionsClass::Instance.MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
 		if (pThis->MindControlledBy)
