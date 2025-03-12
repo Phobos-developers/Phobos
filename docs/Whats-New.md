@@ -334,6 +334,9 @@ New:
 - Technos recount current burst index when change the firing weapon (by CrimRecya)
 - Shield armor inheritance customization (by Ollerus)
 - Damaged unit image changes (by Fryone)
+- Customizable spawns queue (by TwinkleStar)
+- Initial spawns number (by TwinkleStar)
+- Override target under EMP attack behavior (By FS-21)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -605,7 +608,8 @@ Vanilla fixes:
 - Fixed the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
-- Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107 & Xkein)
+- Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

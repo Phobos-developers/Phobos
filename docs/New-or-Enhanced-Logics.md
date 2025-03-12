@@ -624,7 +624,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=E2  ; InfantryType
+DefaultDisguise=    ; InfantryType
 ```
 
 ### Random death animaton for NotHuman Infantry
@@ -1273,6 +1273,18 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
 ```
 
+### Customizable spawns queue
+- It is now possible to spawn multiple types of spawnees from a spawner with `Spawns.Queue`. The order of spawnees in this queue is the order of their respawn.
+  - `Spawns` still needs to be set to enable the spawner logic and act as a default spawnee.
+  - `SpawnsNumber` still needs to be set to determine the amount of spawnee slots.
+  - If the length of the queue is longer than the spawner's `SpawnsNumber`, spawnee after this length will be omitted. If the length is shorter however, the rest of the positions will be filled by the spawnee defined by `Spawns`. Hence, it's recommended to make them the same.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+Spawns.Queue=       ; List of AircraftTypes, in order
+```
+
 ### Disabling fallback to (Elite)Secondary weapon
 
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
@@ -1323,10 +1335,14 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 ![image](_static/images/underwater-new-attack-tag.gif)
 *Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
+![image](_static/images/forceweapon_emp.gif)
+*Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
   - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
+  - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
 
 In `rulesmd.ini`:
 ```ini
@@ -1334,6 +1350,16 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.UnderEMP=-1         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
+### Initial spawns number
+- It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+InitialSpawnsNumber=      ; integer
 ```
 
 ### Initial strength for TechnoTypes and cloned infantry

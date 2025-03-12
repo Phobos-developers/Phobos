@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Building/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -1214,8 +1215,11 @@ void ScriptExt::CheckUnitTargetingCapabilities(TechnoClass* pTechno, bool& hasAn
 	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AA) || (pWeaponSecondary && pWeaponSecondary->Projectile->AA))
 		hasAntiAir = true;
 
-	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AG) || (pWeaponSecondary && pWeaponSecondary->Projectile->AG) || agentMode)
+	if (agentMode || (pWeaponPrimary && pWeaponPrimary->Projectile->AG && !BulletTypeExt::ExtMap.Find(pWeaponPrimary->Projectile)->AAOnly)
+		|| (pWeaponSecondary && pWeaponSecondary->Projectile->AG && !BulletTypeExt::ExtMap.Find(pWeaponSecondary->Projectile)->AAOnly))
+	{
 		hasAntiGround = true;
+	}
 }
 
 bool ScriptExt::IsUnitArmed(TechnoClass* pTechno)

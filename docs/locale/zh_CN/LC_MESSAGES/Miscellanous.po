@@ -563,8 +563,8 @@ msgid ""
 "When this feature is enabled, the Ares equivalent of `$Inherits` "
 "(undocumented) is disabled!"
 msgstr ""
-"当此功能启用后，[Ares "
-"的继承功能](https://bbs.ra2diy.com/forum.php?mod=viewthread&tid=24681)（未在官方文档中列出）将被禁用！"
+"当此功能启用后，<a class="reference external" href="https://bbs.ra2diy.com/forum.php?mod=viewthread&tid=24681" target="_blank">Ares 的继承功能</a>"
+"（未在官方文档中列出）将被禁用！"
 
 #: ../../Miscellanous.md:231
 msgid ""

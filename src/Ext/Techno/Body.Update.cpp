@@ -108,7 +108,7 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 {
 	auto const pThis = specific_cast<UnitClass*>(this->OwnerObject());
 
-	if (pThis->Type->Ammo <= 0 || !pThis->Type->IsSimpleDeployer)
+	if (!pThis || pThis->Type->Ammo <= 0 || !pThis->Type->IsSimpleDeployer)
 		return;
 
 	auto const pTypeExt = this->TypeExtData;
@@ -570,6 +570,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
 	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+
+	if (!pThis)
+		return;
+
 	const bool isDroppodLoco = VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278;
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI

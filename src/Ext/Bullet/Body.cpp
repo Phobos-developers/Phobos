@@ -317,6 +317,9 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 	// House
 	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
 
+	if (pBullet->Type->FirersPalette)
+		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
+
 	// Velocity
 	auto velocity = BulletVelocity::Empty;
 
