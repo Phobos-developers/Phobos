@@ -154,7 +154,7 @@ void TechnoExt::ExtData::InitializeDisplayInfo()
 	else if (const auto pSecondary = pThis->GetWeapon(1)->WeaponType)
 		pThis->RearmTimer.TimeLeft = pSecondary->ROF;
 
-	pThis->RearmTimer.StartTime = -pThis->RearmTimer.TimeLeft;
+	pThis->RearmTimer.StartTime = Math::min(-2, -pThis->RearmTimer.TimeLeft);
 }
 
 void TechnoExt::ExtData::InitializeAttachEffects()
