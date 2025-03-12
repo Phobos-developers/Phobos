@@ -120,6 +120,59 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
 }
 
+DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
+{
+	enum { Jump = 0x6B6DF0, Change = 0x6B6D53, Continue = 0 };
+	GET(SpawnManagerClass*, pThis, ESI);
+	GET_STACK(size_t, i, STACK_OFFSET(0x1C, 0x4));
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+	if ((int) i >= pTypeExt->InitialSpawnsNumber.Get(pThis->SpawnCount))
+	{
+		GET(SpawnControl*, pControl, EBP);
+		pControl->Unit = nullptr;
+		pControl->SpawnTimer.Start(pThis->RegenRate);
+		pControl->Status = SpawnNodeStatus::Dead;
+		pThis->SpawnedNodes.AddItem(pControl);
+		return Jump;
+	}
+
+	if (pTypeExt->Spawns_Queue.size() <= i || !pTypeExt->Spawns_Queue[i])
+		return Continue;
+
+	R->EAX(pTypeExt->Spawns_Queue[i]->CreateObject(pThis->Owner->GetOwningHouse()));
+	return Change;
+}
+
+DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
+{
+	GET(SpawnManagerClass*, pThis, ESI);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+	if (pTypeExt->Spawns_Queue.empty())
+		return 0;
+
+	std::vector<AircraftTypeClass*> vec = pTypeExt->Spawns_Queue;
+
+	for (auto pNode : pThis->SpawnedNodes)
+	{
+		if (pNode->Unit)
+		{
+			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->GetTechnoType(); });
+			if (it != vec.end())
+				vec.erase(it);
+		}
+	}
+
+	if (vec.empty() || !vec[0])
+		return 0;
+
+	R->EAX(vec[0]->CreateObject(pThis->Owner->GetOwningHouse()));
+	return 0x6B78EA;
+}
+
 DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
@@ -313,6 +366,7 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 	if (pExt->DefaultDisguise)
 	{
 		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
 		return 0x5227BF;
 	}
@@ -326,7 +380,8 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
-	if (pThis->Deactivated || pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	// Deactivated mirage should still be able to keep disguise
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
@@ -528,8 +583,8 @@ void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, Object
 		TechnoExt::UpdateAttachedAnimLayers(pTechno);
 }
 
-DEFINE_JUMP(CALL, 0x54B18E, GET_OFFSET(DisplayClass_Submit_Wrapper));  // JumpjetLocomotionClass_Process
-DEFINE_JUMP(CALL, 0x4CD4E7, GET_OFFSET(DisplayClass_Submit_Wrapper));  // FlyLocomotionClass_Update
+DEFINE_FUNCTION_JUMP(CALL, 0x54B18E, DisplayClass_Submit_Wrapper);  // JumpjetLocomotionClass_Process
+DEFINE_FUNCTION_JUMP(CALL, 0x4CD4E7, DisplayClass_Submit_Wrapper);  // FlyLocomotionClass_Update
 
 // Fixes SecondaryFire / SecondaryProne sequences not remapping to WetAttack in water.
 // Ideally there would be WetAttackSecondary but adding new sequences would be a big undertaking.

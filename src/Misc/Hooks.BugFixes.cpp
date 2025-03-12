@@ -567,7 +567,7 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 }
 
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
-DEFINE_JUMP(CALL, 0x4387A3, GET_OFFSET(_BombClass_Detonate_DamageArea));
+DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 
 // BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
@@ -796,7 +796,7 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 	return res;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E4290, GET_OFFSET(BuildingClass_SetOwningHouse_Wrapper));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
 DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
 DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
 
@@ -923,12 +923,14 @@ DEFINE_HOOK(0x71ADE4, TemporalClass_Release_SlaveTargetFix, 0x5)
 // which means it didn't consider the actual speed of the unit. Now we check it and the units won't get stuck
 // even at high speeds - NetsuNegi
 
-DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9)
+DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8)
 {
 	enum { KeepMoving = 0x72980F, CloseEnough = 0x7295CE };
 
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
-	GET(int const, distance, EAX);
+
+	auto& currLoc = pLoco->LinkedTo->Location;
+	int distance = (int) CoordStruct{currLoc.X - pLoco->Coords.X, currLoc.Y - pLoco->Coords.Y,0}.Magnitude() ;
 
 	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however - Starkku
@@ -943,9 +945,14 @@ DEFINE_HOOK(0x7295C5, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x9
 	speed = pLoco->LinkedTo->GetCurrentSpeed();
 	pType->Speed = maxSpeed;
 
-	TunnelLocomotionClass::TunnelMovementSpeed = speed;
-
-	return distance >= speed + 1 ? KeepMoving : CloseEnough;
+	if (distance > speed)
+	{
+		REF_STACK(CoordStruct, newLoc, STACK_OFFSET(0x40, -0xC));
+		double angle = -Math::atan2(currLoc.Y - pLoco->Coords.Y, pLoco->Coords.X - currLoc.X);
+		newLoc = currLoc + CoordStruct { int((double)speed * Math::cos(angle)), int((double)speed * Math::sin(angle)), 0 };
+		return 0x7298D3;
+	}
+	return 0x7295CE;
 }
 
 DEFINE_HOOK(0x75BD70, WalkLocomotionClass_ProcessMoving_SlowdownDistance, 0x9)
@@ -1104,6 +1111,30 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 
 #pragma endregion
 
+#pragma region AmphibiousHarvester
+
+DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pType = pThis->Type;
+
+	if (!pType->Teleporter)
+	{
+		REF_STACK(SpeedType, speedType, STACK_OFFSET(0xA0, -0x98));
+		REF_STACK(int, currentZoneType, STACK_OFFSET(0xA0, -0x94));
+		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xA0, -0x90));
+
+		speedType = pType->SpeedType;
+		movementZone = pType->MovementZone;
+		currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region StopEventFix
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
@@ -1195,7 +1226,7 @@ int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, Abstrac
 		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
 		: pSource->DistanceFrom3D(pTarget); // 3D distance (vanilla)
 }
-DEFINE_JUMP(CALL, 0x6EBCC9, GET_OFFSET(Check2DDistanceInsteadOf3D));
+DEFINE_FUNCTION_JUMP(CALL, 0x6EBCC9, Check2DDistanceInsteadOf3D);
 
 #pragma endregion
 
@@ -1222,8 +1253,8 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
-DEFINE_JUMP(CALL, 0x6E8305, GET_OFFSET(HexStr2Int_replacement)); // TaskForce
-DEFINE_JUMP(CALL, 0x6E5FA6, GET_OFFSET(HexStr2Int_replacement)); // TagType
+DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
+DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
 #pragma region Sensors
 
@@ -1312,6 +1343,187 @@ DEFINE_HOOK(0x54D06F, JumpjetLocomotionClass_ProcessCrashing_RemoveSensors, 0x5)
 	}
 
 	return 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
+{
+	enum { NotUsableArea = 0x688FB9 };
+
+	GET(TechnoClass*, pTechno, EBX);
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
+
+	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pTechnoType = pTechno->GetTechnoType();
+
+	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+}
+
+DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
+{
+	enum { NotUsableArea = 0x689295 };
+
+	GET(TechnoClass*, pTechno, EDI);
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
+
+	if (pTechno->WhatAmI() == BuildingClass::AbsID)
+		return 0;
+
+	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pTechnoType = pTechno->GetTechnoType();
+
+	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
+}
+
+DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
+{
+	enum { SkipGameCode = 0x446CD2 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(UnitClass*, pFreeUnit, EDI);
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
+	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
+	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
+{
+	enum { SkipGameCode = 0x446E15 };
+
+	GET(BuildingClass*, pThis, EBP);
+	GET(UnitClass*, pFreeUnit, EDI);
+	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
+	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
+	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+
+	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
+{
+	enum { SkipGameCode = 0x449487 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+	LEA_STACK(CellStruct*, pDest, 0x4);
+	const auto pCell = MapClass::Instance->GetCellAt(*pDest);
+	const auto pUndeploysInto = pType->UndeploysInto;
+
+	R->AL(pCell->IsClearToMove(pUndeploysInto->SpeedType, false, false, -1, pUndeploysInto->MovementZone, -1, 1));
+	return SkipGameCode;
+}
+
+#pragma region XSurfaceFix
+
+// Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.
+class XSurfaceFake final : public XSurface
+{
+	int _GetPixel(Point2D const& point) const;
+};
+
+int XSurfaceFake::_GetPixel(Point2D const& point) const
+{
+	int color = 0;
+
+	Point2D finalPoint = point;
+	if (finalPoint.X > Width || finalPoint.Y > Height)
+		finalPoint = Point2D::Empty;
+
+	void* pointer = ((Surface*)this)->Lock(finalPoint.X, finalPoint.Y);
+	if (pointer != nullptr)
+	{
+		if (BytesPerPixel == 2)
+			color = *static_cast<unsigned short*>(pointer);
+		else
+			color = *static_cast<unsigned char*>(pointer);
+		((Surface*)this)->Unlock();
+	}
+	return color;
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x4A3E8A, XSurfaceFake::_GetPixel)
+DEFINE_FUNCTION_JUMP(CALL, 0x4A3EB7, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(CALL, 0x4A3F7C, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(CALL, 0x642213, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(CALL, 0x6423D6, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2098, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E212C, XSurfaceFake::_GetPixel);
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E85FC, XSurfaceFake::_GetPixel);
+
+#pragma endregion
+
+#pragma region PointerExpired
+
+// Fixed incorrect process in PointerExpired.
+// Add checks for bRemoved.
+DEFINE_HOOK(0x7077FD, TechnoClass_PointerExpired_SpawnOwnerFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x20, 0x8));
+	// Skip the reset for SpawnOwner if !removed.
+	return removed ? 0 : 0x707803;
+}
+
+DEFINE_HOOK(0x468503, BulletClass_PointerExpired_OwnerFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x1C, 0x8));
+	// Skip the reset for Owner if !removed.
+	return removed ? 0 : 0x468509;
+}
+
+DEFINE_HOOK(0x44E910, BuildingClass_PointerExpired_C4ExpFix, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0xC, 0x8));
+	// Skip the reset for C4AppliedBy if !removed.
+	return removed ? 0 : 0x44E916;
+}
+
+DEFINE_HOOK(0x725961, AbstractClass_AnnouncePointerExpired_BombList, 0x6)
+{
+	GET(bool, removed, EDI);
+	// Skip the call of BombListClass::PointerExpired if !removed.
+	return removed ? 0 : 0x72596C;
+}
+
+// Changed the bRemoved arg in AbstractClass::AnnounceExpiredPointer calling.
+// It should be false in most case.
+namespace Disappear
+{
+	bool removed = false;
+}
+
+DEFINE_HOOK_AGAIN(0x543A5E, SetDisappearContext, 0x6); // IsometricTileClass_Limbo
+DEFINE_HOOK_AGAIN(0x6FCD95, SetDisappearContext, 0x6); // TechnoClass_PreUninit
+DEFINE_HOOK(0x5F57A9, SetDisappearContext, 0x6) // ObjectClass_ReceiveDamage_NowDead
+{
+	Disappear::removed = true;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x71C6D8, DisappearWithContextSet, 0xA); // TerrainClass_Extinguish
+DEFINE_HOOK(0x75F996, DisappearWithContextSet, 0xA) // WaveClass_Limbo
+{
+	GET(ObjectClass*, pThis, ESI);
+	Disappear::removed = true;
+	pThis->Disappear(true);
+	return R->Origin() + 0xA;
+}
+
+DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
+{
+	GET(ObjectClass*, pThis, ESI);
+	R->ECX(pThis);
+	R->EDX(Disappear::removed);
+	Disappear::removed = false;
+	return 0x5F5311;
 }
 
 #pragma endregion

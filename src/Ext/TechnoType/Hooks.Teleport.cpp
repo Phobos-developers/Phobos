@@ -2,6 +2,7 @@
 #include <LocomotionClass.h>
 #include <TeleportLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <TacticalClass.h>
@@ -19,7 +20,10 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	GET_LOCO(ESI);
 
 	if (auto pWarpOut = pExt->WarpOut.Get(RulesClass::Instance->WarpOut))
-		GameCreate<AnimClass>(pWarpOut, pLinked->Location)->Owner = pLinked->Owner;
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpOut, pLinked->Location);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+	}
 
 	if (pExt->WarpOutWeapon)
 		WeaponTypeExt::DetonateAt(pExt->WarpOutWeapon, pLinked, pLinked);
@@ -71,8 +75,10 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 	GET_LOCO(ESI);
 
 	if (auto pWarpIn = pExt->WarpIn.Get(RulesClass::Instance->WarpIn))
-		GameCreate<AnimClass>(pWarpIn, pLinked->Location)->Owner
-		= pLinked->Owner;
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpIn, pLinked->Location);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+	}
 
 	auto const lastWarpDistance = TechnoExt::ExtMap.Find(pLinked)->LastWarpDistance;
 	bool isInMinRange = lastWarpDistance < pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum);
@@ -91,7 +97,10 @@ DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 0x5)
 	GET_LOCO(ESI);
 
 	if (auto pWarpAway = pExt->WarpAway.Get(RulesClass::Instance->WarpOut))
-		GameCreate<AnimClass>(pWarpAway, pLinked->Location)->Owner = pLinked->Owner;
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpAway, pLinked->Location);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+	}
 
 	return 0x719878;
 }
