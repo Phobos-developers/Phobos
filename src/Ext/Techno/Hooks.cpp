@@ -36,7 +36,6 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	if (pExt->PreviousType)
 		pExt->UpdateTypeData_Foot();
 
-	pExt->UpdateLaserTrails();
 	pExt->UpdateWarpInDelay();
 
 	return 0;
@@ -184,9 +183,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeAttachEffects();
-
-	if ((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
-		pExt->InitializeLaserTrails();
+	pExt->InitializeLaserTrails();
 
 	if (pExt->TypeExtData->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);

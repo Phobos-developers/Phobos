@@ -29,6 +29,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	this->UpdateShield();
 	this->UpdateAttachEffects();
+	this->UpdateLaserTrails();
 	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
@@ -420,6 +421,15 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	this->UpdateSelfOwnedAttachEffects();
 
+	// Recreate Laser Trails
+	if (this->LaserTrails.size())
+		this->LaserTrails.clear();
+
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	{
+		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
+	}
+
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
 		this->AutoDeathTimer.Stop();
@@ -456,15 +466,6 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	auto const pOldType = this->PreviousType;
 	auto const pCurrentType = this->TypeExtData->OwnerObject();
 	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
-
-	// Recreate Laser Trails
-	if (this->LaserTrails.size())
-		this->LaserTrails.clear();
-
-	for (auto const& entry : this->TypeExtData->LaserTrailData)
-	{
-		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
-	}
 
 	// Update movement sound if still moving while type changed.
 	if (pThis->Locomotor->Is_Moving_Now() && pThis->IsMoveSoundPlaying)
@@ -549,15 +550,20 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 void TechnoExt::ExtData::UpdateLaserTrails()
 {
-	auto const pThis = generic_cast<FootClass*>(this->OwnerObject());
+	auto const pThis = this->OwnerObject();
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
 	for (auto& trail : this->LaserTrails)
 	{
-		// @Kerbiter if you want to limit it to certain locos you do it here
-		// with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
-		if (VTable::Get(pThis->Locomotor.GetInterfacePtr()) != 0x7E8278 && trail.Type->DroppodOnly)
-			continue;
+		if (trail.Type->DroppodOnly && (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+		{
+			auto const pFoot = static_cast<FootClass*>(pThis);
+
+			// @Kerbiter if you want to limit it to certain locos you do it here
+			// // with vtable check you can avoid the tedious process of Query IPersit/IUnknown Interface, GetClassID, compare with loco GUID, which is omnipresent in vanilla code
+			if (VTable::Get(pFoot->Locomotor.GetInterfacePtr()) != 0x7E8278)
+				continue;
+		}
 
 		trail.Cloaked = false;
 
