@@ -1382,7 +1382,6 @@ namespace Disappear
 	bool removed = false;
 }
 
-DEFINE_HOOK_AGAIN(0x543A5E, SetDisappearContext, 0x6); // IsometricTileClass_Limbo
 DEFINE_HOOK_AGAIN(0x6FCD95, SetDisappearContext, 0x6); // TechnoClass_PreUninit
 DEFINE_HOOK(0x5F57A9, SetDisappearContext, 0x6) // ObjectClass_ReceiveDamage_NowDead
 {
@@ -1390,20 +1389,12 @@ DEFINE_HOOK(0x5F57A9, SetDisappearContext, 0x6) // ObjectClass_ReceiveDamage_Now
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x71C6D8, DisappearWithContextSet, 0xA); // TerrainClass_Extinguish
-DEFINE_HOOK(0x75F996, DisappearWithContextSet, 0xA) // WaveClass_Limbo
-{
-	GET(ObjectClass*, pThis, ESI);
-	Disappear::removed = true;
-	pThis->Disappear(true);
-	return R->Origin() + 0xA;
-}
-
 DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 {
 	GET(ObjectClass*, pThis, ESI);
+	GET_STACK(bool, removed, STACK_OFFSET(0x8, 0x4));
 	R->ECX(pThis);
-	R->EDX(Disappear::removed);
+	R->EDX(((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None) ? Disappear::removed : removed);
 	Disappear::removed = false;
 	return 0x5F5311;
 }
