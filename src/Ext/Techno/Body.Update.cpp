@@ -17,14 +17,12 @@
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::ExtData::OnEarlyUpdate()
 {
-	auto pType = this->TypeExtData->OwnerObject();
+	auto pType = this->OwnerObject()->GetTechnoType();
 
 	// Set only if unset or type is changed
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
-	if (!this->TypeExtData || this->OwnerObject()->GetTechnoType() != pType)
+	if (!this->TypeExtData || this->TypeExtData->OwnerObject() != pType)
 		this->UpdateTypeData(pType);
-	else if (this->PreviousType)
-		this->PreviousType = nullptr;
 
 	if (this->CheckDeathConditions())
 		return;
@@ -412,11 +410,11 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 	}
 }
 
-void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pOldType)
+void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 {
 	auto const pThis = this->OwnerObject();
+	auto const pOldType = this->TypeExtData->OwnerObject();
 	auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
-	auto const pCurrentType = pThis->GetTechnoType();
 	this->PreviousType = pOldType;
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
@@ -452,11 +450,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pOldType)
 	}
 }
 
-void TechnoExt::ExtData::UpdateTypeData_Foot(TechnoTypeClass* pOldType)
+void TechnoExt::ExtData::UpdateTypeData_Foot()
 {
 	auto const pThis = static_cast<FootClass*>(this->OwnerObject());
+	auto const pOldType = this->PreviousType;
+	auto const pCurrentType = this->TypeExtData->OwnerObject();
 	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
-	auto const pCurrentType = pThis->GetTechnoType();
 
 	// Recreate Laser Trails
 	if (this->LaserTrails.size())
@@ -544,6 +543,8 @@ void TechnoExt::ExtData::UpdateTypeData_Foot(TechnoTypeClass* pOldType)
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
+
+	this->PreviousType = nullptr;
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()

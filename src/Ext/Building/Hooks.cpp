@@ -21,9 +21,7 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
-
-	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
-	pTechnoExt->UpdateGattlingRateDownReset();
+	pExt->TechnoExtData->UpdateGattlingRateDownReset();
 
 	return 0;
 }

@@ -34,7 +34,7 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->PreviousType)
-		pExt->UpdateTypeData_Foot(pExt->PreviousType);
+		pExt->UpdateTypeData_Foot();
 
 	pExt->UpdateLaserTrails();
 	pExt->UpdateWarpInDelay();

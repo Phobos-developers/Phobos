@@ -28,7 +28,7 @@ public:
 		std::vector<LaserTrailClass> LaserTrails;
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 		AttachEffectTechnoProperties AE;
-		TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame, will be unset there on next frame.
+		TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
 		int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
@@ -122,8 +122,8 @@ public:
 		void UpdateOnTunnelEnter();
 		void UpdateOnTunnelExit();
 		void ApplySpawnLimitRange();
-		void UpdateTypeData(TechnoTypeClass* pOldType);
-		void UpdateTypeData_Foot(TechnoTypeClass* pOldType);
+		void UpdateTypeData(TechnoTypeClass* pCurrentType);
+		void UpdateTypeData_Foot();
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
 		void UpdateGattlingRateDownReset();
