@@ -252,6 +252,7 @@ This page lists all the individual contributions to the project by their author.
   - `Scorch` / `Flamer` fire animation customization
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
+  - `IsSonic` wave drawing crash fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

@@ -1400,3 +1400,18 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 }
 
 #pragma endregion
+	
+// IsSonic wave drawing uses fixed-size arrays accessed with index that is determined based on factors like wave lifetime,
+// distance of pixel from start coords etc. The result is that at certain distance invalid memory is being accessed leading to crashes.
+// Easiest solution to this is simply clamping the final color index so that no memory beyond the size 14 color data buffer in WaveClass
+// is being accessed with it. Last index of color data is uninitialized, changing that or trying to access it just results in glitchy behaviour
+// so the cutoff is at 12 here instead of 13.
+DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
+{
+	GET(int, colorIndex, EAX);
+
+	if (colorIndex > 12)
+		R->EAX(12);
+
+	return 0;
+}
