@@ -617,7 +617,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 			this->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
 		}
 		else if (!pThis->MindControlRingAnim && this->MindControlRingAnimType &&
-			pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive && pThis->Health > 0)
+			pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
 		{
 			auto coords = pThis->GetCoords();
 			int offset = 0;

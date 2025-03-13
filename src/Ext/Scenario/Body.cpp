@@ -98,7 +98,7 @@ void ScenarioExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 	{
 		auto const pTechno = pExt->OwnerObject();
 
-		if (!pTechno->IsInLogic && pTechno->IsAlive && pTechno->Health > 0)
+		if (!pTechno->IsInLogic && pTechno->IsAlive)
 			pExt->CheckDeathConditions(true);
 	}
 }
@@ -109,7 +109,7 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 	{
 		auto const pTechno = pExt->OwnerObject();
 
-		if (pTechno->IsAlive && pTechno->Health > 0 && pTechno->Transporter && pTechno->Transporter->IsInLogic)
+		if (pTechno->IsAlive && pTechno->Transporter && pTechno->Transporter->IsInLogic)
 			pTechno->Reload();
 	}
 }

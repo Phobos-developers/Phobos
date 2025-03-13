@@ -42,7 +42,7 @@ public:
 	// Reversed from Tactical::Select
 	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, LTRBStruct* pRect, const TacticalSelectableStruct& selectable)
 	{
-		if (selectable.Techno && selectable.Techno->IsAlive && selectable.Techno->Health > 0)
+		if (selectable.Techno && selectable.Techno->IsAlive)
 		{
 			int nLocalX = selectable.X - pThis->TacticalPos.X;
 			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
