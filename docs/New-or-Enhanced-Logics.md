@@ -1143,20 +1143,15 @@ TabIndex=1  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
-Spawner.LimitRange=false         ; boolean
-Spawner.ExtraLimitRange=0        ; integer, range in cells
-Spawner.DelayFrames=             ; integer, game frames
-Spawner.AttackImmediately=false  ; boolean
-Spawner.RecycleRange=-1          ; float, range in cells
-Spawner.RecycleAnim=             ; Animation
-```
-
-In `artmd.ini`:
-```ini
-[SOMETECHNO]
-RecycleCoords=                   ; integer - Forward,Lateral,Height.
-RecycleOnTurret=false            ; boolean
+[SOMETECHNO]                       ; TechnoType
+Spawner.LimitRange=false           ; boolean
+Spawner.ExtraLimitRange=0          ; integer, range in cells
+Spawner.DelayFrames=               ; integer, game frames
+Spawner.AttackImmediately=false    ; boolean
+Spawner.RecycleRange=-1            ; float, range in cells
+Spawner.RecycleAnim=               ; Animation
+Spawner.RecycleCoords=0,0,0        ; integer - Forward,Lateral,Height.
+Spawner.RecycleOnTurret=false      ; boolean
 ```
 
 ```{note}
