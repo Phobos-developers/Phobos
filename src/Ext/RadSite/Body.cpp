@@ -233,7 +233,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 		if (const auto pCell = MapClass::Instance->TryGetCellAt(*it))
 		{
 			const auto pCellExt = CellExt::ExtMap.Find(pCell);
-			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](std::pair<RadSiteClass*, int> const& item) { return item.first == pThis; });
+			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
 
 			if (it_Rad != pCellExt->RadLevels.end())
 				pCellExt->RadLevels.erase(it_Rad);
