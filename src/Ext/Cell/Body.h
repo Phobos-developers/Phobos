@@ -13,11 +13,28 @@ public:
 	static constexpr DWORD Canary = 0x13371337;
 	static constexpr size_t ExtPointerOffset = 0x144;
 
+	struct RadLevel
+	{
+		RadSiteClass* Rad { nullptr };
+		int Level { 0 };
+
+		RadLevel() = default;
+		RadLevel(RadSiteClass* pRad, int level) : Rad(pRad), Level(level)
+		{ }
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
 	class ExtData final : public Extension<CellClass>
 	{
 	public:
 		std::vector<RadSiteClass*> RadSites {};
-		std::vector<std::pair<RadSiteClass*, int>> RadLevels { };
+		std::vector<RadLevel> RadLevels { };
 
 		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
 		{ }

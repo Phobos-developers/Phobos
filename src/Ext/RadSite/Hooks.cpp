@@ -354,7 +354,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_Radiate_Increase, 0x8)
 	const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
 
 	if (it != radLevels.end())
-		it->second += amount;
+		it->Level += amount;
 	else
 		radLevels.emplace_back(pThis, amount);
 
@@ -386,7 +386,7 @@ DEFINE_HOOK(0x65BC6E, RadSiteClass_Deactivate_Decrease, 0x6)
 	if (it != radLevels.end())
 	{
 		const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
-		it->second -= amount;
+		it->Level -= amount;
 	}
 
 	return SkipGameCode;
@@ -417,7 +417,7 @@ DEFINE_HOOK(0x65BE01, RadSiteClass_DecreaseRadiation_Decrease, 0x6)
 	if (it != radLevels.end())
 	{
 		const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
-		it->second -= amount;
+		it->Level -= amount;
 	}
 
 	return SkipGameCode;

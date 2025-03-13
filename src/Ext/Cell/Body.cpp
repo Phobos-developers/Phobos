@@ -33,6 +33,25 @@ void CellExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 void CellExt::ExtData::InvalidatePointer(void* ptr, bool removed)
 { }
 
+bool CellExt::RadLevel::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool CellExt::RadLevel::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<CellExt::RadLevel*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool CellExt::RadLevel::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Rad)
+		.Process(this->Level)
+		.Success();
+}
+
 // =============================
 // container
 
