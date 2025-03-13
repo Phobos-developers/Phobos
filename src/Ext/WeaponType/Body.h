@@ -69,6 +69,8 @@ public:
 		Valueable<bool> Beam_IsHouseColor;
 		Valueable<int> LaserThickness;
 
+		bool SkipWeaponPicking;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -115,6 +117,7 @@ public:
 			, Beam_Amplitude { 40.0 }
 			, Beam_IsHouseColor { false }
 			, LaserThickness { 3 }
+			, SkipWeaponPicking { true }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

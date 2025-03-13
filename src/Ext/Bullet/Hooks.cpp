@@ -239,22 +239,26 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 		auto const pType = pObject->GetType();
 
 		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pShrapnelWeapon->Warhead, pType->Armor) == 0.0)
-			return SkipObject;
-		else if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
-			return SkipObject;
-
-		if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 		{
-			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
-				return SkipObject;
-
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
-				return SkipObject;
-
-			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
-				return SkipObject;
+			return SkipObject;
 		}
+		else if (!pWeaponExt->SkipWeaponPicking)
+		{
+			if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+				return SkipObject;
 
+			if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+			{
+				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+					return SkipObject;
+
+				if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
+					return SkipObject;
+
+				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+					return SkipObject;
+			}
+		}
 	}
 	else if (pOwner->IsAlliedWith(pObject))
 	{

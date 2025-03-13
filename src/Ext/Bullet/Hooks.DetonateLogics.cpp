@@ -378,15 +378,18 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+		if (!pWeaponExt->SkipWeaponPicking)
+		{
+			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
 			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
-		{
-			return false;
-		}
+			{
+				return false;
+			}
 
-		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
-			return false;
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+				return false;
+		}
 	}
 	else
 	{

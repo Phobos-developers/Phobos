@@ -121,6 +121,13 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
 	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
 	this->LaserThickness.Read(exINI, pSection, "LaserThickness");
+
+	// handle SkipWeaponPicking
+	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All || this->AttachEffect_RequiredTypes.size()
+		|| this->AttachEffect_RequiredGroups.size() || this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
+	{
+		this->SkipWeaponPicking = false;
+	}
 }
 
 template <typename T>
@@ -172,6 +179,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Beam_Amplitude)
 		.Process(this->Beam_IsHouseColor)
 		.Process(this->LaserThickness)
+		.Process(this->SkipWeaponPicking)
 		;
 };
 

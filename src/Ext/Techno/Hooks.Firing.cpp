@@ -137,24 +137,23 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	if (!pTargetTechno)
 		return Primary;
 
-	if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
-	{
-		if (const auto pShield = pTargetExt->Shield.get())
-		{
-			if (pShield->IsActive())
-			{
-				auto const secondary = pThis->GetWeapon(1)->WeaponType;
-				bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 
-				if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
-				{
-					if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
-						return Secondary;
-				}
-				else
-				{
-					return Primary;
-				}
+	if (const auto pShield = pTargetExt->Shield.get())
+	{
+		if (pShield->IsActive())
+		{
+			auto const secondary = pThis->GetWeapon(1)->WeaponType;
+			bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+
+			if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
+			{
+				if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
+					return Secondary;
+			}
+			else
+			{
+				return Primary;
 			}
 		}
 	}
@@ -265,43 +264,41 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const int nMoney = pWHExt->TransactMoney;
 
-	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
+	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
+		return CannotFire;
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
+	CellClass* pTargetCell = nullptr;
+
+	// AAOnly doesn't need to be checked if LandTargeting=1.
+	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
 	{
-		const int nMoney = pWHExt->TransactMoney;
+		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
 
-		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
+		if (pBulletTypeExt->AAOnly)
 			return CannotFire;
 	}
 
-	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (pTarget)
 	{
-		const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
-		CellClass* pTargetCell = nullptr;
-
-		// AAOnly doesn't need to be checked if LandTargeting=1.
-		if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
+		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 		{
-			auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
-
-			if (pBulletTypeExt->AAOnly)
-				return CannotFire;
+			pTargetCell = pCell;
 		}
-
-		if (pTarget)
+		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
 		{
-			if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-			{
-				pTargetCell = pCell;
-			}
-			else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-			{
-				// Ignore target cell for technos that are in air.
-				if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
-					pTargetCell = pObject->GetCell();
-			}
+			// Ignore target cell for technos that are in air.
+			if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
+				pTargetCell = pObject->GetCell();
 		}
+	}
 
+	if (pWeaponExt->SkipWeaponPicking)
+	{
 		if (pTargetCell)
 		{
 			if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
@@ -522,7 +519,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				CellClass* tgtCell = MapClass::Instance->TryGetCellAt(tgtPos);
 				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (pThis->OnBridge || tgtCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
-				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
+				if (!pExt->SkipWeaponPicking && EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
 				{
 					R->EAX(tgtCell);
 					return 0;
@@ -533,7 +530,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 		}
 		else if (pExt->AreaFire_Target == AreaFireTarget::Self)
 		{
-			if (!EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, pThis->OnBridge))
+			if (!pExt->SkipWeaponPicking && !EnumFunctions::AreCellAndObjectsEligible(pThis->GetCell(), pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, pThis->OnBridge))
 				return DoNotFire;
 
 			R->EAX(pThis);
@@ -542,7 +539,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 		bool allowBridges = pCell && pCell->ContainsBridge() && (pThis->OnBridge || pCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
-		if (!EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, allowBridges))
+		if (!pExt->SkipWeaponPicking && !EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, allowBridges))
 			return DoNotFire;
 	}
 

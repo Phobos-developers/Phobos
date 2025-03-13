@@ -533,22 +533,24 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	int maxSpeed = 0;
-
 	if (pThis)
 	{
-		maxSpeed = pThis->GetTechnoType()->Speed;
-
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+		if (pTypeExt->UseDisguiseMovementSpeed)
 		{
-			if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
-				maxSpeed = pType->Speed;
+			int maxSpeed = pThis->GetTechnoType()->Speed;
+
+			if (pThis->IsDisguised())
+			{
+				if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+					maxSpeed = pType->Speed;
+			}
+
+			R->EAX(maxSpeed);
 		}
 	}
 
-	R->EAX(maxSpeed);
 	return SkipGameCode;
 }
 

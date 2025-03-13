@@ -93,11 +93,11 @@ void AttachEffectClass::AI()
 		return;
 	}
 
-	if (!this->HasInitialized && this->InitialDelay == 0)
+	if (!this->HasInitialized)
 	{
 		this->HasInitialized = true;
 
-		if (this->Type->ROFMultiplier > 0.0 && this->Type->ROFMultiplier_ApplyOnCurrentTimer)
+		if (this->Type->ROFMultiplier != 1.0 && this->Type->ROFMultiplier > 0.0 && this->Type->ROFMultiplier_ApplyOnCurrentTimer)
 		{
 			double ROFModifier = this->Type->ROFMultiplier;
 			auto const pTechno = this->Techno;
@@ -231,9 +231,9 @@ void AttachEffectClass::OnlineCheck()
 	auto pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
-	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
+	if (isActive && pTechno->WhatAmI() == AbstractType::Building)
 	{
-		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
+		auto const pBuilding = static_cast<BuildingClass const*>(pTechno);
 		isActive = pBuilding->IsPowerOnline();
 	}
 
@@ -410,7 +410,7 @@ bool AttachEffectClass::HasExpired() const
 
 bool AttachEffectClass::ShouldBeDiscardedNow() const
 {
-	if (this->ShouldBeDiscarded)
+	if (this->ShouldBeDiscarded || this->Type->DiscardOn == DiscardCondition::None)
 		return true;
 
 	auto const pTechno = this->Techno;
