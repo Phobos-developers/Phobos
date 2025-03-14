@@ -65,7 +65,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
-		for (auto const& pBullet : *BulletClass::Array())
+		for (auto const& pBullet : BulletClass::Array)
 		{
 			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
 
@@ -184,7 +184,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		std::unordered_set<HouseClass*> validHouses;
 
-		for (auto pHouse : *HouseClass::Array)
+		for (auto pHouse : HouseClass::Array)
 		{
 			if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosDontExist_Houses, pThis->Owner, pHouse))
 				validHouses.insert(pHouse);
@@ -203,7 +203,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		std::unordered_set<HouseClass*> validHouses;
 
-		for (auto pHouse : *HouseClass::Array)
+		for (auto pHouse : HouseClass::Array)
 		{
 			if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosExist_Houses, pThis->Owner, pHouse))
 				validHouses.insert(pHouse);
@@ -492,12 +492,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				{
 					pThis->ExitedOpenTopped(pPassenger);
 
+
 					// Lose target & destination
 					pPassenger->Guard();
 
 					// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 					// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-					LogicClass::Instance->RemoveObject(pPassenger);
+					LogicClass::Instance.RemoveObject(pPassenger);
 				}
 
 				pLastPassenger = pPassenger;
@@ -528,7 +529,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				if (auto const count = pCurrentType->MoveSound.Count)
 				{
 					// Play a new sound.
-					int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+					int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
 					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
 					pFoot->IsMoveSoundPlaying = true;
 				}

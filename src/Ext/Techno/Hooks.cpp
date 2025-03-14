@@ -421,7 +421,7 @@ DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 	if (pType && pType->Palette && pType->Palette->Count > 0)
 		convert = pType->Palette->GetItem(colorIndex)->LightConvert;
 	else
-		convert = ColorScheme::Array->GetItem(colorIndex)->LightConvert;
+		convert = ColorScheme::Array.GetItem(colorIndex)->LightConvert;
 
 	R->EBX(convert);
 
@@ -533,24 +533,22 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
+	int maxSpeed = 0;
+
 	if (pThis)
 	{
+		maxSpeed = pThis->GetTechnoType()->Speed;
+
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-		if (pTypeExt->UseDisguiseMovementSpeed)
+		if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
 		{
-			int maxSpeed = pThis->GetTechnoType()->Speed;
-
-			if (pThis->IsDisguised())
-			{
-				if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
-					maxSpeed = pType->Speed;
-			}
-
-			R->EAX(maxSpeed);
+			if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+				maxSpeed = pType->Speed;
 		}
 	}
 
+	R->EAX(maxSpeed);
 	return SkipGameCode;
 }
 

@@ -268,11 +268,11 @@ void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 		return;
 
 	// Could possibly be faster to track the attached anims in TechnoExt but the profiler doesn't show this as a performance hog so whatever.
-	for (auto pAnim : *AnimClass::Array)
+	for (auto pAnim : AnimClass::Array)
 	{
 		if (pAnim->OwnerObject != pThis)
 			continue;
 
-		DisplayClass::Instance->Submit(pAnim);
+		DisplayClass::Instance.Submit(pAnim);
 	}
 }

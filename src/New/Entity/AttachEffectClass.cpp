@@ -410,8 +410,11 @@ bool AttachEffectClass::HasExpired() const
 
 bool AttachEffectClass::ShouldBeDiscardedNow() const
 {
-	if (this->ShouldBeDiscarded || this->Type->DiscardOn == DiscardCondition::None)
+	if (this->ShouldBeDiscarded)
 		return true;
+
+	if (this->Type->DiscardOn == DiscardCondition::None)
+		return false;
 
 	auto const pTechno = this->Techno;
 

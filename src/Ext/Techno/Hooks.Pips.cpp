@@ -270,7 +270,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 	else
 	{
-		std::vector<int> tiberiumPipCounts(TiberiumClass::Array->Count);
+		std::vector<int> tiberiumPipCounts(TiberiumClass::Array.Count);
 
 		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
 		{
@@ -282,20 +282,20 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		int const emptyFrame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
 
 		std::vector<int> pipOrder;
-		pipOrder.reserve(TiberiumClass::Array->Count);
+		pipOrder.reserve(TiberiumClass::Array.Count);
 
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
-				index >= 0 && index < TiberiumClass::Array->Count)
+				index >= 0 && index < TiberiumClass::Array.Count)
 			{
 				pipOrder.push_back(index);
 			}
 		}
 
 		// Then add any tiberium types that are missing
-		for (int i = 0; i < TiberiumClass::Array->Count; i++)
+		for (int i = 0; i < TiberiumClass::Array.Count; i++)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{
