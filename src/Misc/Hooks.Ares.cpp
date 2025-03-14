@@ -12,9 +12,9 @@
 ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
 {
 	// temporarily reset the mutex since it's not part of the design
-	int mutex_old = std::exchange(Unsorted::IKnowWhatImDoing(), 0);
+	int mutex_old = std::exchange(Unsorted::ScenarioInit, 0);
 	auto instance = type->CreateObject(owner);
-	Unsorted::IKnowWhatImDoing = mutex_old;
+	Unsorted::ScenarioInit = mutex_old;
 	return instance;
 }
 

@@ -85,7 +85,7 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (!MapClass::Instance->CoordinatesLegal(pBuilding->GetMapCoords())
+	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords())
 		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
 	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
@@ -100,7 +100,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 
 	GET(TechnoClass* const, pTechno, ECX);
 
-	if (!MapClass::Instance->CoordinatesLegal(pTechno->GetMapCoords()))
+	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()))
 		return SkipTechno;
 
 	return 0;
@@ -120,7 +120,7 @@ namespace LimboTrackingTemp
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 {
-	for (auto const pTechno : *TechnoClass::Array())
+	for (auto const pTechno : TechnoClass::Array)
 	{
 		auto const pType = pTechno->GetTechnoType();
 

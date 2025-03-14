@@ -459,7 +459,7 @@ DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 	if (pType && pType->Palette && pType->Palette->Count > 0)
 		convert = pType->Palette->GetItem(colorIndex)->LightConvert;
 	else
-		convert = ColorScheme::Array->GetItem(colorIndex)->LightConvert;
+		convert = ColorScheme::Array.GetItem(colorIndex)->LightConvert;
 
 	R->EBX(convert);
 

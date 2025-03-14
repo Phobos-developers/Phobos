@@ -63,7 +63,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadExt->SetRadLevel(amount);
 	pRadExt->CreateLight();
 
-	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance->TryGetCellAt(location)))
+	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(location)))
 		pCellExt->RadSites.emplace_back(pRadSite);
 }
 
@@ -107,7 +107,7 @@ void RadSiteExt::ExtData::CreateLight()
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
 	}
-	else if (const auto pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
+	else if (auto const pCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell))
 	{
 		const auto pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
 		pThis->LightSource = pLight;
@@ -145,8 +145,8 @@ void RadSiteExt::ExtData::SetRadLevel(int amount)
 double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
 	const auto pThis = this->OwnerObject();
-	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
-	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	const auto base = MapClass::Instance.GetCellAt(pThis->BaseCell)->GetCoords();
+	const auto coords = MapClass::Instance.GetCellAt(cell)->GetCoords();
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
 	double radLevel = pThis->RadLevel;
@@ -207,7 +207,7 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 	GET(RadSiteClass*, pThis, ESI);
 
 	RadSiteExt::ExtMap.TryAllocate(pThis, pThis->WhatAmI() == AbstractType::RadSite, "Attempted to allocate RadSiteExt from unknown pointer!");
-	PointerExpiredNotification::NotifyInvalidObject->Add(pThis);
+	PointerExpiredNotification::NotifyInvalidObject.Add(pThis);
 
 	return 0;
 }
@@ -216,7 +216,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
 
-	const auto pBaseCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
+	const auto pBaseCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell);
 
 	if (pBaseCell)
 	{
@@ -229,7 +229,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 
 	for (CellRangeEnumerator it(pThis->BaseCell, pThis->Spread + 0.5); it; it++)
 	{
-		if (const auto pCell = MapClass::Instance->TryGetCellAt(*it))
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(*it))
 		{
 			const auto pCellExt = CellExt::ExtMap.Find(pCell);
 			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
@@ -240,7 +240,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 	}
 
 	RadSiteExt::ExtMap.Remove(pThis);
-	PointerExpiredNotification::NotifyInvalidObject->Remove(pThis);
+	PointerExpiredNotification::NotifyInvalidObject.Remove(pThis);
 
 	return 0;
 }

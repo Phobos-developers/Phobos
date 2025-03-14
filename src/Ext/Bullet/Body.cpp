@@ -92,7 +92,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
-	const auto pCell = MapClass::Instance->TryGetCellAt(Cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(Cell);
 
 	if (!pCell)
 		return;
