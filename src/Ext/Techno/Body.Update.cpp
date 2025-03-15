@@ -59,7 +59,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
-		for (auto const& pBullet : *BulletClass::Array())
+		for (auto const& pBullet : BulletClass::Array)
 		{
 			const auto pInterceptorType = pTypeExt->InterceptorType.get();
 			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
@@ -165,7 +165,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		{
 			auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 				{
-					for (HouseClass* pHouse : *HouseClass::Array)
+					for (HouseClass* pHouse : HouseClass::Array)
 					{
 						if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
 							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
@@ -483,7 +483,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				LogicClass::Instance->RemoveObject(pPassenger);
+				LogicClass::Instance.RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
@@ -503,7 +503,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				if (auto const count = pCurrentType->MoveSound.Count)
 				{
 					// Play a new sound.
-					int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+					int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
 					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
 					pFoot->IsMoveSoundPlaying = true;
 				}

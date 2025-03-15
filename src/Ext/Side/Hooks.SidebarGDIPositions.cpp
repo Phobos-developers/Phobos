@@ -6,7 +6,7 @@ bool isNODSidebar = false;
 DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 {
 	GET(int, sideIndex, ECX);
-	auto pSide = SideClass::Array->GetItem(sideIndex);
+	auto pSide = SideClass::Array.GetItem(sideIndex);
 	auto pSideExt = pSide ? SideExt::ExtMap.Find(pSide) : nullptr;
 	isNODSidebar = pSideExt ? !pSideExt->Sidebar_GDIPositions : sideIndex;
 

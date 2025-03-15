@@ -255,6 +255,7 @@ This page lists all the individual contributions to the project by their author.
   - `<Player @ X>` as owner for pre-placed objects
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
+  - `IsSonic` wave drawing crash fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -388,6 +389,7 @@ This page lists all the individual contributions to the project by their author.
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+  - Fix a jumpjet crash related to voxel shadow drawing
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft

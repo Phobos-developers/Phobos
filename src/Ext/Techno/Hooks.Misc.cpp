@@ -14,7 +14,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	GET(TechnoClass*, pSlave, EDI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
-	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
+	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->Location);
 
@@ -114,7 +114,7 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	else
 	{
 		auto const mapCoords = pThis->Owner->GetMapCoords();
-		auto const pCell = MapClass::Instance->GetCellAt(mapCoords);
+		auto const pCell = MapClass::Instance.GetCellAt(mapCoords);
 		pSpawnee->SetDestination(pCell->GetNeighbourCell(FacingType::North), true);
 		pSpawnee->QueueMission(Mission::Move, false);
 	}

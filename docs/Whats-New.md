@@ -344,6 +344,7 @@ New:
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 
 Fixes / interactions with other extensions:
