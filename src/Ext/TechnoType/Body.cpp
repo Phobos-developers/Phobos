@@ -492,6 +492,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->InitialSpawnsNumber.Read(exINI, pSection, "InitialSpawnsNumber");
 	this->Spawns_Queue.Read(exINI, pSection, "Spawns.Queue");
 
+	this->RadarInvisible_ToSelf.Read(exINI, pSection, "RadarInvisible.ToSelf");
+	this->RadarInvisible_ToAlly.Read(exINI, pSection, "RadarInvisible.ToAlly");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -896,6 +899,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->InitialSpawnsNumber)
 		.Process(this->Spawns_Queue)
+
+		.Process(this->RadarInvisible_ToSelf)
+		.Process(this->RadarInvisible_ToAlly)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -265,6 +265,9 @@ public:
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
+		Valueable<bool> RadarInvisible_ToSelf;
+		Valueable<bool> RadarInvisible_ToAlly;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -522,6 +525,9 @@ public:
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
+
+			, RadarInvisible_ToSelf { false }
+			, RadarInvisible_ToAlly { false }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -700,3 +700,42 @@ DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable,
 }
 
 #pragma endregion
+
+#pragma region RadarDrawing
+
+DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
+{
+	enum { Invisible = 0x655E66, GoOtherChecks = 0x655E19 };
+
+	GET_STACK(bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
+	GET(TechnoClass*, pThis, EBP);
+
+	auto pTechno = abstract_cast<TechnoClass*>(pThis);
+
+	if (!pTechno)
+		return 0;
+
+	bool hideByShroud = isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer();
+	bool hideByType = false;
+
+	auto pTechnoOwner = pTechno->Owner;
+	auto pType = pTechno->GetTechnoType();
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (HouseClass::CurrentPlayer == pTechnoOwner)
+	{
+		hideByType = pTypeExt->RadarInvisible_ToSelf;
+	}
+	else if (pTechnoOwner->IsAlliedWith(HouseClass::CurrentPlayer))
+	{
+		hideByType = pTypeExt->RadarInvisible_ToAlly;
+	}
+	else
+	{
+		hideByShroud = pType->RadarInvisible;
+	}
+
+	return (hideByShroud || hideByType) ? Invisible : GoOtherChecks;
+}
+
+#pragma endregion
