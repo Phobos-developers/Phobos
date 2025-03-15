@@ -28,7 +28,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
 ![image](_static/images/jumpjet-turning.gif)
-*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
+*Jumpjet turning to target applied in Robot Storm X*
 
 - Fixed the bug when turreted jumpjet units always facing bottom-right direction when motion stops.
 - Fixed the bug when jumpjet objects are unable to use `Sensors`.
