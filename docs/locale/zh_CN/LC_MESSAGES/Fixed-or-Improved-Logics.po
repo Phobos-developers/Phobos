@@ -169,10 +169,10 @@ msgstr "修复了 Jumpjet 单位在坠毁时仍可继续向敌方目标开火的
 #: ../../Fixed-or-Improved-Logics.md:30
 msgid ""
 "![image](_static/images/jumpjet-turning.gif) *Jumpjet turning to target "
-"applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*"
+"applied in Robot Storm X*"
 msgstr ""
-"![image](_static/images/jumpjet-turning.gif) *[Robot Storm "
-"X](https://www.moddb.com/mods/cc-robot-storm-x) 中的 Jumpjet 转向目标应用实例*"
+"![image](_static/images/jumpjet-turning.gif) *Robot Storm "
+"X 中的 Jumpjet 转向目标应用实例*"
 
 #: ../../Fixed-or-Improved-Logics.md:30 ../../Fixed-or-Improved-Logics.md:40
 #: ../../Fixed-or-Improved-Logics.md:50 ../../Fixed-or-Improved-Logics.md:79
