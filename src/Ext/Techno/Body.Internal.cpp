@@ -55,7 +55,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 
 		double turretRad = pThis->TurretFacing().GetRadian<32>();
 		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
-		float angle = (float)(turretRad - bodyRad);
+		// For BuildingClass turret facing is equal to primary facing
+		float angle = pFoot ? (float)(turretRad - bodyRad) : (float)(turretRad);
 
 		mtx.RotateZ(angle);
 	}

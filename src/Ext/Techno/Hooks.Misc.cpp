@@ -3,6 +3,8 @@
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
+
 #pragma region SlaveManagerClass
 
 // Issue #601
@@ -185,6 +187,76 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
 				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
+{
+	enum { Recycle = 0x6B77FF, NoRecycle = 0x6B7838 };
+
+	GET(SpawnManagerClass* const, pThis, ESI);
+	GET(AircraftClass* const, pSpawner, EDI);
+	GET(CellStruct* const, pCarrierMapCrd, EBP);
+
+	auto const pCarrier = pThis->Owner;
+	auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+	auto const spawnerCrd = pSpawner->GetCoords();
+
+	auto shouldRecycleSpawned = [&]()
+	{
+		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
+		auto const recycleCrd = FLH != CoordStruct::Empty
+			? TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret)
+			: pCarrier->GetCoords();
+		auto const deltaCrd = spawnerCrd - recycleCrd;
+		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange.Get();
+
+		if (recycleRange < 0)
+		{
+			// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
+			// 182 is √2/2 * 256. 20 is same to vanilla behavior.
+			return (pCarrier->WhatAmI() == AbstractType::Building)
+				? (deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
+				: (pSpawner->GetMapCoords() == *pCarrierMapCrd && deltaCrd.Z < 20);
+		}
+
+		return deltaCrd.Magnitude() <= recycleRange;
+	};
+
+	if (shouldRecycleSpawned())
+	{
+		if (pCarrierTypeExt->Spawner_RecycleAnim)
+		{
+			auto pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
+			auto pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
+			pAnimExt->SetInvoker(pSpawner);
+			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawner->Owner, pSpawner->Owner, false, true);
+		}
+
+		pSpawner->SetLocation(pCarrier->GetCoords());
+		return Recycle;
+	}
+
+	return NoRecycle;
+}
+
+// Change destination to RecycleFLH.
+DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
+{
+	GET(FootClass* const, pThis, EBP);
+	GET(CoordStruct*, pDestCrd, EAX);
+
+	auto pCarrier = pThis->SpawnOwner;
+
+	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
+	{
+		auto pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
+
+		if (FLH != CoordStruct::Empty)
+			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 	}
 
 	return 0;
