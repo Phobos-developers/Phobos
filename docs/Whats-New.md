@@ -565,6 +565,8 @@ Vanilla fixes:
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
+- Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

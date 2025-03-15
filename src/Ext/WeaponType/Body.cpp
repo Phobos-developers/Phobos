@@ -15,7 +15,7 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	{
 		auto pTechno = pTarget;
 
-		if (this->AttachEffect_CheckOnFirer && pFirer)
+		if (this->AttachEffect_CheckOnFirer)
 			pTechno = pFirer;
 
 		if (!pTechno)
