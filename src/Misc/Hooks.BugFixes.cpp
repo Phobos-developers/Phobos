@@ -1533,3 +1533,10 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 
 	return 0;
 }
+
+// EIP 004C2C19 crash has 2 causes: the Owner of an EBolt being invalid, and the ElectricBolt of a Unit being invalid
+// Vanilla doesn't have InvalidatePointer for EBolt, so it's made into this way to clear the pointer on EBolt
+// now we'll clear Owner for EBolt in AnnounceInvalidPointer so there won't be nullptr when EBolt trying to access an Owner
+// in this case, we can also dismiss ElectricBolt on Unit, to prevent the crash that caused by its invalidation
+DEFINE_JUMP(LJMP, 0x6FD5F2, 0x6FD5FC)
+DEFINE_JUMP(LJMP, 0x6FD600, 0x6FD606)
