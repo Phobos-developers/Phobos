@@ -2490,7 +2490,7 @@ msgid ""
 "building could not be found, the house the Superweapon belonged to is "
 "still used to deal damage and apply Phobos-introduced Warhead effects."
 msgstr ""
-"武器和弹头的行为就像由发射超级武器的建筑所发射的一样。这尊重诸如 `SW.RangeMinimum/Maximum` 之类的控制（在这方面类似于 "
+"武器和弹头的行为就像由发射超级武器的建筑所发射的一样。这尊重诸如 `SW.RangeMinimum/Maximum` 之类的控制语句（在这方面类似于 "
 "Ares 的 GenericWarhead 超级武器）。即便找不到发射建筑也仍会使用超级武器所属于的所属方来造成伤害并应用 Phobos "
 "引入的弹头效果。"
 
