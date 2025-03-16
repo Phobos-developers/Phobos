@@ -726,7 +726,7 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	{
 		hideByType = pTypeExt->RadarInvisible_ToSelf;
 	}
-	else if (pTechnoOwner->IsAlliedWith(HouseClass::CurrentPlayer))
+	else if (pTechnoOwner->IsAlliedWith(HouseClass::CurrentPlayer)) // TODO: check asymmetric alliance
 	{
 		hideByType = pTypeExt->RadarInvisible_ToAlly;
 	}
