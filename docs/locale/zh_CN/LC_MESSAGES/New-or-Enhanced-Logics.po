@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-17 19:37+0800\n"
+"POT-Creation-Date: 2025-03-17 21:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -588,16 +588,16 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:1144 ../../New-or-Enhanced-Logics.md:1178
 #: ../../New-or-Enhanced-Logics.md:1206 ../../New-or-Enhanced-Logics.md:1217
 #: ../../New-or-Enhanced-Logics.md:1239 ../../New-or-Enhanced-Logics.md:1257
-#: ../../New-or-Enhanced-Logics.md:1271 ../../New-or-Enhanced-Logics.md:1285
-#: ../../New-or-Enhanced-Logics.md:1315 ../../New-or-Enhanced-Logics.md:1337
+#: ../../New-or-Enhanced-Logics.md:1271 ../../New-or-Enhanced-Logics.md:1302
+#: ../../New-or-Enhanced-Logics.md:1318 ../../New-or-Enhanced-Logics.md:1337
 #: ../../New-or-Enhanced-Logics.md:1350 ../../New-or-Enhanced-Logics.md:1366
 #: ../../New-or-Enhanced-Logics.md:1400 ../../New-or-Enhanced-Logics.md:1412
 #: ../../New-or-Enhanced-Logics.md:1426 ../../New-or-Enhanced-Logics.md:1462
 #: ../../New-or-Enhanced-Logics.md:1489 ../../New-or-Enhanced-Logics.md:1500
 #: ../../New-or-Enhanced-Logics.md:1510 ../../New-or-Enhanced-Logics.md:1532
-#: ../../New-or-Enhanced-Logics.md:1545 ../../New-or-Enhanced-Logics.md:1559
-#: ../../New-or-Enhanced-Logics.md:1577 ../../New-or-Enhanced-Logics.md:1594
-#: ../../New-or-Enhanced-Logics.md:1622 ../../New-or-Enhanced-Logics.md:1652
+#: ../../New-or-Enhanced-Logics.md:1545 ../../New-or-Enhanced-Logics.md:1571
+#: ../../New-or-Enhanced-Logics.md:1601 ../../New-or-Enhanced-Logics.md:1617
+#: ../../New-or-Enhanced-Logics.md:1635 ../../New-or-Enhanced-Logics.md:1651
 #: ../../New-or-Enhanced-Logics.md:1666 ../../New-or-Enhanced-Logics.md:1681
 #: ../../New-or-Enhanced-Logics.md:1696 ../../New-or-Enhanced-Logics.md:1725
 #: ../../New-or-Enhanced-Logics.md:1748 ../../New-or-Enhanced-Logics.md:1791
@@ -606,8 +606,8 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:1887 ../../New-or-Enhanced-Logics.md:1902
 #: ../../New-or-Enhanced-Logics.md:1928 ../../New-or-Enhanced-Logics.md:1944
 #: ../../New-or-Enhanced-Logics.md:1954 ../../New-or-Enhanced-Logics.md:1965
-#: ../../New-or-Enhanced-Logics.md:1976 ../../New-or-Enhanced-Logics.md:1989
-#: ../../New-or-Enhanced-Logics.md:2003 ../../New-or-Enhanced-Logics.md:2016
+#: ../../New-or-Enhanced-Logics.md:1978 ../../New-or-Enhanced-Logics.md:1992
+#: ../../New-or-Enhanced-Logics.md:2005 ../../New-or-Enhanced-Logics.md:2016
 #: ../../New-or-Enhanced-Logics.md:2030 ../../New-or-Enhanced-Logics.md:2046
 #: ../../New-or-Enhanced-Logics.md:2061 ../../New-or-Enhanced-Logics.md:2078
 #: ../../New-or-Enhanced-Logics.md:2091 ../../New-or-Enhanced-Logics.md:2104
@@ -5049,54 +5049,16 @@ msgstr ""
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 
 #: ../../New-or-Enhanced-Logics.md:1279
-msgid "Customize EVA voice and `SellSound` when selling units"
-msgstr "单位出售音效"
-
-#: ../../New-or-Enhanced-Logics.md:1281
-msgid ""
-"When a building or a unit is sold, a sell sound as well as an EVA is "
-"played to the owner. These configurations have been deglobalized."
-msgstr "当建筑或单位被出售时将向所有者播放出售音效和 EVA 语音。这些设置以允许微观定义。"
-
-#: ../../New-or-Enhanced-Logics.md:1282
-msgid ""
-"`EVA.Sold` is used to customize the EVA voice when selling, default to "
-"`EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles."
-msgstr ""
-"`EVA.Sold` 用于自定义出售时的 EVA 语音，简直默认为 `EVA_StructureSold` 载具默认为 "
-"`EVA_UnitSold`。"
-
-#: ../../New-or-Enhanced-Logics.md:1283
-msgid ""
-"`SellSound` is used to customize the report sound when selling, default "
-"to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' "
-"`SellSound` globally. This has been changed in consistency with "
-"buildings' `SellSound`."
-msgstr ""
-"`SellSound` 用于自定义出售时的音效，默认为 `[AudioVisual] -> SellSound`。请注意，原版游戏中出售载具的 "
-"`SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
-
-#: ../../New-or-Enhanced-Logics.md:1286
-msgid ""
-"[SOMETECHNO]    ; BuildingType or VehicleType\n"
-"EVA.Sold=       ; EVA entry\n"
-"SellSound=      ; Sound entry\n"
-msgstr ""
-"[SOMETECHNO]    ; BuildingType or VehicleType\n"
-"EVA.Sold=       ; EVA entry\n"
-"SellSound=      ; Sound entry\n"
-
-#: ../../New-or-Enhanced-Logics.md:1292
 msgid "Customizable OpenTopped properties"
 msgstr "自定义 `OpenTopped` 属性"
 
-#: ../../New-or-Enhanced-Logics.md:1294
+#: ../../New-or-Enhanced-Logics.md:1281
 msgid ""
 "You can now override global `OpenTopped` transport properties per "
 "TechnoType."
 msgstr "现在你可以为每个科技类型微观设定全局 `OpenTopped` 运输工具的属性。"
 
-#: ../../New-or-Enhanced-Logics.md:1295
+#: ../../New-or-Enhanced-Logics.md:1282
 msgid ""
 "`OpenTopped.IgnoreRangefinding` can be used to disable `OpenTopped` "
 "transport rangefinding behaviour where smallest weapon range between "
@@ -5106,7 +5068,7 @@ msgstr ""
 "`OpenTopped.IgnoreRangefinding` 可用于禁用 `OpenTopped` "
 "运输工具在接近超出射程的目标和扫描潜在目标时使用运输工具与所有载员之间的 `Range` 最小武器的射程这一测距行为。"
 
-#: ../../New-or-Enhanced-Logics.md:1296
+#: ../../New-or-Enhanced-Logics.md:1283
 msgid ""
 "`OpenTopped.AllowFiringIfDeactivated` can be used to customize whether or"
 " not passengers can fire out when the transport is deactivated (EMP, "
@@ -5115,13 +5077,13 @@ msgstr ""
 "`OpenTopped.AllowFiringIfDeactivated` 可用于自定义当运输工具被瘫痪（EMP、`PoweredUnit` "
 "等）时载员是否可以开火。"
 
-#: ../../New-or-Enhanced-Logics.md:1297
+#: ../../New-or-Enhanced-Logics.md:1284
 msgid ""
 "`OpenTopped.ShareTransportTarget` controls whether or not the current "
 "target of the transport itself is passed to the passengers as well."
 msgstr "`OpenTopped.ShareTransportTarget` 控制运输工具的当前目标是否传递给乘客。"
 
-#: ../../New-or-Enhanced-Logics.md:1299
+#: ../../New-or-Enhanced-Logics.md:1286
 msgid ""
 "[SOMETECHNO]                              ; TechnoType\n"
 "OpenTopped.RangeBonus=                    ; integer, override of the "
@@ -5145,30 +5107,30 @@ msgstr ""
 "OpenTopped.AllowFiringIfDeactivated=true  ; boolean\n"
 "OpenTopped.ShareTransportTarget=true      ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:1309
+#: ../../New-or-Enhanced-Logics.md:1296
 msgid "Customizable spawns queue"
 msgstr "自定义子机序列"
 
-#: ../../New-or-Enhanced-Logics.md:1310
+#: ../../New-or-Enhanced-Logics.md:1297
 msgid ""
 "It is now possible to spawn multiple types of spawnees from a spawner "
 "with `Spawns.Queue`. The order of spawnees in this queue is the order of "
 "their respawn."
 msgstr "现在可以通过 `Spawns.Queue` 从子机发射器生成多种子机。该序列中的子机顺序即为其重新生成顺序。"
 
-#: ../../New-or-Enhanced-Logics.md:1311
+#: ../../New-or-Enhanced-Logics.md:1298
 msgid ""
 "`Spawns` still needs to be set to enable the spawner logic and act as a "
 "default spawnee."
 msgstr "仍需设置 `Spawns` 以启用子机逻辑并作为默认子机。"
 
-#: ../../New-or-Enhanced-Logics.md:1312
+#: ../../New-or-Enhanced-Logics.md:1299
 msgid ""
 "`SpawnsNumber` still needs to be set to determine the amount of spawnee "
 "slots."
 msgstr "仍需设置 `SpawnsNumber` 以决定子机数量。"
 
-#: ../../New-or-Enhanced-Logics.md:1313
+#: ../../New-or-Enhanced-Logics.md:1300
 msgid ""
 "If the length of the queue is longer than the spawner's `SpawnsNumber`, "
 "spawnee after this length will be omitted. If the length is shorter "
@@ -5178,7 +5140,7 @@ msgstr ""
 "如果队列长度超过子机发射器的 `SpawnsNumber`，超出部分的子机将被忽略。如果队列长度过短则剩余部分由 `Spawns` "
 "定义的子机填补。因此建议将它们设为等长。"
 
-#: ../../New-or-Enhanced-Logics.md:1316
+#: ../../New-or-Enhanced-Logics.md:1303
 msgid ""
 "[SOMETECHNO]        ; TechnoType\n"
 "Spawns.Queue=       ; List of AircraftTypes, in order\n"
@@ -5186,12 +5148,50 @@ msgstr ""
 "[SOMETECHNO]        ; TechnoType\n"
 "Spawns.Queue=       ; List of AircraftTypes, in order\n"
 
-#: ../../New-or-Enhanced-Logics.md:1322
+#: ../../New-or-Enhanced-Logics.md:1309
 msgid ""
 "Note that all spawnees in a queue should have `MissileSpawn` set to the "
 "same value (all to true or false). Mixing them will make missile spawnees"
 " can't hit their targets."
 msgstr "注意队列中的所有子机应当拥有相同的 `MissileSpawn` 值（均为 true 或均为 false）。混合使用会导致导弹类子机无法命中目标。"
+
+#: ../../New-or-Enhanced-Logics.md:1312
+msgid "Customize EVA voice and `SellSound` when selling units"
+msgstr "单位出售音效"
+
+#: ../../New-or-Enhanced-Logics.md:1314
+msgid ""
+"When a building or a unit is sold, a sell sound as well as an EVA is "
+"played to the owner. These configurations have been deglobalized."
+msgstr "当建筑或单位被出售时将向所有者播放出售音效和 EVA 语音。这些设置以允许微观定义。"
+
+#: ../../New-or-Enhanced-Logics.md:1315
+msgid ""
+"`EVA.Sold` is used to customize the EVA voice when selling, default to "
+"`EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles."
+msgstr ""
+"`EVA.Sold` 用于自定义出售时的 EVA 语音，简直默认为 `EVA_StructureSold` 载具默认为 "
+"`EVA_UnitSold`。"
+
+#: ../../New-or-Enhanced-Logics.md:1316
+msgid ""
+"`SellSound` is used to customize the report sound when selling, default "
+"to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' "
+"`SellSound` globally. This has been changed in consistency with "
+"buildings' `SellSound`."
+msgstr ""
+"`SellSound` 用于自定义出售时的音效，默认为 `[AudioVisual] -> SellSound`。请注意，原版游戏中出售载具的 "
+"`SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
+
+#: ../../New-or-Enhanced-Logics.md:1319
+msgid ""
+"[SOMETECHNO]    ; BuildingType or VehicleType\n"
+"EVA.Sold=       ; EVA entry\n"
+"SellSound=      ; Sound entry\n"
+msgstr ""
+"[SOMETECHNO]    ; BuildingType or VehicleType\n"
+"EVA.Sold=       ; EVA entry\n"
+"SellSound=      ; Sound entry\n"
 
 #: ../../New-or-Enhanced-Logics.md:1325
 msgid "Disabling fallback to (Elite)Secondary weapon"
@@ -5836,159 +5836,10 @@ msgstr ""
 "Promote.EliteAnimation=           ; AnimationType\n"
 
 #: ../../New-or-Enhanced-Logics.md:1552
-msgid "Revenge weapon"
-msgstr "复仇武器"
-
-#: ../../New-or-Enhanced-Logics.md:1554
-msgid ""
-"Similar to `DeathWeapon` in that it is fired after a TechnoType is "
-"killed, but with the difference that it will be fired on whoever dealt "
-"the damage that killed the TechnoType. If TechnoType died of sources "
-"other than direct damage dealt by another TechnoType, `RevengeWeapon` "
-"will not be fired."
-msgstr ""
-"类似于 "
-"`DeathWeapon`，它在科技类型被击杀后发射，但不同的是它将发射给造成伤害并杀死科技类型的人。如果科技类型不是由于其他科技类型造成的直接伤害而死亡，那么"
-" `RevengeWeapon` 将不会被发射。"
-
-#: ../../New-or-Enhanced-Logics.md:1555
-msgid ""
-"`RevengeWeapon.AffectsHouses` can be used to filter which houses the "
-"damage that killed the TechnoType is allowed to come from to fire the "
-"weapon."
-msgstr "`RevengeWeapon.AffectsHouses` 可用于筛选可以对哪些所属方的击杀者发射武器。"
-
-#: ../../New-or-Enhanced-Logics.md:1556
-msgid ""
-"It is possible to grant revenge weapons through [attached effects"
-"](#attached-effects) as well."
-msgstr "也可以通过 [Attach Effect](#attached-effects) 来授予复仇武器。"
-
-#: ../../New-or-Enhanced-Logics.md:1557
-msgid ""
-"Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not "
-"trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to "
-"list WeaponTypes affected by this, if none are listed all WeaponTypes are"
-" affected."
-msgstr ""
-"如果弹头 `SuppressRevengeWeapons` 设为 true "
-"则不会触发复仇武器。`SuppressRevengeWeapons.Types` "
-"可用于列出受影响的武器类型，如果没有列出，则所有武器类型都受影响。"
-
-#: ../../New-or-Enhanced-Logics.md:1560
-msgid ""
-"[SOMETECHNO]                    ; TechnoType\n"
-"RevengeWeapon=                  ; WeaponType\n"
-"RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration "
-"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
-"\n"
-"[SOMEWARHEAD]                   ; WarheadType\n"
-"SuppressRevengeWeapons=false    ; boolean\n"
-"SuppressRevengeWeapons.Types=   ; List of WeaponTypes\n"
-msgstr ""
-"[SOMETECHNO]                    ; TechnoType\n"
-"RevengeWeapon=                  ; WeaponType\n"
-"RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration "
-"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
-"\n"
-"[SOMEWARHEAD]                   ; WarheadType\n"
-"SuppressRevengeWeapons=false    ; boolean\n"
-"SuppressRevengeWeapons.Types=   ; List of WeaponTypes\n"
-
-#: ../../New-or-Enhanced-Logics.md:1570
-msgid "Shared Ammo"
-msgstr "共享弹药"
-
-#: ../../New-or-Enhanced-Logics.md:1572
-msgid ""
-"Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo"
-" to passengers that have `Ammo.Shared=yes`. In addition, a transport can "
-"filter who will receive ammo if passengers have the same value in "
-"`Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers"
-" with different groups values."
-msgstr ""
-"拥有 `OpenTopped=yes` 和 `Ammo.Shared=yes` 的运输工具将像拥有 `Ammo.Shared=yes` "
-"的载员共享弹药。此外如果载员拥有与运输工具相同的 `Ammo.Shared.Group=<integer>` "
-"值则运输工具可以筛选谁将接收弹药而忽略不拥有同组值的其他载员。"
-
-#: ../../New-or-Enhanced-Logics.md:1574
-msgid ""
-"Transports with `Ammo.Shared.Group=-1` will transfer ammo to any "
-"passenger with `Ammo.Shared=yes` ignoring the group."
-msgstr "拥有 `Ammo.Shared.Group=-1` 的运输工具将像任何拥有 `Ammo.Shared=yes` 的载员共享弹药。"
-
-#: ../../New-or-Enhanced-Logics.md:1575
-msgid "Transports must have ammo and should be able to reload ammo."
-msgstr "运输工具必须拥有弹药并应当能够自行重装弹药。"
-
-#: ../../New-or-Enhanced-Logics.md:1578
-msgid ""
-"[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes\n"
-"Ammo.Shared=no        ; boolean\n"
-"Ammo.Shared.Group=-1  ; integer\n"
-"\n"
-"[SOMETECHNO2]         ; TechnoType, passenger\n"
-"Ammo.Shared=no        ; boolean\n"
-"Ammo.Shared.Group=-1  ; integer\n"
-msgstr ""
-"[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes\n"
-"Ammo.Shared=no        ; boolean\n"
-"Ammo.Shared.Group=-1  ; integer\n"
-"\n"
-"[SOMETECHNO2]         ; TechnoType, passenger\n"
-"Ammo.Shared=no        ; boolean\n"
-"Ammo.Shared.Group=-1  ; integer\n"
-
-#: ../../New-or-Enhanced-Logics.md:1588
-msgid "Weapons fired on warping in / out"
-msgstr "武器在传送时开火"
-
-#: ../../New-or-Enhanced-Logics.md:1590
-msgid ""
-"It is now possible to add weapons that are fired on a teleporting "
-"TechnoType when it warps in or out. They are at the same time as the "
-"appropriate animations (`WarpIn` / `WarpOut`) are displayed."
-msgstr "现在可以在科技类型传送来/去时发射武器。它们会与相应的 (`WarpIn`／`WarpOut`) 动画一起显示。"
-
-#: ../../New-or-Enhanced-Logics.md:1591
-msgid ""
-"`WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance "
-"traveled (in leptons) was less than `ChronoRangeMinimum`. This works "
-"regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon`"
-" is not set, it defaults to `WarpInWeapon`."
-msgstr ""
-"`WarpInMinRangeWeapon` 将在传送距离（以 leptons 为单位）小于 `ChronoRangeMinimum` "
-"时使用，无论是否设置了 `ChronoTrigger`。如果未设置 `WarpInMinRangeWeapon`，则默认为 "
-"`WarpInWeapon`。"
-
-#: ../../New-or-Enhanced-Logics.md:1592
-msgid ""
-"If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of "
-"`WarpIn(MinRange)Weapon` is overriden by the number of whole cells "
-"teleported across."
-msgstr ""
-"如果设置了 `WarpInWeapon.UseDistanceAsDamage` 则 `WarpIn(MinRange)Weapon` 的 "
-"`Damage` 将被覆盖为传送所跨越的完整单元格数。"
-
-#: ../../New-or-Enhanced-Logics.md:1595
-msgid ""
-"[SOMETECHNO]                            ; TechnoType\n"
-"WarpInWeapon=                           ; WeaponType\n"
-"WarpInMinRangeWeapon=                   ; WeaponType\n"
-"WarpInWeapon.UseDistanceAsDamage=false  ; boolean\n"
-"WarpOutWeapon=                          ; WeaponType\n"
-msgstr ""
-"[SOMETECHNO]                            ; TechnoType\n"
-"WarpInWeapon=                           ; WeaponType\n"
-"WarpInMinRangeWeapon=                   ; WeaponType\n"
-"WarpInWeapon.UseDistanceAsDamage=false  ; boolean\n"
-"WarpOutWeapon=                          ; WeaponType\n"
-
-#: ../../New-or-Enhanced-Logics.md:1603
 msgid "Raise alert when technos are taking damage"
 msgstr "单位受伤警报"
 
-#: ../../New-or-Enhanced-Logics.md:1605
+#: ../../New-or-Enhanced-Logics.md:1554
 msgid ""
 "In Vanilla, non-building technos will not generate radar events or EVAs "
 "when attacked, so players can hardly notice them until they are "
@@ -5999,17 +5850,17 @@ msgstr ""
 "在原版，非建筑科技类型在收到攻击时不会生成雷达事件或 EVA "
 "播报，因此它们很难在被摧毁前被玩家注意到。现在当你的单位受到攻击时可以收到雷达事件（以及可选的声音效果），以便及时应战。"
 
-#: ../../New-or-Enhanced-Logics.md:1606
+#: ../../New-or-Enhanced-Logics.md:1555
 msgid ""
 "`[AudioVisual] -> CombatAlert` is a global switch, set it to `true` to "
 "enable the entire logic."
 msgstr "`[AudioVisual] -> CombatAlert` 是一个全局开关，将其设置为 `true` 以启用整个逻辑。"
 
-#: ../../New-or-Enhanced-Logics.md:1607
+#: ../../New-or-Enhanced-Logics.md:1556
 msgid "These flags controlls when to trigger a combat alert."
 msgstr "这些标签控制什么时候触发战斗警报。"
 
-#: ../../New-or-Enhanced-Logics.md:1608
+#: ../../New-or-Enhanced-Logics.md:1557
 msgid ""
 "You can disable this logic on specific techno by setting `[TechnoType] ->"
 " CombatAlert` to `false`, which default to `[AudioVisual] -> "
@@ -6020,7 +5871,7 @@ msgstr ""
 "`[AudioVisual] -> CombatAlert.Default`。如果 `CombatAlert.Default` 也为空，则默认为对"
 " `Insignificant=yes` 或 `Spawned=yes` 的科技类型禁用。"
 
-#: ../../New-or-Enhanced-Logics.md:1609
+#: ../../New-or-Enhanced-Logics.md:1558
 msgid ""
 "`[AudioVisual] -> CombatAlert.IgnoreBuilding` will turn the logic off on "
 "buildings. You can override it for specific building by setting "
@@ -6031,13 +5882,13 @@ msgstr ""
 "`[TechnoType] -> CombatAlert.NotBuilding` 为 `true` "
 "来为特定建筑覆盖设置。你可能希望将其用于载具性质的建筑。"
 
-#: ../../New-or-Enhanced-Logics.md:1610
+#: ../../New-or-Enhanced-Logics.md:1559
 msgid ""
 "`[AudioVisual] -> CombatAlert.SuppressIfInScreen` decides whether to "
 "disable the logic for the units in the current screen."
 msgstr "`[AudioVisual] -> CombatAlert.SuppressIfInScreen` 决定是否为当前屏幕中的单位禁用此逻辑。"
 
-#: ../../New-or-Enhanced-Logics.md:1611
+#: ../../New-or-Enhanced-Logics.md:1560
 msgid ""
 "`[AudioVisual] -> CombatAlert.Interval` decides the time interval (in "
 "frames) between alerts, to prevent the alert from being anonying. It is "
@@ -6046,13 +5897,13 @@ msgstr ""
 "`[AudioVisual] -> CombatAlert.Interval` 决定警报之间的间隔（以帧为单位），以防止警报过于频繁。默认为 "
 "150 帧。"
 
-#: ../../New-or-Enhanced-Logics.md:1612
+#: ../../New-or-Enhanced-Logics.md:1561
 msgid ""
 "`[AudioVisual] -> CombatAlert.SuppressIfAllyDamage` decides whether to "
 "disable the logic for the damage from allys."
 msgstr "`[AudioVisual] -> CombatAlert.SuppressIfAllyDamage` 决定是否为盟友造成的伤害禁用此逻辑。"
 
-#: ../../New-or-Enhanced-Logics.md:1613
+#: ../../New-or-Enhanced-Logics.md:1562
 msgid ""
 "Technos hitted by a warhead with `[WarheadType] -> CombatAlert.Suppress` "
 "setted to `true` will not raise a radar event or EVA. This flag is "
@@ -6063,11 +5914,11 @@ msgstr ""
 "的弹头击中将不会触发雷达事件或 EVA。此标签默认为 Ares 标签 `[WarheadType] -> Malicious` 的相反值和 "
 "`[WarheadType] -> Nonprovocative` 的值。"
 
-#: ../../New-or-Enhanced-Logics.md:1614
+#: ../../New-or-Enhanced-Logics.md:1563
 msgid "And the following flags controlls the effect of a combat alert."
 msgstr "一下标签控制战斗警报的效果。"
 
-#: ../../New-or-Enhanced-Logics.md:1615
+#: ../../New-or-Enhanced-Logics.md:1564
 msgid ""
 "`[AudioVisual] -> CombatAlert.MakeAVoice` decides whether to play some "
 "sound effect with the combat alert. Set it to `true` will enable the "
@@ -6076,7 +5927,7 @@ msgstr ""
 "`[AudioVisual] -> CombatAlert.MakeAVoice` 决定是否与战斗警报一起播放一些音效。将其设为 true "
 "以启用以下标签，否则它们将被忽略。"
 
-#: ../../New-or-Enhanced-Logics.md:1616
+#: ../../New-or-Enhanced-Logics.md:1565
 msgid ""
 "`[TechnoType] -> CombatAlert.UseFeedbackVoice` decides whether to use the"
 " sound defined by `VoiceFeedback`. Default to `[AudioVisual] -> "
@@ -6085,7 +5936,7 @@ msgstr ""
 "`[TechnoType] -> CombatAlert.UseFeedbackVoice` 决定是否使用 `VoiceFeedback` "
 "定义的声音。默认为 `[AudioVisual] -> CombatAlert.UseFeedbackVoice`。"
 
-#: ../../New-or-Enhanced-Logics.md:1617
+#: ../../New-or-Enhanced-Logics.md:1566
 msgid ""
 "`[TechnoType] -> CombatAlert.UseAttackVoice` decides whether to use the "
 "sound defined by `VoiceAttack`. Default to `[AudioVisual] -> "
@@ -6094,7 +5945,7 @@ msgstr ""
 "`[TechnoType] -> CombatAlert.UseAttackVoice` 决定是否使用 `VoiceAttack` "
 "定义的声音。默认为 `[AudioVisual] -> CombatAlert.UseAttackVoice`。"
 
-#: ../../New-or-Enhanced-Logics.md:1618
+#: ../../New-or-Enhanced-Logics.md:1567
 msgid ""
 "`[TechnoType] -> CombatAlert.UseEVA` decides whether to play an EVA. "
 "Default to `[AudioVisual] -> CombatAlert.UseEVA`. The EVA to play is "
@@ -6105,7 +5956,7 @@ msgstr ""
 "CombatAlert.UseEVA`。所用的 EVA 默认为 `EVA_UnitsInCombat`，可以通过 `[TechnoType] ->"
 " CombatAlert.EVA` 指定。"
 
-#: ../../New-or-Enhanced-Logics.md:1619
+#: ../../New-or-Enhanced-Logics.md:1568
 msgid ""
 "The sound effect is taken **at order**, feedback first, attack then, eva "
 "finally. The flags in `[AudioVisual]` controlls whether to check it "
@@ -6114,7 +5965,7 @@ msgstr ""
 "声音效果 **依次** 被使用，首先是反馈，然后是攻击，最后是 EVA。在 `[AudioVisual]` "
 "中的标签控制是否全局检查，可以为每个科技类型单独指定。"
 
-#: ../../New-or-Enhanced-Logics.md:1620
+#: ../../New-or-Enhanced-Logics.md:1569
 msgid ""
 "An example: You set `CombatAlert.UseFeedbackVoice` and "
 "`CombatAlert.UseEVA` to `true` and `CombatAlert.UseAttackVoice` to "
@@ -6127,7 +5978,7 @@ msgstr ""
 "`VoiceFeedback`、`VoiceAttack` 和 `CombatAlert.EVA` 的单位将播放 "
 "`VoiceFeedback`。拥有 `VoiceAttack` 的单位将播放 `EVA_UnitsInCombat`。"
 
-#: ../../New-or-Enhanced-Logics.md:1623
+#: ../../New-or-Enhanced-Logics.md:1572
 msgid ""
 "[AudioVisual]\n"
 "CombatAlert=false                      ; boolean\n"
@@ -6175,11 +6026,11 @@ msgstr ""
 "[SOMEWARHEAD]                          ; WarheadType\n"
 "CombatAlert.Suppress=                  ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:1648
+#: ../../New-or-Enhanced-Logics.md:1597
 msgid "Recount burst index"
 msgstr "重置连发索引"
 
-#: ../../New-or-Enhanced-Logics.md:1650
+#: ../../New-or-Enhanced-Logics.md:1599
 msgid ""
 "You can now make technos recount their current burst index when they have"
 " changed the firing weapon or have maintained for a period of time "
@@ -6189,7 +6040,7 @@ msgstr ""
 "现在你可以让单位在更换了开火武器或一段时间内没有目标的情况下重置当前的连发索引。默认为 `[General] -> "
 "RecountBurst`，其默认为 false。"
 
-#: ../../New-or-Enhanced-Logics.md:1653
+#: ../../New-or-Enhanced-Logics.md:1602
 msgid ""
 "[General]\n"
 "RecountBurst=false  ; boolean\n"
@@ -6203,17 +6054,121 @@ msgstr ""
 "[SOMETECHNO]        ; TechnoType\n"
 "RecountBurst=       ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:1661
+#: ../../New-or-Enhanced-Logics.md:1610
+msgid "Revenge weapon"
+msgstr "复仇武器"
+
+#: ../../New-or-Enhanced-Logics.md:1612
+msgid ""
+"Similar to `DeathWeapon` in that it is fired after a TechnoType is "
+"killed, but with the difference that it will be fired on whoever dealt "
+"the damage that killed the TechnoType. If TechnoType died of sources "
+"other than direct damage dealt by another TechnoType, `RevengeWeapon` "
+"will not be fired."
+msgstr ""
+"类似于 "
+"`DeathWeapon`，它在科技类型被击杀后发射，但不同的是它将发射给造成伤害并杀死科技类型的人。如果科技类型不是由于其他科技类型造成的直接伤害而死亡，那么"
+" `RevengeWeapon` 将不会被发射。"
+
+#: ../../New-or-Enhanced-Logics.md:1613
+msgid ""
+"`RevengeWeapon.AffectsHouses` can be used to filter which houses the "
+"damage that killed the TechnoType is allowed to come from to fire the "
+"weapon."
+msgstr "`RevengeWeapon.AffectsHouses` 可用于筛选可以对哪些所属方的击杀者发射武器。"
+
+#: ../../New-or-Enhanced-Logics.md:1614
+msgid ""
+"It is possible to grant revenge weapons through [attached effects"
+"](#attached-effects) as well."
+msgstr "也可以通过 [Attach Effect](#attached-effects) 来授予复仇武器。"
+
+#: ../../New-or-Enhanced-Logics.md:1615
+msgid ""
+"Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not "
+"trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to "
+"list WeaponTypes affected by this, if none are listed all WeaponTypes are"
+" affected."
+msgstr ""
+"如果弹头 `SuppressRevengeWeapons` 设为 true "
+"则不会触发复仇武器。`SuppressRevengeWeapons.Types` "
+"可用于列出受影响的武器类型，如果没有列出，则所有武器类型都受影响。"
+
+#: ../../New-or-Enhanced-Logics.md:1618
+msgid ""
+"[SOMETECHNO]                    ; TechnoType\n"
+"RevengeWeapon=                  ; WeaponType\n"
+"RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration "
+"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
+"\n"
+"[SOMEWARHEAD]                   ; WarheadType\n"
+"SuppressRevengeWeapons=false    ; boolean\n"
+"SuppressRevengeWeapons.Types=   ; List of WeaponTypes\n"
+msgstr ""
+"[SOMETECHNO]                    ; TechnoType\n"
+"RevengeWeapon=                  ; WeaponType\n"
+"RevengeWeapon.AffectsHouses=all ; List of Affected House Enumeration "
+"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
+"\n"
+"[SOMEWARHEAD]                   ; WarheadType\n"
+"SuppressRevengeWeapons=false    ; boolean\n"
+"SuppressRevengeWeapons.Types=   ; List of WeaponTypes\n"
+
+#: ../../New-or-Enhanced-Logics.md:1628
+msgid "Shared Ammo"
+msgstr "共享弹药"
+
+#: ../../New-or-Enhanced-Logics.md:1630
+msgid ""
+"Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo"
+" to passengers that have `Ammo.Shared=yes`. In addition, a transport can "
+"filter who will receive ammo if passengers have the same value in "
+"`Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers"
+" with different groups values."
+msgstr ""
+"拥有 `OpenTopped=yes` 和 `Ammo.Shared=yes` 的运输工具将像拥有 `Ammo.Shared=yes` "
+"的载员共享弹药。此外如果载员拥有与运输工具相同的 `Ammo.Shared.Group=<integer>` "
+"值则运输工具可以筛选谁将接收弹药而忽略不拥有同组值的其他载员。"
+
+#: ../../New-or-Enhanced-Logics.md:1632
+msgid ""
+"Transports with `Ammo.Shared.Group=-1` will transfer ammo to any "
+"passenger with `Ammo.Shared=yes` ignoring the group."
+msgstr "拥有 `Ammo.Shared.Group=-1` 的运输工具将像任何拥有 `Ammo.Shared=yes` 的载员共享弹药。"
+
+#: ../../New-or-Enhanced-Logics.md:1633
+msgid "Transports must have ammo and should be able to reload ammo."
+msgstr "运输工具必须拥有弹药并应当能够自行重装弹药。"
+
+#: ../../New-or-Enhanced-Logics.md:1636
+msgid ""
+"[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes\n"
+"Ammo.Shared=no        ; boolean\n"
+"Ammo.Shared.Group=-1  ; integer\n"
+"\n"
+"[SOMETECHNO2]         ; TechnoType, passenger\n"
+"Ammo.Shared=no        ; boolean\n"
+"Ammo.Shared.Group=-1  ; integer\n"
+msgstr ""
+"[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes\n"
+"Ammo.Shared=no        ; boolean\n"
+"Ammo.Shared.Group=-1  ; integer\n"
+"\n"
+"[SOMETECHNO2]         ; TechnoType, passenger\n"
+"Ammo.Shared=no        ; boolean\n"
+"Ammo.Shared.Group=-1  ; integer\n"
+
+#: ../../New-or-Enhanced-Logics.md:1646
 msgid "Sound entry on unit's creation"
 msgstr "单位创建时音效"
 
-#: ../../New-or-Enhanced-Logics.md:1663
+#: ../../New-or-Enhanced-Logics.md:1648
 msgid ""
 "When a unit is created, sound specified in `VoiceCreated` will be played "
 "for the unit owner."
 msgstr "当一个单位被创建时将为单位所有者播放 `VoiceCreated` 指定的音效。"
 
-#: ../../New-or-Enhanced-Logics.md:1664
+#: ../../New-or-Enhanced-Logics.md:1649
 msgid ""
 "If `IsVoiceCreatedGlobal` is set to true, `VoiceCreated` will be played "
 "globally instead of `EVA_UnitReady`."
@@ -6221,7 +6176,7 @@ msgstr ""
 "如果 `IsVoiceCreatedGlobal` 设为 true 则将全局播放 `VoiceCreated` 而不是 "
 "`EVA_UnitReady`。"
 
-#: ../../New-or-Enhanced-Logics.md:1667
+#: ../../New-or-Enhanced-Logics.md:1652
 msgid ""
 "[AudioVisual]\n"
 "IsVoiceCreatedGlobal=false   ; boolean\n"
@@ -6234,6 +6189,51 @@ msgstr ""
 "\n"
 "[SOMETECHNO]                 ; TechnoType\n"
 "VoiceCreated=                ; Sound entry\n"
+
+#: ../../New-or-Enhanced-Logics.md:1660
+msgid "Weapons fired on warping in / out"
+msgstr "武器在传送时开火"
+
+#: ../../New-or-Enhanced-Logics.md:1662
+msgid ""
+"It is now possible to add weapons that are fired on a teleporting "
+"TechnoType when it warps in or out. They are at the same time as the "
+"appropriate animations (`WarpIn` / `WarpOut`) are displayed."
+msgstr "现在可以在科技类型传送来/去时发射武器。它们会与相应的 (`WarpIn`／`WarpOut`) 动画一起显示。"
+
+#: ../../New-or-Enhanced-Logics.md:1663
+msgid ""
+"`WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance "
+"traveled (in leptons) was less than `ChronoRangeMinimum`. This works "
+"regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon`"
+" is not set, it defaults to `WarpInWeapon`."
+msgstr ""
+"`WarpInMinRangeWeapon` 将在传送距离（以 leptons 为单位）小于 `ChronoRangeMinimum` "
+"时使用，无论是否设置了 `ChronoTrigger`。如果未设置 `WarpInMinRangeWeapon`，则默认为 "
+"`WarpInWeapon`。"
+
+#: ../../New-or-Enhanced-Logics.md:1664
+msgid ""
+"If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of "
+"`WarpIn(MinRange)Weapon` is overriden by the number of whole cells "
+"teleported across."
+msgstr ""
+"如果设置了 `WarpInWeapon.UseDistanceAsDamage` 则 `WarpIn(MinRange)Weapon` 的 "
+"`Damage` 将被覆盖为传送所跨越的完整单元格数。"
+
+#: ../../New-or-Enhanced-Logics.md:1667
+msgid ""
+"[SOMETECHNO]                            ; TechnoType\n"
+"WarpInWeapon=                           ; WeaponType\n"
+"WarpInMinRangeWeapon=                   ; WeaponType\n"
+"WarpInWeapon.UseDistanceAsDamage=false  ; boolean\n"
+"WarpOutWeapon=                          ; WeaponType\n"
+msgstr ""
+"[SOMETECHNO]                            ; TechnoType\n"
+"WarpInWeapon=                           ; WeaponType\n"
+"WarpInMinRangeWeapon=                   ; WeaponType\n"
+"WarpInWeapon.UseDistanceAsDamage=false  ; boolean\n"
+"WarpOutWeapon=                          ; WeaponType\n"
 
 #: ../../New-or-Enhanced-Logics.md:1675
 msgid "Terrain"
@@ -7068,96 +7068,28 @@ msgstr ""
 "SpySat=false   ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:1971
-msgid "Shroud map for enemies on impact"
-msgstr "黑幕弹"
-
-#: ../../New-or-Enhanced-Logics.md:1973
-msgid "Warheads can now shroud the entire map on impact."
-msgstr "现在弹头可以在引爆时填充整个地图的黑幕"
-
-#: ../../New-or-Enhanced-Logics.md:1974
-msgid "Shroud only applies to enemies of the warhead owner."
-msgstr "仅适用于敌对所属方。"
-
-#: ../../New-or-Enhanced-Logics.md:1977
-msgid ""
-"[SOMEWARHEAD]  ; WarheadType\n"
-"BigGap=false   ; boolean\n"
-msgstr ""
-"[SOMEWARHEAD]  ; WarheadType\n"
-"BigGap=false   ; boolean\n"
-
-#: ../../New-or-Enhanced-Logics.md:1982
-msgid "Spawn powerup crate"
-msgstr "生成工具箱"
-
-#: ../../New-or-Enhanced-Logics.md:1984
-msgid ""
-"Warheads can now spawn powerup crates of specified type(s) on their "
-"impact cells (if free, or nearby cells if occupied something other than a"
-" crate) akin to map trigger action `108 Create Crate`."
-msgstr ""
-"现在弹头可以在其引爆的单元格上创建指定类型的升级工具箱（如果空置，若被非工具箱的对象占据则生成到附近的单元格）类似于地图触发动作 `108 "
-"创建工具箱...`。"
-
-#: ../../New-or-Enhanced-Logics.md:1985
-msgid ""
-"`SpawnsCrateN` where N is a number starting from 0, parsed until no key "
-"is found can be used to define the type of crate spawned."
-msgstr "`SpawnsCrateN` 中的 N 是从 0 开始的数字，游戏会解析到最后一个为止。用于定义每个生成的升级工具箱类型。"
-
-#: ../../New-or-Enhanced-Logics.md:1986
-msgid ""
-"`SpawnsCrateN.Weight` is a number that determines relative weighting of "
-"spawning corresponding crate type vs. other listed ones (0 is no chance, "
-"higher means higher probability) defaulting to 1 if not defined."
-msgstr ""
-"`SpawnsCrateN.Weight` 是一个用于确定生成对应升级工具箱类型与其他列出的类型相比的相对权重（0 "
-"表示没门，越高代表概率越高）如果未定义则默认为 1。"
-
-#: ../../New-or-Enhanced-Logics.md:1987
-msgid ""
-"`SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if "
-"latter is not set."
-msgstr "如果未设置 `SpawnsCrate0.Type/Weight` 则 `SpawnsCrate.Type/Weight` 是其别名。"
-
-#: ../../New-or-Enhanced-Logics.md:1990
-msgid ""
-"[SOMEWARHEAD]            ; WarheadType\n"
-"SpawnsCrate(N).Type=     ; Powerup crate type enum "
-"(money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)"
-"\n"
-"SpawnsCrate(N).Weight=1  ; integer\n"
-msgstr ""
-"[SOMEWARHEAD]            ; WarheadType\n"
-"SpawnsCrate(N).Type=     ; Powerup crate type enum "
-"(money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)"
-"\n"
-"SpawnsCrate(N).Weight=1  ; integer\n"
-
-#: ../../New-or-Enhanced-Logics.md:1996
 msgid "Sell or undeploy building on impact"
 msgstr "将建筑出售或反部署"
 
-#: ../../New-or-Enhanced-Logics.md:1998
+#: ../../New-or-Enhanced-Logics.md:1973
 msgid ""
 "Warheads with `BuildingSell` can now sell buildings with build up image. "
 "It has a higher priority than `BuildingUndeploy`."
 msgstr "现在拥有 `BuildingSell` 的弹头可以出售拥有拔起动画的建筑。它的优先级高于 `BuildingUndeploy`。"
 
-#: ../../New-or-Enhanced-Logics.md:1999
+#: ../../New-or-Enhanced-Logics.md:1974
 msgid ""
 "`BuildingSell.IgnoreUnsellable` controls whether to ignore all possible "
 "situations where sales may be disabled except for build up image."
 msgstr "`BuildingSell.IgnoreUnsellable` 控制是否忽略除了缺失拔起动画之外所有可能禁止建筑出售的情况。"
 
-#: ../../New-or-Enhanced-Logics.md:2000
+#: ../../New-or-Enhanced-Logics.md:1975
 msgid ""
 "Warheads with `BuildingUndeploy` can now undeploy buildings with "
 "`UndeploysInto`."
 msgstr "现在拥有 `BuildingUndeploy` 的弹头可以令目标建筑反部署为 `UndeploysInto` 的对象。"
 
-#: ../../New-or-Enhanced-Logics.md:2001
+#: ../../New-or-Enhanced-Logics.md:1976
 msgid ""
 "`BuildingUndeploy.Leave` controls whether need to let them move to low "
 "threat locations nearby. The threat degree here is calculated using the "
@@ -7167,7 +7099,7 @@ msgstr ""
 "`BuildingUndeploy.Leave` "
 "控制是否需要让它们移动到附近较低威胁的位置。这里的威胁程度使用科技类型的价格计算。如果附近的科技类型没有主武器或属于友方所属，那么不被计入。"
 
-#: ../../New-or-Enhanced-Logics.md:2004
+#: ../../New-or-Enhanced-Logics.md:1979
 msgid ""
 "[SOMEWARHEAD]                        ; Warhead\n"
 "BuildingSell=false                   ; boolean\n"
@@ -7180,6 +7112,74 @@ msgstr ""
 "BuildingSell.IgnoreUnsellable=false  ; boolean\n"
 "BuildingUndeploy=false               ; boolean\n"
 "BuildingUndeploy.Leave=false         ; boolean\n"
+
+#: ../../New-or-Enhanced-Logics.md:1987
+msgid "Shroud map for enemies on impact"
+msgstr "黑幕弹"
+
+#: ../../New-or-Enhanced-Logics.md:1989
+msgid "Warheads can now shroud the entire map on impact."
+msgstr "现在弹头可以在引爆时填充整个地图的黑幕"
+
+#: ../../New-or-Enhanced-Logics.md:1990
+msgid "Shroud only applies to enemies of the warhead owner."
+msgstr "仅适用于敌对所属方。"
+
+#: ../../New-or-Enhanced-Logics.md:1993
+msgid ""
+"[SOMEWARHEAD]  ; WarheadType\n"
+"BigGap=false   ; boolean\n"
+msgstr ""
+"[SOMEWARHEAD]  ; WarheadType\n"
+"BigGap=false   ; boolean\n"
+
+#: ../../New-or-Enhanced-Logics.md:1998
+msgid "Spawn powerup crate"
+msgstr "生成工具箱"
+
+#: ../../New-or-Enhanced-Logics.md:2000
+msgid ""
+"Warheads can now spawn powerup crates of specified type(s) on their "
+"impact cells (if free, or nearby cells if occupied something other than a"
+" crate) akin to map trigger action `108 Create Crate`."
+msgstr ""
+"现在弹头可以在其引爆的单元格上创建指定类型的升级工具箱（如果空置，若被非工具箱的对象占据则生成到附近的单元格）类似于地图触发动作 `108 "
+"创建工具箱...`。"
+
+#: ../../New-or-Enhanced-Logics.md:2001
+msgid ""
+"`SpawnsCrateN` where N is a number starting from 0, parsed until no key "
+"is found can be used to define the type of crate spawned."
+msgstr "`SpawnsCrateN` 中的 N 是从 0 开始的数字，游戏会解析到最后一个为止。用于定义每个生成的升级工具箱类型。"
+
+#: ../../New-or-Enhanced-Logics.md:2002
+msgid ""
+"`SpawnsCrateN.Weight` is a number that determines relative weighting of "
+"spawning corresponding crate type vs. other listed ones (0 is no chance, "
+"higher means higher probability) defaulting to 1 if not defined."
+msgstr ""
+"`SpawnsCrateN.Weight` 是一个用于确定生成对应升级工具箱类型与其他列出的类型相比的相对权重（0 "
+"表示没门，越高代表概率越高）如果未定义则默认为 1。"
+
+#: ../../New-or-Enhanced-Logics.md:2003
+msgid ""
+"`SpawnsCrate.Type/Weight` is an alias for `SpawnsCrate0.Type/Weight` if "
+"latter is not set."
+msgstr "如果未设置 `SpawnsCrate0.Type/Weight` 则 `SpawnsCrate.Type/Weight` 是其别名。"
+
+#: ../../New-or-Enhanced-Logics.md:2006
+msgid ""
+"[SOMEWARHEAD]            ; WarheadType\n"
+"SpawnsCrate(N).Type=     ; Powerup crate type enum "
+"(money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)"
+"\n"
+"SpawnsCrate(N).Weight=1  ; integer\n"
+msgstr ""
+"[SOMEWARHEAD]            ; WarheadType\n"
+"SpawnsCrate(N).Type=     ; Powerup crate type enum "
+"(money|unit|healbase|cloak|explosion|napalm|squad|reveal|armor|speed|firepower|icbm|invulnerability|veteran|ionstorm|gas|tiberium|pod)"
+"\n"
+"SpawnsCrate(N).Weight=1  ; integer\n"
 
 #: ../../New-or-Enhanced-Logics.md:2012
 msgid "Trigger specific NotHuman infantry Death anim sequence"
@@ -7642,4 +7642,3 @@ msgstr ""
 "(none|land|water|empty|infantry|units|buildings|all)\n"
 "CanTargetHouses=all  ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
-
