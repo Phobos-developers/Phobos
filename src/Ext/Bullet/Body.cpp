@@ -101,7 +101,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 	auto const pRadType = pWeaponExt->RadType;
 	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 
-	auto const it = std::find_if(RadSiteClass::Array->begin(), RadSiteClass::Array->end(),
+	auto const it = std::find_if(RadSiteClass::Array.begin(), RadSiteClass::Array.end(),
 		[=](auto const pSite)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
@@ -109,7 +109,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 			if (pRadExt->Type != pRadType)
 				return false;
 
-			if (MapClass::Instance->TryGetCellAt(pSite->BaseCell) != MapClass::Instance->TryGetCellAt(Cell))
+			if (MapClass::Instance.TryGetCellAt(pSite->BaseCell) != MapClass::Instance.TryGetCellAt(Cell))
 				return false;
 
 			if (Spread != pSite->Spread)
@@ -125,7 +125,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		}
 	);
 
-	if (it != RadSiteClass::Array->end())
+	if (it != RadSiteClass::Array.end())
 	{
 		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
 		{
@@ -315,6 +315,9 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 
 	// House
 	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
+
+	if (pBullet->Type->FirersPalette)
+		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
 
 	// Velocity
 	auto velocity = BulletVelocity::Empty;

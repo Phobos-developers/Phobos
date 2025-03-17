@@ -43,6 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->DepletedAmmoActions();
 	this->UpdateAttachEffects();
+	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
 	this->UpdateGattlingRateDownReset();
 }
@@ -58,7 +59,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
-		for (auto const& pBullet : *BulletClass::Array())
+		for (auto const& pBullet : BulletClass::Array)
 		{
 			const auto pInterceptorType = pTypeExt->InterceptorType.get();
 			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
@@ -164,7 +165,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 		{
 			auto existSingleType = [pThis, affectedHouse, allowLimbo](TechnoTypeClass* pType)
 				{
-					for (HouseClass* pHouse : *HouseClass::Array)
+					for (HouseClass* pHouse : HouseClass::Array)
 					{
 						if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
 							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
@@ -291,7 +292,8 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
 						pAnim->SetOwnerObject(pThis);
-						pAnim->Owner = pThis->Owner;
+						AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+						AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 					}
 
 					// Check if there is money refund
@@ -481,7 +483,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				LogicClass::Instance->RemoveObject(pPassenger);
+				LogicClass::Instance.RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
@@ -501,7 +503,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				if (auto const count = pCurrentType->MoveSound.Count)
 				{
 					// Play a new sound.
-					int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+					int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
 					VocClass::PlayAt(soundIndex, pFoot->Location, &pFoot->MoveSoundAudioController);
 					pFoot->IsMoveSoundPlaying = true;
 				}
@@ -598,21 +600,40 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 				offset = pThis->GetTechnoType()->MindControlRingOffset;
 
 			coords.Z += offset;
-			auto anim = GameCreate<AnimClass>(this->MindControlRingAnimType, coords, 0, 1);
+			pThis->MindControlRingAnim = GameCreate<AnimClass>(this->MindControlRingAnimType, coords, 0, 1);
+			pThis->MindControlRingAnim->SetOwnerObject(pThis);
 
-			if (anim)
-			{
-				pThis->MindControlRingAnim = anim;
-				pThis->MindControlRingAnim->SetOwnerObject(pThis);
-
-				if (pThis->WhatAmI() == AbstractType::Building)
-					pThis->MindControlRingAnim->ZAdjust = -1024;
-			}
+			if (pThis->WhatAmI() == AbstractType::Building)
+				pThis->MindControlRingAnim->ZAdjust = -1024;
 		}
 	}
 	else if (this->MindControlRingAnimType)
 	{
 		this->MindControlRingAnimType = nullptr;
+	}
+}
+
+void TechnoExt::ExtData::UpdateRecountBurst()
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->CurrentBurstIndex && !pThis->Target && this->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
+	{
+		const auto pWeapon = this->LastWeaponType;
+
+		if (pWeapon && pWeapon->Burst && pThis->LastFireBulletFrame + std::max(pWeapon->ROF, 30) <= Unsorted::CurrentFrame)
+		{
+			const auto ratio = static_cast<double>(pThis->CurrentBurstIndex) / pWeapon->Burst;
+			const auto rof = static_cast<int>(ratio * pWeapon->ROF * this->AE.ROFMultiplier) - std::max(pWeapon->ROF, 30);
+
+			if (rof > 0)
+			{
+				pThis->ChargeTurretDelay = rof;
+				pThis->RearmTimer.Start(rof);
+			}
+
+			pThis->CurrentBurstIndex = 0;
+		}
 	}
 }
 
@@ -755,12 +776,9 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	{
 		if (pVanishAnimation)
 		{
-			if (auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords()))
-			{
-				auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-				pAnim->Owner = pThis->Owner;
-				pAnimExt->SetInvoker(pThis);
-			}
+			auto const pAnim = GameCreate<AnimClass>(pVanishAnimation, pThis->GetCoords());
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 		}
 
 		pThis->KillPassengers(pThis);

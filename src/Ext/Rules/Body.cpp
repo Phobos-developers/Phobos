@@ -220,6 +220,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
 
+	this->RecountBurst.Read(exINI, GameStrings::General, "RecountBurst");
 	this->NoRearm_UnderEMP.Read(exINI, GameStrings::General, "NoRearm.UnderEMP");
 	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
 	this->NoReload_UnderEMP.Read(exINI, GameStrings::General, "NoReload.UnderEMP");
@@ -428,6 +429,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatAlert_UseAttackVoice)
 		.Process(this->CombatAlert_UseEVA)
 		.Process(this->UseFixedVoxelLighting)
+		.Process(this->RecountBurst)
 		.Process(this->NoRearm_UnderEMP)
 		.Process(this->NoRearm_Temporal)
 		.Process(this->NoReload_UnderEMP)
@@ -467,7 +469,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelLightSource.Get().Normalized();
-		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix() * source;
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix * source;
 	}
 
 	/*
@@ -476,7 +478,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelShadowLightSource.Get().Normalized();
-		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix() * source;
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix * source;
 	}
 	*/
 
@@ -579,7 +581,7 @@ DEFINE_HOOK(0x679A15, RulesData_LoadBeforeTypeData, 0x6)
 
 DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 {
-	RulesClass* pItem = RulesClass::Instance();
+	RulesClass* pItem = RulesClass::Instance;
 	GET(CCINIClass*, pINI, ESI);
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
@@ -592,7 +594,7 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
 {
 	GET(TechnoTypeClass*, pThis, ESI);
-	auto pRules = RulesClass::Instance();
+	auto pRules = RulesClass::Instance;
 	auto pRulesExt = RulesExt::Global();
 
 	pThis->JumpjetTurnRate = pRules->TurnRate;

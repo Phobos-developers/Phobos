@@ -99,7 +99,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 		{
-			auto const aircraft = copy_dvc(*AircraftClass::Array);
+			auto const aircraft = copy_dvc(AircraftClass::Array);
 
 			for (auto pAircraft : aircraft)
 				tryDetonate(pAircraft);
@@ -107,7 +107,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 		{
-			auto const buildings = copy_dvc(*BuildingClass::Array);
+			auto const buildings = copy_dvc(BuildingClass::Array);
 
 			for (auto pBuilding : buildings)
 				tryDetonate(pBuilding);
@@ -115,7 +115,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 		{
-			auto const infantry = copy_dvc(*InfantryClass::Array);
+			auto const infantry = copy_dvc(InfantryClass::Array);
 
 			for (auto pInf : infantry)
 				tryDetonate(pInf);
@@ -123,7 +123,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 		{
-			auto const units = copy_dvc(*UnitClass::Array);
+			auto const units = copy_dvc(UnitClass::Array);
 
 			for (auto const pUnit : units)
 				tryDetonate(pUnit);
@@ -177,7 +177,7 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 		auto const pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], pThis->GetCoords());
 
 		if (pThis->Owner)
-			pAnim->Owner = pThis->Owner->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner->Owner, nullptr, false, true);
 
 		debrisCount--;
 	}
@@ -504,7 +504,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		}
 		else
 		{
-			for (auto const pTechno : *TechnoClass::Array)
+			for (auto const pTechno : TechnoClass::Array)
 			{
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
 				{
@@ -527,7 +527,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				int y = random.RandomRanged(-range, range);
 
 				CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
-				auto const pCell = MapClass::Instance->GetCellAt(cell);
+				auto const pCell = MapClass::Instance.GetCellAt(cell);
 
 				targets.AddItem(pCell);
 			}

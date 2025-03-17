@@ -69,7 +69,7 @@ DEFINE_HOOK(0x68BDC0, ScenarioClass_ReadWaypoints, 0x8)
 		{
 			buffer.X = static_cast<short>(nCoord % 1000);
 			buffer.Y = static_cast<short>(nCoord / 1000);
-			if (auto pCell = MapClass::Instance->TryGetCellAt(buffer))
+			if (auto pCell = MapClass::Instance.TryGetCellAt(buffer))
 				pCell->Flags |= CellFlags::IsWaypoint;
 			else if (ScenarioExt::CellParsed)
 				Debug::Log("[Developer warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
