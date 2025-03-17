@@ -306,13 +306,12 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	return Math::max(range, 0);
 }
 
-int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool mode)
+int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum)
 {
-	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
-
-	if (!pExt || !pFirer)
+	if (!pThis || !pFirer)
 		return 0;
 
+	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
 	const auto keepRange = pExt->KeepRange.Get();
 
 	if (!keepRange)
@@ -353,7 +352,7 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 		}
 	}
 
-	if (mode)
+	if (isMinimum)
 		return (keepRange > 0) ? keepRange : 0;
 
 	if (keepRange > 0)
