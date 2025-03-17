@@ -410,6 +410,7 @@ This page lists all the individual contributions to the project by their author.
   - Draw visual effects for airburst weapons
   - Technos recount current burst index when change the firing weapon
   - Units will not always stuck in the factory
+  - Technos can maintain a suitable distance after firing
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

@@ -340,6 +340,7 @@ New:
 - Recycle spawner in long-range (by TaranDahl)
 - Play an anim when recycling a spawner (by TaranDahl)
 - Recycle the spawner on other FLH (by TaranDahl)
+- Technos can maintain a suitable distance after firing (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)

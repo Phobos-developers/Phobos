@@ -1,6 +1,7 @@
 #include "Body.h"
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
+#include <SpawnManagerClass.h>
 
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
@@ -114,6 +115,9 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
 	this->AttachEffect_IgnoreFromSameSource.Read(exINI, pSection, "AttachEffect.IgnoreFromSameSource");
+	this->KeepRange.Read(exINI, pSection, "KeepRange");
+	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
+	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 
 	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
@@ -166,6 +170,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffect_DisallowedMaxCounts)
 		.Process(this->AttachEffect_CheckOnFirer)
 		.Process(this->AttachEffect_IgnoreFromSameSource)
+		.Process(this->KeepRange)
+		.Process(this->KeepRange_AllowAI)
+		.Process(this->KeepRange_AllowPlayer)
 		.Process(this->KickOutPassengers)
 		.Process(this->Beam_Color)
 		.Process(this->Beam_Duration)
@@ -297,6 +304,67 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 	range += extraRange;
 
 	return Math::max(range, 0);
+}
+
+int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum)
+{
+	if (!pThis || !pFirer)
+		return 0;
+
+	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
+	const auto keepRange = pExt->KeepRange.Get();
+
+	if (!keepRange)
+		return 0;
+
+	const auto absType = pFirer->WhatAmI();
+
+	if (absType != AbstractType::Infantry && absType != AbstractType::Unit)
+		return 0;
+
+	const auto pHouse = pFirer->Owner;
+
+	if (pHouse && pHouse->IsControlledByHuman())
+	{
+		if (!pExt->KeepRange_AllowPlayer)
+			return 0;
+	}
+	else if (!pExt->KeepRange_AllowAI)
+	{
+		return 0;
+	}
+
+	if (!pFirer->RearmTimer.InProgress())
+	{
+		const auto spawnManager = pFirer->SpawnManager;
+
+		if (!spawnManager || spawnManager->Status != SpawnManagerStatus::CoolDown)
+			return 0;
+
+		const auto spawnsNumber = pFirer->GetTechnoType()->SpawnsNumber;
+
+		for (int i = 0; i < spawnsNumber; i++)
+		{
+			const auto status = spawnManager->SpawnedNodes[i]->Status;
+
+			if (status == SpawnNodeStatus::TakeOff || status == SpawnNodeStatus::Returning)
+				return 0;
+		}
+	}
+
+	if (isMinimum)
+		return (keepRange > 0) ? keepRange : 0;
+
+	if (keepRange > 0)
+		return 0;
+
+	const auto checkRange = -keepRange - 128;
+	const auto pTarget = pFirer->Target;
+
+	if (pTarget && pFirer->DistanceFrom(pTarget) >= checkRange)
+		return (checkRange > 443) ? checkRange : 443; // 1.73 * Unsorted::LeptonsPerCell
+
+	return -keepRange;
 }
 
 // =============================
