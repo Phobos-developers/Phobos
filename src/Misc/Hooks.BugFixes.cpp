@@ -1112,6 +1112,35 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 
 #pragma endregion
 
+#pragma region UntetherFix
+
+// Radio: do not untether techno who have other tether link
+DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
+{
+	// Place the hook after processing to prevent functions from calling each other and getting stuck in a dead loop.
+	GET(TechnoClass* const, pThis, ESI);
+	// The radio link capacity of some technos can be greater than 1 (like airport)
+	// Here is a specific example, there may be other situations as well:
+	// - Untether without check may result in `AirportBound=no` aircraft being unable to release from `IsTether` status.
+	// - Specifically, all four aircraft are connected to the airport and have `RadioLink` settings, but when the first aircraft
+	//   is `Unlink` from the airport, all subsequent aircraft will be stuck in `IsTether` status.
+	// - This is because when both parties who are `RadioLink` to each other need to `Unlink`, they need to `Untether` first,
+	//   and this requires ensuring that both parties have `IsTether` flag (0x6F4C50), otherwise `Untether` cannot be successful,
+	//   which may lead to some unexpected situations.
+	for (int i = 0; i < pThis->RadioLinks.Capacity; ++i)
+	{
+		if (const auto pLink = pThis->RadioLinks.Items[i])
+		{
+			if (pLink->IsTether) // If there's another tether link, reset flag to true
+				pThis->IsTether = true; // Ensures that other links can be properly untether afterwards
+		}
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
@@ -1400,7 +1429,7 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 }
 
 #pragma endregion
-	
+
 // IsSonic wave drawing uses fixed-size arrays accessed with index that is determined based on factors like wave lifetime,
 // distance of pixel from start coords etc. The result is that at certain distance invalid memory is being accessed leading to crashes.
 // Easiest solution to this is simply clamping the final color index so that no memory beyond the size 14 color data buffer in WaveClass
