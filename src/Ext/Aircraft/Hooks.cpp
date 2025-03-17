@@ -328,31 +328,6 @@ bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2908, AircraftTypeClass_CanUseWaypoint)
 
-// Radio: do not untether techno who have other tether link
-DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
-{
-	// Place the hook after processing to prevent functions from calling each other and getting stuck in a dead loop.
-	GET(TechnoClass* const, pThis, ESI);
-	// The radio link capacity of some technos can be greater than 1 (like airport)
-	// Here is a specific example, there may be other situations as well:
-	// - Untether without check may result in `AirportBound=no` aircraft being unable to release from `IsTether` status.
-	// - Specifically, all four aircraft are connected to the airport and have `RadioLink` settings, but when the first aircraft
-	//   is `Unlink` from the airport, all subsequent aircraft will be stuck in `IsTether` status.
-	// - This is because when both parties who are `RadioLink` to each other need to `Unlink`, they need to `Untether` first,
-	//   and this requires ensuring that both parties have `IsTether` flag (0x6F4C50), otherwise `Untether` cannot be successful,
-	//   which may lead to some unexpected situations.
-	for (int i = 0; i < pThis->RadioLinks.Capacity; ++i)
-	{
-		if (const auto pLink = pThis->RadioLinks.Items[i])
-		{
-			if (pLink->IsTether) // If there's another tether link, reset flag to true
-				pThis->IsTether = true; // Ensures that other links can be properly untether afterwards
-		}
-	}
-	// Perhaps it can be considered as a separate fix?
-	return 0;
-}
-
 // Move: smooth the planning paths and returning route
 DEFINE_HOOK_AGAIN(0x4168C7, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
