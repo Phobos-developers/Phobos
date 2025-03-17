@@ -23,8 +23,7 @@ void ScriptExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 // container
 
 ScriptExt::ExtContainer::ExtContainer() : Container("ScriptClass")
-{
-}
+{ }
 
 ScriptExt::ExtContainer::~ExtContainer() = default;
 
@@ -562,17 +561,17 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 	auto pTeamType = pTeam->Type;
 	bool found = false;
 
-	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+	for (int i = 0; i < AITriggerTypeClass::Array.Count && !found; i++)
 	{
-		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+		auto pTriggerTeam1Type = AITriggerTypeClass::Array.GetItem(i)->Team1;
+		auto pTriggerTeam2Type = AITriggerTypeClass::Array.GetItem(i)->Team2;
 
 		if (pTeamType
 			&& ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType)
 				|| (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
 		{
 			found = true;
-			pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+			pTriggerType = AITriggerTypeClass::Array.GetItem(i);
 		}
 	}
 
@@ -1199,7 +1198,7 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 	}
 
 	int houseIndex = pLeader->Owner->EnemyHouseIndex;
-	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array->GetItem(houseIndex) : nullptr;
+	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array.GetItem(houseIndex) : nullptr;
 
 	if (!pEnemy)
 	{
@@ -1262,7 +1261,7 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 		}
 	}
 
-	auto pTargetCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords());
+	auto pTargetCell = MapClass::Instance.TryGetCellAt(pTarget->GetCoords());
 
 	if (pTargetCell)
 	{

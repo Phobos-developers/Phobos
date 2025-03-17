@@ -5,8 +5,9 @@
 #include <Ext/House/Body.h>
 #include <Helpers/Macro.h>
 
-DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8) {
-	GET(TeamClass *, pTeam, ESI);
+DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
+{
+	GET(TeamClass*, pTeam, ESI);
 
 	if (!pTeam)
 		return 0;
@@ -74,11 +75,11 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 
 	// if ( NewINIFormat < 4 ) then divide 128
 	// in other times we divide 1000
-	const int nDivisor = ScenarioClass::NewINIFormat() < 4 ? 128 : 1000;
+	const int nDivisor = ScenarioClass::NewINIFormat < 4 ? 128 : 1000;
 	cell.X = static_cast<short>(nCoord % nDivisor);
 	cell.Y = static_cast<short>(nCoord / nDivisor);
 
-	R->EAX(MapClass::Instance->GetCellAt(cell));
+	R->EAX(MapClass::Instance.GetCellAt(cell));
 	return 0x6E959C;
 }
 

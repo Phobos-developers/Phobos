@@ -51,19 +51,35 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	{
 		memset(Phobos::wideBuffer, 0, sizeof Phobos::wideBuffer);
 		CRT::mbstowcs(Phobos::wideBuffer, buffer, strlen(buffer));
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer, 600, 5, true);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer, 600, 5, true);
 		Debug::Log("%s\n", buffer);
 		buffer[0] = 0;
 	};
 
-	auto printFoots = [&append, &display](FootClass* pFoot)
+	auto getTargetInfo = [](TechnoClass* pCurrent, AbstractClass* pTarget, int& distance, const char*& ID, CellStruct& mapCoords)
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
+		{
+			mapCoords = pObject->GetMapCoords();
+			ID = pObject->GetType()->get_ID();
+		}
+		else if (auto const pCell = abstract_cast<CellClass*>(pTarget))
+		{
+			mapCoords = pCell->MapCoords;
+			ID = "Cell";
+		}
+
+		distance = pCurrent->DistanceFrom(pTarget) / Unsorted::LeptonsPerCell;
+	};
+
+	auto printFoots = [&append, &display, &getTargetInfo](FootClass* pFoot)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto pType = pFoot->GetTechnoType();
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pFoot->Owner->get_ID(), pFoot->Owner->PlainName);
 		append("Location = (%d, %d), ", pFoot->GetMapCoords().X, pFoot->GetMapCoords().Y);
-		append("Current Mission = %d (%s)\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission));
+		append("Mission = %d (%s), Status = %d\n", pFoot->CurrentMission, MissionControlClass::FindName(pFoot->CurrentMission), pFoot->MissionStatus);
 
 		if (pFoot->BelongsToATeam())
 		{
@@ -71,15 +87,15 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 			auto pTeamType = pFoot->Team->Type;
 			bool found = false;
-			for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+			for (int i = 0; i < AITriggerTypeClass::Array.Count && !found; i++)
 			{
-				auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-				auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+				auto pTriggerTeam1Type = AITriggerTypeClass::Array.GetItem(i)->Team1;
+				auto pTriggerTeam2Type = AITriggerTypeClass::Array.GetItem(i)->Team2;
 
 				if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
 				{
 					found = true;
-					auto pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+					auto pTriggerType = AITriggerTypeClass::Array.GetItem(i);
 					append("Trigger ID = %s, weights [Current, Min, Max]: %f, %f, %f", pTriggerType->ID, pTriggerType->Weight_Current, pTriggerType->Weight_Minimum, pTriggerType->Weight_Maximum);
 				}
 			}
@@ -110,19 +126,18 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		{
 			auto mapCoords = CellStruct::Empty;
 			auto ID = "N/A";
+			int distance = 0;
+			getTargetInfo(pFoot, pFoot->Target, distance, ID, mapCoords);
+			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
+		}
 
-			if (auto const pObject = abstract_cast<ObjectClass*>(pFoot->Target))
-			{
-				mapCoords = pObject->GetMapCoords();
-				ID = pObject->GetType()->get_ID();
-			}
-			else if (auto const pCell = abstract_cast<CellClass*>(pFoot->Target))
-			{
-				mapCoords = pCell->MapCoords;
-				ID = "Cell";
-			}
-
-			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, (pFoot->DistanceFrom(pFoot->Target) / Unsorted::LeptonsPerCell), mapCoords.X, mapCoords.Y);
+		if (pFoot->Destination)
+		{
+			auto mapCoords = CellStruct::Empty;
+			auto ID = "N/A";
+			int distance = 0;
+			getTargetInfo(pFoot, pFoot->Destination, distance, ID, mapCoords);
+			append("Destination = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
 		}
 
 		append("Current HP = (%d / %d)", pFoot->Health, pType->Strength);
@@ -140,13 +155,14 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		display();
 	};
 
-	auto printBuilding = [&append, &display](BuildingClass* pBuilding)
+	auto printBuilding = [&append, &display, &getTargetInfo](BuildingClass* pBuilding)
 	{
 		append("[Phobos] Dump ObjectInfo runs.\n");
 		auto pType = pBuilding->Type;
 		append("ID = %s, ", pType->ID);
 		append("Owner = %s (%s), ", pBuilding->Owner->get_ID(), pBuilding->Owner->PlainName);
-		append("Location = (%d, %d)\n", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+		append("Location = (%d, %d), ", pBuilding->GetMapCoords().X, pBuilding->GetMapCoords().Y);
+		append("Mission = %d (%s), Status = %d\n", pBuilding->CurrentMission, MissionControlClass::FindName(pBuilding->CurrentMission), pBuilding->MissionStatus);
 
 		if (pBuilding->Factory && pBuilding->Factory->Object)
 		{
@@ -176,7 +192,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 				if (i != 0)
 					append(", ");
 
-				append("Slot %d = %s", i+1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
+				append("Slot %d = %s", i + 1, pBuilding->Upgrades[i] ? pBuilding->Upgrades[i]->get_ID() : "<none>");
 			}
 			append("\n");
 		}
@@ -188,19 +204,9 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		{
 			auto mapCoords = CellStruct::Empty;
 			auto ID = "N/A";
-
-			if (auto const pObject = abstract_cast<ObjectClass*>(pBuilding->Target))
-			{
-				mapCoords = pObject->GetMapCoords();
-				ID = pObject->GetType()->get_ID();
-			}
-			else if (auto const pCell = abstract_cast<CellClass*>(pBuilding->Target))
-			{
-				mapCoords = pCell->MapCoords;
-				ID = "Cell";
-			}
-
-			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, (pBuilding->DistanceFrom(pBuilding->Target) / Unsorted::LeptonsPerCell), mapCoords.X, mapCoords.Y);
+			int distance = 0;
+			getTargetInfo(pBuilding, pBuilding->Target, distance, ID, mapCoords);
+			append("Target = %s, Distance = %d, Location = (%d, %d)\n", ID, distance, mapCoords.X, mapCoords.Y);
 		}
 
 		append("Current HP = (%d / %d)\n", pBuilding->Health, pBuilding->Type->Strength);
@@ -235,17 +241,21 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		dumped = true;
 	};
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto pTechno : TechnoClass::Array)
 	{
 		if (dumped) break;
 		if (pTechno->IsMouseHovering)
 			dumpInfo(pTechno);
 	}
+
 	if (!dumped)
-		if (ObjectClass::CurrentObjects->Count > 0)
+	{
+		if (ObjectClass::CurrentObjects.Count > 0)
 		{
-			if (ObjectClass::CurrentObjects->Count != 1)
-				MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
-			dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
+			if (ObjectClass::CurrentObjects.Count != 1)
+				MessageListClass::Instance.PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
+
+			dumpInfo(ObjectClass::CurrentObjects.GetItem(ObjectClass::CurrentObjects.Count - 1));
 		}
+	}
 }
