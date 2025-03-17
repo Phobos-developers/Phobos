@@ -347,6 +347,7 @@ This page lists all the individual contributions to the project by their author.
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
    - Fix `AltNextScenario` not taking effect
+   - Fix `Hospital=yes` building can't kick out infantry after loading a save
 - **NetsuNegi**:
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
@@ -433,6 +434,10 @@ This page lists all the individual contributions to the project by their author.
   - No turret unit turn to the target
   - Units are now unable to kick out from a factory that is in construction process
   - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+  - Recycle spawner in long-range
+  - Play an anim when recycling a spawner
+  - Recycle the spawner on other FLH
+  - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

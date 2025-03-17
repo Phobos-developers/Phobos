@@ -1136,14 +1136,26 @@ TabIndex=1  ; integer
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
 - `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
+- `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
+- `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled.
+- `Spawner.RecycleCoord` defines the relative position to the carrier that the spawned aircraft will head to.
+  - `Spawner.RecycleOnTurret` defines if the FLH is relative to the turret rather than the body.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
-Spawner.LimitRange=false         ; boolean
-Spawner.ExtraLimitRange=0        ; integer, range in cells
-Spawner.DelayFrames=             ; integer, game frames
-Spawner.AttackImmediately=false  ; boolean
+[SOMETECHNO]                       ; TechnoType
+Spawner.LimitRange=false           ; boolean
+Spawner.ExtraLimitRange=0          ; integer, range in cells
+Spawner.DelayFrames=               ; integer, game frames
+Spawner.AttackImmediately=false    ; boolean
+Spawner.RecycleRange=-1            ; float, range in cells
+Spawner.RecycleAnim=               ; Animation
+Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
+Spawner.RecycleOnTurret=false      ; boolean
+```
+
+```{note}
+If you set recycle FLH, it is best to set a recycle range of at least `0.5` at the same time. Otherwise, the spawner may not recycle correctly.
 ```
 
 ### Shared Ammo
@@ -1283,6 +1295,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 Spawns.Queue=       ; List of AircraftTypes, in order
+```
+
+```{warning}
+Note that all spawnees in a queue should have `MissileSpawn` set to the same value (all to true or false). Mixing them will make missile spawnees can't hit their targets.
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon

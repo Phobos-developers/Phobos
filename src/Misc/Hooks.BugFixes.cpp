@@ -68,7 +68,7 @@ DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 	if (!pType)
 		return 0;
 
-	const auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords, pType->SpeedType, -1,
+	const auto cell = MapClass::Instance.NearByLocation(pParasiteTechno->LastMapCoords, pType->SpeedType, -1,
 		pType->MovementZone, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
 
 	if (cell != CellStruct::Empty) // Cell2Coord makes X/Y values of CoordStruct non-zero, additional checks are required
@@ -297,7 +297,7 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 {
 	GET(HouseClass*, pHouse, EDX);
 	GET(int, idxBld, EBP);
-	auto const pType = BuildingTypeClass::Array->Items[idxBld];
+	auto const pType = BuildingTypeClass::Array[idxBld];
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
 	if (count == -1)
@@ -329,7 +329,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	GET(CellClass*, pThis, EBP);
 	GET(int, idxOverlay, EBX);
 	GET_STACK(int, state, STACK_OFFSET(0x10, 0x8));
-	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array->GetItem(idxOverlay)->Wall;
+	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array.GetItem(idxOverlay)->Wall;
 	enum { Attachable = 0x480549 };
 
 	if (isWall)
@@ -421,7 +421,7 @@ DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
 	GET(BuildingClass* const, pThis, ESI);
 	GET(CellClass* const, pTarget, EAX);
 
-	auto pWeapon = SuperWeaponTypeClass::Array->GetItem(pThis->FiringSWType)->WeaponType;
+	auto pWeapon = SuperWeaponTypeClass::Array.GetItem(pThis->FiringSWType)->WeaponType;
 	BulletClass* pBullet = nullptr;
 
 	if (pWeapon)
@@ -527,7 +527,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	auto nCoord = *pCoord;
 	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
 	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
-	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
+	auto nLandType = MapClass::Instance.GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
 	{
@@ -808,7 +808,7 @@ DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
 	GET(TechnoClass*, pSpawnTechno, EDI);
 
 	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
-	CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+	CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
 
 	pSpawnTechno->SetDestination(pCellDestination, true);
 
@@ -852,7 +852,7 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	if (range < 1)
 		range = 1;
 
-	auto const bounds = MapClass::Instance->MapCoordBounds;
+	auto const bounds = MapClass::Instance.MapCoordBounds;
 	auto const mapCoords = pCell->MapCoords;
 	int sectorWidth = bounds.Right / 20;
 	int sectorHeight = bounds.Bottom / 20;
@@ -1127,7 +1127,7 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 		speedType = pType->SpeedType;
 		movementZone = pType->MovementZone;
-		currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+		currentZoneType = MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
 	}
 
 	return 0;
@@ -1386,7 +1386,7 @@ DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
 	if (pTechno->WhatAmI() == BuildingClass::AbsID)
 		return 0;
 
-	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
 	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
@@ -1402,7 +1402,7 @@ DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
 	if (pTechno->WhatAmI() == BuildingClass::AbsID)
 		return 0;
 
-	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
 	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
@@ -1417,9 +1417,9 @@ DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
 	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
 	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
 	const auto movementZone = pFreeUnit->Type->MovementZone;
-	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
 	return SkipGameCode;
 }
 
@@ -1432,9 +1432,9 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
 	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
 	const auto movementZone = pFreeUnit->Type->MovementZone;
-	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
 	return SkipGameCode;
 }
 
@@ -1444,7 +1444,7 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 
 	GET(BuildingTypeClass*, pType, EAX);
 	LEA_STACK(CellStruct*, pDest, 0x4);
-	const auto pCell = MapClass::Instance->GetCellAt(*pDest);
+	const auto pCell = MapClass::Instance.GetCellAt(*pDest);
 	const auto pUndeploysInto = pType->UndeploysInto;
 
 	R->AL(pCell->IsClearToMove(pUndeploysInto->SpeedType, false, false, -1, pUndeploysInto->MovementZone, -1, 1));
@@ -1562,3 +1562,10 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 
 	return 0;
 }
+
+// EIP 004C2C19 crash has 2 causes: the Owner of an EBolt being invalid, and the ElectricBolt of a Unit being invalid
+// Vanilla doesn't have InvalidatePointer for EBolt, so it's made into this way to clear the pointer on EBolt
+// now we'll clear Owner for EBolt in AnnounceInvalidPointer so there won't be nullptr when EBolt trying to access an Owner
+// in this case, we can also dismiss ElectricBolt on Unit, to prevent the crash that caused by its invalidation
+DEFINE_JUMP(LJMP, 0x6FD5F2, 0x6FD5FC)
+DEFINE_JUMP(LJMP, 0x6FD600, 0x6FD606)

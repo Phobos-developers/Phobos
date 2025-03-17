@@ -319,7 +319,7 @@ New:
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
 - New Parabola trajectory (by CrimRecya)
-- Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)
+- Type select for buildings (code by TaranDahl, doc by Ollerus)
 - Raise alert when technos are taking damage (by TaranDahl)
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
@@ -337,11 +337,14 @@ New:
 - Customizable spawns queue (by TwinkleStar)
 - Initial spawns number (by TwinkleStar)
 - Override target under EMP attack behavior (By FS-21)
+- Recycle spawner in long-range (by TaranDahl)
+- Play an anim when recycling a spawner (by TaranDahl)
+- Recycle the spawner on other FLH (by TaranDahl)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
-- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
+- Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -465,8 +468,8 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
-- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
-- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
+- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl)
+- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl)
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
@@ -601,7 +604,7 @@ Vanilla fixes:
 - Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
 - Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
-- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied (by TaranDahl)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 - Fixed the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
 - `FreeUnit` uses its own `SpeedType` to determine where to spawn (by NetsuNegi)
@@ -611,6 +614,8 @@ Vanilla fixes:
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
+- Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

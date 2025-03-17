@@ -96,7 +96,7 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
 		return 0;
 
-	R->EAX(MapClass::Instance->GetCellAt(pObject->GetCoords()));
+	R->EAX(MapClass::Instance.GetCellAt(pObject->GetCoords()));
 
 	return 0;
 }
@@ -370,7 +370,7 @@ DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoi
 
 	// In vanilla, only aircrafts or `foots with fly locomotion` will call this virtual function
 	// So I don't know why WW use hard-coded `SpeedType::Track` and `MovementZone::Normal` to check this
-	R->AL(MapClass::Instance->GetCellAt(cell)->IsClearToMove(pType->SpeedType, false, false, -1, pType->MovementZone, -1, true));
+	R->AL(MapClass::Instance.GetCellAt(cell)->IsClearToMove(pType->SpeedType, false, false, -1, pType->MovementZone, -1, true));
 	return SkipGameCode;
 }
 
