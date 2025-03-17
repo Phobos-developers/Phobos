@@ -129,6 +129,7 @@ This page lists all the individual contributions to the project by their author.
   - Kill Object Automatically logic prototype
   - Customizable resource storage
   - Override uncloaked underwater attack behavior
+  - Override target under EMP attack behavior
   - AI Aircraft docks fix
   - Shared ammo logic
   - Customizable FLH when infantry is prone or deployed
@@ -254,6 +255,7 @@ This page lists all the individual contributions to the project by their author.
   - `<Player @ X>` as owner for pre-placed objects
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
+  - `IsSonic` wave drawing crash fix
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -344,6 +346,8 @@ This page lists all the individual contributions to the project by their author.
 - **FlyStar**:
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
+   - Fix `AltNextScenario` not taking effect
+   - Fix `Hospital=yes` building can't kick out infantry after loading a save
 - **NetsuNegi**:
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
@@ -355,6 +359,8 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
+   - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
+   - Fix `DefaultDisguise` showing wrong house colors for different players
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -371,16 +377,20 @@ This page lists all the individual contributions to the project by their author.
   - Customizable rocker amplitude
   - Customizable wake anim
   - Initial effort on optimization for crates' random distribution
+  - Customizable spawns queue
+  - Initial spawns number
 - **Fryone**:
   - Customizable ElectricBolt Arcs
   - Sound entry on unit's creation
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
   - Promotion animation
+  - Damaged unit image changes
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
+  - Fix a jumpjet crash related to voxel shadow drawing
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -399,6 +409,8 @@ This page lists all the individual contributions to the project by their author.
   - Sell or undeploy building on impact
   - Draw visual effects for airburst weapons
   - Technos recount current burst index when change the firing weapon
+  - Units will not always stuck in the factory
+  - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
 - **Ollerus**:
   - Build limit group enhancement
@@ -407,6 +419,7 @@ This page lists all the individual contributions to the project by their author.
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
+  - Fix `DefaultDisguise` showing wrong house colors for different players
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -421,11 +434,18 @@ This page lists all the individual contributions to the project by their author.
   - Bunkerable checks dehardcode
   - Prevent the units with locomotors that cause problems from entering the tank bunker
   - No turret unit turn to the target
+  - Units are now unable to kick out from a factory that is in construction process
+  - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+  - Recycle spawner in long-range
+  - Play an anim when recycling a spawner
+  - Recycle the spawner on other FLH
+  - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
 - **Aephiex** - initial fix for Ares academy not working on the initial payloads of vehicles built from a war factory
 - **Multfinite** - Allow to toggle main exception handler via command line argument `-ExceptionHandler=boolean`
+- **hejiajun107, Xkein** - Fix a jumpjet crash related to voxel shadow drawing
 - **Ares developers**:
   - YRpp and Syringe which are used, save/load, project foundation and generally useful code from Ares
   - unfinished RadTypes code

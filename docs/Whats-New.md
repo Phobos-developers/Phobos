@@ -10,11 +10,11 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- `PowersUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUp1DamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add.
-- `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
+- `PowersUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpXDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add.
+- `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
-- The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `WarpOut`.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
+- The obsolete `[General] -> WarpIn` has been enabled for the default anim type when technos are warping in. If you want to restore the vanilla behavior, use the same anim type as `[General] -> WarpOut`.
 - Vehicles with `Crusher=true` + `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
 
 ### From older Phobos versions
@@ -319,7 +319,7 @@ New:
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
 - New Parabola trajectory (by CrimRecya)
-- Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)
+- Type select for buildings (code by TaranDahl, doc by Ollerus)
 - Raise alert when technos are taking damage (by TaranDahl)
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
@@ -333,11 +333,20 @@ New:
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Technos recount current burst index when change the firing weapon (by CrimRecya)
 - Shield armor inheritance customization (by Ollerus)
+- Damaged unit image changes (by Fryone)
+- Customizable spawns queue (by TwinkleStar)
+- Initial spawns number (by TwinkleStar)
+- Override target under EMP attack behavior (By FS-21)
+- Recycle spawner in long-range (by TaranDahl)
+- Play an anim when recycling a spawner (by TaranDahl)
+- Recycle the spawner on other FLH (by TaranDahl)
+- Technos can maintain a suitable distance after firing (by CrimRecya)
 - Projectile subject to ground check before firing (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
-- Fix an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
+- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
+- Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -461,8 +470,8 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
-- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
-- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
+- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl)
+- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl)
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
@@ -593,16 +602,22 @@ Vanilla fixes:
 - Fixed objects with ally target and `AttackFriendlies=true` having their target reset every frame, particularly AI-owned buildings (by Starkku)
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers (by Starkku)
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix (by tyuah8)
-- Fix `Stop` command not working so well in some cases (by CrimRecya)
+- Fixed `Stop` command not working so well in some cases (by CrimRecya)
 - Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
-- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
+- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied (by TaranDahl)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
-- Fix the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
+- Fixed the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
 - `FreeUnit` uses its own `SpeedType` to determine where to spawn (by NetsuNegi)
-- Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land (by NetsuNegi)
-- Fix the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
+- Fixed the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land (by NetsuNegi)
+- Fixed the bug where pathfinding issues occur when a building performs undeploy (by NetsuNegi)
+- Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory (by CrimRecya & TaranDahl)
+- Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
+- Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
+- Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -644,7 +659,7 @@ Phobos fixes:
 - Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC` instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)
 - Buildings considered vehicles (`ConsideredVehicle=true` or not set in conjunction with `UndeploysInto` & 1x1 foundation) are now considered units by affected target enum checks (by Starkku)
 - Fixed Phobos Warhead effects not reliably being applied on damage area as opposed to full weapon-based Warhead detonation (by Starkku)
-- Fix `LimboKill` not working reliably (by CrimRecya)
+- Fixed `LimboKill` not working reliably (by CrimRecya)
 - Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by Starkku)
 - Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by default (while not displaying the pip) when they should not (by Starkku)
 - Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` overriding corresponding `IgnoreDesignators` settings (by Ollerus)
@@ -652,7 +667,9 @@ Phobos fixes:
 - Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` behavior inside tank bunkers (by Fryone)
 - Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters (by Fryone)
 - Fixed an issue that caused new attack and move script actions to pick buildings with `InvisibleInGame=yes` as targets (FS-21)
-- Fix `Insignia.Weapon` failing to parse in map (by Ollerus)
+- Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)
+- Fixed `AltNextScenario` not taking effect (by FlyStar)
+- Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH.
