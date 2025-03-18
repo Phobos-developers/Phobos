@@ -90,9 +90,6 @@ public:
 
 	static CoordStruct AddFLHToSourceCoords(const CoordStruct& sourceCoords, const CoordStruct& targetCoords, TechnoClass* const pTechno, AbstractClass* const pTarget, bool& subjectToGround)
 	{
-		if (!subjectToGround)
-			return sourceCoords;
-
 		// Buildings, air force, and passengers are not allowed, because they don't even know how to find a suitable location
 		if (((pTechno->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None) || pTechno->IsInAir() || pTarget->IsInAir() || pTechno->Transporter)
 		{
@@ -219,7 +216,7 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 	if (!pObstacleCell)
 	{
 		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get(); // Make AI search for suitable attack locations.
-		const auto newSourceCoords = BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, subjectToGround);
+		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
 	}
 
