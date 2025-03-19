@@ -1681,11 +1681,8 @@ RecountBurst=       ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[AudioVisual]
-JumpjetTilt=false                       ; boolean
-
 [SOMEUNIT]                              ; UnitType, with Locomotor=Jumpjet
-JumpjetTilt=                            ; boolean, defaults to [AudioVisual]->JumpjetTilt
+JumpjetTilt=false                       ; boolean
 JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
 JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
 JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value

@@ -185,7 +185,7 @@ public:
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
 
-		Nullable<bool> JumpjetTilt;
+		Valueable<bool> JumpjetTilt;
 		Valueable<double> JumpjetTilt_ForwardAccelFactor;
 		Valueable<double> JumpjetTilt_ForwardSpeedFactor;
 		Valueable<double> JumpjetTilt_SidewaysRotationFactor;
@@ -275,7 +275,7 @@ public:
 		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
 		Valueable<CoordStruct> Spawner_RecycleCoord;
 		Valueable<bool> Spawner_RecycleOnTurret;
-		
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -453,7 +453,7 @@ public:
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
 
-			, JumpjetTilt {}
+			, JumpjetTilt { false }
 			, JumpjetTilt_ForwardAccelFactor { 1.0 }
 			, JumpjetTilt_ForwardSpeedFactor { 1.0 }
 			, JumpjetTilt_SidewaysRotationFactor { 1.0 }
@@ -539,7 +539,7 @@ public:
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
-			
+
 			, Spawner_RecycleRange { Leptons(-1) }
 			, Spawner_RecycleAnim { }
 			, Spawner_RecycleCoord { {0,0,0} }

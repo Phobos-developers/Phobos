@@ -182,8 +182,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
 
-		if (pTypeExt->JumpjetTilt.Get(RulesExt::Global()->JumpjetTilt)
-			&& !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+		if (pTypeExt->JumpjetTilt && !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
 		{
 			if (pThis->CurrentSpeed > 0.0)
 			{
