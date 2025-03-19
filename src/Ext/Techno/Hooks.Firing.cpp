@@ -56,7 +56,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		}
 		else if (pCell->OverlayTypeIndex != -1)
 		{
-			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
+			auto const pOverlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
 
 			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels)
 			{
@@ -101,6 +101,11 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 			pTarget->IsDisguised())
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
+		}
+		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
+			pTarget->IsUnderEMP())
+		{
+			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
 		}
 
 		if (forceWeaponIndex >= 0)
@@ -410,6 +415,41 @@ DEFINE_HOOK(0x6FCBE6, TechnoClass_CanFire_BridgeAAFix, 0x6)
 #pragma endregion
 
 #pragma region TechnoClass_Fire
+DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
+{
+	enum { CanNotFire = 0x6FDE03 };
+
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (pThis->CurrentBurstIndex && pWeapon != pExt->LastWeaponType && pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
+		{
+			if (pExt->LastWeaponType && pExt->LastWeaponType->Burst)
+			{
+				const auto ratio = static_cast<double>(pThis->CurrentBurstIndex) / pExt->LastWeaponType->Burst;
+				const auto rof = static_cast<int>(ratio * pExt->LastWeaponType->ROF * pExt->AE.ROFMultiplier) - (Unsorted::CurrentFrame - pThis->LastFireBulletFrame);
+
+				if (rof > 0)
+				{
+					pThis->ChargeTurretDelay = rof;
+					pThis->RearmTimer.Start(rof);
+					pThis->CurrentBurstIndex = 0;
+					pExt->LastWeaponType = pWeapon;
+
+					return CanNotFire;
+				}
+			}
+
+			pThis->CurrentBurstIndex = 0;
+		}
+
+		pExt->LastWeaponType = pWeapon;
+	}
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_DiscardAEOnFire, 0x6)
 {
@@ -479,7 +519,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 				unsigned int cellIndex = (i + rand) % size;
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
-				CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+				CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (pThis->OnBridge || tgtCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
 				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
@@ -586,6 +626,51 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 	}
 
 	return 0;
+}
+
+static inline void SetChargeTurretDelay(TechnoClass* pThis, int rearmDelay, WeaponTypeClass* pWeapon)
+{
+	pThis->ChargeTurretDelay = rearmDelay;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->ChargeTurret_Delays.size() > 0)
+	{
+		size_t burstIndex = pWeapon->Burst > 1 ? pThis->CurrentBurstIndex - 1 : 0;
+		size_t index = burstIndex < pWeaponExt->ChargeTurret_Delays.size() ? burstIndex : pWeaponExt->ChargeTurret_Delays.size() - 1;
+		int delay = pWeaponExt->ChargeTurret_Delays[index];
+
+		if (delay <= 0)
+			return;
+
+		pThis->ChargeTurretDelay = delay;
+		TechnoExt::ExtMap.Find(pThis)->ChargeTurretTimer.Start(delay);
+	}
+}
+
+DEFINE_HOOK(0x6FE4A4, TechnoClass_FireAt_ChargeTurret1, 0x6)
+{
+	enum { SkipGameCode = 0x6FE4AA };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, rearmDelay, EAX);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0xB0, -0x70));
+
+	SetChargeTurretDelay(pThis, rearmDelay, pWeapon);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6FF29E, TechnoClass_FireAt_ChargeTurret2, 0x6)
+{
+	enum { SkipGameCode = 0x6FF2A4 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, rearmDelay, EAX);
+	GET(WeaponTypeClass*, pWeapon, EBX);
+
+	SetChargeTurretDelay(pThis, rearmDelay, pWeapon);
+
+	return SkipGameCode;
 }
 
 #pragma endregion
@@ -705,9 +790,10 @@ DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EDI);
 
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	auto const pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
-	double rof = pWeapon->ROF * pTechnoExt->AE.ROFMultiplier;
+	double rof = pWeapon->ROF * pExt->AE.ROFMultiplier;
+	pExt->LastRearmWasFullDelay = true;
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
 	__asm { fld rof };
@@ -721,17 +807,17 @@ DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->LastRearmWasFullDelay = false;
+
 	// Currently only used with infantry, so a performance saving measure.
 	if (pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+		if (pExt->ForceFullRearmDelay)
 		{
-			if (pExt->ForceFullRearmDelay)
-			{
-				pExt->ForceFullRearmDelay = false;
-				pThis->CurrentBurstIndex = 0;
-				return ApplyFullRearmDelay;
-			}
+			pExt->ForceFullRearmDelay = false;
+			pThis->CurrentBurstIndex = 0;
+			return ApplyFullRearmDelay;
 		}
 	}
 

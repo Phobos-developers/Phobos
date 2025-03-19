@@ -2,6 +2,7 @@
 #include <BulletClass.h>
 #include <WeaponTypeClass.h>
 #include <DiskLaserClass.h>
+#include <EBolt.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -28,6 +29,7 @@ public:
 		Valueable<bool> Bolt_Disable2;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
+		Valueable<int> Bolt_Duration;
 		Nullable<bool> Strafing;
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
@@ -40,6 +42,7 @@ public:
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
 		Nullable<PartialVector2D<int>> ROF_RandomDelay;
+		ValueableVector<int> ChargeTurret_Delays;
 		Valueable<bool> OmniFire_TurnToTarget;
 		Valueable<bool> FireOnce_ResetSequence;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
@@ -58,7 +61,16 @@ public:
 		ValueableVector<int> AttachEffect_DisallowedMaxCounts;
 		Valueable<bool> AttachEffect_CheckOnFirer;
 		Valueable<bool> AttachEffect_IgnoreFromSameSource;
+		Valueable<Leptons> KeepRange;
+		Valueable<bool> KeepRange_AllowAI;
+		Valueable<bool> KeepRange_AllowPlayer;
 		Valueable<bool> KickOutPassengers;
+
+		Nullable<ColorStruct> Beam_Color;
+		Valueable<int> Beam_Duration;
+		Valueable<double> Beam_Amplitude;
+		Valueable<bool> Beam_IsHouseColor;
+		Valueable<int> LaserThickness;
 
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
@@ -68,6 +80,7 @@ public:
 			, Bolt_Disable2 { false }
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
+			, Bolt_Duration { 17 }
 			, Strafing { }
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
@@ -80,6 +93,7 @@ public:
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
 			, ROF_RandomDelay {}
+			, ChargeTurret_Delays {}
 			, OmniFire_TurnToTarget { false }
 			, FireOnce_ResetSequence { true }
 			, ExtraWarheads {}
@@ -98,7 +112,15 @@ public:
 			, AttachEffect_DisallowedMaxCounts {}
 			, AttachEffect_CheckOnFirer { false }
 			, AttachEffect_IgnoreFromSameSource { false }
+			, KeepRange { Leptons(0) }
+			, KeepRange_AllowAI { false }
+			, KeepRange_AllowPlayer { false }
 			, KickOutPassengers { true }
+			, Beam_Color {}
+			, Beam_Duration { 15 }
+			, Beam_Amplitude { 40.0 }
+			, Beam_IsHouseColor { false }
+			, LaserThickness { 3 }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
@@ -134,6 +156,8 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static double OldRadius;
+	static PhobosMap<EBolt*, const WeaponTypeExt::ExtData*> BoltWeaponMap;
+	static const WeaponTypeExt::ExtData* BoltWeaponType;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
@@ -141,4 +165,5 @@ public:
 	static void DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr, AbstractClass* pTarget = nullptr);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
+	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
 };

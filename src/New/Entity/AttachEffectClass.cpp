@@ -101,8 +101,11 @@ void AttachEffectClass::AI()
 		{
 			double ROFModifier = this->Type->ROFMultiplier;
 			auto const pTechno = this->Techno;
+			auto const pExt = TechnoExt::ExtMap.Find(this->Techno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
-			pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
+
+			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
+				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
 		if (this->Type->HasTint())
@@ -305,16 +308,15 @@ void AttachEffectClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
 		pAnim->SetOwnerObject(this->Techno);
-		pAnim->Owner = this->Type->Animation_UseInvokerAsOwner ? InvokerHouse : this->Techno->Owner;
+		auto const pOwner = this->Type->Animation_UseInvokerAsOwner ? this->InvokerHouse : this->Techno->Owner;
+		pAnim->Owner = pOwner;
 		pAnim->RemainingIterations = 0xFFu;
 		this->Animation = pAnim;
 
 		if (this->Type->Animation_UseInvokerAsOwner)
-		{
-			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-			pAnimExt->SetInvoker(Invoker);
-		}
-
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Invoker, this->InvokerHouse);
+		else
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 	}
 }
 
@@ -522,7 +524,9 @@ int AttachEffectClass::Attach(TechnoClass* pTarget, HouseClass* pInvokerHouse, T
 	if (ROFModifier != 1.0)
 	{
 		pTarget->RearmTimer.Start(static_cast<int>(pTarget->RearmTimer.GetTimeLeft() * ROFModifier));
-		pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
+
+		if (!pTargetExt->ChargeTurretTimer.HasStarted() && pTargetExt->LastRearmWasFullDelay)
+			pTarget->ChargeTurretDelay = static_cast<int>(pTarget->ChargeTurretDelay * ROFModifier);
 	}
 
 	if (attachedCount > 0)

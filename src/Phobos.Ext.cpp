@@ -240,6 +240,13 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
 
+	// Fix EBolt Owner not being invalidated
+	for (auto const pBolt : EBolt::Array)
+	{
+		if (pBolt->Owner == pInvalid)
+			pBolt->Owner = nullptr;
+	}
+
 	return 0;
 }
 
@@ -256,7 +263,6 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::SaveGlobals(pStm);
 	return 0;
 }
@@ -264,7 +270,6 @@ DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::LoadGlobals(pStm);
 	return 0;
 }
