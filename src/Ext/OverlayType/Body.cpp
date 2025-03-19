@@ -30,11 +30,10 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//INI_EX exINI(pINI);
 
 	auto pArtSection = pThis->ImageFile;
-	auto const pArtINI = &CCINIClass::INI_Art();
-	INI_EX exArtINI(pArtINI);
+	INI_EX exArtINI(&CCINIClass::INI_Art);
 
 	this->ZAdjust.Read(exArtINI, pArtSection, "ZAdjust");
-	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
+	this->PaletteFile.Read(&CCINIClass::INI_Art, pArtSection, "Palette");
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 
 	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
