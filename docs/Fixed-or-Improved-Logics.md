@@ -1346,6 +1346,18 @@ Ammo.AddOnDeploy=0      ; integer
 Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
 ```
 
+### Sinking behavior dehardcode
+
+- In vanilla, whether a ship sinks when it dies on the water is determined by multiple settings of hardcoding. The speed of the sinking is hardcoded to 5 Leptons per frame.
+- Now you can determine whether a ship sinks with a dedicated flag `Sinkable`, and use `SinkSpeed` to customize the speed at which the ship sinks.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+Sinkable=               ; bool
+SinkSpeed=5             ; integer, lepton per frame
+```
+
 ### Unit Without Turret Always Turn To Target
 
 - Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
