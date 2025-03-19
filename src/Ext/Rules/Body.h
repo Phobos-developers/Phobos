@@ -176,6 +176,7 @@ public:
 		Valueable<bool> UseFixedVoxelLighting;
 
 		Valueable<bool> AttackMove_Aggressive;
+		Valueable<bool> AttackMove_UpdateTarget;
 
 		Valueable<bool> RecountBurst;
 		Valueable<bool> NoRearm_UnderEMP;
@@ -328,6 +329,7 @@ public:
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
 			, AttackMove_Aggressive { false }
+			, AttackMove_UpdateTarget { false }
 			, RecountBurst { false }
 			, NoRearm_UnderEMP { false }
 			, NoRearm_Temporal { false }

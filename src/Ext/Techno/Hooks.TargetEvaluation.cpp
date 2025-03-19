@@ -181,7 +181,7 @@ DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_Aggressive) && CheckAttackMoveCanResetTarget(pThis))
+	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_UpdateTarget) && CheckAttackMoveCanResetTarget(pThis))
 	{
 		pThis->Target = nullptr;
 		pThis->HaveAttackMoveTarget = false;
