@@ -37,8 +37,8 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
 	if (Phobos::UI::ProducingProgress_Show)
 	{
-		auto pPlayer = HouseClass::CurrentPlayer();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
+		auto pPlayer = HouseClass::CurrentPlayer;
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(HouseClass::CurrentPlayer->SideIndex));
 		int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
 		int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
 		int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;
@@ -68,11 +68,11 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 					: -1;
 
 				Point2D vPos = { XBase + i * XOffset, YBase };
-				RectangleStruct sidebarRect = DSurface::Sidebar()->GetRect();
+				RectangleStruct sidebarRect = DSurface::Sidebar->GetRect();
 
 				if (idxFrame != -1)
 				{
-					DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
+					DSurface::Sidebar->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
 						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 				}
 			}

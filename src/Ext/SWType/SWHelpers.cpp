@@ -80,7 +80,7 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 		return false;
 
 	// a single inhibitor in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+	return std::any_of(TechnoClass::Array.begin(), TechnoClass::Array.end(), [=, &coords](TechnoClass* pTechno)
 		{ return this->IsInhibitorEligible(pOwner, coords, pTechno); }
 	);
 }
@@ -118,7 +118,7 @@ bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coo
 		return true;
 
 	// a single designator in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+	return std::any_of(TechnoClass::Array.begin(), TechnoClass::Array.end(), [=, &coords](TechnoClass* pTechno)
 		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
 }
 

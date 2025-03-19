@@ -223,7 +223,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
-			, MissingCameo { GameStrings::XXICON_SHP() }
+			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }
 			, PlacementGrid_TranslucencyWithPreview { }

@@ -28,7 +28,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
 ![image](_static/images/jumpjet-turning.gif)
-*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
+*Jumpjet turning to target applied in Robot Storm X*
 
 - Fixed the bug when turreted jumpjet units always facing bottom-right direction when motion stops.
 - Fixed the bug when jumpjet objects are unable to use `Sensors`.
@@ -192,6 +192,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
+- Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
 
 ## Fixes / interactions with other extensions
 
