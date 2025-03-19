@@ -1069,11 +1069,14 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
+	int count = 0;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
+
+		count++;
 
 		if (attachEffect->HasCumulativeAnim)
 		{
@@ -1093,7 +1096,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 
 	if (pAEWithAnim)
 	{
-		pAEWithAnim->UpdateCumulativeAnim();
+		pAEWithAnim->UpdateCumulativeAnim(count);
 
 		if (pRemoved == pAEWithAnim)
 		{

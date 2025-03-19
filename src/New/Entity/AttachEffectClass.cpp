@@ -329,12 +329,10 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
-void AttachEffectClass::UpdateCumulativeAnim()
+void AttachEffectClass::UpdateCumulativeAnim(int count)
 {
 	if (!this->HasCumulativeAnim || !this->Animation)
 		return;
-
-	int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(this->Type);
 
 	if (count < 1)
 	{
@@ -580,7 +578,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			currentTypeCount++;
 			match = attachEffect;
 
-			if (pType->Cumulative && (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker)))
+			if (!pType->Cumulative)
+				break;
+			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
 				cumulativeMatches.push_back(attachEffect);
 		}
 	}
@@ -763,7 +763,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || pTargetExt->GetAttachedEffectCumulativeCount(pType) < 2)
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount < 2)
 					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
@@ -777,6 +777,10 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			}
 
 			it = targetAEs->erase(it);
+			stackCount--;
+
+			if (stackCount <= 0)
+				break;
 		}
 		else
 		{

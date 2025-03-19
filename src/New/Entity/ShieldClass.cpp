@@ -636,11 +636,12 @@ void ShieldClass::SelfHealing()
 	}
 
 	const double amount = timerWHModifier->InProgress() ? this->SelfHealing_Warhead : pType->SelfHealing;
-	const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
 	const auto percentageAmount = this->GetPercentageAmount(amount);
 
 	if (percentageAmount != 0)
 	{
+		const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+
 		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 

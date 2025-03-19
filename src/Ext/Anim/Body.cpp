@@ -45,7 +45,7 @@ void AnimExt::ExtData::CreateAttachedSystem()
 	const auto pThis = this->OwnerObject();
 	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
+	if (pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
 		this->AttachedSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr);
 		AnimExt::AnimsWithAttachedParticles.push_back(pThis);

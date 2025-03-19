@@ -66,11 +66,10 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 
 	if (pThis->Owner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
-		{
-			if (pTypeExt->Spawner_DelayFrames.isset())
-				R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
-		}
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+		if (pTypeExt->Spawner_DelayFrames.isset())
+			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
 	}
 
 	return 0;
@@ -83,11 +82,10 @@ DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
 
 	if (pThis->Owner)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
-		{
-			if (pTypeExt->Spawner_DelayFrames.isset())
-				R->ECX(pTypeExt->Spawner_DelayFrames.Get());
-		}
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+		if (pTypeExt->Spawner_DelayFrames.isset())
+			R->ECX(pTypeExt->Spawner_DelayFrames.Get());
 	}
 
 	return 0;
@@ -178,6 +176,7 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 	GET(SpawnManagerClass*, pThis, ESI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
 	if (pTypeExt->Promote_IncludeSpawns)
 	{
 		for (auto i : pThis->SpawnedNodes)
