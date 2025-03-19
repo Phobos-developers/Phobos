@@ -117,7 +117,7 @@ void SWSidebarClass::InitIO()
 		}
 	}
 
-	for (const auto superIdx : SidebarExt::Global()->SWSidebar_Indices)
+	for (const auto superIdx : ScenarioExt::Global()->SWSidebar_Indices)
 		SWSidebarClass::Instance.AddButton(superIdx);
 }
 
@@ -137,7 +137,7 @@ bool SWSidebarClass::AddButton(int superIdx)
 	const bool success = columns.back()->AddButton(superIdx);
 
 	if (success)
-		SidebarExt::Global()->SWSidebar_Indices.emplace_back(superIdx);
+		ScenarioExt::Global()->SWSidebar_Indices.emplace_back(superIdx);
 
 	return success;
 }
@@ -231,7 +231,7 @@ int SWSidebarClass::GetMaximumButtonCount()
 
 bool SWSidebarClass::IsEnabled()
 {
-	return SidebarExt::Global()->SWSidebar_Enable;
+	return ScenarioExt::Global()->SWSidebar_Enable;
 }
 
 void SWSidebarClass::RecheckCameo()

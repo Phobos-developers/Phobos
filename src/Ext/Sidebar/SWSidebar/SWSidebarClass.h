@@ -2,7 +2,7 @@
 #include "SWButtonClass.h"
 #include "SWColumnClass.h"
 #include "ToggleSWButtonClass.h"
-#include <Ext/Sidebar/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <CommandClass.h>
 
 class SWSidebarClass

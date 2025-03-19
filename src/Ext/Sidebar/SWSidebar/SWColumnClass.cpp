@@ -148,7 +148,7 @@ bool SWColumnClass::RemoveButton(int superIdx)
 
 	AnnounceInvalidPointer(SWSidebarClass::Instance.CurrentButton, *it);
 
-	auto& indices = SidebarExt::Global()->SWSidebar_Indices;
+	auto& indices = ScenarioExt::Global()->SWSidebar_Indices;
 	const auto it_Idx = std::find(indices.cbegin(), indices.cend(), superIdx);
 
 	if (it_Idx != indices.cend())

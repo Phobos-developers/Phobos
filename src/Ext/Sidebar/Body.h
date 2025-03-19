@@ -18,12 +18,8 @@ public:
 	class ExtData final : public Extension<SidebarClass>
 	{
 	public:
-		bool SWSidebar_Enable;
-		std::vector<int> SWSidebar_Indices;
 
 		ExtData(SidebarClass* OwnerObject) : Extension<SidebarClass>(OwnerObject)
-			, SWSidebar_Enable { true }
-			, SWSidebar_Indices {}
 		{ }
 
 		virtual ~ExtData() = default;
