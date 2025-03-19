@@ -821,13 +821,15 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 
 #pragma region save_load
 
-//Skip incorrect load ctor call in various LocomotionClass_Load
+//Skip incorrect load ctor call in various Load
 DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state removal on loading game
 DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
 DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
 DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
 DEFINE_JUMP(LJMP, 0x65B3F7, 0x65B416);//RadSite, no effect
-
+DEFINE_JUMP(LJMP, 0x6F4317, 0x6F43AB);
+DEFINE_JUMP(LJMP, 0x6F43B5, 0x6F43C7);//Techno (AirstrikeTimer,CloakProgress,TurretRecoil,BarrelRecoil)
+DEFINE_JUMP(LJMP, 0x43B694, 0x43B6C3);//Building(RepairProgress)
 // Save GameModeOptions in campaign modes
 DEFINE_JUMP(LJMP, 0x67E3BD, 0x67E3D3); // Save
 DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
