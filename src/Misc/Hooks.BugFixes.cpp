@@ -790,15 +790,14 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 
 	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
-	// Fix : update powered anims
+	// Fix : update powered anims next frame
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
-		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+		pThis->WasOnline = !pThis->WasOnline;
 	return res;
 }
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
-DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
-DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
+DEFINE_JUMP(LJMP, 0x6E0C78, 0x6E0C7F);//Simplify TAction 36
 
 // Fix a glitch related to incorrect target setting for missiles
 // Author: Belonit
