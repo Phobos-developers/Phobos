@@ -23,19 +23,19 @@ bool SWButtonClass::Draw(bool forced)
 	if (!forced)
 		return false;
 
-	const auto pSurface = DSurface::Composite();
+	const auto pSurface = DSurface::Composite;
 	auto bounds = pSurface->GetRect();
 	Point2D location = { this->X, this->Y };
 	RectangleStruct destRect = { location.X, location.Y, this->Width, this->Height };
 
-	const auto pCurrent = HouseClass::CurrentPlayer();
+	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	// support for pcx cameos
 	if (const auto pPCXCameo = pSWExt->SidebarPCX.GetSurface())
 	{
-		PCX::Instance->BlitToSurface(&destRect, pSurface, pPCXCameo);
+		PCX::Instance.BlitToSurface(&destRect, pSurface, pPCXCameo);
 	}
 	else if (const auto pCameo = pSuper->Type->SidebarImage) // old shp cameos, fixed palette
 	{
@@ -46,10 +46,10 @@ bool SWButtonClass::Draw(bool forced)
 
 		if (!_stricmp(pCameoRef->Filename, GameStrings::XXICON_SHP) && strstr(pFilename, ".pcx"))
 		{
-			PCX::Instance->LoadFile(pFilename);
+			PCX::Instance.LoadFile(pFilename);
 
-			if (const auto CameoPCX = PCX::Instance->GetSurface(pFilename))
-				PCX::Instance->BlitToSurface(&destRect, pSurface, CameoPCX);
+			if (const auto CameoPCX = PCX::Instance.GetSurface(pFilename))
+				PCX::Instance.BlitToSurface(&destRect, pSurface, CameoPCX);
 		}
 		else
 		{
@@ -61,7 +61,7 @@ bool SWButtonClass::Draw(bool forced)
 	if (this->IsHovering)
 	{
 		RectangleStruct cameoRect = { location.X, location.Y, this->Width, this->Height };
-		const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor());
+		const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
 		pSurface->DrawRect(&cameoRect, tooltipColor);
 	}
 
@@ -83,10 +83,11 @@ bool SWButtonClass::Draw(bool forced)
 		if (buttonId < 10)
 		{
 			unsigned short hotkey = 0;
-			for (int i = 0; i < CommandClass::Hotkeys->IndexCount; i++)
+
+			for (int idx = 0; idx < CommandClass::Hotkeys.IndexCount; idx++)
 			{
-				if (CommandClass::Hotkeys->IndexTable[i].Data == SWSidebarClass::Commands[buttonId])
-					hotkey = CommandClass::Hotkeys->IndexTable[i].ID;
+				if (CommandClass::Hotkeys.IndexTable[idx].Data == SWSidebarClass::Commands[buttonId])
+					hotkey = CommandClass::Hotkeys.IndexTable[idx].ID;
 			}
 
 			Point2D textLoc = { location.X + this->Width / 2, location.Y };
@@ -151,11 +152,11 @@ bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 		return false;
 
 	if (flags & GadgetFlag::RightPress)
-		DisplayClass::Instance->CurrentSWTypeIndex = -1;
+		DisplayClass::Instance.CurrentSWTypeIndex = -1;
 
 	if (flags & GadgetFlag::LeftPress)
 	{
-		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+		MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 		VocClass::PlayGlobal(RulesClass::Instance->GUIBuildSound, 0x2000, 1.0);
 		this->LaunchSuper();
 	}
@@ -172,7 +173,7 @@ void SWButtonClass::SetColumn(int column)
 
 bool SWButtonClass::LaunchSuper() const
 {
-	const auto pCurrent = HouseClass::CurrentPlayer();
+	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto pSuper = pCurrent->Supers[this->SuperIndex];
 	const auto pSWExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 	const bool manual = !pSWExt->SW_ManualFire && pSWExt->SW_AutoFire;
@@ -202,17 +203,17 @@ bool SWButtonClass::LaunchSuper() const
 			}
 			else
 			{
-				DisplayClass::Instance->CurrentBuilding = nullptr;
-				DisplayClass::Instance->CurrentBuildingType = nullptr;
-				DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
-				DisplayClass::Instance->SetActiveFoundation(nullptr);
-				MapClass::Instance->SetRepairMode(0);
-				MapClass::Instance->SetSellMode(0);
-				DisplayClass::Instance->PowerToggleMode = false;
-				DisplayClass::Instance->PlanningMode = false;
-				DisplayClass::Instance->PlaceBeaconMode = false;
-				DisplayClass::Instance->CurrentSWTypeIndex = swIndex;
-				MapClass::Instance->UnselectAll();
+				DisplayClass::Instance.CurrentBuilding = nullptr;
+				DisplayClass::Instance.CurrentBuildingType = nullptr;
+				DisplayClass::Instance.CurrentBuildingOwnerArrayIndex = -1;
+				DisplayClass::Instance.SetActiveFoundation(nullptr);
+				MapClass::Instance.SetRepairMode(0);
+				MapClass::Instance.SetSellMode(0);
+				DisplayClass::Instance.PowerToggleMode = false;
+				DisplayClass::Instance.PlanningMode = false;
+				DisplayClass::Instance.PlaceBeaconMode = false;
+				DisplayClass::Instance.CurrentSWTypeIndex = swIndex;
+				MapClass::Instance.UnselectAll();
 				VoxClass::PlayIndex(pSWExt->EVA_SelectTarget);
 			}
 

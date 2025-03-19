@@ -17,7 +17,7 @@ bool SWColumnClass::Draw(bool forced)
 	if (!SWSidebarClass::IsEnabled())
 		return false;
 
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int cameoBackgroundWidth = Phobos::UI::SuperWeaponSidebar_Interval + cameoWidth;
 
@@ -28,7 +28,7 @@ bool SWColumnClass::Draw(bool forced)
 		for (const auto button : this->Buttons)
 		{
 			RectangleStruct drawRect { this->X, button->Y - cameoHarfInterval, cameoBackgroundWidth, Phobos::UI::SuperWeaponSidebar_CameoHeight };
-			PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pCenterPCX);
+			PCX::Instance.BlitToSurface(&drawRect, DSurface::Composite, pCenterPCX);
 		}
 	}
 
@@ -36,14 +36,14 @@ bool SWColumnClass::Draw(bool forced)
 	{
 		const int height = pTopPCX->GetHeight();
 		RectangleStruct drawRect { this->X, this->Y, cameoBackgroundWidth, height };
-		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pTopPCX);
+		PCX::Instance.BlitToSurface(&drawRect, DSurface::Composite, pTopPCX);
 	}
 
 	if (const auto pBottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
 	{
 		const int height = pBottomPCX->GetHeight();
 		RectangleStruct drawRect { this->X, this->Y + this->Height - height, cameoBackgroundWidth, height };
-		PCX::Instance->BlitToSurface(&drawRect, DSurface::Composite, pBottomPCX);
+		PCX::Instance.BlitToSurface(&drawRect, DSurface::Composite, pBottomPCX);
 	}
 
 	for (const auto button : this->Buttons)
@@ -58,13 +58,13 @@ void SWColumnClass::OnMouseEnter()
 		return;
 
 	SWSidebarClass::Instance.CurrentColumn = this;
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }
 
 void SWColumnClass::OnMouseLeave()
 {
 	SWSidebarClass::Instance.CurrentColumn = nullptr;
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }
 
 bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModifier modifier)
@@ -74,7 +74,7 @@ bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModi
 
 bool SWColumnClass::AddButton(int superIdx)
 {
-	const auto pSWType = SuperWeaponTypeClass::Array->GetItemOrDefault(superIdx);
+	const auto pSWType = SuperWeaponTypeClass::Array.GetItemOrDefault(superIdx);
 
 	if (!pSWType)
 		return false;
@@ -97,8 +97,8 @@ bool SWColumnClass::AddButton(int superIdx)
 	{
 		auto Compare = [ownerBits](const int left, const int right)
 		{
-			const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(left));
-			const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItemOrDefault(right));
+			const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItemOrDefault(left));
+			const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItemOrDefault(right));
 
 			if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
 				return false;
@@ -116,8 +116,8 @@ bool SWColumnClass::AddButton(int superIdx)
 
 		this->RemoveButton(backIdx);
 		sidebar.DisableEntry = true;
-		SidebarClass::Instance->AddCameo(AbstractType::Special, backIdx);
-		SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(AbstractType::Super, backIdx, false));
+		SidebarClass::Instance.AddCameo(AbstractType::Special, backIdx);
+		SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(AbstractType::Super, backIdx, false));
 		sidebar.DisableEntry = false;
 	}
 
@@ -128,7 +128,7 @@ bool SWColumnClass::AddButton(int superIdx)
 		return false;
 
 	button->Zap();
-	GScreenClass::Instance->AddButton(button);
+	GScreenClass::Instance.AddButton(button);
 	SWSidebarClass::Instance.SortButtons();
 
 	if (const auto toggleButton = SWSidebarClass::Instance.ToggleButton)
@@ -154,7 +154,7 @@ bool SWColumnClass::RemoveButton(int superIdx)
 	if (it_Idx != indices.cend())
 		indices.erase(it_Idx);
 
-	GScreenClass::Instance->RemoveButton(*it);
+	GScreenClass::Instance.RemoveButton(*it);
 	buttons.erase(it);
 	return true;
 }
@@ -166,7 +166,7 @@ void SWColumnClass::ClearButtons(bool remove)
 	if (remove)
 	{
 		for (const auto button : buttons)
-			GScreenClass::Instance->RemoveButton(button);
+			GScreenClass::Instance.RemoveButton(button);
 	}
 
 	buttons.clear();
@@ -174,7 +174,7 @@ void SWColumnClass::ClearButtons(bool remove)
 
 void SWColumnClass::SetHeight(int height)
 {
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 
 	this->Height = height;
 

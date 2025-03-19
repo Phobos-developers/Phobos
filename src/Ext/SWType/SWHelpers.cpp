@@ -291,7 +291,7 @@ void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer
 			// user defined color
 			color = this->Message_ColorScheme;
 		}
-		else if (const auto pCurrent = HouseClass::CurrentPlayer())
+		else if (const auto pCurrent = HouseClass::CurrentPlayer)
 		{
 			// default way: the current player's color
 			color = pCurrent->ColorSchemeIndex;
@@ -299,5 +299,5 @@ void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer
 	}
 
 	// print the message
-	MessageListClass::Instance->PrintMessage(message, RulesClass::Instance->MessageDelay, color);
+	MessageListClass::Instance.PrintMessage(message, RulesClass::Instance->MessageDelay, color);
 }

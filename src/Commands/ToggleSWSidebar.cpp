@@ -29,5 +29,5 @@ void ToggleSWSidebar::Execute(WWKey eInput) const
 	ToggleSWButtonClass::SwitchSidebar();
 
 	if (SWSidebarClass::Instance.CurrentColumn)
-		MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+		MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }

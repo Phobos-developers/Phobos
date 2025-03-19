@@ -10,7 +10,7 @@ template <typename T>
 T* MakeCommand()
 {
 	T* command = GameCreate<T>();
-	CommandClass::Array->AddItem(command);
+	CommandClass::Array.AddItem(command);
 	return command;
 };
 

@@ -18,18 +18,18 @@ bool ToggleSWButtonClass::Draw(bool forced)
 	if (columns.empty())
 		return false;
 
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 	const auto pTogglePCX = SWSidebarClass::IsEnabled() ? pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : pSideExt->SuperWeaponSidebar_OffPCX.GetSurface();
 
 	if (!pTogglePCX)
 		return false;
 
 	RectangleStruct destRect { this->X, this->Y, this->Width, this->Height };
-	PCX::Instance->BlitToSurface(&destRect, DSurface::Composite, pTogglePCX);
+	PCX::Instance.BlitToSurface(&destRect, DSurface::Composite, pTogglePCX);
 
 	if (this->IsHovering)
 	{
-		const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor());
+		const COLORREF tooltipColor = Drawing::RGB_To_Int(Drawing::TooltipColor);
 		DSurface::Composite->DrawRect(&destRect, tooltipColor);
 	}
 
@@ -44,14 +44,14 @@ void ToggleSWButtonClass::OnMouseEnter()
 		return;
 
 	this->IsHovering = true;
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }
 
 void ToggleSWButtonClass::OnMouseLeave()
 {
 	this->IsHovering = false;
 	this->IsPressed = false;
-	MouseClass::Instance->UpdateCursor(MouseCursorType::Default, false);
+	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }
 
 bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
@@ -61,7 +61,7 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 	if (columns.empty())
 		return false;
 
-	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->Items[ScenarioClass::Instance->PlayerSideIndex]);
+	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 
 	if (SWSidebarClass::IsEnabled() ? !pSideExt->SuperWeaponSidebar_OnPCX.GetSurface() : !pSideExt->SuperWeaponSidebar_OffPCX.GetSurface())
 		return false;
@@ -94,7 +94,7 @@ void ToggleSWButtonClass::UpdatePosition()
 	else
 	{
 		position.X = 0;
-		position.Y = (GameOptionsClass::Instance->ScreenHeight - this->Height) / 2;
+		position.Y = (GameOptionsClass::Instance.ScreenHeight - this->Height) / 2;
 	}
 
 	this->SetPosition(position.X, position.Y);
