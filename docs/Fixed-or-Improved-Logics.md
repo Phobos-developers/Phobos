@@ -28,13 +28,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug allowing jumpjet units to continue firing at enemy target when crashing.
 
 ![image](_static/images/jumpjet-turning.gif)
-*Jumpjet turning to target applied in [Robot Storm X](https://www.moddb.com/mods/cc-robot-storm-x)*
+*Jumpjet turning to target applied in Robot Storm X*
 
 - Fixed the bug when turreted jumpjet units always facing bottom-right direction when motion stops.
 - Fixed the bug when jumpjet objects are unable to use `Sensors`.
-- Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
-- Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
-- Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
 - Allowed usage of `AlternateFLH` of vehicles in `OpenTopped` transport.
 - Improved the statistic distribution of the spawned crates over the visible area of the map so that they will no longer have a higher chance to show up near the edges.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
@@ -60,9 +57,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - AITrigger can now recognize Building Upgrades as legal condition.
 - `EWGates` and `NSGates` now will link walls like `xxGateOne` and `xxGateTwo` do.
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
-- Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
+- Fixed missing `No Enter` cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
-- Aircraft & jumpjet units are now affected by speed modifiers such as `SpeedAircraft/Infantry/UnitsMult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*.
+- Aircraft & jumpjet units are now affected by speed modifiers such as `Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and Crates / AttachEffect *(Ares feature)*.
 - Both voxel and SHP vehicle units should now correctly respect custom palette set through `Palette`.
 - Setting `RadarInvisible` to true on TerrainTypes now hides them from minimap display.
 - Mind control indicator animations will now correctly restore on mind controlled objects when uncloaked.
@@ -127,7 +124,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
-- Fixed the issue where the powered anims of `Powered`/`PoweredSpecial` buildings cease to update when being captured by enemies.
+- Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fix a glitch related to incorrect target setting for missiles.
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
@@ -181,12 +178,22 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Aircraft with `AirportBound=no` continue moving forward.
 - Now in air team members will use the 2D distance instead of the 3D distance to judge whether have reached the mission destination, so as to prevent the problem that the mission is stuck and cannot continue in some cases (such as when the jumpjet stops on the building).
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
+- `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
 - Allowed `AuxBuilding` to count building upgrades.
-- Fix the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Prevent the units with locomotors that cause problems from entering the tank bunker.
-- Fix an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
+- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
+- Fixed the bug that destroyed unit may leaves sensors.
+- `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
+- The bug where naval ships as StartUnit might spawn on land has been fixed.
+- When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
+- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
+- Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
+- Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
+- Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
 
 ## Fixes / interactions with other extensions
 
@@ -315,7 +322,7 @@ ExtraShadow=true              ; boolean
     - `SmallFireAnims` can be used to set the animation types, defaults to `[AudioVisual] -> SmallFire` (single animation).
     - `SmallFireChances` is a list of probabilities for the animations to spawn, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `1.0,0.5` for `Flamer=true`, `1.0` otherwise.
     - `SmallFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `SmallFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities. Defaults to `0.25,0.625` for `Flamer=true`, `0.0` otherwise.
-  - `LargeFireCount` determines number of large fire animations to spawn by`Flamer=true` animations only.
+  - `LargeFireCount` determines number of large fire animations to spawn by `Flamer=true` animations only.
     - `LargeFireAnims` can be used to set the animation types, defaults to `[AudioVisual] -> LargeFire` (single animation).
     - `LargeFireChances` is a list of probabilities for the animations to spawn, up to `LargeFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
     - `LargeFireDistances` is a list of distances in cells for the animations to spawn at from the parent animation's coordinates, up to `LargeFireCount` amount of items are read. Last item listed is used if count exceeds the number of listed probabilities.
@@ -876,7 +883,7 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; TechnoType
+[SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
 ```
 
@@ -1031,7 +1038,7 @@ Please note that enabling this will remove the vertical offset vanilla engine ap
 ```
 
 ![image](_static/images/VoxelLightSourceComparison.png)
-*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by [CCS_qkl](https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index)*
+*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">CCS_qkl</a>*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
@@ -1239,7 +1246,7 @@ DestroyAnim.Random=true                ; boolean
 ![image](_static/images/preserve-ic.gif)
 *Bugfix in action*
 
-- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. Force Shield status preservation is turned off by default.
+- Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. Force Shield status preservation is turned off by default.
   - This behavior can be turned on/off per-TechnoType and on global basis.
   - `IronCurtain.Modifier` / `ForceShield.Modifier` (whichever is applicable) is re-applied upon type conversion.
 
@@ -1284,7 +1291,7 @@ DrawTurretShadow=false  ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEUNIT]      ; UnitType
+[SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
 ```
 
@@ -1341,15 +1348,15 @@ Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type
 
 ### Unit Without Turret Always Turn To Target
 
-- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting to `NoTurret.TrackTarget` true.
+- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
 
 In `rulesmd.ini`:
 ```ini
 [General]
 NoTurret.TrackTarget=false   ; boolean
 
-[SOMEUNIT]                   ; UnitType
-NoTurret.TrackTarget=        ; boolean, defaults to [General]->NoTurret.TrackTarget
+[SOMEVEHICLE]                ; VehicleType
+NoTurret.TrackTarget=        ; boolean, defaults to [General] -> NoTurret.TrackTarget
 ```
 
 ## Veinholes & Weeds
@@ -1631,6 +1638,29 @@ In `rulesmd.ini`:
 FireOnce.ResetSequence=true  ; boolean
 ```
 
+### Electric bolt customizations
+
+![image](_static/images/ebolt.gif)
+*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
+
+- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
+- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
+- `Bolt.Duration` can be specified to explicitly set the overall duration of the visual electric bolt effect. Only values in range of 1 to 31 are accepted, values outside this range are clamped into it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]           ; WeaponType
+Bolt.Disable1=false    ; boolean
+Bolt.Disable2=false    ; boolean
+Bolt.Disable3=false    ; boolean
+Bolt.Arcs=8            ; integer
+Bolt.Duration=17       ; integer, game frames
+```
+
+```{note}
+Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
+```
+
 ### Single-color lasers
 
 ![image](_static/images/issinglecolor.gif)
@@ -1642,39 +1672,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
-```
-
-### Toggle-able ElectricBolt visuals
-
-![image](_static/images/ebolt.gif)
-*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
-
-- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Disable1=false    ; boolean
-Bolt.Disable2=false    ; boolean
-Bolt.Disable3=false    ; boolean
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
-```
-
-### Customizable ElectricBolt Arcs
-
-- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Arcs=8            ; integer, number of arcs in a bolt
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
 ```
 
 ## RadialIndicator visibility
@@ -1723,20 +1720,20 @@ DropPod properties can now be customized on a per-InfantryType basis.
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]                ; InfantryType
-DropPod.Angle =               ; double, default to [General] -> DropPodAngle, measured in radians
-DropPod.AtmosphereEntry =     ; anim, default to [AudioVisual] -> AtmosphereEntry
-DropPod.GroundAnim =          ; 2 anims, default to [General] -> DropPod
-DropPod.AirImage =            ; SHP file, the pod's shape, default to POD
-DropPod.Height =              ; int, default to [General] -> DropPodHeight
-DropPod.Puff =                ; anim, default to [AudioVisual] -> DropPodPuff
-DropPod.Speed =               ; int, default to [General] -> DropPodSpeed
-DropPod.Trailer =             ; anim, default to [General] -> DropPodTrailer, which by default is SMOKEY
-DropPod.Trailer.Attached =    ; boolean, default to no
-DropPod.Trailer.SpawnDelay =  ; int, number of frames between each spawn of DropPod.Trailer, default to 6
-DropPod.Weapon =              ; weapon, default to [General] -> DropPodWeapon
-DropPod.Weapon.HitLandOnly =  ; boolean, default to no
+DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
+DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
+DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
+DropPod.AirImage=             ; SHP file, the pod's shape, default to POD
+DropPod.Height=               ; int, default to [General] -> DropPodHeight
+DropPod.Puff=                 ; anim, default to [AudioVisual] -> DropPodPuff
+DropPod.Speed=                ; int, default to [General] -> DropPodSpeed
+DropPod.Trailer=              ; anim, default to [General] -> DropPodTrailer, which by default is SMOKEY
+DropPod.Trailer.Attached=     ; boolean, default to no
+DropPod.Trailer.SpawnDelay=   ; int, number of frames between each spawn of DropPod.Trailer, default to 6
+DropPod.Weapon=               ; weapon, default to [General] -> DropPodWeapon
+DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
 ```{note}
-`[General] -> DropPodTrailer`is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+`[General] -> DropPodTrailer` is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
