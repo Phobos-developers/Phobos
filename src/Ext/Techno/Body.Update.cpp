@@ -1,6 +1,7 @@
 // methods used in TechnoClass_AI hooks or anything similar
 #include "Body.h"
 
+#include <SessionClass.h>
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
 
@@ -678,33 +679,67 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
 
-		bool applyHeal = false;
 		int amount = 0;
+		auto const pOwner = pThis->Owner;
 
 		if (selfHealType == SelfHealGainType::Infantry)
 		{
-			int count = RulesExt::Global()->InfantryGainSelfHealCap.isset() ?
-				std::min(std::max(RulesExt::Global()->InfantryGainSelfHealCap.Get(), 1), pThis->Owner->InfantrySelfHeal) :
-				pThis->Owner->InfantrySelfHeal;
+			if (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames)
+				return;
+
+			const bool hasCap = RulesExt::Global()->InfantryGainSelfHealCap.isset();
+			const int cap = RulesExt::Global()->InfantryGainSelfHealCap.Get();
+			int count = hasCap ? std::clamp(pOwner->InfantrySelfHeal, 1, cap) : pOwner->InfantrySelfHeal;
+
+			if (RulesExt::Global()->GainSelfHealAllowPlayerControl && SessionClass::IsCampaign() && (!hasCap || count < cap))
+			{
+				for (auto pHouse : HouseClass::Array)
+				{
+					if (pHouse != pOwner && pHouse->IsControlledByCurrentPlayer())
+					{
+						count += pHouse->InfantrySelfHeal;
+
+						if (hasCap && count >= cap)
+						{
+							count = cap;
+							break;
+						}
+					}
+				}
+			}
 
 			amount = RulesClass::Instance->SelfHealInfantryAmount * count;
-
-			if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames) && amount)
-				applyHeal = true;
 		}
 		else
 		{
-			int count = RulesExt::Global()->UnitsGainSelfHealCap.isset() ?
-				std::min(std::max(RulesExt::Global()->UnitsGainSelfHealCap.Get(), 1), pThis->Owner->UnitsSelfHeal) :
-				pThis->Owner->UnitsSelfHeal;
+			if (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames)
+				return;
+
+			const bool hasCap = RulesExt::Global()->UnitsGainSelfHealCap.isset();
+			const int cap = RulesExt::Global()->UnitsGainSelfHealCap.Get();
+			int count = hasCap ? std::clamp(pOwner->UnitsSelfHeal, 1, cap) : pOwner->UnitsSelfHeal;
+
+			if (RulesExt::Global()->GainSelfHealAllowPlayerControl && SessionClass::IsCampaign() && (!hasCap || count < cap))
+			{
+				for (auto pHouse : HouseClass::Array)
+				{
+					if (pHouse != pOwner && pHouse->IsControlledByCurrentPlayer())
+					{
+						count += pHouse->UnitsSelfHeal;
+
+						if (hasCap && count >= cap)
+						{
+							count = cap;
+							break;
+						}
+					}
+				}
+			}
 
 			amount = RulesClass::Instance->SelfHealUnitAmount * count;
-
-			if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames) && amount)
-				applyHeal = true;
 		}
 
-		if (applyHeal && amount)
+		if (amount)
 		{
 			if (amount >= healthDeficit)
 				amount = healthDeficit;

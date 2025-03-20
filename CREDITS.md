@@ -419,6 +419,7 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
   - Fix `DefaultDisguise` showing wrong house colors for different players
+  - Allowed player's self-healing effects to be benefited by houses with `PlayerControl=true` in campaign
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
