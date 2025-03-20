@@ -271,6 +271,7 @@ public:
 		Valueable<bool> Spawner_RecycleOnTurret;
 
 		Nullable<bool> Sinkable;
+		Valueable<bool> SinkableBySquid;
 		Valueable<int> SinkSpeed;
 		
 		struct LaserTrailDataEntry
@@ -537,6 +538,7 @@ public:
 			, Spawner_RecycleOnTurret { false }
 			
 			, Sinkable { }
+			, SinkableBySquid { true }
 			, SinkSpeed { 5 }
 		{ }
 

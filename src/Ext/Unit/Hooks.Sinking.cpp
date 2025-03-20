@@ -32,3 +32,48 @@ DEFINE_HOOK(0x737DE2, UnitClass_ReceiveDamage_Sinkable, 0x6)
 
 	return pTypeExt->Sinkable.Get(ShouldSink) ? GoOtherChecks : NoSink;
 }
+
+DEFINE_HOOK(0x629C7C, ParasiteClass_UpdateSquid_SinkableBySquid, 0xA)
+{
+	enum { ret = 0x629C86 };
+
+	GET(ParasiteClass*, pThis, ESI);
+
+	auto pVictim = pThis->Victim;
+
+	if (pVictim->WhatAmI() != AbstractType::Unit)
+	{
+		pVictim->Stun();
+		return ret;
+	}
+
+	auto pVictimType = pVictim->GetTechnoType();
+	auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictimType);
+
+	if (pVictimTypeExt->SinkableBySquid)
+	{
+		pVictim->Stun();
+	}
+	else
+	{
+		pVictim->IsSinking = false;
+		pVictim->Health = 0;
+		pVictim->IsAlive = false;
+		auto location = pVictim->Location;
+		auto location2D = Point2D({ pVictim->Location.X,pVictim->Location.Y });
+
+		if (pVictim->GetHeight() <= 10
+		  && pVictim->IsABomb
+		  && (MapClass::Instance.GetTargetCell(location2D)->LandType == LandType::Water))
+		{
+			GameCreate<AnimClass>(RulesClass::Instance->Wake, location, 0, 1, 1536, 0, 0);
+			GameCreate<AnimClass>(RulesClass::Instance->SplashList.Items[RulesClass::Instance->SplashList.Count - 1], location, 0, 1, 1536, 0, 0);
+		}
+		else
+		{
+			((UnitClass*)pVictim)->Explode();
+		}
+	}
+
+	return ret;
+}

@@ -498,6 +498,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
 
 	this->Sinkable.Read(exINI, pSection, "Sinkable");
+	this->SinkableBySquid.Read(exINI, pSection, "SinkableBySquid");
 	this->SinkSpeed.Read(exINI, pSection, "SinkSpeed");
 
 	// Ares 0.2
@@ -911,6 +912,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Spawner_RecycleOnTurret)
 
 		.Process(this->Sinkable)
+		.Process(this->SinkableBySquid)
 		.Process(this->SinkSpeed)
 		;
 }

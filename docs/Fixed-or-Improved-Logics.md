@@ -1349,12 +1349,17 @@ Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type
 ### Sinking behavior dehardcode
 
 - In vanilla, whether a ship sinks when it dies on the water is determined by multiple settings of hardcoding. The speed of the sinking is hardcoded to 5 Leptons per frame.
-- Now you can determine whether a ship sinks with a dedicated flag `Sinkable`, and use `SinkSpeed` to customize the speed at which the ship sinks.
+- Now you can use the following flags to manage them.
+  - `Sinkable` determines whether a ship sinks if killed on water by normal weapon.
+  - `SinkableBySquid` determines whether a ship sinks if killed by Giant Squid's parasite weapon.
+  - `SinkSpeed` defines the speed at which the ship sinks.
+
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]           ; VehicleType
-Sinkable=               ; bool
+Sinkable=               ; boolean
+SinkableBySquid=true    ; boolean
 SinkSpeed=5             ; integer, lepton per frame
 ```
 
