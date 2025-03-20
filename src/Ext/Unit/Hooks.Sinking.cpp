@@ -37,9 +37,7 @@ DEFINE_HOOK(0x629C7C, ParasiteClass_UpdateSquid_SinkableBySquid, 0xA)
 {
 	enum { ret = 0x629C86 };
 
-	GET(ParasiteClass*, pThis, ESI);
-
-	auto pVictim = pThis->Victim;
+	GET(FootClass*, pVictim, EDI);
 
 	if (pVictim->WhatAmI() != AbstractType::Unit)
 	{
