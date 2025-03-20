@@ -196,12 +196,12 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	do
 	{
 		placeCoords = pThis->GetMapCoords() - CellStruct { static_cast<short>(extraDistance / 2), static_cast<short>(extraDistance / 2) };
-		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistance, extraDistance, true, false, false, false, CellStruct::Empty, false, false);
+		placeCoords = MapClass::Instance.NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistance, extraDistance, true, false, false, false, CellStruct::Empty, false, false);
 
 		if (placeCoords == CellStruct::Empty)
 			return CoordStruct::Empty;
 
-		const auto pCell = MapClass::Instance->GetCellAt(placeCoords);
+		const auto pCell = MapClass::Instance.GetCellAt(placeCoords);
 
 		if (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) == Move::OK)
 			break;
@@ -210,7 +210,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 	while (extraDistance <= maxAttempts);
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(placeCoords))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(placeCoords))
 		return pCell->GetCoordsWithBridge();
 
 	return CoordStruct::Empty;
@@ -225,14 +225,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 		return true;
 
 	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
-	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
+	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
+		int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
@@ -245,14 +245,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 				return true;
 
 			auto const speedType = pThis->GetTechnoType()->SpeedType;
-			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+			auto cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,
 				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
 
 			if (cellStruct == CellStruct::Empty)
 				return false;
 
-			auto const pCell = MapClass::Instance->TryGetCellAt(cellStruct);
+			auto const pCell = MapClass::Instance.TryGetCellAt(cellStruct);
 
 			if (!pCell)
 				return false;
@@ -316,7 +316,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Detach CLEG targeting
 	auto tempUsing = pThis->TemporalImUsing;
 	if (tempUsing && tempUsing->Target)
-		tempUsing->Detach();
+		tempUsing->LetGo();
 
 	HouseClass* const pOwner = pThis->Owner;
 
@@ -375,7 +375,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	}
 
 	// TODO : Jumpjet locomotor special treatement, some brainfart, must be uncorrect, HELP ME!
-	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet();
+	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
@@ -522,6 +522,23 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
+
+	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	{
+		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		{
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
+				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
+			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
+				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+		}
+	}
+	return nullptr;
+}
+
 // =============================
 // load / save
 
@@ -553,6 +570,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastRearmWasFullDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->LastWeaponType)
 		.Process(this->FiringObstacleCell)
 		.Process(this->IsDetachingForCloak)
 		.Process(this->LastTargetID)

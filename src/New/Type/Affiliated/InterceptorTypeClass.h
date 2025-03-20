@@ -22,6 +22,7 @@ public:
 	Valueable<bool> WeaponReplaceProjectile;
 	Valueable<bool> WeaponCumulativeDamage;
 	Valueable<bool> KeepIntact;
+	Valueable<bool> ApplyFirepowerMult;
 	Nullable<bool> DeleteOnIntercept;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
