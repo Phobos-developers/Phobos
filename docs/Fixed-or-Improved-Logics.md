@@ -1351,7 +1351,7 @@ Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type
 - In vanilla, whether a ship sinks when it dies on the water is determined by multiple settings of hardcoding. The speed of the sinking is hardcoded to 5 Leptons per frame.
 - Now you can use the following flags to manage them.
   - `Sinkable` determines whether a ship sinks if killed on water by normal weapon.
-  - `SinkableBySquid` determines whether a ship sinks if killed by Giant Squid's parasite weapon.
+  - `SinkableBySquid` determines whether a ship sinks if killed by Giant Squid's culling parasite weapon. If set to `false`, it will take a fatal damage when it should be killed.
   - `SinkSpeed` defines the speed at which the ship sinks.
 
 
