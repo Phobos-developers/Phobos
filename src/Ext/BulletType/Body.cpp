@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Bullet/Trajectories/PhobosActualTrajectory.h>
+
 BulletTypeExt::ExtContainer BulletTypeExt::ExtMap;
 
 double BulletTypeExt::GetAdjustedGravity(BulletTypeClass* pType)
@@ -87,7 +89,7 @@ void BulletTypeExt::ExtData::TrajectoryValidation() const
 	const char* pSection = pThis->ID;
 
 	// Trajectory validation combined with other projectile behaviour.
-	if (this->TrajectoryType)
+	if (const auto pTrajType = this->TrajectoryType.get())
 	{
 		if (pThis->Arcing)
 		{
@@ -111,6 +113,20 @@ void BulletTypeExt::ExtData::TrajectoryValidation() const
 		{
 			Debug::Log("[Developer warning] [%s] has Trajectory set together with Vertical. Vertical has been set to false.\n", pSection);
 			pThis->Vertical = false;
+		}
+
+		if (pThis->Arm) // 0x4E11F0
+			pThis->Arm = 0;
+
+		if (pThis->Ranged) // 0x467C1C
+			pThis->Ranged = false;
+
+		const auto flag = pTrajType->Flag();
+
+		if (flag == TrajectoryFlag::Straight || flag == TrajectoryFlag::Bombard)
+		{
+			if (this->SubjectToGround)
+				static_cast<ActualTrajectoryType*>(pTrajType)->SubjectToGround = true;
 		}
 	}
 }
@@ -152,7 +168,6 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Splits_TargetCellRange)
 		.Process(this->Splits_UseWeaponTargeting)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
-
 
 		.Process(this->TrajectoryType) // just keep this shit at last
 		;

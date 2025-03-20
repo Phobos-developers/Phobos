@@ -51,6 +51,8 @@ public:
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		WeaponTypeClass* LastWeaponType;
+		CoordStruct LastWeaponFLH;
+		int CurrentTracingCount;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
 		DWORD LastTargetID;
@@ -95,6 +97,8 @@ public:
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
 			, LastWeaponType {}
+			, LastWeaponFLH {}
+			, CurrentTracingCount { 0 }
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
 			, LastTargetID { 0xFFFFFFFF }

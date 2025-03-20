@@ -30,6 +30,7 @@ public:
 		int DamageNumberOffset;
 
 		TrajectoryPointer Trajectory;
+		bool DispersedTrajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -39,9 +40,11 @@ public:
 			, InterceptedStatus { InterceptedStatus::None }
 			, DetonateOnInterception { true }
 			, LaserTrails {}
-			, Trajectory { nullptr }
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
+
+			, Trajectory { nullptr }
+			, DispersedTrajectory { false }
 		{ }
 
 		virtual ~ExtData() = default;

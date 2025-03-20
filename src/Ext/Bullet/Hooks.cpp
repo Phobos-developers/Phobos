@@ -66,7 +66,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
 	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
-	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
+	//Let trajectories draw their own laser trails after the Trajectory's OnEarlyUpdate() to avoid predicting incorrect positions or pass through targets.
 	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
 		CoordStruct location = pThis->GetCoords();
@@ -295,7 +295,10 @@ constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
 	return flag != TrajectoryFlag::Invalid;
 /*	return flag == TrajectoryFlag::Straight
 		|| flag == TrajectoryFlag::Bombard
-		|| flag == TrajectoryFlag::Parabola;*/
+		|| flag == TrajectoryFlag::Missile
+		|| flag == TrajectoryFlag::Engrave
+		|| flag == TrajectoryFlag::Parabola
+		|| flag == TrajectoryFlag::Tracing;*/
 }
 
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)

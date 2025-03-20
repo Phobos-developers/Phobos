@@ -522,8 +522,8 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
-
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+{
 	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
 	{
 		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
@@ -571,6 +571,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
 		.Process(this->LastWeaponType)
+		.Process(this->LastWeaponFLH)
+		.Process(this->CurrentTracingCount)
 		.Process(this->FiringObstacleCell)
 		.Process(this->IsDetachingForCloak)
 		.Process(this->LastTargetID)

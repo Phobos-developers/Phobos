@@ -342,6 +342,10 @@ New:
 - Recycle the spawner on other FLH (by TaranDahl)
 - Technos can maintain a suitable distance after firing (by CrimRecya)
 - Projectile subject to ground check before firing (by CrimRecya)
+- New trajectory system (by CrimRecya)
+- New Missile trajectory (by CrimRecya)
+- New Engrave trajectory (by CrimRecya)
+- New Tracing trajectory (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
