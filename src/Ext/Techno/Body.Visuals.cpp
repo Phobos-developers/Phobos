@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <SessionClass.h>
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
 
@@ -26,13 +27,46 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
 		isOrganic = true;
 
-	if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
+	auto hasSelfHeal = [](const bool infantryHeal)
+		{
+			auto const pOwner = pThis->Owner;
+
+			if (infantryHeal ? pOwner->InfantrySelfHeal > 0 : pOwner->UnitsSelfHeal > 0)
+				return true;
+
+			const bool allowPlayerControl = RulesExt::Global()->GainSelfHealAllowPlayerControl && SessionClass::IsCampaign();
+			const bool allowAllies = RulesExt::Global()->GainSelfHealAllowAllies;
+
+			if (allowPlayerControl || allowAllies)
+			{
+				for (auto pHouse : HouseClass::Array)
+				{
+					if (pHouse == pOwner)
+						continue;
+
+					if (allowPlayerControl && pHouse->IsControlledByCurrentPlayer())
+					{
+						if (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0)
+							return true;
+					}
+					else if (allowAllies && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner))
+					{
+						if (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0)
+							return true;
+					}
+				}
+			}
+
+			return false;
+		};
+
+	if ((hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)) && hasSelfHeal(true))
 	{
 		drawPip = true;
 		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
 		isInfantryHeal = true;
 	}
-	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
+	else if ((hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)) && hasSelfHeal(false))
 	{
 		drawPip = true;
 		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;

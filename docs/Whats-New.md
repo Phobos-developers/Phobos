@@ -341,7 +341,7 @@ New:
 - Play an anim when recycling a spawner (by TaranDahl)
 - Recycle the spawner on other FLH (by TaranDahl)
 - Technos can maintain a suitable distance after firing (by CrimRecya)
-- Allowed player's self-healing effects to be benefited by houses with `PlayerControl=true` in campaign (by Ollerus)
+- Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)

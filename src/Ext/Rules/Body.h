@@ -36,6 +36,7 @@ public:
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> GainSelfHealAllowMultiplayPassive;
 		Valueable<bool> GainSelfHealAllowPlayerControl;
+		Valueable<bool> GainSelfHealAllowAllies;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
@@ -202,6 +203,7 @@ public:
 			, UnitsGainSelfHealCap {}
 			, GainSelfHealAllowMultiplayPassive { true }
 			, GainSelfHealAllowPlayerControl { false }
+			, GainSelfHealAllowAllies { false }
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
