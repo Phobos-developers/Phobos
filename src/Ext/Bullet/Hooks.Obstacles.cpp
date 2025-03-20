@@ -88,31 +88,38 @@ public:
 		return false;
 	}
 
-	static CoordStruct AddFLHToSourceCoords(const CoordStruct& sourceCoords, const CoordStruct& targetCoords, TechnoClass* const pTechno, AbstractClass* const pTarget, bool& subjectToGround)
+	static CoordStruct AddFLHToSourceCoords(const CoordStruct& sourceCoords, const CoordStruct& targetCoords, TechnoClass* const pTechno, AbstractClass* const pTarget,
+		WeaponTypeClass* pWeapon, bool& subjectToGround)
 	{
 		// Buildings, air force, and passengers are not allowed, because they don't even know how to find a suitable location
 		if (((pTechno->AbstractFlags & AbstractFlags::Foot) == AbstractFlags::None) || pTechno->IsInAir() || pTarget->IsInAir() || pTechno->Transporter)
 		{
+			// Turn off the switch for subsequent checks
 			subjectToGround = false;
 			return sourceCoords;
 		}
-
-		// Predicting the firing position of weapons, unable to predict the degree of inclination of the unit yet
+		// Predicting the firing position of weapons
+		// Unable to predict the degree of inclination of the techno yet
 		Matrix3D mtx = Matrix3D::GetIdentity();
-		// Position on the ground
-		const auto source = MapClass::Instance.GetCellAt(sourceCoords)->GetCoordsWithBridge();
+		// Position on the ground or bridge
+		const auto pCell = MapClass::Instance.GetCellAt(sourceCoords);
+		const auto source = pTechno->OnBridge ? pCell->GetCoordsWithBridge() : pCell->GetCoords();
 		// Predicted orientation
 		float radian = (float)(-Math::atan2(targetCoords.Y - source.Y, targetCoords.X - source.X));
 		mtx.RotateZ(radian);
-		// Offset of turret
+		// Offset of turret, directly substitute because it is impossible to predict the orientation of the techno when it reaches this position
+		// Only predict the situation when the techno is facing the target directly
 		if (pTechno->HasTurret())
 			TechnoTypeExt::ApplyTurretOffset(pTechno->GetTechnoType(), &mtx);
-		// FLH of weapon
-		const auto& flh = pTechno->GetWeapon(pTechno->SelectWeapon(pTarget))->FLH;
-		// Substitute and obtain the result
-		mtx.Translate((float)flh.X, (float)flh.Y, (float)flh.Z);
+		// FLH of weapon, not use independent firing positions
+		// Because this will result in different results due to the current burst, causing the techno to constantly move
+		const auto pWeaponStruct = pTechno->GetWeapon(pTechno->SelectWeapon(pTarget));
+		const auto& flh = pWeaponStruct->FLH;
+		// If the weapon's burst is greater than 1, use the center firing position for calculation
+		// This can avoid constantly searching for position and pacing back and forth
+		mtx.Translate((float)flh.X, ((pWeaponStruct->WeaponType == pWeapon && pWeapon->Burst != 1) ? 0 : ((float)flh.Y)), (float)flh.Z);
 		const auto result = mtx.GetTranslation();
-		// Only add the offset value
+		// Starting from the center position of the cell and adding the offset value
 		return source + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 	}
 };
@@ -215,8 +222,8 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 
 	if (!pObstacleCell)
 	{
-		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get(); // Make AI search for suitable attack locations.
-		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, subjectToGround) : *pSourceCoords;
+		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
+		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
 	}
 
