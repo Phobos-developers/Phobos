@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/Building/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -192,7 +193,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 		// Favorite Enemy House case. If set, AI will focus against that House
 		if (pTeam->Type->OnlyTargetHouseEnemy && pLeaderUnit->Owner->EnemyHouseIndex >= 0)
-			enemyHouse = HouseClass::Array->GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
+			enemyHouse = HouseClass::Array.GetItem(pLeaderUnit->Owner->EnemyHouseIndex);
 
 		int targetMask = scriptArgument;
 		selectedTarget = GreatestThreat(pLeaderUnit, targetMask, calcThreatMode, enemyHouse, attackAITargetType, idxAITargetTypeItem, agentMode);
@@ -413,9 +414,9 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
 	// Generic method for targeting
-	for (int i = 0; i < TechnoClass::Array->Count; i++)
+	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
-		auto object = TechnoClass::Array->GetItem(i);
+		auto object = TechnoClass::Array.GetItem(i);
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
 
@@ -522,7 +523,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 					}
 
 					// Is Defender house targeting Attacker House? if "yes" then more Threat
-					if (pTechno->Owner == HouseClass::Array->GetItem(object->Owner->EnemyHouseIndex))
+					if (pTechno->Owner == HouseClass::Array.GetItem(object->Owner->EnemyHouseIndex))
 					{
 						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
 						objectThreatValue += EnemyHouseThreatBonus;
@@ -1162,10 +1163,10 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, 
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			// Finding the objects from the list that actually exists in the map
-			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			for (int i = 0; i < TechnoClass::Array.Count; i++)
 			{
-				auto pTechno = TechnoClass::Array->GetItem(i);
-				auto pTechnoType = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				auto pTechno = TechnoClass::Array.GetItem(i);
+				auto pTechnoType = TechnoClass::Array.GetItem(i)->GetTechnoType();
 				bool found = false;
 
 				for (auto j = 0u; j < objectsList.size() && !found; j++)
@@ -1214,8 +1215,11 @@ void ScriptExt::CheckUnitTargetingCapabilities(TechnoClass* pTechno, bool& hasAn
 	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AA) || (pWeaponSecondary && pWeaponSecondary->Projectile->AA))
 		hasAntiAir = true;
 
-	if ((pWeaponPrimary && pWeaponPrimary->Projectile->AG) || (pWeaponSecondary && pWeaponSecondary->Projectile->AG) || agentMode)
+	if (agentMode || (pWeaponPrimary && pWeaponPrimary->Projectile->AG && !BulletTypeExt::ExtMap.Find(pWeaponPrimary->Projectile)->AAOnly)
+		|| (pWeaponSecondary && pWeaponSecondary->Projectile->AG && !BulletTypeExt::ExtMap.Find(pWeaponSecondary->Projectile)->AAOnly))
+	{
 		hasAntiGround = true;
+	}
 }
 
 bool ScriptExt::IsUnitArmed(TechnoClass* pTechno)
