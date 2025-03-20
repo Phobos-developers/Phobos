@@ -1498,11 +1498,16 @@ MultiMindControl.ReleaseVictim=false  ; boolean
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
+- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
+```
+
+```{note}
+Note that you can still undeploy the building by using a `BuildingUndeploy=true` warhead or by setting a rally point and selling it.
 ```
 
 ### No rearm and reload in EMP or temporal
