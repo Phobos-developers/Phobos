@@ -27,15 +27,15 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
 		isOrganic = true;
 
-	auto hasSelfHeal = [](const bool infantryHeal)
+	auto hasSelfHeal = [pThis](const bool infantryHeal)
 		{
 			auto const pOwner = pThis->Owner;
 
 			if (infantryHeal ? pOwner->InfantrySelfHeal > 0 : pOwner->UnitsSelfHeal > 0)
 				return true;
 
-			const bool allowPlayerControl = RulesExt::Global()->GainSelfHealAllowPlayerControl && SessionClass::IsCampaign();
-			const bool allowAllies = RulesExt::Global()->GainSelfHealAllowAllies;
+			const bool allowPlayerControl = RulesExt::Global()->GainSelfHealFromPlayerControl && SessionClass::IsCampaign();
+			const bool allowAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
 			if (allowPlayerControl || allowAllies)
 			{

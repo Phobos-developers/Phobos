@@ -685,7 +685,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 
 		int amount = 0;
 
-		auto countSelfHealing = [](const bool infantryHeal)
+		auto countSelfHealing = [pThis](const bool infantryHeal)
 			{
 				auto const pOwner = pThis->Owner;
 				const bool hasCap = RulesExt::Global()->InfantryGainSelfHealCap.isset();
@@ -698,8 +698,8 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 					return count;
 				}
 
-				const bool allowPlayerControl = RulesExt::Global()->GainSelfHealAllowPlayerControl && SessionClass::IsCampaign();
-				const bool allowAllies = RulesExt::Global()->GainSelfHealAllowAllies;
+				const bool allowPlayerControl = RulesExt::Global()->GainSelfHealFromPlayerControl && SessionClass::IsCampaign();
+				const bool allowAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
 				if (allowPlayerControl || allowAllies)
 				{
