@@ -7,7 +7,6 @@
 
 #include <Ext/ParticleSystemType/Body.h>
 #include <Ext/Techno/Body.h>
-#include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -214,11 +213,11 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 		{
 			const auto& pRulesExt = RulesExt::Global();
 			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
-			*pTargetCoords = MapClass::GetRandomCoordsNear(BulletExt::ExtMap.Find(pBullet)->Trajectory ? pBullet->TargetCoords : pBullet->Data.Location, radius, false);
+			*pTargetCoords = MapClass::GetRandomCoordsNear(pBullet->Data.Location, radius, false);
 		}
 		else
 		{
-			*pTargetCoords = BulletExt::ExtMap.Find(pBullet)->Trajectory ? pBullet->TargetCoords : pBullet->Data.Location;
+			*pTargetCoords = pBullet->Data.Location;
 		}
 	}
 	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)
