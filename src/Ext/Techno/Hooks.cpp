@@ -715,3 +715,15 @@ DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable,
 
 #pragma endregion
 
+DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
+{
+	GET(InfantryClass*, pThis, ESI);
+	GET(int, currentSpeed, ECX);
+
+	auto pType = pThis->Type;
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto multiplier = pTypeExt->ProneSpeed.Get(RulesExt::Global()->ProneSpeed.Get(pType->Crawls ? 0.67 : 1.5));
+	currentSpeed *= multiplier;
+	R->ECX(currentSpeed);
+	return 0x521DC5;
+}

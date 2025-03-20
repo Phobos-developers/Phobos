@@ -278,6 +278,8 @@ public:
 		Valueable<bool> Sinkable_SquidGrab;
 		Valueable<int> SinkSpeed;
 
+		Nullable<double> ProneSpeed;
+		
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -548,6 +550,8 @@ public:
 			, Sinkable { }
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
+			
+			, ProneSpeed { }
 		{ }
 
 		virtual ~ExtData() = default;

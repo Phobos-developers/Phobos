@@ -503,6 +503,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Sinkable.Read(exINI, pSection, "Sinkable");
 	this->Sinkable_SquidGrab.Read(exINI, pSection, "Sinkable.SquidGrab");
 	this->SinkSpeed.Read(exINI, pSection, "SinkSpeed");
+	
+	this->ProneSpeed.Read(exINI, pSection, "ProneSpeed");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -924,6 +926,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sinkable)
 		.Process(this->Sinkable_SquidGrab)
 		.Process(this->SinkSpeed)
+		
+		.Process(this->ProneSpeed)
+
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
