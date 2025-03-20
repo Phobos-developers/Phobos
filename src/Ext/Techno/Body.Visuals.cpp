@@ -35,21 +35,19 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 				return true;
 
 			const bool allowPlayerControl = RulesExt::Global()->GainSelfHealFromPlayerControl && SessionClass::IsCampaign();
-			const bool allowAllies = RulesExt::Global()->GainSelfHealFromAllies;
+			const bool allowAlliesInCampaign = RulesExt::Global()->GainSelfHealFromAllies && SessionClass::IsCampaign();
+			const bool allowAlliesDefault = RulesExt::Global()->GainSelfHealFromAllies && !SessionClass::IsCampaign();
 
-			if (allowPlayerControl || allowAllies)
+			if (allowPlayerControl || allowAlliesInCampaign || allowAlliesDefault)
 			{
 				for (auto pHouse : HouseClass::Array)
 				{
 					if (pHouse == pOwner)
 						continue;
 
-					if (allowPlayerControl && pHouse->IsControlledByCurrentPlayer())
-					{
-						if (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0)
-							return true;
-					}
-					else if (allowAllies && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner))
+					if ((allowPlayerControl && pHouse->IsControlledByCurrentPlayer())
+						|| (allowAlliesInCampaign && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner))
+						|| (allowAlliesDefault && pHouse->IsAlliedWith(pOwner)))
 					{
 						if (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0)
 							return true;

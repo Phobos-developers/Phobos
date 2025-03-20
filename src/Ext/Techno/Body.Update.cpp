@@ -699,9 +699,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 				}
 
 				const bool allowPlayerControl = RulesExt::Global()->GainSelfHealFromPlayerControl && SessionClass::IsCampaign();
-				const bool allowAllies = RulesExt::Global()->GainSelfHealFromAllies;
+				const bool allowAlliesInCampaign = RulesExt::Global()->GainSelfHealFromAllies && SessionClass::IsCampaign();
+				const bool allowAlliesDefault = RulesExt::Global()->GainSelfHealFromAllies && !SessionClass::IsCampaign();
 
-				if (allowPlayerControl || allowAllies)
+				if (allowPlayerControl || allowAlliesInCampaign || allowAlliesDefault)
 				{
 					for (auto pHouse : HouseClass::Array)
 					{
@@ -709,7 +710,8 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 							continue;
 
 						if ((allowPlayerControl && pHouse->IsControlledByCurrentPlayer())
-							|| (allowAllies && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner)))
+							|| (allowAlliesInCampaign && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner))
+							|| (allowAlliesDefault && pHouse->IsAlliedWith(pOwner)))
 						{
 							count += infantryHeal ? pHouse->InfantrySelfHeal : pHouse->UnitsSelfHeal;
 
