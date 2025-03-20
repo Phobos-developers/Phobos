@@ -391,29 +391,15 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 
 void TechnoExt::ExtData::ApplySpawnLimitRange()
 {
-	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
 	if (pTypeExt->Spawner_LimitRange)
 	{
+		auto const pThis = this->OwnerObject();
+
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			auto pTechnoType = pThis->GetTechnoType();
-			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
-
-			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-				{
-					if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-						weaponRange = pWeaponType->Range;
-				};
-
-			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-			weaponRange += weaponRangeExtra;
+			int weaponRange = pThis->Veterancy.IsElite() ? pTypeExt->EliteSpawnerRange : pTypeExt->SpawnerRange;
 
 			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
 				pManager->ResetTarget();
@@ -707,33 +693,30 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
 
-		bool applyHeal = false;
 		int amount = 0;
 
 		if (selfHealType == SelfHealGainType::Infantry)
 		{
+			if (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames)
+				return;
+
 			int count = RulesExt::Global()->InfantryGainSelfHealCap.isset() ?
-				std::min(std::max(RulesExt::Global()->InfantryGainSelfHealCap.Get(), 1), pThis->Owner->InfantrySelfHeal) :
-				pThis->Owner->InfantrySelfHeal;
+				std::clamp(pThis->Owner->InfantrySelfHeal, 1, RulesExt::Global()->InfantryGainSelfHealCap.Get()) : pThis->Owner->InfantrySelfHeal;
 
 			amount = RulesClass::Instance->SelfHealInfantryAmount * count;
-
-			if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames) && amount)
-				applyHeal = true;
 		}
 		else
 		{
+			if (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames)
+				return;
+
 			int count = RulesExt::Global()->UnitsGainSelfHealCap.isset() ?
-				std::min(std::max(RulesExt::Global()->UnitsGainSelfHealCap.Get(), 1), pThis->Owner->UnitsSelfHeal) :
-				pThis->Owner->UnitsSelfHeal;
+				std::clamp(pThis->Owner->UnitsSelfHeal, 1, RulesExt::Global()->UnitsGainSelfHealCap.Get()) : pThis->Owner->UnitsSelfHeal;
 
 			amount = RulesClass::Instance->SelfHealUnitAmount * count;
-
-			if (!(Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames) && amount)
-				applyHeal = true;
 		}
 
-		if (applyHeal)
+		if (amount)
 		{
 			if (amount >= healthDeficit)
 				amount = healthDeficit;

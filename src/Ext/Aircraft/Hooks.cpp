@@ -510,11 +510,12 @@ DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2668, AircraftClass_GreatestThreat)
 
 static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType);
 
 	if (!pWeaponExt->Strafing_Shots.isset())
 		return true;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Strafe_BombsDroppedThisRound >= pWeaponExt->Strafing_Shots)
 		return false;
