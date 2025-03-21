@@ -200,7 +200,7 @@ DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 
 static bool __forceinline IsOnBridge(FootClass* pUnit)
 {
-	auto const pCell = MapClass::Instance->GetCellAt(pUnit->GetCoords());
+	auto const pCell = MapClass::Instance.GetCellAt(pUnit->GetCoords());
 	auto const pCellAdj = pCell->GetNeighbourCell(FacingType::North);
 	bool containsBridge = pCell->ContainsBridge();
 	bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
@@ -215,7 +215,7 @@ static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& 
 	int bridgeBonus = bridgeHeight * level;
 	double currentLevel = (pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight)) - bridgeHeight;
 	levelIntensity = static_cast<int>(level * currentLevel * levelMult);
-	cellIntensity = MapClass::Instance()->GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
+	cellIntensity = MapClass::Instance.GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
 }
 
 DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
@@ -273,7 +273,7 @@ DEFINE_HOOK(0x73CFA7, UnitClass_DrawIt_LevelIntensity, 0x6)
 	{
 		int level = ScenarioClass::Instance->NormalLighting.Level;
 
-		if (LightningStorm::Active())
+		if (LightningStorm::Active)
 			level = ScenarioClass::Instance->IonLighting.Level;
 		else if (PsyDom::Active())
 			level = ScenarioClass::Instance->DominatorLighting.Level;

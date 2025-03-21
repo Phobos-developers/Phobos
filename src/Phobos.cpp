@@ -1,12 +1,12 @@
 #include "Phobos.h"
 
 #include <Drawing.h>
+#include <SessionClass.h>
+#include <Unsorted.h>
 
 #include <Utilities/Debug.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
-#include <Unsorted.h>
-
 #include "Utilities/AresHelper.h"
 #include "Utilities/Parser.h"
 
@@ -23,6 +23,10 @@ const char* Phobos::AppIconPath = nullptr;
 
 bool Phobos::DisplayDamageNumbers = false;
 bool Phobos::IsLoadingSaveGame = false;
+
+bool Phobos::Optimizations::Applied = false;
+bool Phobos::Optimizations::DisableRadDamageOnBuildings = true;
+bool Phobos::Optimizations::DisableSyncLogging = false;
 
 #ifdef STR_GIT_COMMIT
 const wchar_t* Phobos::VersionDescription = L"Phobos nightly build (" STR_GIT_COMMIT L" @ " STR_GIT_BRANCH L"). DO NOT SHIP IN MODS!";
@@ -73,7 +77,7 @@ void Phobos::CmdLineParse(char** ppArgs, int nNumArgs)
 		{
 			auto delimIndex = arg.find("=");
 			auto value = arg.substr(delimIndex + 1, arg.size() - delimIndex - 1);
-			
+
 			bool v = dontSetExceptionHandler;
 			if (boolParser.TryParse(value.c_str(), &v))
 				dontSetExceptionHandler = !v;
@@ -218,6 +222,13 @@ DEFINE_HOOK(0x67E44D, LoadGame_SetFlag, 0x5)
 DEFINE_HOOK(0x67E68A, LoadGame_UnsetFlag, 0x5)
 {
 	Phobos::IsLoadingSaveGame = false;
+	Phobos::ApplyOptimizations();
+	return 0;
+}
+
+DEFINE_HOOK(0x683E7F, ScenarioClass_Start_Optimizations, 0x7)
+{
+	Phobos::ApplyOptimizations();
 	return 0;
 }
 
@@ -245,3 +256,67 @@ DEFINE_HOOK(0x4F4583, GScreenClass_DrawText, 0x6)
 	return 0;
 }
 #endif
+
+// Mainly used to disable hooks for optimization.
+// Called after loading saved game and at end of scenario start after all INI data etc has been initialized.
+// Only executed once per game session.
+void Phobos::ApplyOptimizations()
+{
+	if (Phobos::Optimizations::Applied)
+		return;
+
+	// Disable BuildingClass_AI_Radiation
+	if (Phobos::Optimizations::DisableRadDamageOnBuildings)
+		Patch::Apply_RAW(0x43FB23, { 0x53, 0x55, 0x56, 0x8B, 0xF1 });
+
+	if (SessionClass::IsMultiplayer())
+	{
+		// Disable MainLoop_SaveGame
+		Patch::Apply_LJMP(0x55DBCD, 0x55DC99);
+	}
+	else
+	{
+		// Disable Random2Class_Random_SyncLog
+		Patch::Apply_RAW(0x65C7D0, { 0xC3, 0x90, 0x90, 0x90, 0x90, 0x90 });
+
+		// Disable Random2Class_RandomRanged_SyncLog
+		Patch::Apply_RAW(0x65C88A, { 0xC2, 0x08, 0x00, 0x90, 0x90, 0x90 });
+
+		// Disable FacingClass_Set_SyncLog
+		Patch::Apply_RAW(0x4C9300, { 0x83, 0xEC, 0x10, 0x53, 0x56 });
+
+		// Disable InfantryClass_AssignTarget_SyncLog
+		Patch::Apply_RAW(0x51B1F0, { 0x53, 0x56, 0x8B, 0xF1, 0x57 });
+
+		// Disable BuildingClass_AssignTarget_SyncLog
+		Patch::Apply_RAW(0x443B90, { 0x56, 0x8B, 0xF1, 0x57, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 });
+
+		// Disable TechnoClass_AssignTarget_SyncLog
+		Patch::Apply_RAW(0x6FCDB0, { 0x83, 0xEC, 0x0C, 0x53, 0x56 });
+
+		// Disable AircraftClass_AssignDestination_SyncLog
+		Patch::Apply_RAW(0x41AA80, { 0x53, 0x56, 0x57, 0x8B, 0x7C, 0x24, 0x10 });
+
+		// Disable BuildingClass_AssignDestination_SyncLog
+		Patch::Apply_RAW(0x455D50, { 0x56, 0x8B, 0xF1, 0x83, 0xBE, 0xAC, 0x0, 0x0, 0x0, 0x13 });
+
+		// Disable InfantryClass_AssignDestination_SyncLog
+		Patch::Apply_RAW(0x51AA40, { 0x83, 0xEC, 0x2C, 0x53, 0x55 });
+
+		// Disable UnitClass_AssignDestination_SyncLog
+		Patch::Apply_RAW(0x741970, { 0x81, 0xEC, 0x80, 0x0, 0x0, 0x0 });
+
+		// Disable AircraftClass_OverrideMission_SyncLog
+		Patch::Apply_RAW(0x41BB30, { 0x8B, 0x81, 0xAC, 0x0, 0x0, 0x0 });
+
+		// Disable FootClass_OverrideMission_SyncLog
+		Patch::Apply_RAW(0x4D8F40, { 0x8B, 0x54, 0x24, 0x4, 0x56 });
+
+		// Disable TechnoClass_OverrideMission_SyncLog
+		Patch::Apply_RAW(0x7013A0, { 0x8B, 0x54, 0x24, 0x4, 0x56 });
+
+		Phobos::Optimizations::DisableSyncLogging = true;
+	}
+
+	Phobos::Optimizations::Applied = true;
+}
