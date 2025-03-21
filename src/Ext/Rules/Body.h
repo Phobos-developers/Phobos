@@ -157,7 +157,7 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
-		Valueable<int> AttackMindControlledDelay;
+		Valueable<int> MindControl_ThreatDelay;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -282,7 +282,7 @@ public:
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
 			, UseFixedVoxelLighting { false }
-			, AttackMindControlledDelay { 0 }
+			, MindControl_ThreatDelay { 0 }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }

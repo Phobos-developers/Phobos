@@ -349,21 +349,10 @@ bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* p
 
 	const auto pManager = pMind->CaptureManager;
 
-	if (!pManager)
+	if (!pManager || !pRetaliator->Owner->IsAlliedWith(pManager->GetOriginalOwner(pControlled)))
 		return true;
 
-	const auto pHome = pManager->GetOriginalOwner(pControlled);
-	const auto pHouse = pRetaliator->Owner;
-
-	if (!pHome || !pHouse || !pHouse->IsAlliedWith(pHome))
-		return true;
-
-	const auto pExt = TechnoExt::ExtMap.Find(pControlled);
-
-	if (!pExt)
-		return true;
-
-	return pExt->BeControlledThreatFrame <= Unsorted::CurrentFrame();
+	return TechnoExt::ExtMap.Find(pControlled)->BeControlledThreatFrame <= Unsorted::CurrentFrame;
 }
 
 DEFINE_HOOK(0x7089E8, TechnoClass_AllowedToRetaliate_AttackMindControlledDelay, 0x6)

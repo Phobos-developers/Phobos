@@ -49,8 +49,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				auto pOriginOwner = pNode->OriginalOwner->Defeated ?
 					HouseClass::FindNeutral() : pNode->OriginalOwner;
 
-				if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
-					pExt->BeControlledThreatFrame = 0;
+				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
 
 				pTarget->SetOwningHouse(pOriginOwner, !silent);
 				pManager->DecideUnitFate(pTarget);
@@ -85,48 +84,43 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 					CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
 		}
 
-		if (auto pControlNode = GameCreate<ControlNode>())
+		auto pControlNode = GameCreate<ControlNode>();
+		pControlNode->OriginalOwner = pTarget->Owner;
+		pControlNode->Unit = pTarget;
+
+		pManager->ControlNodes.AddItem(pControlNode);
+		pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+
+		if (threatDelay > 0)
+			TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
+
+		if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
 		{
-			pControlNode->OriginalOwner = pTarget->Owner;
-			pControlNode->Unit = pTarget;
+			pTarget->MindControlledBy = pManager->Owner;
 
-			pManager->ControlNodes.AddItem(pControlNode);
-			pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+			pManager->DecideUnitFate(pTarget);
 
-			if (threatDelay > 0)
+			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+			auto const pType = pTarget->GetTechnoType();
+			CoordStruct location = pTarget->GetCoords();
+
+			if (pBld)
+				location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+			else
+				location.Z += pType->MindControlRingOffset;
+
+			if (auto const pAnimType = pControlledAnimType)
 			{
-				if (const auto pExt = TechnoExt::ExtMap.Find(pTarget))
-					pExt->BeControlledThreatFrame = Unsorted::CurrentFrame() + threatDelay;
-			}
+				auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
 
-			if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
-			{
-				pTarget->MindControlledBy = pManager->Owner;
-
-				pManager->DecideUnitFate(pTarget);
-
-				auto const pBld = abstract_cast<BuildingClass*>(pTarget);
-				auto const pType = pTarget->GetTechnoType();
-				CoordStruct location = pTarget->GetCoords();
+				pTarget->MindControlRingAnim = pAnim;
+				pAnim->SetOwnerObject(pTarget);
 
 				if (pBld)
-					location.Z += pBld->Type->Height * Unsorted::LevelHeight;
-				else
-					location.Z += pType->MindControlRingOffset;
-
-				if (auto const pAnimType = pControlledAnimType)
-				{
-					auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
-
-					pTarget->MindControlRingAnim = pAnim;
-					pAnim->SetOwnerObject(pTarget);
-
-					if (pBld)
-						pAnim->ZAdjust = -1024;
-				}
-
-				return true;
+					pAnim->ZAdjust = -1024;
 			}
+
+			return true;
 		}
 	}
 
