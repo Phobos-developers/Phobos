@@ -342,6 +342,7 @@ New:
 - Recycle the spawner on other FLH (by TaranDahl)
 - Technos can maintain a suitable distance after firing (by CrimRecya)
 - Projectile subject to ground check before firing (by CrimRecya)
+- Delay automatic attack on the controlled unit (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -518,7 +519,6 @@ New:
 - Allow infantry to use land sequences in water (by Starkku)
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
-- Delay automatic attack on the controlled unit (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Extending `Power` to all TechnoTypes (by Morton)
 
