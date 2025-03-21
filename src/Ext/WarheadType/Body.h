@@ -55,6 +55,7 @@ public:
 		Valueable<double> Crit_Chance;
 		Valueable<bool> Crit_ApplyChancePerTarget;
 		Valueable<int> Crit_ExtraDamage;
+		Valueable<bool> Crit_ExtraDamage_ApplyFirepowerMult;
 		Valueable<WarheadTypeClass*> Crit_Warhead;
 		Valueable<bool> Crit_Warhead_FullDetonation;
 		Valueable<AffectedTarget> Crit_Affects;
@@ -219,6 +220,7 @@ public:
 			, Crit_Chance { 0.0 }
 			, Crit_ApplyChancePerTarget { false }
 			, Crit_ExtraDamage { 0 }
+			, Crit_ExtraDamage_ApplyFirepowerMult { false }
 			, Crit_Warhead {}
 			, Crit_Warhead_FullDetonation { true }
 			, Crit_Affects { AffectedTarget::All }

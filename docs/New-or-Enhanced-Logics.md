@@ -387,7 +387,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
-  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow`/`ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
+  - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
   - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
   - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
@@ -507,7 +507,7 @@ DetachOnCloak=true                      ; boolean
 
 ### Play sound as a detached sound event
 
-- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report/StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
+- It is now possible for animation to play a sound that is not attached to an audio event handler by using `DetachedReport`. By default animation `Report` / `StartSound` is played by an audio event handler, which allows the sound to loop and play at correct location even if it changes after its initial creation. This can also cause issues with animations that chain different types through `Next`, as the audio event handler resets when the animation restarts.
 
 In `artmd.ini`:
 ```ini
@@ -624,7 +624,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=E2  ; InfantryType
+DefaultDisguise=    ; InfantryType
 ```
 
 ### Random death animaton for NotHuman Infantry
@@ -944,6 +944,7 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 
 - It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
   - `Level=true` projectiles detonate on tiles belonging to non-water tilesets by default, but will not consider such tiles as true obstacles. This behaviour can be overridden by setting these keys.
+- As for `SubjectToGround`, if set it to true ,it will predict the height of the connecting straight line from the bullet's source coordinates to target coordinates. If the predicted height is lower than the ground height of the current predicted position, the firer will also consider targets blocked by such obstacles as out of range and will attempt to reposition themselves. Due to technical reasons, this feature will not be effective for the Air Force and buildings. Technos attacking in `OpenTopped=true` vehicles will not be affected either.
 
 In `rulesmd.ini`:
 ```ini
@@ -952,6 +953,7 @@ SubjectToLand=                ; boolean
 SubjectToLand.Detonate=true   ; boolean
 SubjectToWater=               ; boolean
 SubjectToWater.Detonate=true  ; boolean
+SubjectToGround=false         ; boolean
 ```
 
 ### Return weapon
@@ -1022,7 +1024,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 
 - It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.
   - Note that if you fire another `Type=EMPulse` superweapon with different weapon index that the same building is capable of launching before the first weapon was fired, the latter superweapon's settings will take precedence.
-  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum/SW.RangeMaximum` are explicitly set.
+  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set.
 - Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
 
 In `rulesmd.ini`:
@@ -1082,7 +1084,7 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
-  - `SW.Next.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `SW.Next.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` respectively.
 
 In `rulesmd.ini`:
 ```ini
@@ -1136,14 +1138,26 @@ TabIndex=1  ; integer
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
 - `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
+- `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
+- `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled.
+- `Spawner.RecycleCoord` defines the relative position to the carrier that the spawned aircraft will head to.
+  - `Spawner.RecycleOnTurret` defines if the FLH is relative to the turret rather than the body.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
-Spawner.LimitRange=false         ; boolean
-Spawner.ExtraLimitRange=0        ; integer, range in cells
-Spawner.DelayFrames=             ; integer, game frames
-Spawner.AttackImmediately=false  ; boolean
+[SOMETECHNO]                       ; TechnoType
+Spawner.LimitRange=false           ; boolean
+Spawner.ExtraLimitRange=0          ; integer, range in cells
+Spawner.DelayFrames=               ; integer, game frames
+Spawner.AttackImmediately=false    ; boolean
+Spawner.RecycleRange=-1            ; float, range in cells
+Spawner.RecycleAnim=               ; Animation
+Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
+Spawner.RecycleOnTurret=false      ; boolean
+```
+
+```{note}
+If you set recycle FLH, it is best to set a recycle range of at least `0.5` at the same time. Otherwise, the spawner may not recycle correctly.
 ```
 
 ### Shared Ammo
@@ -1273,6 +1287,22 @@ OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
 ```
 
+### Customizable spawns queue
+- It is now possible to spawn multiple types of spawnees from a spawner with `Spawns.Queue`. The order of spawnees in this queue is the order of their respawn.
+  - `Spawns` still needs to be set to enable the spawner logic and act as a default spawnee.
+  - `SpawnsNumber` still needs to be set to determine the amount of spawnee slots.
+  - If the length of the queue is longer than the spawner's `SpawnsNumber`, spawnee after this length will be omitted. If the length is shorter however, the rest of the positions will be filled by the spawnee defined by `Spawns`. Hence, it's recommended to make them the same.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+Spawns.Queue=       ; List of AircraftTypes, in order
+```
+
+```{warning}
+Note that all spawnees in a queue should have `MissileSpawn` set to the same value (all to true or false). Mixing them will make missile spawnees can't hit their targets.
+```
+
 ### Disabling fallback to (Elite)Secondary weapon
 
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:
@@ -1323,10 +1353,14 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 ![image](_static/images/underwater-new-attack-tag.gif)
 *Naval underwater target behavior with `ForceWeapon.Naval.Decloaked` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
+![image](_static/images/forceweapon_emp.gif)
+*Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
+
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
   - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
+  - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
 
 In `rulesmd.ini`:
 ```ini
@@ -1334,6 +1368,16 @@ In `rulesmd.ini`:
 ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.UnderEMP=-1         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+```
+
+### Initial spawns number
+- It is now possible to set the initial amount of spawnees for a spawner, instead of always being filled. Won't work if it's larger than `SpawnsNumber`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+InitialSpawnsNumber=      ; integer
 ```
 
 ### Initial strength for TechnoTypes and cloned infantry
@@ -1406,7 +1450,6 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1418,11 +1461,16 @@ MultiMindControl.ReleaseVictim=false  ; boolean
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
+- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 NoManualMove=false  ; boolean
+```
+
+```{note}
+Note that you can still undeploy the building by using a `BuildingUndeploy=true` warhead or by setting a rally point and selling it.
 ```
 
 ### Promoted Spawns
@@ -1592,7 +1640,7 @@ Convert.ComputerToHuman=    ; TechnoType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                  ; TechnoType, `IsGattling=yes`
+[SOMETECHNO]                  ; TechnoType, with IsGattling=yes
 RateDown.Delay=0              ; integer, game frames
 RateDown.Reset=false          ; boolean
 RateDown.Cover.Value=0        ; integer
@@ -1644,6 +1692,27 @@ DestroyAnim=       ; AnimationType
 DestroySound=      ; Sound entry
 ```
 
+## Vehicles
+
+### Damaged unit image changes
+
+- When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` VehicleType.
+- Similar, `Image.ConditionRed` is used as image if unit health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
+- It is also works on water by setting `WaterImage.ConditionYellow` and `WaterImage.ConditionRed` VehicleType, similar to Ares' `WaterImage`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                         ; VehicleType
+Image.ConditionYellow=                ; VehicleType entry
+Image.ConditionRed=                   ; VehicleType entry
+WaterImage.ConditionYellow=           ; VehicleType entry
+WaterImage.ConditionRed=              ; VehicleType entry
+```
+
+```{warning}
+Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
 ## Warheads
 
 ```{hint}
@@ -1680,7 +1749,9 @@ RemoveMindControl=false  ; boolean
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
   - `Crit.Chance` determines chance for a critical hit to occur. By default this is checked once when the Warhead is detonated and every target that is susceptible to critical hits will be affected. If `Crit.ApplyChancePerTarget` is set, then whether or not the chance roll is successful is determined individually for each target.
   - `Crit.ExtraDamage` determines the damage dealt by the critical hit. If `Crit.Warhead` is set, the damage is used to detonate the specified Warhead on each affected target, otherwise the damage is directly dealt based on current Warhead's `Verses` settings.
-  - `Crit.Warhead` can be used to set a Warhead to detonate instead of using current Warhead. `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
+  - `Crit.ExtraDamage.ApplyFirepowerMult` determines whether or not the critical hit damage should multiply the TechnoType's firepower multipliers.
+  - `Crit.Warhead` can be used to set a Warhead to detonate instead of using current Warhead.
+  - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
   - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
@@ -1692,24 +1763,25 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                       ; WarheadType
-Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false     ; boolean
-Crit.ExtraDamage=0                  ; integer
-Crit.Warhead=                       ; WarheadType
-Crit.Warhead.FullDetonation=true    ; boolean
-Crit.Affects=all                    ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                      ; List of AnimationTypes
-Crit.AnimList.PickRandom=           ; boolean
-Crit.AnimList.CreateAll=            ; boolean
-Crit.ActiveChanceAnims=             ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false    ; boolean
-Crit.SuppressWhenIntercepted=false  ; boolean
+[SOMEWARHEAD]                               ; WarheadType
+Crit.Chance=0.0                             ; floating point value, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false             ; boolean
+Crit.ExtraDamage=0                          ; integer
+Crit.ExtraDamage.ApplyFirepowerMult=false   ; boolean
+Crit.Warhead=                               ; WarheadType
+Crit.Warhead.FullDetonation=true            ; boolean
+Crit.Affects=all                            ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectBelowPercent=1.0                 ; floating point value, percents or absolute (0.0-1.0)
+Crit.AnimList=                              ; List of AnimationTypes
+Crit.AnimList.PickRandom=                   ; boolean
+Crit.AnimList.CreateAll=                    ; boolean
+Crit.ActiveChanceAnims=                     ; List of AnimationTypes
+Crit.AnimOnAffectedTargets=false            ; boolean
+Crit.SuppressWhenIntercepted=false          ; boolean
 
-[SOMETECHNO]                        ; TechnoType
-ImmuneToCrit=no                     ; boolean
+[SOMETECHNO]                                ; TechnoType
+ImmuneToCrit=false                          ; boolean
 ```
 
 ```{warning}
@@ -1830,7 +1902,7 @@ PenetratesForceShield=       ; boolean
   - `LaunchSW` specifies the superweapons to launch when the warhead is detonated. If superweapon has negative `Money.Amount`, the firing house must have enough credits in order for it to be fired.
   - `LaunchSW.RealLaunch` controls whether the owner who fired the warhead must own all listed superweapons. Otherwise they will be launched out of nowhere.
   - `LaunchSW.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
-  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators`/`SW.AnyDesignator` respectively.
+  - `LaunchSW.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` respectively.
   - `LaunchSW.DisplayMoney` can be set to display the amount of credits given or deducted by the launched superweapon by `Money.Amount`. The number is displayed in green if given, red if deducted and will move upwards after appearing.
     - `LaunchSW.DisplayMoney.Houses` determines which houses can see the credits display.
     - `LaunchSW.DisplayMoney.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at superweapon's target cell.
@@ -2066,4 +2138,19 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Keep Range After Firing
+
+- Technos can maintain a suitable distance after firing if `KeepRange` is not set to 0.
+  - `KeepRange` controls how long the distance to maintain when the techno's ROF timer is ticking. What is actually read is its absolute value. If it is a positive value, it will be stayed outside this distance, just like it has a special `MinimumRange` after firing. If it is a negative value, it will be kept as close as possible to this distance, just like it has a special `Range` after firing. In addition, if the effective range section is too small, it will be considered unable to fire. It is best to have an effective range of 1.0, and 2.0 is best for Infantry.
+    - `KeepRange.AllowAI` controls whether this function is effective for computer.
+    - `KeepRange.AllowPlayer` controls whether this function is effective for human.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                 ; WeaponType
+KeepRange=0                  ; floating point value
+KeepRange.AllowAI=false      ; boolean
+KeepRange.AllowPlayer=false  ; boolean
 ```

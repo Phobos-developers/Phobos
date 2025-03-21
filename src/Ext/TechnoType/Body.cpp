@@ -124,7 +124,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	HouseClass* decidedOwner = pOwner && !pOwner->Defeated
 		? pOwner : HouseClass::FindCivilianSide();
 
-	auto pCell = MapClass::Instance->TryGetCellAt(location);
+	auto pCell = MapClass::Instance.TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
 	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
 	bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0;
@@ -134,12 +134,12 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 
 	if (checkPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
 	{
-		auto nCell = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(location), speedType, -1, mZone,
+		auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location), speedType, -1, mZone,
 			isBridge, 1, 1, true, false, false, isBridge, CellStruct::Empty, false, false);
 
 		if (nCell != CellStruct::Empty)
 		{
-			pCell = MapClass::Instance->TryGetCellAt(nCell);
+			pCell = MapClass::Instance.TryGetCellAt(nCell);
 
 			if (pCell)
 				location = pCell->GetCoords();
@@ -151,7 +151,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 		isBridge = allowBridges && pCell->ContainsBridge();
 		int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
 		int zCoord = alwaysOnGround ? INT32_MIN : baseHeight;
-		int cellFloorHeight = MapClass::Instance->GetCellFloorHeight(location) + bridgeZ;
+		int cellFloorHeight = MapClass::Instance.GetCellFloorHeight(location) + bridgeZ;
 
 		if (!alwaysOnGround && spawnHeight >= 0)
 			location.Z = cellFloorHeight + spawnHeight;
@@ -171,9 +171,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 			}
 			else if (!pCell->GetBuilding() || !checkPathfinding)
 			{
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 				success = pTechno->Unlimbo(location, facing);
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 			}
 			else
 			{
@@ -187,13 +187,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 
 				if (pSpawnAnimType)
 				{
-					if (auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location))
-					{
-						AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-
-						if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
-							pAnimExt->SetInvoker(pInvoker, pInvokerHouse);
-					}
+					auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
+					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
 				}
 
 				if (!pTechno->InLimbo)
@@ -224,7 +220,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 								pJJLoco->CurrentHeight = pType->JumpjetHeight;
 
 								if (!inAir)
-									AircraftTrackerClass::Instance->Add(pTechno);
+									AircraftTrackerClass::Instance.Add(pTechno);
 							}
 							else if (inAir)
 							{
@@ -394,6 +390,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->ForceWeapon_Cloaked.Read(exINI, pSection, "ForceWeapon.Cloaked");
 	this->ForceWeapon_Disguised.Read(exINI, pSection, "ForceWeapon.Disguised");
+	this->ForceWeapon_UnderEMP.Read(exINI, pSection, "ForceWeapon.UnderEMP");
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
@@ -486,6 +483,19 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
 	this->Power.Read(exINI, pSection, "Power");
+
+	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
+	this->Image_ConditionRed.Read(exINI, pSection, "Image.ConditionRed");
+	this->WaterImage_ConditionYellow.Read(exINI, pSection, "WaterImage.ConditionYellow");
+	this->WaterImage_ConditionRed.Read(exINI, pSection, "WaterImage.ConditionRed");
+
+	this->InitialSpawnsNumber.Read(exINI, pSection, "InitialSpawnsNumber");
+	this->Spawns_Queue.Read(exINI, pSection, "Spawns.Queue");
+
+	this->Spawner_RecycleRange.Read(exINI, pSection, "Spawner.RecycleRange");
+	this->Spawner_RecycleAnim.Read(exINI, pSection, "Spawner.RecycleAnim");
+	this->Spawner_RecycleCoord.Read(exINI, pSection, "Spawner.RecycleCoord");
+	this->Spawner_RecycleOnTurret.Read(exINI, pSection, "Spawner.RecycleOnTurret");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -773,6 +783,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->ForceWeapon_Cloaked)
 		.Process(this->ForceWeapon_Disguised)
+		.Process(this->ForceWeapon_UnderEMP)
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
@@ -882,6 +893,20 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 
 		.Process(this->Power)
+		
+    	.Process(this->Image_ConditionYellow)
+		.Process(this->Image_ConditionRed)
+		.Process(this->WaterImage_ConditionYellow)
+		.Process(this->WaterImage_ConditionRed)
+
+		.Process(this->InitialSpawnsNumber)
+		.Process(this->Spawns_Queue)
+		
+		.Process(this->Spawner_RecycleRange)
+		.Process(this->Spawner_RecycleAnim)
+		.Process(this->Spawner_RecycleCoord)
+		.Process(this->Spawner_RecycleOnTurret)
+
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
