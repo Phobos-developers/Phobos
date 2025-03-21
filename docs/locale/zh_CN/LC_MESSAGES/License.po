@@ -8,54 +8,60 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"POT-Creation-Date: 2025-03-08 13:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.16.0\n"
 
-#: ../License.md:1
+#: ../../License.md:1
 msgid "License"
-msgstr "许可证"
+msgstr "许可证，汉化可参阅[此处](http://www.thebigfly.com/gnu/lgpl/lgpl-v3.php)。"
 
-#: ../../LICENSE.md:4
+#: ../../../LICENSE.md:2
+msgid ""
+"               GNU LESSER GENERAL PUBLIC LICENSE\n"
+"                   Version 3, 29 June 2007\n"
+msgstr ""
+
+#: ../../../LICENSE.md:5
 msgid ""
 "Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>  "
 "Everyone is permitted to copy and distribute verbatim copies  of this "
 "license document, but changing it is not allowed."
-msgstr "关于许可证的汉化，请参阅[此处](http://www.thebigfly.com/gnu/lgpl/lgpl-v3.php)。\n"
+msgstr ""
 "Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>  "
 "Everyone is permitted to copy and distribute verbatim copies  of this "
 "license document, but changing it is not allowed."
 
-#: ../../LICENSE.md:9
+#: ../../../LICENSE.md:10
 msgid ""
 "This version of the GNU Lesser General Public License incorporates the "
 "terms and conditions of version 3 of the GNU General Public License, "
 "supplemented by the additional permissions listed below."
 msgstr ""
 
-#: ../../LICENSE.md:13
+#: ../../../LICENSE.md:14
 msgid "Additional Definitions."
 msgstr ""
 
-#: ../../LICENSE.md:15
+#: ../../../LICENSE.md:16
 msgid ""
 "As used herein, \"this License\" refers to version 3 of the GNU Lesser "
 "General Public License, and the \"GNU GPL\" refers to version 3 of the "
 "GNU General Public License."
 msgstr ""
 
-#: ../../LICENSE.md:19
+#: ../../../LICENSE.md:20
 msgid ""
 "\"The Library\" refers to a covered work governed by this License, other "
 "than an Application or a Combined Work as defined below."
 msgstr ""
 
-#: ../../LICENSE.md:22
+#: ../../../LICENSE.md:23
 msgid ""
 "An \"Application\" is any work that makes use of an interface provided by"
 " the Library, but which is not otherwise based on the Library. Defining a"
@@ -63,14 +69,14 @@ msgid ""
 "interface provided by the Library."
 msgstr ""
 
-#: ../../LICENSE.md:27
+#: ../../../LICENSE.md:28
 msgid ""
 "A \"Combined Work\" is a work produced by combining or linking an "
 "Application with the Library.  The particular version of the Library with"
 " which the Combined Work was made is also called the \"Linked Version\"."
 msgstr ""
 
-#: ../../LICENSE.md:32
+#: ../../../LICENSE.md:33
 msgid ""
 "The \"Minimal Corresponding Source\" for a Combined Work means the "
 "Corresponding Source for the Combined Work, excluding any source code for"
@@ -78,7 +84,7 @@ msgid ""
 "on the Application, and not on the Linked Version."
 msgstr ""
 
-#: ../../LICENSE.md:37
+#: ../../../LICENSE.md:38
 msgid ""
 "The \"Corresponding Application Code\" for a Combined Work means the "
 "object code and/or source code for the Application, including any data "
@@ -86,21 +92,21 @@ msgid ""
 "Application, but excluding the System Libraries of the Combined Work."
 msgstr ""
 
-#: ../../LICENSE.md:42
+#: ../../../LICENSE.md:43
 msgid "Exception to Section 3 of the GNU GPL."
 msgstr ""
 
-#: ../../LICENSE.md:44
+#: ../../../LICENSE.md:45
 msgid ""
 "You may convey a covered work under sections 3 and 4 of this License "
 "without being bound by section 3 of the GNU GPL."
 msgstr ""
 
-#: ../../LICENSE.md:47
+#: ../../../LICENSE.md:48
 msgid "Conveying Modified Versions."
 msgstr ""
 
-#: ../../LICENSE.md:49
+#: ../../../LICENSE.md:50
 msgid ""
 "If you modify a copy of the Library, and, in your modifications, a "
 "facility refers to a function or data to be supplied by an Application "
@@ -108,7 +114,7 @@ msgid ""
 "facility is invoked), then you may convey a copy of the modified version:"
 msgstr ""
 
-#: ../../LICENSE.md:55
+#: ../../../LICENSE.md:56
 msgid ""
 "a) under this License, provided that you make a good faith effort to    "
 "ensure that, in the event an Application does not supply the    function "
@@ -116,17 +122,17 @@ msgid ""
 "its purpose remains meaningful, or"
 msgstr ""
 
-#: ../../LICENSE.md:60
+#: ../../../LICENSE.md:61
 msgid ""
 "b) under the GNU GPL, with none of the additional permissions of    this "
 "License applicable to that copy."
 msgstr ""
 
-#: ../../LICENSE.md:63
+#: ../../../LICENSE.md:64
 msgid "Object Code Incorporating Material from Library Header Files."
 msgstr ""
 
-#: ../../LICENSE.md:65
+#: ../../../LICENSE.md:66
 msgid ""
 "The object code form of an Application may incorporate material from a "
 "header file that is part of the Library.  You may convey such object code"
@@ -136,24 +142,24 @@ msgid ""
 "lines in length), you do both of the following:"
 msgstr ""
 
-#: ../../LICENSE.md:72
+#: ../../../LICENSE.md:73
 msgid ""
 "a) Give prominent notice with each copy of the object code that the    "
 "Library is used in it and that the Library and its use are    covered by "
 "this License."
 msgstr ""
 
-#: ../../LICENSE.md:76
+#: ../../../LICENSE.md:77
 msgid ""
 "b) Accompany the object code with a copy of the GNU GPL and this license"
 "    document."
 msgstr ""
 
-#: ../../LICENSE.md:79
+#: ../../../LICENSE.md:80
 msgid "Combined Works."
 msgstr ""
 
-#: ../../LICENSE.md:81
+#: ../../../LICENSE.md:82
 msgid ""
 "You may convey a Combined Work under terms of your choice that, taken "
 "together, effectively do not restrict modification of the portions of the"
@@ -161,20 +167,20 @@ msgid ""
 "debugging such modifications, if you also do each of the following:"
 msgstr ""
 
-#: ../../LICENSE.md:87
+#: ../../../LICENSE.md:88
 msgid ""
 "a) Give prominent notice with each copy of the Combined Work that    the "
 "Library is used in it and that the Library and its use are    covered by "
 "this License."
 msgstr ""
 
-#: ../../LICENSE.md:91
+#: ../../../LICENSE.md:92
 msgid ""
 "b) Accompany the Combined Work with a copy of the GNU GPL and this "
 "license    document."
 msgstr ""
 
-#: ../../LICENSE.md:94
+#: ../../../LICENSE.md:95
 msgid ""
 "c) For a Combined Work that displays copyright notices during    "
 "execution, include the copyright notice for the Library among    these "
@@ -182,11 +188,29 @@ msgid ""
 "the GNU GPL and this license document."
 msgstr ""
 
-#: ../../LICENSE.md:99
+#: ../../../LICENSE.md:100
 msgid "d) Do one of the following:"
 msgstr ""
 
-#: ../../LICENSE.md:116
+#: ../../../LICENSE.md:102
+msgid ""
+"   0) Convey the Minimal Corresponding Source under the terms of this\n"
+"   License, and the Corresponding Application Code in a form\n"
+"   suitable for, and under terms that permit, the user to\n"
+"   recombine or relink the Application with a modified version of\n"
+"   the Linked Version to produce a modified Combined Work, in the\n"
+"   manner specified by section 6 of the GNU GPL for conveying\n"
+"   Corresponding Source.\n"
+"\n"
+"   1) Use a suitable shared library mechanism for linking with the\n"
+"   Library.  A suitable mechanism is one that (a) uses at run time\n"
+"   a copy of the Library already present on the user's computer\n"
+"   system, and (b) will operate properly with a modified version\n"
+"   of the Library that is interface-compatible with the Linked\n"
+"   Version.\n"
+msgstr ""
+
+#: ../../../LICENSE.md:117
 msgid ""
 "e) Provide Installation Information, but only if you would otherwise    "
 "be required to provide such information under section 6 of the    GNU "
@@ -200,11 +224,11 @@ msgid ""
 "section 6 of the GNU GPL    for conveying Corresponding Source.)"
 msgstr ""
 
-#: ../../LICENSE.md:128
+#: ../../../LICENSE.md:129
 msgid "Combined Libraries."
 msgstr ""
 
-#: ../../LICENSE.md:130
+#: ../../../LICENSE.md:131
 msgid ""
 "You may place library facilities that are a work based on the Library "
 "side by side in a single library together with other library facilities "
@@ -213,25 +237,25 @@ msgid ""
 "the following:"
 msgstr ""
 
-#: ../../LICENSE.md:136
+#: ../../../LICENSE.md:137
 msgid ""
 "a) Accompany the combined library with a copy of the same work based    "
 "on the Library, uncombined with any other library facilities,    conveyed"
 " under the terms of this License."
 msgstr ""
 
-#: ../../LICENSE.md:140
+#: ../../../LICENSE.md:141
 msgid ""
 "b) Give prominent notice with the combined library that part of it    is "
 "a work based on the Library, and explaining where to find the    "
 "accompanying uncombined form of the same work."
 msgstr ""
 
-#: ../../LICENSE.md:144
+#: ../../../LICENSE.md:145
 msgid "Revised Versions of the GNU Lesser General Public License."
 msgstr ""
 
-#: ../../LICENSE.md:146
+#: ../../../LICENSE.md:147
 msgid ""
 "The Free Software Foundation may publish revised and/or new versions of "
 "the GNU Lesser General Public License from time to time. Such new "
@@ -239,7 +263,7 @@ msgid ""
 " in detail to address new problems or concerns."
 msgstr ""
 
-#: ../../LICENSE.md:151
+#: ../../../LICENSE.md:152
 msgid ""
 "Each version is given a distinguishing version number. If the Library as "
 "you received it specifies that a certain numbered version of the GNU "
@@ -252,7 +276,7 @@ msgid ""
 "Free Software Foundation."
 msgstr ""
 
-#: ../../LICENSE.md:161
+#: ../../../LICENSE.md:162
 msgid ""
 "If the Library as you received it specifies that a proxy can decide "
 "whether future versions of the GNU Lesser General Public License shall "
