@@ -178,7 +178,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			}
 		}
 		// Check whether about to fall into the ground
-		if (std::abs(this->MovingVelocity.Z) > Unsorted::CellHeight)
+		if (this->BounceTimes > 0 || std::abs(this->MovingVelocity.Z) > Unsorted::CellHeight)
 		{
 			const auto theTargetCoords = pBullet->Location + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
 			const auto cellHeight = MapClass::Instance.GetCellFloorHeight(theTargetCoords);
@@ -189,10 +189,9 @@ bool ParabolaTrajectory::OnVelocityCheck()
 				const auto newRatio = std::abs((pBullet->Location.Z - cellHeight) / this->MovingVelocity.Z);
 				// Only when the proportion is smaller, it needs to be recorded
 				if (ratio > newRatio)
-				{
 					ratio = newRatio;
-					velocityCheck = 1;
-				}
+
+				velocityCheck = 1;
 			}
 		}
 	}
@@ -826,14 +825,22 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(const CellClass* con
 	// Can bounce on water surface?
 	if (pCell->LandType == LandType::Water && !pType->BounceOnWater)
 		return true;
-
+	// Obtain information on which surface to bounce on
+	const auto groundNormalVector = this->GetGroundNormalVector(pCell, position);
+	// Bounce only occurs when the velocity is in different directions or the surface is not cliff
+	if (this->LastVelocity * groundNormalVector > 0 && std::abs(groundNormalVector.Z) < 1e-10)
+	{
+		// Restore original velocity
+		this->MovingVelocity = this->LastVelocity;
+		this->MovingSpeed = this->MovingVelocity.Magnitude();
+		return false;
+	}
+	// Record bouncing once
 	--this->BounceTimes;
 	this->ShouldBounce = false;
 	// Calculate the velocity vector after bouncing
-	const auto groundNormalVector = this->GetGroundNormalVector(pCell, position);
 	this->MovingVelocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
-
 	const auto pBullet = this->Bullet;
 	// Detonate an additional warhead when bouncing?
 	if (pType->BounceDetonate)
@@ -896,22 +903,19 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(const CellClass* const 
 		}
 	}
 	// 362.1 -> Unsorted::LeptonsPerCell * sqrt(2)
-	const auto horizontalVelocity = PhobosTrajectory::Get2DVelocity(this->MovingVelocity);
-	const auto velocity = horizontalVelocity > 362.1 ? this->MovingVelocity * (362.1 / horizontalVelocity) : this->MovingVelocity;
-	const CoordStruct velocityCoords { static_cast<int>(velocity.X), static_cast<int>(velocity.Y), static_cast<int>(velocity.Z) };
-
+	const auto horizontalVelocity = PhobosTrajectory::Get2DVelocity(this->LastVelocity);
+	const auto velocity = PhobosTrajectory::Vector2Coord(horizontalVelocity > 362.1 ? this->LastVelocity * (362.1 / horizontalVelocity) : this->LastVelocity);
 	const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
 	const auto bulletHeight = position.Z;
-	const auto lastCellHeight = MapClass::Instance.GetCellFloorHeight(position - velocityCoords);
-
+	const auto lastCellHeight = MapClass::Instance.GetCellFloorHeight(position - velocity);
 	// Check if it has hit a cliff (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 	{
 		auto cell = pCell->MapCoords;
-		const auto reverseSgnX = static_cast<short>(this->MovingVelocity.X > 0.0 ? -1 : 1);
-		const auto reverseSgnY = static_cast<short>(this->MovingVelocity.Y > 0.0 ? -1 : 1);
+		const auto reverseSgnX = static_cast<short>(this->LastVelocity.X > 0.0 ? -1 : 1);
+		const auto reverseSgnY = static_cast<short>(this->LastVelocity.Y > 0.0 ? -1 : 1);
 		int index = 0;
-
+		// Determine the shape of the cliff using 9 surrounding cells
 		if (this->CheckBulletHitCliff(cell.X + reverseSgnX, cell.Y, bulletHeight, lastCellHeight))
 		{
 			if (!this->CheckBulletHitCliff(cell.X, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))

@@ -77,6 +77,7 @@ public:
 	virtual const PhobosTrajectoryType* GetType() const override { return this->Type; }
 	virtual void OpenFire() override;
 	virtual void FireTrajectory() override;
+	virtual bool GetCanHitGround() const override { return this->BounceTimes <= 0; }
 	virtual void MultiplyBulletVelocity(const double ratio, const bool shouldDetonate) override;
 
 private:
