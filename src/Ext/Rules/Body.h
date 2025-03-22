@@ -143,6 +143,7 @@ public:
 		Valueable<bool> ExpandTurretRotation;
 		Valueable<bool> Turret_IdleRotate;
 		Valueable<bool> Turret_PointToMouse;
+		Valueable<bool> Turret_BodyFoundation;
 		Valueable<int> Turret_IdleRestartMin;
 		Valueable<int> Turret_IdleRestartMax;
 		Valueable<int> Turret_IdleIntervalMin;
@@ -316,6 +317,7 @@ public:
 			, ExpandTurretRotation { false }
 			, Turret_IdleRotate { false }
 			, Turret_PointToMouse { false }
+			, Turret_BodyFoundation { false }
 			, Turret_IdleRestartMin { 150 }
 			, Turret_IdleRestartMax { 300 }
 			, Turret_IdleIntervalMin { 150 }

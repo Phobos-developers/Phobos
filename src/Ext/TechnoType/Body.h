@@ -241,6 +241,7 @@ public:
 		Nullable<int> TurretROT;
 		Valueable<double> Turret_Restriction;
 		Valueable<double> Turret_ExtraAngle;
+		Nullable<bool> Turret_BodyFoundation;
 		Valueable<bool> Turret_BodyOrientation;
 		Valueable<double> Turret_BodyOrientationAngle;
 		Valueable<bool> Turret_BodyOrientationSymmetric;
@@ -513,6 +514,7 @@ public:
 			, TurretROT {}
 			, Turret_Restriction { 180.0 }
 			, Turret_ExtraAngle { 0.0 }
+			, Turret_BodyFoundation {}
 			, Turret_BodyOrientation { false }
 			, Turret_BodyOrientationAngle { 0.0 }
 			, Turret_BodyOrientationSymmetric { true }

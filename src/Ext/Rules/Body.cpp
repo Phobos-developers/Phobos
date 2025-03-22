@@ -198,6 +198,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ExpandTurretRotation.Read(exINI, GameStrings::General, "ExpandTurretRotation");
 	this->Turret_IdleRotate.Read(exINI, GameStrings::AudioVisual, "Turret.IdleRotate");
 	this->Turret_PointToMouse.Read(exINI, GameStrings::AudioVisual, "Turret.PointToMouse");
+	this->Turret_BodyFoundation.Read(exINI, GameStrings::AudioVisual, "Turret.BodyFoundation");
 	this->Turret_IdleRestartMin.Read(exINI, GameStrings::AudioVisual, "Turret.IdleRestartMin");
 	this->Turret_IdleRestartMax.Read(exINI, GameStrings::AudioVisual, "Turret.IdleRestartMax");
 	this->Turret_IdleIntervalMin.Read(exINI, GameStrings::AudioVisual, "Turret.IdleIntervalMin");
@@ -420,6 +421,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ExpandTurretRotation)
 		.Process(this->Turret_IdleRotate)
 		.Process(this->Turret_PointToMouse)
+		.Process(this->Turret_BodyFoundation)
 		.Process(this->Turret_IdleRestartMin)
 		.Process(this->Turret_IdleRestartMax)
 		.Process(this->Turret_IdleIntervalMin)

@@ -276,14 +276,27 @@ void TechnoTypeExt::ExtData::SetTurretLimitedDir(FootClass* pThis, DirStruct des
 	const auto pBody = &pThis->PrimaryFacing;
 	const auto pTurret = &pThis->SecondaryFacing;
 	const auto destinationDir = this->GetTurretDesiredDir(desiredDir);
+	auto setTurretDesired = [this, pBody, pTurret](const DirStruct& dir)
+	{
+		if (this->Turret_BodyFoundation.Get(RulesExt::Global()->Turret_BodyFoundation) && pBody->IsRotating())
+		{
+			const auto difference = static_cast<short>(pBody->Difference().Raw) > 0 ? pBody->ROT.Raw : -pBody->ROT.Raw;
+			const auto facing = DirStruct { pTurret->Current().Raw + difference };
+			pTurret->DesiredFacing = facing;
+			pTurret->StartFacing = facing;
+			pTurret->RotationTimer.Start(0);
+		}
+
+		pTurret->SetDesired(dir);
+	};
 	// There are no restrictions
 	if (turretRestrictAngle >= 180.0)
 	{
-		pTurret->SetDesired(destinationDir);
+		setTurretDesired(destinationDir);
 		return;
 	}
 
-	const auto restrictRaw = static_cast<short>(this->Turret_Restriction * TechnoTypeExt::AngleToRaw + 0.5);
+	const auto restrictRaw = static_cast<short>(turretRestrictAngle * TechnoTypeExt::AngleToRaw + 0.5);
 	const auto desiredRaw = static_cast<short>(destinationDir.Raw);
 	const auto turretRaw = static_cast<short>(pTurret->Current().Raw);
 
@@ -318,13 +331,13 @@ void TechnoTypeExt::ExtData::SetTurretLimitedDir(FootClass* pThis, DirStruct des
 	}
 	// When there is a significant difference and they are located on both sides of the body, first return the turret to its original position
 	if (std::abs(static_cast<short>(desiredRaw - turretRaw)) < 8192 && (currentDifference > 0 && desiredDifference < 0 || currentDifference < 0 && desiredDifference > 0))
-		pTurret->SetDesired(bodyDir);
+		setTurretDesired(bodyDir);
 	else if (desiredDifference < -restrictRaw)
-		pTurret->SetDesired(DirStruct { (bodyRaw - restrictRaw) });
+		setTurretDesired(DirStruct { (bodyRaw - restrictRaw) });
 	else if (desiredDifference > restrictRaw)
-		pTurret->SetDesired(DirStruct { (bodyRaw + restrictRaw) });
+		setTurretDesired(DirStruct { (bodyRaw + restrictRaw) });
 	else
-		pTurret->SetDesired(destinationDir);
+		setTurretDesired(destinationDir);
 }
 
 short TechnoTypeExt::ExtData::GetTurretLimitedRaw(short currentDirectionRaw)
@@ -579,6 +592,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TurretROT.Read(exINI, pSection, "TurretROT");
 	this->Turret_Restriction.Read(exINI, pSection, "Turret.Restriction");
 	this->Turret_ExtraAngle.Read(exINI, pSection, "Turret.ExtraAngle");
+	this->Turret_BodyFoundation.Read(exINI, pSection, "Turret.BodyFoundation");
 	this->Turret_BodyOrientation.Read(exINI, pSection, "Turret.BodyOrientation");
 	this->Turret_BodyOrientationAngle.Read(exINI, pSection, "Turret.BodyOrientationAngle");
 	this->Turret_BodyOrientationSymmetric.Read(exINI, pSection, "Turret.BodyOrientationSymmetric");
@@ -998,6 +1012,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->TurretROT)
 		.Process(this->Turret_Restriction)
 		.Process(this->Turret_ExtraAngle)
+		.Process(this->Turret_BodyFoundation)
 		.Process(this->Turret_BodyOrientation)
 		.Process(this->Turret_BodyOrientationAngle)
 		.Process(this->Turret_BodyOrientationSymmetric)

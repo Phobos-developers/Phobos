@@ -1704,6 +1704,7 @@ MindControl.ThreatDelay=      ; integer, game frames
 - The turret and body of the units can now be rotated under control.
   - `Turret.Restriction` defines the angle at which the turret can be turned to both sides.
   - `Turret.ExtraAngle` defines the additional rotation angle of the turret, and `Turret.Restriction` will also rotate with this value. The positive number is clockwise and the negative number is counterclockwise, that is, what angle the turret should use by default or face the target.
+  - `Turret.BodyFoundation` controls whether the unit's turret will rotate in the direction of body rotation.
   - `Turret.BodyOrientation` controls whether the body needs to aim at the target when firing.
   - `Turret.BodyOrientationAngle` defines the additional rotation angle of the body when aiming at the target. The positive number is clockwise and the negative number is counterclockwise, that is, what angle the body should use to face the target.
   - `Turret.BodyOrientationSymmetric` controls whether both sides of the additional body rotation angle can be used.
@@ -1711,11 +1712,12 @@ MindControl.ThreatDelay=      ; integer, game frames
 In `rulesmd.ini`:
 ```ini
 [General]
-ExpandTurretRotation=no             ; boolean
+ExpandTurretRotation=false          ; boolean
 
 [AudioVisual]
 Turret.IdleRotate=false             ; boolean
 Turret.PointToMouse=false           ; boolean
+Turret.BodyFoundation=false         ; boolean
 Turret.IdleRestartMin=150           ; integer, number of frames
 Turret.IdleRestartMax=300           ; integer, number of frames
 Turret.IdleIntervalMin=150          ; integer, number of frames
@@ -1726,7 +1728,8 @@ Turret.IdleRotate=                  ; boolean
 Turret.PointToMouse=                ; boolean
 Turret.Restriction=180.0            ; floating point value
 Turret.ExtraAngle=0                 ; floating point value
-Turret.BodyOrientation=no           ; boolean
+Turret.BodyFoundation=              ; boolean
+Turret.BodyOrientation=false        ; boolean
 Turret.BodyOrientationAngle=0       ; floating point value
 Turret.BodyOrientationSymmetric=yes ; boolean
 ```
