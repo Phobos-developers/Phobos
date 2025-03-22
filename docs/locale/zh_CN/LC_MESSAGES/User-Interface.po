@@ -1255,7 +1255,7 @@ msgstr ""
 msgid ""
 "Can be set to true on buildings with `ProduceCashAmount` to count them as"
 " active 'harvesters' while generating credits."
-msgstr "可以在使用 `ProduceCashAmount` 的建筑上设置为 true 以便在其生成资金时计为工作中的“矿车”。"
+msgstr "可以在使用 `ProduceCashAmount` 的建筑上设置为 true 以便在其生成资金时计为工作中的 “矿车”。"
 
 #: ../../User-Interface.md:426
 msgid ""

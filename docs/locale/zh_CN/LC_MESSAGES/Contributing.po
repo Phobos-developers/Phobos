@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-08 13:50+0800\n"
+"POT-Creation-Date: 2025-03-22 22:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,8 +40,7 @@ msgid ""
 "Due to the size of the project and varying complexity of the codebase, we"
 " have established a maintenance crew structure to help with the project's"
 " development and maintenance. The structure is as follows:"
-msgstr ""
-"由于项目规则和代码库的复杂性不同，我们建立了下述维护团队结构以协助项目开发和维护："
+msgstr "由于项目规则和代码库的复杂性不同，我们建立了下述维护团队结构以协助项目开发和维护："
 
 #: ../../Contributing.md:11
 msgid ""
@@ -49,8 +48,7 @@ msgid ""
 "the project is headed and have the final say in case of disputes. They "
 "are responsible for the project's vision and direction, and are the main "
 "point of contact for the community."
-msgstr ""
-"**负责人**（或 `T3` 维护者）：主要决策者，定义项目方向，在争议中拥有最终决定权。他们负责项目的愿景和方向，是社区的主要连接点。"
+msgstr "**负责人**（或 `T3` 维护者）：主要决策者，定义项目方向，在争议中拥有最终决定权。他们负责项目的愿景和方向，是社区的主要连接点。"
 
 #: ../../Contributing.md:12
 msgid "**`T2` maintainers** - assigned to more complex PRs, can make releases."
@@ -64,8 +62,7 @@ msgstr "**`T1` 维护者**：负责处理较简单的拉取请求。"
 msgid ""
 "**Triages** - help triage/label/assign PRs, issues, discussions, help "
 "with communication with the community."
-msgstr ""
-"**分类员**：协助分类／标记／分配拉取请求、问题和讨论，协助与社区沟通。"
+msgstr "**分类员**：协助分类／标记／分配拉取请求、问题和讨论，协助与社区沟通。"
 
 #: ../../Contributing.md:16
 msgid ""
@@ -76,8 +73,7 @@ msgid ""
 "the list, in case of need - individual permissions can be assigned to "
 "contributors by leads (for example, to help with documentation "
 "translations)."
-msgstr ""
-"这些角色根据拉取请求的复杂性和贡献者的经验进行分配，并非一成不变。此外这里只列出了常用的角色，在必要情况下负责人可为贡献者单独分配权限。"
+msgstr "这些角色根据拉取请求的复杂性和贡献者的经验进行分配，并非一成不变。此外这里只列出了常用的角色，在必要情况下负责人可为贡献者单独分配权限。"
 
 #: ../../Contributing.md:18
 msgid "Types of contributions"
@@ -88,15 +84,13 @@ msgid ""
 "To distribute the workload and make the project more manageable, we have "
 "established several commonly occuring types of contributions that can be "
 "made to the project. These types are as follows:"
-msgstr ""
-"为分担工作量并使项目更易于管理，我们定义了以下常见的贡献类型："
+msgstr "为分担工作量并使项目更易于管理，我们定义了以下常见的贡献类型："
 
 #: ../../Contributing.md:22
 msgid ""
 "Phobos bugfixes, including reconnection error (desync), crash (fatal "
 "error) fixes, and documentation fixes"
-msgstr ""
-"Phobos 修复，包括不同步（Reconnection Error）、崩溃（Fatal Error）和文档修复"
+msgstr "Phobos 修复，包括不同步（Reconnection Error）、崩溃（Fatal Error）和文档修复"
 
 #: ../../Contributing.md:23 ../../Contributing.md:25 ../../Contributing.md:27
 msgid "`T1` complexity by default"
@@ -111,8 +105,7 @@ msgid ""
 "Unhardcodings/customizations - contributions that only make something "
 "customizable through the INI or other way (by the modder usually), "
 "without adding too much code to handle the customization"
-msgstr ""
-"去硬编码／自定义功能——仅通过 Modder 可用的 INI 或其他方式使得某些功能得以自定义而不增加过多代码。"
+msgstr "去硬编码／自定义功能——仅通过 Modder 可用的 INI 或其他方式使得某些功能得以自定义而不增加过多代码。"
 
 #: ../../Contributing.md:28
 msgid "New features"
@@ -123,8 +116,7 @@ msgid ""
 "Extensions of existing systems - add logic to existing systems, doesn't "
 "warrant it's own entity or type classes generally, but may introduce new "
 "hooks"
-msgstr ""
-"现有系统扩展——为现有系统添加逻辑，通常无需独立实体或类型类，但可能引入新钩子"
+msgstr "现有系统扩展——为现有系统添加逻辑，通常无需独立实体或类型类，但可能引入新钩子"
 
 #: ../../Contributing.md:30
 msgid ""
@@ -136,23 +128,20 @@ msgstr "示例：反馈武器、弹头发射超级武器、使用现有的自定
 msgid ""
 "`T1` or `T2` complexity by default, depending on judgement of the one who"
 " assigns the PR"
-msgstr ""
-"默认复杂度：`T1` 或 `T2`（由拉取请求分配者判断）"
+msgstr "默认复杂度：`T1` 或 `T2`（由拉取请求分配者判断）"
 
 #: ../../Contributing.md:32
 msgid ""
 "New systems - generally with their own classes that don't extend game "
 "classes/logics (or have such amount of code that should be separated into"
 " separate classes)"
-msgstr ""
-"新系统——通常拥有自己的类，这些类不扩展游戏类／逻辑（或者代码量过大，应分离到单独的类中）"
+msgstr "新系统——通常拥有自己的类，这些类不扩展游戏类／逻辑（或者代码量过大，应分离到单独的类中）"
 
 #: ../../Contributing.md:33
 msgid ""
 "Examples: custom trajectories framework, interceptor logic, shield logic,"
 " etc."
-msgstr ""
-"示例：自定义轨迹框架、抛射体拦截、护盾逻辑等"
+msgstr "示例：自定义轨迹框架、抛射体拦截、护盾逻辑等"
 
 #: ../../Contributing.md:34 ../../Contributing.md:36
 msgid "`T2` complexity by default"
@@ -162,15 +151,13 @@ msgstr "默认复杂度：`T2`"
 msgid ""
 "Contributions to project infrastructure - changes to the project's build "
 "system, CI, documentation, etc."
-msgstr ""
-"项目基础设施建设——对项目构建系统的更改、CI、文档更改等"
+msgstr "项目基础设施建设——对项目构建系统的更改、CI、文档更改等"
 
 #: ../../Contributing.md:37
 msgid ""
 "Project policy changes - changes to the project's guidelines, "
 "contributing guidelines, etc."
-msgstr ""
-"项目政策更改——对项目指南、贡献指南等的更改"
+msgstr "项目政策更改——对项目指南、贡献指南等的更改"
 
 #: ../../Contributing.md:38
 msgid "`T3` complexity by default (has to be reviewed by leads)"
@@ -183,15 +170,15 @@ msgid ""
 "requests, discussions and issues) in order to not bloat the project with "
 "one-off features."
 msgstr ""
-"强烈建议 Modder 们提交新增功能可复用性的反馈（重要内容应通过仓库页面 Pull Requests、Discussions 或 Issue 来跟踪），以避免项目充斥不可复用的一次性功能。"
+"强烈建议 Modder 们提交新增功能可复用性的反馈（重要内容应通过仓库页面 Pull Requests、Discussions 或 Issue "
+"来跟踪），以避免项目充斥不可复用的一次性功能。"
 
 #: ../../Contributing.md:44
 msgid ""
 "The list is not exhaustive, you are welcome to propose/submit changes to "
 "it (or to any project policies in order to improve how the project is "
 "maintained)."
-msgstr ""
-"列表并不详尽，欢迎提出修改（或调整任何改进维护方式的项目政策）建议。"
+msgstr "列表并不详尽，欢迎提出修改（或调整任何改进维护方式的项目政策）建议。"
 
 #: ../../Contributing.md:46
 msgid "In absence of a fitting category - a lead should review it."
@@ -201,8 +188,7 @@ msgstr "如果没有对应的类别——它应当由负责人审查。"
 msgid ""
 "What can make any PR more controversial and requiring a higher level "
 "maintainer's assignment:"
-msgstr ""
-"可能导致拉取请求更受争议并需要更高级别维护者处理的情况："
+msgstr "可能导致拉取请求更受争议并需要更高级别维护者处理的情况："
 
 #: ../../Contributing.md:49
 msgid "Modifying/breaking previous (or vanilla) behavior"
@@ -220,8 +206,7 @@ msgstr "混合的贡献类型"
 msgid ""
 "Current level of maintainers not being sure about whether they can judge "
 "this PR"
-msgstr ""
-"当前维护者不确定能否准确评估该拉取请求"
+msgstr "当前维护者不确定能否准确评估该拉取请求"
 
 #: ../../Contributing.md:54
 msgid "Project structure"
@@ -244,8 +229,8 @@ msgid ""
 "and is defined in a separate file with a few methods and then registered "
 "in `Commands.cpp`."
 msgstr ""
-"`Commands/` - "
-"新快捷键命令源码。每个新的快捷键类均继承自 `PhobosCommandClass`（定义在 `Commands.h` 中）并在一个单独的文件中用几种方法定义然后注册到 `Commands.cpp`中。"
+"`Commands/` - 新快捷键命令源码。每个新的快捷键类均继承自 `PhobosCommandClass`（定义在 `Commands.h`"
+" 中）并在一个单独的文件中用几种方法定义然后注册到 `Commands.cpp`中。"
 
 #: ../../Contributing.md:59
 msgid "`New/` - source code for new ingame classes."
@@ -258,8 +243,8 @@ msgid ""
 "project. Every enumerated type class inherits `Enumerable<T>` (where `T` "
 "is an enum. type class) class that is defined in `Enumerable.h`."
 msgstr ""
-"`Type/` - "
-"新增枚举类型（即需要在 INI 文件中通过注册表部分声明的类型，例如辐射类型）。每个枚举类型类都继承自 `Enumerable.h` 中定义的 `Enumerable<T>` 类（这里的 `T` 是枚举类型名）。"
+"`Type/` - 新增枚举类型（即需要在 INI 文件中通过注册表部分声明的类型，例如辐射类型）。每个枚举类型类都继承自 "
+"`Enumerable.h` 中定义的 `Enumerable<T>` 类（这里的 `T` 是枚举类型名）。"
 
 #: ../../Contributing.md:61
 msgid "`Entity/` - classes that represent ingame entities are located here."
@@ -285,8 +270,8 @@ msgid ""
 " from `Container.h` (where `T` is the class that is being extended), "
 "which is the actual class that contains new data for vanilla classes;"
 msgstr ""
-"`ExtData` - "
-"继承自 `Container.h` 中 `Extension<T>` 的扩展数据类（其中 `T` 是被扩展的类），这也是包含了原版类中新数据的实际类型；"
+"`ExtData` - 继承自 `Container.h` 中 `Extension<T>` 的扩展数据类（其中 `T` "
+"是被扩展的类），这也是包含了原版类中新数据的实际类型；"
 
 #: ../../Contributing.md:65
 msgid ""
@@ -294,7 +279,9 @@ msgid ""
 " `ExtData` instances for base class instances which inherits "
 "`Container<T>` from `Container.h` (where `T` is the extension data "
 "class);"
-msgstr "`ExtContainer` - 一个特殊的映射类的定义，用于储存和查找继承自 `Container.h` 的 `Container<T>` 的基类实例的 `ExtData` 类；"
+msgstr ""
+"`ExtContainer` - 一个特殊的映射类的定义，用于储存和查找继承自 `Container.h` 的 `Container<T>` "
+"的基类实例的 `ExtData` 类；"
 
 #: ../../Contributing.md:66
 msgid "`ExtMap` - a static instance of `ExtContainer` map;"
@@ -338,8 +325,8 @@ msgid ""
 "classes. If you define a new or extended class you have to add your new "
 "class into `MassActions` global variable type declaration in this file."
 msgstr ""
-"`Phobos.Ext.cpp` - "
-"包含通用处理代码、新的或扩展的类。如果你定义了一个新的或扩展的类那么你必须将你的新类添加进全局变量 `MassActions` 中进行声明。"
+"`Phobos.Ext.cpp` - 包含通用处理代码、新的或扩展的类。如果你定义了一个新的或扩展的类那么你必须将你的新类添加进全局变量 "
+"`MassActions` 中进行声明。"
 
 #: ../../Contributing.md:74
 msgid ""
@@ -360,8 +347,8 @@ msgid ""
 "hotkey chord in Visual studio. Still, it is advised to manually check the"
 " style before submitting the code."
 msgstr ""
-"我们制定了代码样式规范以保持一致性。部分规则已在可用情况下通过 `.editorconfig` 文件强制执行，因此你可以在 Visual Studio 中通过按下 `Ctrl + K + "
-"D` 来自动格式化代码。尽管如此，我们仍建议在提交代码前手动检查代码样式。"
+"我们制定了代码样式规范以保持一致性。部分规则已在可用情况下通过 `.editorconfig` 文件强制执行，因此你可以在 Visual "
+"Studio 中通过按下 `Ctrl + K + D` 来自动格式化代码。尽管如此，我们仍建议在提交代码前手动检查代码样式。"
 
 #: ../../Contributing.md:79
 msgid "We use tabs instead of spaces to indent code."
@@ -375,8 +362,7 @@ msgid ""
 "block head and body in case of multiline bodies:"
 msgstr ""
 "大括号始终应当放在新的一行上（[Allman 缩进 "
-"风格](https://en.wikipedia.org/wiki/Indentation_style#Allman_style)）。"
-"这样做的一个原因是需要对于多行代码的情况清楚地区分代码块的头部和尾部："
+"风格](https://en.wikipedia.org/wiki/Indentation_style#Allman_style)）。这样做的一个原因是需要对于多行代码的情况清楚地区分代码块的头部和尾部："
 
 #: ../../Contributing.md:81
 msgid ""
@@ -399,8 +385,7 @@ msgid ""
 "Braceless code block bodies should be made only when both code block head"
 " and body are single line,  statements split into multiple lines and "
 "nested braceless blocks are not allowed within braceless blocks:"
-msgstr ""
-"只有代码块头部和代码块主体均为单行时才应当使用无大括号的代码块，且无大括号的块中不允许存在跨多行的语句拆分以及嵌套的无大括号块："
+msgstr "只有代码块头部和代码块主体均为单行时才应当使用无大括号的代码块，且无大括号的块中不允许存在跨多行的语句拆分以及嵌套的无大括号块："
 
 #: ../../Contributing.md:90
 msgid ""
@@ -464,15 +449,13 @@ msgstr "只有当大括号块为空时才允许左右括号放置在同一行。
 msgid ""
 "If you use if-else you should either have all of the code blocks braced "
 "or braceless to keep things consistent."
-msgstr ""
-"如果使用了 if-else 语句，那么所有代码块应当统一使用大括号或统一不使用大括号以保持一致性。"
+msgstr "如果使用了 if-else 语句，那么所有代码块应当统一使用大括号或统一不使用大括号以保持一致性。"
 
 #: ../../Contributing.md:118
 msgid ""
 "Big conditions which span multiple lines and are hard to read otherwise "
 "should be split into smaller logical parts to improve readability:"
-msgstr ""
-"难以阅读的跨多行的复杂条件语句应被拆分为更小的逻辑单元以提高可读性："
+msgstr "难以阅读的跨多行的复杂条件语句应被拆分为更小的逻辑单元以提高可读性："
 
 #: ../../Contributing.md:119
 msgid ""
@@ -509,30 +492,26 @@ msgid ""
 "Code should have empty lines to make it easier to read. Use an empty line"
 " to split code into logical parts. It's mandatory to have empty lines to "
 "separate:"
-msgstr ""
-"代码应使用一些空行分隔逻辑部分来提升可读性。以下情况必须使用空行分隔："
+msgstr "代码应使用一些空行分隔逻辑部分来提升可读性。以下情况必须使用空行分隔："
 
 #: ../../Contributing.md:135
 msgid ""
 "`return` statements (except when there is only one line of code except "
 "that statement);"
-msgstr ""
-"`return` 语句（除非该句外仅有一行代码）；"
+msgstr "`return` 语句（除非该句外仅有一行代码）；"
 
 #: ../../Contributing.md:136
 msgid ""
 "local variable assignments that are used in the further code (you "
 "shouldn't put an empty line after one-line local variable assignments "
 "that are used only in the following code block though);"
-msgstr ""
-"后续代码中使用的局部变量声明（但若仅用于后续代码块的单行局部变量声明则其后无需空行）；"
+msgstr "后续代码中使用的局部变量声明（但若仅用于后续代码块的单行局部变量声明则其后无需空行）；"
 
 #: ../../Contributing.md:137
 msgid ""
 "code blocks (braceless or not) or anything using code blocks (function or"
 " hook definitions, classes, namespaces etc.);"
-msgstr "代码块（无论是否有花括号）以及用代码块规则的其他东西（函数，钩子定义，类，名空间等）；"
-"代码块（无论是否有大括号）或任何使用代码块的结构（函数／钩子定义、类、命名空间等）；"
+msgstr "代码块（无论是否有花括号）以及用代码块规则的其他东西（函数，钩子定义，类，名空间等）；代码块（无论是否有大括号）或任何使用代码块的结构（函数／钩子定义、类、命名空间等）；"
 
 #: ../../Contributing.md:138
 msgid "hook register input/output."
@@ -624,8 +603,7 @@ msgstr ""
 msgid ""
 "`auto` may be used to hide an unnecessary type declaration if it doesn't "
 "make the code harder to read. `auto` may not be used on primitive types."
-msgstr ""
-"在不影响代码可读性的前提下可以使用 `auto` 来隐式声明不必要的显式类型。基础类型禁止使用 `auto`。"
+msgstr "在不影响代码可读性的前提下可以使用 `auto` 来隐式声明不必要的显式类型。基础类型禁止使用 `auto`。"
 
 #: ../../Contributing.md:181
 msgid "A space must be put between braces of empty curly brace blocks."
@@ -637,7 +615,9 @@ msgid ""
 "like syntax structures used in frequently modified places should be split"
 " per-item with item separation characters (commas, for example) placed "
 "*after newline character*:"
-msgstr "为了减少 Git 合并冲突，在频繁修改区域的成员初始化列表及其他类似列表的语法结构中应当采用按项分行且项目分隔符（例如逗号）置于 **换行符** 之后的书写方式："
+msgstr ""
+"为了减少 Git 合并冲突，在频繁修改区域的成员初始化列表及其他类似列表的语法结构中应当采用按项分行且项目分隔符（例如逗号）置于 **换行符** "
+"之后的书写方式："
 
 #: ../../Contributing.md:183
 msgid ""
@@ -664,36 +644,33 @@ msgid ""
 "level) and a descriptive name, like `pTechnoType` for a local "
 "`TechnoTypeClass*` variable."
 msgstr ""
-"局部变量和函数／方法参数采用驼峰命名法（使用前缀 `p` 表示指针类型，每个指针嵌套级别都需添加前缀），并配以描述性名称，例如局部变量 `TechnoTypeClass*` 应命名为 `pTechnoType`。"
+"局部变量和函数／方法参数采用驼峰命名法（使用前缀 `p` 表示指针类型，每个指针嵌套级别都需添加前缀），并配以描述性名称，例如局部变量 "
+"`TechnoTypeClass*` 应命名为 `pTechnoType`。"
 
 #: ../../Contributing.md:192
 msgid ""
 "Classes, namespaces, class fields and members are always written in "
 "`PascalCase`."
-msgstr ""
-"类、命名空间、类字段和成员始终采用帕斯卡命名法。"
+msgstr "类、命名空间、类字段和成员始终采用帕斯卡命名法。"
 
 #: ../../Contributing.md:193
 msgid ""
 "Class fields that can be set via INI tags should be named exactly like "
 "ini tags with dots replaced with underscores."
-msgstr ""
-"可以通过 INI 标签设置的类字段必须与 INI 标签保持完全一致的命名，仅将点号替换为下划线。"
+msgstr "可以通过 INI 标签设置的类字段必须与 INI 标签保持完全一致的命名，仅将点号替换为下划线。"
 
 #: ../../Contributing.md:194
 msgid ""
 "Pointer type declarations always have pointer sign `*` attached to the "
 "type declaration."
-msgstr ""
-"指针类型声明时，`*` 必须紧贴类型声明。"
+msgstr "指针类型声明时，`*` 必须紧贴类型声明。"
 
 #: ../../Contributing.md:195
 msgid ""
 "Non-static class extension methods faked by declaring a static method "
 "with `pThis` as a first argument are only to be placed in the extension "
 "class for the class instance of which `pThis` is."
-msgstr ""
-"通过声明一个以 `pThis` 作为首个参数的静态方法来伪造的非静态类扩展方法只能放置在 `pThis` 所在的类实例的扩展类中。"
+msgstr "通过声明一个以 `pThis` 作为首个参数的静态方法来伪造的非静态类扩展方法只能放置在 `pThis` 所在的类实例的扩展类中。"
 
 #: ../../Contributing.md:196
 msgid ""
@@ -701,8 +678,8 @@ msgid ""
 "`void*` or `void* _` as a second argument to discard value passed through"
 " `EDX` register. Such methods are to be used for call replacement."
 msgstr ""
-"如果需要伪造 `__thiscall`，可以使用 `__fastcall` 并将 `void*` 或 `void* "
-"_` 作为第二个参数来丢弃通过 `EDX` 寄存器传递的值。此方法仅用于调用替换。"
+"如果需要伪造 `__thiscall`，可以使用 `__fastcall` 并将 `void*` 或 `void* _` 作为第二个参数来丢弃通过"
+" `EDX` 寄存器传递的值。此方法仅用于调用替换。"
 
 #: ../../Contributing.md:197
 msgid ""
@@ -711,15 +688,15 @@ msgid ""
 "Defined-again hooks are exempt from this scheme due to impossibility to "
 "define different names for the same hook."
 msgstr ""
-"工资函数必须按以下规则命名：`钩上的函数_钩子的功能` 或 `类名_钩上的方法_钩子的功能`。由于无法为同一钩子定义不同的名称，再次定义（DEFINE_HOOK_AGAIN）的钩子不受此方案的约束。"
+"工资函数必须按以下规则命名：`钩上的函数_钩子的功能` 或 "
+"`类名_钩上的方法_钩子的功能`。由于无法为同一钩子定义不同的名称，再次定义（DEFINE_HOOK_AGAIN）的钩子不受此方案的约束。"
 
 #: ../../Contributing.md:198
 msgid ""
 "Return addresses should use anonymous enums to make it clear what address"
 " means what, if applicable. The enum has to be placed right at the "
 "function start and include all addresses that are used in this hook:"
-msgstr ""
-"返回地址应在可行的情况下使用匿名枚举进行语义化标注。该枚举必须置于函数起始位置，并包含本钩子中使用的所有地址："
+msgstr "返回地址应在可行的情况下使用匿名枚举进行语义化标注。该枚举必须置于函数起始位置，并包含本钩子中使用的所有地址："
 
 #: ../../Contributing.md:199
 msgid ""
@@ -744,7 +721,8 @@ msgid ""
 "of `DEFINE_HOOK` macro) to reduce potential issues if the person editing "
 "this hook decides to use `return 0x0`."
 msgstr ""
-"即使钩子不使用 `return 0x0` 来执行被覆盖的指令，你仍必须编写正确的钩子大小（`DEFINE_HOOK` 宏的最后一个参数），以减少当其他人编辑此钩子时若决定使用 `return 0x0` 可能引发的潜在问题。"
+"即使钩子不使用 `return 0x0` 来执行被覆盖的指令，你仍必须编写正确的钩子大小（`DEFINE_HOOK` "
+"宏的最后一个参数），以减少当其他人编辑此钩子时若决定使用 `return 0x0` 可能引发的潜在问题。"
 
 #: ../../Contributing.md:208
 msgid ""
@@ -752,7 +730,8 @@ msgid ""
 "`RadTypeClass`). Extension classes are to be named with `Ext` postfix "
 "instead (like `RadTypeExt`)."
 msgstr ""
-"新的游戏内「实体」类应当以 `Class` 后缀命名（例如 `RadTypeClass`）。扩展类应当改用 `Ext` 后缀命名（例如 `RadTypeExt`）。"
+"新的游戏内「实体」类应当以 `Class` 后缀命名（例如 `RadTypeClass`）。扩展类应当改用 `Ext` 后缀命名（例如 "
+"`RadTypeExt`）。"
 
 #: ../../Contributing.md:209
 msgid "Do not pollute the namespace."
@@ -762,8 +741,7 @@ msgstr "不要污染命名空间。"
 msgid ""
 "Avoid introducing unnecessary macros if they can be replaced by "
 "equivalent `constexpr` or `__forceinline` functions."
-msgstr ""
-"若能使用等效的 `constexpr` 或 `__forceinline` 函数替代就不要引入不必要的宏。"
+msgstr "若能使用等效的 `constexpr` 或 `__forceinline` 函数替代就不要引入不必要的宏。"
 
 #: ../../Contributing.md:213
 msgid "The styleguide is not exhaustive and may be adjusted in the future."
@@ -779,8 +757,8 @@ msgid ""
 "flow](https://nvie.com/posts/a-successful-git-branching-model/)-like "
 "workflow:"
 msgstr ""
-"我们使用 [git-flow](https://nvie.com/posts/a-successful-git-branching-"
-"model/) 之类的工作流:"
+"我们使用 [git-flow](https://nvie.com/posts/a-successful-git-branching-model/)"
+" 之类的工作流:"
 
 #: ../../Contributing.md:219
 msgid ""
@@ -788,7 +766,8 @@ msgid ""
 "branched off like a feature branch with the requirement of version "
 "increment and `master` being merged into `develop` after that;"
 msgstr ""
-"`master` 用于稳定版本发布，允许直接推送热修复补丁或像功能分支一样分离分支，但需遵循版本号递增要求，并在之后将 `master` 分支合并回 `develop` 分支；"
+"`master` 用于稳定版本发布，允许直接推送热修复补丁或像功能分支一样分离分支，但需遵循版本号递增要求，并在之后将 `master` "
+"分支合并回 `develop` 分支；"
 
 #: ../../Contributing.md:220
 msgid "`develop` is the main development branch;"
@@ -803,7 +782,9 @@ msgid ""
 "them back in case of smaller branches and sometimes merge commit in case "
 "the branch is so big it would be viable to keep it as is."
 msgstr ""
-"带有 `feature/` 前缀的分支（有时根据实际情况可能使用不同的前缀，例如大的修复或改动）即所谓的「功能分支」——这些分支从 `develop` 分离出来用于引入新的功能，完成后合并回 `develop`。对于小型分支，我们使用压缩合并；若分支规模较大，则可能使用合并提交来维持提交记录的完整性；"
+"带有 `feature/` 前缀的分支（有时根据实际情况可能使用不同的前缀，例如大的修复或改动）即所谓的「功能分支」——这些分支从 "
+"`develop` 分离出来用于引入新的功能，完成后合并回 "
+"`develop`。对于小型分支，我们使用压缩合并；若分支规模较大，则可能使用合并提交来维持提交记录的完整性；"
 
 #: ../../Contributing.md:222
 msgid ""
@@ -811,7 +792,8 @@ msgid ""
 "but with `master` branch, with a requirement of `master` being merged "
 "into `develop` after `hotfix/` branch was squash merged into `master`."
 msgstr ""
-"带有 `hotfix/` 前缀的分支使用方式类似于 `feature/`，但基于 `master` 分支创建，要求将 `hotfix/` 分支压缩合并到 `master` 后必须将 `master` 合并回 `develop`；"
+"带有 `hotfix/` 前缀的分支使用方式类似于 `feature/`，但基于 `master` 分支创建，要求将 `hotfix/` "
+"分支压缩合并到 `master` 后必须将 `master` 合并回 `develop`；"
 
 #: ../../Contributing.md:223
 msgid ""
@@ -821,7 +803,9 @@ msgid ""
 "commit into `master` and `develop` with a stable version number increase,"
 " after which the stable version is released."
 msgstr ""
-"带有 `release/` 前缀的分支在计划发布新的稳定版本时从 `develop` 分离，允许同时开发下个版本的功能和改进当前版本的稳定性。这些分支通过合并提交合并到 `master` 和 `develop`，并递增稳定版本的版本号，随后发布稳定版本。"
+"带有 `release/` 前缀的分支在计划发布新的稳定版本时从 `develop` "
+"分离，允许同时开发下个版本的功能和改进当前版本的稳定性。这些分支通过合并提交合并到 `master` 和 "
+"`develop`，并递增稳定版本的版本号，随后发布稳定版本。"
 
 #: ../../Contributing.md:224
 msgid ""
@@ -830,7 +814,8 @@ msgid ""
 "merge remote branch into local and vice versa**, this creates junk "
 "commits and makes things unsquashable."
 msgstr ""
-"当你在处理本地与远程分支时应当使用 **拉取（快进）** 将远程分支的变更同步到本地，**不要将远程分支合并到本地分支**，反之亦然，否则会产生垃圾提交并使代码无法压缩整理。"
+"当你在处理本地与远程分支时应当使用 **拉取（快进）** "
+"将远程分支的变更同步到本地，**不要将远程分支合并到本地分支**，反之亦然，否则会产生垃圾提交并使代码无法压缩整理。"
 
 #: ../../Contributing.md:226
 msgid "These commands will do the following for all repositories on your PC:"
@@ -844,8 +829,7 @@ msgstr "移除拉取时的自动合并行为，改用变基操作；"
 msgid ""
 "highlight changes consisting of moving existing lines to another location"
 " with a different color."
-msgstr ""
-"用特定颜色高亮显示「移动现有代码行到新位置」这类变更。"
+msgstr "用特定颜色高亮显示「移动现有代码行到新位置」这类变更。"
 
 #: ../../Contributing.md:230
 msgid ""
@@ -872,7 +856,10 @@ msgid ""
 " branch in YRpp, then you can push it and submit a pull request to YRpp "
 "repository."
 msgstr ""
-"当你开发 Phobos 和／或研究 YR 引擎时常常需要对 YRpp 进行修正。这些修正通常需要提交到 [YRpp 仓库](https://github.com/Phobos-developers/YRpp)，可与 Phobos 中的实际功能分开处理。但许多情况下这些改动需要作为 Phobos 贡献流程的一部分进行提交。要向 YRpp 提交改动你需要在 YRpp 中创建分支，推送后向 YRpp 仓库提交拉取请求。"
+"当你开发 Phobos 和／或研究 YR 引擎时常常需要对 YRpp 进行修正。这些修正通常需要提交到 [YRpp "
+"仓库](https://github.com/Phobos-developers/YRpp)，可与 Phobos "
+"中的实际功能分开处理。但许多情况下这些改动需要作为 Phobos 贡献流程的一部分进行提交。要向 YRpp 提交改动你需要在 YRpp "
+"中创建分支，推送后向 YRpp 仓库提交拉取请求。"
 
 #: ../../Contributing.md:240
 msgid ""
@@ -881,7 +868,8 @@ msgid ""
 "any other repository, so the changes can be synchronized to Phobos and "
 "you don't need to rename stuff by hand."
 msgstr ""
-"当你递归克隆 Phobos 时，YRpp 会作为子模块一同克隆。子模块本质上就是嵌套的仓库。您可以像操作普通仓库一样打开它，因此变更可以同步到 Phobos，无需手动重命名文件。"
+"当你递归克隆 Phobos 时，YRpp 会作为子模块一同克隆。子模块本质上就是嵌套的仓库。您可以像操作普通仓库一样打开它，因此变更可以同步到 "
+"Phobos，无需手动重命名文件。"
 
 #: ../../Contributing.md:242
 msgid "The suggested workflow is as follows:"
@@ -893,37 +881,35 @@ msgid ""
 "feature (`Rename...` feature in Visual Studio (regular or Code), `[F2]` "
 "by default), then you will have two \"levels\" of changes displayed in "
 "your Git client:"
-msgstr "在你选择的 IDE 中使用符号重命名功能修改字段和函数名称（Visual Studio 常规版本或 Code 中默认快捷键为 `[F2]`），此时你将在 Git 客户端中看到以下两个「层级」的变更："
+msgstr ""
+"在你选择的 IDE 中使用符号重命名功能修改字段和函数名称（Visual Studio 常规版本或 Code 中默认快捷键为 "
+"`[F2]`），此时你将在 Git 客户端中看到以下两个「层级」的变更："
 
 #: ../../Contributing.md:244
 msgid ""
 "for Phobos repository - changes in the Phobos code (as regular changes) "
 "and changes to YRpp (as one submodule change)."
-msgstr ""
-"Phobos 仓库：Phobos 代码的常规变更 + YRpp 子模块的变更（显示为一个子模块变更）。"
+msgstr "Phobos 仓库：Phobos 代码的常规变更 + YRpp 子模块的变更（显示为一个子模块变更）。"
 
 #: ../../Contributing.md:245
 msgid ""
 "for YRpp repository - changes to the field names and function names in "
 "YRpp as regular changes."
-msgstr ""
-"YRpp 仓库：YRpp 中字段和函数名称的常规变更。"
+msgstr "YRpp 仓库：YRpp 中字段和函数名称的常规变更。"
 
 #: ../../Contributing.md:246
 msgid ""
 "Create a branch in YRpp repository (create a fork of it if you didn't "
 "yet), commit and push the changes and submit it as a pull request. After "
 "pushing it you have two options in Phobos repository:"
-msgstr ""
-"在 YRpp 仓库中创建分支（若未创建则先 fork），提交并推送更改，然后发起拉取请求。推送后你在 Phobos 仓库有两个选择："
+msgstr "在 YRpp 仓库中创建分支（若未创建则先 fork），提交并推送更改，然后发起拉取请求。推送后你在 Phobos 仓库有两个选择："
 
 #: ../../Contributing.md:247
 msgid ""
 "wait until it's accepted, then checkout YRpp at the newest commit, then "
 "commit and push - this will save you having to commit and push multiple "
 "times, but you won't be able to get a nightly build for people to test;"
-msgstr ""
-"等待合并通过后，将 YRpp 子模块切换至最新提交，然后提交推送——这可以减少提交次数，但无法获取供测试的每夜构建；"
+msgstr "等待合并通过后，将 YRpp 子模块切换至最新提交，然后提交推送——这可以减少提交次数，但无法获取供测试的每夜构建；"
 
 #: ../../Contributing.md:248
 msgid ""
@@ -934,7 +920,8 @@ msgid ""
 "build system won't know what are the changes as they are not exposed to "
 "the world, only available to you locally."
 msgstr ""
-"不等待 YRpp 合并，在推送 YRpp 分支变更后立即推送 Phobos——这种方式可以确保 Phobos 拉取请求使用最新构建。注意你必须在 YRpp 分支完成提交推送，否则构建系统无法识别仅在本地存在的变更"
+"不等待 YRpp 合并，在推送 YRpp 分支变更后立即推送 Phobos——这种方式可以确保 Phobos 拉取请求使用最新构建。注意你必须在 "
+"YRpp 分支完成提交推送，否则构建系统无法识别仅在本地存在的变更"
 
 #: ../../Contributing.md:249
 msgid ""
@@ -942,8 +929,7 @@ msgid ""
 "latest commit that was merged (you do that in the submodule), verify that"
 " it compiles like normal, and then commit and push it to your Phobos "
 "branch that you made for your pull request."
-msgstr ""
-"当 YRpp 拉取请求接受后，你需要再子模块中切换到已合并的最新提交，验证正常编译后，将其提交并推送到 Phobos 拉取请求创建的分支。"
+msgstr "当 YRpp 拉取请求接受后，你需要再子模块中切换到已合并的最新提交，验证正常编译后，将其提交并推送到 Phobos 拉取请求创建的分支。"
 
 #: ../../Contributing.md:251
 msgid "Ways to help"
@@ -954,8 +940,7 @@ msgid ""
 "Engine modding is a complicated process which is pretty hard to pull off,"
 " but there are also easier parts which don't require mastering the art of"
 " reverse-engineering or becoming a dank magician in C++."
-msgstr ""
-"引擎修改是一个复杂的过程，但其中也包括无需精通逆向工程或成为 C++ 大魔导师即可完成的部分。"
+msgstr "引擎修改是一个复杂的过程，但其中也包括无需精通逆向工程或成为 C++ 大魔导师即可完成的部分。"
 
 #: ../../Contributing.md:255
 msgid "Research and reverse-engineering"
@@ -972,15 +957,17 @@ msgid ""
 "Engine](https://www.cheatengine.org)'s debugger is pretty good for that) "
 "to trace how the binary works."
 msgstr ""
-"你可以通过使用引擎观察其运作机制，并记录哪些因素会影响其行为。但你可能终究还是需要深入其内部原理。通常需要借助反汇编器／反编译器（例如 [IDA](https://www.hex-rays.com/products/ida/) 和 [Ghidra](https://ghidra-sre.org/)）来解析二进制文件（例如 `gamemd.exe`）中的代码，以及调试器（[Cheat Engine](https://www.cheatengine.org) 的调试器对此非常适用）来追踪二进制文件的执行流程。"
+"你可以通过使用引擎观察其运作机制，并记录哪些因素会影响其行为。但你可能终究还是需要深入其内部原理。通常需要借助反汇编器／反编译器（例如 "
+"[IDA](https://www.hex-rays.com/products/ida/) 和 [Ghidra](https://ghidra-"
+"sre.org/)）来解析二进制文件（例如 `gamemd.exe`）中的代码，以及调试器（[Cheat "
+"Engine](https://www.cheatengine.org) 的调试器对此非常适用）来追踪二进制文件的执行流程。"
 
 #: ../../Contributing.md:260
 msgid ""
 "Reverse-engineering is a complex task, but don't be discouraged, if you "
 "want to try your hands at it ask us in the Discord channel, we will "
 "gladly help 😄"
-msgstr ""
-"逆向工程虽复杂但无需畏惧。如果你对此跃跃欲试，那么欢迎你在 Discord 频道向我们提问，我们将乐于为你提供帮助😄"
+msgstr "逆向工程虽复杂但无需畏惧。如果你对此跃跃欲试，那么欢迎你在 Discord 频道向我们提问，我们将乐于为你提供帮助😄"
 
 #: ../../Contributing.md:264
 msgid ""
@@ -989,7 +976,8 @@ msgid ""
 "C++ knowledge, understanding of computer architecture, memory structure, "
 "OOP and compiler theory would certainly help."
 msgstr ""
-"[汇编语言](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html) 和 C++ 知识、对计算机体系结构、内存结构、OOP 及编译器原理的理解对此大有裨益。"
+"[汇编语言](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html) 和 C++ "
+"知识、对计算机体系结构、内存结构、OOP 及编译器原理的理解对此大有裨益。"
 
 #: ../../Contributing.md:267
 msgid "Development"
@@ -1006,7 +994,10 @@ msgid ""
 "inject code using Syringe) and usually [Visual Studio "
 "2017/2019](https://visualstudio.microsoft.com) or newer."
 msgstr ""
-"当你理解引擎运作逻辑并确定需要扩展的部分后需要编写代码来实现目标。具体方式是通过声明一个 *钩子*——即在程序执行到二进制文件特定地址时触发的代码。所有开发工作均使用 C++ 结合[YRpp](https://github.com/Phobos-developers/YRpp)（提供与 YR 代码交互及通过 Syringe 注入代码的功能），通常需要使用 [Visual Studio 2017／2019](https://visualstudio.microsoft.com) 或更新的版本。"
+"当你理解引擎运作逻辑并确定需要扩展的部分后需要编写代码来实现目标。具体方式是通过声明一个 "
+"*钩子*——即在程序执行到二进制文件特定地址时触发的代码。所有开发工作均使用 C++ 结合[YRpp](https://github.com"
+"/Phobos-developers/YRpp)（提供与 YR 代码交互及通过 Syringe 注入代码的功能），通常需要使用 [Visual "
+"Studio 2017／2019](https://visualstudio.microsoft.com) 或更新的版本。"
 
 #: ../../Contributing.md:272
 msgid "Contributing changes to the project"
@@ -1020,7 +1011,8 @@ msgid ""
 "code or whatever you want to contribute. Commit, push, start a pull "
 "request, wait for it to get reviewed, or merged."
 msgstr ""
-"贡献功能或进行更改需要使用 Git 客户端（我推荐 [GitKraken](https://www.gitkraken.com/)）Fork 并克隆仓库，建议创建一个新分支，随后编辑／添加代码或进行其他修改。然后提交 -> 推送 -> 发起拉取请求 -> 等待审核或合并。"
+"贡献功能或进行更改需要使用 Git 客户端（我推荐 [GitKraken](https://www.gitkraken.com/)）Fork "
+"并克隆仓库，建议创建一个新分支，随后编辑／添加代码或进行其他修改。然后提交 -> 推送 -> 发起拉取请求 -> 等待审核或合并。"
 
 #: ../../Contributing.md:276
 msgid "If you contribute something, please make sure:"
@@ -1034,8 +1026,7 @@ msgstr "你编编写了相关更改的文档说明；"
 msgid ""
 "you mention the change in the changelog and migration sections in the "
 "[what's new page](Whats-New.md);"
-msgstr ""
-"你在 [版本更新说明](Whats-New.md) 页的更新日志和迁移指南中提及了这些改动；"
+msgstr "你在 [版本更新说明](Whats-New.md) 页的更新日志和迁移指南中提及了这些改动；"
 
 #: ../../Contributing.md:279
 msgid "you mention your contribution in the [credits page](CREDITS.md)."
@@ -1046,8 +1037,7 @@ msgid ""
 "If your change does not fit in standard criteria or too small that it "
 "doesn't need the above - add `[Minor]` to your pull request's title, so "
 "the CI won't yell at you for no reason."
-msgstr ""
-"若变更不符合标准流程或规模过小无需上述步骤，请在拉取请求标题添加 [Minor]，以避免 CI 无故报错。"
+msgstr "若变更不符合标准流程或规模过小无需上述步骤，请在拉取请求标题添加 [Minor]，以避免 CI 无故报错。"
 
 #: ../../Contributing.md:284
 msgid ""
@@ -1057,7 +1047,8 @@ msgid ""
 "containing built DLL and PDB (for your testers, f. ex.), or download a "
 "build from an automatically posted comment."
 msgstr ""
-"每次推送至拉取请求会触发每夜构建，你可以在拉取请求页面底部查看构建状态。点击 `Show all checks` 进入构建详情页，可下载包含 DLL 和 PDB 的压缩包（供你的测试人员使用），或从自动发布的评论中获取构建文件（需要拥有 GitHub 账号）。"
+"每次推送至拉取请求会触发每夜构建，你可以在拉取请求页面底部查看构建状态。点击 `Show all checks` 进入构建详情页，可下载包含 "
+"DLL 和 PDB 的压缩包（供你的测试人员使用），或从自动发布的评论中获取构建文件（需要拥有 GitHub 账号）。"
 
 #: ../../Contributing.md:288
 msgid ""
@@ -1067,7 +1058,9 @@ msgid ""
 "would help to correctly write the interaction with the memory where you "
 "hook at. Basic understanding of Git and GitHub is also needed."
 msgstr ""
-"举杯 C++ 经验、编程模式及常用技术知识将有助于提升效率。[基础汇编知识](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html) 有助于正确编写内存交互钩子。同时需掌握 Git 与 GitHub 的基本使用。"
+"举杯 C++ "
+"经验、编程模式及常用技术知识将有助于提升效率。[基础汇编知识](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html)"
+" 有助于正确编写内存交互钩子。同时需掌握 Git 与 GitHub 的基本使用。"
 
 #: ../../Contributing.md:291
 msgid "Testing"
@@ -1082,7 +1075,9 @@ msgid ""
 " to your thoughts. Any bugs should be reported to issues section of this "
 "repo, if possible."
 msgstr ""
-"这是任何 modder（甚至纯玩家）均可参与的工作。查看新的功能或改动，尽可能设想所有可能的应用场景、逻辑漏洞、边界情况及意外交互等，并加以验证。发现任何 Bug 请提交至本仓库的 Issue 版块。"
+"这是任何 "
+"modder（甚至纯玩家）均可参与的工作。查看新的功能或改动，尽可能设想所有可能的应用场景、逻辑漏洞、边界情况及意外交互等，并加以验证。发现任何 "
+"Bug 请提交至本仓库的 Issue 版块。"
 
 #: ../../Contributing.md:296
 msgid ""
@@ -1092,7 +1087,8 @@ msgid ""
 "that by having your testers play with the new features! Also the check-"
 "list below can help you identify issues quicker."
 msgstr ""
-"**总体稳定性**仅可通过大量离线／在线游戏测试进行验证。大多 modder 没有测试团队，若期望功能稳定，请组织测试人员参与新功能测试！下方检查清单有助于问题定位。"
+"**总体稳定性**仅可通过大量离线／在线游戏测试进行验证。大多 modder "
+"没有测试团队，若期望功能稳定，请组织测试人员参与新功能测试！下方检查清单有助于问题定位。"
 
 #: ../../Contributing.md:299
 msgid "Testing check-list"
@@ -1103,8 +1099,7 @@ msgid ""
 "**All possible valid use cases covered**. Try to check all of the valid "
 "feature use cases you can think of and verify that they work as intended "
 "with the feature."
-msgstr ""
-"**涵盖所有有效用例**：尽可能验证你所能想到的正常使用场景是否按预期工作。"
+msgstr "**涵盖所有有效用例**：尽可能验证你所能想到的正常使用场景是否按预期工作。"
 
 #: ../../Contributing.md:302
 msgid ""
@@ -1114,7 +1109,9 @@ msgid ""
 "ensure all the improvements work __identically__ before and after being "
 "saved and loaded (on the same version of Phobos, of course)."
 msgstr ""
-"**正确的存档与读档**：多数新增内容例如 INI 标签需存入存档中的对象信息。有时这会出现问题，尤其在复杂一些的东西上（例如辐射类型）。请确保所有改进在保存和加载前后（当然是在同一版本的 Phobos 环境下）都能正常工作。"
+"**正确的存档与读档**：多数新增内容例如 INI "
+"标签需存入存档中的对象信息。有时这会出现问题，尤其在复杂一些的东西上（例如辐射类型）。请确保所有改进在保存和加载前后（当然是在同一版本的 "
+"Phobos 环境下）都能正常工作。"
 
 #: ../../Contributing.md:303
 msgid ""
@@ -1122,8 +1119,7 @@ msgid ""
 "interacting with other features from vanilla or other libs (for example, "
 "mind control removal warhead initially was crashing when trying to remove"
 " mind control from a permanently mind-controlled unit)."
-msgstr ""
-"**与其他功能的交互**：测试该功能与原版或其他库功能的联动（例如：最初的解除心控弹头作用于永久心控目标时会导致崩溃）。"
+msgstr "**与其他功能的交互**：测试该功能与原版或其他库功能的联动（例如：最初的解除心控弹头作用于永久心控目标时会导致崩溃）。"
 
 #: ../../Contributing.md:304
 msgid ""
@@ -1136,7 +1132,9 @@ msgid ""
 "selection filtering Ares' `GroupAs` was initially broken and units using "
 "it weren't being type selected properly)."
 msgstr ""
-"**重叠功能的兼容性**：（包括来自 Ares、HAres、CNCNet Spanwer DLL 等第三方库的功能）考虑哪些功能的代码可能与你当前所测试功能的代码重叠（从技术上讲；这意味着它们修改了相同代码）。由于项目的性质部分功能可能会出现冲突（例如：最初实现的低优先级框选曾导致 Ares 的 `GroupAs` 被破坏，导致使用它的单位无法被正确按类群选）。"
+"**重叠功能的兼容性**：（包括来自 Ares、HAres、CNCNet Spanwer DLL "
+"等第三方库的功能）考虑哪些功能的代码可能与你当前所测试功能的代码重叠（从技术上讲；这意味着它们修改了相同代码）。由于项目的性质部分功能可能会出现冲突（例如：最初实现的低优先级框选曾导致"
+" Ares 的 `GroupAs` 被破坏，导致使用它的单位无法被正确按类群选）。"
 
 #: ../../Contributing.md:305
 msgid ""
@@ -1144,22 +1142,21 @@ msgid ""
 "induced by some extreme  parameter values (for example, vanilla game "
 "crashes on zero-size `PreviewPack` instead of not drawing it)."
 msgstr ""
-"**边界情况**：某些极端情况下的工作状况，通常是一些极端参数值引发的（例如：原版游戏在 `[PreviewPack]` 尺寸为 0 的情况不会跳过渲染而是导致崩溃）。"
+"**边界情况**：某些极端情况下的工作状况，通常是一些极端参数值引发的（例如：原版游戏在 `[PreviewPack]` 尺寸为 0 "
+"的情况不会跳过渲染而是导致崩溃）。"
 
 #: ../../Contributing.md:306
 msgid ""
 "**Corner cases**. Those are similar to edge cases but are hard to "
 "reproduce and are usually induced by a combination of extreme parameter "
 "values."
-msgstr ""
-"**角落案例**：类似边界情况，并且难以复现，通常需要多重极端参数加以组合才能引发。"
+msgstr "**角落案例**：类似边界情况，并且难以复现，通常需要多重极端参数加以组合才能引发。"
 
 #: ../../Contributing.md:309
 msgid ""
 "Knowledge on how to mod YR and having an inquisitive mind, being "
 "attentive to details would help."
-msgstr ""
-"熟悉 YR Mod 制作、具备探索精神以及对细节的敏感将有助于测试效率。"
+msgstr "熟悉 YR Mod 制作、具备探索精神以及对细节的敏感将有助于测试效率。"
 
 #: ../../Contributing.md:312
 msgid "Writing docs"
@@ -1171,8 +1168,7 @@ msgid ""
 "works you can help by writing a detailed description in these docs, or "
 "you can just improve the pieces of docs you think are not detailed "
 "enough."
-msgstr ""
-"无需多言。如果你对 Phobos 中某部分机制理解的相当透彻，那么你可以通过撰写详细说明来做出贡献，或者你也可以改进现有文档中不够详尽的段落。"
+msgstr "无需多言。如果你对 Phobos 中某部分机制理解的相当透彻，那么你可以通过撰写详细说明来做出贡献，或者你也可以改进现有文档中不够详尽的段落。"
 
 #: ../../Contributing.md:316
 msgid ""
@@ -1182,7 +1178,10 @@ msgid ""
 "parser.readthedocs.io/)). We use [Sphinx](https://sphinx-doc.org/) to "
 "build docs, [Read the Docs](https://readthedocs.io/) to host."
 msgstr ""
-"这些文档使用 Markdown 编写（语法非常简单，[60秒即可掌握 MD](https://commonmark.org/help/)；如果你扩展语法相关的帮助请参考 [MyST 解析器](https://myst-parser.readthedocs.io/)）。我们使用 [Sphinx](https://sphinx-doc.org/) 构建文档，[Read the Docs](https://readthedocs.io/) 进行托管。"
+"这些文档使用 Markdown 编写（语法非常简单，[60秒即可掌握 "
+"MD](https://commonmark.org/help/)；如果你扩展语法相关的帮助请参考 [MyST 解析器](https"
+"://myst-parser.readthedocs.io/)）。我们使用 [Sphinx](https://sphinx-doc.org/) "
+"构建文档，[Read the Docs](https://readthedocs.io/) 进行托管。"
 
 #: ../../Contributing.md:319
 msgid ""
@@ -1192,7 +1191,8 @@ msgid ""
 "`Show all checks` and see the built documentation in the details of a "
 "build run."
 msgstr ""
-"你无需安装 Python 和 Sphinx 模块即可查看更改——你创建的每个拉取请求均会触发 Read The Docs 自动构建，类似每夜构建，滚动至页面底部点击 `Show all checks` 即可在构建详情中查看渲染后的文档。"
+"你无需安装 Python 和 Sphinx 模块即可查看更改——你创建的每个拉取请求均会触发 Read The Docs "
+"自动构建，类似每夜构建，滚动至页面底部点击 `Show all checks` 即可在构建详情中查看渲染后的文档。"
 
 #: ../../Contributing.md:322
 msgid "There are two ways to edit the docs."
@@ -1204,7 +1204,8 @@ msgid ""
 "[contributing changes section](contributing-changes-to-the-project); the "
 "docs are located in the `docs` folder."
 msgstr ""
-"**本地编辑**：如 [向项目提交更改](#contributing-changes-to-the-project) 中所述，文档位于 `docs` 文件夹。"
+"**本地编辑**：如 [向项目提交更改](#contributing-changes-to-the-project) 中所述，文档位于 "
+"`docs` 文件夹。"
 
 #: ../../Contributing.md:324
 msgid ""
@@ -1216,14 +1217,14 @@ msgid ""
 "(preferably to a new branch) and make them into a pull request to main "
 "repo."
 msgstr ""
-"**在线编辑**：找到要编辑的文档，点击右上角按钮——跳转至 GitHub 文件编辑页（在右上角寻找铅笔图标）。编辑后将自动创建 fork 仓库，你可以提交更改（建议新建分支）并向主仓库发起拉取请求。"
+"**在线编辑**：找到要编辑的文档，点击右上角按钮——跳转至 GitHub 文件编辑页（在右上角寻找铅笔图标）。编辑后将自动创建 fork "
+"仓库，你可以提交更改（建议新建分支）并向主仓库发起拉取请求。"
 
 #: ../../Contributing.md:327
 msgid ""
 "OK English grammar and understanding of docs structure would be enough. "
 "You would also need a GitHub account."
-msgstr ""
-"拥有足够好的英语语法与对文档结构的理解即可参与。当然你还需要拥有一个 GitHub 账号。"
+msgstr "拥有足够好的英语语法与对文档结构的理解即可参与。当然你还需要拥有一个 GitHub 账号。"
 
 #: ../../Contributing.md:330
 msgid "Providing media to showcase features"
@@ -1235,14 +1236,14 @@ msgid ""
 "bonus for the mod author. To record GIFs you can use such apps as, for "
 "example, [GifCam](http://blog.bahraniapps.com/gifcam/)."
 msgstr ""
-"这些将在文档中被使用，并附有对应 mod 的链接作为对 mod 作者的鼓励。录制 GIF 推荐使用 [GifCam](http://blog.bahraniapps.com/gifcam/) 等工具"
+"这些将在文档中被使用，并附有对应 mod 的链接作为对 mod 作者的鼓励。录制 GIF 推荐使用 "
+"[GifCam](http://blog.bahraniapps.com/gifcam/) 等工具"
 
 #: ../../Contributing.md:335
 msgid ""
 "Please, provide screenshots, GIFs and videos in their natural size and "
 "without excess stuff or length."
-msgstr ""
-"请提供适当尺寸的截图／GIF／视频，避免冗余内容与过场的时长。"
+msgstr "请提供适当尺寸的截图／GIF／视频，避免冗余内容与过场的时长。"
 
 #: ../../Contributing.md:338
 msgid "Promoting the work"
@@ -1253,5 +1254,5 @@ msgid ""
 "You can always help us by spreading the word about the project among "
 "people, whether you're an influential youtuber, a C&C related community "
 "leader or just an average player."
-msgstr ""
-"无论你是知名 Youtuber、C&C 社区领袖还是普通玩家都可以通过向其他人宣传本项目来帮助我们。"
+msgstr "无论你是知名 Youtuber、C&C 社区领袖还是普通玩家都可以通过向其他人宣传本项目来帮助我们。"
+
