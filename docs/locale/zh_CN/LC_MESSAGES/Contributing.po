@@ -48,7 +48,7 @@ msgid ""
 "the project is headed and have the final say in case of disputes. They "
 "are responsible for the project's vision and direction, and are the main "
 "point of contact for the community."
-msgstr "**负责人**（或 `T3` 维护者）：主要决策者，定义项目方向，在争议中拥有最终决定权。他们负责项目的愿景和方向，是社区的主要连接点。"
+msgstr "**`T3` 维护者**：**负责人**，主要决策者，决定项目方向，在争议中拥有最终决定权。他们负责项目的愿景和方向，是社区的主要连接点。"
 
 #: ../../Contributing.md:12
 msgid "**`T2` maintainers** - assigned to more complex PRs, can make releases."
@@ -1037,7 +1037,7 @@ msgid ""
 "If your change does not fit in standard criteria or too small that it "
 "doesn't need the above - add `[Minor]` to your pull request's title, so "
 "the CI won't yell at you for no reason."
-msgstr "若变更不符合标准流程或规模过小无需上述步骤，请在拉取请求标题添加 [Minor]，以避免 CI 无故报错。"
+msgstr "若变更不符合标准流程或规模过小无需上述步骤，请在拉取请求标题添加 `[Minor]`，以避免 CI 无故报错。"
 
 #: ../../Contributing.md:284
 msgid ""
