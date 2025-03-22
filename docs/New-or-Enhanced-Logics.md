@@ -1696,8 +1696,8 @@ MindControl.ThreatDelay=      ; integer, game frames
 
 - When `ExpandTurretRotation` is set to true, the following functions will be enabled.
 - Units with turret without `TurretSpins=true` can looks more vivid when it is in idle.
-  - `Turret.IdleRotate` controls whether units can rotate their turrets when in idle. Defaults to `[AudioVisual]` -> `Turret.IdleRotate`.
-  - `Turret.PointToMouse` controls whether units will turn their turrets to your mouse when in idle. Defaults to `[AudioVisual]` -> `Turret.PointToMouse`.
+  - `Turret.IdleRotate` controls whether units can rotate their turrets when in idle. Defaults to `[AudioVisual]->Turret.IdleRotate`.
+  - `Turret.PointToMouse` controls whether units will turn their turrets to your mouse when in idle. Defaults to `[AudioVisual]->Turret.PointToMouse`.
     - At the present moment, this only functions in singleplayer.
   - `Turret.IdleRestartMin` and `Turret.IdleRestartMax` control the delay from idle to action occurrence together.
   - `Turret.IdleIntervalMin` and `Turret.IdleIntervalMax` control the delay between every idle actions together.
@@ -1712,26 +1712,26 @@ MindControl.ThreatDelay=      ; integer, game frames
 In `rulesmd.ini`:
 ```ini
 [General]
-ExpandTurretRotation=false          ; boolean
+ExpandTurretRotation=false            ; boolean
 
 [AudioVisual]
-Turret.IdleRotate=false             ; boolean
-Turret.PointToMouse=false           ; boolean
-Turret.BodyFoundation=false         ; boolean
-Turret.IdleRestartMin=150           ; integer, number of frames
-Turret.IdleRestartMax=300           ; integer, number of frames
-Turret.IdleIntervalMin=150          ; integer, number of frames
-Turret.IdleIntervalMax=450          ; integer, number of frames
+Turret.IdleRotate=false               ; boolean
+Turret.PointToMouse=false             ; boolean
+Turret.BodyFoundation=false           ; boolean
+Turret.IdleRestartMin=150             ; integer, number of frames
+Turret.IdleRestartMax=300             ; integer, number of frames
+Turret.IdleIntervalMin=150            ; integer, number of frames
+Turret.IdleIntervalMax=450            ; integer, number of frames
 
-[SOMEUNIT]                          ; VehicleType, `Turret=yes`
-Turret.IdleRotate=                  ; boolean
-Turret.PointToMouse=                ; boolean
-Turret.Restriction=180.0            ; floating point value
-Turret.ExtraAngle=0                 ; floating point value
-Turret.BodyFoundation=              ; boolean
-Turret.BodyOrientation=false        ; boolean
-Turret.BodyOrientationAngle=0       ; floating point value
-Turret.BodyOrientationSymmetric=yes ; boolean
+[SOMEUNIT]                            ; VehicleType, `Turret=yes`
+Turret.IdleRotate=                    ; boolean
+Turret.PointToMouse=                  ; boolean
+Turret.Restriction=180.0              ; floating point value
+Turret.ExtraAngle=0                   ; floating point value
+Turret.BodyFoundation=                ; boolean
+Turret.BodyOrientation=false          ; boolean
+Turret.BodyOrientationAngle=0         ; floating point value
+Turret.BodyOrientationSymmetric=true  ; boolean
 ```
 
 ## Terrain
