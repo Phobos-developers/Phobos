@@ -34,11 +34,11 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
 
-	auto const count = static_cast<unsigned int>(UnitTypeClass::Array->Count);
+	auto const count = static_cast<unsigned int>(UnitTypeClass::Array.Count);
 	creationFrames.assign(count, 0x7FFFFFFF);
 	values.assign(count, 0);
 
-	for (auto currentTeam : *TeamClass::Array)
+	for (auto currentTeam : TeamClass::Array)
 	{
 		if (!currentTeam || currentTeam->Owner != pThis)
 			continue;
@@ -71,7 +71,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 		}
 	}
 
-	for (auto unit : *UnitClass::Array)
+	for (auto unit : UnitClass::Array)
 	{
 		auto const index = static_cast<unsigned int>(unit->GetType()->GetArrayIndex());
 
@@ -91,7 +91,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 
 	for (auto i = 0u; i < count; ++i)
 	{
-		auto const type = UnitTypeClass::Array->Items[static_cast<int>(i)];
+		auto const type = UnitTypeClass::Array[static_cast<int>(i)];
 		int currentValue = values[i];
 
 		if (currentValue <= 0
@@ -232,7 +232,7 @@ bool HouseExt::IsDisabledFromShell(
 {
 	// SWAllowed does not apply to campaigns any more
 	if (SessionClass::IsCampaign()
-		|| GameModeOptionsClass::Instance->SWAllowed)
+		|| GameModeOptionsClass::Instance.SWAllowed)
 	{
 		return false;
 	}
@@ -278,14 +278,11 @@ size_t HouseExt::FindBuildableIndex(
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 {
 	int result = 0;
+	auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto const pTechno : pExt->OwnedCountedHarvesters)
 	{
-		if (pTechno->Owner == pThis)
-		{
-			auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-			result += pTypeExt->Harvester_Counted && TechnoExt::IsHarvesting(pTechno);
-		}
+		result += TechnoExt::IsHarvesting(pTechno);
 	}
 
 	return result;
@@ -294,9 +291,13 @@ int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
 int HouseExt::TotalHarvesterCount(HouseClass* pThis)
 {
 	int result = 0;
+	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
 
-	for (auto pType : RulesExt::Global()->HarvesterTypes)
-		result += pThis->CountOwnedAndPresent(pType);
+	for (auto const pTechno : pHouseExt->OwnedCountedHarvesters)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+		result += pExt->HasBeenPlacedOnMap;
+	}
 
 	return result;
 }
@@ -321,9 +322,12 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	auto newCoords = GeneralUtils::CalculateCoordsFromDistance(currentCoords, targetCoords, distance);
 
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
-	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
+	cellStruct = MapClass::Instance.NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
-	return MapClass::Instance->TryGetCellAt(cellStruct);
+	if (cellStruct == CellStruct::Empty)
+		return nullptr;
+
+	return MapClass::Instance.TryGetCellAt(cellStruct);
 }
 
 // Gets the superweapons used by AI for Chronoshift script actions.
@@ -381,8 +385,8 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		if (allowRandom)
 		{
 			auto& Random = ScenarioClass::Instance->Random;
-			return HouseClass::Array->GetItem(
-				Random.RandomRanged(0, HouseClass::Array->Count - 1));
+			return HouseClass::Array.GetItem(
+				Random.RandomRanged(0, HouseClass::Array.Count - 1));
 		}
 		else
 		{
@@ -607,6 +611,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->PowerPlantEnhancers)
 		.Process(this->OwnedLimboDeliveredBuildings)
+		.Process(this->OwnedCountedHarvesters)
 		.Process(this->LimboAircraft)
 		.Process(this->LimboBuildings)
 		.Process(this->LimboInfantry)
@@ -621,6 +626,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->RestrictedFactoryPlants)
 		.Process(this->LastBuiltNavalVehicleType)
 		.Process(this->ProducingNavalUnitTypeIndex)
+		.Process(this->CombatAlertTimer)
 		.Process(this->NumAirpads_NonMFB)
 		.Process(this->NumBarracks_NonMFB)
 		.Process(this->NumWarFactories_NonMFB)
@@ -880,7 +886,8 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
+	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	int queued = 0;
 
 	if (pFactory)
@@ -900,7 +907,8 @@ int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
 {
 	const AbstractType absType = pType->WhatAmI();
-	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, BuildCat::DontCare);
+	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	if (pFactory)
 	{
 		int queued = pFactory->CountTotal(pType);

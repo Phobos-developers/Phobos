@@ -9,7 +9,7 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 	auto pRulesExt = RulesExt::Global();
 	HouseClass* pOwner = pBuilding->Owner;
 	int index = pOwner->ProducingAircraftTypeIndex;
-	auto const pType = index >= 0 ? AircraftTypeClass::Array()->GetItem(index) : nullptr;
+	auto const pType = index >= 0 ? AircraftTypeClass::Array.GetItem(index) : nullptr;
 
 	if (pRulesExt->AllowParallelAIQueues && !pRulesExt->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues))
 		return 0;
@@ -82,21 +82,21 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 					return Skip;
 
 				index = pOwner->ProducingBuildingTypeIndex;
-				pType = index >= 0 ? BuildingTypeClass::Array()->GetItem(index) : nullptr;
+				pType = index >= 0 ? BuildingTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::InfantryType:
 				if (pRulesExt->ForbidParallelAIQueues_Infantry)
 					return Skip;
 
 				index = pOwner->ProducingInfantryTypeIndex;
-				pType = index >= 0 ? InfantryTypeClass::Array()->GetItem(index) : nullptr;
+				pType = index >= 0 ? InfantryTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::AircraftType:
 				if (pRulesExt->ForbidParallelAIQueues_Aircraft)
 					return Skip;
 
 				index = pOwner->ProducingAircraftTypeIndex;
-				pType = index >= 0 ? AircraftTypeClass::Array()->GetItem(index) : nullptr;
+				pType = index >= 0 ? AircraftTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::UnitType:
 				if (pThis->Type->Naval ? pRulesExt->ForbidParallelAIQueues_Navy : pRulesExt->ForbidParallelAIQueues_Vehicle)
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 					index = pOwner->ProducingUnitTypeIndex;
 				}
 
-				pType = index >= 0 ? UnitTypeClass::Array()->GetItem(index) : nullptr;
+				pType = index >= 0 ? UnitTypeClass::Array.GetItem(index) : nullptr;
 
 				break;
 			default:

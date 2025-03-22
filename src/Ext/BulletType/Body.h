@@ -45,6 +45,8 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
+		Valueable<bool> SubjectToGround;
+
 		Valueable<bool> Splits;
 		Valueable<double> AirburstSpread;
 		Valueable<double> RetargetAccuracy;
@@ -84,6 +86,7 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, SubjectToGround { false }
 			, Splits { false }
 			, AirburstSpread { 1.5 }
 			, RetargetAccuracy { 0.0 }
