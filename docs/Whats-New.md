@@ -343,6 +343,7 @@ New:
 - Technos can maintain a suitable distance after firing (by CrimRecya)
 - Projectile subject to ground check before firing (by CrimRecya)
 - Delay automatic attack on the controlled unit (by CrimRecya)
+- Customized Vehicle Turret Rotation (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -486,7 +487,6 @@ New:
 - Waypoint path is drawn for all units under player control or if `[GlobalControls] -> DebugPlanningPaths=yes` (by Trsdy)
 - `RemoveDisguise` now works on vehicle disguises (by Trsdy)
 - Allow anchoring extended tooltips to the left side of the sidebar (by Trsdy)
-- Customized Vehicle Turret Rotation (by CrimRecya)
 - Toggle to allow spawned aircraft to attack immediately after being spawned (by Starkku)
 - `ZAdjust` for OverlayTypes (by Starkku)
 - Allow customizing extra tint intensity for Iron Curtain & Force Shield (by Starkku)

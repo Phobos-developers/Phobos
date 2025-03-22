@@ -702,7 +702,7 @@ void TechnoExt::ExtData::ManualIdleAction()
 		if (mouseCoords != CoordStruct::Empty) // Mouse in tactical
 		{
 			const auto offset = -static_cast<int>(pThis->GetCoords().Z * ((Unsorted::LeptonsPerCell / 2.0) / Unsorted::LevelHeight));
-			const auto targetDir = pThis->GetTargetDirection(MapClass::Instance->GetCellAt(CoordStruct { mouseCoords.X - offset, mouseCoords.Y - offset, 0 }));
+			const auto targetDir = pThis->GetTargetDirection(MapClass::Instance.GetCellAt(CoordStruct { mouseCoords.X - offset, mouseCoords.Y - offset, 0 }));
 
 			if (const auto pFoot = abstract_cast<FootClass*>(pThis))
 				pTypeExt->SetTurretLimitedDir(pFoot, targetDir);

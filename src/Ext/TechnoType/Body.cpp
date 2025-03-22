@@ -276,52 +276,55 @@ void TechnoTypeExt::ExtData::SetTurretLimitedDir(FootClass* pThis, DirStruct des
 	const auto pBody = &pThis->PrimaryFacing;
 	const auto pTurret = &pThis->SecondaryFacing;
 	const auto destinationDir = this->GetTurretDesiredDir(desiredDir);
-
-	if (turretRestrictAngle < 10.0)
-	{
-		const auto facing = pBody->Current();
-		pTurret->SetCurrent(facing);
-		pTurret->SetDesired(facing);
-
-		if (!pThis->Locomotor->Is_Moving_Now())
-			pBody->SetDesired(destinationDir);
-
-		return;
-	}
-
+	// There are no restrictions
 	if (turretRestrictAngle >= 180.0)
 	{
 		pTurret->SetDesired(destinationDir);
 		return;
 	}
 
+	const auto restrictRaw = static_cast<short>(this->Turret_Restriction * TechnoTypeExt::AngleToRaw + 0.5);
 	const auto desiredRaw = static_cast<short>(destinationDir.Raw);
 	const auto turretRaw = static_cast<short>(pTurret->Current().Raw);
-	const auto currentDir = pBody->Current();
-	const auto bodyDir = this->GetTurretDesiredDir(currentDir);
-	const auto bodyRaw = static_cast<short>(bodyDir.Raw);
+
+	auto currentDir = pBody->Current();
+	auto bodyDir = this->GetTurretDesiredDir(currentDir);
+	auto bodyRaw = static_cast<short>(bodyDir.Raw);
+	auto desiredDifference = static_cast<short>(desiredRaw - bodyRaw);
+	// Beyond the rotation range of the turret, the body rotates first
+	if ((desiredDifference < -restrictRaw || desiredDifference > restrictRaw) && !pThis->Destination && !pThis->Locomotor->Is_Moving())
+	{
+		pBody->SetDesired(this->Turret_BodyOrientation ? this->GetBodyDesiredDir(currentDir, desiredDir) : desiredDir);
+		// Once rotation begins, data needs to be updated to avoid delays
+		currentDir = pBody->Current();
+		bodyDir = this->GetTurretDesiredDir(currentDir);
+		bodyRaw = static_cast<short>(bodyDir.Raw);
+		desiredDifference = static_cast<short>(desiredRaw - bodyRaw);
+	}
 
 	const auto currentDifference = static_cast<short>(turretRaw - bodyRaw);
-	const auto desiredDifference = static_cast<short>(desiredRaw - bodyRaw);
-	const auto restrictRaw = static_cast<short>(this->Turret_Restriction * TechnoTypeExt::AngleToRaw + 0.5);
-
+	// If the current orientation exceeds the limit, force it back to the maximum limit position
 	if (currentDifference < -restrictRaw)
 	{
-		const auto restrictDir = DirStruct {(bodyRaw - restrictRaw)};
+		const auto restrictDir = DirStruct { (bodyRaw - restrictRaw) };
 		pTurret->SetCurrent(restrictDir);
 		pTurret->SetDesired(restrictDir);
 	}
 	else if (currentDifference > restrictRaw)
 	{
-		const auto restrictDir = DirStruct {(bodyRaw + restrictRaw)};
+		const auto restrictDir = DirStruct { (bodyRaw + restrictRaw) };
 		pTurret->SetCurrent(restrictDir);
 		pTurret->SetDesired(restrictDir);
 	}
-
-	if ((desiredDifference < -restrictRaw || desiredDifference > restrictRaw) && !pThis->Locomotor->Is_Moving_Now())
-		pBody->SetDesired(this->Turret_BodyOrientation ? this->GetBodyDesiredDir(currentDir, desiredDir) : desiredDir);
-
-	pTurret->SetDesired(((currentDifference > 0 && desiredDifference < 0) || (currentDifference < 0 && desiredDifference > 0)) ? bodyDir : destinationDir);
+	// When there is a significant difference and they are located on both sides of the body, first return the turret to its original position
+	if (std::abs(static_cast<short>(desiredRaw - turretRaw)) < 8192 && (currentDifference > 0 && desiredDifference < 0 || currentDifference < 0 && desiredDifference > 0))
+		pTurret->SetDesired(bodyDir);
+	else if (desiredDifference < -restrictRaw)
+		pTurret->SetDesired(DirStruct { (bodyRaw - restrictRaw) });
+	else if (desiredDifference > restrictRaw)
+		pTurret->SetDesired(DirStruct { (bodyRaw + restrictRaw) });
+	else
+		pTurret->SetDesired(destinationDir);
 }
 
 short TechnoTypeExt::ExtData::GetTurretLimitedRaw(short currentDirectionRaw)

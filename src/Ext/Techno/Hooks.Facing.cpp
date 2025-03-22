@@ -33,9 +33,8 @@ DEFINE_HOOK(0x7369D6, UnitClass_UpdateRotation_StopUnitIdleAction, 0xA)
 			else
 			{
 				const auto targetDir = pThis->GetTargetDirection(pThis->Target);
-				pTypeExt->SetTurretLimitedDir(pThis, targetDir);
 
-				if (pTypeExt->Turret_BodyOrientation && !pThis->Locomotor->Is_Moving_Now())
+				if (pTypeExt->Turret_BodyOrientation && !pThis->Destination && !pThis->Locomotor->Is_Moving())
 				{
 					const auto curDir = pThis->PrimaryFacing.Current();
 					const auto tgtDir = pTypeExt->GetBodyDesiredDir(curDir, targetDir);
@@ -43,6 +42,8 @@ DEFINE_HOOK(0x7369D6, UnitClass_UpdateRotation_StopUnitIdleAction, 0xA)
 					if (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 8192)
 						pThis->PrimaryFacing.SetDesired(tgtDir);
 				}
+
+				pTypeExt->SetTurretLimitedDir(pThis, targetDir);
 			}
 		}
 	}
@@ -135,6 +136,32 @@ DEFINE_HOOK(0x736AEA, UnitClass_UpdateRotation_ApplyUnitIdleAction, 0x6)
 
 	if (!pThis->BunkerLinkedItem && pThis->Type->Speed && (!pThis->Type->IsSimpleDeployer || !pThis->Deployed))
 		pTypeExt->SetTurretLimitedDir(pThis, pThis->PrimaryFacing.Current());
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x736F92, UnitClass_UpdateFiring_FacingFireError, 0x6)
+{
+	enum { SkipGameCode = 0x737063 };
+
+	GET(UnitClass* const, pThis, ESI);
+
+	if (!RulesExt::Global()->ExpandTurretRotation)
+		return 0;
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto targetDir = pThis->GetTargetDirection(pThis->Target);
+
+	if (pTypeExt->Turret_BodyOrientation && !pThis->Destination && !pThis->Locomotor->Is_Moving())
+	{
+		const auto curDir = pThis->PrimaryFacing.Current();
+		const auto tgtDir = pTypeExt->GetBodyDesiredDir(curDir, targetDir);
+
+		if (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 8192)
+			pThis->PrimaryFacing.SetDesired(tgtDir);
+	}
+
+	pTypeExt->SetTurretLimitedDir(pThis, targetDir);
 
 	return SkipGameCode;
 }
