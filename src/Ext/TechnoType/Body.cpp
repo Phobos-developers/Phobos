@@ -329,8 +329,8 @@ void TechnoTypeExt::ExtData::SetTurretLimitedDir(FootClass* pThis, DirStruct des
 		pTurret->SetCurrent(restrictDir);
 		pTurret->SetDesired(restrictDir);
 	}
-	// When there is a significant difference and they are located on both sides of the body, first return the turret to its original position
-	if (std::abs(static_cast<short>(desiredRaw - turretRaw)) < 8192 && (currentDifference > 0 && desiredDifference < 0 || currentDifference < 0 && desiredDifference > 0))
+	// When they are located on both sides of the body, first return the turret to its original position
+	if (currentDifference > 0 && desiredDifference < 0 || currentDifference < 0 && desiredDifference > 0)
 		setTurretDesired(bodyDir);
 	else if (desiredDifference < -restrictRaw)
 		setTurretDesired(DirStruct { (bodyRaw - restrictRaw) });
