@@ -215,7 +215,7 @@ msgstr "允许使用 255 及以上的 TileSet 而不再会导致东北-西南方
 
 #: ../../Fixed-or-Improved-Logics.md:38
 msgid "Added a \"Load Game\" button to the retry dialog on mission failure."
-msgstr "在任务失败的重开对话框中添加了一个“载入游戏”按钮。"
+msgstr "在任务失败的重开对话框中添加了一个 “载入游戏” 按钮。"
 
 #: ../../Fixed-or-Improved-Logics.md:40
 msgid ""
@@ -2003,7 +2003,7 @@ msgstr ""
 msgid ""
 "When capturing such \"buildings\", the player won't be notified by EVA "
 "capture event."
-msgstr "当占领此类“建筑”时，玩家不会收到 EVA 占领事件的播报。"
+msgstr "当占领此类 “建筑” 时，玩家不会收到 EVA 占领事件的播报。"
 
 #: ../../Fixed-or-Improved-Logics.md:420
 msgid ""
@@ -3828,7 +3828,7 @@ msgstr ""
 msgid ""
 "You can use these flags to make the AIs \"all in\" before they are "
 "defeated."
-msgstr "你可以用这些标签让 AI 被击败前“全力以赴”"
+msgstr "你可以用这些标签让 AI 被击败前 “全力以赴”"
 
 #: ../../Fixed-or-Improved-Logics.md:1007
 msgid ""
@@ -3953,7 +3953,7 @@ msgid ""
 "voxel light source being \"nudged\" up by a bit and light being applied "
 "incorrectly on tilted voxels. It is now possible to fix that."
 msgstr ""
-"原本的游戏中使用了一些奇怪且不必要的数学计算导致 Voxel 的光源被“微调”向上了一些并在倾斜的 Voxel "
+"原本的游戏中使用了一些奇怪且不必要的数学计算导致 Voxel 的光源被 “微调” 向上了一些并在倾斜的 Voxel "
 "上光照效果不正确。现在可以修复这个问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:1057
@@ -4230,7 +4230,7 @@ msgid ""
 "setting `HasCrumblingFrames` to true."
 msgstr ""
 "此外，地形对象现在可以在其血量归 0 后到从地图中删除前的这段时间中通过设置 `HasCrumblingFrames` 为 true "
-"来显示一个“倒坍”动画。"
+"来显示一个 “倒坍” 动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:1146
 msgid ""
@@ -4685,7 +4685,7 @@ msgid ""
 "`KeepTargetOnMove.ExtraDistance` can be used to modify the distance "
 "considered 'out of range' from target (it is added to weapon range), "
 "negative values work to reduce the distance."
-msgstr "`KeepTargetOnMove.ExtraDistance` 可以用来修改被认为“超出射程”的范围（基于武器射程的修正值），负值会缩短判定距离。"
+msgstr "`KeepTargetOnMove.ExtraDistance` 可以用来修改被认为 “超出射程” 的范围（基于武器射程的修正值），负值会缩短判定距离。"
 
 #: ../../Fixed-or-Improved-Logics.md:1323
 msgid ""
@@ -5304,7 +5304,7 @@ msgid ""
 "They will not spring 'attacked' / 'attacked by' events. Note that if the "
 "Warhead deals actual damage, events that check for that can still be "
 "sprung."
-msgstr "它们不会触发“受到攻击”／“被...攻击”事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
+msgstr "它们不会触发 “受到攻击”／“被...攻击” 事件。注意如果弹头造成了实际杀伤那么检查杀伤的事件仍可能被触发。"
 
 #: ../../Fixed-or-Improved-Logics.md:1549
 msgid ""

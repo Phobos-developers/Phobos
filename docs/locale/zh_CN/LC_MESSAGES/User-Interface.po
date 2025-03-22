@@ -751,8 +751,8 @@ msgid ""
 "`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
 " hotkey](#toggle-designator-range) in \"Interface\" category."
 msgstr ""
-"此功能可以*由玩家*通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
-"或“界面”类别中的[“开启指示者范围显示”热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
+"此功能可以 *由玩家* 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
+"或 “界面” 类别中的 [“开启指示者范围显示” 热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
 
 #: ../../User-Interface.md:242
 msgid ""
@@ -1511,7 +1511,7 @@ msgid ""
 "first side, false for all others."
 msgstr ""
 "现在可以通过设置 `Sidebar.GDIPosition` 来切换硬编码的侧边栏按钮坐标为 GDI "
-"阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。\""
+"阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。"
 
 #: ../../User-Interface.md:531
 msgid ""
