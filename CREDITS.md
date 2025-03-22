@@ -412,6 +412,7 @@ This page lists all the individual contributions to the project by their author.
   - Units will not always stuck in the factory
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
+  - Delay automatic attack on the controlled unit
   - New trajectory system
   - New Missile trajectory
   - New Engrave trajectory
