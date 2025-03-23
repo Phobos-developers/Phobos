@@ -1324,20 +1324,6 @@ EVA.Sold=       ; EVA entry
 SellSound=      ; Sound entry
 ```
 
-### Delay automatic attack on the controlled unit
-
-- Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead, default to `[General] -> MindControl.ThreatDelay`.
-  - This will not affect the manual selection of attacks and is useless with permanent mind control.
-
-In `rulesmd.ini`:
-```ini
-[General]
-MindControl.ThreatDelay=0     ; integer, game frames
-
-[SOMEWARHEAD]                 ; WarheadType
-MindControl.ThreatDelay=      ; integer, game frames
-```
-
 ### Disabling fallback to (Elite)Secondary weapon
 
 - It is now possible to disable the fallback to `(Elite)Secondary` weapon from `(Elite)Primary` weapon if it cannot fire at the chosen target by setting `NoSecondaryWeaponFallback` to true (defaults to false). `NoSecondaryWeaponFallback.AllowAA` controls whether or not fallback because of projectile `AA` setting and target being in air is still allowed. This does not apply to special cases where `(Elite)Secondary` weapon is always chosen, including but not necessarily limited to the following:

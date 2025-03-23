@@ -1541,6 +1541,20 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
+### Delay automatic attack on the controlled unit
+
+- Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead, default to `[General] -> MindControl.ThreatDelay`.
+  - This will not affect the manual selection of attacks and is useless with permanent mind control.
+
+In `rulesmd.ini`:
+```ini
+[General]
+MindControl.ThreatDelay=0     ; integer, game frames
+
+[SOMEWARHEAD]                 ; WarheadType
+MindControl.ThreatDelay=      ; integer, game frames
+```
+
 ### Nonprovocative Warheads
 
 - You can now make Warheads behave in nonprovocative fashion. Warheads with `Nonprovocative=true` exhibit following behaviours:
