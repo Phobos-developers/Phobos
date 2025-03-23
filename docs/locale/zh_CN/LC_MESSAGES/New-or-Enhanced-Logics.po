@@ -686,7 +686,7 @@ msgid ""
 "any point during the radiation's lifetime it continues to behave as if "
 "not having an invoker."
 msgstr ""
-"`RadHasInvoker` 如果设为 true 则辐射造成的伤害会被视为由发射用于创建辐射区域的抛射体的科技类型（即“调用者”）造成的。除 "
+"`RadHasInvoker` 如果设为 true 则辐射造成的伤害会被视为由发射用于创建辐射区域的抛射体的科技类型（即 “调用者”）造成的。除 "
 "`RadHasOwner` "
 "的效果外这还将使调用者从被辐射击杀的单位中获得经验。注意如果调用者在辐射生命周期中的任何时刻死亡那么它将继续变得如同没有调用者一样。"
 
@@ -1108,7 +1108,7 @@ msgid ""
 "display an infantry's shield strength and the 3th frame for other units, "
 "or 2nd and 1st respectively if not enough frames are available."
 msgstr ""
-"`Pips.Shield.Background` 可用于指定非建筑 pip 的背景或“边框”。默认为 `pipbrd.shp`。第 4 "
+"`Pips.Shield.Background` 可用于指定非建筑 pip 的背景或 “边框”。默认为 `pipbrd.shp`。第 4 "
 "帧用于显示步兵的护盾值，其他单位使用第 3 帧，如果可用帧不足则分别使用第 2 帧和第 1 帧。"
 
 #: ../../New-or-Enhanced-Logics.md:407
@@ -2010,7 +2010,7 @@ msgid ""
 "disable snapping."
 msgstr ""
 "`Trajectory.Straight.TargetSnapDistance` "
-"控制抛射体在引爆时与目标的最大距离以使抛射体在引爆时“瞬移”到目标。设为 0 将禁用瞬移。"
+"控制抛射体在引爆时与目标的最大距离以使抛射体在引爆时 “瞬移” 到目标。设为 0 将禁用瞬移。"
 
 #: ../../New-or-Enhanced-Logics.md:732
 msgid ""
@@ -2323,7 +2323,7 @@ msgid ""
 "Delivery can be made random with these optional tags. The game will "
 "randomly choose only a single building from the list for each roll chance"
 " provided."
-msgstr "使用这些标签可以使投放变得随机。游戏将根据每个提供的“掷骰子”概率随机选择列表中的一个建筑。"
+msgstr "使用这些标签可以使投放变得随机。游戏将根据每个提供的 “掷骰子” 概率随机选择列表中的一个建筑。"
 
 #: ../../New-or-Enhanced-Logics.md:890
 msgid ""
@@ -2331,7 +2331,7 @@ msgid ""
 "happening. Valid values range from 0% (never happens) to 100% (always "
 "happens). Defaults to a single sure roll."
 msgstr ""
-"`LimboDelivery.RollChances` 是“掷骰子”发生的概率列表。有效值的范围为 0%（从不发生）到 "
+"`LimboDelivery.RollChances` 是 “掷骰子” 发生的概率列表。有效值的范围为 0%（从不发生）到 "
 "100%（总是发生）。默认为单次必出。"
 
 #: ../../New-or-Enhanced-Logics.md:891
@@ -2343,7 +2343,7 @@ msgid ""
 " roll attempt doesn't have weights specified, the last weights will be "
 "used."
 msgstr ""
-"`LimboDelivery.RandomWeightsN` 是每个“掷骰子”发生概率的权重列表。有效值为 0（从不发生）到 "
+"`LimboDelivery.RandomWeightsN` 是每个 “掷骰子” 发生概率的权重列表。有效值为 0（从不发生）到 "
 "100%（总是发生）。`RandomWeights` 是 `RandomWeights0` "
 "的有效别名。如果掷骰尝试没有指定权重，则使用最后一个权重。"
 
@@ -2390,7 +2390,7 @@ msgid ""
 "In order for this feature to work with AITriggerTypes conditions "
 "(\"Owning house owns ???\" and \"Enemy house owns ???\"), `LegalTarget` "
 "must be set to true."
-msgstr "为使此功能与 AITriggerTypes 条件（“拥有者拥有？”和“敌人拥有？”）一起工作，`LegalTarget` 必须设置为 true。"
+msgstr "为使此功能与 AITriggerTypes 条件（“拥有者拥有？” 和 “敌人拥有？”）一起工作，`LegalTarget` 必须设置为 true。"
 
 #: ../../New-or-Enhanced-Logics.md:917
 msgid ""

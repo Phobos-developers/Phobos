@@ -539,8 +539,8 @@ msgid ""
 "`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
 " hotkey](#toggle-designator-range) in \"Interface\" category."
 msgstr ""
-"此功能可以*由玩家*通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
-"或“界面”类别中的[“开启指示者范围显示”热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
+"此功能可以 *由玩家* 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
+"或 “界面” 类别中的 [“开启指示者范围显示” 热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
 
 #: ../../User-Interface.md:270
 msgid "SuperWeapon ShowTimer sorting"
@@ -746,8 +746,8 @@ msgid ""
 "If there's no CnCNet5 spawner loaded, the window resolution will be "
 "always `800x600`."
 msgstr ""
-"此功能与 CnCNet5 的 -spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5"
-" -spanwer，那么载入分辨率将被锁定为 `800x600`。"
+"此功能与 CnCNet5 Spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5"
+" Spanwer，那么载入分辨率将被锁定为 `800x600`。"
 
 #: ../../User-Interface.md:333
 msgid ""
@@ -999,7 +999,7 @@ msgid ""
 "first side, false for all others."
 msgstr ""
 "现在可以通过设置 `Sidebar.GDIPosition` 来切换硬编码的侧边栏按钮坐标为 GDI "
-"阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。\""
+"阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。"
 
 #: ../../User-Interface.md:493
 msgid "Weeds counter"
