@@ -101,9 +101,9 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		Point2D point = TacticalClass::Instance->CoordsToClient(pSource->GetCoords()).first;
 		point += off;
 
-		++Unsorted::IKnowWhatImDoing;
+		++Unsorted::ScenarioInit;
 		GameCreate<AlphaShapeClass>(pSource, point.X, point.Y);
-		--Unsorted::IKnowWhatImDoing;
+		--Unsorted::ScenarioInit;
 		//int Margin = 40;
 		RectangleStruct Dirty = { point.X - tacticalPos->X, point.Y - tacticalPos->Y, pImage->Width, pImage->Height };
 		TacticalClass::Instance->RegisterDirtyArea(Dirty, true);
