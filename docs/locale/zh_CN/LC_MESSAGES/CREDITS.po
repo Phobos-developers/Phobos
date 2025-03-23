@@ -1041,7 +1041,7 @@ msgstr "超级武器发射其他超级武器"
 
 #: ../../../CREDITS.md:267
 msgid "SpyEffects expansion, launching Super Weapons on building infiltration"
-msgstr "间谍效果扩展，允许在建筑渗透时发射超级武器"
+msgstr "间谍效果扩展，允许在建筑被渗透时发射超级武器"
 
 #: ../../../CREDITS.md:268
 msgid "Real time timers"
@@ -1593,11 +1593,11 @@ msgstr "增强的直线轨迹"
 
 #: ../../../CREDITS.md:403
 msgid "Enable Building Production Queue"
-msgstr "启用的建筑生产队列"
+msgstr "启用建筑生产队列"
 
 #: ../../../CREDITS.md:404
 msgid "Fix for sidebar not updating queued unit numbers when on hold"
-msgstr "修复侧边栏在暂停时未能更新预购单位订单数量的问题"
+msgstr "修复侧边栏在生产暂停时未能更新预购单位订单数量的问题"
 
 #: ../../../CREDITS.md:405
 msgid "New Parabola trajectory"
@@ -1717,7 +1717,7 @@ msgstr "寄生返回 bug 修复"
 
 #: ../../../CREDITS.md:436
 msgid "Bunkerable checks dehardcode"
-msgstr "坦克碉堡检查的去硬编码化"
+msgstr "坦克碉堡准入检查的去硬编码化"
 
 #: ../../../CREDITS.md:437
 msgid ""
