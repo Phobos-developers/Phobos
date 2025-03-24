@@ -1842,7 +1842,7 @@ msgstr "现在可以将某个具有 `Factory` 的建筑排除在 `MultipleFactor
 
 #: ../../Fixed-or-Improved-Logics.md:447
 msgid "Unit repair customization"
-msgstr "单位自定义维修"
+msgstr "在建筑上自定义单位维修参数"
 
 #: ../../Fixed-or-Improved-Logics.md:449
 msgid ""

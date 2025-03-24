@@ -2131,7 +2131,7 @@ msgstr "超级武器"
 
 #: ../../New-or-Enhanced-Logics.md:802
 msgid "AI Superweapon delay timer"
-msgstr "AI 超级武器延迟"
+msgstr "AI 超级武器发射延迟"
 
 #: ../../New-or-Enhanced-Logics.md:804
 msgid ""
@@ -3511,7 +3511,7 @@ msgstr ""
 msgid ""
 "`Crit.Warhead` can be used to set a Warhead to detonate instead of using "
 "current Warhead."
-msgstr "`Crit.Warhead` 可用于设置一个用于替代当前弹头引爆的弹头。"
+msgstr "`Crit.Warhead` 可用于设置一个替代当前弹头引爆的弹头。"
 
 #: ../../New-or-Enhanced-Logics.md:1425
 msgid ""
