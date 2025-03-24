@@ -44,8 +44,8 @@ msgid ""
 "argument followed by absolute or relative path to an `*.ico` file (f. ex."
 " `gamemd.exe -icon Resources/clienticon.ico`)."
 msgstr ""
-"你可以通过 `-icon` 命令行参数指定自定义一个绝对或相对路径中的 `*.ico` 文件（例如 `gamemd.exe -icon "
-"Resources/clienticon.ico` ）作为 `gamemd.exe` 的图标。"
+"你可以通过 `-icon` 命令行参数（例如 `gamemd.exe -icon Resources/clienticon.ico` ）"
+"指定自定义一个绝对或相对路径中的 `*.ico` 文件作为 `gamemd.exe` 的图标。"
 
 #: ../../User-Interface.md:9
 msgid ""
@@ -57,7 +57,7 @@ msgid ""
 "file, but will load it bypassing registration."
 msgstr ""
 "修复了由 `Blowfish.dll` 导致的 `***FATAL*** String Manager failed to initialize "
-"properly` 错误，该错误发生在 `Blowfish.dll` 无法在操作系统中注册时，例如当玩家没有管理员权限的时候。在 Phobos "
+"properly` 错误，该错误发生在 `Blowfish.dll` 无法在操作系统中注册时，例如玩家没有管理员权限的情况。在 Phobos "
 "中，如果游戏在系统中找不到已注册的文件，它将不再尝试注册该文件，而是绕过注册直接加载。"
 
 #: ../../User-Interface.md:10

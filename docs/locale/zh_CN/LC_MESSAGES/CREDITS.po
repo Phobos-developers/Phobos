@@ -937,7 +937,7 @@ msgstr "自定义潜地单位移动高度和速度"
 
 #: ../../../CREDITS.md:241
 msgid "AI superweapon delay timer customization"
-msgstr "自定义 AI 超级武器延迟"
+msgstr "自定义 AI 超级武器发射延迟"
 
 #: ../../../CREDITS.md:242
 msgid "Disabling `MultipleFactory` bonus from specific BuildingType"

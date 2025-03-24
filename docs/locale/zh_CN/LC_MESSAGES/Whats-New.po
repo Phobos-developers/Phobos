@@ -333,7 +333,7 @@ msgstr ""
 
 #: ../../Whats-New.md:52
 msgid "`Shadow` for debris & meteor animations is changed to `ExtraShadow`."
-msgstr "用于碎片和流行动画的 `Shadow` 已更名为 `ExtraShadow`。"
+msgstr "用于碎片和流星动画的 `Shadow` 已更名为 `ExtraShadow`。"
 
 #: ../../Whats-New.md:54
 msgid "From pre-0.3 devbuilds"
@@ -350,7 +350,7 @@ msgid ""
 "height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-"
 "Logics.md#straight-trajectory)."
 msgstr ""
-"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不再同一高度的目标因此它已不再被支持，请使用 `Straight` 轨迹替代。参见 [此处](New-or-Enhanced-Logics.md"
+"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不在同一高度的目标因此它已不再被支持，请使用 `Straight` 轨迹替代。参见 [此处](New-or-Enhanced-Logics.md"
 "#straight-trajectory)。"
 
 #: ../../Whats-New.md:58
@@ -373,7 +373,7 @@ msgid ""
 "Timed jump script actions now take the time measured in ingame seconds "
 "instead of frames. Divide your value by 15 to accommodate to this change."
 msgstr ""
-"定时跳转脚本现在使用 **游戏秒** 而非帧来作为时间单位。也就是你的值需要／15 来使用。"
+"定时跳转脚本现在使用 **游戏秒** 而非帧来作为时间单位。也就是你先前的值需要／15 来使用。"
 
 #: ../../Whats-New.md:61
 msgid ""

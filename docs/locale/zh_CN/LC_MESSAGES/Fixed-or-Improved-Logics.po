@@ -2225,7 +2225,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:490
 msgid "Unit repair customization"
-msgstr "单位自定义维修"
+msgstr "在建筑上自定义单位维修参数"
 
 #: ../../Fixed-or-Improved-Logics.md:492
 msgid ""
