@@ -81,44 +81,40 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 		}
 
 		auto pControlNode = GameCreate<ControlNode>();
-		if (pControlNode)
+		pControlNode->OriginalOwner = pTarget->Owner;
+		pControlNode->Unit = pTarget;
+
+		pManager->ControlNodes.AddItem(pControlNode);
+		pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+
+		if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
 		{
-			pControlNode->OriginalOwner = pTarget->Owner;
-			pControlNode->Unit = pTarget;
+			pTarget->MindControlledBy = pManager->Owner;
 
-			pManager->ControlNodes.AddItem(pControlNode);
-			pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+			pManager->DecideUnitFate(pTarget);
 
-			if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
+			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+			auto const pType = pTarget->GetTechnoType();
+			CoordStruct location = pTarget->GetCoords();
+
+			if (pBld)
+				location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+			else
+				location.Z += pType->MindControlRingOffset;
+
+			if (auto const pAnimType = pControlledAnimType)
 			{
-				pTarget->MindControlledBy = pManager->Owner;
+				auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
 
-				pManager->DecideUnitFate(pTarget);
-
-				auto const pBld = abstract_cast<BuildingClass*>(pTarget);
-				auto const pType = pTarget->GetTechnoType();
-				CoordStruct location = pTarget->GetCoords();
+				pTarget->MindControlRingAnim = pAnim;
+				pAnim->SetOwnerObject(pTarget);
 
 				if (pBld)
-					location.Z += pBld->Type->Height * Unsorted::LevelHeight;
-				else
-					location.Z += pType->MindControlRingOffset;
+					pAnim->ZAdjust = -1024;
 
-				if (auto const pAnimType = pControlledAnimType)
-				{
-					auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
-
-					pTarget->MindControlRingAnim = pAnim;
-					pAnim->SetOwnerObject(pTarget);
-
-					if (pBld)
-						pAnim->ZAdjust = -1024;
-
-				}
-
-				return true;
 			}
 
+			return true;
 		}
 	}
 

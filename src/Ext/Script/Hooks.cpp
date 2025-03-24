@@ -43,8 +43,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (pUnit
-				&& pUnit->IsAlive
+			if (pUnit->IsAlive
 				&& pUnit->Health > 0
 				&& !pUnit->InLimbo)
 			{

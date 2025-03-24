@@ -951,13 +951,9 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		if (!pTypeBuilding)
 			break;
 
-		pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pTypeBuilding);
-
-		if (pBuildingTypeExt)
-			nSuperWeapons = pBuildingTypeExt->SuperWeapons.size();
+		nSuperWeapons = BuildingTypeExt::ExtMap.Find(pTypeBuilding)->SuperWeapons.size();
 
 		if (!pTechno->Owner->IsNeutral()
-			&& pTypeBuilding
 			&& (pTypeBuilding->SuperWeapon >= 0
 				|| pTypeBuilding->SuperWeapon2 >= 0
 				|| nSuperWeapons > 0))

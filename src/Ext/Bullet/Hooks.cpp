@@ -342,8 +342,10 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	{
 		return 0;
 	}
-	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	else
 	{
+		auto const pExt = BulletExt::ExtMap.Find(pThis);
+
 		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		{
 			R->EAX(pThis->Type);
@@ -373,11 +375,10 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
-			return SkipSetCoordinate;
-	}
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
+		return SkipSetCoordinate;
 
 	return 0;
 }
@@ -404,15 +405,13 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 
 	if (pThis->WeaponType)
 	{
-		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-		{
-			int defaultValue = RulesClass::Instance->BallisticScatter;
-			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+		int defaultValue = RulesClass::Instance->BallisticScatter;
+		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
-			int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
-			R->EAX(result);
-		}
+		int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
+		R->EAX(result);
 	}
 
 	return 0;

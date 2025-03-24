@@ -298,8 +298,10 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 			R->ESI(pThis);
 			return SkipTerrainColor;
 		}
-		else if (auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+		else
 		{
+			auto const pTerrainExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
 			if (pTerrainExt->MinimapColor.isset())
 			{
 				auto& color = pTerrainExt->MinimapColor.Get();

@@ -447,13 +447,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if (pTechnoExt)
+	for (auto& trail : pTechnoExt->LaserTrails)
 	{
-		for (auto& trail : pTechnoExt->LaserTrails)
-		{
-			trail.Visible = false;
-			trail.LastLocation = { };
-		}
+		trail.Visible = false;
+		trail.LastLocation = { };
 	}
 
 	return 0;
@@ -521,10 +518,7 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		return pExt->NoManualMove ? 0x700C62 : 0;
-
-	return 0;
+	return TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoManualMove ? 0x700C62 : 0;
 }
 
 DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)

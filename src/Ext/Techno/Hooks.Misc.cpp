@@ -25,27 +25,26 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 
 	GET(InfantryClass*, pSlave, ESI);
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type);
+
+	switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
 	{
-		switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
+	case SlaveChangeOwnerType::Suicide:
+		return KillTheSlave;
+
+	case SlaveChangeOwnerType::Master:
+		R->EAX(pSlave->Owner);
+		return ChangeSlaveOwner;
+
+	case SlaveChangeOwnerType::Neutral:
+		if (auto pNeutral = HouseClass::FindNeutral())
 		{
-		case SlaveChangeOwnerType::Suicide:
-			return KillTheSlave;
-
-		case SlaveChangeOwnerType::Master:
-			R->EAX(pSlave->Owner);
+			R->EAX(pNeutral);
 			return ChangeSlaveOwner;
-
-		case SlaveChangeOwnerType::Neutral:
-			if (auto pNeutral = HouseClass::FindNeutral())
-			{
-				R->EAX(pNeutral);
-				return ChangeSlaveOwner;
-			}
-
-		default: // SlaveChangeOwnerType::Killer
-			return 0x0;
 		}
+
+	default: // SlaveChangeOwnerType::Killer
+		return 0x0;
 	}
 
 	return 0x0;

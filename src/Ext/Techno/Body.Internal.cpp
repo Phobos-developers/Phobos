@@ -112,33 +112,31 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type))
-	{
-		Nullable<CoordStruct> pickedFLH;
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	Nullable<CoordStruct> pickedFLH;
 
-		if (pThis->IsDeployed())
+	if (pThis->IsDeployed())
+	{
+		if (weaponIndex == 0)
+			pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
+		else if (weaponIndex == 1)
+			pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
+	}
+	else
+	{
+		if (pThis->Crawling)
 		{
 			if (weaponIndex == 0)
-				pickedFLH = pTypeExt->DeployedPrimaryFireFLH;
+				pickedFLH = pTypeExt->PronePrimaryFireFLH;
 			else if (weaponIndex == 1)
-				pickedFLH = pTypeExt->DeployedSecondaryFireFLH;
+				pickedFLH = pTypeExt->ProneSecondaryFireFLH;
 		}
-		else
-		{
-			if (pThis->Crawling)
-			{
-				if (weaponIndex == 0)
-					pickedFLH = pTypeExt->PronePrimaryFireFLH;
-				else if (weaponIndex == 1)
-					pickedFLH = pTypeExt->ProneSecondaryFireFLH;
-			}
-		}
+	}
 
-		if (pickedFLH.isset())
-		{
-			FLH = pickedFLH.Get();
-			FLHFound = true;
-		}
+	if (pickedFLH.isset())
+	{
+		FLH = pickedFLH.Get();
+		FLHFound = true;
 	}
 
 	return FLH;
@@ -146,14 +144,13 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 
 void TechnoExt::ExtData::InitializeAttachEffects()
 {
-	if (auto pTypeExt = this->TypeExtData)
-	{
-		if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
-			return;
+	auto pTypeExt = this->TypeExtData;
 
-		auto const pThis = this->OwnerObject();
-		AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
-	}
+	if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
+		return;
+
+	auto const pThis = this->OwnerObject();
+	AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 }
 
 // Gets tint colors for invulnerability, airstrike laser target and berserk, depending on parameters.

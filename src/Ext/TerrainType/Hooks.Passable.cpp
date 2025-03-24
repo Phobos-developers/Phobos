@@ -18,11 +18,10 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
-	{
-		if (pTypeExt->IsPassable)
-			return Skip;
-	}
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsPassable)
+		return Skip;
 
 	return 0;
 }
@@ -41,13 +40,12 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	if (pTarget->WhatAmI() == AbstractType::Terrain)
 	{
-		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type))
+		auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type);
+
+		if (pTypeExt->IsPassable && !isForceFire)
 		{
-			if (pTypeExt->IsPassable && !isForceFire)
-			{
-				R->EBP(Action::Move);
-				return ReturnAction;
-			}
+			R->EBP(Action::Move);
+			return ReturnAction;
 		}
 	}
 
@@ -62,13 +60,10 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 	GET(CellClass*, pThis, EDI);
 	GET(TerrainClass*, pTerrain, ESI);
 
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+	if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
 	{
-		if (pTypeExt->IsPassable)
-		{
-			pThis->Passability = PassabilityType::Passable;
-			return ReturnFromFunction;
-		}
+		pThis->Passability = PassabilityType::Passable;
+		return ReturnFromFunction;
 	}
 
 	return 0;
@@ -104,15 +99,12 @@ DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
 
 	if (pTerrain)
 	{
-		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+		if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 		{
-			if (pTypeExt->CanBeBuiltOn)
-			{
-				if (IS_CELL_OCCUPIED(pThis))
-					return Skip;
-				else
-					return SkipFlags;
-			}
+			if (IS_CELL_OCCUPIED(pThis))
+				return Skip;
+			else
+				return SkipFlags;
 		}
 	}
 

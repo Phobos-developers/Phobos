@@ -97,15 +97,12 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 
 	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+		if (pBuilding->Type->Grinding && pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
+			pThis->Owner->IsAlliedWith(pTarget) && (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->Grinding_AllowAllies || action == Action::Select))
 		{
-			if (pBuilding->Type->Grinding && pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-				pThis->Owner->IsAlliedWith(pTarget) && (pExt->Grinding_AllowAllies || action == Action::Select))
-			{
-				action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
-				R->EBP(action);
-				return ReturnValue;
-			}
+			action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
+			R->EBP(action);
+			return ReturnValue;
 		}
 	}
 

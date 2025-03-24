@@ -102,10 +102,11 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 			checkUpgrade(pTPowersUp);
 	}
 
-	if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+	auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding);
+
+	for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
 	{
-		for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
-			checkUpgrade(pTPowersUp);
+		checkUpgrade(pTPowersUp);
 	}
 
 	return isUpgrade ? result : -1;

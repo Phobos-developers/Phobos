@@ -21,12 +21,8 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 
 	if (pBuilding->Type->Factory == AbstractType::AircraftType)
 	{
-		if (pBuilding->Factory
-			&& !BuildingExt::HasFreeDocks(pBuilding))
-		{
-			if (auto pBldExt = BuildingExt::ExtMap.Find(pBuilding))
-				pBldExt->UpdatePrimaryFactoryAI();
-		}
+		if (pBuilding->Factory && !BuildingExt::HasFreeDocks(pBuilding))
+			BuildingExt::ExtMap.Find(pBuilding)->UpdatePrimaryFactoryAI();
 	}
 
 	return 0;

@@ -265,8 +265,7 @@ DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 	GET(AnimClass* const, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x110, 0x4));
 
-	if (auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
-		pLocation->X += pTypeExt->XDrawOffset;
+	pLocation->X += AnimTypeExt::ExtMap.Find(pThis->Type)->XDrawOffset;
 
 	return 0;
 }

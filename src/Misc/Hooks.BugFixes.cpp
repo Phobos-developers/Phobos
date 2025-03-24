@@ -541,8 +541,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 			pAnim->Owner = pThisBomb->OwnerHouse;
 		}
 
-		if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
-			pExt->SetInvoker(pThisBomb->Owner);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThisBomb->Owner);
 
 	}
 
@@ -1518,7 +1517,7 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 }
 
 #pragma endregion
-	
+
 // IsSonic wave drawing uses fixed-size arrays accessed with index that is determined based on factors like wave lifetime,
 // distance of pixel from start coords etc. The result is that at certain distance invalid memory is being accessed leading to crashes.
 // Easiest solution to this is simply clamping the final color index so that no memory beyond the size 14 color data buffer in WaveClass

@@ -135,11 +135,8 @@ bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
 {
 	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))
 	{
-		if (auto pExt = TechnoExt::ExtMap.Find(pTechno))
-		{
-			ShieldClass* pShield = pExt->Shield.get();
-			return !pShield || pShield->HP <= 0;
-		}
+		ShieldClass* pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
+		return !pShield || pShield->HP <= 0;
 	}
 
 	return false;
@@ -409,11 +406,8 @@ void ShieldClass::AI()
 
 	if (this->Techno->Health <= 0 || !this->Techno->IsAlive || this->Techno->IsSinking)
 	{
-		if (auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno))
-		{
-			pTechnoExt->Shield = nullptr;
-			return;
-		}
+		TechnoExt::ExtMap.Find(this->Techno)->Shield = nullptr;
+		return;
 	}
 
 	if (this->ConvertCheck())

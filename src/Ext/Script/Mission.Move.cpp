@@ -56,7 +56,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 	for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
-		if (pFoot && pFoot->IsAlive && !pFoot->InLimbo)
+		if (pFoot->IsAlive && !pFoot->InLimbo)
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
 

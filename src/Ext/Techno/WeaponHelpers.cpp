@@ -85,11 +85,10 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
 	if (pThis->GetTechnoType()->Ammo > 0)
 	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
-				return true;
-		}
+		auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+		if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
+			return true;
 	}
 
 	return false;
@@ -101,17 +100,14 @@ WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponI
 
 	if (pThis->WhatAmI() == AbstractType::Unit)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		// Only apply DeployFireWeapon on vehicles if explicitly set.
+		if (!TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployFireWeapon.isset())
 		{
-			// Only apply DeployFireWeapon on vehicles if explicitly set.
-			if (!pTypeExt->DeployFireWeapon.isset())
-			{
-				weaponIndex = 0;
-				auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
+			weaponIndex = 0;
+			auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
 
-				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
-					weaponIndex = 1;
-			}
+			if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
+				weaponIndex = 1;
 		}
 	}
 

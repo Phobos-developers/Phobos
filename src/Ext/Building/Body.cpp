@@ -43,16 +43,15 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
-			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade))
-			{
-				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
-				for (auto i = 0; i < countUpgrade; ++i)
-				{
-					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+			const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade);
+			const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
 
-					if (idxSW == index)
-						return true;
-				}
+			for (auto i = 0; i < countUpgrade; ++i)
+			{
+				const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+
+				if (idxSW == index)
+					return true;
 			}
 		}
 	}
@@ -66,20 +65,11 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
 	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
-	if (amount > 0.0)
+	if (amount > 0.0 && BuildingTypeExt::ExtMap.Find(pThis->Type)->Refinery_UseStorage)
 	{
-		if (auto pBuildingType = pThis->Type)
-		{
-			if (auto const pExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
-			{
-				if (pExt->Refinery_UseStorage)
-				{
-					// Store Tiberium in structures
-					depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
-					pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
-				}
-			}
-		}
+		// Store Tiberium in structures
+		depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
+		pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
 	}
 }
 
@@ -228,20 +218,19 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 		return false;
 	}
 
-	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
-	{
-		if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
-			return false;
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
-		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
-			return false;
+	if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+		return false;
 
-		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
-			return false;
+	if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+		return false;
 
-		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
-			return false;
-	}
+	if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+		return false;
+
+	if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+		return false;
 
 	return true;
 }
