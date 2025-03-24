@@ -206,8 +206,8 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 
 	if (const auto pBullet = FireAtTemp::FireBullet)
 	{
+		// The weapon may not have been set up
 		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
-
 		// pBullet->Data.Location (0x4E1130) -> pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords
 		if (pWeaponExt && pWeaponExt->VisualScatter)
 		{
