@@ -206,6 +206,7 @@ void BombardTrajectory::FireTrajectory()
 		else
 		{
 			middleLocation = CoordStruct { pBullet->TargetCoords.X, pBullet->TargetCoords.Y, static_cast<int>(this->Height) };
+			this->RemainingDistance += (middleLocation.Z - pBullet->TargetCoords.Z);
 		}
 
 		const auto pExt = BulletExt::ExtMap.Find(pBullet);
