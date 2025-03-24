@@ -98,26 +98,14 @@ DigitalDisplay.Enable=false             ; boolean
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
-### Show designator & inhibitor range
+### Flashing Technos on selecting
 
-- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
-  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`.
-- This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`.
-- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ShowDesignatorRange=true    ; boolean
-
-[SOMESW]                    ; SuperWeaponType
-ShowDesignatorRange=true    ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowDesignatorRange=false             ; boolean
+SelectionFlashDuration=0    ; integer, number of frames
 ```
 
 ### Hide health bars
@@ -257,6 +245,28 @@ RealTimeTimers=false            ; boolean
 RealTimeTimers.Adaptive=false   ; boolean
 ```
 
+### Show designator & inhibitor range
+
+- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
+  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`.
+- This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`.
+- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowDesignatorRange=true    ; boolean
+
+[SOMESW]                    ; SuperWeaponType
+ShowDesignatorRange=true    ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowDesignatorRange=false             ; boolean
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
@@ -266,16 +276,6 @@ In `rulesmd.ini`:
 [SOMESW]              ; SuperWeaponType
 ShowTimer=yes
 ShowTimer.Priority=0  ; integer
-```
-
-### Flashing Technos on selecting
-
-- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-SelectionFlashDuration=0    ; integer, number of frames
 ```
 
 ## Hotkey Commands
@@ -460,36 +460,6 @@ ShowPowerDelta=true  ; boolean
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
-### Weeds counter
-
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
-  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
-  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-WeedsCounter.Show=false          ; boolean
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                       ; Side
-Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowWeedsCounter=true  ; boolean
-```
-
-```{note}
-Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
-```
-
 ### Producing Progress
 
 ![image](_static/images/producing-progress-01.gif)
@@ -518,6 +488,36 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]             ; Side
 Sidebar.GDIPositions=  ; boolean
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ## Tooltips

@@ -352,24 +352,6 @@ In `rulesmd.ini`:
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 ```
 
-### Unit repair customization
-
-- It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
-  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`.
-    - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
-  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General] -> RepairStep`.
-  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General] -> RepairPercent`. Note that the final cost is set to 1 if it is less than that.
-    - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]        ; BuildingType
-Units.RepairRate=     ; floating point value, ingame minutes
-Units.RepairStep=     ; integer
-Units.RepairPercent=  ; floating point value, percents or absolute
-Units.UseRepairCost=  ; boolean
-```
-
 ### Airstrike target eligibility
 
 - By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
@@ -460,6 +442,24 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Unit repair customization
+
+- It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
+  - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`.
+    - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
+  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General] -> RepairStep`.
+  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General] -> RepairPercent`. Note that the final cost is set to 1 if it is less than that.
+    - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+Units.RepairRate=     ; floating point value, ingame minutes
+Units.RepairStep=     ; integer
+Units.RepairPercent=  ; floating point value, percents or absolute
+Units.UseRepairCost=  ; boolean
 ```
 
 ## Particle systems
@@ -624,6 +624,71 @@ ChronoSpherePreDelay=   ; integer, game frames
 Due to technical constraints, these settings do not apply to buildings teleported by Ares' customizable ChronoSphere SW. They only have a pre-teleport delay equal to `[General] -> ChronoDelay`.
 ```
 
+### Customizable harvester ore gathering animation
+
+![image](_static/images/oregath.gif)
+*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                     ; TechnoType
+OreGathering.Anims=              ; List of AnimationTypes
+OreGathering.FramesPerDir=15     ; List of integers
+OreGathering.Tiberiums=0         ; List of Tiberium IDs
+```
+
+### Customizable target evaluation map zone check behaviour
+
+- By default, any non-AircraftType units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]             ; TechnoType
+TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
+```
+
+### Customizable Teleport/Chrono Locomotor settings per TechnoType
+
+![image](_static/images/cust-Chrono.gif)
+*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
+
+- You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
+- Only applicable to Techno that have Teleport/Chrono Locomotor attached.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
+WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
+WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
+ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
+ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
+ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
+ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
+ChronoDelay=            ; integer, delay after teleport for chronosphere
+```
+
+### Customizable unit image in art
+
+- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
+- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
+- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
+- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ArtImageSwap=false  ; disabled by default
+```
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+Image=              ; name of the file that will be used as image, without extension
+```
+
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -674,82 +739,6 @@ Insignia.ShowEnemy=                      ; boolean
 Insignia customization besides the `InsigniaFrames` shorthand should function similarly to the equivalent feature introduced by Ares and takes precedence over it if Phobos is used together with Ares.
 ```
 
-### Customizable harvester ore gathering animation
-
-![image](_static/images/oregath.gif)
-*Custom ore gathering anims in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- You can now specify which anim should be drawn when a harvester of specified type is gathering specified type of ore.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                     ; TechnoType
-OreGathering.Anims=              ; List of AnimationTypes
-OreGathering.FramesPerDir=15     ; List of integers
-OreGathering.Tiberiums=0         ; List of Tiberium IDs
-```
-
-### Customizable Teleport/Chrono Locomotor settings per TechnoType
-
-![image](_static/images/cust-Chrono.gif)
-*Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
-
-- You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
-- Only applicable to Techno that have Teleport/Chrono Locomotor attached.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
-ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
-ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
-ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
-ChronoRangeMinimum=     ; integer, can be used to set a small range within which the delay is constant
-ChronoDelay=            ; integer, delay after teleport for chronosphere
-```
-
-### Customizable target evaluation map zone check behaviour
-
-- By default, any non-AircraftType units seeking targets via ScriptType team mission (action) `0 Attack Target Type` or any [attack team missions introduced in Phobos](AI-Scripting-and-Mapping.md#attack-actions) check if the potential target is in same map zone as the attacking unit to be able to pick it as a target. This can now be customized to allow objects from any map zone with no constraints (`TargetZoneScanType=any`) or only if they are within weapon range (`TargetZoneScanType=inrange`).
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]             ; TechnoType
-TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
-```
-
-### Customizable unit image in art
-
-- `Image` tag in art INI is no longer limited to AnimationTypes and BuildingTypes, and can be applied to all TechnoTypes (InfantryTypes, VehicleTypes, AircraftTypes, BuildingTypes).
-- The tag specifies **only** the file name (without extension) of the asset that replaces TechnoType's graphics. If the name in `Image` is also an entry in the art INI, **no tags will be read from it**.
-- **By default this feature is disabled** to remain compatible with YR. To use this feature, enable it in rules with `ArtImageSwap=true`.
-- This feature supports SHP images for InfantryTypes, SHP and VXL images for VehicleTypes and VXL images for AircraftTypes.
-
-In `rulesmd.ini`:
-```ini
-[General]
-ArtImageSwap=false  ; disabled by default
-```
-
-In `artmd.ini`:
-```ini
-[SOMETECHNO]        ; TechnoType
-Image=              ; name of the file that will be used as image, without extension
-```
-
-### Customize resource storage
-
-- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
-- This tag can not be used without Ares.
-
-In `rulesmd.ini`:
-```ini
-[General]
-Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
-```
-
 ### Customizable wake anim
 
 - You can now specify the `Wake` anim per TechnoType to override default rules value.
@@ -761,6 +750,17 @@ In `rulesmd.ini`:
 Wake=                ; Anim (played when Techno moving on the water), default to [General] -> Wake
 Wake.Grapple=        ; Anim (played when Techno being parasited on the water), defaults to [TechnoType] -> Wake
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
+```
+
+### Customize resource storage
+
+- Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
+- This tag can not be used without Ares.
+
+In `rulesmd.ini`:
+```ini
+[General]
+Storage.TiberiumIndex=-1  ; integer, [Tiberiums] list index
 ```
 
 ### Customizing effect of level lighting on air units
@@ -787,6 +787,26 @@ Explodes.KillPassengers=true ; boolean
 
 [SOMEBUILDING]               ; BuildingType
 Explodes.DuringBuildup=true  ; boolean
+```
+
+### Forbid parallel AI queues
+
+- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
+  - If `AllowParallelAIQueues=no` *(Ares feature)* is set, the tags have no effect.
+- You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
+ForbidParallelAIQueues.Infantry=no  ; boolean
+ForbidParallelAIQueues.Vehicle=no   ; boolean
+ForbidParallelAIQueues.Navy=no      ; boolean
+ForbidParallelAIQueues.Aircraft=no  ; boolean
+ForbidParallelAIQueues.Building=no  ; boolean
+
+[SOMETECHNO]                        ; TechnoType
+ForbidParallelAIQueues=false        ; boolean
 ```
 
 ### Iron Curtain & Force Shield effects on organics customization
@@ -830,7 +850,7 @@ ForceShield.ExtraTintIntensity=0.0  ; floating point value
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; TechnoType
+[SOMETECHNO]               ; TechnoType
 JumpjetRotateOnCrash=true  ; boolean
 ```
 
@@ -1007,26 +1027,6 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
-### Forbid parallel AI queues
-
-- You can now set if specific types of factories do not have AI production cloning issue instead of Ares' indiscriminate behavior of `AllowParallelAIQueues=no`.
-  - If `AllowParallelAIQueues=no` *(Ares feature)* is set, the tags have no effect.
-- You can also exclude specific TechnoTypes from being built in parallel by AI by setting `ForbidParallelAIQueues` to true on a TechnoType.
-
-In `rulesmd.ini`:
-```ini
-[GlobalControls]
-AllowParallelAIQueues=yes           ; must be set yes/true unless you don't use Ares
-ForbidParallelAIQueues.Infantry=no  ; boolean
-ForbidParallelAIQueues.Vehicle=no   ; boolean
-ForbidParallelAIQueues.Navy=no      ; boolean
-ForbidParallelAIQueues.Aircraft=no  ; boolean
-ForbidParallelAIQueues.Building=no  ; boolean
-
-[SOMETECHNO]                        ; TechnoType
-ForbidParallelAIQueues=false        ; boolean
-```
-
 ## Terrains
 
 ### Animated TerrainTypes
@@ -1041,6 +1041,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 AnimationLength=   ; integer, number of frames
+```
+
+### Custom palette
+
+- You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
+  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
+
+In `artmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
 ```
 
 ### Customizable ore spawners
@@ -1059,17 +1070,6 @@ SpawnsTiberium.Type=0         ; tiberium/ore type index
 SpawnsTiberium.Range=1        ; integer, radius in cells
 SpawnsTiberium.GrowthStage=3  ; integer - single or comma-sep. range
 SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
-```
-
-### Custom palette
-
-- You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
-  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
-
-In `artmd.ini`:
-```ini
-[SOMETERRAINTYPE]  ; TerrainType
-Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
 ```
 
 ### Damaged frames and crumbling animation
@@ -1158,6 +1158,57 @@ DestroyAnim=                           ; List of AnimationTypes
 DestroyAnim.Random=true                ; boolean
 ```
 
+### `IsSimpleDeployer` vehicle ammo change on deploy
+
+- `Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+Ammo.AddOnDeploy=0      ; integer
+```
+
+```{warning}
+Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
+```
+
+### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
+
+- Vehicle deployment can now be affected by ammo count.
+  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
+  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
+    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
+    - Setting a negative number will disable ammo count check.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                        ; VehicleType
+Ammo.AutoDeployMinimumAmount=-1      ; integer
+Ammo.AutoDeployMaximumAmount=-1      ; integer
+Ammo.DeployUnlockMinimumAmount=-1    ; integer
+Ammo.DeployUnlockMaximumAmount=-1    ; integer
+```
+
+```{warning}
+Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+```
+
+### IsSimpleDeployer vehicle deploy animation / direction customization
+
+- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
+- `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
+- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                          ; VehicleType
+DeployingAnim.AllowAnyDirection=false  ; boolean
+DeployingAnim.KeepUnitVisible=false    ; boolean
+DeployingAnim.ReverseForUndeploy=true  ; boolean
+DeployingAnim.UseUnitDrawer=true       ; boolean
+```
+
 ### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
@@ -1196,57 +1247,6 @@ In `artmd.ini`:
 ```ini
 [SOMEUNIT]      ; UnitType
 TurretShadow=   ; boolean
-```
-
-### IsSimpleDeployer vehicle deploy animation / direction customization
-
-- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
-- `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
-- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
-- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                          ; VehicleType
-DeployingAnim.AllowAnyDirection=false  ; boolean
-DeployingAnim.KeepUnitVisible=false    ; boolean
-DeployingAnim.ReverseForUndeploy=true  ; boolean
-DeployingAnim.UseUnitDrawer=true       ; boolean
-```
-
-### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
-
-- Vehicle deployment can now be affected by ammo count.
-  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
-  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
-    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
-    - Setting a negative number will disable ammo count check.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                        ; VehicleType
-Ammo.AutoDeployMinimumAmount=-1      ; integer
-Ammo.AutoDeployMaximumAmount=-1      ; integer
-Ammo.DeployUnlockMinimumAmount=-1    ; integer
-Ammo.DeployUnlockMaximumAmount=-1    ; integer
-```
-
-```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
-```
-
-### `IsSimpleDeployer` vehicle ammo change on deploy
-
-- `Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]           ; VehicleType
-Ammo.AddOnDeploy=0      ; integer
-```
-
-```{warning}
-Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
 ```
 
 ## Veinholes & Weeds
@@ -1340,6 +1340,58 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 ## Warheads
 
+### Allowing damage dealt to firer
+
+- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
+  - Note that effect of `Psychedelic=true`, despite being tied to damage will still fail to apply on the firer as it does not affect any objects belonging to same house as the firer, including itself.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]            ; WarheadType
+AllowDamageOnSelf=false  ; boolean
+```
+
+### Combat light customizations
+
+- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
+- You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
+- Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+CombatLightDetailLevel=0  ; integer
+
+[SOMEWARHEAD]             ; WarheadType
+CombatLightDetailLevel=   ; integer
+CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
+CLIsBlack=false           ; boolean
+```
+
+### Custom debris animations and additional debris spawn settings
+
+- You can now use `DebrisAnims` to specify a list of debris animations to spawn instead of animations from `[General] -> MetallicDebris` when Warhead with `MaxDebris` > 0 and no `DebrisTypes` (VoxelAnims) listed is detonated.
+- `Debris.Conventional`, if set to true, makes `DebrisTypes` or `DebrisAnims` only spawn if Warhead is fired on non-water cell.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]              ; WarheadType
+DebrisAnims=               ; List of AnimationTypes
+Debris.Conventional=false  ; boolean
+```
+
+### Customizable rocker amplitude
+
+- The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with fixed value and add a multiplier to it.
+  - When both multiplier and override values are set - both are used.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+Rocker.AmplitudeMultiplier=1.0  ; double
+Rocker.AmplitudeOverride=       ; integer
+```
+
 ### Customizable Warhead animation behaviour
 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
@@ -1367,46 +1419,6 @@ SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
-```
-
-### Custom debris animations and additional debris spawn settings
-
-- You can now use `DebrisAnims` to specify a list of debris animations to spawn instead of animations from `[General] -> MetallicDebris` when Warhead with `MaxDebris` > 0 and no `DebrisTypes` (VoxelAnims) listed is detonated.
-- `Debris.Conventional`, if set to true, makes `DebrisTypes` or `DebrisAnims` only spawn if Warhead is fired on non-water cell.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]              ; WarheadType
-DebrisAnims=               ; List of AnimationTypes
-Debris.Conventional=false  ; boolean
-```
-
-### Allowing damage dealt to firer
-
-- You can now allow warhead to deal damage (and apply damage-adjacent effects such as `KillDriver` and `DisableWeapons/Sonar/Flash.Duration` *(Ares features)*) on the object that is considered as the firer of the Warhead even if it does not have `DamageSelf=true`.
-  - Note that effect of `Psychedelic=true`, despite being tied to damage will still fail to apply on the firer as it does not affect any objects belonging to same house as the firer, including itself.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]            ; WarheadType
-AllowDamageOnSelf=false  ; boolean
-```
-
-### Combat light customizations
-
-- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
-- You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
-- Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-CombatLightDetailLevel=0  ; integer
-
-[SOMEWARHEAD]             ; WarheadType
-CombatLightDetailLevel=   ; integer
-CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
-CLIsBlack=false           ; boolean
 ```
 
 ### Customizing decloak on damaging targets
@@ -1447,18 +1459,6 @@ In `rulesmd.ini`:
 ShakeIsLocal=false  ; boolean
 ```
 
-### Customizable rocker amplitude
-
-- The rocker amplitude of warheads with `Rocker=yes` used to be determined by `Damage` value of the weapon. You can now override it with fixed value and add a multiplier to it.
-  - When both multiplier and override values are set - both are used.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]                   ; WarheadType
-Rocker.AmplitudeMultiplier=1.0  ; double
-Rocker.AmplitudeOverride=       ; integer
-```
-
 ## Weapons
 
 ### AmbientDamage customizations
@@ -1493,6 +1493,20 @@ In `rulesmd.ini`:
 [SOMEWEAPON]          ; WeaponType
 DiskLaser.Radius=240  ; floating point value
                       ; 240 is the default saucer disk radius
+```
+
+### Customizable ElectricBolt Arcs
+
+- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]           ; WeaponType
+Bolt.Arcs=8            ; integer, number of arcs in a bolt
+```
+
+```{note}
+Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
 ```
 
 ### Customizable ROF random delay
@@ -1554,20 +1568,6 @@ In `rulesmd.ini`:
 Bolt.Disable1=false    ; boolean
 Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
-```
-
-### Customizable ElectricBolt Arcs
-
-- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Arcs=8            ; integer, number of arcs in a bolt
 ```
 
 ```{note}

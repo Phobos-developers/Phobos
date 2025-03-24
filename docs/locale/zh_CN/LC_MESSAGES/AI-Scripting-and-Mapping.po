@@ -344,8 +344,13 @@ msgid "The following values are the *Target Type#* which can be used as second p
 msgstr "下列值为可用于新攻击脚本动作第二个参数的 *目标类型 #* 参数："
 
 #: ../../AI-Scripting-and-Mapping.md:157
-msgid "'Buildings considered as vehicles' means buildings with both `UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or buildings with `ConsideredVehicle=true`."
-msgstr "“被视为载具的建筑”意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 `ConsideredVehicle` 或者设置了 `ConsideredVehicle=true` 的建筑。"
+msgid ""
+"'Buildings considered as vehicles' means buildings with both "
+"`UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or"
+" buildings with `ConsideredVehicle=true`."
+msgstr ""
+"“被视为载具的建筑” 意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 "
+"`ConsideredVehicle` 或者设置了 `ConsideredVehicle=true` 的建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:0
 msgid "*Value*"

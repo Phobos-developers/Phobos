@@ -528,6 +528,17 @@ Adjacent.Disallowed=        ; List of BuildingTypes
 NoBuildAreaOnBuildup=false  ; boolean
 ```
 
+### Destroyable pathfinding obstacles
+
+- It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
+  - Keep in mind that if an unit has appropriate `MovementZone` but no means to actually destroy an obstacle (such as a weapon that can fire and deal damage at them), they will get stuck trying to go through them instead of pathing around.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]               ; BuildingType
+IsDestroyableObstacle=false  ; boolean
+```
+
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)
@@ -546,17 +557,6 @@ In `rulesmd.ini`:
 [UPGRADENAME]       ; BuildingType
 PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowersUp.Buildings= ; List of BuildingTypes
-```
-
-### Destroyable pathfinding obstacles
-
-- It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.
-  - Keep in mind that if an unit has appropriate `MovementZone` but no means to actually destroy an obstacle (such as a weapon that can fire and deal damage at them), they will get stuck trying to go through them instead of pathing around.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]               ; BuildingType
-IsDestroyableObstacle=false  ; boolean
 ```
 
 ### Power plant enhancer
@@ -601,6 +601,18 @@ DeployedPrimaryFireFLH=    ; integer - Forward,Lateral,Height
 DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 ```
 
+### Customizable `SlavesFreeSound`
+
+- `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
+
+In `rulesmd.ini`:
+
+```ini
+[SOMEINFANTRY]        ; InfantryType
+Slaved=yes
+SlavesFreeSound=      ; Sound entry
+```
+
 ### Default disguise for individual InfantryTypes
 
 - Infantry can now have its `DefaultDisguise` overridden per-type.
@@ -623,24 +635,6 @@ In `rulesmd.ini`:
 NotHuman.RandomDeathSequence=yes  ; boolean
 ```
 
-### Shared Ammo
-
-- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
-In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
-- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
-- Transports must have ammo and should be able to reload ammo.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
-Ammo.Shared=no        ; boolean
-Ammo.Shared.Group=-1  ; integer
-
-[SOMETECHNO2]         ; TechnoType, passenger
-Ammo.Shared=no        ; boolean
-Ammo.Shared.Group=-1  ; integer
-```
-
 ### Slaves' house decision customization when owner is killed
 
 - You can now decide the slaves' house when the corresponding slave miner is killed using `Slaved.OwnerWhenMasterKilled`:
@@ -654,18 +648,6 @@ In `rulesmd.ini`:
 [SOMEINFANTRY]                       ; InfantryType
 Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
-```
-
-### Customizable `SlavesFreeSound`
-
-- `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
-
-In `rulesmd.ini`:
-
-```ini
-[SOMEINFANTRY]        ; InfantryType
-Slaved=yes
-SlavesFreeSound=      ; Sound entry
 ```
 
 ### Use land sequences even in water
@@ -770,23 +752,6 @@ Trajectory=Bombard             ; Trajectory type
 Trajectory.Bombard.Height=0.0  ; double
 ```
 
-### Shrapnel enhancements
-
-![image](_static/images/shrapnel.gif)
-*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
-- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
-  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]                   ; Projectile
-Shrapnel.AffectsGround=false       ; boolean
-Shrapnel.AffectsBuildings=false    ; boolean
-Shrapnel.UseWeaponTargeting=false  ; boolean
-```
-
 ### Projectiles blocked by land or water
 
 - It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
@@ -813,6 +778,23 @@ ReturnWeapon=     ; WeaponType
 
 ```{note}
 This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
+```
+
+### Shrapnel enhancements
+
+![image](_static/images/shrapnel.gif)
+*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=false       ; boolean
+Shrapnel.AffectsBuildings=false    ; boolean
+Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
 ## Super Weapons
@@ -863,6 +845,17 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 
 ```{warning}
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
+### Customize SuperWeapon TabIndex
+
+- You can now assign a Super Weapon's cameo to any sidebar tab using `TabIndex`.
+  - Valid values are: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]    ; SuperWeaponType
+TabIndex=1  ; integer
 ```
 
 ### EMPulse settings
@@ -959,17 +952,6 @@ Detonate.Warhead.Full=true  ; boolean
 Detonate.Weapon=            ; WeaponType
 Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
-```
-
-### Customize SuperWeapon TabIndex
-
-- You can now assign a Super Weapon's cameo to any sidebar tab using `TabIndex`.
-  - Valid values are: 0 (buildings tab), 1 (arsenal tab), 2 (infantry tab), 3 (vehicle tab).
-
-In `rulesmd.ini`:
-```ini
-[SOMESW]    ; SuperWeaponType
-TabIndex=1  ; integer
 ```
 
 ## Technos
@@ -1085,6 +1067,32 @@ BuildLimitGroup.ExtraLimit.MaxCount=            ; List of integers
 BuildLimitGroup.ExtraLimit.MaxNum=0             ; integer
 ```
 
+### Convert TechnoType on owner house change
+
+- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+Convert.HumanToComputer=    ; TechnoType
+Convert.ComputerToHuman=    ; TechnoType
+```
+
+### Custom tint on TechnoTypes
+
+- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
+  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
+  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
+  - Tint effects can also be applied by [attached effects](#attached-effects) and on [shields](#shields).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]              ; TechnoType
+Tint.Color=               ; integer - R,G,B
+Tint.Intensity=0.0        ; floating point value
+Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
 ### Customizable OpenTopped properties
 
 - You can now override global `OpenTopped` transport properties per TechnoType.
@@ -1100,6 +1108,19 @@ OpenTopped.WarpDistance=                  ; integer, override of the global defa
 OpenTopped.IgnoreRangefinding=false       ; boolean
 OpenTopped.AllowFiringIfDeactivated=true  ; boolean
 OpenTopped.ShareTransportTarget=true      ; boolean
+```
+
+### Customize EVA voice and `SellSound` when selling units
+
+- When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
+  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
+  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]    ; BuildingType or UnitType
+EVA.Sold=       ; EVA entry
+SellSound=      ; Sound entry
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
@@ -1165,18 +1186,6 @@ ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary
 ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ```
 
-### Make units try turning to target when firing with `OmniFire=yes`
-
-- The unit will try to turn the body to target even firing with `OmniFire=yes`.
-  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]              ; WeaponType
-OmniFire=yes
-OmniFire.TurnToTarget=no  ; boolean
-```
-
 ### Initial strength for TechnoTypes and cloned infantry
 
 ![image](_static/images/initialstrength.cloning-01.png)
@@ -1234,8 +1243,20 @@ AutoDeath.TechnosDontExist.AllowLimboed=false  ; boolean
 AutoDeath.TechnosDontExist.Houses=owner        ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 AutoDeath.TechnosExist=                        ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                ; boolean
-AutoDeath.TechnosExist.AllowLimboed=false       ; boolean
+AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Make units try turning to target when firing with `OmniFire=yes`
+
+- The unit will try to turn the body to target even firing with `OmniFire=yes`.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]              ; WeaponType
+OmniFire=yes
+OmniFire.TurnToTarget=no  ; boolean
 ```
 
 ### Mind Control enhancement
@@ -1282,6 +1303,19 @@ In `rulesmd.ini`:
 Promote.IncludeSpawns=false  ; boolean
 ```
 
+### Promotion animation
+
+- You can now specify an animation on the unit or structure promotion.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+Promote.VeteranAnimation=         ; AnimationType
+Promote.EliteAnimation=           ; AnimationType
+```
+
 ### Revenge weapon
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
@@ -1300,47 +1334,22 @@ SuppressRevengeWeapons=false    ; boolean
 SuppressRevengeWeapons.Types=   ; List of WeaponTypes
 ```
 
-### Weapons fired on warping in / out
+### Shared Ammo
 
-- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
-  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
-  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                            ; TechnoType
-WarpInWeapon=                           ; WeaponType
-WarpInMinRangeWeapon=                   ; WeaponType
-WarpInWeapon.UseDistanceAsDamage=false  ; boolean
-WarpOutWeapon=                          ; WeaponType
-```
-
-### Custom tint on TechnoTypes
-
-- A tint effect similar to that used by Iron Curtain / Force Shield or `Psychedelic=true` Warheads can be applied to TechnoTypes naturally by setting `Tint.Color` and/or `Tint Intensity`.
-  - `Tint.Intensity` is additive lighting increase/decrease - 1.0 is the default object lighting.
-  - `Tint.VisibleToHouses` can be used to customize which houses can see the tint effect.
-  - Tint effects can also be applied by [attached effects](#attached-effects) and on [shields](#shields).
+- Transports with `OpenTopped=yes` and `Ammo.Shared=yes` will transfer ammo to passengers that have `Ammo.Shared=yes`.
+In addition, a transport can filter who will receive ammo if passengers have the same value in `Ammo.Shared.Group=<integer>` of the transport, ignoring other passengers with different groups values.
+- Transports with `Ammo.Shared.Group=-1` will transfer ammo to any passenger with `Ammo.Shared=yes` ignoring the group.
+- Transports must have ammo and should be able to reload ammo.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]              ; TechnoType
-Tint.Color=               ; integer - R,G,B
-Tint.Intensity=0.0        ; floating point value
-Tint.VisibleToHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
+[SOMETECHNO1]         ; TechnoType, transport with OpenTopped=yes
+Ammo.Shared=no        ; boolean
+Ammo.Shared.Group=-1  ; integer
 
-### Customize EVA voice and `SellSound` when selling units
-
-- When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
-  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]    ; BuildingType or UnitType
-EVA.Sold=       ; EVA entry
-SellSound=      ; Sound entry
+[SOMETECHNO2]         ; TechnoType, passenger
+Ammo.Shared=no        ; boolean
+Ammo.Shared.Group=-1  ; integer
 ```
 
 ### Sound entry on unit's creation
@@ -1357,28 +1366,19 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; Sound entry
 ```
 
-### Promotion animation
+### Weapons fired on warping in / out
 
-- You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-Promote.VeteranAnimation=         ; AnimationType
-Promote.EliteAnimation=           ; AnimationType
-```
-
-### Convert TechnoType on owner house change
-
-- You can now change a unit's type when changing ownership from human to computer or from computer to human.
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                ; TechnoType
-Convert.HumanToComputer=    ; TechnoType
-Convert.ComputerToHuman=    ; TechnoType
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpOutWeapon=                          ; WeaponType
 ```
 
 ## Terrain
