@@ -128,12 +128,14 @@ msgid ""
 "on Warhead etc. now requires `[CombatDamage] -> "
 "AllowWeaponSelectAgainstWalls` to be set to true first."
 msgstr ""
+"现在对墙时根据弹头上的 `Wall=true` 选择武器需要先将 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设为 true。"
 
 #: ../../Whats-New.md:25
 msgid ""
 "Lunar theater tileset parsing unhardcoding is now only applied if "
 "`lunarmd.ini` has `[General] -> ApplyLunarFixes` set to true."
 msgstr ""
+"月球气候地形集解析的去硬编码化现在仅在 `lunarmd.ini` 中 `[General] -> ApplyLunarFixes` 设为 true 时生效。"
 
 #: ../../Whats-New.md:26
 msgid ""
@@ -142,6 +144,7 @@ msgid ""
 "affects `Hospital=true` buildings, infantry do not have repair cost by "
 "default."
 msgstr ""
+"`Units.DisableRepairCost` 已更名为 `Units.UseRepairCost`（注意预期效果反转），因其不再具有分离的默认值且影响 `Hospital=true` 的建筑，默认情况下步兵无维修费用。"
 
 #: ../../Whats-New.md:27
 msgid ""
@@ -149,12 +152,14 @@ msgid ""
 "Warheads no longer default to `AnimList.PickRandom` if "
 "`Crit.AnimList.PickRandom` is not set."
 msgstr ""
+"由 `Crit.AnimOnAffectedTargets=true` 弹头创建的暴击动画当 `Crit.AnimList.PickRandom` 未设置时不再默认使用 `AnimList.PickRandom` 的值。"
 
 #: ../../Whats-New.md:28
 msgid ""
 "`SelfHealGainType` value `none` has been changed to `noheal` due to "
 "`none` being treated as a blank string and not parsed by the game."
 msgstr ""
+"`SelfHealGainType` 值 `none` 已更名为 `noheal`，因为 `none` 会被游戏视为空字符串且无法解析。"
 
 #: ../../Whats-New.md:29
 msgid ""
@@ -163,6 +168,7 @@ msgid ""
 "conjunction with `UndeploysInto` & 1x1 foundation) as units instead of "
 "buildings."
 msgstr ""
+"影响目标筛选（`CanTarget`、`Crit.Affects` 等）现在将「被视为载具的建筑」（`ConsideredVehicle=true` 或同时拥有 `UndeploysInto` 与 `Foundation=1x1` 的建筑）视为单位而非建筑。"
 
 #: ../../Whats-New.md:30
 msgid ""
@@ -170,6 +176,7 @@ msgid ""
 "created will now automatically take off instead of staying on ground. Set"
 " to true to force spawn on ground."
 msgstr ""
+"如果 `CreateUnit.AlwaysSpawnOnGround` 设为 false 则创建的 JumpJet 载具将会自动起飞而不是躺在地上。设为 true 可强制在地面生成。"
 
 #: ../../Whats-New.md:31
 msgid ""
@@ -177,6 +184,7 @@ msgid ""
 "work in inverted fashion (negative goes up, positive goes down) to be "
 "consistent with how pixel offsets work elsewhere in the game."
 msgstr ""
+"数字化显示逻辑中 `Offset` 和 `Offset.ShieldDelta` 的 Y 轴左边现在改为反向（负值向上，正值向下）以符合游戏中其他像素偏移语句的工作方式。"
 
 #: ../../Whats-New.md:32
 msgid ""
@@ -184,6 +192,7 @@ msgid ""
 "buildings if any of the foundation cells are hit instead of only the top-"
 "left most cell (cell #0)."
 msgstr ""
+"现在 Phobos 弹头效果结合 `CellSpread` 使用时只要命中建筑所占的任意单元格即可对建筑生效而不再是必须命中最左上角的单元格（0 号单元格）。"
 
 #: ../../Whats-New.md:33
 msgid ""
@@ -191,6 +200,7 @@ msgid ""
 "list is shorter than `ExtraWarheads` for all Warhead detonations "
 "exceeding the length."
 msgstr ""
+"现在 `ExtraWarheads` 列表比 `ExtraWarheads.DamageOverrides` 更长时超出部分的弹头会使用后者列出的最后一个值。"
 
 #: ../../Whats-New.md:34
 msgid ""
@@ -199,6 +209,7 @@ msgid ""
 "units now get their layer updated immediately after parent unit, if they "
 "are on same layer they will draw above the parent unit."
 msgstr ""
+"Air 和 Top 层的内容不再排序，这些图层的动画不再遵循 `YSortAdjust`。附着于飞行单位的动画现在会跟随所附着单位更新图层，若处于同层则绘制在父单位上方。"
 
 #: ../../Whats-New.md:35
 msgid ""
@@ -206,12 +217,14 @@ msgid ""
 " to make it more clear it applies to both `AnimList` and splash "
 "animations."
 msgstr ""
+"`AnimList.ShowOnZeroDamage` 已更名为 `CreateAnimsOnZeroDamage` 以明确其同时作用于 `AnimList` 和水花动画。"
 
 #: ../../Whats-New.md:36
 msgid ""
 "INI inclusion and inheritance are now turned off by default and need to "
 "be turned on via command line flags `-Include` and `-Inheritance`."
 msgstr ""
+"Phobos 版的 INI 包含和继承默认关闭，需要通过命令行参数 `-Include` 和 `-Inheritance` 开启。"
 
 #: ../../Whats-New.md:37
 msgid ""
@@ -219,6 +232,7 @@ msgid ""
 "targets that are behind non-water tiles by default. Use "
 "`SubjectToLand=true` to re-enable this behaviour."
 msgstr ""
+"`Level=true` 的抛射体现在不再在对被非水地块阻隔的目标时移动自己的位置（恢复原版规则）。现在需要使用 `SubjectToLand=true` 来启用这一行为。"
 
 #: ../../Whats-New.md:39
 #, fuzzy
@@ -233,6 +247,7 @@ msgid ""
 "armor type is used if target has an active shield that cannot be "
 "penetrated by the Warhead."
 msgstr ""
+"现在由 Phobos 引入的弹头效果例如修改护盾、暴击、解除伪装和心控除非 `EffectsRequireVerses` 否则需要弹头 `Verses` 能够影响目标才会生效。若目标拥有无法被弹头穿透的激活状态护盾则使用护盾的护甲类型判定。"
 
 #: ../../Whats-New.md:42
 msgid ""
@@ -240,12 +255,14 @@ msgid ""
 "cells from their detonation point, this distance can be customized via "
 "`Trajectory.Straight.TargetSnapDistance`."
 msgstr ""
+"现在 `Trajectory=Straight` 的抛射体可以自动锁定距离爆点 0.5 格内的目标，该距离可以通过 `Trajectory.Straight.TargetSnapDistance` 进行调整。"
 
 #: ../../Whats-New.md:43
 msgid ""
 "`LaunchSW.RealLaunch=false` now checks if firing house has enough credits"
 " to satisfy SW's `Money.Amount` in order to be fired."
 msgstr ""
+"现在即便 `LaunchSW.RealLaunch=false` 也会检查发射方的资金是否满足超武 `Money.Amount` 的数值。"
 
 #: ../../Whats-New.md:44
 msgid ""
@@ -254,6 +271,7 @@ msgid ""
 "ground level. This behaviour can be restored by setting "
 "`CreateUnit.AlwaysSpawnOnGround` to true."
 msgstr ""
+"现在 `CreateUnit` 默认在动画所在高度处创建单位（即便启用了 `CreateUnit.ConsiderPathfinding`）而非始终在地面创建。这一行为可以通过将 `CreateUnit.AlwaysSpawnOnGround` 设为 true 来复原。"
 
 #: ../../Whats-New.md:45
 msgid ""
@@ -262,6 +280,8 @@ msgid ""
 "Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be"
 " used to customize this behaviour."
 msgstr ""
+"Phobos 引入的攻击脚本现在会评估潜在目标当前所处的地图区域。可使用 [TargetZoneScanType](Fixed-or-Improved-"
+"Logics.md#customizable-target-evaluation-map-zone-check-behaviour) 来自定义该行为。"
 
 #: ../../Whats-New.md:46
 msgid ""
@@ -271,6 +291,8 @@ msgid ""
 "as-vehicles) instead on buildings that do not have both `UndeploysInto` "
 "set and `Foundation=1x1`."
 msgstr ""
+"`Artillary`、`ICBMLauncher`、`TickTank` 及 `SensorArray` 不再影响建筑是否被 AI 攻击脚本视为载具。对于没有同时设置 `UndeploysInto` 与 `Foundation=1x1` 的建筑请使用 [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-"
+"as-vehicles)。"
 
 #: ../../Whats-New.md:47
 msgid ""
@@ -279,13 +301,15 @@ msgid ""
 "`PassengerDeletion.SoylentAllowedHouses=enemies` matches the previous "
 "default behaviour with `PassengerDeletion.SoylentFriendlies=false`."
 msgstr ""
+"`PassengerDeletion.SoylentFriendlies` 已被替换为 `PassengerDeletion.SoylentAllowedHouses`。目前设定默认值 `PassengerDeletion.SoylentAllowedHouses=enemies` 对应原本默认 `PassengerDeletion.SoylentFriendlies=false` 的行为。"
 
 #: ../../Whats-New.md:48
 msgid ""
 "`Grinding.DisplayRefund` is changed to `DisplayIncome`, "
 "`Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, "
-"`Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`"
+"`Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`."
 msgstr ""
+"`Grinding.DisplayRefund` 已更名为 `DisplayIncome`，`Grinding.DisplayRefund.Houses` 更名为 `DisplayIncome.Houses`，`Grinding.DisplayRefund.Offset` 更名为 `DisplayIncome.Offset`。"
 
 #: ../../Whats-New.md:49
 msgid ""
@@ -293,6 +317,7 @@ msgid ""
 "`JumpjetAllowLayerDeviation` have been deprecated as the animation "
 "layering issues have been properly fixed by default now."
 msgstr ""
+"`[JumpjetControls] -> AllowLayerDeviation` 和 `JumpjetAllowLayerDeviation` 已被弃用，因为动画图层问题现在默认状态下已彻底修复。"
 
 #: ../../Whats-New.md:50
 msgid ""
@@ -300,16 +325,18 @@ msgid ""
 "obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to"
 " targets as other units do."
 msgstr ""
+"`[JumpjetControls] -> TurnToTarget` 和 `JumpjetTurnToTarget` 均已过时。使用 `OmniFire=no` 武器的 JumpJet 单位现在 **总是** 会像其他单位那样转向目标。"
 
 #: ../../Whats-New.md:51
 msgid ""
 "Buildings delivered by trigger action 125 will now **always** play "
 "buildup anim as long as it exists. `[ParamTypes] -> 53` is deprecated."
 msgstr ""
+"现在 125 号触发结果所投送的建筑只要存在就 **总是** 会播放其建造动画。`[ParamTypes] -> 53` 已弃用。"
 
 #: ../../Whats-New.md:52
 msgid "`Shadow` for debris & meteor animations is changed to `ExtraShadow`."
-msgstr ""
+msgstr "用于碎片和流行动画的 `Shadow` 已更名为 `ExtraShadow`。"
 
 #: ../../Whats-New.md:54
 msgid "From pre-0.3 devbuilds"
@@ -317,17 +344,17 @@ msgstr "由 pre-0.3 开发版"
 
 #: ../../Whats-New.md:56
 msgid "`Trajectory.Speed` is now defined on projectile instead of weapon."
-msgstr "`Trajectory.Speed`现在定义在抛射体上，而非武器上。"
+msgstr "`Trajectory.Speed` 现在定义在抛射体上而不再是武器上。"
 
 #: ../../Whats-New.md:57
 msgid ""
 "`Gravity=0` is not supported anymore as it will cause the projectile to "
 "fly backwards and be unable to hit the target which is not at the same "
 "height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-"
-"Logics.md#projectile-trajectories)."
+"Logics.md#straight-trajectory)."
 msgstr ""
-"`Gravity=0`会导致抛射体行为异常，因此不再使用。使用直线弹道代替，请见[此处](New-or-Enhanced-Logics.md"
-"#projectile-trajectories)。"
+"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不再同一高度的目标因此它已不再被支持，请使用 `Straight` 轨迹替代。参见 [此处](New-or-Enhanced-Logics.md"
+"#straight-trajectory)。"
 
 #: ../../Whats-New.md:58
 msgid ""
@@ -335,20 +362,21 @@ msgid ""
 "`Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been "
 "remade/renamed and require adjustments to function."
 msgstr ""
-"自毁逻辑重做，`Death.NoAmmo`，, "
-"`Death.Countdown`与`Death.Peaceful`标签均被重做或重命名，并且需要一些调整才能生效。"
+"自毁逻辑已被重新实现，`Death.NoAmmo`、`Death.Countdown` 和 `Death.Peaceful` 标签已被重做／重命名并需要调整以运作。"
 
 #: ../../Whats-New.md:59
 msgid ""
 "`DetachedFromOwner` on weapons is deprecated. This has been replaced by "
 "`AllowDamageOnSelf` on warheads."
 msgstr ""
+"武器上的 `DetachedFromOwner` 现已改为弹头上的 `AllowDamageOnSelf`。"
 
 #: ../../Whats-New.md:60
 msgid ""
 "Timed jump script actions now take the time measured in ingame seconds "
 "instead of frames. Divide your value by 15 to accommodate to this change."
 msgstr ""
+"定时跳转脚本现在使用 **游戏秒** 而非帧来作为时间单位。也就是你的值需要／15 来使用。"
 
 #: ../../Whats-New.md:61
 msgid ""
@@ -360,18 +388,21 @@ msgid ""
 "addition, you must explicitly enable this feature by specifying "
 "`[AudioVisual] -> PlacementPreview=yes`."
 msgstr ""
+"[放置预览](User-Interface.md#placement-preview) 逻辑已被调整，`BuildingPlacementPreview.DefaultTranslucentLevel`、`BuildingPlacementGrid.TranslucentLevel`、`PlacementPreview.Show`、`PlacementPreview.TranslucentLevel` 以及 `ShowBuildingPlacementPreview` 标签已被重做／重命名并需要调整以运作。另外，你必须通过指定 `[AudioVisual] -> PlacementPreview=yes` 手动启用此功能。"
 
 #: ../../Whats-New.md:62 ../../Whats-New.md:70
 msgid ""
 "Existing script actions were renumbered, please use the migration utility"
 " to change the numbers to the correct ones."
 msgstr ""
+"现有的动作脚本已被重新编号，请使用迁移工具将旧有序号更改为正确的新序号。"
 
 #: ../../Whats-New.md:63
 msgid ""
 "`DiskLaser.Radius` values were misinterpreted by a factor of 1/2π. The "
 "default radius is now 240, please multiply your customized radii by 2π."
 msgstr ""
+"`DiskLaser.Radius` 的值曾被错误解释了一个大小为 1/2π 的系数。现在默认半径为 240，以及你需要将自定义的半径乘以 2π。"
 
 #: ../../Whats-New.md:65
 msgid "From 0.2.2.2"
@@ -383,15 +414,16 @@ msgid ""
 "-> [WarheadType] -> BreaksShield` have been changed to `Shield.Penetrate`"
 " and `Shield.Break`, respectively."
 msgstr ""
-"`rulesmd.ini -> [WarheadType] -> PenetratesShield`与`rulesmd.ini -> "
-"[WarheadType] -> BreaksShield`已分别变更为`Shield.Penetrate`和`Shield.Break`。"
+"`rulesmd.ini -> [WarheadType] -> PenetratesShield` 和 `rulesmd.ini -> "
+"[WarheadType] -> BreaksShield` 已分别更名为 `Shield.Penetrate` 和 `Shield.Break`。"
 
 #: ../../Whats-New.md:68
 msgid ""
 "`Rad.NoOwner` on weapons is deprecated. This has been replaced by "
 "`RadHasOwner` key on radiation types itself. It also defaults to no, so "
 "radiation once again has no owner house by default."
-msgstr "武器标签`Rad.NoOwner`已被弃用。其功能现在由辐射类型中的标签`RadHasOwner`代替，且默认值为否，意味着辐射再次变为默认无所属。"
+msgstr ""
+"武器上的 `Rad.NoOwner` 已被弃用。这已被辐射类型自身的 `RadHasOwner` 标签取代。其默认值同样为否，因此辐射默认情况下恢复回了无所属方。"
 
 #: ../../Whats-New.md:69
 msgid ""
@@ -400,6 +432,7 @@ msgid ""
 "UseGlobalRadApplicationDelay` is explicitly set to false, otherwise "
 "values from `[Radiation]` are used."
 msgstr ""
+"`RadApplicationDelay` 和 `RadApplicationDelay.Building` 现仅在 `[Radiation] -> UseGlobalRadApplicationDelay` 设为 false 时使用，否则始终使用 `[Radiation]` 中的值。"
 
 #: ../../Whats-New.md:72
 msgid "From 0.1.1"
@@ -411,8 +444,7 @@ msgid ""
 "deprecated and can be removed now, the bugfix for `DeployToFire` "
 "deployers is now always on."
 msgstr ""
-"`rulesmd.ini -> [TechnoType] -> "
-"Deployed.RememberTarget`已被弃用并可以移除，对`DeployToFire`的修复现在一直开启。"
+"`rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` 现已弃用，针对 `DeployToFire` 部署者丢失目标的 Bug 修复现在始终开启。"
 
 #: ../../Whats-New.md:76
 msgid "New user settings in RA2MD.INI"
@@ -425,8 +457,8 @@ msgid ""
 "[miscellaneous](Miscellanous.md) sections. Search functionality can be "
 "used to find them quickly if needed."
 msgstr ""
-"这些是由 Phobos 各种功能所新添加的用户设置标签。大多数可以在 [用户界面特性](User-Interface.md) 或 "
-"[杂项内容](Miscellanous.md) 部分找到。如果有必要你可以使用搜索功能快速找到它们。"
+"这些是由 Phobos 各种功能所新添加的用户设置标签。大多可以在 [用户界面特性](User-Interface.md) 或 "
+"[杂项内容](Miscellanous.md) 部分找到。你可以用搜索功能快速查找。"
 
 #: ../../Whats-New.md:98
 msgid "For Map Editor (Final Alert 2)"
