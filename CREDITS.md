@@ -412,6 +412,7 @@ This page lists all the individual contributions to the project by their author.
   - Units will not always stuck in the factory
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
+  - Delay automatic attack on the controlled unit
   - Laser, electric bolt and rad beam scatter
   - Fix the bug that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles
 - **Ollerus**:
