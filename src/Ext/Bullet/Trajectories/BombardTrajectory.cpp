@@ -140,6 +140,10 @@ TrajectoryCheckReturnType BombardTrajectory::OnDetonateUpdate(const CoordStruct&
 
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
+	this->RemainingDistance -= static_cast<int>(this->MovingSpeed);
+	// Check the remaining travel distance of the bullet
+	if (this->IsFalling && this->RemainingDistance < 0)
+		return TrajectoryCheckReturnType::Detonate;
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(position) < pType->DetonationDistance.Get())
 		return TrajectoryCheckReturnType::Detonate;
@@ -405,8 +409,6 @@ bool BombardTrajectory::BulletVelocityChange()
 
 	if (!this->IsFalling)
 	{
-		this->RemainingDistance -= static_cast<int>(this->MovingSpeed);
-
 		if (this->RemainingDistance < this->MovingSpeed)
 		{
 			const auto pBullet = this->Bullet;
@@ -473,15 +475,9 @@ bool BombardTrajectory::BulletVelocityChange()
 			}
 		}
 	}
-	else
+	else if (pType->FreeFallOnTarget)
 	{
-		if (pType->FreeFallOnTarget)
-			this->CalculateBulletVelocity(-this->MovingVelocity.Z + BulletTypeExt::GetAdjustedGravity(this->Bullet->Type));
-
-		this->RemainingDistance -= static_cast<int>(this->MovingSpeed);
-		// Check the remaining travel distance of the bullet
-		if (this->RemainingDistance < 0)
-			this->ShouldDetonate = true;
+		this->CalculateBulletVelocity(-this->MovingVelocity.Z + BulletTypeExt::GetAdjustedGravity(this->Bullet->Type));
 	}
 
 	return false;
