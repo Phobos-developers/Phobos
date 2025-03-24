@@ -481,7 +481,7 @@ bool BombardTrajectory::BulletVelocityChange()
 		this->RemainingDistance -= static_cast<int>(this->MovingSpeed);
 		// Check the remaining travel distance of the bullet
 		if (this->RemainingDistance < 0)
-			return true;
+			this->ShouldDetonate = true;
 	}
 
 	return false;

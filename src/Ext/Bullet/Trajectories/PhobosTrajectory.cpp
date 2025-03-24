@@ -317,7 +317,7 @@ bool PhobosTrajectory::OnVelocityCheck()
 			}
 		}
 		// Check whether about to fall into the ground
-		if (std::abs(this->MovingVelocity.Z) > Unsorted::CellHeight)
+		if (std::abs(this->MovingVelocity.Z) > Unsorted::CellHeight && this->GetCanHitGround())
 		{
 			const auto theTargetCoords = pBullet->Location + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
 			const auto cellHeight = MapClass::Instance.GetCellFloorHeight(theTargetCoords);
