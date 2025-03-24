@@ -868,7 +868,7 @@ msgstr "修复了在路径点中为间谍／工程师／需要驻军的无武装
 msgid ""
 "`PowerUpN` building animations can now use `Powered` & "
 "`PoweredLight/Effect/Special` keys."
-msgstr "`PowerUpN` 建筑动画现在可以使用 `Powered` 和 `PoweredLight/Effect/Special` 标签。"
+msgstr "`PowerUpN` 建筑动画现在可以使用 `Powered` 和 `PoweredLight/Effect/Special` 类的标签。"
 
 #: ../../Fixed-or-Improved-Logics.md:143
 msgid ""
@@ -1740,8 +1740,7 @@ msgid ""
 "Phantom](https://www.moddb.com/mods/project-phantom))*"
 msgstr ""
 "![image](_static/images/grinding.gif) "
-"*使用友军的部队回收站、仅限载具以及显示资金（[幽灵计划](https://www.moddb.com/mods/project-"
-"phantom)）*"
+"*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中使用友军的部队回收站、仅限载具以及显示资金*"
 
 #: ../../Fixed-or-Improved-Logics.md:403
 msgid ""
@@ -2252,8 +2251,8 @@ msgid ""
 "![image](_static/images/oregath.gif) *Custom ore gathering anims in "
 "[Project Phantom](https://www.moddb.com/mods/project-phantom)*"
 msgstr ""
-"![image](_static/images/oregath.gif) *在[幽灵计划](https://www.moddb.com/mods"
-"/project-phantom)中的自定义矿石采集动画*"
+"![image](_static/images/oregath.gif) *在 [幽灵计划](https://www.moddb.com/mods"
+"/project-phantom) 中的自定义矿石采集动画*"
 
 #: ../../Fixed-or-Improved-Logics.md:632
 msgid ""
