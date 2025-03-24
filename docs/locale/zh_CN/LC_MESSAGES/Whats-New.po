@@ -1000,40 +1000,41 @@ msgid ""
 "Allow using waypoints, area guard and attack move with aircraft (by "
 "CrimRecya)"
 msgstr ""
+"允许战机使用路径点、区域警戒和移动攻击（by CrimRecya）"
 
 #: ../../Whats-New.md:315
 msgid "Enhanced Straight trajectory (by CrimRecya)"
-msgstr ""
+msgstr "增强的直线轨迹（by CrimRecya）"
 
 #: ../../Whats-New.md:316
 msgid "Enable building production queue (by CrimRecya)"
-msgstr ""
+msgstr "启用建筑生产队列（by CrimRecya）"
 
 #: ../../Whats-New.md:317
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
 "units when the production is on hold (by CrimRecya)"
-msgstr ""
+msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:318
 msgid "Custom exit cell for infantry factory (by Starkku)"
-msgstr ""
+msgstr "自定义兵营退出单元格（by Starkku）"
 
 #: ../../Whats-New.md:319
 msgid "Option for vehicles to keep target when issued move command (by Starkku)"
-msgstr ""
+msgstr "设置载具在发出移动命令时是否保持目标（by Starkku）"
 
 #: ../../Whats-New.md:320
 msgid "Skip anim delay for burst fire (by TaranDahl)"
-msgstr ""
+msgstr "为 Burst 武器跳过建筑开火前摇动画（by TaranDahl）"
 
 #: ../../Whats-New.md:321
 msgid "New Parabola trajectory (by CrimRecya)"
-msgstr ""
+msgstr "新的抛物线轨迹（by CrimRecya）"
 
 #: ../../Whats-New.md:322
 msgid "Type select for buildings (code by TaranDahl, doc by Ollerus)"
-msgstr ""
+msgstr "建筑的类型选择（代码 By TaranDahl，文档 by Ollerus）"
 
 #: ../../Whats-New.md:323
 msgid "Raise alert when technos are taking damage (by TaranDahl)"
@@ -1059,7 +1060,7 @@ msgstr ""
 
 #: ../../Whats-New.md:328
 msgid "Damage multiplier for different houses (by CrimRecya)"
-msgstr ""
+msgstr "对不同所属方的伤害修正比（by CrimRecya）"
 
 #: ../../Whats-New.md:329
 msgid "Customizable duration for electric bolts (by Starkku)"
@@ -1067,25 +1068,26 @@ msgstr "自定义抛射体轨迹 (by secsome)"
 
 #: ../../Whats-New.md:330
 msgid "Extended gattling rate down logic (by CrimRecya)"
-msgstr ""
+msgstr "拓展的盖特掉档逻辑（by CrimRecya）"
 
 #: ../../Whats-New.md:331
 msgid "Sell or undeploy building on impact (by CrimRecya)"
-msgstr ""
+msgstr "弹头将建筑出售或反部署（by CrimRecya）"
 
 #: ../../Whats-New.md:332
 msgid "No rearm and reload in EMP or temporal (by CrimRecya)"
-msgstr ""
+msgstr "EMP 或超时空停止 CD（by CrimRecya）"
 
 #: ../../Whats-New.md:333
 msgid "Draw visual effects for airburst weapons (by CrimRecya)"
-msgstr ""
+msgstr "空爆武器正常绘制武器特效（by CrimRecya）"
 
 #: ../../Whats-New.md:334
 msgid ""
 "Technos recount current burst index when change the firing weapon (by "
 "CrimRecya)"
 msgstr ""
+"科技类型在更换开火武器时重置当前连发索引（by CrimRecya）"
 
 #: ../../Whats-New.md:335
 msgid "Shield armor inheritance customization (by Ollerus)"
@@ -1121,15 +1123,15 @@ msgstr ""
 
 #: ../../Whats-New.md:343
 msgid "Technos can maintain a suitable distance after firing (by CrimRecya)"
-msgstr ""
+msgstr "科技类型可以在开火后保持适当的距离（by CrimRecya）"
 
 #: ../../Whats-New.md:344
 msgid "Projectile subject to ground check before firing (by CrimRecya)"
-msgstr ""
+msgstr "`SubjectToGround`（by CrimRecya）"
 
 #: ../../Whats-New.md:345
 msgid "Delay automatic attack on the controlled unit (by CrimRecya)"
-msgstr ""
+msgstr "`MindControl.ThreatDelay`（by CrimRecya）"
 
 #: ../../Whats-New.md:347 ../../Whats-New.md:525 ../../Whats-New.md:827
 #: ../../Whats-New.md:938 ../../Whats-New.md:965 ../../Whats-New.md:1004
