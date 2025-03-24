@@ -161,7 +161,7 @@ TrajectoryCheckReturnType MissileTrajectory::OnDetonateUpdate(const CoordStruct&
 	if (this->RemainingDistance < 0)
 		return TrajectoryCheckReturnType::Detonate;
 	// Close enough
-	if (this->Bullet->TargetCoords.DistanceFrom(position) < this->Type->DetonationDistance.Get())
+	if ((this->Bullet->TargetCoords + this->OffsetCoord).DistanceFrom(position) < this->Type->DetonationDistance.Get())
 		return TrajectoryCheckReturnType::Detonate;
 
 	return TrajectoryCheckReturnType::SkipGameCheck;
