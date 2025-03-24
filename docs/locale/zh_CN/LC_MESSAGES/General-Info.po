@@ -8,61 +8,65 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-16 14:17+0800\n"
+"POT-Creation-Date: 2025-03-22 22:11+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.16.0\n"
 
-#: ../General-Info.md:1
+#: ../../General-Info.md:1
 msgid "General Info"
 msgstr "概况"
 
-#: ../General-Info.md:3
+#: ../../General-Info.md:3
 msgid "This page lists general info that should be known about the project."
-msgstr "本页面将列出对于本项目你应该知道的概况。"
+msgstr "此页面列出了有关该项目应知的基本信息。"
 
-#: ../General-Info.md:5
+#: ../../General-Info.md:5
 msgid "Build types"
 msgstr "版本类型"
 
-#: ../General-Info.md:7
+#: ../../General-Info.md:7
 msgid "There are three main types of Phobos builds:"
-msgstr "火卫一版本有三种主要类型："
+msgstr "Phobos 主要有三种不同类型的版本："
 
-#: ../General-Info.md:8
+#: ../../General-Info.md:8
 msgid ""
 "*stable builds* - those are numbered like your regular versions "
 "(something close to semantic versioning, e.g. version 1.2.3 for example) "
 "and ideally should contain no bugs, therefore are safe to use in mods;"
-msgstr "**稳定版**：这些版本的编号方式与常规版本相同（比如1.2.3版），并且在理想状况下不包含任何bug，可以放心地在mod中使用。"
+msgstr "**稳定版**：采用常规版本号（例如 v1.2.3），并且理论上不包含任何此前已知的 Bug，可以安全地用于 Mod。"
 
-#: ../General-Info.md:9
+#: ../../General-Info.md:9
 msgid ""
 "*development builds* - those are the builds which contain functionality "
 "that needs to be tested. They are numbered plainly starting from 0 and "
 "incrementing the number on each release. Mod authors still can include "
 "those versions with their mods if they want latest features, though we "
 "can't guarantee lack of bugs;"
-msgstr "**开发版**：这些版本包含需要测试的功能，其编号从0开始，每次发布后递增。Mod作者如果想要最新的功能，可以将这种版本使用在mod中，但我们不保证没有bug。"
+msgstr ""
+"**开发版**：包含待测试功能的版本，采用 0 开始的简单数字编号，每次发布递增版本号。Mod 作者仍可在 Mod "
+"中使用这类版本以获得最新功能，但我们无法保证它们没有 Bug。"
 
-#: ../General-Info.md:10
+#: ../../General-Info.md:10
 msgid ""
 "*nightly builds* - bleeding edge versions which can include prototypes, "
 "proofs of concepts, scrapped features etc., in other words - we can't "
 "guarantee anything in those builds and they absolutely should NOT be used"
 " in mod releases and should only be used to help with development and "
 "testing."
-msgstr "**每日生成**：这些版本是最新的版本，包括有原型，概念证明，废弃功能等等，换句话说，我们不能保证这种版本的稳定性，绝对不应在mod中使用这种版本，仅用于帮助开发与测试。"
+msgstr ""
+"**每夜构建**：最前沿版本，可能包含原型机、理论验证、废弃功能等。换而言之我们无法保证这些版本的稳定性，它们仅应当用于协助 Phobos "
+"开发和测试而绝不应该用于 Mod 的发布版本。"
 
-#: ../General-Info.md:12
+#: ../../General-Info.md:12
 msgid "Disabling development build warning"
 msgstr "关闭开发版本警告"
 
-#: ../General-Info.md:14
+#: ../../General-Info.md:14
 msgid ""
 "**DISCLAIMER:** We understand that everyone wants to try and use the new "
 "features as soon as they're released, but we can't do all the testing "
@@ -73,20 +77,22 @@ msgid ""
 "This would allow us to concentrate on implementing the actual features, "
 "which is the most complex task. Learn more on testing "
 "[here](Contributing.md#testing)."
-msgstr "**声明**：我们理解每个人都想要在刚出炉的时候尝试和使用最新的功能，但我们自己不可能做完全部的测试，我们只能在最基础的层面测试。因此我们要求使用最新的开发版的每个人在关闭开发版本警告之前使用一切手段测试新的改变，然后就可以将开发版使用在mod的发行版本中了。这将允许我们将集中在最复杂的实现具体功能上，了解更多请见[此处](Contributing.md#testing)。"
+msgstr ""
+"**免责声明**：我们理解每个人都希望尽快体验新功能的愿望，但我们仅可进行基础的功能验证而无法完成全面的测试。我们要求所有用户在关闭开发版本警告前务必通过各种方式全面测试变更内容，然后再将开发版本使用于"
+" Mod 的发布版本中。这将使我们能够专注于实现最复杂的核心功能。测试指南见 [此处](Contributing.md#testing)。"
 
-#: ../General-Info.md:16
+#: ../../General-Info.md:16
 msgid ""
 "You can hide the warning by specifying the build number after `-b=` as a "
 "command line argument (for example, `-b=1` would hide the warning for "
 "development build #1 of Phobos)."
-msgstr "你可以通过指定`-b=`版本号的方式关闭开发版本警告（例如对于Build#1来说就是`-b=1`）。"
+msgstr "你可以通过在命令行参数 `-b=` 后面指定开发版本的版本号来隐藏开发版本警告（例如 `-b=1` 可以隐藏 Build#1 开发版本的警告）。"
 
-#: ../General-Info.md:18
+#: ../../General-Info.md:18
 msgid "Saved games filtering"
 msgstr "存档过滤"
 
-#: ../General-Info.md:20
+#: ../../General-Info.md:20
 msgid ""
 "Phobos fully supports saving and loading thanks to prototype code from "
 "publicly released Ares 0.A source and it implements it's own filtering "
@@ -97,25 +103,31 @@ msgid ""
 "development build number on which this nightly is based on. While "
 "different nightly version saves may be listed, they are most likely "
 "incompatible in case there were changes to extension class fields."
-msgstr "火卫一完全支持存档读档，感谢Ares 0.A开源代码中的原型代码。我们的存档过滤与Ares的存档过滤不会产生冲突。在火卫一不同版本之间，我们会对火卫一的扩展类进行更改，因此不同版本之间的存档是不通用的。但是须注意过滤机制对每日生成没有作用，因此如果扩展类发生了改变，那么存档很有可能不兼容。"
+msgstr ""
+"得益于 Ares0.A 公开的源码范例，Phobos 完全支持存读档功能，并且实现了独立的过滤机制，这与 Ares 的存档过滤机制没有冲突。由于 "
+"Phobos "
+"扩展类几乎在每个版本都有所变动，所以不同版本间的存档互不兼容。但过滤机制不适用于每夜构建版本——这些版本使用其所基于的最新开发版本的编号。虽然不同每夜构建版本的存档可能显示在存读档列表中，但如果扩展类字段发生了变动，那么这些存档很可能实际上并不兼容。"
 
-#: ../General-Info.md:22
+#: ../../General-Info.md:22
 msgid "Compatibility"
 msgstr "兼容性"
 
-#: ../General-Info.md:24
+#: ../../General-Info.md:24
 msgid ""
 "While Phobos is standalone, it is designed to be used alongside "
 "[Ares](https://ares.strategy-x.com) and [CnCNet5 "
 "spawner](https://github.com/CnCNet/cncnet-for-ares). Adding new features "
 "or improving existing ones is done with compatibility with those in mind."
-msgstr "火卫一是独立的，被设计用于与[战神平台](https://ares.strategy-x.com)和[CnCNet5 生成器](https://github.com/CnCNet/cncnet-for-ares)一同使用。添加新功能或改进现有功能时要兼顾它们。"
+msgstr ""
+"Phobos 虽然可以独立运行，但其设计初衷是与 [Ares](https://ares.strategy-x.com) 以及 [CnCNet5 "
+"Spawner](https://github.com/CnCNet/cncnet-for-ares) "
+"搭配使用。新增或改进功能时都会考虑与它们的兼容性。"
 
-#: ../General-Info.md:26
+#: ../../General-Info.md:26
 msgid ""
 "While we would also like to support HAres we can't guarantee "
 "compatibility with it due to the separation of it's userbase and "
 "developers from international community. We welcome any help on the "
 "matter though!"
-msgstr "尽管我们也希望支持HAres，但是由于其用户群体与开发者与国际社区的分割，我们不保证兼容性。不过，我们随时欢迎你们的任何帮助！"
+msgstr "尽管我们也希望支持 HAres，但由于其用户群体及开发者与国际社区分离，所以我们无法保证兼容性。但我们欢迎就此问题提供任何帮助！"
 

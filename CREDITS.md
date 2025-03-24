@@ -412,6 +412,8 @@ This page lists all the individual contributions to the project by their author.
   - Technos recount current burst index when change the firing weapon
   - Units will not always stuck in the factory
   - Technos can maintain a suitable distance after firing
+  - Projectile subject to ground check before firing
+  - Delay automatic attack on the controlled unit
   - Exclusive SuperWeapon Sidebar
 - **Ollerus**:
   - Build limit group enhancement
