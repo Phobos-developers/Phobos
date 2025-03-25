@@ -62,7 +62,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		}
 		else if (pCell->OverlayTypeIndex != -1)
 		{
-			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
+			auto const pOverlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
 
 			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels)
 			{
@@ -84,9 +84,6 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	if (ForceWeaponInRangeTemp::SelectWeaponByRange || !pThis)
 		return 0;
 
-	int forceWeaponIndex = -1;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
 	if (pThis->Target)
 	{
 		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
@@ -94,6 +91,8 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		if (!pTarget)
 			return 0;
 
+		int forceWeaponIndex = -1;
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 		auto const pTargetType = pTarget->GetTechnoType();
 
 		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
@@ -112,18 +111,23 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
+		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
+			pTarget->IsUnderEMP())
+		{
+			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
+		}
 		else if (!pTypeExt->ForceWeapon_InRange.empty())
 		{
 			ForceWeaponInRangeTemp::SelectWeaponByRange = true;
 			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange();
 			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
 		}
-	}
 
-	if (forceWeaponIndex >= 0)
-	{
-		R->EAX(forceWeaponIndex);
-		return UseWeaponIndex;
+		if (forceWeaponIndex >= 0)
+		{
+			R->EAX(forceWeaponIndex);
+			return UseWeaponIndex;
+		}
 	}
 
 	return 0;
@@ -530,7 +534,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 				unsigned int cellIndex = (i + rand) % size;
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
-				CellClass* tgtCell = MapClass::Instance->TryGetCellAt(tgtPos);
+				CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (pThis->OnBridge || tgtCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
 				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
