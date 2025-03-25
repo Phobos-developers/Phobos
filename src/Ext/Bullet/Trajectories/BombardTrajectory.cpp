@@ -239,21 +239,6 @@ void BombardTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 		this->LastTargetCoord = pBullet->TargetCoords;
 }
 
-bool BombardTrajectory::CalculateBulletVelocity(const double speed)
-{
-	if (this->IsFalling && this->Type->FreeFallOnTarget)
-	{
-		this->MovingSpeed = speed;
-		this->MovingVelocity.X = 0;
-		this->MovingVelocity.Y = 0;
-		this->MovingVelocity.Z = -speed;
-
-		return false;
-	}
-
-	return this->PhobosTrajectory::CalculateBulletVelocity(speed);
-}
-
 void BombardTrajectory::MultiplyBulletVelocity(const double ratio, const bool shouldDetonate)
 {
 	this->MovingVelocity *= ratio;
@@ -405,79 +390,75 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 
 bool BombardTrajectory::BulletVelocityChange()
 {
-	const auto pType = this->Type;
-
 	if (!this->IsFalling)
 	{
-		if (this->RemainingDistance < this->MovingSpeed)
+		if (this->ToFalling)
 		{
+			this->IsFalling = true;
+			this->RemainingDistance = 1;
 			const auto pBullet = this->Bullet;
+			const auto pType = this->Type;
+			const auto pTarget = pBullet->Target;
+			auto middleLocation = CoordStruct::Empty;
 
-			if (this->ToFalling)
+			if (!pType->FreeFallOnTarget)
 			{
-				this->IsFalling = true;
-				this->RemainingDistance = 1;
-				const auto pTarget = pBullet->Target;
-				auto middleLocation = CoordStruct::Empty;
+				if (pType->LeadTimeCalculate.Get(false) && pTarget)
+					pBullet->TargetCoords += pTarget->GetCoords() - this->InitialTargetCoord + this->CalculateBulletLeadTime();
 
-				if (!pType->FreeFallOnTarget)
-				{
-					if (pType->LeadTimeCalculate.Get(false) && pTarget)
-						pBullet->TargetCoords += pTarget->GetCoords() - this->InitialTargetCoord + this->CalculateBulletLeadTime();
+				middleLocation = pBullet->Location;
+				const auto fallSpeed = pType->FallSpeed.Get(pType->Speed);
+				this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - middleLocation);
 
-					middleLocation = pBullet->Location;
-					const auto fallSpeed = pType->FallSpeed.Get(pType->Speed);
-					this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - middleLocation);
+				if (this->CalculateBulletVelocity(fallSpeed))
+					return true;
+				// Rotate the selected angle
+				if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+					this->DisperseBurstSubstitution(this->RotateRadian);
 
-					if (this->CalculateBulletVelocity(fallSpeed))
-						return true;
-
-					// Rotate the selected angle
-					if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
-						this->DisperseBurstSubstitution(this->RotateRadian);
-
-					this->RemainingDistance += static_cast<int>(pBullet->TargetCoords.DistanceFrom(middleLocation));
-				}
-				else
-				{
-					if (pType->LeadTimeCalculate.Get(false) && pTarget)
-						pBullet->TargetCoords += pTarget->GetCoords() - this->InitialTargetCoord + this->CalculateBulletLeadTime();
-
-					middleLocation = pBullet->TargetCoords;
-					middleLocation.Z = pBullet->Location.Z;
-
-					this->MovingSpeed = 0;
-					this->CalculateBulletVelocity(0);
-					this->RemainingDistance += pBullet->Location.Z - MapClass::Instance.GetCellFloorHeight(middleLocation);
-				}
-
-				const auto pExt = BulletExt::ExtMap.Find(pBullet);
-
-				if (pExt->LaserTrails.size())
-				{
-					for (auto& trail : pExt->LaserTrails)
-						trail.LastLocation = middleLocation;
-				}
-				this->RefreshBulletLineTrail();
-
-				pBullet->SetLocation(middleLocation);
-				const auto pTechno = pBullet->Owner;
-				const auto pOwner = pTechno ? pTechno->Owner : pExt->FirerHouse;
-				AnimExt::CreateRandomAnim(pType->TurningPointAnims, middleLocation, pTechno, pOwner, true);
+				this->RemainingDistance += static_cast<int>(pBullet->TargetCoords.DistanceFrom(middleLocation));
 			}
 			else
 			{
-				this->ToFalling = true;
-				const auto pTarget = pBullet->Target;
-
 				if (pType->LeadTimeCalculate.Get(false) && pTarget)
-					this->LastTargetCoord = pTarget->GetCoords();
+					pBullet->TargetCoords += pTarget->GetCoords() - this->InitialTargetCoord + this->CalculateBulletLeadTime();
+
+				middleLocation.X = pBullet->TargetCoords.X;
+				middleLocation.Y = pBullet->TargetCoords.Y;
+				middleLocation.Z = pBullet->Location.Z;
+
+				this->MovingSpeed = 0;
+				this->MovingVelocity = BulletVelocity::Empty;
+				this->RemainingDistance += pBullet->Location.Z - MapClass::Instance.GetCellFloorHeight(middleLocation);
 			}
+
+			const auto pExt = BulletExt::ExtMap.Find(pBullet);
+
+			if (pExt->LaserTrails.size())
+			{
+				for (auto& trail : pExt->LaserTrails)
+					trail.LastLocation = middleLocation;
+			}
+			this->RefreshBulletLineTrail();
+
+			pBullet->SetLocation(middleLocation);
+			const auto pTechno = pBullet->Owner;
+			const auto pOwner = pTechno ? pTechno->Owner : pExt->FirerHouse;
+			AnimExt::CreateRandomAnim(pType->TurningPointAnims, middleLocation, pTechno, pOwner, true);
+		}
+		else if (this->RemainingDistance < this->MovingSpeed)
+		{
+			this->ToFalling = true;
+			const auto pTarget = this->Bullet->Target;
+
+			if (this->Type->LeadTimeCalculate.Get(false) && pTarget)
+				this->LastTargetCoord = pTarget->GetCoords();
 		}
 	}
-	else if (pType->FreeFallOnTarget)
+	else if (this->Type->FreeFallOnTarget)
 	{
-		this->CalculateBulletVelocity(-this->MovingVelocity.Z + BulletTypeExt::GetAdjustedGravity(this->Bullet->Type));
+		this->MovingSpeed += BulletTypeExt::GetAdjustedGravity(this->Bullet->Type);
+		this->MovingVelocity.Z = -this->MovingSpeed;
 	}
 
 	return false;
