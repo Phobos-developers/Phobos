@@ -94,7 +94,7 @@ void DistributionModeHoldDownCommandClass::Execute(WWKey eInput) const
 	{
 		DistributionModeHoldDownCommandClass::Enabled = false;
 
-		if (HouseClass::IsCurrentPlayerObserver() || SessionClass::Instance->MultiplayerObserver)
+		if (HouseClass::IsCurrentPlayerObserver() || SessionClass::Instance.MultiplayerObserver)
 			return;
 
 		VocClass::PlayGlobal(RulesExt::Global()->EndDistributionModeSound, 0x2000, 1.0);
@@ -102,10 +102,10 @@ void DistributionModeHoldDownCommandClass::Execute(WWKey eInput) const
 		if (!DistributionModeHoldDownCommandClass::OffMessageShowed)
 		{
 			DistributionModeHoldDownCommandClass::OffMessageShowed = true;
-			MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOff", L"Distribution mode unabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+			MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOff", L"Distribution mode unabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 		}
 	}
-	else if (!HouseClass::IsCurrentPlayerObserver() && !SessionClass::Instance->MultiplayerObserver)
+	else if (!HouseClass::IsCurrentPlayerObserver() && !SessionClass::Instance.MultiplayerObserver)
 	{
 		DistributionModeHoldDownCommandClass::Enabled = true;
 		VocClass::PlayGlobal(RulesExt::Global()->StartDistributionModeSound, 0x2000, 1.0);
@@ -113,7 +113,7 @@ void DistributionModeHoldDownCommandClass::Execute(WWKey eInput) const
 		if (!DistributionModeHoldDownCommandClass::OnMessageShowed)
 		{
 			DistributionModeHoldDownCommandClass::OnMessageShowed = true;
-			MessageListClass::Instance->PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOn", L"Distribution mode enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+			MessageListClass::Instance.PrintMessage(GeneralUtils::LoadStringUnlessMissing("MSG:DistributionModeOn", L"Distribution mode enabled."), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 		}
 	}
 }
@@ -135,7 +135,7 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 	GET(ObjectClass* const, pTarget, EBP);
 	GET_STACK(const Action, mouseAction, STACK_OFFSET(0x20, 0xC));
 
-	const auto count = ObjectClass::CurrentObjects->Count;
+	const auto count = ObjectClass::CurrentObjects.Count;
 
 	if (count > 0)
 	{
@@ -167,20 +167,20 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 				{
 					auto coords = pItem->GetCoords();
 
-					if (!MapClass::Instance->IsWithinUsableArea(coords))
+					if (!MapClass::Instance.IsWithinUsableArea(coords))
 						continue;
 
-					coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+					coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 
-					if (MapClass::Instance->GetCellAt(coords)->ContainsBridge())
+					if (MapClass::Instance.GetCellAt(coords)->ContainsBridge())
 						coords.Z += CellClass::BridgeHeight;
 
-					if (!MapClass::Instance->IsLocationShrouded(coords))
+					if (!MapClass::Instance.IsLocationShrouded(coords))
 						record[pItem] = 0;
 				}
 			}
 
-			for (const auto& pSelect : ObjectClass::CurrentObjects())
+			for (const auto& pSelect : ObjectClass::CurrentObjects)
 			{
 				TechnoClass* pCanTarget = nullptr;
 				TechnoClass* pNewTarget = nullptr;
@@ -232,7 +232,7 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 		}
 		else // Vanilla
 		{
-			for (const auto& pSelect : ObjectClass::CurrentObjects())
+			for (const auto& pSelect : ObjectClass::CurrentObjects)
 			{
 				const auto currentAction = pSelect->MouseOverObject(pTarget);
 
@@ -259,7 +259,7 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 
 	if (mode1 || mode2)
 	{
-		const auto pCell = MapClass::Instance->GetCellAt(DisplayClass::Instance->CurrentFoundation_CenterCell);
+		const auto pCell = MapClass::Instance.GetCellAt(DisplayClass::Instance.CurrentFoundation_CenterCell);
 		const auto color = ((mode2 > 1)
 			? ((mode2 == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
 			: (mode2 == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
