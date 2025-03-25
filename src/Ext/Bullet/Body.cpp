@@ -268,7 +268,9 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	{
 		pEBolt->AlternateColor = pWeapon->IsAlternateColor;
 		//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-		WeaponTypeExt::BoltWeaponMap[pEBolt] = WeaponTypeExt::ExtMap.Find(pWeapon);
+		auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
+		weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
+		weaponStruct.BurstIndex = 0;
 		pEBolt->Fire(pBullet->SourceCoords, pBullet->TargetCoords, 0);
 	}
 }

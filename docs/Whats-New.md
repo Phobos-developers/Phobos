@@ -328,6 +328,7 @@ New:
 - No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Damage multiplier for different houses (by CrimRecya)
 - Customizable duration for electric bolts (by Starkku)
+- Customizable FLH tracking for electric bolts (by Starkku)
 - Extended gattling rate down logic (by CrimRecya)
 - Sell or undeploy building on impact (by CrimRecya)
 - No rearm and reload in EMP or temporal (by CrimRecya)
@@ -350,6 +351,7 @@ Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
+- Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)

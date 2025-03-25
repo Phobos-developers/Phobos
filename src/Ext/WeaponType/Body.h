@@ -30,6 +30,7 @@ public:
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
 		Valueable<int> Bolt_Duration;
+		Nullable<bool> Bolt_FollowFLH;
 		Nullable<bool> Strafing;
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
@@ -82,6 +83,7 @@ public:
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
 			, Bolt_Duration { 17 }
+			, Bolt_FollowFLH {}
 			, Strafing { }
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
@@ -152,13 +154,19 @@ public:
 		~ExtContainer();
 	};
 
+	struct EBoltWeaponStruct
+	{
+		WeaponTypeExt::ExtData* Weapon;
+		int BurstIndex;
+	};
+
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static double OldRadius;
-	static PhobosMap<EBolt*, const WeaponTypeExt::ExtData*> BoltWeaponMap;
+	static PhobosMap<EBolt*, EBoltWeaponStruct> BoltWeaponMap;
 	static const WeaponTypeExt::ExtData* BoltWeaponType;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
@@ -168,4 +176,5 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
+
 };

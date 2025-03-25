@@ -29,6 +29,7 @@ public:
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 		AttachEffectTechnoProperties AE;
 		TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
+		std::vector<EBolt*> ElectricBolts;
 		int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
@@ -75,6 +76,7 @@ public:
 			, AttachedEffects {}
 			, AE {}
 			, PreviousType { nullptr }
+			, ElectricBolts {}
 			, AnimRefCount { 0 }
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
@@ -153,6 +155,7 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+		void ClearElectricBolts();
 	};
 
 	class ExtContainer final : public Container<TechnoExt>
