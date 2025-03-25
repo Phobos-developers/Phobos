@@ -1,10 +1,10 @@
 #include <AircraftClass.h>
+#include <EventClass.h>
 #include <FlyLocomotionClass.h>
 
 #include <Ext/Aircraft/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
-#include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
 
@@ -96,7 +96,7 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
 		return 0;
 
-	R->EAX(MapClass::Instance->GetCellAt(pObject->GetCoords()));
+	R->EAX(MapClass::Instance.GetCellAt(pObject->GetCoords()));
 
 	return 0;
 }
@@ -123,7 +123,7 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 	return false;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E2268, GET_OFFSET(AircraftClass_IFlyControl_IsStrafe));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2268, AircraftClass_IFlyControl_IsStrafe);
 
 DEFINE_HOOK(0x418403, AircraftClass_Mission_Attack_FireAtTarget_BurstFix, 0x8)
 {
@@ -191,13 +191,13 @@ WeaponStruct* __fastcall AircraftClass_GetWeapon_Wrapper(AircraftClass* pThis, v
 		return pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
 }
 
-DEFINE_JUMP(CALL6, 0x4180F9, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x4184E3, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x41852B, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418893, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x4189A2, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418AB1, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
-DEFINE_JUMP(CALL6, 0x418B9A, GET_OFFSET(AircraftClass_GetWeapon_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL6, 0x4180F9, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x4184E3, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x41852B, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x418893, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x4189A2, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x418AB1, AircraftClass_GetWeapon_Wrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x418B9A, AircraftClass_GetWeapon_Wrapper);
 
 void __fastcall AircraftClass_SetTarget_Wrapper(AircraftClass* pThis, void* _, AbstractClass* pTarget)
 {
@@ -205,7 +205,7 @@ void __fastcall AircraftClass_SetTarget_Wrapper(AircraftClass* pThis, void* _, A
 	TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex = -1;
 }
 
-DEFINE_JUMP(VTABLE, 0x7E266C, GET_OFFSET(AircraftClass_SetTarget_Wrapper));
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E266C, AircraftClass_SetTarget_Wrapper);
 
 #pragma endregion
 
@@ -272,7 +272,7 @@ DirType _fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
 	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
 }
 
-DEFINE_JUMP(CALL, 0x446F67, GET_OFFSET(AircraftClass_PoseDir_Wrapper)); // BuildingClass_GrandOpening
+DEFINE_FUNCTION_JUMP(CALL, 0x446F67, AircraftClass_PoseDir_Wrapper); // BuildingClass_GrandOpening
 
 DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
 {
@@ -326,10 +326,7 @@ bool __fastcall AircraftTypeClass_CanUseWaypoint(AircraftTypeClass* pThis)
 {
 	return RulesExt::Global()->ExtendedAircraftMissions.Get();
 }
-DEFINE_JUMP(VTABLE, 0x7E2908, GET_OFFSET(AircraftTypeClass_CanUseWaypoint))
-
-// KickOut: skip useless tether
-DEFINE_JUMP(LJMP, 0x444021, 0x44402E)
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2908, AircraftTypeClass_CanUseWaypoint)
 
 // Move: smooth the planning paths and returning route
 DEFINE_HOOK_AGAIN(0x4168C7, AircraftClass_Mission_Move_SmoothMoving, 0x5)
@@ -373,7 +370,7 @@ DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoi
 
 	// In vanilla, only aircrafts or `foots with fly locomotion` will call this virtual function
 	// So I don't know why WW use hard-coded `SpeedType::Track` and `MovementZone::Normal` to check this
-	R->AL(MapClass::Instance->GetCellAt(cell)->IsClearToMove(pType->SpeedType, false, false, -1, pType->MovementZone, -1, true));
+	R->AL(MapClass::Instance.GetCellAt(cell)->IsClearToMove(pType->SpeedType, false, false, -1, pType->MovementZone, -1, true));
 	return SkipGameCode;
 }
 
@@ -390,10 +387,9 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 		auto coords = pThis->GetCoords();
 
 		if (pThis->TargetAndEstimateDamage(coords, ThreatType::Area))
-		{
 			pThis->QueueMission(Mission::Attack, false);
-			return SkipGameCode;
-		}
+
+		return SkipGameCode;
 	}
 
 	return 0;
@@ -404,7 +400,7 @@ bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
 {
 	return RulesExt::Global()->ExtendedAircraftMissions.Get();
 }
-DEFINE_JUMP(VTABLE, 0x7E290C, GET_OFFSET(AircraftTypeClass_CanAttackMove))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E290C, AircraftTypeClass_CanAttackMove)
 
 DEFINE_HOOK(0x6FA68B, TechnoClass_Update_AttackMovePaused, 0xA) // To make aircrafts not search for targets while resting at the airport, this is designed to adapt to loop waypoint
 {
@@ -504,7 +500,44 @@ AbstractClass* __fastcall AircraftClass_GreatestThreat(AircraftClass* pThis, voi
 
 	return pThis->FootClass::GreatestThreat(threatType, pSelectCoords, onlyTargetHouseEnemy);
 }
-DEFINE_JUMP(VTABLE, 0x7E2668, GET_OFFSET(AircraftClass_GreatestThreat))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2668, AircraftClass_GreatestThreat)
+
+// Handle assigning area guard mission to aircraft.
+DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
+{
+	enum { SkipGameCode = 0x4C7435 };
+
+	GET(TechnoClass* const, pTechno, EDI);
+
+	if (RulesExt::Global()->ExtendedAircraftMissions && pTechno->WhatAmI() == AbstractType::Aircraft)
+	{
+		// If we're on dock reloading but have ammo, untether from dock and try to scan for targets.
+		if (pTechno->CurrentMission == Mission::Sleep && pTechno->Ammo)
+			pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+
+		// Skip assigning destination / target here.
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+// Do not untether aircraft when assigning area guard mission by default.
+DEFINE_HOOK(0x4C72F2, EventClass_Execute__AircraftAreaGuard_Untether, 0x6)
+{
+	enum { SkipGameCode = 0x4C7349 };
+
+	GET(EventClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTechno, EDI);
+
+	if (RulesExt::Global()->ExtendedAircraftMissions && pTechno->WhatAmI() == AbstractType::Aircraft
+		&& pThis->MegaMission.Mission == (char)Mission::Area_Guard)
+	{
+		return SkipGameCode;
+	}
+
+	return 0;
+}
 
 #pragma endregion
 

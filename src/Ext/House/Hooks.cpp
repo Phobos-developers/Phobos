@@ -76,11 +76,11 @@ DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
 				pThis->PowerDrain -= pExt->Power * count;
 	};
 
-	for (const auto pType : *InfantryTypeClass::Array)
+	for (const auto pType : InfantryTypeClass::Array)
 		updateDrainForThisType(pType);
-	for (const auto pType : *UnitTypeClass::Array)
+	for (const auto pType : UnitTypeClass::Array)
 		updateDrainForThisType(pType);
-	for (const auto pType : *AircraftTypeClass::Array)
+	for (const auto pType : AircraftTypeClass::Array)
 		updateDrainForThisType(pType);
 	// Don't do this for buildings, they've already been counted.
 
@@ -129,7 +129,7 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (!MapClass::Instance->CoordinatesLegal(pBuilding->GetMapCoords())
+	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords())
 		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
 	{
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
@@ -144,7 +144,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 
 	GET(TechnoClass* const, pTechno, ECX);
 
-	if (!MapClass::Instance->CoordinatesLegal(pTechno->GetMapCoords()))
+	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()))
 		return SkipTechno;
 
 	return 0;
@@ -164,7 +164,7 @@ namespace LimboTrackingTemp
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 {
-	for (auto const pTechno : *TechnoClass::Array())
+	for (auto const pTechno : TechnoClass::Array)
 	{
 		auto const pType = pTechno->GetTechnoType();
 
@@ -195,8 +195,8 @@ void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 	LimboTrackingTemp::IsBeingDeleted = false;
 }
 
-DEFINE_JUMP(CALL, 0x4DE60B, GET_OFFSET(TechnoClass_UnInit_Wrapper));   // FootClass
-DEFINE_JUMP(VTABLE, 0x7E3FB4, GET_OFFSET(TechnoClass_UnInit_Wrapper)); // BuildingClass
+DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3FB4, TechnoClass_UnInit_Wrapper); // BuildingClass
 
 DEFINE_HOOK(0x6F6BC9, TechnoClass_Limbo_AddTracking, 0x6)
 {

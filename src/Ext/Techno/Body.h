@@ -50,9 +50,14 @@ public:
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
 		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
+		WeaponTypeClass* LastWeaponType;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		CDTimerClass UnitAutoDeployTimer;
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
+		int BeControlledThreatFrame;
+		DWORD LastTargetID;
+		int AccumulatedGattlingValue;
+		bool ShouldUpdateGattlingValue;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -61,6 +66,7 @@ public:
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		bool KeepTargetOnMove;
+		CellStruct LastSensorsMapCoords;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -90,14 +96,20 @@ public:
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
 			, CanCurrentlyDeployIntoBuilding { false }
+			, LastWeaponType {}
 			, FiringObstacleCell {}
 			, UnitAutoDeployTimer {}
 			, IsDetachingForCloak { false }
+			, BeControlledThreatFrame { 0 }
+			, LastTargetID { 0xFFFFFFFF }
+			, AccumulatedGattlingValue { 0 }
+			, ShouldUpdateGattlingValue { false }
 			, OriginalPassengerOwner {}
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
+			, LastSensorsMapCoords { CellStruct::Empty }
 		{ }
 
 		void OnEarlyUpdate();
@@ -112,15 +124,21 @@ public:
 		void UpdateTypeData(TechnoTypeClass* currentType);
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
+		void UpdateGattlingRateDownReset();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
+		void UpdateRecountBurst();
+		void UpdateRearmInEMPState();
+		void UpdateRearmInTemporal();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+
+		UnitTypeClass* GetUnitTypeExtra() const;
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }

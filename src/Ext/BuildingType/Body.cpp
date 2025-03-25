@@ -54,7 +54,7 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array->Items[bTypeIdx]);
+		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
 		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
 			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
@@ -597,7 +597,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
-	auto pArtINI = &CCINIClass::INI_Art();
+	auto pArtINI = &CCINIClass::INI_Art;
 
 	if (!pINI->GetSection(pSection))
 		return;
@@ -647,7 +647,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
 
-	this->IsAnimDelayedBurst.Read(exArtINI, pSection, "IsAnimDelayedBurst");
 	this->Units_RepairRate.Read(exINI, pSection, "Units.RepairRate");
 	this->Units_RepairStep.Read(exINI, pSection, "Units.RepairStep");
 	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
@@ -683,7 +682,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
-	if (SuperWeaponTypeClass::Array->Count > 0)
+	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
 		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
@@ -720,7 +719,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Art
-	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
+	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
+	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()

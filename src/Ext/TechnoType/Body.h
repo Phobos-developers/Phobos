@@ -157,6 +157,7 @@ public:
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
+		Valueable<int> ForceWeapon_UnderEMP;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -223,6 +224,8 @@ public:
 
 		AEAttachInfoTypeClass AttachEffects;
 
+		Nullable<bool> RecountBurst;
+
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
 		Valueable<int> BuildLimitGroup_Factor;
@@ -235,6 +238,15 @@ public:
 
 		Valueable<bool> CanBeBuiltOn;
 
+		Valueable<int> RateDown_Delay;
+		Valueable<bool> RateDown_Reset;
+		Valueable<int> RateDown_Cover_Value;
+		Valueable<int> RateDown_Cover_AmmoBelow;
+
+		Nullable<bool> NoRearm_UnderEMP;
+		Nullable<bool> NoRearm_Temporal;
+		Nullable<bool> NoReload_UnderEMP;
+		Nullable<bool> NoReload_Temporal;
 		Nullable<bool> NoTurret_TrackTarget;
 
 		Nullable<AnimTypeClass*> Wake;
@@ -246,6 +258,19 @@ public:
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
+
+    	Nullable<UnitTypeClass*> Image_ConditionYellow;
+		Nullable<UnitTypeClass*> Image_ConditionRed;
+		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
+		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
+
+		Nullable<int> InitialSpawnsNumber;
+		ValueableVector<AircraftTypeClass*> Spawns_Queue;
+
+		Valueable<Leptons> Spawner_RecycleRange;
+		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
+		Valueable<CoordStruct> Spawner_RecycleCoord;
+		Valueable<bool> Spawner_RecycleOnTurret;
 
 		struct LaserTrailDataEntry
 		{
@@ -388,6 +413,7 @@ public:
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
+			, ForceWeapon_UnderEMP { -1 }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
@@ -463,6 +489,8 @@ public:
 
 			, AttachEffects {}
 
+			, RecountBurst {}
+
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}
 			, BuildLimitGroup_Factor { 1 }
@@ -475,6 +503,15 @@ public:
 
 			, CanBeBuiltOn { false }
 
+			, RateDown_Delay { 0 }
+			, RateDown_Reset { false }
+			, RateDown_Cover_Value { 0 }
+			, RateDown_Cover_AmmoBelow { -2 }
+
+			, NoRearm_UnderEMP {}
+			, NoRearm_Temporal {}
+			, NoReload_UnderEMP {}
+			, NoReload_Temporal {}
 			, NoTurret_TrackTarget {}
 
 			, Wake { }
@@ -486,6 +523,19 @@ public:
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }
+
+      		, Image_ConditionYellow { }
+			, Image_ConditionRed { }
+			, WaterImage_ConditionYellow { }
+			, WaterImage_ConditionRed { }
+
+			, InitialSpawnsNumber { }
+			, Spawns_Queue { }
+
+			, Spawner_RecycleRange { Leptons(-1) }
+			, Spawner_RecycleAnim { }
+			, Spawner_RecycleCoord { {0,0,0} }
+			, Spawner_RecycleOnTurret { false }
 		{ }
 
 		virtual ~ExtData() = default;
