@@ -580,6 +580,16 @@ AirburstWeapon.ApplyFirepowerMult=false  ; boolean
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
 ```
 
+### Bomb parachute anim deglobalization
+
+- Now you can define `BombParachute` per projectile.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+BombParachute=          ; AnimationType, default to [General]->BombParachute
+```
+
 ### Cluster scatter distance customization
 
 - `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.

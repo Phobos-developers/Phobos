@@ -473,7 +473,7 @@ DEFINE_HOOK(0x5F5A8C, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pTypeExt->BombParachute)
-		R->EDX(pTypeExt->BombParachute);
+		R->EDX(pTypeExt->BombParachute.Get());
 
 	return 0;
 }
