@@ -144,7 +144,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	{
 		auto currentCell = topLeftCell + *pFoundation;
 
-		if (const auto pCell = MapClass::Instance->TryGetCellAt(currentCell))
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(currentCell))
 		{
 			auto pObject = pCell->FirstObject;
 
@@ -189,7 +189,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	{
 		auto searchCell = topLeftCell + *pFoundation;
 
-		if (const auto pSearchCell = MapClass::Instance->TryGetCellAt(searchCell))
+		if (const auto pSearchCell = MapClass::Instance.TryGetCellAt(searchCell))
 		{
 			if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end() // TODO If there is a cellflag (or CellExt) that can be used …
 				&& !pSearchCell->GetBuilding()
@@ -401,7 +401,7 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 					{
 						for (int j = 0; j < 2; ++j)
 						{
-							if (const auto pSearchCell = MapClass::Instance->TryGetCellAt(searchCell))
+							if (const auto pSearchCell = MapClass::Instance.TryGetCellAt(searchCell))
 							{
 								if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end()
 									&& std::find(optionalCells.begin(), optionalCells.end(), pSearchCell) == optionalCells.end()

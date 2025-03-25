@@ -158,11 +158,11 @@ static inline bool IsSameFenceType(const BuildingTypeClass* const pPostType, con
 	}
 	else
 	{
-		const auto count = BuildingTypeClass::Array->Count;
+		const auto count = BuildingTypeClass::Array.Count;
 
 		for (int i = 0; i < count; ++i)
 		{
-			const auto pSearchType = BuildingTypeClass::Array->Items[i];
+			const auto pSearchType = BuildingTypeClass::Array.Items[i];
 
 			if (pSearchType->LaserFence)
 			{
@@ -314,7 +314,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	{
 		const auto isoTileTypeIndex = pCell->IsoTileTypeIndex;
 
-		if (isoTileTypeIndex >= 0 && isoTileTypeIndex < IsometricTileTypeClass::Array->Count && !IsometricTileTypeClass::Array->Items[isoTileTypeIndex]->Morphable)
+		if (isoTileTypeIndex >= 0 && isoTileTypeIndex < IsometricTileTypeClass::Array.Count && !IsometricTileTypeClass::Array.Items[isoTileTypeIndex]->Morphable)
 			return CanNotExistHere;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
@@ -402,7 +402,7 @@ DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
 			R->EDX<BlitterFlags>(flags | (zero ? BlitterFlags::Zero : BlitterFlags::Nonzero));
 			return DrawVanillaAlt;
 		}
-		else if (BuildingTypeClass* const pType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingTypeCopy))
+		else if (BuildingTypeClass* const pType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingTypeCopy))
 		{
 			R->Stack<bool>(STACK_OFFSET(0x30, -0x1D), pCell->CanThisExistHere(pType->SpeedType, pType, HouseClass::CurrentPlayer));
 			R->EDX<BlitterFlags>(flags | BlitterFlags::TransLucent75);
@@ -463,7 +463,7 @@ static inline bool CheckBuildingFoundation(BuildingTypeClass* const pBuildingTyp
 {
 	for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		if (const auto pCell = MapClass::Instance->TryGetCellAt(topLeftCell + *pFoundation))
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(topLeftCell + *pFoundation))
 		{
 			if (!pCell->CanThisExistHere(pBuildingType->SpeedType, pBuildingType, pHouse))
 				return false;
@@ -480,7 +480,7 @@ static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType,
 {
 	if (!pType->PlaceAnywhere && !pTypeExt->LimboBuild)
 	{
-		const auto onWater = MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water;
+		const auto onWater = MapClass::Instance.GetCellAt(checkCell)->LandType == LandType::Water;
 		const auto waterBound = pType->SpeedType == SpeedType::Float;
 
 		if (const auto pAnotherType = (opposite ^ onWater) ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
@@ -530,7 +530,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 		return CanNotBuild;
 	}
 
-	const auto pDisplay = DisplayClass::Instance();
+	const auto pDisplay = &DisplayClass::Instance;
 	auto pBuilding = static_cast<BuildingClass*>(pTechno);
 	auto pBuildingType = pBuilding->Type;
 	const auto pBufferBuilding = pBuilding;
@@ -605,7 +605,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 				}
 
 				// If the land occupation of the two buildings is different, the larger one will prevail, And the smaller one may not be placed on the shore.
-				if ((MapClass::Instance->GetCellAt(checkCell)->LandType == LandType::Water) ^ (pBuildingType->SpeedType == SpeedType::Float))
+				if ((MapClass::Instance.GetCellAt(checkCell)->LandType == LandType::Water) ^ (pBuildingType->SpeedType == SpeedType::Float))
 					pBuildingType = pAnotherType;
 			}
 		}
@@ -732,10 +732,10 @@ DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 
 	R->EBX(0);
 
-	if (!DisplayClass::Instance->CurrentBuildingTypeCopy)
+	if (!DisplayClass::Instance.CurrentBuildingTypeCopy)
 		return SkipGameCode;
 
-	R->ECX(DisplayClass::Instance->CurrentBuildingTypeCopy);
+	R->ECX(DisplayClass::Instance.CurrentBuildingTypeCopy);
 	return CheckMouseCoords;
 }
 
@@ -750,7 +750,7 @@ DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 	{
 		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
 		{
-			if (const auto pCurrentType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType))
+			if (const auto pCurrentType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingType))
 			{
 				if (!BuildingTypeExt::IsSameBuildingType(pBuilding->Type, pCurrentType))
 					return SkipGameCode;
@@ -770,9 +770,9 @@ DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 
 	if (RulesExt::Global()->ExtendedBuildingPlacing && index >= 0)
 	{
-		if (const auto pCurrentBuildingType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType))
+		if (const auto pCurrentBuildingType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingType))
 		{
-			if (!BuildingTypeExt::IsSameBuildingType(BuildingTypeClass::Array->Items[index], pCurrentBuildingType))
+			if (!BuildingTypeExt::IsSameBuildingType(BuildingTypeClass::Array.Items[index], pCurrentBuildingType))
 				return SkipGameCode;
 		}
 	}
@@ -893,7 +893,7 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 		}
 		else
 		{
-			const auto pCell = MapClass::Instance->GetCellAt(topLeftCell);
+			const auto pCell = MapClass::Instance.GetCellAt(topLeftCell);
 			const auto pCellBuilding = pCell->GetBuilding();
 
 			if (!pCellBuilding || !reinterpret_cast<bool(__thiscall*)(BuildingClass*, BuildingTypeClass*, HouseClass*)>(0x452670)(pCellBuilding, pBuildingType, pHouse)) // CanUpgradeBuilding
@@ -1145,7 +1145,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 DEFINE_HOOK_AGAIN(0x4ABA47, DisplayClass_PreparePassesProximityCheck_ReplaceBuildingType, 0x6)
 DEFINE_HOOK(0x4A946E, DisplayClass_PreparePassesProximityCheck_ReplaceBuildingType, 0x6)
 {
-	const auto pDisplay = DisplayClass::Instance();
+	const auto pDisplay = &DisplayClass::Instance;
 
 	if (const auto pAnotherType = GetAnotherPlacingType(pDisplay))
 	{
@@ -1173,8 +1173,8 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 	if (!RulesExt::Global()->ExtendedBuildingPlacing)
 		return 0;
 
-	const auto pPlayer = HouseClass::CurrentPlayer();
-	const auto pDisplay = DisplayClass::Instance();
+	const auto pPlayer = HouseClass::CurrentPlayer;
+	const auto pDisplay = &DisplayClass::Instance;
 
 	auto drawImage = [&pDisplay](BuildingTypeClass* const pType, HouseClass* const pHouse, const CellStruct cell)
 	{
@@ -1202,11 +1202,11 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 
 		const auto ColorSchemeIndex = pHouse->ColorSchemeIndex;
 		const auto Palettes = pType->Palette;
-		const auto pColor = Palettes ? Palettes->Items[ColorSchemeIndex] : ColorScheme::Array->Items[ColorSchemeIndex];
+		const auto pColor = Palettes ? Palettes->Items[ColorSchemeIndex] : ColorScheme::Array.Items[ColorSchemeIndex];
 		DSurface::Temp->DrawSHP(pColor->LightConvert, pImage, imageFrame, &point, &rect, blitFlags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	};
 
-	for (const auto& pHouse : *HouseClass::Array)
+	for (const auto& pHouse : HouseClass::Array)
 	{
 		if (pPlayer->IsObserver() || pHouse->IsAlliedWith(pPlayer))
 		{
@@ -1266,9 +1266,9 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 	{
 		const auto index = pBaseNode->BuildingTypeIndex;
 
-		if (index >= 0 && index < BuildingTypeClass::Array->Count)
+		if (index >= 0 && index < BuildingTypeClass::Array.Count)
 		{
-			const auto pType = BuildingTypeClass::Array->Items[index];
+			const auto pType = BuildingTypeClass::Array.Items[index];
 
 //			if ((pType->ConstructionYard && RulesExt::Global()->AIForbidConYard) || BuildingTypeExt::ExtMap.Find(pType)->LimboBuild) // TODO If merge #1470
 			if (BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
@@ -1293,7 +1293,7 @@ DEFINE_HOOK(0x452E2C, BuildingClass_CreateLaserFence_FindSpecificIndex, 0x5)
 			if (pFenceType->LaserFence)
 			{
 				R->EBP(pFenceType->ArrayIndex);
-				R->EAX(BuildingTypeClass::Array->Count);
+				R->EAX(BuildingTypeClass::Array.Count);
 				return SkipGameCode;
 			}
 		}
@@ -1346,5 +1346,5 @@ DEFINE_HOOK(0x6D5815, TacticalClass_DrawLaserFenceGrid_SkipDrawLaserFence, 0x6)
 	GET(BuildingTypeClass* const, pPostType, ECX);
 
 	// Have used CurrentBuilding->Type yet, so simply use static_cast
-	return IsMatchedPostType(static_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding)->Type, pPostType) ? 0 : SkipGameCode;
+	return IsMatchedPostType(static_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding)->Type, pPostType) ? 0 : SkipGameCode;
 }

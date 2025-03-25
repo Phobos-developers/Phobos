@@ -72,8 +72,8 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
-	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
-	auto pType = specific_cast<BuildingTypeClass*>(DisplayClass::Instance->CurrentBuildingType);
+	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
+	auto pType = specific_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingType);
 	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
 
 	if (pBuilding && pTypeExt && pTypeExt->PlacementPreview)
