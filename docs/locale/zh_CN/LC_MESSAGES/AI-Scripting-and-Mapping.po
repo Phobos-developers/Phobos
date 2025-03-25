@@ -557,7 +557,7 @@ msgid ""
 "`UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or"
 " buildings with `ConsideredVehicle=true`."
 msgstr ""
-"“被视为载具的建筑”意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 "
+"“被视为载具的建筑” 意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 "
 "`ConsideredVehicle` 或者设置了 `ConsideredVehicle=true` 的建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md
