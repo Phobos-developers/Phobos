@@ -34,16 +34,14 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 // Buildable-upon TechnoTypes Hook #7 -> sub_5683C0 - Remove some of them when buildings are placed on them.
 DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 {
-	GET(ObjectClass*, pObject, EDI);
+	GET(ObjectClass*, pPlaceObject, EDI);
 	GET(CellClass*, pCell, EAX);
 
-	if (pObject->WhatAmI() == AbstractType::Building)
+	if (pPlaceObject->WhatAmI() == AbstractType::Building)
 	{
-		auto pCellObject = pCell->FirstObject;
-
-		while (pCellObject)
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (const auto pTechno = abstract_cast<TechnoClass*>(pCellObject))
+			if (const auto pTechno = abstract_cast<TechnoClass*>(pObject))
 			{
 				const auto pType = pTechno->GetTechnoType();
 				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -56,7 +54,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 					pTechno->UnInit();
 				}
 			}
-			else if (const auto pTerrain = abstract_cast<TerrainClass*>(pCellObject))
+			else if (const auto pTerrain = abstract_cast<TerrainClass*>(pObject))
 			{
 				const auto pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
@@ -66,8 +64,6 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 					TerrainTypeExt::Remove(pTerrain);
 				}
 			}
-
-			pCellObject = pCellObject->NextObject;
 		}
 	}
 
@@ -84,11 +80,9 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 	if (!Game::IsActive)
 		return Unlimbo;
 
-	auto pCellObject = pCell->FirstObject;
-
-	while (pCellObject)
+	for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
-		if (const auto pTerrain = abstract_cast<TerrainClass*>(pCellObject))
+		if (const auto pTerrain = abstract_cast<TerrainClass*>(pObject))
 		{
 			const auto pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
 
@@ -98,8 +92,6 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 			pCell->RemoveContent(pTerrain, false);
 			TerrainTypeExt::Remove(pTerrain);
 		}
-
-		pCellObject = pCellObject->NextObject;
 	}
 
 	return Unlimbo;
