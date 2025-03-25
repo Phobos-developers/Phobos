@@ -155,15 +155,19 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 			const bool targetIsNeutral = pTargetHouse == pSpecial || pTargetHouse == pCivilian || pTargetHouse == pNeutral;
 
 			const auto range = (2 << mode1);
-			const auto pItems = Helpers::Alex::getCellSpreadItems(pTarget->Location, range);
-			std::map<TechnoClass*, int> record;
-			record[static_cast<TechnoClass*>(pTarget)] = 0;
+			const auto center = pTarget->GetCoords();
+			const auto pItems = Helpers::Alex::getCellSpreadItems(center, range);
+
+			std::vector<std::pair<TechnoClass*, int>> record;
+			const auto maxSize = pItems.size();
+			record.reserve(maxSize);
+
 			int current = 1;
 
 			for (const auto& pItem : pItems)
 			{
-				if ((pItem->CloakState != CloakState::Cloaked || pItem->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex))
-					&& !pItem->IsDisguisedAs(HouseClass::CurrentPlayer))
+				if (!pItem->IsDisguisedAs(HouseClass::CurrentPlayer)
+					&& (pItem->CloakState != CloakState::Cloaked || pItem->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex)))
 				{
 					auto coords = pItem->GetCoords();
 
@@ -176,45 +180,55 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 						coords.Z += CellClass::BridgeHeight;
 
 					if (!MapClass::Instance.IsLocationShrouded(coords))
-						record[pItem] = 0;
+						 record.emplace_back(pItem, 0);
 				}
 			}
 
+			const auto recordSize = record.size();
+			std::sort(&record[0], &record[recordSize],[&center](const auto& pairA, const auto& pairB)
+			{
+				const auto coordsA = pairA.first->GetCoords();
+				const auto distanceA = Point2D{coordsA.X, coordsA.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
+				const auto coordsB = pairB.first->GetCoords();
+				const auto distanceB = Point2D{coordsB.X, coordsB.Y}.DistanceFromSquared(Point2D{center.X, center.Y});
+				return distanceA < distanceB;
+			});
+
 			for (const auto& pSelect : ObjectClass::CurrentObjects)
 			{
-				TechnoClass* pCanTarget = nullptr;
-				TechnoClass* pNewTarget = nullptr;
+				size_t canTargetIndex = maxSize;
+				size_t newTargetIndex = maxSize;
 
-				for (const auto& [pItem, num] : record)
+				for (size_t i = 0; i < recordSize; ++i)
 				{
-					if (pSelect->MouseOverObject(pItem) == mouseAction && (targetIsNeutral || (pItem->Owner != pSpecial && pItem->Owner != pCivilian && pItem->Owner != pNeutral))
+       				const auto& [pItem, num] = record[i];
+
+					if (pSelect->MouseOverObject(pItem) == mouseAction
+						&& (targetIsNeutral || (pItem->Owner != pSpecial && pItem->Owner != pCivilian && pItem->Owner != pNeutral))
 						&& (mode2 < 2 || (pItem->WhatAmI() == pTarget->WhatAmI()
-						&& (mode2 < 3 || TechnoTypeExt::GetSelectionGroupID(pItem->GetTechnoType()) == TechnoTypeExt::GetSelectionGroupID(pTarget->GetTechnoType())))))
+							&& (mode2 < 3 || TechnoTypeExt::GetSelectionGroupID(pItem->GetTechnoType()) == TechnoTypeExt::GetSelectionGroupID(pTarget->GetTechnoType())))))
 					{
-						pCanTarget = pItem;
+						canTargetIndex = i;
 
 						if (num < current)
 						{
-							pNewTarget = pCanTarget;
+							newTargetIndex = i;
 							break;
 						}
 					}
 				}
 
-				if (!pNewTarget)
+				if (newTargetIndex == maxSize && canTargetIndex != maxSize)
 				{
-					if (pCanTarget)
-					{
-						++current;
-						pNewTarget = pCanTarget;
-					}
+					++current;
+					newTargetIndex = canTargetIndex;
 				}
 
-				if (pNewTarget)
+				if (newTargetIndex != maxSize)
 				{
-					if (record.contains(pNewTarget))
-						++record[pNewTarget];
+					auto& [pNewTarget, recordCount] = record[newTargetIndex];
 
+					++recordCount;
 					pSelect->ObjectClickedAction(mouseAction, pNewTarget, false);
 				}
 				else
