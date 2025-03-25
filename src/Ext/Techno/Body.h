@@ -53,6 +53,7 @@ public:
 		WeaponTypeClass* LastWeaponType;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
+		int BeControlledThreatFrame;
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
 		bool ShouldUpdateGattlingValue;
@@ -97,6 +98,7 @@ public:
 			, LastWeaponType {}
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
+			, BeControlledThreatFrame { 0 }
 			, LastTargetID { 0xFFFFFFFF }
 			, AccumulatedGattlingValue { 0 }
 			, ShouldUpdateGattlingValue { false }
@@ -133,6 +135,8 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+
+		UnitTypeClass* GetUnitTypeExtra() const;
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
