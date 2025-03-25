@@ -104,6 +104,12 @@ InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-base
 InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
 
+[SOMETECHNO]                             ; TechnoType
+InsigniaType=                            ; InsigniaType
+InsigniaType.WeaponN=                    ; InsigniaType
+InsigniaType.PassengersN=                ; InsigniaType
+```
+
 ## Game Speed
 
 ### Single player game speed

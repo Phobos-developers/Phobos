@@ -780,7 +780,6 @@ InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-base
 InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrames=-1,-1,-1                  ; int, frames of insignia shp (zero-based) or -1 for default
-InsigniaType=                            ; InsigniaType
 Insignia.WeaponN=                        ; filename - excluding the .shp extension
 Insignia.WeaponN.Rookie=                 ; filename - excluding the .shp extension
 Insignia.WeaponN.Veteran=                ; filename - excluding the .shp extension
@@ -790,7 +789,6 @@ InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-base
 InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
-InsigniaType.WeaponN=                    ; InsigniaType
 Insignia.PassengersN=                    ; filename - excluding the .shp extension
 Insignia.PassengersN.Rookie=             ; filename - excluding the .shp extension
 Insignia.PassengersN.Veteran=            ; filename - excluding the .shp extension
@@ -800,7 +798,6 @@ InsigniaFrame.PassengersN.Rookie=-1      ; int, frame of insignia shp (zero-base
 InsigniaFrame.PassengersN.Veteran=-1     ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.PassengersN.Elite=-1       ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrames.PassengersN=-1,-1,-1      ; int, frames of insignia shp (zero-based) or -1 for default
-InsigniaType.PassengersN=                ; InsigniaType
 Insignia.ShowEnemy=                      ; boolean
 ```
 
