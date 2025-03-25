@@ -83,9 +83,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 	Phobos::Config::HideLightFlashEffects = CCINIClass::INI_RA2MD.ReadBool("Phobos", "HideLightFlashEffects", false);
 	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool("Phobos", "ShowFlashOnSelecting", false);
 
-	Phobos::Config::DistributionSpreadMode = CCINIClass::INI_RA2MD->ReadInteger("Phobos", "DefaultDistributionSpreadMode", 2);
+	Phobos::Config::DistributionSpreadMode = CCINIClass::INI_RA2MD.ReadInteger("Phobos", "DefaultDistributionSpreadMode", 2);
 	Phobos::Config::DistributionSpreadMode = std::clamp(Phobos::Config::DistributionSpreadMode, 0, 3);
-	Phobos::Config::DistributionFilterMode = CCINIClass::INI_RA2MD->ReadInteger("Phobos", "DefaultDistributionFilterMode", 2);
+	Phobos::Config::DistributionFilterMode = CCINIClass::INI_RA2MD.ReadInteger("Phobos", "DefaultDistributionFilterMode", 2);
 	Phobos::Config::DistributionFilterMode = std::clamp(Phobos::Config::DistributionFilterMode, 0, 3);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
