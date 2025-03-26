@@ -2529,21 +2529,21 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:583
 msgid "Bomb parachute anim deglobalization"
-msgstr ""
+msgstr "自定义抛射体降落伞动画"
 
 #: ../../Fixed-or-Improved-Logics.md:585
 msgid "Now you can define `BombParachute` per projectile."
-msgstr ""
+msgstr "现在你可以为每一个抛射体使用 `BombParachute` 单独定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:588
 msgid ""
 "[SOMEPROJECTILE]        ; Projectile\n"
 "BombParachute=          ; AnimationType, default to "
-"[General]->BombParachute\n"
+"[General] ->B ombParachute\n"
 msgstr ""
 "[SOMEPROJECTILE]        ; Projectile\n"
 "BombParachute=          ; AnimationType, default to "
-"[General]->BombParachute\n"
+"[General] -> BombParachute\n"
 
 #: ../../Fixed-or-Improved-Logics.md:593
 msgid "Cluster scatter distance customization"

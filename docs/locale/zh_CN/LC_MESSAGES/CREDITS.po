@@ -1758,7 +1758,7 @@ msgstr "修复了占地面积超过 1x1 的建筑无法回收子机的 Bug"
 
 #: ../../../CREDITS.md:445
 msgid "`BombParachute` deglobalization"
-msgstr ""
+msgstr "抛射体自定义 `BombParachute`"
 
 #: ../../../CREDITS.md:446
 msgid "**tyuah8**:"

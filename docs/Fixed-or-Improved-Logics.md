@@ -587,7 +587,7 @@ AirburstWeapon.ApplyFirepowerMult=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-BombParachute=          ; AnimationType, default to [General]->BombParachute
+BombParachute=          ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Cluster scatter distance customization
