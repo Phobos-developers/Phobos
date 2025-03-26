@@ -226,9 +226,7 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 {
-	const auto pOwner = pTransport->Owner;
-
-	if (!pOwner || !pOwner->IsAlliedWith(pPassenger) || pTransport->IsBeingWarpedOut())
+	if (!pTransport->Owner->IsAlliedWith(pPassenger) || pTransport->IsBeingWarpedOut())
 		return false;
 
 	if (pPassenger->IsMindControlled() || pPassenger->ParasiteEatingMe)
@@ -239,25 +237,25 @@ bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	if (pManager && pManager->IsControllingSomething())
 		return false;
 
-	const auto passengerSize = pPassenger->GetTechnoType()->Size;
 	const auto pTransportType = pTransport->Type;
+	const auto bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
+	const auto passengerSize = bySize ? static_cast<int>(pPassenger->GetTechnoType()->Size) : 1;
 
-	if (passengerSize > pTransportType->SizeLimit)
+	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))
 		return false;
 
 	const auto maxSize = pTransportType->Passengers;
-	const auto predictSize = pTransport->Passengers.GetTotalSize() + static_cast<int>(passengerSize);
+	const auto predictSize = (bySize ? pTransport->Passengers.GetTotalSize() : pTransport->Passengers.NumPassengers) + passengerSize;
 	const auto pLink = pTransport->GetNthLink();
 	const auto needCalculate = pLink && pLink != pPassenger;
 
 	if (needCalculate)
 	{
-		const auto linkCell = pLink->GetCoords();
-		const auto tranCell = pTransport->GetCoords();
+		const auto delta = pLink->GetCoords() - pTransport->GetCoords();
 
 		// When the most important passenger is close, need to prevent overlap
-		if (abs(linkCell.X - tranCell.X) <= 384 && abs(linkCell.Y - tranCell.Y) <= 384)
-			return (predictSize <= (maxSize - pLink->GetTechnoType()->Size));
+		if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
+			return (predictSize <= (maxSize - (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1)));
 	}
 
 	const auto remain = maxSize - predictSize;
@@ -265,7 +263,7 @@ bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	if (remain < 0)
 		return false;
 
-	if (needCalculate && remain < static_cast<int>(pLink->GetTechnoType()->Size))
+	if (needCalculate && remain < (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1))
 	{
 		// Avoid passenger moving forward, resulting in overlap with transport and create invisible barrier
 		pLink->SendToFirstLink(RadioCommand::NotifyUnlink);

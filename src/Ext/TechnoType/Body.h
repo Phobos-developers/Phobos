@@ -238,6 +238,7 @@ public:
 
 		Nullable<bool> NoQueueUpToEnter;
 		Nullable<bool> NoQueueUpToUnload;
+		Valueable<bool> Passengers_BySize;
 
 		Valueable<int> RateDown_Delay;
 		Valueable<bool> RateDown_Reset;
@@ -504,6 +505,7 @@ public:
 
 			, NoQueueUpToEnter {}
 			, NoQueueUpToUnload {}
+			, Passengers_BySize { true }
 
 			, RateDown_Delay { 0 }
 			, RateDown_Reset { false }

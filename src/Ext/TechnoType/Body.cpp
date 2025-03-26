@@ -514,6 +514,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NoAmmoWeapon.Read(exINI, pSection, "NoAmmoWeapon");
 	this->NoAmmoAmount.Read(exINI, pSection, "NoAmmoAmount");
 
+	// Ares 2.0
+	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
+
 	char tempBuffer[32];
 
 	if (this->OwnerObject()->Gunner)
@@ -878,6 +881,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->NoQueueUpToEnter)
 		.Process(this->NoQueueUpToUnload)
+		.Process(this->Passengers_BySize)
 
 		.Process(this->RateDown_Delay)
 		.Process(this->RateDown_Reset)
