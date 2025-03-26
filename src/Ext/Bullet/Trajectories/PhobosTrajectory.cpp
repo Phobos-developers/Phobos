@@ -518,59 +518,66 @@ void PhobosTrajectory::MultiplyBulletVelocity(const double ratio, const bool sho
 /*!
 	Rotate one vector by a certain angle towards the direction of another vector.
 
-	\param from Vector that needs to be rotated. It doesn't need to be a standardized vector.
-	\param to The final direction vector that needs to be oriented. It doesn't need to be a standardized vector.
+	\param vector Vector that needs to be rotated. This function directly modifies this value.
+	\param aim The final direction vector that needs to be oriented. It doesn't need to be a standardized vector.
 	\param turningRadian The maximum radius that can rotate. Note that it must be a positive number.
 
-	\returns The calculation result of the new vector.
+	\returns No return value, result is vector.
 
 	\author CrimRecya
 */
-BulletVelocity PhobosTrajectory::RotateVector(const BulletVelocity& from, const BulletVelocity& to, double turningRadian)
+void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity& aim, double turningRadian)
 {
-	// Try using the vector to calculate the included angle
-	const auto dotProduct = (to * from);
-	const auto baseFactor = sqrt(to.MagnitudeSquared() * from.MagnitudeSquared());
+	const auto baseFactor = sqrt(aim.MagnitudeSquared() * vector.MagnitudeSquared());
 	// Not valid vector
 	if (baseFactor <= 1e-10)
-		return to;
+	{
+		vector = aim;
+		return;
+	}
+	// Try using the vector to calculate the included angle
+	const auto dotProduct = (aim * vector);
 	// Calculate the cosine of the angle when the conditions are suitable
 	const auto cosTheta = dotProduct / baseFactor;
 	// Ensure that the result range of cos is correct
 	const auto radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0));
 	// When the angle is small, aim directly at the target
 	if (std::abs(radian) <= turningRadian)
-		return to;
+	{
+		vector = aim;
+		return;
+	}
 	// Calculate the rotation axis
-	auto rotationAxis = to.CrossProduct(from);
+	auto rotationAxis = aim.CrossProduct(vector);
 	// The radian can rotate, input the correct direction
 	const auto rotateRadian = (radian < 0 ? turningRadian : -turningRadian);
 	// Substitute to calculate new velocity
-	return PhobosTrajectory::RotateAboutTheAxis(from, rotationAxis, rotateRadian);
+	PhobosTrajectory::RotateAboutTheAxis(vector, rotationAxis, rotateRadian);
 }
 
 /*!
 	Rotate the vector around the axis of rotation by a fixed angle.
 
-	\param vector Vector that needs to be rotated. It doesn't need to be a standardized vector.
+	\param vector Vector that needs to be rotated. This function directly modifies this value.
 	\param axis The vector of rotation axis. This operation will standardize it.
 	\param radian The angle of rotation, positive or negative determines its direction of rotation.
 
-	\returns The calculation result of the new vector.
+	\returns No return value, result is vector.
 
 	\author CrimRecya
 */
-BulletVelocity PhobosTrajectory::RotateAboutTheAxis(const BulletVelocity& vector, BulletVelocity& axis, double radian)
+void PhobosTrajectory::RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, double radian)
 {
 	const auto axisLengthSquared = axis.MagnitudeSquared();
 	// Zero axis vector is not acceptable
 	if (axisLengthSquared < 1e-10)
-		return vector;
-	// Rotate around the axis of rotation
+		return;
+	// Standardize rotation axis
 	axis *= 1 / sqrt(axisLengthSquared);
+	// Rotate around the axis of rotation
 	const auto cosRotate = Math::cos(radian);
 	// Substitute the formula to calculate the new vector
-	return ((vector * cosRotate) + (axis * ((1 - cosRotate) * (vector * axis))) + (axis.CrossProduct(vector) * Math::sin(radian)));
+	vector = (vector * cosRotate) + (axis * ((1 - cosRotate) * (vector * axis))) + (axis.CrossProduct(vector) * Math::sin(radian));
 }
 
 // Inspection of projectile orientation
@@ -662,7 +669,7 @@ void PhobosTrajectory::OnFacingUpdate()
 			desiredFacing.Z = 0;
 		}
 		// Calculate specifically only when the ROT is reasonable
-		pBullet->Velocity = PhobosTrajectory::RotateVector(pBullet->Velocity, desiredFacing, (pType->BulletROT * ratio));
+		PhobosTrajectory::RotateVector(pBullet->Velocity, desiredFacing, (pType->BulletROT * ratio));
 		// Standardizing
 		pBullet->Velocity *= (1 / pBullet->Velocity.Magnitude());
 	}

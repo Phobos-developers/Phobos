@@ -177,5 +177,5 @@ void ActualTrajectory::DisperseBurstSubstitution(double baseRadian)
 		extraRotate = Math::Pi * (pType->RotateCoord * (burst / (this->CountOfBurst - 1.0) - 0.5)) / 180;
 	}
 	// Rotate the selected angle
-	this->MovingVelocity = PhobosTrajectory::RotateAboutTheAxis(this->MovingVelocity, rotationAxis, extraRotate);
+	PhobosTrajectory::RotateAboutTheAxis(this->MovingVelocity, rotationAxis, extraRotate);
 }
