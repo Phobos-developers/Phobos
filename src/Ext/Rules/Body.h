@@ -30,7 +30,6 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
-		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
 		Nullable<int> InfantryGainSelfHealCap;
@@ -156,6 +155,10 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<double> DamageOwnerMultiplier;
+		Valueable<double> DamageAlliesMultiplier;
+		Valueable<double> DamageEnemiesMultiplier;
+
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
 
@@ -173,6 +176,15 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<int> MindControl_ThreatDelay;
+
+		Valueable<bool> RecountBurst;
+		Valueable<bool> NoRearm_UnderEMP;
+		Valueable<bool> NoRearm_Temporal;
+		Valueable<bool> NoReload_UnderEMP;
+		Valueable<bool> NoReload_Temporal;
+		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -213,7 +225,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
-			, MissingCameo { GameStrings::XXICON_SHP() }
+			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }
 			, PlacementGrid_TranslucencyWithPreview { }
@@ -300,6 +312,9 @@ public:
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, DamageOwnerMultiplier { 1.0 }
+			, DamageAlliesMultiplier { 1.0 }
+			, DamageEnemiesMultiplier { 1.0 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -316,6 +331,13 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, MindControl_ThreatDelay { 0 }
+			, RecountBurst { false }
+			, NoRearm_UnderEMP { false }
+			, NoRearm_Temporal { false }
+			, NoReload_UnderEMP { false }
+			, NoReload_Temporal { false }
+			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
@@ -375,5 +397,4 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
 };

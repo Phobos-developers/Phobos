@@ -9,6 +9,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
+#include <PlanningTokenClass.h>
 
 #pragma region Update
 
@@ -147,7 +148,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	}
 	else
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->Owner->EMPTarget);
+		auto const pCell = MapClass::Instance.TryGetCellAt(pThis->Owner->EMPTarget);
 
 		if (pCell)
 		{
@@ -184,12 +185,12 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
 {
-	auto coords = MapClass::Instance->GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
+	auto coords = MapClass::Instance.GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
 	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
 	return pCrd;
 }
 
-DEFINE_JUMP(CALL6, 0x44D1F9, GET_OFFSET(BuildingClass_GetFireCoords_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL6, 0x44D1F9, BuildingClass_GetFireCoords_Wrapper);
 
 DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 {
@@ -199,6 +200,46 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 	pBullet->SetWeaponType(pWeapon);
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region KickOutStuckUnits
+
+// Kick out stuck units when the factory building is not busy, only factory buildings can enter this hook
+DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// This is not a solution to the problem at its root
+	// Currently the root cause of the problem is not located
+	// So the idle weapon factory is asked to search every second for any units that are stuck
+	if (!(Unsorted::CurrentFrame % 15)) // Check every 15 frames for factories
+	{
+		const auto pType = pThis->Type;
+
+		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		{
+			const auto mission = pThis->CurrentMission;
+
+			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 1) // Unloading but stuck
+				BuildingExt::KickOutStuckUnits(pThis);
+		}
+	}
+
+	return 0;
+}
+
+// Should not kick out units if the factory building is in construction process
+DEFINE_HOOK(0x4444A0, BuildingClass_KickOutUnit_NoKickOutInConstruction, 0xA)
+{
+	enum { ThisIsOK = 0x444565, ThisIsNotOK = 0x4444B3};
+
+	GET(BuildingClass* const, pThis, ESI);
+
+	const auto mission = pThis->GetCurrentMission();
+
+	return (mission == Mission::Unload || mission == Mission::Construction) ? ThisIsNotOK : ThisIsOK;
 }
 
 #pragma endregion
@@ -226,7 +267,7 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 			return SkipSetShouldRebuild;
 
 		// Per-house dehardcoding: BaseNodes + SW-Delivery
-		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
+		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance.Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
 			return SkipSetShouldRebuild;
 	}
 	// Vanilla instruction: always repairable in other game modes
@@ -247,6 +288,7 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 
 	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 	pAnimExt->ParentBuilding = pThis;
+	TechnoExt::ExtMap.Find(pThis)->AnimRefCount++;
 
 	return 0;
 }
@@ -353,16 +395,16 @@ static void RecalculateCells(BuildingClass* pThis)
 
 	for (auto const& cell : cells)
 	{
-		if (auto pCell = map->TryGetCellAt(cell))
+		if (auto pCell = map.TryGetCellAt(cell))
 		{
 			pCell->RecalcAttributes(DWORD(-1));
 
 			if constexpr (remove)
-				map->ResetZones(cell);
+				map.ResetZones(cell);
 			else
-				map->RecalculateZones(cell);
+				map.RecalculateZones(cell);
 
-			map->RecalculateSubZones(cell);
+			map.RecalculateSubZones(cell);
 
 		}
 	}
@@ -532,7 +574,7 @@ DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
 
 DEFINE_HOOK(0x4FA612, HouseClass_BeginProduction_ForceRedrawStrip, 0x5)
 {
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;
 	return 0;
 }
 
@@ -559,8 +601,8 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 
 		if (firstRemoved)
 		{
-			SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 			if (all)
 				while (pFactory->RemoveOneFromQueue(pType));
@@ -577,8 +619,8 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
 		return CheckSame;
 
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 	return Return;
 }
@@ -652,10 +694,10 @@ DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
 		exitCell.X += (short)offset.X;
 		exitCell.Y += (short)offset.Y;
 
-		if (MapClass::Instance->CoordinatesLegal(exitCell))
+		if (MapClass::Instance.CoordinatesLegal(exitCell))
 		{
 			GET(TechnoClass*, pTechno, ESI);
-			auto const pCell = MapClass::Instance->GetCellAt(exitCell);
+			auto const pCell = MapClass::Instance.GetCellAt(exitCell);
 
 			if (pTechno->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true) == Move::OK)
 			{
@@ -725,6 +767,21 @@ bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 {
 	return RulesExt::Global()->BuildingWaypoints;
 }
-DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4610, BuildingTypeClass_CanUseWaypoint)
+
+DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning, 0x5)
+{
+	enum { SkipGameCode = 0x4AE982 };
+
+	GET(ObjectClass* const, pObject, ECX);
+	LEA_STACK(CellStruct*, pCell, STACK_OFFSET(0x20, 0x8));
+
+	auto action = pObject->MouseOverCell(pCell);
+
+	if (!PlanningNodeClass::PlanningModeActive || pObject->WhatAmI() != AbstractType::Building || action == Action::Attack)
+		pObject->CellClickedAction(action, pCell, pCell, false);
+
+	return SkipGameCode;
+}
 
 #pragma endregion
