@@ -224,6 +224,7 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 #pragma region NoQueueUpToEnterAndUnload
 
+// Rewrite from 0x73758A, replace send RadioCommand::QueryCanEnter
 bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 {
 	if (!pTransport->Owner->IsAlliedWith(pPassenger) || pTransport->IsBeingWarpedOut())
@@ -239,9 +240,9 @@ bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 
 	const auto pTransportType = pTransport->Type;
 	const auto bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
-	const auto passengerSize = bySize ? static_cast<int>(pPassenger->GetTechnoType()->Size) : 1;
+	const auto passengerSize = bySize ? Game::F2I(pPassenger->GetTechnoType()->Size) : 1;
 
-	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))
+	if (passengerSize > Game::F2I(pTransportType->SizeLimit))
 		return false;
 
 	const auto maxSize = pTransportType->Passengers;
@@ -255,22 +256,93 @@ bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 
 		// When the most important passenger is close, need to prevent overlap
 		if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
-			return (predictSize <= (maxSize - (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1)));
+			return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
 	}
 
-	const auto remain = maxSize - predictSize;
+	return predictSize < maxSize;
+}
 
-	if (remain < 0)
-		return false;
+// Rewrite from 0x51A21B
+void __fastcall InfantryEnterNow(UnitClass* pTransport, InfantryClass* pPassenger)
+{
+	if (const auto pTag = pTransport->AttachedTag)
+		pTag->RaiseEvent(TriggerEvent::EnteredBy, pPassenger, CellStruct::Empty);
 
-	if (needCalculate && remain < (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1))
+	pPassenger->ArchiveTarget = nullptr;
+	pPassenger->OnBridge = false;
+	pPassenger->MissionAccumulateTime = 0;
+	pPassenger->GattlingValue = 0;
+	pPassenger->CurrentGattlingStage = 0;
+
+	/* Have checked in CanEnterNow
+	if (const auto pMind = pPassenger->MindControlledBy)
 	{
-		// Avoid passenger moving forward, resulting in overlap with transport and create invisible barrier
-		pLink->SendToFirstLink(RadioCommand::NotifyUnlink);
-		pLink->EnterIdleMode(false, true);
+		if (const auto pManager = pMind->CaptureManager)
+			pManager->FreeUnit(pPassenger);
 	}
+	*/
 
-	return true;
+	pPassenger->Limbo();
+
+	if (pTransport->Type->OpenTopped)
+		pTransport->EnteredOpenTopped(pPassenger);
+
+	pPassenger->Transporter = pTransport;
+	pTransport->AddPassenger(pPassenger);
+	pPassenger->Undiscover();
+
+	// Added, to prevent passengers from wanting to get on after getting off
+	pPassenger->QueueUpToEnter = nullptr;
+
+	// Added, to stop the passengers and let OpenTopped work normally
+	pPassenger->SetSpeedPercentage(0.0);
+
+	// Added, to stop hover unit's meaningless behavior
+	if (const auto pHover = locomotion_cast<HoverLocomotionClass*>(pPassenger->Locomotor))
+		pHover->MaxSpeed = 0;
+}
+
+// Rewrite from 0x73A6D1
+void __fastcall UnitEnterNow(UnitClass* pTransport, UnitClass* pPassenger)
+{
+	// I don't know why units have no trigger
+
+	pPassenger->ArchiveTarget = nullptr;
+	pPassenger->OnBridge = false;
+	pPassenger->MissionAccumulateTime = 0;
+	pPassenger->GattlingValue = 0;
+	pPassenger->CurrentGattlingStage = 0;
+
+	/* Have checked in CanEnterNow
+	if (const auto pMind = pPassenger->MindControlledBy)
+	{
+		if (const auto pManager = pMind->CaptureManager)
+			pManager->FreeUnit(pPassenger);
+	}
+	*/
+
+	pPassenger->Limbo();
+	pTransport->AddPassenger(pPassenger);
+
+	if (pTransport->Type->OpenTopped)
+		pTransport->EnteredOpenTopped(pPassenger);
+
+	pPassenger->Transporter = pTransport;
+
+	if (pPassenger->Type->OpenTopped)
+		pPassenger->SetTargetForPassengers(nullptr);
+
+	pPassenger->Undiscover();
+
+	// Added, to prevent passengers from wanting to get on after getting off
+	pPassenger->QueueUpToEnter = nullptr;
+
+	// Added, to stop the passengers and let OpenTopped work normally
+	pPassenger->SetSpeedPercentage(0.0);
+
+	// Added, to stop hover unit's meaningless behavior
+	if (const auto pHover = locomotion_cast<HoverLocomotionClass*>(pPassenger->Locomotor))
+		pHover->MaxSpeed = 0;
 }
 
 DEFINE_HOOK(0x51A0D4, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x6)
@@ -287,44 +359,9 @@ DEFINE_HOOK(0x51A0D4, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x6)
 
 			if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
 			{
-				if (CanEnterNow(pDest, pThis)) // Replace send radio command: QueryCanEnter
+				if (CanEnterNow(pDest, pThis))
 				{
-					if (const auto pTag = pDest->AttachedTag)
-						pTag->RaiseEvent(TriggerEvent::EnteredBy, pThis, CellStruct::Empty);
-
-					pThis->ArchiveTarget = nullptr;
-					pThis->OnBridge = false;
-					pThis->MissionAccumulateTime = 0;
-					pThis->GattlingValue = 0;
-					pThis->CurrentGattlingStage = 0;
-
-					/* Have checked in CanEnterNow
-					if (const auto pMind = pThis->MindControlledBy)
-					{
-						if (const auto pManager = pMind->CaptureManager)
-							pManager->FreeUnit(pThis);
-					}
-					*/
-
-					pThis->Limbo();
-
-					if (pDest->Type->OpenTopped)
-						pDest->EnteredOpenTopped(pThis);
-
-					pThis->Transporter = pDest;
-					pDest->AddPassenger(pThis);
-					pThis->Undiscover();
-
-					// Added, to prevent passengers from wanting to get on after getting off
-					pThis->QueueUpToEnter = nullptr;
-
-					// Added, to stop the passengers and let OpenTopped work normally
-					pThis->SetSpeedPercentage(0.0);
-
-					// Added, to stop hover unit's meaningless behavior
-					if (const auto pHover = locomotion_cast<HoverLocomotionClass*>(pThis->Locomotor))
-						pHover->MaxSpeed = 0;
-
+					InfantryEnterNow(pDest, pThis);
 					return EnteredThenReturn;
 				}
 			}
@@ -348,47 +385,9 @@ DEFINE_HOOK(0x73A5EA, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 
 			if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
 			{
-				if (CanEnterNow(pDest, pThis)) // Replace send radio command: QueryCanEnter
+				if (CanEnterNow(pDest, pThis))
 				{
-					// I don't know why units have no trigger
-
-					pThis->ArchiveTarget = nullptr;
-					pThis->OnBridge = false;
-					pThis->MissionAccumulateTime = 0;
-					pThis->GattlingValue = 0;
-					pThis->CurrentGattlingStage = 0;
-
-					/* Have checked in CanEnterNow
-					if (const auto pMind = pThis->MindControlledBy)
-					{
-						if (const auto pManager = pMind->CaptureManager)
-							pManager->FreeUnit(pThis);
-					}
-					*/
-
-					pThis->Limbo();
-					pDest->AddPassenger(pThis);
-
-					if (pDest->Type->OpenTopped)
-						pDest->EnteredOpenTopped(pThis);
-
-					pThis->Transporter = pDest;
-
-					if (pThis->Type->OpenTopped)
-						pThis->SetTargetForPassengers(nullptr);
-
-					pThis->Undiscover();
-
-					// Added, to prevent passengers from wanting to get on after getting off
-					pThis->QueueUpToEnter = nullptr;
-
-					// Added, to stop the passengers and let OpenTopped work normally
-					pThis->SetSpeedPercentage(0.0);
-
-					// Added, to stop hover unit's meaningless behavior
-					if (const auto pHover = locomotion_cast<HoverLocomotionClass*>(pThis->Locomotor))
-						pHover->MaxSpeed = 0;
-
+					UnitEnterNow(pDest, pThis);
 					return EnteredThenReturn;
 				}
 			}
@@ -398,12 +397,30 @@ DEFINE_HOOK(0x73A5EA, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	return 0;
 }
 
-static inline void PlayUnitLeaveTransportSound(UnitClass* pThis)
+DEFINE_HOOK(0x70D957, FootClass_QueueEnter_ForceMoving, 0x6)
 {
-	const int sound = pThis->Type->LeaveTransportSound;
+	GET(FootClass* const, pThis, ESI);
 
-	if (sound != -1)
-		VoxClass::PlayAtPos(sound, &pThis->Location);
+	const auto pDest = abstract_cast<UnitClass*>(pThis->QueueUpToEnter);
+
+	if (pDest && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+	{
+		const auto absType = pThis->WhatAmI();
+		// When the distance is very close, the passengers may not move, which can cause UpdatePosition to not be called
+		// So special handling is needed here, avoid not being able to trigger quick boarding without moving
+		if (absType == AbstractType::Infantry)
+		{
+			if (pThis->GetMapCoords().DistanceFromSquared(pDest->GetMapCoords()) <= 2 && CanEnterNow(pDest, pThis))
+				InfantryEnterNow(pDest, static_cast<InfantryClass*>(pThis));
+		}
+		else if (absType == AbstractType::Unit)
+		{
+			if (pThis->GetMapCoords().DistanceFromSquared(pDest->GetMapCoords()) <= 2 && CanEnterNow(pDest, pThis))
+				UnitEnterNow(pDest, static_cast<UnitClass*>(pThis));
+		}
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
@@ -413,11 +430,12 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 	GET(UnitClass* const, pThis, ESI);
 	GET(FootClass* const, pPassenger, EDI);
 
+	// Restore vanilla function
 	pPassenger->Undiscover();
 
 	// Play the sound when interrupted for some reason
 	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
-		PlayUnitLeaveTransportSound(pThis);
+		VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
 
 	return SkipGameCode;
 }
@@ -433,7 +451,7 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 		if (pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
-			PlayUnitLeaveTransportSound(pThis);
+			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
 			pThis->MissionStatus = 4;
 			return UnloadReturn;
 		}
@@ -442,7 +460,8 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 		return UnloadLoop;
 	}
 
-	PlayUnitLeaveTransportSound(pThis);
+	// PlayAtPos has already handled the situation where Sound is less than 0 internally, so unnecessary checks will be skipped
+	VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
 	return UnloadReturn;
 }
 
