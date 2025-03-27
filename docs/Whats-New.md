@@ -681,7 +681,7 @@ Fixes / interactions with other extensions:
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed (by Starkku)
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted (by Starkku)
 - Infantry type conversion from `Deployer=yes` to `no` now correctly update the sequence anim (by Trsdy)
-- Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+- Fixed an issue introduced by Ares that caused building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku & Trsdy)
 - Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles (by Trsdy)
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)

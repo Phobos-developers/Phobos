@@ -7,24 +7,6 @@
 
 #include <Ext/Sidebar/Body.h>
 
-// In vanilla YR, game destroys building animations directly by calling constructor.
-// Ares changed this to call UnInit() which has a consequence of doing pointer invalidation on the AnimClass pointer.
-// This notably causes an issue with Grinder that restores ActiveAnim if the building is sold/destroyed while SpecialAnim is playing even if the building is gone or in limbo.
-// Now it does not do this if the building is in limbo, which covers all cases from being destroyed, sold, to erased by Temporal weapons.
-// There is another potential case for this with ProductionAnim & IdleAnim which is also patched here just in case.
-DEFINE_HOOK_AGAIN(0x44E997, BuildingClass_Detach_RestoreAnims, 0x6)
-DEFINE_HOOK(0x44E9FA, BuildingClass_Detach_RestoreAnims, 0x6)
-{
-	enum { SkipAnimOne = 0x44E9A4, SkipAnimTwo = 0x44EA07 };
-
-	GET(BuildingClass*, pThis, ESI);
-
-	if (pThis->InLimbo)
-		return R->Origin() == 0x44E997 ? SkipAnimOne : SkipAnimTwo;
-
-	return 0;
-}
-
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
@@ -58,7 +40,7 @@ void Apply_Ares3_0_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
-	
+
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
 }
@@ -80,7 +62,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
-	
+
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
 }

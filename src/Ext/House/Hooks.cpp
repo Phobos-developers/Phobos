@@ -196,7 +196,18 @@ void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
-DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3FB4, TechnoClass_UnInit_Wrapper); // BuildingClass
+
+void __fastcall BuildingClass_UnInit_Wrapper(BuildingClass* pThis)
+{
+	for (auto bAnim : pThis->Anims)
+	{
+		if (bAnim && VTable::Get(bAnim) == 0x7E3354)
+			bAnim->UnInit();
+	}
+	TechnoClass_UnInit_Wrapper(pThis);
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3FB4, BuildingClass_UnInit_Wrapper);
 
 DEFINE_HOOK(0x6F6BC9, TechnoClass_Limbo_AddTracking, 0x6)
 {
