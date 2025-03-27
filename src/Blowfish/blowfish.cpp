@@ -1,42 +1,58 @@
-/*******************************************************************************
-/*                 O P E N  S O U R C E  --  V I N I F E R A                  **
-/*******************************************************************************
- *
- *  @project       Vinifera
- *
- *  @file          BLOWFISH.CPP
- *
- *  @author        Joe L. Bostic (see notes below)
- *
- *  @contributors  CCHyper
- *
- *  @brief         This implements the Blowfish algorithm.
- *
- *  @license       Vinifera is free software: you can redistribute it and/or
- *                 modify it under the terms of the GNU General Public License
- *                 as published by the Free Software Foundation, either version
- *                 3 of the License, or (at your option) any later version.
- *
- *                 Vinifera is distributed in the hope that it will be
- *                 useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- *                 PURPOSE. See the GNU General Public License for more details.
- *
- *                 You should have received a copy of the GNU General Public
- *                 License along with this program.
- *                 If not, see <http://www.gnu.org/licenses/>.
- *
- *  @note          This file contains heavily modified code from the source code
- *                 released by Electronic Arts for the C&C Remastered Collection
- *                 under the GPL3 license. Source:
- *                 https://github.com/ElectronicArts/CnC_Remastered_Collection
- *
- ******************************************************************************/
+/*
+**	Command & Conquer Red Alert(tm)
+**	Copyright 2025 Electronic Arts Inc.
+**
+**	This program is free software: you can redistribute it and/or modify
+**	it under the terms of the GNU General Public License as published by
+**	the Free Software Foundation, either version 3 of the License, or
+**	(at your option) any later version.
+**
+**	This program is distributed in the hope that it will be useful,
+**	but WITHOUT ANY WARRANTY; without even the implied warranty of
+**	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**	GNU General Public License for more details.
+**
+**	You should have received a copy of the GNU General Public License
+**	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* $Header: /CounterStrike/BLOWFISH.CPP 1     3/03/97 10:24a Joe_bostic $ */
+/***********************************************************************************************
+ ***              C O N F I D E N T I A L  ---  W E S T W O O D  S T U D I O S               ***
+ ***********************************************************************************************
+ *                                                                                             *
+ *                 Project Name : Command & Conquer                                            *
+ *                                                                                             *
+ *                    File Name : BLOWFISH.CPP                                                 *
+ *                                                                                             *
+ *                   Programmer : Joe L. Bostic                                                *
+ *                                                                                             *
+ *                   Start Date : 04/14/96                                                     *
+ *                                                                                             *
+ *                  Last Update : July 8, 1996 [JLB]                                           *
+ *                                                                                             *
+ *---------------------------------------------------------------------------------------------*
+ * Functions:                                                                                  *
+ *   BlowfishEngine::Decrypt -- Decrypts data using blowfish algorithm.                        *
+ *   BlowfishEngine::Encrypt -- Encrypt an arbitrary block of data.                            *
+ *   BlowfishEngine::Process_Block -- Process a block of data using Blowfish algorithm.        *
+ *   BlowfishEngine::Sub_Key_Encrypt -- Encrypts a block for use in S-Box processing.          *
+ *   BlowfishEngine::Submit_Key -- Submit a key that will allow data processing.               *
+ *   BlowfishEngine::~BlowfishEngine -- Destructor for the Blowfish engine.                    *
+ * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+
 #include "blowfish.h"
 #include <cstring>
 #include <cassert>
 
 
+/*
+**	Byte order controlled long integer. This integer is constructed
+**	so that character 0 (C0) is the most significant byte of the
+**	integer. This is biased toward big endian architecture, but that
+**	just happens to be how the Blowfish algorithm was designed.
+*/
 typedef union {
 	unsigned long Long;
 	struct {
@@ -48,36 +64,79 @@ typedef union {
 } Int;
 
 
-BlowfishEngine::BlowfishEngine() :
-	IsKeyed(false),
-	P_Encrypt(),
-	P_Decrypt(),
-	bf_S()
-{
-}
-
-
-BlowfishEngine::~BlowfishEngine()
+/***********************************************************************************************
+ * BlowfishEngine::~BlowfishEngine -- Destructor for the Blowfish engine.                      *
+ *                                                                                             *
+ *    This destructor will clear out the s-box tables so that even if the memory for the       *
+ *    class remains, it will contain no compromising data.                                     *
+ *                                                                                             *
+ * INPUT:   none                                                                               *
+ *                                                                                             *
+ * OUTPUT:  none                                                                               *
+ *                                                                                             *
+ * WARNINGS:   none                                                                            *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   07/08/1996 JLB : Created.                                                                 *
+ *=============================================================================================*/
+BlowfishEngine::~BlowfishEngine(void)
 {
 	if (IsKeyed) {
-		Submit_Key(nullptr, 0);
+		Submit_Key(NULL, 0);
 	}
 }
 
 
+/***********************************************************************************************
+ * BlowfishEngine::Submit_Key -- Submit a key that will allow data processing.                 *
+ *                                                                                             *
+ *    This routine must be called before any data can be encrypted or decrypted. This routine  *
+ *    need only be called when the key is to be changed or set for the first time. Once the    *
+ *    key has been set, the engine may be used to encrypt, decrypt, or both operations         *
+ *    indefinitely. The key must be 56 bytes or less in length. This is necessary because      *
+ *    any keys longer than that will not correctly affect the encryption process.              *
+ *                                                                                             *
+ *    If the key pointer is NULL, then the S-Box tables are reset to identity. This will       *
+ *    mask the previous key setting. Use this method to clear the engine after processing in   *
+ *    order to gain a measure of security.                                                     *
+ *                                                                                             *
+ * INPUT:   key      -- Pointer to the key data block.                                         *
+ *                                                                                             *
+ *          length   -- The length of the submitted key.                                       *
+ *                                                                                             *
+ * OUTPUT:  none                                                                               *
+ *                                                                                             *
+ * WARNINGS:   This is a time consuming process.                                               *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   04/14/1996 JLB : Created.                                                                 *
+ *=============================================================================================*/
 void BlowfishEngine::Submit_Key(void const * key, int length)
 {
 	assert(length <= MAX_KEY_LENGTH);
 
-	std::memcpy(P_Encrypt, P_Init, sizeof(P_Init));
-	std::memcpy(P_Decrypt, P_Init, sizeof(P_Init));
-	std::memcpy(bf_S, S_Init, sizeof(S_Init));
+	/*
+	**	Initialize the permutation and S-Box tables to a known
+	**	constant value.
+	*/
+	memcpy(P_Encrypt, P_Init, sizeof(P_Init));
+	memcpy(P_Decrypt, P_Init, sizeof(P_Init));
+	memcpy(bf_S, S_Init, sizeof(S_Init));
 
+	/*
+	**	Validate parameters.
+	*/
 	if (key == 0 || length == 0) {
 		IsKeyed = false;
 		return;
 	}
 
+	/*
+	**	Combine the key with the permutation table. Wrap the key
+	**	as many times as necessary to ensure that the entire
+	**	permutation table has been modified. The key is lifted
+	**	into a long by using endian independent means.
+	*/
 	int j = 0;
 	unsigned char const * key_ptr = (unsigned char const *)key;
 	unsigned long * p_ptr = &P_Encrypt[0];
@@ -92,10 +151,17 @@ void BlowfishEngine::Submit_Key(void const * key, int length)
 		*p_ptr++ ^= data;
 	}
 
+	/*
+	**	The permutation table must be scrambled by means of the key. This
+	**	is how the key is factored into the encryption -- by merely altering
+	**	the permutation (and S-Box) tables. Because this transformation alters
+	**	the table data WHILE it is using the table data, the tables are
+	**	thoroughly obfuscated by this process.
+	*/
 	unsigned long left = 0x00000000L;
 	unsigned long right = 0x00000000L;
-	unsigned long * p_en = &P_Encrypt[0];
-	unsigned long * p_de = &P_Decrypt[ROUNDS+1];
+	unsigned long * p_en = &P_Encrypt[0];			// Encryption table.
+	unsigned long * p_de = &P_Decrypt[ROUNDS+1];	// Decryption table.
 	for (int p_index = 0; p_index < ROUNDS+2; p_index += 2) {
 		Sub_Key_Encrypt(left, right);
 
@@ -106,6 +172,11 @@ void BlowfishEngine::Submit_Key(void const * key, int length)
 		*p_de-- = right;
 	}
 
+	/*
+	**	Perform a similar transmutation to the S-Box tables. Also notice that the
+	**	working 64 bit number is carried into this process from the previous
+	**	operation.
+	*/
 	for (int sbox_index = 0; sbox_index < 4; sbox_index++) {
 		for (int ss_index = 0; ss_index < UCHAR_MAX+1; ss_index += 2) {
 			Sub_Key_Encrypt(left, right);
@@ -118,18 +189,45 @@ void BlowfishEngine::Submit_Key(void const * key, int length)
 }
 
 
+/***********************************************************************************************
+ * BlowfishEngine::Encrypt -- Encrypt an arbitrary block of data.                              *
+ *                                                                                             *
+ *    Use this routine to encrypt an arbitrary block of data. The block must be an even        *
+ *    multiple of 8 bytes. Any bytes left over will not be encrypted. The 8 byte requirement   *
+ *    is necessary because the underlying algorithm processes blocks in 8 byte chunks.         *
+ *    Partial blocks are unrecoverable and useless.                                            *
+ *                                                                                             *
+ * INPUT:   plaintext-- Pointer to the data block to be encrypted.                             *
+ *                                                                                             *
+ *          length   -- The length of the data block.                                          *
+ *                                                                                             *
+ *          cyphertext- Pointer to the output buffer that will hold the encrypted data.        *
+ *                                                                                             *
+ * OUTPUT:  Returns with the actual number of bytes encrypted.                                 *
+ *                                                                                             *
+ * WARNINGS:   You must submit the key before calling this routine. This will only encrypt     *
+ *             the plaintext in 8 byte increments. Modulo bytes left over are not processed.   *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   04/14/1996 JLB : Created.                                                                 *
+ *=============================================================================================*/
 int BlowfishEngine::Encrypt(void const * plaintext, int length, void * cyphertext)
 {
 	if (plaintext == 0 || length == 0) {
-		return 0;
+		return(0);
 	}
-
 	if (cyphertext == 0) cyphertext = (void *)plaintext;
 
 	if (IsKeyed) {
 
+		/*
+		**	Validate parameters.
+		*/
 		int blocks = length / BYTES_PER_BLOCK;
 
+		/*
+		**	Process the buffer in 64 bit chunks.
+		*/
 		for (int index = 0; index < blocks; index++) {
 			Process_Block(plaintext, cyphertext, P_Encrypt);
 			plaintext = ((char *)plaintext) + BYTES_PER_BLOCK;
@@ -137,35 +235,65 @@ int BlowfishEngine::Encrypt(void const * plaintext, int length, void * cyphertex
 		}
 		int encrypted = blocks * BYTES_PER_BLOCK;
 
+		/*
+		**	Copy over any trailing left over appendix bytes.
+		*/
 		if (encrypted < length) {
-			std::memmove(cyphertext, plaintext, length - encrypted);
+			memmove(cyphertext, plaintext, length - encrypted);
 		}
 
 		return(encrypted);
 	}
 
+	/*
+	**	Non-keyed processing merely copies the data.
+	*/
 	if (plaintext != cyphertext) {
-		std::memmove(cyphertext, plaintext, length);
+		memmove(cyphertext, plaintext, length);
 	}
-
-	return length;
+	return(length);
 }
 
 
+/***********************************************************************************************
+ * BlowfishEngine::Decrypt -- Decrypt an arbitrary block of data.                              *
+ *                                                                                             *
+ *    Use this routine to decrypt an arbitrary block of data. The block must be an even        *
+ *    multiple of 8 bytes. Any bytes left over will not be decrypted. The 8 byte requirement   *
+ *    is necessary because the underlying algorithm processes blocks in 8 byte chunks.         *
+ *    Partial blocks are unrecoverable and useless.                                            *
+ *                                                                                             *
+ * INPUT:   cyphertext- Pointer to the data block to be decrypted.                             *
+ *                                                                                             *
+ *          length   -- The length of the data block.                                          *
+ *                                                                                             *
+ *          plaintext-- Pointer to the output buffer that will hold the decrypted data.        *
+ *                                                                                             *
+ * OUTPUT:  Returns with the actual number of bytes decrypted.                                 *
+ *                                                                                             *
+ * WARNINGS:   You must submit the key before calling this routine. This will only decrypt     *
+ *             the cyphertext in 8 byte increments. Modulo bytes left over are not processed.  *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   04/14/1996 JLB : Created.                                                                 *
+ *=============================================================================================*/
 int BlowfishEngine::Decrypt(void const * cyphertext, int length, void * plaintext)
 {
 	if (cyphertext == 0 || length == 0) {
-		return 0;
+		return(0);
 	}
-
-	if (plaintext == 0) {
-		plaintext = (void *)cyphertext;
-	}
+	if (plaintext == 0) plaintext = (void *)cyphertext;
 
 	if (IsKeyed) {
 
+		/*
+		**	Validate parameters.
+		*/
 		int blocks = length / BYTES_PER_BLOCK;
 
+		/*
+		**	Process the buffer in 64 bit chunks.
+		*/
 		for (int index = 0; index < blocks; index++) {
 			Process_Block(cyphertext, plaintext, P_Decrypt);
 			cyphertext = ((char *)cyphertext) + BYTES_PER_BLOCK;
@@ -173,23 +301,59 @@ int BlowfishEngine::Decrypt(void const * cyphertext, int length, void * plaintex
 		}
 		int encrypted = blocks * BYTES_PER_BLOCK;
 
+		/*
+		**	Copy over any trailing left over appendix bytes.
+		*/
 		if (encrypted < length) {
-			std::memmove(plaintext, cyphertext, length - encrypted);
+			memmove(plaintext, cyphertext, length - encrypted);
 		}
 
-		return encrypted;
+		return(encrypted);
 	}
 
+	/*
+	**	Non-keyed processing merely copies the data.
+	*/
 	if (plaintext != cyphertext) {
-		std::memmove(plaintext, cyphertext, length);
+		memmove(plaintext, cyphertext, length);
 	}
-
-	return length;
+	return(length);
 }
 
 
+/***********************************************************************************************
+ * BlowfishEngine::Process_Block -- Process a block of data using Blowfish algorithm.          *
+ *                                                                                             *
+ *    This is the main processing routine for encryption and decryption. The algorithm         *
+ *    consists of a 16 round Feistal network and uses mathematics from different algebraic     *
+ *    groups (strengthens against differential cryptanalysis). The large S-Boxes and the       *
+ *    rounds strengthen it against linear cryptanalysis.                                       *
+ *                                                                                             *
+ * INPUT:   plaintext   -- Pointer to the source text (it actually might be a pointer to       *
+ *                         the cyphertext if this is called as a decryption process).          *
+ *                                                                                             *
+ *          cyphertext  -- Pointer to the output buffer that will hold the processed block.    *
+ *                                                                                             *
+ *          ptable      -- Pointer to the permutation table. This algorithm will encrypt       *
+ *                         and decrypt using the same S-Box tables. The encryption control     *
+ *                         is handled by the permutation table.                                *
+ *                                                                                             *
+ * OUTPUT:  none                                                                               *
+ *                                                                                             *
+ * WARNINGS:   The source and destination buffers must be 8 bytes long.                        *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   04/19/1996 JLB : Created.                                                                 *
+ *=============================================================================================*/
 void BlowfishEngine::Process_Block(void const * plaintext, void * cyphertext, unsigned long const * ptable)
 {
+	/*
+	**	Input the left and right halves of the source block such that
+	**	the byte order is constant regardless of the endian
+	**	persuasion of the current processor. The blowfish algorithm is
+	**	biased toward "big endian" architecture and some optimizations
+	**	could be done for big endian processors in that case.
+	*/
 	unsigned char const * source = (unsigned char const *)plaintext;
 	Int left;
 	left.Char.C0 = *source++;
@@ -203,6 +367,11 @@ void BlowfishEngine::Process_Block(void const * plaintext, void * cyphertext, un
 	right.Char.C2 = *source++;
 	right.Char.C3 = *source;
 
+	/*
+	**	Perform all Feistal rounds on the block. This is the encryption/decryption
+	**	process. Since there is an exchange that occurs after each round, two
+	**	rounds are combined in this loop to avoid unnecessary exchanging.
+	*/
 	for (int index = 0; index < ROUNDS/2; index++) {
 		left.Long ^= *ptable++;
 		right.Long ^= ((( bf_S[0][left.Char.C0] + bf_S[1][left.Char.C1]) ^ bf_S[2][left.Char.C2]) + bf_S[3][left.Char.C3]);
@@ -210,9 +379,21 @@ void BlowfishEngine::Process_Block(void const * plaintext, void * cyphertext, un
 		left.Long ^= ((( bf_S[0][right.Char.C0] + bf_S[1][right.Char.C1]) ^ bf_S[2][right.Char.C2]) + bf_S[3][right.Char.C3]);
 	}
 
+	/*
+	**	The final two longs in the permutation table are processed into the block.
+	**	The left and right halves are still reversed as a side effect of the last
+	**	round.
+	*/
 	left.Long ^= *ptable++;
 	right.Long ^= *ptable;
 
+	/*
+	**	The final block data is output in endian architecture
+	**	independent format. Notice that the blocks are output as
+	**	right first and left second. This is to counteract the final
+	**	superfluous exchange that occurs as a side effect of the
+	**	encryption rounds.
+	*/
 	unsigned char * out = (unsigned char *)cyphertext;
 	*out++ = right.Char.C0;
 	*out++ = right.Char.C1;
@@ -226,6 +407,27 @@ void BlowfishEngine::Process_Block(void const * plaintext, void * cyphertext, un
 }
 
 
+/***********************************************************************************************
+ * BlowfishEngine::Sub_Key_Encrypt -- Encrypts a block for use in S-Box processing.            *
+ *                                                                                             *
+ *    This is the same as the normal process block function but it doesn't have the endian     *
+ *    fixup logic. Since this routine is only called for S-Box table generation and it is      *
+ *    known that the S-Box initial data is already in local machine endian format, the         *
+ *    byte order fixups are not needed. This also has a tendency to speed up S-Box generation  *
+ *    as well.                                                                                 *
+ *                                                                                             *
+ * INPUT:   left  -- The left half of the data block.                                          *
+ *                                                                                             *
+ *          right -- The right half of the data block.                                         *
+ *                                                                                             *
+ * OUTPUT:  none, but the processed block is stored back into the left and right half          *
+ *          integers.                                                                          *
+ *                                                                                             *
+ * WARNINGS:   none                                                                            *
+ *                                                                                             *
+ * HISTORY:                                                                                    *
+ *   04/19/1996 JLB : Created.                                                                 *
+ *=============================================================================================*/
 void BlowfishEngine::Sub_Key_Encrypt(unsigned long & left, unsigned long & right)
 {
 	Int l;
@@ -244,6 +446,13 @@ void BlowfishEngine::Sub_Key_Encrypt(unsigned long & left, unsigned long & right
 	right = l.Long ^ P_Encrypt[ROUNDS];
 }
 
+
+/*
+**	These tables have the bytes stored in machine endian format. Because of this,
+**	a special block cypher routine is needed when the sub-keys are generated.
+**	This is kludgier than it otherwise should be. However, storing these
+**	integers in machine independent format would be even more painful.
+*/
 
 unsigned long const BlowfishEngine::P_Init[BlowfishEngine::ROUNDS+2] = {
 	0x243F6A88U,0x85A308D3U,0x13198A2EU,0x03707344U,0xA4093822U,0x299F31D0U,0x082EFA98U,0xEC4E6C89U,
