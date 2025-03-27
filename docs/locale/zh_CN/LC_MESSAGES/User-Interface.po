@@ -1624,7 +1624,7 @@ msgid ""
 "is `SW.Shots`."
 msgstr ""
 "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf "
-"中自定义。如果使用双参数格式（例如 `还剩 `%d/%d 发`），第二个整数是 `SW.Shots`。"
+"中自定义。如果使用双参数格式（例如 `还剩 %d/%d 发`），第二个整数是 `SW.Shots`。"
 
 #: ../../User-Interface.md:575
 msgid ""
