@@ -103,7 +103,7 @@ WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponI
 			if (!pTypeExt->DeployFireWeapon.isset())
 			{
 				weaponIndex = 0;
-				auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+				auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
 
 				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
 					weaponIndex = 1;
@@ -173,7 +173,7 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	int weaponIndex = -1;
 	auto pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndex);
 
-	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall)
+	if ((pTechnoType->TurretCount > 0 && !pTechnoType->IsGattling) || !pWallOverlayType || !pWallOverlayType->Wall || !RulesExt::Global()->AllowWeaponSelectAgainstWalls)
 		return weaponIndex;
 	else if (weaponIndex == -1)
 		return 0;
@@ -188,8 +188,8 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 		pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		bool aeForbidsSecondary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
-		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood)
-			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary)) && !aeForbidsSecondary)
+		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood))
+			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary) && !aeForbidsSecondary)
 		{
 			return weaponIndexSec;
 		}
@@ -209,15 +209,8 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	if (!pWHExt->KillWeapon || pTypeExt->SuppressKillWeapons || !EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectHouses, pSource->Owner, pThis->Owner))
 		return;
 
-	if (pWHExt->KillWeapon_AffectTypes.size() > 0 && !pWHExt->KillWeapon_AffectTypes.Contains(pType))
-		return;
-
-	if (pWHExt->KillWeapon_IgnoreTypes.size() > 0 && pWHExt->KillWeapon_IgnoreTypes.Contains(pType))
-		return;
-
 	if (pTypeExt->SuppressKillWeapons_Types.size() > 0 && pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon))
 		return;
 
-	if (EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_AffectTargets))
-		WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
+	WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
 }

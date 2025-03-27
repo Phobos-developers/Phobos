@@ -292,7 +292,10 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 
 constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
 {
-	return flag == TrajectoryFlag::Straight;
+	return flag != TrajectoryFlag::Invalid;
+/*	return flag == TrajectoryFlag::Straight
+		|| flag == TrajectoryFlag::Bombard
+		|| flag == TrajectoryFlag::Parabola;*/
 }
 
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
@@ -459,6 +462,18 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 
 	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
 		return SkipCheck;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5A8C, ObjectClass_SpawnParachuted_BombParachute, 0x5)
+{
+	GET(BulletClass*, pThis, ESI);
+
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->BombParachute)
+		R->EDX(pTypeExt->BombParachute.Get());
 
 	return 0;
 }

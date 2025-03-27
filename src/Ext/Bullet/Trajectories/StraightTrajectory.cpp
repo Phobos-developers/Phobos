@@ -98,14 +98,9 @@ void StraightTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->SubjectToGround.Read(exINI, pSection, "Trajectory.Straight.SubjectToGround");
 	this->ConfineAtHeight.Read(exINI, pSection, "Trajectory.Straight.ConfineAtHeight");
 	this->EdgeAttenuation.Read(exINI, pSection, "Trajectory.Straight.EdgeAttenuation");
-
-	if (this->EdgeAttenuation < 0.0)
-		this->EdgeAttenuation = 0.0;
-
+	this->EdgeAttenuation = Math::max(0.0, this->EdgeAttenuation);
 	this->CountAttenuation.Read(exINI, pSection, "Trajectory.Straight.CountAttenuation");
-
-	if (this->CountAttenuation < 0.0)
-		this->CountAttenuation = 0.0;
+	this->CountAttenuation = Math::max(0.0, this->CountAttenuation);
 }
 
 template<typename T>
@@ -152,6 +147,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	pBullet->Velocity = BulletVelocity::Empty;
 	const auto pFirer = pBullet->Owner;
 
+	// Determine the range of the bullet
 	if (const auto pWeapon = pBullet->WeaponType)
 	{
 		this->AttenuationRange = pWeapon->Range;
@@ -168,6 +164,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		}
 	}
 
+	// Record some information of the attacker
 	if (pFirer)
 	{
 		this->CurrentBurst = pFirer->CurrentBurstIndex;
@@ -180,6 +177,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 			this->OffsetCoord.Y = -(this->OffsetCoord.Y);
 	}
 
+	// Wait, or launch immediately?
 	if (!pType->LeadTimeCalculate || !abstract_cast<FootClass*>(pBullet->Target))
 		this->PrepareForOpenFire(pBullet);
 	else
@@ -216,16 +214,20 @@ bool StraightTrajectory::OnAI(BulletClass* pBullet)
 void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
+
+	// Calculate the current damage
 	const auto pTechno = abstract_cast<TechnoClass*>(pBullet->Target);
 	pBullet->Health = this->GetTheTrueDamage(pBullet->Health, pBullet, pTechno, true);
 
+	// Whether to detonate at ground level?
 	if (pType->PassDetonateLocal)
 	{
 		CoordStruct detonateCoords = pBullet->Location;
-		detonateCoords.Z = MapClass::Instance->GetCellFloorHeight(detonateCoords);
+		detonateCoords.Z = MapClass::Instance.GetCellFloorHeight(detonateCoords);
 		pBullet->SetLocation(detonateCoords);
 	}
 
+	// Can snap to target?
 	const auto targetSnapDistance = pType->TargetSnapDistance.Get();
 
 	if (pType->PassThrough || targetSnapDistance <= 0)
@@ -234,6 +236,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	const auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	const auto coords = pTarget ? pTarget->GetCoords() : pBullet->Data.Location;
 
+	// Whether to snap to target?
 	if (coords.DistanceFrom(pBullet->Location) <= targetSnapDistance)
 	{
 		const auto pExt = BulletExt::ExtMap.Find(pBullet);
@@ -261,68 +264,73 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 {
 	const auto pType = this->Type;
 	double rotateAngle = 0.0;
-	const auto pTarget = pBullet->Target;
 	auto theTargetCoords = pBullet->TargetCoords;
 	auto theSourceCoords = pBullet->SourceCoords;
 
 	// TODO If I could calculate this before firing, perhaps it can solve the problem of one frame delay and not so correct turret orientation.
-	if (pType->LeadTimeCalculate && pTarget)
+	if (pType->LeadTimeCalculate)
 	{
-		theTargetCoords = pTarget->GetCoords();
-		theSourceCoords = pBullet->Location;
-
-		if (theTargetCoords != this->LastTargetCoord)
+		if (const auto pTarget = pBullet->Target)
 		{
-			const auto extraOffsetCoord = theTargetCoords - this->LastTargetCoord;
-			const auto targetSourceCoord = theSourceCoords - theTargetCoords;
-			const auto lastSourceCoord = theSourceCoords - this->LastTargetCoord;
+			theTargetCoords = pTarget->GetCoords();
+			theSourceCoords = pBullet->Location;
 
-			const auto theDistanceSquared = targetSourceCoord.MagnitudeSquared();
-			const auto targetSpeedSquared = extraOffsetCoord.MagnitudeSquared();
-			const auto targetSpeed = sqrt(targetSpeedSquared);
-
-			const auto crossFactor = lastSourceCoord.CrossProduct(targetSourceCoord).MagnitudeSquared();
-			const auto verticalDistanceSquared = crossFactor / targetSpeedSquared;
-
-			const auto horizonDistanceSquared = theDistanceSquared - verticalDistanceSquared;
-			const auto horizonDistance = sqrt(horizonDistanceSquared);
-
-			const auto straightSpeedSquared = pType->Trajectory_Speed * pType->Trajectory_Speed;
-			const auto baseFactor = straightSpeedSquared - targetSpeedSquared;
-			const auto squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
-
-			if (squareFactor > 1e-10)
+			// Solving trigonometric functions
+			if (theTargetCoords != this->LastTargetCoord)
 			{
-				const auto minusFactor = -(horizonDistance * targetSpeed);
-				int travelTime = 0;
+				const auto extraOffsetCoord = theTargetCoords - this->LastTargetCoord;
+				const auto targetSourceCoord = theSourceCoords - theTargetCoords;
+				const auto lastSourceCoord = theSourceCoords - this->LastTargetCoord;
 
-				if (std::abs(baseFactor) < 1e-10)
+				const auto theDistanceSquared = targetSourceCoord.MagnitudeSquared();
+				const auto targetSpeedSquared = extraOffsetCoord.MagnitudeSquared();
+				const auto targetSpeed = sqrt(targetSpeedSquared);
+
+				const auto crossFactor = lastSourceCoord.CrossProduct(targetSourceCoord).MagnitudeSquared();
+				const auto verticalDistanceSquared = crossFactor / targetSpeedSquared;
+
+				const auto horizonDistanceSquared = theDistanceSquared - verticalDistanceSquared;
+				const auto horizonDistance = sqrt(horizonDistanceSquared);
+
+				const auto straightSpeedSquared = pType->Trajectory_Speed * pType->Trajectory_Speed;
+				const auto baseFactor = straightSpeedSquared - targetSpeedSquared;
+				const auto squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
+
+				// Is there a solution?
+				if (squareFactor > 1e-10)
 				{
-					travelTime = std::abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
-				}
-				else
-				{
-					const auto travelTimeM = static_cast<int>((minusFactor - sqrt(squareFactor)) / baseFactor);
-					const auto travelTimeP = static_cast<int>((minusFactor + sqrt(squareFactor)) / baseFactor);
+					const auto minusFactor = -(horizonDistance * targetSpeed);
+					int travelTime = 0;
 
-					if (travelTimeM > 0 && travelTimeP > 0)
-						travelTime = travelTimeM < travelTimeP ? travelTimeM : travelTimeP;
-					else if (travelTimeM > 0)
-						travelTime = travelTimeM;
-					else if (travelTimeP > 0)
-						travelTime = travelTimeP;
-
-					if (targetSourceCoord.MagnitudeSquared() < lastSourceCoord.MagnitudeSquared())
-						travelTime += 1;
+					if (std::abs(baseFactor) < 1e-10)
+					{
+						travelTime = std::abs(horizonDistance) > 1e-10 ? (static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + 1) : 0;
+					}
 					else
-						travelTime += 2;
-				}
+					{
+						const auto travelTimeM = static_cast<int>((minusFactor - sqrt(squareFactor)) / baseFactor);
+						const auto travelTimeP = static_cast<int>((minusFactor + sqrt(squareFactor)) / baseFactor);
 
-				theTargetCoords += extraOffsetCoord * travelTime;
+						if (travelTimeM > 0 && travelTimeP > 0)
+							travelTime = travelTimeM < travelTimeP ? travelTimeM : travelTimeP;
+						else if (travelTimeM > 0)
+							travelTime = travelTimeM;
+						else if (travelTimeP > 0)
+							travelTime = travelTimeP;
+
+						if (targetSourceCoord.MagnitudeSquared() < lastSourceCoord.MagnitudeSquared())
+							travelTime += 1;
+						else
+							travelTime += 2;
+					}
+
+					theTargetCoords += extraOffsetCoord * travelTime;
+				}
 			}
 		}
 	}
 
+	// Calculate the orientation of the coordinate system
 	if (!pType->LeadTimeCalculate && theTargetCoords == theSourceCoords && pBullet->Owner) // For disperse.
 	{
 		const auto theOwnerCoords = pBullet->Owner->GetCoords();
@@ -333,6 +341,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		rotateAngle = Math::atan2(theTargetCoords.Y - theSourceCoords.Y , theTargetCoords.X - theSourceCoords.X);
 	}
 
+	// Add the fixed offset value
 	if (this->OffsetCoord != CoordStruct::Empty)
 	{
 		theTargetCoords.X += static_cast<int>(this->OffsetCoord.X * Math::cos(rotateAngle) + this->OffsetCoord.Y * Math::sin(rotateAngle));
@@ -340,6 +349,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		theTargetCoords.Z += this->OffsetCoord.Z;
 	}
 
+	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 	{
 		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
@@ -350,6 +360,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		theTargetCoords = MapClass::GetRandomCoordsNear(theTargetCoords, offsetDistance, false);
 	}
 
+	// Determine the distance that the bullet can travel
 	if (pType->PassThrough)
 	{
 		if (this->DetonationDistance > 0)
@@ -364,6 +375,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		this->RemainingDistance += static_cast<int>(theSourceCoords.DistanceFrom(theTargetCoords) + pType->Trajectory_Speed);
 	}
 
+	// Determine the firing velocity vector of the bullet
 	pBullet->TargetCoords = theTargetCoords;
 	pBullet->Velocity.X = static_cast<double>(theTargetCoords.X - theSourceCoords.X);
 	pBullet->Velocity.Y = static_cast<double>(theTargetCoords.Y - theSourceCoords.Y);
@@ -373,6 +385,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 	else
 		pBullet->Velocity.Z = static_cast<double>(this->GetVelocityZ(pBullet));
 
+	// Rotate the selected angle
 	if (!this->UseDisperseBurst && std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 	{
 		const auto axis = pType->AxisOfRotation.Get();
@@ -386,6 +399,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 
 		const auto rotationAxisLengthSquared = rotationAxis.MagnitudeSquared();
 
+		// Rotate around the axis of rotation
 		if (std::abs(rotationAxisLengthSquared) > 1e-10)
 		{
 			double extraRotate = 0.0;
@@ -408,6 +422,7 @@ void StraightTrajectory::PrepareForOpenFire(BulletClass* pBullet)
 		}
 	}
 
+	// Substitute the speed to calculate velocity
 	if (this->CalculateBulletVelocity(pBullet))
 		this->RemainingDistance = 0;
 }
@@ -419,6 +434,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 	auto targetCellZ = pBullet->TargetCoords.Z;
 	auto bulletVelocityZ = static_cast<int>(targetCellZ - sourceCellZ);
 
+	// Subtract directly if no need to pass through the target
 	if (!pType->PassThrough)
 		return bulletVelocityZ;
 
@@ -440,8 +456,10 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 			targetCellZ += CellClass::BridgeHeight;
 	}
 
+	// If both are at the same height, use the DetonationDistance to calculate which position behind the target needs to be aimed
 	if (sourceCellZ == targetCellZ || std::abs(bulletVelocityZ) <= 32)
 	{
+		// Infinite distance, horizontal emission
 		if (!this->DetonationDistance)
 			return 0;
 
@@ -450,6 +468,7 @@ int StraightTrajectory::GetVelocityZ(BulletClass* pBullet)
 		const auto distanceOfTwo = sourceCoords.DistanceFrom(targetCoords);
 		const auto theDistance = (this->DetonationDistance < 0) ? (distanceOfTwo - this->DetonationDistance) : this->DetonationDistance;
 
+		// Calculate the ratio for subsequent speed calculation
 		if (std::abs(theDistance) > 1e-10)
 			bulletVelocityZ = static_cast<int>(bulletVelocityZ * (distanceOfTwo / theDistance));
 		else
@@ -495,9 +514,11 @@ bool StraightTrajectory::BulletPrepareCheck(BulletClass* pBullet)
 
 bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 {
+	// If this value is not empty, it means that the projectile should be directly detonated at this time. This cannot be taken out here for use.
 	if (this->ExtraCheck)
 		return true;
 
+	// Check the remaining travel distance of the bullet
 	this->RemainingDistance -= static_cast<int>(this->Type->Trajectory_Speed);
 
 	if (this->RemainingDistance < 0)
@@ -505,13 +526,16 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 
 	const auto pType = this->Type;
 
+	// Need to detonate it in advance?
 	if (!pType->PassThrough && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
-	if (pType->SubjectToGround && MapClass::Instance->GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
+	// Below ground level? (16 ->error range)
+	if (pType->SubjectToGround && MapClass::Instance.GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 16))
 		return true;
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(pBullet->Location))
+	// Out of map?
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(pBullet->Location))
 		return false;
 	else
 		return true;
@@ -524,6 +548,7 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 	bool velocityCheck = false;
 	double locationDistance = this->RemainingDistance;
 
+	// Check if the distance to the destination exceeds the speed limit
 	if (locationDistance < pType->Trajectory_Speed)
 		velocityCheck = true;
 
@@ -532,21 +557,16 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 
 	if (pType->Trajectory_Speed < 256.0) // Low speed with checkSubject was already done well.
 	{
-		if (checkThrough)
+		// Blocked by obstacles?
+		if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, MapClass::Instance.GetCellAt(pBullet->Location), pOwner))
 		{
-			if (const auto pCell = MapClass::Instance->GetCellAt(pBullet->Location))
-			{
-				if (this->CheckThroughAndSubjectInCell(pBullet, pCell, pOwner))
-				{
-					locationDistance = 0.0;
-					velocityCheck = true;
-				}
-			}
+			locationDistance = 0.0;
+			velocityCheck = true;
 		}
 	}
-	else if (checkThrough || checkSubject)
+	else if (checkThrough || checkSubject) // When in high speed, it's necessary to check each cell on the path that the next frame will pass through
 	{
-		const auto theSourceCoords = pBullet->Location;
+		const auto& theSourceCoords = pBullet->Location;
 		const CoordStruct theTargetCoords
 		{
 			pBullet->Location.X + static_cast<int>(pBullet->Velocity.X),
@@ -562,26 +582,14 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 		auto largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
 		const auto stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
 		auto curCoord = theSourceCoords;
-		auto pCurCell = MapClass::Instance->GetCellAt(sourceCell);
+		auto pCurCell = MapClass::Instance.GetCellAt(sourceCell);
 		double cellDistance = locationDistance;
 
 		for (size_t i = 0; i < largePace; ++i)
 		{
-			if (pType->SubjectToGround && (curCoord.Z + 15) < MapClass::Instance->GetCellFloorHeight(curCoord))
-			{
-				velocityCheck = true;
-				cellDistance = curCoord.DistanceFrom(theSourceCoords);
-				break;
-			}
-
-			if (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall)
-			{
-				velocityCheck = true;
-				cellDistance = curCoord.DistanceFrom(theSourceCoords);
-				break;
-			}
-
-			if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
+			if ((pType->SubjectToGround && (curCoord.Z + 16) < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level? (16 ->error range)
+				|| (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array.GetItem(pCurCell->OverlayTypeIndex)->Wall) // Impact on the wall?
+				|| (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))) // Blocked by obstacles?
 			{
 				velocityCheck = true;
 				cellDistance = curCoord.DistanceFrom(theSourceCoords);
@@ -589,12 +597,13 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 			}
 
 			curCoord += stepCoord;
-			pCurCell = MapClass::Instance->GetCellAt(curCoord);
+			pCurCell = MapClass::Instance.GetCellAt(curCoord);
 		}
 
 		locationDistance = cellDistance;
 	}
 
+	// Check if the bullet needs to slow down the speed
 	if (velocityCheck)
 	{
 		this->RemainingDistance = 0;
@@ -610,8 +619,10 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 {
 	const auto pType = this->Type;
 
+	// Obstacles were detected in the current frame here
 	if (const auto pDetonateAt = this->ExtraCheck)
 	{
+		// Slow down and reset the target
 		const auto position = pDetonateAt->GetCoords();
 		const auto distance = position.DistanceFrom(pBullet->Location);
 		const auto velocity = pBullet->Velocity.Magnitude();
@@ -622,6 +633,7 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 		if (std::abs(velocity) > 1e-10 && distance < velocity)
 			pBullet->Velocity *= distance / velocity;
 
+		// Need to cause additional damage?
 		if (this->ProximityImpact != 0)
 		{
 			const auto pWH = pType->ProximityWarhead;
@@ -633,8 +645,10 @@ void StraightTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, HouseClas
 
 			if (pType->ProximityDirect)
 				pDetonateAt->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
+			else if (pType->ProximityMedial)
+				WarheadTypeExt::DetonateAt(pWH, pBullet->Location, pBullet->Owner, damage, pOwner);
 			else
-				WarheadTypeExt::DetonateAt(pWH, pType->ProximityMedial ? pBullet->Location : position, pBullet->Owner, damage, pOwner, pType->ProximityMedial ? nullptr : pDetonateAt);
+				WarheadTypeExt::DetonateAt(pWH, position, pBullet->Owner, damage, pOwner, pDetonateAt);
 
 			this->CalculateNewDamage(pBullet);
 		}
@@ -651,11 +665,13 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 		const auto pTechno = abstract_cast<TechnoClass*>(pObject);
 		pObject = pObject->NextObject;
 
-		if (!pTechno || (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != abstract_cast<TechnoClass*>(pBullet->Target)))
+		// Non technos and not target friendly forces will be excluded
+		if (!pTechno || (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pBullet->Target))
 			continue;
 
 		const auto technoType = pTechno->WhatAmI();
 
+		// Check building obstacles
 		if (technoType == AbstractType::Building)
 		{
 			const auto pBuilding = static_cast<BuildingClass*>(pTechno);
@@ -670,6 +686,7 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 			}
 		}
 
+		// Check unit obstacles
 		if (!pType->ThroughVehicles && (technoType == AbstractType::Unit || technoType == AbstractType::Aircraft))
 		{
 			this->ExtraCheck = pTechno;
@@ -685,8 +702,10 @@ void StraightTrajectory::CalculateNewDamage(BulletClass* pBullet)
 	const auto pType = this->Type;
 	const auto ratio = pType->CountAttenuation.Get();
 
+	// Calculate the attenuation damage under three different scenarios
 	if (ratio != 1.0)
 	{
+		// If the ratio is not 0, the lowest damage will be retained
 		if (ratio)
 		{
 			if (pBullet->Health)
@@ -735,8 +754,9 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 		this->PassDetonateTimer.Start(pType->PassDetonateDelay > 0 ? pType->PassDetonateDelay : 1);
 		auto detonateCoords = pBullet->Location;
 
+		// Whether to detonate at ground level?
 		if (pType->PassDetonateLocal)
-			detonateCoords.Z = MapClass::Instance->GetCellFloorHeight(detonateCoords);
+			detonateCoords.Z = MapClass::Instance.GetCellFloorHeight(detonateCoords);
 
 		const auto damage = this->GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, false);
 		WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
@@ -754,7 +774,8 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		return;
 
 	// Step 1: Find valid targets on the ground within range.
-	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius(pBullet);
+	const auto radius = pType->ProximityRadius.Get();
+	std::vector<CellClass*> recCellClass = PhobosTrajectoryType::GetCellsInProximityRadius(pBullet, radius);
 	const size_t cellSize = recCellClass.size() * 2;
 	size_t vectSize = cellSize;
 	size_t thisSize = 0;
@@ -765,10 +786,11 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		static_cast<int>(pBullet->Velocity.Y),
 		static_cast<int>(pBullet->Velocity.Z)
 	};
+	const auto velocitySq = velocityCrd.MagnitudeSquared();
+	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(vectSize);
-	const auto pTarget = pBullet->Target;
 
 	for (const auto& pRecCell : recCellClass)
 	{
@@ -787,20 +809,27 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			if (technoType == AbstractType::Building && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
 				continue;
 
+			// Not directly harming friendly forces
 			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
 				continue;
 
-			const auto distanceCrd = pTechno->GetCoords() - pBullet->SourceCoords;
-			const auto locationCrd = (velocityCrd + (pBullet->Location - pBullet->SourceCoords));
-			const auto terminalCrd = distanceCrd - locationCrd;
-			auto distance = locationCrd.MagnitudeSquared(); // Not true distance yet.
+			// Check distance
+			const auto targetCrd = pTechno->GetCoords();
+			const auto pathCrd = targetCrd - pBullet->SourceCoords;
 
-			if (distanceCrd * velocityCrd < 0 || terminalCrd * velocityCrd > 0)
+			if (pathCrd * velocityCrd < 0) // In front of the techno
 				continue;
 
-			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
+			const auto distanceCrd = targetCrd - pBullet->Location;
+			const auto nextDistanceCrd = distanceCrd - velocityCrd;
 
-			if (technoType != AbstractType::Building && distance > pType->ProximityRadius.Get())
+			if (nextDistanceCrd * velocityCrd > 0) // Behind the bullet
+				continue;
+
+			const auto cross = distanceCrd.CrossProduct(nextDistanceCrd).MagnitudeSquared();
+			const auto distance = (velocitySq > 1e-10) ? sqrt(cross / velocitySq) : distanceCrd.Magnitude();
+
+			if (technoType != AbstractType::Building && distance > radius) // In the cylinder
 				continue;
 
 			if (thisSize >= vectSize)
@@ -818,26 +847,35 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (pType->ProximityFlight)
 	{
 		const auto airTracker = &AircraftTrackerClass::Instance;
-		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5), static_cast<int>((pType->ProximityRadius.Get() + pType->Trajectory_Speed / 2) / Unsorted::LeptonsPerCell));
+		airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(pBullet->Location + velocityCrd * 0.5),
+			Game::F2I(sqrt(radius * radius + (velocitySq / 4)) / Unsorted::LeptonsPerCell));
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
 			if (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)
 				continue;
 
+			// Not directly harming friendly forces
 			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
 				continue;
 
-			const auto distanceCrd = pTechno->GetCoords() - pBullet->Location;
-			const auto terminalCrd = distanceCrd - velocityCrd;
-			auto distance = velocityCrd.MagnitudeSquared(); // Not true distance yet.
+			// Check distance
+			const auto targetCrd = pTechno->GetCoords();
+			const auto pathCrd = targetCrd - pBullet->SourceCoords;
 
-			if (distanceCrd * velocityCrd < 0 || terminalCrd * velocityCrd > 0)
+			if (pathCrd * velocityCrd < 0) // In front of the techno
 				continue;
 
-			distance = (distance > 1e-10) ? sqrt(distanceCrd.CrossProduct(terminalCrd).MagnitudeSquared() / distance) : distanceCrd.Magnitude();
+			const auto distanceCrd = targetCrd - pBullet->Location;
+			const auto nextDistanceCrd = distanceCrd - velocityCrd;
 
-			if (distance > pType->ProximityRadius.Get())
+			if (nextDistanceCrd * velocityCrd > 0) // Behind the bullet
+				continue;
+
+			const auto cross = distanceCrd.CrossProduct(nextDistanceCrd).MagnitudeSquared();
+			const auto distance = (velocitySq > 1e-10) ? sqrt(cross / velocitySq) : distanceCrd.Magnitude();
+
+			if (distance > radius) // In the cylinder
 				continue;
 
 			if (thisSize >= vectSize)
@@ -858,6 +896,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (const auto pFirer = pBullet->Owner)
 		this->TheCasualty[pFirer->UniqueID] = 20;
 
+	// Update Record
 	for (const auto& [ID, remainTime] : this->TheCasualty)
 	{
 		if (remainTime > 0)
@@ -871,6 +910,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	std::vector<TechnoClass*> validTargets;
 
+	// checking for duplicate
 	for (const auto& pTechno : validTechnos)
 	{
 		if (!this->TheCasualty.contains(pTechno->UniqueID))
@@ -889,6 +929,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 			const auto distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
 			const auto distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
 
+			// Distance priority
 			if (distanceA < distanceB)
 				return true;
 
@@ -901,15 +942,18 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 	for (const auto& pTechno : validTargets)
 	{
-		if (pTechno == this->ExtraCheck) // Not effective for the technos following it.
+		// Not effective for the technos following it.
+		if (pTechno == this->ExtraCheck)
 			break;
 
+		// Last chance
 		if (this->ProximityImpact == 1)
 		{
 			this->ExtraCheck = pTechno;
 			break;
 		}
 
+		// Skip technos that are within range but will not obstruct and cannot be passed through
 		const auto technoType = pTechno->WhatAmI();
 
 		if (!pType->ThroughVehicles && (technoType == AbstractType::Unit || technoType == AbstractType::Aircraft))
@@ -918,295 +962,21 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		if (technoType == AbstractType::Building && (static_cast<BuildingClass*>(pTechno)->IsStrange() ? !pType->ThroughVehicles : !pType->ThroughBuilding))
 			continue;
 
+		// Cause damage
 		auto damage = this->GetTheTrueDamage(this->ProximityDamage, pBullet, pType->ProximityMedial ? nullptr : pTechno, false);
 
 		if (pType->ProximityDirect)
 			pTechno->ReceiveDamage(&damage, 0, pWH, pBullet->Owner, false, false, pOwner);
+		else if (pType->ProximityMedial)
+			WarheadTypeExt::DetonateAt(pWH, pBullet->Location, pBullet->Owner, damage, pOwner);
 		else
-			WarheadTypeExt::DetonateAt(pWH, pType->ProximityMedial ? pBullet->Location : pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pType->ProximityMedial ? nullptr : pTechno);
+			WarheadTypeExt::DetonateAt(pWH, pTechno->GetCoords(), pBullet->Owner, damage, pOwner, pTechno);
 
 		this->CalculateNewDamage(pBullet);
 
 		if (this->ProximityImpact > 0)
 			--this->ProximityImpact;
 	}
-}
-
-// A rectangular shape with a custom width from the current frame to the next frame in length.
-std::vector<CellClass*> StraightTrajectory::GetCellsInProximityRadius(BulletClass* pBullet)
-{
-	// Seems like the y-axis is reversed, but it's okay.
-	const CoordStruct walkCoord { static_cast<int>(pBullet->Velocity.X), static_cast<int>(pBullet->Velocity.Y), 0 };
-	const auto sideMult = this->Type->ProximityRadius.Get() / walkCoord.Magnitude();
-
-	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
-	const CoordStruct cor4Coord { static_cast<int>((-walkCoord.Y) * sideMult), static_cast<int>(walkCoord.X * sideMult), 0 };
-	const auto thisCell = CellClass::Coord2Cell(pBullet->Location);
-
-	auto cor1Cell = CellClass::Coord2Cell((pBullet->Location + cor1Coord));
-	auto cor4Cell = CellClass::Coord2Cell((pBullet->Location + cor4Coord));
-
-	const auto off1Cell = cor1Cell - thisCell;
-	const auto off4Cell = cor4Cell - thisCell;
-	const auto nextCell = CellClass::Coord2Cell((pBullet->Location + walkCoord));
-
-	auto cor2Cell = nextCell + off1Cell;
-	auto cor3Cell = nextCell + off4Cell;
-
-	// Arrange the vertices of the rectangle in order from bottom to top.
-	int cornerIndex = 0;
-	CellStruct corner[4] = { cor1Cell, cor2Cell, cor3Cell, cor4Cell };
-
-	for (int i = 1; i < 4; ++i)
-	{
-		if (corner[cornerIndex].Y > corner[i].Y)
-			cornerIndex = i;
-	}
-
-	cor1Cell = corner[cornerIndex];
-	++cornerIndex %= 4;
-	cor2Cell = corner[cornerIndex];
-	++cornerIndex %= 4;
-	cor3Cell = corner[cornerIndex];
-	++cornerIndex %= 4;
-	cor4Cell = corner[cornerIndex];
-
-	std::vector<CellStruct> recCells = this->GetCellsInRectangle(cor1Cell, cor4Cell, cor2Cell, cor3Cell);
-	std::vector<CellClass*> recCellClass;
-	recCellClass.reserve(recCells.size());
-
-	for (const auto& pCells : recCells)
-	{
-		if (CellClass* pRecCell = MapClass::Instance->TryGetCellAt(pCells))
-			recCellClass.push_back(pRecCell);
-	}
-
-	return recCellClass;
-}
-
-// Record cells in the order of "draw left boundary, draw right boundary, fill middle, and move up one level".
-std::vector<CellStruct> StraightTrajectory::GetCellsInRectangle(CellStruct bottomStaCell, CellStruct leftMidCell, CellStruct rightMidCell, CellStruct topEndCell)
-{
-	std::vector<CellStruct> recCells;
-	const auto cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
-	recCells.reserve(cellNums);
-	recCells.push_back(bottomStaCell);
-
-	if (bottomStaCell == leftMidCell || bottomStaCell == rightMidCell)
-	{
-		auto middleCurCell = bottomStaCell;
-
-		const auto middleTheDist = topEndCell - bottomStaCell;
-		const CellStruct middleTheUnit { static_cast<short>(Math::sgn(middleTheDist.X)), static_cast<short>(Math::sgn(middleTheDist.Y)) };
-		const CellStruct middleThePace { static_cast<short>(middleTheDist.X * middleTheUnit.X), static_cast<short>(middleTheDist.Y * middleTheUnit.Y) };
-		auto mTheCurN = static_cast<float>((middleThePace.Y - middleThePace.X) / 2.0);
-
-		while (middleCurCell != topEndCell)
-		{
-			if (mTheCurN > 0)
-			{
-				mTheCurN -= middleThePace.X;
-				middleCurCell.Y += middleTheUnit.Y;
-				recCells.push_back(middleCurCell);
-			}
-			else if (mTheCurN < 0)
-			{
-				mTheCurN += middleThePace.Y;
-				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
-			}
-			else
-			{
-				mTheCurN += middleThePace.Y - middleThePace.X;
-				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
-				middleCurCell.X -= middleTheUnit.X;
-				middleCurCell.Y += middleTheUnit.Y;
-				recCells.push_back(middleCurCell);
-				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
-			}
-		}
-	}
-	else
-	{
-		auto leftCurCell = bottomStaCell;
-		auto rightCurCell = bottomStaCell;
-		auto middleCurCell = bottomStaCell;
-
-		bool leftNext = false;
-		bool rightNext = false;
-		bool leftSkip = false;
-		bool rightSkip = false;
-		bool leftContinue = false;
-		bool rightContinue = false;
-
-		const auto left1stDist = leftMidCell - bottomStaCell;
-		const CellStruct left1stUnit { static_cast<short>(Math::sgn(left1stDist.X)), static_cast<short>(Math::sgn(left1stDist.Y)) };
-		const CellStruct left1stPace { static_cast<short>(left1stDist.X * left1stUnit.X), static_cast<short>(left1stDist.Y * left1stUnit.Y) };
-		auto left1stCurN = static_cast<float>((left1stPace.Y - left1stPace.X) / 2.0);
-
-		const auto left2ndDist = topEndCell - leftMidCell;
-		const CellStruct left2ndUnit { static_cast<short>(Math::sgn(left2ndDist.X)), static_cast<short>(Math::sgn(left2ndDist.Y)) };
-		const CellStruct left2ndPace { static_cast<short>(left2ndDist.X * left2ndUnit.X), static_cast<short>(left2ndDist.Y * left2ndUnit.Y) };
-		auto left2ndCurN = static_cast<float>((left2ndPace.Y - left2ndPace.X) / 2.0);
-
-		const auto right1stDist = rightMidCell - bottomStaCell;
-		const CellStruct right1stUnit { static_cast<short>(Math::sgn(right1stDist.X)), static_cast<short>(Math::sgn(right1stDist.Y)) };
-		const CellStruct right1stPace { static_cast<short>(right1stDist.X * right1stUnit.X), static_cast<short>(right1stDist.Y * right1stUnit.Y) };
-		auto right1stCurN = static_cast<float>((right1stPace.Y - right1stPace.X) / 2.0);
-
-		const auto right2ndDist = topEndCell - rightMidCell;
-		const CellStruct right2ndUnit { static_cast<short>(Math::sgn(right2ndDist.X)), static_cast<short>(Math::sgn(right2ndDist.Y)) };
-		const CellStruct right2ndPace { static_cast<short>(right2ndDist.X * right2ndUnit.X), static_cast<short>(right2ndDist.Y * right2ndUnit.Y) };
-		auto right2ndCurN = static_cast<float>((right2ndPace.Y - right2ndPace.X) / 2.0);
-
-		while (leftCurCell != topEndCell || rightCurCell != topEndCell)
-		{
-			while (leftCurCell != topEndCell) // Left
-			{
-				if (!leftNext) // Bottom Left Side
-				{
-					if (left1stCurN > 0)
-					{
-						left1stCurN -= left1stPace.X;
-						leftCurCell.Y += left1stUnit.Y;
-
-						if (leftCurCell == leftMidCell)
-						{
-							leftNext = true;
-						}
-						else
-						{
-							recCells.push_back(leftCurCell);
-							break;
-						}
-					}
-					else
-					{
-						left1stCurN += left1stPace.Y;
-						leftCurCell.X += left1stUnit.X;
-
-						if (leftCurCell == leftMidCell)
-						{
-							leftNext = true;
-							leftSkip = true;
-						}
-					}
-				}
-				else // Top Left Side
-				{
-					if (left2ndCurN >= 0)
-					{
-						if (leftSkip)
-						{
-							leftSkip = false;
-							left2ndCurN -= left2ndPace.X;
-							leftCurCell.Y += left2ndUnit.Y;
-						}
-						else
-						{
-							leftContinue = true;
-							break;
-						}
-					}
-					else
-					{
-						left2ndCurN += left2ndPace.Y;
-						leftCurCell.X += left2ndUnit.X;
-					}
-				}
-
-				if (leftCurCell != rightCurCell) // Avoid double counting cells.
-					recCells.push_back(leftCurCell);
-			}
-
-			while (rightCurCell != topEndCell) // Right
-			{
-				if (!rightNext) // Bottom Right Side
-				{
-					if (right1stCurN > 0)
-					{
-						right1stCurN -= right1stPace.X;
-						rightCurCell.Y += right1stUnit.Y;
-
-						if (rightCurCell == rightMidCell)
-						{
-							rightNext = true;
-						}
-						else
-						{
-							recCells.push_back(rightCurCell);
-							break;
-						}
-					}
-					else
-					{
-						right1stCurN += right1stPace.Y;
-						rightCurCell.X += right1stUnit.X;
-
-						if (rightCurCell == rightMidCell)
-						{
-							rightNext = true;
-							rightSkip = true;
-						}
-					}
-				}
-				else // Top Right Side
-				{
-					if (right2ndCurN >= 0)
-					{
-						if (rightSkip)
-						{
-							rightSkip = false;
-							right2ndCurN -= right2ndPace.X;
-							rightCurCell.Y += right2ndUnit.Y;
-						}
-						else
-						{
-							rightContinue = true;
-							break;
-						}
-					}
-					else
-					{
-						right2ndCurN += right2ndPace.Y;
-						rightCurCell.X += right2ndUnit.X;
-					}
-				}
-
-				if (rightCurCell != leftCurCell) // Avoid double counting cells.
-					recCells.push_back(rightCurCell);
-			}
-
-			middleCurCell = leftCurCell;
-			middleCurCell.X += 1;
-
-			while (middleCurCell.X < rightCurCell.X) // Center
-			{
-				recCells.push_back(middleCurCell);
-				middleCurCell.X += 1;
-			}
-
-			if (leftContinue) // Continue Top Left Side
-			{
-				leftContinue = false;
-				left2ndCurN -= left2ndPace.X;
-				leftCurCell.Y += left2ndUnit.Y;
-				recCells.push_back(leftCurCell);
-			}
-
-			if (rightContinue) // Continue Top Right Side
-			{
-				rightContinue = false;
-				right2ndCurN -= right2ndPace.X;
-				rightCurCell.Y += right2ndUnit.Y;
-				recCells.push_back(rightCurCell);
-			}
-		}
-	}
-
-	return recCells;
 }
 
 int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, TechnoClass* pTechno, bool self)
@@ -1216,6 +986,7 @@ int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, Techn
 
 	const auto pType = this->Type;
 
+	// Calculate damage distance attenuation
 	if (pType->EdgeAttenuation != 1.0)
 	{
 		const auto damageMultiplier = this->GetExtraDamageMultiplier(pBullet, pTechno);
@@ -1223,6 +994,7 @@ int StraightTrajectory::GetTheTrueDamage(int damage, BulletClass* pBullet, Techn
 		const auto signal = Math::sgn(calculatedDamage);
 		damage = static_cast<int>(calculatedDamage);
 
+		// Retain minimal damage
 		if (!damage && pType->EdgeAttenuation > 0.0)
 			damage = signal;
 	}
@@ -1235,6 +1007,7 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 	double distance = 0.0;
 	double damageMult = 1.0;
 
+	// Here it may not be fair to the architecture
 	if (pTechno)
 		distance = pTechno->GetCoords().DistanceFrom(pBullet->SourceCoords);
 	else
@@ -1243,6 +1016,7 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 	if (this->AttenuationRange < static_cast<int>(distance))
 		return this->Type->EdgeAttenuation;
 
+	// Remove the first cell distance for calculation
 	if (distance > 256.0)
 		damageMult += (this->Type->EdgeAttenuation - 1.0) * ((distance - 256.0) / (static_cast<double>(this->AttenuationRange - 256)));
 
@@ -1258,27 +1032,28 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 		pBullet->Location.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	if (const auto pCell = MapClass::Instance->GetCellAt(futureCoords))
+	auto checkDifference = MapClass::Instance.GetCellFloorHeight(futureCoords) - futureCoords.Z;
+
+	if (MapClass::Instance.GetCellAt(futureCoords)->ContainsBridge())
 	{
-		auto checkDifference = MapClass::Instance->GetCellFloorHeight(futureCoords) - futureCoords.Z;
-		const auto cellCoords = pCell->GetCoordsWithBridge();
-		const auto differenceOnBridge = cellCoords.Z - futureCoords.Z;
+		const auto differenceOnBridge = checkDifference + CellClass::BridgeHeight;
 
 		if (std::abs(differenceOnBridge) < std::abs(checkDifference))
 			checkDifference = differenceOnBridge;
+	}
 
-		if (std::abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
-		{
-			const auto pType = this->Type;
-			pBullet->Velocity.Z += static_cast<double>(checkDifference + pType->ConfineAtHeight);
+	// The height does not exceed the cliff, or the cliff can be ignored? (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
+	if (std::abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
+	{
+		const auto pType = this->Type;
+		pBullet->Velocity.Z += static_cast<double>(checkDifference + pType->ConfineAtHeight);
 
-			if (!pType->PassDetonateLocal && this->CalculateBulletVelocity(pBullet))
-				return true;
-		}
-		else
-		{
+		if (!pType->PassDetonateLocal && this->CalculateBulletVelocity(pBullet))
 			return true;
-		}
+	}
+	else
+	{
+		return true;
 	}
 
 	return false;
