@@ -607,7 +607,7 @@ msgid ""
 "`EVA_StructureSold` for buildings with `UndeploysInto` when being selled."
 msgstr ""
 "修复了拥有 `UndeploysInto` 但 `Unsellable=no` 且 `ConstructionYard=no` "
-"的建筑无法正常出售的问题。恢复了 `EVA_StructureSold` 用于具有 `UndeploysInto` 的建筑被出售。"
+"的建筑无法正常出售的问题。并且复原了在 `UndeploysInto` 的建筑被出售时应有的 `EVA_StructureSold` 播报语音。"
 
 #: ../../Fixed-or-Improved-Logics.md:105
 msgid ""

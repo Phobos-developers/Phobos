@@ -2887,7 +2887,7 @@ msgid ""
 "`EVA.Sold` is used to customize the EVA voice when selling, default to "
 "`EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles."
 msgstr ""
-"`EVA.Sold` 用于自定义出售时的 EVA 语音，简直默认为 `EVA_StructureSold` 载具默认为 "
+"`EVA.Sold` 用于自定义出售时的 EVA 语音，建筑默认为 `EVA_StructureSold` 载具默认为 "
 "`EVA_UnitSold`。"
 
 #: ../../New-or-Enhanced-Logics.md:1117
