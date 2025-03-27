@@ -1883,14 +1883,14 @@ While this feature can provide better performance than a large `CellSpread` valu
 ### Fire weapon when kill
 
 - `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
-  - `KillWeapon.AffectHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
+  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
 - Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
  In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                   ; Warhead
 KillWeapon=                     ; WeaponType
-KillWeapon.AffectHouses=all     ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                    ; TechnoType
 SuppressKillWeapons=false       ; boolean

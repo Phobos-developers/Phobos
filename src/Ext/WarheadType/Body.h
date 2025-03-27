@@ -164,7 +164,7 @@ public:
 		Nullable<bool> CombatAlert_Suppress;
 
 		Valueable<WeaponTypeClass*> KillWeapon;
-		Valueable<AffectedHouse> KillWeapon_AffectHouses;
+		Valueable<AffectedHouse> KillWeapon_AffectsHouses;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -349,7 +349,7 @@ public:
 			, DamageAreaTarget {}
 
 			, KillWeapon {}
-			, KillWeapon_AffectHouses { AffectedHouse::All }
+			, KillWeapon_AffectsHouses { AffectedHouse::All }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
