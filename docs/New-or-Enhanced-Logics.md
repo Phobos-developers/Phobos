@@ -1681,7 +1681,7 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Fast access vehicle
 
-- Now you can let passengers quickly enter or leave the transport vehicles (useless for buildings) without queuing. Defaults to `[General]` -> `NoQueueUpToEnter` or `NoQueueUpToUnload`.
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General]->NoQueueUpToEnter` or `[General]->NoQueueUpToUnload`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1689,7 +1689,7 @@ In `rulesmd.ini`:
 NoQueueUpToEnter=false    ; boolean
 NoQueueUpToUnload=false   ; boolean
 
-[SOMEUNIT]                ; UnitType
+[SOMEVEHICLE]             ; VehicleType
 NoQueueUpToEnter=         ; boolean
 NoQueueUpToUnload=        ; boolean
 ```
