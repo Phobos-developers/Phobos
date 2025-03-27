@@ -308,13 +308,13 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum)
 {
-	if (!pThis || !pFirer)
+	if (!pThis)
 		return 0;
 
 	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
 	const auto keepRange = pExt->KeepRange.Get();
 
-	if (!keepRange)
+	if (!keepRange || !pFirer || pFirer->Transporter)
 		return 0;
 
 	const auto absType = pFirer->WhatAmI();
