@@ -478,7 +478,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			if (auto const count = pCurrentType->MoveSound.Count)
 			{
 				// Play a new sound.
-				int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
+				int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
 				VocClass::PlayAt(soundIndex, pThis->Location, &pThis->MoveSoundAudioController);
 				pThis->IsMoveSoundPlaying = true;
 			}
@@ -538,7 +538,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 				// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
-				LogicClass::Instance->RemoveObject(pPassenger);
+				LogicClass::Instance.RemoveObject(pPassenger);
 			}
 
 			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
