@@ -144,13 +144,19 @@ public:
 		~ExtContainer();
 	};
 
+	struct EBoltWeaponStruct
+	{
+		WeaponTypeExt::ExtData* Weapon;
+		int BurstIndex;
+	};
+
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static double OldRadius;
-	static PhobosMap<EBolt*, const WeaponTypeExt::ExtData*> BoltWeaponMap;
+	static PhobosMap<EBolt*, EBoltWeaponStruct> BoltWeaponMap;
 	static const WeaponTypeExt::ExtData* BoltWeaponType;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
