@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-23 12:19+0800\n"
+"POT-Creation-Date: 2025-03-28 23:57+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -611,7 +611,7 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:2037 ../../New-or-Enhanced-Logics.md:2053
 #: ../../New-or-Enhanced-Logics.md:2068 ../../New-or-Enhanced-Logics.md:2085
 #: ../../New-or-Enhanced-Logics.md:2098 ../../New-or-Enhanced-Logics.md:2111
-#: ../../New-or-Enhanced-Logics.md:2134 ../../New-or-Enhanced-Logics.md:2151
+#: ../../New-or-Enhanced-Logics.md:2135 ../../New-or-Enhanced-Logics.md:2153
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -919,7 +919,7 @@ msgstr "![image](_static/images/radtype-01.png) *混合起来的多种辐射类�
 #: ../../New-or-Enhanced-Logics.md:1483 ../../New-or-Enhanced-Logics.md:1534
 #: ../../New-or-Enhanced-Logics.md:1727 ../../New-or-Enhanced-Logics.md:1830
 #: ../../New-or-Enhanced-Logics.md:1885 ../../New-or-Enhanced-Logics.md:2079
-#: ../../New-or-Enhanced-Logics.md:2124 ../../New-or-Enhanced-Logics.md:2145
+#: ../../New-or-Enhanced-Logics.md:2124 ../../New-or-Enhanced-Logics.md:2147
 msgid "image"
 msgstr "图像"
 
@@ -7607,6 +7607,17 @@ msgstr "`Strafing.UseAmmoPerShot` 如果设为 `true` 将在每次开火后都�
 
 #: ../../New-or-Enhanced-Logics.md:2132
 msgid ""
+"`Strafing.EndDelay` can be used to override the delay after firing last "
+"shot in strafing run before aircraft resumes another strafing run or "
+"returns to base. Defaults to (Weapon `Range` * 256 + 1024) / Aircraft "
+"`Speed`. Note that using a short delay with aircraft that can do multiple"
+" strafing runs with their ammo can cause undesired behaviour like dancing"
+" around or facing weird way depending on other factors like ROF and/or "
+"movement speed."
+msgstr ""
+
+#: ../../New-or-Enhanced-Logics.md:2133
+msgid ""
 "There is a special case for aircraft spawned by `Type=SpyPlane` "
 "superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where "
 "`Strafing.Shots` only if explicitly set on its primary weapon, determines"
@@ -7616,13 +7627,15 @@ msgstr ""
 "对于 `Type=SpyPlane` 超级武器生成的战机在 `SpyPlane Approach` 或 `SpyPlane Overfly` "
 "任务中的情况 `Strafing.Shots` 只有在其主武器上手动设置才会生效并决定地图揭示效果的最大次数而无视其他因素。"
 
-#: ../../New-or-Enhanced-Logics.md:2135
+#: ../../New-or-Enhanced-Logics.md:2136
+#, fuzzy
 msgid ""
 "[SOMEWEAPON]                   ; WeaponType\n"
 "Strafing=                      ; boolean\n"
 "Strafing.Shots=                ; integer\n"
 "Strafing.SimulateBurst=false   ; boolean\n"
 "Strafing.UseAmmoPerShot=false  ; boolean\n"
+"Strafing.EndDelay=             ; integer, game frames\n"
 msgstr ""
 "[SOMEWEAPON]                   ; WeaponType\n"
 "Strafing=                      ; boolean\n"
@@ -7630,11 +7643,11 @@ msgstr ""
 "Strafing.SimulateBurst=false   ; boolean\n"
 "Strafing.UseAmmoPerShot=false  ; boolean\n"
 
-#: ../../New-or-Enhanced-Logics.md:2143
+#: ../../New-or-Enhanced-Logics.md:2145
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 
-#: ../../New-or-Enhanced-Logics.md:2145
+#: ../../New-or-Enhanced-Logics.md:2147
 msgid ""
 "![image](_static/images/weaponfilter.gif) *`Weapon target filter - "
 "different weapon used against enemies & allies as well as units & "
@@ -7645,21 +7658,21 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的武器瞄准筛选 - "
 "就像分别对单位和建筑使用那样对敌军和友军使用不同武器*"
 
-#: ../../New-or-Enhanced-Logics.md:2148
+#: ../../New-or-Enhanced-Logics.md:2150
 msgid ""
 "You can now specify which targets or houses a weapon can fire at. This "
 "also affects weapon selection, other than certain special cases where the"
 " selection is fixed."
 msgstr "现在你可以指定武器可以开火的目标或所属方。这还会影响武器选择，除了某些特殊情况下的固定选择。"
 
-#: ../../New-or-Enhanced-Logics.md:2149
+#: ../../New-or-Enhanced-Logics.md:2151
 msgid ""
 "Note that `CanTarget` explicitly requires either `all` or `empty` to be "
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
 msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
 
-#: ../../New-or-Enhanced-Logics.md:2152
+#: ../../New-or-Enhanced-Logics.md:2154
 msgid ""
 "[SOMEWEAPON]         ; WeaponType\n"
 "CanTarget=all        ; List of Affected Target Enumeration "
@@ -7672,3 +7685,4 @@ msgstr ""
 "(none|land|water|empty|infantry|units|buildings|all)\n"
 "CanTargetHouses=all  ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
+
