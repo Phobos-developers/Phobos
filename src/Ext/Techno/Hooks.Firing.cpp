@@ -934,3 +934,24 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
 }
+
+DEFINE_HOOK(0x6F7561, TechnoClass_IsCloseEnough_CylinderRangefinding, 0x5)
+{
+	GET_BASE(WeaponTypeClass* const, pWeaponType, 0x10);
+	GET(TechnoClass* const, pThis, EDI);
+
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	bool cylinder = RulesExt::Global()->CylinderRangefinding;
+
+	if (pWeaponExt)
+	{
+		cylinder = pWeaponExt->CylinderRangefinding.Get(cylinder);
+	}
+
+	if (cylinder)
+	{
+		R->EAX(3); // If pThis->WhatAmI() == aircraft(3), then ignore the range in Z axis.
+	}
+
+	return 0;
+}
