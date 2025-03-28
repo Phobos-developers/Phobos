@@ -253,6 +253,7 @@ This page lists all the individual contributions to the project by their author.
   - EM Pulse cannon logic improvements
   - `<Player @ X>` as owner for pre-placed objects
   - `IsSonic` wave drawing crash fix
+  - Customizable electric bolt duration and electric bolt-related fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
