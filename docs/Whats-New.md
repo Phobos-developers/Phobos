@@ -467,7 +467,7 @@ New:
 - CellSpread in cylinder shape (by TaranDahl)
 - CellSpread damage check if victim is in air or on floor (by TaranDahl)
 - OpenTopped range bonus and damage multiplier customization for passengers (by Ollerus)
-- Animation transparency customization settings (by Starkku)
+- [Animation transparency customization settings](New-or-Enhanced-Logics.md#customizable-animation-transparency-settings) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
