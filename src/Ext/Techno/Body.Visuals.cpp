@@ -487,22 +487,17 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (!pSpawnManager || !pType->Spawns || pType->SpawnsNumber <= 0)
 			return;
 
-		value = 0;
+		value = pSpawnManager->RegenRate;
+		maxValue = value;
 
-		for (int i = 0; i < pType->SpawnsNumber; i++)
+		for (int i = 0; i < pType->SpawnsNumber; ++i)
 		{
 			const auto pSpawnNode = pSpawnManager->SpawnedNodes[i];
 
-			if (pSpawnNode->Status != SpawnNodeStatus::Dead)
-				continue;
-
-			const auto thisValue = pSpawnNode->SpawnTimer.GetTimeLeft();
-
-			if (thisValue < value || !value)
-				value = thisValue;
+			if (pSpawnNode->Status == SpawnNodeStatus::Dead)
+				value = Math::min(value, pSpawnNode->SpawnTimer.GetTimeLeft());
 		}
 
-		maxValue = pSpawnManager->RegenRate;
 		break;
 	}
 	case DisplayInfoType::GattlingTimer:
@@ -572,29 +567,20 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 
 		const auto pHouse = pThis->Owner;
 		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+		auto getSuperTimer = [pHouse, pBuildingType]() -> CDTimerClass*
+		{
+			if (pBuildingType->SuperWeapon != -1)
+				return &pHouse->Supers.GetItem(pBuildingType->SuperWeapon)->RechargeTimer;
+			else if (pBuildingType->SuperWeapon2 != -1)
+				return &pHouse->Supers.GetItem(pBuildingType->SuperWeapon2)->RechargeTimer;
 
-		if (pBuildingType->SuperWeapon != -1)
-		{
-			const auto& timer = pHouse->Supers.GetItem(pBuildingType->SuperWeapon)->RechargeTimer;
-			value = timer.GetTimeLeft();
-			maxValue = timer.TimeLeft;
-		}
-		else if (pBuildingType->SuperWeapon2 != -1)
-		{
-			const auto& timer = pHouse->Supers.GetItem(pBuildingType->SuperWeapon2)->RechargeTimer;
-			value = timer.GetTimeLeft();
-			maxValue = timer.TimeLeft;
-		}
-		else
-		{
 			const auto& superWeapons = BuildingTypeExt::ExtMap.Find(pBuildingType)->SuperWeapons;
-
-			if (superWeapons.size() > 0)
-			{
-				const auto& timer = pHouse->Supers.GetItem(superWeapons[0])->RechargeTimer;
-				value = timer.GetTimeLeft();
-				maxValue = timer.TimeLeft;
-			}
+			return superWeapons.size() > 0 ? &pHouse->Supers.GetItem(superWeapons[0])->RechargeTimer : nullptr;
+		};
+		if (const auto pTimer = getSuperTimer())
+		{
+			value = pTimer->GetTimeLeft();
+			maxValue = pTimer->TimeLeft;
 		}
 
 		break;
