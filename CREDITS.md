@@ -414,6 +414,8 @@ This page lists all the individual contributions to the project by their author.
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
   - Delay automatic attack on the controlled unit
+  - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own.
+  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -443,6 +445,7 @@ This page lists all the individual contributions to the project by their author.
   - Recycle the spawner on other FLH
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
+  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

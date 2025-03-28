@@ -1245,6 +1245,20 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
 
 #pragma endregion
 
+#pragma region SpawnerFireFix
+
+DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_AirCarrierSkipCheckNearBridge, 0x8)
+{
+	enum { ContinueCheck = 0x6FC61F, CannotFire = 0x6FCD29 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const bool, nearBridge, EAX);
+
+	return (nearBridge && !pThis->IsInAir()) ? CannotFire : ContinueCheck;
+}
+
+#pragma endregion
+
 #pragma region TeamCloseRangeFix
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
