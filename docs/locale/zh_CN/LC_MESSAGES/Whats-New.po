@@ -127,6 +127,7 @@ msgid ""
 " now be customized explicitly by setting `Strafing.EndDelay` on the "
 "weapon."
 msgstr ""
+"武器 `Strafing.Shots` < 5 的战机现在在扫射的最后一发后会保持直线飞行，就像 `Strafing.Shots` >= 5 的情况一样。保持这样飞行的时长现在可以通过在武器上设置 `Strafing.EndDelay` 来进行定义。"
 
 #: ../../Whats-New.md:25
 msgid ""
