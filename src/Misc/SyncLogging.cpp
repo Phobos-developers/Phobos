@@ -550,24 +550,28 @@ DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 	return 0;
 }
 
-}
-
 #pragma region FrameCRC
 
-static bool IsHashable(ObjectClass* pObj)
+class ObjectFake : public ObjectClass
 {
-	auto const rtti = pObj->WhatAmI();
+public:
+	inline bool _IsCRCHashable();
+};
+
+bool ObjectFake::_IsCRCHashable()
+{
+	auto const rtti = this->WhatAmI();
 
 	if (rtti == AbstractType::Anim)
 	{
-		if (pObj->UniqueID == -2)
+		if (this->UniqueID == -2)
 			return false;
 
-		auto const pAnim = static_cast<AnimClass*>(pObj);
+		auto const pAnim = static_cast<AnimClass*>((ObjectClass*)this);
 		auto const pType = pAnim->Type;
 
 		if (pType->Damage != 0.0 || pType->Bouncer || pType->IsMeteor || pType->IsTiberium || pType->TiberiumChainReaction
-			|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnit)
+			|| pType->IsAnimatedTiberium || pType->MakeInfantry != -1 || AnimTypeExt::ExtMap.Find(pType)->CreateUnitType.get())
 		{
 			return true;
 		}
@@ -576,7 +580,7 @@ static bool IsHashable(ObjectClass* pObj)
 	}
 	else if (rtti == AbstractType::Particle)
 	{
-		auto const pParticle = static_cast<ParticleClass*>(pObj);
+		auto const pParticle = static_cast<ParticleClass*>((ObjectClass*)this);
 		auto const pType = pParticle->Type;
 
 		if (pType->Damage)
@@ -598,30 +602,30 @@ static int __forceinline GetCoordHash(CoordStruct location)
 	return location.X / 10 + ((location.Y / 10) << 16);
 }
 
-static void __fastcall ComputeGameCRC()
+static void ComputeGameCRC()
 {
 	EventClass::CurrentFrameCRC = 0;
 
-	for (auto const pInf : *InfantryClass::Array)
+	for (auto const pInf : InfantryClass::Array)
 	{
 		int primaryFacing = pInf->PrimaryFacing.Current().GetValue<8>();
 		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pInf->Location) + primaryFacing);
 	}
 
-	for (auto const pUnit : *UnitClass::Array)
+	for (auto const pUnit : UnitClass::Array)
 	{
 		int primaryFacing = pUnit->PrimaryFacing.Current().GetValue<8>();
 		int secondaryFacing = pUnit->SecondaryFacing.Current().GetValue<8>();
 		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pUnit->Location) + primaryFacing + secondaryFacing);
 	}
 
-	for (auto const pBuilding : *BuildingClass::Array)
+	for (auto const pBuilding : BuildingClass::Array)
 	{
 		int primaryFacing = pBuilding->PrimaryFacing.Current().GetValue<8>();
 		AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pBuilding->Location) + primaryFacing);
 	}
 
-	for (auto const pHouse : *HouseClass::Array)
+	for (auto const pHouse : HouseClass::Array)
 	{
 		AddCRC(&EventClass::CurrentFrameCRC, pHouse->MapIsClear);
 	}
@@ -632,7 +636,7 @@ static void __fastcall ComputeGameCRC()
 
 		for (auto const pObj : *layer)
 		{
-			if (IsHashable(pObj))
+			if (((ObjectFake*)pObj)->_IsCRCHashable())
 				AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
 		}
 	}
@@ -641,14 +645,15 @@ static void __fastcall ComputeGameCRC()
 
 	for (auto const pObj : logic)
 	{
-		if (IsHashable(pObj))
+		if (((ObjectFake*)pObj)->_IsCRCHashable())
 			AddCRC(&EventClass::CurrentFrameCRC, GetCoordHash(pObj->Location) + (int)pObj->WhatAmI());
 	}
 
 	AddCRC(&EventClass::CurrentFrameCRC, ScenarioClass::Instance->Random.Random());
 	Game::LogFrameCRC(Unsorted::CurrentFrame % 256);
+}
 
-DEFINE_JUMP(CALL, 0x64731C, GET_OFFSET(ComputeGameCRC));
-DEFINE_JUMP(CALL, 0x647684, GET_OFFSET(ComputeGameCRC));
+DEFINE_FUNCTION_JUMP(CALL, 0x64731C, ComputeGameCRC);
+DEFINE_FUNCTION_JUMP(CALL, 0x647684, ComputeGameCRC);
 
 #pragma endregion
