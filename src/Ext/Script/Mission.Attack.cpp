@@ -388,21 +388,21 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
-		auto object = TechnoClass::Array.GetItem(i);
-		auto objectType = object->GetTechnoType();
+		auto pTarget = TechnoClass::Array.GetItem(i);
+		auto pTargetType = pTarget->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
 
-		if (!objectType->LegalTarget)
+		if (!pTargetType->LegalTarget)
 			continue;
 
 		// Discard invisible structures
-		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
+		BuildingTypeClass* pTypeBuilding = pTarget->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(pTargetType) : nullptr;
 
 		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
 			continue;
 
 		// Note: the TEAM LEADER is picked for this task, be careful with leadership values in your mod
-		int weaponIndex = pTechno->SelectWeapon(object);
+		int weaponIndex = pTechno->SelectWeapon(pTarget);
 		auto weaponType = pTechno->GetWeapon(weaponIndex)->WeaponType;
 
 		if (weaponType && weaponType->Projectile->AA)
@@ -413,29 +413,29 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 		if (!agentMode)
 		{
-			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, objectType->Armor) == 0.0)
+			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, pTargetType->Armor) == 0.0)
 				continue;
 
-			if (object->IsInAir() && !unitWeaponsHaveAA)
+			if (pTarget->IsInAir() && !unitWeaponsHaveAA)
 				continue;
 
-			if (!object->IsInAir() && !unitWeaponsHaveAG)
+			if (!pTarget->IsInAir() && !unitWeaponsHaveAG)
 				continue;
 
-			auto const missionControl = &MissionControlClass::Array[(int)object->CurrentMission];
+			auto const missionControl = &MissionControlClass::Array[(int)pTarget->CurrentMission];
 
 			if (missionControl->NoThreat)
 				continue;
 
-			if (object->EstimatedHealth <= 0 && pTechnoType->VHPScan == 2)
+			if (pTarget->EstimatedHealth <= 0 && pTechnoType->VHPScan == 2)
 				continue;
 		}
 
-		if (objectType->Naval)
+		if (pTargetType->Naval)
 		{
 			// Submarines aren't a valid target
-			if (object->CloakState == CloakState::Cloaked
-				&& objectType->Underwater
+			if (pTarget->CloakState == CloakState::Cloaked
+				&& pTargetType->Underwater
 				&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
 					|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
 			{
@@ -444,44 +444,44 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 			// Land not OK for the Naval unit
 			if (pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
-				&& (object->GetCell()->LandType != LandType::Water))
+				&& (pTarget->GetCell()->LandType != LandType::Water))
 			{
 				continue;
 			}
 		}
 
 		// Stealth check.
-		if (object->CloakState == CloakState::Cloaked)
+		if (pTarget->CloakState == CloakState::Cloaked)
 		{
-			auto const pCell = object->GetCell();
+			auto const pCell = pTarget->GetCell();
 
 			if (!pCell->Sensors_InclHouse(pTechno->Owner->ArrayIndex))
 				continue;
 		}
 
 		// OnlyTargetHouseEnemy forces targets of a specific (hated) house
-		if (onlyTargetThisHouseEnemy && object->Owner != onlyTargetThisHouseEnemy)
+		if (onlyTargetThisHouseEnemy && pTarget->Owner != onlyTargetThisHouseEnemy)
 			continue;
 
 		// Check map zone
-		if (!TechnoExt::AllowedTargetByZone(pTechno, object, pTypeExt->TargetZoneScanType, weaponType))
+		if (!TechnoExt::AllowedTargetByZone(pTechno, pTarget, pTypeExt->TargetZoneScanType, weaponType))
 			continue;
 
-		if (object != pTechno
-			&& ScriptExt::IsUnitAvailable(object, true)
-			&& !objectType->Immune
-			&& !object->TemporalTargetingMe
-			&& !object->BeingWarpedOut
-			&& object->Owner != pTechno->Owner
-			&& (!pTechno->Owner->IsAlliedWith(object) || ScriptExt::IsUnitMindControlledFriendly(pTechno->Owner, object)))
+		if (pTarget != pTechno
+			&& ScriptExt::IsUnitAvailable(pTarget, true)
+			&& !pTargetType->Immune
+			&& !pTarget->TemporalTargetingMe
+			&& !pTarget->BeingWarpedOut
+			&& pTarget->Owner != pTechno->Owner
+			&& (!pTechno->Owner->IsAlliedWith(pTarget) || ScriptExt::IsUnitMindControlledFriendly(pTechno->Owner, pTarget)))
 		{
 			double value = 0;
 
-			if (EvaluateObjectWithMask(object, method, attackAITargetType, idxAITargetTypeItem, pTechno))
+			if (EvaluateObjectWithMask(pTarget, method, attackAITargetType, idxAITargetTypeItem, pTechno))
 			{
 				CellStruct newCell;
-				newCell.X = (short)object->Location.X;
-				newCell.Y = (short)object->Location.Y;
+				newCell.X = (short)pTarget->Location.X;
+				newCell.Y = (short)pTarget->Location.Y;
 
 				bool isGoodTarget = false;
 
@@ -489,30 +489,30 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 				{
 					// Threat affected by distance
 					double threatMultiplier = 128.0;
-					double objectThreatValue = objectType->ThreatPosed;
+					double objectThreatValue = pTargetType->ThreatPosed;
 
-					if (objectType->SpecialThreatValue > 0)
+					if (pTargetType->SpecialThreatValue > 0)
 					{
 						double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
-						objectThreatValue += objectType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
+						objectThreatValue += pTargetType->SpecialThreatValue * TargetSpecialThreatCoefficientDefault;
 					}
 
 					// Is Defender house targeting Attacker House? if "yes" then more Threat
-					if (pTechno->Owner == HouseClass::Array.GetItem(object->Owner->EnemyHouseIndex))
+					if (pTechno->Owner == HouseClass::Array.GetItem(pTarget->Owner->EnemyHouseIndex))
 					{
 						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
 						objectThreatValue += EnemyHouseThreatBonus;
 					}
 
 					// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
-					objectThreatValue += object->Health * (1 - object->GetHealthPercentage());
-					value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(object) / 256.0) + 1.0);
+					objectThreatValue += pTarget->Health * (1 - pTarget->GetHealthPercentage());
+					value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(pTarget) / 256.0) + 1.0);
 
 					if (pTechnoType->VHPScan == 1)
 					{
-						if (object->EstimatedHealth <= 0)
+						if (pTarget->EstimatedHealth <= 0)
 							value /= 2;
-						else if (object->EstimatedHealth <= objectType->Strength / 2)
+						else if (pTarget->EstimatedHealth <= pTargetType->Strength / 2)
 							value *= 2;
 					}
 
@@ -538,7 +538,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 					{
 						// Is this object very FAR? then LESS THREAT against pTechno.
 						// More CLOSER? MORE THREAT for pTechno.
-						value = pTechno->DistanceFrom(object); // Note: distance is in leptons (*256)
+						value = pTechno->DistanceFrom(pTarget); // Note: distance is in leptons (*256)
 
 						if (value < bestVal || bestVal < 0)
 							isGoodTarget = true;
@@ -549,7 +549,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 						{
 							// Is this object very FAR? then MORE THREAT against pTechno.
 							// More CLOSER? LESS THREAT for pTechno.
-							value = pTechno->DistanceFrom(object); // Note: distance is in leptons (*256)
+							value = pTechno->DistanceFrom(pTarget); // Note: distance is in leptons (*256)
 
 							if (value > bestVal || bestVal < 0)
 								isGoodTarget = true;
@@ -559,7 +559,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 				if (isGoodTarget)
 				{
-					bestObject = object;
+					bestObject = pTarget;
 					bestVal = value;
 				}
 			}
