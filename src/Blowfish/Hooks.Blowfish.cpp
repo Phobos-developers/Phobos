@@ -8,11 +8,6 @@
  *
  *  @author: ZivDero
  */
-class FakeBlowfishEngine
-{
-public:
-	BlowfishEngine* CTOR_Proxy() { return new (reinterpret_cast<BlowfishEngine*>(this)) BlowfishEngine; }
-};
 
 /**
  *  Skip loading BLOWFISH.DLL
@@ -23,7 +18,6 @@ DEFINE_JUMP(LJMP, 0x6BD6CA, 0x6BD71D);
 /**
  *  Replace BlowfishEngine functions.
  */
-DEFINE_FUNCTION_JUMP(LJMP, 0x437F50, FakeBlowfishEngine::CTOR_Proxy);
 DEFINE_FUNCTION_JUMP(LJMP, 0x437FC0, BlowfishEngine::~BlowfishEngine);
 DEFINE_FUNCTION_JUMP(LJMP, 0x437FD0, BlowfishEngine::Submit_Key);
 DEFINE_FUNCTION_JUMP(LJMP, 0x438000, BlowfishEngine::Encrypt);
