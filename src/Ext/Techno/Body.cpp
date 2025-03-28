@@ -551,6 +551,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
+		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
@@ -663,3 +664,4 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
+
