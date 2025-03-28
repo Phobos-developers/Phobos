@@ -300,7 +300,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						continue;
 					}
 
-					// Naval units like Submarines are unable to target ground targets except if they have nti-ground weapons. Ignore the attack
+					// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack
 					if (pTechnoType->Underwater
 						&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
 						&& pFocus->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
@@ -420,25 +420,32 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 				continue;
 		}
 
-		// Stealth ground unit check
-		if (object->CloakState == CloakState::Cloaked && !objectType->Naval)
-			continue;
-
-		// Submarines aren't a valid target
-		if (object->CloakState == CloakState::Cloaked
-			&& objectType->Underwater
-			&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
-				|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+		if (objectType->Naval)
 		{
-			continue;
+			// Submarines aren't a valid target
+			if (object->CloakState == CloakState::Cloaked
+				&& objectType->Underwater
+				&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
+					|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+			{
+				continue;
+			}
+
+			// Land not OK for the Naval unit
+			if (pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+				&& (object->GetCell()->LandType != LandType::Water))
+			{
+				continue;
+			}
 		}
 
-		// Land not OK for the Naval unit
-		if (objectType->Naval
-			&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
-			&& (object->GetCell()->LandType != LandType::Water))
+		// Stealth check.
+		if (object->CloakState == CloakState::Cloaked)
 		{
-			continue;
+			auto const pCell = object->GetCell();
+
+			if (!pCell->Sensors_InclHouse(pTechno->Owner->ArrayIndex))
+				continue;
 		}
 
 		// OnlyTargetHouseEnemy forces targets of a specific (hated) house

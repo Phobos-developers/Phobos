@@ -224,25 +224,32 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
 			continue;
 
-		// Stealth ground unit check
-		if (object->CloakState == CloakState::Cloaked && !objectType->Naval)
-			continue;
-
-		// Submarines aren't a valid target
-		if (object->CloakState == CloakState::Cloaked
-			&& objectType->Underwater
-			&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
-				|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+		if (objectType->Naval)
 		{
-			continue;
+			// Submarines aren't a valid target
+			if (object->CloakState == CloakState::Cloaked
+				&& objectType->Underwater
+				&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
+					|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+			{
+				continue;
+			}
+
+			// Land not OK for the Naval unit
+			if (pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+				&& (object->GetCell()->LandType != LandType::Water))
+			{
+				continue;
+			}
 		}
 
-		// Land not OK for the Naval unit
-		if (objectType->Naval
-			&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
-			&& object->GetCell()->LandType != LandType::Water)
+		// Stealth check.
+		if (object->CloakState == CloakState::Cloaked)
 		{
-			continue;
+			auto const pCell = object->GetCell();
+
+			if (!pCell->Sensors_InclHouse(pTechno->Owner->ArrayIndex))
+				continue;
 		}
 
 		if (object != pTechno
