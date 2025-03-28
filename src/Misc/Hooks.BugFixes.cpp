@@ -1249,12 +1249,12 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
 
 DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_AirCarrierSkipCheckNearBridge, 0x8)
 {
-	enum { ContinueCheck = 0x6FC61F, CannotFire = 0x6FCD29 };
+	enum { ContinueCheck = 0x6FC61F, TemporaryCannotFire = 0x6FCD0E };
 
 	GET(TechnoClass* const, pThis, ESI);
 	GET(const bool, nearBridge, EAX);
 
-	return (nearBridge && !pThis->IsInAir()) ? CannotFire : ContinueCheck;
+	return (nearBridge && !pThis->IsInAir()) ? TemporaryCannotFire : ContinueCheck;
 }
 
 #pragma endregion
