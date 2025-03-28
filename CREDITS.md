@@ -412,6 +412,7 @@ This page lists all the individual contributions to the project by their author.
   - Units will not always stuck in the factory
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
+  - Delay automatic attack on the controlled unit
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -441,6 +442,7 @@ This page lists all the individual contributions to the project by their author.
   - Play an anim when recycling a spawner
   - Recycle the spawner on other FLH
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
+  - `BombParachute` deglobalization
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
