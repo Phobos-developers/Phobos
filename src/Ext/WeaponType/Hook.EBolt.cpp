@@ -78,9 +78,6 @@ void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 {
 	if (pTechno && pTechno->IsAlive)
 	{
-		auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
 		this->Owner = pTechno;
 		this->WeaponSlot = weaponIndex;
 

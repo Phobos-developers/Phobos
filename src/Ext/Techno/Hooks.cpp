@@ -45,7 +45,6 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->DepletedAmmoActions();
-	pExt->UpdateGattlingRateDownReset();
 
 	return 0;
 }

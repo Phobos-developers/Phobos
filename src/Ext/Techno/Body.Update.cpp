@@ -34,8 +34,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
-	this->UpdateRecountBurst();
-	this->UpdateRearmInEMPState();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -478,7 +476,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			if (auto const count = pCurrentType->MoveSound.Count)
 			{
 				// Play a new sound.
-				int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
+				int soundIndex = pCurrentType->MoveSound[Randomizer::Global->Random() % count];
 				VocClass::PlayAt(soundIndex, pThis->Location, &pThis->MoveSoundAudioController);
 				pThis->IsMoveSoundPlaying = true;
 			}

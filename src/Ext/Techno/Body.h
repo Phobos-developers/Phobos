@@ -116,7 +116,6 @@ public:
 		void UpdateTypeData_Foot();
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
-		void UpdateGattlingRateDownReset();
 		void UpdateWarpInDelay();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
