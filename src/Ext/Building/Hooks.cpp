@@ -13,24 +13,15 @@
 
 #pragma region Update
 
-//After TechnoClass_AI?
+// After TechnoClass_AI
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	// Do not search this up again in any functions called here because it is costly for performance - Starkku
-	auto pExt = BuildingExt::ExtMap.Find(pThis);
-
-	/*
-	// Set only if unset or type has changed - Not currently useful as building type does not change.
-	auto pType = pThis->Type;
-
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
-	*/
-
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
+	pExt->TechnoExtData->UpdateGattlingRateDownReset();
 
 	return 0;
 }
@@ -148,7 +139,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	}
 	else
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->Owner->EMPTarget);
+		auto const pCell = MapClass::Instance.TryGetCellAt(pThis->Owner->EMPTarget);
 
 		if (pCell)
 		{
@@ -185,7 +176,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
 {
-	auto coords = MapClass::Instance->GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
+	auto coords = MapClass::Instance.GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
 	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
 	return pCrd;
 }
@@ -214,7 +205,7 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 	// This is not a solution to the problem at its root
 	// Currently the root cause of the problem is not located
 	// So the idle weapon factory is asked to search every second for any units that are stuck
-	if (!(Unsorted::CurrentFrame() % 15)) // Check every 15 frames for factories
+	if (!(Unsorted::CurrentFrame % 15)) // Check every 15 frames for factories
 	{
 		const auto pType = pThis->Type;
 
@@ -267,7 +258,7 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 			return SkipSetShouldRebuild;
 
 		// Per-house dehardcoding: BaseNodes + SW-Delivery
-		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
+		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance.Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
 			return SkipSetShouldRebuild;
 	}
 	// Vanilla instruction: always repairable in other game modes
@@ -395,16 +386,16 @@ static void RecalculateCells(BuildingClass* pThis)
 
 	for (auto const& cell : cells)
 	{
-		if (auto pCell = map->TryGetCellAt(cell))
+		if (auto pCell = map.TryGetCellAt(cell))
 		{
 			pCell->RecalcAttributes(DWORD(-1));
 
 			if constexpr (remove)
-				map->ResetZones(cell);
+				map.ResetZones(cell);
 			else
-				map->RecalculateZones(cell);
+				map.RecalculateZones(cell);
 
-			map->RecalculateSubZones(cell);
+			map.RecalculateSubZones(cell);
 
 		}
 	}
@@ -574,7 +565,7 @@ DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
 
 DEFINE_HOOK(0x4FA612, HouseClass_BeginProduction_ForceRedrawStrip, 0x5)
 {
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;
 	return 0;
 }
 
@@ -601,8 +592,8 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 
 		if (firstRemoved)
 		{
-			SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 			if (all)
 				while (pFactory->RemoveOneFromQueue(pType));
@@ -619,8 +610,8 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
 		return CheckSame;
 
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 	return Return;
 }
@@ -694,10 +685,10 @@ DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
 		exitCell.X += (short)offset.X;
 		exitCell.Y += (short)offset.Y;
 
-		if (MapClass::Instance->CoordinatesLegal(exitCell))
+		if (MapClass::Instance.CoordinatesLegal(exitCell))
 		{
 			GET(TechnoClass*, pTechno, ESI);
-			auto const pCell = MapClass::Instance->GetCellAt(exitCell);
+			auto const pCell = MapClass::Instance.GetCellAt(exitCell);
 
 			if (pTechno->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true) == Move::OK)
 			{

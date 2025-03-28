@@ -255,6 +255,8 @@ This page lists all the individual contributions to the project by their author.
   - `<Player @ X>` as owner for pre-placed objects
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
+  - `IsSonic` wave drawing crash fix
+  - Customizable electric bolt duration and electric bolt-related fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -346,6 +348,7 @@ This page lists all the individual contributions to the project by their author.
    - Campaign load screen PCX support
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
    - Fix `AltNextScenario` not taking effect
+   - Fix `Hospital=yes` building can't kick out infantry after loading a save
 - **NetsuNegi**:
    - Forbidding parallel AI queues by type
    - Jumpjet crash speed fix when crashing onto building
@@ -408,6 +411,9 @@ This page lists all the individual contributions to the project by their author.
   - Draw visual effects for airburst weapons
   - Technos recount current burst index when change the firing weapon
   - Units will not always stuck in the factory
+  - Technos can maintain a suitable distance after firing
+  - Projectile subject to ground check before firing
+  - Delay automatic attack on the controlled unit
   - Several new Infotypes, no display in specific status and a new single frame display method
 - **Ollerus**:
   - Build limit group enhancement
@@ -433,6 +439,11 @@ This page lists all the individual contributions to the project by their author.
   - No turret unit turn to the target
   - Units are now unable to kick out from a factory that is in construction process
   - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+  - Recycle spawner in long-range
+  - Play an anim when recycling a spawner
+  - Recycle the spawner on other FLH
+  - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
+  - `BombParachute` deglobalization
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

@@ -265,6 +265,11 @@ public:
 		Nullable<int> InitialSpawnsNumber;
 		ValueableVector<AircraftTypeClass*> Spawns_Queue;
 
+		Valueable<Leptons> Spawner_RecycleRange;
+		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
+		Valueable<CoordStruct> Spawner_RecycleCoord;
+		Valueable<bool> Spawner_RecycleOnTurret;
+		
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -522,6 +527,11 @@ public:
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
+			
+			, Spawner_RecycleRange { Leptons(-1) }
+			, Spawner_RecycleAnim { }
+			, Spawner_RecycleCoord { {0,0,0} }
+			, Spawner_RecycleOnTurret { false }
 		{ }
 
 		virtual ~ExtData() = default;
