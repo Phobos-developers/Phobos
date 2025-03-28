@@ -13,13 +13,39 @@
 
 #pragma region Update
 
+// Early, before ObjectClass_AI
 DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	// Do not search this up again in any functions called here because it is costly for performance - Starkku
 	TechnoExt::ExtMap.Find(pThis)->OnEarlyUpdate();
-	TechnoExt::ApplyMindControlRangeLimit(pThis);
+
+	return 0;
+}
+
+// After TechnoClass_AI
+DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->PreviousType)
+		pExt->UpdateTypeData_Foot();
+
+	pExt->UpdateWarpInDelay();
+
+	return 0;
+}
+
+// After FootClass_AI
+DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->DepletedAmmoActions();
+	pExt->UpdateGattlingRateDownReset();
 
 	return 0;
 }
@@ -41,13 +67,24 @@ DEFINE_HOOK(0x71A88D, TemporalClass_AI, 0x0)
 	return R->EAX<int>() <= 0 ? 0x71A895 : 0x71AB08;
 }
 
-DEFINE_HOOK_AGAIN(0x51BAC7, FootClass_AI_Tunnel, 0x6)//InfantryClass_AI_Tunnel
-DEFINE_HOOK(0x7363B5, FootClass_AI_Tunnel, 0x6)//UnitClass_AI_Tunnel
+DEFINE_HOOK_AGAIN(0x51B389, FootClass_TunnelAI_Enter, 0x6) // InfantryClass_TunnelAI
+DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 {
 	GET(FootClass*, pThis, ESI);
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateOnTunnelEnter();
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x51BA94, FootClass_TunnelAI_Exit, 0x7) // InfantryClass_TunnelAI
+DEFINE_HOOK(0x736005, FootClass_TunnelAI_Exit, 0x6)       // UnitClass_TunnelAI
+{
+	GET(FootClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateOnTunnelExit();
 
 	return 0;
 }
@@ -141,8 +178,8 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
-	pExt->InitializeLaserTrails();
 	pExt->InitializeAttachEffects();
+	pExt->InitializeLaserTrails();
 
 	if (pExt->TypeExtData->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
