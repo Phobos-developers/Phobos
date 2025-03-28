@@ -33,6 +33,7 @@ public:
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
+		Nullable<int> Strafing_EndDelay;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
 		ValueableVector<int> Burst_Delays;
@@ -80,6 +81,7 @@ public:
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
 			, Strafing_UseAmmoPerShot { false }
+			, Strafing_EndDelay {}
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
 			, Burst_Delays {}
