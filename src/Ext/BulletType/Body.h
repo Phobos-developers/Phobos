@@ -45,6 +45,8 @@ public:
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
 
+		Valueable<bool> SubjectToGround;
+
 		Valueable<bool> Splits;
 		Valueable<double> AirburstSpread;
 		Valueable<double> RetargetAccuracy;
@@ -57,6 +59,8 @@ public:
 		Valueable<int> Splits_TargetCellRange;
 		Valueable<bool> Splits_UseWeaponTargeting;
 		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
+
+		Valueable<AnimTypeClass*> BombParachute;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -84,6 +88,7 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, SubjectToGround { false }
 			, Splits { false }
 			, AirburstSpread { 1.5 }
 			, RetargetAccuracy { 0.0 }
@@ -96,6 +101,7 @@ public:
 			, Splits_TargetCellRange { 3 }
 			, Splits_UseWeaponTargeting { false }
 			, AirburstWeapon_ApplyFirepowerMult { false }
+			, BombParachute { }
 		{ }
 
 		virtual ~ExtData() = default;

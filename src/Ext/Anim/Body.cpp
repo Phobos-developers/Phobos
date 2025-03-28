@@ -107,18 +107,16 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 
 HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 {
-	if (!pAnim)
-		return pDefaultOwner;
-
-	HouseClass* pTechnoOwner = nullptr;
-
-	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
-		pTechnoOwner = pTechno->Owner;
-
 	if (pAnim->Owner)
 		return pAnim->Owner;
-	else
-		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
+
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
+	{
+		if (pTechno->Owner)
+			return pTechno->Owner;
+	}
+
+	return pDefaultOwner;
 }
 
 void AnimExt::VeinAttackAI(AnimClass* pAnim)
@@ -439,7 +437,7 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 		if (!pExt)
 		{
 			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
-			Debug::FatalErrorAndExit(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
+			Debug::Log(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
 		}
 
 		if (pExt->Invoker == pTechno)
@@ -459,7 +457,7 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 		if (!pExt)
 		{
 			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
-			Debug::FatalErrorAndExit(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
+			Debug::Log(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
 		}
 
 		if (pExt->AttachedSystem == pParticleSystem)

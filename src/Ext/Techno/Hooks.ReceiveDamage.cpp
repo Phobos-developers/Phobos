@@ -200,7 +200,7 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
-		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 		{
 			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
 				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);

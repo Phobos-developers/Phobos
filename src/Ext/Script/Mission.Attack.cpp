@@ -594,7 +594,6 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
 	TechnoTypeExt::ExtData* pTypeTechnoExt = nullptr;
 	BuildingTypeClass* pTypeBuilding = pTechno->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(pTechnoType) : nullptr;
-	BuildingTypeExt::ExtData* pBuildingTypeExt = nullptr;
 	UnitTypeClass* pTypeUnit = pTechno->WhatAmI() == AbstractType::Unit ? static_cast<UnitTypeClass*>(pTechnoType) : nullptr;
 	WeaponTypeClass* pWeaponPrimary = nullptr;
 	WeaponTypeClass* pWeaponSecondary = nullptr;

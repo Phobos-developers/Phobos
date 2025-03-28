@@ -120,13 +120,10 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 			for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 			{
-				if (!pFoot)
-					continue;
-
-				auto const pTechnoType = pFoot->GetTechnoType();
-
 				if (IsUnitAvailable(pFoot, true))
 				{
+					auto const pTechnoType = pFoot->GetTechnoType();
+
 					if (pTechnoType->Underwater && pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK && selectedTarget->GetCell()->LandType != LandType::Water) // Land not OK for the Naval unit
 					{
 						// Naval units like Submarines are unable to target ground targets except if they have anti-ground weapons. Ignore the attack

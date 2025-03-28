@@ -781,23 +781,22 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 }
 #pragma endregion DrawInfoTipAndSpiedSelection
 
-
+#include <intrin.h>
 bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
 	if(announce) announce = !pThis->IsStrange();
 
 	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
-
-	// Fix : update powered anims
+	// TODO: something goes wrong in TAction 36, fix it later
+	DWORD const caller =(DWORD) _ReturnAddress();
+	if(caller > 0x6E0C91 || caller < 0x6E0B60)
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
 		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
 	return res;
 }
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
-DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
-DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
 
 // Fix a glitch related to incorrect target setting for missiles
 // Author: Belonit
@@ -821,13 +820,15 @@ DEFINE_HOOK(0x689EB0, ScenarioClass_ReadMap_SkipHeaderInCampaign, 0x6)
 
 #pragma region save_load
 
-//Skip incorrect load ctor call in various LocomotionClass_Load
+//Skip incorrect load ctor call in various Load
 DEFINE_JUMP(LJMP, 0x719CBC, 0x719CD8);//Teleport, notorious CLEG frozen state removal on loading game
 DEFINE_JUMP(LJMP, 0x72A16A, 0x72A186);//Tunnel, not a big deal
 DEFINE_JUMP(LJMP, 0x663428, 0x663445);//Rocket, not a big deal
 DEFINE_JUMP(LJMP, 0x5170CE, 0x5170E0);//Hover, not a big deal
 DEFINE_JUMP(LJMP, 0x65B3F7, 0x65B416);//RadSite, no effect
-
+DEFINE_JUMP(LJMP, 0x6F4317, 0x6F43AB);
+DEFINE_JUMP(LJMP, 0x6F43B5, 0x6F43C7);//Techno (AirstrikeTimer,CloakProgress,TurretRecoil,BarrelRecoil)
+DEFINE_JUMP(LJMP, 0x43B694, 0x43B6C3);//Building(RepairProgress)
 // Save GameModeOptions in campaign modes
 DEFINE_JUMP(LJMP, 0x67E3BD, 0x67E3D3); // Save
 DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
@@ -1210,6 +1211,35 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	}
 
 	return SkipGameCode;
+}
+
+#pragma endregion
+
+#pragma region UntetherFix
+
+// Radio: do not untether techno who have other tether link
+DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
+{
+	// Place the hook after processing to prevent functions from calling each other and getting stuck in a dead loop.
+	GET(TechnoClass* const, pThis, ESI);
+	// The radio link capacity of some technos can be greater than 1 (like airport)
+	// Here is a specific example, there may be other situations as well:
+	// - Untether without check may result in `AirportBound=no` aircraft being unable to release from `IsTether` status.
+	// - Specifically, all four aircraft are connected to the airport and have `RadioLink` settings, but when the first aircraft
+	//   is `Unlink` from the airport, all subsequent aircraft will be stuck in `IsTether` status.
+	// - This is because when both parties who are `RadioLink` to each other need to `Unlink`, they need to `Untether` first,
+	//   and this requires ensuring that both parties have `IsTether` flag (0x6F4C50), otherwise `Untether` cannot be successful,
+	//   which may lead to some unexpected situations.
+	for (int i = 0; i < pThis->RadioLinks.Capacity; ++i)
+	{
+		if (const auto pLink = pThis->RadioLinks.Items[i])
+		{
+			if (pLink->IsTether) // If there's another tether link, reset flag to true
+				pThis->IsTether = true; // Ensures that other links can be properly untether afterwards
+		}
+	}
+
+	return 0;
 }
 
 #pragma endregion

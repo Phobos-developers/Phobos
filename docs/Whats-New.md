@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
 - Selecting weapons other than primary against walls based on `Wall=true` on Warhead etc. now requires `[CombatDamage] -> AllowWeaponSelectAgainstWalls` to be set to true first.
 - Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General] -> ApplyLunarFixes` set to true.
 - `Units.DisableRepairCost` was changed to `Units.UseRepairCost` (note inverted expected value) as it no longer has discrete default value and affects `Hospital=true` buildings, infantry do not have repair cost by default.
@@ -45,7 +46,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - Phobos-introduced attack scripts now consider potential target's current map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be used to customize this behaviour.
 - `Artillary`, `ICBMLauncher`, `TickTank` or `SensorArray` no longer affect whether or not building is considered as vehicle for AI attack scripts. Use [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-as-vehicles) instead on buildings that do not have both `UndeploysInto` set and `Foundation=1x1`.
 - `PassengerDeletion.SoylentFriendlies` has been replaced by `PassengerDeletion.SoylentAllowedHouses`. Current default value of `PassengerDeletion.SoylentAllowedHouses=enemies` matches the previous default behaviour with `PassengerDeletion.SoylentFriendlies=false`.
-- `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`
+- `Grinding.DisplayRefund` is changed to `DisplayIncome`, `Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, `Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`.
 - `[JumpjetControls] -> AllowLayerDeviation` and `JumpjetAllowLayerDeviation` have been deprecated as the animation layering issues have been properly fixed by default now.
 - `[JumpjetControls] -> TurnToTarget` and `JumpjetTurnToTarget` are obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to targets as other units do.
 - Buildings delivered by trigger action 125 will now **always** play buildup anim as long as it exists. `[ParamTypes] -> 53` is deprecated.
@@ -54,7 +55,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 #### From pre-0.3 devbuilds
 
 - `Trajectory.Speed` is now defined on projectile instead of weapon.
-- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#projectile-trajectories).
+- `Gravity=0` is not supported anymore as it will cause the projectile to fly backwards and be unable to hit the target which is not at the same height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-Logics.md#straight-trajectory).
 - Automatic self-destruction logic logic has been reimplemented, `Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been remade/renamed and require adjustments to function.
 - `DetachedFromOwner` on weapons is deprecated. This has been replaced by `AllowDamageOnSelf` on warheads.
 - Timed jump script actions now take the time measured in ingame seconds instead of frames. Divide your value by 15 to accommodate to this change.
@@ -319,7 +320,7 @@ New:
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
 - New Parabola trajectory (by CrimRecya)
-- Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)
+- Type select for buildings (code by TaranDahl, doc by Ollerus)
 - Raise alert when technos are taking damage (by TaranDahl)
 - Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
 - Toggle waypoint for building (by TaranDahl)
@@ -327,6 +328,7 @@ New:
 - No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Damage multiplier for different houses (by CrimRecya)
 - Customizable duration for electric bolts (by Starkku)
+- Customizable FLH tracking for electric bolts (by Starkku)
 - Extended gattling rate down logic (by CrimRecya)
 - Sell or undeploy building on impact (by CrimRecya)
 - No rearm and reload in EMP or temporal (by CrimRecya)
@@ -337,11 +339,19 @@ New:
 - Customizable spawns queue (by TwinkleStar)
 - Initial spawns number (by TwinkleStar)
 - Override target under EMP attack behavior (By FS-21)
+- Recycle spawner in long-range (by TaranDahl)
+- Play an anim when recycling a spawner (by TaranDahl)
+- Recycle the spawner on other FLH (by TaranDahl)
+- Technos can maintain a suitable distance after firing (by CrimRecya)
+- Projectile subject to ground check before firing (by CrimRecya)
+- Delay automatic attack on the controlled unit (by CrimRecya)
+- `BombParachute` deglobalization (by TaranDahl)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
-- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
+- Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
+- Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -465,8 +475,8 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
-- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
-- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
+- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl)
+- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl)
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `Anim/SplashList` animations around impact coordinates (by Starkku)
@@ -601,7 +611,7 @@ Vanilla fixes:
 - Use 2D distance instead of 3D to check whether in air team members have arrived destination (by CrimRecya)
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc. (by Starkku)
 - Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct (by NetsuNegi)
-- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied (by 航味麻酱)
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied (by TaranDahl)
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby (by CrimRecya)
 - Fixed the bug that destroyed unit may leaves sensors (by tyuah8 & NetsuNegi)
 - `FreeUnit` uses its own `SpeedType` to determine where to spawn (by NetsuNegi)
@@ -611,6 +621,8 @@ Vanilla fixes:
 - Fixed a crash caused by electric bolt not invalidating Owner (by NetsuNegi)
 - Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, Xkein & ZivDero)
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+- Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
+- Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
