@@ -5,6 +5,7 @@
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WarheadType/Body.h>
@@ -83,8 +84,12 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 		else if (RulesExt::Global()->Promote_EliteAnimation)
 			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
 
-		if(promAnim)
+		if (promAnim)
+		{
 			promAnim->SetOwnerObject(pThis);
+			AnimExt::SetAnimOwnerHouseKind(promAnim, pThis->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(promAnim)->SetInvoker(pThis);
+		}
 	}
 
 	return aresProcess();
@@ -142,6 +147,9 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	pExt->InitializeLaserTrails();
 	pExt->InitializeAttachEffects();
 
+	if (pExt->TypeExtData->Harvester_Counted)
+		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
+
 	return 0;
 }
 
@@ -155,6 +163,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
 	{
 		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
 		return 0x6F4277;
 	}
@@ -254,9 +263,9 @@ bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 	return pThis->TechnoClass::Limbo();
 }
 
-DEFINE_JUMP(VTABLE, 0x7F4A34, GET_OFFSET(TechnoClass_Limbo_Wrapper)); // TechnoClass
-DEFINE_JUMP(CALL, 0x4DB3B1, GET_OFFSET(TechnoClass_Limbo_Wrapper));   // FootClass
-DEFINE_JUMP(CALL, 0x445DDA, GET_OFFSET(TechnoClass_Limbo_Wrapper))    // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4A34, TechnoClass_Limbo_Wrapper); // TechnoClass
+DEFINE_FUNCTION_JUMP(CALL, 0x4DB3B1, TechnoClass_Limbo_Wrapper);   // FootClass
+DEFINE_FUNCTION_JUMP(CALL, 0x445DDA, TechnoClass_Limbo_Wrapper)    // BuildingClass
 
 #pragma endregion
 
@@ -377,9 +386,9 @@ DEFINE_HOOK(0x6FE352, TechnoClass_FirepowerMultiplier, 0x8)       // TechnoClass
 
 #pragma region Disguise
 
-bool __fastcall IsAlly_Wrapper(HouseClass* pThis, void* _, HouseClass* pOther)
+bool __fastcall IsAlly_Wrapper(HouseClass* pTechnoOwner, void* _, HouseClass* pCurrentPlayer)
 {
-	return pThis->IsObserver() || pOther->IsAlliedWith(pOther) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
+	return pCurrentPlayer->IsObserver() || pTechnoOwner->IsAlliedWith(pCurrentPlayer) || (RulesExt::Global()->DisguiseBlinkingVisibility & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
@@ -398,10 +407,10 @@ bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 	return pCurrent->IsObserver() || EnumFunctions::CanTargetHouse(visibilityFlags, pCurrent, pThis);
 }
 
-DEFINE_JUMP(CALL, 0x4DEDD2, GET_OFFSET(IsAlly_Wrapper));                      // FootClass_GetImage
-DEFINE_JUMP(CALL, 0x70EE5D, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
-DEFINE_JUMP(CALL, 0x70EE70, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_ClearlyVisibleTo
-DEFINE_JUMP(CALL, 0x7062FB, GET_OFFSET(IsControlledByCurrentPlayer_Wrapper)); // TechnoClass_DrawObject
+DEFINE_FUNCTION_JUMP(CALL, 0x4DEDD2, IsAlly_Wrapper);                      // FootClass_GetImage
+DEFINE_FUNCTION_JUMP(CALL, 0x70EE5D, IsControlledByCurrentPlayer_Wrapper); // TechnoClass_ClearlyVisibleTo
+DEFINE_FUNCTION_JUMP(CALL, 0x70EE70, IsControlledByCurrentPlayer_Wrapper); // TechnoClass_ClearlyVisibleTo
+DEFINE_FUNCTION_JUMP(CALL, 0x7062FB, IsControlledByCurrentPlayer_Wrapper); // TechnoClass_DrawObject
 
 DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 {
@@ -417,7 +426,7 @@ DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 	if (pType && pType->Palette && pType->Palette->Count > 0)
 		convert = pType->Palette->GetItem(colorIndex)->LightConvert;
 	else
-		convert = ColorScheme::Array->GetItem(colorIndex)->LightConvert;
+		convert = ColorScheme::Array.GetItem(colorIndex)->LightConvert;
 
 	R->EBX(convert);
 
@@ -513,15 +522,32 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 
 DEFINE_JUMP(VTABLE, 0x7EB1AC, 0x4DEAE0); // Redirect InfantryClass::IronCurtain to FootClass::IronCurtain
 
+#pragma region NoManualMove
+
 DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		return pExt->NoManualMove ? 0x700C62 : 0;
-
-	return 0;
+	return TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoManualMove ? 0x700C62 : 0;
 }
+
+DEFINE_HOOK(0x4437B3, BuildingClass_CellClickedAction_NoManualMove, 0x6)
+{
+	GET(BuildingTypeClass*, pType, EDX);
+
+	return TechnoTypeExt::ExtMap.Find(pType)->NoManualMove ? 0x44384E : 0;
+}
+
+DEFINE_HOOK(0x44F62B, BuildingClass_CanPlayerMove_NoManualMove, 0x6)
+{
+	GET(BuildingTypeClass*, pType, EDX);
+
+	R->ECX(TechnoTypeExt::ExtMap.Find(pType)->NoManualMove ? 0 : pType->UndeploysInto);
+
+	return 0x44F631;
+}
+
+#pragma endregion
 
 DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 {
@@ -548,6 +574,43 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73B4E0 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			R->EBX<ObjectTypeClass *>(pCustomType);
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
+{
+	enum { Continue = 0x73C608 };
+
+	GET(UnitClass*, pThis, EBP);
+	TechnoExt::ExtData *pData = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
+	{
+		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		{
+			if (SHPStruct* Image = pCustomType->GetImage())
+				R->EAX<SHPStruct *>(Image);
+		}
+	}
+
+	R->ECX(pThis->GetType());
+	return Continue;
+}
 
 #pragma region KeepTargetOnMove
 

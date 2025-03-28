@@ -87,8 +87,8 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 	REF_STACK(CoordStruct, previousCoords, STACK_OFFSET(0x24, -0xC));
 
 	auto const sourceLocation = pThis->ParticleSystem ? pThis->ParticleSystem->Location : CoordStruct { INT_MAX, INT_MAX, INT_MAX };
-	auto const pCell = MapClass::Instance->TryGetCellAt(currentCoords);
-	int cellFloor = MapClass::Instance->GetCellFloorHeight(currentCoords);
+	auto const pCell = MapClass::Instance.TryGetCellAt(currentCoords);
+	int cellFloor = MapClass::Instance.GetCellFloorHeight(currentCoords);
 	bool downwardTrajectory = currentCoords.Z < previousCoords.Z;
 	bool isBelowSource = cellFloor < sourceLocation.Z - Unsorted::LevelHeight * 2;
 	bool isRamp = pCell ? pCell->SlopeIndex : false;
@@ -126,7 +126,7 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 
 	REF_STACK(CoordStruct const, coords, STACK_OFFSET(0xC0, -0x80));
 
-	auto pCell = MapClass::Instance->GetCellAt(coords);
+	auto pCell = MapClass::Instance.GetCellAt(coords);
 
 	if (pCell == FireAtTemp::pObstacleCell)
 		return Stop;

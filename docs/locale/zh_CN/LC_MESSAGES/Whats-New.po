@@ -8,702 +8,3618 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-01 10:53+0800\n"
+"POT-Creation-Date: 2025-03-22 21:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.9.1\n"
+"Generated-By: Babel 2.16.0\n"
 
-#: ../Whats-New.md:1
+#: ../../Whats-New.md:1
 msgid "What's New"
-msgstr "新东西"
+msgstr "版本更新说明"
 
-#: ../Whats-New.md:3
+#: ../../Whats-New.md:3
 msgid ""
 "This page lists the history of changes across stable Phobos releases and "
 "also all the stuff that requires modders to change something in their "
-"mods to accomodate."
-msgstr "此页面列出了项目的更新日志以及所有modder需要对mod做的必要改动。"
+"mods to accommodate."
+msgstr "此页面列出了 Phobos 稳定版本的历史更改以及 modder 们为适应当前版本对其 mod 所需要做的必要改动。"
 
-#: ../Whats-New.md:5
+#: ../../Whats-New.md:5
 msgid "Migrating"
 msgstr "迁移"
 
-#: ../Whats-New.md:1
+#: ../../Whats-New.md:8
 msgid ""
 "You can use the migration utility (can be found on [Phobos "
 "supplementaries repo](https://github.com/Phobos-"
 "developers/PhobosSupplementaries)) to apply most of the changes "
 "automatically using a corresponding sed script file."
 msgstr ""
-"你可以使用[火卫一组件库](https://github.com/Phobos-"
-"developers/PhobosSupplementaries)中的迁移工具来自动应用更改。"
+"你可以使用迁移工具（可以在 [Phobos 补充资源库](https://github.com/Phobos-"
+"developers/PhobosSupplementaries) 中找到）通过相应的 sed 脚本文件自动应用大多数更改。"
 
-#: ../Whats-New.md:11
+#: ../../Whats-New.md:11
 msgid "From vanilla"
 msgstr "由原版"
 
-#: ../Whats-New.md:13
+#: ../../Whats-New.md:13
 msgid ""
-"SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due "
-"to it being the default value they wouldn't have hardcoded shadows "
-"anymore by default. Override this by specifying `Shadow=yes` for SHP "
-"debris."
-msgstr "SHP碎片硬编码的影子现在遵循`Shadow=no`，并且由于这就是默认值，所以它们不再拥有硬编码的影子。为SHP碎片指定`Shadow=yes`以覆盖此设定。"
+"`PowersUpNAnim` is now used instead of the upgrade building's image file "
+"for upgrade animation if set. Note that displaying a damaged version will"
+" still require setting `PowerUpXDamagedAnim` explicitly in all cases, as "
+"the fallback to upgrade building image does not extend to it, nor would "
+"it be safe to add."
+msgstr ""
+"现在如果设置了加载物动画那么将会使用 `PowersUpNAnim` 替代加载物建筑的图像文件。注意你仍需明确设置 "
+"`PowerUpXDamagedAnim` "
+"来启用伤残版本的加载物动画，因为并没有将自动回退到加载物图像的逻辑扩展到它，并且那也不是一个安全的做法。"
 
-#: ../Whats-New.md:14
+#: ../../Whats-New.md:14
+msgid ""
+"`[CrateRules] -> FreeMCV` now controls whether or not player is forced to"
+" receive unit from `[General] -> BaseUnit` from goodie crate if they own "
+"no buildings or any existing `[General] -> BaseUnit` vehicles and own "
+"more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) "
+"credits."
+msgstr ""
+"现在 `[CrateRules] -> FreeMCV` 可以控制玩家是否会在他们没有任何建筑物或任何 `BaseUnit` 中的载具且资金超过 "
+"`[CrateRules] -> FreeMCV.CreditsThreshold`（默认为 1500）时强制获得一个 `[General] ->"
+" BaseUnit` 中的单位。"
+
+#: ../../Whats-New.md:15
 msgid ""
 "Translucent RLE SHPs will now be drawn using a more precise and "
 "performant algorithm that has no green tint and banding. Can be disabled "
-"with `rulesmd.ini->[General]->FixTransparencyBlitters=no`."
+"with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`."
 msgstr ""
-"绘制半透明的RLE "
-"SHP时，现在会使用更精确更高效的算法，此算法没有绿色偏移和条纹，可通过`rulesmd.ini->[General]->FixTransparencyBlitters=no`关闭"
+"现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹。可以通过 `rulesmd.ini -> "
+"[General] -> FixTransparencyBlitters=no` 来禁用。"
 
-#: ../Whats-New.md:15
+#: ../../Whats-New.md:16
 msgid ""
 "Iron Curtain status is now preserved by default when converting between "
-"TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be "
+"TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be "
 "turned off per-TechnoType and global basis using "
-"`[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`."
-msgstr "铁幕状态现在可以在单位通过`DeploysInto`/`UndeploysInto`转换时保留。此行为可以被标签关闭`[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`。"
+"`[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`."
+msgstr ""
+"现在铁幕效果会默认在科技类型通过 `DeploysInto`／`UndeploysInto` 转换时保留。这一行为可以通过每个科技类型和全局设置的"
+" `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no` 来关闭。"
 
-#: ../Whats-New.md:17
+#: ../../Whats-New.md:17
+msgid ""
+"The obsolete `[General] -> WarpIn` has been enabled for the default anim "
+"type when technos are warping in. If you want to restore the vanilla "
+"behavior, use the same anim type as `[General] -> WarpOut`."
+msgstr ""
+"原本废弃的 `[General] -> WarpIn` 已启用于科技类型传送来时的默认动画类型。如果想要恢复原版行为，请为其设置一个与 "
+"`[General] -> WarpOut` 相同的动画类型。"
+
+#: ../../Whats-New.md:18
+msgid ""
+"Vehicles with `Crusher=true` + `OmniCrusher=true` / "
+"`MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles /"
+" walls respectively. This now obeys `TiltsWhenCrushes` but can be "
+"customized individually for these two scenarios using "
+"`TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both "
+"default to `TiltsWhenCrushes`."
+msgstr ""
+"拥有 `Crusher=true` 和 `OmniCrusher=true`／`MovementZone=CrusherAll` "
+"的载具类型硬编码在其碾压载具／围墙时会掀起而倾斜。现在此行为遵循 `TiltsWhenCrushes` 设置，但可以使用 "
+"`TiltsWhenCrusher.Vehicles` 和 `TiltsWhenCrusher.Overlays` "
+"分别定义这两种情况，它们都默认为 `TiltsWhenCrushes`。"
+
+#: ../../Whats-New.md:20
 msgid "From older Phobos versions"
-msgstr "由旧版本火卫一"
+msgstr "由旧版本 Phobos"
 
-#: ../Whats-New.md:19
+#: ../../Whats-New.md:22
+msgid "From post-0.3 devbuilds"
+msgstr "由 post-0.3 开发版"
+
+#: ../../Whats-New.md:24
+msgid ""
+"Selecting weapons other than primary against walls based on `Wall=true` "
+"on Warhead etc. now requires `[CombatDamage] -> "
+"AllowWeaponSelectAgainstWalls` to be set to true first."
+msgstr ""
+"现在对墙时根据弹头上的 `Wall=true` 选择武器需要先将 `[CombatDamage] -> AllowWeaponSelectAgainstWalls` 设为 true。"
+
+#: ../../Whats-New.md:25
+msgid ""
+"Lunar theater tileset parsing unhardcoding is now only applied if "
+"`lunarmd.ini` has `[General] -> ApplyLunarFixes` set to true."
+msgstr ""
+"月球气候地形集解析的去硬编码化现在仅在 `lunarmd.ini` 中 `[General] -> ApplyLunarFixes` 设为 true 时生效。"
+
+#: ../../Whats-New.md:26
+msgid ""
+"`Units.DisableRepairCost` was changed to `Units.UseRepairCost` (note "
+"inverted expected value) as it no longer has discrete default value and "
+"affects `Hospital=true` buildings, infantry do not have repair cost by "
+"default."
+msgstr ""
+"`Units.DisableRepairCost` 已更名为 `Units.UseRepairCost`（注意预期效果反转），因其不再具有分离的默认值且影响 `Hospital=true` 的建筑，默认情况下步兵无维修费用。"
+
+#: ../../Whats-New.md:27
+msgid ""
+"Critical hit animations created by `Crit.AnimOnAffectedTargets=true` "
+"Warheads no longer default to `AnimList.PickRandom` if "
+"`Crit.AnimList.PickRandom` is not set."
+msgstr ""
+"由 `Crit.AnimOnAffectedTargets=true` 弹头创建的暴击动画当 `Crit.AnimList.PickRandom` 未设置时不再默认使用 `AnimList.PickRandom` 的值。"
+
+#: ../../Whats-New.md:28
+msgid ""
+"`SelfHealGainType` value `none` has been changed to `noheal` due to "
+"`none` being treated as a blank string and not parsed by the game."
+msgstr ""
+"`SelfHealGainType` 值 `none` 已更名为 `noheal`，因为 `none` 会被游戏视为空字符串且无法解析。"
+
+#: ../../Whats-New.md:29
+msgid ""
+"Affected target enum (`CanTarget`, `Crit.Affects` et al) now considers "
+"buildings considered vehicles (`ConsideredVehicle=true` or not set in "
+"conjunction with `UndeploysInto` & 1x1 foundation) as units instead of "
+"buildings."
+msgstr ""
+"影响目标筛选（`CanTarget`、`Crit.Affects` 等）现在将「被视为载具的建筑」（`ConsideredVehicle=true` 或同时拥有 `UndeploysInto` 与 `Foundation=1x1` 的建筑）视为单位而非建筑。"
+
+#: ../../Whats-New.md:30
+msgid ""
+"If `CreateUnit.AlwaysSpawnOnGround` is set to false, jumpjet vehicles "
+"created will now automatically take off instead of staying on ground. Set"
+" to true to force spawn on ground."
+msgstr ""
+"如果 `CreateUnit.AlwaysSpawnOnGround` 设为 false 则创建的 JumpJet 载具将会自动起飞而不是躺在地上。设为 true 可强制在地面生成。"
+
+#: ../../Whats-New.md:31
+msgid ""
+"Digital display `Offset` and `Offset.ShieldDelta` Y-axis coordinates now "
+"work in inverted fashion (negative goes up, positive goes down) to be "
+"consistent with how pixel offsets work elsewhere in the game."
+msgstr ""
+"数字化显示逻辑中 `Offset` 和 `Offset.ShieldDelta` 的 Y 轴左边现在改为反向（负值向上，正值向下）以符合游戏中其他像素偏移语句的工作方式。"
+
+#: ../../Whats-New.md:32
+msgid ""
+"Phobos Warhead effects combined with `CellSpread` now correctly apply to "
+"buildings if any of the foundation cells are hit instead of only the top-"
+"left most cell (cell #0)."
+msgstr ""
+"现在 Phobos 弹头效果结合 `CellSpread` 使用时只要命中建筑所占的任意单元格即可对建筑生效而不再是必须命中最左上角的单元格（0 号单元格）。"
+
+#: ../../Whats-New.md:33
+msgid ""
+"`ExtraWarheads.DamageOverrides` now falls back to last listed value if "
+"list is shorter than `ExtraWarheads` for all Warhead detonations "
+"exceeding the length."
+msgstr ""
+"现在 `ExtraWarheads` 列表比 `ExtraWarheads.DamageOverrides` 更长时超出部分的弹头会使用后者列出的最后一个值。"
+
+#: ../../Whats-New.md:34
+msgid ""
+"Air and Top layer contents are no longer sorted, animations in these "
+"layers no longer respect `YSortAdjust`. Animations attached to flying "
+"units now get their layer updated immediately after parent unit, if they "
+"are on same layer they will draw above the parent unit."
+msgstr ""
+"Air 和 Top 层的内容不再排序，这些图层的动画不再遵循 `YSortAdjust`。附着于飞行单位的动画现在会跟随所附着单位更新图层，若处于同层则绘制在父单位上方。"
+
+#: ../../Whats-New.md:35
+msgid ""
+"`AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage`"
+" to make it more clear it applies to both `AnimList` and splash "
+"animations."
+msgstr ""
+"`AnimList.ShowOnZeroDamage` 已更名为 `CreateAnimsOnZeroDamage` 以明确其同时作用于 `AnimList` 和水花动画。"
+
+#: ../../Whats-New.md:36
+msgid ""
+"INI inclusion and inheritance are now turned off by default and need to "
+"be turned on via command line flags `-Include` and `-Inheritance`."
+msgstr ""
+"Phobos 版的 INI 包含和继承默认关闭，需要通过命令行参数 `-Include` 和 `-Inheritance` 开启。"
+
+#: ../../Whats-New.md:37
+msgid ""
+"`Level=true` projectiles no longer attempt to do reposition against "
+"targets that are behind non-water tiles by default. Use "
+"`SubjectToLand=true` to re-enable this behaviour."
+msgstr ""
+"`Level=true` 的抛射体现在不再在对被非水地块阻隔的目标时移动自己的位置（恢复原版规则）。现在需要使用 `SubjectToLand=true` 来启用这一行为。"
+
+#: ../../Whats-New.md:39
+msgid "From 0.3"
+msgstr "由 0.3"
+
+#: ../../Whats-New.md:41
+msgid ""
+"Phobos-introduced Warhead effects like shield modifiers, critical hits, "
+"disguise & mind control removal now require Warhead `Verses` to affect "
+"target to apply unless `EffectsRequireVerses` is set to false. Shield "
+"armor type is used if target has an active shield that cannot be "
+"penetrated by the Warhead."
+msgstr ""
+"现在由 Phobos 引入的弹头效果例如修改护盾、暴击、解除伪装和心控除非 `EffectsRequireVerses` 否则需要弹头 `Verses` 能够影响目标才会生效。若目标拥有无法被弹头穿透的激活状态护盾则使用护盾的护甲类型判定。"
+
+#: ../../Whats-New.md:42
+msgid ""
+"`Trajectory=Straight` projectiles can now snap on targets within 0.5 "
+"cells from their detonation point, this distance can be customized via "
+"`Trajectory.Straight.TargetSnapDistance`."
+msgstr ""
+"现在 `Trajectory=Straight` 的抛射体可以自动锁定距离爆点 0.5 格内的目标，该距离可以通过 `Trajectory.Straight.TargetSnapDistance` 进行调整。"
+
+#: ../../Whats-New.md:43
+msgid ""
+"`LaunchSW.RealLaunch=false` now checks if firing house has enough credits"
+" to satisfy SW's `Money.Amount` in order to be fired."
+msgstr ""
+"现在即便 `LaunchSW.RealLaunch=false` 也会检查发射方的资金是否满足超武 `Money.Amount` 的数值。"
+
+#: ../../Whats-New.md:44
+msgid ""
+"`CreateUnit` now creates the units by default at animation's height (even"
+" if `CreateUnit.ConsiderPathfinding` is enabled) instead of always at "
+"ground level. This behaviour can be restored by setting "
+"`CreateUnit.AlwaysSpawnOnGround` to true."
+msgstr ""
+"现在 `CreateUnit` 默认在动画所在高度处创建单位（即便启用了 `CreateUnit.ConsiderPathfinding`）而非始终在地面创建。这一行为可以通过将 `CreateUnit.AlwaysSpawnOnGround` 设为 true 来复原。"
+
+#: ../../Whats-New.md:45
+msgid ""
+"Phobos-introduced attack scripts now consider potential target's current "
+"map zone when evaluating targets. [TargetZoneScanType](Fixed-or-Improved-"
+"Logics.md#customizable-target-evaluation-map-zone-check-behaviour) can be"
+" used to customize this behaviour."
+msgstr ""
+"Phobos 引入的攻击脚本现在会评估潜在目标当前所处的地图区域。可使用 [TargetZoneScanType](Fixed-or-Improved-"
+"Logics.md#customizable-target-evaluation-map-zone-check-behaviour) 来自定义该行为。"
+
+#: ../../Whats-New.md:46
+msgid ""
+"`Artillary`, `ICBMLauncher`, `TickTank` or `SensorArray` no longer affect"
+" whether or not building is considered as vehicle for AI attack scripts. "
+"Use [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-"
+"as-vehicles) instead on buildings that do not have both `UndeploysInto` "
+"set and `Foundation=1x1`."
+msgstr ""
+"`Artillary`、`ICBMLauncher`、`TickTank` 及 `SensorArray` 不再影响建筑是否被 AI 攻击脚本视为载具。对于没有同时设置 `UndeploysInto` 与 `Foundation=1x1` 的建筑请使用 [ConsideredVehicle](Fixed-or-Improved-Logics.md#buildings-considered-"
+"as-vehicles)。"
+
+#: ../../Whats-New.md:47
+msgid ""
+"`PassengerDeletion.SoylentFriendlies` has been replaced by "
+"`PassengerDeletion.SoylentAllowedHouses`. Current default value of "
+"`PassengerDeletion.SoylentAllowedHouses=enemies` matches the previous "
+"default behaviour with `PassengerDeletion.SoylentFriendlies=false`."
+msgstr ""
+"`PassengerDeletion.SoylentFriendlies` 已被替换为 `PassengerDeletion.SoylentAllowedHouses`。目前设定默认值 `PassengerDeletion.SoylentAllowedHouses=enemies` 对应原本默认 `PassengerDeletion.SoylentFriendlies=false` 的行为。"
+
+#: ../../Whats-New.md:48
+msgid ""
+"`Grinding.DisplayRefund` is changed to `DisplayIncome`, "
+"`Grinding.DisplayRefund.Houses` is changed to `DisplayIncome.Houses`, "
+"`Grinding.DisplayRefund.Offset` is changed to `DisplayIncome.Offset`."
+msgstr ""
+"`Grinding.DisplayRefund` 已更名为 `DisplayIncome`，`Grinding.DisplayRefund.Houses` 更名为 `DisplayIncome.Houses`，`Grinding.DisplayRefund.Offset` 更名为 `DisplayIncome.Offset`。"
+
+#: ../../Whats-New.md:49
+msgid ""
+"`[JumpjetControls] -> AllowLayerDeviation` and "
+"`JumpjetAllowLayerDeviation` have been deprecated as the animation "
+"layering issues have been properly fixed by default now."
+msgstr ""
+"`[JumpjetControls] -> AllowLayerDeviation` 和 `JumpjetAllowLayerDeviation` 已被弃用，因为动画图层问题现在默认状态下已彻底修复。"
+
+#: ../../Whats-New.md:50
+msgid ""
+"`[JumpjetControls] -> TurnToTarget` and `JumpjetTurnToTarget` are "
+"obsolete. Jumpjet units who fire `OmniFire=no` weapons **always** turn to"
+" targets as other units do."
+msgstr ""
+"`[JumpjetControls] -> TurnToTarget` 和 `JumpjetTurnToTarget` 均已过时。使用 `OmniFire=no` 武器的 JumpJet 单位现在 **总是** 会像其他单位那样转向目标。"
+
+#: ../../Whats-New.md:51
+msgid ""
+"Buildings delivered by trigger action 125 will now **always** play "
+"buildup anim as long as it exists. `[ParamTypes] -> 53` is deprecated."
+msgstr ""
+"现在 125 号触发结果所投送的建筑只要存在就 **总是** 会播放其建造动画。`[ParamTypes] -> 53` 已弃用。"
+
+#: ../../Whats-New.md:52
+msgid "`Shadow` for debris & meteor animations is changed to `ExtraShadow`."
+msgstr "用于碎片和流行动画的 `Shadow` 已更名为 `ExtraShadow`。"
+
+#: ../../Whats-New.md:54
 msgid "From pre-0.3 devbuilds"
-msgstr "由pre-0.3开发版"
+msgstr "由 pre-0.3 开发版"
 
-#: ../Whats-New.md:21
+#: ../../Whats-New.md:56
 msgid "`Trajectory.Speed` is now defined on projectile instead of weapon."
-msgstr "`Trajectory.Speed`现在定义在抛射体上，而非武器上。"
+msgstr "`Trajectory.Speed` 现在定义在抛射体上而不再是武器上。"
 
-#: ../Whats-New.md:22
+#: ../../Whats-New.md:57
 msgid ""
 "`Gravity=0` is not supported anymore as it will cause the projectile to "
 "fly backwards and be unable to hit the target which is not at the same "
 "height. Use `Straight` Trajectory instead. See [here](New-or-Enhanced-"
-"Logics.md#projectile-trajectories)."
+"Logics.md#straight-trajectory)."
 msgstr ""
-"`Gravity=0`会导致抛射体行为异常，因此不再使用。使用直线弹道代替，请见[此处](New-or-Enhanced-Logics.md"
-"#projectile-trajectories)。"
+"由于 `Gravity=0` 会导致抛射体向后飞行并且无法击中不再同一高度的目标因此它已不再被支持，请使用 `Straight` 轨迹替代。参见 [此处](New-or-Enhanced-Logics.md"
+"#straight-trajectory)。"
 
-#: ../Whats-New.md:23
+#: ../../Whats-New.md:58
 msgid ""
 "Automatic self-destruction logic logic has been reimplemented, "
 "`Death.NoAmmo`, `Death.Countdown` and `Death.Peaceful` tags have been "
 "remade/renamed and require adjustments to function."
 msgstr ""
-"自毁逻辑重做，`Death.NoAmmo`，, "
-"`Death.Countdown`与`Death.Peaceful`标签均被重做或重命名，并且需要一些调整才能生效。"
+"自毁逻辑已被重新实现，`Death.NoAmmo`、`Death.Countdown` 和 `Death.Peaceful` 标签已被重做／重命名并需要调整以运作。"
 
-#: ../Whats-New.md:25
-msgid "From 0.2.2.2"
-msgstr "由0.2.2.2"
-
-#: ../Whats-New.md:27
+#: ../../Whats-New.md:59
 msgid ""
-"Keys `rulesmd.ini->[SOMEWARHEAD]->PenetratesShield` and "
-"`rulesmd.ini->[SOMEWARHEAD]->BreaksShield` have been changed to "
-"`Shield.Penetrate` and `Shield.Break`, respectively."
-msgstr "`rulesmd.ini->[SOMEWARHEAD]->PenetratesShield`与`rulesmd.ini->[SOMEWARHEAD]->BreaksShield`已分别变更为`Shield.Penetrate`和`Shield.Break`。"
+"`DetachedFromOwner` on weapons is deprecated. This has been replaced by "
+"`AllowDamageOnSelf` on warheads."
+msgstr ""
+"武器上的 `DetachedFromOwner` 现已改为弹头上的 `AllowDamageOnSelf`。"
 
-#: ../Whats-New.md:28
+#: ../../Whats-New.md:60
+msgid ""
+"Timed jump script actions now take the time measured in ingame seconds "
+"instead of frames. Divide your value by 15 to accommodate to this change."
+msgstr ""
+"定时跳转脚本现在使用 **游戏秒** 而非帧来作为时间单位。也就是你的值需要／15 来使用。"
+
+#: ../../Whats-New.md:61
+msgid ""
+"[Placement Preview](User-Interface.md#placement-preview) logic has been "
+"adjusted, `BuildingPlacementPreview.DefaultTranslucentLevel`, "
+"`BuildingPlacementGrid.TranslucentLevel`, `PlacementPreview.Show`, "
+"`PlacementPreview.TranslucentLevel` and `ShowBuildingPlacementPreview` "
+"tags have been remade/renamed and require adjustments to function. In "
+"addition, you must explicitly enable this feature by specifying "
+"`[AudioVisual] -> PlacementPreview=yes`."
+msgstr ""
+"[放置预览](User-Interface.md#placement-preview) 逻辑已被调整，`BuildingPlacementPreview.DefaultTranslucentLevel`、`BuildingPlacementGrid.TranslucentLevel`、`PlacementPreview.Show`、`PlacementPreview.TranslucentLevel` 以及 `ShowBuildingPlacementPreview` 标签已被重做／重命名并需要调整以运作。另外，你必须通过指定 `[AudioVisual] -> PlacementPreview=yes` 手动启用此功能。"
+
+#: ../../Whats-New.md:62 ../../Whats-New.md:70
+msgid ""
+"Existing script actions were renumbered, please use the migration utility"
+" to change the numbers to the correct ones."
+msgstr ""
+"现有的动作脚本已被重新编号，请使用迁移工具将旧有序号更改为正确的新序号。"
+
+#: ../../Whats-New.md:63
+msgid ""
+"`DiskLaser.Radius` values were misinterpreted by a factor of 1/2π. The "
+"default radius is now 240, please multiply your customized radii by 2π."
+msgstr ""
+"`DiskLaser.Radius` 的值曾被错误解释了一个大小为 1/2π 的系数。现在默认半径为 240，以及你需要将自定义的半径乘以 2π。"
+
+#: ../../Whats-New.md:65
+msgid "From 0.2.2.2"
+msgstr "由 0.2.2.2"
+
+#: ../../Whats-New.md:67
+msgid ""
+"Keys `rulesmd.ini -> [WarheadType] -> PenetratesShield` and `rulesmd.ini "
+"-> [WarheadType] -> BreaksShield` have been changed to `Shield.Penetrate`"
+" and `Shield.Break`, respectively."
+msgstr ""
+"`rulesmd.ini -> [WarheadType] -> PenetratesShield` 和 `rulesmd.ini -> "
+"[WarheadType] -> BreaksShield` 已分别更名为 `Shield.Penetrate` 和 `Shield.Break`。"
+
+#: ../../Whats-New.md:68
 msgid ""
 "`Rad.NoOwner` on weapons is deprecated. This has been replaced by "
 "`RadHasOwner` key on radiation types itself. It also defaults to no, so "
 "radiation once again has no owner house by default."
-msgstr "武器标签`Rad.NoOwner`已被弃用。其功能现在由辐射类型中的标签`RadHasOwner`代替，且默认值为否，意味着辐射再次变为默认无所属。"
+msgstr ""
+"武器上的 `Rad.NoOwner` 已被弃用。这已被辐射类型自身的 `RadHasOwner` 标签取代。其默认值同样为否，因此辐射默认情况下恢复回了无所属方。"
 
-#: ../Whats-New.md:30
-msgid "From 0.1.1"
-msgstr "由0.1.1"
-
-#: ../Whats-New.md:32
+#: ../../Whats-New.md:69
 msgid ""
-"Key `rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget` is "
+"`RadApplicationDelay` and `RadApplicationDelay.Building` on custom "
+"radiation types are now only used if `[Radiation] -> "
+"UseGlobalRadApplicationDelay` is explicitly set to false, otherwise "
+"values from `[Radiation]` are used."
+msgstr ""
+"`RadApplicationDelay` 和 `RadApplicationDelay.Building` 现仅在 `[Radiation] -> UseGlobalRadApplicationDelay` 设为 false 时使用，否则始终使用 `[Radiation]` 中的值。"
+
+#: ../../Whats-New.md:72
+msgid "From 0.1.1"
+msgstr "由 0.1.1"
+
+#: ../../Whats-New.md:74
+msgid ""
+"Key `rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` is "
 "deprecated and can be removed now, the bugfix for `DeployToFire` "
 "deployers is now always on."
-msgstr "`rulesmd.ini->[SOMETECHNOTYPE]->Deployed.RememberTarget`已被弃用并可以移除，对`DeployToFire`的修复现在一直开启。"
+msgstr ""
+"`rulesmd.ini -> [TechnoType] -> Deployed.RememberTarget` 现已弃用，针对 `DeployToFire` 部署者丢失目标的 Bug 修复现在始终开启。"
 
-#: ../Whats-New.md:34
+#: ../../Whats-New.md:76
+msgid "New user settings in RA2MD.INI"
+msgstr "RA2MD.INI 中新增的用户设置项"
+
+#: ../../Whats-New.md:78
+msgid ""
+"These are new user setting keys added by various features in Phobos. Most"
+" of them can be found in either in [user inteface](User-Interface.md) or "
+"[miscellaneous](Miscellanous.md) sections. Search functionality can be "
+"used to find them quickly if needed."
+msgstr ""
+"这些是由 Phobos 各种功能所新添加的用户设置标签。大多可以在 [用户界面特性](User-Interface.md) 或 "
+"[杂项内容](Miscellanous.md) 部分找到。你可以用搜索功能快速查找。"
+
+#: ../../Whats-New.md:79
+msgid ""
+"[Phobos]\n"
+"CampaignDefaultGameSpeed=4       ; integer\n"
+"ShowBriefing=true                ; boolean\n"
+"DigitalDisplay.Enable=false      ; boolean\n"
+"ShowDesignatorRange=false        ; boolean\n"
+"PrioritySelectionFiltering=true  ; boolean\n"
+"ShowPlacementPreview=yes         ; boolean\n"
+"RealTimeTimers=false             ; boolean\n"
+"RealTimeTimers.Adaptive=false    ; boolean\n"
+"ShowHarvesterCounter=true        ; boolean\n"
+"ShowPowerDelta=true              ; boolean\n"
+"ShowWeedsCounter=true            ; boolean\n"
+"ToolTipDescriptions=true         ; boolean\n"
+"ToolTipBlur=false                ; boolean\n"
+"SaveGameOnScenarioStart=true     ; boolean\n"
+"HideLightFlashEffects=false      ; boolean\n"
+msgstr ""
+"[Phobos]\n"
+"CampaignDefaultGameSpeed=4       ; integer\n"
+"ShowBriefing=true                ; boolean\n"
+"DigitalDisplay.Enable=false      ; boolean\n"
+"ShowDesignatorRange=false        ; boolean\n"
+"PrioritySelectionFiltering=true  ; boolean\n"
+"ShowPlacementPreview=yes         ; boolean\n"
+"RealTimeTimers=false             ; boolean\n"
+"RealTimeTimers.Adaptive=false    ; boolean\n"
+"ShowHarvesterCounter=true        ; boolean\n"
+"ShowPowerDelta=true              ; boolean\n"
+"ShowWeedsCounter=true            ; boolean\n"
+"ToolTipDescriptions=true         ; boolean\n"
+"ToolTipBlur=false                ; boolean\n"
+"SaveGameOnScenarioStart=true     ; boolean\n"
+"HideLightFlashEffects=false      ; boolean\n"
+
+#: ../../Whats-New.md:98
 msgid "For Map Editor (Final Alert 2)"
-msgstr "对地图编辑器（Final Alert 2）"
+msgstr "对地图编辑器（Final Alert 2）的更改"
 
-#: ../Whats-New.md:39
+#: ../../Whats-New.md:103
 msgid "In `FAData.ini`:"
-msgstr "在`FAData.ini`中："
+msgstr "在 `FAData.ini`："
 
-#: ../Whats-New.md:230
+#: ../../Whats-New.md:104
+msgid ""
+"[ParamTypes]\n"
+"47=Structures,28\n"
+"54=Use GlobalVar,10\n"
+"55=Operation,0\n"
+"56=Variable index,0\n"
+"57=Lower bound,0\n"
+"58=Upper bound,0\n"
+"59=Operate var is global,10\n"
+"60=Operate var index,0\n"
+"65=Campaign AI Repairable,0\n"
+"68=House,1,2\n"
+"69=Non-inert,10\n"
+"70=AITargetTypes index,0\n"
+"\n"
+"[EventsRA2]\n"
+"500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1\n"
+"501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1\n"
+"502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1\n"
+"503=Local variable is greater than or equals to,48,6,0,0,[LONG "
+"DESC],0,1,503,1\n"
+"504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1\n"
+"505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1\n"
+"506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1\n"
+"507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1\n"
+"508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1\n"
+"509=Global variable is greater than or queals to,48,6,0,0,[LONG "
+"DESC],0,1,509,1\n"
+"510=Global variable is less than or equals to,48,6,0,0,[LONG "
+"DESC],0,1,510,1\n"
+"511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1\n"
+"512=Local variable is greater than local variable,48,3,0,0,[LONG "
+"DESC],0,1,500,1\n"
+"513=Local variable is less than local variable,48,3,0,0,[LONG "
+"DESC],0,1,501,1\n"
+"514=Local variable equals to local variable,48,3,0,0,[LONG "
+"DESC],0,1,502,1\n"
+"515=Local variable is greater than or equals to local "
+"variable,48,3,0,0,[LONG DESC],0,1,503,1\n"
+"516=Local variable is less than or equals local variable,48,3,0,0,[LONG "
+"DESC],0,1,504,1\n"
+"517=Local variable and local variable is true,48,3,0,0,[LONG "
+"DESC],0,1,505,1\n"
+"518=Global variable is greater than local variable,48,3,0,0,[LONG "
+"DESC],0,1,506,1\n"
+"519=Global variable is less than local variable,48,3,0,0,[LONG "
+"DESC],0,1,507,1\n"
+"520=Global variable equals to local variable,48,3,0,0,[LONG "
+"DESC],0,1,508,1\n"
+"521=Global variable is greater than or queals to local "
+"variable,48,3,0,0,[LONG DESC],0,1,509,1\n"
+"522=Global variable is less than or equals to local "
+"variable,48,3,0,0,[LONG DESC],0,1,510,1\n"
+"523=Global variable and local variable is true,48,3,0,0,[LONG "
+"DESC],0,1,511,1\n"
+"524=Local variable is greater than global variable,48,35,0,0,[LONG "
+"DESC],0,1,500,1\n"
+"525=Local variable is less than global variable,48,35,0,0,[LONG "
+"DESC],0,1,501,1\n"
+"526=Local variable equals to global variable,48,35,0,0,[LONG "
+"DESC],0,1,502,1\n"
+"527=Local variable is greater than or equals to global "
+"variable,48,35,0,0,[LONG DESC],0,1,503,1\n"
+"528=Local variable is less than or equals global variable,48,35,0,0,[LONG"
+" DESC],0,1,504,1\n"
+"529=Local variable and global variable is true,48,35,0,0,[LONG "
+"DESC],0,1,505,1\n"
+"530=Global variable is greater than global variable,48,35,0,0,[LONG "
+"DESC],0,1,506,1\n"
+"531=Global variable is less than global variable,48,35,0,0,[LONG "
+"DESC],0,1,507,1\n"
+"532=Global variable equals to global variable,48,35,0,0,[LONG "
+"DESC],0,1,508,1\n"
+"533=Global variable is greater than or queals to global "
+"variable,48,35,0,0,[LONG DESC],0,1,509,1\n"
+"534=Global variable is less than or equals to global "
+"variable,48,35,0,0,[LONG DESC],0,1,510,1\n"
+"535=Global variable and global variable is true,48,35,0,0,[LONG "
+"DESC],0,1,511,1\n"
+"600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1"
+"\n"
+"601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1\n"
+"602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1\n"
+"604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1\n"
+"605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1\n"
+"\n"
+"[ActionsRA2]\n"
+"41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG "
+"DESC].,0,1,41\n"
+"125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125\n"
+"500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1\n"
+"501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1\n"
+"502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1\n"
+"503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0\n"
+"504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1\n"
+"505=Fire Super Weapon at specified location "
+"(Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from "
+"[SuperWeaponTypes] list at a specified location. House=-1 means random "
+"target that isn't neutral. House=-2 means the first neutral house. "
+"House=-3 means random human target. Coordinate X=-1 means random. "
+"Coordinate Y=-1 means random,0,1,505\n"
+"506=Fire Super Weapon at specified waypoint "
+"(Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from "
+"[SuperWeaponTypes] list at a specified waypoint. House=-1 means random "
+"target that isn't neutral. House=-2 means the first neutral house. "
+"House=-3 means random human target. Coordinate X=-1 means random. "
+"Coordinate Y=-1 means random,0,1,506\n"
+"510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set "
+"MCVRedeploys to the given value,0,1,510\n"
+"\n"
+"; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)\n"
+"[ScriptTypeLists]\n"
+"1=ScriptLocalVariable\n"
+"2=ScriptGlobalVariable\n"
+"3=ScriptLocalVariable_Local\n"
+"4=ScriptLocalVariable_Global\n"
+"5=ScriptGlobalVariable_Local\n"
+"6=ScriptGlobalVariable_Global\n"
+"\n"
+"[ScriptLocalVariable]\n"
+"HasExtraParam=Yes\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptGlobalVariable]\n"
+"HasExtraParam=Yes\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptLocalVariable_Local]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_LocalVariables\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptLocalVariable_Global]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_GlobalVariables\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptGlobalVariable_Local]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_LocalVariables\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptGlobalVariable_Global]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_GlobalVariables\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptExtType_LocalVariables]\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptExtType_GlobalVariables]\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptsRA2]\n"
+"10100=Timed Area Guard,20,0,1,[LONG DESC]\n"
+"10101=Wait until ammo is full,0,0,1,[LONG DESC]\n"
+"10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]\n"
+"10103=Load Onto Transports,0,0,1,[LONG DESC]\n"
+"10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]\n"
+"18000=Local variable set,22,0,1,[LONG DESC]\n"
+"18001=Local variable add,22,0,1,[LONG DESC]\n"
+"18002=Local variable minus,22,0,1,[LONG DESC]\n"
+"18003=Local variable multiply,22,0,1,[LONG DESC]\n"
+"18004=Local variable divide,22,0,1,[LONG DESC]\n"
+"18005=Local variable mod,22,0,1,[LONG DESC]\n"
+"18006=Local variable leftshift,22,0,1,[LONG DESC]\n"
+"18007=Local variable rightshift,22,0,1,[LONG DESC]\n"
+"18008=Local variable reverse,22,0,1,[LONG DESC]\n"
+"18009=Local variable xor,22,0,1,[LONG DESC]\n"
+"18010=Local variable or,22,0,1,[LONG DESC]\n"
+"18011=Local variable and,22,0,1,[LONG DESC]\n"
+"18012=Global variable set,23,0,1,[LONG DESC]\n"
+"18013=Global variable add,23,0,1,[LONG DESC]\n"
+"18014=Global variable minus,23,0,1,[LONG DESC]\n"
+"18015=Global variable multiply,23,0,1,[LONG DESC]\n"
+"18016=Global variable divide,23,0,1,[LONG DESC]\n"
+"18017=Global variable mod,23,0,1,[LONG DESC]\n"
+"18018=Global variable leftshift,23,0,1,[LONG DESC]\n"
+"18019=Global variable rightshift,23,0,1,[LONG DESC]\n"
+"18020=Global variable reverse,23,0,1,[LONG DESC]\n"
+"18021=Global variable xor,23,0,1,[LONG DESC]\n"
+"18022=Global variable or,23,0,1,[LONG DESC]\n"
+"18023=Global variable and,23,0,1,[LONG DESC]\n"
+"18024=Local variable set by local variable,24,0,1,[LONG DESC]\n"
+"18025=Local variable add by local variable,24,0,1,[LONG DESC]\n"
+"18026=Local variable minus by local variable,24,0,1,[LONG DESC]\n"
+"18027=Local variable multiply by local variable,24,0,1,[LONG DESC]\n"
+"18028=Local variable divide by local variable,24,0,1,[LONG DESC]\n"
+"18029=Local variable mod by local variable,24,0,1,[LONG DESC]\n"
+"18030=Local variable leftshift by local variable,24,0,1,[LONG DESC]\n"
+"18031=Local variable rightshift by local variable,24,0,1,[LONG DESC]\n"
+"18032=Local variable reverse by local variable,24,0,1,[LONG DESC]\n"
+"18033=Local variable xor by local variable,24,0,1,[LONG DESC]\n"
+"18034=Local variable or by local variable,24,0,1,[LONG DESC]\n"
+"18035=Local variable and by local variable,24,0,1,[LONG DESC]\n"
+"18036=Global variable set by local variable,25,0,1,[LONG DESC]\n"
+"18037=Global variable add by local variable,25,0,1,[LONG DESC]\n"
+"18038=Global variable minus by local variable,25,0,1,[LONG DESC]\n"
+"18039=Global variable multiply by local variable,25,0,1,[LONG DESC]\n"
+"18040=Global variable divide by local variable,25,0,1,[LONG DESC]\n"
+"18041=Global variable mod by local variable,25,0,1,[LONG DESC]\n"
+"18042=Global variable leftshift by local variable,25,0,1,[LONG DESC]\n"
+"18043=Global variable rightshift by local variable,25,0,1,[LONG DESC]\n"
+"18044=Global variable reverse by local variable,25,0,1,[LONG DESC]\n"
+"18045=Global variable xor by local variable,25,0,1,[LONG DESC]\n"
+"18046=Global variable or by local variable,25,0,1,[LONG DESC]\n"
+"18047=Global variable and by local variable,25,0,1,[LONG DESC]\n"
+"18048=Local variable set by global variable,26,0,1,[LONG DESC]\n"
+"18049=Local variable add by global variable,26,0,1,[LONG DESC]\n"
+"18050=Local variable minus by global variable,26,0,1,[LONG DESC]\n"
+"18051=Local variable multiply by global variable,26,0,1,[LONG DESC]\n"
+"18052=Local variable divide by global variable,26,0,1,[LONG DESC]\n"
+"18053=Local variable mod by global variable,26,0,1,[LONG DESC]\n"
+"18054=Local variable leftshift by global variable,26,0,1,[LONG DESC]\n"
+"18055=Local variable rightshift by global variable,26,0,1,[LONG DESC]\n"
+"18056=Local variable reverse by global variable,26,0,1,[LONG DESC]\n"
+"18057=Local variable xor by global variable,26,0,1,[LONG DESC]\n"
+"18058=Local variable or by global variable,26,0,1,[LONG DESC]\n"
+"18059=Local variable and by global variable,26,0,1,[LONG DESC]\n"
+"18060=Global variable set by global variable,27,0,1,[LONG DESC]\n"
+"18061=Global variable add by global variable,27,0,1,[LONG DESC]\n"
+"18062=Global variable minus by global variable,27,0,1,[LONG DESC]\n"
+"18063=Global variable multiply by global variable,27,0,1,[LONG DESC]\n"
+"18064=Global variable divide by global variable,27,0,1,[LONG DESC]\n"
+"18065=Global variable mod by global variable,27,0,1,[LONG DESC]\n"
+"18066=Global variable leftshift by global variable,27,0,1,[LONG DESC]\n"
+"18067=Global variable rightshift by global variable,27,0,1,[LONG DESC]\n"
+"18068=Global variable reverse by global variable,27,0,1,[LONG DESC]\n"
+"18069=Global variable xor by global variable,27,0,1,[LONG DESC]\n"
+"18070=Global variable or by global variable,27,0,1,[LONG DESC]\n"
+"18071=Global variable and by global variable,27,0,1,[LONG DESC]\n"
+"\n"
+"[ScriptParams]\n"
+"22=Local variables,-1\n"
+"23=Global variables,-2\n"
+"24=Local variables,-3\n"
+"25=Local variables,-4\n"
+"26=Global variables,-5\n"
+"27=Global variables,-6\n"
+msgstr ""
+"[ParamTypes]\n"
+"47=Structures,28\n"
+"54=Use GlobalVar,10\n"
+"55=Operation,0\n"
+"56=Variable index,0\n"
+"57=Lower bound,0\n"
+"58=Upper bound,0\n"
+"59=Operate var is global,10\n"
+"60=Operate var index,0\n"
+"65=Campaign AI Repairable,0\n"
+"68=House,1,2\n"
+"69=Non-inert,10\n"
+"70=AITargetTypes index,0\n"
+"\n"
+"[EventsRA2]\n"
+"500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1\n"
+"501=Local variable is less than,48,6,0,0,[LONG DESC],0,1,501,1\n"
+"502=Local variable equals to,48,6,0,0,[LONG DESC],0,1,502,1\n"
+"503=Local variable is greater than or equals to,48,6,0,0,[LONG "
+"DESC],0,1,503,1\n"
+"504=Local variable is less than or equals,48,6,0,0,[LONG DESC],0,1,504,1\n"
+"505=Local variable and X is true,48,6,0,0,[LONG DESC],0,1,505,1\n"
+"506=Global variable is greater than,48,6,0,0,[LONG DESC],0,1,506,1\n"
+"507=Global variable is less than,48,6,0,0,[LONG DESC],0,1,507,1\n"
+"508=Global variable equals to,48,6,0,0,[LONG DESC],0,1,508,1\n"
+"509=Global variable is greater than or queals to,48,6,0,0,[LONG "
+"DESC],0,1,509,1\n"
+"510=Global variable is less than or equals to,48,6,0,0,[LONG "
+"DESC],0,1,510,1\n"
+"511=Global variable and X is true,48,6,0,0,[LONG DESC],0,1,511,1\n"
+"512=Local variable is greater than local variable,48,3,0,0,[LONG "
+"DESC],0,1,500,1\n"
+"513=Local variable is less than local variable,48,3,0,0,[LONG "
+"DESC],0,1,501,1\n"
+"514=Local variable equals to local variable,48,3,0,0,[LONG "
+"DESC],0,1,502,1\n"
+"515=Local variable is greater than or equals to local "
+"variable,48,3,0,0,[LONG DESC],0,1,503,1\n"
+"516=Local variable is less than or equals local variable,48,3,0,0,[LONG "
+"DESC],0,1,504,1\n"
+"517=Local variable and local variable is true,48,3,0,0,[LONG "
+"DESC],0,1,505,1\n"
+"518=Global variable is greater than local variable,48,3,0,0,[LONG "
+"DESC],0,1,506,1\n"
+"519=Global variable is less than local variable,48,3,0,0,[LONG "
+"DESC],0,1,507,1\n"
+"520=Global variable equals to local variable,48,3,0,0,[LONG "
+"DESC],0,1,508,1\n"
+"521=Global variable is greater than or queals to local "
+"variable,48,3,0,0,[LONG DESC],0,1,509,1\n"
+"522=Global variable is less than or equals to local "
+"variable,48,3,0,0,[LONG DESC],0,1,510,1\n"
+"523=Global variable and local variable is true,48,3,0,0,[LONG "
+"DESC],0,1,511,1\n"
+"524=Local variable is greater than global variable,48,35,0,0,[LONG "
+"DESC],0,1,500,1\n"
+"525=Local variable is less than global variable,48,35,0,0,[LONG "
+"DESC],0,1,501,1\n"
+"526=Local variable equals to global variable,48,35,0,0,[LONG "
+"DESC],0,1,502,1\n"
+"527=Local variable is greater than or equals to global "
+"variable,48,35,0,0,[LONG DESC],0,1,503,1\n"
+"528=Local variable is less than or equals global variable,48,35,0,0,[LONG"
+" DESC],0,1,504,1\n"
+"529=Local variable and global variable is true,48,35,0,0,[LONG "
+"DESC],0,1,505,1\n"
+"530=Global variable is greater than global variable,48,35,0,0,[LONG "
+"DESC],0,1,506,1\n"
+"531=Global variable is less than global variable,48,35,0,0,[LONG "
+"DESC],0,1,507,1\n"
+"532=Global variable equals to global variable,48,35,0,0,[LONG "
+"DESC],0,1,508,1\n"
+"533=Global variable is greater than or queals to global "
+"variable,48,35,0,0,[LONG DESC],0,1,509,1\n"
+"534=Global variable is less than or equals to global "
+"variable,48,35,0,0,[LONG DESC],0,1,510,1\n"
+"535=Global variable and global variable is true,48,35,0,0,[LONG "
+"DESC],0,1,511,1\n"
+"600=Shield of the attached object is broken,0,0,0,0,[LONG DESC],0,1,600,1"
+"\n"
+"601=House owns Techno Type,68,46,0,0,[LONG DESC],0,1,601,1\n"
+"602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1\n"
+"604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1\n"
+"605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1\n"
+"\n"
+"[ActionsRA2]\n"
+"41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG "
+"DESC].,0,1,41\n"
+"125=Build at...,-10,47,0,65,0,0,1,0,0,[LONG DESC],0,1,125\n"
+"500=Save game,-4,13,0,0,0,0,0,0,0,[LONG DESC],0,1,500,1\n"
+"501=Edit variable,0,56,55,6,54,0,0,0,0,[LONG DESC],0,1,501,1\n"
+"502=Generate random number,0,56,57,58,54,0,0,0,0,[LONG DESC],0,1,502,1\n"
+"503=Print variable value,0,56,54,0,0,0,0,0,0,[LONG DESC],0,1,503,0\n"
+"504=Binary operation,0,56,55,60,54,59,0,0,0,[LONG DESC],0,1,504,1\n"
+"505=Fire Super Weapon at specified location "
+"(Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from "
+"[SuperWeaponTypes] list at a specified location. House=-1 means random "
+"target that isn't neutral. House=-2 means the first neutral house. "
+"House=-3 means random human target. Coordinate X=-1 means random. "
+"Coordinate Y=-1 means random,0,1,505\n"
+"506=Fire Super Weapon at specified waypoint "
+"(Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from "
+"[SuperWeaponTypes] list at a specified waypoint. House=-1 means random "
+"target that isn't neutral. House=-2 means the first neutral house. "
+"House=-3 means random human target. Coordinate X=-1 means random. "
+"Coordinate Y=-1 means random,0,1,506\n"
+"510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set "
+"MCVRedeploys to the given value,0,1,510\n"
+"\n"
+"; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)\n"
+"[ScriptTypeLists]\n"
+"1=ScriptLocalVariable\n"
+"2=ScriptGlobalVariable\n"
+"3=ScriptLocalVariable_Local\n"
+"4=ScriptLocalVariable_Global\n"
+"5=ScriptGlobalVariable_Local\n"
+"6=ScriptGlobalVariable_Global\n"
+"\n"
+"[ScriptLocalVariable]\n"
+"HasExtraParam=Yes\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptGlobalVariable]\n"
+"HasExtraParam=Yes\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptLocalVariable_Local]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_LocalVariables\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptLocalVariable_Global]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_GlobalVariables\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptGlobalVariable_Local]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_LocalVariables\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptGlobalVariable_Global]\n"
+"HasExtraParam=Yes\n"
+"ExtraParamType=ScriptExtType_GlobalVariables\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptExtType_LocalVariables]\n"
+"BuiltInType=14\n"
+"\n"
+"[ScriptExtType_GlobalVariables]\n"
+"BuiltInType=5\n"
+"\n"
+"[ScriptsRA2]\n"
+"10100=Timed Area Guard,20,0,1,[LONG DESC]\n"
+"10101=Wait until ammo is full,0,0,1,[LONG DESC]\n"
+"10102=Regroup Temporarily Around the Team Leader,20,0,1,[LONG DESC]\n"
+"10103=Load Onto Transports,0,0,1,[LONG DESC]\n"
+"10104=Chronoshift to Enemy Base,20,0,1,[LONG DESC]\n"
+"18000=Local variable set,22,0,1,[LONG DESC]\n"
+"18001=Local variable add,22,0,1,[LONG DESC]\n"
+"18002=Local variable minus,22,0,1,[LONG DESC]\n"
+"18003=Local variable multiply,22,0,1,[LONG DESC]\n"
+"18004=Local variable divide,22,0,1,[LONG DESC]\n"
+"18005=Local variable mod,22,0,1,[LONG DESC]\n"
+"18006=Local variable leftshift,22,0,1,[LONG DESC]\n"
+"18007=Local variable rightshift,22,0,1,[LONG DESC]\n"
+"18008=Local variable reverse,22,0,1,[LONG DESC]\n"
+"18009=Local variable xor,22,0,1,[LONG DESC]\n"
+"18010=Local variable or,22,0,1,[LONG DESC]\n"
+"18011=Local variable and,22,0,1,[LONG DESC]\n"
+"18012=Global variable set,23,0,1,[LONG DESC]\n"
+"18013=Global variable add,23,0,1,[LONG DESC]\n"
+"18014=Global variable minus,23,0,1,[LONG DESC]\n"
+"18015=Global variable multiply,23,0,1,[LONG DESC]\n"
+"18016=Global variable divide,23,0,1,[LONG DESC]\n"
+"18017=Global variable mod,23,0,1,[LONG DESC]\n"
+"18018=Global variable leftshift,23,0,1,[LONG DESC]\n"
+"18019=Global variable rightshift,23,0,1,[LONG DESC]\n"
+"18020=Global variable reverse,23,0,1,[LONG DESC]\n"
+"18021=Global variable xor,23,0,1,[LONG DESC]\n"
+"18022=Global variable or,23,0,1,[LONG DESC]\n"
+"18023=Global variable and,23,0,1,[LONG DESC]\n"
+"18024=Local variable set by local variable,24,0,1,[LONG DESC]\n"
+"18025=Local variable add by local variable,24,0,1,[LONG DESC]\n"
+"18026=Local variable minus by local variable,24,0,1,[LONG DESC]\n"
+"18027=Local variable multiply by local variable,24,0,1,[LONG DESC]\n"
+"18028=Local variable divide by local variable,24,0,1,[LONG DESC]\n"
+"18029=Local variable mod by local variable,24,0,1,[LONG DESC]\n"
+"18030=Local variable leftshift by local variable,24,0,1,[LONG DESC]\n"
+"18031=Local variable rightshift by local variable,24,0,1,[LONG DESC]\n"
+"18032=Local variable reverse by local variable,24,0,1,[LONG DESC]\n"
+"18033=Local variable xor by local variable,24,0,1,[LONG DESC]\n"
+"18034=Local variable or by local variable,24,0,1,[LONG DESC]\n"
+"18035=Local variable and by local variable,24,0,1,[LONG DESC]\n"
+"18036=Global variable set by local variable,25,0,1,[LONG DESC]\n"
+"18037=Global variable add by local variable,25,0,1,[LONG DESC]\n"
+"18038=Global variable minus by local variable,25,0,1,[LONG DESC]\n"
+"18039=Global variable multiply by local variable,25,0,1,[LONG DESC]\n"
+"18040=Global variable divide by local variable,25,0,1,[LONG DESC]\n"
+"18041=Global variable mod by local variable,25,0,1,[LONG DESC]\n"
+"18042=Global variable leftshift by local variable,25,0,1,[LONG DESC]\n"
+"18043=Global variable rightshift by local variable,25,0,1,[LONG DESC]\n"
+"18044=Global variable reverse by local variable,25,0,1,[LONG DESC]\n"
+"18045=Global variable xor by local variable,25,0,1,[LONG DESC]\n"
+"18046=Global variable or by local variable,25,0,1,[LONG DESC]\n"
+"18047=Global variable and by local variable,25,0,1,[LONG DESC]\n"
+"18048=Local variable set by global variable,26,0,1,[LONG DESC]\n"
+"18049=Local variable add by global variable,26,0,1,[LONG DESC]\n"
+"18050=Local variable minus by global variable,26,0,1,[LONG DESC]\n"
+"18051=Local variable multiply by global variable,26,0,1,[LONG DESC]\n"
+"18052=Local variable divide by global variable,26,0,1,[LONG DESC]\n"
+"18053=Local variable mod by global variable,26,0,1,[LONG DESC]\n"
+"18054=Local variable leftshift by global variable,26,0,1,[LONG DESC]\n"
+"18055=Local variable rightshift by global variable,26,0,1,[LONG DESC]\n"
+"18056=Local variable reverse by global variable,26,0,1,[LONG DESC]\n"
+"18057=Local variable xor by global variable,26,0,1,[LONG DESC]\n"
+"18058=Local variable or by global variable,26,0,1,[LONG DESC]\n"
+"18059=Local variable and by global variable,26,0,1,[LONG DESC]\n"
+"18060=Global variable set by global variable,27,0,1,[LONG DESC]\n"
+"18061=Global variable add by global variable,27,0,1,[LONG DESC]\n"
+"18062=Global variable minus by global variable,27,0,1,[LONG DESC]\n"
+"18063=Global variable multiply by global variable,27,0,1,[LONG DESC]\n"
+"18064=Global variable divide by global variable,27,0,1,[LONG DESC]\n"
+"18065=Global variable mod by global variable,27,0,1,[LONG DESC]\n"
+"18066=Global variable leftshift by global variable,27,0,1,[LONG DESC]\n"
+"18067=Global variable rightshift by global variable,27,0,1,[LONG DESC]\n"
+"18068=Global variable reverse by global variable,27,0,1,[LONG DESC]\n"
+"18069=Global variable xor by global variable,27,0,1,[LONG DESC]\n"
+"18070=Global variable or by global variable,27,0,1,[LONG DESC]\n"
+"18071=Global variable and by global variable,27,0,1,[LONG DESC]\n"
+"\n"
+"[ScriptParams]\n"
+"22=Local variables,-1\n"
+"23=Global variables,-2\n"
+"24=Local variables,-3\n"
+"25=Local variables,-4\n"
+"26=Global variables,-5\n"
+"27=Global variables,-6\n"
+
+#: ../../Whats-New.md:306
 msgid "Changelog"
 msgstr "更新日志"
 
-#: ../Whats-New.md:232
-msgid "0.3"
-msgstr ""
+#: ../../Whats-New.md:308
+msgid "Version TBD (develop branch nightly builds)"
+msgstr "待定版本（开发分支每夜构建）"
 
-#: ../Whats-New.md:237 ../Whats-New.md:411 ../Whats-New.md:441
-#: ../Whats-New.md:458 ../Whats-New.md:518
+#: ../../Whats-New.md:313 ../../Whats-New.md:361 ../../Whats-New.md:696
+#: ../../Whats-New.md:727 ../../Whats-New.md:932 ../../Whats-New.md:962
+#: ../../Whats-New.md:979 ../../Whats-New.md:1039
 msgid "New:"
 msgstr "新的："
 
-#: ../Whats-New.md:238
+#: ../../Whats-New.md:314
+msgid ""
+"Allow using waypoints, area guard and attack move with aircraft (by "
+"CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:315
+msgid "Enhanced Straight trajectory (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:316
+msgid "Enable building production queue (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:317
+msgid ""
+"Fixed sidebar not updating queued unit numbers when adding or removing "
+"units when the production is on hold (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:318
+msgid "Custom exit cell for infantry factory (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:319
+msgid "Option for vehicles to keep target when issued move command (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:320
+msgid "Skip anim delay for burst fire (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:321
+msgid "New Parabola trajectory (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:322
+msgid "Type select for buildings (code by TaranDahl, doc by Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:323
+msgid "Raise alert when technos are taking damage (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:324
+msgid ""
+"Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge "
+"of NaotoYuuki)"
+msgstr ""
+
+#: ../../Whats-New.md:325
+msgid "Toggle waypoint for building (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:326
+msgid "Bunkerable checks dehardcode (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:327
+msgid "No turret unit turn to the target (by CrimRecya & TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:328
+msgid "Damage multiplier for different houses (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:329
+msgid "Customizable duration for electric bolts (by Starkku)"
+msgstr "自定义抛射体轨迹 (by secsome)"
+
+#: ../../Whats-New.md:330
+msgid "Extended gattling rate down logic (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:331
+msgid "Sell or undeploy building on impact (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:332
+msgid "No rearm and reload in EMP or temporal (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:333
+msgid "Draw visual effects for airburst weapons (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:334
+msgid ""
+"Technos recount current burst index when change the firing weapon (by "
+"CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:335
+msgid "Shield armor inheritance customization (by Ollerus)"
+msgstr "护盾吸收与穿透自定义 (by Morton)"
+
+#: ../../Whats-New.md:336
+msgid "Damaged unit image changes (by Fryone)"
+msgstr "单位伤残更换图像（by Fryone）"
+
+#: ../../Whats-New.md:337
+msgid "Customizable spawns queue (by TwinkleStar)"
+msgstr ""
+
+#: ../../Whats-New.md:338
+msgid "Initial spawns number (by TwinkleStar)"
+msgstr ""
+
+#: ../../Whats-New.md:339
+msgid "Override target under EMP attack behavior (By FS-21)"
+msgstr ""
+
+#: ../../Whats-New.md:340
+msgid "Recycle spawner in long-range (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:341
+msgid "Play an anim when recycling a spawner (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:342
+msgid "Recycle the spawner on other FLH (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:343
+msgid "Technos can maintain a suitable distance after firing (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:344
+msgid "Projectile subject to ground check before firing (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:345
+msgid "Delay automatic attack on the controlled unit (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:347 ../../Whats-New.md:525 ../../Whats-New.md:827
+#: ../../Whats-New.md:938 ../../Whats-New.md:965 ../../Whats-New.md:1004
+#: ../../Whats-New.md:1051
+msgid "Vanilla fixes:"
+msgstr "原版修复："
+
+#: ../../Whats-New.md:348
+msgid ""
+"Prevent the units with locomotors that cause problems from entering the "
+"tank bunker (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:349
+msgid ""
+"Fixed an issue that harvesters with amphibious movement zone can not "
+"automatically return to refineries with `WaterBound` on water surface (by"
+" NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:350
+msgid ""
+"Buildings with foundation bigger than 1x1 can now recycle spawned "
+"correctly (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:352 ../../Whats-New.md:675 ../../Whats-New.md:891
+msgid "Fixes / interactions with other extensions:"
+msgstr ""
+
+#: ../../Whats-New.md:353
+msgid ""
+"Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building "
+"upgrades (by Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:356
+msgid "0.4"
+msgstr ""
+
+#: ../../Whats-New.md:362
+msgid "`Crit.AffectsHouses` for critical hit system (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:363
+msgid "Warhead or weapon detonation at superweapon target cell (by Starkku)"
+msgstr "全图弹头 (by Starkku)"
+
+#: ../../Whats-New.md:364
+msgid "Super Weapons launching other Super Weapons (by Morton)"
+msgstr "弹头释放超武 (by Trsdy)"
+
+#: ../../Whats-New.md:365
+msgid "Launching Super Weapons on building infiltration (by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:366
+msgid "Building airstrike target eligibility customization (by Starkku)"
+msgstr "自定义建筑提供自愈 (by Starkku)"
+
+#: ../../Whats-New.md:367
+msgid "IvanBomb detonation & image display centered on buildings (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:368
+msgid "Forcing specific weapon against cloaked or disguised targets (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:369
+msgid "Customizable ROF random delay (by Starkku)"
+msgstr "自定义抛射体轨迹 (by secsome)"
+
+#: ../../Whats-New.md:370
+msgid "Animation with `Tiled=yes` now supports `CustomPalette` (by ststl)"
+msgstr ""
+
+#: ../../Whats-New.md:371
+msgid "Toggleable DieSound when grinding (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:372
+msgid "Shields can inherit Techno ArmorType (by Starkku)"
+msgstr "尾迹动画继承所属方 (by Starkku)"
+
+#: ../../Whats-New.md:373
+msgid ""
+"Income money flying-string display when harvesters or slaves are docking "
+"to refineries or when spies steal credits (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:374
+msgid "Allow random crates to be generated only on lands (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:375
+msgid "Iron-curtain effects on infantries and organic units (by ststl)"
+msgstr ""
+
+#: ../../Whats-New.md:376
+msgid "Custom `SlavesFreeSound` (by TwinkleStar)"
+msgstr ""
+
+#: ../../Whats-New.md:377
+msgid "Allows jumpjet to crash without rotation (by TwinkleStar)"
+msgstr ""
+
+#: ../../Whats-New.md:378
+msgid "Customizable priority of superweapons timer sorting(by ststl)"
+msgstr ""
+
+#: ../../Whats-New.md:379
+msgid "Customizable aircraft spawner spawn delay (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:380
+msgid "Customizable Cluster scatter distance (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:381
+msgid "Customizable FlakScatter distance (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:382
+msgid ""
+"Customizable debris & meteor impact and warhead detonation behaviour (by "
+"Starkku, Otamaa)"
+msgstr ""
+
+#: ../../Whats-New.md:383
+msgid "Custom warhead debris animations (by Starkku)"
+msgstr "弹头自伤开关 (by Starkku)"
+
+#: ../../Whats-New.md:384
+msgid ""
+"Multiple burst shots / burst delay within infantry firing sequence (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:385
+msgid "Attached particle system for animations (by Starkku)"
+msgstr "附加动画图层自定义 (by Starkku)"
+
+#: ../../Whats-New.md:386
+msgid ""
+"Removal of hardcoded AA & Gattling weapon selection restrictions (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:387
+msgid "Projectile `SubjectToLand/Water` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:388
+msgid "Real time timers (by Morton)"
+msgstr "使用XDrawOffset为动画设置X轴偏移量 (by Morton)"
+
+#: ../../Whats-New.md:389
+msgid ""
+"Default campaign game speed override and custom campaign game speed FPS "
+"(by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:390
+msgid "Trigger actions that allow/forbid MCV to redeploy in game (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:391
+msgid ""
+"`AnimList` on zero damage Warheads toggle via `AnimList.ShowOnZeroDamage`"
+" (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:392
+msgid "Including INI files and inheriting INI sections (by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:393
+msgid "Additions to automatic passenger deletion (by Starkku)"
+msgstr "自动删除乘客 (by FS-21)"
+
+#: ../../Whats-New.md:394
+msgid "Buildings considered as vehicles (by Starkku)"
+msgstr "自定义建筑提供自愈 (by Starkku)"
+
+#: ../../Whats-New.md:395
+msgid ""
+"TechnoType target evaluation map zone check behaviour customization (by "
+"Starkku)"
+msgstr "地形对象与矿石小地图颜色自定义 (by Starkku)"
+
+#: ../../Whats-New.md:396
+msgid "`CanC4=false` building zero damage toggle (by Starkku)"
+msgstr "弹头自伤开关 (by Starkku)"
+
+#: ../../Whats-New.md:397
+msgid "OpenTopped transport target sharing customization (by Starkku)"
+msgstr "OpenTopped载具寻敌与失活状态定义 (by Starkku)"
+
+#: ../../Whats-New.md:398
+msgid "Vanish animation for `AutoDeath.Behavior=vanish` (by Starkku)"
+msgstr "附加动画图层自定义 (by Starkku)"
+
+#: ../../Whats-New.md:399
+msgid "`AAOnly` for projectiles (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:400
+msgid ""
+"`CreateUnit` improvements & additions (can spawn infantry and aircraft, "
+"units spawning in air, spawn animation) (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:401
+msgid "Option to center pause menu background (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:402
+msgid "LaunchSW.DisplayMoney (by Starkku)"
+msgstr "可开关的显示金币弹资金 (by Starkku)"
+
+#: ../../Whats-New.md:403
+msgid "Disguise logic improvements (by Starkku)"
+msgstr "动画伤害与武器升级 (by Starkku)"
+
+#: ../../Whats-New.md:404
+msgid "Custom insignias (by Starkku)"
+msgstr "单位自动开火 (by Starkku)"
+
+#: ../../Whats-New.md:405
+msgid "Upgrade logic to allow altering of SpySat status (by Otamaa)"
+msgstr ""
+
+#: ../../Whats-New.md:406
+msgid ""
+"Allow `ZShapePointMove` to apply during buildup via "
+"`ZShapePointMove.OnBuildup` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:407
+msgid ""
+"`UndeploysInto` building selling buildup sequence length customization "
+"(by Starkku)"
+msgstr "自定义建筑提供自愈 (by Starkku)"
+
+#: ../../Whats-New.md:408
+msgid ""
+"Allow overriding `Shield.AffectTypes` for each Warhead shield interaction"
+" (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:409
+msgid "TechnoType conversion warhead & superweapon (by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:410
+msgid "TechnoType conversion on ownership change (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:411
+msgid "Unlimited skirmish colors (by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:412
+msgid ""
+"Example custom locomotor that circles around the target (*NOTE: For "
+"developer use only*) (by Kerbiter, CCHyper, with help from Otamaa; based "
+"on earlier experiment by CnCVK)"
+msgstr ""
+
+#: ../../Whats-New.md:413
+msgid ""
+"Vehicle voxel turret shadows & body multi-section shadows (by TwinkleStar"
+" & Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:414
+msgid "Crushing tilt and slowdown customization (by Starkku)"
+msgstr "自定义建筑提供自愈 (by Starkku)"
+
+#: ../../Whats-New.md:415
+msgid "Extra warhead detonations on weapon (by Starkku)"
+msgstr "全图弹头 (by Starkku)"
+
+#: ../../Whats-New.md:416
+msgid ""
+"Chrono sparkle animation display customization and improvements (by "
+"Starkku)"
+msgstr "附加动画图层自定义 (by Starkku)"
+
+#: ../../Whats-New.md:417
+msgid "Script action to Chronoshift teams to enemy base (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:418
+msgid "Customizable ElectricBolt Arcs (by Fryone, Kerbiter)"
+msgstr "自定义飞碟激光范围 (by Belonit, Kerbiter)"
+
+#: ../../Whats-New.md:419
+msgid ""
+"Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, "
+"JunJacobYoung, based on knowledge of DeathFish)"
+msgstr ""
+
+#: ../../Whats-New.md:420
+msgid ""
+"PipScale pip customizations (size, ammo / spawn / tiberium frames or "
+"offsets) (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:421
+msgid "Auto-deploy/Deploy block on ammo change (by Fryone)"
+msgstr ""
+
+#: ../../Whats-New.md:422
+msgid "`AltPalette` lighting toggle (by Starkku)"
+msgstr "弹头自伤开关 (by Starkku)"
+
+#: ../../Whats-New.md:423
+msgid "Unhardcoded timer blinking color scheme (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:424
+msgid ""
+"Customizing shield self-healing timer restart when shield is damaged (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:425
+msgid ""
+"Customizing minimum & maximum amount of damage shield can take from a "
+"single hit (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:426
+msgid ""
+"`AutoDeath.Technos(Dont)Exist` can optionally track limboed (not "
+"physically on map, e.g transports etc) technos (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:427
+msgid "Wall overlay `Palette` support (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:428
+msgid "Show designator & inhibitor range (by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:429
+msgid "Owner-only sound on unit creation (by Fryone)"
+msgstr ""
+
+#: ../../Whats-New.md:430
+msgid ""
+"Allow using `Secondary` weapon against walls if `Primary` cannot target "
+"them (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:431
+msgid "Reloading ammo in transports (by Starkku)"
+msgstr "护盾修改弹头 (by Starkku)"
+
+#: ../../Whats-New.md:432
+msgid "Dump variables to file on scenario end / hotkey (by Morton)"
+msgstr ""
+
+#: ../../Whats-New.md:433
+msgid ""
+"\"House owns TechnoType\" and \"House doesn't own TechnoType\" trigger "
+"events"
+msgstr ""
+
+#: ../../Whats-New.md:434
+msgid ""
+"Allow toggling `Infantry/UnitsGainSelfHeal` for `MultiplayPassive=true` "
+"houses (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:435
+msgid ""
+"Customizable straight trajectory detonation & snap distance and pass-"
+"through option (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:436
+msgid "Airstrike & spy plane fixed spawn distance & height (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:437
+msgid ""
+"Allow enabling application of `Verses` and `PercentAtMax` for negative "
+"damage (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:438
+msgid ""
+"In addition to `PlacementGrid.Translucency`, allow to set the "
+"transparency of the grid when PlacementPreview is enabled, using the "
+"`PlacementGrid.TranslucencyWithPreview` tag (by Belonit)."
+msgstr ""
+
+#: ../../Whats-New.md:439
+msgid "Show briefing screen on singleplayer mission start (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:440
+msgid ""
+"Allow setting mission par times and related messages in `missionmd.ini` "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:441
+msgid ""
+"Allow setting default singleplayer map loading screen and briefing "
+"offsets (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:442
+msgid ""
+"Allow toggling whether or not fire particle systems adjust target "
+"coordinates when firer rotates (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:443
+msgid "`AmbientDamage` warhead & main target ignore customization (by Starkku)"
+msgstr "AreaFire武器目标自定义 (by Starkku)"
+
+#: ../../Whats-New.md:444
+msgid "Flashing Technos on selecting (by Fryone)"
+msgstr ""
+
+#: ../../Whats-New.md:445
+msgid "Customizable DropPod properties on a per-InfantryType basis (by Trsdy)"
+msgstr "自定义可对外射击载具的属性 (by Otamaa)"
+
+#: ../../Whats-New.md:446
+msgid "Projectile return weapon (by Starkku)"
+msgstr "反馈 (by Starkku)"
+
+#: ../../Whats-New.md:447
+msgid ""
+"Allow customizing aircraft landing direction per aircraft or per dock (by"
+" Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:448
+msgid ""
+"Allow animations to play sounds detached from audio event handler (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:449
+msgid "Game save option when starting campaigns (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:450
+msgid "Carryall pickup voice (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:451
+msgid ""
+"Option to have `Grinding.Weapon` require accumulated credits from "
+"grinding (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:452
+msgid "Re-enable the Veinhole Monster and Weeds from TS (by ZivDero)"
+msgstr ""
+
+#: ../../Whats-New.md:453
+msgid ""
+"Recreate the weed-charging of SWs like the TS Chemical Missile (by "
+"ZivDero)"
+msgstr ""
+
+#: ../../Whats-New.md:454
+msgid "Allow to change the speed of gas particles (by ZivDero)"
+msgstr ""
+
+#: ../../Whats-New.md:455
+msgid ""
+"Allow upgrade animations to use `Powered` & `PoweredLight/Effect/Special`"
+" keys (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:456
+msgid ""
+"Toggle for `Explodes=true` BuildingTypes to not explode during buildup or"
+" being sold (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:457
+msgid ""
+"Toggleable height-based shadow scaling for voxel air units (by Trsdy & "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:458
+msgid ""
+"User setting toggles for harvester counter & power delta indicator (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:459
+msgid "Shrapnel weapon target filtering toggle (by Starkku)"
+msgstr "武器瞄准筛选 (by Uranusian, Starkku)"
+
+#: ../../Whats-New.md:460
+msgid ""
+"Restore functionality of `[CrateRules] -> FreeMCV` with customizable "
+"credits threshold (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:461
+msgid ""
+"Allow customizing the number of vehicles required for unit crates to turn"
+" into money crates (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:462
+msgid "Per-VehicleType reroll chance for `CrateGoodie=true` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:463
+msgid "Warheads spawning powerup crates (by Starkku)"
+msgstr "弹头自伤开关 (by Starkku)"
+
+#: ../../Whats-New.md:464
+msgid "Custom tint on TechnoTypes (by Starkku)"
+msgstr "单位自动开火 (by Starkku)"
+
+#: ../../Whats-New.md:465
+msgid "Revenge weapon (by Starkku)"
+msgstr "反馈 (by Starkku)"
+
+#: ../../Whats-New.md:466
+msgid ""
+"AttachEffect types with new features like custom tint and weapon range "
+"modifier (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:467
+msgid ""
+"Force shield effect sync on deploy & vs. organic targets effect "
+"customization to complement the Iron Curtain ones (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:468
+msgid ""
+"Map trigger action `41 Play Animation At...` now uses additional "
+"parameter to determine if animation can play sound, deal damage etc. (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:469
+msgid ""
+"Allow restricting how many times per frame a single radiation site can "
+"damage a building (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:470
+msgid ""
+"Allow explicitly setting the superweapons AI uses for Chronoshift script "
+"actions (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:471
+msgid ""
+"Allow customizing Aircraft weapon strafing regardless of `ROT` and "
+"`Strafing.Shots` values beyond 5 (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:472
+msgid ""
+"Allow strafing weapons to deduct ammo per shot instead of per strafing "
+"run (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:473
+msgid ""
+"Allow `CloakVisible=true` laser trails optinally be seen only if unit is "
+"detected (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:474
+msgid ""
+"Skirmish AI \"sell all buildings and set all technos to hunt\" behavior "
+"dehardcode (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:475
+msgid "Skirmish AI \"gather when MCV deploy\" behavior dehardcode (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:476
+msgid ""
+"Customizing whether passengers are kicked out when an aircraft fires (by "
+"ststl)"
+msgstr ""
+
+#: ../../Whats-New.md:477
+msgid "Shield hit flash (by Starkku)"
+msgstr "护盾修改弹头 (by Starkku)"
+
+#: ../../Whats-New.md:478
+msgid ""
+"Option to scatter `Anim/SplashList` animations around impact coordinates "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:479
+msgid "Customizable wake anim (by TwinkleStar)"
+msgstr ""
+
+#: ../../Whats-New.md:480
+msgid "Customizable rocker amplitude (by TwinkleStar, Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:481
+msgid ""
+"AI script action to jump back to previous script after picking a random "
+"script (by handama)"
+msgstr ""
+
+#: ../../Whats-New.md:482
+msgid "Insignias visibility and position adjustments (by Fryone)"
+msgstr ""
+
+#: ../../Whats-New.md:483
+msgid "Promotion animation (by Fryone)"
+msgstr "使用XDrawOffset为动画设置X轴偏移量 (by Morton)"
+
+#: ../../Whats-New.md:484
+msgid ""
+"Allow different technos to share build limit in a group (by ststl & "
+"Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:485
+msgid ""
+"Map events `604-605` for checking if a specific Techno enters in a cell "
+"(by FS-21)"
+msgstr ""
+
+#: ../../Whats-New.md:486
+msgid ""
+"Waypoint path is drawn for all units under player control or if "
+"`[GlobalControls] -> DebugPlanningPaths=yes` (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:487
+msgid "`RemoveDisguise` now works on vehicle disguises (by Trsdy)"
+msgstr "修复了伪装移除弹头对永久伪装步兵无效的问题 (by Starkku)"
+
+#: ../../Whats-New.md:488
+msgid ""
+"Allow anchoring extended tooltips to the left side of the sidebar (by "
+"Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:489
+msgid ""
+"Toggle to allow spawned aircraft to attack immediately after being "
+"spawned (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:490
+msgid "`ZAdjust` for OverlayTypes (by Starkku)"
+msgstr "武器Burst间隔 (by Starkku)"
+
+#: ../../Whats-New.md:491
+msgid ""
+"Allow customizing extra tint intensity for Iron Curtain & Force Shield "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:492
+msgid ""
+"Option to enable parsing 8-bit RGB values from `[ColorAdd]` instead of "
+"RGB565 (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:493
+msgid ""
+"Customizing height and speed at which subterranean units travel (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:494
+msgid ""
+"Option for Warhead damage to penetrate Iron Curtain or Force Shield (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:495
+msgid "Option for Warhead to remove all shield types at once (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:496
+msgid ""
+"Allow customizing voxel light source position (by Kerbiter, Morton, based"
+" on knowledge of thomassnedon)"
+msgstr ""
+
+#: ../../Whats-New.md:497
+msgid ""
+"Option to fix voxel light source being offset and incorrectly tilting on "
+"slopes (by Kerbiter)"
+msgstr ""
+
+#: ../../Whats-New.md:498
+msgid "AI superweapon delay timer customization (by Starkku)"
+msgstr "AreaFire武器目标自定义 (by Starkku)"
+
+#: ../../Whats-New.md:499
+msgid "Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:500
+msgid "Customizable ChronoSphere teleport delays for units (by Starkku)"
+msgstr "武器Burst间隔 (by Starkku)"
+
+#: ../../Whats-New.md:501
+msgid "Allowed and disallowed types for `FactoryPlant` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:502
+msgid ""
+"Customizable damage & 'crumbling' (destruction) frames for TerrainTypes "
+"(by Starkku)"
+msgstr "可通行与不阻挡建造的地形对象 (by Starkku)"
+
+#: ../../Whats-New.md:503
+msgid "Custom object palettes for TerrainTypes (by Starkku)"
+msgstr "Burst独立FLH (by Starkku)"
+
+#: ../../Whats-New.md:504
+msgid "Forbidding parallel AI queues for specific TechnoTypes (by Starkku)"
+msgstr "根据类型关闭AI克隆 (by NetsuNegi)"
+
+#: ../../Whats-New.md:505
+msgid "Nonprovocative Warheads (by Starkku)"
+msgstr "护盾修改弹头 (by Starkku)"
+
+#: ../../Whats-New.md:506 ../../Whats-New.md:511
+msgid "Buildings considered as destroyable pathfinding obstacles (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:507
+msgid "`FireOnce` infantry sequence reset toggle (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:508
+msgid "Assign Super Weapon cameo to any sidebar tab (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:509
+msgid "Customizing effect of level lighting on air units (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:510
+msgid ""
+"Reimplemented `Airburst` & `Splits` logic with more customization options"
+" (by Starkku)"
+msgstr "部队回收站增强与自定义 (by Starkku)"
+
+#: ../../Whats-New.md:512
+msgid "Animation visibility customization settings (by Starkku)"
+msgstr "附加动画图层自定义 (by Starkku)"
+
+#: ../../Whats-New.md:513
+msgid "Light effect customizations (by Starkku)"
+msgstr "部队回收站增强与自定义 (by Starkku)"
+
+#: ../../Whats-New.md:514
+msgid "Building unit repair customizations (by Starkku)"
+msgstr "自定义建筑提供自愈 (by Starkku)"
+
+#: ../../Whats-New.md:515
+msgid ""
+"Toggle to disallow buildings from providing build area during buildup (by"
+" Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:516
+msgid ""
+"Allow customizing which building types provide build area for a building "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:517
+msgid "`Scorch` / `Flamer` fire animation customization (by Starkku)"
+msgstr "附加动画图层自定义 (by Starkku)"
+
+#: ../../Whats-New.md:518
+msgid "Warheads parasite removal customization (by Starkku)"
+msgstr "附加动画图层自定义 (by Starkku)"
+
+#: ../../Whats-New.md:519
+msgid "Allow infantry to use land sequences in water (by Starkku)"
+msgstr "允许`NotHuman=yes`的步兵使用随机的死亡动画序列 (by Otamaa)"
+
+#: ../../Whats-New.md:520
+msgid ""
+"`<Player @ X>` can now be used as owner for pre-placed objects on "
+"skirmish and multiplayer maps (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:521
+msgid "Allow customizing charge turret delays per burst on a weapon (by Starkku)"
+msgstr "单位自动开火 (by Starkku)"
+
+#: ../../Whats-New.md:522
+msgid "Unit `Speed` setting now accepts floating point values (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:523
+msgid "Extending `Power` to all TechnoTypes (by Morton)"
+msgstr "在artmd.ini中可以为全部科技类型指定Image (by Morton)"
+
+#: ../../Whats-New.md:526
+msgid ""
+"Allow AI to repair structures built from base nodes/trigger action 125/SW"
+" delivery in single player missions (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:527
+#, python-format
+msgid ""
+"Allow usage of `AlternateFLH%d` of vehicles in `OpenTopped` transport. "
+"(by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:528
+msgid ""
+"Improved the statistic distribution of the spawned crates over the "
+"visible area of the map. (by Trsdy, based on TwinkleStar's work)"
+msgstr ""
+
+#: ../../Whats-New.md:529
+msgid ""
+"Teams spawned by trigger action 7,80,107 can use IFV and `OpenTopped` "
+"logic normally (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:530
+msgid ""
+"Prevented units from retaining previous order after ownership change (by "
+"Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:531
+msgid ""
+"Break the mind-control link when capturing a mind-controlled building "
+"with an engineer (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:532
+msgid ""
+"Fixed BibShape drawing for a couple of frames during buildup for "
+"buildings with long buildup animations (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:533
+msgid "Cloaked & disguised objects displaying to observers (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:534
+msgid ""
+"Cloaked objects from allies displaying to player in single player "
+"missions (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:535
+msgid ""
+"Skip `NaturalParticleSystem` displaying from in-map pre-placed structures"
+" (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:536
+msgid "Made sure that `Suicide=yes` weapon does kill the firer (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:537
+msgid ""
+"Made sure that vxl units being flipped over get killed instead of "
+"rotating up and down (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:538
+msgid ""
+"Allow jumpjet units to visually tilt or be flipped over on the ground "
+"even if `TiltCrashJumpjet=no` (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:539
+msgid ""
+"Fixed the range for number of debris spawned by Warhead to use MaxDebris "
+"instead of MaxDebris - 1 (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:540
+msgid ""
+"Fixed `LandTargeting=1` not preventing from targeting TerrainTypes (trees"
+" etc.) on land (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:541
+msgid ""
+"Fixed `NavalTargeting=6` not preventing from targeting empty water cells "
+"or TerrainTypes (trees etc.) on water (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:542
+msgid ""
+"Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still "
+"targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:543
+msgid ""
+"Fixed an issue that causes objects in layers outside ground layer to not "
+"be sorted correctly (caused issues with animation and jumpjet layering "
+"for an instance) (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:544
+msgid "Restored `EVA_StructureSold` for buildings with `UndeploysInto` (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:545
+msgid "Allow MCV to redeploy in campaigns (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:546
+msgid ""
+"Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` but "
+"`ConstructionYard=no` (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:547
+msgid ""
+"Fixed infantry without `C4=true` being killed in water if paradropped, "
+"chronoshifted etc. even if they can normally enter water (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:548
+msgid ""
+"Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly "
+"setting the location for the vehicle to move into when undeployed (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:549
+msgid "Allow more than 5 `AlternateFLH` entries for units (by ststl)"
+msgstr ""
+
+#: ../../Whats-New.md:550
+msgid ""
+"Buildings with `CanC4=false` will no longer take 1 point of positive "
+"damage if hit by negative damage (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:551
+msgid ""
+"Buildings with primary weapon that has `AG=false` projectile now have "
+"attack cursor when selected (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:552
+msgid ""
+"Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and"
+" passengers firing out no longer have the passenger firing offset shift "
+"lateral position based on burst index (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:553
+msgid ""
+"Light tint created by a building is now able to be removed after loading "
+"the game (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:554
+msgid "Prevented crashing jumpjet units from firing (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:555
+msgid ""
+"Fixed disguised infantry not using custom palette for drawing the "
+"disguise when needed (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:556
+msgid ""
+"Reenabled the obsolete `[General] WarpIn` as default anim type when units"
+" are warping in (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:557
+msgid ""
+"Fixed permanent health bar display for units targeted by temporal weapons"
+" upon mouse hover (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:558
+msgid ""
+"Buildings with superweapons no longer display `SuperAnimThree` at "
+"beginning of match if pre-placed on the map (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:559
+msgid ""
+"AI players can now build `Naval=true` and `Naval=false` vehicles "
+"concurrently like human players do (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:560
+msgid ""
+"Fixed the bug when jumpjets were snapping into facing bottom-right when "
+"starting movement (by Kerbiter)"
+msgstr ""
+
+#: ../../Whats-New.md:561
+msgid ""
+"Suppressed the BuildingCaptured EVA events when capturing a building "
+"considered as a vehicle (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:562
+msgid ""
+"Objects with `Palette` set now have their color tint adjusted accordingly"
+" by superweapons, map retint actions etc. if they belong to a house using"
+" any color scheme instead of only those from the first half of `[Colors]`"
+" list (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:563
+msgid ""
+"Animations using `AltPalette` are now remapped to their owner's color "
+"scheme instead of first listed color scheme and no longer draw over "
+"shroud (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:564
+msgid ""
+"Fixed `DeployToFire` not considering building placement rules for "
+"`DeploysInto` buildings and as a result not working properly with "
+"`WaterBound` buildings (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:565
+msgid ""
+"Fixed `DeployToFire` not recalculating firer's position on land if it "
+"cannot currently deploy (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:566
+msgid ""
+"`Arcing=true` projectile elevation inaccuracy can now be fixed by setting"
+" `Arcing.AllowElevationInaccuracy=false` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:567
+msgid ""
+"Fixed position and layer of info tip and reveal production cameo on "
+"selected building (by Belonit)"
+msgstr ""
+
+#: ../../Whats-New.md:568
+msgid "Fixed `TurretOffset` to be supported for SHP vehicles (by TwinkleStar)"
+msgstr ""
+
+#: ../../Whats-New.md:569
+msgid ""
+"`Powered`/`PoweredSpecial` buildings' powered anims will update as usual "
+"when being captured by enemies (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:570
+msgid ""
+"Fixed a glitch related to incorrect target setting for missiles (by "
+"Belonit)"
+msgstr ""
+
+#: ../../Whats-New.md:571
+msgid ""
+"Skipped parsing `[Header]` section of compaign maps which led to "
+"occasional crashes on Linux (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:572
+msgid "Fixed units' turret rotation and jumpjet wobble under EMP (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:573
+msgid ""
+"Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by "
+"elevation changes (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:574
+msgid ""
+"Fixed railgun and fire particles being cut off by elevation changes (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:575
+msgid ""
+"Fixed teleport units' frozen-still timer being reset after load game (by "
+"Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:576
+msgid "Fixed teleport units being unable to visually tilt on slopes (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:577
+msgid ""
+"Fixed teleport and drill units being unable to be visually flipped (by "
+"Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:578
+msgid ""
+"Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as "
+"the default setting and do not always land facing north or in case of "
+"pre-placed buildings, the building's direction (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:579
+msgid ""
+"Spawned aircraft now align with the spawner's facing when landing (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:580
+msgid ""
+"Fixed infantries attempted to entering buildings when waypointing "
+"together with engineer/agent/occupier/etc (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:581
+msgid "Fixed jumpjet crash speed when crashing onto buildings (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:582
+msgid ""
+"Fixed a desync potentially caused by displaying of cursor over selected "
+"`DeploysInto` units (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:583
+msgid "Skipped drawing the rally point line when undeploying a factory (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:584
+msgid ""
+"Tint effects are now correctly applied to SHP vehicles and all types of "
+"aircraft as well as building animations regardless of their position (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:585
+msgid ""
+"Iron Curtained / Force Shielded objects now always use the correct tint "
+"color (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:586
+msgid ""
+"Objects in invalid map coordinates are no longer used for starting view "
+"and AI base center calculations (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:587
+msgid ""
+"Units & buildings with `DecloakToFire=false` weapons can now cloak while "
+"targeting & reloading (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:588
+msgid ""
+"Units with `Sensors=true` will no longer reveal ally buildings (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:589
+msgid ""
+"Air units are now reliably included by target scan with large range and "
+"Warhead detonation by large `CellSpread` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:590
+msgid ""
+"Weapons with `AA=true` Projectile can now correctly fire at air units "
+"when both firer and target are over a bridge (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:591
+msgid ""
+"Fixed disguised units not using the correct palette if target has custom "
+"palette (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:592
+msgid ""
+"Building upgrades now consistently use building's `PowerUpN` animation "
+"settings corresponding to the upgrade's `PowersUpToLevel` where possible "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:593
+msgid ""
+"Subterranean units are no longer allowed to perform deploy functions like"
+" firing weapons or `IsSimpleDeployer` while burrowed or burrowing, they "
+"will instead emerge first like they do for transport unloading (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:594
+msgid ""
+"Fixed `Temporal=true` Warheads potentially crashing game if used to "
+"attack `Slaved=true` infantry (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:595
+msgid ""
+"Fixed some locomotors (Tunnel, Walk, Mech) getting stuck when moving too "
+"fast (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:596
+msgid ""
+"Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn "
+"in unit palette will now have cell lighting changes applied on them (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:597
+msgid ""
+"Fixed Nuke & Dominator Level lighting not applying to AircraftTypes (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:598
+msgid ""
+"Removed the 0 damage effect from `InfDeath=9` warheads to in-air "
+"infantries (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:599
+msgid ""
+"Projectiles created from `AirburstWeapon` now remember their WeaponType "
+"and can apply radiation etc. (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:600
+msgid ""
+"Fixed damaged aircraft not repairing on `UnitReload=true` docks unless "
+"they land on the dock first (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:601
+msgid ""
+"Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, "
+"`WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be"
+" toggled to be parsed for lunar theater (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:602
+msgid ""
+"Fixed infantry `SecondaryFire` / `SecondaryProne` sequences being "
+"displayed in water instead of `WetAttack` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:603
+msgid ""
+"Fixed objects with ally target and `AttackFriendlies=true` having their "
+"target reset every frame, particularly AI-owned buildings (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:604
+msgid ""
+"Follower vehicle index for preplaced vehicles in maps is now explicitly "
+"constrained to `[Units]` list in map files and is no longer thrown off by"
+" vehicles that could not be created or created vehicles having other "
+"vehicles as initial passengers (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:605
+msgid ""
+"Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-"
+"piggybacked bugfix (by tyuah8)"
+msgstr ""
+
+#: ../../Whats-New.md:606
+msgid "Fixed `Stop` command not working so well in some cases (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:607
+msgid ""
+"Use 2D distance instead of 3D to check whether in air team members have "
+"arrived destination (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:608
+msgid ""
+"Subterranean movement now benefits from speed multipliers from all "
+"sources such as veterancy, AttachEffect etc. (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:609
+msgid ""
+"Fixed an issue where a unit will leave an impassable invisible barrier in"
+" its original position when it is teleported by ChronoSphere onto an "
+"uncrushable unit and self destruct (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:610
+msgid ""
+"Fixed the bug that parasite will vanish if it missed its target when its "
+"previous cell is occupied (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:611
+msgid ""
+"Aircraft will now behave as expected according to it's `MovementZone` and"
+" `SpeedType` when moving onto different surfaces. In particular, this "
+"fixes erratic behavior when vanilla aircraft is ordered to move onto "
+"water surface and instead the movement order changes to a shore nearby "
+"(by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:612
+msgid ""
+"Fixed the bug that destroyed unit may leaves sensors (by tyuah8 & "
+"NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:613
+msgid ""
+"`FreeUnit` uses its own `SpeedType` to determine where to spawn (by "
+"NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:614
+msgid ""
+"Fixed the bug where naval ships set to `AllowedToStartInMultiplayer=yes` "
+"may spawn incorrectly on land (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:615
+msgid ""
+"Fixed the bug where pathfinding issues occur when a building performs "
+"undeploy (by NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:616
+msgid ""
+"Units are now unable to kick out from a factory that is in construction "
+"process, and will not always stuck in the factory (by CrimRecya & "
+"TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:617
+msgid ""
+"Fixed a crash caused by electric bolt not invalidating Owner (by "
+"NetsuNegi)"
+msgstr ""
+
+#: ../../Whats-New.md:618
+msgid ""
+"Fixed a jumpjet crash related to voxel shadow drawing (by hejiajun107, "
+"Xkein & ZivDero)"
+msgstr ""
+
+#: ../../Whats-New.md:619
+msgid ""
+"Fixed issues caused by incorrect reference removal (f.ex. If the unit "
+"cloaks/enters transport, it cannot gain experience from previously "
+"launched spawners/C4/projectiles)"
+msgstr ""
+
+#: ../../Whats-New.md:620
+msgid ""
+"Fixed an issue that caused `IsSonic=true` wave drawing to crash the game "
+"if the wave traveled over a certain distance (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:621
+msgid ""
+"Fixed `Hospital=yes` building can't kick out infantry after loading a "
+"save (by FlyStar)"
+msgstr ""
+
+#: ../../Whats-New.md:623 ../../Whats-New.md:699 ../../Whats-New.md:862
+#: ../../Whats-New.md:904 ../../Whats-New.md:917 ../../Whats-New.md:941
+#: ../../Whats-New.md:952 ../../Whats-New.md:969 ../../Whats-New.md:1017
+#: ../../Whats-New.md:1029
+msgid "Phobos fixes:"
+msgstr "火卫一修复："
+
+#: ../../Whats-New.md:624
+msgid ""
+"Fixed a few errors of calling for superweapon launch by `LaunchSW` or "
+"building infiltration (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:625
+msgid "Add `ImmuneToCrit` for shields (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:626
+msgid ""
+"Reimplemented the bugfix for jumpjet units' facing when firing, discard "
+"the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:627
+msgid ""
+"`Gunner=true` transports now correctly change turret if a passenger is "
+"removed by `PassengerDeletion` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:628
+msgid ""
+"`PassengerDeletion.Soylent` now correctly calculates refund value if "
+"removed passenger has no explicitly set `Soylent` value (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:629
+msgid ""
+"Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing "
+"house to deal damage and apply Phobos warhead effects even if no firing "
+"building is found (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:630
+msgid ""
+"`CreateUnit` now uses civilian house as owner instead if the intended "
+"owner house has been defeated (this is in-line with how `MakeInfantry` "
+"works) (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:631
+msgid ""
+"`IsHouseColor` laser trails on techno now correctly change color when it "
+"changes owner (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:632
+msgid ""
+"Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where "
+"object changes layer (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:633
+msgid ""
+"Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield "
+"armor types (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:634
+msgid ""
+"Fixed new Phobos script actions not picking team leader correctly based "
+"on `LeadershipRating` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:635
+msgid ""
+"Fixed an issue with `Gunner=true` vehicles not correctly using the first "
+"passenger's mode with multiple passengers inside (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:636
+msgid ""
+"Used `MindControl.Anim` for buildings deployed from mind-controlled "
+"vehicles (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:637
+msgid ""
+"Optimized extension class implementation, should improve performance all "
+"around (by Otamaa & Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:638
+msgid ""
+"Fixed `Interceptor` not resetting target if the intercepted projectile "
+"changes type to non-interceptable one afterwards (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:639
+msgid ""
+"Fixed `PlacementPreview` setting for BuildingTypes not being parsed from "
+"INI (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:640
+msgid ""
+"Fixed Phobos animation additions that support `CreateUnit.Owner` not also"
+" checking `MakeInfantryOwner` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:641
+msgid ""
+"Fixed `AutoDeath` to consider all conditions for objects in limbo (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:642
+msgid ""
+"Shields will no longer take damage if the parent techno has `Immune=true`"
+" or has `TypeImmune=true` and the damage comes from instance of same "
+"TechnoType owned by same house (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:643
+msgid "Fixed interceptors causing multiplayer games to desync (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:644
+msgid ""
+"Optimized performance for map trigger retint action light source fix (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:645
+msgid ""
+"Fixed a number of issues with Warhead Shield respawn / self heal rate "
+"modifiers like timers getting reset unnecessarily, the timer being "
+"adjusted wrong after the Warhead effect runs out etc. (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:646
+msgid ""
+"Fixed a problem with disguise visibility logic that could cause game to "
+"crash on loading a map (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:647
+msgid ""
+"Fixed owned `LimboDelivery` buildings not being saved correctly in "
+"savegames (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:648
+msgid ""
+"Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` "
+"and related checks (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:649
+msgid ""
+"Fixed `DetonateOnAllMapObjects` behaving erratically or potentially "
+"crashing if it destroys buildings using Ares' advanced rubble (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:650
+msgid ""
+"Fixed game crashing on loading save games if the saved game state had "
+"active radiation sites (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:651
+msgid "Fixed a desync error caused by air/top layer sorting (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:652
+msgid ""
+"Fixed heal / repair weapons being unable to remove parasites from "
+"shielded targets if they were unable to heal / repair the parent unit (by"
+" Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:653
+msgid ""
+"Fixed `Inviso=true` interceptor projectiles applying damage on "
+"interceptable, armor type-having projectiles twice (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:654
+msgid ""
+"Fixed `AutoDeath` causing crashes when used to kill a parasite unit "
+"inside an another unit (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:655
+msgid ""
+"Phobos Warhead effects combined with `CellSpread` now correctly apply to "
+"buildings if any of the foundation cells are hit (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:656
+msgid ""
+"Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to "
+"target if projectile detonates prematurely, far-away from target (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:657
+msgid ""
+"Fixed radiation site damage not taking the radiation level reduction into"
+" accord (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:658
+msgid ""
+"Correctly update laser trail position while techno is cloaked even if "
+"trail is not drawn (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:659
+msgid ""
+"Fixed `Shield.Respawn.Amount` not defaulting to shield type default if "
+"not set (by Starkku)"
+msgstr "修复了护盾受击时单位不会被解除隐形的问题 (by Starkku)"
+
+#: ../../Whats-New.md:660
+msgid ""
+"Fixed frame by frame hotkey description to read `TXT_FRAME_BY_FRAME_DESC`"
+" instead of `TXT_DISPLAY_DAMAGE_DESC` (by DeathFishAtEase)"
+msgstr ""
+
+#: ../../Whats-New.md:661
+msgid ""
+"Buildings considered vehicles (`ConsideredVehicle=true` or not set in "
+"conjunction with `UndeploysInto` & 1x1 foundation) are now considered "
+"units by affected target enum checks (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:662
+msgid ""
+"Fixed Phobos Warhead effects not reliably being applied on damage area as"
+" opposed to full weapon-based Warhead detonation (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:663
+msgid "Fixed `LimboKill` not working reliably (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:664
+msgid ""
+"Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:665
+msgid ""
+"Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by "
+"default (while not displaying the pip) when they should not (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:666
+msgid ""
+"Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` "
+"overriding corresponding `IgnoreDesignators` settings (by Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:667
+msgid ""
+"Type conversion on Warheads and Superweapons will no longer recursively "
+"convert units if applicable conversion pairs are listed, and only first "
+"applicable pair takes effect (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:668
+msgid ""
+"Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` "
+"behavior inside tank bunkers (by Fryone)"
+msgstr ""
+
+#: ../../Whats-New.md:669
+msgid ""
+"Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters "
+"(by Fryone)"
+msgstr ""
+
+#: ../../Whats-New.md:670
+msgid ""
+"Fixed an issue that caused new attack and move script actions to pick "
+"buildings with `InvisibleInGame=yes` as targets (FS-21)"
+msgstr ""
+
+#: ../../Whats-New.md:671
+msgid "Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:672
+msgid "Fixed `AltNextScenario` not taking effect (by FlyStar)"
+msgstr ""
+
+#: ../../Whats-New.md:673
+msgid ""
+"Fixed `DefaultDisguise` showing wrong house colors for different players "
+"(by NetsuNegi & Ollerus)"
+msgstr ""
+
+#: ../../Whats-New.md:676
+msgid ""
+"Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect "
+"the firing building's FLH."
+msgstr ""
+
+#: ../../Whats-New.md:677
+msgid ""
+"Weapons fired by EMPulse superweapons *(Ares feature)* now respect "
+"`Floater` and Phobos-added `Gravity` setting (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:678
+msgid ""
+"`IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no "
+"longer get stuck after deploying or play their move sound indefinitely "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:679
+msgid ""
+"All forms of type conversion (including Ares') now correctly update the "
+"warp-in delay if unit with teleport `Locomotor` was converted while the "
+"delay was active (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:680
+msgid ""
+"All forms of type conversion (including Ares') now correctly update "
+"`MoveSound` if a moving unit has their type changed (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:681
+msgid ""
+"All forms of type conversion (including Ares') now correctly update "
+"`OpenTopped` state of passengers in transport that is converted (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:682
+msgid ""
+"Infantry type conversion from `Deployer=yes` to `no` now correctly update"
+" the sequence anim (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:683
+msgid ""
+"Fixed an issue introduced by Ares that caused `Grinding=true` building "
+"`ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing "
+"and the building was sold, erased or destroyed (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:684
+msgid "Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:685
+msgid ""
+"Fixed Ares' Abductor weapon leaves permanent placement stats when "
+"abducting moving vehicles (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:686
+msgid ""
+"Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by"
+" Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:687
+msgid ""
+"Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares"
+" feature)* of vehicles built from a war factory (by Trsdy, supersedes "
+"Aephiex impl.)"
+msgstr ""
+
+#: ../../Whats-New.md:688
+msgid ""
+"Fixed Ares' InitialPayload not being created for vehicles spawned by "
+"trigger actions (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:691
+msgid "0.3.0.1"
+msgstr ""
+
+#: ../../Whats-New.md:697
+msgid "Additional sync logging in case of desync errors occuring (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:700
+msgid "`AutoDeath` support for objects in limbo (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:701
+msgid ""
+"Buildings sold by `AutoDeath` no longer play a click sound effect (by "
+"Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:702
+msgid ""
+"Fixed shield animation being hidden while underground or in tunnels fix "
+"not working correctly (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:703
+msgid ""
+"Restore the `MindClearedSound` when deploying a mind-controlled unit into"
+" a building loses the mind-control (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:704
+msgid ""
+"Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected "
+"object (thus requiring `CellSpread`) (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:705
+msgid ""
+"Fixed script action 10103 'Load Into Transports' unintentionally skipping"
+" next action (by FS-21)"
+msgstr "本动作113用以随机跳过下一动作 (by FS-21)\""
+
+#: ../../Whats-New.md:706
+msgid ""
+"Changed mission retry dialog button order to better match old order "
+"people are used to (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:707
+msgid "Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:708
+msgid ""
+"Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the "
+"invoker's house to deal damage and apply Phobos warhead effects even if "
+"invoker is dead when weapon is fired (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:709
+msgid ""
+"Fixed a crash when trying to create radiation outside map bounds (by "
+"Otamaa)"
+msgstr "修复了当使用地图快照快捷键时崩溃的问题 (by Otamaa)"
+
+#: ../../Whats-New.md:710
+msgid ""
+"Fixed new AI attack scripts not allowing zero damage weapons to pick "
+"targets (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:711
+msgid ""
+"Fixed floating point value parsing precision to match the game (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:712
+msgid ""
+"Power output / drain should now correctly be applied for buildings "
+"created via `LimboDelivery` in campaigns (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:713
+msgid ""
+"Fixed shield health bar showing empty bar when shield is still on very "
+"low health instead of depleted (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:714
+msgid ""
+"Fixed `CanTarget` not considering objects on bridges when checking if "
+"cell is empty (by Starkku)"
+msgstr "修复了护盾受击时单位不会被解除隐形的问题 (by Starkku)"
+
+#: ../../Whats-New.md:715
+msgid ""
+"Fixed vehicle deploy weapons not working if the unit is cloaked and "
+"weapon has `DecloakToFire=true` (by NetsuNegi & Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:716
+msgid ""
+"Fixed `IsAnimated` terrain not updating correctly in all circumstances "
+"(by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:717
+msgid ""
+"Fixed `CreateUnit` interaction with bridges (spawning under when "
+"shouldn't etc) (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:718
+msgid ""
+"`CanTarget` now considers bridges as land like game's normal weapon "
+"selection does (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:719
+msgid ""
+"`AreaFire.Target` now takes cells with bridges into consideration "
+"depending on firer's elevation (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:722
+msgid "0.3"
+msgstr ""
+
+#: ../../Whats-New.md:728
 msgid "LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)"
 msgstr "激光尾迹 (by Kerbiter, ChrisLv_CN)"
 
-#: ../Whats-New.md:239
+#: ../../Whats-New.md:729
 msgid "Anim-to-Unit logic and ability to randomize DestroyAnim (by Otamaa)"
 msgstr "动画生成单位与随机DestroyAnim (by Otamaa)"
 
-#: ../Whats-New.md:240
+#: ../../Whats-New.md:730
 msgid "Shield modification warheads (by Starkku)"
 msgstr "护盾修改弹头 (by Starkku)"
 
-#: ../Whats-New.md:241
+#: ../../Whats-New.md:731
 msgid "Shield BreakWeapon & InitialStrength (by Starkku)"
 msgstr "护盾击碎武器与初始血量 (by Starkku)"
 
-#: ../Whats-New.md:242
+#: ../../Whats-New.md:732
 msgid "Initial Strength for TechnoTypes (by Uranusian)"
 msgstr "单位初始血量 (by Uranusian)"
 
-#: ../Whats-New.md:243
+#: ../../Whats-New.md:733
 msgid ""
 "Re-enable obsolete `JumpjetControls` for TechnoTypes' default Jumpjet "
 "properties (by Uranusian)"
 msgstr "重新激活废弃的`JumpjetControls`作为单位的Jumpjet参数初始值 (by Uranusian)"
 
-#: ../Whats-New.md:244
+#: ../../Whats-New.md:734
 msgid "Weapon targeting filter (by Uranusian, Starkku)"
 msgstr "武器瞄准筛选 (by Uranusian, Starkku)"
 
-#: ../Whats-New.md:245
+#: ../../Whats-New.md:735
 msgid "Secondary weapon fallback customization (by Starkku)"
 msgstr "副武器推算自定义 (by Starkku)"
 
-#: ../Whats-New.md:246
+#: ../../Whats-New.md:736
 msgid "Burst-specific FLHs for TechnoTypes (by Starkku)"
 msgstr "Burst独立FLH (by Starkku)"
 
-#: ../Whats-New.md:247
+#: ../../Whats-New.md:737
 msgid "Burst delays for weapons (by Starkku)"
 msgstr "武器Burst间隔 (by Starkku)"
 
-#: ../Whats-New.md:248
+#: ../../Whats-New.md:738
 msgid "AreaFire weapon target customization (by Starkku)"
 msgstr "AreaFire武器目标自定义 (by Starkku)"
 
-#: ../Whats-New.md:249
+#: ../../Whats-New.md:739
 msgid "Auto-firing TechnoType weapons (by Starkku)"
 msgstr "单位自动开火 (by Starkku)"
 
-#: ../Whats-New.md:250
+#: ../../Whats-New.md:740
 msgid "PowerPlant Enhancer (by secsome)"
 msgstr "电力增幅器 (by secsome)"
 
-#: ../Whats-New.md:251
+#: ../../Whats-New.md:741
 msgid "Unlimited Global / Local Variables (by secsome)"
 msgstr "无限全局/局部变量 (by secsome)"
 
-#: ../Whats-New.md:252
+#: ../../Whats-New.md:742
 msgid ""
 "Adds a \"Load Game\" button to the retry dialog on mission failure (by "
 "secsome)"
 msgstr "在重新开始游戏的对话框中增加了一个“读取游戏”按钮 (by secsome)"
 
-#: ../Whats-New.md:253
+#: ../../Whats-New.md:743
 msgid "Default disguise for individual InfantryTypes (by secsome)"
 msgstr "为步兵类型单独设置默认伪装 (by secsome)"
 
-#: ../Whats-New.md:254
+#: ../../Whats-New.md:744
 msgid "Quicksave hotkey command (by secsome)"
 msgstr "存档快捷键 (by secsome)"
 
-#: ../Whats-New.md:255
-msgid "Save Game Trigger Action (by secsome)"
+#: ../../Whats-New.md:745
+msgid "Save Game trigger action (by secsome)"
 msgstr "存档触发动作 (by secsome)"
 
-#: ../Whats-New.md:256
+#: ../../Whats-New.md:746
 msgid "Numeric Variables (by secsome)"
 msgstr "数字变量 (by secsome)"
 
-#: ../Whats-New.md:257
+#: ../../Whats-New.md:747
 msgid "TechnoType's tooltip would display it's build time now (by secsome)"
 msgstr "科技类型的工具提示现在会显示建造时间 (by secsome)"
 
-#: ../Whats-New.md:258
+#: ../../Whats-New.md:748
+msgid "Customizable tooltip background color and opacity (by secsome)"
+msgstr "自定义抛射体重力 (by secsome)"
+
+#: ../../Whats-New.md:749
+msgid "FrameByFrame & FrameStep hotkey command (by secsome)"
+msgstr "存档快捷键 (by secsome)"
+
+#: ../../Whats-New.md:750
 msgid ""
 "Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by "
 "Otamaa)"
 msgstr "允许`NotHuman=yes`的步兵使用随机的死亡动画序列 (by Otamaa)"
 
-#: ../Whats-New.md:259
+#: ../../Whats-New.md:751
 msgid ""
 "Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` "
 "anim sequence (by Otamaa)"
 msgstr "允许弹头触发特定的`NotHuman=yes`步兵的死亡动画序列 (by Otamaa)"
 
-#: ../Whats-New.md:260
+#: ../../Whats-New.md:752
 msgid "XDrawOffset for animations (by Morton)"
 msgstr "使用XDrawOffset为动画设置X轴偏移量 (by Morton)"
 
-#: ../Whats-New.md:261
+#: ../../Whats-New.md:753
 msgid "Customizable OpenTopped properties (by Otamaa)"
 msgstr "自定义可对外射击载具的属性 (by Otamaa)"
 
-#: ../Whats-New.md:262
+#: ../../Whats-New.md:754
 msgid "Automatic Passenger Deletion (by FS-21)"
 msgstr "自动删除乘客 (by FS-21)"
 
-#: ../Whats-New.md:263
-msgid ""
-"Script Action 74 to 81, 84 to 91 and 104 to 105 for new AI attacks (by "
-"FS-21)"
+#: ../../Whats-New.md:755
+msgid "Script actions for new AI attacks (by FS-21)"
 msgstr "脚本动作74至81，84至91，104，105用于新AI攻击 (by FS-21)"
 
-#: ../Whats-New.md:264
-msgid "Script Actions 82 & 83 for modifying AI Trigger Current Weight (by FS-21)"
+#: ../../Whats-New.md:756
+msgid "Script actions for modifying AI Trigger Current Weight (by FS-21)"
 msgstr "脚本动作82&83用于变更AI触发当前的权重 (by FS-21)"
 
-#: ../Whats-New.md:265
+#: ../../Whats-New.md:757
 msgid ""
-"Script Action 92 for waiting & repeat the same new AI attack if no target"
-" was found (by FS-21)"
+"Script action for waiting & repeat the same new AI attack if no target "
+"was found (by FS-21)"
 msgstr "脚本动作92用于在未发现目标时等待并重复相同新AI攻击 (by FS-21)"
 
-#: ../Whats-New.md:266
+#: ../../Whats-New.md:758
 msgid ""
-"Script Action 93 that modifies the Team's Trigger Weight when ends the "
-"new attack action (by FS-21)"
+"Script action that modifies the Team's Trigger Weight when ends the new "
+"attack action (by FS-21)"
 msgstr "脚本动作93将在新攻击行为结束时更改小队触发权重 (by FS-21)"
 
-#: ../Whats-New.md:267
-msgid "Script Action 94 for picking a random script from a list (by FS-21)"
+#: ../../Whats-New.md:759
+msgid "Script action for picking a random script from a list (by FS-21)"
 msgstr "脚本动作94用于在列表中抽选一个随机脚本 (by FS-21)"
 
-#: ../Whats-New.md:268
-msgid ""
-"Script Action 95 to 102 and 106 to 109 for new AI movements towards "
-"certain objects (by FS-21)"
+#: ../../Whats-New.md:760
+msgid "Script action for new AI movements towards certain objects (by FS-21)"
 msgstr "脚本动作95至98及106至109提供新型的AI向某些对象移动指令 (by FS-21)"
 
-#: ../Whats-New.md:269
+#: ../../Whats-New.md:761
 msgid ""
-"Script Action 103 that Modify Target Distance in the new move actions (by"
-" FS-21)"
+"Script action that modify target distance in the new move actions (by "
+"FS-21)"
 msgstr "脚本动作103用以定义新的移动动作的目标距离 (by FS-21)"
 
-#: ../Whats-New.md:270
-msgid "Script Action 110 that Modify how ends the new move actions (by FS-21)"
+#: ../../Whats-New.md:762
+msgid "Script action that modify how ends the new move actions (by FS-21)"
 msgstr "脚本动作110用以定义新的移动动作如何视为完成 (by FS-21)"
 
-#: ../Whats-New.md:271
-msgid ""
-"Script Action 111 that un-register Team success, is just the opposite "
-"effect of Action 49 (by FS-21)"
+#: ../../Whats-New.md:763
+msgid "Script action that un-register Team success (by FS-21)"
 msgstr "脚本动作 111 取消任务执行成功，即49号动作的反向版本 (by FS-21)"
 
-#: ../Whats-New.md:272
-msgid "Script Action 112 to regroup temporarily around the Team Leader (by FS-21)"
+#: ../../Whats-New.md:764
+msgid "Script action to regroup temporarily around the Team Leader (by FS-21)"
 msgstr "脚本动作112可使小队成员暂时在队长周围集结 (by FS-21)"
 
-#: ../Whats-New.md:273
-msgid "Script Action 113 to Randomly Skip Next Action (by FS-21)"
+#: ../../Whats-New.md:765
+msgid "Script action to randomly skip next action (by FS-21)"
 msgstr "本动作113用以随机跳过下一动作 (by FS-21)\""
 
-#: ../Whats-New.md:274
-msgid "Script Action 124 to 126 for timed Script Action jumps (by FS-21)"
+#: ../../Whats-New.md:766
+msgid "Script action for timed script action jumps (by FS-21)"
 msgstr "本动作124到126用以定时跳至脚本动作 (by FS-21)\""
 
-#: ../Whats-New.md:275
+#: ../../Whats-New.md:767
 msgid "ObjectInfo now shows current Target and AI Trigger data (by FS-21)"
 msgstr "ObjectInfo现在会显示当前目标和AI触发数据 (by FS-21)"
 
-#: ../Whats-New.md:276
+#: ../../Whats-New.md:768
 msgid "Shield absorption and passthrough customization (by Morton)"
 msgstr "护盾吸收与穿透自定义 (by Morton)"
 
-#: ../Whats-New.md:277
+#: ../../Whats-New.md:769
 msgid "Limbo Delivery of buildings (by Morton)"
 msgstr "虚拟投放建筑 (by Morton)"
 
-#: ../Whats-New.md:278
+#: ../../Whats-New.md:770
 msgid "Ore stage threshold for `HideIfNoOre` (by Otamaa)"
 msgstr "可根据矿石阶段上下限的`HideIfNoOre` (by Otamaa)"
 
-#: ../Whats-New.md:279
+#: ../../Whats-New.md:771
 msgid "Image reading in art rules for all TechnoTypes (by Morton)"
 msgstr "在artmd.ini中可以为全部科技类型指定Image (by Morton)"
 
-#: ../Whats-New.md:280
+#: ../../Whats-New.md:772
 msgid "Attached animation layer customization (by Starkku)"
 msgstr "附加动画图层自定义 (by Starkku)"
 
-#: ../Whats-New.md:281
+#: ../../Whats-New.md:773
 msgid "Jumpjet unit layer deviation customization (by Starkku)"
 msgstr "Jumpjet单位图层浮动自定义 (by Starkku)"
 
-#: ../Whats-New.md:282
+#: ../../Whats-New.md:774
 msgid "IsSimpleDeployer deploy direction & animation customizations (by Starkku)"
 msgstr "IsSimpleDeployer部署方向和动画自定义 (by Starkku)"
 
-#: ../Whats-New.md:283
+#: ../../Whats-New.md:775
 msgid "Customizable projectile gravity (by secsome)"
 msgstr "自定义抛射体重力 (by secsome)"
 
-#: ../Whats-New.md:284
+#: ../../Whats-New.md:776
 msgid ""
 "Gates can now link with walls correctly via `NSGates` or `EWGates` (by "
 "Uranusian)"
 msgstr "闸门现在可以通过`NSGates`或`EWGates`与围墙链接 (by Uranusian)"
 
-#: ../Whats-New.md:285
+#: ../../Whats-New.md:777
 msgid "Per-warhead toggle for decloak of damaged targets (by Starkku)"
 msgstr "弹头自定义被弹显形 (by Starkku)"
 
-#: ../Whats-New.md:286
+#: ../../Whats-New.md:778
 msgid ""
 "`DeployFireWeapon=-1` now allows the deployed infantries using both "
 "weapons as undeployed (by Uranusian)"
 msgstr "`DeployFireWeapon=-1`允许部署的步兵像未部署的步兵一样使用两种武器 (by Uranusian)"
 
-#: ../Whats-New.md:287
+#: ../../Whats-New.md:779
 msgid "Power delta (surplus) counter for sidebar (by Morton)"
 msgstr "侧边栏电力变动（盈余）显示 (by Morton)"
 
-#: ../Whats-New.md:288
+#: ../../Whats-New.md:780
 msgid "Added Production and Money to Dump Object Info command (by FS-21)"
 msgstr "显示目标信息快捷键现在可以显示建筑的生产与资金 (by FS-21)"
 
-#: ../Whats-New.md:289
+#: ../../Whats-New.md:781
 msgid "`EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)"
 msgstr "`EnemyUIName=`可为其他所有科技类型生效 (by Otamaa)"
 
-#: ../Whats-New.md:290
+#: ../../Whats-New.md:782
 msgid "`DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)"
 msgstr "地形对象的摧毁动画与摧毁音效 (by Otamaa)"
 
-#: ../Whats-New.md:291
+#: ../../Whats-New.md:783
 msgid "Weapons fired on warping in / out (by Starkku)"
 msgstr "传送动画武器 (by Otamaa)"
 
-#: ../Whats-New.md:292
+#: ../../Whats-New.md:784
 msgid ""
 "`Storage.TiberiumIndex` for customizing resource storage in structures "
 "(by FS-21)"
 msgstr "自定义建筑存储矿物类型 (by FS-21)"
 
-#: ../Whats-New.md:293
+#: ../../Whats-New.md:785
 msgid "Grinder improvements & customizations (by Starkku)"
 msgstr "部队回收站增强与自定义 (by Starkku)"
 
-#: ../Whats-New.md:294
+#: ../../Whats-New.md:786
 msgid "Attached animation position customization (by Starkku)"
 msgstr "附加动画位置自定义 (by Starkku)"
 
-#: ../Whats-New.md:295
+#: ../../Whats-New.md:787
 msgid "Trigger Action 505 for Firing SW at specified location (by FS-21)"
 msgstr "触发动作505，在指定位置发射超级武器 (by FS-21)"
 
-#: ../Whats-New.md:296
+#: ../../Whats-New.md:788
 msgid "Trigger Action 506 for Firing SW at waypoint (by FS-21)"
 msgstr "触发动作506，在指定路径点发射超级武器 (by FS-21)"
 
-#: ../Whats-New.md:297
+#: ../../Whats-New.md:789
 msgid ""
 "New behaviors for objects' self-destruction under certain conditions (by "
 "Trsdy & FS-21)"
 msgstr "单位在特定情况下自毁 (by Trsdy & FS-21)"
 
-#: ../Whats-New.md:298
+#: ../../Whats-New.md:790
 msgid ""
 "Slaves' ownership decision when corresponding slave miner is destroyed "
 "(by Trsdy)"
 msgstr "奴隶矿车被毁后奴隶归属 (by Trsdy)"
 
-#: ../Whats-New.md:299
+#: ../../Whats-New.md:791
 msgid "Customize buildings' selling sound and EVA voice (by Trsdy)"
 msgstr "自定义建筑变卖音效与副官语音 (by Trsdy)"
 
-#: ../Whats-New.md:300
+#: ../../Whats-New.md:792
 msgid ""
 "`ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack"
 " behavior (by FS-21)"
 msgstr "`ForceWeapon.Naval.Decloacked`用以覆盖攻击未隐形的水下单位 (by FS-21)"
 
-#: ../Whats-New.md:301
+#: ../../Whats-New.md:793
 msgid "Shrapnel enhancement (by secsome)"
 msgstr "溅射增强 (by secsome)"
 
-#: ../Whats-New.md:302
+#: ../../Whats-New.md:794
 msgid "Shared Ammo for transports to passengers (by FS-21)"
 msgstr "载具与乘客分享弹药(by FS-21)"
 
-#: ../Whats-New.md:303
+#: ../../Whats-New.md:795
 msgid "Additional critical hit logic customizations (by Starkku)"
 msgstr "额外暴击逻辑 (by Starkku)"
 
-#: ../Whats-New.md:304
+#: ../../Whats-New.md:796
 msgid "Laser trails for VoxelAnims (by Otamaa)"
 msgstr "VXL碎片激光尾迹 (by Otamaa)"
 
-#: ../Whats-New.md:305
+#: ../../Whats-New.md:797
 msgid "Local warhead screen shaking (by Starkku)"
 msgstr "局部弹头震屏 (by Starkku)"
 
-#: ../Whats-New.md:306
+#: ../../Whats-New.md:798
 msgid "Feedback weapon (by Starkku)"
 msgstr "反馈 (by Starkku)"
 
-#: ../Whats-New.md:307
+#: ../../Whats-New.md:799
 msgid "TerrainType & ore minimap color customization (by Starkku)"
 msgstr "地形对象与矿石小地图颜色自定义 (by Starkku)"
 
-#: ../Whats-New.md:308
+#: ../../Whats-New.md:800
 msgid "Single-color weapon lasers (by Starkku)"
 msgstr "单一颜色激光 (by Starkku)"
 
-#: ../Whats-New.md:309
+#: ../../Whats-New.md:801
 msgid "Customizable projectile trajectory (by secsome)"
 msgstr "自定义抛射体轨迹 (by secsome)"
 
-#: ../Whats-New.md:310
+#: ../../Whats-New.md:802
 msgid "Display damage numbers debug hotkey command (by Starkku)"
 msgstr "快捷键显示伤害数字 (by Starkku)"
 
-#: ../Whats-New.md:311
+#: ../../Whats-New.md:803
 msgid "Toggleable display of TransactMoney amounts (by Starkku)"
 msgstr "可开关的显示金币弹资金 (by Starkku)"
 
-#: ../Whats-New.md:312
+#: ../../Whats-New.md:804
 msgid "Building-provided self-healing customization (by Starkku)"
 msgstr "自定义建筑提供自愈 (by Starkku)"
 
-#: ../Whats-New.md:313
-msgid "Building placement preview (by Otamaa)"
+#: ../../Whats-New.md:805
+msgid "Building placement preview (by Otamaa & Belonit)"
 msgstr "建筑放置预览 (by Otamaa)"
 
-#: ../Whats-New.md:314
+#: ../../Whats-New.md:806
 msgid "Passable & buildable-upon TerrainTypes (by Starkku)"
 msgstr "可通行与不阻挡建造的地形对象 (by Starkku)"
 
-#: ../Whats-New.md:315
+#: ../../Whats-New.md:807
 msgid ""
 "Toggle for passengers to automatically change owner if transport owner "
 "changes (by Starkku)"
 msgstr "载具所属方变更时可选的乘客跟随变更 (by Starkku)"
 
-#: ../Whats-New.md:316
+#: ../../Whats-New.md:808
 msgid "Superweapon launch on warhead detonation (by Trsdy)"
 msgstr "弹头释放超武 (by Trsdy)"
 
-#: ../Whats-New.md:317
+#: ../../Whats-New.md:809
 msgid "Preserve IronCurtain status upon DeploysInto/UndeploysInto (by Trsdy)"
 msgstr "部署与反部署保存铁幕状态 (by Trsdy)"
 
-#: ../Whats-New.md:318
+#: ../../Whats-New.md:810
 msgid ""
 "Correct owner house for Warhead Anim/SplashList & Play Animation trigger "
 "animations (by Starkku)"
 msgstr "弹头动画与播放动画触发的动画拥有所属方 (by Starkku)"
 
-#: ../Whats-New.md:319
+#: ../../Whats-New.md:811
 msgid "Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)"
 msgstr "步兵匍匐与部署FLH (by FS-21)"
 
-#: ../Whats-New.md:320
+#: ../../Whats-New.md:812
 msgid ""
 "Enhanced projectile interception logic, including projectile strength & "
 "armor types (by Starkku)"
 msgstr "增强的抛射体拦截逻辑，支持定义抛射体血量与护甲 (by Starkku)"
 
-#: ../Whats-New.md:321
+#: ../../Whats-New.md:813
 msgid "Initial Strength for Cloned Infantry (by FS-21)"
 msgstr "克隆步兵的初始生命值 (by FS-21)"
 
-#: ../Whats-New.md:322
+#: ../../Whats-New.md:814
 msgid ""
 "OpenTopped transport rangefinding & deactivated state customizations (by "
 "Starkku)"
 msgstr "OpenTopped载具寻敌与失活状态定义 (by Starkku)"
 
-#: ../Whats-New.md:323
-msgid "Forbidding parallel AI queues by type (by NetsuNegi)"
+#: ../../Whats-New.md:815
+msgid "Forbidding parallel AI queues by type (by NetsuNegi & Trsdy)"
 msgstr "根据类型关闭AI克隆 (by NetsuNegi)"
 
-#: ../Whats-New.md:324
+#: ../../Whats-New.md:816
 msgid "Animation damage / weapon improvements (by Starkku)"
 msgstr "动画伤害与武器升级 (by Starkku)"
 
-#: ../Whats-New.md:325
+#: ../../Whats-New.md:817
 msgid "Warhead self-damaging toggle (by Starkku)"
 msgstr "弹头自伤开关 (by Starkku)"
 
-#: ../Whats-New.md:326
+#: ../../Whats-New.md:818
 msgid "Trailer animations inheriting owner (by Starkku)"
 msgstr "尾迹动画继承所属方 (by Starkku)"
 
-#: ../Whats-New.md:327
+#: ../../Whats-New.md:819
 msgid "Warhead detonation on all objects on map (by Starkku)"
 msgstr "全图弹头 (by Starkku)"
 
-#: ../Whats-New.md:328
+#: ../../Whats-New.md:820
 msgid ""
 "Implemented support for PCX images for campaign loading screen (by "
 "FlyStar)"
 msgstr "战役PCX载入图 (by FlyStar)"
 
-#: ../Whats-New.md:329
+#: ../../Whats-New.md:821
 msgid ""
 "Implemented support for PCX images for observer loading screen (by "
 "Uranusian)"
 msgstr "观战者PCX载入图 (by Uranusian)"
 
-#: ../Whats-New.md:330
+#: ../../Whats-New.md:822
 msgid "Animated (non-tiberium spawning) TerrainTypes (by Starkku)"
 msgstr "可动地形对象 (by Starkku)"
 
-#: ../Whats-New.md:332 ../Whats-New.md:417 ../Whats-New.md:444
-#: ../Whats-New.md:483 ../Whats-New.md:530
-msgid "Vanilla fixes:"
-msgstr "原版修复："
+#: ../../Whats-New.md:823
+msgid "Toggleable passenger killing for Explodes=true units (by Starkku)"
+msgstr ""
 
-#: ../Whats-New.md:333
+#: ../../Whats-New.md:824
+msgid ""
+"New condition for automatic self-destruction logic when TechnoTypes "
+"exist/don't exist (by FlyStar)"
+msgstr ""
+
+#: ../../Whats-New.md:825
+msgid ""
+"For developers: now you can use command line arg to control main "
+"exception handler (by Multfinite)"
+msgstr ""
+
+#: ../../Whats-New.md:828
 msgid ""
 "Fixed laser drawing code to allow for thicker lasers in house color draw "
 "mode (by Kerbiter, ChrisLv_CN)"
 msgstr "修复了激光绘制的代码使其能够在所属方颜色模式下绘制更粗的激光 (by Kerbiter, ChrisLv_CN)"
 
-#: ../Whats-New.md:334
+#: ../../Whats-New.md:829
 msgid "Fixed DeathWeapon not detonating properly (by Uranusian)"
 msgstr "修复了DeathWeapon不会正确引爆的问题 (by Uranusian)"
 
-#: ../Whats-New.md:335
+#: ../../Whats-New.md:830
 msgid ""
 "Fixed lasers & other effects drawing from wrong offset with weapons that "
 "use Burst (by Starkku)"
 msgstr "修复了激光和其他效果在Burst武器上绘制偏移错误的问题 (by Starkku)"
 
-#: ../Whats-New.md:336
+#: ../../Whats-New.md:831
 msgid ""
 "Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to"
 " place onto water (by Uranusian)"
 msgstr "修复了有`Naval=yes`的建筑会无视`WaterBound=no`强制建筑只能放置在水面上的问题 (by Uranusian)"
 
-#: ../Whats-New.md:337
+#: ../../Whats-New.md:832
 msgid ""
 "Fixed temporal weapon crash under certain conditions where stack dump "
 "starts with 0051BB7D (by secsome)"
 msgstr "修复了某些情况下超时空武器的弹框，此情况下Stack dump以0051BB7D开始 (by secsome)"
 
-#: ../Whats-New.md:338
+#: ../../Whats-New.md:833
 msgid ""
 "Fixed the bug when retinting map lighting with a map action corrupted "
 "light sources (by secsome)"
 msgstr "修复了重绘地图光照触发会使建筑光效失灵的问题 (by secsome)"
 
-#: ../Whats-New.md:339
+#: ../../Whats-New.md:834
 msgid ""
 "Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` "
 "lead to the game fail to draw the preview (by secsome)"
 msgstr "修复了读取地图时，Preview(Pack)节位于Map节时导致游戏不能绘制预览图的问题 (by secsome)"
 
-#: ../Whats-New.md:340
+#: ../../Whats-New.md:835
+msgid "Fixed the bug that GameModeOptions are not correctly saved (by secsome)"
+msgstr ""
+
+#: ../../Whats-New.md:836
 msgid ""
 "Fixed the bug that AITriggerTypes do not recognize building upgrades (by "
 "Uranusian)"
 msgstr "修复了AITriggerTypes不能正确识别建筑升级的问题 (by Uranusian)"
 
-#: ../Whats-New.md:341
+#: ../../Whats-New.md:837
 msgid ""
-"Fixed AI Aircraft docks bug when Ares tag `[GlobalControls]` -> "
-"`AllowParallelAIQueues=no` is set (by FS-21)"
-msgstr "修复了AI停机坪bug当`[GlobalControls]` -> `AllowParallelAIQueues=no`时 (by FS-21)"
+"Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> "
+"AllowParallelAIQueues=no` is set (by FS-21)"
+msgstr "修复了AI停机坪bug当`[GlobalControls] -> AllowParallelAIQueues=no`时 (by FS-21)"
 
-#: ../Whats-New.md:342
+#: ../../Whats-New.md:838
 msgid ""
 "Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the "
 "center of the building when `X` goes past 10 (by Otamaa)"
 msgstr "修复了当`X`超过10之后，驻军建筑的`MuzzleFlashX`会画在建筑中心的问题。 (by Otamaa)"
 
-#: ../Whats-New.md:343
+#: ../../Whats-New.md:839
 msgid ""
 "Fixed jumpjet units that are `Crashable` not crashing to ground properly "
 "if destroyed while being pulled by a `Locomotor` warhead (by Starkku)"
 msgstr "修复了`Crashable`的Jumpjet单位在被`Locomotor`弹头拉起后不能正确坠毁到地面上的问题 (by Starkku)"
 
-#: ../Whats-New.md:344
+#: ../../Whats-New.md:840
 msgid ""
 "Fixed aircraft & jumpjet units not being affected by speed modifiers (by "
 "Starkku)"
 msgstr "修复了飞机与Jumpjet单位无法被速度倍率影响的问题 (by Starkku)"
 
-#: ../Whats-New.md:345
+#: ../../Whats-New.md:841
 msgid "Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)"
 msgstr "修复了载具（VXL与SHP）不读取Palette的问题 (by Starkku)"
 
-#: ../Whats-New.md:346
+#: ../../Whats-New.md:842
 msgid ""
 "Fixed mind control indicator animations not reappearing on mind "
 "controlled objects that are cloaked and then uncloaked (by Starkku)"
 msgstr "修复了心灵控制指示动画在隐形和显形后消失的问题 (by Starkku)"
 
-#: ../Whats-New.md:347
+#: ../../Whats-New.md:843
 msgid ""
 "Fixed Nuke carrier and payload weapons not respecting `Bright` setting on"
 " weapon (by Starkku)"
 msgstr "修复了核弹起飞与落地武器不遵循其武器Bright设定的问题 (by Starkku)"
 
-#: ../Whats-New.md:348
+#: ../../Whats-New.md:844
 msgid ""
 "Fixed buildings not reverting to undamaged graphics when HP was restored "
-"above `[AudioVisual]`->`ConditionYellow` via `SelfHealing` (by Starkku)"
+"above `[AudioVisual] -> ConditionYellow` via `SelfHealing` (by Starkku)"
 msgstr ""
-"修复了建筑在通过自愈回血到`[AudioVisual]`->`ConditionYellow`以上的生命值后不会自动变回未受损图像的问题 (by "
+"修复了建筑在通过自愈回血到`[AudioVisual] -> ConditionYellow`以上的生命值后不会自动变回未受损图像的问题 (by "
 "Starkku)"
 
-#: ../Whats-New.md:349
+#: ../../Whats-New.md:845
 msgid ""
 "Fixed jumpjet units being unable to turn to the target when firing from a"
 " different direction (by Trsdy)"
 msgstr "修复了Jumpjet单位无法正确转向到开火目标方向的问题 (by trsdy)"
 
-#: ../Whats-New.md:350
+#: ../../Whats-New.md:846
+msgid ""
+"Fixed turreted jumpjet units always facing bottom-right direction when "
+"stop moving (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:847
+msgid ""
+"Fixed jumpjet objects being unable to detect cloaked objects beneath (by "
+"Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:848
 msgid ""
 "Anim owner is now set for warhead AnimList/SplashList anims and Play Anim"
 " at Waypoint trigger animations (by Starkku)"
 msgstr "弹头AnimList/SplashList与触发动作播放动画在路径点中生成的动画现在均会自动获得所属方 (by Starkku)"
 
-#: ../Whats-New.md:351
+#: ../../Whats-New.md:849
 msgid ""
 "Fixed AI script action Deploy getting stuck with vehicles with "
 "`DeploysInto` if there was no space to deploy at initial location (by "
 "Starkku)"
 msgstr "修复了AI脚本动作部署对于拥有DeploysInto的载具来说，在其初始位置没有足够的空间可以展开时导致卡住的问题 (by Starkku)"
 
-#: ../Whats-New.md:352
+#: ../../Whats-New.md:850
 msgid "Fixed `Foundation=0x0` causing crashes if used on TerrainTypes."
 msgstr "修复了Foundation=0x0使用在TerrainTypes上时导致崩溃的问题。"
 
-#: ../Whats-New.md:353
+#: ../../Whats-New.md:851
 msgid ""
 "Projectiles now remember the house of the firer even if the firer is "
 "destroyed before the projectile detonates. Does not currently apply to "
 "Ares-introduced Warhead effects (by Starkku)"
 msgstr "抛射体现在会记住其发射所属方，即便开火者在其爆炸前已经被毁。目前尚不影响Ares引入的弹头效果 (by Starkku)"
 
-#: ../Whats-New.md:354
+#: ../../Whats-New.md:852
 msgid ""
 "Buildings now correctly use laser parameters set for Secondary weapons "
 "instead of reading them from Primary weapon (by Starkku)"
 msgstr "建筑现在会正确使用副武器的激光参数，而非固定读取主武器 (by Starkku)"
 
-#: ../Whats-New.md:355
+#: ../../Whats-New.md:853
 msgid ""
 "Fixed an issue that caused vehicles killed by damage dealt by a known "
 "house but without a known source TechnoType (f.ex animation warhead "
@@ -711,518 +3627,726 @@ msgid ""
 "trigger events etc. (by Starkku)"
 msgstr "修复了当载具被已知所属方但没有源头单位的伤害击杀时，不会被记录为被击杀，因此无法触发事件等问题 (by Starkku)"
 
-#: ../Whats-New.md:356
+#: ../../Whats-New.md:854
 msgid ""
 "Translucent RLE SHPs will now be drawn using a more precise and "
 "performant algorithm that has no green tint and banding (only applies to "
 "Z-aware drawing mode for now) (by Apollo)"
 msgstr "绘制半透明的RLE SHP时，现在会使用更精确更高效的算法，此算法没有绿色偏移和条纹 (by Apollo)"
 
-#: ../Whats-New.md:357
+#: ../../Whats-New.md:855
 msgid ""
 "Fixed transports recursively put into each other not having a correct "
 "killer set after second transport when being killed by something (by "
 "Kerbiter)"
 msgstr "修复了载具套娃时计算击杀不正确的问题 (by Kerbiter)"
 
-#: ../Whats-New.md:359 ../Whats-New.md:383 ../Whats-New.md:396
-#: ../Whats-New.md:420 ../Whats-New.md:431 ../Whats-New.md:448
-#: ../Whats-New.md:496 ../Whats-New.md:508
-msgid "Phobos fixes:"
-msgstr "火卫一修复："
+#: ../../Whats-New.md:856
+msgid ""
+"Fixed projectiles with `Inviso=true` suffering from potential inaccuracy "
+"problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` "
+"(by Starkku)"
+msgstr ""
 
-#: ../Whats-New.md:360
+#: ../../Whats-New.md:857
+msgid ""
+"Fixed the bug when `MakeInfantry` logic on BombClass resulted in "
+"`Neutral` side infantry (by Otamaa)"
+msgstr ""
+
+#: ../../Whats-New.md:858
+msgid ""
+"Fixed railgun particles being drawn to wrong coordinate against buildings"
+" with non-default `TargetCoordOffset` or when force-firing on bridges (by"
+" Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:859
+msgid ""
+"Fixed building `TargetCoordOffset` not being taken into accord for "
+"several things like fire angle calculations and target lines (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:860
+msgid "Allowed observers to see a selected building's radial indicator (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:863
 msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
 "under effects of a `Temporal` Warhead (by Starkku)"
 msgstr "修复了单位被超时空弹头攻击后，护盾仍然能够受到伤害的问题 (by Starkku)"
 
-#: ../Whats-New.md:361
+#: ../../Whats-New.md:864
 msgid "Improved shield behavior for forced damage (by Uranusian)"
 msgstr "升级了护盾对强制伤害的处理 (by Uranusian)"
 
-#: ../Whats-New.md:362
+#: ../../Whats-New.md:865
 msgid ""
 "Fixed SplashList animations playing when a unit is hit on a bridge over "
 "water (by Uranusian)"
 msgstr "修复了弹头水花动画会在攻击位于水面上的高架桥上的单位时播放的问题 (by Uranusian)"
 
-#: ../Whats-New.md:363
+#: ../../Whats-New.md:866
 msgid "Fixed shielded objects not decloaking if shield takes damage (by Starkku)"
 msgstr "修复了护盾受击时单位不会被解除隐形的问题 (by Starkku)"
 
-#: ../Whats-New.md:364
+#: ../../Whats-New.md:867
 msgid ""
 "Fixed critical hit animation playing even if no critical hits were dealt "
 "due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)"
 msgstr "修复了当暴击没有发生时，暴击动画仍会播放的问题 (by Starkku)"
 
-#: ../Whats-New.md:365
+#: ../../Whats-New.md:868
 msgid ""
 "Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by "
 "Starkku)"
 msgstr "修复了伪装移除弹头对永久伪装步兵无效的问题 (by Starkku)"
 
-#: ../Whats-New.md:366
+#: ../../Whats-New.md:869
 msgid ""
 "Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow "
 "falloff to match the vanilla appearance (by Starkku)"
 msgstr "修复了单色激光（IsHouseColor, IsSingleColor, LaserTrails）的光照衰减以匹配原版表现 (by Starkku)"
 
-#: ../Whats-New.md:367
+#: ../../Whats-New.md:870
 msgid ""
 "Fixed a potential cause of crashes concerning shield animations (such in "
 "conjunction with cloaking) (by Starkku)"
 msgstr "修复了一个可能的导致护盾动画崩溃的问题 (by Starkku)"
 
-#: ../Whats-New.md:368
+#: ../../Whats-New.md:871
 msgid ""
 "Fixed interceptors intercepting projectiles fired by friendly objects if "
 "the said object died after firing the projectile (by Starkku)"
 msgstr "修复了当友军死亡后，由友军发射的抛射体可以被拦截者拦截的问题 (by Starkku)"
 
-#: ../Whats-New.md:369
+#: ../../Whats-New.md:872
 msgid ""
 "Fixed interceptor weapons with `Inviso=true` projectiles detonating the "
 "projectile at wrong coordinates (by Starkku)"
 msgstr "修复了Inviso拦截武器爆炸位置错误的问题 (by Starkku)"
 
-#: ../Whats-New.md:370
+#: ../../Whats-New.md:873
 msgid ""
 "Fixed some possible configuration reading issues when using Phobos with "
 "patches that rename `uimd.ini` (by Belonit)"
 msgstr "修复了当重命名uimd.ini后配置无法正确读取的问题 (by Belonit)"
 
-#: ../Whats-New.md:371
+#: ../../Whats-New.md:874
 msgid "Fixed a game crash when using the Map Snapshot command (by Otamaa)"
 msgstr "修复了当使用地图快照快捷键时崩溃的问题 (by Otamaa)"
 
-#: ../Whats-New.md:373
+#: ../../Whats-New.md:875
+msgid ""
+"Fixed issue with incorrect input in edit dialog element when using IME "
+"(by Belonit)"
+msgstr ""
+
+#: ../../Whats-New.md:876
+msgid ""
+"Fixed an issue where tooltip text could be clipped by tooltip rectangle "
+"border if using `MaxWidth` > 0 (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:877
+msgid ""
+"Fixed projectiles with `Trajectory=Straight` suffering from potential "
+"inaccuracy problems if combined with `Airburst=yes` or Warhead with "
+"`EMEffect=true` (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:878
+msgid "Minor performance optimization related to shields (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:879
+msgid ""
+"Fixed teleporting miners (Chrono Miner) considered to be idle by "
+"harvester counter, improved related game performance (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:880
+msgid ""
+"Fixed negative damage weapons considering shield health when evaluating "
+"targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:881
+msgid ""
+"Fixed engineers considering shield health instead of building health when"
+" determining if they can repair or capture a building (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:882
+msgid ""
+"Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing "
+"up even if the object shield is attached to is currently underground (by "
+"Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:883
+msgid ""
+"Fixed shields not being removed from sinking units until they have fully "
+"finished sinking (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:884
+msgid "Fixed techno-extdata update after type conversion (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:885
+msgid ""
+"Fixed Phobos Warhead effects (crits, new shield modifiers etc.) "
+"considering sinking units valid targets (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:886
+msgid ""
+"Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would "
+"still fire multiple times if deploy command is issued repeatedly or when "
+"not idle (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:887
+msgid ""
+"Fixed a game crash when checking BuildLimit if Phobos is running without "
+"Ares (by Belonit)"
+msgstr ""
+
+#: ../../Whats-New.md:888
+msgid ""
+"Corrected the misinterpretation in the definition of `DiskLaser.Radius` "
+"(by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:889
+msgid "Fixed GlobalVariables failed working among scenarios (by Trsdy)"
+msgstr ""
+
+#: ../../Whats-New.md:892
+msgid ""
+"Weapons fired by EMPulse superweapons *(Ares feature)* without "
+"`EMPulse.TargetSelf=true` can now create radiation (by Starkku)"
+msgstr ""
+
+#: ../../Whats-New.md:894
 msgid "Non-DLL:"
 msgstr "非DLL："
 
-#: ../Whats-New.md:374
+#: ../../Whats-New.md:895
 msgid ""
 "Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to "
 "use latest Phobos tags (by Kerbiter)"
 msgstr "实装了一个工具来半自动升级ini (by Kerbiter)"
 
-#: ../Whats-New.md:378
+#: ../../Whats-New.md:899
 msgid "0.2.2.2"
 msgstr ""
 
-#: ../Whats-New.md:384
+#: ../../Whats-New.md:905
 msgid "Fixed shield type info not saving properly (by Uranusian)"
 msgstr "修复了护盾类型信息不能被正确保存的问题 (by Uranusian)"
 
-#: ../Whats-New.md:385
+#: ../../Whats-New.md:906
 msgid ""
 "Fixed extended building upgrades logic not properly interacting with "
 "Ares' BuildLimit check (by Uranusian)"
 msgstr "修复了扩展建筑升级与Ares的BuildLimit检查不兼容的问题 (by Uranusian)"
 
-#: ../Whats-New.md:386
+#: ../../Whats-New.md:907
 msgid "Fix more random crashes for Cameo Priority (by Uranusian)"
 msgstr "修复了由图标优先级导致的随机崩溃 (by Uranusian)"
 
-#: ../Whats-New.md:387
+#: ../../Whats-New.md:908
 msgid ""
 "Fix aircraft weapons causing game freeze when burst index was not "
 "correctly reset after firing (by Starkku)"
 msgstr "修复了飞机开火后Burst武器开火次序没有被正确重置导致游戏失去响应的问题 (by Starkku)"
 
-#: ../Whats-New.md:391
+#: ../../Whats-New.md:912
 msgid "0.2.2.1"
 msgstr ""
 
-#: ../Whats-New.md:397
+#: ../../Whats-New.md:918
 msgid "Fixed random crashes about CameoPriority (by Uranusian)"
 msgstr "修复了由图标优先级导致的随机崩溃 (by Uranusian)"
 
-#: ../Whats-New.md:398
+#: ../../Whats-New.md:919
 msgid "Fixed trigger action 125 not functioning properly (by Uranusian)"
 msgstr "修复了触发动作125的修复未能正确生效的问题 (by Uranusian)"
 
-#: ../Whats-New.md:399
+#: ../../Whats-New.md:920
 msgid "Fixed area warhead detonation not falling back to firer house (by Otamaa)"
 msgstr "修复了区域弹头不会回馈所属方的问题 (by Otamaa)"
 
-#: ../Whats-New.md:400
+#: ../../Whats-New.md:921
 msgid ""
 "RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also"
 " various fixes to radiation / desolators (by Otamaa)"
 msgstr "辐射现在会读取Ares的ImmuneToRadiation；以及其它的一些关于辐射和辐射工兵的修复 (by Otamaa)"
 
-#: ../Whats-New.md:401
+#: ../../Whats-New.md:922
 msgid "Fixed `Crit.Affects` not functioning properly (by Uranusian)"
 msgstr "修复了`Crit.Affects`未能正常生效的问题 (by Uranusian)"
 
-#: ../Whats-New.md:402
+#: ../../Whats-New.md:923
 msgid ""
 "Fixed improper upgrade owner transfer which resulted in built ally / "
 "enemy building upgrades keeping the player who built them alive (by "
 "Kerbiter)"
 msgstr "修复了由将插件建造在其他所属方导致自己不能正常战败的问题 (by Kerbiter)"
 
-#: ../Whats-New.md:406
+#: ../../Whats-New.md:927
 msgid "0.2.2"
 msgstr ""
 
-#: ../Whats-New.md:412
+#: ../../Whats-New.md:933
 msgid ""
 "Customizable producing progress \"bars\" like CnC:Remastered did (by "
 "Uranusian)"
 msgstr "像《命令与征服：重制版》一样的自定义生产进度“条” (by Uranusian)"
 
-#: ../Whats-New.md:413
+#: ../../Whats-New.md:934
 msgid "Customizable cameo sorting priority (by Uranusian)"
 msgstr "自定义图标排序优先级 (by Uranusian)"
 
-#: ../Whats-New.md:414
+#: ../../Whats-New.md:935
 msgid "Customizable harvester ore gathering animation (by secsome, Uranusian)"
 msgstr "自定义矿车采矿动画 (by secsome, Uranusian)"
 
-#: ../Whats-New.md:415
+#: ../../Whats-New.md:936
 msgid ""
 "Allow making technos unable to be issued with movement order (by "
 "Uranusian)"
 msgstr "允许使单位无法接受移动指令 (by Uranusian)"
 
-#: ../Whats-New.md:418
+#: ../../Whats-New.md:939
 msgid ""
 "Fixed non-IME keyboard input to be working correctly for languages / "
 "keyboard layouts that use character ranges other than Basic Latin and "
 "Latin-1 Supplement (by Belonit)"
 msgstr "修复了非输入法键盘输入对于使用基础拉丁/拉丁-1以外的语言/键盘布局的支持 (by Belonit)"
 
-#: ../Whats-New.md:421
+#: ../../Whats-New.md:942
 msgid "Fixed the critical damage logic not functioning properly (by Uranusian)"
 msgstr "修复了暴击伤害逻辑工作失常的问题 (by Uranusian)"
 
-#: ../Whats-New.md:422
+#: ../../Whats-New.md:943
 msgid "Fixed the bug when executing the stop command game crashes (by Uranusian)"
 msgstr "修复了某些情况下按下停止命令时会崩溃的问题 (by Uranusian)"
 
-#: ../Whats-New.md:426
+#: ../../Whats-New.md:947
 msgid "0.2.1.1"
 msgstr ""
 
-#: ../Whats-New.md:432
+#: ../../Whats-New.md:953
 msgid ""
 "Fixed occasional crashes introduced by `Speed=0` stationary vehicles code"
 " (by Starkku)"
 msgstr "修复了`Speed=0`的单位偶尔崩溃的问题 (by Starkku)"
 
-#: ../Whats-New.md:436
+#: ../../Whats-New.md:957
 msgid "0.2.1"
 msgstr ""
 
-#: ../Whats-New.md:442
+#: ../../Whats-New.md:963
 msgid ""
 "Setting VehicleType `Speed` to 0 now makes game treat them as stationary "
 "(by Starkku)"
 msgstr "将载具的速度设置为0将认为他们是静止单位 (by Starkku)"
 
-#: ../Whats-New.md:445
+#: ../../Whats-New.md:966
 msgid ""
 "Fixed the bug when after a failed placement the building/defence tab "
 "hotkeys won't trigger placement mode again (by Uranusian)"
 msgstr "修复了当一次摆放失败后，建筑标签/防御标签快捷键（Q/W）无法正确响应的问题 (by Uranusian)"
 
-#: ../Whats-New.md:446
+#: ../../Whats-New.md:967
 msgid ""
 "Fixed the bug when building with `UndeployInto` plays "
 "`EVA_NewRallypointEstablished` while undeploying (by secsome)"
 msgstr "修复了有UndeployInto的建筑在反部署时会播放`EVA_NewRallypointEstablished`的问题 (by secsome)"
 
-#: ../Whats-New.md:449
+#: ../../Whats-New.md:970
 msgid ""
 "Fixed the bug when trigger action `125 Build At...` wasn't actually "
 "producing a building when the target cells were occupied (by secsome)"
 msgstr "修复了触发动作125`将建筑建造于...`在目标单元格被占用时将无法将建筑放下的问题 (by secsome)"
 
-#: ../Whats-New.md:453
+#: ../../Whats-New.md:974
 msgid "0.2"
 msgstr ""
 
-#: ../Whats-New.md:459
+#: ../../Whats-New.md:980
 msgid ""
 "Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with "
 "warhead additions (by Starkku)"
 msgstr "护盾逻辑 (by Uranusian, secsome, Belonit) 及对应的新弹头 (by Starkku)"
 
-#: ../Whats-New.md:460
+#: ../../Whats-New.md:981
 msgid "Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)"
 msgstr "自定义辐射 (by AlexB, Otamaa, Belonit, Uranusian)"
 
-#: ../Whats-New.md:461
+#: ../../Whats-New.md:982
 msgid ""
 "New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, "
 "`73 Wait until ammo is full` (by FS-21)"
 msgstr "新的脚本`71 时效性区域警戒`，`72 向载具中装载`，`73 等待直到装满弹药` (by FS-21)"
 
-#: ../Whats-New.md:462
+#: ../../Whats-New.md:983
 msgid ""
 "Ore drills now have customizable ore type, range, ore growth stage and "
 "amount of cells generated (by Kerbiter)"
 msgstr "矿柱自定义生成矿石类型，范围，生长阶段和生长格数 (by Kerbiter)"
 
-#: ../Whats-New.md:463
+#: ../../Whats-New.md:984
 msgid ""
 "Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, "
 "Erzoid/SukaHati)"
 msgstr "基本的抛射体拦截逻辑 (by AutoGavy, ChrisLv_CN, Kerbiter, Erzoid/SukaHati)"
 
-#: ../Whats-New.md:464
+#: ../../Whats-New.md:985
 msgid ""
 "Customizable harvester active/total counter next to credits counter (by "
 "Uranusian)"
 msgstr "资金计数器旁边的可自定义的矿车活动/总共计数器 (by Uranusian)"
 
-#: ../Whats-New.md:465
+#: ../../Whats-New.md:986
 msgid "Select Next Idle Harvester hotkey command (by Kerbiter)"
 msgstr "选择下一矿车快捷键 (by Kerbiter)"
 
-#: ../Whats-New.md:466
+#: ../../Whats-New.md:987
 msgid "Dump Object Info hotkey command (by secsome, FS-21)"
 msgstr "输出目标信息快捷键 (by secsome, FS-21)"
 
-#: ../Whats-New.md:467
+#: ../../Whats-New.md:988
 msgid "Remove Disguise and Remove Mind Control warhead effects (by secsome)"
 msgstr "反伪装和反心控弹头 (by secsome)"
 
-#: ../Whats-New.md:468
+#: ../../Whats-New.md:989
 msgid "Custom per-warhead SplashLists (by Uranusian)"
 msgstr "自定义弹头水花动画 (by Uranusian)"
 
-#: ../Whats-New.md:469
+#: ../../Whats-New.md:990
 msgid ""
 "`AnimList.PickRandom` used to randomize `AnimList` with no side effects "
 "(by secsome)"
 msgstr "`AnimList.PickRandom`作为无副作用的随机`AnimList` (by secsome)"
 
-#: ../Whats-New.md:470
+#: ../../Whats-New.md:991
 msgid "Chance-based critical damage system on warheads (by AutoGavy)"
 msgstr "基于概率的弹头暴击伤害系统 (by AutoGavy)"
 
-#: ../Whats-New.md:471
+#: ../../Whats-New.md:992
 msgid "Optional mind control range limit (by Uranusian)"
 msgstr "可选的心灵控制距离 (by Uranusian)"
 
-#: ../Whats-New.md:472
+#: ../../Whats-New.md:993
 msgid ""
 "Multiple mind controllers can now release units on overload (by "
 "Uranusian, secsome)"
 msgstr "多重心控可以在过载时释放单位 (by Uranusian, secsome)"
 
-#: ../Whats-New.md:473
+#: ../../Whats-New.md:994
 msgid ""
 "Spawns now can be killed on low power and have limited pursuing range (by"
 " FS-21)"
 msgstr "子机可以在断电模式下坠毁，并可以有有限追击距离 (by FS-21)"
 
-#: ../Whats-New.md:474
+#: ../../Whats-New.md:995
 msgid "Spawns can now have the same exp. level as owner techno (by Uranusian)"
 msgstr "子机与发射者共有经验等级 (by Uranusian)"
 
-#: ../Whats-New.md:475
+#: ../../Whats-New.md:996
 msgid ""
 "`TurretOffset` now accepts `F,L,H` and `F,L` values instead of just `F` "
 "value (by Kerbiter)"
 msgstr "`TurretOffset`现在除了`F`以外还可以接受`F,L,H`和`F,L`作为值 (by Kerbiter)"
 
-#: ../Whats-New.md:476
+#: ../../Whats-New.md:997
 msgid "ElectricBolt arc visuals can now be disabled per-arc (by Otamaa)"
 msgstr "特斯拉电弧（ElectricBolt）的视觉特效中单独的弧可以关闭 (by Otamaa)"
 
-#: ../Whats-New.md:477
+#: ../../Whats-New.md:998
 msgid "Semantic locomotor aliases for modder convenience (by Belonit)"
 msgstr "为modder方便所用的locomotor别称 (by Belonit)"
 
-#: ../Whats-New.md:478
+#: ../../Whats-New.md:999
 msgid ""
 "Ability to specify amount of shots for strafing aircraft and burst "
 "simulation (by Starkku)"
 msgstr "扫射飞机每轮射击次数与Burst模拟 (by Starkku)"
 
-#: ../Whats-New.md:479
+#: ../../Whats-New.md:1000
 msgid ""
 "Customizeable Teleport/Chrono Locomotor properties per TechnoType (by "
 "Otamaa)"
 msgstr "自定义超时空移动参数 (by Otamaa)"
 
-#: ../Whats-New.md:480
+#: ../../Whats-New.md:1001
 msgid "Maximum waypoints amount increased from 702 to 2147483647 (by secsome)"
 msgstr "路径点数量上限由702增加到2147483647 (by secsome)"
 
-#: ../Whats-New.md:481
+#: ../../Whats-New.md:1002
 msgid "Customizeable Missing Cameo file (by Uranusian)"
 msgstr "自定义缺省图标 (by Uranusian)"
 
-#: ../Whats-New.md:484
+#: ../../Whats-New.md:1005
 msgid ""
 "Map previews with zero size won't crash the game anymore (by Kerbiter, "
 "Belonit)"
 msgstr "0大小的地图预览不再使游戏崩溃 (by Kerbiter, Belonit)"
 
-#: ../Whats-New.md:485
+#: ../../Whats-New.md:1006
 msgid "Tileset 255+ bridge fix (by E1 Elite)"
 msgstr "Tileset 255+的桥修复 (by E1 Elite)"
 
-#: ../Whats-New.md:486
+#: ../../Whats-New.md:1007
 msgid ""
 "Fixed fatal errors when `Blowfish.dll` couldn't be registered in the "
 "system properly due to missing admin rights (by Belonit)"
 msgstr "修复了由于无管理员权限导致的`Blowfish.dll`未被注册导致的致命错误 (by Belonit)"
 
-#: ../Whats-New.md:487
+#: ../../Whats-New.md:1008
 msgid ""
 "Fix to take Burst into account for aircraft weapon shots beyond the first"
 " one (by Starkku)"
 msgstr "修复了扫射攻击的飞机只有第一次攻击时读取Burst的问题 (by Starkku)"
 
-#: ../Whats-New.md:488
+#: ../../Whats-New.md:1009
 msgid ""
 "Fixed the bug when units are already dead but still in map (for sinking, "
 "crashing, dying animation, etc.), they could die again (by Uranusian)"
 msgstr "修复了当单位死亡时仍然可以受到伤害导致多次死亡的问题 (by Uranusian)"
 
-#: ../Whats-New.md:489
+#: ../../Whats-New.md:1010
 msgid ""
 "Fixed the bug when cloaked Desolator was unable to fire his deploy weapon"
 " (by Otamaa)"
 msgstr "修复了辐射工兵在隐形时无法使用部署武器的问题 (by Otamaa)"
 
-#: ../Whats-New.md:490
+#: ../../Whats-New.md:1011
 msgid ""
 "Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-"
 "release the victim to control new one (by Uranusian)"
 msgstr "多重心控单位可以在过载前释放单位 (by Uranusian)"
 
-#: ../Whats-New.md:491
+#: ../../Whats-New.md:1012
 msgid ""
 "Fixed the bug that script action `Move to cell` was still using leftover "
 "cell calculations from previous games (by secsome)"
 msgstr "修复了脚本动作“移动到坐标”使用先前游戏中的残留计算的问题 (by secsome)"
 
-#: ../Whats-New.md:492
+#: ../../Whats-New.md:1013
 msgid ""
 "Fixed the bug when trigger action `125 Build At...` didn't play buildup "
 "anim (by secsome)"
 msgstr "修复了触发动作125“将建筑建造于...” 不能播放建造动画的问题，由新的参数控制 (by secsome)"
 
-#: ../Whats-New.md:493
+#: ../../Whats-New.md:1014
 msgid ""
 "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond "
 "specified maximums anymore) (by Otamaa)"
 msgstr "修复了DebrisMaximums（生成的碎片不再能超过对应最大上限） (by Otamaa)"
 
-#: ../Whats-New.md:494
+#: ../../Whats-New.md:1015
 msgid ""
 "Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command"
 " now work properly) (by Starkku)"
 msgstr "修复了DeployFire逻辑（DeployFireWeapon, FireOnce, 及停止指令现在可以正常运作） (by Starkku)"
 
-#: ../Whats-New.md:497
+#: ../../Whats-New.md:1018
 msgid ""
 "Properly rewritten a fix for mind-controlled vehicles deploying into "
 "buildings (by FS-21)"
 msgstr "重写了被心控的车辆变成建筑的修复 (by FS-21)"
 
-#: ../Whats-New.md:498
+#: ../../Whats-New.md:1019
 msgid ""
 "Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is "
 "deprecated, now always on (by Kerbiter)"
 msgstr "重写了`DeployToFire`的修复，标签`Deployed.RememberTarget`已被弃用，永久开启 (by Kerbiter)"
 
-#: ../Whats-New.md:499
+#: ../../Whats-New.md:1020
 msgid "New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)"
 msgstr "新的弹头特效可以与Ares的通用弹头（`GenericWarhead`）超武兼容 (by Belonit)"
 
-#: ../Whats-New.md:503
+#: ../../Whats-New.md:1024
 msgid "0.1.1"
-msgstr ""
+msgstr "0.1.1"
 
-#: ../Whats-New.md:509
+#: ../../Whats-New.md:1030
 msgid "Fixed an occasional crash when selecting units with a selection box"
 msgstr "修复了选择单位时偶然的崩溃问题"
 
-#: ../Whats-New.md:513
+#: ../../Whats-New.md:1034
 msgid "0.1"
 msgstr ""
 
-#: ../Whats-New.md:519
+#: ../../Whats-New.md:1040
 msgid "Full-color PCX graphics support (by Belonit)"
 msgstr "全彩色PCX支持 (by Belonit)"
 
-#: ../Whats-New.md:520
+#: ../../Whats-New.md:1041
 msgid "Support for PCX loading screens of any size (by Belonit)"
 msgstr "支持任意大小的PCX载入屏幕 (by Belonit)"
 
-#: ../Whats-New.md:521
+#: ../../Whats-New.md:1042
 msgid ""
 "Extended sidebar tooltips with descriptions, recharge time and power "
 "consumption/generation (by Kerbiter, Belonit)"
 msgstr "带有介绍，充能时间，电力生成/消耗的扩展工具提示 (by Kerbiter, Belonit)"
 
-#: ../Whats-New.md:522
+#: ../../Whats-New.md:1043
 msgid "Selection priority filtering for box selection (by Kerbiter)"
 msgstr "选择优先级筛选 (by Kerbiter)"
 
-#: ../Whats-New.md:523
+#: ../../Whats-New.md:1044
 msgid "Shroud, reveal and money transact warheads (by Belonit)"
 msgstr "迷雾弹，揭示弹和金币弹弹头 (by Belonit)"
 
-#: ../Whats-New.md:524
+#: ../../Whats-New.md:1045
 msgid "Custom game icon command line arg (by Belonit)"
 msgstr "自定义游戏图标命令行参数 (by Belonit)"
 
-#: ../Whats-New.md:525
+#: ../../Whats-New.md:1046
 msgid "Ability to disable black spawn position dots on map preview (by Belonit)"
 msgstr "允许关闭游戏预览时的黑点 (by Belonit)"
 
-#: ../Whats-New.md:526
+#: ../../Whats-New.md:1047
 msgid ""
 "Ability to specify applicable building owner for building upgrades (by "
 "Kerbiter)"
 msgstr "允许将建筑升级建给其它可用所属方 (by Kerbiter)"
 
-#: ../Whats-New.md:527
+#: ../../Whats-New.md:1048
 msgid "Customizable disk laser radius (by Belonit, Kerbiter)"
 msgstr "自定义飞碟激光范围 (by Belonit, Kerbiter)"
 
-#: ../Whats-New.md:528
+#: ../../Whats-New.md:1049
 msgid "Ability to switch to GDI sidebar layout for any side (by Belonit)"
 msgstr "允许为任意阵营切换GDI侧边栏布局 (by Belonit)"
 
-#: ../Whats-New.md:531
+#: ../../Whats-New.md:1052
 msgid ""
 "Deploying mind-controlled TechnoTypes won't make them permanently mind-"
 "controlled anymore (unfinished fix by DCoder)"
 msgstr "部署心灵控制单位不再会使他们永久转变所属方 (未完成的修复by DCoder)"
 
-#: ../Whats-New.md:532
+#: ../../Whats-New.md:1053
 msgid ""
 "SHP debris hardcoded shadows now respect `Shadow=no` tag value (by "
 "Kerbiter)"
 msgstr "SHP碎片硬编码影子现在遵循`Shadow=no`设定 (by Kerbiter)"
 
-#: ../Whats-New.md:533
+#: ../../Whats-New.md:1054
 msgid ""
 "`DeployToFire` vehicles won't lose target on deploy anymore (unfinished "
 "fix by DCoder)"
 msgstr "`DeployToFire`不再会因部署失去目标 (未完成的修复by DCoder)"
 
-#: ../Whats-New.md:534
+#: ../../Whats-New.md:1055
 msgid ""
 "Fixed QWER hotkey tab switching not hiding the displayed tooltip as it "
 "should (by Belonit)"
 msgstr "修复了当通过QWER切换标签页时, 工具提示不会消失的问题 (by Belonit)"
 
-#: ../Whats-New.md:535
+#: ../../Whats-New.md:1056
 msgid "Sidebar tooltips now can go over sidebar bounds (by Belonit)"
 msgstr "侧边栏工具提示现在可以超越侧边栏边界 (by Belonit)"
 
-#: ../Whats-New.md:536
+#: ../../Whats-New.md:1057
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "提升了小得过分的工具提示字符上限 (by Belonit)"
+
+#~ msgid ""
+#~ "SHP debris hardcoded shadows now respect"
+#~ " `Shadow=no` tag value, and due to"
+#~ " it being the default value they "
+#~ "wouldn't have hardcoded shadows anymore "
+#~ "by default. Override this by specifying"
+#~ " `Shadow=yes` for SHP debris."
+#~ msgstr "SHP碎片硬编码的影子现在遵循`Shadow=no`，并且由于这就是默认值，所以它们不再拥有硬编码的影子。为SHP碎片指定`Shadow=yes`以覆盖此设定。"
+
+#~ msgid ""
+#~ "Fix an issue that harvesters with "
+#~ "amphibious movement zone can not "
+#~ "automatically return to refineries with "
+#~ "`WaterBound` on water surface (by "
+#~ "NetsuNegi)"
+#~ msgstr ""
+
+#~ msgid "Fix `Stop` command not working so well in some cases (by CrimRecya)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fix an issue where a unit will "
+#~ "leave an impassable invisible barrier in"
+#~ " its original position when it is "
+#~ "teleported by ChronoSphere onto an "
+#~ "uncrushable unit and self destruct (by"
+#~ " NetsuNegi)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fix the bug that parasite will "
+#~ "vanish if it missed its target "
+#~ "when its previous cell is occupied "
+#~ "(by 航味麻酱)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fix the bug that destroyed unit "
+#~ "may leaves sensors (by tyuah8 & "
+#~ "NetsuNegi)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fix the bug where naval ships set"
+#~ " to `AllowedToStartInMultiplayer=yes` may spawn"
+#~ " incorrectly on land (by NetsuNegi)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fix the bug where pathfinding issues "
+#~ "occur when a building performs undeploy"
+#~ " (by NetsuNegi)"
+#~ msgstr ""
+
+#~ msgid "Fix `LimboKill` not working reliably (by CrimRecya)"
+#~ msgstr ""
+
+#~ msgid "Fix `Insignia.Weapon` failing to parse in map (by Ollerus)"
+#~ msgstr ""
+
+#~ msgid "Fix `AltNextScenario` not taking effect (by FlyStar)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fixed a jumpjet crash related to "
+#~ "voxel shadow drawing (by hejiajun107 &"
+#~ " Xkein)"
+#~ msgstr ""
+
+#~ msgid "Type select for buildings (code by TaranDahl(航味麻酱), doc by Ollerus)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Skirmish AI \"sell all buildings and "
+#~ "set all technos to hunt\" behavior "
+#~ "dehardcode (by TaranDahl/航味麻酱)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Skirmish AI \"gather when MCV deploy\""
+#~ " behavior dehardcode (by TaranDahl/航味麻酱)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Fixed the bug that parasite will "
+#~ "vanish if it missed its target "
+#~ "when its previous cell is occupied "
+#~ "(by 航味麻酱)"
+#~ msgstr ""
+
