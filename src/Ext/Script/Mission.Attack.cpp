@@ -392,6 +392,9 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
 
+		if (!objectType->LegalTarget)
+			continue;
+
 		// Discard invisible structures
 		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
 
@@ -417,6 +420,14 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 				continue;
 
 			if (!object->IsInAir() && !unitWeaponsHaveAG)
+				continue;
+
+			auto const missionControl = &MissionControlClass::Array[(int)object->CurrentMission];
+
+			if (missionControl->NoThreat)
+				continue;
+
+			if (object->EstimatedHealth <= 0 && pTechnoType->VHPScan == 2)
 				continue;
 		}
 
@@ -496,6 +507,14 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 					// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
 					objectThreatValue += object->Health * (1 - object->GetHealthPercentage());
 					value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(object) / 256.0) + 1.0);
+
+					if (pTechnoType->VHPScan == 1)
+					{
+						if (object->EstimatedHealth <= 0)
+							value /= 2;
+						else if (object->EstimatedHealth <= objectType->Strength / 2)
+							value *= 2;
+					}
 
 					if (calcThreatMode == 0)
 					{
