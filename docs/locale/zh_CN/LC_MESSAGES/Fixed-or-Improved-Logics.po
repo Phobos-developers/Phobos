@@ -1147,11 +1147,10 @@ msgid ""
 msgstr "修复错误脱引用导致的问题（例如，如果单位隐形／进入运输工具则无法自此前发射的子机／安置的 C4 炸弹／发射的抛射体获得经验）。"
 
 #: ../../Fixed-or-Improved-Logics.md:184
-#, fuzzy
 msgid ""
 "Fixed an issue that caused `IsSonic=true` wave drawing to crash the game "
 "if the wave traveled over a certain distance."
-msgstr "修复了一个如果 `IsSonic=true` 的波绘制超过一定距离会导致游戏崩溃的问题"
+msgstr "修复了一个如果 `IsSonic=true` 的波绘制超过一定距离会导致游戏崩溃的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:185
 msgid ""
@@ -3858,9 +3857,8 @@ msgstr ""
 "武器在开火后重置步兵序列的效果。目标将像以前一样被遗忘，如果开火后还有剩余帧，那么开火序列将简单地照常继续播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:1532
-#, fuzzy
 msgid "Electric bolt customizations"
-msgstr "自定义战斗闪光"
+msgstr "自定义 EBolt"
 
 #: ../../Fixed-or-Improved-Logics.md:1534
 msgid ""
@@ -3887,15 +3885,14 @@ msgstr ""
 "为每种武器自定义这一效果。值为 0 将会绘制一条直线。"
 
 #: ../../Fixed-or-Improved-Logics.md:1550
-#, fuzzy
 msgid ""
 "Due to technical constraints, these features do not work with electric "
 "bolts created from support weapon of [Ares' Prism Forwarding](https"
 "://ares-developers.github.io/Ares-"
 "docs/new/buildings/prismforwarding.html) or those from AirburstWeapon."
 msgstr ""
-"由于技术限制，这不适用于 [Ares 中光棱塔递光武器](https://ares-developers.github.io/Ares-"
-"docs/new/buildings/prismforwarding.html)所创建的 EBolt 效果。"
+"由于技术限制，这些特性不适用于 [Ares 中光棱塔递光武器](https://ares-developers.github.io/Ares-"
+"docs/new/buildings/prismforwarding.html) 所创建的 EBolt 效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:1553
 msgid "Single-color lasers"

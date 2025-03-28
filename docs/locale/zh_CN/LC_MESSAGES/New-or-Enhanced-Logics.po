@@ -4230,6 +4230,10 @@ msgid ""
 " around or facing weird way depending on other factors like ROF and/or "
 "movement speed."
 msgstr ""
+"`Strafing.EndDelay` 可用于覆盖战机在扫射过程中射出最后一发后进行另一轮扫射或返航前的时间间隔。默认为 "
+"(`[WeaponType] -> Range` * 256 + 1024) / `[AircraftType] -> "
+"Speed`。注意对于弹药量足够进行多次扫射的战机而言过短的间隔可能导致并不理想的行为例如四处游走或朝向怪异的方向，具体取决于 "
+"`[WeaponType] -> ROF` 和／或 `[AircraftType] -> Speed` 等其他因素。"
 
 #: ../../New-or-Enhanced-Logics.md:1744
 msgid ""

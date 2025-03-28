@@ -1000,9 +1000,8 @@ msgid "`IsSonic` wave drawing crash fix"
 msgstr "`IsSonic` 波绘制崩溃修复"
 
 #: ../../../CREDITS.md:257
-#, fuzzy
 msgid "Customizable electric bolt duration and electric bolt-related fixes"
-msgstr "自定义 EBolt 电弧"
+msgstr "自定义 EBolt 持续时间和 EBolt 相关修复"
 
 #: ../../../CREDITS.md:258
 msgid "**Morton (MortonPL)**:"
