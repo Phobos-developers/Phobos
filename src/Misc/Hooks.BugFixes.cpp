@@ -1245,9 +1245,10 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
 
 #pragma endregion
 
-#pragma region SpawnerFireFix
+#pragma region SpawnerFix
 
-DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_AirCarrierSkipCheckNearBridge, 0x8)
+// Let in air aircraft carrier ignore nearby elevated bridge check
+DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
 {
 	enum { ContinueCheck = 0x6FC61F, TemporaryCannotFire = 0x6FCD0E };
 
