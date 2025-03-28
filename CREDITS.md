@@ -414,6 +414,7 @@ This page lists all the individual contributions to the project by their author.
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
   - Delay automatic attack on the controlled unit
+  - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
