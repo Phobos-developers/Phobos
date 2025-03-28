@@ -571,9 +571,6 @@ In `artmd.ini`:
 [SOMEANIM]                          ; AnimationType
 Translucency.Cloaked=               ; integer - only accepted values are 75, 50, 25 and 0.
 Translucent.KeyframeN.Value=        ; integer - only accepted values are 75, 50, 25 and 0.
-Translucent.KeyframeN.Percentage=   ; floating point value, percents or absolute
-Translucent.KeyframeN.Absolute=     ; integer, zero-based frame index
-Translucent.Interpolation=none      ; Interpolation mode (none|linear)
 ```
 
 ### Customizable animation visibility settings
