@@ -1496,20 +1496,6 @@ DiskLaser.Radius=240  ; floating point value
                       ; 240 is the default saucer disk radius
 ```
 
-### Customizable ElectricBolt Arcs
-
-- By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Arcs=8            ; integer, number of arcs in a bolt
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
-```
-
 ### Customizable ROF random delay
 
 - By default weapon `ROF` has a random delay of 0 to 2 frames added to it. This random delay is now customizable, globally and on per-WeaponType basis.
@@ -1575,25 +1561,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 IsSingleColor=false  ; boolean
-```
-
-### Toggle-able ElectricBolt visuals
-
-![image](_static/images/ebolt.gif)
-*EBolt customization utilized for different Tesla bolt weapon usage ([RA2: Reboot](https://www.moddb.com/mods/reboot))*
-
-- You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]           ; WeaponType
-Bolt.Disable1=false    ; boolean
-Bolt.Disable2=false    ; boolean
-Bolt.Disable3=false    ; boolean
-```
-
-```{note}
-Due to technical constraints, this does not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
 ```
 
 ## RadialIndicator visibility
