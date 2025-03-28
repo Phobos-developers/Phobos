@@ -2,7 +2,54 @@
 
 This page describes ways to help or contribute to Phobos and lists the contributing guidelines that are used in the project.
 
-## Guidelines for contributors
+## Project guidelines and policies
+
+### Phobos maintenance crew structure
+
+Due to the size of the project and varying complexity of the codebase, we have established a maintenance crew structure to help with the project's development and maintenance. The structure is as follows:
+
+- **Leads** (or `T3` maintainers) - primary decision makers, define where the project is headed and have the final say in case of disputes. They are responsible for the project's vision and direction, and are the main point of contact for the community.
+- **`T2` maintainers** - assigned to more complex PRs, can make releases.
+- **`T1` maintainers** - assigned to less complex PRs.
+- **Triages** - help triage/label/assign PRs, issues, discussions, help with communication with the community.
+
+Those roles are assigned based on the complexity of the PRs and the experience of the contributors. The roles are not fixed and can change based on the contributor's experience and the complexity of the PRs they are working on. Also only the commonly occured roles are established in the list, in case of need - individual permissions can be assigned to contributors by leads (for example, to help with documentation translations).
+
+### Types of contributions
+
+To distribute the workload and make the project more manageable, we have established several commonly occuring types of contributions that can be made to the project. These types are as follows:
+
+- Phobos bugfixes, including reconnection error (desync), crash (fatal error) fixes, and documentation fixes
+  - `T1` complexity by default
+- Vanilla bugfixes
+  - `T1` complexity by default
+- Unhardcodings/customizations - contributions that only make something customizable through the INI or other way (by the modder usually), without adding too much code to handle the customization
+  - `T1` complexity by default
+- New features
+  - Extensions of existing systems - add logic to existing systems, doesn't warrant it's own entity or type classes generally, but may introduce new hooks
+    - Examples: feedback weapon logic, superweapon launch warhead logic, a new type of trajectory that uses existing custom trajectory framework, etc.
+    - `T1` or `T2` complexity by default, depending on judgement of the one who assigns the PR
+  - New systems - generally with their own classes that don't extend game classes/logics (or have such amount of code that should be separated into separate classes)
+    - Examples: custom trajectories framework, interceptor logic, shield logic, etc.
+    - `T2` complexity by default
+- Contributions to project infrastructure - changes to the project's build system, CI, documentation, etc.
+  - `T2` complexity by default
+- Project policy changes - changes to the project's guidelines, contributing guidelines, etc.
+  - `T3` complexity by default (has to be reviewed by leads)
+
+```{hint}
+Modders are highly encouraged to submit feedback on reusability of added features (preferably most important takeaways should be tracked in pull requests, discussions and issues) in order to not bloat the project with one-off features.
+```
+
+The list is not exhaustive, you are welcome to propose/submit changes to it (or to any project policies in order to improve how the project is maintained).
+
+In absence of a fitting category - a lead should review it.
+
+What can make any PR more controversial and requiring a higher level maintainer's assignment:
+- Modifying/breaking previous (or vanilla) behavior
+- Requiring migration
+- Mixing contribution types
+- Current level of maintainers not being sure about whether they can judge this PR
 
 ### Project structure
 
@@ -185,6 +232,21 @@ git config --global pull.rebase true
 git config --global branch.autoSetupRebase always
 git config --global diff.colorMoved zebra
 ```
+
+### Working with YRpp via submodules
+
+Often when working on Phobos and/or researching the YR engine you'll need to implement corrections for YRpp. Generally the corrections need to be submitted to [YRpp repository](https://github.com/Phobos-developers/YRpp) and can be done separately from the actual features in Phobos, but frequently the improvements are to be submitted as a part of Phobos contribution process. To submit improvements to YRpp you have to create a branch in YRpp, then you can push it and submit a pull request to YRpp repository.
+
+When you clone Phobos recursively - you also clone YRpp as a submodule. Basically submodules are just nested repositories. You can open it like any other repository, so the changes can be synchronized to Phobos and you don't need to rename stuff by hand.
+
+The suggested workflow is as follows:
+1. In your IDE of choice rename fields and functions using symbol renaming feature (`Rename...` feature in Visual Studio (regular or Code), `[F2]` by default), then you will have two "levels" of changes displayed in your Git client:
+   - for Phobos repository - changes in the Phobos code (as regular changes) and changes to YRpp (as one submodule change).
+   - for YRpp repository - changes to the field names and function names in YRpp as regular changes.
+2. Create a branch in YRpp repository (create a fork of it if you didn't yet), commit and push the changes and submit it as a pull request. After pushing it you have two options in Phobos repository:
+   - wait until it's accepted, then checkout YRpp at the newest commit, then commit and push - this will save you having to commit and push multiple times, but you won't be able to get a nightly build for people to test;
+   - don't wait for YRpp changes to be merged, commit and push right after you pushed the YRpp changes to your YRpp branch - you will have an up-to-date build on Phobos pull request this way. Note that you must do this only after you committed to and pushed your YRpp branch, otherwise the build system won't know what are the changes as they are not exposed to the world, only available to you locally.
+3. After the YRpp pull request gets accepted you will need to switch to the latest commit that was merged (you do that in the submodule), verify that it compiles like normal, and then commit and push it to your Phobos branch that you made for your pull request.
 
 ## Ways to help
 

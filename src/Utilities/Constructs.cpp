@@ -136,7 +136,7 @@ PhobosPCXFile& PhobosPCXFile::operator = (const char* pFilename)
 
 BSurface* PhobosPCXFile::GetSurface(BytePalette* pPalette) const
 {
-	return this->Exists() ? PCX::Instance->GetSurface(this->filename, pPalette) : nullptr;
+	return this->Exists() ? PCX::Instance.GetSurface(this->filename, pPalette) : nullptr;
 }
 
 bool PhobosPCXFile::Exists() const
@@ -146,7 +146,7 @@ bool PhobosPCXFile::Exists() const
 		this->checked = true;
 		if (this->filename)
 		{
-			auto pPCX = &PCX::Instance();
+			auto pPCX = &PCX::Instance;
 			this->exists = (pPCX->GetSurface(this->filename) || pPCX->LoadFile(this->filename));
 		}
 	}
@@ -286,4 +286,3 @@ bool TheaterSpecificSHP::Save(PhobosStreamWriter& Stm) const
 {
 	return Savegame::WritePhobosStream(Stm, this->value);
 }
-

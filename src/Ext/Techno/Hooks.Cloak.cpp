@@ -51,19 +51,19 @@ bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 
 // Replaces the vanilla vtable calls & calls function from wrapper to retain compatibility with Ares.
 // The vanilla functions are completely overwritten by Ares.
-DEFINE_JUMP(VTABLE, 0x7E2544, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7E8F34, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // FootClass
-DEFINE_JUMP(VTABLE, 0x7EB2F8, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F4C00, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5F10, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper)); // UnitClass
-DEFINE_JUMP(CALL, 0x457779, GET_OFFSET(TechnoClass_IsReadyToCloak_Wrapper))    // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2544, TechnoClass_IsReadyToCloak_Wrapper); // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8F34, TechnoClass_IsReadyToCloak_Wrapper); // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB2F8, TechnoClass_IsReadyToCloak_Wrapper); // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4C00, TechnoClass_IsReadyToCloak_Wrapper); // TechnoClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F10, TechnoClass_IsReadyToCloak_Wrapper); // UnitClass
+DEFINE_FUNCTION_JUMP(CALL, 0x457779, TechnoClass_IsReadyToCloak_Wrapper)    // BuildingClass
 
-DEFINE_JUMP(VTABLE, 0x7E2548, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // AircraftClass
-DEFINE_JUMP(VTABLE, 0x7E8F38, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // FootClass
-DEFINE_JUMP(VTABLE, 0x7EB2FC, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // InfantryClass
-DEFINE_JUMP(VTABLE, 0x7F4C04, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // TechnoClass
-DEFINE_JUMP(VTABLE, 0x7F5F14, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper)); // UnitClass
-DEFINE_JUMP(CALL, 0x4578C9, GET_OFFSET(TechnoClass_ShouldNotCloak_Wrapper));   // BuildingClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E2548, TechnoClass_ShouldNotCloak_Wrapper); // AircraftClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E8F38, TechnoClass_ShouldNotCloak_Wrapper); // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB2FC, TechnoClass_ShouldNotCloak_Wrapper); // InfantryClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F4C04, TechnoClass_ShouldNotCloak_Wrapper); // TechnoClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5F14, TechnoClass_ShouldNotCloak_Wrapper); // UnitClass
+DEFINE_FUNCTION_JUMP(CALL, 0x4578C9, TechnoClass_ShouldNotCloak_Wrapper);   // BuildingClass
 
 
 // Allow units with DecloakToFire=no weapons to cloak even when about to fire on target.
@@ -90,12 +90,38 @@ DEFINE_HOOK(0x6F7792, TechnoClass_InWeaponRange_DecloakToFire, 0xA)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK_AGAIN(0x703789, TechnoClass_CloakUpdateMCAnim, 0x6) // TechnoClass_Do_Cloak
-DEFINE_HOOK(0x6FB9D7, TechnoClass_CloakUpdateMCAnim, 0x6)       // TechnoClass_Cloaking_AI
+DEFINE_HOOK_AGAIN(0x6FBBC3, TechnoClass_Cloak_BeforeDetach, 0x5)  // TechnoClass_Cloaking_AI
+DEFINE_HOOK(0x703789, TechnoClass_Cloak_BeforeDetach, 0x6)        // TechnoClass_Do_Cloak
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	{
+		if (!pExt->MindControlRingAnimType)
+			pExt->UpdateMindControlAnim();
+
+		pExt->IsDetachingForCloak = true;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6FBBCE, TechnoClass_Cloak_AfterDetach, 0x7)  // TechnoClass_Cloaking_AI
+DEFINE_HOOK(0x703799, TechnoClass_Cloak_AfterDetach, 0xA)        // TechnoClass_Do_Cloak
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+		pExt->IsDetachingForCloak = false;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FB9D7, TechnoClass_Cloak_RestoreMCAnim, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
 		pExt->UpdateMindControlAnim();
 
 	return 0;

@@ -59,7 +59,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 		}
 		else
 		{
-			if(!bPlayBuildUp)
+			if (!bPlayBuildUp)
 				pBld->Place(false);
 
 			pBld->IsReadyToCommence = true;
@@ -99,7 +99,7 @@ DEFINE_HOOK(0x6D4455, Tactical_Render_UpdateLightSources, 0x8)
 {
 	if (RetintTemp::UpdateLightSources)
 	{
-		for (auto lSource : *LightSourceClass::Array)
+		for (auto lSource : LightSourceClass::Array)
 		{
 			if (lSource->Activated)
 			{
