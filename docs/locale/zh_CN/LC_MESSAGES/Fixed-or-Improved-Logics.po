@@ -344,9 +344,9 @@ msgid ""
 "`Speed(Aircraft/Infantry/Units)Mult` on `Countries`, `VeteranSpeed` and "
 "Crates / AttachEffect *(Ares feature)*."
 msgstr ""
-"现在战机与 Jumpjet 单位正常受国家设置中的 "
+"现在战机与 Jumpjet 单位正常享受国家设置中的 "
 "`Speed(Aircraft/Infantry/Units)Mult`、`VeteranSpeed` 和箱子／AttachEffect "
-"中速度加成效果影响。"
+"中速度加成效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:63
 msgid ""
@@ -820,7 +820,7 @@ msgstr "移除了 Jumpjet 单位坠毁到建筑上时的减速效果。"
 msgid ""
 "Fixed `AmbientDamage` when used with `IsRailgun=yes` being cut off by "
 "elevation changes."
-msgstr "修复了`AmbientDamage` 在与 `IsRailgun=yes` 共用时会被高度变化切断的问题。"
+msgstr "修复了 `AmbientDamage` 在与 `IsRailgun=yes` 共用时会被高度变化切断的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:134
 msgid "Fixed railgun and fire particles being cut off by elevation changes."

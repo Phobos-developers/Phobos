@@ -554,7 +554,7 @@ Vanilla fixes:
 - Light tint created by a building is now able to be removed after loading the game (by Trsdy)
 - Prevented crashing jumpjet units from firing (by Trsdy)
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
-- Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
+- Reenabled the obsolete `[General] -> WarpIn` as default anim type when units are warping in (by Trsdy)
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
