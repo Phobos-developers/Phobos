@@ -1103,7 +1103,6 @@ msgid "Customizable duration for electric bolts (by Starkku)"
 msgstr "自定义抛射体轨迹 (by secsome)"
 
 #: ../../Whats-New.md:331
-#, fuzzy
 msgid "Customizable FLH tracking for electric bolts (by Starkku)"
 msgstr "自定义抛射体轨迹 (by secsome)"
 

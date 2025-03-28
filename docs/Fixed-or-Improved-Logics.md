@@ -1685,7 +1685,7 @@ Bolt.FollowFLH=        ; boolean
 ```
 
 ```{note}
-Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from AirburstWeapon.
+Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
 ```
 
 ### Single-color lasers

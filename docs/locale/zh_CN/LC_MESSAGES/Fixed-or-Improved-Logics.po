@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 23:57+0800\n"
+"POT-Creation-Date: 2025-03-29 00:23+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1221,7 +1221,7 @@ msgid ""
 "Electric bolts that are supposed to update their position based on units "
 "current firing coords (by default, those fired by vehicles) now do so "
 "correctly for more than one concurrent electric bolt."
-msgstr ""
+msgstr "现在那些本应跟随单位当前开火坐标更新位置的 EBolt 效果（默认指由载具发射的）能够正确的对超过 1 个同时创建的 EBolt 效果生效。"
 
 #: ../../Fixed-or-Improved-Logics.md:199
 msgid "Fixes / interactions with other extensions"
@@ -2543,7 +2543,6 @@ msgid "Now you can define `BombParachute` per projectile."
 msgstr "现在你可以为每一个抛射体使用 `BombParachute` 单独定义。"
 
 #: ../../Fixed-or-Improved-Logics.md:589
-#, fuzzy
 msgid ""
 "[SOMEPROJECTILE]        ; Projectile\n"
 "BombParachute=          ; AnimationType, default to [General] -> "
@@ -5606,9 +5605,10 @@ msgid ""
 "on every frame (making it follow unit's movement, rotation etc). Defaults"
 " to true on vehicles, false for everything else."
 msgstr ""
+"`Bolt.FollowFLH` 可用于覆盖 EBolt 起始坐标跟随单位开火坐标每帧改变（时期跟随单位的移动、旋转等）的默认行为。载具默认为 "
+"true 其他所有情况默认 false。"
 
 #: ../../Fixed-or-Improved-Logics.md:1677
-#, fuzzy
 msgid ""
 "[SOMEWEAPON]           ; WeaponType\n"
 "Bolt.Disable1=false    ; boolean\n"
@@ -5624,17 +5624,18 @@ msgstr ""
 "Bolt.Disable3=false    ; boolean\n"
 "Bolt.Arcs=8            ; integer\n"
 "Bolt.Duration=17       ; integer, game frames\n"
+"Bolt.FollowFLH=        ; boolean\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1688
-#, fuzzy
 msgid ""
 "Due to technical constraints, these features do not work with electric "
 "bolts created from support weapon of [Ares' Prism Forwarding](https"
 "://ares-developers.github.io/Ares-"
-"docs/new/buildings/prismforwarding.html) or those from AirburstWeapon."
+"docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`."
 msgstr ""
 "由于技术限制，这不适用于 [Ares 中光棱塔递光武器](https://ares-developers.github.io/Ares-"
-"docs/new/buildings/prismforwarding.html) 所创建的 EBolt 效果。"
+"docs/new/buildings/prismforwarding.html) 或那些 `AirburstWeapon` 所创建的 EBolt "
+"效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:1691
 msgid "Single-color lasers"
