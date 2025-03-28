@@ -78,6 +78,9 @@ void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
 {
 	if (pTechno && pTechno->IsAlive)
 	{
+		if (pTechno->WhatAmI() != AbstractType::Unit)
+			return;
+
 		this->Owner = pTechno;
 		this->WeaponSlot = weaponIndex;
 
