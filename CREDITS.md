@@ -256,6 +256,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
+  - Customizable electric bolt duration and electric bolt-related fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption

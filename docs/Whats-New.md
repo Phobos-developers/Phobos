@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
 - Selecting weapons other than primary against walls based on `Wall=true` on Warhead etc. now requires `[CombatDamage] -> AllowWeaponSelectAgainstWalls` to be set to true first.
 - Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General] -> ApplyLunarFixes` set to true.
 - `Units.DisableRepairCost` was changed to `Units.UseRepairCost` (note inverted expected value) as it no longer has discrete default value and affects `Hospital=true` buildings, infantry do not have repair cost by default.
@@ -327,6 +328,7 @@ New:
 - No turret unit turn to the target (by CrimRecya & TaranDahl)
 - Damage multiplier for different houses (by CrimRecya)
 - Customizable duration for electric bolts (by Starkku)
+- Customizable FLH tracking for electric bolts (by Starkku)
 - Extended gattling rate down logic (by CrimRecya)
 - Sell or undeploy building on impact (by CrimRecya)
 - No rearm and reload in EMP or temporal (by CrimRecya)
@@ -624,6 +626,7 @@ Vanilla fixes:
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance (by Starkku)
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
+- Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
