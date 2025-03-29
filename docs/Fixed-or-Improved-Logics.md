@@ -1341,14 +1341,14 @@ KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
 
 - In vanilla, whether a ship sinks when it dies on the water is determined by multiple settings of hardcoding. The speed of the sinking is hardcoded to 5 Leptons per frame.
 - Now you can determine whether a ship sinks with a dedicated flag `Sinkable`, and use `SinkSpeed` to customize the speed at which the ship sinks.
-- `SinkableBySquid` controls the behavior of a ship when it is killed by a squid. Set it to `false` to cause the ship to take a lethal damage instead of sinking directly at that time (and thus obey `Sinkable` settings).
+- `Sinkable.SquidGrab` controls the behavior of a ship when it is killed by a squid. Set it to `false` to cause the ship to take a lethal damage instead of sinking directly at that time (and thus obey `Sinkable` settings).
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]           ; VehicleType
 Sinkable=               ; bool
 SinkSpeed=5             ; integer, lepton per frame
-SinkableBySquid=true    ; bool
+Sinkable.SquidGrab=true    ; bool
 ```
 
 ### Stationary vehicles

@@ -43,7 +43,7 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	auto pVictimType = pVictim->GetTechnoType();
 	auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictimType);
 
-	if (pVictimTypeExt->SinkableBySquid || pVictim->WhatAmI() != AbstractType::Unit)
+	if (pVictimTypeExt->Sinkable_SquidGrab || pVictim->WhatAmI() != AbstractType::Unit)
 	{
 		pVictim->IsSinking = true;
 		pVictim->Destroyed(pThis->Owner);
