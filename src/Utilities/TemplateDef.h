@@ -1493,7 +1493,7 @@ inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerFo
 	{
 		this->clear();
 		this->reserve(size);
-;
+
 		for (size_t i = 0; i < size; ++i)
 		{
 			bool value;

@@ -18,9 +18,7 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pTypeExt->IsPassable)
+	if (TerrainTypeExt::ExtMap.Find(pThis->Type)->IsPassable)
 		return Skip;
 
 	return 0;
@@ -38,11 +36,9 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
 		return 0;
 
-	if (pTarget->WhatAmI() == AbstractType::Terrain)
+	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type);
-
-		if (pTypeExt->IsPassable && !isForceFire)
+		if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable && !isForceFire)
 		{
 			R->EBP(Action::Move);
 			return ReturnAction;
@@ -78,9 +74,7 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 
 	if (auto const pTerrain = abstract_cast<TerrainClass*>(pTarget))
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-		if (pTypeExt->IsPassable)
+		if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
 			return SkipTerrainChecks;
 	}
 
@@ -162,9 +156,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
 	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-		if (pTypeExt->CanBeBuiltOn)
+		if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 			return ContinueChecks;
 
 		return DontDraw;
@@ -183,9 +175,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-			if (pTypeExt->CanBeBuiltOn)
+			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);

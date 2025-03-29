@@ -43,15 +43,17 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
-			const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade);
-			const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
-
-			for (auto i = 0; i < countUpgrade; ++i)
+			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade))
 			{
-				const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
 
-				if (idxSW == index)
-					return true;
+				for (auto i = 0; i < countUpgrade; ++i)
+				{
+					const auto idxSW = pUpgradeExt->GetSuperWeaponIndex(i, pThis->Owner);
+
+					if (idxSW == index)
+						return true;
+				}
 			}
 		}
 	}
