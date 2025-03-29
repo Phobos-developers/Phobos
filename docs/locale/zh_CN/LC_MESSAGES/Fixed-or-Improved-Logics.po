@@ -1245,13 +1245,13 @@ msgstr ""
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* now respect "
 "`Floater` and Phobos-added `Gravity` setting."
-msgstr "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器正常使用 `Floater` 与 Phobos 添加的 `Gravity` 功能。"
+msgstr "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器遵守 `Floater` 与 Phobos 添加的 `Gravity` 设定"
 
 #: ../../Fixed-or-Improved-Logics.md:204
 msgid ""
 "`IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no "
 "longer get stuck after deploying or play their move sound indefinitely."
-msgstr "拥有 Hover 运动模式的 `IsSimpleDeployer` 且 `DeployToLand` 的单位在部署后不再卡住或无限播放移动音效。"
+msgstr "拥有 Hover 运动模式的 `IsSimpleDeployer` 且 `DeployToLand` 的单位在部署后不再会卡住或无限播放移动音效。"
 
 #: ../../Fixed-or-Improved-Logics.md:205
 msgid ""
