@@ -129,7 +129,13 @@ void MissileTrajectory::OnUnlimbo()
 bool MissileTrajectory::OnEarlyUpdate()
 {
 	// No need to wait for the calculation of lead time
-	return this->PhobosTrajectory::OnEarlyUpdate();
+	if (this->PhobosTrajectory::OnEarlyUpdate())
+		return true;
+	// Restore ProjectileRange
+	if (!this->Type->UniqueCurve)
+		this->CheckProjectileRange();
+	// Waiting for new location calculated
+	return false;
 }
 
 bool MissileTrajectory::OnVelocityCheck()

@@ -120,7 +120,11 @@ void BulletTypeExt::ExtData::TrajectoryValidation() const
 			pThis->Arm = 0;
 
 		if (pThis->Ranged) // 0x467C1C
+		{
 			pThis->Ranged = false;
+			// To avoid inappropriate behavior, this will only apply to ProjectileRange
+			pTrajType->Ranged = true;
+		}
 
 		const auto flag = pTrajType->Flag();
 

@@ -85,8 +85,13 @@ bool ActualTrajectory::OnEarlyUpdate()
 {
 	if (this->WaitOneFrame && this->BulletPrepareCheck())
 		return false;
-
-	return this->PhobosTrajectory::OnEarlyUpdate();
+	// Check whether need to detonate first
+	if (this->PhobosTrajectory::OnEarlyUpdate())
+		return true;
+	// Restore ProjectileRange
+	this->CheckProjectileRange();
+	// Waiting for new location calculated
+	return false;
 }
 
 void ActualTrajectory::OnPreDetonate()

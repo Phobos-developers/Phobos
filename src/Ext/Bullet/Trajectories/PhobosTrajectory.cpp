@@ -800,13 +800,13 @@ void PhobosTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->RecordSourceCoord.Read(exINI, pSection, "Trajectory.RecordSourceCoord");
 
 	this->PassDetonate.Read(exINI, pSection, "Trajectory.PassDetonate");
+	this->PassDetonateLocal.Read(exINI, pSection, "Trajectory.PassDetonateLocal");
 	this->PassDetonateWarhead.Read<true>(exINI, pSection, "Trajectory.PassDetonateWarhead");
 	this->PassDetonateDamage.Read(exINI, pSection, "Trajectory.PassDetonateDamage");
 	this->PassDetonateDelay.Read(exINI, pSection, "Trajectory.PassDetonateDelay");
 	this->PassDetonateDelay = Math::max(1, this->PassDetonateDelay);
 	this->PassDetonateInitialDelay.Read(exINI, pSection, "Trajectory.PassDetonateInitialDelay");
 	this->PassDetonateInitialDelay = Math::max(0, this->PassDetonateInitialDelay);
-	this->PassDetonateLocal.Read(exINI, pSection, "Trajectory.PassDetonateLocal");
 	this->ProximityImpact.Read(exINI, pSection, "Trajectory.ProximityImpact");
 	this->ProximityWarhead.Read<true>(exINI, pSection, "Trajectory.ProximityWarhead");
 	this->ProximityDamage.Read(exINI, pSection, "Trajectory.ProximityDamage");
@@ -873,13 +873,14 @@ void PhobosTrajectoryType::Serialize(T& Stm)
 		.Process(this->ApplyRangeModifiers)
 		.Process(this->UseDisperseCoord)
 		.Process(this->RecordSourceCoord)
+		.Process(this->Ranged)
 
 		.Process(this->PassDetonate)
+		.Process(this->PassDetonateLocal)
 		.Process(this->PassDetonateWarhead)
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateDelay)
 		.Process(this->PassDetonateInitialDelay)
-		.Process(this->PassDetonateLocal)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityWarhead)
 		.Process(this->ProximityDamage)

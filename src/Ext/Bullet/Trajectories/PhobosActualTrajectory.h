@@ -57,6 +57,18 @@ public:
 	virtual void OnPreDetonate() override;
 	virtual void FireTrajectory() { this->OpenFire(); } // New
 
+	inline void CheckProjectileRange()
+	{
+		if (this->GetType()->Ranged)
+		{
+			const auto pBullet = this->Bullet;
+			pBullet->Range -= Game::F2I(this->MovingSpeed);
+
+			if (pBullet->Range <= 0)
+				this->ShouldDetonate = true;
+		}
+	}
+
 	bool BulletPrepareCheck();
 	CoordStruct GetOnlyStableOffsetCoords(double rotateRadian);
 	CoordStruct GetInaccurateTargetCoords(const CoordStruct& baseCoord, double distance);
