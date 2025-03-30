@@ -65,7 +65,7 @@ msgid ""
 "Fixed non-IME keyboard input to be working correctly for languages / "
 "keyboard layouts that use character ranges other than Basic Latin and "
 "Latin-1 Supplement (font support required)."
-msgstr "修复了非输入法键盘输入以使基础拉丁或拉丁-1以外的语言或键盘布局可以正常工作。"
+msgstr "修复了非输入法键盘输入以使基础拉丁或拉丁 -1 以外的语言／键盘布局可以正常工作。"
 
 #: ../../User-Interface.md:11
 msgid ""
@@ -668,7 +668,7 @@ msgstr "`[ ]` 下一个空闲矿车"
 msgid ""
 "Selects and centers the camera on the next TechnoType that is counted via"
 " the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的科技类型。"
+msgstr "选择并将镜头中心转移到下一个被 [矿车计数器](#harvester-counter) 计入且处于空闲状态的科技类型。"
 
 #: ../../User-Interface.md:316
 msgid ""
@@ -1023,7 +1023,7 @@ msgstr "你可以通过 `Sidebar.WeedsCounter.Offset`（每个阵营的设置）
 msgid ""
 "Counter is by default displayed in side's tooltip color, which can be "
 "overridden per side by setting `Sidebar.WeedsCounter.Color`."
-msgstr "计数器默认为每个阵营工具条的颜色，可以通过设置 `Sidebar.WeedsCounter.Color` 来为每个阵营独立覆盖设置。"
+msgstr "计数器默认为每个阵营拓展工具条的颜色，可以通过设置 `Sidebar.WeedsCounter.Color` 来为每个阵营独立覆盖设置。"
 
 #: ../../User-Interface.md:498
 msgid ""
@@ -1039,7 +1039,7 @@ msgstr "默认的废矿计数器位置与[矿车计数器](#harvester-counter)�
 
 #: ../../User-Interface.md:523
 msgid "Tooltips"
-msgstr "工具条"
+msgstr "拓展工具条"
 
 #: ../../User-Interface.md:525
 msgid ""
@@ -1047,7 +1047,7 @@ msgid ""
 " Final War](https://www.moddb.com/mods/cncfinalwar)*"
 msgstr ""
 "![image](_static/images/tooltips-01.png) *[CnC: Final "
-"War](https://www.moddb.com/mods/cncfinalwar) 中的拓展工具条*"
+"War](https://www.moddb.com/mods/cncfinalwar) 中的拓展拓展工具条*"
 
 #: ../../User-Interface.md:528
 msgid ""
@@ -1056,20 +1056,20 @@ msgid ""
 "character limit is lifted when the feature is enabled via the "
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr ""
-"现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
-" 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
+"现在当鼠标悬停在图标上时侧边栏拓展工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
+" 1024 字符长度的工具提示信息。"
 
 #: ../../User-Interface.md:529
 msgid ""
 "TechnoType's tooltip would display it's name, cost, power, build time and"
 " description (when applicable)."
-msgstr "科技类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
+msgstr "科技类型的拓展工具条将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
 #: ../../User-Interface.md:530
 msgid ""
 "SWType's tooltip would display it's name, cost,  and recharge time (when "
 "applicable)."
-msgstr "超级武器类型的工具提示将显示其名称、成本和 CD（如果适用）。"
+msgstr "超级武器类型的拓展工具条将显示其名称、成本和充能时间（如果适用）。"
 
 #: ../../User-Interface.md:531
 #, python-format
@@ -1089,29 +1089,29 @@ msgid ""
 " (displayed before correspoding values) with the corresponding tags. "
 "Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default."
 msgstr ""
-"拓展工具提示条不会使用 `TXT_MONEY_FORMAT_1` 和 "
-"`TXT_MONEY_FORMAT_2`。你可以使用相应的标签指定成本、电力和时间标签（在对应值前显示）。默认为 `$ U+0024`，`⚡ "
+"拓展拓展工具条不会使用 `TXT_MONEY_FORMAT_1` 和 "
+"`TXT_MONEY_FORMAT_2`。但你可以使用对应的标签指定成本、电力和时间标签（在对应值前显示）。默认为 `$ U+0024`，`⚡ "
 "U+26A1` 和 `⌚ U+231A`。"
 
 #: ../../User-Interface.md:533
 msgid ""
 "Fixed a bug when switching build queue tabs via QWER didn't make tooltips"
 " disappear as they should, resulting in stuck tooltips."
-msgstr "修复了一个通过 QWER 切换建造队列标签时工具提示没有消失的问题，这导致工具提示卡住。"
+msgstr "修复了一个通过 QWER 切换建造队列标签时拓展工具条没有消失的问题，这导致拓展工具条卡住。"
 
 #: ../../User-Interface.md:534
 msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
 "are excluded from the number you specify)."
-msgstr "现在工具提示条可以超出侧边栏边界以容纳更长的内容。您可以使用新增的标签控制最大文本宽度（不包括边框）。"
+msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。您可以使用新增的标签控制最大文本宽度（不包括边框）。"
 
 #: ../../User-Interface.md:535
 msgid ""
 "`AnchoredToolTips` positions the tooltip always to the left of sidebar, "
 "only applies to if `ExtendedToolTips` is set to true and they are enabled"
 " in user settings."
-msgstr "`AnchoredToolTips` 将工具提示始终定到侧边栏左侧，仅在 `ExtendedToolTips` 设置为 true 且用户启用时生效。"
+msgstr "`AnchoredToolTips` 将拓展工具条始终定到侧边栏左侧，仅在 `ExtendedToolTips` 设置为 true 且用户启用时生效。"
 
 #: ../../User-Interface.md:555
 msgid ""
@@ -1133,7 +1133,7 @@ msgstr ""
 msgid ""
 "The background color and opacity of tooltips can now be customized "
 "globally or per side."
-msgstr "现在可以全局或按阵营自定义工具提示的背景色和不透明度。"
+msgstr "现在可以全局或按阵营自定义拓展工具条的背景色和不透明度。"
 
 #: ../../User-Interface.md:578
 msgid ""

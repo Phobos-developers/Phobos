@@ -2041,22 +2041,22 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:755
 msgid "Projectiles blocked by land or water"
-msgstr "SubjectToLand/Water"
+msgstr "SubjectTo(Land/Water)"
 
 #: ../../New-or-Enhanced-Logics.md:757
 msgid ""
 "It is now possible to make projectiles consider either land or water as "
-"obstacles that block their path by setting `SubjectToLand/Water` to true,"
+"obstacles that block their path by setting `SubjectTo(Land/Water)` to true,"
 " respectively. Weapons firing such projectiles will consider targets "
 "blocked by such obstacles as out of range and will attempt to reposition "
 "themselves so they can fire without being blocked by the said obstacles "
-"before firing and if `SubjectToLand/Water.Detonate` is set to true, the "
+"before firing and if `SubjectTo(Land/Water).Detonate` is set to true, the "
 "projectiles will detonate if they somehow manage to collide with the said"
 " obstacles."
 msgstr ""
-"现在可以通过将 `SubjectToLand/Water` 分别设为 true "
+"现在可以通过将 `SubjectTo(Land/Water)` 分别设为 true "
 "以使抛射体将陆地或水域视为阻挡其路径的障碍物。发射此类抛射体的武器将把这些障碍物阻挡的目标视为超出射程并尝试重新移动自己的位置以便在不受这些障碍阻挡的情况下开火。如果"
-" `SubjectToLand/Water.Detonate` 设置为 true，那么抛射体设法与上述障碍交叠时将会爆炸。"
+" `SubjectTo(Land/Water).Detonate` 设置为 true，那么抛射体设法与上述障碍交叠时将会爆炸。"
 
 #: ../../New-or-Enhanced-Logics.md:758
 msgid ""
@@ -2220,7 +2220,7 @@ msgstr "自定义超级武器所在栏"
 msgid ""
 "You can now assign a Super Weapon's cameo to any sidebar tab using "
 "`TabIndex`."
-msgstr "现在你可以通过 `TabIndex` 将超级武器的图标分配到任何侧边栏标签下。"
+msgstr "现在你可以通过 `TabIndex` 将超级武器的图标分配到侧边栏的任意标签页下。"
 
 #: ../../New-or-Enhanced-Logics.md:853
 msgid ""
