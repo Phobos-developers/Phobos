@@ -1596,10 +1596,10 @@ msgstr ""
 #: ../../Whats-New.md:441
 msgid ""
 "In addition to `PlacementGrid.Translucency`, allow to set the "
-"transparency of the grid when PlacementPreview is enabled, using the "
+"transparency of the grid when `PlacementPreview` is enabled, using the "
 "`PlacementGrid.TranslucencyWithPreview` tag (by Belonit)"
 msgstr ""
-"除 `PlacementGrid.Translucency` 外允许在启用 PlacementPreview 时使用 `PlacementGrid.TranslucencyWithPreview` 设置预览格子的透明度（by Belonit）"
+"除 `PlacementGrid.Translucency` 外允许在启用 `PlacementPreview` 时使用 `PlacementGrid.TranslucencyWithPreview` 设置预览格子的透明度（by Belonit）"
 
 #: ../../Whats-New.md:442
 msgid "Show briefing screen on singleplayer mission start (by Starkku)"
