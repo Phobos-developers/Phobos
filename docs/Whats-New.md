@@ -346,6 +346,7 @@ New:
 - Projectile subject to ground check before firing (by CrimRecya)
 - Delay automatic attack on the controlled unit (by CrimRecya)
 - `BombParachute` deglobalization (by TaranDahl)
+- Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
