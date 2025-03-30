@@ -1245,6 +1245,8 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
 
 #pragma endregion
 
+DEFINE_JUMP(LJMP, 0x43C38D, 0x43C3FF); // If no Ares
+
 #pragma region TeamCloseRangeFix
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
