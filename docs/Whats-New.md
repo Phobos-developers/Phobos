@@ -418,7 +418,7 @@ New:
 - Extra warhead detonations on weapon (by Starkku)
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
-- Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
+- Customizable ElectricBolt Arcs (by Fryone & Kerbiter)
 - Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, based on knowledge of DeathFish)
 - PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - Auto-deploy/Deploy block on ammo change (by Fryone)
@@ -496,7 +496,7 @@ New:
 - Customizing height and speed at which subterranean units travel (by Starkku)
 - Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
 - Option for Warhead to remove all shield types at once (by Starkku)
-- Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
+- Allow customizing voxel light source position (by Kerbiter & Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
 - AI superweapon delay timer customization (by Starkku)
 - Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)
@@ -729,7 +729,7 @@ Phobos fixes:
   <summary>Click to show<br>点击展开</summary>
 
 New:
-- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
+- LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize `DestroyAnim` (by Otamaa)
 - Shield modification warheads (by Starkku)
 - Shield BreakWeapon & InitialStrength (by Starkku)
@@ -829,7 +829,7 @@ New:
 - For developers: now you can use command line arg to control main exception handler (by Multfinite)
 
 Vanilla fixes:
-- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter & ChrisLv_CN)
 - Fixed `DeathWeapon` not detonating properly (by Uranusian)
 - Fixed lasers & other effects drawing from wrong offset with weapons that use `Burst` (by Starkku)
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
@@ -988,7 +988,7 @@ New:
 - Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, Erzoid/SukaHati)
 - Customizable harvester active/total counter next to credits counter (by Uranusian)
 - Select Next Idle Harvester hotkey command (by Kerbiter)
-- Dump Object Info hotkey command (by secsome, FS-21)
+- Dump Object Info hotkey command (by secsome & FS-21)
 - Remove Disguise and Remove Mind Control warhead effects (by secsome)
 - Custom per-warhead `SplashLists` (by Uranusian)
 - `AnimList.PickRandom` used to randomize `AnimList` with no side effects (by secsome)
@@ -1006,7 +1006,7 @@ New:
 - Customizeable Missing Cameo file (by Uranusian)
 
 Vanilla fixes:
-- Map previews with zero size won't crash the game anymore (by Kerbiter, Belonit)
+- Map previews with zero size won't crash the game anymore (by Kerbiter & Belonit)
 - Tileset 255+ bridge fix (by E1 Elite)
 - Fixed fatal errors when `Blowfish.dll` couldn't be registered in the system properly due to missing admin rights (by Belonit)
 - Fix to take Burst into account for aircraft weapon shots beyond the first one (by Starkku)
@@ -1043,13 +1043,13 @@ Phobos fixes:
 New:
 - Full-color PCX graphics support (by Belonit)
 - Support for PCX loading screens of any size (by Belonit)
-- Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter, Belonit)
+- Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter & Belonit)
 - Selection priority filtering for box selection (by Kerbiter)
 - Shroud, reveal and money transact warheads (by Belonit)
 - Custom game icon command line arg (by Belonit)
 - Ability to disable black spawn position dots on map preview (by Belonit)
 - Ability to specify applicable building owner for building upgrades (by Kerbiter)
-- Customizable disk laser radius (by Belonit, Kerbiter)
+- Customizable disk laser radius (by Belonit & Kerbiter)
 - Ability to switch to GDI sidebar layout for any side (by Belonit)
 
 Vanilla fixes:
