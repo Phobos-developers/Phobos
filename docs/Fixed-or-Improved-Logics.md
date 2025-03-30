@@ -197,7 +197,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
 - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own.
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
-- Fixed an issue that Spawner cannot retract its spawned aircraft when on the bridge.
+- Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
 
 ## Fixes / interactions with other extensions
 
