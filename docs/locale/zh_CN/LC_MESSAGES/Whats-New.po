@@ -1064,7 +1064,7 @@ msgstr "设置载具在发出移动命令时是否保持目标（by Starkku）"
 
 #: ../../Whats-New.md:321
 msgid "Skip anim delay for burst fire (by TaranDahl)"
-msgstr "为 Burst 武器跳过建筑开火前摇动画（by TaranDahl）"
+msgstr "为有 `Burst` 的武器跳过建筑开火前摇动画（by TaranDahl）"
 
 #: ../../Whats-New.md:322
 msgid "New Parabola trajectory (by CrimRecya)"

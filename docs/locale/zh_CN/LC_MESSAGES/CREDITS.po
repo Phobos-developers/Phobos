@@ -1701,7 +1701,7 @@ msgstr "`RepairBaseNodes` 的全局值"
 
 #: ../../../CREDITS.md:432
 msgid "Skip anim delay for burst fire"
-msgstr "为 Burst 武器跳过建筑开火前摇动画"
+msgstr "为有 `Burst` 的武器跳过建筑开火前摇动画"
 
 #: ../../../CREDITS.md:433
 msgid "Type select for buildings (code)"
