@@ -95,23 +95,23 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
 {
-	const auto pCell = MapClass::Instance->TryGetCellAt(Cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(Cell);
 
 	if (!pCell)
 		return;
 
-	auto const pThis = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 
-	auto const pWeapon = pThis->GetWeaponType();
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	auto const pRadType = pWeaponExt->RadType;
-	auto const pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
+	const auto pWeapon = pThis->GetWeaponType();
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pRadType = pWeaponExt->RadType;
+	const auto pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 
-	auto const it = std::find_if(pCellExt->RadSites.cbegin(), pCellExt->RadSites.cend(),
-		[=](auto const pSite)
+	const auto it = std::find_if(pCellExt->RadSites.cbegin(), pCellExt->RadSites.cend(),
+		[=](const auto pSite)
 		{
-			auto const pRadExt = RadSiteExt::ExtMap.Find(pSite);
+			const auto pRadExt = RadSiteExt::ExtMap.Find(pSite);
 
 			if (pRadExt->Type != pRadType || pWeapon != pRadExt->Weapon)
 				return false;
@@ -128,7 +128,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
 			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
 
-		auto const pRadExt = RadSiteExt::ExtMap.Find((*it));
+		const auto pRadExt = RadSiteExt::ExtMap.Find((*it));
 		// Handle It
 		pRadExt->Add(RadLevel);
 		return;

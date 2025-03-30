@@ -31,14 +31,14 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 	GET(BulletClass* const, pThis, ESI);
 	GET_BASE(CoordStruct const*, pCoords, 0x8);
 
-	auto const pWeapon = pThis->GetWeaponType();
+	const auto pWeapon = pThis->GetWeaponType();
 
 	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance->IsWithinUsableArea((*pCoords)))
 	{
-		auto const pExt = BulletExt::ExtMap.Find(pThis);
-		auto const pWH = pThis->WH;
-		auto const cell = CellClass::Coord2Cell(*pCoords);
-		auto const spread = Game::F2I(pWH->CellSpread);
+		const auto pExt = BulletExt::ExtMap.Find(pThis);
+		const auto pWH = pThis->WH;
+		const auto cell = CellClass::Coord2Cell(*pCoords);
+		const auto spread = Game::F2I(pWH->CellSpread);
 
 		pExt->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
 	}
@@ -60,17 +60,17 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 
 	GET(InfantryClass*, pInfantry, ESI);
 	GET(int, weaponRadLevel, EBX);
-	auto const pCell = pInfantry->GetCell();
-	auto const pCellExt = CellExt::ExtMap.Find(pCell);
+	const auto pCell = pInfantry->GetCell();
+	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 	int radLevel = 0;
 
 	if (!pCellExt->RadSites.empty())
 	{
-		if (auto const pWeapon = pInfantry->GetDeployWeapon()->WeaponType)
+		if (const auto pWeapon = pInfantry->GetDeployWeapon()->WeaponType)
 		{
-			auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-			auto const pRadType = pWeaponExt->RadType;
-			auto const warhead = pWeapon->Warhead;
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+			const auto pRadType = pWeaponExt->RadType;
+			const auto warhead = pWeapon->Warhead;
 
 			for (const auto radSite : pCellExt->RadSites)
 			{
@@ -92,7 +92,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 {
 	GET(InfantryClass* const, pThis, ESI);
 
-	auto const pWeapon = pThis->GetDeployWeapon()->WeaponType;
+	const auto pWeapon = pThis->GetDeployWeapon()->WeaponType;
 	AbstractClass* pTarget = nullptr; //default WWP nullptr
 
 	if (pWeapon
@@ -129,7 +129,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 		return 0;
 	}
 
-	auto const buildingCoords = pBuilding->GetMapCoords();
+	const auto buildingCoords = pBuilding->GetMapCoords();
 	std::unordered_map<RadSiteClass*, int> damageCounts;
 
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
@@ -147,7 +147,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			if (radLevel <= 0)
 				continue;
 
-			auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
+			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 			RadTypeClass* pType = pRadExt->Type;
 			int maxDamageCount = pType->GetBuildingDamageMaxCount();
 
@@ -194,16 +194,16 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
 		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
-		if (auto const pCell = pFoot->GetCell())
+		if (const auto pCell = pFoot->GetCell())
 		{
-			auto const pCellExt = CellExt::ExtMap.Find(pCell);
+			const auto pCellExt = CellExt::ExtMap.Find(pCell);
 
 			for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 			{
 				if (radLevel <= 0)
 					continue;
 
-				auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
+				const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 				RadTypeClass* pType = pRadExt->Type;
 
 				if (!pType->GetWarhead())
@@ -241,9 +241,9 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 DEFINE_HOOK(65B593, RadSiteClass_Activate_Delay, 6)
 {
 	GET(RadSiteClass* const, pThis, ECX);
-	auto const pExt = RadSiteExt::ExtMap.Find(pThis);
+	const auto pExt = RadSiteExt::ExtMap.Find(pThis);
 
-	auto const currentLevel = pThis->GetRadLevel();
+	const auto currentLevel = pThis->GetRadLevel();
 	auto levelDelay = pExt->Type->GetLevelDelay();
 	auto lightDelay = pExt->Type->GetLightDelay();
 

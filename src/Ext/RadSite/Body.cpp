@@ -15,7 +15,7 @@ void RadSiteExt::ExtData::Initialize()
 
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
 {
-	auto const pWarhead = this->Type->GetWarhead();
+	const auto pWarhead = this->Type->GetWarhead();
 
 	if (!this->Type->GetWarheadDetonate())
 	{
@@ -30,7 +30,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 		}
 		else
 		{
-			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
 		}
 
@@ -45,7 +45,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
-	auto const pRadSite = GameCreate<RadSiteClass>();
+	const auto pRadSite = GameCreate<RadSiteClass>();
 	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
@@ -108,9 +108,9 @@ void RadSiteExt::ExtData::CreateLight()
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
 	}
-	else if (auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
+	else if (const auto pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
 	{
-		auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
+		const auto pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
 		pThis->LightSource = pLight;
 		pLight->DetailLevel = 0;
 		pLight->Activate(update);
@@ -123,7 +123,7 @@ void RadSiteExt::ExtData::CreateLight()
 void RadSiteExt::ExtData::Add(int amount)
 {
 	const auto pThis = this->OwnerObject();
-	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
+	const auto RadExt = RadSiteExt::ExtMap.Find(pThis);
 	int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
 	pThis->Deactivate();
 	pThis->RadLevel = value + amount;
