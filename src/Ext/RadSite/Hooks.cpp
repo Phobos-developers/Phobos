@@ -33,7 +33,7 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 
 	auto const pWeapon = pThis->GetWeaponType();
 
-	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance->IsWithinUsableArea((*pCoords)))
+	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance.IsWithinUsableArea((*pCoords)))
 	{
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
 		auto const pWH = pThis->WH;
@@ -105,7 +105,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
 		pThis->CloakDelayTimer.Start(nDeployFrame);
 
-		pTarget = MapClass::Instance->TryGetCellAt(pThis->GetCoords());
+		pTarget = MapClass::Instance.TryGetCellAt(pThis->GetCoords());
 	}
 
 	pThis->SetTarget(pTarget); //Here we go
