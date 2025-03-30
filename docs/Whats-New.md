@@ -99,7 +99,7 @@ HideLightFlashEffects=false      ; boolean
 ### For Map Editor (Final Alert 2)
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
   In `FAData.ini`:
   ```ini
@@ -309,7 +309,7 @@ HideLightFlashEffects=false      ; boolean
 ### 0.4
 
 <details open>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
@@ -641,7 +641,7 @@ Fixes / interactions with other extensions:
 ### 0.3.0.1
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
@@ -672,7 +672,7 @@ Phobos fixes:
 ### 0.3
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 New:
 - LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
@@ -850,7 +850,7 @@ Non-DLL:
 ### 0.2.2.2
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 Phobos fixes:
 - Fixed shield type info not saving properly (by Uranusian)
@@ -863,7 +863,7 @@ Phobos fixes:
 ### 0.2.2.1
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 Phobos fixes:
 - Fixed random crashes about `CameoPriority` (by Uranusian)
@@ -878,7 +878,7 @@ Phobos fixes:
 ### 0.2.2
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
@@ -898,7 +898,7 @@ Phobos fixes:
 ### 0.2.1.1
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 Phobos fixes:
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
@@ -908,7 +908,7 @@ Phobos fixes:
 ### 0.2.1
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
@@ -925,7 +925,7 @@ Phobos fixes:
 ### 0.2
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 New:
 - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
@@ -975,7 +975,7 @@ Phobos fixes:
 ### 0.1.1
 
 <details>
-  <summary>Click to show</summary>
+  <summary>Click to show<br>点击展开</summary>
 
 Phobos fixes:
 - Fixed an occasional crash when selecting units with a selection box (by Kerbiter)
@@ -985,7 +985,7 @@ Phobos fixes:
 ### 0.1
 
 <details>
-<summary>Click to show</summary>
+<summary>Click to show<br>点击展开</summary>
 
 New:
 - Full-color PCX graphics support (by Belonit)
