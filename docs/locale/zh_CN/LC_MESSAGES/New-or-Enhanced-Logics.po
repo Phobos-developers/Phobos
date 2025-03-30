@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-17 21:13+0800\n"
+"POT-Creation-Date: 2025-03-29 01:17+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -605,7 +605,7 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:1650 ../../New-or-Enhanced-Logics.md:1661
 #: ../../New-or-Enhanced-Logics.md:1675 ../../New-or-Enhanced-Logics.md:1691
 #: ../../New-or-Enhanced-Logics.md:1706 ../../New-or-Enhanced-Logics.md:1723
-#: ../../New-or-Enhanced-Logics.md:1745 ../../New-or-Enhanced-Logics.md:1762
+#: ../../New-or-Enhanced-Logics.md:1746 ../../New-or-Enhanced-Logics.md:1764
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -625,7 +625,7 @@ msgstr "![image](_static/images/radtype-01.png) *混合起来的多种辐射类�
 #: ../../New-or-Enhanced-Logics.md:1295 ../../New-or-Enhanced-Logics.md:1408
 #: ../../New-or-Enhanced-Logics.md:1501 ../../New-or-Enhanced-Logics.md:1539
 #: ../../New-or-Enhanced-Logics.md:1717 ../../New-or-Enhanced-Logics.md:1735
-#: ../../New-or-Enhanced-Logics.md:1756
+#: ../../New-or-Enhanced-Logics.md:1758
 msgid "image"
 msgstr "图像"
 
@@ -2009,8 +2009,8 @@ msgid ""
 " to make the projectile 'snap' on the intended target. Set to 0 to "
 "disable snapping."
 msgstr ""
-"`Trajectory.Straight.TargetSnapDistance` "
-"控制抛射体在引爆时与目标的最大距离以使抛射体在引爆时 “瞬移” 到目标。设为 0 将禁用瞬移。"
+"`Trajectory.Straight.TargetSnapDistance` 控制抛射体在引爆时与目标的最大距离以使抛射体在引爆时 “瞬移” "
+"到目标。设为 0 将禁用瞬移。"
 
 #: ../../New-or-Enhanced-Logics.md:732
 msgid ""
@@ -2041,22 +2041,22 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:755
 msgid "Projectiles blocked by land or water"
-msgstr "SubjectToLand/Water"
+msgstr "SubjectTo(Land/Water)"
 
 #: ../../New-or-Enhanced-Logics.md:757
 msgid ""
 "It is now possible to make projectiles consider either land or water as "
-"obstacles that block their path by setting `SubjectToLand/Water` to true,"
+"obstacles that block their path by setting `SubjectTo(Land/Water)` to true,"
 " respectively. Weapons firing such projectiles will consider targets "
 "blocked by such obstacles as out of range and will attempt to reposition "
 "themselves so they can fire without being blocked by the said obstacles "
-"before firing and if `SubjectToLand/Water.Detonate` is set to true, the "
+"before firing and if `SubjectTo(Land/Water).Detonate` is set to true, the "
 "projectiles will detonate if they somehow manage to collide with the said"
 " obstacles."
 msgstr ""
-"现在可以通过将 `SubjectToLand/Water` 分别设为 true "
+"现在可以通过将 `SubjectTo(Land/Water)` 分别设为 true "
 "以使抛射体将陆地或水域视为阻挡其路径的障碍物。发射此类抛射体的武器将把这些障碍物阻挡的目标视为超出射程并尝试重新移动自己的位置以便在不受这些障碍阻挡的情况下开火。如果"
-" `SubjectToLand/Water.Detonate` 设置为 true，那么抛射体设法与上述障碍交叠时将会爆炸。"
+" `SubjectTo(Land/Water).Detonate` 设置为 true，那么抛射体设法与上述障碍交叠时将会爆炸。"
 
 #: ../../New-or-Enhanced-Logics.md:758
 msgid ""
@@ -2131,7 +2131,7 @@ msgstr "超级武器"
 
 #: ../../New-or-Enhanced-Logics.md:802
 msgid "AI Superweapon delay timer"
-msgstr "AI 超级武器延迟"
+msgstr "AI 超级武器发射延迟"
 
 #: ../../New-or-Enhanced-Logics.md:804
 msgid ""
@@ -2220,7 +2220,7 @@ msgstr "自定义超级武器所在栏"
 msgid ""
 "You can now assign a Super Weapon's cameo to any sidebar tab using "
 "`TabIndex`."
-msgstr "现在你可以通过 `TabIndex` 将超级武器的图标分配到任何侧边栏标签下。"
+msgstr "现在你可以通过 `TabIndex` 将超级武器的图标分配到侧边栏的任意标签页下。"
 
 #: ../../New-or-Enhanced-Logics.md:853
 msgid ""
@@ -2887,7 +2887,7 @@ msgid ""
 "`EVA.Sold` is used to customize the EVA voice when selling, default to "
 "`EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles."
 msgstr ""
-"`EVA.Sold` 用于自定义出售时的 EVA 语音，简直默认为 `EVA_StructureSold` 载具默认为 "
+"`EVA.Sold` 用于自定义出售时的 EVA 语音，建筑默认为 `EVA_StructureSold` 载具默认为 "
 "`EVA_UnitSold`。"
 
 #: ../../New-or-Enhanced-Logics.md:1117
@@ -3511,7 +3511,7 @@ msgstr ""
 msgid ""
 "`Crit.Warhead` can be used to set a Warhead to detonate instead of using "
 "current Warhead."
-msgstr "`Crit.Warhead` 可用于设置一个用于替代当前弹头引爆的弹头。"
+msgstr "`Crit.Warhead` 可用于设置一个替代当前弹头引爆的弹头。"
 
 #: ../../New-or-Enhanced-Logics.md:1425
 msgid ""
@@ -4222,6 +4222,21 @@ msgstr "`Strafing.UseAmmoPerShot` 如果设为 `true` 将在每次开火后都�
 
 #: ../../New-or-Enhanced-Logics.md:1743
 msgid ""
+"`Strafing.EndDelay` can be used to override the delay after firing last "
+"shot in strafing run before aircraft resumes another strafing run or "
+"returns to base. Defaults to (Weapon `Range` * 256 + 1024) / Aircraft "
+"`Speed`. Note that using a short delay with aircraft that can do multiple"
+" strafing runs with their ammo can cause undesired behaviour like dancing"
+" around or facing weird way depending on other factors like ROF and/or "
+"movement speed."
+msgstr ""
+"`Strafing.EndDelay` 可用于覆盖战机在扫射过程中射出最后一发后进行另一轮扫射或返航前的时间间隔。默认为 "
+"(`[WeaponType] -> Range` * 256 + 1024) / `[AircraftType] -> "
+"Speed`。注意对于弹药量足够进行多次扫射的战机而言过短的间隔可能导致并不理想的行为例如四处游走或朝向怪异的方向，具体取决于 "
+"`[WeaponType] -> ROF` 和／或 `[AircraftType] -> Speed` 等其他因素。"
+
+#: ../../New-or-Enhanced-Logics.md:1744
+msgid ""
 "There is a special case for aircraft spawned by `Type=SpyPlane` "
 "superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where "
 "`Strafing.Shots` only if explicitly set on its primary weapon, determines"
@@ -4231,11 +4246,11 @@ msgstr ""
 "对于 `Type=SpyPlane` 超级武器生成的战机在 `SpyPlane Approach` 或 `SpyPlane Overfly` "
 "任务中的情况 `Strafing.Shots` 只有在其主武器上手动设置才会生效并决定地图揭示效果的最大次数而无视其他因素。"
 
-#: ../../New-or-Enhanced-Logics.md:1754
+#: ../../New-or-Enhanced-Logics.md:1756
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 
-#: ../../New-or-Enhanced-Logics.md:1756
+#: ../../New-or-Enhanced-Logics.md:1758
 msgid ""
 "![image](_static/images/weaponfilter.gif) *`Weapon target filter - "
 "different weapon used against enemies & allies as well as units & "
@@ -4246,16 +4261,17 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的武器瞄准筛选 - "
 "就像分别对单位和建筑使用那样对敌军和友军使用不同武器*"
 
-#: ../../New-or-Enhanced-Logics.md:1759
+#: ../../New-or-Enhanced-Logics.md:1761
 msgid ""
 "You can now specify which targets or houses a weapon can fire at. This "
 "also affects weapon selection, other than certain special cases where the"
 " selection is fixed."
 msgstr "现在你可以指定武器可以开火的目标或所属方。这还会影响武器选择，除了某些特殊情况下的固定选择。"
 
-#: ../../New-or-Enhanced-Logics.md:1760
+#: ../../New-or-Enhanced-Logics.md:1762
 msgid ""
 "Note that `CanTarget` explicitly requires either `all` or `empty` to be "
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
 msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
+

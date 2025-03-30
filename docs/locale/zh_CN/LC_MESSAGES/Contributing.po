@@ -28,9 +28,8 @@ msgid ""
 msgstr "此页面介绍了协助或为 Phobos 项目做出贡献的方法，并列出了项目中所用的贡献指南。"
 
 #: ../../Contributing.md:5
-#, fuzzy
 msgid "Guidelines for contributors"
-msgstr "贡献类型"
+msgstr "对贡献者的指导"
 
 #: ../../Contributing.md:7
 msgid "Project structure"
