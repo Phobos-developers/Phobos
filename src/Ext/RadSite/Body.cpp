@@ -146,8 +146,8 @@ void RadSiteExt::ExtData::SetRadLevel(int amount)
 double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
 	const auto pThis = this->OwnerObject();
-	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
-	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	const auto base = MapClass::Instance.GetCellAt(pThis->BaseCell)->GetCoords();
+	const auto coords = MapClass::Instance.GetCellAt(cell)->GetCoords();
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
 	double radLevel = pThis->RadLevel;
@@ -208,7 +208,7 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 	GET(RadSiteClass*, pThis, ESI);
 
 	RadSiteExt::ExtMap.TryAllocate(pThis, pThis->WhatAmI() == AbstractType::RadSite, "Attempted to allocate RadSiteExt from unknown pointer!");
-	PointerExpiredNotification::NotifyInvalidObject->Add(pThis);
+	PointerExpiredNotification::NotifyInvalidObject.Add(pThis);
 
 	return 0;
 }
@@ -241,7 +241,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 	}
 
 	RadSiteExt::ExtMap.Remove(pThis);
-	PointerExpiredNotification::NotifyInvalidObject->Remove(pThis);
+	PointerExpiredNotification::NotifyInvalidObject.Remove(pThis);
 
 	return 0;
 }

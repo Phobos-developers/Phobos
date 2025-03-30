@@ -3,6 +3,8 @@
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
+
 #pragma region SlaveManagerClass
 
 // Issue #601
@@ -12,7 +14,7 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 	GET(TechnoClass*, pSlave, EDI);
 
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
-	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance()->SlavesFreeSound);
+	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->Location);
 
@@ -112,12 +114,65 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	else
 	{
 		auto const mapCoords = pThis->Owner->GetMapCoords();
-		auto const pCell = MapClass::Instance->GetCellAt(mapCoords);
+		auto const pCell = MapClass::Instance.GetCellAt(mapCoords);
 		pSpawnee->SetDestination(pCell->GetNeighbourCell(FacingType::North), true);
 		pSpawnee->QueueMission(Mission::Move, false);
 	}
 
 	return R->Origin() == 0x6B7600 ? SkipGameCode1 : SkipGameCode2;
+}
+
+DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
+{
+	enum { Jump = 0x6B6DF0, Change = 0x6B6D53, Continue = 0 };
+	GET(SpawnManagerClass*, pThis, ESI);
+	GET_STACK(size_t, i, STACK_OFFSET(0x1C, 0x4));
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+	if ((int) i >= pTypeExt->InitialSpawnsNumber.Get(pThis->SpawnCount))
+	{
+		GET(SpawnControl*, pControl, EBP);
+		pControl->Unit = nullptr;
+		pControl->SpawnTimer.Start(pThis->RegenRate);
+		pControl->Status = SpawnNodeStatus::Dead;
+		pThis->SpawnedNodes.AddItem(pControl);
+		return Jump;
+	}
+
+	if (pTypeExt->Spawns_Queue.size() <= i || !pTypeExt->Spawns_Queue[i])
+		return Continue;
+
+	R->EAX(pTypeExt->Spawns_Queue[i]->CreateObject(pThis->Owner->GetOwningHouse()));
+	return Change;
+}
+
+DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
+{
+	GET(SpawnManagerClass*, pThis, ESI);
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+	if (pTypeExt->Spawns_Queue.empty())
+		return 0;
+
+	std::vector<AircraftTypeClass*> vec = pTypeExt->Spawns_Queue;
+
+	for (auto pNode : pThis->SpawnedNodes)
+	{
+		if (pNode->Unit)
+		{
+			auto it = std::find_if(vec.begin(), vec.end(), [=](auto pType) { return pType == pNode->Unit->GetTechnoType(); });
+			if (it != vec.end())
+				vec.erase(it);
+		}
+	}
+
+	if (vec.empty() || !vec[0])
+		return 0;
+
+	R->EAX(vec[0]->CreateObject(pThis->Owner->GetOwningHouse()));
+	return 0x6B78EA;
 }
 
 DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
@@ -132,6 +187,76 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
 				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
+{
+	enum { Recycle = 0x6B77FF, NoRecycle = 0x6B7838 };
+
+	GET(SpawnManagerClass* const, pThis, ESI);
+	GET(AircraftClass* const, pSpawner, EDI);
+	GET(CellStruct* const, pCarrierMapCrd, EBP);
+
+	auto const pCarrier = pThis->Owner;
+	auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+	auto const spawnerCrd = pSpawner->GetCoords();
+
+	auto shouldRecycleSpawned = [&]()
+	{
+		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
+		auto const recycleCrd = FLH != CoordStruct::Empty
+			? TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret)
+			: pCarrier->GetCoords();
+		auto const deltaCrd = spawnerCrd - recycleCrd;
+		const int recycleRange = pCarrierTypeExt->Spawner_RecycleRange.Get();
+
+		if (recycleRange < 0)
+		{
+			// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
+			// 182 is √2/2 * 256. 20 is same to vanilla behavior.
+			return (pCarrier->WhatAmI() == AbstractType::Building)
+				? (deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
+				: (pSpawner->GetMapCoords() == *pCarrierMapCrd && deltaCrd.Z < 20);
+		}
+
+		return deltaCrd.Magnitude() <= recycleRange;
+	};
+
+	if (shouldRecycleSpawned())
+	{
+		if (pCarrierTypeExt->Spawner_RecycleAnim)
+		{
+			auto pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
+			auto pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
+			pAnimExt->SetInvoker(pSpawner);
+			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawner->Owner, pSpawner->Owner, false, true);
+		}
+
+		pSpawner->SetLocation(pCarrier->GetCoords());
+		return Recycle;
+	}
+
+	return NoRecycle;
+}
+
+// Change destination to RecycleFLH.
+DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
+{
+	GET(FootClass* const, pThis, EBP);
+	GET(CoordStruct*, pDestCrd, EAX);
+
+	auto pCarrier = pThis->SpawnOwner;
+
+	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
+	{
+		auto pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
+
+		if (FLH != CoordStruct::Empty)
+			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
 	}
 
 	return 0;
@@ -313,6 +438,7 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 	if (pExt->DefaultDisguise)
 	{
 		pThis->Disguise = pExt->DefaultDisguise;
+		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
 		return 0x5227BF;
 	}
@@ -326,7 +452,8 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	// Remove mirage disguise if under emp or being flipped, approximately 15 deg
-	if (pThis->Deactivated || pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
+	// Deactivated mirage should still be able to keep disguise
+	if (pThis->IsUnderEMP() || std::abs(pThis->AngleRotatedForwards) > 0.25 || std::abs(pThis->AngleRotatedSideways) > 0.25)
 	{
 		pThis->ClearDisguise();
 		R->EAX(pThis->MindControlRingAnim);
@@ -334,6 +461,51 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 	}
 
 	return 0x746931;
+}
+
+#pragma endregion
+
+#pragma region AttackMindControlledDelay
+
+bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
+{
+	const auto pMind = pControlled->MindControlledBy;
+
+	if (!pMind || pRetaliator->Berzerk)
+		return true;
+
+	const auto pManager = pMind->CaptureManager;
+
+	if (!pManager || !pRetaliator->Owner->IsAlliedWith(pManager->GetOriginalOwner(pControlled)))
+		return true;
+
+	return TechnoExt::ExtMap.Find(pControlled)->BeControlledThreatFrame <= Unsorted::CurrentFrame;
+}
+
+DEFINE_HOOK(0x7089E8, TechnoClass_AllowedToRetaliate_AttackMindControlledDelay, 0x6)
+{
+	enum { CannotRetaliate = 0x708B17 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pAttacker, EBP);
+
+	return CanAttackMindControlled(pAttacker, pThis) ? 0 : CannotRetaliate;
+}
+
+DEFINE_HOOK(0x6F88BF, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay, 0x6)
+{
+	enum { CannotSelect = 0x6F894F };
+
+	GET(TechnoClass* const, pThis, EDI);
+	GET(ObjectClass* const, pTarget, ESI);
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (!CanAttackMindControlled(pTechno, pThis))
+			return CannotSelect;
+	}
+
+	return 0;
 }
 
 #pragma endregion
@@ -528,8 +700,8 @@ void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, Object
 		TechnoExt::UpdateAttachedAnimLayers(pTechno);
 }
 
-DEFINE_JUMP(CALL, 0x54B18E, GET_OFFSET(DisplayClass_Submit_Wrapper));  // JumpjetLocomotionClass_Process
-DEFINE_JUMP(CALL, 0x4CD4E7, GET_OFFSET(DisplayClass_Submit_Wrapper));  // FlyLocomotionClass_Update
+DEFINE_FUNCTION_JUMP(CALL, 0x54B18E, DisplayClass_Submit_Wrapper);  // JumpjetLocomotionClass_Process
+DEFINE_FUNCTION_JUMP(CALL, 0x4CD4E7, DisplayClass_Submit_Wrapper);  // FlyLocomotionClass_Update
 
 // Fixes SecondaryFire / SecondaryProne sequences not remapping to WetAttack in water.
 // Ideally there would be WetAttackSecondary but adding new sequences would be a big undertaking.
