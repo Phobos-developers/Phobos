@@ -443,6 +443,7 @@ This page lists all the individual contributions to the project by their author.
   - Recycle the spawner on other FLH
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
+  - Sinkablity and sinking speed customization
   - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
