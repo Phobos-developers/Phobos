@@ -401,6 +401,7 @@ This page lists all the individual contributions to the project by their author.
   - Parasite returning bug fix
   - Units are now unable to kick out from a factory that is in construction process
   - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
+  - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

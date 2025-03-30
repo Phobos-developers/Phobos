@@ -183,6 +183,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
+- Fixed an issue where `FireAngle` would not work properly under certain circumstances.
 
 ## Fixes / interactions with other extensions
 
