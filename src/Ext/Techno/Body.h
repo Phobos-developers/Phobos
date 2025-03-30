@@ -28,6 +28,8 @@ public:
 		std::vector<LaserTrailClass> LaserTrails;
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 		AttachEffectTechnoProperties AE;
+		TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
+		std::vector<EBolt*> ElectricBolts;
 		int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
@@ -73,6 +75,8 @@ public:
 			, LaserTrails {}
 			, AttachedEffects {}
 			, AE {}
+			, PreviousType { nullptr }
+			, ElectricBolts {}
 			, AnimRefCount { 0 }
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
@@ -118,11 +122,15 @@ public:
 		void EatPassengers();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
+		void UpdateOnTunnelExit();
 		void ApplySpawnLimitRange();
-		void UpdateTypeData(TechnoTypeClass* currentType);
+		void UpdateTypeData(TechnoTypeClass* pCurrentType);
+		void UpdateTypeData_Foot();
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
 		void UpdateGattlingRateDownReset();
+		void UpdateKeepTargetOnMove();
+		void UpdateWarpInDelay();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
@@ -135,6 +143,7 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void ApplyMindControlRangeLimit();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
@@ -146,6 +155,7 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
+		void ClearElectricBolts();
 	};
 
 	class ExtContainer final : public Container<TechnoExt>
@@ -174,7 +184,6 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
-	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
