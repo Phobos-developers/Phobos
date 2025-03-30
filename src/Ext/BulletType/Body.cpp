@@ -52,6 +52,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AAOnly.Read(exINI, pSection, "AAOnly");
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
+	this->SubjectToGround.Read(exINI, pSection, "SubjectToGround");
 
 	this->Splits.Read(exINI, pSection, "Splits");
 	this->AirburstSpread.Read(exINI, pSection, "AirburstSpread");
@@ -65,6 +66,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Splits_TargetCellRange.Read(exINI, pSection, "Splits.TargetCellRange");
 	this->Splits_UseWeaponTargeting.Read(exINI, pSection, "Splits.UseWeaponTargeting");
 	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AirburstWeapon.ApplyFirepowerMult");
+	this->BombParachute.Read(exINI, pSection, "BombParachute");
 
 	// Ares 0.7
 	this->BallisticScatter_Min.Read(exINI, pSection, "BallisticScatter.Min");
@@ -138,6 +140,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->ReturnWeapon)
+		.Process(this->SubjectToGround)
 		.Process(this->Splits)
 		.Process(this->AirburstSpread)
 		.Process(this->RetargetAccuracy)
@@ -150,7 +153,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Splits_TargetCellRange)
 		.Process(this->Splits_UseWeaponTargeting)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
-
+		.Process(this->BombParachute)
 
 		.Process(this->TrajectoryType) // just keep this shit at last
 		;

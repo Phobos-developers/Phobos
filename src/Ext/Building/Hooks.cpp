@@ -13,24 +13,15 @@
 
 #pragma region Update
 
-//After TechnoClass_AI?
+// After TechnoClass_AI
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	// Do not search this up again in any functions called here because it is costly for performance - Starkku
-	auto pExt = BuildingExt::ExtMap.Find(pThis);
-
-	/*
-	// Set only if unset or type has changed - Not currently useful as building type does not change.
-	auto pType = pThis->Type;
-
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
-	*/
-
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
+	pExt->TechnoExtData->UpdateGattlingRateDownReset();
 
 	return 0;
 }
