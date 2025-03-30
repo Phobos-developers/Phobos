@@ -851,7 +851,7 @@ msgid ""
 "Aircraft docking on buildings now respect `[AudioVisual] -> PoseDir` as "
 "the default setting and do not always land facing north or in case of "
 "pre-placed buildings, the building's direction."
-msgstr "现在战机在建筑上停靠时尊重 `[AudioVisual] -> PoseDir` 作为默认设置而不总是朝向北方，或者在预先放置建筑上面向建筑的方向。"
+msgstr "现在战机在建筑上停靠时尊重 `[AudioVisual] -> PoseDir` 作为默认设置而不总是朝向北方，或者在地图预置建筑上面向建筑的方向。"
 
 #: ../../Fixed-or-Improved-Logics.md:140
 msgid "Spawned aircraft now align with the spawner's facing when landing."
@@ -862,7 +862,7 @@ msgid ""
 "Fixed the bug that waypointing unarmed infantries with "
 "agent/engineer/occupier to a spyable/capturable/occupiable building "
 "triggers `EnteredBy` event by executing capture mission."
-msgstr "修复了在路径点中为间谍／工程师／需要驻军的无武装步兵设置目标为可渗透／占领／驻军的建筑执行行为时会触发 `被...进入` 条件的 Bug。"
+msgstr "修复了在路径点中为间谍／工程师／可驻军步兵设置目标为可渗透／占领／驻军的建筑执行行为时会触发 `被...进入` 条件的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:142
 msgid ""
@@ -878,7 +878,7 @@ msgstr "修复了在选中 `DeploysInto` 单位上显示光标时可能引起的
 
 #: ../../Fixed-or-Improved-Logics.md:144
 msgid "Skipped drawing rally point line when undeploying a factory."
-msgstr "在一个工厂反部署时跳过了绘制集结线。"
+msgstr "跳过工厂类建筑反部署时的集结线绘制。"
 
 #: ../../Fixed-or-Improved-Logics.md:145
 msgid ""
@@ -1038,7 +1038,7 @@ msgstr "修复了步兵在水中显示 `SecondaryFire`／`SecondaryProne` 序列
 msgid ""
 "Fixed objects with ally target and `AttackFriendlies=true` having their "
 "target reset every frame, particularly AI-owned buildings."
-msgstr "修复了具有友军目标和 `AttackFriendlies=true` 的对象每帧重置目标的问题，尤其是 AI 拥有的建筑。"
+msgstr "修复了目标为友军单位且 `AttackFriendlies=true` 的对象每帧重置目标的问题，尤其是 AI 拥有的建筑。"
 
 #: ../../Fixed-or-Improved-Logics.md:169
 msgid ""
@@ -1053,8 +1053,8 @@ msgid ""
 " vehicles that could not be created or created vehicles having other "
 "vehicles as initial passengers."
 msgstr ""
-"现在地图中预先放置的载具其跟随载具索引明确受限于地图文件中的 `[Units]` "
-"列表并且不再因为无法创建的载具或创建的载具具有其他载具作为初始乘客而混乱。"
+"现在地图预置载具的跟随索引已被明确限制在地图 `[Units]` 列表中并且不"
+"再受到无法创建的载具或创建的载具具有其他载具作为初始乘客的情况所干扰。"
 
 #: ../../Fixed-or-Improved-Logics.md:171
 msgid ""
@@ -1087,7 +1087,7 @@ msgstr ""
 msgid ""
 "Subterranean movement now benefits from speed multipliers from all "
 "sources such as veterancy, AttachEffect etc."
-msgstr "现在钻地移动受益于所有来源的速度加成例如升级、AttachEffect 等。"
+msgstr "现在钻地运动方式享受来自升级、AttachEffect 等所有来源的速度加成。"
 
 #: ../../Fixed-or-Improved-Logics.md:175
 msgid ""
