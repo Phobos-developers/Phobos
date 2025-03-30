@@ -57,7 +57,7 @@ msgstr "自定义 `DiskLaser` 范围"
 
 #: ../../../CREDITS.md:13 ../../../CREDITS.md:31
 msgid "Extended tooltips"
-msgstr "扩展工具条"
+msgstr "扩展拓展工具条"
 
 #: ../../../CREDITS.md:14 ../../../CREDITS.md:30
 msgid "Building upgrades enhancement"
@@ -367,7 +367,7 @@ msgstr "原版地图预览图读取 bug 修复"
 
 #: ../../../CREDITS.md:97
 msgid "Customizable tooltip background"
-msgstr "自定义工具条背景"
+msgstr "自定义拓展工具条背景"
 
 #: ../../../CREDITS.md:98
 msgid "Parts of Ares calling code"
@@ -1336,7 +1336,7 @@ msgstr "跳过建筑反部署时的集结线绘制"
 
 #: ../../../CREDITS.md:342
 msgid "Ares' `SW.Shots` hint on extended tooltips"
-msgstr "在拓展工具条中现实 Ares 的 `SW.Shots`"
+msgstr "在拓展拓展工具条中现实 Ares 的 `SW.Shots`"
 
 #: ../../../CREDITS.md:343
 msgid "Ares' Abductor weapon fix"
@@ -1380,7 +1380,7 @@ msgstr "修复了 `AltNextScenario` 无法生效的问题"
 
 #: ../../../CREDITS.md:352
 msgid "Fix `Hospital=yes` building can't kick out infantry after loading a save"
-msgstr "修复 `Hospital=yes` 的建筑在读档后无法让步兵离开的问题"
+msgstr "修复了 `Hospital=yes` 的建筑在读档后无法让步兵离开的问题"
 
 #: ../../../CREDITS.md:353
 msgid "**NetsuNegi**:"
@@ -1418,13 +1418,13 @@ msgstr "`FreeUnit` 使用单位自己的 `SpeedType` 来寻找生成位置"
 msgid ""
 "Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` "
 "may spawn incorrectly on land"
-msgstr "修复海军舰船设为 `AllowedToStartInMultiplayer=yes` 可能生成在陆地上的 Bug"
+msgstr "修复了海军舰船设为 `AllowedToStartInMultiplayer=yes` 可能生成在陆地上的 Bug"
 
 #: ../../../CREDITS.md:362
 msgid ""
 "Fix the bug where pathfinding issues occur when a building performs "
 "undeploy"
-msgstr "修复建筑执行 `UndeploysInto` 时的寻路问题"
+msgstr "修复了建筑执行 `UndeploysInto` 时的寻路问题"
 
 #: ../../../CREDITS.md:363
 msgid ""
@@ -1645,11 +1645,11 @@ msgstr "科技类型可以在开火后保持适当的距离"
 
 #: ../../../CREDITS.md:416
 msgid "Projectile subject to ground check before firing"
-msgstr "`SubjectToGround`"
+msgstr "开火前检查抛射体是否会穿地"
 
 #: ../../../CREDITS.md:417
 msgid "Delay automatic attack on the controlled unit"
-msgstr "`MindControl.ThreatDelay`"
+msgstr "攻击被心控单位的延迟"
 
 #: ../../../CREDITS.md:418
 msgid "**Ollerus**:"
@@ -1740,7 +1740,7 @@ msgid ""
 "Fix issues caused by incorrect reference removal (f.ex. If the unit "
 "cloaks/enters transport, it cannot gain experience from previously "
 "launched spawners/C4/projectiles)"
-msgstr "修复错误脱引用导致的问题（例如，如果单位隐形／进入运输工具则无法自此前发射的子机／抛射体以及安置的 C4 炸弹获得经验）"
+msgstr "修复了错误脱引用导致的问题（例如，如果单位隐形／进入运输工具则无法自此前发射的子机／抛射体以及安置的 C4 炸弹获得经验）"
 
 #: ../../../CREDITS.md:442
 msgid "Recycle spawner in long-range"

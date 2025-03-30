@@ -241,7 +241,7 @@ msgstr "现在 `TurretOffset` 可以支持 Shape 载具了。"
 
 #: ../../Fixed-or-Improved-Logics.md:45
 msgid "`InfiniteMindControl` with `Damage=1` can now control more than 1 unit."
-msgstr "现在允许`InfiniteMindControl` 在 `Damage=1` 的情况下正常控制 1 个以上的单位。"
+msgstr "现在允许 `InfiniteMindControl` 在 `Damage=1` 的情况下正常控制 1 个以上的单位。"
 
 #: ../../Fixed-or-Improved-Logics.md:46
 msgid ""
@@ -443,7 +443,7 @@ msgid ""
 "house but without a known source TechnoType (f.ex animation warhead "
 "damage) to not be recorded as killed correctly and thus not spring map "
 "trigger events etc."
-msgstr "修复了只有所属方但没有开火者科技类型造成的伤害击杀（例如来自动画弹头伤害）未能正确记录为被击杀而无法触发地图事件等问题。"
+msgstr "修复了只有所属方但没有开火者的杀伤（例如来自动画弹头伤害）击杀载具时未能正确记录因而无法触发地图事件等问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:77
 msgid ""
@@ -1867,7 +1867,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:361
 msgid "Ore stage threshold for `HideIfNoOre`"
-msgstr "`HideIfNoOre` 的矿石阶段下限"
+msgstr "`HideIfNoOre` 的矿石阶段阈值"
 
 #: ../../Fixed-or-Improved-Logics.md:363
 msgid ""
@@ -2911,7 +2911,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:716
 msgid "Customizable Teleport/Chrono Locomotor settings per TechnoType"
-msgstr "自定义超时空运动"
+msgstr "自定义超时空运动设置"
 
 #: ../../Fixed-or-Improved-Logics.md:718
 msgid ""
@@ -4308,7 +4308,7 @@ msgstr ""
 #: ../../Fixed-or-Improved-Logics.md:1173
 #: ../../Fixed-or-Improved-Logics.md:1198
 msgid "Minimap color customization"
-msgstr "小地图颜色的自定义"
+msgstr "自定义小地图颜色"
 
 #: ../../Fixed-or-Improved-Logics.md:1175
 msgid ""
@@ -4738,7 +4738,7 @@ msgid ""
 "`IsSimpleDeployer` set to true. Should not be used on buildable vehicles,"
 " as they won't be able to exit factories."
 msgstr ""
-"现在载具将在 `Speed` 设置为 0 时使游戏将它们视为静止的，其行为方式非常类似于 `IsSimpleDeployer` 设置为 true "
+"现在载具将在 `Speed` 设置为 0 时使游戏将它们视为静止，其行为方式非常类似于 `IsSimpleDeployer` 设置为 true "
 "的部署状态载具。不应用于可生产的载具，否则它们将无法退出工厂。"
 
 #: ../../Fixed-or-Improved-Logics.md:1344
@@ -5226,11 +5226,11 @@ msgstr ""
 #: ../../Fixed-or-Improved-Logics.md:1523
 msgid ""
 "`SplashList.PickRandom`, `SplashList.CreateAll`, "
-"`SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to "
+"`SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to "
 "these animations in same manner as the `AnimList` equivalents."
 msgstr ""
 "`SplashList.PickRandom`、`SplashList.CreateAll`、`SplashList.CreationInterval`"
-" 和 `SplashList.ScatterMin/Max` 与 `AnimList` 同类语句相同。"
+" 和 `SplashList.Scatter(Min/Max)` 与 `AnimList` 同类语句相同。"
 
 #: ../../Fixed-or-Improved-Logics.md:1524
 msgid ""
