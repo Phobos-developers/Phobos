@@ -416,6 +416,7 @@ This page lists all the individual contributions to the project by their author.
   - Delay automatic attack on the controlled unit
   - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
   - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fixed an issue that Spawner cannot retract its spawned aircraft when on the bridge
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
