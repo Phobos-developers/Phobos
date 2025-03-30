@@ -352,6 +352,7 @@ Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
+- Technos are no longer unable to stop when it is above the elevated bridge, and they are still not allowed to stop moving under the elevated bridge, but can stop other missions (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -625,7 +626,7 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
-  
+
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)

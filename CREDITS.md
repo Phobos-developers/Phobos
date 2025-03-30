@@ -395,7 +395,7 @@ This page lists all the individual contributions to the project by their author.
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
-  - Fix `Stop` command not working so well in some cases
+  - Fix `Stop` command not working so well in many cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - No rearm and reload in EMP or temporal
