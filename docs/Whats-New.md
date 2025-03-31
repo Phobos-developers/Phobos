@@ -347,6 +347,7 @@ New:
 - Delay automatic attack on the controlled unit (by CrimRecya)
 - `BombParachute` deglobalization (by TaranDahl)
 - Sinkablity and sinking speed customization (by TaranDahl)
+- Fast access vehicle (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -625,7 +626,7 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
-  
+
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
 - Add `ImmuneToCrit` for shields (by Trsdy)
