@@ -7484,8 +7484,8 @@ msgid ""
 "fired on the transport. `OpenToppedDamageMultiplier` is not applied on "
 "feedback weapons."
 msgstr ""
-"`FireInTransport` 设置当原始武器从内部 `OpenTopped=true` "
-"的运输工具中开火时是否可以发射反馈武器。如果反馈武器被发射，它会在运输工具上发射。`OpenToppedDamageMultiplier` "
+"当原始武器于运输工具内的载员使用时反馈武器会根据自身的 `FireInTransport` 决定能否发射。"
+"如果反馈武器被发射那么它将命中运输工具。注：`OpenToppedDamageMultiplier` "
 "不适用于反馈武器。"
 
 #: ../../New-or-Enhanced-Logics.md:2101
