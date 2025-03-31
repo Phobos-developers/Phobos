@@ -1037,7 +1037,7 @@ In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
-SubterraneanSpeed=7.5    ; floating point value
+SubterraneanSpeed=19     ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
