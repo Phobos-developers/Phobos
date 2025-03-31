@@ -2134,6 +2134,21 @@ OmniFire.TurnToTarget=no  ; boolean
 
 - In addition to allowing custom radiation types, several enhancements are also available to the default radiation type defined in `[Radiation]`, such as ability to set owner & invoker or deal damage against buildings. See [Custom Radiation Types](#custom-radiation-types) for more details.
 
+### Range finding in cylinder
+
+- In vanilla, technos in air will ignore the distance in Z axis when checking if the target is in range. Now you can use the following flags to make technos always range finding like that.
+- `[General]->CylinderRangefinding` controls this globally, and can be customized per weapon type.
+- Mind that set the flags to `false` meaning "use default" rather than "disable". Technos in air will always range finding in cylinder like vanilla, despite what you set.
+
+In `rulesmd.ini`:
+```ini
+[General]                         ; WeaponType
+CylinderRangefinding=false  ; boolean
+
+[SOMEWEAPON]                      ; WeaponType
+CylinderRangefinding=       ; boolean
+```
+
 ### Strafing aircraft weapon customization
 
 ![image](_static/images/strafing-01.gif)

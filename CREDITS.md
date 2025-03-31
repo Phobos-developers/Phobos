@@ -446,6 +446,7 @@ This page lists all the individual contributions to the project by their author.
   - `BombParachute` deglobalization
   - Sinkablity and sinking speed customization
   - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+  - Weapon range finding in cylinder
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
