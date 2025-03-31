@@ -600,17 +600,15 @@ void BombardTrajectory::RefreshBulletLineTrail(BulletClass* pBullet)
 
 	if (pType->UseLineTrail)
 	{
-		if (const auto pLineTrailer = GameCreate<LineTrail>())
-		{
-			pBullet->LineTrailer = pLineTrailer;
+		const auto pLineTrailer = GameCreate<LineTrail>();
+		pBullet->LineTrailer = pLineTrailer;
 
-			if (RulesClass::Instance->LineTrailColorOverride != ColorStruct { 0, 0, 0 })
-				pLineTrailer->Color = RulesClass::Instance->LineTrailColorOverride;
-			else
-				pLineTrailer->Color = pType->LineTrailColor;
+		if (RulesClass::Instance->LineTrailColorOverride != ColorStruct { 0, 0, 0 })
+			pLineTrailer->Color = RulesClass::Instance->LineTrailColorOverride;
+		else
+			pLineTrailer->Color = pType->LineTrailColor;
 
-			pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
-			pLineTrailer->Owner = pBullet;
-		}
+		pLineTrailer->SetDecrement(pType->LineTrailColorDecrement);
+		pLineTrailer->Owner = pBullet;
 	}
 }

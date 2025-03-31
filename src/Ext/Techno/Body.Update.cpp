@@ -1099,6 +1099,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
 	int count = 0;
+	int cap = pAttachEffectType->Cumulative_MaxCount > -1 ? pAttachEffectType->Cumulative_MaxCount : INT_MAX;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
@@ -1121,6 +1122,9 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 				duration = currentDuration;
 			}
 		}
+
+		if (count >= cap)
+			break;
 	}
 
 	if (pAEWithAnim)

@@ -519,6 +519,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	int cap = pAttachEffectType->Cumulative_MaxCount > -1 ? pAttachEffectType->Cumulative_MaxCount : INT_MAX;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
@@ -528,6 +529,9 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 				continue;
 
 			foundCount++;
+
+			if (foundCount >= cap)
+				return foundCount;
 		}
 	}
 

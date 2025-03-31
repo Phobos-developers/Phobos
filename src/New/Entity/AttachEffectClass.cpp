@@ -577,11 +577,19 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		{
 			currentTypeCount++;
 			match = attachEffect;
+			int cap = pType->Cumulative_MaxCount > -1 ? pType->Cumulative_MaxCount : INT_MAX;
 
 			if (!pType->Cumulative)
+			{
 				break;
+			}
 			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
+			{
 				cumulativeMatches.push_back(attachEffect);
+
+				if (cumulativeMatches.size() >= cap)
+					break;
+			}
 		}
 	}
 

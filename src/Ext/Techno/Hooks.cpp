@@ -487,10 +487,13 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	for (auto& trail : pTechnoExt->LaserTrails)
+	if (pTechnoExt)
 	{
-		trail.Visible = false;
-		trail.LastLocation = { };
+		for (auto& trail : pTechnoExt->LaserTrails)
+		{
+			trail.Visible = false;
+			trail.LastLocation = { };
+		}
 	}
 
 	return 0;
