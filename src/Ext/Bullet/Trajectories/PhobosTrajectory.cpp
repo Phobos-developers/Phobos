@@ -718,7 +718,7 @@ void PhobosTrajectory::DetonateOnObstacle()
 	else
 		this->ShouldDetonate = true;
 	// Need to cause additional damage?
-	if (!this->ProximityImpact || !this->GetType()->ProximityWarhead)
+	if (!this->ProximityImpact)
 		return;
 	// Detonate extra warhead
 	const auto pFirer = pBullet->Owner;
