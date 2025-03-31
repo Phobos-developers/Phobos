@@ -1190,4 +1190,96 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
+
+	this->UpdateTintValues();
+}
+
+// Recalculates tint values.
+void TechnoExt::ExtData::UpdateTintValues()
+{
+	// reset values
+	this->TintColorOwner = 0;
+	this->TintColorAllies = 0;
+	this->TintColorEnemies = 0;
+	this->TintIntensityOwner = 0;
+	this->TintIntensityAllies = 0;
+	this->TintIntensityEnemies = 0;
+
+	auto const pTypeExt = this->TypeExtData;
+	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
+	bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->HasTint();
+
+	// Bail out early if no custom tint is applied.
+	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
+		return;
+
+	auto calculateTint = [this](const int color, const int intensity, const AffectedHouse affectedHouse)
+		{
+			// despite being replicated, this is more time saving than using if statement
+			switch (affectedHouse)
+			{
+				case AffectedHouse::All:
+					this->TintColorOwner |= color;
+					this->TintColorAllies |= color;
+					this->TintColorEnemies |= color;
+					this->TintIntensityOwner += intensity;
+					this->TintIntensityAllies += intensity;
+					this->TintIntensityEnemies += intensity;
+					break;
+				case AffectedHouse::Owner:
+					this->TintColorOwner |= color;
+					this->TintIntensityOwner += intensity;
+					break;
+				case AffectedHouse::Allies:
+					this->TintColorAllies |= color;
+					this->TintIntensityAllies += intensity;
+					break;
+				case AffectedHouse::Enemies:
+					this->TintColorEnemies |= color;
+					this->TintIntensityEnemies += intensity;
+					break;
+				case AffectedHouse::Team:
+					this->TintColorOwner |= color;
+					this->TintColorAllies |= color;
+					this->TintIntensityOwner += intensity;
+					this->TintIntensityAllies += intensity;
+					break;
+				case AffectedHouse::NotAllies:
+					this->TintColorOwner |= color;
+					this->TintColorEnemies |= color;
+					this->TintIntensityOwner += intensity;
+					this->TintIntensityEnemies += intensity;
+					break;
+				case AffectedHouse::NotOwner:
+					this->TintColorAllies |= color;
+					this->TintColorEnemies |= color;
+					this->TintIntensityAllies += intensity;
+					this->TintIntensityEnemies += intensity;
+					break;
+				default:
+					break;
+			}
+		};
+
+	if (hasTechnoTint)
+		calculateTint(Drawing::RGB_To_Int(pTypeExt->Tint_Color), static_cast<int>(pTypeExt->Tint_Intensity * 1000), pTypeExt->Tint_VisibleToHouses);
+
+	if (this->AE.HasTint)
+	{
+		for (auto const& attachEffect : this->AttachedEffects)
+		{
+			auto const type = attachEffect->GetType();
+
+			if (!attachEffect->IsActive() || !type->HasTint())
+				continue;
+
+			calculateTint(Drawing::RGB_To_Int(type->Tint_Color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+		}
+	}
+
+	if (hasShieldTint)
+	{
+		auto const pShieldType = this->Shield->GetType();
+		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
 }

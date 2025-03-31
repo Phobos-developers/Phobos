@@ -597,6 +597,12 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->LastSensorsMapCoords)
+		.Process(this->TintColorOwner)
+		.Process(this->TintColorAllies)
+		.Process(this->TintColorEnemies)
+		.Process(this->TintIntensityOwner)
+		.Process(this->TintIntensityAllies)
+		.Process(this->TintIntensityEnemies)
 		;
 }
 

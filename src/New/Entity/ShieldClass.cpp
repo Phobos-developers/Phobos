@@ -807,7 +807,10 @@ void ShieldClass::UpdateIdleAnim()
 void ShieldClass::UpdateTint()
 {
 	if (this->Type->HasTint())
+	{
+		TechnoExt::ExtMap.Find(this->Techno)->UpdateTintValues();
 		this->Techno->MarkForRedraw();
+	}
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()

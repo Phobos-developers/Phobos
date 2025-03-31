@@ -192,47 +192,23 @@ int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
 // Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
 void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
-	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
+	auto const pOwner = pThis->Owner;
 
-	// Bail out early if no custom tint is applied.
-	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
-		return;
-
-	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	if (pOwner == HouseClass::CurrentPlayer)
 	{
-		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
-		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
+		color = pExt->TintColorOwner;
+		intensity = pExt->TintIntensityOwner;
 	}
-
-	if (pExt->AE.HasTint)
+	else if (pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 	{
-		for (auto const& attachEffect : pExt->AttachedEffects)
-		{
-			auto const type = attachEffect->GetType();
-
-			if (!attachEffect->IsActive() || !type->HasTint())
-				continue;
-
-			if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-				continue;
-
-			color |= Drawing::RGB_To_Int(type->Tint_Color);
-			intensity += static_cast<int>(type->Tint_Intensity * 1000);
-		}
+		color = pExt->TintColorAllies;
+		intensity = pExt->TintIntensityAllies;
 	}
-
-	if (hasShieldTint)
+	else
 	{
-		auto const pShieldType = pExt->Shield->GetType();
-
-		if (!EnumFunctions::CanTargetHouse(pShieldType->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-			return;
-
-		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
-		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
+		color = pExt->TintColorEnemies;
+		color = pExt->TintIntensityEnemies;
 	}
 }
 
