@@ -395,7 +395,7 @@ This page lists all the individual contributions to the project by their author.
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
-  - Fix `Stop` command not working so well in some cases
+  - Fix `Stop` command not working so well in many cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - No rearm and reload in EMP or temporal
@@ -414,6 +414,7 @@ This page lists all the individual contributions to the project by their author.
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
   - Delay automatic attack on the controlled unit
+  - Fast access vehicle
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -443,6 +444,8 @@ This page lists all the individual contributions to the project by their author.
   - Recycle the spawner on other FLH
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
+  - Sinkablity and sinking speed customization
+  - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
   - Weapon range finding in cylinder
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
