@@ -63,7 +63,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadExt->SetRadLevel(amount);
 	pRadExt->CreateLight();
 
-	const auto pCell = MapClass::Instance->TryGetCellAt(location);
+	const auto pCell = MapClass::Instance.TryGetCellAt(location);
 	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 	pCellExt->RadSites.emplace_back(pRadSite);
 }
@@ -108,7 +108,7 @@ void RadSiteExt::ExtData::CreateLight()
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
 	}
-	else if (const auto pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
+	else if (const auto pCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell))
 	{
 		const auto pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
 		pThis->LightSource = pLight;
@@ -217,7 +217,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
 
-	const auto pBaseCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
+	const auto pBaseCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell);
 
 	if (pBaseCell)
 	{
@@ -230,7 +230,7 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 
 	for (CellRangeEnumerator it(pThis->BaseCell, pThis->Spread + 0.5); it; it++)
 	{
-		if (const auto pCell = MapClass::Instance->TryGetCellAt(*it))
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(*it))
 		{
 			const auto pCellExt = CellExt::ExtMap.Find(pCell);
 			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });

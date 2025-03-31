@@ -135,7 +135,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
-		const auto pCell = MapClass::Instance->TryGetCellAt(nCurrentCoord);
+		const auto pCell = MapClass::Instance.TryGetCellAt(nCurrentCoord);
 
 		if (!pCell)
 			continue;
@@ -342,7 +342,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_Radiate_Increase, 0x8)
 		return SkipGameCode;
 
 	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x60, -0x4C));
-	const auto pCell = MapClass::Instance->TryGetCellAt(*cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(*cell);
 
 	if (!pCell)
 		return SkipGameCode;
@@ -373,7 +373,7 @@ DEFINE_HOOK(0x65BC6E, RadSiteClass_Deactivate_Decrease, 0x6)
 		return SkipGameCode;
 
 	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x70, -0x5C));
-	const auto pCell = MapClass::Instance->TryGetCellAt(*cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(*cell);
 
 	if (!pCell)
 		return SkipGameCode;
@@ -404,7 +404,7 @@ DEFINE_HOOK(0x65BE01, RadSiteClass_DecreaseRadiation_Decrease, 0x6)
 		return SkipGameCode;
 
 	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x60, -0x50));
-	const auto pCell = MapClass::Instance->TryGetCellAt(*cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(*cell);
 
 	if (!pCell)
 		return SkipGameCode;
