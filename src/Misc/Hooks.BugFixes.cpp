@@ -782,22 +782,22 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 }
 #pragma endregion DrawInfoTipAndSpiedSelection
 
-
+#include <intrin.h>
 bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
 	if(announce) announce = !pThis->IsStrange();
 
 	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
-
-	// Fix : update powered anims next frame
+	// TODO: something goes wrong in TAction 36, fix it later
+	DWORD const caller =(DWORD) _ReturnAddress();
+	if(caller > 0x6E0C91 || caller < 0x6E0B60)
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
-		pThis->WasOnline = !pThis->WasOnline;
+		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
 	return res;
 }
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
-DEFINE_JUMP(LJMP, 0x6E0C78, 0x6E0C7F);//Simplify TAction 36
 
 // Fix a glitch related to incorrect target setting for missiles
 // Author: Belonit
@@ -1586,9 +1586,15 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 	return 0;
 }
 
-// EIP 004C2C19 crash has 2 causes: the Owner of an EBolt being invalid, and the ElectricBolt of a Unit being invalid
-// Vanilla doesn't have InvalidatePointer for EBolt, so it's made into this way to clear the pointer on EBolt
-// now we'll clear Owner for EBolt in AnnounceInvalidPointer so there won't be nullptr when EBolt trying to access an Owner
-// in this case, we can also dismiss ElectricBolt on Unit, to prevent the crash that caused by its invalidation
-DEFINE_JUMP(LJMP, 0x6FD5F2, 0x6FD5FC)
-DEFINE_JUMP(LJMP, 0x6FD600, 0x6FD606)
+// WW used SetDesired here, causing the barrel drawn incorrectly.
+DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
+{
+	enum { SkipGameCode = 0x6F6DFA };
+
+	GET(DirStruct*, pDir, ECX);
+	GET(TechnoClass*, pThis, ESI);
+
+	pThis->BarrelFacing.SetCurrent(*pDir);
+
+	return SkipGameCode;
+}
