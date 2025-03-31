@@ -566,7 +566,7 @@ DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 }
 
 // Do not untether aircraft when assigning area guard mission by default.
-DEFINE_HOOK(0x4C72F2, EventClass_Execute__AircraftAreaGuard_Untether, 0x6)
+DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Untether, 0x6)
 {
 	enum { SkipGameCode = 0x4C7349 };
 

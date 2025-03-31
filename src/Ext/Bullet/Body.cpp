@@ -221,9 +221,7 @@ inline void BulletExt::SimulatedFiringReport(BulletClass* pBullet)
 
 	const auto pFirer = pBullet->Owner;
 	const auto reportIndex = pWeapon->Report[(pFirer ? pFirer->unknown_short_3C8 : ScenarioClass::Instance->Random.Random()) % pWeapon->Report.Count];
-
-	if (reportIndex != -1)
-		VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
+	VocClass::PlayAt(reportIndex, pBullet->Location, nullptr);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call
@@ -263,15 +261,13 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	if (auto const pEBolt = GameCreate<EBolt>())
-	{
-		pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-		//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-		auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
-		weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
-		weaponStruct.BurstIndex = 0;
-		pEBolt->Fire(pBullet->SourceCoords, pBullet->TargetCoords, 0);
-	}
+	const auto pEBolt = GameCreate<EBolt>();
+	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
+	//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
+	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
+	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
+	weaponStruct.BurstIndex = 0;
+	pEBolt->Fire(pBullet->SourceCoords, pBullet->TargetCoords, 0);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call
@@ -282,19 +278,18 @@ inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* 
 	if (!pWeapon->IsRadBeam)
 		return;
 
-	const bool isTemporal = pWeapon->Warhead && pWeapon->Warhead->Temporal;
+	const auto pWH = pWeapon->Warhead;
+	const bool isTemporal = pWH && pWH->Temporal;
+	const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam);
 
-	if (const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam))
-	{
-		pRadBeam->SetCoordsSource(pBullet->SourceCoords);
-		pRadBeam->SetCoordsTarget(pBullet->TargetCoords);
+	pRadBeam->SetCoordsSource(pBullet->SourceCoords);
+	pRadBeam->SetCoordsTarget(pBullet->TargetCoords);
 
-		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-		pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pHouse) ? pHouse->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
-		pRadBeam->Period = pWeaponExt->Beam_Duration;
-		pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
-	}
+	pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pHouse) ? pHouse->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
+	pRadBeam->Period = pWeaponExt->Beam_Duration;
+	pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call
@@ -311,7 +306,7 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 	pBullet->WeaponType = pWeapon;
 
 	// Range
-	int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
+	const int projectileRange = WeaponTypeExt::ExtMap.Find(pWeapon)->ProjectileRange.Get();
 	pBullet->Range = projectileRange;
 
 	// House
