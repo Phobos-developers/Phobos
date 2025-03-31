@@ -93,6 +93,8 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<bool> NoQueueUpToEnter;
+		Valueable<bool> NoQueueUpToUnload;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -175,6 +177,8 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
+		Valueable<int> MindControl_ThreatDelay;
+
 		Valueable<bool> RecountBurst;
 		Valueable<bool> NoRearm_UnderEMP;
 		Valueable<bool> NoRearm_Temporal;
@@ -254,6 +258,8 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedAircraftMissions { false }
+			, NoQueueUpToEnter { false }
+			, NoQueueUpToUnload { false }
 
 			, BuildingProductionQueue { false }
 
@@ -325,6 +331,7 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, MindControl_ThreatDelay { 0 }
 			, RecountBurst { false }
 			, NoRearm_UnderEMP { false }
 			, NoRearm_Temporal { false }
