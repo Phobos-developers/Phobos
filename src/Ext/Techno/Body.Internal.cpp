@@ -227,6 +227,10 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 	if (hasShieldTint)
 	{
 		auto const pShieldType = pExt->Shield->GetType();
+
+		if (!EnumFunctions::CanTargetHouse(pShieldType->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+			return;
+
 		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
 		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
 	}
