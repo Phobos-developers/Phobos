@@ -79,9 +79,6 @@ DEFINE_HOOK(0x6F9222, TechnoClass_SelectAutoTarget_HealingTargetAir, 0x6)
 	return pThis->CombatDamage(-1) < 0 ? 0x6F922E : 0;
 }
 
-// Skip the hardcode of healing weapon auto target range.
-DEFINE_JUMP(LJMP, 0x6F9024, 0x6F9042);
-
 #pragma endregion
 
 #pragma region Walls
