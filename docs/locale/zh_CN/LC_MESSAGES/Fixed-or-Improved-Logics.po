@@ -1430,10 +1430,12 @@ msgstr "战机现在将能够使用路径点。"
 msgid ""
 "Aircraft can fly at a certain speed as much as possible, when the "
 "distance to the destination is less than half of `SlowdownDistance` or 8 "
-"cell distances divided by ROT, it will return to the airport. And now "
+"cell distances divided by `ROT`, it will return to the airport. And now "
 "aircraft not have to fly directly above the airport before starting to "
 "descend."
 msgstr ""
+"战机将尽可能以一定速度飞行，当距离目标点不足 `SlowdownDistance` 的一半或 8 格长除以 `ROT` "
+"的距离时，它将会返回机场。此外现在已允许战机提前开始下降而无需飞抵机场正上方。"
 
 #: ../../Fixed-or-Improved-Logics.md:234
 msgid ""
