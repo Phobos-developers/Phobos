@@ -816,6 +816,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
 | `BallisticScatter` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
 | `Gravity` | · | ⚪ | ⚪ | · | ⚪ | · |
 | `SubjectToGround` | ⚪ | ⚪ | · | · | · | · |
+| `ProjectileRange(Weapon's)` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
 | `Trajectory.Speed` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
 | `Trajectory.Duration` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
 | `Trajectory.TolerantTime` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
@@ -841,6 +842,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
 
 ```{note}
 - `SubjectToGround` can cause the projectile with `Trajectory=Straight` during the entire process or the projectile with `Trajectory=Bombard` during the ascent phase to detonate prematurely due to impact with the ground.
+- Setting `Trajectory.Missile.UniqueCurve` will ignore all of these settings.
 ```
 
 - In addition, these types of projectile also have some general functions for detonating warheads. Effective for all types.
@@ -909,7 +911,7 @@ Trajectory.DamageCountAttenuation=1.0  ; floating point value
   - `Trajectory.DisperseSuicide` controls whether the projectile will self destruct after the number of times it spreads the weapon has been exhausted.
   - `Trajectory.DisperseFromFirer` controls whether the weapons will be fired by the firer towards the projectile. Otherwise, the tracing weapons will be fired from the projectile towards the target. Using different default values, when `Trajectory=Engrave` or `Trajectory=Tracing`, the default is true, while others are false.
   - `Trajectory.DisperseFaceCheck` controls whether the projectile will check its orientation before firing the weapons. Ignore this if `Trajectory.BulletFacing=Velocity` or `Trajectory.BulletFacing=Spin`.
-  - `Trajectory.DisperseForceFire` controls whether still fire disperse weapon when there is no target or the target is beyond the weapon's range.
+  - `Trajectory.DisperseForceFire` controls whether still fire disperse weapon when the projectile itself has no target or the target is beyond the weapon's range.
   - `Trajectory.DisperseCoord` controls the FLH where the projectile fires the weapon when set `Trajectory.DisperseFromFirer` to false.
 
 In `rulesmd.ini`:
