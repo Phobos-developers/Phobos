@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-08 13:50+0800\n"
+"POT-Creation-Date: 2025-03-17 21:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,8 +44,8 @@ msgid ""
 "argument followed by absolute or relative path to an `*.ico` file (f. ex."
 " `gamemd.exe -icon Resources/clienticon.ico`)."
 msgstr ""
-"你可以通过 `-icon` 命令行参数指定自定义一个绝对或相对路径中的 `*.ico` 文件（例如 `gamemd.exe -icon "
-"Resources/clienticon.ico` ）作为 `gamemd.exe` 的图标。"
+"你可以通过 `-icon` 命令行参数（例如 `gamemd.exe -icon Resources/clienticon.ico` ）"
+"指定自定义一个绝对或相对路径中的 `*.ico` 文件作为 `gamemd.exe` 的图标。"
 
 #: ../../User-Interface.md:9
 msgid ""
@@ -57,7 +57,7 @@ msgid ""
 "file, but will load it bypassing registration."
 msgstr ""
 "修复了由 `Blowfish.dll` 导致的 `***FATAL*** String Manager failed to initialize "
-"properly` 错误，该错误发生在 `Blowfish.dll` 无法在操作系统中注册时，例如当玩家没有管理员权限的时候。在 Phobos "
+"properly` 错误，该错误发生在 `Blowfish.dll` 无法在操作系统中注册时，例如玩家没有管理员权限的情况。在 Phobos "
 "中，如果游戏在系统中找不到已注册的文件，它将不再尝试注册该文件，而是绕过注册直接加载。"
 
 #: ../../User-Interface.md:10
@@ -65,7 +65,7 @@ msgid ""
 "Fixed non-IME keyboard input to be working correctly for languages / "
 "keyboard layouts that use character ranges other than Basic Latin and "
 "Latin-1 Supplement (font support required)."
-msgstr "修复了非输入法键盘输入以使基础拉丁或拉丁-1以外的语言或键盘布局可以正常工作。"
+msgstr "修复了非输入法键盘输入以使基础拉丁或拉丁 -1 以外的语言／键盘布局可以正常工作。"
 
 #: ../../User-Interface.md:11
 msgid ""
@@ -107,15 +107,15 @@ msgid "You can now specify which soundtrack themes would play on win or lose."
 msgstr "现在你可以指定在胜利或失败时播放哪些音轨的主题曲。"
 
 #: ../../User-Interface.md:23 ../../User-Interface.md:52
-#: ../../User-Interface.md:109 ../../User-Interface.md:131
-#: ../../User-Interface.md:144 ../../User-Interface.md:167
-#: ../../User-Interface.md:190 ../../User-Interface.md:214
-#: ../../User-Interface.md:265 ../../User-Interface.md:275
-#: ../../User-Interface.md:294 ../../User-Interface.md:377
+#: ../../User-Interface.md:107 ../../User-Interface.md:126
+#: ../../User-Interface.md:139 ../../User-Interface.md:162
+#: ../../User-Interface.md:187 ../../User-Interface.md:241
+#: ../../User-Interface.md:260 ../../User-Interface.md:270
+#: ../../User-Interface.md:293 ../../User-Interface.md:377
 #: ../../User-Interface.md:392 ../../User-Interface.md:412
 #: ../../User-Interface.md:440 ../../User-Interface.md:485
-#: ../../User-Interface.md:519 ../../User-Interface.md:550
-#: ../../User-Interface.md:560 ../../User-Interface.md:592
+#: ../../User-Interface.md:520 ../../User-Interface.md:530
+#: ../../User-Interface.md:549 ../../User-Interface.md:592
 #: ../../User-Interface.md:612
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
@@ -146,9 +146,9 @@ msgstr ""
 "补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 示例 "
 "Shape 文件的默认配置。*"
 
-#: ../../User-Interface.md:34 ../../User-Interface.md:126
+#: ../../User-Interface.md:34 ../../User-Interface.md:121
 #: ../../User-Interface.md:420 ../../User-Interface.md:465
-#: ../../User-Interface.md:538 ../../User-Interface.md:568
+#: ../../User-Interface.md:508 ../../User-Interface.md:568
 msgid "image"
 msgstr "图像"
 
@@ -344,11 +344,11 @@ msgstr ""
 "DigitalDisplay.Disable=false            ; boolean\n"
 "DigitalDisplayTypes=                    ; List of DigitalDisplayTypes\n"
 
-#: ../../User-Interface.md:92 ../../User-Interface.md:118
-#: ../../User-Interface.md:154 ../../User-Interface.md:175
-#: ../../User-Interface.md:239 ../../User-Interface.md:254
-#: ../../User-Interface.md:300 ../../User-Interface.md:451
-#: ../../User-Interface.md:496 ../../User-Interface.md:526
+#: ../../User-Interface.md:92 ../../User-Interface.md:113
+#: ../../User-Interface.md:149 ../../User-Interface.md:170
+#: ../../User-Interface.md:212 ../../User-Interface.md:227
+#: ../../User-Interface.md:250 ../../User-Interface.md:451
+#: ../../User-Interface.md:496 ../../User-Interface.md:556
 #: ../../User-Interface.md:600 ../../User-Interface.md:624
 #: ../../User-Interface.md:636
 msgid "In `RA2MD.INI`:"
@@ -371,73 +371,42 @@ msgstr ""
 "developers/PhobosSupplementaries) 找到数字化显示的示例 Shape 文件。"
 
 #: ../../User-Interface.md:102
-msgid "Show designator & inhibitor range"
-msgstr "显示指示者和抑制者范围"
+msgid "Flashing Technos on selecting"
+msgstr "闪烁选中的科技类型"
 
 #: ../../User-Interface.md:104
 msgid ""
-"It is now possible to display range of designator and inhibitor units "
-"when in super weapon targeting mode. Each instance of player owned techno"
-" types listed in `[SuperWeapon] -> SW.Designators` will display a circle "
-"with radius set in `[TechnoType] -> DesignatorRange` or `Sight`."
-msgstr ""
-"现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators`"
-" 中的科技类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
+"Selecting technos, controlled by player, now may show a flash effect by "
+"setting `SelectionFlashDuration` parameter higher than 0."
+msgstr "现在可以通过设置一个大于 0 的 `SelectionFlashDuration` 来让由玩家控制的单位在被选中时可以出现闪烁效果。"
 
 #: ../../User-Interface.md:105
 msgid ""
-"In a similar manner, each instance of enemy owned techno types listed in "
-"`[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in"
-" `[TechnoType] -> InhibitorRange` or `Sight`."
-msgstr ""
-"类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的科技类型将显示一个半径由 "
-"`[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
+"The feature can be toggled on/off by user if enabled in mod via "
+"`ShowFlashOnSelecting` setting in `RA2MD.INI`."
+msgstr "此功能可以在 mod 中于 `RA2MD.INI` 设置 `ShowFlashOnSelecting` 来由用户自行开关。"
 
-#: ../../User-Interface.md:106
-msgid ""
-"This feature can be disabled globally with `[AudioVisual] -> "
-"ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> "
-"ShowDesignatorRange=false`."
-msgstr ""
-"可以通过全局的 `[AudioVisual] -> ShowDesignatorRange=false` 或超级武器类型上的 "
-"`[SuperWeapon] -> ShowDesignatorRange=false` 来禁用此功能。"
-
-#: ../../User-Interface.md:107
-msgid ""
-"This feature can be toggled *by the player* (if enabled in the mod) with "
-"`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
-" hotkey](#toggle-designator-range) in \"Interface\" category."
-msgstr ""
-"此功能可以*由玩家*通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
-"或“界面”类别中的[“开启指示者范围显示”热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
-
-#: ../../User-Interface.md:110
+#: ../../User-Interface.md:108
 msgid ""
 "[AudioVisual]\n"
-"ShowDesignatorRange=true    ; boolean\n"
-"\n"
-"[SOMESW]                    ; SuperWeaponType\n"
-"ShowDesignatorRange=true    ; boolean\n"
+"SelectionFlashDuration=0    ; integer, number of frames\n"
 msgstr ""
 "[AudioVisual]\n"
-"ShowDesignatorRange=true    ; boolean\n"
-"\n"
-"[SOMESW]                    ; SuperWeaponType\n"
-"ShowDesignatorRange=true    ; boolean\n"
+"SelectionFlashDuration=0    ; integer, number of frames\n"
+
+#: ../../User-Interface.md:114
+msgid ""
+"[Phobos]\n"
+"ShowFlashOnSelecting=false  ; boolean\n"
+msgstr ""
+"[Phobos]\n"
+"ShowFlashOnSelecting=false  ; boolean\n"
 
 #: ../../User-Interface.md:119
-msgid ""
-"[Phobos]\n"
-"ShowDesignatorRange=false             ; boolean\n"
-msgstr ""
-"[Phobos]\n"
-"ShowDesignatorRange=false             ; boolean\n"
-
-#: ../../User-Interface.md:124
 msgid "Hide health bars"
 msgstr "隐藏血条"
 
-#: ../../User-Interface.md:126
+#: ../../User-Interface.md:121
 msgid ""
 "![image](_static/images/healthbar.hide-01.png) *Health bars hidden in "
 "[CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*"
@@ -445,35 +414,35 @@ msgstr ""
 "![image](_static/images/healthbar.hide-01.png) *[CnC: Final "
 "War](https://www.moddb.com/mods/cncfinalwar) 中的隐藏血条使用实例*"
 
-#: ../../User-Interface.md:129
+#: ../../User-Interface.md:124
 msgid ""
 "Health bar display can now be turned off as needed, hiding both the "
 "health bar box and health pips."
 msgstr "现在可以根据需要关闭血条显示，这会隐藏血条框和生命值点数。"
 
-#: ../../User-Interface.md:132
+#: ../../User-Interface.md:127
 msgid ""
 "[SOMENAME]            ; TechnoType\n"
 "HealthBar.Hide=false  ; boolean\n"
 msgstr ""
 
-#: ../../User-Interface.md:137
+#: ../../User-Interface.md:132
 msgid "Light flash effect toggling"
 msgstr "闪光效果切换"
 
-#: ../../User-Interface.md:139
+#: ../../User-Interface.md:134
 msgid ""
 "It is possible to toggle certain light flash effects off. These light "
 "flash effects include:"
 msgstr "可以关闭某些闪光效果。这些闪光效果包括："
 
-#: ../../User-Interface.md:140
+#: ../../User-Interface.md:135
 msgid ""
 "Combat light effects (`Bright=true`) and everything that uses same "
 "functionality e.g Iron Curtain / Force Field impact flashes."
 msgstr "战斗闪光效果（`Bright=true`）以及使用相同逻辑的所有效果，例如铁幕／力场护盾受击闪光。"
 
-#: ../../User-Interface.md:141
+#: ../../User-Interface.md:136
 msgid ""
 "Alpha images attached to ParticleSystems or Particles that are generated "
 "through a Warhead's `Particle` if `[AudioVisual] -> "
@@ -485,7 +454,7 @@ msgstr ""
 "`Particle.AlphaImageIsLightFlash` 设为 true，那么计入那些附加在由弹头 `Particle` "
 "生成的粒子系统或粒子上的 AlphaImage 光效。"
 
-#: ../../User-Interface.md:142
+#: ../../User-Interface.md:137
 msgid ""
 "Additionally these alpha images are not created if `[AudioVisual] -> "
 "LightFlashAlphaImageDetailLevel` is higher than current detail level, "
@@ -494,7 +463,7 @@ msgstr ""
 "此外如果 `[AudioVisual] -> LightFlashAlphaImageDetailLevel` 高于当前画质级别，那么无论 "
 "`HideLightFlashEffects` 设置如何，这些 AlphaImage 都不会被创建。"
 
-#: ../../User-Interface.md:145
+#: ../../User-Interface.md:140
 msgid ""
 "[AudioVisual]\n"
 "WarheadParticleAlphaImageIsLightFlash=false  ; boolean\n"
@@ -509,20 +478,20 @@ msgstr ""
 "\n"
 "[SOMEWARHEAD]                                ; WarheadType\n"
 "Particle.AlphaImageIsLightFlash=             ; boolean\n"
+
+#: ../../User-Interface.md:150
+msgid ""
+"[Phobos]\n"
+"HideLightFlashEffects=false  ; boolean\n"
+msgstr ""
+"[Phobos]\n"
+"HideLightFlashEffects=false  ; boolean\n"
 
 #: ../../User-Interface.md:155
-msgid ""
-"[Phobos]\n"
-"HideLightFlashEffects=false  ; boolean\n"
-msgstr ""
-"[Phobos]\n"
-"HideLightFlashEffects=false  ; boolean\n"
-
-#: ../../User-Interface.md:160
 msgid "Low priority for box selection"
 msgstr "低优先级框选"
 
-#: ../../User-Interface.md:162
+#: ../../User-Interface.md:157
 msgid ""
 "![smartvesters](_static/images/lowpriority-01.gif) *Harvesters not "
 "selected together with battle units in [Rise of the "
@@ -531,11 +500,11 @@ msgstr ""
 "![智能矿车](_static/images/lowpriority-01.gif) "
 "*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中的矿车不会与作战单位一同被选中*"
 
-#: ../../User-Interface.md:162
+#: ../../User-Interface.md:157
 msgid "smartvesters"
 msgstr "智能矿车"
 
-#: ../../User-Interface.md:165
+#: ../../User-Interface.md:160
 msgid ""
 "You can now set lower priority for an ingame object (currently has effect"
 " on units mostly), which means it will be excluded from box selection if "
@@ -548,7 +517,7 @@ msgstr ""
 "现在你可以为游戏中的对象设置较低的优先级（目前主要影响单位），这意味着如果框选区域内至少有一个正常优先级的单位，则该对象将被排除在框选结果之外。否则它会被正常地选中。适用于带类型选择框选（类型选择热键"
 " + 拖动）和普通框选。如果要添加的单位中不存在正常优先级的单位那么 Shift 框选时正常将低优先级单位添加到选中的组中。"
 
-#: ../../User-Interface.md:168
+#: ../../User-Interface.md:163
 msgid ""
 "[SOMETECHNO]                ; TechnoType\n"
 "LowSelectionPriority=false  ; boolean\n"
@@ -556,98 +525,26 @@ msgstr ""
 "[SOMETECHNO]                ; TechnoType\n"
 "LowSelectionPriority=false  ; boolean\n"
 
-#: ../../User-Interface.md:173 ../../User-Interface.md:237
-#: ../../User-Interface.md:252
+#: ../../User-Interface.md:168 ../../User-Interface.md:210
+#: ../../User-Interface.md:225
 msgid ""
 "This behavior is designed to be toggleable by users. For now you can only"
 " do that externally via client or manually."
 msgstr "此行为设计为可由用户切换。目前你只能通过客户端或进行手动设置。"
 
+#: ../../User-Interface.md:171
+msgid ""
+"[Phobos]\n"
+"PrioritySelectionFiltering=true  ; boolean\n"
+msgstr ""
+"[Phobos]\n"
+"PrioritySelectionFiltering=true  ; boolean\n"
+
 #: ../../User-Interface.md:176
-msgid ""
-"[Phobos]\n"
-"PrioritySelectionFiltering=true  ; boolean\n"
-msgstr ""
-"[Phobos]\n"
-"PrioritySelectionFiltering=true  ; boolean\n"
-
-#: ../../User-Interface.md:181
-msgid "Visual indication of income from grinders and refineries"
-msgstr "从回收站和矿场获得收入的视觉提示"
-
-#: ../../User-Interface.md:183
-msgid ""
-"`DisplayIncome` can be set to display the amount of credits acquired when"
-" a building is grinding units / receiving ore dump from harvesters or "
-"slaves."
-msgstr "`DisplayIncome` 可以设置为显示建筑在回收单位或从矿车或奴隶接受矿石时获得的资金点数。"
-
-#: ../../User-Interface.md:184
-msgid ""
-"Multiple income within less than one in-game second have their amounts "
-"coalesced into single display."
-msgstr "在游戏内不到一秒的时间内多次收入的金额将会合并成一个来显示。"
-
-#: ../../User-Interface.md:185
-msgid ""
-"`DisplayIncome.Houses` determines which houses can see the credits "
-"display."
-msgstr "`DisplayIncome.Houses` 决定哪些所属方可以看到资金点数显示。"
-
-#: ../../User-Interface.md:186
-msgid ""
-"If you don't want players to see how AI cheats with `VirtualPurifiers` "
-"for example, `DisplayIncome.AllowAI` can be set to false to disable the "
-"display. It overrides the previous option."
-msgstr ""
-"例如如果你不希望玩家看到 AI 如何通过 `VirtualPurifiers` 作弊，可以将 `DisplayIncome.AllowAI` 设为"
-" false 以禁用。覆盖上一条选项。"
-
-#: ../../User-Interface.md:187
-msgid ""
-"`DisplayIncome.Offset` is additional pixel offset for the center of the "
-"credits display, by default `0,0` at building's center."
-msgstr "`DisplayIncome.Offset` 是资金点数显示中心以像素为单位的额外偏移，默认 `0,0` 即建筑的中心。"
-
-#: ../../User-Interface.md:188
-msgid ""
-"`[AudioVisual] -> DisplayIncome` also allows to display the amount of "
-"credits when selling a unit on a repair bay."
-msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
-
-#: ../../User-Interface.md:191
-msgid ""
-"[AudioVisual]\n"
-"DisplayIncome=false       ; boolean\n"
-"DisplayIncome.Houses=All  ; Affected House Enumeration "
-"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
-"DisplayIncome.AllowAI=yes ; boolean\n"
-"\n"
-"[SOMEBUILDING]            ; BuildingType\n"
-"DisplayIncome=            ; boolean, defaults to [AudioVisual] -> "
-"DisplayIncome\n"
-"DisplayIncome.Houses=     ; Affected House Enumeration, defaults to "
-"[AudioVisual] -> DisplayIncome.Houses\n"
-"DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default\n"
-msgstr ""
-"[AudioVisual]\n"
-"DisplayIncome=false       ; boolean\n"
-"DisplayIncome.Houses=All  ; Affected House Enumeration "
-"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
-"DisplayIncome.AllowAI=yes ; boolean\n"
-"\n"
-"[SOMEBUILDING]            ; BuildingType\n"
-"DisplayIncome=            ; boolean, defaults to [AudioVisual] -> "
-"DisplayIncome\n"
-"DisplayIncome.Houses=     ; Affected House Enumeration, defaults to "
-"[AudioVisual] -> DisplayIncome.Houses\n"
-"DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default\n"
-
-#: ../../User-Interface.md:203
 msgid "Placement preview"
 msgstr "放置预览"
 
-#: ../../User-Interface.md:205
+#: ../../User-Interface.md:178
 msgid ""
 "![placepreview](_static/images/placepreview.png) *Building placement "
 "preview using 50% translucency in [Rise of the "
@@ -656,11 +553,11 @@ msgstr ""
 "![放置预览](_static/images/placepreview.png) "
 "*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中使用 50% 透明度的建筑放置预览*"
 
-#: ../../User-Interface.md:205
+#: ../../User-Interface.md:178
 msgid "placepreview"
 msgstr "放置预览"
 
-#: ../../User-Interface.md:208
+#: ../../User-Interface.md:181
 msgid ""
 "Building previews can now be enabled when placing a building for "
 "construction. This can be enabled on a global basis with `[AudioVisual] "
@@ -670,7 +567,7 @@ msgstr ""
 "现在放置建筑进行建造时可以启用建筑预览。这可以通过在全局设置 `[AudioVisual] -> PlacementPreview` "
 "和每个建筑上设置 `[BuildingType] -> PlacementPreview` 来进一步自定义开启。"
 
-#: ../../User-Interface.md:209
+#: ../../User-Interface.md:182
 msgid ""
 "The building placement grid (`place.shp`) translucency setting can be "
 "adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is "
@@ -680,7 +577,7 @@ msgstr ""
 "可以调整建筑放置网格（`place.shp`）的透明度，如果 `PlacementPreview` 被启用，那么由 "
 "`PlacementGrid.TranslucencyWithPreview` 来进行调整。"
 
-#: ../../User-Interface.md:210
+#: ../../User-Interface.md:183
 msgid ""
 "If using the building's appropriate `Buildup` is not desired, "
 "customizations allow for you to choose the exact SHP and frame you'd "
@@ -691,14 +588,14 @@ msgstr ""
 "`PlacementPreview.Shape`、`PlacementPreview.ShapeFrame` 和 "
 "`PlacementPreview.Palette` 来选择你希望显示的确切 Shape 文件和帧。"
 
-#: ../../User-Interface.md:211
+#: ../../User-Interface.md:184
 msgid ""
 "You can specify theater-specific palettes and shapes by putting three `~`"
 " marks to the theater specific part of the filename. `~~~` is replaced "
 "with the theater’s three-letter extension."
 msgstr "你可以通过在文件名的特定部分添加三个 `~` 标记来指定特定气候的色盘和 Shape 文件。`~~~` 将被替换为气候的三字母扩展名。"
 
-#: ../../User-Interface.md:212
+#: ../../User-Interface.md:185
 msgid ""
 "`PlacementPreview.ShapeFrame` tag defaults to building's artmd.ini "
 "`Buildup` entry's last non-shadow frame. If there is no 'Buildup' "
@@ -708,7 +605,7 @@ msgstr ""
 "`PlacementPreview.ShapeFrame` 标签默认为建筑 `artmd.ini` 中 `Buildup` "
 "条目的最后一个非阴影帧。如果没有指定 `Buildup` 那么它会尝试使用建筑本体的第一帧（动画帧和 Bib 不包括在此预览效果中）作为默认值。"
 
-#: ../../User-Interface.md:215
+#: ../../User-Interface.md:188
 msgid ""
 "[AudioVisual]\n"
 "PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)"
@@ -760,7 +657,7 @@ msgstr ""
 "PlacementPreview.Translucency=       ; translucency level (0/25/50/75), "
 "defaults to [AudioVisual] -> PlacementPreview.Translucency\n"
 
-#: ../../User-Interface.md:234
+#: ../../User-Interface.md:207
 msgid ""
 "The `PlacementPreview.Palette` option is not used when "
 "`PlacementPreview.Remap` is set to yes. This may change in future."
@@ -768,7 +665,7 @@ msgstr ""
 "当 `PlacementPreview.Remap` 设为 yes 时 `PlacementPreview.Palette` "
 "不会被使用。这在未来可能进行更改。"
 
-#: ../../User-Interface.md:240
+#: ../../User-Interface.md:213
 msgid ""
 "[Phobos]\n"
 "ShowPlacementPreview=yes   ; boolean\n"
@@ -776,17 +673,17 @@ msgstr ""
 "[Phobos]\n"
 "ShowPlacementPreview=yes   ; boolean\n"
 
-#: ../../User-Interface.md:245
+#: ../../User-Interface.md:218
 msgid "Real time timers"
 msgstr "实时计时器"
 
-#: ../../User-Interface.md:247
+#: ../../User-Interface.md:220
 msgid ""
 "Timers can now display values in real time, taking game speed into "
 "account. This can be enabled with `RealTimeTimers=true`."
 msgstr "计时器现在可以实时显示值，同时考虑游戏速度。这可以通过 `RealTimeTimers=true` 来启用。"
 
-#: ../../User-Interface.md:248
+#: ../../User-Interface.md:221
 msgid ""
 "By default, time is calculated relative to desired framerate. Enabling "
 "`RealTimeTimers.Adaptive` (always true for unlimited FPS and custom "
@@ -796,17 +693,17 @@ msgstr ""
 "默认情况下，时间是根据期望的帧率计算的。当启用 `RealTimeTimers.Adaptive`（对于无限制 FPS 和自定义速度始终为 "
 "true）时，时间将根据 *当前* FPS 计算，同时考虑延迟。"
 
-#: ../../User-Interface.md:249
+#: ../../User-Interface.md:222
 msgid ""
 "When playing with unlimited FPS (or custom speed above 60 FPS), the "
 "timers might constantly change value because of the unstable nature."
 msgstr "在使用无限制 FPS（或自定义速度高于 60 FPS）时，计时器可能会因为不稳定而不断改变数值。"
 
-#: ../../User-Interface.md:250
+#: ../../User-Interface.md:223
 msgid "This option respects custom game speeds."
 msgstr "此选项尊重自定义游戏速度。"
 
-#: ../../User-Interface.md:255
+#: ../../User-Interface.md:228
 msgid ""
 "[Phobos]\n"
 "RealTimeTimers=false            ; boolean\n"
@@ -816,17 +713,80 @@ msgstr ""
 "RealTimeTimers=false            ; boolean\n"
 "RealTimeTimers.Adaptive=false   ; boolean\n"
 
-#: ../../User-Interface.md:261
+#: ../../User-Interface.md:234
+msgid "Show designator & inhibitor range"
+msgstr "显示指示者和抑制者范围"
+
+#: ../../User-Interface.md:236
+msgid ""
+"It is now possible to display range of designator and inhibitor units "
+"when in super weapon targeting mode. Each instance of player owned techno"
+" types listed in `[SuperWeapon] -> SW.Designators` will display a circle "
+"with radius set in `[TechnoType] -> DesignatorRange` or `Sight`."
+msgstr ""
+"现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators`"
+" 中的科技类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
+
+#: ../../User-Interface.md:237
+msgid ""
+"In a similar manner, each instance of enemy owned techno types listed in "
+"`[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in"
+" `[TechnoType] -> InhibitorRange` or `Sight`."
+msgstr ""
+"类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的科技类型将显示一个半径由 "
+"`[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
+
+#: ../../User-Interface.md:238
+msgid ""
+"This feature can be disabled globally with `[AudioVisual] -> "
+"ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> "
+"ShowDesignatorRange=false`."
+msgstr ""
+"可以通过全局的 `[AudioVisual] -> ShowDesignatorRange=false` 或超级武器类型上的 "
+"`[SuperWeapon] -> ShowDesignatorRange=false` 来禁用此功能。"
+
+#: ../../User-Interface.md:239
+msgid ""
+"This feature can be toggled *by the player* (if enabled in the mod) with "
+"`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
+" hotkey](#toggle-designator-range) in \"Interface\" category."
+msgstr ""
+"此功能可以 *由玩家* 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
+"或 “界面” 类别中的 [“开启指示者范围显示” 热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
+
+#: ../../User-Interface.md:242
+msgid ""
+"[AudioVisual]\n"
+"ShowDesignatorRange=true    ; boolean\n"
+"\n"
+"[SOMESW]                    ; SuperWeaponType\n"
+"ShowDesignatorRange=true    ; boolean\n"
+msgstr ""
+"[AudioVisual]\n"
+"ShowDesignatorRange=true    ; boolean\n"
+"\n"
+"[SOMESW]                    ; SuperWeaponType\n"
+"ShowDesignatorRange=true    ; boolean\n"
+
+#: ../../User-Interface.md:251
+msgid ""
+"[Phobos]\n"
+"ShowDesignatorRange=false             ; boolean\n"
+msgstr ""
+"[Phobos]\n"
+"ShowDesignatorRange=false             ; boolean\n"
+
+#: ../../User-Interface.md:256
 msgid "SuperWeapon ShowTimer sorting"
 msgstr "超级武器计时器优先级"
 
-#: ../../User-Interface.md:263
+#: ../../User-Interface.md:258
 msgid ""
 "You can now sort the timers of superweapons in ascending order from top "
 "to bottom according to a given priority value."
 msgstr "现在你可以根据给定的优先级数值将超级武器的计时器从上到下按升序排列。"
 
-#: ../../User-Interface.md:266
+#: ../../User-Interface.md:261
 msgid ""
 "[SOMESW]              ; SuperWeaponType\n"
 "ShowTimer=yes\n"
@@ -836,11 +796,11 @@ msgstr ""
 "ShowTimer=yes\n"
 "ShowTimer.Priority=0  ; integer\n"
 
-#: ../../User-Interface.md:272
+#: ../../User-Interface.md:267
 msgid "Type select for buildings"
 msgstr "建筑同类选择"
 
-#: ../../User-Interface.md:273
+#: ../../User-Interface.md:268
 msgid ""
 "In vanilla game, type select can almost only be used on 1x1 buildings "
 "with `UndeploysInto`. Now it's possible to use it on all buildings if "
@@ -849,7 +809,7 @@ msgstr ""
 "在原本的游戏中，类型选择几乎只能用于拥有 `UndeploysInto` 的 1x1 建筑。现在如果将 "
 "`BuildingTypeSelectable` 设为 true，那么也可以对所有建筑使用类型选择。"
 
-#: ../../User-Interface.md:276
+#: ../../User-Interface.md:271
 msgid ""
 "[General]\n"
 "BuildingTypeSelectable=false  ; boolean\n"
@@ -857,7 +817,7 @@ msgstr ""
 "[General]\n"
 "BuildingTypeSelectable=false  ; boolean\n"
 
-#: ../../User-Interface.md:282
+#: ../../User-Interface.md:277
 msgid ""
 "In Vanilla, you can type select a building by holding down the T key in "
 "advance and then clicking on the building. However, other type selection "
@@ -868,43 +828,83 @@ msgstr ""
 "在原版中，你可以通过提前按住 `T` 键然后点击建筑来进行类型选择。然而，其他类型选择方法（例如先选择建筑再按 `T` "
 "键，或者先选择建筑再按底边栏的类型选择按钮）对建筑无效。"
 
-#: ../../User-Interface.md:286
+#: ../../User-Interface.md:281
 msgid ""
 "Due to technical limitations, this feature is forcibly disabled without "
 "Ares."
 msgstr "由于技术限制，没有 Ares 的情况此功能将被强制禁用。"
 
+#: ../../User-Interface.md:284
+msgid "Visual indication of income from grinders and refineries"
+msgstr "从回收站和矿场获得收入的视觉提示"
+
+#: ../../User-Interface.md:286
+msgid ""
+"`DisplayIncome` can be set to display the amount of credits acquired when"
+" a building is grinding units / receiving ore dump from harvesters or "
+"slaves."
+msgstr "`DisplayIncome` 可以设置为显示建筑在回收单位或从矿车或奴隶接受矿石时获得的资金点数。"
+
+#: ../../User-Interface.md:287
+msgid ""
+"Multiple income within less than one in-game second have their amounts "
+"coalesced into single display."
+msgstr "在游戏内不到一秒的时间内多次收入的金额将会合并成一个来显示。"
+
+#: ../../User-Interface.md:288
+msgid ""
+"`DisplayIncome.Houses` determines which houses can see the credits "
+"display."
+msgstr "`DisplayIncome.Houses` 决定哪些所属方可以看到资金点数显示。"
+
 #: ../../User-Interface.md:289
-msgid "Flashing Technos on selecting"
-msgstr "闪烁选中的科技类型"
+msgid ""
+"If you don't want players to see how AI cheats with `VirtualPurifiers` "
+"for example, `DisplayIncome.AllowAI` can be set to false to disable the "
+"display. It overrides the previous option."
+msgstr ""
+"例如如果你不希望玩家看到 AI 如何通过 `VirtualPurifiers` 作弊，可以将 `DisplayIncome.AllowAI` 设为"
+" false 以禁用。覆盖上一条选项。"
+
+#: ../../User-Interface.md:290
+msgid ""
+"`DisplayIncome.Offset` is additional pixel offset for the center of the "
+"credits display, by default `0,0` at building's center."
+msgstr "`DisplayIncome.Offset` 是资金点数显示中心以像素为单位的额外偏移，默认 `0,0` 即建筑的中心。"
 
 #: ../../User-Interface.md:291
 msgid ""
-"Selecting technos, controlled by player, now may show a flash effect by "
-"setting `SelectionFlashDuration` parameter higher than 0."
-msgstr "现在可以通过设置一个大于 0 的 `SelectionFlashDuration` 来让由玩家控制的单位在被选中时可以出现闪烁效果。"
+"`[AudioVisual] -> DisplayIncome` also allows to display the amount of "
+"credits when selling a unit on a repair bay."
+msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
 
-#: ../../User-Interface.md:292
-msgid ""
-"The feature can be toggled on/off by user if enabled in mod via "
-"`ShowFlashOnSelecting` setting in `RA2MD.INI`."
-msgstr "此功能可以在 mod 中于 `RA2MD.INI` 设置 `ShowFlashOnSelecting` 来由用户自行开关。"
-
-#: ../../User-Interface.md:295
+#: ../../User-Interface.md:294
 msgid ""
 "[AudioVisual]\n"
-"SelectionFlashDuration=0    ; integer, number of frames\n"
+"DisplayIncome=false       ; boolean\n"
+"DisplayIncome.Houses=All  ; Affected House Enumeration "
+"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
+"DisplayIncome.AllowAI=yes ; boolean\n"
+"\n"
+"[SOMEBUILDING]            ; BuildingType\n"
+"DisplayIncome=            ; boolean, defaults to [AudioVisual] -> "
+"DisplayIncome\n"
+"DisplayIncome.Houses=     ; Affected House Enumeration, defaults to "
+"[AudioVisual] -> DisplayIncome.Houses\n"
+"DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default\n"
 msgstr ""
 "[AudioVisual]\n"
-"SelectionFlashDuration=0    ; integer, number of frames\n"
-
-#: ../../User-Interface.md:301
-msgid ""
-"[Phobos]\n"
-"ShowFlashOnSelecting=false  ; boolean\n"
-msgstr ""
-"[Phobos]\n"
-"ShowFlashOnSelecting=false  ; boolean\n"
+"DisplayIncome=false       ; boolean\n"
+"DisplayIncome.Houses=All  ; Affected House Enumeration "
+"(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
+"DisplayIncome.AllowAI=yes ; boolean\n"
+"\n"
+"[SOMEBUILDING]            ; BuildingType\n"
+"DisplayIncome=            ; boolean, defaults to [AudioVisual] -> "
+"DisplayIncome\n"
+"DisplayIncome.Houses=     ; Affected House Enumeration, defaults to "
+"[AudioVisual] -> DisplayIncome.Houses\n"
+"DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default\n"
 
 #: ../../User-Interface.md:306
 msgid "Hotkey Commands"
@@ -1022,7 +1022,7 @@ msgstr "`[ ]` 下一个空闲矿车"
 msgid ""
 "Selects and centers the camera on the next TechnoType that is counted via"
 " the [harvester counter](#harvester-counter) and is currently idle."
-msgstr "选择并将镜头中心转移到下一个被 [矿车指示器](#harvester-counter) 计入且处于空闲状态的科技类型。"
+msgstr "选择并将镜头中心转移到下一个被 [矿车计数器](#harvester-counter) 计入且处于空闲状态的科技类型。"
 
 #: ../../User-Interface.md:341
 msgid ""
@@ -1100,8 +1100,8 @@ msgid ""
 "If there's no CnCNet5 spawner loaded, the window resolution will be "
 "always `800x600`."
 msgstr ""
-"此功能与 CnCNet5 的 -spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5"
-" -spanwer，那么载入分辨率将被锁定为 `800x600`。"
+"此功能与 CnCNet5 Spawner DLL 相结合，它将把载入界面固定为当前游戏分辨率大小并把载入图置于中间。如果没有 CnCNet5"
+" Spanwer，那么载入分辨率将被锁定为 `800x600`。"
 
 #: ../../User-Interface.md:358
 msgid ""
@@ -1118,7 +1118,7 @@ msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这�
 
 #: ../../User-Interface.md:361 ../../User-Interface.md:402
 #: ../../User-Interface.md:431 ../../User-Interface.md:477
-#: ../../User-Interface.md:513 ../../User-Interface.md:544
+#: ../../User-Interface.md:514 ../../User-Interface.md:543
 #: ../../User-Interface.md:580
 msgid "In `uimd.ini`:"
 msgstr "在 `uimd.ini`："
@@ -1255,7 +1255,7 @@ msgstr ""
 msgid ""
 "Can be set to true on buildings with `ProduceCashAmount` to count them as"
 " active 'harvesters' while generating credits."
-msgstr "可以在使用 `ProduceCashAmount` 的建筑上设置为 true 以便在其生成资金时计为工作中的“矿车”。"
+msgstr "可以在使用 `ProduceCashAmount` 的建筑上设置为 true 以便在其生成资金时计为工作中的 “矿车”。"
 
 #: ../../User-Interface.md:426
 msgid ""
@@ -1464,72 +1464,10 @@ msgstr ""
 "ShowPowerDelta=true  ; boolean\n"
 
 #: ../../User-Interface.md:506
-msgid "Weeds counter"
-msgstr "废矿计数器"
-
-#: ../../User-Interface.md:508
-msgid ""
-"Counter for amount of [weeds in storage](Fixed-or-Improved-"
-"Logics.md#weeds--weed-eaters) can be added near the credits indicator."
-msgstr ""
-"你可以在资金示数器附近添加一个额外的计数器用于显示[存储的泰伯利亚废矿](Fixed-or-Improved-Logics.md#weeds"
-"--weed-eaters)的数量。"
-
-#: ../../User-Interface.md:509
-msgid ""
-"You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-"
-"side setting), negative means left/up, positive means right/down."
-msgstr "你可以通过 `Sidebar.WeedsCounter.Offset`（每个阵营的设置）调整计数器位置，负数表示左／上，正数表示右／下。"
-
-#: ../../User-Interface.md:510
-msgid ""
-"Counter is by default displayed in side's tooltip color, which can be "
-"overridden per side by setting `Sidebar.WeedsCounter.Color`."
-msgstr "计数器默认为每个阵营工具条的颜色，可以通过设置 `Sidebar.WeedsCounter.Color` 来为每个阵营独立覆盖设置。"
-
-#: ../../User-Interface.md:511
-msgid ""
-"The feature can be toggled on/off by user if enabled in mod via "
-"`ShowWeedsCounter` setting in `RA2MD.INI`."
-msgstr "此逻辑可以在 mod 中于 `RA2MD.INI` 设置 `ShowWeedsCounter` 来由用户自行开关。"
-
-#: ../../User-Interface.md:514
-msgid ""
-"[Sidebar]\n"
-"WeedsCounter.Show=false          ; boolean\n"
-msgstr ""
-"[Sidebar]\n"
-"WeedsCounter.Show=false          ; boolean\n"
-
-#: ../../User-Interface.md:520
-msgid ""
-"[SOMESIDE]                       ; Side\n"
-"Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default\n"
-"Sidebar.WeedsCounter.Color=      ; integer - R,G,B\n"
-msgstr ""
-"[SOMESIDE]                       ; Side\n"
-"Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default\n"
-"Sidebar.WeedsCounter.Color=      ; integer - R,G,B\n"
-
-#: ../../User-Interface.md:527
-msgid ""
-"[Phobos]\n"
-"ShowWeedsCounter=true  ; boolean\n"
-msgstr ""
-"[Phobos]\n"
-"ShowWeedsCounter=true  ; boolean\n"
-
-#: ../../User-Interface.md:533
-msgid ""
-"Default position for weeds counter overlaps with [harvester counter"
-"](#harvester-counter)."
-msgstr "默认的废矿计数器位置与[矿车计数器](#harvester-counter)重叠。"
-
-#: ../../User-Interface.md:536
 msgid "Producing Progress"
 msgstr "生产进度"
 
-#: ../../User-Interface.md:538
+#: ../../User-Interface.md:508
 msgid ""
 "![image](_static/images/producing-progress-01.gif) *Producing Progress "
 "bars in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-"
@@ -1538,17 +1476,17 @@ msgstr ""
 "![image](_static/images/producing-progress-01.gif) "
 "*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的生产进度条*"
 
-#: ../../User-Interface.md:541
+#: ../../User-Interface.md:511
 msgid "You can now know your factories' status via sidebar!"
 msgstr "现在你可以通过侧边栏了解到你的工厂的状态了！"
 
-#: ../../User-Interface.md:542
+#: ../../User-Interface.md:512
 msgid ""
 "You need to draw your own assets (`tab0xpp.shp`, x is replaced by 0-3) "
 "and put them into `sidec0x.mix`."
 msgstr "你需要自己绘制资源（`tab0xpp.shp`，x 替换为 0-3）并将它们放入 `sidec0x.mix` 中。"
 
-#: ../../User-Interface.md:545
+#: ../../User-Interface.md:515
 msgid ""
 "[Sidebar]\n"
 "ProducingProgress.Show=false  ; boolean\n"
@@ -1556,34 +1494,96 @@ msgstr ""
 "[Sidebar]\n"
 "ProducingProgress.Show=false  ; boolean\n"
 
-#: ../../User-Interface.md:551
+#: ../../User-Interface.md:521
 msgid ""
 "[SOMESIDE]                            ; Side\n"
 "Sidebar.ProducingProgress.Offset=0,0  ; X,Y, pixels relative to default\n"
 msgstr ""
 
-#: ../../User-Interface.md:556
+#: ../../User-Interface.md:526
 msgid "Specify Sidebar style"
 msgstr "指定侧边栏样式"
 
-#: ../../User-Interface.md:558
+#: ../../User-Interface.md:528
 msgid ""
 "It's now possible to switch hardcoded sidebar button coords to use GDI "
 "sidebar coords by setting `Sidebar.GDIPosition`. Defaults to true for "
 "first side, false for all others."
 msgstr ""
 "现在可以通过设置 `Sidebar.GDIPosition` 来切换硬编码的侧边栏按钮坐标为 GDI "
-"阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。\""
+"阵营（原版盟军）侧边栏坐标。默认情况下，第一个阵营为 true，其他阵营为 false。"
 
-#: ../../User-Interface.md:561
+#: ../../User-Interface.md:531
 msgid ""
 "[SOMESIDE]             ; Side\n"
 "Sidebar.GDIPositions=  ; boolean\n"
 msgstr ""
 
+#: ../../User-Interface.md:536
+msgid "Weeds counter"
+msgstr "废矿计数器"
+
+#: ../../User-Interface.md:538
+msgid ""
+"Counter for amount of [weeds in storage](Fixed-or-Improved-"
+"Logics.md#weeds--weed-eaters) can be added near the credits indicator."
+msgstr ""
+"你可以在资金示数器附近添加一个额外的计数器用于显示[存储的泰伯利亚废矿](Fixed-or-Improved-Logics.md#weeds"
+"--weed-eaters)的数量。"
+
+#: ../../User-Interface.md:539
+msgid ""
+"You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-"
+"side setting), negative means left/up, positive means right/down."
+msgstr "你可以通过 `Sidebar.WeedsCounter.Offset`（每个阵营的设置）调整计数器位置，负数表示左／上，正数表示右／下。"
+
+#: ../../User-Interface.md:540
+msgid ""
+"Counter is by default displayed in side's tooltip color, which can be "
+"overridden per side by setting `Sidebar.WeedsCounter.Color`."
+msgstr "计数器默认为每个阵营拓展工具条的颜色，可以通过设置 `Sidebar.WeedsCounter.Color` 来为每个阵营独立覆盖设置。"
+
+#: ../../User-Interface.md:541
+msgid ""
+"The feature can be toggled on/off by user if enabled in mod via "
+"`ShowWeedsCounter` setting in `RA2MD.INI`."
+msgstr "此逻辑可以在 mod 中于 `RA2MD.INI` 设置 `ShowWeedsCounter` 来由用户自行开关。"
+
+#: ../../User-Interface.md:544
+msgid ""
+"[Sidebar]\n"
+"WeedsCounter.Show=false          ; boolean\n"
+msgstr ""
+"[Sidebar]\n"
+"WeedsCounter.Show=false          ; boolean\n"
+
+#: ../../User-Interface.md:550
+msgid ""
+"[SOMESIDE]                       ; Side\n"
+"Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default\n"
+"Sidebar.WeedsCounter.Color=      ; integer - R,G,B\n"
+msgstr ""
+"[SOMESIDE]                       ; Side\n"
+"Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default\n"
+"Sidebar.WeedsCounter.Color=      ; integer - R,G,B\n"
+
+#: ../../User-Interface.md:557
+msgid ""
+"[Phobos]\n"
+"ShowWeedsCounter=true  ; boolean\n"
+msgstr ""
+"[Phobos]\n"
+"ShowWeedsCounter=true  ; boolean\n"
+
+#: ../../User-Interface.md:563
+msgid ""
+"Default position for weeds counter overlaps with [harvester counter"
+"](#harvester-counter)."
+msgstr "默认的废矿计数器位置与[矿车计数器](#harvester-counter)重叠。"
+
 #: ../../User-Interface.md:566
 msgid "Tooltips"
-msgstr "工具条"
+msgstr "拓展工具条"
 
 #: ../../User-Interface.md:568
 msgid ""
@@ -1591,7 +1591,7 @@ msgid ""
 " Final War](https://www.moddb.com/mods/cncfinalwar)*"
 msgstr ""
 "![image](_static/images/tooltips-01.png) *[CnC: Final "
-"War](https://www.moddb.com/mods/cncfinalwar) 中的拓展工具条*"
+"War](https://www.moddb.com/mods/cncfinalwar) 中的拓展拓展工具条*"
 
 #: ../../User-Interface.md:571
 msgid ""
@@ -1600,20 +1600,20 @@ msgid ""
 "character limit is lifted when the feature is enabled via the "
 "corresponding tag, allowing for 1024 character long tooltips."
 msgstr ""
-"现在当鼠标悬停在图标上时侧边栏工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
-" 1024 字符长度的工具提示（喜欢我侧边栏小作文吗）。"
+"现在当鼠标悬停在图标上时侧边栏拓展工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
+" 1024 字符长度的工具提示信息。"
 
 #: ../../User-Interface.md:572
 msgid ""
 "TechnoType's tooltip would display it's name, cost, power, build time and"
 " description (when applicable)."
-msgstr "科技类型的工具提示将显示其名称、成本、电力、建造时间和描述（如果适用）。"
+msgstr "科技类型的拓展工具条将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
 #: ../../User-Interface.md:573
 msgid ""
 "SWType's tooltip would display it's name, cost,  and recharge time (when "
 "applicable)."
-msgstr "超级武器类型的工具提示将显示其名称、成本和 CD（如果适用）。"
+msgstr "超级武器类型的拓展工具条将显示其名称、成本和充能时间（如果适用）。"
 
 #: ../../User-Interface.md:574
 #, python-format
@@ -1624,7 +1624,7 @@ msgid ""
 "is `SW.Shots`."
 msgstr ""
 "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf "
-"中自定义。如果使用双参数格式（例如 `还剩 `%d/%d 发`），第二个整数是 `SW.Shots`。"
+"中自定义。如果使用双参数格式（例如 `还剩 %d/%d 发`），第二个整数是 `SW.Shots`。"
 
 #: ../../User-Interface.md:575
 msgid ""
@@ -1633,29 +1633,29 @@ msgid ""
 " (displayed before correspoding values) with the corresponding tags. "
 "Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default."
 msgstr ""
-"拓展工具提示条不会使用 `TXT_MONEY_FORMAT_1` 和 "
-"`TXT_MONEY_FORMAT_2`。你可以使用相应的标签指定成本、电力和时间标签（在对应值前显示）。默认为 `$ U+0024`，`⚡ "
+"拓展拓展工具条不会使用 `TXT_MONEY_FORMAT_1` 和 "
+"`TXT_MONEY_FORMAT_2`。但你可以使用对应的标签指定成本、电力和时间标签（在对应值前显示）。默认为 `$ U+0024`，`⚡ "
 "U+26A1` 和 `⌚ U+231A`。"
 
 #: ../../User-Interface.md:576
 msgid ""
 "Fixed a bug when switching build queue tabs via QWER didn't make tooltips"
 " disappear as they should, resulting in stuck tooltips."
-msgstr "修复了一个通过 QWER 切换建造队列标签时工具提示没有消失的问题，这导致工具提示卡住。"
+msgstr "修复了一个通过 QWER 切换建造队列标签时拓展工具条没有消失的问题，这导致拓展工具条卡住。"
 
 #: ../../User-Interface.md:577
 msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
 "are excluded from the number you specify)."
-msgstr "现在工具提示条可以超出侧边栏边界以容纳更长的内容。您可以使用新增的标签控制最大文本宽度（不包括边框）。"
+msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。您可以使用新增的标签控制最大文本宽度（不包括边框）。"
 
 #: ../../User-Interface.md:578
 msgid ""
 "`AnchoredToolTips` positions the tooltip always to the left of sidebar, "
 "only applies to if `ExtendedToolTips` is set to true and they are enabled"
 " in user settings."
-msgstr "`AnchoredToolTips` 将工具提示始终定到侧边栏左侧，仅在 `ExtendedToolTips` 设置为 true 且用户启用时生效。"
+msgstr "`AnchoredToolTips` 将拓展工具条始终定到侧边栏左侧，仅在 `ExtendedToolTips` 设置为 true 且用户启用时生效。"
 
 #: ../../User-Interface.md:581
 msgid ""
@@ -1715,7 +1715,7 @@ msgstr ""
 msgid ""
 "The background color and opacity of tooltips can now be customized "
 "globally or per side."
-msgstr "现在可以全局或按阵营自定义工具提示的背景色和不透明度。"
+msgstr "现在可以全局或按阵营自定义拓展工具条的背景色和不透明度。"
 
 #: ../../User-Interface.md:613
 msgid ""
@@ -1774,17 +1774,3 @@ msgid ""
 msgstr ""
 "[Phobos]\n"
 "SaveGameOnScenarioStart=true ; boolean\n"
-
-#~ msgid ""
-#~ "By default, values are displayed in "
-#~ "`current/maximum` format (i.e. `20/40`). "
-#~ "`HideMaxValue=yes` will make the counter "
-#~ "show only the current value (i.e. "
-#~ "20). `Percentage=yes` changes the format "
-#~ "to `percent%` (i.e. `50%`)."
-#~ msgstr ""
-#~ "默认情况下，值以 `当前值/最大值` 的格式显示（例如 "
-#~ "`20/40`）。`HideMaxValue=yes` 将使计数器仅显示当前值（例如 "
-#~ "`20`）。`Percentage=yes` 将格式更改为 `百分比 %`（例如 "
-#~ "`50%`）。"
-
