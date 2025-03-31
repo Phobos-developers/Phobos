@@ -175,7 +175,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Technos are no longer unable to stop the area guard mission.
   - Aircraft no longer find airport twice and overlap.
   - Aircraft no longer briefly pause in the air before returning.
-  - Aircraft with `AirportBound=no` continue moving forward.
+  - Aircraft with `AirportBound=no` no longer continue moving forward.
+  - Technos are no longer unable to stop when it is above the elevated bridge.
+  - Technos are still not allowed to stop moving under the elevated bridge, but can stop other missions.
 - Now in air team members will use the 2D distance instead of the 3D distance to judge whether have reached the mission destination, so as to prevent the problem that the mission is stuck and cannot continue in some cases (such as when the jumpjet stops on the building).
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
@@ -194,6 +196,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
 - Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
+- Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
+- Fixed an issue where `FireAngle` would not work properly under certain circumstances.
 
 ## Fixes / interactions with other extensions
 
@@ -587,7 +591,7 @@ AirburstWeapon.ApplyFirepowerMult=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-BombParachute=          ; AnimationType, default to [General]->BombParachute
+BombParachute=          ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Cluster scatter distance customization
@@ -1336,6 +1340,20 @@ KeepTargetOnMove=false            ; boolean
 KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
 ```
 
+### Sinking behavior dehardcode
+
+- In vanilla, whether a ship sinks when it dies on the water is determined by multiple settings of hardcoding. The speed of the sinking is hardcoded to 5 Leptons per frame.
+- Now you can determine whether a ship sinks with a dedicated flag `Sinkable`, and use `SinkSpeed` to customize the speed at which the ship sinks.
+- `Sinkable.SquidGrab` controls the behavior of a ship when it is killed by a squid. Set it to `false` to cause the ship to take a lethal damage instead of sinking directly at that time (and thus obey `Sinkable` settings).
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+Sinkable=               ; bool
+SinkSpeed=5             ; integer, lepton per frame
+Sinkable.SquidGrab=true    ; bool
+```
+
 ### Stationary vehicles
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
@@ -1519,7 +1537,7 @@ Rocker.AmplitudeOverride=       ; integer
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
 - `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage] -> SplashList` are used.
-  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to these animations in same manner as the `AnimList` equivalents.
+  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to these animations in same manner as the `AnimList` equivalents.
 - - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land. This determines whether to use `AnimList` or `SplashList` when hitting surface ships.
 
@@ -1670,6 +1688,7 @@ FireOnce.ResetSequence=true  ; boolean
 - You can now specify individual bolts you want to disable for `IsElectricBolt=true` weapons. Note that this is only a visual change.
 - By default `IsElectricBolt=true` effect draws a bolt with 8 arcs. This can now be customized per WeaponType with `Bolt.Arcs`. Value of 0 results in a straight line being drawn.
 - `Bolt.Duration` can be specified to explicitly set the overall duration of the visual electric bolt effect. Only values in range of 1 to 31 are accepted, values outside this range are clamped into it.
+- `Bolt.FollowFLH` can be used to override the default behaviour where the electric bolt source coordinates change to match the unit's firing coord on every frame (making it follow unit's movement, rotation etc). Defaults to true on vehicles, false for everything else.
 
 In `rulesmd.ini`:
 ```ini
@@ -1679,10 +1698,11 @@ Bolt.Disable2=false    ; boolean
 Bolt.Disable3=false    ; boolean
 Bolt.Arcs=8            ; integer
 Bolt.Duration=17       ; integer, game frames
+Bolt.FollowFLH=        ; boolean
 ```
 
 ```{note}
-Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html).
+Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
 ```
 
 ### Single-color lasers

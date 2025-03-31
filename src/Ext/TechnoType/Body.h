@@ -236,6 +236,10 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> NoQueueUpToEnter;
+		Nullable<bool> NoQueueUpToUnload;
+		Valueable<bool> Passengers_BySize;
+
 		Valueable<int> RateDown_Delay;
 		Valueable<bool> RateDown_Reset;
 		Valueable<int> RateDown_Cover_Value;
@@ -269,6 +273,10 @@ public:
 		Valueable<AnimTypeClass*> Spawner_RecycleAnim;
 		Valueable<CoordStruct> Spawner_RecycleCoord;
 		Valueable<bool> Spawner_RecycleOnTurret;
+
+		Nullable<bool> Sinkable;
+		Valueable<bool> Sinkable_SquidGrab;
+		Valueable<int> SinkSpeed;
 
 		struct LaserTrailDataEntry
 		{
@@ -503,6 +511,10 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
+			, NoQueueUpToEnter {}
+			, NoQueueUpToUnload {}
+			, Passengers_BySize { true }
+
 			, RateDown_Delay { 0 }
 			, RateDown_Reset { false }
 			, RateDown_Cover_Value { 0 }
@@ -536,6 +548,10 @@ public:
 			, Spawner_RecycleAnim { }
 			, Spawner_RecycleCoord { {0,0,0} }
 			, Spawner_RecycleOnTurret { false }
+
+			, Sinkable { }
+			, Sinkable_SquidGrab { true }
+			, SinkSpeed { 5 }
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types {}
