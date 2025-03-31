@@ -194,6 +194,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
 - Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
+- Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc.
 
 ## Fixes / interactions with other extensions
 
