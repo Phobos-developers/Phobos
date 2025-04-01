@@ -416,6 +416,9 @@ This page lists all the individual contributions to the project by their author.
   - Delay automatic attack on the controlled unit
   - Fast access vehicle
   - Fixed an issue that some amphibious technos being unable to enter on water structures
+  - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
+  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -446,7 +449,8 @@ This page lists all the individual contributions to the project by their author.
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
   - Sinkablity and sinking speed customization
-  - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+  - Fixed an issue where `FireAngle` would not work properly under certain circumstances
+  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
