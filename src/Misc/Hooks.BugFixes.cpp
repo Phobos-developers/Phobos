@@ -1374,6 +1374,7 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
+
 DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
 DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
@@ -1666,4 +1667,39 @@ DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 	pThis->BarrelFacing.SetCurrent(*pDir);
 
 	return SkipGameCode;
+}
+
+namespace BulletDrawVoxelTemp
+{
+	ConvertClass* Convert = nullptr;
+}
+
+DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
+{
+	GET(BulletClass*, pThis, EAX);
+
+	if (pThis->Type->AnimPalette)
+	{
+		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL;
+	}
+	else if (pThis->Type->FirersPalette)
+	{
+		const int inheritColor = pThis->InheritedColor;
+		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array.Items[colorIndex]->LightConvert;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x46B23C, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+{
+	const auto pConvert = BulletDrawVoxelTemp::Convert;
+
+	if (!pConvert)
+		return 0;
+
+	R->ECX(pConvert);
+	return R->Origin() + 6;
 }

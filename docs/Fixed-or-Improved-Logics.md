@@ -205,6 +205,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
 - Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
+- Allow voxel projectiles to use AnimPalette and FirersPalette.
 
 ## Fixes / interactions with other extensions
 
