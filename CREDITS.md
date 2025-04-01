@@ -363,7 +363,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
    - Fix `DefaultDisguise` showing wrong house colors for different players
    - Taking over Ares' AlphaImage respawn logic to reduce lags from it
-   - Allow voxel projectiles to use AnimPalette and FirersPalette
+   - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -454,9 +454,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
   - Sinkablity and sinking speed customization
-  - Fix an issue where `FireAngle` would not work properly under certain circumstances.
-  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
-  - Fix the bug that healing weapons could not automatically acquire aerial targets.
+  - Fix an issue where `FireAngle` would not work properly under certain circumstances
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix the bug that healing weapons could not automatically acquire aerial targets
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

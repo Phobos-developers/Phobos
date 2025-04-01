@@ -1450,8 +1450,8 @@ msgid "Taking over Ares' AlphaImage respawn logic to reduce lags from it"
 msgstr "接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿"
 
 #: ../../../CREDITS.md:367
-msgid "Allow voxel projectiles to use AnimPalette and FirersPalette"
-msgstr ""
+msgid "Allow voxel projectiles to use `AnimPalette` and `FirersPalette`"
+msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`"
 
 #: ../../../CREDITS.md:368
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1698,11 +1698,10 @@ msgid "Laser, electric bolt and rad beam scatter"
 msgstr "激光、EBolt 和辐射波的散布"
 
 #: ../../../CREDITS.md:427
-#, fuzzy
 msgid ""
 "Fixed an issue that laser, electric bolt and rad beam not support "
 "`Inviso=true` projectiles with `FlakScatter=true` to scatter"
-msgstr "修复了激光、EBolt、辐射波不支持 `FlakScatter=true` 与 `Inaccurate=true` 抛射体的问题"
+msgstr "修复了激光、EBolt、辐射波在 `FlakScatter=true` 的 `Inviso=true` 抛射体上不不跟随散布的问题"
 
 #: ../../../CREDITS.md:428
 msgid "**Ollerus**:"
@@ -1808,7 +1807,6 @@ msgid "Recycle the spawner on other FLH"
 msgstr "使用其他 FLH 回收子机"
 
 #: ../../../CREDITS.md:455
-#, fuzzy
 msgid ""
 "Fix the bug that spawned can not return to buildings with foundation "
 "bigger than 1x1"
@@ -1823,24 +1821,23 @@ msgid "Sinkablity and sinking speed customization"
 msgstr "自定义能否沉没以及沉没速度"
 
 #: ../../../CREDITS.md:458
-#, fuzzy
 msgid ""
 "Fix an issue where `FireAngle` would not work properly under certain "
-"circumstances."
+"circumstances"
 msgstr "修复了 `FireAngle` 在某些情况下未能正常工作的问题"
 
 #: ../../../CREDITS.md:459
-#, fuzzy
 msgid ""
 "Fix an issue that in air aircraft carriers being unable to attack when it"
-" is near by elevated bridges."
+" is near by elevated bridges"
 msgstr "修复了空天母舰靠近高架桥梁时无法攻击的问题"
 
 #: ../../../CREDITS.md:460
 msgid ""
 "Fix the bug that healing weapons could not automatically acquire aerial "
-"targets."
+"targets"
 msgstr ""
+"修复了治疗武器无法自动获取到空中目标的 Bug"
 
 #: ../../../CREDITS.md:461
 msgid "**tyuah8**:"

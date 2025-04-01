@@ -7732,7 +7732,7 @@ msgid ""
 "`VisualScatter` to true."
 msgstr ""
 "现在你可以在 `VisualScatter` 设为 true "
-"时为视觉效果（`IsLaser=true`、`IsElectricBolt=true` 或 `IsRadBeam=true`）指定散布范围"
+"时为视觉效果（`IsLaser=true`、`IsElectricBolt=true` 或 `IsRadBeam=true`）添加一个随机偏移。"
 
 #: ../../New-or-Enhanced-Logics.md:2180
 msgid ""
@@ -7753,8 +7753,9 @@ msgstr ""
 #: ../../New-or-Enhanced-Logics.md:2190
 msgid ""
 "This function is only used as an additional scattering visual display, "
-"which is different from `BallisticScatter` and can be used "
+"which is different from `BallisticScatter.(Min/Max)` and can be used "
 "simultaneously, without affecting the actual explosion position of the "
 "projectile."
 msgstr ""
+"此功能仅叠加到**视觉效果**原本的散布上，也就是说它独立于 `BallisticScatter.(Min/Max)` 且可共同使用，不会影响抛射体实际爆点的散布。"
 

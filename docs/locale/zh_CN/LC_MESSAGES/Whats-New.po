@@ -1256,13 +1256,12 @@ msgid ""
 msgstr "修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:363
-#, fuzzy
 msgid ""
 "Fixed an issue that laser, electric bolt and rad beam not support "
 "`Inviso=true` projectiles with `FlakScatter=true` to scatter (by "
 "CrimRecya)"
 msgstr ""
-"修复了激光、EBolt、辐射波不支持 `FlakScatter=true` 与 `Inaccurate=true` 抛射体的问题（by "
+"修复了激光、EBolt、辐射波在 `FlakScatter=true` 的 `Inviso=true` 抛射体上不不跟随散布的问题（by "
 "CrimRecya）"
 
 #: ../../Whats-New.md:365 ../../Whats-New.md:694 ../../Whats-New.md:911
@@ -2698,6 +2697,7 @@ msgid ""
 "Fixed the bug that healing weapons could not automatically acquire aerial"
 " targets (by TaranDahl)"
 msgstr ""
+"修复了治疗武器无法自动获取到空中目标的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:639
 msgid "Ares fixes:"
@@ -3896,9 +3896,10 @@ msgstr "允许了观察者查看选中建筑的范围指示器（by Trsdy）"
 
 #: ../../Whats-New.md:880
 msgid ""
-"Allow voxel projectiles to use AnimPalette and FirersPalette (by "
+"Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by "
 "NetsuNegi)"
 msgstr ""
+"允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`（by NetsuNegi）"
 
 #: ../../Whats-New.md:883
 msgid ""
