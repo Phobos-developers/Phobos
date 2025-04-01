@@ -362,6 +362,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
    - Fix `DefaultDisguise` showing wrong house colors for different players
+   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
