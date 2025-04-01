@@ -348,6 +348,7 @@ New:
 - `BombParachute` deglobalization (by TaranDahl)
 - Sinkablity and sinking speed customization (by TaranDahl)
 - Fast access vehicle (by CrimRecya)
+- Laser, electric bolt and rad beam scatter (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -359,6 +360,7 @@ Vanilla fixes:
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
+- Fixed an issue that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
