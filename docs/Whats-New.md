@@ -634,6 +634,7 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
+- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
 
 Ares fixes:
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)

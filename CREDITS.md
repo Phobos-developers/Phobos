@@ -451,11 +451,12 @@ This page lists all the individual contributions to the project by their author.
   - Recycle spawner in long-range
   - Play an anim when recycling a spawner
   - Recycle the spawner on other FLH
-  - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
+  - Fix the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
   - Sinkablity and sinking speed customization
-  - Fixed an issue where `FireAngle` would not work properly under certain circumstances
-  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix an issue where `FireAngle` would not work properly under certain circumstances.
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
+  - Fix the bug that healing weapons could not automatically acquire aerial targets.
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
