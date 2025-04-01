@@ -524,7 +524,6 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
 			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
-			pThis->MissionStatus = 4; // Then guard
 			return UnloadReturn;
 		}
 		else if (!CanUnloadNow(pThis, pPassenger))
