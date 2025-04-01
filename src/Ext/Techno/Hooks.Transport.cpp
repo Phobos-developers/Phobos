@@ -466,3 +466,12 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 }
 
 #pragma endregion
+
+#pragma region AmphibiousEnterAndUnload
+
+// Enter building
+DEFINE_JUMP(LJMP, 0x43C38D, 0x43C3FF); // Skip amphibious and naval check if no Ares
+
+// TODO Enter unit
+
+#pragma endregion

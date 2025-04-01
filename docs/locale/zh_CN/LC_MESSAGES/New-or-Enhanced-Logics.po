@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-31 13:41+0800\n"
+"POT-Creation-Date: 2025-04-01 22:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -612,7 +612,7 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:2068 ../../New-or-Enhanced-Logics.md:2083
 #: ../../New-or-Enhanced-Logics.md:2100 ../../New-or-Enhanced-Logics.md:2113
 #: ../../New-or-Enhanced-Logics.md:2126 ../../New-or-Enhanced-Logics.md:2150
-#: ../../New-or-Enhanced-Logics.md:2168
+#: ../../New-or-Enhanced-Logics.md:2168 ../../New-or-Enhanced-Logics.md:2179
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -6273,10 +6273,11 @@ msgstr "快速上车"
 #: ../../New-or-Enhanced-Logics.md:1684
 msgid ""
 "Now you can let infantry or vehicle passengers quickly enter or leave the"
-" transport vehicles without queuing. Defaults to "
-"`[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`."
+" transport vehicles without queuing. Defaults to `[General] -> "
+"NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`."
 msgstr ""
-"现在你可以让步兵或载具类载员无需排队地快速进入或离开运输载具。默认为 `[General] -> NoQueueUpToEnter` 或 `[General] -> NoQueueUpToUnload`。"
+"现在你可以让步兵或载具类载员无需排队地快速进入或离开运输载具。默认为 `[General] -> NoQueueUpToEnter` 或 "
+"`[General] -> NoQueueUpToUnload`。"
 
 #: ../../New-or-Enhanced-Logics.md:1687
 msgid ""
@@ -7484,9 +7485,8 @@ msgid ""
 "fired on the transport. `OpenToppedDamageMultiplier` is not applied on "
 "feedback weapons."
 msgstr ""
-"当原始武器于运输工具内的载员使用时反馈武器会根据自身的 `FireInTransport` 决定能否发射。"
-"如果反馈武器被发射那么它将命中运输工具。注：`OpenToppedDamageMultiplier` "
-"不适用于反馈武器。"
+"当原始武器于运输工具内的载员使用时反馈武器会根据自身的 `FireInTransport` "
+"决定能否发射。如果反馈武器被发射那么它将命中运输工具。注：`OpenToppedDamageMultiplier` 不适用于反馈武器。"
 
 #: ../../New-or-Enhanced-Logics.md:2101
 msgid ""
@@ -7720,4 +7720,25 @@ msgstr ""
 "(none|land|water|empty|infantry|units|buildings|all)\n"
 "CanTargetHouses=all  ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
+
+#: ../../New-or-Enhanced-Logics.md:2175
+msgid "Visual effect scatter"
+msgstr ""
+
+#: ../../New-or-Enhanced-Logics.md:2177
+msgid ""
+"You can now add a random offset to visual effect's (`IsLaser=true`, "
+"`IsElectricBolt=true` or `IsRadBeam=true`) target location if set "
+"`VisualScatter` to true."
+msgstr ""
+
+#: ../../New-or-Enhanced-Logics.md:2180
+msgid ""
+"[AudioVisual]\n"
+"VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
+"VisualScatter.Max=0.13  ; floating point value, distance in cells\n"
+"\n"
+"[SOMEWEAPON]            ; WeaponType\n"
+"VisualScatter=false     ; boolean\n"
+msgstr ""
 
