@@ -424,6 +424,7 @@ This page lists all the individual contributions to the project by their author.
   - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
   - Laser, electric bolt and rad beam scatter
   - Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
+  - Amphibious access vehicle (by CrimRecya)
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
