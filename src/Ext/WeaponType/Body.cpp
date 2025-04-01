@@ -81,6 +81,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
+	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
 
 	this->RadType.Read<true>(exINI, pSection, "RadType");
 
@@ -88,6 +89,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Strafing_Shots.Read(exINI, pSection, "Strafing.Shots");
 	this->Strafing_SimulateBurst.Read(exINI, pSection, "Strafing.SimulateBurst");
 	this->Strafing_UseAmmoPerShot.Read(exINI, pSection, "Strafing.UseAmmoPerShot");
+	this->Strafing_EndDelay.Read(exINI, pSection, "Strafing.EndDelay");
 	this->CanTarget.Read(exINI, pSection, "CanTarget");
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
@@ -139,10 +141,12 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable3)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
+		.Process(this->Bolt_FollowFLH)
 		.Process(this->Strafing)
 		.Process(this->Strafing_Shots)
 		.Process(this->Strafing_SimulateBurst)
 		.Process(this->Strafing_UseAmmoPerShot)
+		.Process(this->Strafing_EndDelay)
 		.Process(this->CanTarget)
 		.Process(this->CanTargetHouses)
 		.Process(this->RadType)
@@ -310,13 +314,13 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum)
 {
-	if (!pThis || !pFirer)
+	if (!pThis)
 		return 0;
 
 	const auto pExt = WeaponTypeExt::ExtMap.Find(pThis);
 	const auto keepRange = pExt->KeepRange.Get();
 
-	if (!keepRange)
+	if (!keepRange || !pFirer || pFirer->Transporter)
 		return 0;
 
 	const auto absType = pFirer->WhatAmI();

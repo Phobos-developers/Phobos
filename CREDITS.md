@@ -256,6 +256,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
+  - Customizable electric bolt duration and electric bolt-related fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -394,7 +395,7 @@ This page lists all the individual contributions to the project by their author.
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
-  - Fix `Stop` command not working so well in some cases
+  - Fix `Stop` command not working so well in many cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - No rearm and reload in EMP or temporal
@@ -413,8 +414,14 @@ This page lists all the individual contributions to the project by their author.
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
   - Delay automatic attack on the controlled unit
+  - Fast access vehicle
+  - Fixed an issue that some amphibious technos being unable to enter on water structures
+  - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
+  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
+  - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
   - Laser, electric bolt and rad beam scatter
-  - Fix the bug that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles
+  - Fixed an issue that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -443,6 +450,10 @@ This page lists all the individual contributions to the project by their author.
   - Play an anim when recycling a spawner
   - Recycle the spawner on other FLH
   - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
+  - `BombParachute` deglobalization
+  - Sinkablity and sinking speed customization
+  - Fixed an issue where `FireAngle` would not work properly under certain circumstances
+  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
