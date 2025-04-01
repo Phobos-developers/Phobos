@@ -415,6 +415,7 @@ This page lists all the individual contributions to the project by their author.
   - Projectile subject to ground check before firing
   - Delay automatic attack on the controlled unit
   - Fast access vehicle
+  - Fixed an issue that some amphibious technos being unable to enter on water structures
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

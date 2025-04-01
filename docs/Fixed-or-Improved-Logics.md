@@ -198,6 +198,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+- Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures.
 
 ## Fixes / interactions with other extensions
 
