@@ -2185,3 +2185,7 @@ VisualScatter.Max=0.13  ; floating point value, distance in cells
 [SOMEWEAPON]            ; WeaponType
 VisualScatter=false     ; boolean
 ```
+
+```{note}
+This function is only used as an additional scattering visual display, which is different from `BallisticScatter` and can be used simultaneously, without affecting the actual explosion position of the projectile.
+```
