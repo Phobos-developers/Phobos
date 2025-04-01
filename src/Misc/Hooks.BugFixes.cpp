@@ -1139,6 +1139,8 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 #pragma region StopEventFix
 
+DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
+
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
 	enum { SkipGameCode = 0x4C762A };
@@ -1163,6 +1165,9 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	// Clearing the current target should still be necessary for all technos
 	pTechno->SetTarget(nullptr);
+
+	// Stop any enter action
+	pTechno->QueueUpToEnter = nullptr;
 
 	if (commonAircraft)
 	{
@@ -1190,26 +1195,31 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	}
 	else
 	{
-		// Check Jumpjets
 		const auto pFoot = abstract_cast<FootClass*>(pTechno);
-		const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
 
 		// Clear archive target for infantries and vehicles like receive a mega mission
 		if (pFoot && !pAircraft)
 			pTechno->SetArchiveTarget(nullptr);
 
-		// To avoid foots stuck in Mission::Area_Guard
-		if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
-			pTechno->QueueMission(Mission::Guard, true);
+		// Only stop when it is not under the bridge (meeting the original conditions which has been skipped)
+		if (!pTechno->vt_entry_2B0() || pTechno->OnBridge || pTechno->IsInAir() || pTechno->GetCell()->SlopeIndex)
+		{
+			// To avoid foots stuck in Mission::Area_Guard
+			if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+				pTechno->QueueMission(Mission::Guard, true);
 
-		// To avoid jumpjets falling into a state of standing idly by
-		if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
-			pTechno->SetDestination(nullptr, true);
-		else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
-			pTechno->QueueMission(Mission::Guard, true);
-		else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
-			pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
-		// Otherwise landing or idling normally without answering the stop command
+			// Check Jumpjets
+			const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+			// To avoid jumpjets falling into a state of standing idly by
+			if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+				pTechno->SetDestination(nullptr, true);
+			else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+				pTechno->QueueMission(Mission::Guard, true);
+			else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+				pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+			// Otherwise landing or idling normally without answering the stop command
+		}
 	}
 
 	return SkipGameCode;
@@ -1219,8 +1229,27 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 #pragma region UntetherFix
 
-// Radio: do not untether techno who have other tether link
-DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
+// Change enter to move when unlink
+DEFINE_HOOK(0x6F4C50, TechnoClass_ReceiveCommand_NotifyUnlink, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET_STACK(TechnoClass* const, pCall, STACK_OFFSET(0x18, 0x4));
+	// If the link connection is cancelled and foot A is entering techno B, it may cause A and B to overlap
+	if (!pCall->InLimbo // Has not already entered
+		&& (pCall->AbstractFlags & AbstractFlags::Foot) // Is foot
+		&& pCall->CurrentMission == Mission::Enter // Is entering
+		&& static_cast<FootClass*>(pCall)->Destination == pThis) // Is entering techno B
+	{
+		pCall->SetDestination(pThis->GetCell(), false); // Set the destination at its feet
+		pCall->QueueMission(Mission::Move, false); // Replace entering with moving
+		pCall->NextMission(); // Immediately respond to the Mission::Move
+	}
+
+	return 0;
+}
+
+// Do not untether techno who have other tether link
+DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 {
 	// Place the hook after processing to prevent functions from calling each other and getting stuck in a dead loop.
 	GET(TechnoClass* const, pThis, ESI);
@@ -1268,6 +1297,42 @@ Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *
 	return pPoint;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD98, JumpjetLoco_ILoco_Shadow_Point);
+
+#pragma endregion
+
+#pragma region SpawnerFix
+
+// Enable the carrier on the bridge to retrieve the aircraft normally
+DEFINE_HOOK(0x4CF3F9, FlyLocomotionClass_FlightUpdate_FixFlightLevel, 0x5)
+{
+	enum { SkipGameCode = 0x4CF4D2 };
+
+	GET(FlyLocomotionClass* const, pThis, EBP);
+
+	const auto pFoot = pThis->LinkedTo;
+
+	if (pFoot->GetMapCoords() == CellClass::Coord2Cell(pThis->MovingDestination) // Maintain height until on same cell to prevent poor visual display
+		&& MapClass::Instance.GetCellAt(pFoot->Location)->ContainsBridge() // Only effective when on the bridge
+		&& pThis->FlightLevel >= CellClass::BridgeHeight) // Not lower than the ground level
+	{
+		// Subtract the excess bridge height to allow the aircraft to return to the correct altitude
+		pThis->FlightLevel -= CellClass::BridgeHeight;
+	}
+
+	return SkipGameCode;
+}
+
+// Let in air aircraft carrier ignore nearby elevated bridge check
+DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
+{
+	enum { ContinueCheck = 0x6FC61F, TemporaryCannotFire = 0x6FCD0E };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const bool, nearElevatedBridge, EAX);
+
+	// In addition, the return value of the function has been changed to allow the aircraft carrier to retain the current target
+	return (nearElevatedBridge && !pThis->IsInAir()) ? TemporaryCannotFire : ContinueCheck;
+}
 
 #pragma endregion
 
@@ -1588,4 +1653,17 @@ DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 		R->EAX(12);
 
 	return 0;
+}
+
+// WW used SetDesired here, causing the barrel drawn incorrectly.
+DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
+{
+	enum { SkipGameCode = 0x6F6DFA };
+
+	GET(DirStruct*, pDir, ECX);
+	GET(TechnoClass*, pThis, ESI);
+
+	pThis->BarrelFacing.SetCurrent(*pDir);
+
+	return SkipGameCode;
 }

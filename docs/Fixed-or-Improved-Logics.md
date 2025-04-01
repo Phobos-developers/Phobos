@@ -175,7 +175,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Technos are no longer unable to stop the area guard mission.
   - Aircraft no longer find airport twice and overlap.
   - Aircraft no longer briefly pause in the air before returning.
-  - Aircraft with `AirportBound=no` continue moving forward.
+  - Aircraft with `AirportBound=no` no longer continue moving forward.
+  - Technos are no longer unable to stop when it is above the elevated bridge.
+  - Technos are still not allowed to stop moving under the elevated bridge, but can stop other missions.
 - Now in air team members will use the 2D distance instead of the 3D distance to judge whether have reached the mission destination, so as to prevent the problem that the mission is stuck and cannot continue in some cases (such as when the jumpjet stops on the building).
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
@@ -195,6 +197,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
 - Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
+- Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+- Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures.
+- Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own.
+- Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
+- Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
 
 ## Fixes / interactions with other extensions
@@ -228,6 +235,7 @@ VoicePickup=    ; Sound entry
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
+- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or 8 cell distances divided by ROT, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
@@ -589,7 +597,7 @@ AirburstWeapon.ApplyFirepowerMult=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
-BombParachute=          ; AnimationType, default to [General]->BombParachute
+BombParachute=          ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Cluster scatter distance customization
@@ -1338,6 +1346,20 @@ KeepTargetOnMove=false            ; boolean
 KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
 ```
 
+### Sinking behavior dehardcode
+
+- In vanilla, whether a ship sinks when it dies on the water is determined by multiple settings of hardcoding. The speed of the sinking is hardcoded to 5 Leptons per frame.
+- Now you can determine whether a ship sinks with a dedicated flag `Sinkable`, and use `SinkSpeed` to customize the speed at which the ship sinks.
+- `Sinkable.SquidGrab` controls the behavior of a ship when it is killed by a squid. Set it to `false` to cause the ship to take a lethal damage instead of sinking directly at that time (and thus obey `Sinkable` settings).
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]           ; VehicleType
+Sinkable=               ; bool
+SinkSpeed=5             ; integer, lepton per frame
+Sinkable.SquidGrab=true    ; bool
+```
+
 ### Stationary vehicles
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
@@ -1521,7 +1543,7 @@ Rocker.AmplitudeOverride=       ; integer
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
 - `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
 - `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage] -> SplashList` are used.
-  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.ScatterMin/Max` apply to these animations in same manner as the `AnimList` equivalents.
+  - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to these animations in same manner as the `AnimList` equivalents.
 - - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land. This determines whether to use `AnimList` or `SplashList` when hitting surface ships.
 
@@ -1686,7 +1708,7 @@ Bolt.FollowFLH=        ; boolean
 ```
 
 ```{note}
-Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from AirburstWeapon.
+Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
 ```
 
 ### Single-color lasers
