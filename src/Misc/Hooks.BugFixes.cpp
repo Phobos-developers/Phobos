@@ -1680,22 +1680,21 @@ DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
 
 	if (pThis->Type->AnimPalette)
 	{
-		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL();
+		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL;
 	}
 	else if (pThis->Type->FirersPalette)
 	{
 		const int inheritColor = pThis->InheritedColor;
 		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
-		BulletDrawVoxelTemp::Convert = ColorScheme::Array->Items[colorIndex]->LightConvert;
-  }
-  
-  return 0;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array.Items[colorIndex]->LightConvert;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK_AGAIN(0x46B23C, BulletClass_DrawVoxel_SetLightConvert, 0x6)
 DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
 {
-
 	const auto pConvert = BulletDrawVoxelTemp::Convert;
 
 	if (!pConvert)
