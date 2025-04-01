@@ -1187,9 +1187,8 @@ msgid "Fast access vehicle (by CrimRecya)"
 msgstr "快速上车（by CrimRecya）"
 
 #: ../../Whats-New.md:351
-#, fuzzy
 msgid "Laser, electric bolt and rad beam scatter (by CrimRecya)"
-msgstr "新的抛物线轨迹（by CrimRecya）"
+msgstr "激光、EBolt 和辐射波的散布（by CrimRecya）"
 
 #: ../../Whats-New.md:353 ../../Whats-New.md:538 ../../Whats-New.md:845
 #: ../../Whats-New.md:956 ../../Whats-New.md:983 ../../Whats-New.md:1022
@@ -1229,36 +1228,42 @@ msgid ""
 "`MovementZone=AmphibiousCrusher` technos being unable to enter on water "
 "structures (by CrimRecya)"
 msgstr ""
+"修复了 `MovementZone=AmphibiousDestroyer` 与 `MovementZone=AmphibiousCrusher` 的单位无法进入水上建筑的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:359
 msgid ""
 "Fixed an issue that aircraft carriers can not find suitable locations for"
 " attacks when under elevated bridges on their own (by CrimRecya)"
 msgstr ""
+"修复了航空母舰在桥下时无法找到恰当攻击位置的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:360
 msgid ""
 "Fixed an issue that in air aircraft carriers being unable to attack when "
 "it is near by elevated bridges (by CrimRecya & TaranDahl)"
 msgstr ""
+"修复了空天母舰靠近高架桥梁时无法攻击的问题（by CrimRecya 与 TaranDahl）"
 
 #: ../../Whats-New.md:361
 msgid ""
 "Fixed an issue that aircraft carriers cannot retract its spawned aircraft"
 " when on the bridge (by CrimRecya)"
 msgstr ""
+"修复了航空母舰在桥上无法回收子机的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:362
 msgid ""
 "Fixed an issue where the shadow of jumpjet remained on the ground when it"
 " was above the elevated bridge (by CrimRecya)"
 msgstr ""
+"修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:363
 msgid ""
 "Fixed an issue that laser, electric bolt and rad beam not support "
 "`FlakScatter=true` and `Inaccurate=true` projectiles (by CrimRecya)"
 msgstr ""
+"修复了激光、EBolt、辐射波不支持 `FlakScatter=true` 与 `Inaccurate=true` 抛射体的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:365 ../../Whats-New.md:693 ../../Whats-New.md:909
 msgid "Fixes / interactions with other extensions:"
@@ -2689,15 +2694,15 @@ msgid ""
 msgstr "修复了 `FireAngle` 在某些情况下未能正常工作的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:638
-#, fuzzy
 msgid "Ares fixes:"
-msgstr "Phobos 过往版本问题修复："
+msgstr "Ares 已知问题修复："
 
 #: ../../Whats-New.md:639
 msgid ""
 "Taking over Ares' AlphaImage respawn logic to reduce lags from it (by "
 "NetsuNegi)"
 msgstr ""
+"接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿（by NetsuNegi）"
 
 #: ../../Whats-New.md:641 ../../Whats-New.md:717 ../../Whats-New.md:880
 #: ../../Whats-New.md:922 ../../Whats-New.md:935 ../../Whats-New.md:959

@@ -1447,7 +1447,7 @@ msgstr "修复了 `DefaultDisguise` 为不同玩家显示不同所属方颜色�
 
 #: ../../../CREDITS.md:366
 msgid "Taking over Ares' AlphaImage respawn logic to reduce lags from it"
-msgstr ""
+msgstr "接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿"
 
 #: ../../../CREDITS.md:367
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1664,40 +1664,46 @@ msgid ""
 "Fixed an issue that some amphibious technos being unable to enter on "
 "water structures"
 msgstr ""
+"修复了一些两栖单位无法进入水上建筑的问题"
 
 #: ../../../CREDITS.md:421
 msgid ""
 "Fixed an issue that aircraft carriers can not find suitable locations for"
 " attacks when under elevated bridges on their own"
 msgstr ""
+"修复了航空母舰在桥下时无法找到恰当攻击位置的问题"
 
 #: ../../../CREDITS.md:422 ../../../CREDITS.md:458
 msgid ""
 "Fixed an issue that in air aircraft carriers being unable to attack when "
 "it is near by elevated bridges"
 msgstr ""
+"修复了空天母舰靠近高架桥梁时无法攻击的问题"
 
 #: ../../../CREDITS.md:423
 msgid ""
 "Fixed an issue that aircraft carriers cannot retract its spawned aircraft"
 " when on the bridge"
 msgstr ""
+"修复了航空母舰在桥上无法回收子机的问题"
 
 #: ../../../CREDITS.md:424
 msgid ""
 "Fixed an issue where the shadow of jumpjet remained on the ground when it"
 " was above the elevated bridge"
 msgstr ""
+"修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题"
 
 #: ../../../CREDITS.md:425
 msgid "Laser, electric bolt and rad beam scatter"
-msgstr ""
+msgstr "激光、EBolt 和辐射波的散布"
 
 #: ../../../CREDITS.md:426
 msgid ""
 "Fixed an issue that laser, electric bolt and rad beam not support "
 "`FlakScatter=true` and `Inaccurate=true` projectiles"
 msgstr ""
+"修复了激光、EBolt、辐射波不支持 `FlakScatter=true` 与 `Inaccurate=true` 抛射体的问题"
 
 #: ../../../CREDITS.md:427
 msgid "**Ollerus**:"
@@ -1817,7 +1823,6 @@ msgid "Sinkablity and sinking speed customization"
 msgstr "自定义能否沉没以及沉没速度"
 
 #: ../../../CREDITS.md:457
-#, fuzzy
 msgid ""
 "Fixed an issue where `FireAngle` would not work properly under certain "
 "circumstances"

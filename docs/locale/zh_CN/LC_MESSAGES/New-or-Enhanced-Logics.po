@@ -7723,7 +7723,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2175
 msgid "Visual effect scatter"
-msgstr ""
+msgstr "视觉效果散布"
 
 #: ../../New-or-Enhanced-Logics.md:2177
 msgid ""
@@ -7731,6 +7731,7 @@ msgid ""
 "`IsElectricBolt=true` or `IsRadBeam=true`) target location if set "
 "`VisualScatter` to true."
 msgstr ""
+"现在你可以在 `VisualScatter` 设为 true 时为视觉效果（`IsLaser=true`、`IsElectricBolt=true` 或 `IsRadBeam=true`）指定散布范围"
 
 #: ../../New-or-Enhanced-Logics.md:2180
 msgid ""
@@ -7741,4 +7742,10 @@ msgid ""
 "[SOMEWEAPON]            ; WeaponType\n"
 "VisualScatter=false     ; boolean\n"
 msgstr ""
+"[AudioVisual]\n"
+"VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
+"VisualScatter.Max=0.13  ; floating point value, distance in cells\n"
+"\n"
+"[SOMEWEAPON]            ; WeaponType\n"
+"VisualScatter=false     ; boolean\n"
 

@@ -1243,36 +1243,42 @@ msgid ""
 "`MovementZone=AmphibiousCrusher` technos being unable to enter on water "
 "structures."
 msgstr ""
+"修复了 `MovementZone=AmphibiousDestroyer` 与 `MovementZone=AmphibiousCrusher` 的单位无法进入水上建筑的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:202
 msgid ""
 "Fixed an issue that aircraft carriers can not find suitable locations for"
 " attacks when under elevated bridges on their own."
 msgstr ""
+"修复了航空母舰在桥下时无法找到恰当攻击位置的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:203
 msgid ""
 "Fixed an issue that in air aircraft carriers being unable to attack when "
 "it is near by elevated bridges."
 msgstr ""
+"修复了空天母舰靠近高架桥梁时无法攻击的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:204
 msgid ""
 "Fixed an issue that aircraft carriers cannot retract its spawned aircraft"
 " when on the bridge."
 msgstr ""
+"修复了航空母舰在桥上无法回收子机的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:205
 msgid ""
 "Fixed an issue where the shadow of jumpjet remained on the ground when it"
 " was above the elevated bridge."
 msgstr ""
+"修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:206
 msgid ""
 "Fixed an issue that laser, electric bolt and rad beam not support "
 "`FlakScatter=true` and `Inaccurate=true` projectiles."
 msgstr ""
+"修复了激光、EBolt、辐射波不支持 `FlakScatter=true` 与 `Inaccurate=true` 抛射体的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:208
 msgid "Fixes / interactions with other extensions"
@@ -1363,7 +1369,7 @@ msgstr "修复了 Ares 的初始荷载未为触发行为生成的载具创建的
 msgid ""
 "Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building "
 "upgrades."
-msgstr "允许 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物了。"
+msgstr "允许了 Ares 的 `SW.AuxBuildings` 和 `SW.NegBuildings` 计入建筑加载物。"
 
 #: ../../Fixed-or-Improved-Logics.md:223
 msgid ""
@@ -1371,6 +1377,7 @@ msgid ""
 "every frame for buildings, static techno and techno without turret, in "
 "order to reduce lags from it."
 msgstr ""
+"接管了 Ares 的 AlphaImage 重绘逻辑，使其用于建筑、静止单位和无炮塔单位时不会每帧重绘，以减少其造成的卡顿。"
 
 #: ../../Fixed-or-Improved-Logics.md:225
 msgid "Aircraft"
