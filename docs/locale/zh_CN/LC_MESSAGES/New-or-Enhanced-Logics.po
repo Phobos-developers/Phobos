@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-02 00:30+0800\n"
+"POT-Creation-Date: 2025-04-02 00:58+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -612,7 +612,7 @@ msgstr "`AttachEffect.CheckOnFirer` 可设为 true 以将必须存在／禁止�
 #: ../../New-or-Enhanced-Logics.md:2068 ../../New-or-Enhanced-Logics.md:2083
 #: ../../New-or-Enhanced-Logics.md:2100 ../../New-or-Enhanced-Logics.md:2113
 #: ../../New-or-Enhanced-Logics.md:2126 ../../New-or-Enhanced-Logics.md:2150
-#: ../../New-or-Enhanced-Logics.md:2168 ../../New-or-Enhanced-Logics.md:2179
+#: ../../New-or-Enhanced-Logics.md:2164 ../../New-or-Enhanced-Logics.md:2186
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -920,7 +920,7 @@ msgstr "![image](_static/images/radtype-01.png) *混合起来的多种辐射类�
 #: ../../New-or-Enhanced-Logics.md:1483 ../../New-or-Enhanced-Logics.md:1534
 #: ../../New-or-Enhanced-Logics.md:1742 ../../New-or-Enhanced-Logics.md:1845
 #: ../../New-or-Enhanced-Logics.md:1900 ../../New-or-Enhanced-Logics.md:2094
-#: ../../New-or-Enhanced-Logics.md:2139 ../../New-or-Enhanced-Logics.md:2162
+#: ../../New-or-Enhanced-Logics.md:2139 ../../New-or-Enhanced-Logics.md:2180
 msgid "image"
 msgstr "图像"
 
@@ -7679,10 +7679,49 @@ msgstr ""
 "Strafing.EndDelay=             ; integer, game frames\n"
 
 #: ../../New-or-Enhanced-Logics.md:2160
+msgid "Visual effect scatter"
+msgstr "视觉效果散布"
+
+#: ../../New-or-Enhanced-Logics.md:2162
+msgid ""
+"You can now add a random offset to visual effect's (`IsLaser=true`, "
+"`IsElectricBolt=true` or `IsRadBeam=true`) target location if set "
+"`VisualScatter` to true."
+msgstr ""
+"现在你可以在 `VisualScatter` 设为 true "
+"时为视觉效果（`IsLaser=true`、`IsElectricBolt=true` 或 `IsRadBeam=true`）添加一个随机偏移。"
+
+#: ../../New-or-Enhanced-Logics.md:2165
+msgid ""
+"[AudioVisual]\n"
+"VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
+"VisualScatter.Max=0.13  ; floating point value, distance in cells\n"
+"\n"
+"[SOMEWEAPON]            ; WeaponType\n"
+"VisualScatter=false     ; boolean\n"
+msgstr ""
+"[AudioVisual]\n"
+"VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
+"VisualScatter.Max=0.13  ; floating point value, distance in cells\n"
+"\n"
+"[SOMEWEAPON]            ; WeaponType\n"
+"VisualScatter=false     ; boolean\n"
+
+#: ../../New-or-Enhanced-Logics.md:2175
+msgid ""
+"This function is only used as an additional scattering visual display, "
+"which is different from `BallisticScatter.(Min/Max)` and can be used "
+"simultaneously, without affecting the actual explosion position of the "
+"projectile."
+msgstr ""
+"此功能仅叠加到**视觉效果**原本的散布上，也就是说它独立于 `BallisticScatter.(Min/Max)` "
+"且可共同使用，不会影响抛射体实际爆点的散布。"
+
+#: ../../New-or-Enhanced-Logics.md:2178
 msgid "Weapon targeting filter"
 msgstr "武器瞄准筛选"
 
-#: ../../New-or-Enhanced-Logics.md:2162
+#: ../../New-or-Enhanced-Logics.md:2180
 msgid ""
 "![image](_static/images/weaponfilter.gif) *`Weapon target filter - "
 "different weapon used against enemies & allies as well as units & "
@@ -7693,21 +7732,21 @@ msgstr ""
 "*[幽灵计划](https://www.moddb.com/mods/project-phantom) 中的武器瞄准筛选 - "
 "就像分别对单位和建筑使用那样对敌军和友军使用不同武器*"
 
-#: ../../New-or-Enhanced-Logics.md:2165
+#: ../../New-or-Enhanced-Logics.md:2183
 msgid ""
 "You can now specify which targets or houses a weapon can fire at. This "
 "also affects weapon selection, other than certain special cases where the"
 " selection is fixed."
 msgstr "现在你可以指定武器可以开火的目标或所属方。这还会影响武器选择，除了某些特殊情况下的固定选择。"
 
-#: ../../New-or-Enhanced-Logics.md:2166
+#: ../../New-or-Enhanced-Logics.md:2184
 msgid ""
 "Note that `CanTarget` explicitly requires either `all` or `empty` to be "
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
 msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
 
-#: ../../New-or-Enhanced-Logics.md:2169
+#: ../../New-or-Enhanced-Logics.md:2187
 msgid ""
 "[SOMEWEAPON]         ; WeaponType\n"
 "CanTarget=all        ; List of Affected Target Enumeration "
@@ -7720,42 +7759,3 @@ msgstr ""
 "(none|land|water|empty|infantry|units|buildings|all)\n"
 "CanTargetHouses=all  ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
-
-#: ../../New-or-Enhanced-Logics.md:2175
-msgid "Visual effect scatter"
-msgstr "视觉效果散布"
-
-#: ../../New-or-Enhanced-Logics.md:2177
-msgid ""
-"You can now add a random offset to visual effect's (`IsLaser=true`, "
-"`IsElectricBolt=true` or `IsRadBeam=true`) target location if set "
-"`VisualScatter` to true."
-msgstr ""
-"现在你可以在 `VisualScatter` 设为 true "
-"时为视觉效果（`IsLaser=true`、`IsElectricBolt=true` 或 `IsRadBeam=true`）添加一个随机偏移。"
-
-#: ../../New-or-Enhanced-Logics.md:2180
-msgid ""
-"[AudioVisual]\n"
-"VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
-"VisualScatter.Max=0.13  ; floating point value, distance in cells\n"
-"\n"
-"[SOMEWEAPON]            ; WeaponType\n"
-"VisualScatter=false     ; boolean\n"
-msgstr ""
-"[AudioVisual]\n"
-"VisualScatter.Min=0.03  ; floating point value, distance in cells\n"
-"VisualScatter.Max=0.13  ; floating point value, distance in cells\n"
-"\n"
-"[SOMEWEAPON]            ; WeaponType\n"
-"VisualScatter=false     ; boolean\n"
-
-#: ../../New-or-Enhanced-Logics.md:2190
-msgid ""
-"This function is only used as an additional scattering visual display, "
-"which is different from `BallisticScatter.(Min/Max)` and can be used "
-"simultaneously, without affecting the actual explosion position of the "
-"projectile."
-msgstr ""
-"此功能仅叠加到**视觉效果**原本的散布上，也就是说它独立于 `BallisticScatter.(Min/Max)` 且可共同使用，不会影响抛射体实际爆点的散布。"
-

@@ -2157,21 +2157,6 @@ Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.EndDelay=             ; integer, game frames
 ```
 
-### Weapon targeting filter
-
-![image](_static/images/weaponfilter.gif)
-*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]         ; WeaponType
-CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
 ### Visual effect scatter
 
 - You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
@@ -2188,4 +2173,19 @@ VisualScatter=false     ; boolean
 
 ```{note}
 This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
+```
+
+### Weapon targeting filter
+
+![image](_static/images/weaponfilter.gif)
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
+  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```

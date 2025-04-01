@@ -2699,10 +2699,6 @@ msgid ""
 msgstr ""
 "修复了治疗武器无法自动获取到空中目标的 Bug（by TaranDahl）"
 
-#: ../../Whats-New.md:639
-msgid "Ares fixes:"
-msgstr "Ares 已知问题修复："
-
 #: ../../Whats-New.md:640
 msgid ""
 "Taking over Ares' AlphaImage respawn logic to reduce lags from it (by "
