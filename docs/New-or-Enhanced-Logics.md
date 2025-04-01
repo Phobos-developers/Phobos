@@ -2171,3 +2171,17 @@ In `rulesmd.ini`:
 CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
+
+### Visual effect scatter
+
+- You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+VisualScatter.Min=0.03  ; floating point value, distance in cells
+VisualScatter.Max=0.13  ; floating point value, distance in cells
+
+[SOMEWEAPON]            ; WeaponType
+VisualScatter=false     ; boolean
+```

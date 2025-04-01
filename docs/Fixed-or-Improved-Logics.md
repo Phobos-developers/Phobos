@@ -198,6 +198,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Buildings with foundation bigger than 1x1 can now recycle spawner correctly.
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+- Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures.
+- Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own.
+- Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
+- Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
+- Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
+- Fixed an issue that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles.
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
 
 ## Fixes / interactions with other extensions
@@ -215,6 +221,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
+- Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 
 ## Aircraft
 
@@ -231,6 +238,7 @@ VoicePickup=    ; Sound entry
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
+- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or 8 cell distances divided by ROT, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.

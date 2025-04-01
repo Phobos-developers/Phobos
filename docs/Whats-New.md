@@ -348,13 +348,19 @@ New:
 - `BombParachute` deglobalization (by TaranDahl)
 - Sinkablity and sinking speed customization (by TaranDahl)
 - Fast access vehicle (by CrimRecya)
-- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
+- Laser, electric bolt and rad beam scatter (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 - Technos are no longer unable to stop when it is above the elevated bridge, and they are still not allowed to stop moving under the elevated bridge, but can stop other missions (by CrimRecya)
+- Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures (by CrimRecya)
+- Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own (by CrimRecya)
+- Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
+- Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
+- Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
+- Fixed an issue that laser, electric bolt and rad beam not support `FlakScatter=true` and `Inaccurate=true` projectiles (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -628,6 +634,10 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
+- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
+
+Ares fixes:
+- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
