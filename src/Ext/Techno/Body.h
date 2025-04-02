@@ -136,7 +136,6 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
-		void ClearElectricBolts();
 	};
 
 	class ExtContainer final : public Container<TechnoExt>
