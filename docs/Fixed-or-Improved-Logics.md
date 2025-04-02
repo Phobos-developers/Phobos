@@ -169,6 +169,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps.
 - Follower vehicle index for preplaced vehicles in maps is now explicitly constrained to `[Units]` list in map files and is no longer thrown off by vehicles that could not be created or created vehicles having other vehicles as initial passengers.
 - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
+- Stop command (`[S]` by default) behavior is now more correct:
+  - Jumpjets no longer fall into a state of standing by idly.
+  - Technos are no longer unable to stop the attack move mission.
+  - Technos are no longer unable to stop the area guard mission.
+  - Aircraft no longer find airport twice and overlap.
+  - Aircraft no longer briefly pause in the air before returning.
+  - Aircraft with `AirportBound=no` no longer continue moving forward.
+  - Technos are no longer unable to stop when it is above the elevated bridge.
+  - Technos are still not allowed to stop moving under the elevated bridge, but can stop other missions.
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
@@ -184,6 +193,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt.
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+- Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own.
+- Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
+- Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
+- Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
+- Fixed the bug that healing weapons could not automatically acquire aerial targets.
+- Allow voxel projectiles to use AnimPalette and FirersPalette.
 
 ## Fixes / interactions with other extensions
 

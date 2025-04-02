@@ -20,6 +20,7 @@
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
 #include <TunnelLocomotionClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -1114,6 +1115,96 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 
 #pragma endregion
 
+#pragma region StopEventFix
+
+DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
+
+DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
+{
+	enum { SkipGameCode = 0x4C762A };
+
+	GET(TechnoClass* const, pTechno, ESI);
+
+	// Check aircraft
+	const auto pAircraft = abstract_cast<AircraftClass*>(pTechno);
+	const bool commonAircraft = pAircraft && !pAircraft->Airstrike && !pAircraft->Spawned;
+	const auto mission = pTechno->CurrentMission;
+
+	// To avoid aircraft overlap by keep link if is returning or is in airport now.
+	if (!commonAircraft || (mission != Mission::Sleep && mission != Mission::Guard && mission != Mission::Enter)
+		|| !pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+	{
+		pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
+	}
+
+	// To avoid technos being unable to stop in attack move mega mission
+	if (pTechno->MegaMissionIsAttackMove())
+		pTechno->ClearMegaMissionData();
+
+	// Clearing the current target should still be necessary for all technos
+	pTechno->SetTarget(nullptr);
+
+	// Stop any enter action
+	pTechno->QueueUpToEnter = nullptr;
+
+	if (commonAircraft)
+	{
+		if (pAircraft->Type->AirportBound)
+		{
+			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
+			if (pAircraft->Ammo)
+				pTechno->SetDestination(nullptr, true);
+
+			// To avoid `AirportBound=yes` aircraft pausing in the air and let they returning to air base immediately.
+			if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink())) // If the aircraft have no valid dock, try to find a new one
+				pAircraft->EnterIdleMode(false, true);
+		}
+		else if (pAircraft->Ammo)
+		{
+			// To avoid `AirportBound=no` aircraft ignoring the stop task or directly return to the airport.
+			if (pAircraft->Destination && static_cast<int>(CellClass::Coord2Cell(pAircraft->Destination->GetCoords()).DistanceFromSquared(pAircraft->GetMapCoords())) > 2) // If the aircraft is moving, find the forward cell then stop in it
+				pAircraft->SetDestination(pAircraft->GetCell()->GetNeighbourCell(static_cast<FacingType>(pAircraft->PrimaryFacing.Current().GetValue<3>())), true);
+		}
+		else if (!pAircraft->DockNowHeadingTo || (pAircraft->DockNowHeadingTo != pAircraft->GetNthLink()))
+		{
+			pAircraft->EnterIdleMode(false, true);
+		}
+		// Otherwise landing or idling normally without answering the stop command
+	}
+	else
+	{
+		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+
+		// Clear archive target for infantries and vehicles like receive a mega mission
+		if (pFoot && !pAircraft)
+			pTechno->SetArchiveTarget(nullptr);
+
+		// Only stop when it is not under the bridge (meeting the original conditions which has been skipped)
+		if (!pTechno->vt_entry_2B0() || pTechno->OnBridge || pTechno->IsInAir() || pTechno->GetCell()->SlopeIndex)
+		{
+			// To avoid foots stuck in Mission::Area_Guard
+			if (pTechno->CurrentMission == Mission::Area_Guard && !pTechno->GetTechnoType()->DefaultToGuardArea)
+				pTechno->QueueMission(Mission::Guard, true);
+
+			// Check Jumpjets
+			const auto pJumpjetLoco = pFoot ? locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor) : nullptr;
+
+			// To avoid jumpjets falling into a state of standing idly by
+			if (!pJumpjetLoco) // If is not jumpjet, clear the destination is enough
+				pTechno->SetDestination(nullptr, true);
+			else if (!pFoot->Destination) // When in attack move and have had a target, the destination will be cleaned up, enter the guard mission can prevent the jumpjets stuck in a status of standing idly by
+				pTechno->QueueMission(Mission::Guard, true);
+			else if (static_cast<int>(CellClass::Coord2Cell(pFoot->Destination->GetCoords()).DistanceFromSquared(pTechno->GetMapCoords())) > 2) // If the jumpjet is moving, find the forward cell then stop in it
+				pTechno->SetDestination(pTechno->GetCell()->GetNeighbourCell(static_cast<FacingType>(pJumpjetLoco->LocomotionFacing.Current().GetValue<3>())), true);
+			// Otherwise landing or idling normally without answering the stop command
+		}
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
 #pragma region UntetherFix
 
 // Radio: do not untether techno who have other tether link
@@ -1143,6 +1234,67 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_NotifyUnlink, 0x7)
 
 #pragma endregion
 
+#pragma region JumpjetShadowPointFix
+
+Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *pPoint)
+{
+	__assume(iloco != nullptr);
+	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iloco);
+	const auto pThis = pLoco->LinkedTo;
+	const auto pCell = MapClass::Instance->GetCellAt(pThis->Location);
+	auto height = pThis->Location.Z - MapClass::Instance->GetCellFloorHeight(pThis->Location);
+	// Vanilla GetHeight check OnBridge flag, which can not work on jumpjet
+	// Here, we simulate the drawing of an airplane for altitude calculation
+	if (pCell->ContainsBridge()
+		&& ((pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::North)->ContainsBridge()
+			|| !(pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::West)->ContainsBridge()))
+	{
+		height -= CellClass::BridgeHeight;
+	}
+
+	*pPoint = Point2D { 0, TacticalClass::AdjustForZ(height) };
+	return pPoint;
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD98, JumpjetLoco_ILoco_Shadow_Point);
+
+#pragma endregion
+
+#pragma region SpawnerFix
+
+// Enable the carrier on the bridge to retrieve the aircraft normally
+DEFINE_HOOK(0x4CF3F9, FlyLocomotionClass_FlightUpdate_FixFlightLevel, 0x5)
+{
+	enum { SkipGameCode = 0x4CF4D2 };
+
+	GET(FlyLocomotionClass* const, pThis, EBP);
+
+	const auto pFoot = pThis->LinkedTo;
+
+	if (pFoot->GetMapCoords() == CellClass::Coord2Cell(pThis->MovingDestination) // Maintain height until on same cell to prevent poor visual display
+		&& MapClass::Instance->GetCellAt(pFoot->Location)->ContainsBridge() // Only effective when on the bridge
+		&& pThis->FlightLevel >= CellClass::BridgeHeight) // Not lower than the ground level
+	{
+		// Subtract the excess bridge height to allow the aircraft to return to the correct altitude
+		pThis->FlightLevel -= CellClass::BridgeHeight;
+	}
+
+	return SkipGameCode;
+}
+
+// Let in air aircraft carrier ignore nearby elevated bridge check
+DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
+{
+	enum { ContinueCheck = 0x6FC61F, TemporaryCannotFire = 0x6FCD0E };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const bool, nearElevatedBridge, EAX);
+
+	// In addition, the return value of the function has been changed to allow the aircraft carrier to retain the current target
+	return (nearElevatedBridge && !pThis->IsInAir()) ? TemporaryCannotFire : ContinueCheck;
+}
+
+#pragma endregion
+
 // This shouldn't be here
 // Author: tyuah8
 DEFINE_HOOK_AGAIN(0x4AF94D, EndPiggyback_PowerOn, 0x7) // Drive
@@ -1166,6 +1318,7 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
+
 DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
 DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
@@ -1458,4 +1611,39 @@ DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 	pThis->BarrelFacing.SetCurrent(*pDir);
 
 	return SkipGameCode;
+}
+
+namespace BulletDrawVoxelTemp
+{
+	ConvertClass* Convert = nullptr;
+}
+
+DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
+{
+	GET(BulletClass*, pThis, EAX);
+
+	if (pThis->Type->AnimPalette)
+	{
+		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL;
+	}
+	else if (pThis->Type->FirersPalette)
+	{
+		const int inheritColor = pThis->InheritedColor;
+		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array->Items[colorIndex]->LightConvert;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x46B23C, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+{
+	const auto pConvert = BulletDrawVoxelTemp::Convert;
+
+	if (!pConvert)
+		return 0;
+
+	R->ECX(pConvert);
+	return R->Origin() + 6;
 }
