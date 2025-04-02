@@ -72,6 +72,13 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 	return AllowedObject;
 }
 
+// Fix the hardcode of healing weapon can't acquire in air target.
+DEFINE_HOOK(0x6F9222, TechnoClass_SelectAutoTarget_HealingTargetAir, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	return pThis->CombatDamage(-1) < 0 ? 0x6F922E : 0;
+}
+
 #pragma endregion
 
 #pragma region Walls

@@ -1,5 +1,7 @@
 #pragma once
 #include <functional>
+#include "Constructs.h"
+ 
 class TechnoClass;
 class TechnoTypeClass;
 class FootClass;
@@ -9,6 +11,7 @@ class BuildingClass;
 class HouseTypeClass;
 class SuperClass;
 class SuperWeaponTypeClass;
+class AlphaShapeClass;
 
 class AresTechnoExtData;
 class AresTechnoTypeExtData;
@@ -25,6 +28,8 @@ public:
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool IgnoreDefenses);
 	static std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> SWTypeExtMap_Find;
+
+	static PhobosMap<ObjectClass*, AlphaShapeClass*>* AlphaExtMap;
 private:
 	static constexpr bool _maybe = false;
 
