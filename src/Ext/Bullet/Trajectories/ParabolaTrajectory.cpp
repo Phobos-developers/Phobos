@@ -199,7 +199,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 	{
 		// When in high speed, it's necessary to check each cell on the path that the next frame will pass through
 		double locationDistance = 0.0;
-		const bool subjectToWalls = pBullet->Type->SubjectToWalls;
+		const auto pBulletType = pBullet->Type;
 		// Anyway, at least check the ground
 		const auto& theSourceCoords = pBullet->Location;
 		const auto theTargetCoords = theSourceCoords + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
@@ -207,8 +207,14 @@ bool ParabolaTrajectory::OnVelocityCheck()
 		const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		// No need to use these variables anymore
 		{
-			const auto sourceCell = CellClass::Coord2Cell(theSourceCoords);
-			const auto targetCell = CellClass::Coord2Cell(theTargetCoords);
+			const auto pSourceCell = MapClass::Instance.GetCellAt(theSourceCoords);
+			const auto sourceCell = pSourceCell->MapCoords;
+			const auto pTargetCell = MapClass::Instance.GetCellAt(theTargetCoords);
+			const auto targetCell = pTargetCell->MapCoords;
+			auto pLastCell = MapClass::Instance.GetCellAt(pBullet->LastMapCoords);
+			const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+			const bool subjectToWCS = pBulletType->SubjectToWalls || pBulletType->SubjectToCliffs || pBulletTypeExt->SubjectToSolid;
+			const bool checkLevel = !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset();
 			const auto cellDist = sourceCell - targetCell;
 			const auto cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
 			// Take big steps as much as possible to reduce check times, just ensure that each cell is inspected
@@ -219,28 +225,31 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			// Check one by one towards the direction of the next frame's position
 			for (size_t i = 0; i < largePace; ++i)
 			{
-				if (curCoord.Z < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level?
-				{
-					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
-					velocityCheck = 1;
-					break;
-				}
-				else if ((subjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array.GetItem(pCurCell->OverlayTypeIndex)->Wall
-					&& (!RulesClass::Instance->AlliedWallTransparency || !pOwner->IsAlliedWith(HouseClass::Array.Items[pCurCell->WallOwnerIndex]))
-					&& (pCurCell->Level * Unsorted::LevelHeight + Unsorted::CellHeight > curCoord.Z)) // Impact on the wall?
-					|| (checkThrough && this->CheckThroughAndSubjectInCell(pCurCell, pOwner))) // Blocked by obstacles?
+				if ((checkThrough && this->CheckThroughAndSubjectInCell(pCurCell, pOwner)) // Blocked by obstacles?
+					|| (subjectToWCS && TrajectoryHelper::GetObstacle(pSourceCell, pTargetCell, pLastCell, curCoord, pBulletType, pOwner)) // Impact on the wall/cliff/solid?
+					|| (checkLevel ? (pBulletType->Level && pCurCell->IsOnFloor()) // Level or above land/water?
+						: ((pCurCell->LandType == LandType::Water || pCurCell->LandType == LandType::Beach)
+							? (pBulletTypeExt->SubjectToWater.Get(false) && pBulletTypeExt->SubjectToWater_Detonate)
+							: (pBulletTypeExt->SubjectToLand.Get(false) && pBulletTypeExt->SubjectToLand_Detonate))))
 				{
 					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
 					velocityCheck = 2;
 					break;
 				}
+				else if (curCoord.Z < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level?
+				{
+					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
+					velocityCheck = 1;
+					break;
+				}
 				// There are no obstacles, continue to check the next cell
 				curCoord += stepCoord;
+				pLastCell = pCurCell;
 				pCurCell = MapClass::Instance.GetCellAt(curCoord);
 			}
 		}
 		// Check whether ignore firestorm wall before searching
-		if (!pBullet->Type->IgnoresFirestorm)
+		if (!pBulletType->IgnoresFirestorm)
 		{
 			const auto fireStormCoords = MapClass::Instance.FindFirstFirestorm(theSourceCoords, theTargetCoords, pOwner);
 			// Not empty when firestorm wall exists

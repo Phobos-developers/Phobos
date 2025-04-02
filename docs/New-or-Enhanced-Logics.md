@@ -893,6 +893,12 @@ Trajectory.DamageCountAttenuation=1.0  ; floating point value
 - Make sure you set a low `Trajectory.ProximityRadius` value unless necessary.
 ```
 
+```{hint}
+- `SubjectToBuildings` and `Trajectory.ThroughBuilding` are different. The former follows the settings of Ares and will only self destruct when conditions are met, while the latter will self destruct when touching any building and trigger its effect if `Trajectory.ProximityImpact` is set.
+- Simply put, `Trajectory.PassDetonate` is periodically effect and `Trajectory.ProximityImpact` is once per person effect.
+- If `Trajectory.ProximityImpact` is set to non-zero, the default value of `Trajectory.PeacefulVanish` will be changed.
+```
+
 - Of course, there are also some general functions for launching weapons. Effective for all types too.
   - `Trajectory.DisperseWeapons` defines the dispersal weapons of the projectile.
   - `Trajectory.DisperseBursts` defines how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.DisperseWeapons`, the last value in the list will be used.
@@ -942,7 +948,11 @@ Trajectory.DisperseCoord=0,0,0       ; integer - Forward,Lateral,Height
 - The listed Weapons in `Trajectory.DisperseWeapons` must be listed in `[WeaponTypes]` for them to work.
 - If you set `Trajectory.DisperseRetarget=true`, also make sure you set `Trajectory.DisperseWeapons` a low `Range` value unless necessary.
 - `Trajectory.DisperseWeapons` now not support `Arcing=true` projectiles and customized `Bolt.ColorN`.
+```
+
+```{hint}
 - Although `Trajectory.DisperseDoRepeat=false` will disable duplicate target selection, if the weapon is able to attack the ground, it may still attack duplicate targets by locking onto the cell where the target is located.
+- If `Trajectory.DisperseCycle` is set to non-zero, the default value of `Trajectory.PeacefulVanish` will be changed.
 ```
 
 #### Straight trajectory
@@ -1062,7 +1072,11 @@ Trajectory.Engrave.UpdateDirection=false   ; boolean
 
 ```{note}
 - It's best not to let it be intercepted.
-- Directly using the laser drawing in `Trajectory=Engrave` with `Trajectory.PassDetonateWarhead` is more cost-effective than using `Trajectory.DisperseWeapons`. Please consider using it at your own discretion.
+```
+
+```{hint}
+- Directly using the laser drawing in `Trajectory=Engrave` with `Trajectory.PassDetonateWarhead` is more cost-effective than using `Trajectory.DisperseWeapons`. If you need the laser to be blocked by the Fire Storm Wall, you can try using the latter.
+- The default value of `Trajectory.PeacefulVanish` will be changed when using this type of trajectory.
 ```
 
 #### Parabola trajectory
@@ -1098,9 +1112,12 @@ Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value
 ```
 
 ```{note}
+- If `Trajectory.Parabola.OpenFireMode=Angle`, the performance consumption is high, and may have no solution. It is not recommended to enable `SubjectToCliffs` or enable `AA` with a smaller `MinimumRange` when using this mode.
+```
+
+```{hint}
 - Compared to vanilla `Arcing`, this can also be used for aircrafts and airburst weapon.
 - Be aware that `Trajectory.DetonationDistance` do not conflict with `Trajectory.Parabola.BounceTimes` and will take effect simultaneously. So if you want to explode the bullet only after the times of bounces is exhausted, you should set `Trajectory.DetonationDistance` to a non positive value.
-- If `Trajectory.Parabola.OpenFireMode=Angle`, the performance consumption is high, and may have no solution. It is not recommended to enable `SubjectToCliffs` or enable `AA` with a smaller `MinimumRange` when using this mode.
 ```
 
 #### Tracing trajectory

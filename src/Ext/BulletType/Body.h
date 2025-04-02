@@ -62,6 +62,9 @@ public:
 
 		Valueable<AnimTypeClass*> BombParachute;
 
+		// Ares 0.1
+		Valueable<bool> SubjectToSolid;
+
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
 		Nullable<Leptons> BallisticScatter_Max;
@@ -88,6 +91,7 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, SubjectToSolid { false }
 			, SubjectToGround { false }
 			, Splits { false }
 			, AirburstSpread { 1.5 }

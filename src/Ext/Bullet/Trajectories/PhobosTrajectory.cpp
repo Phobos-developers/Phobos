@@ -336,9 +336,11 @@ bool PhobosTrajectory::OnVelocityCheck()
 	{
 		// When in high speed, it's necessary to check each cell on the path that the next frame will pass through
 		const bool subjectToGround = this->GetCanHitGround();
-		const bool subjectToWalls = pBullet->Type->SubjectToWalls;
-		const bool subjectToFirestorm = !pBullet->Type->IgnoresFirestorm;
-		const bool checkCoords = checkThrough || subjectToGround || subjectToWalls;
+		const auto pBulletType = pBullet->Type;
+		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+		const bool subjectToWCS = pBulletType->SubjectToWalls || pBulletType->SubjectToCliffs || pBulletTypeExt->SubjectToSolid;
+		const bool subjectToFirestorm = !pBulletType->IgnoresFirestorm;
+		const bool checkCoords = subjectToGround || checkThrough || subjectToWCS;
 		// If no inspection is needed, just skip it
 		if (checkCoords || subjectToFirestorm)
 		{
@@ -351,8 +353,12 @@ bool PhobosTrajectory::OnVelocityCheck()
 			// Skip when no inspection is needed
 			if (checkCoords)
 			{
-				const auto sourceCell = CellClass::Coord2Cell(theSourceCoords);
-				const auto targetCell = CellClass::Coord2Cell(theTargetCoords);
+				const auto pSourceCell = MapClass::Instance.GetCellAt(theSourceCoords);
+				const auto sourceCell = pSourceCell->MapCoords;
+				const auto pTargetCell = MapClass::Instance.GetCellAt(theTargetCoords);
+				const auto targetCell = pTargetCell->MapCoords;
+				auto pLastCell = MapClass::Instance.GetCellAt(pBullet->LastMapCoords);
+				const bool checkLevel = !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset();
 				const auto cellDist = sourceCell - targetCell;
 				const auto cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
 				// Take big steps as much as possible to reduce check times, just ensure that each cell is inspected
@@ -364,10 +370,12 @@ bool PhobosTrajectory::OnVelocityCheck()
 				for (size_t i = 0; i < largePace; ++i)
 				{
 					if ((subjectToGround && (curCoord.Z + 16) < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level? (16 ->error range)
-						|| (subjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array.GetItem(pCurCell->OverlayTypeIndex)->Wall
-						&& (!RulesClass::Instance->AlliedWallTransparency || !pOwner->IsAlliedWith(HouseClass::Array.Items[pCurCell->WallOwnerIndex]))
-						&& (pCurCell->Level * Unsorted::LevelHeight + Unsorted::CellHeight > curCoord.Z)) // Impact on the wall?
-						|| (checkThrough && this->CheckThroughAndSubjectInCell(pCurCell, pOwner))) // Blocked by obstacles?
+						|| (checkThrough && this->CheckThroughAndSubjectInCell(pCurCell, pOwner)) // Blocked by obstacles?
+						|| (subjectToWCS && TrajectoryHelper::GetObstacle(pSourceCell, pTargetCell, pLastCell, curCoord, pBulletType, pOwner)) // Impact on the wall/cliff/solid?
+						|| (checkLevel ? (pBulletType->Level && pCurCell->IsOnFloor()) // Level or above land/water?
+							: ((pCurCell->LandType == LandType::Water || pCurCell->LandType == LandType::Beach)
+								? (pBulletTypeExt->SubjectToWater.Get(false) && pBulletTypeExt->SubjectToWater_Detonate)
+								: (pBulletTypeExt->SubjectToLand.Get(false) && pBulletTypeExt->SubjectToLand_Detonate))))
 					{
 						locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
 						velocityCheck = true;
@@ -375,6 +383,7 @@ bool PhobosTrajectory::OnVelocityCheck()
 					}
 					// There are no obstacles, continue to check the next cell
 					curCoord += stepCoord;
+					pLastCell = pCurCell;
 					pCurCell = MapClass::Instance.GetCellAt(curCoord);
 				}
 			}
