@@ -561,6 +561,38 @@ DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 	return answer == RadioCommand::RequestLoading ? DoNothing : NotifyUnlink;
 }
 
+DEFINE_HOOK(0x4B08EF, DriveLocomotionClass_Process_CheckUnload, 0x5)
+{
+	enum { SkipGameCode = 0x4B078C, ContinueProcess = 0x4B0903 };
+
+	GET(ILocomotion* const, iloco, ESI);
+
+	__assume(iloco != nullptr);
+
+	const auto pFoot = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+
+	if (pFoot->GetCurrentMission() != Mission::Unload)
+		return ContinueProcess;
+
+	return (pFoot->GetTechnoType()->Passengers > 0 && pFoot->Passengers.GetFirstPassenger()) ? ContinueProcess : SkipGameCode;
+}
+
+DEFINE_HOOK(0x69FFB6, ShipLocomotionClass_Process_CheckUnload, 0x5)
+{
+	enum { SkipGameCode = 0x69FE39, ContinueProcess = 0x69FFCA };
+
+	GET(ILocomotion* const, iloco, ESI);
+
+	__assume(iloco != nullptr);
+
+	const auto pFoot = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+
+	if (pFoot->GetCurrentMission() != Mission::Unload)
+		return ContinueProcess;
+
+	return (pFoot->GetTechnoType()->Passengers > 0 && pFoot->Passengers.GetFirstPassenger()) ? ContinueProcess : SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region AmphibiousEnterAndUnload
