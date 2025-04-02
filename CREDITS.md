@@ -417,13 +417,13 @@ This page lists all the individual contributions to the project by their author.
   - Projectile subject to ground check before firing
   - Delay automatic attack on the controlled unit
   - Fast access vehicle
-  - Fixed an issue that some amphibious technos being unable to enter on water structures
-  - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
-  - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
-  - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
-  - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
+  - Fix an issue that some amphibious technos being unable to enter on water structures
+  - Fix an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
+  - Fix an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
   - Laser, electric bolt and rad beam scatter
-  - Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
+  - Fix an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -454,9 +454,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that spawned can not return to buildings with foundation bigger than 1x1
   - `BombParachute` deglobalization
   - Sinkablity and sinking speed customization
-  - Fix an issue where `FireAngle` would not work properly under certain circumstances.
-  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
-  - Fix the bug that healing weapons could not automatically acquire aerial targets.
+  - Fix an issue where `FireAngle` would not work properly under certain circumstances
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix the bug that healing weapons could not automatically acquire aerial targets
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
