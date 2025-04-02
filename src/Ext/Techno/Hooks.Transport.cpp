@@ -545,6 +545,24 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 
 #pragma endregion
 
+#pragma region TransportFix
+
+DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
+{
+	enum { NextAction = 0x4D92ED, NotifyUnlink = 0x4D92CE, DoNothing = 0x4D946C };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(const RadioCommand, answer, EAX);
+	// Restore vanilla check
+	if (pThis->IsTether || answer == RadioCommand::AnswerPositive)
+		return NextAction;
+	// The link should not be disconnected while the transporter is in motion (passengers waiting to enter),
+	// as this will result in the first passenger not getting on board
+	return answer == RadioCommand::RequestLoading ? DoNothing : NotifyUnlink;
+}
+
+#pragma endregion
+
 #pragma region AmphibiousEnterAndUnload
 
 // Enter building
