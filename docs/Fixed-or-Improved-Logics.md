@@ -198,7 +198,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
-- Allow voxel projectiles to use AnimPalette and FirersPalette.
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette`.
 
 ## Fixes / interactions with other extensions
 

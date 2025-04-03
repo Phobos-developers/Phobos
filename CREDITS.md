@@ -357,7 +357,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
    - Fix `DefaultDisguise` showing wrong house colors for different players
-   - Allow voxel projectiles to use AnimPalette and FirersPalette
+   - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons

@@ -1922,30 +1922,35 @@ msgid ""
 "Fixed an issue that aircraft carriers can not find suitable locations for"
 " attacks when under elevated bridges on their own (by CrimRecya)"
 msgstr ""
+"修复了航空母舰在桥下时无法找到恰当攻击位置的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:574
 msgid ""
 "Fixed an issue that in air aircraft carriers being unable to attack when "
 "it is near by elevated bridges (by CrimRecya & TaranDahl)"
 msgstr ""
+"修复了空天母舰靠近高架桥梁时无法攻击的问题（by CrimRecya 与 TaranDahl）"
 
 #: ../../Whats-New.md:575
 msgid ""
 "Fixed an issue that aircraft carriers cannot retract its spawned aircraft"
 " when on the bridge (by CrimRecya)"
 msgstr ""
+"修复了航空母舰在桥上无法回收子机的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:576
 msgid ""
 "Fixed an issue where the shadow of jumpjet remained on the ground when it"
 " was above the elevated bridge (by CrimRecya)"
 msgstr ""
+"修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:577
 msgid ""
 "Fixed the bug that healing weapons could not automatically acquire aerial"
 " targets (by TaranDahl)"
 msgstr ""
+"修复了治疗武器无法自动获取到空中目标的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:579 ../../Whats-New.md:655 ../../Whats-New.md:820
 #: ../../Whats-New.md:862 ../../Whats-New.md:875 ../../Whats-New.md:899
@@ -3144,9 +3149,10 @@ msgstr "允许了观察者查看选中建筑的范围指示器（by Trsdy）"
 
 #: ../../Whats-New.md:818
 msgid ""
-"Allow voxel projectiles to use AnimPalette and FirersPalette (by "
+"Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by "
 "NetsuNegi)"
 msgstr ""
+"允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`（by NetsuNegi）"
 
 #: ../../Whats-New.md:821
 msgid ""

@@ -1062,41 +1062,41 @@ msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 
 
 #: ../../Fixed-or-Improved-Logics.md:172
 msgid "Stop command (`[S]` by default) behavior is now more correct:"
-msgstr ""
+msgstr "停止命令（默认 `[S]`）的行为现在更加正确："
 
 #: ../../Fixed-or-Improved-Logics.md:173
 msgid "Jumpjets no longer fall into a state of standing by idly."
-msgstr ""
+msgstr "Jumpjet 单位不再进入空闲站立状态。"
 
 #: ../../Fixed-or-Improved-Logics.md:174
 msgid "Technos are no longer unable to stop the attack move mission."
-msgstr ""
+msgstr "科技类型现在可以停止移动攻击任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:175
 msgid "Technos are no longer unable to stop the area guard mission."
-msgstr ""
+msgstr "科技类型现在可以停止区域警戒任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:176
 msgid "Aircraft no longer find airport twice and overlap."
-msgstr ""
+msgstr "战机不再两次寻找机场并重叠。"
 
 #: ../../Fixed-or-Improved-Logics.md:177
 msgid "Aircraft no longer briefly pause in the air before returning."
-msgstr ""
+msgstr "战机在返回前不再在空中端在停留"
 
 #: ../../Fixed-or-Improved-Logics.md:178
 msgid "Aircraft with `AirportBound=no` no longer continue moving forward."
-msgstr ""
+msgstr "拥有 `AirportBound=no` 的战机不再会继续向前移动"
 
 #: ../../Fixed-or-Improved-Logics.md:179
 msgid "Technos are no longer unable to stop when it is above the elevated bridge."
-msgstr ""
+msgstr "科技类型在桥上时不再无法停止。"
 
 #: ../../Fixed-or-Improved-Logics.md:180
 msgid ""
 "Technos are still not allowed to stop moving under the elevated bridge, "
 "but can stop other missions."
-msgstr ""
+msgstr "科技类型在桥下时仍然无法停止移动，但可以停止其他任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:181
 msgid ""
@@ -1206,34 +1206,39 @@ msgid ""
 "Fixed an issue that aircraft carriers can not find suitable locations for"
 " attacks when under elevated bridges on their own."
 msgstr ""
+"修复了航空母舰在桥下时无法找到恰当攻击位置的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:197
 msgid ""
 "Fixed an issue that in air aircraft carriers being unable to attack when "
 "it is near by elevated bridges."
 msgstr ""
+"修复了空天母舰靠近高架桥梁时无法攻击的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:198
 msgid ""
 "Fixed an issue that aircraft carriers cannot retract its spawned aircraft"
 " when on the bridge."
 msgstr ""
+"修复了航空母舰在桥上无法回收子机的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:199
 msgid ""
 "Fixed an issue where the shadow of jumpjet remained on the ground when it"
 " was above the elevated bridge."
 msgstr ""
+"修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:200
 msgid ""
 "Fixed the bug that healing weapons could not automatically acquire aerial"
 " targets."
 msgstr ""
+"修复了治疗武器无法自动获取到空中目标的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:201
-msgid "Allow voxel projectiles to use AnimPalette and FirersPalette."
-msgstr ""
+msgid "Allow voxel projectiles to use `AnimPalette` and `FirersPalette`."
+msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`。"
 
 #: ../../Fixed-or-Improved-Logics.md:203
 msgid "Fixes / interactions with other extensions"

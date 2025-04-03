@@ -1424,8 +1424,8 @@ msgid "Fix `DefaultDisguise` showing wrong house colors for different players"
 msgstr "修复了 `DefaultDisguise` 为不同玩家显示不同所属方颜色的问题"
 
 #: ../../../CREDITS.md:361
-msgid "Allow voxel projectiles to use AnimPalette and FirersPalette"
-msgstr ""
+msgid "Allow voxel projectiles to use `AnimPalette` and `FirersPalette`"
+msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`"
 
 #: ../../../CREDITS.md:362
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1537,7 +1537,7 @@ msgstr "修复 `LimboKill` 未能可靠工作的问题"
 
 #: ../../../CREDITS.md:390
 msgid "Fix `Stop` command not working so well in many cases"
-msgstr ""
+msgstr "修复 `停止` 命令很多情况下不工作的问题"
 
 #: ../../../CREDITS.md:391
 msgid "Fix aircraft `MovementZone` and `SpeedType` inconsistencies"
@@ -1556,24 +1556,28 @@ msgid ""
 "Fix an issue that aircraft carriers can not find suitable locations for "
 "attacks when under elevated bridges on their own"
 msgstr ""
+"修复了航空母舰在桥下时无法找到恰当攻击位置的问题"
 
 #: ../../../CREDITS.md:395 ../../../CREDITS.md:412
 msgid ""
 "Fix an issue that in air aircraft carriers being unable to attack when it"
 " is near by elevated bridges"
 msgstr ""
+"修复了空天母舰靠近高架桥梁时无法攻击的问题"
 
 #: ../../../CREDITS.md:396
 msgid ""
 "Fix an issue that aircraft carriers cannot retract its spawned aircraft "
 "when on the bridge"
 msgstr ""
+"修复了航空母舰在桥上无法回收子机的问题"
 
 #: ../../../CREDITS.md:397
 msgid ""
 "Fix an issue where the shadow of jumpjet remained on the ground when it "
 "was above the elevated bridge"
 msgstr ""
+"修复了 Jumpjet 在桥梁上方时其影子残留在地面的问题"
 
 #: ../../../CREDITS.md:398
 msgid "**Ollerus**:"
@@ -1637,6 +1641,7 @@ msgid ""
 "Fix the bug that healing weapons could not automatically acquire aerial "
 "targets"
 msgstr ""
+"修复了治疗武器无法自动获取到空中目标的 Bug"
 
 #: ../../../CREDITS.md:414
 msgid "**tyuah8**:"
