@@ -2710,6 +2710,7 @@ msgid ""
 "when looking for buildings like tank bunkers, bio reactors, etc. (by "
 "TaranDahl)"
 msgstr ""
+"修复了 AI 会找实际无法抵达的坦克碉堡、生化反应炉等建筑作为目标而导致卡住的问题（by TaranDahl）"
 
 #: ../../Whats-New.md:641 ../../Whats-New.md:718 ../../Whats-New.md:882
 #: ../../Whats-New.md:924 ../../Whats-New.md:937 ../../Whats-New.md:961
