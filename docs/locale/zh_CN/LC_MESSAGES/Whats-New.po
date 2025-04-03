@@ -1179,9 +1179,9 @@ msgstr "允许弹头一次性移除所有护盾类型（by Starkku）"
 
 #: ../../Whats-New.md:447
 msgid ""
-"Allow customizing voxel light source position (by Kerbiter, Morton, based"
+"Allow customizing voxel light source position (by Kerbiter & Morton, based"
 " on knowledge of thomassnedon)"
-msgstr "自定义 Voxel 光照角度（by Kerbiter、Morton，基于 thomassnedon 的知识）"
+msgstr "自定义 Voxel 光照角度（by Kerbiter 与 Morton，基于 thomassnedon 的知识）"
 
 #: ../../Whats-New.md:448
 msgid ""
@@ -2934,13 +2934,13 @@ msgstr "当科技类型存在／不存在时自动自毁逻辑的新行为（by 
 #: ../../Whats-New.md:781
 msgid ""
 "Skirmish AI \"sell all buildings and set all technos to hunt\" behavior "
-"dehardcode (by TaranDahl/航味麻酱)"
+"dehardcode (by TaranDahl)"
 msgstr "遭遇战 AI 「卖家冲锋」行为去硬编码（by TaranDahl）"
 
 #: ../../Whats-New.md:782
 msgid ""
 "Skirmish AI \"gather when MCV deploy\" behavior dehardcode (by "
-"TaranDahl/航味麻酱)"
+"TaranDahl)"
 msgstr "遭遇战 AI 「在 MCV 部署时集结」行为去硬编码（by TaranDahl）"
 
 #: ../../Whats-New.md:785

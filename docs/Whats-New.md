@@ -424,6 +424,8 @@ New:
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
+- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl)
+- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl)
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `(Anim/Splash)List` animations around impact coordinates (by Starkku)
@@ -444,7 +446,7 @@ New:
 - Customizing height and speed at which subterranean units travel (by Starkku)
 - Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
 - Option for Warhead to remove all shield types at once (by Starkku)
-- Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
+- Allow customizing voxel light source position (by Kerbiter & Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
 - AI superweapon delay timer customization (by Starkku)
 - Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)
@@ -570,11 +572,11 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
+- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
 - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own (by CrimRecya)
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
-- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -778,8 +780,6 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for `Explodes=true` units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
-- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
-- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
 
 Vanilla fixes:
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter & ChrisLv_CN)

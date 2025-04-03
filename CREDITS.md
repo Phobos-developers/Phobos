@@ -271,8 +271,8 @@ This page lists all the individual contributions to the project by their author.
   - Show designator & inhibitor range
   - Dump variables to file on scenario end / hotkey
   - `601 House owns TechnoType` and `602 House doesn't own TechnoType` trigger events
-  - Help with docs
   - Voxel light source position customization
+  - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype

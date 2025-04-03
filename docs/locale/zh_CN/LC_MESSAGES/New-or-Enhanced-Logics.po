@@ -1865,22 +1865,22 @@ msgstr "`Interceptor.CanTargetHouses` 控制抛射体（或其发射者）属于
 #: ../../New-or-Enhanced-Logics.md:674
 msgid ""
 "`Interceptor.GuardRange` (and "
-"`Interceptor.(Rookie|Veteran|EliteGuardRange`) is maximum range of the "
+"`Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the "
 "unit to intercept projectile. The unit weapon range will limit the unit "
 "interception range though."
 msgstr ""
 "`Interceptor.GuardRange`（以及 "
-"`Interceptor.(Rookie|Veteran|EliteGuardRange`）是单位拦截抛射体的最大范围。不过武器的射程仍会限制单位的实际拦截范围。"
+"`Interceptor.(Rookie|Veteran|EliteGuardRange)`）是单位拦截抛射体的最大范围。不过武器的射程仍会限制单位的实际拦截范围。"
 
 #: ../../New-or-Enhanced-Logics.md:675
 msgid ""
 "`Interceptor.MinimumGuardRange` (and "
-"`Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`) is the minimum "
+"`Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum "
 "range of the unit to intercept projectile. Any projectile under this "
 "range will not be intercepted."
 msgstr ""
 "`Interceptor.MinimumGuardRange`（以及 "
-"`Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`）是单位拦截抛射体的最小范围。任何小于此范围的抛射体都不会被拦截。"
+"`Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`）是单位拦截抛射体的最小范围。任何小于此范围的抛射体都不会被拦截。"
 
 #: ../../New-or-Enhanced-Logics.md:676
 msgid ""
@@ -2253,7 +2253,7 @@ msgstr "注意如果在同一个建筑发射第一种武器前发射另一种具
 #: ../../New-or-Enhanced-Logics.md:865
 msgid ""
 "Additionally, due to technical limitations the targeting constraints will"
-" always default to primary weapon's `Range` / `MinimumRange` unless "
+" always default to primary weapon's `Range/MinimumRange` unless "
 "`SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set."
 msgstr ""
 "此外由于技术限制目前除非手动列出了 `SW.RangeMinimum`／`SW.RangeMaximum` 否则始终默认使用主武器的 "
@@ -3293,12 +3293,17 @@ msgstr "`Promote.VeteranAnimation` 用于单位或建筑升级为老兵时。"
 #: ../../New-or-Enhanced-Logics.md:1310
 msgid ""
 "`Promote.EliteAnimation` is used when unit or structure is promoted to "
-"elite. If `Promote.EliteAnimation` is not defined, "
+"elite."
+msgstr ""
+"`Promote.EliteAnimation` 用于单位或建筑升级为精英时。"
+
+#: ../../New-or-Enhanced-Logics.md:1310
+msgid ""
+"If `Promote.EliteAnimation` is not defined, "
 "`Promote.VeteranAnimation` will play instead when unit or structure is "
 "promoted to elite."
 msgstr ""
-"`Promote.EliteAnimation` 用于单位或建筑升级为精英时。如果未定义 `Promote.EliteAnimation` 则使用"
-" `Promote.VeteranAnimation`。"
+"如果未定义 `Promote.EliteAnimation` 则使用 `Promote.VeteranAnimation`。"
 
 #: ../../New-or-Enhanced-Logics.md:1319
 msgid "Revenge weapon"
