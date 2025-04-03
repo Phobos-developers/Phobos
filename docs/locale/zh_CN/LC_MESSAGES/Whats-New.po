@@ -1607,7 +1607,7 @@ msgstr "在运输工具内重装填弹药（by Starkku）"
 
 #: ../../Whats-New.md:445
 msgid "Dump variables to file on scenario end / hotkey (by Morton)"
-msgstr "在场景结束／按下热键时将变量输出至文件（by Morton）"
+msgstr "在场景结束／按下快捷键时将变量输出至文件（by Morton）"
 
 #: ../../Whats-New.md:446
 msgid ""

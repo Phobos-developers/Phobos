@@ -139,7 +139,7 @@ msgstr "自定义矿柱"
 
 #: ../../../CREDITS.md:35
 msgid "Select next idle harvester hotkey"
-msgstr "选择下一个空闲矿车热键"
+msgstr "选择下一个空闲矿车快捷键"
 
 #: ../../../CREDITS.md:36
 msgid "Interceptor enhancement"
@@ -231,7 +231,7 @@ msgstr "图标排序优先级"
 
 #: ../../../CREDITS.md:61
 msgid "Tab hotkey placement fix"
-msgstr "标签热键放置修复"
+msgstr "标签快捷键放置修复"
 
 #: ../../../CREDITS.md:62
 msgid "Producing progress indicators"
@@ -283,7 +283,7 @@ msgstr "**secsome (SEC-SOME)**："
 
 #: ../../../CREDITS.md:74
 msgid "Debug info dump hotkey"
-msgstr "输出对象信息热键"
+msgstr "输出对象信息快捷键"
 
 #: ../../../CREDITS.md:75
 msgid "Refactoring & porting of Ares helper code"
@@ -659,7 +659,7 @@ msgstr "核弹载体与载荷武器 `Bright` 修复"
 
 #: ../../../CREDITS.md:170
 msgid "Display damage numbers hotkey command"
-msgstr "显示伤害数字热键命令"
+msgstr "显示伤害数字快捷键命令"
 
 #: ../../../CREDITS.md:171
 msgid "`TransactMoney.Display`"
@@ -1073,7 +1073,7 @@ msgstr "显示指示者和抑制者范围"
 
 #: ../../../CREDITS.md:276
 msgid "Dump variables to file on scenario end / hotkey"
-msgstr "在场景结束／按下热键时将变量输出至文件"
+msgstr "在场景结束／按下快捷键时将变量输出至文件"
 
 #: ../../../CREDITS.md:277
 msgid ""
