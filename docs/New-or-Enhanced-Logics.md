@@ -894,7 +894,7 @@ Trajectory.DamageCountAttenuation=1.0  ; floating point value
 ```
 
 ```{hint}
-- `SubjectToBuildings` and `Trajectory.ThroughBuilding` are different. The former follows the settings of Ares and will only self destruct when conditions are met, while the latter will self destruct when touching non-allies building and trigger its effect if `Trajectory.ProximityImpact` is set.
+- `SubjectToBuildings` and `Trajectory.ThroughBuilding` are different. But the two are not in conflict and can take effect simultaneously. The former can affect the search for enemies and ignore the main target, follows the settings of Ares and will only self destruct when conditions are met. While the latter will self destruct when touching only non-allies building (including main target) and trigger its effect if `Trajectory.ProximityImpact` is set.
 - Simply put, `Trajectory.PassDetonate` is periodically effect and `Trajectory.ProximityImpact` is once per person effect.
 - If `Trajectory.ProximityImpact` is set to non-zero, the default value of `Trajectory.PeacefulVanish` will be changed.
 ```
