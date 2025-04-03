@@ -357,6 +357,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
    - Fix `DefaultDisguise` showing wrong house colors for different players
+   - Allow voxel projectiles to use AnimPalette and FirersPalette
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -385,9 +386,14 @@ This page lists all the individual contributions to the project by their author.
   - Fix a jumpjet crash related to voxel shadow drawing
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
+  - Fix `Stop` command not working so well in many cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Draw visual effects for airburst weapons
   - Units will not always stuck in the factory
+  - Fix an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
+  - Fix an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -401,7 +407,9 @@ This page lists all the individual contributions to the project by their author.
   - Parasite returning bug fix
   - Units are now unable to kick out from a factory that is in construction process
   - Fix issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles)
-  - Fixed an issue where `FireAngle` would not work properly under certain circumstances.
+  - Fix an issue where `FireAngle` would not work properly under certain circumstances
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix the bug that healing weapons could not automatically acquire aerial targets
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
