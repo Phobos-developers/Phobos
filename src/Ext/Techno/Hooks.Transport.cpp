@@ -488,6 +488,11 @@ static inline bool CanUnloadNow(UnitClass* pTransport, FootClass* pPassenger)
 	return pTransport->GetCell()->LandType != LandType::Water;
 }
 
+namespace TransportUnloadTemp
+{
+	bool ShouldPlaySound = false;
+}
+
 DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 {
 	enum { SkipGameCode = 0x73E289 };
@@ -498,9 +503,28 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 	// Restore vanilla function
 	pPassenger->Undiscover();
 
-	// Play the sound when interrupted for some reason
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
-		VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+	// Clean up the unload space
+	const bool alt = pThis->OnBridge;
+	const auto pCell = pThis->GetCell();
+	const auto coord = pCell->GetCoords();
+
+	for (int i = 0; i < 8; ++i)
+	{
+		const auto pAdjCell = pCell->GetNeighbourCell(static_cast<FacingType>(i));
+		const auto pTechno = pAdjCell->FindTechnoNearestTo(Point2D::Empty, alt, pThis);
+
+		if (pTechno && pTechno->Owner->IsAlliedWith(pThis))
+			pAdjCell->ScatterContent(coord, true, true, alt);
+	}
+
+	// Play the sound when interrupted
+	if (TransportUnloadTemp::ShouldPlaySound)
+	{
+		TransportUnloadTemp::ShouldPlaySound = false;
+
+		if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+	}
 
 	return SkipGameCode;
 }
@@ -520,15 +544,18 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
 			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
+			TransportUnloadTemp::ShouldPlaySound = false;
 			return UnloadReturn;
 		}
 		else if (!CanUnloadNow(pThis, pPassenger))
 		{
 			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
+			TransportUnloadTemp::ShouldPlaySound = false;
 			pThis->MissionStatus = 0; // Retry
 			return NoUnloadReturn;
 		}
 
+		TransportUnloadTemp::ShouldPlaySound = true;
 		R->EBX(0); // Reset
 		return UnloadLoop;
 	}
