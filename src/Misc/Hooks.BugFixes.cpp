@@ -20,6 +20,7 @@
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
 #include <TunnelLocomotionClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -1274,6 +1275,67 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 
 #pragma endregion
 
+#pragma region JumpjetShadowPointFix
+
+Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *pPoint)
+{
+	__assume(iloco != nullptr);
+	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iloco);
+	const auto pThis = pLoco->LinkedTo;
+	const auto pCell = MapClass::Instance.GetCellAt(pThis->Location);
+	auto height = pThis->Location.Z - MapClass::Instance.GetCellFloorHeight(pThis->Location);
+	// Vanilla GetHeight check OnBridge flag, which can not work on jumpjet
+	// Here, we simulate the drawing of an airplane for altitude calculation
+	if (pCell->ContainsBridge()
+		&& ((pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::North)->ContainsBridge()
+			|| !(pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::West)->ContainsBridge()))
+	{
+		height -= CellClass::BridgeHeight;
+	}
+
+	*pPoint = Point2D { 0, TacticalClass::AdjustForZ(height) };
+	return pPoint;
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD98, JumpjetLoco_ILoco_Shadow_Point);
+
+#pragma endregion
+
+#pragma region SpawnerFix
+
+// Enable the carrier on the bridge to retrieve the aircraft normally
+DEFINE_HOOK(0x4CF3F9, FlyLocomotionClass_FlightUpdate_FixFlightLevel, 0x5)
+{
+	enum { SkipGameCode = 0x4CF4D2 };
+
+	GET(FlyLocomotionClass* const, pThis, EBP);
+
+	const auto pFoot = pThis->LinkedTo;
+
+	if (pFoot->GetMapCoords() == CellClass::Coord2Cell(pThis->MovingDestination) // Maintain height until on same cell to prevent poor visual display
+		&& MapClass::Instance.GetCellAt(pFoot->Location)->ContainsBridge() // Only effective when on the bridge
+		&& pThis->FlightLevel >= CellClass::BridgeHeight) // Not lower than the ground level
+	{
+		// Subtract the excess bridge height to allow the aircraft to return to the correct altitude
+		pThis->FlightLevel -= CellClass::BridgeHeight;
+	}
+
+	return SkipGameCode;
+}
+
+// Let in air aircraft carrier ignore nearby elevated bridge check
+DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
+{
+	enum { ContinueCheck = 0x6FC61F, TemporaryCannotFire = 0x6FCD0E };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const bool, nearElevatedBridge, EAX);
+
+	// In addition, the return value of the function has been changed to allow the aircraft carrier to retain the current target
+	return (nearElevatedBridge && !pThis->IsInAir()) ? TemporaryCannotFire : ContinueCheck;
+}
+
+#pragma endregion
+
 #pragma region TeamCloseRangeFix
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
@@ -1312,6 +1374,7 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
+
 DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
 DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
@@ -1604,6 +1667,41 @@ DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 	pThis->BarrelFacing.SetCurrent(*pDir);
 
 	return SkipGameCode;
+}
+
+namespace BulletDrawVoxelTemp
+{
+	ConvertClass* Convert = nullptr;
+}
+
+DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
+{
+	GET(BulletClass*, pThis, EAX);
+
+	if (pThis->Type->AnimPalette)
+	{
+		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL;
+	}
+	else if (pThis->Type->FirersPalette)
+	{
+		const int inheritColor = pThis->InheritedColor;
+		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array.Items[colorIndex]->LightConvert;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x46B23C, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+{
+	const auto pConvert = BulletDrawVoxelTemp::Convert;
+
+	if (!pConvert)
+		return 0;
+
+	R->ECX(pConvert);
+	return R->Origin() + 6;
 }
 
 #pragma region StructureFindingFix

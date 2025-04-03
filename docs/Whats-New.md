@@ -348,16 +348,18 @@ New:
 - `BombParachute` deglobalization (by TaranDahl)
 - Sinkablity and sinking speed customization (by TaranDahl)
 - Fast access vehicle (by CrimRecya)
+- Laser, electric bolt and rad beam scatter (by CrimRecya)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
-- Technos are no longer unable to stop when it is above the elevated bridge, and they are still not allowed to stop moving under the elevated bridge, but can stop other missions (by CrimRecya)
-- Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
+- Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures (by CrimRecya)
+- Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
+- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 </details>
 
 ### 0.4
@@ -628,6 +630,13 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
+- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
+- Technos are no longer unable to stop when it is above the elevated bridge, and they are still not allowed to stop moving under the elevated bridge, but can stop other missions (by CrimRecya)
+- Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own (by CrimRecya)
+- Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
+- Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
+- Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
+- Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -867,6 +876,7 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
+- Allow voxel projectiles to use AnimPalette and FirersPalette (by NetsuNegi)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
