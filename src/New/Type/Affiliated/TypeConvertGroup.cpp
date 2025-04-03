@@ -1,14 +1,14 @@
 #include <Ext/Techno/Body.h>
 #include "TypeConvertGroup.h"
 
-void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
+void TypeConvertGroup::Convert(TechnoClass* pTarget, const std::vector<TypeConvertGroup>& convertPairs, HouseClass* pOwner)
 {
 	for (const auto& [fromTypes, toType, affectedHouses] : convertPairs)
 	{
 		if (!toType.Get())
 			continue;
 
-		if (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTargetFoot->Owner))
+		if (pOwner && !EnumFunctions::CanTargetHouse(affectedHouses, pOwner, pTarget->Owner))
 			continue;
 
 		if (fromTypes.size())
@@ -16,16 +16,16 @@ void TypeConvertGroup::Convert(FootClass* pTargetFoot, const std::vector<TypeCon
 			for (const auto& from : fromTypes)
 			{
 				// Check if the target matches upgrade-from TechnoType and it has something to upgrade to
-				if (from == pTargetFoot->GetTechnoType())
+				if (from == pTarget->GetTechnoType())
 				{
-					TechnoExt::ConvertToType(pTargetFoot, toType);
+					TechnoExt::ConvertToType(pTarget, toType);
 					goto end; // Breaking out of nested loops without extra checks one of the very few remaining valid usecases for goto, leave it be.
 				}
 			}
 		}
 		else
 		{
-			TechnoExt::ConvertToType(pTargetFoot, toType);
+			TechnoExt::ConvertToType(pTarget, toType);
 			break;
 		}
 	}

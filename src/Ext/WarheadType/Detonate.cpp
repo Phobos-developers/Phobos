@@ -592,12 +592,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
-
-	if (!pTargetFoot)
-		return;
-
-	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+	TypeConvertGroup::Convert(pTarget, this->Convert_Pairs, pHouse);
 }
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)

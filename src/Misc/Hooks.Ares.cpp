@@ -4,6 +4,7 @@
 #include <Ext/Building/Body.h>
 #include <Ext/Sidebar/Body.h>
 #include <Ext/EBolt/Body.h>
+#include <Ext/Techno/Body.h>
 
 #include <New/Entity/Ares/RadarJammerClass.h>
 
@@ -27,10 +28,7 @@ static void __fastcall LetGo(TemporalClass* pTemporal)
 
 static bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 {
-	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
-		return TechnoExt::ConvertToType(pFoot, pToType);
-
-	return false;
+	return TechnoExt::ConvertToType(pThis, pToType);
 }
 
 // Technically this replaces GetTechnoType() call.
