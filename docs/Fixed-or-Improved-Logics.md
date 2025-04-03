@@ -530,6 +530,18 @@ In `rulesmd.ini`:
 BuildingWaypoints=false  ; boolean
 ```
 
+## Infantry
+
+### Prone speed customization
+
+- In vanilla, infantry has hardcoded prone speed. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]        ; InfantryType
+ProneSpeed=           ; floating point value, multiplier
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
