@@ -607,7 +607,7 @@ DEFINE_HOOK(0x718F1E, TeleportLocomotionClass_MovingTo_ReplaceMovementZone, 0x6)
 		movementZone = MovementZone::Amphibious;
 
 	R->EBP(movementZone);
-	return 0;
+	return R->Origin() + 0x6;
 }
 
 #pragma endregion
