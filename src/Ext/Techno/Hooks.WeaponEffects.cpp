@@ -208,16 +208,16 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 	{
 		// The weapon may not have been set up
 		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
-		// pBullet->Data.Location (0x4E1130) -> pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords
+
 		if (pWeaponExt && pWeaponExt->VisualScatter)
 		{
 			const auto& pRulesExt = RulesExt::Global();
 			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
-			*pTargetCoords = MapClass::GetRandomCoordsNear(pBullet->Data.Location, radius, false);
+			*pTargetCoords = MapClass::GetRandomCoordsNear((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), radius, false);
 		}
 		else
 		{
-			*pTargetCoords = pBullet->Data.Location;
+			*pTargetCoords = (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords);
 		}
 	}
 	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)

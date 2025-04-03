@@ -141,6 +141,7 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 
 		if (pObstacleCell)
 		{
+			// TODO Accurate coords
 			pThis->SetLocation(pObstacleCell->GetCoords());
 			pThis->Speed = 0;
 			pThis->Velocity = BulletVelocity::Empty;
