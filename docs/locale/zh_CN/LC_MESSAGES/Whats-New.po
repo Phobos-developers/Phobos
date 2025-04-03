@@ -774,8 +774,8 @@ msgid "Script action to Chronoshift teams to enemy base (by Starkku)"
 msgstr "超时空传送到敌方基地的动作脚本（by Starkku）"
 
 #: ../../Whats-New.md:371
-msgid "Customizable ElectricBolt Arcs (by Fryone, Kerbiter)"
-msgstr "自定义 EBolt 电弧（by Fryone、Kerbiter）"
+msgid "Customizable ElectricBolt Arcs (by Fryone & Kerbiter)"
+msgstr "自定义 EBolt 电弧（by Fryone 与 Kerbiter）"
 
 #: ../../Whats-New.md:372
 msgid ""
@@ -1036,7 +1036,7 @@ msgstr "力场护盾在（反）部署时继承及针对有生物体的自定义
 
 #: ../../Whats-New.md:421
 msgid ""
-"Map trigger action 41 `41 Play Animation At...` now uses additional "
+"Map trigger action `41 Play Animation At...` now uses additional "
 "parameter to determine if animation can play sound, deal damage etc. (by "
 "Starkku)"
 msgstr "地图触发结果 `41 播放动画在...` 现在使用额外参数来决定是否播放声音和造成杀伤（by Starkku）"
@@ -1487,7 +1487,7 @@ msgstr "修复了伪装的步兵在必要时没有使用自定义色盘来绘制
 
 #: ../../Whats-New.md:507
 msgid ""
-"Reenabled the obsolete `[General] WarpIn` as default anim type when units"
+"Reenabled the obsolete `[General] -> WarpIn` as default anim type when units"
 " are warping in (by Trsdy)"
 msgstr "重启废弃的 `[General] -> WarpIn` 作为单位超时空传送来的默认动画类型（by Trsdy）"
 
@@ -2504,8 +2504,8 @@ msgid "0.3"
 msgstr "0.3"
 
 #: ../../Whats-New.md:684
-msgid "LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)"
-msgstr "激光尾迹初始实现（by Kerbiter, ChrisLv_CN）"
+msgid "LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)"
+msgstr "激光尾迹初始实现（by Kerbiter 与 ChrisLv_CN）"
 
 #: ../../Whats-New.md:685
 msgid "Anim-to-Unit logic and ability to randomize `DestroyAnim` (by Otamaa)"
@@ -2946,8 +2946,8 @@ msgstr "遭遇战 AI 「在 MCV 部署时集结」行为去硬编码（by TaranD
 #: ../../Whats-New.md:785
 msgid ""
 "Fixed laser drawing code to allow for thicker lasers in house color draw "
-"mode (by Kerbiter, ChrisLv_CN)"
-msgstr "修复了激光绘制代码以允许其可在所属方颜色模式下绘制更粗的激光（by Kerbiter, ChrisLv_CN）"
+"mode (by Kerbiter & ChrisLv_CN)"
+msgstr "修复了激光绘制代码以允许其可在所属方颜色模式下绘制更粗的激光（by Kerbiter 与 ChrisLv_CN）"
 
 #: ../../Whats-New.md:786
 msgid "Fixed `DeathWeapon` not detonating properly (by Uranusian)"
@@ -3512,8 +3512,8 @@ msgid "Select Next Idle Harvester hotkey command (by Kerbiter)"
 msgstr "选择下一个空闲矿车快捷键（by Kerbiter）"
 
 #: ../../Whats-New.md:945
-msgid "Dump Object Info hotkey command (by secsome, FS-21)"
-msgstr "输出对象信息快捷键（by secsome、FS-21）"
+msgid "Dump Object Info hotkey command (by secsome & FS-21)"
+msgstr "输出对象信息快捷键（by secsome 与 FS-21）"
 
 #: ../../Whats-New.md:946
 msgid "Remove Disguise and Remove Mind Control warhead effects (by secsome)"
@@ -3589,9 +3589,9 @@ msgstr "自定义缺省图标（by Uranusian）"
 
 #: ../../Whats-New.md:963
 msgid ""
-"Map previews with zero size won't crash the game anymore (by Kerbiter, "
+"Map previews with zero size won't crash the game anymore (by Kerbiter & "
 "Belonit)"
-msgstr "0 尺寸的地图预览图不再会导致游戏崩溃（by Kerbiter、Belonit）"
+msgstr "0 尺寸的地图预览图不再会导致游戏崩溃（by Kerbiter 与 Belonit）"
 
 #: ../../Whats-New.md:964
 msgid "Tileset 255+ bridge fix (by E1 Elite)"
@@ -3696,8 +3696,8 @@ msgstr "支持了任意尺寸的 PCX 载入图（by Belonit）"
 #: ../../Whats-New.md:1000
 msgid ""
 "Extended sidebar tooltips with descriptions, recharge time and power "
-"consumption/generation (by Kerbiter, Belonit)"
-msgstr "扩展侧边栏拓展工具条时其带有描述、充能时间和电力能耗／产出（by Kerbiter, Belonit）"
+"consumption/generation (by Kerbiter & Belonit)"
+msgstr "扩展侧边栏拓展工具条时其带有描述、充能时间和电力能耗／产出（by Kerbiter 与 Belonit）"
 
 #: ../../Whats-New.md:1001
 msgid "Selection priority filtering for box selection (by Kerbiter)"
@@ -3722,8 +3722,8 @@ msgid ""
 msgstr "允许为建筑加载物指定适当的建筑所属方，也就是可以建造在别人的建筑上（by Kerbiter）"
 
 #: ../../Whats-New.md:1006
-msgid "Customizable disk laser radius (by Belonit, Kerbiter)"
-msgstr "自定义飞碟激光半径（by Belonit、Kerbiter）"
+msgid "Customizable disk laser radius (by Belonit & Kerbiter)"
+msgstr "自定义飞碟激光半径（by Belonit 与 Kerbiter）"
 
 #: ../../Whats-New.md:1007
 msgid "Ability to switch to GDI sidebar layout for any side (by Belonit)"
