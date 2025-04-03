@@ -199,6 +199,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
 - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`.
+- Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc.
 
 ## Fixes / interactions with other extensions
 
