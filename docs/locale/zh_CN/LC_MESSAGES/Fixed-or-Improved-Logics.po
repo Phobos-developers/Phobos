@@ -3973,7 +3973,7 @@ msgid ""
 "docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`."
 msgstr ""
 "由于技术限制，这些特性不适用于 [Ares 中光棱塔递光武器](https://ares-developers.github.io/Ares-"
-"docs/new/buildings/prismforwarding.html) 所创建的 EBolt 效果。"
+"docs/new/buildings/prismforwarding.html) 或那些 `AirburstWeapon` 所创建的 EBolt "
 
 #: ../../Fixed-or-Improved-Logics.md:1569
 msgid "Single-color lasers"
