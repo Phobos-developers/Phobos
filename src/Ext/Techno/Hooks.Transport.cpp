@@ -224,6 +224,11 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 #pragma region NoQueueUpToEnterAndUnload
 
+static inline bool IsCloseEnoughToEnter(UnitClass* pTransport, FootClass* pPassenger)
+{
+	return (abs(pPassenger->Location.X - pTransport->Location.X) <= 384 && abs(pPassenger->Location.Y - pTransport->Location.Y) <= 384);
+}
+
 // Rewrite from 0x73758A, replace send RadioCommand::QueryCanEnter
 bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 {
@@ -247,17 +252,12 @@ bool __fastcall CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 
 	const auto maxSize = pTransportType->Passengers;
 	const auto predictSize = (bySize ? pTransport->Passengers.GetTotalSize() : pTransport->Passengers.NumPassengers) + passengerSize;
-	const auto pLink = pTransport->GetNthLink();
-	const auto needCalculate = pLink && pLink != pPassenger;
+	const auto pLink = abstract_cast<FootClass*>(pTransport->GetNthLink());
+	const auto needCalculate = pLink && pLink != pPassenger && pLink->Destination == pTransport;
 
-	if (needCalculate)
-	{
-		const auto delta = pLink->GetCoords() - pTransport->GetCoords();
-
-		// When the most important passenger is close, need to prevent overlap
-		if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
-			return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
-	}
+	// When the most important passenger is close, need to prevent overlap
+	if (needCalculate && IsCloseEnoughToEnter(pTransport, pLink))
+		return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
 
 	return predictSize < maxSize;
 }
@@ -353,17 +353,14 @@ DEFINE_HOOK(0x51A0D4, InfantryClass_UpdatePosition_NoQueueUpToEnter, 0x6)
 
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->Destination : pThis->QueueUpToEnter))
 	{
-		if (pDest->Type->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
-		{
-			const auto delta = pThis->GetCoords() - pDest->GetCoords();
+		const auto pType = pDest->Type;
 
-			if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
+		if (pType->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		{
+			if (IsCloseEnoughToEnter(pDest, pThis) && CanEnterNow(pDest, pThis))
 			{
-				if (CanEnterNow(pDest, pThis))
-				{
-					InfantryEnterNow(pDest, pThis);
-					return EnteredThenReturn;
-				}
+				InfantryEnterNow(pDest, pThis);
+				return EnteredThenReturn;
 			}
 		}
 	}
@@ -379,17 +376,14 @@ DEFINE_HOOK(0x73A5EA, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->Destination : pThis->QueueUpToEnter))
 	{
-		if (pDest->Type->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
-		{
-			const auto delta = pThis->GetCoords() - pDest->GetCoords();
+		const auto pType = pDest->Type;
 
-			if (abs(delta.X) <= 384 && abs(delta.Y) <= 384)
+		if (pType->Passengers > 0 && TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+		{
+			if (IsCloseEnoughToEnter(pDest, pThis) && CanEnterNow(pDest, pThis))
 			{
-				if (CanEnterNow(pDest, pThis))
-				{
-					UnitEnterNow(pDest, pThis);
-					return EnteredThenReturn;
-				}
+				UnitEnterNow(pDest, pThis);
+				return EnteredThenReturn;
 			}
 		}
 	}
@@ -397,26 +391,29 @@ DEFINE_HOOK(0x73A5EA, UnitClass_UpdatePosition_NoQueueUpToEnter, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x70D957, FootClass_QueueEnter_ForceMoving, 0x6)
+DEFINE_HOOK(0x70D965, FootClass_QueueEnter_ForceEnter, 0x7)
 {
 	GET(FootClass* const, pThis, ESI);
 
 	const auto pDest = abstract_cast<UnitClass*>(pThis->QueueUpToEnter);
 
-	if (pDest && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+	if (pDest && !pThis->Deactivated && !pThis->IsUnderEMP() && !pThis->Locomotor->Is_Moving() // Entering while moving can cause many problems
+		&& TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
 	{
-		const auto absType = pThis->WhatAmI();
-		// When the distance is very close, the passengers may not move, which can cause UpdatePosition to not be called
-		// So special handling is needed here, avoid not being able to trigger quick boarding without moving
-		if (absType == AbstractType::Infantry)
+		if (IsCloseEnoughToEnter(pDest, pThis))
 		{
-			if (pThis->GetMapCoords().DistanceFromSquared(pDest->GetMapCoords()) <= 2 && CanEnterNow(pDest, pThis))
-				InfantryEnterNow(pDest, static_cast<InfantryClass*>(pThis));
-		}
-		else if (absType == AbstractType::Unit)
-		{
-			if (pThis->GetMapCoords().DistanceFromSquared(pDest->GetMapCoords()) <= 2 && CanEnterNow(pDest, pThis))
-				UnitEnterNow(pDest, static_cast<UnitClass*>(pThis));
+			const auto absType = pThis->WhatAmI();
+
+			if (absType == AbstractType::Infantry)
+			{
+				if (CanEnterNow(pDest, pThis))
+					InfantryEnterNow(pDest, static_cast<InfantryClass*>(pThis));
+			}
+			else if (absType == AbstractType::Unit)
+			{
+				if (CanEnterNow(pDest, pThis))
+					UnitEnterNow(pDest, static_cast<UnitClass*>(pThis));
+			}
 		}
 	}
 
@@ -448,11 +445,10 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 
 	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
 	{
-		if (pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
+		if (!pThis->Passengers.GetFirstPassenger() || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
 			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
-			pThis->MissionStatus = 4;
 			return UnloadReturn;
 		}
 
@@ -464,5 +460,14 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 	VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
 	return UnloadReturn;
 }
+
+#pragma endregion
+
+#pragma region AmphibiousEnterAndUnload
+
+// Enter building
+DEFINE_JUMP(LJMP, 0x43C38D, 0x43C3FF); // Skip amphibious and naval check if no Ares
+
+// TODO Enter unit
 
 #pragma endregion
