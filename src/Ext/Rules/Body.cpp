@@ -283,7 +283,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 // this runs between the before and after type data loading methods for rules ini
 void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 {
-
+	// tint color
+	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->IronCurtainColor);
+	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->ForceShieldColor);
+	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
 }
 
 // this should load everything that TypeData is not dependant on
@@ -447,6 +451,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->BuildingTypeSelectable)
+		.Process(this->TintColorIronCurtain)
+		.Process(this->TintColorForceShield)
+		.Process(this->TintColorAirstrike)
+		.Process(this->TintColorBerserk)
 		;
 }
 

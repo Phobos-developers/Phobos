@@ -28,10 +28,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
 		if (auto const pFootKiller = generic_cast<FootClass*>(pObjectKiller))
-		{
-			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
-			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
-		}
+			TechnoExt::ExtMap.Find(pObjectKiller)->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
 	}
 }
 
@@ -84,20 +81,28 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pInf && pInf->IsDeployed())
-			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
-			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+		if (pInf)
+		{
+			if (pInf->IsDeployed())
+				pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
+			else if (pInf->Crawling)
+				pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
+			else
+				pickedFLHs = pExt->EliteWeaponBurstFLHs;
+		}
 		else
+		{
 			pickedFLHs = pExt->EliteWeaponBurstFLHs;
+		}
 	}
-	else
+	else if (pInf)
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf->IsDeployed())
 			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf->Crawling)
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
+
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
 	{
 		FLHFound = true;
@@ -161,11 +166,11 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	if (pThis)
 	{
 		if (invulnerability && pThis->IsIronCurtained())
-			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
+			tintColor |= pThis->ForceShielded ? RulesExt::Global()->TintColorForceShield : RulesExt::Global()->TintColorIronCurtain;
 		if (airstrike && pThis->Airstrike && pThis->Airstrike->Target == pThis)
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+			tintColor |= RulesExt::Global()->TintColorAirstrike;
 		if (berserk && pThis->Berzerk)
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+			tintColor |= RulesExt::Global()->TintColorBerserk;
 	}
 
 	return tintColor;
@@ -208,7 +213,7 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 	else
 	{
 		color = pExt->TintColorEnemies;
-		color = pExt->TintIntensityEnemies;
+		intensity = pExt->TintIntensityEnemies;
 	}
 }
 

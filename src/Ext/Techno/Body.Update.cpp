@@ -1145,6 +1145,8 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 void TechnoExt::ExtData::RecalculateStatMultipliers()
 {
 	auto const pThis = this->OwnerObject();
+	auto& pAE = this->AE;
+	const bool wasTint = pAE.HasTint;
 
 	double firepower = 1.0;
 	double armor = 1.0;
@@ -1179,23 +1181,24 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 	}
 
-	this->AE.FirepowerMultiplier = firepower;
-	this->AE.ArmorMultiplier = armor;
-	this->AE.SpeedMultiplier = speed;
-	this->AE.ROFMultiplier = ROF;
-	this->AE.Cloakable = cloak;
-	this->AE.ForceDecloak = forceDecloak;
-	this->AE.DisableWeapons = disableWeapons;
-	this->AE.HasRangeModifier = hasRangeModifier;
-	this->AE.HasTint = hasTint;
-	this->AE.ReflectDamage = reflectsDamage;
-	this->AE.HasOnFireDiscardables = hasOnFireDiscardables;
-	this->AE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
+	pAE.FirepowerMultiplier = firepower;
+	pAE.ArmorMultiplier = armor;
+	pAE.SpeedMultiplier = speed;
+	pAE.ROFMultiplier = ROF;
+	pAE.Cloakable = cloak;
+	pAE.ForceDecloak = forceDecloak;
+	pAE.DisableWeapons = disableWeapons;
+	pAE.HasRangeModifier = hasRangeModifier;
+	pAE.HasTint = hasTint;
+	pAE.ReflectDamage = reflectsDamage;
+	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
+	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
 
-	this->UpdateTintValues();
+	if (wasTint || hasTint)
+		this->UpdateTintValues();
 }
 
 // Recalculates tint values.
