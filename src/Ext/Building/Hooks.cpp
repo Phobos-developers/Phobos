@@ -807,7 +807,7 @@ DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
 		}
 
 		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-		overPower += pWHExt->ElectricAssaultPower;
+		overPower += pWHExt->ElectricAssaultLevel;
 	}
 
 	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
@@ -832,7 +832,7 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 		if (pWeapon && pWeapon->Warhead)
 		{
 			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-			overPower += pWHExt->ElectricAssaultPower;
+			overPower += pWHExt->ElectricAssaultLevel;
 		}
 	}
 

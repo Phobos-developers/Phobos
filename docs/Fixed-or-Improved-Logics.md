@@ -538,7 +538,7 @@ BuildingWaypoints=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]
-ElectricAssaultPower=1    ; integer
+ElectricAssaultLevel=1    ; integer
 
 [SOMEBUILDING]
 Overpower.KeepOnline=2    ; integer
