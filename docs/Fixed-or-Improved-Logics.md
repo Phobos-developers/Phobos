@@ -647,6 +647,16 @@ BallisticScatter.Max= ; floating point value, distance in cells
 
 ## Technos
 
+### Alternate FLH customizations
+
+- `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLHN` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+AlternateFLH.OnTurret=true  ; boolean
+```
+
 ### Building-provided self-healing customization
 
 - It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
