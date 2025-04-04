@@ -1195,12 +1195,14 @@ msgid ""
 "[Airburst weapon firing/source coordinate customizations](Fixed-or-"
 "Improved-Logics.md#airburst--splits) (by Starkku)"
 msgstr ""
+"[自定义空爆武器中心坐标](Fixed-or-Improved-Logics.md#airburst--splits)（by Starkku）"
 
 #: ../../Whats-New.md:353
 msgid ""
 "[AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-"
 "flh-customizations) (by Starkku)"
 msgstr ""
+"[AlternateFLH 跟随炮塔开关](Fixed-or-Improved-Logics.md#alternate-flh-customizations)（by Starkku）"
 
 #: ../../Whats-New.md:355 ../../Whats-New.md:536 ../../Whats-New.md:848
 #: ../../Whats-New.md:960 ../../Whats-New.md:987 ../../Whats-New.md:1026

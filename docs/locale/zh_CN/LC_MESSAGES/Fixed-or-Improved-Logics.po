@@ -2560,12 +2560,14 @@ msgid ""
 "coordinate to match that of the intended target instead of projectile's "
 "current position."
 msgstr ""
+"`Airburst.TargetAsSource` 可用于令空爆中心坐标跟随目标坐标而非使用抛射体当前位置。例如原先会在爆点生成根据 `[Projectile] -> AroundTarget` 决定飞向原点或目标位置，现在会直接以目标为中心爆开。"
 
 #: ../../Fixed-or-Improved-Logics.md:575
 msgid ""
 "If `Airburst.TargetAsSource.SkipHeight` is also set, then projectile's "
 "current height will be used instead of target's height still."
 msgstr ""
+"如果还设置了 `Airburst.TargetAsSource.SkipHeight` 则仍然使用抛射体当前高度而非目标高度。"
 
 #: ../../Fixed-or-Improved-Logics.md:576
 msgid ""
@@ -2592,6 +2594,7 @@ msgid ""
 "can be used to scatter the source or 'firing' coordinate around the "
 "original coordinate."
 msgstr ""
+"`AirburstWeapon.SourceScatterMin` 和 `AirburstWeapon.SourceScatterMax` 可用于令空爆中心坐标产生散布。"
 
 #: ../../Fixed-or-Improved-Logics.md:581
 msgid ""
@@ -2753,9 +2756,8 @@ msgid "Technos"
 msgstr "科技类型"
 
 #: ../../Fixed-or-Improved-Logics.md:650
-#, fuzzy
 msgid "Alternate FLH customizations"
-msgstr "自定义战斗闪光"
+msgstr "跟随炮塔旋转的 `AlternateFLH`"
 
 #: ../../Fixed-or-Improved-Logics.md:652
 msgid ""
@@ -2764,6 +2766,7 @@ msgid ""
 "multiple mind control link offsets etc. is calculated relative to the "
 "unit's turret if available or body."
 msgstr ""
+"`AlternateFLH.OnTurret` 可用于自定义 `AlternateFLHN` 用于 `OpenTopped` 运输工具的开火坐标、多重心控链接偏移等时其位置是否相对于炮塔而非车体。"
 
 #: ../../Fixed-or-Improved-Logics.md:655
 msgid ""
