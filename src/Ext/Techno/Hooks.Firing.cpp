@@ -703,7 +703,6 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	bool allowOnTurret = true;
-	bool useBurstMirroring = true;
 	CoordStruct flh = CoordStruct::Empty;
 
 	if (weaponIndex >= 0)
@@ -718,30 +717,40 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 			if (!found)
 				flh = pThis->GetWeapon(weaponIndex)->FLH;
+
+			if (pThis->CurrentBurstIndex % 2 != 0)
+				flh.Y = -flh.Y;
 		}
-		else
-		{
-			useBurstMirroring = false;
-		}
+
+		TechnoExt::ExtMap.Find(pThis)->LastWeaponFLH = flh;
 	}
 	else
 	{
-		int index = -weaponIndex - 1;
-		useBurstMirroring = false;
+		const int index = -weaponIndex - 1;
 
 		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
 			flh = pTypeExt->AlternateFLHs[index];
 
 		if (!pTypeExt->AlternateFLH_OnTurret)
 			allowOnTurret = false;
+
+		auto currentPassenger = pThis->Passengers.FirstPassenger;
+
+		for (int i = 0; i < index && currentPassenger; i++)
+			currentPassenger = abstract_cast<FootClass*>(currentPassenger->NextObject);
+
+		if (currentPassenger)
+			TechnoExt::ExtMap.Find(currentPassenger)->LastWeaponFLH = flh;
 	}
 
-	if (useBurstMirroring && pThis->CurrentBurstIndex % 2 != 0)
-		flh.Y = -flh.Y;
+	auto turIdx = -1;
 
-	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
+	if (pTypeExt->BurstPerTurret > 0)
+		turIdx = ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1)) - 1;
+
+	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret, turIdx);
+
 	R->EAX(pCoords);
-
 	return SkipGameCode;
 }
 
