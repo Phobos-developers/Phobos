@@ -533,13 +533,14 @@ BuildingWaypoints=false  ; boolean
 ### Customize overpower logic
 
 - Now you can specific how building can be overpowerd.
+- Ares' Battery super weapon won't be affected by this.
 
 In `rulesmd.ini`:
 ```ini
-[Warhead]
+[SOMEWARHEAD]
 ElectricAssaultPower=1    ; integer
 
-[Building]
+[SOMEBUILDING]
 Overpower.KeepOnline=2    ; integer
 Overpower.ChargeWeapon=1  ; integer
 ```
