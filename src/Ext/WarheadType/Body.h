@@ -163,6 +163,8 @@ public:
 
 		Nullable<bool> CombatAlert_Suppress;
 
+		Valueable<int> ElectricAssaultPower;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -328,6 +330,8 @@ public:
 			, BuildingUndeploy_Leave { false }
 
 			, CombatAlert_Suppress {}
+
+			, ElectricAssaultPower { 1 }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

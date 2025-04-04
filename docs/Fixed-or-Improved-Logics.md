@@ -536,7 +536,7 @@ BuildingWaypoints=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[TechnoType]
+[Warhead]
 ElectricAssaultPower=1    ; integer
 
 [Building]
