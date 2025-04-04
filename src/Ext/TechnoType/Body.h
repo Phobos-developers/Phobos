@@ -298,6 +298,10 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		Valueable<bool> SuppressKillWeapons;
+		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
+
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -550,6 +554,9 @@ public:
 			, Sinkable { }
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
+
+			, SuppressKillWeapons { false }
+			, SuppressKillWeapons_Types {}
 		{ }
 
 		virtual ~ExtData() = default;
