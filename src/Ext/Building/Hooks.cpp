@@ -776,3 +776,49 @@ DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning,
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
+{
+	enum { SkipGameCode = 0x44019D };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->Type->Overpowerable)
+		return SkipGameCode;
+
+	int overPower = 0;
+
+	for (int idx = 0; idx < pThis->Overpowerers.Count; idx++)
+	{
+		const auto pTechno = pThis->Overpowerers[idx];
+
+		if (pTechno->Target == pThis)
+			overPower += TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->ElectricAssaultPower;
+		else
+			pThis->Overpowerers.RemoveItem(idx);
+	}
+
+	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const int charge = pBuildingTypeExt->Overpower_ChargeWeapon;
+
+	pThis->IsOverpowered = overPower >= pBuildingTypeExt->Overpower_KeepOnline + charge || (pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= charge);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK_AGAIN(0x45563B, BuildingClass_IsPowerOnline_Overpower, 0x6)
+DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
+{
+	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
+
+	GET(BuildingClass*, pThis, ESI);
+	int overPower = 0;
+
+	for (const auto pCharger : pThis->Overpowerers)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pCharger->GetTechnoType());
+		overPower += pTypeExt->ElectricAssaultPower;
+	}
+
+	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	return overPower < pBuildingTypeExt->Overpower_KeepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
+}
