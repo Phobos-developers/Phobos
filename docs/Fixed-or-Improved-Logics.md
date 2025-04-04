@@ -538,8 +538,11 @@ BuildingWaypoints=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]        ; InfantryType
+[General]
 ProneSpeed=           ; floating point value, multiplier
+
+[SOMEINFANTRY]        ; InfantryType
+ProneSpeed=           ; floating point value, multiplier, default to [General]->ProneSpeed
 ```
 
 ## Particle systems

@@ -723,7 +723,7 @@ DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
 	auto pType = pThis->Type;
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto multiplier = pTypeExt->ProneSpeed.Get(RulesExt::Global()->ProneSpeed.Get(pType->Crawls ? 0.67 : 1.5));
-	currentSpeed *= multiplier;
+	currentSpeed = static_cast<int>(static_cast<double>(currentSpeed) * multiplier);
 	R->ECX(currentSpeed);
 	return 0x521DC5;
 }
