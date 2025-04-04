@@ -530,6 +530,20 @@ In `rulesmd.ini`:
 BuildingWaypoints=false  ; boolean
 ```
 
+### Customize overpower logic
+
+- Now you can specific how building can be overpowerd.
+
+In `rulesmd.ini`:
+```ini
+[TechnoType]
+ElectricAssaultPower=1    ; integer
+
+[Building]
+Overpower.KeepOnline=2    ; integer
+Overpower.ChargeWeapon=1  ; integer
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
