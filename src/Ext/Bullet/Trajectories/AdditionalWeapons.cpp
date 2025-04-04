@@ -265,7 +265,6 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 			}
 		}
 	}
-
 	// Set basic target
 	if (!pTarget && !this->TargetInTheAir)
 		pTarget = MapClass::Instance.TryGetCellAt(pBullet->TargetCoords);

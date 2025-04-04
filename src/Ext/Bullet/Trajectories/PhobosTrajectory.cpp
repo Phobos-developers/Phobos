@@ -753,8 +753,7 @@ bool PhobosTrajectory::CheckSynchronize()
 		if (pTarget && (pTarget->IsInAir() != this->TargetInTheAir))
 			pTarget = nullptr;
 		// Replace with a new target
-		if (pTarget)
-			this->SetBulletNewTarget(pTarget);
+		pBullet->SetTarget(pTarget);
 	}
 
 	return false;
