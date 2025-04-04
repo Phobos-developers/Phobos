@@ -539,10 +539,11 @@ BuildingWaypoints=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-ProneSpeed=           ; floating point value, multiplier
+ProneSpeed.Crawls=0.67        ; floating point value, multiplier
+ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 
-[SOMEINFANTRY]        ; InfantryType
-ProneSpeed=           ; floating point value, multiplier, default to [General]->ProneSpeed
+[SOMEINFANTRY]                ; InfantryType
+ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
 ## Particle systems
