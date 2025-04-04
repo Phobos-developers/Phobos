@@ -65,10 +65,14 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AroundTarget.Read(exINI, pSection, "AroundTarget");
 	this->Airburst_UseCluster.Read(exINI, pSection, "Airburst.UseCluster");
 	this->Airburst_RandomClusters.Read(exINI, pSection, "Airburst.RandomClusters");
+	this->Airburst_TargetAsSource.Read(exINI, pSection, "Airburst.TargetAsSource");
+	this->Airburst_TargetAsSource_SkipHeight.Read(exINI, pSection, "Airburst.TargetAsSource.SkipHeight");
 	this->Splits_TargetingDistance.Read(exINI, pSection, "Splits.TargetingDistance");
 	this->Splits_TargetCellRange.Read(exINI, pSection, "Splits.TargetCellRange");
 	this->Splits_UseWeaponTargeting.Read(exINI, pSection, "Splits.UseWeaponTargeting");
 	this->AirburstWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AirburstWeapon.ApplyFirepowerMult");
+	this->AirburstWeapon_SourceScatterMin.Read(exINI, pSection, "AirburstWeapon.SourceScatterMin");
+	this->AirburstWeapon_SourceScatterMax.Read(exINI, pSection, "AirburstWeapon.SourceScatterMax");
 	this->BombParachute.Read(exINI, pSection, "BombParachute");
 
 	// Ares 0.7
@@ -171,10 +175,14 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AroundTarget)
 		.Process(this->Airburst_UseCluster)
 		.Process(this->Airburst_RandomClusters)
+		.Process(this->Airburst_TargetAsSource)
+		.Process(this->Airburst_TargetAsSource_SkipHeight)
 		.Process(this->Splits_TargetingDistance)
 		.Process(this->Splits_TargetCellRange)
 		.Process(this->Splits_UseWeaponTargeting)
 		.Process(this->AirburstWeapon_ApplyFirepowerMult)
+		.Process(this->AirburstWeapon_SourceScatterMin)
+		.Process(this->AirburstWeapon_SourceScatterMax)
 		.Process(this->BombParachute)
 
 		.Process(this->TrajectoryType) // just keep this shit at last

@@ -279,6 +279,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->CombatAlert_Suppress.Read(exINI, pSection, "CombatAlert.Suppress");
 
+	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
+	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouses");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -517,6 +520,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingUndeploy_Leave)
 
 		.Process(this->CombatAlert_Suppress)
+
+		.Process(this->KillWeapon)
+		.Process(this->KillWeapon_AffectsHouses)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
