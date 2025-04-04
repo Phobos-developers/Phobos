@@ -349,6 +349,8 @@ New:
 - Sinkablity and sinking speed customization (by TaranDahl)
 - Fast access vehicle (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
+- [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
+- [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
