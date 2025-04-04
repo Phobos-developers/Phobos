@@ -743,12 +743,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 			TechnoExt::ExtMap.Find(currentPassenger)->LastWeaponFLH = flh;
 	}
 
-	auto turIdx = -1;
-
-	if (pTypeExt->BurstPerTurret > 0)
-		turIdx = ((pThis->CurrentBurstIndex / pTypeExt->BurstPerTurret) % (pTypeExt->ExtraTurretCount + 1)) - 1;
-
-	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret, turIdx);
+	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
 
 	R->EAX(pCoords);
 	return SkipGameCode;
