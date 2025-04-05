@@ -54,8 +54,8 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
 		double turretRad = pThis->TurretFacing().GetRadian<32>();
-		double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
-		float angle = (float)(turretRad - bodyRad);
+		// For BuildingClass turret facing is equal to primary facing
+		float angle = pFoot ? (float)(turretRad - pThis->PrimaryFacing.Current().GetRadian<32>()) : (float)(turretRad);
 
 		mtx.RotateZ(angle);
 	}
@@ -67,7 +67,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 
 	// Step 5: apply as an offset to global object coords
 	// Resulting coords are mirrored along X axis, so we mirror it back
-	auto location = pThis->GetCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
+	auto location = pThis->GetRenderCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 
 	return location;
 }
@@ -230,6 +230,10 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 	if (hasShieldTint)
 	{
 		auto const pShieldType = pExt->Shield->GetType();
+
+		if (!EnumFunctions::CanTargetHouse(pShieldType->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+			return;
+
 		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
 		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
 	}
@@ -268,11 +272,11 @@ void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 		return;
 
 	// Could possibly be faster to track the attached anims in TechnoExt but the profiler doesn't show this as a performance hog so whatever.
-	for (auto pAnim : *AnimClass::Array)
+	for (auto pAnim : AnimClass::Array)
 	{
 		if (pAnim->OwnerObject != pThis)
 			continue;
 
-		DisplayClass::Instance->Submit(pAnim);
+		DisplayClass::Instance.Submit(pAnim);
 	}
 }
