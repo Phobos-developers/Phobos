@@ -280,8 +280,8 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
-    
-    Nullable<double> DamagedSpeed;
+
+    	Nullable<double> DamagedSpeed;
 
 		struct LaserTrailDataEntry
 		{

@@ -503,7 +503,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Sinkable.Read(exINI, pSection, "Sinkable");
 	this->Sinkable_SquidGrab.Read(exINI, pSection, "Sinkable.SquidGrab");
 	this->SinkSpeed.Read(exINI, pSection, "SinkSpeed");
-	
+
 	this->ProneSpeed.Read(exINI, pSection, "ProneSpeed");
 
 	this->DamagedSpeed.Read(exINI, pSection, "DamagedSpeed");
