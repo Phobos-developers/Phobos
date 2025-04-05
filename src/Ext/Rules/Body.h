@@ -202,6 +202,9 @@ public:
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
 
+		Valueable<double> ProneSpeed_Crawls;
+		Valueable<double> ProneSpeed_NoCrawls;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -353,6 +356,8 @@ public:
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
+			, ProneSpeed_Crawls { 0.67 }
+			, ProneSpeed_NoCrawls { 1.5 }
 		{ }
 
 		virtual ~ExtData() = default;
