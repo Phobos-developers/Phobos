@@ -587,24 +587,31 @@ Gas.MaxDriftSpeed=2    ; integer (TS default is 5)
   - `AirburstSpread` is the distance in cells that the effect covers, with each cell in range being targeted by `AirburstWeapon` by default.
   - `Airburst.UseCluster`, if set to true, makes it so that only number of cells in the affected area dictated by `Cluster` will be affected, instead of all of them.
     - If `Airburst.RandomClusters` is set to true, the cells affected will be picked by random. Otherwise they will be evenly spaced (counting from center to edges of affected area).
+  - `Airburst.TargetAsSource` can be used to override source or 'firing' coordinate to match that of the intended target instead of projectile's current position.
+    - If `Airburst.TargetAsSource.SkipHeight` is also set, then projectile's current height will be used instead of target's height still.
 - `AroundTarget` controls whether or not targets for projectiles created by `Airburst` or `Splits` are checked for in area around the original projectile's intended target, or where the original projectile detonated. Defaults to value of `Splits`.
 - `AirburstWeapon.ApplyFirepowerMult` determines whether or not firepower modifiers from the firer of the original projectile are applied on the projectiles created from `AirburstWeapon`.
+- `AirburstWeapon.SourceScatterMin` and `AirburstWeapon.SourceScatterMax` can be used to scatter the source or 'firing' coordinate around the original coordinate.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]                         ; Projectile
-Splits=                                  ; boolean
-RetargetAccuracy=0.0                     ; floating point value, percents or absolute (0.0-1.0)
-RetargetSelf=true                        ; boolean
-RetargetSelf.Probability=0.5             ; floating point value, percents or absolute (0.0-1.0)
-Splits.TargetingDistance=5.0             ; floating point value, distance in cells
-Splits.TargetCellRange=3                 ; integer, cell offset
-Splits.UseWeaponTargeting=false          ; boolean
-AirburstSpread=1.5                       ; floating point value, distance in cells
-Airburst.UseCluster=false                ; boolean
-Airburst.RandomClusters=false            ; boolean
-AroundTarget=                            ; boolean
-AirburstWeapon.ApplyFirepowerMult=false  ; boolean
+[SOMEPROJECTILE]                          ; Projectile
+Splits=                                   ; boolean
+RetargetAccuracy=0.0                      ; floating point value, percents or absolute (0.0-1.0)
+RetargetSelf=true                         ; boolean
+RetargetSelf.Probability=0.5              ; floating point value, percents or absolute (0.0-1.0)
+Splits.TargetingDistance=5.0              ; floating point value, distance in cells
+Splits.TargetCellRange=3                  ; integer, cell offset
+Splits.UseWeaponTargeting=false           ; boolean
+AirburstSpread=1.5                        ; floating point value, distance in cells
+Airburst.UseCluster=false                 ; boolean
+Airburst.RandomClusters=false             ; boolean
+Airburst.TargetAsSource=false             ; boolean
+Airburst.TargetAsSource.SkipHeight=false  ; boolean
+AroundTarget=                             ; boolean
+AirburstWeapon.ApplyFirepowerMult=false   ; boolean
+AirburstWeapon.SourceScatterMin=0.0       ; floating point value, distance in cells
+AirburstWeapon.SourceScatterMax=0.0       ; floating point value, distance in cells
 ```
 
 ```{note}
@@ -655,6 +662,16 @@ BallisticScatter.Max= ; floating point value, distance in cells
 ```
 
 ## Technos
+
+### Alternate FLH customizations
+
+- `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLHN` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
+
+In `artmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+AlternateFLH.OnTurret=true  ; boolean
+```
 
 ### Building-provided self-healing customization
 
