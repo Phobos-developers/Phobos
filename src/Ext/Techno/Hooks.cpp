@@ -715,28 +715,14 @@ DEFINE_HOOK(0x465D40, BuildingClass_Is1x1AndUndeployable_BuildingMassSelectable,
 
 #pragma endregion
 
-DEFINE_HOOK(0x4B3DF0, DriveLocomotionClass_Sub_4B2630_DamagedSpeedMultiplier, 0x6)
+DEFINE_HOOK_AGAIN(0x6A343F, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Ship
+DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Drive
 {
-	enum { SkipGameCode = 0x4B3DF6 };
-
 	GET(FootClass*, pLinkedTo, ECX);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
 
 	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 	__asm fmul multiplier;
 
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x6A343F, ShipLocomotionClass_Sub_6A1C80_DamagedSpeedMultiplier, 0x6)
-{
-	enum { SkipGameCode = 0x6A3445 };
-
-	GET(FootClass*, pLinkedTo, ECX);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
-
-	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
-	__asm fmul multiplier;
-
-	return SkipGameCode;
+	return R->Origin() + 0x6;
 }
