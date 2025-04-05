@@ -530,6 +530,19 @@ In `rulesmd.ini`:
 BuildingWaypoints=false  ; boolean
 ```
 
+### Damaged speed customization
+
+- In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
+
+In `rulesmd.ini`
+```ini
+[General]
+DamagedSpeed=0.75        ; double
+
+[SOMEUNIT]
+DamagedSpeed=            ; double
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates

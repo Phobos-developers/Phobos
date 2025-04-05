@@ -279,6 +279,8 @@ public:
 		Valueable<bool> Sinkable_SquidGrab;
 		Valueable<int> SinkSpeed;
 
+		Nullable<double> DamagedSpeed;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -554,6 +556,8 @@ public:
 			, Sinkable { }
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
+
+			, DamagedSpeed { }
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types {}
