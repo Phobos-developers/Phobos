@@ -813,7 +813,16 @@ DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
 	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 	const int charge = pBuildingTypeExt->Overpower_ChargeWeapon;
 
-	pThis->IsOverpowered = overPower >= pBuildingTypeExt->Overpower_KeepOnline + charge || (pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= charge);
+	if (charge >= 0)
+	{
+		const int keepOnline = pBuildingTypeExt->Overpower_KeepOnline;
+		pThis->IsOverpowered = overPower >= keepOnline + charge || (pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= charge);
+	}
+	else
+	{
+		pThis->IsOverpowered = false;
+	}
+
 	return SkipGameCode;
 }
 
@@ -823,6 +832,12 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
 
 	GET(BuildingClass*, pThis, ESI);
+	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const int keepOnline = pBuildingTypeExt->Overpower_KeepOnline;
+
+	if (keepOnline < 0)
+		return LowPower;
+
 	int overPower = 0;
 
 	for (const auto pCharger : pThis->Overpowerers)
@@ -836,6 +851,5 @@ DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
 		}
 	}
 
-	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-	return overPower < pBuildingTypeExt->Overpower_KeepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
+	return overPower < keepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
 }
