@@ -279,7 +279,9 @@ public:
 		Valueable<bool> Sinkable_SquidGrab;
 		Valueable<int> SinkSpeed;
 
-		Nullable<double> DamagedSpeed;
+		Nullable<double> ProneSpeed;
+    
+    Nullable<double> DamagedSpeed;
 
 		struct LaserTrailDataEntry
 		{
@@ -561,6 +563,8 @@ public:
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types {}
+
+			, ProneSpeed { }
 		{ }
 
 		virtual ~ExtData() = default;

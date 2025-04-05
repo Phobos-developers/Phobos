@@ -530,6 +530,24 @@ In `rulesmd.ini`:
 BuildingWaypoints=false  ; boolean
 ```
 
+## Infantry
+
+### Prone speed customization
+
+- In vanilla, infantry has hardcoded prone speed. Now you can customize it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ProneSpeed.Crawls=0.67        ; floating point value, multiplier
+ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
+
+[SOMEINFANTRY]                ; InfantryType
+ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
+```
+
+## Unit
+
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
@@ -542,7 +560,6 @@ DamagedSpeed=0.75        ; double
 
 [SOMEUNIT]
 DamagedSpeed=            ; double
-```
 
 ## Particle systems
 
