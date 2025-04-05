@@ -6874,19 +6874,21 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1898
 msgid "Fire weapon when kill"
-msgstr ""
+msgstr "击杀武器"
 
 #: ../../New-or-Enhanced-Logics.md:1900
 msgid ""
 "`KillWeapon` will be fired at the target TechnoType's location once it's "
 "been killed by this Warhead."
 msgstr ""
+"被此弹头击杀时目标单位会爆出 `KillWeapon` 指定的武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1901
 msgid ""
 "`KillWeapon.AffectsHouses` is used to filter which houses targets can "
 "belong to be considered valid for `KillWeapon`."
 msgstr ""
+"`KillWeapon.AffectsHouses` 用于筛选哪些所属方的目标可以触发 `KillWeapon`。"
 
 #: ../../New-or-Enhanced-Logics.md:1902
 msgid ""
@@ -6895,6 +6897,9 @@ msgid ""
 "used to list WeaponTypes affected by this, if none are listed all "
 "WeaponTypes are affected."
 msgstr ""
+"如果单位 `SuppressKillWeapons` 设为 true "
+"则其被击杀时不会触发 `KillWeapon`。`SuppressKillWeapons.Types` "
+"可用于列出受影响的武器类型，如果没有列出，则所有武器类型都受影响。"
 
 #: ../../New-or-Enhanced-Logics.md:1905
 msgid ""

@@ -1727,7 +1727,7 @@ msgstr "自定义护盾继承单位护甲"
 
 #: ../../../CREDITS.md:436
 msgid "Fire weapon when kill"
-msgstr ""
+msgstr "击杀武器"
 
 #: ../../../CREDITS.md:437
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
@@ -1843,9 +1843,8 @@ msgid ""
 msgstr "修复了 AI 会找实际无法抵达的坦克碉堡、生化反应炉等建筑作为目标而导致卡住的问题"
 
 #: ../../../CREDITS.md:463
-#, fuzzy
 msgid "Prone speed customization"
-msgstr "自定义子机生成间隔"
+msgstr "自定义匍匐速度"
 
 #: ../../../CREDITS.md:464
 msgid "**tyuah8**:"

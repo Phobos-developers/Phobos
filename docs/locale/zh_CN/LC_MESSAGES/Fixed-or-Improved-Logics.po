@@ -2406,15 +2406,15 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:533
 msgid "Infantry"
-msgstr ""
+msgstr "步兵"
 
 #: ../../Fixed-or-Improved-Logics.md:535
 msgid "Prone speed customization"
-msgstr ""
+msgstr "自定义匍匐速度"
 
 #: ../../Fixed-or-Improved-Logics.md:537
 msgid "In vanilla, infantry has hardcoded prone speed. Now you can customize it."
-msgstr ""
+msgstr "原版中步兵匍匐前进的速度是硬编码的。现在你可以自由定义了。"
 
 #: ../../Fixed-or-Improved-Logics.md:540
 msgid ""

@@ -1206,12 +1206,11 @@ msgstr ""
 
 #: ../../Whats-New.md:354
 msgid "Fire weapon when kill (by Ollerus)"
-msgstr ""
+msgstr "击杀武器（by Ollerus）"
 
 #: ../../Whats-New.md:355
-#, fuzzy
 msgid "Prone speed customization (by TaranDahl)"
-msgstr "自定义能否沉没以及沉没速度（by TaranDahl）"
+msgstr "自定义匍匐速度（by TaranDahl）"
 
 #: ../../Whats-New.md:357 ../../Whats-New.md:538 ../../Whats-New.md:850
 #: ../../Whats-New.md:962 ../../Whats-New.md:989 ../../Whats-New.md:1028
