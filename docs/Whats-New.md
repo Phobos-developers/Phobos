@@ -351,6 +351,7 @@ New:
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
 - [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
+- Customize overpower logic (by NetsuNegi)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -533,7 +534,6 @@ New:
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - Extending `Power` to all TechnoTypes (by Morton)
 - Fire weapon when kill (by Ollerus)
-- Customize overpower logic (by NetsuNegi)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
