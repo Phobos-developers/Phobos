@@ -1895,6 +1895,23 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
 ```
 
+### Fire weapon when kill
+
+- `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
+  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
+- Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; Warhead
+KillWeapon=                     ; WeaponType
+KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                    ; TechnoType
+SuppressKillWeapons=false       ; boolean
+SuppressKillWeapons.Types=      ; list of WeaponTypes
+```
+
 ### Generate credits on impact
 
 ![image](_static/images/hackerfinallyworks-01.gif)
