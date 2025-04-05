@@ -533,6 +533,7 @@ BuildingWaypoints=false  ; boolean
 ### Damaged speed customization
 
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
+- The max valuebale value is 1.0, you cannot make unit get faster on yellow condition by it.
 
 In `rulesmd.ini`
 ```ini
