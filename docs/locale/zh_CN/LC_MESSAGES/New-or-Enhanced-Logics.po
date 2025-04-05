@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-06 00:26+0800\n"
+"POT-Creation-Date: 2025-04-06 00:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -351,7 +351,7 @@ msgstr "`RevengeWeapon` 可用于通过 AE 为被附加对象设置一个临时�
 msgid ""
 "`RevengeWeapon.AffectsHouses` customizes which houses can trigger the "
 "revenge weapon."
-msgstr "`RevengeWeapon.AffectsHouses` 定义哪些所属方可以触发这个复仇武器"
+msgstr "`RevengeWeapon.AffectsHouses` 定义哪些所属方可以触发这个复仇武器。"
 
 #: ../../New-or-Enhanced-Logics.md:48
 msgid ""
@@ -6117,7 +6117,7 @@ msgstr "也可以通过 [Attach Effect](#attached-effects) 来授予复仇武器
 
 #: ../../New-or-Enhanced-Logics.md:1622
 msgid ""
-"Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not "
+"If a Warhead has `SuppressRevengeWeapons` set to true, it will not "
 "trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to "
 "list WeaponTypes affected by this, if none are listed all WeaponTypes are"
 " affected."
@@ -6885,44 +6885,42 @@ msgstr ""
 #: ../../New-or-Enhanced-Logics.md:1901
 msgid ""
 "`KillWeapon.AffectsHouses` is used to filter which houses targets can "
-"belong to be considered valid for KillWeapon."
+"belong to be considered valid for `KillWeapon`."
 msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1902
 msgid ""
-"Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not "
-"trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be "
+"If a TechnoType has `SuppressKillWeapons` set to true, it will not "
+"trigger `KillWeapon` upon being killed. `SuppressKillWeapons.Types` can be "
 "used to list WeaponTypes affected by this, if none are listed all "
 "WeaponTypes are affected."
 msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1905
 msgid ""
-"[SOMEWARHEAD]                   ; Warhead\n"
+"[SOMEWARHEAD]                   ; WarheadType\n"
 "KillWeapon=                     ; WeaponType\n"
-"KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration "
+"KillWeapon.AffectsHouses=all    ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "\n"
 "[SOMETECHNO]                    ; TechnoType\n"
 "SuppressKillWeapons=false       ; boolean\n"
-"SuppressKillWeapons.Types=      ; list of WeaponTypes\n"
+"SuppressKillWeapons.Types=      ; List of WeaponTypes\n"
 msgstr ""
-"[SOMEWARHEAD]                   ; Warhead\n"
+"[SOMEWARHEAD]                   ; WarheadType\n"
 "KillWeapon=                     ; WeaponType\n"
-"KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration "
+"KillWeapon.AffectsHouses=all    ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "\n"
 "[SOMETECHNO]                    ; TechnoType\n"
 "SuppressKillWeapons=false       ; boolean\n"
-"SuppressKillWeapons.Types=      ; list of WeaponTypes\n"
+"SuppressKillWeapons.Types=      ; List of WeaponTypes\n"
 
 #: ../../New-or-Enhanced-Logics.md:1915
-#, fuzzy
 msgid "Generate credits on impact"
 msgstr "单位转换弹头"
 
 #: ../../New-or-Enhanced-Logics.md:1917
-#, fuzzy
 msgid ""
 "![image](_static/images/hackerfinallyworks-01.gif) *`TransactMoney` used "
 "in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*"
@@ -6931,12 +6929,10 @@ msgstr ""
 "*[东方崛起](https://www.moddb.com/mods/riseoftheeast) 中的激光尾焰应用实例*"
 
 #: ../../New-or-Enhanced-Logics.md:1920
-#, fuzzy
 msgid "Warheads can now give credits to its owner at impact."
 msgstr "现在弹头可以在引爆时揭示整个地图的黑幕。"
 
 #: ../../New-or-Enhanced-Logics.md:1921
-#, fuzzy
 msgid ""
 "`TransactMoney.Display` can be set to display the amount of credits given"
 " or deducted. The number is displayed in green if given, red if deducted "
@@ -6953,21 +6949,18 @@ msgid ""
 msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1923
-#, fuzzy
 msgid ""
 "`TransactMoney.Display.Houses` determines which houses can see the "
 "credits display."
 msgstr "`LaunchSW.DisplayMoney.Houses` 决定哪些所属方可以看到资金显示。"
 
 #: ../../New-or-Enhanced-Logics.md:1924
-#, fuzzy
 msgid ""
 "`TransactMoney.Display.Offset` is additional pixel offset for the center "
 "of the credits display, by default `0,0` at target's/firer's center."
 msgstr "`LaunchSW.DisplayMoney.Offset` 是资金显示中心的额外像素偏移量，默认为 `0,0` 即超级武器目标单元格处。"
 
 #: ../../New-or-Enhanced-Logics.md:1927
-#, fuzzy
 msgid ""
 "[SOMEWARHEAD]                        ; WarheadType\n"
 "TransactMoney=0                      ; integer - credits added or "

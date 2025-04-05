@@ -1619,7 +1619,7 @@ RecountBurst=       ; boolean
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
-  - Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+  - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
 ```ini
@@ -1898,18 +1898,18 @@ While this feature can provide better performance than a large `CellSpread` valu
 ### Fire weapon when kill
 
 - `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
-  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
-- Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for `KillWeapon`.
+- If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
  In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                   ; Warhead
+[SOMEWARHEAD]                   ; WarheadType
 KillWeapon=                     ; WeaponType
-KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
 [SOMETECHNO]                    ; TechnoType
 SuppressKillWeapons=false       ; boolean
-SuppressKillWeapons.Types=      ; list of WeaponTypes
+SuppressKillWeapons.Types=      ; List of WeaponTypes
 ```
 
 ### Generate credits on impact
