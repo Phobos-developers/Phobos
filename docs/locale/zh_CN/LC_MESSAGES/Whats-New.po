@@ -1205,12 +1205,12 @@ msgstr ""
 "customizations)（by Starkku）"
 
 #: ../../Whats-New.md:354
-msgid "Fire weapon when kill (by Ollerus)"
-msgstr "击杀武器（by Ollerus）"
+msgid "[Fire weapon when kill](New-or-Enhanced-Logics.md#fire-weapon-when-kill) (by Ollerus)"
+msgstr "[击杀武器](New-or-Enhanced-Logics.md#fire-weapon-when-kill)（by Ollerus）"
 
 #: ../../Whats-New.md:355
-msgid "Prone speed customization (by TaranDahl)"
-msgstr "自定义匍匐速度（by TaranDahl）"
+msgid "[Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)"
+msgstr "[自定义匍匐速度](Fixed-or-Improved-Logics.md#prone-speed-customization)（by TaranDahl）"
 
 #: ../../Whats-New.md:357 ../../Whats-New.md:538 ../../Whats-New.md:850
 #: ../../Whats-New.md:962 ../../Whats-New.md:989 ../../Whats-New.md:1028
