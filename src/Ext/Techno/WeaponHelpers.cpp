@@ -3,6 +3,7 @@
 #include <OverlayTypeClass.h>
 
 #include <Ext/WeaponType/Body.h>
+#include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
@@ -199,13 +200,57 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	return weaponIndex;
 }
 
+void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH)
+{
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
+
+	if (pWHExt->KillWeapon && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner))
+	{
+		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
+			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
+	}
+}
+
+void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+
+	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+	{
+		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+	}
+
+	for (auto& attachEffect : pExt->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const pType = attachEffect->GetType();
+
+		if (!pType->RevengeWeapon)
+			continue;
+
+		if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
+			continue;
+
+		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+	}
+}
+
 int TechnoExt::ExtData::ApplyForceWeaponInRange()
 {
 	int forceWeaponIndex = -1;
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 	auto const pTarget = pThis->Target;
-	
+
 	auto const& weaponIndices = pTypeExt->ForceWeapon_InRange;
 	auto const& rangeOverrides = pTypeExt->ForceWeapon_InRange_Overrides;
 	const bool applyRangeModifiers = pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
