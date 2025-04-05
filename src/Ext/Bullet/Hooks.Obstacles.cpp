@@ -141,6 +141,7 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 
 		if (pObstacleCell)
 		{
+			// TODO Accurate coords
 			pThis->SetLocation(pObstacleCell->GetCoords());
 			pThis->Speed = 0;
 			pThis->Velocity = BulletVelocity::Empty;
@@ -225,6 +226,18 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
 		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);
+	}
+
+	// Enable aircraft carriers to search for suitable attack positions on their own
+	if (!pObstacleCell && pTechno->SpawnManager && (pTechno->AbstractFlags & AbstractFlags::Foot) && !pTechno->IsInAir())
+	{
+		const auto coords = pTechno->Location;
+		pTechno->Location = *pSourceCoords; // Temporarily adjust the coordinates based on the path finding
+
+		if (reinterpret_cast<bool(__thiscall*)(const TechnoClass*)>(0x703B10)(pTechno)) // Near by elevated bridge
+			pObstacleCell = MapClass::Instance.GetCellAt(*pSourceCoords);
+
+		pTechno->Location = coords;
 	}
 
 	InRangeTemp::Techno = nullptr;

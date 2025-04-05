@@ -120,6 +120,7 @@ public:
 		std::vector<std::vector<CoordStruct>> WeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteWeaponBurstFLHs;
 		std::vector<CoordStruct> AlternateFLHs;
+		Valueable<bool> AlternateFLH_OnTurret;
 
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
@@ -236,6 +237,10 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> NoQueueUpToEnter;
+		Nullable<bool> NoQueueUpToUnload;
+		Valueable<bool> Passengers_BySize;
+
 		Valueable<int> RateDown_Delay;
 		Valueable<bool> RateDown_Reset;
 		Valueable<int> RateDown_Cover_Value;
@@ -273,6 +278,8 @@ public:
 		Nullable<bool> Sinkable;
 		Valueable<bool> Sinkable_SquidGrab;
 		Valueable<int> SinkSpeed;
+
+		Nullable<double> ProneSpeed;
 		
 		struct LaserTrailDataEntry
 		{
@@ -292,6 +299,10 @@ public:
 		std::vector<std::vector<CoordStruct>> EliteCrouchedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
+
+		Valueable<bool> SuppressKillWeapons;
+		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
+
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -348,6 +359,7 @@ public:
 			, OreGathering_Tiberiums {}
 			, OreGathering_FramesPerDir {}
 			, LaserTrailData {}
+			, AlternateFLH_OnTurret { true }
 			, DestroyAnim_Random { true }
 			, NotHuman_RandomDeathSequence { false }
 
@@ -503,6 +515,10 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
+			, NoQueueUpToEnter {}
+			, NoQueueUpToUnload {}
+			, Passengers_BySize { true }
+
 			, RateDown_Delay { 0 }
 			, RateDown_Reset { false }
 			, RateDown_Cover_Value { 0 }
@@ -531,15 +547,20 @@ public:
 
 			, InitialSpawnsNumber { }
 			, Spawns_Queue { }
-			
+
 			, Spawner_RecycleRange { Leptons(-1) }
 			, Spawner_RecycleAnim { }
 			, Spawner_RecycleCoord { {0,0,0} }
 			, Spawner_RecycleOnTurret { false }
-			
+
 			, Sinkable { }
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
+
+			, SuppressKillWeapons { false }
+			, SuppressKillWeapons_Types {}
+
+			, ProneSpeed { }
 		{ }
 
 		virtual ~ExtData() = default;
