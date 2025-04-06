@@ -1455,7 +1455,7 @@ msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`"
 
 #: ../../../CREDITS.md:368
 msgid "Customize damaged speed ratio of drive/ship loco"
-msgstr ""
+msgstr "自定义 `Locomotor` 为 `Drive`／`Ship` 的单位伤残状态的速度比率"
 
 #: ../../../CREDITS.md:369
 msgid "**Apollo** - Translucent SHP drawing patches"

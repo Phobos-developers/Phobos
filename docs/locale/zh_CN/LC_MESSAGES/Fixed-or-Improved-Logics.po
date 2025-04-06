@@ -3489,20 +3489,21 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:889
 msgid "Damaged speed customization"
-msgstr ""
+msgstr "自定义伤残速度"
 
 #: ../../Fixed-or-Improved-Logics.md:891
 msgid ""
 "In vanilla, units using drive/ship loco will has hardcoded speed "
 "multiplier when damaged. Now you can customize it."
 msgstr "原版中步兵匍匐前进的速度是硬编码的。现在你可以自由定义了。"
+"原版中 `Locomotor` 使用 `Drive`／`Ship` 的单位在伤残时有一个硬编码的速度倍率。现在你可以自由定义了。"
 
 #: ../../Fixed-or-Improved-Logics.md:892
 msgid ""
 "The max valuebale value is 1.0, you cannot make unit get faster on yellow"
 " condition by it."
 msgstr ""
-""
+"最大有效值为 1.0，你无法凭借这个逻辑让单位在黄血时变得更快。"
 
 #: ../../Fixed-or-Improved-Logics.md:895
 msgid ""

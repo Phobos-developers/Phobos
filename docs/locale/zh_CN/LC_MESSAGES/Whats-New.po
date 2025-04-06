@@ -1223,8 +1223,8 @@ msgid ""
 "[Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-"
 "Logics.md#damaged-speed-customization) (by NetsuNegi)"
 msgstr ""
-""
-""
+"[自定义 `Locomotor` 为 `Drive`／`Ship` 的单位伤残状态的速度比率](Fixed-or-Improved-"
+"Logics.md#damaged-speed-customization)（by NetsuNegi）"
 
 #: ../../Whats-New.md:358 ../../Whats-New.md:539 ../../Whats-New.md:851
 #: ../../Whats-New.md:963 ../../Whats-New.md:990 ../../Whats-New.md:1029

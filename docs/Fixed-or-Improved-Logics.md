@@ -891,7 +891,7 @@ JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 - In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
 - The max valuebale value is 1.0, you cannot make unit get faster on yellow condition by it.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [General]
 DamagedSpeed=0.75        ; floating point value, multiplier
