@@ -56,7 +56,7 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		}
 		else if (pCell->OverlayTypeIndex != -1)
 		{
-			auto const pOverlayType = OverlayTypeClass::Array()->GetItem(pCell->OverlayTypeIndex);
+			auto const pOverlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
 
 			if (pOverlayType->Wall && pCell->OverlayData >> 4 != pOverlayType->DamageLevels)
 			{
@@ -519,7 +519,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 				unsigned int cellIndex = (i + rand) % size;
 				CellStruct tgtPos = pCell->MapCoords + adjacentCells[cellIndex];
-				CellClass* tgtCell = MapClass::Instance->TryGetCellAt(tgtPos);
+				CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (pThis->OnBridge || tgtCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
 				if (EnumFunctions::AreCellAndObjectsEligible(tgtCell, pExt->CanTarget, pExt->CanTargetHouses, pThis->Owner, true, false, allowBridges))
@@ -682,72 +682,60 @@ DEFINE_HOOK(0x6FF29E, TechnoClass_FireAt_ChargeTurret2, 0x6)
 // and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
 DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)
 
-DEFINE_HOOK(0x6F3AF9, TechnoClass_GetFLH_AlternateFLH, 0x6)
+// 4.4.2025 - Starkku: Consolidated all the FLH hooks into single one & using TechnoExt::GetFLHAbsoluteCoord() to get the actual coordinate.
+DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 {
+	enum { SkipGameCode = 0x6F3D50 };
+
 	GET(TechnoClass*, pThis, EBX);
-	GET(int, weaponIdx, ESI);
+	GET(TechnoTypeClass*, pType, EAX);
+	GET(int, weaponIndex, ESI);
+	GET_STACK(CoordStruct*, pCoords, STACK_OFFSET(0xD8, 0x4));
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	weaponIdx = -weaponIdx - 1;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	bool allowOnTurret = true;
+	bool useBurstMirroring = true;
+	CoordStruct flh = CoordStruct::Empty;
 
-	const CoordStruct& flh =
-		weaponIdx < static_cast<int>(pTypeExt->AlternateFLHs.size())
-		? pTypeExt->AlternateFLHs[weaponIdx]
-		: CoordStruct::Empty;
-
-	R->ECX(flh.X);
-	R->EBP(flh.Y);
-	R->EAX(flh.Z);
-
-	return 0x6F3B37;
-}
-
-namespace BurstFLHTemp
-{
-	bool FLHFound;
-}
-
-DEFINE_HOOK(0x6F3B37, TechnoClass_GetFLH_BurstFLH_1, 0x7)
-{
-	GET(TechnoClass*, pThis, EBX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
-
-	if (weaponIndex < 0)
-		return 0;
-
-	bool FLHFound = false;
-	CoordStruct FLH = CoordStruct::Empty;
-
-	FLH = TechnoExt::GetBurstFLH(pThis, weaponIndex, FLHFound);
-	BurstFLHTemp::FLHFound = FLHFound;
-
-	if (!FLHFound)
+	if (weaponIndex >= 0)
 	{
-		if (auto pInf = abstract_cast<InfantryClass*>(pThis))
-			FLH = TechnoExt::GetSimpleFLH(pInf, weaponIndex, FLHFound);
+		bool found = false;
+		flh = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
+		if (!found)
+		{
+			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+				flh = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
+
+			if (!found)
+				flh = pThis->GetWeapon(weaponIndex)->FLH;
+		}
+		else
+		{
+			useBurstMirroring = false;
+		}
+	}
+	else
+	{
+		int index = -weaponIndex - 1;
+		useBurstMirroring = false;
+
+		if (index < static_cast<int>(pTypeExt->AlternateFLHs.size()))
+			flh = pTypeExt->AlternateFLHs[index];
+
+		if (!pTypeExt->AlternateFLH_OnTurret)
+			allowOnTurret = false;
 	}
 
-	if (FLHFound)
-	{
-		R->ECX(FLH.X);
-		R->EBP(FLH.Y);
-		R->EAX(FLH.Z);
-	}
+	if (useBurstMirroring && pThis->CurrentBurstIndex % 2 != 0)
+		flh.Y = -flh.Y;
 
-	return 0;
+	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
+	R->EAX(pCoords);
+
+	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6F3C88, TechnoClass_GetFLH_BurstFLH_2, 0x6)
-{
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0xD8, 0x8));
-
-	if (BurstFLHTemp::FLHFound || weaponIndex < 0)
-		R->EAX(0);
-
-	BurstFLHTemp::FLHFound = false;
-
-	return 0;
-}
 #pragma endregion
 
 // Basically a hack to make game and Ares pick laser properties from non-Primary weapons.

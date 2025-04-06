@@ -34,7 +34,8 @@ DEFINE_HOOK(0x4692BD, BulletClass_Logics_ApplyMindControl, 0x6)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 	auto const pControlledAnimType = pWHExt->MindControl_Anim.Get(RulesClass::Instance->ControlledAnimationType);
-	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType));
+	auto const threatDelay = pWHExt->MindControl_ThreatDelay.Get(RulesExt::Global()->MindControl_ThreatDelay);
+	R->AL(CaptureManagerExt::CaptureUnit(pThis->Owner->CaptureManager, pThis->Target, pControlledAnimType, threatDelay));
 
 	return SkipGameCode;
 }
@@ -99,7 +100,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Aircraft) != AffectedTarget::None)
 		{
-			auto const aircraft = copy_dvc(*AircraftClass::Array);
+			auto const aircraft = copy_dvc(AircraftClass::Array);
 
 			for (auto pAircraft : aircraft)
 				tryDetonate(pAircraft);
@@ -107,7 +108,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Building) != AffectedTarget::None)
 		{
-			auto const buildings = copy_dvc(*BuildingClass::Array);
+			auto const buildings = copy_dvc(BuildingClass::Array);
 
 			for (auto pBuilding : buildings)
 				tryDetonate(pBuilding);
@@ -115,7 +116,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Infantry) != AffectedTarget::None)
 		{
-			auto const infantry = copy_dvc(*InfantryClass::Array);
+			auto const infantry = copy_dvc(InfantryClass::Array);
 
 			for (auto pInf : infantry)
 				tryDetonate(pInf);
@@ -123,7 +124,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 		if ((pWHExt->DetonateOnAllMapObjects_AffectTargets & AffectedTarget::Unit) != AffectedTarget::None)
 		{
-			auto const units = copy_dvc(*UnitClass::Array);
+			auto const units = copy_dvc(UnitClass::Array);
 
 			for (auto const pUnit : units)
 				tryDetonate(pUnit);
@@ -504,7 +505,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		}
 		else
 		{
-			for (auto const pTechno : *TechnoClass::Array)
+			for (auto const pTechno : TechnoClass::Array)
 			{
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
 				{
@@ -527,7 +528,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				int y = random.RandomRanged(-range, range);
 
 				CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
-				auto const pCell = MapClass::Instance->GetCellAt(cell);
+				auto const pCell = MapClass::Instance.GetCellAt(cell);
 
 				targets.AddItem(pCell);
 			}
@@ -568,7 +569,25 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			{
 				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, true);
+					auto coords = pThis->Location;
+					int scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
+					int scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
+
+					if (pType->Airburst && pTypeExt->Airburst_TargetAsSource)
+					{
+						coords = pTarget->GetCoords();
+
+						if (pTypeExt->Airburst_TargetAsSource_SkipHeight)
+							coords.Z = pThis->Location.Z;
+					}
+
+					if (scatterMin > 0 || scatterMax > 0)
+					{
+						int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
+						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
+					}
+
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 				}
 			}

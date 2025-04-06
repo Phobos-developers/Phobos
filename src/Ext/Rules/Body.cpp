@@ -139,6 +139,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
 
 	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
+	this->NoQueueUpToEnter.Read(exINI, GameStrings::General, "NoQueueUpToEnter");
+	this->NoQueueUpToUnload.Read(exINI, GameStrings::General, "NoQueueUpToUnload");
 
 	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
@@ -190,6 +192,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->BuildingWaypoints.Read(exINI, GameStrings::General, "BuildingWaypoints");
 
+	this->VisualScatter_Min.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Min");
+	this->VisualScatter_Max.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Max");
+
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
@@ -220,6 +225,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
 
+	this->MindControl_ThreatDelay.Read(exINI, GameStrings::General, "MindControl.ThreatDelay");
+
 	this->RecountBurst.Read(exINI, GameStrings::General, "RecountBurst");
 	this->NoRearm_UnderEMP.Read(exINI, GameStrings::General, "NoRearm.UnderEMP");
 	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
@@ -238,6 +245,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
+
+	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
+	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -362,6 +372,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HeightShadowScaling)
 		.Process(this->HeightShadowScaling_MinScale)
 		.Process(this->ExtendedAircraftMissions)
+		.Process(this->NoQueueUpToEnter)
+		.Process(this->NoQueueUpToUnload)
 		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
@@ -407,6 +419,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->VisualScatter_Min)
+		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
@@ -429,6 +443,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatAlert_UseAttackVoice)
 		.Process(this->CombatAlert_UseEVA)
 		.Process(this->UseFixedVoxelLighting)
+		.Process(this->MindControl_ThreatDelay)
 		.Process(this->RecountBurst)
 		.Process(this->NoRearm_UnderEMP)
 		.Process(this->NoRearm_Temporal)
@@ -444,6 +459,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->BuildingTypeSelectable)
+		.Process(this->ProneSpeed_Crawls)
+		.Process(this->ProneSpeed_NoCrawls)
 		;
 }
 
@@ -469,7 +486,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelLightSource.Get().Normalized();
-		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix() * source;
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix * source;
 	}
 
 	/*
@@ -478,7 +495,7 @@ void RulesExt::ExtData::ReplaceVoxelLightSources()
 	{
 		needCacheFlush = true;
 		auto source = this->VoxelShadowLightSource.Get().Normalized();
-		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix() * source;
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix * source;
 	}
 	*/
 
@@ -581,7 +598,7 @@ DEFINE_HOOK(0x679A15, RulesData_LoadBeforeTypeData, 0x6)
 
 DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 {
-	RulesClass* pItem = RulesClass::Instance();
+	RulesClass* pItem = RulesClass::Instance;
 	GET(CCINIClass*, pINI, ESI);
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
@@ -594,7 +611,7 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
 {
 	GET(TechnoTypeClass*, pThis, ESI);
-	auto pRules = RulesClass::Instance();
+	auto pRules = RulesClass::Instance;
 	auto pRulesExt = RulesExt::Global();
 
 	pThis->JumpjetTurnRate = pRules->TurnRate;

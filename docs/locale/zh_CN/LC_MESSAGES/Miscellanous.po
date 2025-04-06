@@ -84,7 +84,7 @@ msgid ""
 " Customizable Dropdown Colors](https://ares-developers.github.io/Ares-"
 "docs/ui-features/customizabledropdowncolors.html)."
 msgstr ""
-"例如：由于技术不兼容，启用此功能会禁用 [Ares 的“可定制的玩家颜色”功能](https://ares-"
+"例如：由于技术不兼容，启用此功能会禁用 [Ares 的 “可定制的玩家颜色” 功能](https://ares-"
 "developers.github.io/Ares-docs/ui-"
 "features/customizabledropdowncolors.html)。"
 
@@ -367,8 +367,8 @@ msgid ""
 "the effect. A value of 2 means \"every other frame\", 3 means \"every 3 "
 "frames\" etc. Increase of speedup/slowdown is approximately logarithmic."
 msgstr ""
-"`CustomGSN.ChangeInterval` 设置应用该效果的帧间隔。值为 2 表示“每**隔**一帧执行一次”，3 表示“每 3 "
-"帧**中**执行一次”等。加速／减速的改动大致呈对数关系。"
+"`CustomGSN.ChangeInterval` 设置应用该效果的帧间隔。值为 2 表示 “每**隔**一帧执行一次”，3 表示 “每 3 "
+"帧**中**执行一次” 等。加速／减速的改动大致呈对数关系。"
 
 #: ../../Miscellanous.md:96
 msgid ""
@@ -533,7 +533,7 @@ msgid ""
 "When multiple parents are specified, the order of inheritance is \"first "
 "come, first served\", looking up comma separated parents from left to "
 "right."
-msgstr "当指定了多个父节时，继承到顺序是“先到先得”，从左到右查找逗号分隔的父节。"
+msgstr "当指定了多个父节时，继承到顺序是 “先到先得”，从左到右查找逗号分隔的父节。"
 
 #: ../../Miscellanous.md:213
 msgid ""

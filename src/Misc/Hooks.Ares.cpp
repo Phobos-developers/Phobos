@@ -32,9 +32,9 @@ DEFINE_HOOK(0x44E9FA, BuildingClass_Detach_RestoreAnims, 0x6)
 ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, HouseClass* owner)
 {
 	// temporarily reset the mutex since it's not part of the design
-	int mutex_old = std::exchange(Unsorted::IKnowWhatImDoing(), 0);
+	int mutex_old = std::exchange(Unsorted::ScenarioInit, 0);
 	auto instance = type->CreateObject(owner);
-	Unsorted::IKnowWhatImDoing = mutex_old;
+	Unsorted::ScenarioInit = mutex_old;
 	return instance;
 }
 
@@ -48,6 +48,9 @@ void Apply_Ares3_0_Patches()
 	// Abductor fix:
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x54CDF, AresHelper::AresBaseAddress + 0x54D3C);
 
+	// Amphibious enter fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17536, AresHelper::AresBaseAddress + 0x1754D);
+
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62267, &Helpers::Alex::getCellSpreadItems);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x528C8, &Helpers::Alex::getCellSpreadItems);
@@ -58,7 +61,7 @@ void Apply_Ares3_0_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x43D5D, &CreateInitialPayload);
-	
+
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
 }
@@ -70,6 +73,9 @@ void Apply_Ares3_0p1_Patches()
 	// What's done here: Skip Mark_Occupation_Bits cuz pFoot->Remove/Limbo() will do it.
 	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x5598F, AresHelper::AresBaseAddress + 0x559EC);
 
+	// Amphibious enter fix:
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x17C26, AresHelper::AresBaseAddress + 0x17C3D);
+
 	// Redirect Ares' getCellSpreadItems to our implementation:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x62FB7, &Helpers::Alex::getCellSpreadItems);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x53578, &Helpers::Alex::getCellSpreadItems);
@@ -80,7 +86,7 @@ void Apply_Ares3_0p1_Patches()
 
 	// InitialPayload creation:
 	Patch::Apply_CALL6(AresHelper::AresBaseAddress + 0x4483D, &CreateInitialPayload);
-	
+
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
 }

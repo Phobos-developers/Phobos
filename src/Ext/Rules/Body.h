@@ -93,6 +93,8 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<bool> NoQueueUpToEnter;
+		Valueable<bool> NoQueueUpToUnload;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -140,6 +142,9 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<Leptons> VisualScatter_Min;
+		Valueable<Leptons> VisualScatter_Max;
+
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
@@ -175,6 +180,8 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
+		Valueable<int> MindControl_ThreatDelay;
+
 		Valueable<bool> RecountBurst;
 		Valueable<bool> NoRearm_UnderEMP;
 		Valueable<bool> NoRearm_Temporal;
@@ -194,6 +201,9 @@ public:
 
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
+
+		Valueable<double> ProneSpeed_Crawls;
+		Valueable<double> ProneSpeed_NoCrawls;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -221,7 +231,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
-			, MissingCameo { GameStrings::XXICON_SHP() }
+			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }
 			, PlacementGrid_TranslucencyWithPreview { }
@@ -254,6 +264,8 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedAircraftMissions { false }
+			, NoQueueUpToEnter { false }
+			, NoQueueUpToUnload { false }
 
 			, BuildingProductionQueue { false }
 
@@ -303,6 +315,8 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, VisualScatter_Min { Leptons(8) }
+			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
@@ -325,6 +339,7 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, MindControl_ThreatDelay { 0 }
 			, RecountBurst { false }
 			, NoRearm_UnderEMP { false }
 			, NoRearm_Temporal { false }
@@ -341,6 +356,8 @@ public:
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
+			, ProneSpeed_Crawls { 0.67 }
+			, ProneSpeed_NoCrawls { 1.5 }
 		{ }
 
 		virtual ~ExtData() = default;

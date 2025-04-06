@@ -72,7 +72,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pRules->CombatAlert_SuppressIfInScreen)
 			{
-				const auto pTactical = TacticalClass::Instance();
+				const auto pTactical = TacticalClass::Instance;
 				const auto coordInScreen = pTactical->CoordsToScreen(coordInMap) - pTactical->TacticalPos;
 				const auto screenArea = DSurface::Composite->GetRect();
 
@@ -195,33 +195,8 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 
 	if (pSource)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pThis);
-		auto const pTypeExt = pExt->TypeExtData;
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
-
-		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-		{
-			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
-				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
-		}
-
-		for (auto& attachEffect : pExt->AttachedEffects)
-		{
-			if (!attachEffect->IsActive())
-				continue;
-
-			auto const pType = attachEffect->GetType();
-
-			if (!pType->RevengeWeapon)
-				continue;
-
-			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
-				continue;
-
-			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
-		}
+		TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
 	}
 
 	return 0;
