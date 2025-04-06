@@ -21,9 +21,6 @@ void SelectBoxTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Translucency.Read(exINI, pSection, "Translucency");
 	this->Show.Read(exINI, pSection, "Show");
 	this->ShowObserver.Read(exINI, pSection, "ShowObserver");
-
-	if (!this->Shape.Get())
-		this->Shape = FileSystem::LoadSHPFile("select.shp");
 }
 
 template <typename T>
