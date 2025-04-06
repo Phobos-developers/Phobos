@@ -560,6 +560,7 @@ DamagedSpeed=0.75        ; double
 
 [SOMEUNIT]
 DamagedSpeed=            ; double
+```
 
 ## Particle systems
 
