@@ -115,7 +115,7 @@ DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 [SOMESELECTBOXTYPE]
 Shape=                                  ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
-Frame=                                  ; integer, frames of shape for Green, Yellow, Red
+Frame=                                  ; integer, frames of shape for Green, Yellow, Red, default 0,0,0 for infantry, 3,3,3 for vehicle and aircraft
 Grounded=false                          ; boolean - always draw on ground
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
