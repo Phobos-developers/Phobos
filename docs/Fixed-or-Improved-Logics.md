@@ -961,6 +961,17 @@ UnitPowerDrain=false  ; boolean
 Power=0               ; integer, positive means output, negative means drain
 ```
 
+### RadarInvisible for non-enemy house
+
+- In vanilla, `RadarInvisible` is ignored if the techno is allied with the current player. Now you can change this behavior.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                              ; TechnoType
+RadarInvisible.ToAlly=false               ; boolean
+RadarInvisible.ToSelf=false               ; boolean
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.

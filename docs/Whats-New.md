@@ -337,6 +337,7 @@ New:
 - Customizable spawns queue (by TwinkleStar)
 - Initial spawns number (by TwinkleStar)
 - Override target under EMP attack behavior (By FS-21)
+- RadarInvisible for non-enemy house (By TaranDahl)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)

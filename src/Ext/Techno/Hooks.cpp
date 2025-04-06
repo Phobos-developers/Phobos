@@ -732,7 +732,7 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	}
 	else
 	{
-		hideByShroud = pType->RadarInvisible;
+		hideByType = pType->RadarInvisible;
 	}
 
 	return (hideByShroud || hideByType) ? Invisible : GoOtherChecks;
