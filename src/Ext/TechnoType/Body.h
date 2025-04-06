@@ -281,8 +281,7 @@ public:
 
 		Nullable<double> ProneSpeed;
 		
-		Valueable<bool> RadarInvisible_ToSelf;
-		Valueable<bool> RadarInvisible_ToAlly;
+		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
 		struct LaserTrailDataEntry
 		{
@@ -565,8 +564,7 @@ public:
 
 			, ProneSpeed { }
 			
-			, RadarInvisible_ToSelf { false }
-			, RadarInvisible_ToAlly { false }
+			, RadarInvisibleToHouse {}
 		{ }
 
 		virtual ~ExtData() = default;

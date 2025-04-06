@@ -744,24 +744,9 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 		return 0;
 
 	bool hideByShroud = isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer();
-	bool hideByType = false;
-
-	auto pTechnoOwner = pTechno->Owner;
 	auto pType = pTechno->GetTechnoType();
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (HouseClass::CurrentPlayer == pTechnoOwner)
-	{
-		hideByType = pTypeExt->RadarInvisible_ToSelf;
-	}
-	else if (pTechnoOwner->IsAlliedWith(HouseClass::CurrentPlayer)) // TODO: check asymmetric alliance
-	{
-		hideByType = pTypeExt->RadarInvisible_ToAlly;
-	}
-	else
-	{
-		hideByType = pType->RadarInvisible;
-	}
+	bool hideByType = EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(pType->RadarInvisible ? AffectedHouse::Enemies : AffectedHouse::None), pTechno->Owner, HouseClass::CurrentPlayer);
 
 	return (hideByShroud || hideByType) ? Invisible : GoOtherChecks;
 }

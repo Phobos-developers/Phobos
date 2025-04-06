@@ -509,8 +509,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
 	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
 
-	this->RadarInvisible_ToSelf.Read(exINI, pSection, "RadarInvisible.ToSelf");
-	this->RadarInvisible_ToAlly.Read(exINI, pSection, "RadarInvisible.ToAlly");
+	this->RadarInvisibleToHouse.Read(exINI, pSection, "RadarInvisibleToHouse");
 	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -940,8 +939,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->ProneSpeed)
 		
-		.Process(this->RadarInvisible_ToSelf)
-		.Process(this->RadarInvisible_ToAlly)
+		.Process(this->RadarInvisibleToHouse)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
