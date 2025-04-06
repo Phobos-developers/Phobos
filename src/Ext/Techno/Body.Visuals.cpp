@@ -274,7 +274,8 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds)
 {
 	const auto whatAmI = pThis->WhatAmI();
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	SelectBoxTypeClass* pSelectBox = nullptr;
 
 	if (pTypeExt->SelectBox.isset())
@@ -300,7 +301,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
 	const double healthPercentage = pThis->GetHealthPercentage();
-	const Vector3D<int> frames = pSelectBox->Frame.Get(whatAmI == InfantryClass::AbsID ? CoordStruct { 0, 0, 0 } : CoordStruct { 3,3,3 });
+	const Vector3D<int> frames = pSelectBox->Frame.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
 	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
 	Point2D basePoint = *pLocation;
@@ -314,7 +315,14 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 			return;
 	}
 
-	Point2D drawPoint = basePoint + pSelectBox->Offset.Get() + Point2D { 2, pTypeExt->OwnerObject()->PixelSelectionBracketDelta + 1 };
+	Point2D drawPoint = basePoint + pSelectBox->Offset;
+	drawPoint.Y += pTypeExt->OwnerObject()->PixelSelectionBracketDelta;
+
+	if (whatAmI == AbstractType::Infantry)
+		drawPoint += { 8, -3 };
+	else
+		drawPoint += { 1, -4 };
+
 	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
 
 	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);

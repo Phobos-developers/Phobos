@@ -17,7 +17,7 @@ public:
 	Valueable<bool> ShowObserver;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
-		, Shape { nullptr }
+		, Shape { FileSystem::LoadSHPFile("select.shp") }
 		, Palette {}
 		, Frame {}
 		, Grounded { false }
