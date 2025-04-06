@@ -287,6 +287,11 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	if (!pSelectBox)
 		return;
 
+	const auto pShape = pSelectBox->Shape.Get();
+
+	if (!pShape)
+		return;
+
 	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->ShowObserver : EnumFunctions::CanTargetHouse(pSelectBox->Show, pThis->Owner, HouseClass::CurrentPlayer);
 
 	if (!canSee)
@@ -294,20 +299,9 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-	if (!pPalette)
-		return;
-
-	const auto pShape = pSelectBox->Shape.Get();
-
-	if (!pShape)
-		return;
-
-	Vector3D<int> selectboxFrame = pSelectBox->Frame.Get();
-
-	if (selectboxFrame.X == -1)
-		selectboxFrame = whatAmI == InfantryClass::AbsID ? CoordStruct { 0, 0, 0 } : CoordStruct { 3,3,3 };
-
-	const int frame = pThis->IsGreenHP() ? selectboxFrame.X : pThis->IsYellowHP() ? selectboxFrame.Y : selectboxFrame.Z;
+	const double healthPercentage = pThis->GetHealthPercentage();
+	const Vector3D<int> frames = pSelectBox->Frame.Get(whatAmI == InfantryClass::AbsID ? CoordStruct { 0, 0, 0 } : CoordStruct { 3,3,3 });
+	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
 	Point2D basePoint = *pLocation;
 
