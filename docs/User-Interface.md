@@ -99,6 +99,40 @@ DigitalDisplay.Enable=false             ; boolean
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
+### Select Box
+
+- Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
+
+In `rulesmd.ini`:
+```ini
+[SelectBoxTypes]
+0=SOMESELECTBOXTYPE
+
+[AudioVisual]
+DefaultInfantrySelectBox=               ; Select box for infantry
+DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
+
+[SOMESELECTBOXTYPE]
+Shape=                                  ; filename with .shp extension
+Palette=palette.pal                     ; filename with .pal extension
+Frame=                                  ; integer, frames of shape for Green, Yellow, Red
+Grounded=false                          ; boolean - always draw on ground
+Offset=0,0                              ; integers - horizontal, vertical
+Translucency=0                          ; translucency level (0/25/50/75)
+Show=all                                ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ShowObserver=true                       ; boolean
+
+[SOMETECHNO]
+SelectBox=                              ; Select box
+HideSelectBox=false                     ; boolean
+```
+
+In `RA2MD.INI`
+```ini
+[Phobos]
+EnableSelectBox=false                   ; boolean
+```
+
 ### Flashing Technos on selecting
 
 - Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.

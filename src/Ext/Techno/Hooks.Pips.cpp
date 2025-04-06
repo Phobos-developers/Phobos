@@ -23,6 +23,9 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
+	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
@@ -42,6 +45,9 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
 
 	if (const auto pShieldData = pExt->Shield.get())
 	{

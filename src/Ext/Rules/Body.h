@@ -17,6 +17,7 @@ class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
 class DigitalDisplayTypeClass;
+class SelectBoxTypeClass;
 
 class RulesExt
 {
@@ -141,6 +142,9 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+
+		Valueable<SelectBoxTypeClass*> DefaultInfantrySelectBox;
+		Valueable<SelectBoxTypeClass*> DefaultUnitSelectBox;
 
 		Valueable<Leptons> VisualScatter_Min;
 		Valueable<Leptons> VisualScatter_Max;
@@ -315,6 +319,8 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, DefaultInfantrySelectBox {}
+			, DefaultUnitSelectBox {}
 			, VisualScatter_Min { Leptons(8) }
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }

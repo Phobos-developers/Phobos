@@ -271,6 +271,61 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return position;
 }
 
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds)
+{
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	SelectBoxTypeClass* pSelectBox = nullptr;
+
+	if (pTypeExt->SelectBox.isset())
+		pSelectBox = pTypeExt->SelectBox.Get();
+	else if (whatAmI == InfantryClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultInfantrySelectBox.Get();
+	else if (whatAmI != BuildingClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultUnitSelectBox.Get();
+
+	if (!pSelectBox)
+		return;
+
+	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->ShowObserver : EnumFunctions::CanTargetHouse(pSelectBox->Show, pThis->Owner, HouseClass::CurrentPlayer);
+
+	if (!canSee)
+		return;
+
+	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+	if (!pPalette)
+		return;
+
+	const auto pShape = pSelectBox->Shape.Get();
+
+	if (!pShape)
+		return;
+
+	Vector3D<int> selectboxFrame = pSelectBox->Frame.Get();
+
+	if (selectboxFrame.X == -1)
+		selectboxFrame = whatAmI == InfantryClass::AbsID ? CoordStruct { 0, 0, 0 } : CoordStruct { 3,3,3 };
+
+	const int frame = pThis->IsGreenHP() ? selectboxFrame.X : pThis->IsYellowHP() ? selectboxFrame.Y : selectboxFrame.Z;
+
+	Point2D basePoint = *pLocation;
+
+	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
+	{
+		CoordStruct coords = pThis->GetCenterCoords();
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+
+		if (!TacticalClass::Instance->CoordsToClient(&coords, &basePoint))
+			return;
+	}
+
+	Point2D drawPoint = basePoint + pSelectBox->Offset.Get() + Point2D { 2, pTypeExt->OwnerObject()->PixelSelectionBracketDelta + 1 };
+	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
+
+	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+}
+
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
