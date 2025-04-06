@@ -540,8 +540,8 @@ In `rulesmd.ini`:
 ElectricAssaultLevel=1    ; integer
 
 [SOMEBUILDING]
-Overpower.KeepOnline=2    ; integer
-Overpower.ChargeWeapon=1  ; integer
+Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
+Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
 ```
 
 ```{note}
