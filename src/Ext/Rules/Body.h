@@ -209,6 +209,8 @@ public:
 		Valueable<double> ProneSpeed_Crawls;
 		Valueable<double> ProneSpeed_NoCrawls;
 
+    	Valueable<double> DamagedSpeed;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -364,6 +366,8 @@ public:
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }
 			, ProneSpeed_NoCrawls { 1.5 }
+
+      		, DamagedSpeed { 0.75 }
 		{ }
 
 		virtual ~ExtData() = default;
