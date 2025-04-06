@@ -886,6 +886,20 @@ AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
 JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
+### Damaged speed customization
+
+- In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
+- The max valuebale value is 1.0, you cannot make unit get faster on yellow condition by it.
+
+In `rulesmd.ini`
+```ini
+[General]
+DamagedSpeed=0.75        ; floating point value, multiplier
+
+[SOMETECHNO]             ; TechnoType
+DamagedSpeed=            ; floating point value, multiplier
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -1570,7 +1584,7 @@ Debris.Conventional=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                   ; WarheadType
-Rocker.AmplitudeMultiplier=1.0  ; double
+Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier
 Rocker.AmplitudeOverride=       ; integer
 ```
 
