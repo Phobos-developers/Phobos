@@ -1910,6 +1910,7 @@ KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration (none|owner
 [SOMETECHNO]                    ; TechnoType
 SuppressKillWeapons=false       ; boolean
 SuppressKillWeapons.Types=      ; list of WeaponTypes
+```
 
 ### Generate credits on impact
 

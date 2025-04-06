@@ -546,6 +546,22 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
+## Unit
+
+### Damaged speed customization
+
+- In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
+- The max valuebale value is 1.0, you cannot make unit get faster on yellow condition by it.
+
+In `rulesmd.ini`
+```ini
+[General]
+DamagedSpeed=0.75        ; double
+
+[SOMEUNIT]
+DamagedSpeed=            ; double
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
