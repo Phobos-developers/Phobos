@@ -5313,7 +5313,7 @@ msgid ""
 "blinking unless `DisguiseBlinkingVisibility` is set to `none` or "
 "`enemies`."
 msgstr ""
-"另一个需要注意的是在单人任务中，就伪装闪烁而言，任何玩家所控制的所属方所拥有的伪装单位即使与玩家所属方不是盟友视为当前玩家所有，这意味着玩家始终可以看到他们的伪装闪烁，除非"
+"另一个需要注意的是在单人任务中，就伪装闪烁而言，任何玩家所控制的所属方所拥有的伪装单位即使与玩家所属方不是盟友视为当前玩家所有，这意味着玩家始终可以看到它们的伪装闪烁，除非"
 " `DisguiseBlinkingVisibility` 设置为 `none` 或 `enemies`。"
 
 #: ../../New-or-Enhanced-Logics.md:1350
