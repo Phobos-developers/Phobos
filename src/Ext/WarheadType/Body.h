@@ -163,6 +163,11 @@ public:
 
 		Nullable<bool> CombatAlert_Suppress;
 
+		Valueable<WeaponTypeClass*> KillWeapon;
+		Valueable<AffectedHouse> KillWeapon_AffectsHouses;
+
+    	Valueable<int> ElectricAssaultLevel;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -310,7 +315,7 @@ public:
 
 			, CombatLightDetailLevel {}
 			, CombatLightChance { 1.0 }
-		    , CLIsBlack { false }
+			, CLIsBlack { false }
 			, Particle_AlphaImageIsLightFlash {}
 
 			, DamageOwnerMultiplier {}
@@ -329,6 +334,8 @@ public:
 
 			, CombatAlert_Suppress {}
 
+			, ElectricAssaultLevel { 1 }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
@@ -344,6 +351,9 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
+
+			, KillWeapon {}
+			, KillWeapon_AffectsHouses { AffectedHouse::All }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

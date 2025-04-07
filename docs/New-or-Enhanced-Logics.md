@@ -1619,7 +1619,7 @@ RecountBurst=       ; boolean
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
-  - Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+  - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
 ```ini
@@ -1681,7 +1681,7 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Fast access vehicle
 
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General]->NoQueueUpToEnter` or `[General]->NoQueueUpToUnload`.
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1908,6 +1908,23 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 
 ```{warning}
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
+```
+
+### Fire weapon when kill
+
+- `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
+  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for `KillWeapon`.
+- If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; WarheadType
+KillWeapon=                     ; WeaponType
+KillWeapon.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                    ; TechnoType
+SuppressKillWeapons=false       ; boolean
+SuppressKillWeapons.Types=      ; List of WeaponTypes
 ```
 
 ### Generate credits on impact
@@ -2172,21 +2189,6 @@ Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.EndDelay=             ; integer, game frames
 ```
 
-### Weapon targeting filter
-
-![image](_static/images/weaponfilter.gif)
-*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]         ; WeaponType
-CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
 ### Visual effect scatter
 
 - You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
@@ -2202,5 +2204,20 @@ VisualScatter=false     ; boolean
 ```
 
 ```{note}
-This function is only used as an additional scattering visual display, which is different from `BallisticScatter` and can be used simultaneously, without affecting the actual explosion position of the projectile.
+This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
+```
+
+### Weapon targeting filter
+
+![image](_static/images/weaponfilter.gif)
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
+  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```

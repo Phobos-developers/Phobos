@@ -363,7 +363,9 @@ This page lists all the individual contributions to the project by their author.
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
    - Fix `DefaultDisguise` showing wrong house colors for different players
    - Taking over Ares' AlphaImage respawn logic to reduce lags from it
-   - Allow voxel projectiles to use AnimPalette and FirersPalette
+   - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
+   - Customize damaged speed ratio of drive/ship loco
+   - Customize overpower logic
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -434,6 +436,7 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
   - Fix `DefaultDisguise` showing wrong house colors for different players
+  - Fire weapon when kill
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -459,6 +462,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where `FireAngle` would not work properly under certain circumstances
   - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
   - Fix the bug that healing weapons could not automatically acquire aerial targets
+  - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
+  - Prone speed customization
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
