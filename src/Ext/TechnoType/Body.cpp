@@ -504,6 +504,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Sinkable_SquidGrab.Read(exINI, pSection, "Sinkable.SquidGrab");
 	this->SinkSpeed.Read(exINI, pSection, "SinkSpeed");
 
+	this->ProneSpeed.Read(exINI, pSection, "ProneSpeed");
+
+	this->DamagedSpeed.Read(exINI, pSection, "DamagedSpeed");
+
 	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
 	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
 
@@ -913,7 +917,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Power)
 
-    	.Process(this->Image_ConditionYellow)
+		.Process(this->Image_ConditionYellow)
 		.Process(this->Image_ConditionRed)
 		.Process(this->WaterImage_ConditionYellow)
 		.Process(this->WaterImage_ConditionRed)
@@ -930,8 +934,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sinkable_SquidGrab)
 		.Process(this->SinkSpeed)
 
+		.Process(this->DamagedSpeed)
+
 		.Process(this->SuppressKillWeapons)
 		.Process(this->SuppressKillWeapons_Types)
+
+		.Process(this->ProneSpeed)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
