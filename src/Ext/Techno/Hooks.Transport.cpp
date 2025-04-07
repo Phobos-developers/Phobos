@@ -574,6 +574,15 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 
 #pragma region TransportFix
 
+DEFINE_HOOK(0x51D45B, InfantryClass_Scatter_NoProcess, 0x6)
+{
+	enum { SkipGameCode = 0x51D47B };
+
+	REF_STACK(const int, addr, STACK_OFFSET(0x50, 0));
+	// Skip process in UpdatePosition which can create invisible barrier
+	return (addr == 0x51A4B5) ? SkipGameCode : 0;
+}
+
 DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 {
 	enum { NextAction = 0x4D92ED, NotifyUnlink = 0x4D92CE, DoNothing = 0x4D946C };
@@ -588,6 +597,11 @@ DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 	return answer == RadioCommand::RequestLoading ? DoNothing : NotifyUnlink;
 }
 
+#pragma endregion
+
+#pragma region AmphibiousEnterAndUnload
+
+// Related fix
 DEFINE_HOOK(0x4B08EF, DriveLocomotionClass_Process_CheckUnload, 0x5)
 {
 	enum { SkipGameCode = 0x4B078C, ContinueProcess = 0x4B0903 };
@@ -636,10 +650,6 @@ DEFINE_HOOK(0x718F1E, TeleportLocomotionClass_MovingTo_ReplaceMovementZone, 0x6)
 	R->EBP(movementZone);
 	return R->Origin() + 0x6;
 }
-
-#pragma endregion
-
-#pragma region AmphibiousEnterAndUnload
 
 // Enter building
 DEFINE_JUMP(LJMP, 0x43C38D, 0x43C3FF); // Skip amphibious and naval check if no Ares
