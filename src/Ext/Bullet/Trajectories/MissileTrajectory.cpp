@@ -215,7 +215,8 @@ void MissileTrajectory::OpenFire()
 			// When the distance is short, the initial moving distance will be reduced
 			if (pType->ReduceCoord && this->OriginalDistance < (Unsorted::LeptonsPerCell * 10))
 				this->PreAimDistance *= this->OriginalDistance / (Unsorted::LeptonsPerCell * 10);
-
+			// The calculation for each frame will be completed before the speed update, make up for the first frame here
+			this->PreAimDistance += pType->LaunchSpeed;
 			this->InitializeBulletNotCurve();
 		}
 
