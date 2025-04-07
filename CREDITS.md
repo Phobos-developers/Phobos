@@ -365,6 +365,7 @@ This page lists all the individual contributions to the project by their author.
    - Taking over Ares' AlphaImage respawn logic to reduce lags from it
    - Allow voxel projectiles to use AnimPalette and FirersPalette
    - Customize damaged speed ratio of drive/ship loco
+   - Enhanced reveal & gap warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
