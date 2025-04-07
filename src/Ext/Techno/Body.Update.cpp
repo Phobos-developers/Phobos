@@ -43,7 +43,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt && pTypeExt->InterceptorType && !pThis->Target && !pThis->RearmTimer.HasTimeLeft() && !this->IsBurrowed)
+	if (pTypeExt->InterceptorType && !pThis->Target && !pThis->RearmTimer.HasTimeLeft() && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
 		const auto pInterceptorType = pTypeExt->InterceptorType.get();

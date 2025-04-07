@@ -202,18 +202,18 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 
 	if (pOwner == HouseClass::CurrentPlayer)
 	{
-		color = pExt->TintColorOwner;
-		intensity = pExt->TintIntensityOwner;
+		color |= pExt->TintColorOwner;
+		intensity += pExt->TintIntensityOwner;
 	}
 	else if (pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 	{
-		color = pExt->TintColorAllies;
-		intensity = pExt->TintIntensityAllies;
+		color |= pExt->TintColorAllies;
+		intensity += pExt->TintIntensityAllies;
 	}
 	else
 	{
-		color = pExt->TintColorEnemies;
-		intensity = pExt->TintIntensityEnemies;
+		color |= pExt->TintColorEnemies;
+		intensity += pExt->TintIntensityEnemies;
 	}
 }
 
