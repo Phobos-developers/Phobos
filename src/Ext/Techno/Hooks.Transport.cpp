@@ -397,8 +397,8 @@ DEFINE_HOOK(0x70D965, FootClass_QueueEnter_ForceEnter, 0x7)
 
 	const auto pDest = abstract_cast<UnitClass*>(pThis->QueueUpToEnter);
 
-	if (pDest && !pThis->Deactivated && !pThis->IsUnderEMP() && !pThis->Locomotor->Is_Moving() // Entering while moving can cause many problems
-		&& TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter))
+	if (pDest && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter)
+		&& !pThis->Deactivated && !pThis->IsUnderEMP() && !pThis->Locomotor->Is_Moving()) // Entering while moving can cause many problems
 	{
 		if (IsCloseEnoughToEnter(pDest, pThis))
 		{
@@ -420,6 +420,69 @@ DEFINE_HOOK(0x70D965, FootClass_QueueEnter_ForceEnter, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x70D894, FootClass_UpdateEnter_UpdateEnterPosition, 0x7)
+{
+	GET(FootClass* const, pThis, ESI);
+	GET(UnitClass* const, pDest, EDI); // Is techno not unit, only for convenience
+
+	if (pDest->WhatAmI() == AbstractType::Unit && TechnoTypeExt::ExtMap.Find(pDest->Type)->NoQueueUpToEnter.Get(RulesExt::Global()->NoQueueUpToEnter)
+		&& !pThis->Deactivated && !pThis->IsUnderEMP() && !pDest->Locomotor->Is_Moving())
+	{
+		if (IsCloseEnoughToEnter(pDest, pThis))
+		{
+			if (!pThis->Locomotor->Is_Moving()) // Entering while moving can cause many problems
+			{
+				const auto absType = pThis->WhatAmI();
+
+				if (absType == AbstractType::Infantry)
+				{
+					if (CanEnterNow(pDest, pThis))
+						InfantryEnterNow(pDest, static_cast<InfantryClass*>(pThis));
+				}
+				else if (absType == AbstractType::Unit)
+				{
+					if (CanEnterNow(pDest, pThis))
+						UnitEnterNow(pDest, static_cast<UnitClass*>(pThis));
+				}
+			}
+		}
+		else if (!pThis->Destination) // Move to enter position, prevent other passengers from waiting for call and not moving early
+		{
+			auto cell = CellStruct::Empty;
+			reinterpret_cast<CellStruct*(__thiscall*)(FootClass*, CellStruct*, AbstractClass*)>(0x703590)(pThis, &cell, pDest);
+
+			if (cell != CellStruct::Empty)
+			{
+				pThis->SetDestination(MapClass::Instance.GetCellAt(cell), true);
+				pThis->QueueMission(Mission::Move, false);
+				pThis->NextMission();
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x737945, UnitClass_ReceiveCommand_MoveTransporter, 0x7)
+{
+	enum { SkipGameCode = 0x737952 };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(FootClass* const, pCall, EDI);
+
+	// Move to the vicinity of the passenger
+	auto cell = CellStruct::Empty;
+	reinterpret_cast<CellStruct*(__thiscall*)(FootClass*, CellStruct*, AbstractClass*)>(0x703590)(pThis, &cell, pCall);
+	pThis->SetDestination((cell != CellStruct::Empty ? static_cast<AbstractClass*>(MapClass::Instance.GetCellAt(cell)) : pCall), true);
+
+	return SkipGameCode;
+}
+
+namespace TransportUnloadTemp
+{
+	bool ShouldPlaySound = false;
+}
+
 DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 {
 	enum { SkipGameCode = 0x73E289 };
@@ -430,9 +493,28 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 	// Restore vanilla function
 	pPassenger->Undiscover();
 
-	// Play the sound when interrupted for some reason
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
-		VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+	// Clean up the unload space
+	const bool alt = pThis->OnBridge;
+	const auto pCell = pThis->GetCell();
+	const auto coord = pCell->GetCoords();
+
+	for (int i = 0; i < 8; ++i)
+	{
+		const auto pAdjCell = pCell->GetNeighbourCell(static_cast<FacingType>(i));
+		const auto pTechno = pAdjCell->FindTechnoNearestTo(Point2D::Empty, alt, pThis);
+
+		if (pTechno && pTechno->Owner->IsAlliedWith(pThis))
+			pAdjCell->ScatterContent(coord, true, true, alt);
+	}
+
+	// Play the sound when interrupted
+	if (TransportUnloadTemp::ShouldPlaySound)
+	{
+		TransportUnloadTemp::ShouldPlaySound = false;
+
+		if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+	}
 
 	return SkipGameCode;
 }
@@ -443,22 +525,55 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 
 	GET(UnitClass* const, pThis, ESI);
 
-	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+	const auto pType = pThis->Type;
+	const auto pPassenger = pThis->Passengers.GetFirstPassenger();
+
+	if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
 	{
-		if (!pThis->Passengers.GetFirstPassenger() || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
+		if (!pPassenger || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
-			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
+			TransportUnloadTemp::ShouldPlaySound = false;
 			return UnloadReturn;
 		}
 
+		TransportUnloadTemp::ShouldPlaySound = true;
 		R->EBX(0); // Reset
 		return UnloadLoop;
 	}
 
 	// PlayAtPos has already handled the situation where Sound is less than 0 internally, so unnecessary checks will be skipped
-	VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+	VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
+
 	return UnloadReturn;
+}
+
+#pragma endregion
+
+#pragma region TransportFix
+
+DEFINE_HOOK(0x51D45B, InfantryClass_Scatter_NoProcess, 0x6)
+{
+	enum { SkipGameCode = 0x51D47B };
+
+	REF_STACK(const int, addr, STACK_OFFSET(0x50, 0));
+	// Skip process in UpdatePosition which can create invisible barrier
+	return (addr == 0x51A4B5) ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
+{
+	enum { NextAction = 0x4D92ED, NotifyUnlink = 0x4D92CE, DoNothing = 0x4D946C };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(const RadioCommand, answer, EAX);
+	// Restore vanilla check
+	if (pThis->IsTether || answer == RadioCommand::AnswerPositive)
+		return NextAction;
+	// The link should not be disconnected while the transporter is in motion (passengers waiting to enter),
+	// as this will result in the first passenger not getting on board
+	return answer == RadioCommand::RequestLoading ? DoNothing : NotifyUnlink;
 }
 
 #pragma endregion
