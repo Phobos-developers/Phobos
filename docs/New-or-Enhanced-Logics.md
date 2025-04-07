@@ -925,7 +925,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 
 ### Projectiles blocked by land or water
 
-- It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
+- It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectTo(Land/Water)` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectTo(Land/Water).Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
   - `Level=true` projectiles detonate on tiles belonging to non-water tilesets by default, but will not consider such tiles as true obstacles. This behaviour can be overridden by setting these keys.
 - As for `SubjectToGround`, if set it to true ,it will predict the height of the connecting straight line from the bullet's source coordinates to target coordinates. If the predicted height is lower than the ground height of the current predicted position, the firer will also consider targets blocked by such obstacles as out of range and will attempt to reposition themselves. Due to technical reasons, this feature will not be effective for the Air Force and buildings. Technos attacking in `OpenTopped=true` vehicles will not be affected either.
 
@@ -1679,6 +1679,21 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General]->NoQueueUpToEnter` or `[General]->NoQueueUpToUnload`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType
+NoQueueUpToEnter=         ; boolean
+NoQueueUpToUnload=        ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -1878,6 +1893,23 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 
 ```{warning}
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
+```
+
+### Fire weapon when kill
+
+- `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
+  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
+- Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                   ; Warhead
+KillWeapon=                     ; WeaponType
+KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+
+[SOMETECHNO]                    ; TechnoType
+SuppressKillWeapons=false       ; boolean
+SuppressKillWeapons.Types=      ; list of WeaponTypes
 ```
 
 ### Generate credits on impact
@@ -2129,6 +2161,7 @@ OmniFire.TurnToTarget=no  ; boolean
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run, defaults to 5 if not set. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
   - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.
+  - `Strafing.EndDelay` can be used to override the delay after firing last shot in strafing run before aircraft resumes another strafing run or returns to base. Defaults to (Weapon `Range` * 256 + 1024) / Aircraft `Speed`. Note that using a short delay with aircraft that can do multiple strafing runs with their ammo can cause undesired behaviour like dancing around or facing weird way depending on other factors like ROF and/or movement speed.
 - There is a special case for aircraft spawned by `Type=SpyPlane` superweapons on `SpyPlane Approach` or `SpyPlane Overfly` mission where `Strafing.Shots` only if explicitly set on its primary weapon, determines the maximum number of times the map revealing effect can activate irregardless of other factors.
 
 In `rulesmd.ini`:
@@ -2138,6 +2171,7 @@ Strafing=                      ; boolean
 Strafing.Shots=                ; integer
 Strafing.SimulateBurst=false   ; boolean
 Strafing.UseAmmoPerShot=false  ; boolean
+Strafing.EndDelay=             ; integer, game frames
 ```
 
 ### Weapon targeting filter
@@ -2153,4 +2187,22 @@ In `rulesmd.ini`:
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+### Visual effect scatter
+
+- You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+VisualScatter.Min=0.03  ; floating point value, distance in cells
+VisualScatter.Max=0.13  ; floating point value, distance in cells
+
+[SOMEWEAPON]            ; WeaponType
+VisualScatter=false     ; boolean
+```
+
+```{note}
+This function is only used as an additional scattering visual display, which is different from `BallisticScatter` and can be used simultaneously, without affecting the actual explosion position of the projectile.
 ```
