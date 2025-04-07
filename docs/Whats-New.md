@@ -354,6 +354,7 @@ New:
 - [Fire weapon when kill](New-or-Enhanced-Logics.md#fire-weapon-when-kill) (by Ollerus)
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
 - [Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-Logics.md#damaged-speed-customization) (by NetsuNegi)
+- Customize overpower logic (by NetsuNegi)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
