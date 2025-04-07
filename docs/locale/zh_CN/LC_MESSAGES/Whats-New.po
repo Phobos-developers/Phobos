@@ -66,7 +66,7 @@ msgid ""
 "more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) "
 "credits."
 msgstr ""
-"现在 `[CrateRules] -> FreeMCV` 可以控制玩家是否会在它们没有任何建筑物或任何 `BaseUnit` 中的载具且资金超过 "
+"现在 `[CrateRules] -> FreeMCV` 可以控制玩家是否会在他们没有任何建筑物或任何 `BaseUnit` 中的载具且资金超过 "
 "`[CrateRules] -> FreeMCV.CreditsThreshold`（默认为 1500）时强制获得一个 `[General] ->"
 " BaseUnit` 中的单位。"
 
