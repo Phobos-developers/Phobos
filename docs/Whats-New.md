@@ -368,7 +368,7 @@ New:
 - Extra warhead detonations on weapon (by Starkku)
 - Chrono sparkle animation display customization and improvements (by Starkku)
 - Script action to Chronoshift teams to enemy base (by Starkku)
-- Customizable ElectricBolt Arcs (by Fryone, Kerbiter)
+- Customizable ElectricBolt Arcs (by Fryone & Kerbiter)
 - Digital display of HP and SP (by ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, based on knowledge of DeathFish)
 - PipScale pip customizations (size, ammo / spawn / tiberium frames or offsets) (by Starkku)
 - Auto-deploy/Deploy block on ammo change (by Fryone)
@@ -418,12 +418,14 @@ New:
 - Revenge weapon (by Starkku)
 - AttachEffect types with new features like custom tint and weapon range modifier (by Starkku)
 - Force shield effect sync on deploy & vs. organic targets effect customization to complement the Iron Curtain ones (by Starkku)
-- Map trigger action 41 `41 Play Animation At...` now uses additional parameter to determine if animation can play sound, deal damage etc. (by Starkku)
+- Map trigger action `41 Play Animation At...` now uses additional parameter to determine if animation can play sound, deal damage etc. (by Starkku)
 - Allow restricting how many times per frame a single radiation site can damage a building (by Starkku)
 - Allow explicitly setting the superweapons AI uses for Chronoshift script actions (by Starkku)
 - Allow customizing Aircraft weapon strafing regardless of `ROT` and `Strafing.Shots` values beyond 5 (by Trsdy)
 - Allow strafing weapons to deduct ammo per shot instead of per strafing run (by Starkku)
 - Allow `CloakVisible=true` laser trails optinally be seen only if unit is detected (by Starkku)
+- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl)
+- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl)
 - Customizing whether passengers are kicked out when an aircraft fires (by ststl)
 - Shield hit flash (by Starkku)
 - Option to scatter `(Anim/Splash)List` animations around impact coordinates (by Starkku)
@@ -444,7 +446,7 @@ New:
 - Customizing height and speed at which subterranean units travel (by Starkku)
 - Option for Warhead damage to penetrate Iron Curtain or Force Shield (by Starkku)
 - Option for Warhead to remove all shield types at once (by Starkku)
-- Allow customizing voxel light source position (by Kerbiter, Morton, based on knowledge of thomassnedon)
+- Allow customizing voxel light source position (by Kerbiter & Morton, based on knowledge of thomassnedon)
 - Option to fix voxel light source being offset and incorrectly tilting on slopes (by Kerbiter)
 - AI superweapon delay timer customization (by Starkku)
 - Disabling `MultipleFactory` bonus from specific BuildingType (by Starkku)
@@ -504,7 +506,7 @@ Vanilla fixes:
 - Light tint created by a building is now able to be removed after loading the game (by Trsdy)
 - Prevented crashing jumpjet units from firing (by Trsdy)
 - Fixed disguised infantry not using custom palette for drawing the disguise when needed (by Starkku)
-- Reenabled the obsolete `[General] WarpIn` as default anim type when units are warping in (by Trsdy)
+- Reenabled the obsolete `[General] -> WarpIn` as default anim type when units are warping in (by Trsdy)
 - Fixed permanent health bar display for units targeted by temporal weapons upon mouse hover (by Trsdy)
 - Buildings with superweapons no longer display `SuperAnimThree` at beginning of match if pre-placed on the map (by Starkku)
 - AI players can now build `Naval=true` and `Naval=false` vehicles concurrently like human players do (by Starkku)
@@ -570,11 +572,11 @@ Vanilla fixes:
 - Fixed `Hospital=yes` building can't kick out infantry after loading a save (by FlyStar)
 - Electric bolts that are supposed to update their position based on units current firing coords (by default, those fired by vehicles) now do so correctly for more than one concurrent electric bolt (by Starkku)
 - Fixed an issue where `FireAngle` would not work properly under certain circumstances (by TaranDahl)
+- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
 - Fixed an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own (by CrimRecya)
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges (by CrimRecya & TaranDahl)
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
-- Fixed the bug that healing weapons could not automatically acquire aerial targets (by TaranDahl)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -681,7 +683,7 @@ Phobos fixes:
   <summary>Click to show<br>点击展开</summary>
 
 New:
-- LaserTrails initial implementation (by Kerbiter, ChrisLv_CN)
+- LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)
 - Anim-to-Unit logic and ability to randomize `DestroyAnim` (by Otamaa)
 - Shield modification warheads (by Starkku)
 - Shield BreakWeapon & InitialStrength (by Starkku)
@@ -778,11 +780,9 @@ New:
 - Animated (non-tiberium spawning) TerrainTypes (by Starkku)
 - Toggleable passenger killing for `Explodes=true` units (by Starkku)
 - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist (by FlyStar)
-- Skirmish AI "sell all buildings and set all technos to hunt" behavior dehardcode (by TaranDahl/航味麻酱)
-- Skirmish AI "gather when MCV deploy" behavior dehardcode (by TaranDahl/航味麻酱)
 
 Vanilla fixes:
-- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter, ChrisLv_CN)
+- Fixed laser drawing code to allow for thicker lasers in house color draw mode (by Kerbiter & ChrisLv_CN)
 - Fixed `DeathWeapon` not detonating properly (by Uranusian)
 - Fixed lasers & other effects drawing from wrong offset with weapons that use `Burst` (by Starkku)
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water (by Uranusian)
@@ -815,7 +815,7 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Allow voxel projectiles to use AnimPalette and FirersPalette (by NetsuNegi)
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
@@ -942,7 +942,7 @@ New:
 - Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, Erzoid/SukaHati)
 - Customizable harvester active/total counter next to credits counter (by Uranusian)
 - Select Next Idle Harvester hotkey command (by Kerbiter)
-- Dump Object Info hotkey command (by secsome, FS-21)
+- Dump Object Info hotkey command (by secsome & FS-21)
 - Remove Disguise and Remove Mind Control warhead effects (by secsome)
 - Custom per-warhead `SplashLists` (by Uranusian)
 - `AnimList.PickRandom` used to randomize `AnimList` with no side effects (by secsome)
@@ -960,7 +960,7 @@ New:
 - Customizeable Missing Cameo file (by Uranusian)
 
 Vanilla fixes:
-- Map previews with zero size won't crash the game anymore (by Kerbiter, Belonit)
+- Map previews with zero size won't crash the game anymore (by Kerbiter & Belonit)
 - Tileset 255+ bridge fix (by E1 Elite)
 - Fixed fatal errors when `Blowfish.dll` couldn't be registered in the system properly due to missing admin rights (by Belonit)
 - Fix to take Burst into account for aircraft weapon shots beyond the first one (by Starkku)
@@ -997,13 +997,13 @@ Phobos fixes:
 New:
 - Full-color PCX graphics support (by Belonit)
 - Support for PCX loading screens of any size (by Belonit)
-- Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter, Belonit)
+- Extended sidebar tooltips with descriptions, recharge time and power consumption/generation (by Kerbiter & Belonit)
 - Selection priority filtering for box selection (by Kerbiter)
 - Shroud, reveal and money transact warheads (by Belonit)
 - Custom game icon command line arg (by Belonit)
 - Ability to disable black spawn position dots on map preview (by Belonit)
 - Ability to specify applicable building owner for building upgrades (by Kerbiter)
-- Customizable disk laser radius (by Belonit, Kerbiter)
+- Customizable disk laser radius (by Belonit & Kerbiter)
 - Ability to switch to GDI sidebar layout for any side (by Belonit)
 
 Vanilla fixes:

@@ -271,8 +271,8 @@ This page lists all the individual contributions to the project by their author.
   - Show designator & inhibitor range
   - Dump variables to file on scenario end / hotkey
   - `601 House owns TechnoType` and `602 House doesn't own TechnoType` trigger events
-  - Help with docs
   - Voxel light source position customization
+  - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
    - General assistance
    - Interceptor logic prototype
@@ -357,7 +357,7 @@ This page lists all the individual contributions to the project by their author.
    - Fix the bug where pathfinding issues occur when a building performs undeploy
    - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
    - Fix `DefaultDisguise` showing wrong house colors for different players
-   - Allow voxel projectiles to use AnimPalette and FirersPalette
+   - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons

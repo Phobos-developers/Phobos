@@ -554,7 +554,7 @@ Due to technical limitations, with Ares, upgrades placed through `PowersUp.Build
 
 In `rulesmd.ini`:
 ```ini
-[UPGRADENAME]       ; BuildingType
+[SOMEBUILDING]      ; BuildingType, as an upgrade
 PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowersUp.Buildings= ; List of BuildingTypes
 ```
@@ -621,7 +621,7 @@ SlavesFreeSound=      ; Sound entry
 In `rulesmd.ini`:
 ```ini
 [SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=E2  ; InfantryType
+DefaultDisguise=    ; InfantryType
 ```
 
 ### Random death animaton for NotHuman Infantry
@@ -671,8 +671,8 @@ OnlyUseLandSequences=false  ; boolean
   - `Interceptor.Weapon` determines the weapon (0 = `Primary`, 1 = `Secondary`) to be used for intercepting projectiles.
     - The interceptor weapon may need `AG` and/or `AA` set to true on its projectile to be able to target projectiles depending on their elevation from ground. If you don't set those then the weapon won't be able to target low-flying or high-flying projectiles respectively.
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
-  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
-  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
+  - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
+  - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
     - On interceptors, `Interceptor.WeaponReplaceProjectile` can be set to true to make `Interceptor.WeaponOverride` also replace the intercepted projectile's type (including `Image` and other projectile characteristics) and `Speed` with its own. Does not replace particle systems (`AttachedSystem`, *Ares feature*).
@@ -862,7 +862,7 @@ TabIndex=1  ; integer
 
 - It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.
   - Note that if you fire another `Type=EMPulse` superweapon with different weapon index that the same building is capable of launching before the first weapon was fired, the latter superweapon's settings will take precedence.
-  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range` / `MinimumRange` unless `SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set.
+  - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set.
 - Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
 
 In `rulesmd.ini`:
@@ -968,11 +968,11 @@ Detonate.AtFirer=false      ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                     ; TechnoType
-Spawner.LimitRange=false         ; boolean
-Spawner.ExtraLimitRange=0        ; integer, range in cells
-Spawner.DelayFrames=             ; integer, game frames
-Spawner.AttackImmediately=false  ; boolean
+[SOMETECHNO]                       ; TechnoType
+Spawner.LimitRange=false           ; boolean
+Spawner.ExtraLimitRange=0          ; integer, range in cells
+Spawner.DelayFrames=               ; integer, game frames
+Spawner.AttackImmediately=false    ; boolean
 ```
 
 ### Automatic passenger deletion
@@ -1008,8 +1008,8 @@ PassengerDeletion.SoylentAllowedHouses=enemies  ; Affected House Enumeration (no
 PassengerDeletion.DisplaySoylent=false          ; boolean
 PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
-PassengerDeletion.ReportSound=                  ; Sound
-PassengerDeletion.Anim=                         ; Animation
+PassengerDeletion.ReportSound=                  ; Sound entry
+PassengerDeletion.Anim=                         ; AnimationType
 PassengerDeletion.UnderEMP=false                ; boolean
 ```
 
@@ -1118,7 +1118,7 @@ OpenTopped.ShareTransportTarget=true      ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]    ; BuildingType or UnitType
+[SOMETECHNO]    ; BuildingType or VehicleType
 EVA.Sold=       ; EVA entry
 SellSound=      ; Sound entry
 ```
@@ -1247,18 +1247,6 @@ AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
-### Make units try turning to target when firing with `OmniFire=yes`
-
-- The unit will try to turn the body to target even firing with `OmniFire=yes`.
-  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]              ; WeaponType
-OmniFire=yes
-OmniFire.TurnToTarget=no  ; boolean
-```
-
 ### Mind Control enhancement
 
 ![image](_static/images/mindcontrol-max-range-01.gif)
@@ -1268,16 +1256,12 @@ OmniFire.TurnToTarget=no  ; boolean
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `ControlledAnimationType`.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
 MultiMindControl.ReleaseVictim=false  ; boolean
-
-[SOMEWARHEAD]                         ; WarheadType
-MindControl.Anim=                     ; Animation, defaults to ControlledAnimationType
 ```
 
 ### No Manual Move
@@ -1307,7 +1291,8 @@ Promote.IncludeSpawns=false  ; boolean
 
 - You can now specify an animation on the unit or structure promotion.
   - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
 ```ini
@@ -1362,7 +1347,7 @@ In `rulesmd.ini`:
 [AudioVisual]
 IsVoiceCreatedGlobal=false   ; boolean
 
-[SOMETECHNO]                 ; UnitType
+[SOMETECHNO]                 ; TechnoType
 VoiceCreated=                ; Sound entry
 ```
 
@@ -1434,24 +1419,24 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                       ; WarheadType
-Crit.Chance=0.0                     ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false     ; boolean
-Crit.ExtraDamage=0                  ; integer
-Crit.Warhead=                       ; WarheadType
-Crit.Warhead.FullDetonation=true    ; boolean
-Crit.Affects=all                    ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all              ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0         ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                      ; List of AnimationTypes
-Crit.AnimList.PickRandom=           ; boolean
-Crit.AnimList.CreateAll=            ; boolean
-Crit.ActiveChanceAnims=             ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false    ; boolean
-Crit.SuppressWhenIntercepted=false  ; boolean
+[SOMEWARHEAD]                               ; WarheadType
+Crit.Chance=0.0                             ; floating point value, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false             ; boolean
+Crit.ExtraDamage=0                          ; integer
+Crit.Warhead=                               ; WarheadType
+Crit.Warhead.FullDetonation=true            ; boolean
+Crit.Affects=all                            ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectBelowPercent=1.0                 ; floating point value, percents or absolute (0.0-1.0)
+Crit.AnimList=                              ; List of AnimationTypes
+Crit.AnimList.PickRandom=                   ; boolean
+Crit.AnimList.CreateAll=                    ; boolean
+Crit.ActiveChanceAnims=                     ; List of AnimationTypes
+Crit.AnimOnAffectedTargets=false            ; boolean
+Crit.SuppressWhenIntercepted=false          ; boolean
 
-[SOMETECHNO]                        ; TechnoType
-ImmuneToCrit=no                     ; boolean
+[SOMETECHNO]                                ; TechnoType
+ImmuneToCrit=false                          ; boolean
 ```
 
 ```{warning}
@@ -1495,6 +1480,14 @@ This feature has the same limitations as [Ares' Type Conversion](https://ares-de
 This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
 ```
 
+### Custom Mind Control Animation
+- Allows Warheads to play custom `MindControl.Anim` which defaults to `[CombatDamage] -> ControlledAnimationType`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+MindControl.Anim=                     ; Animation, defaults to [CombatDamage] -> ControlledAnimationType
+```
 
 ### Custom 'SplashList' on Warheads
 
@@ -1724,6 +1717,18 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]     ; WeaponType
 FeedbackWeapon=  ; WeaponType
+```
+
+### Make units try turning to target when firing with `OmniFire=yes`
+
+- The unit will try to turn the body to target even firing with `OmniFire=yes`.
+  - Jumpjets are recommended to have the same value of body `ROT` and `JumpjetTurnRate`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]              ; WeaponType
+OmniFire=yes
+OmniFire.TurnToTarget=no  ; boolean
 ```
 
 ### Radiation enhancements

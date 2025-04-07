@@ -181,9 +181,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
 - `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
-- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
-- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
+- Fixed the bug that parasite will vanish if it missed its target when its previous cell is occupied.
+- Fixed an issue where a unit will leave an impassable invisible barrier in its original position when it is teleported by ChronoSphere onto an uncrushable unit and self destruct.
 - Fixed the bug that destroyed unit may leaves sensors.
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
@@ -198,7 +198,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
-- Allow voxel projectiles to use AnimPalette and FirersPalette.
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette`.
 
 ## Fixes / interactions with other extensions
 
@@ -412,6 +412,16 @@ In `rulesmd.ini`:
 ConsideredVehicle=  ; boolean
 ```
 
+### Customizable selling buildup sequence length for buildings that can undeploy
+
+- By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]        ; BuildingType
+SellBuildupLength=23  ; integer, number of buildup frames to play
+```
+
 ### Customizable & new grinder properties
 
 ![image](_static/images/grinding.gif)
@@ -439,16 +449,6 @@ Grinding.PlayDieSound=true         ; boolean
 Grinding.Sound=                    ; Sound entry
 Grinding.Weapon=                   ; WeaponType
 Grinding.Weapon.RequiredCredits=0  ; integer
-```
-
-### Customizable selling buildup sequence length for buildings that can undeploy
-
-- By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]        ; BuildingType
-SellBuildupLength=23  ; integer, number of buildup frames to play
 ```
 
 ### Exclude Factory from providing multiple factory bonus
@@ -976,7 +976,7 @@ In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
-SubterraneanSpeed=7.5    ; floating point value
+SubterraneanSpeed=19     ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
@@ -1262,7 +1262,7 @@ DrawTurretShadow=false  ; boolean
 
 In `artmd.ini`:
 ```ini
-[SOMEUNIT]      ; UnitType
+[SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
 ```
 
@@ -1563,7 +1563,7 @@ Bolt.Arcs=8            ; integer
 ```
 
 ```{note}
-Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from AirburstWeapon.
+Due to technical constraints, these features do not work with electric bolts created from support weapon of [Ares' Prism Forwarding](https://ares-developers.github.io/Ares-docs/new/buildings/prismforwarding.html) or those from `AirburstWeapon`.
 ```
 
 ### Single-color lasers
