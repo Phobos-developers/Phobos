@@ -3312,7 +3312,7 @@ msgstr "也可以通过 [Attach Effect](#attached-effects) 来授予复仇武器
 
 #: ../../New-or-Enhanced-Logics.md:1309
 msgid ""
-"Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not "
+"If a Warhead has `SuppressRevengeWeapons` set to true, it will not "
 "trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to "
 "list WeaponTypes affected by this, if none are listed all WeaponTypes are"
 " affected."
