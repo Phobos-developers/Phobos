@@ -546,6 +546,7 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 
 ```{note}
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
+```
 
 ## Infantry
 
