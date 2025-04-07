@@ -2408,11 +2408,11 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:533
 msgid "Customize overpower logic"
-msgstr ""
+msgstr "自定义过载逻辑"
 
 #: ../../Fixed-or-Improved-Logics.md:535
 msgid "Now you can specific how building can be overpowerd."
-msgstr ""
+msgstr "现在你可以设定建筑什么情形下才会过载。"
 
 #: ../../Fixed-or-Improved-Logics.md:538
 msgid ""
@@ -2439,6 +2439,8 @@ msgid ""
 "Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-"
 "docs/new/superweapons/types/battery.html) won't be affected by this."
 msgstr ""
+"Ares 的 [电池超武](https://ares-developers.github.io/Ares-"
+"docs/new/superweapons/types/battery.html) 不受此影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:551
 msgid "Infantry"

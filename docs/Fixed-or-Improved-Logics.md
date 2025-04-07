@@ -492,6 +492,24 @@ Grinding.Weapon=                   ; WeaponType
 Grinding.Weapon.RequiredCredits=0  ; integer
 ```
 
+### Customize overpower logic
+
+- Now you can specific how building can be overpowerd.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]
+ElectricAssaultLevel=1    ; integer
+
+[SOMEBUILDING]
+Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
+Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
+```
+
+```{note}
+Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
+```
+
 ### Exclude Factory from providing multiple factory bonus
 
 - It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
@@ -528,24 +546,6 @@ In `rulesmd.ini`:
 ```ini
 [General]
 BuildingWaypoints=false  ; boolean
-```
-
-### Customize overpower logic
-
-- Now you can specific how building can be overpowerd.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]
-ElectricAssaultLevel=1    ; integer
-
-[SOMEBUILDING]
-Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
-Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
-```
-
-```{note}
-Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
 ## Infantry

@@ -1459,7 +1459,7 @@ msgstr "自定义 `Locomotor` 为 `Drive`／`Ship` 的单位伤残状态的速�
 
 #: ../../../CREDITS.md:369
 msgid "Customize overpower logic"
-msgstr ""
+msgstr "自定义过载逻辑"
 
 #: ../../../CREDITS.md:370
 msgid "**Apollo** - Translucent SHP drawing patches"

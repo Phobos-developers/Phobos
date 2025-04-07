@@ -1231,6 +1231,8 @@ msgid ""
 "[Customize overpower logic](Fixed-or-Improved-Logics.md#customize-"
 "overpower-logic) (by NetsuNegi)"
 msgstr ""
+"[自定义过载逻辑](Fixed-or-Improved-Logics.md#customize-"
+"overpower-logic)（by NetsuNegi）"
 
 #: ../../Whats-New.md:359 ../../Whats-New.md:540 ../../Whats-New.md:852
 #: ../../Whats-New.md:964 ../../Whats-New.md:991 ../../Whats-New.md:1030
