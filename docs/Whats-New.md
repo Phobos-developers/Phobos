@@ -353,6 +353,7 @@ New:
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
 - Prone speed customization (by TaranDahl)
 - Customize damaged speed ratio of drive/ship loco (by NetsuNegi)
+- Customize overpower logic (by NetsuNegi)
 - Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
 
 Vanilla fixes:
