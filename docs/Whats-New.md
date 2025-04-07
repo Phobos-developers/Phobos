@@ -319,6 +319,7 @@ New:
 - Custom exit cell for infantry factory (by Starkku)
 - Option for vehicles to keep target when issued move command (by Starkku)
 - Skip anim delay for burst fire (by TaranDahl)
+- Extending `Power` to all TechnoTypes (by Morton)
 - New Parabola trajectory (by CrimRecya)
 - Type select for buildings (code by TaranDahl, doc by Ollerus)
 - Raise alert when technos are taking damage (by TaranDahl)
@@ -332,7 +333,6 @@ New:
 - Extended gattling rate down logic (by CrimRecya)
 - Sell or undeploy building on impact (by CrimRecya)
 - No rearm and reload in EMP or temporal (by CrimRecya)
-- Draw visual effects for airburst weapons (by CrimRecya)
 - Technos recount current burst index when change the firing weapon (by CrimRecya)
 - Shield armor inheritance customization (by Ollerus)
 - Damaged unit image changes (by Fryone)
@@ -351,9 +351,10 @@ New:
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
 - [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
-- Prone speed customization (by TaranDahl)
-- Customize damaged speed ratio of drive/ship loco (by NetsuNegi)
-- Customize overpower logic (by NetsuNegi)
+- [Fire weapon when kill](New-or-Enhanced-Logics.md#fire-weapon-when-kill) (by Ollerus)
+- [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
+- [Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-Logics.md#damaged-speed-customization) (by NetsuNegi)
+- [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -533,9 +534,8 @@ New:
 - Allow infantry to use land sequences in water (by Starkku)
 - `<Player @ X>` can now be used as owner for pre-placed objects on skirmish and multiplayer maps (by Starkku)
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
+- Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
-- Extending `Power` to all TechnoTypes (by Morton)
-- Fire weapon when kill (by Ollerus)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -710,6 +710,7 @@ Fixes / interactions with other extensions:
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
+- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 </details>
 
 ### 0.3.0.1
@@ -882,7 +883,7 @@ Vanilla fixes:
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges (by Starkku)
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines (by Starkku)
 - Allowed observers to see a selected building's radial indicator (by Trsdy)
-- Allow voxel projectiles to use AnimPalette and FirersPalette (by NetsuNegi)
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by NetsuNegi)
 
 Phobos fixes:
 - Fixed shields being able to take damage when the parent TechnoType was under effects of a `Temporal` Warhead (by Starkku)
