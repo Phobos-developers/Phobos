@@ -558,7 +558,7 @@ DEFINE_HOOK(0x51D45B, InfantryClass_Scatter_NoProcess, 0x6)
 	enum { SkipGameCode = 0x51D47B };
 
 	REF_STACK(const int, addr, STACK_OFFSET(0x50, 0));
-	// Skip process in UpdatePosition which can create invisible barrier
+	// Skip process in InfantryClass::UpdatePosition which can create invisible barrier
 	return (addr == 0x51A4B5) ? SkipGameCode : 0;
 }
 
