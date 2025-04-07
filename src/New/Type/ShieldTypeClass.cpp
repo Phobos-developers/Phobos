@@ -40,6 +40,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ConditionRed.Read(exINI, pSection, "ConditionRed");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
+	this->InheritArmor_Allowed.Read(exINI, pSection, "InheritArmor.Allowed");
+	this->InheritArmor_Disallowed.Read(exINI, pSection, "InheritArmor.Disallowed");
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
@@ -69,9 +71,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->IdleAnimDamaged.Read(exINI, pSection, "IdleAnimDamaged.%s");
 
 	this->BreakAnim.Read(exINI, pSection, "BreakAnim");
-	this->BreakAnim.Read(exINI, pSection, "BreakAnims");
 	this->HitAnim.Read(exINI, pSection, "HitAnim");
-	this->HitAnim.Read(exINI, pSection, "HitAnims");
 	this->HitFlash.Read(exINI, pSection, "HitFlash");
 	this->HitFlash_FixedSize.Read(exINI, pSection, "HitFlash.FixedSize");
 	this->HitFlash_Red.Read(exINI, pSection, "HitFlash.Red");
@@ -108,6 +108,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->ConditionRed)
 		.Process(this->Armor)
 		.Process(this->InheritArmorFromTechno)
+		.Process(this->InheritArmor_Allowed)
+		.Process(this->InheritArmor_Disallowed)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)

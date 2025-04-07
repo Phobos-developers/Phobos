@@ -46,16 +46,7 @@ DEFINE_HOOK(0x4226F0, AnimClass_CTOR_CreateUnit_MarkOccupationBits, 0x6)
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pTypeExt->CreateUnit.Get())
-	{
-		auto location = pThis->GetCoords();
-
-		if (auto pCell = pThis->GetCell())
-			location = pCell->GetCoordsWithBridge();
-		else
-			location.Z = MapClass::Instance->GetCellFloorHeight(location);
-
-		pThis->MarkAllOccupationBits(location);
-	}
+		pThis->MarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
 
 	return 0; //return (pThis->Type->MakeInfantry != -1) ? 0x423BD6 : 0x423C03;
 }
@@ -69,15 +60,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 	if (auto const pUnitType = pTypeExt->CreateUnit.Get())
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pThis);
-		auto origLocation = pThis->Location;
-		auto const pCell = pThis->GetCell();
-
-		if (pCell)
-			origLocation = pCell->GetCoordsWithBridge();
-		else
-			origLocation.Z = MapClass::Instance->GetCellFloorHeight(origLocation);
-
-		pThis->UnmarkAllOccupationBits(origLocation);
+		pThis->UnmarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
 
 		auto facing = pTypeExt->CreateUnit_RandomFacing
 			? static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pTypeExt->CreateUnit_Facing;
