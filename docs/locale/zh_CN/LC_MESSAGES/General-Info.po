@@ -48,8 +48,8 @@ msgid ""
 "those versions with their mods if they want latest features, though we "
 "can't guarantee lack of bugs;"
 msgstr ""
-"**开发版**：包含待测试功能的版本，采用 0 开始的简单数字编号，每次发布递增版本号。Mod 作者仍可在 Mod "
-"中使用这类版本以获得最新功能，但我们无法保证它们没有 Bug。"
+"**开发版**：包含待测试功能的版本，采用 `build-` 加上从 `0` 开始且每次发布后递增的简单数字编号作为版本号。Mod "
+"作者仍可在 Mod 中使用这类版本以获得最新功能，但我们无法保证它们没有 Bug。"
 
 #: ../../General-Info.md:10
 msgid ""
