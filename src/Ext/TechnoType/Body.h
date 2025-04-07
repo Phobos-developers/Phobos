@@ -280,9 +280,11 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
-		
-		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
+    	Nullable<double> DamagedSpeed;
+
+		Nullable<AffectedHouse> RadarInvisibleToHouse;
+		
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -558,6 +560,8 @@ public:
 			, Sinkable { }
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
+
+			, DamagedSpeed { }
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types {}
