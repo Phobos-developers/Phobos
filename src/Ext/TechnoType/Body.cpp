@@ -113,7 +113,7 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 	return nullptr;
 }
 
-TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner, std::vector<AnimTypeClass*> pSpawnAnimType,
+TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner, const std::vector<AnimTypeClass*>& pSpawnAnimType,
 	TechnoClass* pInvoker, HouseClass* pInvokerHouse, int spawnHeight, bool alwaysOnGround, bool checkPathfinding, bool parachuteIfInAir, Mission mission, Mission* missionAI)
 {
 	auto const rtti = pType->WhatAmI();

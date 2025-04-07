@@ -602,7 +602,7 @@ public:
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
 	static TechnoClass* CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner,
-		std::vector<AnimTypeClass*> pSpawnAnimType, TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, int spawnHeight = -1,
+		const std::vector<AnimTypeClass*>& pSpawnAnimType, TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, int spawnHeight = -1,
 		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);
 
 	// Ares 0.A

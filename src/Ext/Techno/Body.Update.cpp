@@ -749,7 +749,7 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 	}
 }
 
-void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, std::vector<AnimTypeClass*> pVanishAnimation, bool isInLimbo)
+void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, const std::vector<AnimTypeClass*>& pVanishAnimation, bool isInLimbo)
 {
 	if (isInLimbo)
 	{
