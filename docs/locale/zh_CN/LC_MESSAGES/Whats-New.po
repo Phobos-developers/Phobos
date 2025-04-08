@@ -1858,11 +1858,11 @@ msgstr "允许 `CloakVisible=true` 的激光尾迹仅在单位被检测到时可
 msgid ""
 "Skirmish AI \"sell all buildings and set all technos to hunt\" behavior "
 "dehardcode (by TaranDahl)"
-msgstr "遭遇战 AI 「卖家冲锋」行为去硬编码（by TaranDahl）"
+msgstr "遭遇战 AI「卖家冲锋」行为去硬编码（by TaranDahl）"
 
 #: ../../Whats-New.md:488
 msgid "Skirmish AI \"gather when MCV deploy\" behavior dehardcode (by TaranDahl)"
-msgstr "遭遇战 AI 「在 MCV 部署时集结」行为去硬编码（by TaranDahl）"
+msgstr "遭遇战 AI「在 MCV 部署时集结」行为去硬编码（by TaranDahl）"
 
 #: ../../Whats-New.md:489
 msgid ""
