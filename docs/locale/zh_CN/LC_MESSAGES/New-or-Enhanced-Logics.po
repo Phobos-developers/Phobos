@@ -6877,7 +6877,6 @@ msgid "Fire weapon when kill"
 msgstr "击杀武器"
 
 #: ../../New-or-Enhanced-Logics.md:1900
-#, fuzzy
 msgid ""
 "`KillWeapon` will be fired at the target TechnoType's location once it's "
 "killed by this Warhead."
@@ -6890,23 +6889,25 @@ msgid ""
 "Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be "
 "fired."
 msgstr ""
+"如果可以追溯到弹头来自哪个单位，那么 `KillWeapon.OnFirer` "
+"可以让武器发射在开火者的位置。如果追溯不到来源那么将不会发射。"
 
 #: ../../New-or-Enhanced-Logics.md:1902
-#, fuzzy
 msgid ""
 "`KillWeapon.AffectsHouses` and `KillWeapon.OnFirer.AffectsHouses` are "
 "used to filter which houses targets can belong to be considered valid for"
 " `KillWeapon` and `KillWeapon.OnFirer` respectively."
-msgstr "`KillWeapon.AffectsHouses` 用于筛选哪些所属方的目标可以触发 `KillWeapon`。"
+msgstr "`KillWeapon.AffectsHouses` 和 `KillWeapon.OnFirer.AffectsHouses` "
+"分别用于筛选哪些所属方的目标可以触发 `KillWeapon` 与 `KillWeapon.OnFirer`。"
 
 #: ../../New-or-Enhanced-Logics.md:1903
 msgid ""
 "If the source of this Warhead is not another TechnoType, `KillWeapon` "
 "will be fired in regardless of the target's house."
 msgstr ""
+"如果这个弹头的来源不是另一个单位，发射 `KillWeapon` 将不受目标所属方的限制。"
 
 #: ../../New-or-Enhanced-Logics.md:1904
-#, fuzzy
 msgid ""
 "If a TechnoType has `SuppressKillWeapons` set to true, it will not "
 "trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. "
@@ -6914,7 +6915,7 @@ msgid ""
 "this, if none are listed all WeaponTypes are affected."
 msgstr ""
 "如果单位 `SuppressKillWeapons` 设为 true 则其被击杀时不会触发 "
-"`KillWeapon`。`SuppressKillWeapons.Types` "
+"`KillWeapon` 或 `KillWeapon.OnFirer`。`SuppressKillWeapons.Types` "
 "可用于列出受影响的武器类型，如果没有列出，则所有武器类型都受影响。"
 
 #: ../../New-or-Enhanced-Logics.md:1907
