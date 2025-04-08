@@ -703,3 +703,29 @@ Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x749CAC, BounceClass_ShadowMatrix);
 #pragma endregion
+
+#pragma region voxel_ramp_matrix
+
+// I don't know how can WW miscalculated
+// In fact, there should be three different degrees of tilt angles
+// But This position is too far ahead, I can't find a good way to solve
+// So I have to do it this way for now
+DEFINE_HOOK_AGAIN(0x75564B, sub_754CB0_InitializeRampMatrix1, 0x7)
+DEFINE_HOOK(0x755469, sub_754CB0_InitializeRampMatrix1, 0x5)
+{
+	GET(const float, phi, EBX);
+	R->EBX(R->EBP());
+	R->EBP(phi);
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x7556CF, sub_754CB0_InitializeRampMatrix2, 0x7)
+DEFINE_HOOK(0x7554CC, sub_754CB0_InitializeRampMatrix2, 0x5)
+{
+	GET(const float, phi, EBX);
+	R->EBX(R->EBP());
+	R->EBP(phi);
+	return 0;
+}
+
+#pragma endregion

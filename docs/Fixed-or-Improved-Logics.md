@@ -207,6 +207,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
 - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`.
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc.
+- Fixed an issue that units on the slope tilted at an excessive angle.
 
 ## Fixes / interactions with other extensions
 
