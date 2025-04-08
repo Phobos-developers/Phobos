@@ -266,7 +266,7 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	if (needCalculate && IsCloseEnoughToEnter(pTransport, pLink))
 		return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
 
-	return predictSize < maxSize;
+	return predictSize <= maxSize;
 }
 
 // Rewrite from 0x51A21B/0x73A6D1
