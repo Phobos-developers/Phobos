@@ -1692,16 +1692,31 @@ DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x46B23C, BulletClass_DrawVoxel_SetLightConvert, 0x6)
 DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
 {
+	enum { SkipGameCode = 0x46B218 };
+
 	const auto pConvert = BulletDrawVoxelTemp::Convert;
 
 	if (!pConvert)
 		return 0;
 
 	R->ECX(pConvert);
-	return R->Origin() + 6;
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x46B23C, BulletClass_DrawVoxel_SetLightConvert2, 0x6)
+{
+	enum { SkipGameCode = 0x46B242 };
+
+	const auto pConvert = BulletDrawVoxelTemp::Convert;
+
+	if (!pConvert)
+		return 0;
+
+	BulletDrawVoxelTemp::Convert = nullptr;
+	R->ECX(pConvert);
+	return SkipGameCode;
 }
 
 #pragma region StructureFindingFix
