@@ -98,7 +98,7 @@ HideLightFlashEffects=false      ; boolean
 
 ### For Map Editor (Final Alert 2)
 
-:::{dropdown} Click to show
+````{dropdown} Click to show
 
   In `FAData.ini`:
   ```ini
@@ -301,13 +301,13 @@ HideLightFlashEffects=false      ; boolean
   26=Global variables,-5
   27=Global variables,-6
   ```
-:::
+````
 
 ## Changelog
 
 ### Version TBD (develop branch nightly builds)
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - Allow using waypoints, area guard and attack move with aircraft (by CrimRecya)
@@ -365,11 +365,11 @@ Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 
-:::
+```
 
 ### 0.4
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
@@ -710,11 +710,11 @@ Fixes / interactions with other extensions:
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 
-:::
+```
 
 ### 0.3.0.1
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
@@ -741,11 +741,11 @@ Phobos fixes:
 - `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
 - `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
 
-:::
+```
 
 ### 0.3
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)
@@ -918,11 +918,11 @@ Fixes / interactions with other extensions:
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
 
-:::
+```
 
 ### 0.2.2.2
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed shield type info not saving properly (by Uranusian)
@@ -930,11 +930,11 @@ Phobos fixes:
 - Fix more random crashes for `CameoPriority` (by Uranusian)
 - Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
 
-:::
+```
 
 ### 0.2.2.1
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed random crashes about `CameoPriority` (by Uranusian)
@@ -944,11 +944,11 @@ Phobos fixes:
 - Fixed `Crit.Affects` not functioning properly (by Uranusian)
 - Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
 
-:::
+```
 
 ### 0.2.2
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
@@ -963,20 +963,20 @@ Phobos fixes:
 - Fixed the critical damage logic not functioning properly (by Uranusian)
 - Fixed the bug when executing the stop command game crashes (by Uranusian)
 
-:::
+```
 
 ### 0.2.1.1
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
 
-:::
+```
 
 ### 0.2.1
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
@@ -988,12 +988,12 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
 
-:::
+```
 
 
 ### 0.2
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
@@ -1038,20 +1038,20 @@ Phobos fixes:
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
 - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
 
-:::
+```
 
 ### 0.1.1
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed an occasional crash when selecting units with a selection box (by Kerbiter)
 
-:::
+```
 
 ### 0.1
 
-:::{dropdown} Click to show
+```{dropdown} Click to show
 
 New:
 - Full-color PCX graphics support (by Belonit)
@@ -1073,4 +1073,4 @@ Vanilla fixes:
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
 
-:::
+```
