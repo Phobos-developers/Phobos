@@ -143,6 +143,14 @@ details > *:last-child {
   margin-bottom: 0 !important;
 }
 
+.sd-summary-title {
+    background-color: rgb(243, 246, 246) !important;
+}
+
+details.sd-dropdown[open].sd-card {
+    background-color: rgb(243, 246, 246) !important;
+}
+
 /* =================================== */
 /* Switcher */
 
