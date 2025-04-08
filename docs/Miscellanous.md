@@ -118,7 +118,7 @@ CampaignDefaultGameSpeed=4  ; integer
 Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
 ```
 
-:::{dropdown} Click to show the generator
+```{dropdown} Click to show the generator
 Enter desired FPS
 <div>
 <input id="customGameSpeedIn" type=number oninput="onInput()" style="width:100%";>
@@ -130,7 +130,7 @@ Results (remember to replace N with your game speed number!):
 </p>
 <div id="codeBlockHere1"></div>
 </div>
-:::
+```
 
 <script>
 makeINICodeBlock(document.getElementById("codeBlockHere1"), "customGameSpeedOut", 400);
