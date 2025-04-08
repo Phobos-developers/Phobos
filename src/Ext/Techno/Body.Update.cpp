@@ -162,6 +162,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 
 					return false;
 				};
+
 			return any
 				? std::any_of(vTypes.begin(), vTypes.end(), existSingleType)
 				: std::all_of(vTypes.begin(), vTypes.end(), existSingleType);
@@ -172,16 +173,22 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		std::unordered_set<HouseClass*> validHouses;
 
-		for (auto pHouse : HouseClass::Array)
+		if (pTypeExt->AutoDeath_TechnosDontExist_Houses == AffectedHouse::Owner)
 		{
-			if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosDontExist_Houses, pThis->Owner, pHouse))
-				validHouses.insert(pHouse);
+			validHouses.insert(pThis->Owner);
+		}
+		else
+		{
+			for (auto pHouse : HouseClass::Array)
+			{
+				if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosDontExist_Houses, pThis->Owner, pHouse))
+					validHouses.insert(pHouse);
+			}
 		}
 
 		if (!existTechnoTypes(pTypeExt->AutoDeath_TechnosDontExist, validHouses, !pTypeExt->AutoDeath_TechnosDontExist_Any, pTypeExt->AutoDeath_TechnosDontExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
-
 			return true;
 		}
 	}
@@ -191,16 +198,22 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 	{
 		std::unordered_set<HouseClass*> validHouses;
 
-		for (auto pHouse : HouseClass::Array)
+		if (pTypeExt->AutoDeath_TechnosExist_Houses == AffectedHouse::Owner)
 		{
-			if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosExist_Houses, pThis->Owner, pHouse))
-				validHouses.insert(pHouse);
+			validHouses.insert(pThis->Owner);
+		}
+		else
+		{
+			for (auto pHouse : HouseClass::Array)
+			{
+				if (EnumFunctions::CanTargetHouse(pTypeExt->AutoDeath_TechnosExist_Houses, pThis->Owner, pHouse))
+					validHouses.insert(pHouse);
+			}
 		}
 
 		if (existTechnoTypes(pTypeExt->AutoDeath_TechnosExist, validHouses, pTypeExt->AutoDeath_TechnosExist_Any, pTypeExt->AutoDeath_TechnosExist_AllowLimboed))
 		{
 			TechnoExt::KillSelf(pThis, howToDie, pVanishAnim, isInLimbo);
-
 			return true;
 		}
 	}

@@ -164,39 +164,48 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 {
+	auto limboKill = [](const HouseClass* pTargetHouse, const int limboKillID)
+		{
+			auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+			auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
+
+			for (auto it = vec.begin(); it != vec.end(); )
+			{
+				BuildingClass* const pBuilding = *it;
+				auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
+
+				if (pBuildingExt->LimboID == limboKillID)
+				{
+					it = vec.erase(it);
+
+					// Remove limbo buildings' tracking here because their are not truely InLimbo
+					if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
+						HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+
+					pBuilding->Stun();
+					pBuilding->Limbo();
+					pBuilding->RegisterDestruction(nullptr);
+					pBuilding->UnInit();
+				}
+				else
+				{
+					++it;
+				}
+			}
+		};
+
 	for (int limboKillID : this->LimboKill_IDs)
 	{
+		if (this->LimboKill_Affected == AffectedHouse::Owner)
+		{
+			limboKill(pHouse, limboKillID);
+			continue;
+		}
+
 		for (HouseClass* pTargetHouse : HouseClass::Array)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
-			{
-				auto const pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
-				auto& vec = pHouseExt->OwnedLimboDeliveredBuildings;
-
-				for (auto it = vec.begin(); it != vec.end(); )
-				{
-					BuildingClass* const pBuilding = *it;
-					auto const pBuildingExt = BuildingExt::ExtMap.Find(pBuilding);
-
-					if (pBuildingExt->LimboID == limboKillID)
-					{
-						it = vec.erase(it);
-
-						// Remove limbo buildings' tracking here because their are not truely InLimbo
-						if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-							HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
-
-						pBuilding->Stun();
-						pBuilding->Limbo();
-						pBuilding->RegisterDestruction(nullptr);
-						pBuilding->UnInit();
-					}
-					else
-					{
-						++it;
-					}
-				}
-			}
+				limboKill(pTargetHouse, limboKillID);
 		}
 	}
 }
