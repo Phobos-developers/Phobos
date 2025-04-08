@@ -98,8 +98,7 @@ HideLightFlashEffects=false      ; boolean
 
 ### For Map Editor (Final Alert 2)
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+````{dropdown} Click to show
 
   In `FAData.ini`:
   ```ini
@@ -302,14 +301,14 @@ HideLightFlashEffects=false      ; boolean
   26=Global variables,-5
   27=Global variables,-6
   ```
-</details>
+````
 
 ## Changelog
 
 ### 0.4
 
-<details open>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
+:open:
 
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
@@ -644,12 +643,11 @@ Fixes / interactions with other extensions:
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by Trsdy)
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
-</details>
+```
 
 ### 0.3.0.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
@@ -675,12 +673,11 @@ Phobos fixes:
 - Fixed `CreateUnit` interaction with bridges (spawning under when shouldn't etc) (by Starkku)
 - `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
 - `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
-</details>
+```
 
 ### 0.3
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)
@@ -851,26 +848,24 @@ Fixes / interactions with other extensions:
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
-</details>
+```
 
 
 ### 0.2.2.2
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed shield type info not saving properly (by Uranusian)
 - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
 - Fix more random crashes for `CameoPriority` (by Uranusian)
 - Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
-</details>
+```
 
 
 ### 0.2.2.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed random crashes about `CameoPriority` (by Uranusian)
@@ -879,13 +874,12 @@ Phobos fixes:
 - RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also various fixes to radiation / desolators (by Otamaa)
 - Fixed `Crit.Affects` not functioning properly (by Uranusian)
 - Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
-</details>
+```
 
 
 ### 0.2.2
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
@@ -899,23 +893,21 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed the critical damage logic not functioning properly (by Uranusian)
 - Fixed the bug when executing the stop command game crashes (by Uranusian)
-</details>
+```
 
 
 ### 0.2.1.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
-</details>
+```
 
 
 ### 0.2.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
@@ -926,13 +918,12 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
-</details>
+```
 
 
 ### 0.2
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
@@ -976,23 +967,21 @@ Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
 - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
-</details>
+```
 
 
 ### 0.1.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed an occasional crash when selecting units with a selection box (by Kerbiter)
-</details>
+```
 
 
 ### 0.1
 
-<details>
-<summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Full-color PCX graphics support (by Belonit)
@@ -1013,4 +1002,4 @@ Vanilla fixes:
 - Fixed QWER hotkey tab switching not hiding the displayed tooltip as it should (by Belonit)
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
-</details>
+```
