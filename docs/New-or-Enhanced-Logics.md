@@ -1545,15 +1545,15 @@ Promote.IncludeSpawns=false  ; boolean
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If more than one animation is listed, a random one is selected.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If more than one animation is listed, a random one is selected.
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Promote.VeteranAnimation=         ; AnimationType
-Promote.EliteAnimation=           ; AnimationType
+Promote.VeteranAnimation=         ; list of Animation
+Promote.EliteAnimation=           ; list of Animation
 ```
 
 ### Raise alert when technos are taking damage

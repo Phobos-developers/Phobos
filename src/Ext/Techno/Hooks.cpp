@@ -111,23 +111,15 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 
 	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
-	if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
+	if (!RulesExt::Global()->Promote_VeteranAnimation.size() && !RulesExt::Global()->Promote_EliteAnimation.size())
 		return aresProcess();
 
 	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
-		AnimClass* promAnim = nullptr;
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
-			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
-		else if (RulesExt::Global()->Promote_EliteAnimation)
-			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
-
-		if (promAnim)
-		{
-			promAnim->SetOwnerObject(pThis);
-			AnimExt::SetAnimOwnerHouseKind(promAnim, pThis->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(promAnim)->SetInvoker(pThis);
-		}
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation.size() > 0)
+			AnimExt::CreateRandomAnim(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
+		else if (RulesExt::Global()->Promote_EliteAnimation.size() > 0)
+			AnimExt::CreateRandomAnim(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
 	}
 
 	return aresProcess();

@@ -785,13 +785,14 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
 - Only applicable to Techno that have Teleport/Chrono Locomotor attached.
+- If more than one animation is listed in `WarpOut`, `WarpIn` or `WarpAway`, a random one is selected.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
+WarpOut=                ; list of Animation (played when Techno warping out), default to [General] WarpOut
+WarpIn=                 ; list of Animation (played when Techno warping in), default to [General] WarpIn
+WarpAway=               ; list of Animation (played when Techno chronowarped by chronosphere), default to [General] WarpOut
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance

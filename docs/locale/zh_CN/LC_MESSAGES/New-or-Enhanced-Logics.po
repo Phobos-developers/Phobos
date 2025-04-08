@@ -5848,14 +5848,14 @@ msgstr "现在你可以在单位或建筑升级时播放指定动画。"
 #: ../../New-or-Enhanced-Logics.md:1548
 msgid ""
 "`Promote.VeteranAnimation` is used when unit or structure is promoted to "
-"veteran."
-msgstr "`Promote.VeteranAnimation` 用于单位或建筑升级为老兵时。"
+"veteran. If more than one animation is listed, a random one is selected."
+msgstr "`Promote.VeteranAnimation` 用于单位或建筑升级为老兵时。如果列出了多个动画，则将随机选择一个。"
 
 #: ../../New-or-Enhanced-Logics.md:1549
 msgid ""
 "`Promote.EliteAnimation` is used when unit or structure is promoted to "
-"elite."
-msgstr "`Promote.EliteAnimation` 用于单位或建筑升级为精英时。"
+"elite. If more than one animation is listed, a random one is selected."
+msgstr "`Promote.EliteAnimation` 用于单位或建筑升级为精英时。如果列出了多个动画，则将随机选择一个。"
 
 #: ../../New-or-Enhanced-Logics.md:1550
 msgid ""
@@ -5866,12 +5866,12 @@ msgstr "如果未定义 `Promote.EliteAnimation` 则使用 `Promote.VeteranAnima
 #: ../../New-or-Enhanced-Logics.md:1553
 msgid ""
 "[AudioVisual]\n"
-"Promote.VeteranAnimation=         ; AnimationType\n"
-"Promote.EliteAnimation=           ; AnimationType\n"
+"Promote.VeteranAnimation=         ; list of Animation\n"
+"Promote.EliteAnimation=           ; list of Animation\n"
 msgstr ""
 "[AudioVisual]\n"
-"Promote.VeteranAnimation=         ; AnimationType\n"
-"Promote.EliteAnimation=           ; AnimationType\n"
+"Promote.VeteranAnimation=         ; list of Animation\n"
+"Promote.EliteAnimation=           ; list of Animation\n"
 
 #: ../../New-or-Enhanced-Logics.md:1559
 msgid "Raise alert when technos are taking damage"
