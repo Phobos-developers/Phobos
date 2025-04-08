@@ -283,6 +283,16 @@ public:
 
     	Nullable<double> DamagedSpeed;
 
+		Nullable<int> CrushLevel;
+		Nullable<int> Vet_CrushLevel;
+		Nullable<int> Elite_CrushLevel;
+		Nullable<int> CrushableLevel;
+		Nullable<int> Vet_CrushableLevel;
+		Nullable<int> Elite_CrushableLevel;
+		Nullable<int> DeployedCrushableLevel;
+		Nullable<int> Vet_DeployedCrushableLevel;
+		Nullable<int> Elite_DeployedCrushableLevel;
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -560,6 +570,16 @@ public:
 			, SinkSpeed { 5 }
 
 			, DamagedSpeed { }
+
+			, CrushLevel {}
+			, Vet_CrushLevel {}
+			, Elite_CrushLevel {}
+			, CrushableLevel {}
+			, Vet_CrushableLevel {}
+			, Elite_CrushableLevel {}
+			, DeployedCrushableLevel {}
+			, Vet_DeployedCrushableLevel {}
+			, Elite_DeployedCrushableLevel {}
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types {}

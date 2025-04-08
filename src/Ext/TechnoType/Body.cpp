@@ -508,6 +508,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DamagedSpeed.Read(exINI, pSection, "DamagedSpeed");
 
+	this->CrushLevel.Read(exINI, pSection, "CrushLevel");
+	this->Vet_CrushLevel.Read(exINI, pSection, "CrushLevel.Veteran");
+	this->Elite_CrushLevel.Read(exINI, pSection, "CrushLevel.Elite");
+	this->CrushableLevel.Read(exINI, pSection, "CrushableLevel");
+	this->Vet_CrushableLevel.Read(exINI, pSection, "CrushableLevel.Veteran");
+	this->Elite_CrushableLevel.Read(exINI, pSection, "CrushableLevel.Elite");
+	this->DeployedCrushableLevel.Read(exINI, pSection, "DeployedCrushableLevel");
+	this->Vet_DeployedCrushableLevel.Read(exINI, pSection, "DeployedCrushableLevel.Veteran");
+	this->Elite_DeployedCrushableLevel.Read(exINI, pSection, "DeployedCrushableLevel.Elite");
+
 	this->SuppressKillWeapons.Read(exINI, pSection, "SuppressKillWeapons");
 	this->SuppressKillWeapons_Types.Read(exINI, pSection, "SuppressKillWeapons.Types");
 
@@ -935,6 +945,16 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SinkSpeed)
 
 		.Process(this->DamagedSpeed)
+
+		.Process(this->CrushLevel)
+		.Process(this->Vet_CrushLevel)
+		.Process(this->Elite_CrushLevel)
+		.Process(this->CrushableLevel)
+		.Process(this->Vet_CrushableLevel)
+		.Process(this->Elite_CrushableLevel)
+		.Process(this->DeployedCrushableLevel)
+		.Process(this->Vet_DeployedCrushableLevel)
+		.Process(this->Elite_DeployedCrushableLevel)
 
 		.Process(this->SuppressKillWeapons)
 		.Process(this->SuppressKillWeapons_Types)

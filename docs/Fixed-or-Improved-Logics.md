@@ -564,6 +564,39 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
+## Unit
+
+### Crush level system
+
+- It's possible to customize crush level and crushable level for now. Rolling is only allowed when the CrushLevel of the compactor is greater than the CrushableLevel of the crushed person.
+
+In `rulesmd.ini`
+```ini
+[General]
+CrusherLevel=5                                   ; integer
+CrushableLevel=5                                ; integer
+OmniCrusherLevel=10                           ; integer
+OmniCrushResistantLevel=10                ; integer
+
+[WallModel]
+WallCrushableLevel=10                         ; integer
+
+[SOMEUNIT]                                         ; Crusher
+CrushLevel=                                         ; integer
+CrushLevel.Veteran=                             ; integer
+CrushLevel.Elite=                                  ; integer
+
+[SOMETECHNO]                                    ; infantry, unit, aircraft
+CrushableLevel=                                   ; integer
+CrushableLevel.Veteran=                      ; integer
+CrushableLevel.Elite=                           ; integer
+
+[SOMEINFANTRY]
+DeployedCrushableLevel=                    ; integer
+DeployedCrushableLevel.Veteran=        ; integer
+DeployedCrushableLevel.Elite=             ; integer
+```
+
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates

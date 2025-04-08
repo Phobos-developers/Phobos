@@ -366,6 +366,7 @@ This page lists all the individual contributions to the project by their author.
    - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
    - Customize damaged speed ratio of drive/ship loco
    - Customize overpower logic
+   - Crush level system
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons

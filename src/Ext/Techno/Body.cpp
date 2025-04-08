@@ -435,6 +435,95 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 	return false;
 }
 
+int TechnoExt::GetCrushLevel(FootClass* pThis)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	switch (pThis->Veterancy.GetRemainingLevel())
+	{
+	case Rank::Elite:
+		if (pTypeExt->Elite_CrushLevel.isset())
+			return pTypeExt->Elite_CrushLevel.Get();
+
+	case Rank::Veteran:
+		if (pTypeExt->Vet_CrushLevel.isset())
+			return pTypeExt->Vet_CrushLevel.Get();
+
+	default:
+		if (pTypeExt->CrushLevel.isset())
+			return pTypeExt->CrushLevel.Get();
+	}
+
+	const auto pType = pThis->GetTechnoType();
+
+	if (pType->OmniCrusher)
+		return RulesExt::Global()->OmniCrusherLevel;
+
+	if (pType->Crusher || pThis->HasAbility(Ability::Crusher))
+		return RulesExt::Global()->CrusherLevel;
+
+	return 0;
+}
+
+int TechnoExt::GetCrushableLevel(FootClass* pThis)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	const auto rank = pThis->Veterancy.GetRemainingLevel();
+	const auto pInfantry = specific_cast<InfantryClass*>(pThis);
+
+	if (pInfantry && pInfantry->IsDeployed())
+	{
+		switch (rank)
+		{
+		case Rank::Elite:
+			if (pTypeExt->Elite_DeployedCrushableLevel.isset())
+				return pTypeExt->Elite_DeployedCrushableLevel.Get();
+
+		case Rank::Veteran:
+			if (pTypeExt->Vet_DeployedCrushableLevel.isset())
+				return pTypeExt->Vet_DeployedCrushableLevel.Get();
+
+		default:
+			if (pTypeExt->DeployedCrushableLevel.isset())
+				return pTypeExt->DeployedCrushableLevel.Get();
+		}
+
+		if (pInfantry->Type->OmniCrushResistant)
+			return RulesExt::Global()->OmniCrushResistantLevel;
+
+		if (!pInfantry->Type->DeployedCrushable)
+			return RulesExt::Global()->CrushableLevel;
+	}
+	else
+	{
+		switch (rank)
+		{
+		case Rank::Elite:
+			if (pTypeExt->Elite_CrushableLevel.isset())
+				return pTypeExt->Elite_CrushableLevel.Get();
+
+		case Rank::Veteran:
+			if (pTypeExt->Vet_CrushableLevel.isset())
+				return pTypeExt->Vet_CrushableLevel.Get();
+
+		default:
+			if (pTypeExt->CrushableLevel.isset())
+				return pTypeExt->CrushableLevel.Get();
+		}
+
+		const auto pType = pThis->GetTechnoType();
+
+		if (pType->OmniCrushResistant)
+			return RulesExt::Global()->OmniCrushResistantLevel;
+
+		if (!pType->Crushable)
+			return RulesExt::Global()->CrushableLevel;
+	}
+
+	return 0;
+}
+
 /// <summary>
 /// Gets whether or not techno has listed AttachEffect types active on it
 /// </summary>

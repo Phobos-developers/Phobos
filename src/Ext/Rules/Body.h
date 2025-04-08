@@ -207,6 +207,12 @@ public:
 
     	Valueable<double> DamagedSpeed;
 
+		Valueable<int> CrusherLevel;
+		Valueable<int> CrushableLevel;
+		Valueable<int> OmniCrusherLevel;
+		Valueable<int> OmniCrushResistantLevel;
+		Valueable<int> WallCrushableLevel;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -362,6 +368,12 @@ public:
 			, ProneSpeed_NoCrawls { 1.5 }
 
       		, DamagedSpeed { 0.75 }
+
+			, CrusherLevel { 5 }
+			, CrushableLevel { 5 }
+			, OmniCrusherLevel { 10 }
+			, OmniCrushResistantLevel { 10 }
+			, WallCrushableLevel { 10 }
 		{ }
 
 		virtual ~ExtData() = default;
