@@ -160,6 +160,11 @@ details.sd-dropdown[open] > .sd-card-header {
     box-shadow: none;
 }
 
+details.dropdown-toggle summary,
+details > summary {
+    font-weight: normal !important;
+}
+
 /* =================================== */
 /* Switcher */
 
