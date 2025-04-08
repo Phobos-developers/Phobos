@@ -573,27 +573,27 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 In `rulesmd.ini`
 ```ini
 [General]
-CrusherLevel=5                                   ; integer
-CrushableLevel=5                                ; integer
-OmniCrusherLevel=10                           ; integer
+CrusherLevel=5                            ; integer
+CrushableLevel=5                          ; integer
+OmniCrusherLevel=10                       ; integer
 OmniCrushResistantLevel=10                ; integer
 
 [WallModel]
-WallCrushableLevel=10                         ; integer
+WallCrushableLevel=10                     ; integer
 
-[SOMEUNIT]                                         ; Crusher
-CrushLevel=                                         ; integer
-CrushLevel.Veteran=                             ; integer
-CrushLevel.Elite=                                  ; integer
+[SOMEUNIT]                                ; Crusher
+CrushLevel=                               ; integer
+CrushLevel.Veteran=                       ; integer
+CrushLevel.Elite=                         ; integer
 
-[SOMETECHNO]                                    ; infantry, unit, aircraft
-CrushableLevel=                                   ; integer
-CrushableLevel.Veteran=                      ; integer
-CrushableLevel.Elite=                           ; integer
+[SOMETECHNO]                              ; infantry, unit, aircraft
+CrushableLevel=                           ; integer
+CrushableLevel.Veteran=                   ; integer
+CrushableLevel.Elite=                     ; integer
 
 [SOMEINFANTRY]
-DeployedCrushableLevel=                    ; integer
-DeployedCrushableLevel.Veteran=        ; integer
+DeployedCrushableLevel=                   ; integer
+DeployedCrushableLevel.Veteran=           ; integer
 DeployedCrushableLevel.Elite=             ; integer
 ```
 
