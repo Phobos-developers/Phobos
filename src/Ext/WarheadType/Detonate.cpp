@@ -49,8 +49,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			const auto pCurrent = HouseClass::CurrentPlayer;
 
-			if (pCurrent &&
-				!pCurrent->IsObserver() &&		// Not Observer
+			if (!pCurrent->IsObserver() &&		// Not Observer
 				!pCurrent->Defeated &&						// Not Defeated
 				pCurrent != pHouse &&						// Not pThisHouse
 				!pCurrent->SpySatActive &&				// No SpySat
@@ -74,8 +73,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			for (const auto pOtherHouse : HouseClass::Array)
 			{
-				if (pOtherHouse->IsControlledByHuman() &&     // Not AI
-					!pOtherHouse->IsObserver() &&		// Not Observer
+				if (!pOtherHouse->IsObserver() &&		// Not Observer
 					!pOtherHouse->Defeated &&						// Not Defeated
 					pOtherHouse != pHouse &&							// Not pThisHouse
 					!pOtherHouse->SpySatActive &&					// No SpySat
