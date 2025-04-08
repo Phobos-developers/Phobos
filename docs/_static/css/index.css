@@ -144,11 +144,20 @@ details > *:last-child {
 }
 
 .sd-summary-title {
-    background-color: rgb(243, 246, 246) !important;
+    background-color: rgb(243, 246, 246);
 }
 
 details.sd-dropdown[open].sd-card {
-    background-color: rgb(243, 246, 246) !important;
+    background-color: rgb(243, 246, 246);
+}
+
+details.sd-dropdown:not([open]) > .sd-card-header {
+    box-shadow: inset 0 1px 2px -1px hsl(0deg 0% 100% / 50%),
+				inset 0 -2px 0 0 rgb(0 0 0 / 10%);
+}
+
+details.sd-dropdown[open] > .sd-card-header {
+    box-shadow: none;
 }
 
 /* =================================== */
