@@ -398,11 +398,10 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 	GET(UnitClass* const, pThis, ESI);
 
 	const auto pType = pThis->Type;
-	const auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
 	if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
 	{
-		if (!pPassenger || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
+		if (!pThis->Passengers.GetFirstPassenger() || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
 			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
