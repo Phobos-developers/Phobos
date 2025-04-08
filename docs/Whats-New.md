@@ -308,6 +308,7 @@ HideLightFlashEffects=false      ; boolean
 ### Version TBD (develop branch nightly builds)
 
 ```{dropdown} Click to show
+:open:
 
 New:
 - Allow using waypoints, area guard and attack move with aircraft (by CrimRecya)
