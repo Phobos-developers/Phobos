@@ -1,5 +1,4 @@
 #include "Body.h"
-#include <HoverLocomotionClass.h>
 
 #include <Ext/Scenario/Body.h>
 
@@ -239,7 +238,7 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	// Added to prevent unexpected enter action
-	if (pPassenger->Deactivated || pPassenger->IsUnderEMP())
+	if (pTransport->OnBridge || pPassenger->Deactivated || pPassenger->IsUnderEMP())
 		return false;
 
 	if (pPassenger->IsMindControlled() || pPassenger->ParasiteEatingMe)
@@ -286,6 +285,10 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->OnBridge = false; // Don't swap order casually, important
 	pPassenger->NextObject = nullptr; // Don't swap order casually, very important
 
+	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
+	pPassenger->Locomotor->Force_Track(-1, CoordStruct::Empty); // Added, to prevent the vehicles from stacking together when unloading
+	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
+
 	const auto pPassengerType = pPassenger->GetTechnoType();
 
 	// Reinstalling Locomotor can avoid various issues such as teleportation, ignoring commands, and automatic return
@@ -307,9 +310,6 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		pPassenger->SetTargetForPassengers(nullptr);
 
 	pPassenger->Undiscover();
-
-	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
-	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
 }
 
 // The core part of the fast enter action
@@ -317,7 +317,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
 
-	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->Destination : pThis->QueueUpToEnter))
+	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->GetNthLink() : pThis->QueueUpToEnter))
 	{
 		const auto pType = pDest->Type;
 
@@ -330,7 +330,8 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
 				if ((absType == AbstractType::Infantry || absType == AbstractType::Unit) && CanEnterNow(pDest, pThis))
 					DoEnterNow(pDest, pThis);
 			}
-			else if (!pThis->Destination) // Move to enter position, prevent other passengers from waiting for call and not moving early
+			else if (!pThis->Destination // Move to enter position, prevent other passengers from waiting for call and not moving early
+				&& !pDest->OnBridge && !pDest->Destination)
 			{
 				auto cell = CellStruct::Empty;
 				reinterpret_cast<CellStruct*(__thiscall*)(FootClass*, CellStruct*, AbstractClass*)>(0x703590)(pThis, &cell, pDest);
@@ -445,6 +446,34 @@ DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 	// The link should not be disconnected while the transporter is in motion (passengers waiting to enter),
 	// as this will result in the first passenger not getting on board
 	return answer == RadioCommand::RequestLoading ? DoNothing : NotifyUnlink;
+}
+
+DEFINE_HOOK(0x73769E, UnitClass_ReceiveCommand_NoEnterOnBridge, 0x6)
+{
+	enum { NoEnter = 0x73780F };
+
+	GET(UnitClass* const, pThis, ESI);
+	GET(TechnoClass* const, pCall, EDI);
+
+	return pThis->OnBridge && pCall->OnBridge ? NoEnter : 0;
+}
+
+DEFINE_HOOK(0x70D842, FootClass_UpdateEnter_NoMoveToBridge, 0x5)
+{
+	enum { NoMove = 0x70D84F };
+
+	GET(TechnoClass* const, pEnter, EDI);
+
+	return pEnter->OnBridge && (pEnter->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pEnter)->Type->Passengers > 0) ? NoMove : 0;
+}
+
+DEFINE_HOOK(0x70D910, FootClass_QueueEnter_NoMoveToBridge, 0x5)
+{
+	enum { NoMove = 0x70D977 };
+
+	GET(TechnoClass* const, pEnter, EAX);
+
+	return pEnter->OnBridge && (pEnter->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pEnter)->Type->Passengers > 0) ? NoMove : 0;
 }
 
 #pragma endregion
