@@ -1545,8 +1545,8 @@ Promote.IncludeSpawns=false  ; boolean
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
@@ -1554,6 +1554,10 @@ In `rulesmd.ini`:
 [AudioVisual]
 Promote.VeteranAnimation=         ; AnimationType
 Promote.EliteAnimation=           ; AnimationType
+
+[SOMETECHNO]
+Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
+Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
 ```
 
 ### Raise alert when technos are taking damage
@@ -1897,19 +1901,23 @@ While this feature can provide better performance than a large `CellSpread` valu
 
 ### Fire weapon when kill
 
-- `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
-  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for `KillWeapon`.
-- If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+- `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.
+- `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired.
+- `KillWeapon.AffectsHouses` and `KillWeapon.OnFirer.AffectsHouses` are used to filter which houses targets can belong to be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired in regardless of the target's house.
+- If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
  In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                   ; WarheadType
-KillWeapon=                     ; WeaponType
-KillWeapon.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[SOMEWARHEAD]                           ; WarheadType
+KillWeapon=                             ; WeaponType
+KillWeapon.OnFirer=                     ; WeaponType
+KillWeapon.AffectsHouses=all            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.OnFirer.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
-[SOMETECHNO]                    ; TechnoType
-SuppressKillWeapons=false       ; boolean
-SuppressKillWeapons.Types=      ; List of WeaponTypes
+[SOMETECHNO]                            ; TechnoType
+SuppressKillWeapons=false               ; boolean
+SuppressKillWeapons.Types=              ; List of WeaponTypes
 ```
 
 ### Generate credits on impact
