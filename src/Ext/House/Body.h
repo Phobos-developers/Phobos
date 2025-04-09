@@ -23,6 +23,7 @@ public:
 	public:
 		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoClass*> OwnedCountedHarvesters;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -35,6 +36,7 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass CombatAlertTimer;
 		CDTimerClass AISuperWeaponDelayTimer;
 		CDTimerClass AIFireSaleDelayTimer;
 
@@ -65,6 +67,7 @@ public:
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedCountedHarvesters {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
@@ -79,6 +82,7 @@ public:
 			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, CombatAlertTimer {}
 			, NumAirpads_NonMFB { 0 }
 			, NumBarracks_NonMFB { 0 }
 			, NumWarFactories_NonMFB { 0 }
@@ -86,7 +90,7 @@ public:
 			, NumShipyards_NonMFB { 0 }
 			, AIFireSaleDelayTimer {}
 			, SuspendedEMPulseSWs {}
-			, SuperExts(SuperWeaponTypeClass::Array->Count)
+			, SuperExts(SuperWeaponTypeClass::Array.Count)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
