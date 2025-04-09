@@ -45,31 +45,28 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	if (pHouse)
 	{
-		if (const int createGap = this->CreateGap)
-		{
-			const auto pCurrent = HouseClass::CurrentPlayer;
+		const int createGap = this->CreateGap;
 
-			if (!pCurrent->Defeated && !pCurrent->IsAlliedWith(pHouse) && !pCurrent->SpySatActive)
+		if (createGap > 0)
+		{
+			const auto pCurrent = HouseClass::CurrentPlayer();
+
+			if (!pCurrent->Defeated && !pCurrent->IsAlliedWith(pSourceHouse) && !pCurrent->SpySatActive)
 			{
-				if (createGap > 0)
-				{
-					Sub_4ADEE0(0, 0);
-					CellRangeIterator<CellClass>{}(CellClass::Coord2Cell(coords), this->CreateGap + 0.5, [](CellClass* pCell) {
-						pCell->Flags &= ~CellFlags::Revealed;
-						pCell->AltFlags &= ~AltCellFlags::Clear;
-						pCell->ShroudCounter = 1;
-						pCell->GapsCoveringThisCell = 0;
-						return true;
-					});
-					Sub_4ADCD0(0, 0);
-					pCurrent->Visionary = 0;
-					MapClass::Instance.sub_657CE0();
-					MapClass::Instance.MarkNeedsRedraw(2);
-				}
-				else
-				{
-					MapClass::Instance.Reshroud(pCurrent);
-				}
+				MapClass::Instance->sub_4ADEE0(0, 0);
+				CellRangeIterator<CellClass>{}(cellAt, createGap + 0.5, [](CellClass* pCell) { pCell->Reshroud(); return true; });
+				MapClass::Instance->sub_4ADCD0(0, 0);
+				pCurrent->Visionary = 0;
+				MapClass::Instance->sub_657CE0();
+				MapClass::Instance->MarkNeedsRedraw(2);
+			}
+		}
+		else if (createGap < 0)
+		{
+			for (const auto pOtherHouse : *HouseClass::Array)
+			{
+				if (!pOtherHouse->Defeated && !pOtherHouse->IsAlliedWith(pSourceHouse) && !pOtherHouse->SpySatActive)
+					MapClass::Instance->Reshroud(pOtherHouse);
 			}
 		}
 
