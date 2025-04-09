@@ -1707,3 +1707,45 @@ DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
+{
+	enum { SkipGameCode = 0x51A30A };
+
+	GET(BuildingClass*, pThis, EDI);
+	const int enterSound = pThis->Type->EnterBioReactorSound;
+
+	if (enterSound >= 0)
+	{
+		R->ECX(enterSound);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
+{
+	enum { SkipGameCode = 0x44DBD5 };
+
+	GET(BuildingClass*, pThis, EBP);
+	const int leaveSound = pThis->Type->LeaveBioReactorSound;
+
+	if (leaveSound >= 0)
+	{
+		R->ECX(leaveSound);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
+{
+	GET(FootClass*, pTarget, ESI);
+
+	if (const auto pUnit = abstract_cast<UnitClass*>(pTarget))
+		pUnit->Unloading = false;
+
+	return 0;
+}
