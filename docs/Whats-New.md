@@ -356,8 +356,6 @@ New:
 - [Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-Logics.md#damaged-speed-customization) (by NetsuNegi)
 - [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
 - Promotion animation deglobalization (by Ollerus)
-- Fix the bug that `EnterBioReactorSound` and `LeaveBioReactorSound` on technotype does not used (by NetsuNegi)
-- Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
 - Enhanced reveal & gap warhead (by NetsuNegi)
 
 Vanilla fixes:
@@ -366,6 +364,8 @@ Vanilla fixes:
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 - Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures (by CrimRecya)
 - Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter (by CrimRecya)
+- Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
+- Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
