@@ -350,22 +350,23 @@ This page lists all the individual contributions to the project by their author.
    - Fix `AltNextScenario` not taking effect
    - Fix `Hospital=yes` building can't kick out infantry after loading a save
 - **NetsuNegi**:
-   - Forbidding parallel AI queues by type
-   - Jumpjet crash speed fix when crashing onto building
-   - Disguised units not using the correct palette if target has custom palette bugfix
-   - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
-   - Assign Super Weapon cameo to any sidebar tab
-   - Fix impassable invisible barrier created by chronosphere on uncrushable unit
-   - `FreeUnit` uses its own `SpeedType` to determine where to spawn
-   - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
-   - Fix the bug where pathfinding issues occur when a building performs undeploy
-   - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
-   - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
-   - Fix `DefaultDisguise` showing wrong house colors for different players
-   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
-   - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
-   - Customize damaged speed ratio of drive/ship loco
-   - Customize overpower logic
+  - Forbidding parallel AI queues by type
+  - Jumpjet crash speed fix when crashing onto building
+  - Disguised units not using the correct palette if target has custom palette bugfix
+  - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
+  - Assign Super Weapon cameo to any sidebar tab
+  - Fix impassable invisible barrier created by chronosphere on uncrushable unit
+  - `FreeUnit` uses its own `SpeedType` to determine where to spawn
+  - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
+  - Fix the bug where pathfinding issues occur when a building performs undeploy
+  - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
+  - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
+  - Fix `DefaultDisguise` showing wrong house colors for different players
+  - Taking over Ares' AlphaImage respawn logic to reduce lags from it
+  - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
+  - Customize damaged speed ratio of drive/ship loco
+  - Customize overpower logic
+  - Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
