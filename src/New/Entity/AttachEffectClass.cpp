@@ -46,6 +46,9 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 	Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
 
+	if (this->Invoker)
+		TechnoExt::ExtMap.Find(this->Invoker)->AttachedEffectInvokerCount++;
+
 	AttachEffectClass::Array.emplace_back(this);
 }
 
@@ -57,6 +60,9 @@ AttachEffectClass::~AttachEffectClass()
 		AttachEffectClass::Array.erase(it);
 
 	this->KillAnim();
+
+	if (this->Invoker)
+		TechnoExt::ExtMap.Find(this->Invoker)->AttachedEffectInvokerCount--;
 }
 
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
@@ -66,16 +72,26 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (absType == AbstractType::Anim)
 	{
-		for (auto pEffect : AttachEffectClass::Array)
+		auto const pAnim = abstract_cast<AnimClass*>(abs);
+
+		if (AnimExt::ExtMap.Find(pAnim)->IsAttachedEffectAnim)
 		{
-			if (ptr == pEffect->Animation)
-				pEffect->Animation = nullptr;
+			for (auto pEffect : AttachEffectClass::Array)
+			{
+				if (ptr == pEffect->Animation)
+					pEffect->Animation = nullptr;
+			}
 		}
 	}
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
-		for (auto pEffect : AttachEffectClass::Array)
-			AnnounceInvalidPointer(pEffect->Invoker, ptr);
+		auto const pTechno = abstract_cast<TechnoClass*>(abs);
+
+		if (TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
+		{
+			for (auto pEffect : AttachEffectClass::Array)
+				AnnounceInvalidPointer(pEffect->Invoker, ptr);
+		}
 	}
 }
 
@@ -310,13 +326,17 @@ void AttachEffectClass::CreateAnim()
 		pAnim->SetOwnerObject(this->Techno);
 		auto const pOwner = this->Type->Animation_UseInvokerAsOwner ? this->InvokerHouse : this->Techno->Owner;
 		pAnim->Owner = pOwner;
-		pAnim->RemainingIterations = 0xFFu;
-		this->Animation = pAnim;
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->IsAttachedEffectAnim = true;
 
 		if (this->Type->Animation_UseInvokerAsOwner)
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Invoker, this->InvokerHouse);
+			pAnimExt->SetInvoker(this->Invoker, this->InvokerHouse);
 		else
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+			pAnimExt->SetInvoker(this->Techno);
+
+		pAnim->RemainingIterations = 0xFFu;
+		this->Animation = pAnim;
 	}
 }
 

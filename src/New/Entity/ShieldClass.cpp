@@ -57,12 +57,19 @@ void ShieldClass::UpdateType()
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	auto abs = static_cast<AbstractClass*>(ptr);
+
+	if (abs->WhatAmI() == AbstractType::Anim)
 	{
-		for (auto pShield : ShieldClass::Array)
+		auto const pAnim = abstract_cast<AnimClass*>(abs);
+
+		if (AnimExt::ExtMap.Find(pAnim)->IsShieldIdleAnim)
 		{
-			if (pAnim == pShield->IdleAnim)
-				pShield->IdleAnim = nullptr;
+			for (auto pShield : ShieldClass::Array)
+			{
+				if (pAnim == pShield->IdleAnim)
+					pShield->IdleAnim = nullptr;
+			}
 		}
 	}
 }
@@ -780,7 +787,11 @@ void ShieldClass::CreateAnim()
 
 		pAnim->SetOwnerObject(this->Techno);
 		pAnim->Owner = this->Techno->Owner;
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->SetInvoker(this->Techno);
+		pAnimExt->IsShieldIdleAnim = true;
+
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
 	}
