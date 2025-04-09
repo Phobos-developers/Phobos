@@ -1710,15 +1710,15 @@ NoQueueUpToUnload=        ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                       ; InfantryType, UnitType or AircraftType
+[SOMETECHNO]                      ; InfantryType, UnitType or AircraftType
 TiberiumEater.TransDelay=-1       ; integer
-TiberiumEater.CashMultiplier=1.0  ; float
+TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
-TiberiumEater.FrontOffset=        ; list of integer, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
-TiberiumEater.LeftOffset=         ; list of integer, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
+TiberiumEater.FrontOffset=        ; List of integers, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
+TiberiumEater.LeftOffset=         ; List of integers, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
 TiberiumEater.Display=true        ; boolean
 TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
-TiberiumEater.Anims=              ; list of animations
+TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
 ```
 
