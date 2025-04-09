@@ -280,10 +280,12 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
+    Nullable<double> DamagedSpeed;
 
-    	Nullable<double> DamagedSpeed;
-
-		Nullable<int> CrushLevel;
+		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
+		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+    
+    Nullable<int> CrushLevel;
 		Nullable<int> Vet_CrushLevel;
 		Nullable<int> Elite_CrushLevel;
 		Nullable<int> CrushableLevel;
@@ -569,6 +571,7 @@ public:
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
 
+			, ProneSpeed { }
 			, DamagedSpeed { }
 
 			, CrushLevel {}
@@ -582,9 +585,10 @@ public:
 			, Elite_DeployedCrushableLevel {}
 
 			, SuppressKillWeapons { false }
-			, SuppressKillWeapons_Types {}
+			, SuppressKillWeapons_Types { }
 
-			, ProneSpeed { }
+			, Promote_VeteranAnimation { }
+			, Promote_EliteAnimation { }
 		{ }
 
 		virtual ~ExtData() = default;
