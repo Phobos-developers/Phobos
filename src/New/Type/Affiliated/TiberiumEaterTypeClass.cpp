@@ -1,0 +1,51 @@
+#include "TiberiumEaterTypeClass.h"
+
+#include <Utilities/SavegameDef.h>
+#include <Utilities/TemplateDef.h>
+
+void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
+{
+	INI_EX exINI(pINI);
+
+	this->TransDelay.Read(exINI, pSection, "TiberiumEater.TransDelay");
+	this->CashMultiplier.Read(exINI, pSection, "TiberiumEater.CashMultiplier");
+	this->AmountPerCell.Read(exINI, pSection, "TiberiumEater.AmountPerCell");
+	this->FrontOffset.Read(exINI, pSection, "TiberiumEater.FrontOffset");
+	this->LeftOffset.Read(exINI, pSection, "TiberiumEater.LeftOffset");
+	this->Display.Read(exINI, pSection, "TiberiumEater.Display");
+	this->DisplayToHouse.Read(exINI, pSection, "TiberiumEater.DisplayToHouse");
+	this->DisplayOffset.Read(exINI, pSection, "TiberiumEater.DisplayOffset");
+	this->Anims.Read(exINI, pSection, "TiberiumEater.Anims");
+	this->AnimMove.Read(exINI, pSection, "TiberiumEater.AnimMove");
+}
+
+template <class T>
+bool TiberiumEaterTypeClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->TransDelay)
+		.Process(this->CashMultiplier)
+		.Process(this->AmountPerCell)
+		.Process(this->FrontOffset)
+		.Process(this->LeftOffset)
+		.Process(this->Display)
+		.Process(this->DisplayToHouse)
+		.Process(this->DisplayOffset)
+		.Process(this->Anims)
+		.Process(this->AnimMove)
+		.Success();
+}
+
+#pragma region(save/load)
+
+bool TiberiumEaterTypeClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool TiberiumEaterTypeClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<TiberiumEaterTypeClass*>(this)->Serialize(stm);
+}
+
+#pragma endregion

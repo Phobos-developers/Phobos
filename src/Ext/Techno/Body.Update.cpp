@@ -3,6 +3,7 @@
 
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
+#include <Conversions.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -32,6 +33,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->ApplyInterceptor();
 	this->EatPassengers();
+	this->UpdateTiberiumEater();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
@@ -336,6 +338,97 @@ void TechnoExt::ExtData::EatPassengers()
 			this->PassengerDeletionTimer.Stop();
 		}
 	}
+}
+
+void TechnoExt::ExtData::UpdateTiberiumEater()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
+
+	if (pEaterType->TransDelay < 0 || this->TiberiumEater_Timer.InProgress())
+		return;
+
+	const size_t frontSize = pEaterType->FrontOffset.size();
+	const size_t leftSize = pEaterType->LeftOffset.size();
+	size_t cellCount = std::max(frontSize, leftSize);
+
+	if (!cellCount)
+		cellCount = 1;
+
+	const auto pOwner = pThis->Owner;
+	CoordStruct flh {};
+	bool active = false;
+	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
+	const int animCount = static_cast<int>(pEaterType->Anims.size());
+	int facing = pThis->PrimaryFacing.Current().GetFacing<8>();
+
+	if (facing >= 7)
+		facing = 0;
+	else
+		facing++;
+
+	for (size_t idx = 0; idx < cellCount; idx++)
+	{
+		flh.X = frontSize > idx ? pEaterType->FrontOffset[idx] * Unsorted::LeptonsPerCell : 0;
+		flh.Y = leftSize > idx ? pEaterType->LeftOffset[idx] * Unsorted::LeptonsPerCell : 0;
+		const auto pos = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false);
+		const auto pCell = MapClass::Instance.TryGetCellAt(pos);
+
+		if (!pCell)
+			continue;
+
+		auto cellCoords = pCell->GetCoords();
+		cellCoords.Z = std::max(pThis->Location.Z, cellCoords.Z);
+
+		if (const int contained = pCell->GetContainedTiberiumValue())
+		{
+			const int tiberiumValue = TiberiumClass::Array[pCell->GetContainedTiberiumIndex()]->Value;
+			const int tiberiumAmount = static_cast<int>(static_cast<double>(contained) / tiberiumValue);
+			const int amount = pEaterType->AmountPerCell ? std::min(pEaterType->AmountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
+			pCell->ReduceTiberium(amount);
+			const float multiplier = pEaterType->CashMultiplier * (1.0f + pOwner->NumOrePurifiers * RulesClass::Instance->PurifierBonus);
+			const int value = static_cast<int>(std::round(amount * tiberiumValue * multiplier));
+			pOwner->TransactMoney(value);
+			active = true;
+
+			if (displayCash)
+				FlyingStrings::AddMoneyString(value, pOwner, pEaterType->DisplayToHouse, cellCoords, pEaterType->DisplayOffset);
+
+			if (animCount == 0)
+				continue;
+
+			AnimTypeClass* pAnimType = nullptr;
+
+			switch (animCount)
+			{
+			case 1:
+				pAnimType = pEaterType->Anims[0];
+				break;
+
+			case 8:
+				pAnimType = pEaterType->Anims[facing];
+				break;
+
+			default:
+				pAnimType = pEaterType->Anims[ScenarioClass::Instance->Random.RandomRanged(0, pEaterType->Anims.size() - 1)];
+				break;
+			}
+
+			if (pAnimType)
+			{
+				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
+				{
+					pAnim->Owner = pThis->Owner;
+
+					if (pEaterType->AnimMove)
+						pAnim->SetOwnerObject(pThis);
+				}
+			}
+		}
+	}
+
+	if (active)
+		this->TiberiumEater_Timer.Start(pEaterType->TransDelay);
 }
 
 void TechnoExt::ExtData::UpdateShield()

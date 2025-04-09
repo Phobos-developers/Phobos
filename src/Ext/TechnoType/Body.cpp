@@ -19,6 +19,7 @@ TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 void TechnoTypeExt::ExtData::Initialize()
 {
 	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+	this->TiberiumEaterType = std::make_unique<TiberiumEaterTypeClass>();
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
@@ -673,6 +674,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->DroppodType.reset();
 	}
 
+	this->TiberiumEaterType->LoadFromINI(pINI, pSection);
+
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
 }
@@ -867,6 +870,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+
+		.Process(this->TiberiumEaterType)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
