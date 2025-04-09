@@ -500,4 +500,19 @@ DEFINE_JUMP(LJMP, 0x43C38D, 0x43C3FF); // Skip amphibious and naval check if no 
 
 // TODO Enter unit
 
+
+DEFINE_HOOK(0x73796B, UnitClass_ReceiveCommand_AmphibiousEnter, 0x7)
+{
+	enum { ContinueCheck = 0x737990, MoveToPassenger = 0x737974 };
+
+	GET(UnitClass* const, pThis, ESI);
+
+	if (pThis->OnBridge)
+		return MoveToPassenger;
+
+	GET(CellClass* const, pCell, EBP);
+
+	return (pCell->LandType != LandType::Water) ? ContinueCheck : MoveToPassenger;
+}
+
 #pragma endregion
