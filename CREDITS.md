@@ -366,7 +366,7 @@ This page lists all the individual contributions to the project by their author.
    - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
    - Customize damaged speed ratio of drive/ship loco
    - Customize overpower logic
-   - Fix the bug that `EnterBioReactorSound` and `LeaveBioReactorSound` on technotype does not used
+   - Fix the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used
    - Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
