@@ -1780,6 +1780,22 @@ DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
+{
+	enum { SkipGameCode = 0x44DBD5 };
+
+	GET(BuildingClass*, pThis, EBP);
+	const int leaveSound = pThis->Type->LeaveBioReactorSound;
+
+	if (leaveSound >= 0)
+	{
+		R->ECX(leaveSound);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
 {
 	GET(FootClass*, pTarget, ESI);
