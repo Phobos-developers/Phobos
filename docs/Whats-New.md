@@ -356,8 +356,6 @@ New:
 - [Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-Logics.md#damaged-speed-customization) (by NetsuNegi)
 - [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
 - Promotion animation deglobalization (by Ollerus)
-- Fix the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
-- Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
@@ -365,6 +363,9 @@ Vanilla fixes:
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 - Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures (by CrimRecya)
 - Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter (by CrimRecya)
+- Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
+- Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
+- Fixed an issue that units on the slope tilted at an excessive angle (by CrimRecya & NetsuNegi)
 - Fixed the wrong shadow when a vehicle has hover locomotor and lifting by `IsLocomotor=yes` warhead
 
 Fixes / interactions with other extensions:
