@@ -368,6 +368,7 @@ This page lists all the individual contributions to the project by their author.
    - Customize overpower logic
    - Fix the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used
    - Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead
+   - Fix the wrong shadow when a vehicle has hover locomotor and lifting by `IsLocomotor=yes` warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
