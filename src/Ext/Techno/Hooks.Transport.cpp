@@ -454,7 +454,7 @@ DEFINE_HOOK(0x73769E, UnitClass_ReceiveCommand_NoEnterOnBridge, 0x6)
 
 	GET(UnitClass* const, pThis, ESI);
 	GET(TechnoClass* const, pCall, EDI);
-
+	// If both the transport vehicle and passengers are on the bridge, they should not board
 	return pThis->OnBridge && pCall->OnBridge ? NoEnter : 0;
 }
 
@@ -463,7 +463,7 @@ DEFINE_HOOK(0x70D842, FootClass_UpdateEnter_NoMoveToBridge, 0x5)
 	enum { NoMove = 0x70D84F };
 
 	GET(TechnoClass* const, pEnter, EDI);
-
+	// If the transport vehicle is on the bridge, passengers should wait in place for the transport vehicle to arrive
 	return pEnter->OnBridge && (pEnter->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pEnter)->Type->Passengers > 0) ? NoMove : 0;
 }
 
@@ -472,8 +472,23 @@ DEFINE_HOOK(0x70D910, FootClass_QueueEnter_NoMoveToBridge, 0x5)
 	enum { NoMove = 0x70D977 };
 
 	GET(TechnoClass* const, pEnter, EAX);
-
+	// If the transport vehicle is on the bridge, passengers should wait in place for the transport vehicle to arrive
 	return pEnter->OnBridge && (pEnter->WhatAmI() == AbstractType::Unit && static_cast<UnitClass*>(pEnter)->Type->Passengers > 0) ? NoMove : 0;
+}
+
+DEFINE_HOOK(0x7196BB, TeleportLocomotionClass_Process_MarkDown, 0xA)
+{
+	enum { SkipGameCode = 0x7196C5 };
+
+	GET(FootClass*, pLinkedTo, ECX);
+	// When Teleport units board transport vehicles on the bridge, the lack of this repair can lead to numerous problems
+	// An impassable invisible barrier will be generated on the bridge (the object linked list of the cell will leave it)
+	// And the transport vehicle will board on the vehicle itself (BFRT Passenger:..., BFRT)
+	// If any infantry attempts to pass through this position on the bridge later, it will cause the game to freeze
+	if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+		pLinkedTo->Mark(MarkType::Down);
+
+	return SkipGameCode;
 }
 
 #pragma endregion
