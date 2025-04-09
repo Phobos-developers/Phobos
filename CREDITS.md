@@ -360,6 +360,7 @@ This page lists all the individual contributions to the project by their author.
    - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
    - Fix the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used
    - Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead
+   - Fix an issue that units on the slope tilted at an excessive angle
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -396,6 +397,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
   - Fix an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
   - Fix an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
+  - Fix an issue that units on the slope tilted at an excessive angle
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

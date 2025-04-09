@@ -202,6 +202,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc.
 - Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used.
 - Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead.
+- Fixed an issue that units on the slope tilted at an excessive angle.
 
 ## Fixes / interactions with other extensions
 
