@@ -262,8 +262,18 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	const auto needCalculate = pLink && pLink != pPassenger && pLink->Destination == pTransport;
 
 	// When the most important passenger is close, need to prevent overlap
-	if (needCalculate && IsCloseEnoughToEnter(pTransport, pLink))
-		return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
+	if (needCalculate)
+	{
+		if (IsCloseEnoughToEnter(pTransport, pLink))
+			return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
+
+		if (predictSize > (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)))
+		{
+			pLink->QueueMission(Mission::None, false);
+			pLink->SetDestination(nullptr, true);
+			pLink->SendCommand(RadioCommand::NotifyUnlink, pTransport);
+		}
+	}
 
 	return predictSize <= maxSize;
 }
