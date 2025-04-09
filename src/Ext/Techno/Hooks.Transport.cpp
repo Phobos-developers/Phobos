@@ -262,8 +262,18 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	const auto needCalculate = pLink && pLink != pPassenger && pLink->Destination == pTransport;
 
 	// When the most important passenger is close, need to prevent overlap
-	if (needCalculate && IsCloseEnoughToEnter(pTransport, pLink))
-		return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
+	if (needCalculate)
+	{
+		if (IsCloseEnoughToEnter(pTransport, pLink))
+			return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
+
+		if (predictSize > (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)))
+		{
+			pLink->QueueMission(Mission::None, false);
+			pLink->SetDestination(nullptr, true);
+			pLink->SendCommand(RadioCommand::NotifyUnlink, pTransport);
+		}
+	}
 
 	return predictSize <= maxSize;
 }
@@ -678,6 +688,21 @@ DEFINE_HOOK(0x73DAD8, UnitClass_Mission_Unload_PassengerLeavePosition, 0x5)
 	}
 
 	return 0;
+}
+
+
+DEFINE_HOOK(0x73796B, UnitClass_ReceiveCommand_AmphibiousEnter, 0x7)
+{
+	enum { ContinueCheck = 0x737990, MoveToPassenger = 0x737974 };
+
+	GET(UnitClass* const, pThis, ESI);
+
+	if (pThis->OnBridge)
+		return MoveToPassenger;
+
+	GET(CellClass* const, pCell, EBP);
+
+	return (pCell->LandType != LandType::Water) ? ContinueCheck : MoveToPassenger;
 }
 
 #pragma endregion
