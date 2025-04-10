@@ -206,10 +206,18 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
-	if (pWHExt->KillWeapon && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner))
+	// KillWeapon can be triggered without the source
+	if (pWHExt->KillWeapon && (!pSource || EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
+	}
+
+	// KillWeapon.OnFirer must have a source
+	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner))
+	{
+		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
+			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
 	}
 }
 
@@ -251,9 +259,10 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pTarget = pThis->Target;
 
-	auto const& weaponIndices = pTypeExt->ForceWeapon_InRange;
-	auto const& rangeOverrides = pTypeExt->ForceWeapon_InRange_Overrides;
-	const bool applyRangeModifiers = pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
+	const bool useAASetting = !pTypeExt->ForceAAWeapon_InRange.empty() && pTarget->IsInAir();
+	auto const& weaponIndices = useAASetting ? pTypeExt->ForceAAWeapon_InRange : pTypeExt->ForceWeapon_InRange;
+	auto const& rangeOverrides = useAASetting ? pTypeExt->ForceAAWeapon_InRange_Overrides : pTypeExt->ForceWeapon_InRange_Overrides;
+	const bool applyRangeModifiers = useAASetting ? pTypeExt->ForceAAWeapon_InRange_ApplyRangeModifiers : pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
 
 	const int defaultWeaponIndex = pThis->SelectWeapon(pTarget);
 	const int currentDistance = pThis->DistanceFrom(pTarget);

@@ -297,10 +297,10 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 		if (type->WeaponRange_Multiplier == 1.0 && type->WeaponRange_ExtraRange == 0.0)
 			continue;
 
-		if (type->WeaponRange_AllowWeapons.size() > 0 && pThis && !type->WeaponRange_AllowWeapons.Contains(pThis))
+		if (type->WeaponRange_AllowWeapons.size() > 0 && !type->WeaponRange_AllowWeapons.Contains(pThis))
 			continue;
 
-		if (type->WeaponRange_DisallowWeapons.size() > 0 && pThis && type->WeaponRange_DisallowWeapons.Contains(pThis))
+		if (type->WeaponRange_DisallowWeapons.size() > 0 && type->WeaponRange_DisallowWeapons.Contains(pThis))
 			continue;
 
 		range = static_cast<int>(range * Math::max(type->WeaponRange_Multiplier, 0.0));

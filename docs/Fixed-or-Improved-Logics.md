@@ -203,10 +203,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges.
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge.
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge.
-- Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
+- Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter.
 - Fixed the bug that healing weapons could not automatically acquire aerial targets.
-- Allow voxel projectiles to use AnimPalette and FirersPalette.
+- Allow voxel projectiles to use `AnimPalette` and `FirersPalette`.
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc.
+- Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used.
+- Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead.
+- Fixed an issue that units on the slope tilted at an excessive angle.
 
 ## Fixes / interactions with other extensions
 
@@ -240,7 +243,7 @@ VoicePickup=    ; Sound entry
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
-- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or 8 cell distances divided by ROT, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend.
+- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or 8 cell distances divided by `ROT`, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
@@ -490,6 +493,24 @@ Grinding.PlayDieSound=true         ; boolean
 Grinding.Sound=                    ; Sound entry
 Grinding.Weapon=                   ; WeaponType
 Grinding.Weapon.RequiredCredits=0  ; integer
+```
+
+### Customize overpower logic
+
+- Now you can specific how building can be overpowerd.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]
+ElectricAssaultLevel=1    ; integer
+
+[SOMEBUILDING]
+Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
+Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
+```
+
+```{note}
+Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
 ### Exclude Factory from providing multiple factory bonus
@@ -886,6 +907,20 @@ AircraftLevelLightMultiplier=1.0  ; floating point value, percents or absolute
 JumpjetLevelLightMultiplier=0.0   ; floating point value, percents or absolute
 ```
 
+### Damaged speed customization
+
+- In vanilla, units using drive/ship loco will has hardcoded speed multiplier when damaged. Now you can customize it.
+- The max valuebale value is 1.0, you cannot make unit get faster on yellow condition by it.
+
+In `rulesmd.ini`:
+```ini
+[General]
+DamagedSpeed=0.75        ; floating point value, multiplier
+
+[SOMETECHNO]             ; TechnoType
+DamagedSpeed=            ; floating point value, multiplier
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -1083,7 +1118,7 @@ In `rulesmd.ini`:
 ```ini
 [General]
 SubterraneanHeight=-256  ; integer, height in leptons (1/256th of a cell)
-SubterraneanSpeed=7.5    ; floating point value
+SubterraneanSpeed=19     ; floating point value
 
 [SOMETECHNO]             ; TechnoType
 SubterraneanHeight=      ; integer, height in leptons (1/256th of a cell)
@@ -1392,10 +1427,10 @@ KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]           ; VehicleType
-Sinkable=               ; bool
-SinkSpeed=5             ; integer, lepton per frame
-Sinkable.SquidGrab=true    ; bool
+[SOMEVEHICLE]              ; VehicleType
+Sinkable=                  ; boolean
+SinkSpeed=5                ; integer, leptons per frame
+Sinkable.SquidGrab=true    ; boolean
 ```
 
 ### Stationary vehicles
@@ -1570,7 +1605,7 @@ Debris.Conventional=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                   ; WarheadType
-Rocker.AmplitudeMultiplier=1.0  ; double
+Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier
 Rocker.AmplitudeOverride=       ; integer
 ```
 

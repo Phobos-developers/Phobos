@@ -1398,9 +1398,10 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
-  - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected.
-    - `ForceWeapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `ForceWeapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0. Specifically, if a position has `ForceWeapon.InRange` set to -1 and `ForceWeapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
-    - If `ForceWeapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
+  - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
+    - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
+    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0. Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
+    - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
 
 In `rulesmd.ini`:
 ```ini
@@ -1412,6 +1413,9 @@ ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon,
 ForceWeapon.InRange=                            ; list of integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.InRange.Overrides=                  ; list of floating point value
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceAAWeapon.InRange=                          ; list of integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange.Overrides=                ; list of floating point value
+ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
 ```
 
 ### Initial spawns number
@@ -1551,8 +1555,8 @@ Promote.IncludeSpawns=false  ; boolean
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
@@ -1560,6 +1564,10 @@ In `rulesmd.ini`:
 [AudioVisual]
 Promote.VeteranAnimation=         ; AnimationType
 Promote.EliteAnimation=           ; AnimationType
+
+[SOMETECHNO]
+Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
+Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
 ```
 
 ### Raise alert when technos are taking damage
@@ -1625,7 +1633,7 @@ RecountBurst=       ; boolean
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
-  - Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+  - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
 ```ini
@@ -1687,7 +1695,7 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Fast access vehicle
 
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General]->NoQueueUpToEnter` or `[General]->NoQueueUpToUnload`.
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1903,19 +1911,23 @@ While this feature can provide better performance than a large `CellSpread` valu
 
 ### Fire weapon when kill
 
-- `KillWeapon` will be fired at the target TechnoType's location once it's been killed by this Warhead.
-  - `KillWeapon.AffectsHouses` is used to filter which houses targets can belong to be considered valid for KillWeapon.
-- Ìf a TechnoType has `SuppressKillWeapons` set to true, it will not trigger KillWeapon upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+- `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.
+- `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired.
+- `KillWeapon.AffectsHouses` and `KillWeapon.OnFirer.AffectsHouses` are used to filter which houses targets can belong to be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired in regardless of the target's house.
+- If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
  In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                   ; Warhead
-KillWeapon=                     ; WeaponType
-KillWeapon.AffectsHouses=all    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[SOMEWARHEAD]                           ; WarheadType
+KillWeapon=                             ; WeaponType
+KillWeapon.OnFirer=                     ; WeaponType
+KillWeapon.AffectsHouses=all            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.OnFirer.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 
-[SOMETECHNO]                    ; TechnoType
-SuppressKillWeapons=false       ; boolean
-SuppressKillWeapons.Types=      ; list of WeaponTypes
+[SOMETECHNO]                            ; TechnoType
+SuppressKillWeapons=false               ; boolean
+SuppressKillWeapons.Types=              ; List of WeaponTypes
 ```
 
 ### Generate credits on impact
@@ -2180,21 +2192,6 @@ Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.EndDelay=             ; integer, game frames
 ```
 
-### Weapon targeting filter
-
-![image](_static/images/weaponfilter.gif)
-*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWEAPON]         ; WeaponType
-CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-```
-
 ### Visual effect scatter
 
 - You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
@@ -2210,5 +2207,20 @@ VisualScatter=false     ; boolean
 ```
 
 ```{note}
-This function is only used as an additional scattering visual display, which is different from `BallisticScatter` and can be used simultaneously, without affecting the actual explosion position of the projectile.
+This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
+```
+
+### Weapon targeting filter
+
+![image](_static/images/weaponfilter.gif)
+*`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
+  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]         ; WeaponType
+CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```

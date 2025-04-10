@@ -116,7 +116,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
 		}
-		else if (!pTypeExt->ForceWeapon_InRange.empty())
+		else if (!pTypeExt->ForceWeapon_InRange.empty() || !pTypeExt->ForceAAWeapon_InRange.empty())
 		{
 			ForceWeaponInRangeTemp::SelectWeaponByRange = true;
 			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange();
