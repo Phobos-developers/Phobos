@@ -595,29 +595,33 @@ DEFINE_HOOK(0x73796B, UnitClass_ReceiveCommand_AmphibiousEnter, 0x7)
 }
 
 // Unit unload
-static inline bool CanUnloadLater(UnitClass* pTransport)
-{
-	return pTransport->Passengers.GetFirstPassenger()
-		&& (TechnoTypeExt::ExtMap.Find(pTransport->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload)
-			|| pTransport->GetCell()->LandType != LandType::Water);
-}
 
-DEFINE_HOOK(0x74004B, UnitClass_MouseOverObject_AmphibiousUnload, 0x6)
+DEFINE_HOOK(0x7400B5, UnitClass_MouseOverObject_AmphibiousUnload, 0x7)
 {
 	enum { ContinueCheck = 0x7400C6, CannotUnload = 0x7400BE };
 
+	GET(CellClass* const, pCell, EBX);
+
+	if (pCell->LandType == LandType::Water) // I don't know why WW made a reverse judgment here? Because of the coast/beach?
+		return ContinueCheck;
+
 	GET(UnitClass* const, pThis, ESI);
 
-	return CanUnloadLater(pThis) ? ContinueCheck : CannotUnload;
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
 }
 
-DEFINE_HOOK(0x70106A, TechnoClass_CanDeploySlashUnload_AmphibiousUnload, 0x6)
+DEFINE_HOOK(0x70107A, TechnoClass_CanDeploySlashUnload_AmphibiousUnload, 0x7)
 {
 	enum { ContinueCheck = 0x701087, CannotUnload = 0x700DCE };
 
+	GET(CellClass* const, pCell, EBP);
+
+	if (pCell->LandType != LandType::Water)
+		return ContinueCheck;
+
 	GET(UnitClass* const, pThis, ESI);
 
-	return !pThis->Owner->IsHumanPlayer || CanUnloadLater(pThis) ? ContinueCheck : CannotUnload;
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
 }
 
 DEFINE_HOOK(0x73D769, UnitClass_Mission_Unload_AmphibiousUnload, 0x7)
