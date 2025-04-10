@@ -1086,8 +1086,8 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			// Add your locomotor parsing here
 #ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
 			PARSE_IF_IS_PHOBOS_LOCO(Test);
-			PARSE_IF_IS_PHOBOS_LOCO(Skilled);
 #endif
+			PARSE_IF_IS_PHOBOS_LOCO(Skilled);
 
 #undef PARSE_IF_IS_PHOBOS_LOCO
 
