@@ -54,6 +54,7 @@
 #include <CRT.h>
 #include <LocomotionClass.h>
 #include <Locomotion/TestLocomotionClass.h>
+#include <Locomotion/SkilledLocomotionClass.h>
 
 namespace detail
 {
@@ -1085,6 +1086,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			// Add your locomotor parsing here
 #ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Add semantic parsing for loco
 			PARSE_IF_IS_PHOBOS_LOCO(Test);
+			PARSE_IF_IS_PHOBOS_LOCO(Skilled);
 #endif
 
 #undef PARSE_IF_IS_PHOBOS_LOCO

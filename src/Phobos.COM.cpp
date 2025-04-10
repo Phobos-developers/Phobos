@@ -3,7 +3,7 @@
 #include <Helpers/Macro.h>
 
 #include <Locomotion/TestLocomotionClass.h>
-
+#include <Locomotion/SkilledLocomotionClass.h>
 
 #ifdef CUSTOM_LOCO_EXAMPLE_ENABLED // Register the loco
 DEFINE_HOOK(0x6BD68D, WinMain_PhobosRegistrations, 0x6)
@@ -12,6 +12,7 @@ DEFINE_HOOK(0x6BD68D, WinMain_PhobosRegistrations, 0x6)
 
 	// Add new classes to be COM-registered below
 	RegisterFactoryForClass<TestLocomotionClass>();
+	RegisterFactoryForClass<SkilledLocomotionClass>();
 
 	Debug::Log("COM registration done!\n");
 

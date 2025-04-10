@@ -453,6 +453,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
 
+	this->Skilled_ReverseSpeed.Read(exINI, pSection, "Skilled.ReverseSpeed");
+	this->Skilled_FaceTargetRange.Read(exINI, pSection, "Skilled.FaceTargetRange");
+	this->Skilled_ConfrontEnemies.Read(exINI, pSection, "Skilled.ConfrontEnemies");
+	this->Skilled_RetreatDuration.Read(exINI, pSection, "Skilled.RetreatDuration");
+
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
 	this->BuildLimitGroup_Factor.Read(exINI, pSection, "BuildLimitGroup.Factor");
@@ -883,6 +888,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachEffects)
 
 		.Process(this->RecountBurst)
+
+		.Process(this->Skilled_ReverseSpeed)
+		.Process(this->Skilled_FaceTargetRange)
+		.Process(this->Skilled_ConfrontEnemies)
+		.Process(this->Skilled_RetreatDuration)
 
 		.Process(this->BuildLimitGroup_Types)
 		.Process(this->BuildLimitGroup_Nums)

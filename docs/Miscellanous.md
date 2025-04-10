@@ -78,6 +78,7 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 |Teleport | `{4A582747-9839-11d1-B709-00A024DDAFD1}` |
 |Mech     | `{55D141B8-DB94-11d1-AC98-006008055BB5}` |
 |Ship     | `{2BEA74E1-7CCA-11d3-BE14-00104B62A16C}` |
+|Skilled  | `{4A582751-9839-11d1-B709-00A024DDAFD1}` |
 
 ```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.

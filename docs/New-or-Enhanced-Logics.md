@@ -1698,6 +1698,29 @@ NoQueueUpToEnter=         ; boolean
 NoQueueUpToUnload=        ; boolean
 ```
 
+## Locomotor
+
+### Skilled Locomotor
+
+- `Skilled` locomotor (`{4A582751-9839-11d1-B709-00A024DDAFD1}`) is an improved `Drive` locomotor (`{4A582741-9839-11d1-B709-00A024DDAFD1}`) that can serve as a complete upper level replacement for it.
+- It fixes the issue where `Drive` cannot correctly crush objects during rapid turns.
+- It has smoother uphill and downhill dynamic visual effects.
+- It has the function of driving the unit backwards.
+  - `Skilled.ReverseSpeed` controls the speed ratio when reversing.
+  - `Skilled.FaceTargetRange` controls how close the unit is to its target, allowing reversing.
+  - `Skilled.ConfrontEnemies` controls whether to maitain the frontal movement towards the enemy within the aforementioned distance and no longer automatically selects by the current orientation.
+  - `Skilled.RetreatDuration` controls how long since the unit was last injured, allowing reversing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                  ; VehicleType
+Locomotor=Skilled              ; Locomotor
+Skilled.ReverseSpeed=0.85      ; floating point value
+Skilled.FaceTargetRange=16.0   ; floating point value
+Skilled.ConfrontEnemies=true   ; boolean
+Skilled.RetreatDuration=150    ; integer, game frames
+```
+
 ## Terrain
 
 ### Destroy animation & sound
