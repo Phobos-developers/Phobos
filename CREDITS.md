@@ -369,6 +369,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used
   - Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead
   - Fix an issue that units on the slope tilted at an excessive angle
+  - Enhanced reveal & gap warhead
   - Fix an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
