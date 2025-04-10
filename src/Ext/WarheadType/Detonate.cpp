@@ -85,7 +85,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
 			{
 				Sub_4ADEE0(0, 0);
-				MapClass::Instance.RevealArea1(const_cast<CoordStruct*>(&coords), reveal, pHouse, CellStruct::Empty, 0, 0, 0, 1);
+				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 0, 1);
 				Sub_4ADCD0(0, 0);
 				MapClass::Instance.sub_657CE0();
 				MapClass::Instance.MarkNeedsRedraw(2);
