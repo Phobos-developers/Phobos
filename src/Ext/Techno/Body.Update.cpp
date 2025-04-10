@@ -344,7 +344,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
 	const int transDelay = pEaterType->TransDelay;
 
-	if (transDelay < 0 || this->TiberiumEater_Timer.InProgress())
+	if (transDelay < 0 || (transDelay && this->TiberiumEater_Timer.InProgress()))
 		return;
 
 	const size_t frontSize = pEaterType->FrontOffset.size();
