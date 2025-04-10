@@ -33,7 +33,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateLaserTrails();
 	this->ApplyInterceptor();
 	this->EatPassengers();
-	this->UpdateTiberiumEater();
 	this->ApplySpawnLimitRange();
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
@@ -342,10 +341,10 @@ void TechnoExt::ExtData::EatPassengers()
 
 void TechnoExt::ExtData::UpdateTiberiumEater()
 {
-	const auto pThis = this->OwnerObject();
 	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
+	const int transDelay = pEaterType->TransDelay;
 
-	if (pEaterType->TransDelay < 0 || this->TiberiumEater_Timer.InProgress())
+	if (transDelay < 0 || this->TiberiumEater_Timer.InProgress())
 		return;
 
 	const size_t frontSize = pEaterType->FrontOffset.size();
@@ -355,6 +354,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 	if (!cellCount)
 		cellCount = 1;
 
+	const auto pThis = this->OwnerObject();
 	const auto pOwner = pThis->Owner;
 	CoordStruct flh {};
 	bool active = false;
@@ -377,14 +377,11 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 		if (!pCell)
 			continue;
 
-		auto cellCoords = pCell->GetCoords();
-		cellCoords.Z = std::max(pThis->Location.Z, cellCoords.Z);
-
 		if (const int contained = pCell->GetContainedTiberiumValue())
 		{
 			const int tiberiumValue = TiberiumClass::Array[pCell->GetContainedTiberiumIndex()]->Value;
 			const int tiberiumAmount = static_cast<int>(static_cast<double>(contained) / tiberiumValue);
-			const int amount = pEaterType->AmountPerCell ? std::min(pEaterType->AmountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
+			const int amount = pEaterType->AmountPerCell > 0 ? std::min(pEaterType->AmountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
 			pCell->ReduceTiberium(amount);
 			const float multiplier = pEaterType->CashMultiplier * (1.0f + pOwner->NumOrePurifiers * RulesClass::Instance->PurifierBonus);
 			const int value = static_cast<int>(std::round(amount * tiberiumValue * multiplier));
@@ -392,7 +389,11 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			active = true;
 
 			if (displayCash)
+			{
+				auto cellCoords = pCell->GetCoords();
+				cellCoords.Z = std::max(pThis->Location.Z, cellCoords.Z);
 				FlyingStrings::AddMoneyString(value, pOwner, pEaterType->DisplayToHouse, cellCoords, pEaterType->DisplayOffset);
+			}
 
 			if (animCount == 0)
 				continue;
@@ -416,18 +417,16 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 
 			if (pAnimType)
 			{
-				if (auto pAnim = GameCreate<AnimClass>(pAnimType, pos))
-				{
-					pAnim->Owner = pThis->Owner;
+				const auto pAnim = GameCreate<AnimClass>(pAnimType, pos);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 
-					if (pEaterType->AnimMove)
-						pAnim->SetOwnerObject(pThis);
-				}
+				if (pEaterType->AnimMove)
+					pAnim->SetOwnerObject(pThis);
 			}
 		}
 	}
 
-	if (active)
+	if (active && transDelay > 0)
 		this->TiberiumEater_Timer.Start(pEaterType->TransDelay);
 }
 

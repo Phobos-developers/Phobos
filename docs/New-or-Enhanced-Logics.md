@@ -1701,8 +1701,8 @@ NoQueueUpToUnload=        ; boolean
 ### Tiberium eater
 
 - Units can convert the ore underneath them into cash in real time, like GDI's EPIC unit MARV in Command & Conquer 3 Kane's Wrath, when `TiberiumEater.TransDelay` is 0 or larger.
-- `TiberiumEater.TransDelay` specifies the interval in game frames between two mining "processes".
-- `TiberiumEater.AmountPerCell` controls how many "bails" of ore can be mined at each cell at once.
+- `TiberiumEater.TransDelay` specifies the interval in game frames between two mining "processes", 0 means eat in every frame.
+- `TiberiumEater.AmountPerCell` controls how many "bails" of ore can be mined at each cell at once, <= 0 means no limit.
 - By default, ore mined this way is worth the same as if it was harvested and refined the normal way. This can be adjusted with `TiberiumEater.CashMultiplier`.
 - `TiberiumEater.Display=true` will create a flying text displaying the total cash amount received each mining process. `TiberiumEater.Display.Houses` controlls who can see this text.
 - An animation will be played at each interval at each mined cell. If `TiberiumEater.Anims` contains 8 entries, then an entry will be picked according to unit facing. Otherwise, an entry will be chosen at random.
