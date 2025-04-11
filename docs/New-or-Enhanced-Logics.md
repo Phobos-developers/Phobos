@@ -2016,13 +2016,13 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-- Warheads can now reveal the entire map on impact.
+- Warheads can now reveal an area or the entire map on impact.
   - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-SpySat=false   ; boolean
+Reveal=0     ; integer - cell radius, negative values mean reveal the entire map
 ```
 
 ### Sell or undeploy building on impact
@@ -2043,13 +2043,13 @@ BuildingUndeploy.Leave=false         ; boolean
 
 ### Shroud map for enemies on impact
 
-- Warheads can now shroud the entire map on impact.
+- Warheads can now shroud an area or the entire map on impact.
   - Shroud only applies to enemies of the warhead owner.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-BigGap=false   ; boolean
+CreateGap=0     ; integer - cell radius, negative values mean shroud the entire map
 ```
 
 ### Spawn powerup crate
