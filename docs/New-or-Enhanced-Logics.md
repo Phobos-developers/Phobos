@@ -735,7 +735,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Bombard`, it refers to the initial speed of the projectile.
     - In `Trajectory=Missile`, it refers to the final speed of the projectile. `Trajectory.Speed` will be fixed at 192 by setting `Trajectory.Missile.UniqueCurve=true`.
     - In `Trajectory=Engrave`, it refers to the horizontal engrave speed of the projectile and it cannot exceed 128. Recommend set as about 40.
-    - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes 0, 3, or 5.
+    - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes `Speed`, `SpeedAndHeight`, or `SpeedAndAngle`.
     - In `Trajectory=Tracing`, it refers to the moving speed of the projectile.
   - `Trajectory.Duration` controls the duration the projectile can exist, and at the end of the time, the projectile will detonate. If it is a non positive number, there will be no timing.
     - In `Trajectory=Engrave`, if it is a non positive number, automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration. At this point, `Trajectory.Engrave.TargetCoord` can be regarded as the endpoint coordinates of the cutting line segment.
