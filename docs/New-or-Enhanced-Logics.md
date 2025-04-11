@@ -1732,6 +1732,38 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
+### Directional armor
+
+- The damage suffered by the vehicle can now be affected by the hit direction.
+- The front and rear judgment ranges are always symmetrical. A front angle of 0.5 indicates that the front direction is the axis, and the 45 degree angle range on both sides belongs to the front judgment range.
+A front angle of 1.0 indicates that the 90 degree angle range on both sides belongs to the front judgment range;
+- The lateral range refers to the remaining angle range after excluding the front and back sides.
+- The warhead needs to have 'Directional=true' to enable this effect.
+- `Directional. Multiplier is an additional multiplier used to control the intensity of the effect.
+
+In `rulesmd.ini`
+```ini
+[CombatDamage]
+DirectionalArmor=false                     ; boolean
+DirectionalArmor.FrontMultiplier=1.0   ; float
+DirectionalArmor.SideMultiplier=1.0    ; float
+DirectionalArmor.BackMultiplier=1.0   ; float
+DirectionalArmor.FrontField=0.5         ; float
+DirectionalArmor.BackField=0.5         ; float
+
+[SOMEVEHICLE]                         ; VehicleType
+DirectionalArmor=                     ; boolean
+DirectionalArmor.FrontMultiplier=   ; float
+DirectionalArmor.SideMultiplier=    ; float
+DirectionalArmor.BackMultiplier=   ; float
+DirectionalArmor.FrontField=         ; float
+DirectionalArmor.BackField=         ; float
+
+[SOMEWARHEAD]
+Directional=false                          ; boolean
+Directional.Multiplier=1.0               ; float
+```
+
 ## Warheads
 
 ```{hint}

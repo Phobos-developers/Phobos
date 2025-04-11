@@ -21,6 +21,8 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 	auto const pOwner = pBullet->Owner;
 	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
 	auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
+
+	pWHExt->HitDirection = pBulletExt->BulletDirection;
 	pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	pWHExt->InDamageArea = false;
 

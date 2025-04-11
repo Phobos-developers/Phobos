@@ -204,6 +204,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DamageAlliesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier");
 	this->DamageEnemiesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier");
 
+	this->DirectionalArmor.Read(exINI, GameStrings::CombatDamage, "DirectionalArmor");
+	this->DirectionalArmor_FrontMultiplier.Read(exINI, GameStrings::CombatDamage, "DirectionalArmor.FrontMultiplier");
+	this->DirectionalArmor_SideMultiplier.Read(exINI, GameStrings::CombatDamage, "DirectionalArmor.SideMultiplier");
+	this->DirectionalArmor_BackMultiplier.Read(exINI, GameStrings::CombatDamage, "DirectionalArmor.BackMultiplier");
+	this->DirectionalArmor_FrontField.Read(exINI, GameStrings::CombatDamage, "DirectionalArmor.FrontField");
+	this->DirectionalArmor_BackField.Read(exINI, GameStrings::CombatDamage, "DirectionalArmor.BackField");
+
 	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
 	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
 
@@ -429,6 +436,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
+		.Process(this->DirectionalArmor)
+		.Process(this->DirectionalArmor_FrontMultiplier)
+		.Process(this->DirectionalArmor_SideMultiplier)
+		.Process(this->DirectionalArmor_BackMultiplier)
+		.Process(this->DirectionalArmor_FrontField)
+		.Process(this->DirectionalArmor_BackField)
 		.Process(this->AircraftLevelLightMultiplier)
 		.Process(this->JumpjetLevelLightMultiplier)
 		.Process(this->VoxelLightSource)

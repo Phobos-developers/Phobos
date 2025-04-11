@@ -29,6 +29,9 @@ public:
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 
+		bool ShouldDirectional;
+		int BulletDirection;
+
 		TrajectoryPointer Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
@@ -42,6 +45,8 @@ public:
 			, Trajectory { nullptr }
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
+			, ShouldDirectional { false }
+			, BulletDirection { -1 }
 		{ }
 
 		virtual ~ExtData() = default;
