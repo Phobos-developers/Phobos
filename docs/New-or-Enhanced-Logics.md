@@ -1929,25 +1929,27 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
 ```
 
-### Fire weapon when kill
+### Fire weapon when Warhead kills something
 
 - `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.
 - `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired.
-- `KillWeapon.AffectsHouses` and `KillWeapon.OnFirer.AffectsHouses` are used to filter which houses targets can belong to be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
-  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired in regardless of the target's house.
+- `KillWeapon.AffectsHouses` / `KillWeapon.OnFirer.AffectsHouses` and `KillWeapon.Affects` / `KillWeapon.OnFirer.Affects` can be used to filter which houses targets can belong to and which types of targets are be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired regardless of the target's house or type.
 - If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
  In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                           ; WarheadType
-KillWeapon=                             ; WeaponType
-KillWeapon.OnFirer=                     ; WeaponType
-KillWeapon.AffectsHouses=all            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.OnFirer.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-
-[SOMETECHNO]                            ; TechnoType
-SuppressKillWeapons=false               ; boolean
-SuppressKillWeapons.Types=              ; List of WeaponTypes
+[SOMEWARHEAD]                         ; WarheadType
+KillWeapon=                           ; WeaponType
+KillWeapon.OnFirer=                   ; WeaponType
+KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+     
+[SOMETECHNO]                          ; TechnoType
+SuppressKillWeapons=false             ; boolean
+SuppressKillWeapons.Types=            ; List of WeaponTypes
 ```
 
 ### Generate credits on impact
