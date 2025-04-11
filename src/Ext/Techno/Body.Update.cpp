@@ -1041,12 +1041,15 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	if (markForRedraw)
 		pThis->MarkForRedraw();
 
-	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
-
-	for (auto const& pWeapon : expireWeapons)
+	if (expireWeapons.size())
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const coords = pThis->GetCoords();
+		auto const pOwner = pThis->Owner;
+
+		for (auto const& pWeapon : expireWeapons)
+		{
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		}
 	}
 }
 
@@ -1087,12 +1090,15 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 		}
 	}
 
-	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
-
-	for (auto const& pWeapon : expireWeapons)
+	if (expireWeapons.size())
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const coords = pThis->GetCoords();
+		auto const pOwner = pThis->Owner;
+
+		for (auto const& pWeapon : expireWeapons)
+		{
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		}
 	}
 
 	// Add new ones.

@@ -259,12 +259,15 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 		}
 	}
 
-	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
-
-	for (auto const& pWeapon : expireWeapons)
+	if (expireWeapons.size())
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const coords = pThis->GetCoords();
+		auto const pOwner = pThis->Owner;
+
+		for (auto const& pWeapon : expireWeapons)
+		{
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		}
 	}
 
 	return 0;

@@ -585,6 +585,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	}
 
 	int currentTypeCount = 0;
+	int cap = pType->Cumulative_MaxCount > -1 ? pType->Cumulative_MaxCount : INT_MAX;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
 	cumulativeMatches.reserve(targetAEs.size());
@@ -597,7 +598,6 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		{
 			currentTypeCount++;
 			match = attachEffect;
-			int cap = pType->Cumulative_MaxCount > -1 ? pType->Cumulative_MaxCount : INT_MAX;
 
 			if (!pType->Cumulative)
 			{
@@ -613,7 +613,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 		}
 	}
 
-	if (pType->Cumulative)
+	if (cumulativeMatches.size() > 0)
 	{
 		if (pType->Cumulative_MaxCount >= 0 && currentTypeCount >= pType->Cumulative_MaxCount)
 		{
@@ -626,18 +626,15 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			}
 			else
 			{
-				if (cumulativeMatches.size() > 0)
+				AttachEffectClass* best = nullptr;
+
+				for (auto const& ae : cumulativeMatches)
 				{
-					AttachEffectClass* best = nullptr;
-
-					for (auto const& ae : cumulativeMatches)
-					{
-						if (!best || ae->Duration < best->Duration)
-							best = ae;
-					}
-
-					best->RefreshDuration(attachParams.DurationOverride);
+					if (!best || ae->Duration < best->Duration)
+						best = ae;
 				}
+
+				best->RefreshDuration(attachParams.DurationOverride);
 			}
 
 			return nullptr;
@@ -816,13 +813,15 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		}
 	}
 
-
-	auto const coords = pTarget->GetCoords();
-	auto const pOwner = pTarget->Owner;
-
-	for (auto const& pWeapon : expireWeapons)
+	if (expireWeapons.size())
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
+		auto const coords = pTarget->GetCoords();
+		auto const pOwner = pTarget->Owner;
+
+		for (auto const& pWeapon : expireWeapons)
+		{
+			WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
+		}
 	}
 
 	return detachedCount;

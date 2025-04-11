@@ -132,9 +132,9 @@ public:
 			, SkipWeaponPicking { true }
 		{ }
 
-		int GetBurstDelay(int burstIndex) const;
+		inline int GetBurstDelay(int burstIndex) const;
 
-		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
+		inline bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
 
 		virtual ~ExtData() = default;
 
