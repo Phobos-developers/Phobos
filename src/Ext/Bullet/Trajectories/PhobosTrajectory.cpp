@@ -990,24 +990,6 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x4666F7, BulletClass_Update_TrajectoriesEarlyUpdate, 0x6)
-{
-	enum { Detonate = 0x467E53 };
-
-	GET(BulletClass* const, pThis, EBP);
-
-	const auto pExt = BulletExt::ExtMap.Find(pThis);
-	bool detonate = false;
-
-	if (const auto pTraj = pExt->Trajectory.get())
-		detonate = pTraj->OnEarlyUpdate();
-
-	if (detonate && !pThis->SpawnNextAnim)
-		return Detonate;
-
-	return 0;
-}
-
 DEFINE_HOOK(0x46745C, BulletClass_Update_TrajectoriesVelocityUpdate, 0x7)
 {
 	GET(BulletClass* const, pThis, EBP);
@@ -1017,20 +999,22 @@ DEFINE_HOOK(0x46745C, BulletClass_Update_TrajectoriesVelocityUpdate, 0x7)
 	const auto pExt = BulletExt::ExtMap.Find(pThis);
 
 	if (const auto pTraj = pExt->Trajectory.get())
+	{
 		pTraj->OnVelocityUpdate(pSpeed, pPosition);
 
-	// Trajectory can use Velocity only for turning Image's direction
-	// The true position in the next frame will be calculate after here
-	if (pExt->Trajectory && pExt->LaserTrails.size())
-	{
-		const auto futureCoords = PhobosTrajectory::Vector2Coord(*pSpeed + *pPosition);
-
-		for (auto& trail : pExt->LaserTrails)
+		// Trajectory can use Velocity only for turning Image's direction
+		// The true position in the next frame will be calculate after here
+		if (pExt->LaserTrails.size())
 		{
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = pThis->Location;
+			const auto futureCoords = PhobosTrajectory::Vector2Coord(*pSpeed + *pPosition);
 
-			trail.Update(futureCoords);
+			for (auto& trail : pExt->LaserTrails)
+			{
+				if (!trail.LastLocation.isset())
+					trail.LastLocation = pThis->Location;
+
+				trail.Update(futureCoords);
+			}
 		}
 	}
 
