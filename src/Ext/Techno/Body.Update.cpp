@@ -342,9 +342,13 @@ void TechnoExt::ExtData::EatPassengers()
 void TechnoExt::ExtData::UpdateTiberiumEater()
 {
 	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
+
+	if (!pEaterType)
+		return;
+
 	const int transDelay = pEaterType->TransDelay;
 
-	if (transDelay < 0 || (transDelay && this->TiberiumEater_Timer.InProgress()))
+	if (transDelay && this->TiberiumEater_Timer.InProgress())
 		return;
 
 	const size_t frontSize = pEaterType->FrontOffset.size();
@@ -426,7 +430,7 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 		}
 	}
 
-	if (active && transDelay > 0)
+	if (active && transDelay)
 		this->TiberiumEater_Timer.Start(pEaterType->TransDelay);
 }
 
