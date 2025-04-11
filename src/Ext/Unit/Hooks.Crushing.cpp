@@ -14,10 +14,14 @@ DEFINE_HOOK(addr, ##name##_IsCrusher##mode##, size) \
 	return TechnoExt::GetCrushLevel(pThis) > 0 ? retn : retn2; \
 }
 
-Hook_IsCrusher(0x4B19B8, DriveLocomotionClass_ProcessMoving, , 0x8, ECX, 0x4B19D8, 0x4B1A04)
-Hook_IsCrusher(0x5B1034, MechLocomotionClass_ProcessMoving, , 0x8, ECX, 0x5B1054, 0x5B108A)
-Hook_IsCrusher(0x5B1418, MechLocomotionClass_ProcessMoving, 2, 0x8, ECX, 0x5B1438, 0x5B146E)
+Hook_IsCrusher(0x4B3504, DriveLocomotionClass_PassableCheck, , 0x8, ECX, 0x4B3516, 0x4B3525)
+Hook_IsCrusher(0x4B414F, DriveLocomotionClass_PassableCheck, 2, 0x8, ECX, 0x4B4161, 0x4B4179)
+Hook_IsCrusher(0x5B098E, MechLocomotionClass_ProcessMoving, , 0x8, ECX, 0x5B09A0, 0x5B09AF)
+Hook_IsCrusher(0x5B1034, MechLocomotionClass_ProcessMoving, 2, 0x8, ECX, 0x5B1054, 0x5B108A)
+Hook_IsCrusher(0x5B1418, MechLocomotionClass_ProcessMoving, 3, 0x8, ECX, 0x5B1438, 0x5B146E)
 Hook_IsCrusher(0x6A1044, ShipLocomotionClass_ProcessMoving, , 0x8, ECX, 0x6A1064, 0x6A10B9)
+Hook_IsCrusher(0x6A2B53, ShipLocomotionClass_PassableCheck, , 0x8, ECX, 0x6A2B65, 0x6A2B74)
+Hook_IsCrusher(0x6A377B, ShipLocomotionClass_PassableCheck, 2, 0x8, ECX, 0x6A378D, 0x6A37A5)
 Hook_IsCrusher(0x73AFEB, UnitClass_PerCellProcess, , 0x6, EBP, 0x73B002, 0x73B074)
 Hook_IsCrusher(0x73FC6C, UnitClass_IsCellOccupied, , 0x6, EBX, 0x73FD37, 0x73FC91)
 Hook_IsCrusher(0x741733, UnitClass_CrushCell, , 0x6, EDI, 0x741754, 0x74195E)
@@ -66,7 +70,17 @@ DEFINE_HOOK(0x73F42E, UnitClass_IsCellOccupied_CrushWall, 0x6)
 	return pThis->Type->MovementZone == MovementZone::CrusherAll || TechnoExt::GetCrushLevel(pThis) > RulesExt::Global()->WallCrushableLevel ? CanCrush : CannotCrush;
 }
 
-DEFINE_HOOK(0x4B1A1B, DriveLocomotionClass_4B0F20_CrusherAll, 0x8)
+DEFINE_HOOK(0x4B19B8, DriveLocomotionClass_ProcessMoving_CrushWall, 0x8)
+{
+	enum { CanCrush = 0x4B19E2, CannotCrush = 0x4B1A04 };
+
+	GET(FootClass*, pLinkedTo, ECX);
+	GET(OverlayTypeClass*, pOverlay, ESI);
+
+	return pOverlay->Wall && TechnoExt::GetCrushLevel(pLinkedTo) > RulesExt::Global()->WallCrushableLevel ? CanCrush : CannotCrush;
+}
+
+DEFINE_HOOK(0x4B1A1B, DriveLocomotionClass_ProcessMoving_CrusherAll, 0x8)
 {
 	enum { CanCrush = 0x4B1A2C, CannotCrush = 0x4B1A77 };
 
