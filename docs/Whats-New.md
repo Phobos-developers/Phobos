@@ -357,6 +357,7 @@ New:
 - [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
 - Promotion animation deglobalization (by Ollerus)
 - Enhanced reveal & gap warhead (by NetsuNegi)
+- Forcing specific weapon by range (by Ollerus)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
