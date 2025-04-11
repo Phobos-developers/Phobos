@@ -22,16 +22,6 @@ void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, dou
 	TechnoTypeExt::ExtMap.Find(pType)->ApplyTurretOffset(mtx, factor);
 }
 
-DEFINE_HOOK(0x6F3C56, TechnoClass_GetFLH_TurretMultiOffset, 0x0)
-{
-	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xD8, -0x90));
-	GET(TechnoTypeClass*, technoType, EDX);
-
-	TechnoTypeExt::ApplyTurretOffset(technoType, mtx);
-
-	return 0x6F3C6D;
-}
-
 DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
 {
 	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xCC, -0x90));
@@ -53,7 +43,6 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 
 	return 0x73B790;
 }
-
 
 DEFINE_HOOK(0x73BA4C, UnitClass_DrawVXL_TurretMultiOffset1, 0x0)
 {
@@ -754,4 +743,28 @@ Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x749CAC, BounceClass_ShadowMatrix);
+#pragma endregion
+
+#pragma region voxel_ramp_matrix
+
+// I don't know how can WW miscalculated
+// In fact, there should be three different degrees of tilt angles
+// - EBX -> atan((2*104)/(256√2)) should only be used on the steepest slopes (13-16)
+// - EBP -> atan(104/256) should be used on the most common slopes (1-4)
+// - A smaller radian atan(104/(256√2)) should be use to other slopes (5-12)
+// But this position is too far ahead, I can't find a good way to solve it perfectly
+// Using hooks and filling in floating-point numbers will cause the register to reset to zero
+// So I have to do it this way for now, make changes based on the existing data
+// Thanks to NetsuNegi for providing a simpler patch method to replace the hook method
+DEFINE_PATCH(0x75546D, 0x55) // push ebp
+DEFINE_PATCH(0x755484, 0x55) // push ebp
+DEFINE_PATCH(0x7554A1, 0x55) // push ebp
+DEFINE_PATCH(0x7554BE, 0x55) // push ebp
+DEFINE_PATCH(0x755656, 0x55) // push ebp
+DEFINE_PATCH(0x755677, 0x55) // push ebp
+DEFINE_PATCH(0x755698, 0x55) // push ebp
+DEFINE_PATCH(0x7556B9, 0x55) // push ebp
+// Although it is not the perfectest
+// It can still solve the most common situations on slopes - CrimRecya
+
 #pragma endregion
