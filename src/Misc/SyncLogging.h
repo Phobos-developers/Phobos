@@ -153,7 +153,6 @@ private:
 	static void WriteMissionOverrides(FILE* const pLogFile, int frameDigits);
 	static void WriteAnimCreations(FILE* const pLogFile, int frameDigits);
 public:
-	static bool HooksDisabled;
 	static int AnimCreations_HighestX;
 	static int AnimCreations_HighestY;
 	static int AnimCreations_HighestZ;
