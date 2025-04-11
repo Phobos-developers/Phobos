@@ -1747,21 +1747,21 @@ In `rulesmd.ini`
 DirectionalArmor=false                     ; boolean
 DirectionalArmor.FrontMultiplier=1.0   ; float
 DirectionalArmor.SideMultiplier=1.0    ; float
-DirectionalArmor.BackMultiplier=1.0   ; float
-DirectionalArmor.FrontField=0.5         ; float
+DirectionalArmor.BackMultiplier=1.0    ; float
+DirectionalArmor.FrontField=0.5        ; float
 DirectionalArmor.BackField=0.5         ; float
 
-[SOMEVEHICLE]                         ; VehicleType
-DirectionalArmor=                     ; boolean
-DirectionalArmor.FrontMultiplier=   ; float
-DirectionalArmor.SideMultiplier=    ; float
-DirectionalArmor.BackMultiplier=   ; float
-DirectionalArmor.FrontField=         ; float
-DirectionalArmor.BackField=         ; float
+[SOMEVEHICLE]                          ; VehicleType
+DirectionalArmor=                      ; boolean
+DirectionalArmor.FrontMultiplier=      ; float
+DirectionalArmor.SideMultiplier=       ; float
+DirectionalArmor.BackMultiplier=       ; float
+DirectionalArmor.FrontField=           ; float
+DirectionalArmor.BackField=            ; float
 
 [SOMEWARHEAD]
-Directional=false                          ; boolean
-Directional.Multiplier=1.0               ; float
+Directional=false                      ; boolean
+Directional.Multiplier=1.0             ; float
 ```
 
 ## Warheads
