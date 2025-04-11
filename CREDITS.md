@@ -431,6 +431,8 @@ This page lists all the individual contributions to the project by their author.
   - Laser, electric bolt and rad beam scatter
   - Fix an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
   - Fix an issue that units on the slope tilted at an excessive angle
+  - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
+  - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
