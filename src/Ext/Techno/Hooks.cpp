@@ -754,12 +754,20 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	if (!pTechno)
 		return 0;
 
-	bool hideByShroud = isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer();
-	auto pType = pTechno->GetTechnoType();
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	bool hideByType = EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(pType->RadarInvisible ? AffectedHouse::Enemies : AffectedHouse::None), pTechno->Owner, HouseClass::CurrentPlayer);
+	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
+		return Invisible;
 
-	return (hideByShroud || hideByType) ? Invisible : GoOtherChecks;
+	auto pType = pTechno->GetTechnoType();
+
+	if (pType->RadarInvisible)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
+			return Invisible;
+	}
+
+	return GoOtherChecks;
 }
 
 #pragma endregion
