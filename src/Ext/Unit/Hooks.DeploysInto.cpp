@@ -207,8 +207,8 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	{
 		const auto isoTileTypeIndex = pCell->IsoTileTypeIndex;
 
-		if (isoTileTypeIndex >= 0 && isoTileTypeIndex < IsometricTileTypeClass::Array.Count
-			&& !IsometricTileTypeClass::Array.Items[isoTileTypeIndex]->Morphable)
+		if (isoTileTypeIndex >= 0 && isoTileTypeIndex < IsometricTileTypeClass::Array->Count
+			&& !IsometricTileTypeClass::Array->Items[isoTileTypeIndex]->Morphable)
 		{
 			return CanNotExistHere;
 		}
