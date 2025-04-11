@@ -22,20 +22,30 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
 	auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
 
-	pWHExt->HitDirection = pBulletExt->BulletDirection;
 	pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	pWHExt->InDamageArea = false;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x469AA4, BulletClass_Detonate_ResetHitDirection, 0x5)
+DEFINE_HOOK(0x469A69, BulletClass_Detonate_DamageArea, 0x6)
 {
-	GET(BulletClass* const, pBullet, ESI);
+	enum { SkipGameCode = 0x469A88 };
 
-	WarheadTypeExt::ExtMap.Find(pBullet->WH)->HitDirection = -1;
+	GET(BulletClass*, pBullet, ESI);
+	GET(TechnoClass*, pSourceTechno, EAX);
+	GET(int, damage, EDX);
+	GET_BASE(CoordStruct*, coords, 0x8);
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pSourceHouse = pSourceTechno ? pSourceTechno->Owner : pBulletExt->FirerHouse;
+	const auto pWH = pBullet->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	return 0;
+	pWHExt->HitDirection = pBulletExt->BulletDirection;
+	R->EAX(MapClass::Instance.DamageArea(*coords, damage, pSourceTechno, pWH, true, pSourceHouse));
+	pWHExt->HitDirection = -1;
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
