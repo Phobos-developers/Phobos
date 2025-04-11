@@ -215,6 +215,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash.
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error
+- Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
 
 ## Fixes / interactions with other extensions
 
