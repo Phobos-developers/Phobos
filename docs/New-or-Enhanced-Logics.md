@@ -1748,8 +1748,8 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 - The front and rear judgment ranges are always symmetrical. A front angle of 0.5 indicates that the front direction is the axis, and the 45 degree angle range on both sides belongs to the front judgment range.
 A front angle of 1.0 indicates that the 90 degree angle range on both sides belongs to the front judgment range;
 - The lateral range refers to the remaining angle range after excluding the front and back sides.
-- The warhead needs to have 'Directional=true' to enable this effect.
-- `Directional. Multiplier is an additional multiplier used to control the intensity of the effect.
+- The warhead needs to have `Directional=true` to enable this effect.
+- `Directional.Multiplier` is an additional multiplier used to control the intensity of the effect.
 
 In `rulesmd.ini`
 ```ini
