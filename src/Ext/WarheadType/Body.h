@@ -113,8 +113,8 @@ public:
 		NullableVector<ShieldTypeClass*> Shield_Respawn_Types;
 		NullableVector<ShieldTypeClass*> Shield_SelfHealing_Types;
 
-		Valueable<bool> Directional { false };
-		Valueable<double> Directional_Multiplier { 1.0 };
+		Valueable<bool> Directional;
+		Valueable<double> Directional_Multiplier;
 
 		Valueable<int> NotHuman_DeathSequence;
 		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
@@ -286,6 +286,9 @@ public:
 			, Shield_Break_Types {}
 			, Shield_Respawn_Types {}
 			, Shield_SelfHealing_Types {}
+
+			, Directional { false}
+			, Directional_Multiplier { 1.0 }
 
 			, SpawnsCrate_Types {}
 			, SpawnsCrate_Weights {}

@@ -41,6 +41,7 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 		GET_BASE(HouseClass*, pHouse, 0x14);
 
 		auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
+		pWHExt->HitDirection = -1;
 		pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
 	}
 
