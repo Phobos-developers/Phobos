@@ -51,7 +51,6 @@ public:
 		bool LastRearmWasFullDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
-		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		WeaponTypeClass* LastWeaponType;
 		CoordStruct LastWeaponFLH;
 		int CurrentTracingCount;
@@ -100,7 +99,6 @@ public:
 			, LastRearmWasFullDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
-			, CanCurrentlyDeployIntoBuilding { false }
 			, LastWeaponType {}
 			, LastWeaponFLH {}
 			, CurrentTracingCount { 0 }
@@ -148,6 +146,7 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
+		int ApplyForceWeaponInRange();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
@@ -169,6 +168,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static UnitClass* Deployer;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
