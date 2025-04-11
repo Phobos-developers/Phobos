@@ -787,6 +787,7 @@ Trajectory.CreateCapacity=-1          ; integer
 Trajectory.BulletROT=0                ; integer
 Trajectory.BulletFacing=              ; Bullet facing enumeration (Velocity|Spin|Stable|Target|Destination|FirerBody|FirerTurret)
 Trajectory.RetargetRadius=0           ; floating point value
+Trajectory.RetargetInterval=1         ; integer
 Trajectory.Synchronize=false          ; boolean
 Trajectory.PeacefulVanish=            ; boolean
 Trajectory.ApplyRangeModifiers=false  ; boolean
