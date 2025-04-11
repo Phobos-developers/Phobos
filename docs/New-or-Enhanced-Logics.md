@@ -1628,23 +1628,6 @@ RecountBurst=false  ; boolean
 RecountBurst=       ; boolean
 ```
 
-### Jumpjet Tilts While Moving
-
-- Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
-- The maximum tilt angle will not exceed 45 degrees.
-  - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
-  - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
-
-In `rulesmd.ini`:
-```ini
-[SOMEUNIT]                              ; UnitType, with Locomotor=Jumpjet
-JumpjetTilt=false                       ; boolean
-JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
-JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
-JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
-JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
-```
-
 ### Revenge weapon
 
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
@@ -1757,6 +1740,26 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Jumpjet Tilts While Moving
+
+![image](_static/images/jumpjet-tilt.gif)
+*Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+
+- Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
+- The maximum tilt angle will not exceed 45 degrees.
+  - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
+  - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+JumpjetTilt=false                       ; boolean
+JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
+JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
+JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
+JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
 ## Warheads
