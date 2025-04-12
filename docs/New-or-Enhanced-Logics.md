@@ -1398,14 +1398,24 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
+  - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
+    - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
+    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0. Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
+    - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.UnderEMP=-1         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+[SOMETECHNO]                                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1                  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Cloaked=-1                          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Disguised=-1                        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.InRange.Overrides=                  ; List of floating-point values
+ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
+ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
 ```
 
 ### Initial spawns number
@@ -1545,8 +1555,8 @@ Promote.IncludeSpawns=false  ; boolean
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
@@ -1554,6 +1564,10 @@ In `rulesmd.ini`:
 [AudioVisual]
 Promote.VeteranAnimation=         ; AnimationType
 Promote.EliteAnimation=           ; AnimationType
+
+[SOMETECHNO]
+Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
+Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
 ```
 
 ### Raise alert when technos are taking damage
@@ -1728,6 +1742,26 @@ WaterImage.ConditionRed=              ; VehicleType entry
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
 ```
 
+### Jumpjet Tilts While Moving
+
+![image](_static/images/jumpjet-tilt.gif)
+*Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+
+- Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
+- The maximum tilt angle will not exceed 45 degrees.
+  - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
+  - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+JumpjetTilt=false                       ; boolean
+JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
+JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
+JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
+JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
+```
+
 ## Warheads
 
 ```{hint}
@@ -1895,25 +1929,27 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
 ```
 
-### Fire weapon when kill
+### Fire weapon when Warhead kills something
 
 - `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.
 - `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired.
-- `KillWeapon.AffectsHouses` and `KillWeapon.OnFirer.AffectsHouses` are used to filter which houses targets can belong to be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
-  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired in regardless of the target's house.
+- `KillWeapon.AffectsHouses` / `KillWeapon.OnFirer.AffectsHouses` and `KillWeapon.Affects` / `KillWeapon.OnFirer.Affects` can be used to filter which houses targets can belong to and which types of targets are be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired regardless of the target's house or type.
 - If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
  In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                           ; WarheadType
-KillWeapon=                             ; WeaponType
-KillWeapon.OnFirer=                     ; WeaponType
-KillWeapon.AffectsHouses=all            ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.OnFirer.AffectsHouses=all    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+[SOMEWARHEAD]                         ; WarheadType
+KillWeapon=                           ; WeaponType
+KillWeapon.OnFirer=                   ; WeaponType
+KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 
-[SOMETECHNO]                            ; TechnoType
-SuppressKillWeapons=false               ; boolean
-SuppressKillWeapons.Types=              ; List of WeaponTypes
+[SOMETECHNO]                          ; TechnoType
+SuppressKillWeapons=false             ; boolean
+SuppressKillWeapons.Types=            ; List of WeaponTypes
 ```
 
 ### Generate credits on impact
@@ -2002,13 +2038,13 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-- Warheads can now reveal the entire map on impact.
+- Warheads can now reveal an area or the entire map on impact.
   - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-SpySat=false   ; boolean
+Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
 ```
 
 ### Sell or undeploy building on impact
@@ -2029,13 +2065,13 @@ BuildingUndeploy.Leave=false         ; boolean
 
 ### Shroud map for enemies on impact
 
-- Warheads can now shroud the entire map on impact.
+- Warheads can now shroud an area or the entire map on impact.
   - Shroud only applies to enemies of the warhead owner.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-BigGap=false   ; boolean
+CreateGap=0    ; integer - cell radius, negative values mean shroud the entire map
 ```
 
 ### Spawn powerup crate
