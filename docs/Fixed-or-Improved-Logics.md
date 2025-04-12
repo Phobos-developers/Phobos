@@ -215,6 +215,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash.
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error
+- Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
 
 ## Fixes / interactions with other extensions
 
@@ -225,7 +226,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
-- Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
+- Fixed an issue introduced by Ares that caused building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 - Fixed Ares' Abductor weapon leaves permanent placement stats when abducting moving vehicles.
 - Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (typically begin with `[Developer fatal]Pointer 00000000 declared change to both`).
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory.

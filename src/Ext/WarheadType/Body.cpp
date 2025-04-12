@@ -286,6 +286,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
 	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouses");
 	this->KillWeapon_OnFirer_AffectsHouses.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses");
+	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
+	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
 
   	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
 
@@ -535,6 +537,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KillWeapon_OnFirer)
 		.Process(this->KillWeapon_AffectsHouses)
 		.Process(this->KillWeapon_OnFirer_AffectsHouses)
+		.Process(this->KillWeapon_Affects)
+		.Process(this->KillWeapon_OnFirer_Affects)
 
     	.Process(this->ElectricAssaultLevel)
 
