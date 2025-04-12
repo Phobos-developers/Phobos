@@ -61,15 +61,23 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (abs->WhatAmI() == AbstractType::Anim)
 	{
-		auto const pAnim = abstract_cast<AnimClass*>(abs);
+		auto const pAnim = specific_cast<AnimClass*>(abs);
 
-		if (AnimExt::ExtMap.Find(pAnim)->IsShieldIdleAnim)
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
-			for (auto pShield : ShieldClass::Array)
+			if (pAnimExt->IsShieldIdleAnim)
 			{
-				if (pAnim == pShield->IdleAnim)
-					pShield->IdleAnim = nullptr;
+				for (auto pShield : ShieldClass::Array)
+				{
+					if (pAnim == pShield->IdleAnim)
+						pShield->IdleAnim = nullptr;
+				}
 			}
+		}
+		else
+		{
+			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
+			Debug::Log(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
 		}
 	}
 }

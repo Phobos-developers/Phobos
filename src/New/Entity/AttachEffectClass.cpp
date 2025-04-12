@@ -72,15 +72,23 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (absType == AbstractType::Anim)
 	{
-		auto const pAnim = abstract_cast<AnimClass*>(abs);
+		auto const pAnim = specific_cast<AnimClass*>(abs);
 
-		if (AnimExt::ExtMap.Find(pAnim)->IsAttachedEffectAnim)
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
-			for (auto pEffect : AttachEffectClass::Array)
+			if (pAnimExt->IsAttachedEffectAnim)
 			{
-				if (ptr == pEffect->Animation)
-					pEffect->Animation = nullptr;
+				for (auto pEffect : AttachEffectClass::Array)
+				{
+					if (ptr == pEffect->Animation)
+						pEffect->Animation = nullptr;
+				}
 			}
+		}
+		else
+		{
+			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
+			Debug::Log(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
 		}
 	}
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)

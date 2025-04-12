@@ -1,6 +1,6 @@
 #include "EnumFunctions.h"
 
-inline bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
+bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
     if (flags == AffectedHouse::All)
         return true;
@@ -17,7 +17,7 @@ inline bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* owner
     return (flags & relation) != AffectedHouse::None;
 }
 
-inline bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
+bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
 {
 	if (allowed == AffectedTarget::All)
 		return true;
@@ -47,7 +47,7 @@ inline bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget
     return (allowed & cellType) != AffectedTarget::None;
 }
 
-inline bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
+bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
 {
 	if (allowed == AffectedTarget::All)
         return true;
@@ -84,7 +84,7 @@ inline bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, Affected
     return (allowed & technoType) != AffectedTarget::None;
 }
 
-inline bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately, bool allowBridges)
+bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately, bool allowBridges)
 {
 	if (!pCell)
 		return false;
