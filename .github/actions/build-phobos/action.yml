@@ -28,8 +28,8 @@ runs:
     shell: cmd
 
   - name: Upload Artifact
-    if: ${{success()}}
-    uses: actions/upload-artifact@v2
+    if: ${{ success() && inputs.artifact-name != '' }}
+    uses: actions/upload-artifact@v4
     with:
       name: compiled-dll-${{github.sha}}
       path: |
