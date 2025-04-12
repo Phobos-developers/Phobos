@@ -95,6 +95,8 @@ public:
 		Valueable<bool> ExtendedBuildingPlacing;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<bool> NoQueueUpToEnter;
+		Valueable<bool> NoQueueUpToUnload;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -141,6 +143,9 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
+
+		Valueable<Leptons> VisualScatter_Min;
+		Valueable<Leptons> VisualScatter_Max;
 
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
@@ -198,6 +203,11 @@ public:
 
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
+
+		Valueable<double> ProneSpeed_Crawls;
+		Valueable<double> ProneSpeed_NoCrawls;
+
+    	Valueable<double> DamagedSpeed;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -260,6 +270,8 @@ public:
 			, ExtendedBuildingPlacing { false }
 
 			, ExtendedAircraftMissions { false }
+			, NoQueueUpToEnter { false }
+			, NoQueueUpToUnload { false }
 
 			, BuildingProductionQueue { false }
 
@@ -309,6 +321,8 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, VisualScatter_Min { Leptons(8) }
+			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
@@ -348,6 +362,10 @@ public:
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
+			, ProneSpeed_Crawls { 0.67 }
+			, ProneSpeed_NoCrawls { 1.5 }
+
+      		, DamagedSpeed { 0.75 }
 		{ }
 
 		virtual ~ExtData() = default;

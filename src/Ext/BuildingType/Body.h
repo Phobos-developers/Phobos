@@ -88,6 +88,9 @@ public:
 
 		Nullable<Point2D> BarracksExitCell;
 
+		Valueable<int> Overpower_KeepOnline;
+		Valueable<int> Overpower_ChargeWeapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -143,6 +146,8 @@ public:
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
 			, BarracksExitCell {}
+			, Overpower_KeepOnline { 2 }
+			, Overpower_ChargeWeapon { 1 }
 		{ }
 
 		// Ares 0.A functions
