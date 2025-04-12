@@ -770,16 +770,8 @@ DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->LastRearmWasFullDelay = false;
 
-	// Currently only used with infantry, so a performance saving measure.
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-	{
-		if (pExt->ForceFullRearmDelay)
-		{
-			pExt->ForceFullRearmDelay = false;
-			pThis->CurrentBurstIndex = 0;
-			return ApplyFullRearmDelay;
-		}
-	}
+	if (pExt->ForceFullRearmDelay)
+		return ApplyFullRearmDelay;
 
 	return 0;
 }
@@ -790,6 +782,7 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
+	GET(int, idxCurrentBurst, ECX);
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
@@ -801,7 +794,6 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	}
 
 	// Restore overridden instructions
-	GET(int, idxCurrentBurst, ECX);
 	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
 }
 

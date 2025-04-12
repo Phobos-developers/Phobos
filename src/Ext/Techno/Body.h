@@ -51,7 +51,6 @@ public:
 		bool LastRearmWasFullDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
-		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
 
@@ -92,7 +91,6 @@ public:
 			, LastRearmWasFullDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
-			, CanCurrentlyDeployIntoBuilding { false }
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
 			, OriginalPassengerOwner {}
@@ -146,6 +144,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static UnitClass* Deployer;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);

@@ -84,18 +84,18 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf && pInf->IsDeployed() && pExt->EliteDeployedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf && pInf->Crawling && pExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
 			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf && pInf->IsDeployed() && pExt->DeployedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf && pInf->Crawling && pExt->CrouchedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
