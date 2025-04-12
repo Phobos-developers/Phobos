@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Phobos'
-copyright = '2022, The Phobos Contributors'
+copyright = '2025, The Phobos Contributors'
 author = 'The Phobos Contributors'
 
 

@@ -15,7 +15,8 @@ bool HouseExt::ExtData::OwnsLimboDeliveredBuilding(BuildingClass* pBuilding)
 	if (!pBuilding)
 		return false;
 
-	return this->OwnedLimboDeliveredBuildings.count(pBuilding);
+	auto& vec = this->OwnedLimboDeliveredBuildings;
+	return std::find(vec.begin(), vec.end(), pBuilding) != vec.end();
 }
 
 int HouseExt::ActiveHarvesterCount(HouseClass* pThis)
@@ -84,7 +85,10 @@ void HouseExt::ExtData::UpdateAutoDeathObjectsInLimbo()
 			auto const pBuilding = abstract_cast<BuildingClass*>(pItem);
 
 			if (OwnsLimboDeliveredBuilding(pBuilding))
-				this->OwnedLimboDeliveredBuildings.erase(pBuilding);
+			{
+				auto& vec = this->OwnedLimboDeliveredBuildings;
+				vec.erase(std::remove(vec.begin(), vec.end(), pBuilding), vec.end());
+			}
 
 			pItem->RegisterDestruction(nullptr);
 			// I doubt those in LimboDelete being really necessary, they're gonna be updated either next frame or after uninit anyway

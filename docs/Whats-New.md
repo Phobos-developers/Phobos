@@ -10,11 +10,14 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
-- SHP debris hardcoded shadows now respect `Shadow=no` tag value, and due to it being the default value they wouldn't have hardcoded shadows anymore by default. Override this by specifying `Shadow=yes` for SHP debris.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini->[General]->FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto`/`UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[SOMETECHNOTYPE]/[CombatDamage]->IronCurtain.KeptOnDeploy=no`.
 
 ### From older Phobos versions
+
+#### From 0.3
+
+- `Shadow` for debris & meteor animations is changed to `ExtraShadow`.
 
 #### From pre-0.3 devbuilds
 
@@ -237,7 +240,37 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ## Changelog
 
+### 0.3.1.0
+
+<details open>
+  <summary>Click to show</summary>
+
+New:
+- Option to center pause menu background (by Starkku)
+- In addition to `PlacementGrid.Translucency`, allow to set the transparency of the grid when PlacementPreview is enabled, using the `PlacementGrid.TranslucencyWithPreview` tag (by Belonit).
+
+Phobos fixes:
+- Fixed `Interceptor` not resetting target if the intercepted projectile changes type to non-interceptable one afterwards (by Starkku)
+- Fixed a potential crash caused by a faulty hook in weapon selection code (by Starkku)
+- Fixed `PlacementPreview` setting for BuildingTypes not being parsed from INI (by Starkku)
+- Optimized performance for map trigger retint action light source fix (by Starkku)
+- Fixed owned `LimboDelivery` buildings not being saved correctly in savegames (by Starkku)
+- Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` and related checks (by Starkku)
+
+Vanilla fixes:
+- Fixed position and layer of info tip and reveal production cameo on selected building (by Belonit)
+- Fixed a glitch related to incorrect target setting for missiles (by Belonit)
+- Skipped parsing `[Header]` section of compaign maps which led to occasional crashes on Linux (by Trsdy)
+- Fixed teleport units' frozen-still timer being reset after load game (by Trsdy)
+
+Fixes / interactions with other extensions:
+- Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed (by Starkku)
+</details>
+
 ### 0.3.0.1
+
+<details>
+  <summary>Click to show</summary>
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
@@ -263,6 +296,7 @@ Phobos fixes:
 - Fixed `CreateUnit` interaction with bridges (spawning under when shouldn't etc) (by Starkku)
 - `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
 - `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
+</details>
 
 ### 0.3
 

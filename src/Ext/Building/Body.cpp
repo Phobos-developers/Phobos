@@ -279,6 +279,7 @@ void BuildingExt::ExtData::Serialize(T& Stm)
 		.Process(this->GrindingWeapon_LastFiredFrame)
 		.Process(this->CurrentAirFactory)
 		.Process(this->AccumulatedGrindingRefund)
+		.Process(this->CurrentLaserWeaponIndex)
 		;
 }
 

@@ -17,7 +17,7 @@ public:
 	{
 	public:
 		std::map<BuildingTypeExt::ExtData*, int> BuildingCounter;
-		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
+		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
 		std::vector<TechnoExt::ExtData*> OwnedTimedAutoDeathObjects;
 
 		BuildingClass* Factory_BuildingType;

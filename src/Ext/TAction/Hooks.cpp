@@ -70,49 +70,52 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	return 0x6E42C1;
 }
 
+#pragma region RetintFix
+
+namespace RetintTemp
+{
+	bool UpdateLightSources = false;
+}
+
 // Bugfix, #issue 429: Retint map script disables RGB settings on light source
-// Author: secsome
+// Author: secsome, Starkku
 DEFINE_HOOK_AGAIN(0x6E2F47, TActionClass_Retint_LightSourceFix, 0x3) // Blue
 DEFINE_HOOK_AGAIN(0x6E2EF7, TActionClass_Retint_LightSourceFix, 0x3) // Green
 DEFINE_HOOK(0x6E2EA7, TActionClass_Retint_LightSourceFix, 0x3) // Red
 {
-	// Yeah, we just simply recreating these lightsource...
-	// Stupid but works fine.
+	// Flag the light sources to update, actually do it later and only once to prevent redundancy.
+	RetintTemp::UpdateLightSources = true;
 
-	for (auto pBld : *BuildingClass::Array)
+	return 0;
+}
+
+// Update light sources if they have been flagged to be updated.
+DEFINE_HOOK(0x6D4455, Tactical_Render_UpdateLightSources, 0x8)
+{
+	if (RetintTemp::UpdateLightSources)
 	{
-		if (pBld->LightSource)
+		for (auto pBld : *BuildingClass::Array)
 		{
-			GameDelete(pBld->LightSource);
-			if (pBld->Type->LightIntensity)
+			if (pBld->LightSource && pBld->LightSource->Activated)
 			{
-				TintStruct color { pBld->Type->LightRedTint, pBld->Type->LightGreenTint, pBld->Type->LightBlueTint };
-
-				pBld->LightSource = GameCreate<LightSourceClass>(pBld->GetCoords(),
-					pBld->Type->LightVisibility, pBld->Type->LightIntensity, color);
-
+				pBld->LightSource->Activated = false;
 				pBld->LightSource->Activate();
 			}
 		}
-	}
 
-	for (auto pRadSite : *RadSiteClass::Array)
-	{
-		if (pRadSite->LightSource)
+		for (auto pRadSite : *RadSiteClass::Array)
 		{
-			auto coord = pRadSite->LightSource->Location;
-			auto color = pRadSite->LightSource->LightTint;
-			auto intensity = pRadSite->LightSource->LightIntensity;
-			auto visibility = pRadSite->LightSource->LightVisibility;
-
-			GameDelete(pRadSite->LightSource);
-
-			pRadSite->LightSource = GameCreate<LightSourceClass>(coord,
-				visibility, intensity, color);
-
-			pRadSite->LightSource->Activate();
+			if (pRadSite->LightSource && pRadSite->LightSource->Activated)
+			{
+				pRadSite->LightSource->Activated = false;
+				pRadSite->LightSource->Activate();
+			}
 		}
+
+		RetintTemp::UpdateLightSources = false;
 	}
 
+
+#pragma endregion
 	return 0;
 }

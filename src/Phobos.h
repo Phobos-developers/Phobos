@@ -55,6 +55,7 @@ public:
 		static bool ShowPowerDelta;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
+		static bool CenterPauseMenuBackground;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;

@@ -27,8 +27,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed interaction of `UnitAbsorb` & `InfantryAbsorb` with `Grinding` buildings. The keys will now make the building only accept appropriate types of objects.
 - Fixed missing 'no enter' cursor for VehicleTypes being unable to enter a `Grinding` building.
 - Fixed Engineers being able to enter `Grinding` buildings even when they shouldn't (such as ally building at full HP).
-
-- SHP debris shadows now respect the `Shadow` tag.
 - Allowed usage of TileSet of 255 and above without making NE-SW broken bridges unrepairable.
 - Added a "Load Game" button to the retry dialog on mission failure.
 
@@ -87,6 +85,13 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when `MakeInfantry` logic on BombClass resulted in `Neutral` side infantry.
 - Fixed railgun particles being drawn to wrong coordinate against buildings with non-default `TargetCoordOffset` or when force-firing on bridges.
 - Fixed building `TargetCoordOffset` not being taken into accord for several things like fire angle calculations and target lines.
+- Fix a glitch related to incorrect target setting for missiles.
+- Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
+- Fixed teleport units' (for example CLEG) frozen-still timer being cleared after load game.
+
+## Fixes / interactions with other extensions
+
+- Fixed an issue introduced by Ares that caused `Grinding=true` building `ActiveAnim` to be incorrectly restored while `SpecialAnim` was playing and the building was sold, erased or destroyed.
 
 ## Animations
 
@@ -118,6 +123,15 @@ In `artmd.ini`:
 ```ini
 [SOMEANIM]                       ; AnimationType
 UseCenterCoordsIfAttached=false  ; boolean
+```
+
+### Customizable debris & meteor
+- `ExtraShadow` can be set to false to disable the display of shadows on the ground.
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                    ; AnimationType
+ExtraShadow=true              ; boolean
 ```
 
 ### Layer on animations attached to objects
