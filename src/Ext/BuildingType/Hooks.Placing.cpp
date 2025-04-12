@@ -171,11 +171,11 @@ static inline bool IsSameFenceType(const BuildingTypeClass* const pPostType, con
 
 static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* const pOwner, bool expand, bool& skipFlag, bool& builtOnCanBeBuiltOn, bool& landFootOnly)
 {
-/*	if (pTechno == TechnoExt::Deployer) // TODO if merge #1525
+	if (pTechno == TechnoExt::Deployer)
 	{
 		skipFlag = true;
 		return false;
-	}*/
+	}
 
 	const auto pTechnoType = pTechno->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
@@ -247,8 +247,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else if (pBuildingType->LaserFencePost || pBuildingType->Gate)
 	{
-//		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false; // TODO if merge #1525
-		bool skipFlag = false;
+		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
@@ -326,8 +325,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	}
 	else
 	{
-//		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false; // TODO if merge #1525
-		bool skipFlag = false;
+		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
 		bool builtOnCanBeBuiltOn = false;
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
@@ -1070,7 +1068,10 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 {
 	GET(HouseClass* const, pHouse, ESI);
 
-	if (!pHouse->IsControlledByHuman() || !RulesExt::Global()->ExtendedBuildingPlacing)
+	if (!pHouse->IsControlledByHuman())
+		return 0;
+
+	if (!RulesExt::Global()->ExtendedBuildingPlacing)
 		return 0;
 
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
