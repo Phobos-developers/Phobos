@@ -11,12 +11,9 @@ runs:
   using: "composite"
   steps:
   - name: Add MSBuild to PATH
-    uses: microsoft/setup-msbuild@v1
-
-  - name: Restore NuGet packages
-    working-directory: ${{env.GITHUB_WORKSPACE}}
-    run: nuget restore ${{inputs.sln-path}}
-    shell: cmd
+    uses: microsoft/setup-msbuild@v1.1
+    with:
+      vs-version: '[16.0, )'
 
   - uses: ammaraskar/msvc-problem-matcher@master
 
@@ -28,7 +25,7 @@ runs:
     shell: cmd
 
   - name: Upload Artifact
-    if: ${{ success() && inputs.artifact-name != '' }}
+    if: ${{success()}}
     uses: actions/upload-artifact@v4
     with:
       name: compiled-dll-${{github.sha}}
