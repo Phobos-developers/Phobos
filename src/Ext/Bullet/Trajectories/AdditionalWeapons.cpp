@@ -82,9 +82,10 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 						if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
 							continue;
-						if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pWeaponExt->CanTargetHouses))
-							continue;
 					}
+
+					if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pType->RetargetHouses))
+						continue;
 
 					pNewTechno = pTechno;
 					break;
@@ -123,9 +124,10 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 				if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
 					continue;
-				if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pWeaponExt->CanTargetHouses))
-					continue;
 			}
+
+			if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pType->RetargetHouses))
+				continue;
 
 			pNewTechno = pTechno;
 			break;

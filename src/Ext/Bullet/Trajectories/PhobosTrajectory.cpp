@@ -800,6 +800,7 @@ void PhobosTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->RetargetInterval.Read(exINI, pSection, "Trajectory.RetargetInterval");
 	this->RetargetInterval = Math::max(1, this->RetargetInterval);
 	this->RetargetRadius.Read(exINI, pSection, "Trajectory.RetargetRadius");
+	this->RetargetHouses.Read(exINI, pSection, "Trajectory.RetargetHouses");
 	this->Synchronize.Read(exINI, pSection, "Trajectory.Synchronize");
 	this->MirrorCoord.Read(exINI, pSection, "Trajectory.MirrorCoord");
 	this->PeacefulVanish.Read(exINI, pSection, "Trajectory.PeacefulVanish");
@@ -875,6 +876,7 @@ void PhobosTrajectoryType::Serialize(T& Stm)
 		.Process(this->BulletFacing)
 		.Process(this->RetargetInterval)
 		.Process(this->RetargetRadius)
+		.Process(this->RetargetHouses)
 		.Process(this->Synchronize)
 		.Process(this->MirrorCoord)
 		.Process(this->PeacefulVanish)

@@ -50,6 +50,7 @@ public:
 		, BulletFacing { TrajectoryFacing::Velocity }
 		, RetargetInterval { 1 }
 		, RetargetRadius { 0 }
+		, RetargetHouses { AffectedHouse::Enemies }
 		, Synchronize { false }
 		, MirrorCoord { true }
 		, PeacefulVanish {}
@@ -106,6 +107,7 @@ public:
 	Valueable<TrajectoryFacing> BulletFacing; // Image facing
 	Valueable<int> RetargetInterval; // Wait before attempting to searching for a new target each time we fail to do so
 	Valueable<double> RetargetRadius; // Searching for a new target after losing it
+	Valueable<AffectedHouse> RetargetHouses; // Can select new target in which houses
 	Valueable<bool> Synchronize; // Synchronize the target of its launcher
 	Valueable<bool> MirrorCoord; // Should mirror offset
 	Nullable<bool> PeacefulVanish; // Disappear directly when about to detonate
