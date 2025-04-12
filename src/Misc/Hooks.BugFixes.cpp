@@ -199,6 +199,14 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 	++pThis->CurrentBurstIndex;
 	pThis->CurrentBurstIndex %= pThis->GetWeapon(weaponIndex)->WeaponType->Burst;
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ForceFullRearmDelay)
+	{
+		pExt->ForceFullRearmDelay = false;
+		pThis->CurrentBurstIndex = 0;
+	}
+
 	return 0;
 }
 
