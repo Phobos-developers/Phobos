@@ -1243,7 +1243,7 @@ msgstr ""
 msgid ""
 "Please, provide screenshots, GIFs and videos in their natural size and "
 "without excess stuff or length."
-msgstr "请提供适当尺寸的截图／GIF／视频，避免冗余内容与过场的时长。"
+msgstr "请提供适当尺寸的截图／GIF／视频，避免冗余内容与过长的时长。"
 
 #: ../../Contributing.md:338
 msgid "Promoting the work"

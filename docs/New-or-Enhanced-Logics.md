@@ -1092,6 +1092,9 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 
 ### Next
 
+![image](_static/images/swnext.gif)
+*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
@@ -1400,7 +1403,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
-    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0. Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
+    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
 
 In `rulesmd.ini`:
@@ -1416,6 +1419,10 @@ ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
 ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+```
+
+```{note}
+Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
 ### Initial spawns number
