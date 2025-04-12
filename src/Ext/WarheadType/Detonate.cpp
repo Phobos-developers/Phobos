@@ -17,6 +17,20 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
+#pragma region CreateGap Calls
+
+static void __stdcall Sub_4ADEE0(char a1, DWORD a2)
+{
+	JMP_STD(0x4ADEE0);
+}
+
+static void __stdcall Sub_4ADCD0(char a1, DWORD a2)
+{
+	JMP_STD(0x4ADCD0);
+}
+
+#pragma endregion
+
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
@@ -31,23 +45,56 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	if (pHouse)
 	{
-		if (this->BigGap)
+		const int createGap = this->CreateGap;
+
+		if (createGap > 0)
 		{
-			for (auto pOtherHouse : HouseClass::Array)
+			const auto pCurrent = HouseClass::CurrentPlayer;
+
+			if (!pHouse->IsControlledByCurrentPlayer() && !pHouse->IsAlliedWith(pCurrent) && !pCurrent->Defeated && !pCurrent->SpySatActive)
 			{
-				if (pOtherHouse->IsControlledByHuman() && // Not AI
-					!pOtherHouse->IsObserver() &&         // Not Observer
-					!pOtherHouse->Defeated &&             // Not Defeated
-					pOtherHouse != pHouse &&              // Not pThisHouse
-					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
-				{
-					pOtherHouse->ReshroudMap();
-				}
+				Sub_4ADEE0(0, 0);
+				CellRangeIterator<CellClass>{}(CellClass::Coord2Cell(coords), this->CreateGap + 0.5, [](CellClass* pCell) {
+						pCell->Flags &= ~CellFlags::Revealed;
+						pCell->AltFlags &= ~AltCellFlags::Clear;
+						pCell->ShroudCounter = 1;
+						pCell->GapsCoveringThisCell = 0;
+						return true;
+				});
+				Sub_4ADCD0(0, 0);
+				pCurrent->Visionary = 0;
+				MapClass::Instance.sub_657CE0();
+				MapClass::Instance.MarkNeedsRedraw(2);
+			}
+		}
+		else if (createGap < 0)
+		{
+			for (const auto pOtherHouse : HouseClass::Array)
+			{
+				if (!pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Defeated && !pOtherHouse->SpySatActive)
+					MapClass::Instance.Reshroud(pOtherHouse);
 			}
 		}
 
-		if (this->SpySat)
+		const int reveal = this->Reveal;
+
+		if (reveal > 0)
+		{
+			const auto pCurrent = HouseClass::CurrentPlayer;;
+
+			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
+			{
+				Sub_4ADEE0(0, 0);
+				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 0, 1);
+				Sub_4ADCD0(0, 0);
+				MapClass::Instance.sub_657CE0();
+				MapClass::Instance.MarkNeedsRedraw(2);
+			}
+		}
+		else if (reveal < 0)
+		{
 			MapClass::Instance.Reveal(pHouse);
+		}
 
 		if (this->TransactMoney)
 		{

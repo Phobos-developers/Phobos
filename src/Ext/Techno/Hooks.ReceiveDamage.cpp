@@ -193,11 +193,10 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+
 	if (pSource)
-	{
-		TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
 		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
-	}
 
 	return 0;
 }

@@ -82,72 +82,9 @@ DEFINE_HOOK(0x73FB71, UnitClass_CanEnterCell_PassableTerrain, 0x6)
 }
 
 // Buildable-upon TerrainTypes Hook #1 - Allow placing buildings on top of them.
-DEFINE_HOOK_AGAIN(0x47C80E, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
-DEFINE_HOOK(0x47C745, CellClass_IsClearTo_Build_BuildableTerrain, 0x5)
-{
-	enum { Skip = 0x47C85F, SkipFlags = 0x47C6A0 };
+// DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6) in Hooks.DeploysInto.cpp
 
-	GET(CellClass*, pThis, EDI);
-
-	auto pTerrain = pThis->GetTerrain(false);
-
-	if (pTerrain)
-	{
-		if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
-		{
-			if (IS_CELL_OCCUPIED(pThis))
-				return Skip;
-			else
-				return SkipFlags;
-		}
-	}
-
-	return 0;
-}
-
-// Buildable-upon TerrainTypes Hook #2 - Allow placing laser fences on top of them.
-DEFINE_HOOK(0x47C657, CellClass_IsClearTo_Build_BuildableTerrain_LF, 0x6)
-{
-	enum { Skip = 0x47C6A0, Return = 0x47C6D1 };
-
-	GET(CellClass*, pThis, EDI);
-
-	auto pObj = pThis->FirstObject;
-
-	if (pObj)
-	{
-		bool isEligible = true;
-
-		while (true)
-		{
-			isEligible = pObj->WhatAmI() != AbstractType::Building;
-
-			if (auto const pTerrain = abstract_cast<TerrainClass*>(pObj))
-			{
-				isEligible = false;
-				auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-				if (pTypeExt->CanBeBuiltOn)
-					isEligible = true;
-			}
-
-			if (!isEligible)
-				break;
-
-			pObj = pObj->NextObject;
-
-			if (!pObj)
-				return Skip;
-		}
-
-		return Return;
-	}
-
-	return Skip;
-}
-
-
-// Buildable-upon TerrainTypes Hook #3 - Draw laser fence placement even if they are on the way.
+// Buildable-upon TerrainTypes Hook #2 - Draw laser fence placement even if they are on the way.
 DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x9)
 {
 	enum { ContinueChecks = 0x6D57D2, DontDraw = 0x6D59A6 };
@@ -165,7 +102,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	return ContinueChecks;
 }
 
-// Buildable-upon TerrainTypes Hook #4 - Remove them when buildings are placed on them.
+// Buildable-upon TerrainTypes Hook #3 - Remove them when buildings are placed on them.
 DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 {
 	GET(ObjectClass*, pObject, EDI);

@@ -260,6 +260,18 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x6B74F0, SpawnManagerClass_AI_UseTurretFacing, 0x5)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	auto const pTechno = pThis->Owner;
+
+	if (pTechno->HasTurret() && TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->Spawner_UseTurretFacing)
+		R->EAX(pTechno->SecondaryFacing.Current().Raw);
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region WakeAnims

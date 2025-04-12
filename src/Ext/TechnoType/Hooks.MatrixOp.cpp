@@ -167,6 +167,47 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 			ret->RotateY(arf);
 		}
 	}
+	else
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
+
+		if (pTypeExt->JumpjetTilt && !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+		{
+			if (pThis->CurrentSpeed > 0.0)
+			{
+				constexpr auto maxTilt = static_cast<float>(Math::HalfPi / 2);
+				constexpr auto baseSpeed = 32;
+				constexpr auto baseTilt = Math::HalfPi / 4;
+
+				constexpr auto forwardBaseTilt = baseTilt / baseSpeed;
+				const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
+				const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
+
+				arf += std::min(maxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor) * forwardBaseTilt));
+
+				const auto& locoFace = pThis->LocomotionFacing;
+
+				if (locoFace.IsRotating())
+				{
+					constexpr auto baseTurnRaw = 32768;
+
+					constexpr auto sidewaysBaseTilt = baseTilt / (baseTurnRaw * baseSpeed);
+					const auto sidewaysSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor;
+					const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw) * pTypeExt->JumpjetTilt_SidewaysRotationFactor;
+
+					ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor * sidewaysBaseTilt), -maxTilt, maxTilt);
+				}
+			}
+
+			if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+			{
+				if (pIndex) *pIndex = -1;
+
+				ret->RotateX(ars);
+				ret->RotateY(arf);
+			}
+		}
+	}
 
 	if (pIndex && *pIndex != -1)
 	{
@@ -701,4 +742,28 @@ Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x749CAC, BounceClass_ShadowMatrix);
+#pragma endregion
+
+#pragma region voxel_ramp_matrix
+
+// I don't know how can WW miscalculated
+// In fact, there should be three different degrees of tilt angles
+// - EBX -> atan((2*104)/(256√2)) should only be used on the steepest slopes (13-16)
+// - EBP -> atan(104/256) should be used on the most common slopes (1-4)
+// - A smaller radian atan(104/(256√2)) should be use to other slopes (5-12)
+// But this position is too far ahead, I can't find a good way to solve it perfectly
+// Using hooks and filling in floating-point numbers will cause the register to reset to zero
+// So I have to do it this way for now, make changes based on the existing data
+// Thanks to NetsuNegi for providing a simpler patch method to replace the hook method
+DEFINE_PATCH(0x75546D, 0x55) // push ebp
+DEFINE_PATCH(0x755484, 0x55) // push ebp
+DEFINE_PATCH(0x7554A1, 0x55) // push ebp
+DEFINE_PATCH(0x7554BE, 0x55) // push ebp
+DEFINE_PATCH(0x755656, 0x55) // push ebp
+DEFINE_PATCH(0x755677, 0x55) // push ebp
+DEFINE_PATCH(0x755698, 0x55) // push ebp
+DEFINE_PATCH(0x7556B9, 0x55) // push ebp
+// Although it is not the perfectest
+// It can still solve the most common situations on slopes - CrimRecya
+
 #pragma endregion

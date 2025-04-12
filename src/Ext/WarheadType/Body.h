@@ -21,8 +21,8 @@ public:
 	{
 	public:
 
-		Valueable<bool> SpySat;
-		Valueable<bool> BigGap;
+		Valueable<int> Reveal;
+		Valueable<int> CreateGap;
 		Valueable<int> TransactMoney;
 		Valueable<bool> TransactMoney_Display;
 		Valueable<AffectedHouse> TransactMoney_Display_Houses;
@@ -164,7 +164,11 @@ public:
 		Nullable<bool> CombatAlert_Suppress;
 
 		Valueable<WeaponTypeClass*> KillWeapon;
+		Valueable<WeaponTypeClass*> KillWeapon_OnFirer;
 		Valueable<AffectedHouse> KillWeapon_AffectsHouses;
+		Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouses;
+		Valueable<AffectedTarget> KillWeapon_Affects;
+		Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
 
     	Valueable<int> ElectricAssaultLevel;
 
@@ -192,8 +196,8 @@ public:
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
-			, SpySat { false }
-			, BigGap { false }
+			, Reveal { 0 }
+			, CreateGap { 0 }
 			, TransactMoney { 0 }
 			, TransactMoney_Display { false }
 			, TransactMoney_Display_Houses { AffectedHouse::All }
@@ -353,7 +357,11 @@ public:
 			, DamageAreaTarget {}
 
 			, KillWeapon {}
+			, KillWeapon_OnFirer {}
 			, KillWeapon_AffectsHouses { AffectedHouse::All }
+			, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
+			, KillWeapon_Affects { AffectedTarget::All }
+			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

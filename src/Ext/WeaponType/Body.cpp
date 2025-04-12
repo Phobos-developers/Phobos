@@ -259,14 +259,19 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 {
 	int range = 0;
 
-	if (!pThis && !pFirer)
-		return range;
-	else if (pFirer && pFirer->CanOccupyFire())
-		range = RulesClass::Instance->OccupyWeaponRange * Unsorted::LeptonsPerCell;
-	else if (pThis && pFirer)
-		range = pThis->Range;
+	if (pFirer)
+	{
+		if (pFirer->CanOccupyFire())
+			range = RulesClass::Instance->OccupyWeaponRange * Unsorted::LeptonsPerCell;
+		else if (pThis)
+			range = pThis->Range;
+		else
+			return range;
+	}
 	else
+	{
 		return range;
+	}
 
 	if (range == -512)
 		return range;
