@@ -50,7 +50,7 @@ DEFINE_HOOK(0x73B013, UnitClass_PerCellProcess_CrusherWall, 0x6)
 
 	GET(OverlayTypeClass*, pOverlay, ESI);
 
-	if (pOverlay->Crushable)
+	if (!pOverlay->ArrayIndex || pOverlay->Crushable)
 		return CanCrush;
 
 	if (!pOverlay->Wall)
