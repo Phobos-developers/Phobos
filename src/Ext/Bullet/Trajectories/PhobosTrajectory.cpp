@@ -574,16 +574,5 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
 	}
 
-	if (pThis->Owner && !pThis->Type->Vertical && pThis->SourceCoords != pThis->TargetCoords && pThis->WH)
-	{
-		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-
-		if (pWHExt->Directional)
-		{
-			pExt->ShouldDirectional = true;
-			pExt->BulletDirection = DirStruct(Math::atan2(static_cast<double>(pThis->SourceCoords.Y - pThis->TargetCoords.Y), static_cast<double>(pThis->TargetCoords.X - pThis->SourceCoords.X))).GetValue<16>();
-		}
-	}
-
 	return 0;
 }

@@ -378,8 +378,6 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
-		.Process(this->ShouldDirectional)
-		.Process(this->BulletDirection)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

@@ -41,7 +41,32 @@ DEFINE_HOOK(0x469A69, BulletClass_Detonate_DamageArea, 0x6)
 	const auto pWH = pBullet->WH;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	pWHExt->HitDirection = pBulletExt->BulletDirection;
+	do
+	{
+		if (pWHExt->Directional)
+		{
+			if (pBullet->Type->Inviso)
+			{
+				if (pBullet->SourceCoords.X != pBullet->TargetCoords.X || pBullet->SourceCoords.Y != pBullet->TargetCoords.Y)
+				{
+					pWHExt->HitDirection = DirStruct(Math::atan2(static_cast<double>(pBullet->SourceCoords.Y - pBullet->TargetCoords.Y), static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X))).GetValue<16>();
+					break;
+				}
+			}
+			else
+			{
+				if (pBullet->Velocity.X != 0.0 || pBullet->Velocity.Y != 0.0)
+				{
+					pWHExt->HitDirection = DirStruct((-1) * Math::atan2(pBullet->Velocity.Y, pBullet->Velocity.X)).GetValue<16>();
+					break;
+				}
+			}
+		}
+
+		pWHExt->HitDirection = -1;
+	}
+	while (false);
+
 	R->EAX(MapClass::Instance.DamageArea(*coords, damage, pSourceTechno, pWH, true, pSourceHouse));
 	pWHExt->HitDirection = -1;
 
