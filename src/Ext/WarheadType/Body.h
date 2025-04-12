@@ -167,6 +167,8 @@ public:
 		Valueable<WeaponTypeClass*> KillWeapon_OnFirer;
 		Valueable<AffectedHouse> KillWeapon_AffectsHouses;
 		Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouses;
+		Valueable<AffectedTarget> KillWeapon_Affects;
+		Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
 
     	Valueable<int> ElectricAssaultLevel;
 
@@ -358,6 +360,8 @@ public:
 			, KillWeapon_OnFirer {}
 			, KillWeapon_AffectsHouses { AffectedHouse::All }
 			, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
+			, KillWeapon_Affects { AffectedTarget::All }
+			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

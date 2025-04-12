@@ -207,14 +207,16 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
 	// KillWeapon can be triggered without the source
-	if (pWHExt->KillWeapon && (!pSource || EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)))
+	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_Affects))))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
 	}
 
 	// KillWeapon.OnFirer must have a source
-	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner))
+	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner)
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_OnFirer_Affects))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
