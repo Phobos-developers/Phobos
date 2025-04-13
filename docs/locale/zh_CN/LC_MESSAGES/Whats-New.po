@@ -1163,28 +1163,28 @@ msgstr ""
 "[子机回收增强（自定义坐标、动画等）](New-or-Enhanced-Logics.md#aircraft-spawner-customizations)（by TaranDahl）"
 
 #: ../../Whats-New.md:343
-msgid "Technos can maintain a suitable distance after firing (by CrimRecya)"
-msgstr "科技类型可以在开火后保持适当的距离（by CrimRecya）"
+msgid "[Technos can maintain a suitable distance after firing](New-or-Enhanced-Logics.md#keep-range-after-firing) (by CrimRecya)"
+msgstr "[单位在开火后与目标保持适当的距离](New-or-Enhanced-Logics.md#keep-range-after-firing)（by CrimRecya）"
 
 #: ../../Whats-New.md:344
-msgid "Projectile subject to ground check before firing (by CrimRecya)"
-msgstr "`SubjectToGround`（by CrimRecya）"
+msgid "[Projectile subject to ground check before firing](New-or-Enhanced-Logics.md#projectiles-blocked-by-land-or-water) (by CrimRecya)"
+msgstr "[开火前检查抛射体是否抢地](New-or-Enhanced-Logics.md#projectiles-blocked-by-land-or-water)（by CrimRecya）"
 
 #: ../../Whats-New.md:345
-msgid "Delay automatic attack on the controlled unit (by CrimRecya)"
-msgstr "攻击被心控单位的延迟（by CrimRecya）"
+msgid "[Delay automatic attack on the controlled unit](Fixed-or-Improved-Logics.md#delay-automatic-attack-on-the-controlled-unit) (by CrimRecya)"
+msgstr "[攻击被心控单位的延迟](Fixed-or-Improved-Logics.md#delay-automatic-attack-on-the-controlled-unit)（by CrimRecya）"
 
 #: ../../Whats-New.md:346
-msgid "`BombParachute` deglobalization (by TaranDahl)"
-msgstr "抛射体自定义 `BombParachute`（by TaranDahl）"
+msgid "[`BombParachute` deglobalization](Fixed-or-Improved-Logics.md#bomb-parachute-anim-deglobalization) (by TaranDahl)"
+msgstr "[抛射体自定义 `BombParachute`](Fixed-or-Improved-Logics.md#bomb-parachute-anim-deglobalization)（by TaranDahl）"
 
 #: ../../Whats-New.md:347
-msgid "Sinkablity and sinking speed customization (by TaranDahl)"
-msgstr "自定义能否沉没以及沉没速度（by TaranDahl）"
+msgid "[Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)"
+msgstr "[自定义能否沉没以及沉没速度](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode)（by TaranDahl）"
 
 #: ../../Whats-New.md:348
-msgid "Fast access vehicle (by CrimRecya)"
-msgstr "快速上车（by CrimRecya）"
+msgid "[Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)"
+msgstr "[快速上车](New-or-Enhanced-Logics.md#fast-access-vehicle)（by CrimRecya）"
 
 #: ../../Whats-New.md:349
 msgid "Laser, electric bolt and rad beam scatter (by CrimRecya)"
@@ -1237,20 +1237,21 @@ msgstr ""
 "NetsuNegi）"
 
 #: ../../Whats-New.md:356
-msgid "Promotion animation deglobalization (by Ollerus)"
-msgstr "自定义升级动画（by Ollerus）"
+msgid "[Promotion animation deglobalization](New-or-Enhanced-Logics.md#promotion-animation) (by Ollerus)"
+msgstr "[自定义升级动画](New-or-Enhanced-Logics.md#promotion-animation)（by Ollerus）"
 
 #: ../../Whats-New.md:357
-msgid "Enhanced reveal & gap warhead (by NetsuNegi)"
-msgstr "增强版揭示弹与黑幕弹（by NetsuNegi）"
+msgid "Enhanced [reveal](New-or-Enhanced-Logics.md#reveal-map-for-owner-on-impact) & [gap](New-or-Enhanced-Logics.md#shroud-map-for-enemies-on-impact) warhead (by NetsuNegi)"
+msgstr "增强版<a href=\"New-or-Enhanced-Logics.html#reveal-map-for-owner-on-impact\">揭示弹</a>与"
+"[黑幕弹](New-or-Enhanced-Logics.md#shroud-map-for-enemies-on-impact)（by NetsuNegi）"
 
 #: ../../Whats-New.md:358
-msgid "Forcing specific weapon by range (by Ollerus)"
-msgstr "根据射程选取武器（by Ollerus）"
+msgid "[Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)"
+msgstr "[根据射程选取武器](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets)（by Ollerus）"
 
 #: ../../Whats-New.md:359
-msgid "Jumpjet Tilts While Moving (by CrimRecya)"
-msgstr "Jumpjet 在移动时倾斜（by CrimRecya）"
+msgid "[Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)"
+msgstr "[Jumpjet 在移动时倾斜](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving)（by CrimRecya）"
 
 #: ../../Whats-New.md:360
 msgid ""
@@ -1261,8 +1262,8 @@ msgstr ""
 "Logics.md#aircraft-spawner-customizations)（by Starkku）"
 
 #: ../../Whats-New.md:361
-msgid "Removed dependency on `blowfish.dll` (by ZivDero)"
-msgstr "移除了 `blowfish.dll` 依赖（by ZivDero）"
+msgid "[Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)"
+msgstr "[移除 `blowfish.dll` 依赖](Miscellanous.md#blowfish-dependency)（by ZivDero）"
 
 #: ../../Whats-New.md:363 ../../Whats-New.md:554 ../../Whats-New.md:866
 #: ../../Whats-New.md:975 ../../Whats-New.md:1000 ../../Whats-New.md:1039
