@@ -179,7 +179,6 @@ msgid ""
 msgstr "**[🌐国际性的 Discord 频道：C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**"
 
 #: ../../../README.md:27
-#, python-format
 msgid ""
 "[🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-"
 "bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
