@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-08 17:32+0800\n"
+"POT-Creation-Date: 2025-04-13 16:39+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -611,4 +611,12 @@ msgid ""
 "you get any issues (crashes, bugs) in combination with that then please "
 "first test with the exception handler enabled."
 msgstr "CNCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
+
+#: ../../Miscellanous.md:251
+msgid "Blowfish Dependency"
+msgstr "移除 Blowfish 依赖"
+
+#: ../../Miscellanous.md:253
+msgid "`BLOWFISH.DLL` is no longer required to start the game."
+msgstr "启动游戏时不再需要 `BLOWFISH.DLL`。"
 

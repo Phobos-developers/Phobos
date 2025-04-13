@@ -1613,6 +1613,10 @@ msgid "Fix a jumpjet crash related to voxel shadow drawing"
 msgstr "修复与 Voxel 阴影绘制相关的 Jumpjet 崩溃问题"
 
 #: ../../../CREDITS.md:406
+msgid "Replace `BLOWFISH.DLL` using Red Alert source code"
+msgstr "使用 RA 源码替代掉 `BLOWFISH.DLL`"
+
+#: ../../../CREDITS.md:407
 msgid "**CrimRecya**:"
 msgstr "**CrimRecya**："
 
@@ -2007,7 +2011,15 @@ msgstr "**AutoGavy** - 抛射体拦截逻辑、弹头暴击逻辑"
 msgid "**Chasheen (Chasheenburg)** - CN docs help for Build#24"
 msgstr "**Chasheen (Chasheenburg)** - Build#24 的中文文档协助"
 
-#: ../../../CREDITS.md:498
+#: ../../../CREDITS.md:499
+msgid ""
+"**Noble Fish** - some minor fixes, established Community Chinese docs, "
+"took over and completely rewrite the Official Chinese docs during "
+"Build#46"
+msgstr ""
+"**Noble Fish** - 一些小修复、文档维护者（官方英文文档维护、创建了社区中文文档、在 Build#46 接管并完全重写了官方中文文档）"
+
+#: ../../../CREDITS.md:500
 msgid ""
 "**tomsons26** - all-around help, assistance and guidance in reverse-"
 "engineering, YR binary mappings"

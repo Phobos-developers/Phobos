@@ -1155,52 +1155,48 @@ msgid "Override target under EMP attack behavior (By FS-21)"
 msgstr "覆盖对被 EMP 瘫痪的目标的攻击行为（by FS-21）"
 
 #: ../../Whats-New.md:342
-msgid "Recycle spawner in long-range (by TaranDahl)"
-msgstr "远距离回收子机（by TaranDahl）"
+msgid ""
+"[Aircraft spawner recycling improvements (custom offset, animation etc"
+".)](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by "
+"TaranDahl)"
+msgstr ""
+"[子机回收增强（自定义坐标、动画等）](New-or-Enhanced-Logics.md#aircraft-spawner-customizations)（by TaranDahl）"
 
 #: ../../Whats-New.md:343
-msgid "Play an anim when recycling a spawner (by TaranDahl)"
-msgstr "回收子机时播放动画（by TaranDahl）"
-
-#: ../../Whats-New.md:344
-msgid "Recycle the spawner on other FLH (by TaranDahl)"
-msgstr "使用其他 FLH 回收子机（by TaranDahl）"
-
-#: ../../Whats-New.md:345
 msgid "Technos can maintain a suitable distance after firing (by CrimRecya)"
 msgstr "科技类型可以在开火后保持适当的距离（by CrimRecya）"
 
-#: ../../Whats-New.md:346
+#: ../../Whats-New.md:344
 msgid "Projectile subject to ground check before firing (by CrimRecya)"
 msgstr "`SubjectToGround`（by CrimRecya）"
 
-#: ../../Whats-New.md:347
+#: ../../Whats-New.md:345
 msgid "Delay automatic attack on the controlled unit (by CrimRecya)"
 msgstr "攻击被心控单位的延迟（by CrimRecya）"
 
-#: ../../Whats-New.md:348
+#: ../../Whats-New.md:346
 msgid "`BombParachute` deglobalization (by TaranDahl)"
 msgstr "抛射体自定义 `BombParachute`（by TaranDahl）"
 
-#: ../../Whats-New.md:349
+#: ../../Whats-New.md:347
 msgid "Sinkablity and sinking speed customization (by TaranDahl)"
 msgstr "自定义能否沉没以及沉没速度（by TaranDahl）"
 
-#: ../../Whats-New.md:350
+#: ../../Whats-New.md:348
 msgid "Fast access vehicle (by CrimRecya)"
 msgstr "快速上车（by CrimRecya）"
 
-#: ../../Whats-New.md:351
+#: ../../Whats-New.md:349
 msgid "Laser, electric bolt and rad beam scatter (by CrimRecya)"
 msgstr "激光、EBolt 和辐射波的散布（by CrimRecya）"
 
-#: ../../Whats-New.md:352
+#: ../../Whats-New.md:350
 msgid ""
 "[Airburst weapon firing/source coordinate customizations](Fixed-or-"
 "Improved-Logics.md#airburst--splits) (by Starkku)"
 msgstr "[自定义空爆武器中心坐标](Fixed-or-Improved-Logics.md#airburst--splits)（by Starkku）"
 
-#: ../../Whats-New.md:353
+#: ../../Whats-New.md:351
 msgid ""
 "[AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-"
 "flh-customizations) (by Starkku)"
@@ -1255,6 +1251,18 @@ msgstr "根据射程选取武器（by Ollerus）"
 #: ../../Whats-New.md:359
 msgid "Jumpjet Tilts While Moving (by CrimRecya)"
 msgstr "Jumpjet 在移动时倾斜（by CrimRecya）"
+
+#: ../../Whats-New.md:360
+msgid ""
+"[Spawned aircraft facing to match turret toggle](New-or-Enhanced-"
+"Logics.md#aircraft-spawner-customizations) (by Starkku)"
+msgstr ""
+"[子机生成时对齐炮塔方向的开关](New-or-Enhanced-"
+"Logics.md#aircraft-spawner-customizations)（by Starkku）"
+
+#: ../../Whats-New.md:361
+msgid "Removed dependency on `blowfish.dll` (by ZivDero)"
+msgstr "移除了 `blowfish.dll` 依赖（by ZivDero）"
 
 #: ../../Whats-New.md:363 ../../Whats-New.md:554 ../../Whats-New.md:866
 #: ../../Whats-New.md:975 ../../Whats-New.md:1000 ../../Whats-New.md:1039

@@ -4607,6 +4607,13 @@ msgstr "如果 `Spawner.AttackImmediately` 设为 true，战机子机将在生�
 
 #: ../../New-or-Enhanced-Logics.md:1144
 msgid ""
+"`Spawner.UseTurretFacing`, if set, makes spawned aircraft face the same "
+"way as turret does upon being created if the spawner has a turret."
+msgstr ""
+"若启用 `Spawner.UseTurretFacing` 则子机发射器单位拥有炮塔时子机生成时的初始方向使用炮塔方向而非车体方向。"
+
+#: ../../New-or-Enhanced-Logics.md:1145
+msgid ""
 "`Spawner.RecycleRange` defines the range (in cell) that the spawned is "
 "considered close enough to the spawner to be recycled."
 msgstr "`Spawner.RecycleRange` 决定子机在距离母舰多少格以内可以被进行回收。"
