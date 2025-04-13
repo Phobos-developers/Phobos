@@ -358,6 +358,7 @@ New:
 - Forcing specific weapon by range (by Ollerus)
 - Jumpjet Tilts While Moving (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
+- Removed dependency on `blowfish.dll` (by ZivDero)
 - New trajectory system (by CrimRecya)
 - New Missile trajectory (by CrimRecya)
 - New Engrave trajectory (by CrimRecya)

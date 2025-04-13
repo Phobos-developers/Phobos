@@ -402,6 +402,7 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
   - Fix a jumpjet crash related to voxel shadow drawing
+  - Replace `BLOWFISH.DLL` using Red Alert source code
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -442,6 +443,9 @@ This page lists all the individual contributions to the project by their author.
   - New Missile trajectory
   - New Engrave trajectory
   - New Tracing trajectory
+- **Noble Fish (DeathFish, DeathFishAtEase)**
+  - Documentation maintenance
+  - Chinese documentation maintenance and translation
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
