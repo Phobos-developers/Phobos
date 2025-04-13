@@ -1750,7 +1750,7 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 *Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
 
 - Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
-- The maximum tilt angle will not exceed 45 degrees.
+- The maximum tilt angle will not exceed 90 degrees.
   - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
   - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
 
