@@ -62,6 +62,7 @@ void MissileTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 		this->TargetSnapDistance = Leptons(154);
 		// 154 -> 0.5 * Unsorted::LeptonsPerCell (Used to ensure correct hit at the fixed speed)
 		this->DetonationDistance = Leptons(128);
+		this->Acceleration = 5;
 		// Fixed and appropriate steering speed
 		this->TurningSpeed = 10.0;
 		return;
@@ -185,14 +186,15 @@ void MissileTrajectory::OpenFire()
 		this->MovingVelocity.Z = 4.0;
 		this->MovingSpeed = 4.0;
 		// OriginalDistance is converted to record the maximum height
-		if (this->OriginalDistance < (Unsorted::LeptonsPerCell * 5)) // When the distance is very close, the trajectory tends to be parabolic
-			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 1.2) + (Unsorted::LeptonsPerCell * 2);
+		if (this->OriginalDistance < (Unsorted::LeptonsPerCell * 8)) // When the distance is very close, the trajectory tends to be parabolic
+			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 0.75) + (Unsorted::LeptonsPerCell * 2);
 		else if (this->OriginalDistance > (Unsorted::LeptonsPerCell * 15)) // When the distance is far enough, it is the complete trajectory
 			this->OriginalDistance = static_cast<int>(this->OriginalDistance * 0.4) + (Unsorted::LeptonsPerCell * 2);
 		else // The distance is neither long nor short, it is an adaptive trajectory
 			this->OriginalDistance = (Unsorted::LeptonsPerCell * 8);
 		// Calculate the maximum height during the ascending phase
 		this->OriginalDistance = this->OriginalDistance < 3200 ? this->OriginalDistance / 2 : this->OriginalDistance - 1600;
+		this->RemainingDistance = INT_MAX;
 	}
 	else // Under normal circumstances, the trajectory is similar to ROT projectile with an initial launch direction
 	{
@@ -491,7 +493,7 @@ bool MissileTrajectory::StandardVelocityChange()
 		else
 		{
 			this->CruiseEnable = false;
-			this->LastDotProduct = 0;
+			this->LastDotProduct = 0.0;
 		}
 	}
 	// Calculate the velocity direction change
