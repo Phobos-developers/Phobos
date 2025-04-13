@@ -72,7 +72,7 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 	if (absType == AbstractType::Anim)
 	{
-		auto const pAnim = specific_cast<AnimClass*>(abs);
+		auto const pAnim = abstract_cast<AnimClass*>(abs);
 
 		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{

@@ -56,7 +56,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 
 	pLinked->WarpingOut = true;
 
-	if (auto pUnit = specific_cast<UnitClass*>(pLinked))
+	if (auto pUnit = abstract_cast<UnitClass*>(pLinked))
 	{
 		if (pUnit->Type->Harvester || pUnit->Type->Weeder)
 		{

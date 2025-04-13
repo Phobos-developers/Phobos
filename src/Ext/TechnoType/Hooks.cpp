@@ -58,7 +58,7 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 	GET(ObjectClass*, pObject, ECX);
 
 	auto pDecidedUIName = pObject->GetUIName();
-	auto pFoot = generic_cast<FootClass*>(pObject);
+	auto pFoot = abstract_cast<FootClass*>(pObject);
 	auto pTechnoType = pObject->GetTechnoType();
 
 	if (pFoot && pTechnoType && !pObject->IsDisguised())

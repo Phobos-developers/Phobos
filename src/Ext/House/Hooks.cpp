@@ -260,7 +260,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (auto pMe = generic_cast<FootClass*>(pThis))
+	if (auto pMe = abstract_cast<FootClass*>(pThis))
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();
 		bool You_are_human = pNewOwner->IsControlledByHuman();

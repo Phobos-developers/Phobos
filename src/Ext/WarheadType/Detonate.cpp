@@ -428,9 +428,9 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 {
 	if (pTarget->IsDisguised())
 	{
-		if (auto pSpy = specific_cast<InfantryClass*>(pTarget))
+		if (auto pSpy = abstract_cast<InfantryClass*>(pTarget))
 			pSpy->Disguised = false;
-		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
+		else if (auto pMirage = abstract_cast<UnitClass*>(pTarget))
 			pMirage->ClearDisguise();
 	}
 }
@@ -529,7 +529,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 
 	if (cellSpread == 0.0)
 	{
-		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
+		if (auto const pBullet = abstract_cast<BulletClass*>(pOwner->Target))
 		{
 			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 

@@ -603,7 +603,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 
 	if (pSourceTypeExt->InterceptorType)
 	{
-		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
+		if (auto const pTargetObject = abstract_cast<BulletClass* const>(pTarget))
 		{
 			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
 			{

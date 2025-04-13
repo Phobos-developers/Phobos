@@ -229,7 +229,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			HouseClass* pVictim = nullptr;
 
-			if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
+			if (TechnoClass* Target = abstract_cast<TechnoClass*>(pThis->Target))
 				pVictim = Target->Owner;
 
 			auto types = make_iterator_single(pAnimType);

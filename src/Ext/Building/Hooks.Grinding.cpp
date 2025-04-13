@@ -62,7 +62,7 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 	if (!pThis || pThis->Target)
 		return 0;
 
-	auto pBld = specific_cast<BuildingClass*>(pThis->Destination);
+	auto pBld = abstract_cast<BuildingClass*>(pThis->Destination);
 	if (!pBld)
 		return 0;
 

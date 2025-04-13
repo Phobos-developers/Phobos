@@ -2,19 +2,13 @@
 
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
-    if (flags == AffectedHouse::All)
-        return true;
-
-    AffectedHouse relation = AffectedHouse::None;
-
-    if (ownerHouse == targetHouse)
-        relation |= AffectedHouse::Owner;
-    else if (ownerHouse->IsAlliedWith(targetHouse))
-        relation |= AffectedHouse::Allies;
-    else
-        relation |= AffectedHouse::Enemies;
-
-    return (flags & relation) != AffectedHouse::None;
+	if (flags == AffectedHouse::All)
+		return true;
+	if (ownerHouse == targetHouse)
+		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+	if (ownerHouse->IsAlliedWith(targetHouse))
+		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
+	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
 bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
@@ -30,58 +24,52 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 			return false;
 	}
 
-	AffectedTarget cellType = AffectedTarget::None;
+	if (allowed & AffectedTarget::AllCells)
+	{
+		if (pCell->LandType == LandType::Water && (!considerBridgesLand || !pCell->ContainsBridge())) // check whether it supports water
+			return (allowed & AffectedTarget::Water) != AffectedTarget::None;
+		else                                    // check whether it supports non-water
+			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
+	}
 
-    if (pCell->LandType == LandType::Water)
-    {
-        if (considerBridgesLand && pCell->ContainsBridge())
-            cellType |= AffectedTarget::Land;
-        else
-            cellType |= AffectedTarget::Water;
-    }
-    else
-    {
-        cellType |= AffectedTarget::Land;
-    }
-
-    return (allowed & cellType) != AffectedTarget::None;
+	return allowed != AffectedTarget::None;
 }
 
 bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
 {
 	if (allowed == AffectedTarget::All)
-        return true;
+		return true;
 
-    if (!pTechno)
-        return (allowed & AffectedTarget::NoContent) != AffectedTarget::None;
+	if (allowed & AffectedTarget::AllContents)
+	{
+		if (pTechno)
+		{
+			switch (pTechno->WhatAmI())
+			{
+			case AbstractType::Infantry:
+				return (allowed & AffectedTarget::Infantry) != AffectedTarget::None;
+			case AbstractType::Unit:
+				return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+			case AbstractType::Aircraft:
+				if (!considerAircraftSeparately)
+					return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+				else
+					return (allowed & AffectedTarget::Aircraft) != AffectedTarget::None;
+			case AbstractType::Building:
+				if (pTechno->IsStrange())
+					return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+				else
+					return (allowed & AffectedTarget::Building) != AffectedTarget::None;
+			}
+		}
+		else
+		{
+			// is the target cell allowed to be empty?
+			return (allowed & AffectedTarget::NoContent) != AffectedTarget::None;
+		}
+	}
 
-    AffectedTarget technoType = AffectedTarget::None;
-
-    switch (pTechno->WhatAmI())
-    {
-        case AbstractType::Infantry:
-            technoType |= AffectedTarget::Infantry;
-            break;
-        case AbstractType::Unit:
-            technoType |= AffectedTarget::Unit;
-            break;
-        case AbstractType::Aircraft:
-            if (!considerAircraftSeparately)
-                technoType |= AffectedTarget::Unit;
-            else
-                technoType |= AffectedTarget::Aircraft;
-            break;
-        case AbstractType::Building:
-            if (pTechno->IsStrange())
-                technoType |= AffectedTarget::Unit;
-            else
-                technoType |= AffectedTarget::Building;
-            break;
-        default:
-            return false;
-    }
-
-    return (allowed & technoType) != AffectedTarget::None;
+	return allowed != AffectedTarget::None;
 }
 
 bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately, bool allowBridges)

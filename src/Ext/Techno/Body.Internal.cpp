@@ -27,7 +27,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
-		if (auto const pFootKiller = generic_cast<FootClass*>(pObjectKiller))
+		if (auto const pFootKiller = abstract_cast<FootClass*>(pObjectKiller))
 			TechnoExt::ExtMap.Find(pObjectKiller)->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
 	}
 }

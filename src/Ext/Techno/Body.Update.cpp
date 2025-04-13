@@ -499,7 +499,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		}
 	}
 
-	if (auto const pInf = specific_cast<InfantryClass*>(pThis))
+	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
 	{
 		// It's still not recommended to have such idea, please avoid using this
 		if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
@@ -628,7 +628,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 			auto coords = pThis->GetCoords();
 			int offset = 0;
 
-			if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
+			if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
 				offset = Unsorted::LevelHeight * pBuilding->Type->Height;
 			else
 				offset = pThis->GetTechnoType()->MindControlRingOffset;

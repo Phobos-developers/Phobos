@@ -129,7 +129,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 
 bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass* pTechno, AnimTypeClass* pControlledAnimType, int threatDelay)
 {
-	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
+	if (const auto pTarget = abstract_cast<TechnoClass*>(pTechno))
 	{
 		bool bRemoveFirst = false;
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
