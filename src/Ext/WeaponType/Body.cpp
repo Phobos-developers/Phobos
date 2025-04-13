@@ -102,6 +102,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ChargeTurret_Delays.Read(exINI, pSection, "ChargeTurret.Delays");
 	this->OmniFire_TurnToTarget.Read(exINI, pSection, "OmniFire.TurnToTarget");
 	this->FireOnce_ResetSequence.Read(exINI, pSection, "FireOnce.ResetSequence");
+	this->TurretRecoil_Suppress.Read(exINI, pSection, "TurretRecoil.Suppress");
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
@@ -160,6 +161,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ChargeTurret_Delays)
 		.Process(this->OmniFire_TurnToTarget)
 		.Process(this->FireOnce_ResetSequence)
+		.Process(this->TurretRecoil_Suppress)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)

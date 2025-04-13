@@ -1344,6 +1344,14 @@ DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
 
 #pragma endregion
 
+#pragma region TurretRecoilReadFix
+
+// Skip incorrect copy, why do copy like this?
+DEFINE_JUMP(LJMP, 0x715326, 0x715333); // TechnoTypeClass::LoadFromINI
+// Then EDI is BarrelAnimData now, not incorrect TurretAnimData
+
+#pragma endregion
+
 #pragma region TeamCloseRangeFix
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)

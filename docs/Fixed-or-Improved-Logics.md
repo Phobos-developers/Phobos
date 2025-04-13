@@ -1472,6 +1472,29 @@ In `artmd.ini`:
 TurretShadow=   ; boolean
 ```
 
+### Turret recoil
+
+- Now you can use `TurretRecoil` to control units’ turret/barrel recoil effect when firing.
+  - `TurretTravel` and `BarrelTravel` control the maximum recoil distance.
+  - `TurretRecoil.Suppress` can prevent the weapon from producing this effect when firing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]             ; VehicleType
+TurretRecoil=no           ; boolean
+TurretTravel=2            ; integer, pixels
+TurretCompressFrames=1    ; integer, game frames
+TurretHoldFrames=1        ; integer, game frames
+TurretRecoverFrames=1     ; integer, game frames
+BarrelTravel=2            ; integer, pixels
+BarrelCompressFrames=1    ; integer, game frames
+BarrelHoldFrames=1        ; integer, game frames
+BarrelRecoverFrames=1     ; integer, game frames
+
+[SOMEWEAPON]              ; WeaponType
+TurretRecoil.Suppress=no  ; boolean
+```
+
 ## Veinholes & Weeds
 
 ### Veinholes

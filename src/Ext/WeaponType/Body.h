@@ -48,6 +48,7 @@ public:
 		ValueableVector<int> ChargeTurret_Delays;
 		Valueable<bool> OmniFire_TurnToTarget;
 		Valueable<bool> FireOnce_ResetSequence;
+		Valueable<bool> TurretRecoil_Suppress;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
@@ -102,6 +103,7 @@ public:
 			, ChargeTurret_Delays {}
 			, OmniFire_TurnToTarget { false }
 			, FireOnce_ResetSequence { true }
+			, TurretRecoil_Suppress { false }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
