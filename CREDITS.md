@@ -440,6 +440,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
   - Jumpjet Tilts While Moving
   - Restore turret recoil effect
+  - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
 - **Noble Fish (DeathFish, DeathFishAtEase)**
   - Documentation maintenance
   - Chinese documentation maintenance and translation

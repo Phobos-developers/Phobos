@@ -378,6 +378,7 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport (by CrimRecya)
+- Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
