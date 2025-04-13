@@ -83,7 +83,7 @@ msgid ""
 "developers/Phobos/workflows/EditorConfig/badge.svg)](https://github.com"
 "/Phobos-developers/Phobos/actions?query=workflow%3AEditorConfig) "
 "[![license](https://img.shields.io/github/license/Phobos-"
-"developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)"
+"developers/Phobos.svg)](https://www.gnu.org/licenses/gpl-3.0.html)"
 msgstr ""
 "[![Github 所有发布版本](https://img.shields.io/github/downloads/Phobos-"
 "developers/Phobos/total.svg)](https://github.com/Phobos-"
@@ -539,12 +539,12 @@ msgstr "法律与许可证"
 
 #: ../../../README.md:115
 msgid ""
-"[![LGPL "
-"v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)"
+"[![GPL "
+"v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)"
 msgstr ""
 
 #: ../../../README.md:115
-msgid "LGPL v3"
+msgid "GPL v3"
 msgstr ""
 
 #: ../../../README.md:117

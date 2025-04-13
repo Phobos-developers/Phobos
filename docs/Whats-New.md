@@ -338,9 +338,7 @@ New:
 - Customizable spawns queue (by TwinkleStar)
 - Initial spawns number (by TwinkleStar)
 - Override target under EMP attack behavior (By FS-21)
-- Recycle spawner in long-range (by TaranDahl)
-- Play an anim when recycling a spawner (by TaranDahl)
-- Recycle the spawner on other FLH (by TaranDahl)
+- [Aircraft spawner recycling improvements (custom offset, animation etc.)](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by TaranDahl)
 - Technos can maintain a suitable distance after firing (by CrimRecya)
 - Projectile subject to ground check before firing (by CrimRecya)
 - Delay automatic attack on the controlled unit (by CrimRecya)
@@ -358,6 +356,8 @@ New:
 - Enhanced reveal & gap warhead (by NetsuNegi)
 - Forcing specific weapon by range (by Ollerus)
 - Jumpjet Tilts While Moving (by CrimRecya)
+- [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
+- Removed dependency on `blowfish.dll` (by ZivDero)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
