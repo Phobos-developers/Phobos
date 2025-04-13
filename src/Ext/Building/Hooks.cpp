@@ -9,27 +9,19 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <TacticalClass.h>
+#include <PlanningTokenClass.h>
 
 #pragma region Update
 
-//After TechnoClass_AI?
+// After TechnoClass_AI
 DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	// Do not search this up again in any functions called here because it is costly for performance - Starkku
-	auto pExt = BuildingExt::ExtMap.Find(pThis);
-
-	/*
-	// Set only if unset or type has changed - Not currently useful as building type does not change.
-	auto pType = pThis->Type;
-
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->TypeExtData = BuildingTypeExt::ExtMap.Find(pType);
-	*/
-
+	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
+	pExt->TechnoExtData->UpdateGattlingRateDownReset();
 
 	return 0;
 }
@@ -147,7 +139,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	}
 	else
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->Owner->EMPTarget);
+		auto const pCell = MapClass::Instance.TryGetCellAt(pThis->Owner->EMPTarget);
 
 		if (pCell)
 		{
@@ -184,12 +176,12 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
 {
-	auto coords = MapClass::Instance->GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
+	auto coords = MapClass::Instance.GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
 	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
 	return pCrd;
 }
 
-DEFINE_JUMP(CALL6, 0x44D1F9, GET_OFFSET(BuildingClass_GetFireCoords_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL6, 0x44D1F9, BuildingClass_GetFireCoords_Wrapper);
 
 DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 {
@@ -199,6 +191,46 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 	pBullet->SetWeaponType(pWeapon);
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region KickOutStuckUnits
+
+// Kick out stuck units when the factory building is not busy, only factory buildings can enter this hook
+DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	// This is not a solution to the problem at its root
+	// Currently the root cause of the problem is not located
+	// So the idle weapon factory is asked to search every second for any units that are stuck
+	if (!(Unsorted::CurrentFrame % 15)) // Check every 15 frames for factories
+	{
+		const auto pType = pThis->Type;
+
+		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		{
+			const auto mission = pThis->CurrentMission;
+
+			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 1) // Unloading but stuck
+				BuildingExt::KickOutStuckUnits(pThis);
+		}
+	}
+
+	return 0;
+}
+
+// Should not kick out units if the factory building is in construction process
+DEFINE_HOOK(0x4444A0, BuildingClass_KickOutUnit_NoKickOutInConstruction, 0xA)
+{
+	enum { ThisIsOK = 0x444565, ThisIsNotOK = 0x4444B3};
+
+	GET(BuildingClass* const, pThis, ESI);
+
+	const auto mission = pThis->GetCurrentMission();
+
+	return (mission == Mission::Unload || mission == Mission::Construction) ? ThisIsNotOK : ThisIsOK;
 }
 
 #pragma endregion
@@ -226,7 +258,7 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 			return SkipSetShouldRebuild;
 
 		// Per-house dehardcoding: BaseNodes + SW-Delivery
-		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance->Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
+		if (!HouseExt::ExtMap.Find(pThis->Owner)->RepairBaseNodes[GameOptionsClass::Instance.Difficulty].Get(RulesExt::Global()->RepairBaseNodes))
 			return SkipSetShouldRebuild;
 	}
 	// Vanilla instruction: always repairable in other game modes
@@ -247,6 +279,7 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 
 	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 	pAnimExt->ParentBuilding = pThis;
+	TechnoExt::ExtMap.Find(pThis)->AnimRefCount++;
 
 	return 0;
 }
@@ -353,16 +386,16 @@ static void RecalculateCells(BuildingClass* pThis)
 
 	for (auto const& cell : cells)
 	{
-		if (auto pCell = map->TryGetCellAt(cell))
+		if (auto pCell = map.TryGetCellAt(cell))
 		{
 			pCell->RecalcAttributes(DWORD(-1));
 
 			if constexpr (remove)
-				map->ResetZones(cell);
+				map.ResetZones(cell);
 			else
-				map->RecalculateZones(cell);
+				map.RecalculateZones(cell);
 
-			map->RecalculateSubZones(cell);
+			map.RecalculateSubZones(cell);
 
 		}
 	}
@@ -388,6 +421,15 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 
 	if (pTypeExt->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);
+
+	for (auto& bAnim : pThis->Anims)
+	{
+		if (bAnim && VTable::Get(bAnim) == 0x7E3354)
+		{
+			bAnim->UnInit();
+			bAnim = nullptr;
+		}
+	}
 
 	return 0;
 }
@@ -532,7 +574,7 @@ DEFINE_HOOK(0x4FA520, HouseClass_BeginProduction_SkipBuilding, 0x5)
 
 DEFINE_HOOK(0x4FA612, HouseClass_BeginProduction_ForceRedrawStrip, 0x5)
 {
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;
 	return 0;
 }
 
@@ -559,8 +601,8 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 
 		if (firstRemoved)
 		{
-			SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-			SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+			SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+			SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 			if (all)
 				while (pFactory->RemoveOneFromQueue(pType));
@@ -577,8 +619,8 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 	if (!pFactory->RemoveOneFromQueue(TechnoTypeClass::GetByTypeAndIndex(absType, index)))
 		return CheckSame;
 
-	SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
-	SidebarClass::Instance->RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
+	SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true; // Added, force redraw strip
+	SidebarClass::Instance.RepaintSidebar(SidebarClass::GetObjectTabIdx(absType, index, 0));
 
 	return Return;
 }
@@ -652,10 +694,10 @@ DEFINE_HOOK(0x44EFD8, BuildingClass_FindExitCell_BarracksExitCell, 0x6)
 		exitCell.X += (short)offset.X;
 		exitCell.Y += (short)offset.Y;
 
-		if (MapClass::Instance->CoordinatesLegal(exitCell))
+		if (MapClass::Instance.CoordinatesLegal(exitCell))
 		{
 			GET(TechnoClass*, pTechno, ESI);
-			auto const pCell = MapClass::Instance->GetCellAt(exitCell);
+			auto const pCell = MapClass::Instance.GetCellAt(exitCell);
 
 			if (pTechno->IsCellOccupied(pCell, FacingType::None, -1, nullptr, true) == Move::OK)
 			{
@@ -691,6 +733,20 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x54BC99, JumpjetLocomotionClass_Ascending_BarracksExitCell, 0x6)
+{
+	enum { Continue = 0x54BCA3 };
+
+	GET(BuildingTypeClass*, pType, EAX);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->BarracksExitCell.isset())
+		return Continue;
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region BuildingFiring
@@ -711,6 +767,98 @@ bool __fastcall BuildingTypeClass_CanUseWaypoint(BuildingTypeClass* pThis)
 {
 	return RulesExt::Global()->BuildingWaypoints;
 }
-DEFINE_JUMP(VTABLE, 0x7E4610, GET_OFFSET(BuildingTypeClass_CanUseWaypoint))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4610, BuildingTypeClass_CanUseWaypoint)
+
+DEFINE_HOOK(0x4AE95E, DisplayClass_sub_4AE750_DisallowBuildingNonAttackPlanning, 0x5)
+{
+	enum { SkipGameCode = 0x4AE982 };
+
+	GET(ObjectClass* const, pObject, ECX);
+	LEA_STACK(CellStruct*, pCell, STACK_OFFSET(0x20, 0x8));
+
+	auto action = pObject->MouseOverCell(pCell);
+
+	if (!PlanningNodeClass::PlanningModeActive || pObject->WhatAmI() != AbstractType::Building || action == Action::Attack)
+		pObject->CellClickedAction(action, pCell, pCell, false);
+
+	return SkipGameCode;
+}
 
 #pragma endregion
+
+DEFINE_HOOK(0x4400F9, BuildingClass_AI_UpdateOverpower, 0x6)
+{
+	enum { SkipGameCode = 0x44019D };
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (!pThis->Type->Overpowerable)
+		return SkipGameCode;
+
+	int overPower = 0;
+
+	for (int idx = pThis->Overpowerers.Count - 1; idx >= 0; idx--)
+	{
+		const auto pCharger = pThis->Overpowerers[idx];
+
+		if (pCharger->Target != pThis)
+		{
+			pThis->Overpowerers.RemoveItem(idx);
+			continue;
+		}
+
+		const auto pWeapon = pCharger->GetWeapon(1)->WeaponType;
+
+		if (!pWeapon || !pWeapon->Warhead || !pWeapon->Warhead->ElectricAssault)
+		{
+			pThis->Overpowerers.RemoveItem(idx);
+			continue;
+		}
+
+		const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+		overPower += pWHExt->ElectricAssaultLevel;
+	}
+
+	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const int charge = pBuildingTypeExt->Overpower_ChargeWeapon;
+
+	if (charge >= 0)
+	{
+		const int keepOnline = pBuildingTypeExt->Overpower_KeepOnline;
+		pThis->IsOverpowered = overPower >= keepOnline + charge || (pThis->Owner->GetPowerPercentage() == 1.0 && pThis->HasPower && overPower >= charge);
+	}
+	else
+	{
+		pThis->IsOverpowered = false;
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK_AGAIN(0x45563B, BuildingClass_IsPowerOnline_Overpower, 0x6)
+DEFINE_HOOK(0x4555E4, BuildingClass_IsPowerOnline_Overpower, 0x6)
+{
+	enum { LowPower = 0x4556BE, Continue1 = 0x4555F0, Continue2 = 0x455643 };
+
+	GET(BuildingClass*, pThis, ESI);
+	const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	const int keepOnline = pBuildingTypeExt->Overpower_KeepOnline;
+
+	if (keepOnline < 0)
+		return LowPower;
+
+	int overPower = 0;
+
+	for (const auto pCharger : pThis->Overpowerers)
+	{
+		const auto pWeapon = pCharger->GetWeapon(1)->WeaponType;
+
+		if (pWeapon && pWeapon->Warhead)
+		{
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+			overPower += pWHExt->ElectricAssaultLevel;
+		}
+	}
+
+	return overPower < keepOnline ? LowPower : (R->Origin() == 0x4555E4 ? Continue1 : Continue2);
+}

@@ -34,7 +34,7 @@ FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoCla
 	return fireError;
 }
 
-DEFINE_JUMP(CALL6, 0x7098E6, GET_OFFSET(TechnoClass_TargetSomethingNearby_CanFire_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL6, 0x7098E6, TechnoClass_TargetSomethingNearby_CanFire_Wrapper);
 
 #pragma endregion
 
@@ -70,6 +70,13 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 	}
 
 	return AllowedObject;
+}
+
+// Fix the hardcode of healing weapon can't acquire in air target.
+DEFINE_HOOK(0x6F9222, TechnoClass_SelectAutoTarget_HealingTargetAir, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	return pThis->CombatDamage(-1) < 0 ? 0x6F922E : 0;
 }
 
 #pragma endregion
@@ -135,8 +142,8 @@ int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis,
 	return pThis->GetWeaponRange(CellEvalTemp::weaponIndex);
 }
 
-DEFINE_JUMP(CALL6, 0x6F8CE3, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponWrapper));
-DEFINE_JUMP(CALL6, 0x6F8DD2, GET_OFFSET(TechnoClass_EvaluateCellGetWeaponRangeWrapper));
+DEFINE_FUNCTION_JUMP(CALL6, 0x6F8CE3, TechnoClass_EvaluateCellGetWeaponWrapper);
+DEFINE_FUNCTION_JUMP(CALL6, 0x6F8DD2, TechnoClass_EvaluateCellGetWeaponRangeWrapper);
 
 #pragma endregion
 
@@ -183,7 +190,7 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 	return result;
 }
 
-DEFINE_JUMP(CALL, 0x6F7F51, GET_OFFSET(HealthRatio_Wrapper))
+DEFINE_FUNCTION_JUMP(CALL, 0x6F7F51, HealthRatio_Wrapper)
 
 #pragma endregion
 
@@ -269,7 +276,7 @@ FireError __fastcall UnitClass__GetFireError_Wrapper(UnitClass* pThis, void* _, 
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_JUMP(VTABLE, 0x7F6030, GET_OFFSET(UnitClass__GetFireError_Wrapper))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F6030, UnitClass__GetFireError_Wrapper)
 
 FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, int nWeaponIndex, bool ignoreRange)
 {
@@ -278,7 +285,7 @@ FireError __fastcall InfantryClass__GetFireError_Wrapper(InfantryClass* pThis, v
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_JUMP(VTABLE, 0x7EB418, GET_OFFSET(InfantryClass__GetFireError_Wrapper))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB418, InfantryClass__GetFireError_Wrapper)
 
 Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
@@ -287,7 +294,7 @@ Action __fastcall UnitClass__WhatAction_Wrapper(UnitClass* pThis, void* _, Objec
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_JUMP(VTABLE, 0x7F5CE4, GET_OFFSET(UnitClass__WhatAction_Wrapper))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5CE4, UnitClass__WhatAction_Wrapper)
 
 Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* _, ObjectClass* pObj, bool ignoreForce)
 {
@@ -296,6 +303,6 @@ Action __fastcall InfantryClass__WhatAction_Wrapper(InfantryClass* pThis, void* 
 	AresScheme::Suffix();
 	return result;
 }
-DEFINE_JUMP(VTABLE, 0x7EB0CC, GET_OFFSET(InfantryClass__WhatAction_Wrapper))
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB0CC, InfantryClass__WhatAction_Wrapper)
 
 #pragma endregion

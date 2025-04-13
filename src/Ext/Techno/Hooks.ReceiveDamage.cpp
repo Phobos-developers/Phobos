@@ -21,32 +21,46 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	int nDamageLeft = *args->Damage;
+	const auto pTypeExt = pExt->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+
+	const auto pSourceHouse = args->SourceHouse;
+	const auto pTargetHouse = pThis->Owner;
+
+	// Calculate Damage Multiplier
+	if (!args->IgnoreDefenses && *args->Damage)
+	{
+		double multiplier = 1.0;
+
+		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
+			multiplier = pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier);
+		else if (pSourceHouse != pTargetHouse)
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier);
+		else
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
+
+		if (multiplier != 1.0)
+		{
+			const auto sgnDamage = *args->Damage > 0 ? 1 : -1;
+			const auto calculateDamage = static_cast<int>(*args->Damage * multiplier);
+			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+		}
+	}
 
 	// Raise Combat Alert
-	if (pRules->CombatAlert && nDamageLeft > 1)
+	if (pRules->CombatAlert && *args->Damage > 1)
 	{
 		auto raiseCombatAlert = [&]()
 		{
-			const auto pHouse = pThis->Owner;
-
-			if (!pHouse->IsControlledByCurrentPlayer() || (pRules->CombatAlert_SuppressIfAllyDamage && pHouse->IsAlliedWith(args->SourceHouse)))
+			if (!pTargetHouse->IsControlledByCurrentPlayer() || (pRules->CombatAlert_SuppressIfAllyDamage && pTargetHouse->IsAlliedWith(pSourceHouse)))
 				return;
 
-			const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+			const auto pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
 
-			if (pHouseExt->CombatAlertTimer.HasTimeLeft())
+			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
-
-			const auto pTypeExt = pExt->TypeExtData;
-			const auto pType = pTypeExt->OwnerObject();
-
-			if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
-				return;
-
-			const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
-			if (pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
+			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
 			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
@@ -58,7 +72,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pRules->CombatAlert_SuppressIfInScreen)
 			{
-				const auto pTactical = TacticalClass::Instance();
+				const auto pTactical = TacticalClass::Instance;
 				const auto coordInScreen = pTactical->CoordsToScreen(coordInMap) - pTactical->TacticalPos;
 				const auto screenArea = DSurface::Composite->GetRect();
 
@@ -93,7 +107,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			if (!pShieldData->IsActive())
 				return 0;
 
-			nDamageLeft = pShieldData->ReceiveDamage(args);
+			int nDamageLeft = pShieldData->ReceiveDamage(args);
 
 			if (nDamageLeft >= 0)
 			{
@@ -179,36 +193,10 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+
 	if (pSource)
-	{
-		auto const pExt = TechnoExt::ExtMap.Find(pThis);
-		auto const pTypeExt = pExt->TypeExtData;
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
-
-		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-		{
-			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
-				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
-		}
-
-		for (auto& attachEffect : pExt->AttachedEffects)
-		{
-			if (!attachEffect->IsActive())
-				continue;
-
-			auto const pType = attachEffect->GetType();
-
-			if (!pType->RevengeWeapon)
-				continue;
-
-			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
-				continue;
-
-			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
-		}
-	}
+		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
 
 	return 0;
 }
