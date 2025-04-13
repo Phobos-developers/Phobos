@@ -132,7 +132,7 @@ namespace JumpjetTiltReference
 	constexpr auto BaseSpeed = 32;
 	constexpr auto BaseTilt = Math::HalfPi / 4;
 	constexpr auto BaseTurnRaw = 32768;
-	constexpr auto MaxTilt = static_cast<float>(Math::HalfPi / 2);
+	constexpr auto MaxTilt = static_cast<float>(Math::HalfPi);
 	constexpr auto ForwardBaseTilt = BaseTilt / BaseSpeed;
 	constexpr auto SidewaysBaseTilt = BaseTilt / (BaseTurnRaw * BaseSpeed);
 }
