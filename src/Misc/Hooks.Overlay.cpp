@@ -149,7 +149,7 @@ DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
 		struct OverlayByteWriter
 		{
 			OverlayByteWriter(const char* pSection, size_t nBufferLength)
-				: bp{ nullptr,0 }, lp{ FALSE,0x2000 }, uuLength{ 0 }, lpSectionName{ pSection }
+				: bp { nullptr,0 }, lp { FALSE,0x2000 }, uuLength { 0 }, lpSectionName { pSection }
 			{
 				this->Buffer = YRMemory::Allocate(nBufferLength);
 				bp.Buffer.Buffer = this->Buffer;
