@@ -182,7 +182,7 @@ DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
 		};
 
 		OverlayWriter(size_t nLen)
-			: ByteWriters{ { "OverlayPack", nLen}, { "OverlayPack2", nLen }, { "OverlayPack3", nLen }, { "OverlayPack4", nLen } }
+			: ByteWriters { { "OverlayPack", nLen}, { "OverlayPack2", nLen }, { "OverlayPack3", nLen }, { "OverlayPack4", nLen } }
 		{ }
 
 		void Put(int nOverlay)
@@ -218,7 +218,7 @@ DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
 	{
 		for (short j = 0; j < 0x200; ++j)
 		{
-			CellStruct mapCoord{ j,i };
+			CellStruct mapCoord { j,i };
 			auto const pCell = MapClass::Instance->GetCellAt(mapCoord);
 			writer.Put(pCell->OverlayTypeIndex);
 			datawriter.Put(pCell->OverlayData);
