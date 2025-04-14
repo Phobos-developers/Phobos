@@ -121,6 +121,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 					CellStruct mapCoord{ j,i };
 					unsigned char buffer;
 					ls.Get(&buffer, sizeof(buffer));
+
 					if (MapClass::Instance->CoordinatesLegal(mapCoord))
 					{
 						auto pCell = MapClass::Instance->GetCellAt(mapCoord);
