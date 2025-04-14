@@ -426,7 +426,7 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 			setValue(pTargetHouse);
 		}
-		else
+		else if (pThis->Value == -1)
 		{
 			for (auto pTargetHouse : HouseClass::Array)
 			{
@@ -452,7 +452,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 				pAngerNode.AngerLevel = 0;
 		}
 	}
-	else
+	else  if (pThis->Value == -1)
 	{
 		for (auto pTargetHouse : HouseClass::Array)
 		{
@@ -493,7 +493,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 			pHouse->EnemyHouseIndex = -1;
 		}
 	}
-	else
+	else if (pThis->Param3 == -1)
 	{
 		pHouseExt->SetForceEnemy(-1);
 		pHouse->UpdateAngerNodes(0, nullptr);
