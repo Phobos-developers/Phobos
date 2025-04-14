@@ -70,7 +70,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 			}
 
 			OverlayReader(CCINIClass* pINI)
-				:ByteReaders{ {pINI,"OverlayPack" }, { pINI,"OverlayPack2" }, { pINI,"OverlayPack3" }, { pINI,"OverlayPack4" }, }
+				:ByteReaders{ { pINI, "OverlayPack" }, { pINI, "OverlayPack2" }, { pINI, "OverlayPack3" }, { pINI, "OverlayPack4" }, }
 			{}
 
 		private:
