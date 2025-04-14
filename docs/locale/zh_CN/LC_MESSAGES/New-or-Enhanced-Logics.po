@@ -2042,7 +2042,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:755
 msgid "Projectiles blocked by land or water"
-msgstr "SubjectTo(Land/Water)"
+msgstr "使抛射体被陆地或水域阻挡"
 
 #: ../../New-or-Enhanced-Logics.md:757
 msgid ""
