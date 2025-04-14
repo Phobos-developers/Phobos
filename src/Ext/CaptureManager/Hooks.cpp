@@ -1,5 +1,8 @@
 #include "Body.h"
 
+#include <ParticleSystemClass.h>
+#include <Utilities/Macro.h>
+
 DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
 {
 	GET(CaptureManagerClass*, pThis, ECX);
@@ -59,7 +62,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 {
 	GET(CaptureManagerClass*, pThis, EDI);
 	GET(TechnoClass*, pVictim, ECX);
-	GET_STACK(int, nNodeCount, STACK_OFFS(0x30, 0x1C));
+	GET_STACK(int, nNodeCount, STACK_OFFSET(0x30, 0x1C));
 
 	auto const pAttacker = pThis->Owner;
 	const auto pExt = TechnoTypeExt::ExtMap.Find(pAttacker->GetTechnoType());
@@ -89,7 +92,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 
 	if (pThis->InfiniteMindControl)
 	{
-		auto const pRules = RulesClass::Instance();
+		auto const pRules = RulesClass::Instance;
 
 		if (pThis->OverloadPipState > 0)
 			--pThis->OverloadPipState;
@@ -147,7 +150,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 					}
 				}
 
-				if (nCurIdx > 0 && pOwner->IsAlive)
+				if (nCurIdx > 0 && pOwner->IsAlive && pOwner->Health > 0 && !pOwner->InLimbo)
 				{
 					double const nBase = (nCurIdx != 1) ? 0.015 : 0.029999999;
 					double const nCopied_base = (ScenarioClass::Instance->Random.RandomRanged(0, 100) < 50) ? -nBase : nBase;

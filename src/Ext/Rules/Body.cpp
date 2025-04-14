@@ -58,37 +58,6 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 }
 
-namespace ObjectTypeParser
-{
-	template<typename T>
-	void Exec(CCINIClass* pINI, DynamicVectorClass<DynamicVectorClass<T*>>& nVecDest, const char* pKey, bool bDebug = true)
-	{
-		for (int i = 0; i < pINI->GetKeyCount(pKey); ++i)
-		{
-			DynamicVectorClass<T*> _Buffer;
-			char* context = nullptr;
-			pINI->ReadString(pKey, pINI->GetKeyName(pKey, i), "", Phobos::readBuffer);
-
-			for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context);
-				cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-			{
-				T* buffer;
-
-				if(Parser<T*>::TryParse(cur, &buffer))
-					_Buffer.AddItem(buffer);
-				else
-				{
-					if (bDebug)
-						Debug::Log("ObjectTypeParser DEBUG: [%s][%d]: Error parsing [%s]\n", pKey, nVecDest.Count, cur);
-				}
-			}
-
-			nVecDest.AddItem(_Buffer);
-			_Buffer.Clear();
-		}
-	}
-};
-
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	RulesExt::ExtData* pData = RulesExt::Global();
