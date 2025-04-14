@@ -439,9 +439,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
   - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
   - Jumpjet Tilts While Moving
-- **Noble Fish (DeathFish, DeathFishAtEase)**
-  - Documentation maintenance
-  - Chinese documentation maintenance and translation
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -498,6 +495,7 @@ This page lists all the individual contributions to the project by their author.
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
 - **Chasheen (Chasheenburg)** - CN docs help for Build#24
+- **Noble Fish** - some minor fixes, established Community Chinese docs, took over and completely rewrite the Official Chinese docs during Build#46
 - **tomsons26** - all-around help, assistance and guidance in reverse-engineering, YR binary mappings
 - **CCHyper** - all-around help, current project logo, assistance and guidance in reverse-engineering, YR binary mappings, custom locomotors example implementation
 - **AlexB** - Original FlyingStrings implementation
