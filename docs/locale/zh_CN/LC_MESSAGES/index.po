@@ -167,9 +167,8 @@ msgid ""
 "understand that many may not know English as well as their native language "
 "and/or may have trouble accessing Discord."
 msgstr ""
-"由于该项目是国际性的，而英语是目前最常用的第二语言，因此英语是该项目的主要语"
-"言。 但我们并不限制创建特定语言的社区群组，因为我们知道很多人的英语可能不如母"
-"语好，而且／或者在访问 Discord 时可能会遇到困难。"
+"由于这是一个国际性的项目而英语是目前最常用的第二语言，因此英语是该项目的主要语言。 "
+"不过我们知道很多人的英语可能不如母语那样好，而且／或者在访问 Discord 时可能会遇到困难，所以我们并不限制创建特定语言的社区群组。"
 
 #: ../../README.md:24
 msgid ""
