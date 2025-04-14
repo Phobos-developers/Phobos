@@ -163,11 +163,11 @@ public:
 		Valueable<double> DamageEnemiesMultiplier;
 
 		Valueable<bool> DirectionalArmor;
-		Valueable<float> DirectionalArmor_FrontMultiplier;
-		Valueable<float> DirectionalArmor_SideMultiplier;
-		Valueable<float> DirectionalArmor_BackMultiplier;
-		Valueable<float> DirectionalArmor_FrontField;
-		Valueable<float> DirectionalArmor_BackField;
+		Valueable<double> DirectionalArmor_FrontMultiplier;
+		Valueable<double> DirectionalArmor_SideMultiplier;
+		Valueable<double> DirectionalArmor_BackMultiplier;
+		Valueable<double> DirectionalArmor_FrontField;
+		Valueable<double> DirectionalArmor_BackField;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
