@@ -118,7 +118,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 			{
 				for (short j = 0; j < 0x200; ++j)
 				{
-					CellStruct mapCoord{ j,i };
+					CellStruct mapCoord { j,i };
 					unsigned char buffer;
 					ls.Get(&buffer, sizeof(buffer));
 
