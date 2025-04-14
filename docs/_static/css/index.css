@@ -1,0 +1,243 @@
+:focus-visible {
+  outline: solid 2px;
+}
+
+.wy-nav-top i {
+  line-height: 54px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.wy-nav-content {
+  max-width: none;
+}
+
+.rst-content code.literal {
+  white-space: nowrap;
+}
+
+.rst-content a {
+  color: #58a6ff;
+}
+
+.rst-content p img ~ em {
+  display: block;
+}
+
+.rst-content .btn:focus {
+  outline: unset;
+}
+
+.rst-content .btn:focus-visible {
+  outline: 2px solid;
+}
+
+.wy-body-for-nav {
+  background: #1a1a1a;
+  max-width: 1400px;
+  margin: auto;
+}
+
+.wy-nav-side {
+  left: auto;
+  max-width: 300px;
+}
+
+.wy-side-nav-search input[type="text"] {
+  border-radius: 6px;
+  box-shadow: unset;
+}
+
+.wy-side-nav-search input[type="text"]:focus-visible {
+  outline: solid 2px;
+}
+
+.wy-menu-vertical a:focus-visible {
+  outline-offset: -3px;
+}
+
+.wy-menu-vertical li.current > a,
+.wy-menu-vertical li.on a {
+  border-right: 1px solid #c9c9c9;
+}
+
+.wy-menu-vertical li.toctree-l2.current > a:hover,
+.wy-menu-vertical li.toctree-l2.current li.toctree-l3 > a:hover {
+  background: #d6d6d6;
+}
+
+.wy-menu-vertical li.toctree-l1.current > a {
+  border-bottom: unset;
+  border-top: unset;
+}
+
+.rst-versions {
+  left: auto;
+  width: 300px;
+  max-width: 85%;
+}
+
+.wy-grid-for-nav {
+  position: unset;
+}
+
+@media screen and (max-width: 768px) {
+  .wy-nav-side {
+    left: -300px;
+  }
+
+  .wy-nav-top {
+    padding: unset;
+    width: 100%;
+    position: fixed;
+    height: 50px;
+  }
+
+  .wy-nav-content-wrap.shift {
+    left: min(300px, 85%);
+  }
+
+  .rst-content {
+    padding-top: 50px;
+  }
+}
+
+.toctree-expand {
+  tab-in
+}
+
+details {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  background-color: #f3f6f6;
+  color: #404040;
+  box-shadow: inset 0 1px 2px -1px hsl(0deg 0% 100% / 50%),
+    inset 0 -2px 0 0 rgb(0 0 0 / 10%);
+  padding: 12px 12px 0;
+  margin-bottom: 24px;
+}
+
+summary {
+  font-style: italic;
+  cursor: pointer;
+  margin: -12px -12px 0;
+  padding: 12px;
+
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+details[open] {
+  padding: 12px;
+}
+
+details[open] summary {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+}
+
+details > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* =================================== */
+/* Switcher */
+
+.switcher {
+  position: absolute;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border: none;
+  z-index: 200;
+  outline: unset !important;
+
+  /* margin-left: -50px; */
+  padding: 2px;
+  top: 12px;
+  left: 12px;
+}
+
+/* Switcher Legend */
+
+.switcher__legend {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Switcher Radio */
+
+.switcher__radio {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 22px;
+  height: 22px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  transition: filter 0.1s ease-in;
+
+  margin-right: unset !important;
+}
+
+.switcher__radio:focus {
+  outline: unset !important;
+}
+
+.switcher__radio--light {
+  background-image: url("../icons/light.svg");
+}
+
+.switcher__radio--auto {
+  background-image: url("../icons/auto.svg");
+  background-size: 32px;
+}
+
+.switcher__radio--dark {
+  background-image: url("../icons/dark.svg");
+}
+
+/* Switcher Status */
+
+.switcher__status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 18px;
+  background-color: #fcfcfc;
+  background-repeat: no-repeat;
+  background-image: url("../icons/status.svg");
+  background-size: 22px;
+  background-position: center;
+  transition: background-position 0.1s ease-in;
+}
+
+.switcher__radio:focus-visible ~ .switcher__status {
+  outline: #343131 solid 2px;
+}
+
+.switcher__radio--light:checked ~ .switcher__status {
+  background-position: left 2px center;
+}
+
+.switcher__radio--auto:checked ~ .switcher__status {
+  background-position: center center;
+}
+
+.switcher__radio--dark:checked ~ .switcher__status {
+  background-position: right 2px center;
+}
+
+.switcher__radio--light:checked,
+.switcher__radio--auto:checked,
+.switcher__radio--dark:checked {
+  filter: invert(1);
+}

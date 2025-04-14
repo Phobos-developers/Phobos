@@ -27,7 +27,7 @@ DEFINE_HOOK(0x68BCE4, ScenarioClass_Get_Waypoint_Cell_0, 0x7)
 
 DEFINE_HOOK(0x68BD08, ScenarioClass_Get_Waypoint, 0x7)
 {
-	GET_STACK(int, nWaypoint, STACK_OFFS(0x10, -0x8));
+	GET_STACK(int, nWaypoint, STACK_OFFSET(0x10, 0x8));
 
 	R->ECX(&ScenarioExt::Global()->Waypoints[nWaypoint]);
 
@@ -62,21 +62,21 @@ DEFINE_HOOK(0x68BDC0, ScenarioClass_ReadWaypoints, 0x8)
 		const auto pName = pINI->GetKeyName("Waypoints", i);
 		int id;
 		if (sscanf_s(pName, "%d", &id) != 1 || id < 0)
-			Debug::Log("[Developer Warning] Failed to parse waypoint %s.\n", pName);
+			Debug::Log("[Developer warning] Failed to parse waypoint %s.\n", pName);
 		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
 
 		if (nCoord)
 		{
 			buffer.X = static_cast<short>(nCoord % 1000);
 			buffer.Y = static_cast<short>(nCoord / 1000);
-			if (auto pCell = MapClass::Instance->TryGetCellAt(buffer))
+			if (auto pCell = MapClass::Instance.TryGetCellAt(buffer))
 				pCell->Flags |= CellFlags::IsWaypoint;
 			else if (ScenarioExt::CellParsed)
-				Debug::Log("[Developer Warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
+				Debug::Log("[Developer warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
 			ScenarioExt::Global()->Waypoints[id] = buffer;
 		}
 		else
-			Debug::Log("[Developer Warning] Invalid waypoint %d!\n", id);
+			Debug::Log("[Developer warning] Invalid waypoint %d!\n", id);
 	}
 
 	return 0x68BE8C;
@@ -199,8 +199,8 @@ DEFINE_HOOK(0x6883B7, ScenStruct_ScenStruct_1, 0x6)
 
 DEFINE_HOOK(0x68843B, ScenStruct_ScenStruct_2, 0x6)
 {
-	REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFS(0x40, 0x18));
-	REF_STACK(CellStruct, buffer, STACK_OFFS(0x40, 0x20));
+	REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFSET(0x40, -0x18));
+	REF_STACK(CellStruct, buffer, STACK_OFFSET(0x40, -0x20));
 	GET(int, i, ESI);
 
 	if (ScenarioClass::Instance->IsDefinedWaypoint(i))

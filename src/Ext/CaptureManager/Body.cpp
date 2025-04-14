@@ -1,100 +1,147 @@
 #include "Body.h"
 
-#include <Ext/TechnoType/Body.h>
+#include <Ext/Techno/Body.h>
 
-template<> const DWORD Extension<CaptureExt::base_type>::Canary = 0x87654121;
-CaptureExt::ExtContainer CaptureExt::ExtMap;
-
-void CaptureExt::ExtData::InitializeConstants()
-{}
-
-// =============================
-// load / save
-
-template <typename T>
-void CaptureExt::ExtData::Serialize(T& Stm)
+bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
-	Stm
-		//No need
-		// will cause crash , everything wil be re-init ed later
-		//.Process(OverloadCount)
-		//.Process(OverloadFrames)
-		//.Process(OverloadDamage)
-		//.Process(OverloadDeathSound)
-		;
+	if (pManager->MaxControlNodes == 1)
+		return pManager->CanCapture(pTarget);
+
+	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
+	{
+		// I hate Ares' completely rewritten things - secsome
+		pManager->MaxControlNodes += 1;
+		bool result = pManager->CanCapture(pTarget);
+		pManager->MaxControlNodes -= 1;
+		return result;
+	}
+
+	return pManager->CanCapture(pTarget);
 }
 
-void CaptureExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
+bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTarget, bool silent)
 {
-	Extension<CaptureExt::base_type>::LoadFromStream(Stm);
-	this->Serialize(Stm);
+	if (pTarget)
+	{
+		for (int i = pManager->ControlNodes.Count - 1; i >= 0; --i)
+		{
+			const auto pNode = pManager->ControlNodes[i];
+			if (pTarget == pNode->Unit)
+			{
+				if (pTarget->MindControlRingAnim)
+				{
+					pTarget->MindControlRingAnim->UnInit();
+					pTarget->MindControlRingAnim = nullptr;
+				}
+
+				if (!silent)
+				{
+					int nSound = pTarget->GetTechnoType()->MindClearedSound;
+
+					if (nSound == -1)
+						nSound = RulesClass::Instance->MindClearedSound;
+					if (nSound != -1)
+						VocClass::PlayIndexAtPos(nSound, pTarget->GetCoords());
+				}
+
+				// Fix : Player defeated should not get this unit.
+				auto pOriginOwner = pNode->OriginalOwner->Defeated ?
+					HouseClass::FindNeutral() : pNode->OriginalOwner;
+
+				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
+
+				pTarget->SetOwningHouse(pOriginOwner, !silent);
+				pManager->DecideUnitFate(pTarget);
+				pTarget->MindControlledBy = nullptr;
+
+				GameDelete(pNode);
+
+				pManager->ControlNodes.RemoveItem(i);
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
-void CaptureExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
+bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
+	bool bRemoveFirst, AnimTypeClass* pControlledAnimType, bool silent, int threatDelay)
 {
-	Extension<CaptureExt::base_type>::SaveToStream(Stm);
-	this->Serialize(Stm);
+	if (CaptureManagerExt::CanCapture(pManager, pTarget))
+	{
+		if (pManager->MaxControlNodes <= 0)
+			return false;
+
+		if (!pManager->InfiniteMindControl)
+		{
+			if (pManager->MaxControlNodes == 1 && pManager->ControlNodes.Count == 1)
+				CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+			else if (pManager->ControlNodes.Count == pManager->MaxControlNodes)
+				if (bRemoveFirst)
+					CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
+		}
+
+		auto pControlNode = GameCreate<ControlNode>();
+		pControlNode->OriginalOwner = pTarget->Owner;
+		pControlNode->Unit = pTarget;
+
+		pManager->ControlNodes.AddItem(pControlNode);
+		pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+
+		if (threatDelay > 0)
+			TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
+
+		if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
+		{
+			pTarget->MindControlledBy = pManager->Owner;
+
+			pManager->DecideUnitFate(pTarget);
+
+			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+			auto const pType = pTarget->GetTechnoType();
+			CoordStruct location = pTarget->GetCoords();
+
+			if (pBld)
+				location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+			else
+				location.Z += pType->MindControlRingOffset;
+
+			if (auto const pAnimType = pControlledAnimType)
+			{
+				auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
+
+				pTarget->MindControlRingAnim = pAnim;
+				pAnim->SetOwnerObject(pTarget);
+
+				if (pBld)
+					pAnim->ZAdjust = -1024;
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
-void CaptureExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) { }
-
-bool CaptureExt::LoadGlobals(PhobosStreamReader& Stm)
+bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass* pTechno, AnimTypeClass* pControlledAnimType, int threatDelay)
 {
-	return Stm
-		.Success();
+	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
+	{
+		bool bRemoveFirst = false;
+		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
+			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
+
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, false, threatDelay);
+	}
+
+	return false;
 }
 
-bool CaptureExt::SaveGlobals(PhobosStreamWriter& Stm)
+void CaptureManagerExt::DecideUnitFate(CaptureManagerClass* pManager, FootClass* pFoot)
 {
-	return Stm
-		.Success();
-}
-// =============================
-// container
-
-CaptureExt::ExtContainer::ExtContainer() : Container("CaptureManagerClass") { };
-CaptureExt::ExtContainer::~ExtContainer() = default;
-
-// =============================
-// container hooks
-
-DEFINE_HOOK(0x471832, CaptureManagerClass_CTOR, 0x9)
-{
-	GET(CaptureManagerClass* const, pThis, ESI);
-	CaptureExt::ExtMap.FindOrAllocate(pThis);
-	return 0;
-}
-
-DEFINE_HOOK(0x4729E1, CaptureManagerClass_DTOR, 0xD)
-{
-	GET(CaptureManagerClass* const, pThis, ESI);
-
-	if (auto const& pExt = CaptureExt::ExtMap.Find(pThis))
-		pExt->CleanUp();
-
-	CaptureExt::ExtMap.Remove(pThis);
-	return 0;
-}
-
-DEFINE_HOOK_AGAIN(0x4728E0, CaptureManagerClass_SaveLoad_Prefix, 0x5)
-DEFINE_HOOK(0x472720, CaptureManagerClass_SaveLoad_Prefix, 0x8)
-{
-	GET_STACK(CaptureManagerClass*, pThis, 0x4);
-	GET_STACK(IStream*, pStm, 0x8);
-
-	CaptureExt::ExtMap.PrepareStream(pThis, pStm);
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4728CA, CaptureManagerClass_Load_Suffix, 0xA)
-{
-	CaptureExt::ExtMap.LoadStatic();
-	return 0;
-}
-
-DEFINE_HOOK(0x472958, CaptureManagerClass_Save_Suffix, 0x7)
-{
-	CaptureExt::ExtMap.SaveStatic();
-	return 0;
+	// to be implemented (if needed). - secsome
 }

@@ -1,13 +1,57 @@
 #include "Body.h"
 
-#include <Ext/TechnoType/Body.h>
-#include <Utilities/Macro.h>
+DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
+{
+	GET(CaptureManagerClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
 
-#include <HouseClass.h>
-#include <ScenarioClass.h>
-#include <ParticleSystemClass.h>
+	R->AL(CaptureManagerExt::CaptureUnit(pThis, pTechno));
 
-static void __stdcall DrawALinkTo(CoordStruct nFrom, CoordStruct nTo, ColorStruct color) {
+	return 0x471D5A;
+}
+
+DEFINE_HOOK(0x471FF0, CaptureManagerClass_FreeUnit, 0x8)
+{
+	GET(CaptureManagerClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	R->AL(CaptureManagerExt::FreeUnit(pThis, pTechno));
+
+	return 0x472006;
+}
+
+DEFINE_HOOK(0x6FCB34, TechnoClass_CanFire_CanCapture, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, EBP);
+
+	R->AL(CaptureManagerExt::CanCapture(pThis->CaptureManager, pTarget));
+
+	return 0x6FCB40;
+}
+
+DEFINE_HOOK(0x519F71, InfantryClass_UpdatePosition_BeforeBuildingChangeHouse, 0x6)
+{
+	GET(BuildingClass*, pBld, EDI);
+
+	if (auto pBy = pBld->MindControlledBy)
+		CaptureManagerExt::FreeUnit(pBy->CaptureManager, pBld);
+
+	if (std::exchange(pBld->MindControlledByAUnit, false))
+	{
+		if (auto& pAnim = pBld->MindControlRingAnim)
+		{
+			pAnim->SetOwnerObject(nullptr);
+			pAnim->UnInit();
+			pAnim = nullptr;
+		}
+	}
+
+	return 0;
+}
+
+static void __stdcall DrawALinkTo(CoordStruct nFrom, CoordStruct nTo, ColorStruct color)
+{
 	JMP_STD(0x704E40);
 }
 
@@ -20,7 +64,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	auto const pAttacker = pThis->Owner;
 	const auto pExt = TechnoTypeExt::ExtMap.Find(pAttacker->GetTechnoType());
 
-	if (pExt->Draw_MindControlLink.Get())
+	if (pExt->MindControlDrawLink)
 	{
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
@@ -34,7 +78,6 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 
 void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
 {
-
 	auto const pOwner = pThis->Owner;
 	auto const pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
 
@@ -64,7 +107,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 			for (int i = 0; i < (int)(OverloadCount.size()); ++i)
 			{
 				if(nNodeCount > OverloadCount[i])
-					nCurIdx = i+1; //select the index !
+					nCurIdx = i + 1; //select the index !
 			}
 
 			// prevent nCurIdx selecting out of bound index !
@@ -95,7 +138,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 
 				if (auto const pParticle = pOwnerTypeExt->Overload_ParticleSys.Get(pRules->DefaultSparkSystem))
 				{
-					for (int i = pOwnerTypeExt->Overload_ParticleSysCount.Get(5); i > 0; --i)
+					for (int i = pOwnerTypeExt->Overload_ParticleSysCount; i > 0; --i)
 					{
 						auto const nRandomY = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
 						auto const nRamdomX = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
@@ -119,4 +162,4 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 	}
 }
 
-DEFINE_POINTER_CALL(0x6FA730, &CaptureManagerClass_Overload_AI);
+DEFINE_FUNCTION_JUMP(CALL, 0x6FA730, CaptureManagerClass_Overload_AI);

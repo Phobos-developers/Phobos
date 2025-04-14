@@ -1,0 +1,31 @@
+name: Pull Request Nightly Build
+
+on:
+  pull_request:
+
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: .
+
+  # Configuration type to build.
+  # You can convert this to a build matrix if you need coverage of multiple configuration types.
+  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  BUILD_CONFIGURATION: DevBuild
+  # GIT_COMMIT: $(git rev-parse --short "$GITHUB_SHA")
+  # GIT_BRANCH: ${GITHUB_REF#refs/heads/}
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        # ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Build Phobos
+      uses: ./.github/actions/build-phobos  # Setup steps are reused
+      with:
+        sln-path: ${{env.SOLUTION_FILE_PATH}}
+        build-config: ${{env.BUILD_CONFIGURATION}}

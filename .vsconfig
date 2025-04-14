@@ -3,21 +3,9 @@
   "components": [
     "Microsoft.VisualStudio.Component.CoreEditor",
     "Microsoft.VisualStudio.Workload.CoreEditor",
-    "Microsoft.Net.Component.4.6.1.TargetingPack",
-    "Microsoft.VisualStudio.Component.Roslyn.Compiler",
-    "Microsoft.Net.Component.4.8.SDK",
-    "Microsoft.Component.MSBuild",
-    "Microsoft.VisualStudio.Component.TextTemplating",
-    "Microsoft.VisualStudio.Component.IntelliCode",
     "Microsoft.VisualStudio.Component.VC.CoreIde",
-    "Microsoft.VisualStudio.Component.Windows10SDK",
-    "Microsoft.VisualStudio.Component.VC.Redist.14.Latest",
-    "Microsoft.VisualStudio.ComponentGroup.NativeDesktop.Core",
-    "Microsoft.VisualStudio.Component.VC.v141.x86.x64",
-    "Microsoft.Component.VC.Runtime.UCRTSDK",
-    "Microsoft.VisualStudio.Workload.NativeDesktop",
-    "Microsoft.VisualStudio.Component.WinXP",
-    "Microsoft.VisualStudio.Component.VC.v141.ATL",
-    "Microsoft.VisualStudio.Component.VC.v141.CLI.Support"
+    "Microsoft.VisualStudio.Component.Windows10SDK.20348",
+    "Microsoft.VisualStudio.Component.VC.14.29.16.11.x86.x64",
+    "Microsoft.VisualStudio.Component.VC.14.29.16.11.ATL"
   ]
 }

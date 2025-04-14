@@ -12,7 +12,6 @@
 #include <Ext/Scenario/Body.h>
 
 //Static init
-template<> const DWORD Extension<TActionClass>::Canary = 0x91919191;
 TActionExt::ExtContainer TActionExt::ExtMap;
 
 // =============================
@@ -67,6 +66,10 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::RunSuperWeaponAtLocation(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::RunSuperWeaponAtWaypoint:
 		return TActionExt::RunSuperWeaponAtWaypoint(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::ToggleMCVRedeploy:
+		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+
 	default:
 		bHandled = false;
 		return true;
@@ -78,7 +81,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 	std::vector<int> waypoints;
 	waypoints.reserve(ScenarioExt::Global()->Waypoints.size());
 
-	auto const pScen = ScenarioClass::Instance();
+	auto const pScen = ScenarioClass::Instance;
 
 	for (auto pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
@@ -98,37 +101,17 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (SessionClass::Instance->GameMode == GameMode::Campaign || SessionClass::Instance->GameMode == GameMode::Skirmish)
+	if (SessionClass::IsSingleplayer())
 	{
-		auto PrintMessage = [](const wchar_t* pMessage)
-		{
-			MessageListClass::Instance->PrintMessage(
-				pMessage,
-				RulesClass::Instance->MessageDelay,
-				HouseClass::Player->ColorSchemeIndex,
-				true
-			);
-		};
+		*reinterpret_cast<bool*>(0xABCE08) = false;
+		Phobos::ShouldQuickSave = true;
 
-		char fName[0x80];
-
-		SYSTEMTIME time;
-		GetLocalTime(&time);
-
-		_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
-
-		PrintMessage(StringTable::LoadString("TXT_SAVING_GAME"));
-
-		wchar_t fDescription[0x80] = { 0 };
-		wcscpy_s(fDescription, ScenarioClass::Instance->UINameLoaded);
-		wcscat_s(fDescription, L" - ");
-		wcscat_s(fDescription, StringTable::LoadString(pThis->Text));
-
-		if (ScenarioClass::Instance->SaveGame(fName, fDescription))
-			PrintMessage(StringTable::LoadString("TXT_GAME_WAS_SAVED"));
+		if (SessionClass::IsCampaign())
+			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
 		else
-			PrintMessage(StringTable::LoadString("TXT_ERROR_SAVING_GAME"));
+			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
+		Phobos::CustomGameSaveDescription += L" - ";
+		Phobos::CustomGameSaveDescription += StringTable::LoadString(pThis->Text);
 	}
 
 	return true;
@@ -218,7 +201,7 @@ bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, Obj
 	if (itr != variables.end())
 	{
 		CRT::swprintf(Phobos::wideBuffer, L"%d", itr->second.Value);
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer);
 	}
 
 	return true;
@@ -291,78 +274,39 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 
 bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
-	if (SuperWeaponTypeClass::Array->Count > 0)
+	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
 		int swIdx = pThis->Param3;
-		int houseIdx = -1;
-		std::vector<int> housesListIdx;
+		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
+		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
 
 		do
 		{
 			if (X < 0)
-				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
+				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
 
 			if (Y < 0)
-				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
-		} while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
-		
-		// Only valid House indexes
-		if ((pThis->Param4 >= HouseClass::Array->Count
-			&& pThis->Param4 < HouseClass::PlayerAtA)
-			|| pThis->Param4 > (HouseClass::PlayerAtA + HouseClass::Array->Count - 3))
-		{
-			return true;
+				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
 		}
+		while (!MapClass::Instance.IsWithinUsableArea(targetLocation, false));
 
 		switch (pThis->Param4)
 		{
-		case HouseClass::PlayerAtA:
-			houseIdx = 0;
-			break;
-
-		case HouseClass::PlayerAtB:
-			houseIdx = 1;
-			break;
-
-		case HouseClass::PlayerAtC:
-			houseIdx = 2;
-			break;
-
-		case HouseClass::PlayerAtD:
-			houseIdx = 3;
-			break;
-
-		case HouseClass::PlayerAtE:
-			houseIdx = 4;
-			break;
-
-		case HouseClass::PlayerAtF:
-			houseIdx = 5;
-			break;
-
-		case HouseClass::PlayerAtG:
-			houseIdx = 6;
-			break;
-
-		case HouseClass::PlayerAtH:
-			houseIdx = 7;
-			break;
-
 		case -1:
 			// Random non-neutral
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pHouse : HouseClass::Array)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
 					&& !pHouse->Type->MultiplayPassive)
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -370,34 +314,31 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -2:
 			// Find first Neutral
-			for (auto pHouseNeutral : *HouseClass::Array)
+			for (auto pHouseNeutral : HouseClass::Array)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
-					houseIdx = pHouseNeutral->ArrayIndex;
+					pExecuteHouse = pHouseNeutral;
 					break;
 				}
 			}
-
-			if (houseIdx < 0)
-				return true;
 
 			break;
 
 		case -3:
 			// Random Human Player
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pHouse : HouseClass::Array)
 			{
-				if (pHouse->ControlledByHuman()
+				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated
 					&& !pHouse->IsObserver())
 				{
-					housesListIdx.push_back(pHouse->ArrayIndex);
+					housesList.push_back(pHouse);
 				}
 			}
 
-			if (housesListIdx.size() > 0)
-				houseIdx = housesListIdx.at(ScenarioClass::Instance->Random.RandomRanged(0, housesListIdx.size() - 1));
+			if (housesList.size() > 0)
+				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -405,26 +346,34 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		default:
 			if (pThis->Param4 >= 0)
-				houseIdx = pThis->Param4;
+				pExecuteHouse = HouseClass::Index_IsMP(pThis->Param4) ? HouseClass::FindByIndex(pThis->Param4) : HouseClass::FindByCountryIndex(pThis->Param4);
 			else
 				return true;
 
 			break;
 		}
 
-		HouseClass* pHouse = HouseClass::Array->GetItem(houseIdx);
-		SuperWeaponTypeClass* pSuperType = SuperWeaponTypeClass::Array->GetItem(swIdx);
-		SuperClass* pSuper = GameCreate<SuperClass>(pSuperType, pHouse);
-
-		if (auto const pSWExt = SWTypeExt::ExtMap.Find(pSuperType))
+		if (pExecuteHouse)
 		{
+			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
+	
+			CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
+			pSuper->Reset();
+			pSuper->RechargeTimer = old_timer;
 		}
 	}
 
 	return true;
 }
+
+bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	GameModeOptionsClass::Instance.MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
 
 // =============================
 // container
@@ -441,7 +390,7 @@ DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
 {
 	GET(TActionClass*, pItem, ESI);
 
-	TActionExt::ExtMap.FindOrAllocate(pItem);
+	TActionExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 

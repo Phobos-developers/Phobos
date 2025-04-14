@@ -4,57 +4,42 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-#pragma region DETONATION
-
-bool DetonationInDamageArea = true;
+#pragma region Detonation
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
-	GET(BulletClass* const, pThis, ESI);
+	GET(BulletClass* const, pBullet, ESI);
+	GET_BASE(const CoordStruct*, pCoords, 0x8);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH))
-	{
-		GET_BASE(const CoordStruct*, pCoords, 0x8);
-		auto const pTechno = pThis ? pThis->Owner : nullptr;
-		auto const pHouse = pTechno ? pTechno->Owner : nullptr;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pBullet->WH);
+	auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	auto const pOwner = pBullet->Owner;
+	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
+	auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
+	pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
+	pWHExt->InDamageArea = false;
 
-		pWHExt->Detonate(pTechno, pHouse, pThis, *pCoords);
-	}
-
-	DetonationInDamageArea = false;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x46A290, BulletClass_Detonate_Return, 0x5)
-{
-	DetonationInDamageArea = true;
 	return 0;
 }
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 {
-	if (DetonationInDamageArea)
+	GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pWHExt->InDamageArea)
 	{
-		// GET(const int, Damage, EDX);
-		// GET_BASE(const bool, AffectsTiberium, 0x10);
+		GET(const CoordStruct*, pCoords, ECX);
+		GET_BASE(TechnoClass*, pOwner, 0x08);
+		GET_BASE(HouseClass*, pHouse, 0x14);
 
-		GET_BASE(const WarheadTypeClass*, pWH, 0x0C);
-
-		if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
-		{
-			GET(const CoordStruct*, pCoords, ECX);
-			GET_BASE(TechnoClass*, pOwner, 0x08);
-			GET_BASE(HouseClass*, pHouse, 0x14);
-
-			auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
-
-			pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
-		}
+		auto const pDecidedHouse = !pHouse && pOwner ? pOwner->Owner : pHouse;
+		pWHExt->Detonate(pOwner, pDecidedHouse, nullptr, *pCoords);
 	}
 
 	return 0;
@@ -64,40 +49,41 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	GET(int, nDamage, EDI);
 
-	if (pWHExt && pWHExt->SplashList.size())
-	{
-		GET(int, nDamage, ECX);
-		int idx = pWHExt->SplashList_PickRandom ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->SplashList.size() - 1) :
-			std::min(pWHExt->SplashList.size() * 35 - 1, (size_t)nDamage) / 35;
-		R->EAX(pWHExt->SplashList[idx]);
-		return 0x48A5AD;
-	}
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
+	pWHExt->Splashed = true;
 
-	return 0;
+	int idx = pWHExt->SplashList_PickRandom ?
+		ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1) :
+		std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
+
+	R->EAX(animTypes.size() > 0 ? animTypes[idx] : nullptr);
+	return 0x48A5AD;
 }
 
-DEFINE_HOOK(0x48A5BD, WarheadTypeClass_AnimList_PickRandom, 0x6)
+DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
-	return pWHExt && pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
+	return pWHExt->AnimList_PickRandom ? 0x48A5C7 : 0;
 }
 
-DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
+DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	auto pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+	GET(int, nDamage, EDI);
 
-	if (pWHExt && pWHExt->HasCrit && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
+
+	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
-		GET(int, nDamage, ECX);
 		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
 			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+
 		R->EAX(pWHExt->Crit_AnimList[idx]);
 		return 0x48A5AD;
 	}
@@ -105,134 +91,283 @@ DEFINE_HOOK(0x48A5B3, WarheadTypeClass_AnimList_CritAnim, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
+DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
-	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x20, -0x4));
-	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
-	const auto pWH = pWeapon->Warhead;
-	enum { CannotFire = 0x6FCB7E };
+	enum { SkipCheck = 0x489702 };
 
-	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
-		const int nMoney = pWHExt->TransactMoney;
-		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return CannotFire;
-	}
-
-	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
-	{
-		CellClass* targetCell = nullptr;
-
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-			targetCell = pCell;
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-			targetCell = pObject->GetCell();
-
-		if (targetCell)
-		{
-			if (!EnumFunctions::IsCellEligible(targetCell, pWeaponExt->CanTarget, true))
-				return CannotFire;
-		}
-
-		if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
-		{
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner))
-			{
-				return CannotFire;
-			}
-		}
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
+DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 {
-	enum { Secondary = 0x6F3745 };
+	enum { SkipCheck = 0x442268 };
 
-	GET(TechnoClass*, pThis, ESI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
+	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
 
-	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
 	{
-		if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
-		{
-			if (pThis->GetWeapon(1)->WeaponType && !EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true))
-				return Secondary;
-		}
+		if (pWHExt->AllowDamageOnSelf)
+			return SkipCheck;
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
+#pragma region Fix_WW_Strength_ReceiveDamage_C4Warhead_Misuses
+
+// Suicide=yes behavior on WeaponTypes
+DEFINE_HOOK(0x6FDDCA, TechnoClass_Fire_Suicide, 0xA)
 {
-	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pTargetTechno, EBP);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFS(0x18, -0x4));
+	GET(TechnoClass* const, pThis, ESI);
 
-	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, FurtherCheck = 0x6F3754, OriginalCheck = 0x6F36E3 };
+	R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead,
+		nullptr, true, false, nullptr));
 
-	CellClass* targetCell = nullptr;
+	return 0x6FDE03;
+}
 
-	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		targetCell = pCell;
-	else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
-		targetCell = pObject->GetCell();
+// Kill the vxl unit when flipped over
+DEFINE_HOOK(0x70BC6F, TechnoClass_UpdateRigidBodyKinematics_KillFlipped, 0xA)
+{
+	GET(TechnoClass* const, pThis, ESI);
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, RulesClass::Instance->C4Warhead,
+		pThis->DirectRockerLinkedUnit, true, false, nullptr));
+
+	return 0x70BCA4;
+}
+
+// TODO:
+// 0x4425C0, BuildingClass_ReceiveDamage_MaybeKillRadioLinks, 0x6
+// 0x501477, HouseClass_IHouse_AllToHunt_KillMCInsignificant, 0xA
+// 0x7187D2, TeleportLocomotionClass_7187A0_IronCurtainFuckMeUp, 0x8
+// 0x718B1E
+
+#pragma endregion Fix_WW_Strength_ReceiveDamage_C4Warhead_Misuse
+
+DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
+{
+	enum { SkipGameCode = 0x48A507, NoAnim = 0x48A618 };
+
+	GET(int, damage, ECX);
+	GET(WarheadTypeClass* const, warhead, EDX);
+
+	if (!warhead)
+		return NoAnim;
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(warhead);
+
+	pWHExt->Splashed = false;
+
+	if (damage == 0 && !pWHExt->CreateAnimsOnZeroDamage)
+		return NoAnim;
+	else if (damage < 0)
+		damage = -damage;
+
+	R->EDI(damage);
+	R->ESI(warhead);
+	return SkipGameCode;
+}
+
+#pragma region NegativeDamageModifiers
+
+namespace NegativeDamageTemp
+{
+	bool ApplyNegativeDamageModifiers = false;
+}
+
+DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
+{
+	enum { ApplyModifiers = 0x4891C6 };
+
+	GET(WarheadTypeClass* const, pWarhead, EDI);
+	GET(int, damage, ESI);
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (damage < 0 && pWHExt->ApplyModifiersOnNegativeDamage)
 	{
-		if (const auto pSecondary = pThis->GetWeapon(1))
-		{
-			if (const auto pSecondaryExt = WeaponTypeExt::ExtMap.Find(pSecondary->WeaponType))
-			{
-				if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pSecondaryExt->CanTarget, true)) ||
-					(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondaryExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pSecondaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
-				{
-					return Primary;
-				}
-
-				if (const auto pPrimaryExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType))
-				{
-					if (pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
-						return Primary;
-
-					if ((targetCell && !EnumFunctions::IsCellEligible(targetCell, pPrimaryExt->CanTarget, true)) ||
-						(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pPrimaryExt->CanTarget) ||
-						!EnumFunctions::CanTargetHouse(pPrimaryExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner))))
-					{
-						return Secondary;
-					}
-				}
-			}
-		}
-
-		if (!pTargetTechno)
-			return Primary;
-
-		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
-		{
-			if (const auto pShield = pTargetExt->Shield.get())
-			{
-				if (pShield->IsActive())
-				{
-					if (pThis->GetWeapon(1) && !(pTypeExt->NoSecondaryWeaponFallback && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
-					{
-						if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
-							return Secondary;
-						else
-							return FurtherCheck;
-					}
-
-					return Primary;
-				}
-			}
-		}
+		NegativeDamageTemp::ApplyNegativeDamageModifiers = true;
+		return ApplyModifiers;
 	}
 
-	return OriginalCheck;
+	return 0;
+}
+
+DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
+{
+	enum { SkipGameCode = 0x489235 };
+
+	GET(int, damage, ESI);
+
+	if (NegativeDamageTemp::ApplyNegativeDamageModifiers)
+	{
+		NegativeDamageTemp::ApplyNegativeDamageModifiers = false;
+		R->ECX(damage);
+	}
+	else
+	{
+		R->ECX(damage < 0 ? 0 : damage);
+	}
+
+	return SkipGameCode;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x701A54, TechnoClass_ReceiveDamage_PenetratesIronCurtain, 0x6)
+{
+	enum { AllowDamage = 0x701AAD };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->CanAffectInvulnerable(pThis))
+		return AllowDamage;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
+{
+	enum { BypassInvulnerability = 0x48996D };
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->PenetratesIronCurtain)
+		return BypassInvulnerability;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
+{
+	GET_BASE(WarheadTypeClass*, pWH, 0xC);
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	double rocker = pWHExt->Rocker_AmplitudeOverride.Get(damage);
+	rocker *= 0.01 * pWHExt->Rocker_AmplitudeMultiplier;
+
+	_asm fld rocker
+
+	return 0x489B53;
+}
+
+#pragma region Nonprovocative
+
+// Do not retaliate against being hit by these Warheads.
+DEFINE_HOOK(0x708B0B, TechnoClass_AllowedToRetaliate_Nonprovocative, 0x5)
+{
+	enum { SkipEvents = 0x708B17 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x18, 0x8));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Do not spring 'attacked' trigger events by these Warheads.
+DEFINE_HOOK(0x5F57CF, ObjectClass_ReceiveDamage_Nonprovocative, 0x6)
+{
+	enum { SkipEvents = 0x5F580C };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x24, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Do not consider ToProtect technos hit by weapon as having been attacked e.g provoking response from AI.
+DEFINE_HOOK(0x7027E6, TechnoClass_ReceiveDamage_Nonprovocative, 0x8)
+{
+	enum { SkipGameCode = 0x7027EE };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass*, pSource, EAX);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (!pTypeExt->Nonprovocative)
+	{
+		pThis->BaseIsAttacked(pSource);
+
+		return SkipGameCode;
+	}
+
+	return SkipGameCode;
+}
+
+// Do not consider Whiner=true team members hit by weapon as having been attacked e.g provoking response from AI.
+DEFINE_HOOK(0x4D7493, FootClass_ReceiveDamage_Nonprovocative, 0x5)
+{
+	enum { SkipChecks = 0x4D74CD, SkipEvents = 0x4D74A3 };
+
+	GET(TechnoClass*, pSource, EBX);
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x1C, 0xC));
+
+	if (!pSource)
+		return SkipChecks;
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Suppress harvester under attack notification - Also covered by Ares' Malicious.
+DEFINE_HOOK(0x7384BD, UnitClass_ReceiveDamage_Nonprovocative, 0x6)
+{
+	enum { SkipEvents = 0x738535 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x44, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Do not consider buildings hit by weapon as having been attacked e.g provoking response from AI.
+DEFINE_HOOK(0x442290, BuildingClass_ReceiveDamage_Nonprovocative1, 0x6)
+{
+	enum { SkipEvents = 0x4422C1 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+// Suppress all events and alerts that come from attacking a building, unlike Ares' Malicious this includes all EVA notifications AND events
+DEFINE_HOOK(0x442956, BuildingClass_ReceiveDamage_Nonprovocative2, 0x6)
+{
+	enum { SkipEvents = 0x442980 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x9C, 0xC));
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	return pTypeExt->Nonprovocative ? SkipEvents : 0;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
+{
+	enum { Continue = 0x4D73E3, Skip = 0x4D7413 };
+
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	GET(int*, damage, EDI);
+
+	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (!pTypeExt->RemoveParasite.Get(*damage < 0))
+		return Skip;
+
+	return Continue;
 }

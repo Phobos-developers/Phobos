@@ -3,7 +3,7 @@
 // include this file whenever something is to be saved.
 
 #include "Savegame.h"
-
+#include <optional>
 #include <vector>
 #include <map>
 #include <bitset>
@@ -14,92 +14,57 @@
 #include <FileFormats/SHP.h>
 #include <RulesClass.h>
 #include <SidebarClass.h>
+#include <Utilities/Constructs.h>
 
 #include "Swizzle.h"
 #include "Debug.h"
 
 namespace Savegame
 {
-	namespace detail
+	template <typename T>
+	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
-		struct Selector
-		{
-			template <typename T>
-			static bool ReadFromStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange)
-			{
-				return read_from_stream(Stm, Value, RegisterForChange, 0, 0);
-			}
+		value.Save(stmWriter);
+		value.Load(stmReader, registerForChange);
+	};
 
-			template <typename T>
-			static bool WriteToStream(PhobosStreamWriter& Stm, const T& Value)
-			{
-				return write_to_stream(Stm, Value, 0, 0);
-			}
+	template <typename T>
+	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
+	{
+		value.save(stmWriter);
+		value.load(stmReader, registerForChange);
+	};
 
-		private:
-			// support for upper-case Load and lowercase load member functions.
-			// this is more complex than needed, but allows for more consistency
-			// in function naming.
-			struct Dummy
-			{
-				Dummy(int a) { };
-			};
+	#pragma warning(push)
+	#pragma warning(disable: 4702) // MSVC isn't smart enough and yells about unreachable code
 
-			template <typename T>
-			static auto read_from_stream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange, int, int)
-				-> decltype(Value.Load(Stm, RegisterForChange))
-			{
-				return Value.Load(Stm, RegisterForChange);
-			}
+	template <typename T>
+	bool ReadPhobosStream(PhobosStreamReader& stm, T& value, bool registerForChange)
+	{
+		if constexpr (ImplementsUpperCaseSaveLoad<T>)
+			return value.Load(stm, registerForChange);
 
-			template <typename T>
-			static auto read_from_stream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange, Dummy, int)
-				-> decltype(Value.load(Stm, RegisterForChange))
-			{
-				return Value.load(Stm, RegisterForChange);
-			}
+		else if constexpr (ImplementsLowerCaseSaveLoad<T>)
+			return value.load(stm, registerForChange);
 
-			template <typename T>
-			static bool read_from_stream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange, Dummy, Dummy)
-			{
-				PhobosStreamObject<T> item;
-				return item.ReadFromStream(Stm, Value, RegisterForChange);
-			}
-
-			template <typename T>
-			static auto write_to_stream(PhobosStreamWriter& Stm, const T& Value, int, int)
-				-> decltype(Value.Save(Stm))
-			{
-				return Value.Save(Stm);
-			}
-
-			template <typename T>
-			static auto write_to_stream(PhobosStreamWriter& Stm, const T& Value, Dummy, int)
-				-> decltype(Value.save(Stm))
-			{
-				return Value.save(Stm);
-			}
-
-			template <typename T>
-			static bool write_to_stream(PhobosStreamWriter& Stm, const T& Value, Dummy, Dummy)
-			{
-				PhobosStreamObject<T> item;
-				return item.WriteToStream(Stm, Value);
-			}
-		};
+		PhobosStreamObject<T> item;
+		return item.ReadFromStream(stm, value, registerForChange);
 	}
 
 	template <typename T>
-	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange)
+	bool WritePhobosStream(PhobosStreamWriter& stm, const T& value)
 	{
-		return detail::Selector::ReadFromStream(Stm, Value, RegisterForChange);
+		if constexpr (ImplementsUpperCaseSaveLoad<T>)
+			return value.Save(stm);
+
+		if constexpr (ImplementsLowerCaseSaveLoad<T>)
+			return value.save(stm);
+
+		PhobosStreamObject<T> item;
+		return item.WriteToStream(stm, value);
 	}
 
-	template <typename T>
-	bool WritePhobosStream(PhobosStreamWriter& Stm, const T& Value)
-	{
-		return detail::Selector::WriteToStream(Stm, Value);
-	}
+	#pragma warning(pop)
 
 	template <typename T>
 	T* RestoreObject(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -114,7 +79,7 @@ namespace Savegame
 
 			if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
 			{
-				PhobosSwizzle::Instance.RegisterChange(ptrOld, ptrNew.get());
+				PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
 				return ptrNew.release();
 			}
 		}
@@ -325,7 +290,7 @@ namespace Savegame
 			{
 				std::vector<char> buffer(size);
 
-				if (!size || Stm.Read(reinterpret_cast<byte*>(&buffer[0]), size))
+				if (!size || Stm.Read(reinterpret_cast<byte*>(buffer.data()), size))
 				{
 					Value.assign(buffer.begin(), buffer.end());
 					return true;
@@ -355,6 +320,34 @@ namespace Savegame
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::unique_ptr<T>& Value) const
 		{
 			return PersistObject(Stm, Value.get());
+		}
+	};
+
+	template <typename T>
+	struct Savegame::PhobosStreamObject<std::optional<T>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::optional<T>& Value, bool RegisterForChange) const
+		{
+			bool hasValue = false;
+			if (!Stm.Load(hasValue))
+				return false;
+
+			if (hasValue)
+				return Savegame::ReadPhobosStream(Stm, *Value, RegisterForChange);
+			else
+				Value.reset();
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::optional<T>& Value) const
+		{
+			Stm.Save(Value.has_value());
+
+			if (Value.has_value())
+				return Savegame::WritePhobosStream(Stm, *Value);
+
+			return true;
 		}
 	};
 
@@ -409,7 +402,9 @@ namespace Savegame
 		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
-
+			static_assert(!std::is_pointer_v<TKey> && !std::is_pointer_v<TValue>);
+			static_assert(std::is_trivially_constructible_v<TKey> && std::is_trivially_constructible_v<TValue>);
+			static_assert(std::is_trivially_destructible_v<TKey> && std::is_trivially_destructible_v<TValue>);
 			size_t Count = 0;
 			if (!Stm.Load(Count))
 			{
@@ -442,6 +437,47 @@ namespace Savegame
 			}
 			return true;
 		}
+	};
+
+	template <typename TKey, typename TValue> // Why are you doing this, choom
+	struct Savegame::PhobosStreamObject<std::map<TKey, std::vector<TValue>>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, std::vector<TValue>>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				TKey key;
+				std::vector<TValue> vals;
+				if (!(Savegame::ReadPhobosStream(Stm, key, RegisterForChange)&& Savegame::ReadPhobosStream(Stm, vals, RegisterForChange)))
+				{
+					return false;
+				}
+				Value[key] = vals;
+			}
+
+			return true;
+		}
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, std::vector<TValue>>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& [key,vals] : Value)
+			{
+				if (!(Savegame::WritePhobosStream(Stm, key) && Savegame::WritePhobosStream(Stm,vals)))
+				{
+					return false;
+				}
+			}
+			return true;
+		};
 	};
 
 	template <>
@@ -534,6 +570,20 @@ namespace Savegame
 		{
 			Stm.Save(Value);
 			return true;
+		}
+	};
+
+	template <>
+	struct Savegame::PhobosStreamObject<TranslucencyLevel*>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, TranslucencyLevel*& Value, bool RegisterForChange) const
+		{
+			return Value->Load(Stm, RegisterForChange);
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, TranslucencyLevel* const& Value) const
+		{
+			return Value->Save(Stm);
 		}
 	};
 }

@@ -1,15 +1,15 @@
 #include "Body.h"
 
 #include <Utilities/SavegameDef.h>
-
+#include <New/Entity/ShieldClass.h>
 #include <Ext/Scenario/Body.h>
 #include <BuildingClass.h>
 #include <InfantryClass.h>
 #include <UnitClass.h>
 #include <AircraftClass.h>
+#include <HouseClass.h>
 
 //Static init
-template<> const DWORD Extension<TEventClass>::Canary = 0x91919191;
 TEventExt::ExtContainer TEventExt::ExtMap;
 
 // =============================
@@ -34,7 +34,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 }
 
 bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	TimerStruct* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
 {
 	bHandled = true;
 	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))
@@ -117,6 +117,17 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
+	case PhobosTriggerEvent::ShieldBroken:
+		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+	case PhobosTriggerEvent::HouseOwnsTechnoType:
+		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
+		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::CellHasTechnoType:
+		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
+		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+
 	default:
 		bHandled = false;
 		return true;
@@ -156,6 +167,112 @@ bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 	return false;
 }
 
+bool TEventExt::HouseOwnsTechnoTypeTEvent(TEventClass* pThis)
+{
+	auto pType = TechnoTypeClass::Find(pThis->String);
+	if (!pType)
+		return false;
+
+	auto pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+	if (!pHouse)
+		return false;
+
+	return pHouse->CountOwnedNow(pType) > 0;
+}
+
+bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
+{
+	return !TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+}
+
+bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
+{
+	if (!pObject)
+		return false;
+
+	int desiredListIdx = -1;
+	if (sscanf_s(pThis->String, "%d", &desiredListIdx) <= 0 || desiredListIdx < 0)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid index value for [AITargetTypes]\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	if (RulesExt::Global()->AITargetTypesLists.size() == 0
+		|| RulesExt::Global()->AITargetTypesLists[desiredListIdx].size() == 0)
+	{
+		return false;
+	}
+
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+	if (!pTechno)
+		return false;
+
+	auto const pTechnoType = pTechno->GetTechnoType();
+	bool found = false;
+
+	for (auto const pDesiredItem : RulesExt::Global()->AITargetTypesLists[desiredListIdx])
+	{
+		if (pDesiredItem == pTechnoType)
+		{
+			HouseClass* pHouse = nullptr;
+
+			if (pThis->Value <= -2)
+				pHouse = pEventHouse;
+			else if (pThis->Value >= 0)
+				pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
+			if (pHouse && pTechno->Owner != pHouse)
+				break;
+
+			found = true;
+			break;
+		}
+	}
+
+	return found;
+}
+
+bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
+{
+	if (!pObject)
+		return false;
+
+	auto pDesiredType = TechnoTypeClass::Find(pThis->String);
+	if (!pDesiredType)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid Techno ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+	if (!pTechno)
+		return false;
+
+	auto const pTechnoType = pTechno->GetTechnoType();
+
+	if (pDesiredType == pTechnoType)
+	{
+		HouseClass* pHouse = nullptr;
+
+		if (pThis->Value <= -2)
+			pHouse = pEventHouse;
+		else if (pThis->Value >= 0)
+			pHouse = HouseClass::Index_IsMP(pThis->Value) ? HouseClass::FindByIndex(pThis->Value) : HouseClass::FindByCountryIndex(pThis->Value);
+
+		if (pHouse)
+		{
+			if (pTechno->Owner == pHouse)
+				return true;
+
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 // =============================
 // container
 
@@ -171,7 +288,7 @@ DEFINE_HOOK(0x6DD176, TActionClass_CTOR, 0x5)
 {
 	GET(TActionClass*, pItem, ESI);
 
-	TActionExt::ExtMap.FindOrAllocate(pItem);
+	TActionExt::ExtMap.TryAllocate(pItem);
 	return 0;
 }
 
