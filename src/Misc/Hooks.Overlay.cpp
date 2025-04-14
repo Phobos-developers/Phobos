@@ -98,6 +98,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 						auto pCell = MapClass::Instance->GetCellAt(mapCoord);
 						auto const nOriginOvlData = pCell->OverlayData;
 						GameCreate<OverlayClass>(pType, mapCoord, -1);
+
 						if (nOvl == 24 || nOvl == 25 || nOvl == 237 || nOvl == 238) // bridges
 							pCell->OverlayData = nOriginOvlData;
 					}
