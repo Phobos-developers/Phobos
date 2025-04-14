@@ -242,3 +242,7 @@ In **debug** builds the in-game exception handler is **turned off** by default.
 ```{warning}
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
 ```
+
+## Blowfish Dependency
+
+`BLOWFISH.DLL` is no longer required to start the game.

@@ -152,26 +152,3 @@ DEFINE_HOOK(0x719BD9, TeleportLocomotionClass_Process_ChronosphereDelay2, 0x6)
 
 	return 0;
 }
-
-DEFINE_HOOK(0x4DA53E, FootClass_Update_WarpInDelay, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->HasRemainingWarpInDelay)
-	{
-		if (pExt->LastWarpInDelay)
-		{
-			pExt->LastWarpInDelay--;
-		}
-		else
-		{
-			pExt->HasRemainingWarpInDelay = false;
-			pExt->IsBeingChronoSphered = false;
-			pThis->WarpingOut = false;
-		}
-	}
-
-	return 0;
-}

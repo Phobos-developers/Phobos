@@ -256,6 +256,7 @@ This page lists all the individual contributions to the project by their author.
   - Custom exit cell for infantry factory
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
+  - Customizable electric bolt duration and electric bolt-related fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -349,18 +350,28 @@ This page lists all the individual contributions to the project by their author.
    - Fix `AltNextScenario` not taking effect
    - Fix `Hospital=yes` building can't kick out infantry after loading a save
 - **NetsuNegi**:
-   - Forbidding parallel AI queues by type
-   - Jumpjet crash speed fix when crashing onto building
-   - Disguised units not using the correct palette if target has custom palette bugfix
-   - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
-   - Assign Super Weapon cameo to any sidebar tab
-   - Fix impassable invisible barrier created by chronosphere on uncrushable unit
-   - `FreeUnit` uses its own `SpeedType` to determine where to spawn
-   - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
-   - Fix the bug where pathfinding issues occur when a building performs undeploy
-   - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
-   - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
-   - Fix `DefaultDisguise` showing wrong house colors for different players
+  - Forbidding parallel AI queues by type
+  - Jumpjet crash speed fix when crashing onto building
+  - Disguised units not using the correct palette if target has custom palette bugfix
+  - Tunnel/Walk/Mech locomotor being stuck when moving too fast bugfix
+  - Assign Super Weapon cameo to any sidebar tab
+  - Fix impassable invisible barrier created by chronosphere on uncrushable unit
+  - `FreeUnit` uses its own `SpeedType` to determine where to spawn
+  - Fix the bug where naval ships set to `AllowedToStartInMultiplayer=yes` may spawn incorrectly on land
+  - Fix the bug where pathfinding issues occur when a building performs undeploy
+  - Fix amphibious harvesters can not automatically return to refineries with `WaterBound`
+  - Fix [EIP 004C2C19](https://modenc.renegadeprojects.com/Internal_Error#eip_004C2C19) concerning the electric bolt
+  - Fix `DefaultDisguise` showing wrong house colors for different players
+  - Taking over Ares' AlphaImage respawn logic to reduce lags from it
+  - Allow voxel projectiles to use `AnimPalette` and `FirersPalette`
+  - Customize damaged speed ratio of drive/ship loco
+  - Customize overpower logic
+  - Fix the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used
+  - Fix the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead
+  - Fix an issue that units on the slope tilted at an excessive angle
+  - Enhanced reveal & gap warhead
+  - Fix an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
+  - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
    - Customizable `ShowTimer` priority of superweapons
@@ -391,10 +402,11 @@ This page lists all the individual contributions to the project by their author.
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
   - Fix a jumpjet crash related to voxel shadow drawing
+  - Replace `BLOWFISH.DLL` using Red Alert source code
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
-  - Fix `Stop` command not working so well in some cases
+  - Fix `Stop` command not working so well in many cases
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - No rearm and reload in EMP or temporal
@@ -412,6 +424,24 @@ This page lists all the individual contributions to the project by their author.
   - Units will not always stuck in the factory
   - Technos can maintain a suitable distance after firing
   - Projectile subject to ground check before firing
+  - Delay automatic attack on the controlled unit
+  - Fast access vehicle
+  - Fix an issue that some amphibious technos being unable to enter on water structures
+  - Fix an issue that aircraft carriers can not find suitable locations for attacks when under elevated bridges on their own
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge
+  - Fix an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge
+  - Laser, electric bolt and rad beam scatter
+  - Fix an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter
+  - Fix an issue that units on the slope tilted at an excessive angle
+  - Fix an issue that the first passenger who call the transport ship no longer board the transport ship when the land units call for boarding
+  - Fix an issue that impassable invisible barrier generated by the behavior of infantry continuously entering vehicles
+  - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
+  - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
+  - Jumpjet Tilts While Moving
+- **Noble Fish (DeathFish, DeathFishAtEase)**
+  - Documentation maintenance
+  - Chinese documentation maintenance and translation
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -420,6 +450,9 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
   - Fix `DefaultDisguise` showing wrong house colors for different players
+  - Fire weapon when Warhead kills something
+  - Promotion animation deglobalization
+  - Forcing specific weapon by range
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -439,7 +472,14 @@ This page lists all the individual contributions to the project by their author.
   - Recycle spawner in long-range
   - Play an anim when recycling a spawner
   - Recycle the spawner on other FLH
-  - Fixed the bug that spawned can not return to buildings with foundation bigger than 1x1
+  - Fix the bug that spawned can not return to buildings with foundation bigger than 1x1
+  - `BombParachute` deglobalization
+  - Sinkablity and sinking speed customization
+  - Fix an issue where `FireAngle` would not work properly under certain circumstances
+  - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
+  - Fix the bug that healing weapons could not automatically acquire aerial targets
+  - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
+  - Prone speed customization
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

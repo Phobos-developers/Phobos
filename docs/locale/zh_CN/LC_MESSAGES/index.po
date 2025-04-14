@@ -83,7 +83,7 @@ msgid ""
 "developers/Phobos/workflows/EditorConfig/badge.svg)](https://github.com"
 "/Phobos-developers/Phobos/actions?query=workflow%3AEditorConfig) "
 "[![license](https://img.shields.io/github/license/Phobos-"
-"developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)"
+"developers/Phobos.svg)](https://www.gnu.org/licenses/gpl-3.0.html)"
 msgstr ""
 "[![Github 所有发布版本](https://img.shields.io/github/downloads/Phobos-"
 "developers/Phobos/total.svg)](https://github.com/Phobos-"
@@ -194,7 +194,7 @@ msgstr "下载"
 
 #: ../../../README.md:32
 msgid "You can choose one of the following:"
-msgstr "你可以选择下列方式"
+msgstr "你可以选择下列方式："
 
 #: ../../../README.md:33
 msgid ""
@@ -272,7 +272,7 @@ msgstr ""
 "如果您的 mod 中还没有安装 Syringe，可以连同 [最新版 Ares "
 "软件包](https://launchpad.net/ares/+download) 一同下载。安装时，只需将 `Syringe.exe` "
 "拖入游戏根目录（即您的 `gamemd.exe` 所在的位置）。强烈建议同时**安装 Ares** 以获得完整的 Phobos "
-"功能体验，只需将压缩包中除 `Documentation` 目录之外的所有文件放入游戏根目录即可。"
+"功能体验，只需将压缩包中除 Documentation 目录之外的所有文件放入游戏根目录即可。"
 
 #: ../../../README.md:46
 msgid ""
@@ -428,7 +428,7 @@ msgstr ""
 "使用 `.vsconfig` 中列出的依赖项安装 **Visual Studio** "
 "（建议安装2022版，最低安装2019版）（打开项目时会提示安装缺失的依赖项，也可以运行 VS 安装程序并导入配置）。如果您更喜欢使用 "
 "**Visual Studio Code**，也可以使用 `.vsconfig` 中的依赖项安装 **VS Build "
-"Tools**。也可以不使用代码编辑器或集成开发环境而通过项目中包含的 **命令行脚本** 进行构建。"
+"Tools**。也可以不使用代码编辑器或集成开发环境而是通过项目中包含的 **命令行脚本** 进行构建。"
 
 #: ../../../README.md:87
 msgid ""
@@ -444,7 +444,7 @@ msgstr "对于构建扩展："
 msgid ""
 "in Visual Studio: open the solution file in VS and build it (`Debug` "
 "build config is recommended);"
-msgstr "在 Visual Studio 中：在 VS 中打开解决方案文件并构建（建议使用 `Debug` 构建配置；"
+msgstr "在 Visual Studio 中：在 VS 中打开解决方案文件并构建（建议使用 `Debug` 构建配置）；"
 
 #: ../../../README.md:90
 msgid ""
@@ -527,7 +527,7 @@ msgid ""
 "(make it open Phobos GitHub page for extra fanciness), linking to Phobos "
 "repository, contributing or donating to us via the links above."
 msgstr ""
-"感谢所有使用 Phobos、测试更改和报告 Bug 的人！ 您可以在您的客户端／启动器中展示我们的 Logo（单色版本可在 "
+"感谢所有使用 Phobos、测试更改和报告 Bug 的人！您可以在您的客户端／启动器中展示我们的 Logo（单色版本可在 "
 "[此处](https://github.com/Phobos-developers/Phobos/blob/develop/logo-"
 "mono.png) 获取）来表达您的感谢和为本项目提供助力（可以让它能够点击打开 Phobos GitHub 页面以显得更豪华），或者通过链接到 Phobos "
 "的仓库、通过上方的链接向我们贡献代码或进行捐赠。"
@@ -538,12 +538,12 @@ msgstr "法律与许可证"
 
 #: ../../../README.md:115
 msgid ""
-"[![LGPL "
-"v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)"
+"[![GPL "
+"v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)"
 msgstr ""
 
 #: ../../../README.md:115
-msgid "LGPL v3"
+msgid "GPL v3"
 msgstr ""
 
 #: ../../../README.md:117
