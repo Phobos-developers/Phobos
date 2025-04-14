@@ -602,6 +602,29 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 }
 
+int HouseExt::ExtData::GetForceEnemyIndex()
+{
+	if (!this)
+		return -1;
+
+	auto const pHouse = this->OwnerObject();
+	if (!pHouse)
+		return -1;
+
+	return this->ForceEnemyIndex;
+}
+
+void HouseExt::ExtData::SetForceEnemy(int EnemyIndex)
+{
+	if (!this)
+		return;
+
+	if (EnemyIndex < 0 && EnemyIndex != -2)
+		this->ForceEnemyIndex = -1;
+	else
+		this->ForceEnemyIndex = EnemyIndex;
+}
+
 // =============================
 // load / save
 
