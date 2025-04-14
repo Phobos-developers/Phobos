@@ -13,22 +13,26 @@ public:
 	Valueable<int> SegmentLength;
 	Valueable<bool> IgnoreVertical;
 	Valueable<bool> IsIntense;
+	Valueable<bool> CloakVisible;
+	Valueable<bool> CloakVisible_DetectedOnly;
+	Valueable<bool> DroppodOnly;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
-		, IsHouseColor(false)
-		, Color({ 255, 0, 0 })
-		, FadeDuration(64)
-		, Thickness(4)
-		, SegmentLength(128)
-		, IgnoreVertical(false)
-		, IsIntense(false)
+		, IsHouseColor { false }
+		, Color { { 255, 0, 0 } }
+		, FadeDuration { 64 }
+		, Thickness { 4 }
+		, SegmentLength { 128 }
+		, IgnoreVertical { false }
+		, IsIntense { false }
+		, CloakVisible { false }
+		, CloakVisible_DetectedOnly { false }
+		, DroppodOnly { false }
 	{ }
 
-	virtual ~LaserTrailTypeClass() override = default;
-
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 private:
 	template <typename T>

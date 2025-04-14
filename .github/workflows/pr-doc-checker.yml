@@ -1,0 +1,83 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - unlabeled
+env:
+  BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+
+jobs:
+  Changelog-Check:
+    name: Changelog Mention
+    # If the Minor label is set, then workflow will not be executed
+    if: false == contains(github.event.pull_request.labels.*.name, 'Minor')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Check that Changelog has been updated
+        run: |
+          # Check that Changelog has been updated
+          if (git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD) | grep ^docs/Whats-New.md$)
+          then
+            echo "Thank you for remembering to update the Changelog! 😋"
+            exit 0
+          else
+            echo "It looks like you forgot to update the Changelog! 🧐"
+            echo "Please, mention your changes in 'docs/Whats-New.md' or use [Minor] label for your Pull Request."
+            exit 1
+          fi
+
+  Credits-Check:
+    name: Credits List Mention
+    # If the Minor label is set, then workflow will not be executed
+    if: false == contains(github.event.pull_request.labels.*.name, 'Minor')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Check that Credits List has been updated
+        run: |
+          # Check that Credits List has been updated
+          if (git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD) | grep ^CREDITS.md$)
+          then
+            echo "Thank you for remembering to update the Credits List! 😋"
+            exit 0
+          else
+            echo "It looks like you forgot to update the Credits List! 🧐"
+            echo "Please, mention your contribution in 'CREDITS.md' or use [Minor] label for your Pull Request."
+            exit 1
+          fi
+
+  Documentation-Check:
+    name: Documentation for Changes
+    # If the Minor label is set, then workflow will not be executed
+    if: false == contains(github.event.pull_request.labels.*.name, 'Minor')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Check that Documentation has been updated
+        run: |
+          # Check that Documentation has been updated
+          if (git diff --name-only $(git merge-base origin/$BASE_BRANCH HEAD) | \
+              grep \
+              -e ^docs/New-or-Enhanced-Logics.md$   \
+              -e ^docs/Fixed-or-Improved-Logics.md$ \
+              -e ^docs/AI-Scripting-and-Mapping.md$ \
+              -e ^docs/User-Interface.md$           \
+              -e ^docs/Miscellanous.md$             \
+          )
+          then
+            echo "Thank you for remembering to add your changes to the docs! 😋"
+            exit 0
+          else
+            echo "It looks like you forgot to add your changes to the docs! 🧐"
+            echo "Please, document your changes or use [Minor] label for your Pull Request."
+            exit 1
+          fi

@@ -2,16 +2,18 @@
 
 bool EnumFunctions::CanTargetHouse(AffectedHouse flags, HouseClass* ownerHouse, HouseClass* targetHouse)
 {
-	return (flags & AffectedHouse::Owner) && ownerHouse == targetHouse ||
-		(flags & AffectedHouse::Allies) && ownerHouse != targetHouse && ownerHouse->IsAlliedWith(targetHouse) ||
-		(flags & AffectedHouse::Enemies) && ownerHouse != targetHouse && !ownerHouse->IsAlliedWith(targetHouse);
+	if (ownerHouse == targetHouse)
+		return (flags & AffectedHouse::Owner) != AffectedHouse::None;
+	if (ownerHouse->IsAlliedWith(targetHouse))
+		return (flags & AffectedHouse::Allies) != AffectedHouse::None;
+	return (flags & AffectedHouse::Enemies) != AffectedHouse::None;
 }
 
-bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells)
+bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowed, bool explicitEmptyCells, bool considerBridgesLand)
 {
 	if (explicitEmptyCells)
 	{
-		auto pTechno = pCell->FirstObject ? abstract_cast<TechnoClass*>(pCell->FirstObject) : nullptr;
+		auto pTechno = pCell->GetContent() ? abstract_cast<TechnoClass*>(pCell->GetContent()) : nullptr;
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;
@@ -19,16 +21,16 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 
 	if (allowed & AffectedTarget::AllCells)
 	{
-		if (pCell->LandType == LandType::Water) // check whether it supports water
+		if (pCell->LandType == LandType::Water && (!considerBridgesLand || !pCell->ContainsBridge())) // check whether it supports water
 			return (allowed & AffectedTarget::Water) != AffectedTarget::None;
 		else                                    // check whether it supports non-water
 			return (allowed & AffectedTarget::Land) != AffectedTarget::None;
 	}
 
-	return allowed != AffectedTarget::None ? true : false;
+	return allowed != AffectedTarget::None;
 }
 
-bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed)
+bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget allowed, bool considerAircraftSeparately)
 {
 	if (allowed & AffectedTarget::AllContents)
 	{
@@ -39,10 +41,17 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 			case AbstractType::Infantry:
 				return (allowed & AffectedTarget::Infantry) != AffectedTarget::None;
 			case AbstractType::Unit:
-			case AbstractType::Aircraft:
 				return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+			case AbstractType::Aircraft:
+				if (!considerAircraftSeparately)
+					return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+				else
+					return (allowed & AffectedTarget::Aircraft) != AffectedTarget::None;
 			case AbstractType::Building:
-				return (allowed & AffectedTarget::Building) != AffectedTarget::None;
+				if (pTechno->IsStrange())
+					return (allowed & AffectedTarget::Unit) != AffectedTarget::None;
+				else
+					return (allowed & AffectedTarget::Building) != AffectedTarget::None;
 			}
 		}
 		else
@@ -52,16 +61,16 @@ bool EnumFunctions::IsTechnoEligible(TechnoClass* const pTechno, AffectedTarget 
 		}
 	}
 
-	return allowed != AffectedTarget::None ? true : false;
+	return allowed != AffectedTarget::None;
 }
 
-bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells)
+bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTarget allowed, AffectedHouse allowedHouses, HouseClass* owner, bool explicitEmptyCells, bool considerAircraftSeparately, bool allowBridges)
 {
 	if (!pCell)
 		return false;
 
 	auto object = pCell->FirstObject;
-	bool eligible = EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells);
+	bool eligible = EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells, allowBridges);
 
 	while (true)
 	{
@@ -78,7 +87,7 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 					break;
 			}
 
-			eligible = EnumFunctions::IsTechnoEligible(pTechno, allowed);
+			eligible = EnumFunctions::IsTechnoEligible(pTechno, allowed, considerAircraftSeparately);
 		}
 
 		object = object->NextObject;

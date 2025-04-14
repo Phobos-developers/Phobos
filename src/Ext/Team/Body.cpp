@@ -1,6 +1,5 @@
 #include "Body.h"
 
-template<> const DWORD Extension<TeamClass>::Canary = 0x414B4B41;
 TeamExt::ExtContainer TeamExt::ExtMap;
 
 // =============================
@@ -16,7 +15,13 @@ void TeamExt::ExtData::Serialize(T& Stm)
 		.Process(this->CloseEnough)
 		.Process(this->Countdown_RegroupAtLeader)
 		.Process(this->MoveMissionEndMode)
-		.Process(this->SelectedTarget)
+		.Process(this->WaitNoTargetCounter)
+		.Process(this->WaitNoTargetTimer)
+		.Process(this->ForceJump_Countdown)
+		.Process(this->ForceJump_InitialCountdown)
+		.Process(this->ForceJump_RepeatMode)
+		.Process(this->TeamLeader)
+		.Process(this->PreviousScriptList)
 		;
 }
 
@@ -30,6 +35,11 @@ void TeamExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TeamClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
+}
+
+void TeamExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(TeamLeader, ptr);
 }
 
 // =============================
@@ -46,7 +56,7 @@ DEFINE_HOOK(0x6E8B46, TeamClass_CTOR, 0x7)
 {
 	GET(TeamClass*, pThis, ESI);
 
-	TeamExt::ExtMap.FindOrAllocate(pThis);
+	TeamExt::ExtMap.TryAllocate(pThis);
 
 	return 0;
 }

@@ -47,28 +47,31 @@ class INI_EX;
  */
 
 template<typename T>
-class Valueable {
+class Valueable
+{
 protected:
-	T Value{};
+	T Value {};
 public:
 	using value_type = T;
 	using base_type = std::remove_pointer_t<T>;
 
-	Valueable() = default;
-	explicit Valueable(T value) noexcept(noexcept(T{ std::move(value) })) : Value(std::move(value)) {}
-	Valueable(Valueable const& other) = default;
-	Valueable(Valueable&& other) = default;
+	constexpr Valueable() = default;
+	constexpr explicit Valueable(T value) noexcept(noexcept(T { std::move(value) })) : Value(std::move(value)) { }
+	constexpr Valueable(Valueable const& other) = default;
+	constexpr Valueable(Valueable&& other) = default;
 
-	Valueable& operator = (Valueable const& value) = default;
-	Valueable& operator = (Valueable&& value) = default;
+	constexpr Valueable& operator = (Valueable const& value) = default;
+	constexpr Valueable& operator = (Valueable&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<T&, Val&&>::value>>
-	Valueable& operator = (Val value) {
+	template <typename Val> requires std::assignable_from<T&, Val&&>
+	constexpr Valueable& operator = (Val value)
+	{
 		this->Value = std::move(value);
 		return *this;
 	}
 
-	operator const T& () const noexcept {
+	constexpr operator const T& () const noexcept
+	{
 		return this->Get();
 	}
 
@@ -78,71 +81,84 @@ public:
 	//	return this->GetEx();
 	//}
 
-	T operator -> () const {
+	constexpr T operator -> () const
+	{
 		return this->Get();
 	}
 
-	T* operator & () noexcept {
+	constexpr T* operator & () noexcept
+	{
 		return this->GetEx();
 	}
 
-	bool operator ! () const {
+	constexpr bool operator ! () const
+	{
 		return this->Get() == 0;
 	}
 
-	const T& Get() const noexcept {
+	constexpr const T& Get() const noexcept
+	{
 		return this->Value;
 	}
 
-	T* GetEx() noexcept {
+	constexpr T* GetEx() noexcept
+	{
 		return &this->Value;
 	}
 
-	const T* GetEx() const noexcept {
+	constexpr const T* GetEx() const noexcept
+	{
 		return &this->Value;
 	}
 
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
+	template<bool Allocate = false>
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
 	inline bool Save(PhobosStreamWriter& Stm) const;
 };
 
-template <typename T, typename = std::enable_if_t<std::is_enum<T>::value>>
-inline bool operator == (const Valueable<T>& val, const T& other) {
+template <typename T> requires std::is_enum_v<T>
+constexpr bool operator == (const Valueable<T>& val, const T& other)
+{
 	return val.Get() == other;
 }
 
-template <typename T, typename = std::enable_if_t<std::is_enum<T>::value>>
-inline bool operator == (const T& other, const Valueable<T>& val) {
+template <typename T> requires std::is_enum_v<T>
+constexpr bool operator == (const T& other, const Valueable<T>& val)
+{
 	return val.Get() == other;
 }
 
-template <typename T, typename = std::enable_if_t<std::is_enum<T>::value>>
-inline bool operator != (const Valueable<T>& val, const T& other) {
+template <typename T> requires std::is_enum_v<T>
+constexpr bool operator != (const Valueable<T>& val, const T& other)
+{
 	return !(val == other);
 }
 
-template <typename T, typename = std::enable_if_t<std::is_enum<T>::value>>
-inline bool operator != (const T& other, const Valueable<T>& val) {
+template <typename T> requires std::is_enum_v<T>
+constexpr bool operator != (const T& other, const Valueable<T>& val)
+{
 	return !(val == other);
 }
 
 // more fun
 template<typename Lookuper>
-class ValueableIdx : public Valueable<int> {
+class ValueableIdx : public Valueable<int>
+{
 public:
-	ValueableIdx() noexcept : Valueable<int>(-1) {}
-	explicit ValueableIdx(int value) noexcept : Valueable<int>(value) {}
-	ValueableIdx(ValueableIdx const& other) = default;
-	ValueableIdx(ValueableIdx&& other) = default;
+	constexpr ValueableIdx() noexcept : Valueable<int>(-1) { }
+	constexpr explicit ValueableIdx(int value) noexcept : Valueable<int>(value) { }
+	constexpr ValueableIdx(ValueableIdx const& other) = default;
+	constexpr ValueableIdx(ValueableIdx&& other) = default;
 
-	ValueableIdx& operator = (ValueableIdx const& value) = default;
-	ValueableIdx& operator = (ValueableIdx&& value) = default;
+	constexpr ValueableIdx& operator = (ValueableIdx const& value) = default;
+	constexpr ValueableIdx& operator = (ValueableIdx&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<int&, Val&&>::value>>
-	ValueableIdx& operator = (Val value) {
+	template <typename Val> requires std::assignable_from<int&, Val&&>
+	constexpr ValueableIdx& operator = (Val value)
+	{
 		this->Value = std::move(value);
 		return *this;
 	}
@@ -151,51 +167,59 @@ public:
 };
 
 template<typename T>
-class Nullable : public Valueable<T> {
+class Nullable : public Valueable<T>
+{
 protected:
-	bool HasValue{ false };
+	bool HasValue { false };
 public:
-	Nullable() = default;
-	explicit Nullable(T value) noexcept(noexcept(Valueable<T>{std::move(value)})) : Valueable<T>(std::move(value)), HasValue(true) {}
-	Nullable(Nullable const& other) = default;
-	Nullable(Nullable&& other) = default;
+	constexpr Nullable() = default;
+	constexpr explicit Nullable(T value) noexcept(noexcept(Valueable<T>{std::move(value)})) : Valueable<T>(std::move(value)), HasValue(true) { }
+	constexpr Nullable(Nullable const& other) = default;
+	constexpr Nullable(Nullable&& other) = default;
 
-	Nullable& operator = (Nullable const& value) = default;
-	Nullable& operator = (Nullable&& value) = default;
+	constexpr Nullable& operator = (Nullable const& value) = default;
+	constexpr Nullable& operator = (Nullable&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<T&, Val&&>::value>>
-	Nullable& operator = (Val value) {
+	template <typename Val> requires std::assignable_from<T&, Val&&>
+	constexpr Nullable& operator = (Val value)
+	{
 		this->Value = std::move(value);
 		this->HasValue = true;
 		return *this;
 	}
 
-	bool isset() const noexcept {
+	constexpr bool isset() const noexcept
+	{
 		return this->HasValue;
 	}
 
 	using Valueable<T>::Get;
 
-	T Get(const T& default) const {
-		return this->isset() ? this->Get() : default;
+	constexpr T Get(const T& defaultValue) const
+	{
+		return this->isset() ? this->Get() : defaultValue;
 	}
 
 	using Valueable<T>::GetEx;
 
-	T* GetEx(T* default) & noexcept {
-		return this->isset() ? this->GetEx() : default;
+	constexpr T* GetEx(T* defaultValue) & noexcept
+	{
+		return this->isset() ? this->GetEx() : defaultValue;
 	}
 
-	const T* GetEx(const T* default) const noexcept {
-		return this->isset() ? this->GetEx() : default;
+	constexpr const T* GetEx(const T* defaultValue) const noexcept
+	{
+		return this->isset() ? this->GetEx() : defaultValue;
 	}
 
-	void Reset() {
+	constexpr void Reset()
+	{
 		this->Value = T();
 		this->HasValue = false;
 	}
 
-	inline void Read(INI_EX& parser, const char* pSection, const char* pKey, bool Allocate = false);
+	template<bool Allocate = false>
+	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
 	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
 
@@ -203,18 +227,20 @@ public:
 };
 
 template<typename Lookuper>
-class NullableIdx : public Nullable<int> {
+class NullableIdx : public Nullable<int>
+{
 public:
-	NullableIdx() noexcept : Nullable<int>(-1) { this->HasValue = false; }
-	explicit NullableIdx(int value) noexcept : Nullable<int>(value) {}
-	NullableIdx(NullableIdx const& other) = default;
-	NullableIdx(NullableIdx&& other) = default;
+	constexpr NullableIdx() noexcept : Nullable<int>(-1) { this->HasValue = false; }
+	constexpr explicit NullableIdx(int value) noexcept : Nullable<int>(value) { }
+	constexpr NullableIdx(NullableIdx const& other) = default;
+	constexpr NullableIdx(NullableIdx&& other) = default;
 
-	NullableIdx& operator = (NullableIdx const& value) = default;
-	NullableIdx& operator = (NullableIdx&& value) = default;
+	constexpr NullableIdx& operator = (NullableIdx const& value) = default;
+	constexpr NullableIdx& operator = (NullableIdx&& value) = default;
 
-	template <typename Val, typename = std::enable_if_t<std::is_assignable<int&, Val&&>::value>>
-	NullableIdx& operator = (Val value) {
+	template <typename Val> requires std::assignable_from<int&, Val&&>
+	constexpr NullableIdx& operator = (Val value)
+	{
 		this->Value = std::move(value);
 		this->HasValue = true;
 		return *this;
@@ -235,31 +261,37 @@ public:
  * be removed. I.e. "Test.%s" will be converted to "Test".
  */
 template<typename T>
-class Promotable {
+class Promotable
+{
 public:
-	T Rookie{};
-	T Veteran{};
-	T Elite{};
+	T Rookie {};
+	T Veteran {};
+	T Elite {};
 
 	Promotable() = default;
-	explicit Promotable(T const& all) noexcept(noexcept(T{ all })) : Rookie(all), Veteran(all), Elite(all) {}
+	explicit Promotable(T const& all) noexcept(noexcept(T { all })) : Rookie(all), Veteran(all), Elite(all) { }
 
-	void SetAll(const T& val) {
+	void SetAll(const T& val)
+	{
 		this->Elite = this->Veteran = this->Rookie = val;
 	}
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
 
-	const T* GetEx(TechnoClass* pTechno) const noexcept {
+	const T* GetEx(TechnoClass* pTechno) const noexcept
+	{
 		return &this->Get(pTechno);
 	}
 
-	const T& Get(TechnoClass* pTechno) const noexcept {
+	const T& Get(TechnoClass* pTechno) const noexcept
+	{
 		auto const rank = pTechno->Veterancy.GetRemainingLevel();
-		if (rank == Rank::Elite) {
+		if (rank == Rank::Elite)
+		{
 			return this->Elite;
 		}
-		if (rank == Rank::Veteran) {
+		if (rank == Rank::Veteran)
+		{
 			return this->Veteran;
 		}
 		return this->Rookie;
@@ -272,7 +304,8 @@ public:
 
 
 template<class T>
-class ValueableVector : public std::vector<T> {
+class ValueableVector : public std::vector<T>
+{
 public:
 	using value_type = T;
 	using base_type = std::remove_pointer_t<T>;
@@ -281,19 +314,29 @@ public:
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
-	bool Contains(const T& other) const {
+	bool Contains(const T& other) const
+	{
 		return std::find(this->begin(), this->end(), other) != this->end();
 	}
 
-	int IndexOf(const T& other) const {
+	void AddUnique(const T& item)
+	{
+		if (!this->Contains(item))
+			this->emplace_back(item);
+	}
+
+	int IndexOf(const T& other) const
+	{
 		auto it = std::find(this->begin(), this->end(), other);
-		if (it != this->end()) {
+		if (it != this->end())
+		{
 			return it - this->begin();
 		}
 		return -1;
 	}
 
-	Iterator<T> GetElements() const noexcept {
+	Iterator<T> GetElements() const noexcept
+	{
 		return Iterator<T>(*this);
 	}
 
@@ -303,23 +346,27 @@ public:
 };
 
 template<class T>
-class NullableVector : public ValueableVector<T> {
+class NullableVector : public ValueableVector<T>
+{
 protected:
-	bool hasValue{ false };
+	bool hasValue { false };
 public:
 	NullableVector() noexcept = default;
 
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 
-	bool HasValue() const noexcept {
+	bool HasValue() const noexcept
+	{
 		return this->hasValue;
 	}
 
 	using ValueableVector<T>::GetElements;
 
-	Iterator<T> GetElements(Iterator<T> default) const noexcept {
-		if (!this->hasValue) {
-			return default;
+	Iterator<T> GetElements(Iterator<T> defaultValue) const noexcept
+	{
+		if (!this->hasValue)
+		{
+			return defaultValue;
 		}
 
 		return this->GetElements();
@@ -331,13 +378,103 @@ public:
 };
 
 template<typename Lookuper>
-class ValueableIdxVector : public ValueableVector<int> {
+class ValueableIdxVector : public ValueableVector<int>
+{
 public:
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
 };
 
 template<typename Lookuper>
-class NullableIdxVector : public NullableVector<int> {
+class NullableIdxVector : public NullableVector<int>
+{
 public:
 	inline void Read(INI_EX& parser, const char* pSection, const char* pKey);
+};
+
+/*
+ * This template is for something that varies depending on Technos damage state (or arbitrary 'health' ratio provided).
+ * Damageable<AnimClass*> TestAnims; // class def
+ * TestAnims(); // ctor init-list
+ * TestAnims->Read(..., "Base%s"); // load from ini
+ * TestAnims->Get(Techno); // usage
+ * TestAnims->Get(healthRatio); // alternate usage
+ *
+ * Use %s format specifier, exactly once. If pSingleFlag is null, pBaseFlag will
+ * be used. For the single flag name, a trailing dot (after replacing %s) will
+ * be removed. I.e. "Test.%s" will be converted to "Test".
+ */
+template<typename T>
+class Damageable
+{
+public:
+	Valueable<T> BaseValue {};
+	Nullable<T> ConditionYellow {};
+	Nullable<T> ConditionRed {};
+
+	Damageable() = default;
+	explicit Damageable(T const& all)
+		noexcept(noexcept(T { all }))
+		: BaseValue { all }
+	{ }
+
+	explicit Damageable(T const& undamaged, T const& damaged)
+		noexcept(noexcept(T { undamaged }) && noexcept(T { damaged }))
+		: BaseValue { undamaged }, ConditionYellow { damaged }
+	{ }
+
+	explicit Damageable(T const& green, T const& yellow, T const& red)
+		noexcept(noexcept(T { green }) && noexcept(T { yellow }) && noexcept(T { red }))
+		: BaseValue { green }, ConditionYellow { yellow }, ConditionRed { red }
+	{ }
+
+	inline void Read(INI_EX& parser, const char* pSection, const char* pBaseFlag, const char* pSingleFlag = nullptr);
+
+	const T* GetEx(TechnoClass* pTechno) const noexcept
+	{
+		return &this->Get(pTechno);
+	}
+
+	const T& Get(TechnoClass* pTechno) const noexcept
+	{
+		return Get(pTechno->GetHealthPercentage());
+	}
+
+	const T* GetEx(double ratio) const noexcept
+	{
+		return &this->Get(ratio);
+	}
+
+	const T& Get(double ratio, double conditionYellow = -1, double conditionRed = -1) const noexcept
+	{
+		if (conditionYellow < 0)
+			conditionYellow = RulesClass::Instance->ConditionYellow;
+
+		if (conditionRed < 0)
+			conditionRed = RulesClass::Instance->ConditionRed;
+
+		if (this->ConditionRed.isset() && ratio <= conditionRed)
+			return this->ConditionRed;
+		else if (this->ConditionYellow.isset() && ratio <= conditionYellow)
+			return this->ConditionYellow;
+
+		return this->BaseValue;
+	}
+
+	inline bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+
+	inline bool Save(PhobosStreamWriter& Stm) const;
+};
+
+template<typename T>
+class PartialVector2D : public Vector2D<T> // Same as Vector2D except parsing only one value is valid.
+{
+public:
+	size_t ValueCount;
+};
+
+template<typename T>
+class PartialVector3D : public Vector3D<T> // Same as Vector3D except parsing only one or two values is valid.
+{
+public:
+	size_t ValueCount;
 };

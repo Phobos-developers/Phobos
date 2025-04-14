@@ -1,9 +1,12 @@
 #include "Body.h"
 
+#include <AnimClass.h>
+#include <TacticalClass.h>
+#include <TerrainClass.h>
 #include <TerrainTypeClass.h>
+
 #include <Utilities/GeneralUtils.h>
 
-template<> const DWORD Extension<TerrainTypeClass>::Canary = 0xBEE78007;
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
 
 int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
@@ -14,6 +17,26 @@ int TerrainTypeExt::ExtData::GetTiberiumGrowthStage()
 int TerrainTypeExt::ExtData::GetCellsPerAnim()
 {
 	return GeneralUtils::GetRangedRandomOrSingleValue(this->SpawnsTiberium_CellsPerAnim.Get());
+}
+
+void TerrainTypeExt::ExtData::PlayDestroyEffects(const CoordStruct& coords)
+{
+	VocClass::PlayIndexAtPos(this->DestroySound, coords);
+
+	if (auto const pAnimType = this->DestroyAnim)
+		GameCreate<AnimClass>(pAnimType, coords);
+}
+
+void TerrainTypeExt::Remove(TerrainClass* pTerrain)
+{
+	if (!pTerrain)
+		return;
+
+	RectangleStruct rect = RectangleStruct {};
+	rect = *pTerrain->GetRenderDimensions(&rect);
+	TacticalClass::Instance->RegisterDirtyArea(rect, false);
+	pTerrain->Disappear(true);
+	pTerrain->UnInit();
 }
 
 // =============================
@@ -29,6 +52,14 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
+		.Process(this->MinimapColor)
+		.Process(this->IsPassable)
+		.Process(this->CanBeBuiltOn)
+		.Process(this->HasDamagedFrames)
+		.Process(this->HasCrumblingFrames)
+		.Process(this->CrumblingSound)
+		.Process(this->AnimationLength)
+		.Process(this->PaletteFile)
 		;
 }
 
@@ -49,14 +80,31 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
 	this->DestroySound.Read(exINI, pSection, "DestroySound");
 
+	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+
+	this->IsPassable.Read(exINI, pSection, "IsPassable");
+	this->CanBeBuiltOn.Read(exINI, pSection, "CanBeBuiltOn");
+
+	this->HasDamagedFrames.Read(exINI, pSection, "HasDamagedFrames");
+	this->HasCrumblingFrames.Read(exINI, pSection, "HasCrumblingFrames");
+	this->CrumblingSound.Read(exINI, pSection, "CrumblingSound");
+	this->AnimationLength.Read(exINI, pSection, "AnimationLength");
+
 	//Strength is already part of ObjecTypeClass::ReadIni Duh!
 	//this->TerrainStrength.Read(exINI, pSection, "Strength");
+
+	this->PaletteFile.Read(&CCINIClass::INI_Art, pThis->ImageFile, "Palette");
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
+
+	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
+		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pThis->ImageFile, this->PaletteFile.data());
 }
 
 void TerrainTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TerrainTypeClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 }
 
 void TerrainTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -90,7 +138,10 @@ DEFINE_HOOK(0x71DBC0, TerrainTypeClass_CTOR, 0x7)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
 
-	TerrainTypeExt::ExtMap.FindOrAllocate(pItem);
+	TerrainTypeExt::ExtMap.TryAllocate(pItem);
+
+	// Override the default value (true) from game constructor.
+	pItem->RadarInvisible = false;
 
 	return 0;
 }
@@ -132,10 +183,9 @@ DEFINE_HOOK(0x71E25A, TerrainTypeClass_Save_Suffix, 0x5)
 DEFINE_HOOK(0x71E0A6, TerrainTypeClass_LoadFromINI, 0x5)
 {
 	GET(TerrainTypeClass*, pItem, ESI);
-	GET_STACK(CCINIClass*, pINI, STACK_OFFS(0x210, -0x4));
+	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x210, 0x4));
 
 	TerrainTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 
 	return 0;
 }
-

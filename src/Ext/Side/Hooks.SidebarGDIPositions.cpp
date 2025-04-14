@@ -1,50 +1,50 @@
-﻿#include <ScenarioClass.h>
+#include <ScenarioClass.h>
 #include "Body.h"
 
-bool SideExt::isNODSidebar()
+bool isNODSidebar = false;
+
+DEFINE_HOOK(0x534FA7, Prep_For_Side, 0x5)
 {
-	auto const PlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-	if (auto const pSide = SideClass::Array->GetItemOrDefault(PlayerSideIndex)) {
-		if (auto const pData = SideExt::ExtMap.Find(pSide)) {
-			return !pData->Sidebar_GDIPositions;
-		}
-	}
-	return PlayerSideIndex;
+	GET(int, sideIndex, ECX);
+	auto pSide = SideClass::Array.GetItem(sideIndex);
+	auto pSideExt = pSide ? SideExt::ExtMap.Find(pSide) : nullptr;
+	isNODSidebar = pSideExt ? !pSideExt->Sidebar_GDIPositions : sideIndex;
+
+	return 0;
 }
 
-DEFINE_HOOK(0x6A5090, SidebarGDIPositions1, 0x5)
+DEFINE_HOOK(0x652EAB, RadarClass_InitForHouse, 0x6)
 {
-	R->EAX(SideExt::isNODSidebar());
-	return 0x6A509B;
-}
-
-DEFINE_HOOK(0x652EAB, SidebarGDIPositions2, 0x6)
-{
-	R->EAX(SideExt::isNODSidebar());
+	R->EAX(isNODSidebar);
 	return 0x652EB7;
 }
 
-DEFINE_HOOK(0x6A51E9, SidebarGDIPositions3, 0x6)
+DEFINE_HOOK(0x6A5090, SidebarClass_InitPositions, 0x5)
+{
+	R->EAX(isNODSidebar);
+	return 0x6A509B;
+}
+
+DEFINE_HOOK(0x6A51E9, SidebarClass_InitGUI, 0x6)
 {
 	DWORD& SidebarClass__OBJECT_HEIGHT = *reinterpret_cast<DWORD*>(0xB0B500);
 	SidebarClass__OBJECT_HEIGHT = 0x32;
 
-	bool pos = SideExt::isNODSidebar();
-	R->ESI(pos);
-	R->EDX(pos);
+	R->ESI(isNODSidebar);
+	R->EDX(isNODSidebar);
 	return 0x6A5205;
 }
 
-// power bar
-DEFINE_HOOK(0x63FB5D, SidebarGDIPositions4, 0x6)
+// PowerBar Positions
+DEFINE_HOOK(0x63FB5D, PowerClass_DrawIt, 0x6)
 {
-	R->EAX(SideExt::isNODSidebar());
+	R->EAX(isNODSidebar);
 	return 0x63FB63;
 }
 
-// power bar tooltip
-DEFINE_HOOK(0x6403DF, SidebarGDIPositions5, 0x6)
+// PowerBar Tooltip Positions
+DEFINE_HOOK(0x6403DF, PowerClass_InitGUI, 0x6)
 {
-	R->ESI(SideExt::isNODSidebar());
+	R->ESI(isNODSidebar);
 	return 0x6403E5;
 }

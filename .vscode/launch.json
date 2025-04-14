@@ -1,23 +1,21 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Debug current file as memory dump",
-			"type": "cppvsdbg",
-			"request": "launch",
-			"program": "some text to trick VSCode",
-			"dumpPath": "${file}",
-			"symbolSearchPath": "${fileDirname};${config:gamemdFolder};${workspaceFolder}/Debug;${config:additionalPdbPaths}",
-		},
-		{
-			"name": "Attach debugger to Yuri's Revenge",
-			"type": "cppvsdbg",
-			"request": "attach",
-			"processName": "gamemd.exe",
-			"program": "${config:gamemdFolder}/gamemd.exe",
-			"cwd": "${config:gamemdFolder}",
-			"symbolSearchPath": "${config:gamemdFolder};${workspaceFolder}/Debug;${config:additionalPdbPaths}",
-		}
-
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug current file as memory dump",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "some text to trick VSCode",
+      "dumpPath": "${file}",
+      "symbolSearchPath": "${fileDirname};${config:gamemdFolder};${workspaceFolder}/Debug;${config:additionalPdbPaths}"
+    },
+    {
+      "name": "Attach debugger to Yuri's Revenge",
+      "type": "cppvsdbg",
+      "request": "attach",
+      "program": "${config:gamemdFolder}/gamemd.exe",
+      "cwd": "${config:gamemdFolder}",
+      "symbolSearchPath": "${config:gamemdFolder};${workspaceFolder}/Debug;${config:additionalPdbPaths}"
+    }
+  ]
 }

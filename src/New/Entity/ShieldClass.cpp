@@ -1,42 +1,74 @@
 #include "ShieldClass.h"
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Rules/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/WarheadType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
-
 #include <AnimClass.h>
 #include <HouseClass.h>
 #include <RadarEventClass.h>
 #include <TacticalClass.h>
 
-ShieldClass::ShieldClass() : Techno { nullptr }
+std::vector<ShieldClass*> ShieldClass::Array;
+
+ShieldClass::ShieldClass()
+	: Techno { nullptr }
 	, HP { 0 }
 	, Timers { }
-{ }
+	, AreAnimsHidden { false }
+{
+	ShieldClass::Array.emplace_back(this);
+}
 
-ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached) : Techno { pTechno }
+ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
+	: Techno { pTechno }
 	, IdleAnim { nullptr }
 	, Timers { }
 	, Cloak { false }
 	, Online { true }
 	, Temporal { false }
 	, Available { true }
+	, AreAnimsHidden { false }
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
 {
 	this->UpdateType();
-	SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	strcpy(this->TechnoID, this->Techno->get_ID());
+	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
+	this->TechnoID = this->Techno->GetTechnoType();
+	ShieldClass::Array.emplace_back(this);
+}
+
+ShieldClass::~ShieldClass()
+{
+	auto it = std::find(ShieldClass::Array.begin(), ShieldClass::Array.end(), this);
+
+	if (it != ShieldClass::Array.end())
+		ShieldClass::Array.erase(it);
 }
 
 void ShieldClass::UpdateType()
 {
 	this->Type = TechnoExt::ExtMap.Find(this->Techno)->CurrentShieldType;
 }
+
+void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
+{
+	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	{
+		for (auto pShield : ShieldClass::Array)
+		{
+			if (pAnim == pShield->IdleAnim)
+				pShield->IdleAnim = nullptr;
+		}
+	}
+}
+
+// =============================
+// load / save
 
 template <typename T>
 bool ShieldClass::Serialize(T& Stm)
@@ -46,19 +78,25 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->TechnoID)
 		.Process(this->IdleAnim)
 		.Process(this->Timers.SelfHealing)
-		.Process(this->Timers.SelfHealing_Warhead)
+		.Process(this->Timers.SelfHealing_WHModifier)
 		.Process(this->Timers.Respawn)
+		.Process(this->Timers.Respawn_WHModifier)
 		.Process(this->HP)
 		.Process(this->Cloak)
 		.Process(this->Online)
 		.Process(this->Temporal)
 		.Process(this->Available)
 		.Process(this->Attached)
+		.Process(this->AreAnimsHidden)
 		.Process(this->Type)
 		.Process(this->SelfHealing_Warhead)
 		.Process(this->SelfHealing_Rate_Warhead)
+		.Process(this->SelfHealing_RestartInCombat_Warhead)
+		.Process(this->SelfHealing_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
+		.Process(this->LastBreakFrame)
+		.Process(this->LastTechnoHealthRatio)
 		.Success();
 }
 
@@ -72,6 +110,8 @@ bool ShieldClass::Save(PhobosStreamWriter& Stm) const
 	return const_cast<ShieldClass*>(this)->Serialize(Stm);
 }
 
+// =============================
+//
 // Is used for DeploysInto/UndeploysInto
 void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 {
@@ -82,7 +122,7 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		pToExt->CurrentShieldType = pFromExt->CurrentShieldType;
 		pToExt->Shield = std::make_unique<ShieldClass>(pTo);
-		strcpy(pToExt->Shield->TechnoID, pFromExt->Shield->TechnoID);
+		pToExt->Shield->TechnoID = pFromExt->Shield->TechnoID;
 		pToExt->Shield->Available = pFromExt->Shield->Available;
 		pToExt->Shield->HP = pFromExt->Shield->HP;
 	}
@@ -91,15 +131,44 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 		pFromExt->Shield = nullptr;
 }
 
+bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
+{
+	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))
+	{
+		if (auto pExt = TechnoExt::ExtMap.Find(pTechno))
+		{
+			ShieldClass* pShield = pExt->Shield.get();
+			return !pShield || pShield->HP <= 0;
+		}
+	}
+
+	return false;
+}
+
 int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 {
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
-	if (!this->HP || this->Temporal || *args->Damage == 0 ||
-		this->Techno->IsIronCurtained() || CanBePenetrated(pWHExt->OwnerObject()))
-	{
+	if (!this->HP || this->Temporal || *args->Damage == 0)
 		return *args->Damage;
+
+	// Handle a special case where parasite damages shield but not the unit and unit itself cannot be targeted by repair weapons.
+	if (*args->Damage < 0)
+	{
+		if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+		{
+			if (auto const pParasite = pFoot->ParasiteEatingMe)
+			{
+				// Remove parasite.
+				pParasite->ParasiteImUsing->SuppressionTimer.Start(50);
+				pParasite->ParasiteImUsing->ExitUnit();
+			}
+		}
 	}
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	bool IC = pWHExt->CanAffectInvulnerable(this->Techno);
+
+	if (!IC || CanBePenetrated(args->WH) || this->Techno->GetTechnoType()->Immune || TechnoExt::IsTypeImmune(this->Techno, args->Attacker))
+		return *args->Damage;
 
 	int nDamage = 0;
 	int shieldDamage = 0;
@@ -108,9 +177,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (pWHExt->CanTargetHouse(args->SourceHouse, this->Techno) && !args->WH->Temporal)
 	{
 		if (*args->Damage > 0)
-			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
+			nDamage = MapClass::GetTotalDamage(*args->Damage, args->WH, this->GetArmorType(), args->DistanceToEpicenter);
 		else
-			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->Type->Armor, args->DistanceToEpicenter);
+			nDamage = -MapClass::GetTotalDamage(-*args->Damage, args->WH, this->GetArmorType(), args->DistanceToEpicenter);
 
 		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
 		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
@@ -121,30 +190,84 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		healthDamage = (int)((double)*args->Damage * passPercent);
 	}
 
+	int originalShieldDamage = shieldDamage;
+	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum);
+	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum);
+	int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
+
+	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
+		GeneralUtils::DisplayDamageNumberString(shieldDamage, DamageDisplayType::Shield, this->Techno->GetRenderCoords(), TechnoExt::ExtMap.Find(this->Techno)->DamageNumberOffset);
+
 	if (shieldDamage > 0)
 	{
-		const int rate = this->Timers.SelfHealing_Warhead.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+		bool whModifiersApplied = this->Timers.SelfHealing_WHModifier.InProgress();
+		bool restart = whModifiersApplied ? this->SelfHealing_RestartInCombat_Warhead : this->Type->SelfHealing_RestartInCombat;
 
-		this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
-		this->ResponseAttack();
+		if (restart)
+		{
+			int delay = whModifiersApplied ? this->SelfHealing_RestartInCombatDelay_Warhead : this->Type->SelfHealing_RestartInCombatDelay;
+
+			if (delay > 0)
+			{
+				this->Timers.SelfHealing_CombatRestart.Start(this->Type->SelfHealing_RestartInCombatDelay);
+				this->Timers.SelfHealing.Stop();
+			}
+			else
+			{
+				const int rate = whModifiersApplied ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+				this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
+			}
+		}
+
+		if (!pWHExt->Nonprovocative)
+			this->ResponseAttack();
 
 		if (pWHExt->DecloakDamagedTargets)
 			this->Techno->Uncloak(false);
 
 		int residueDamage = shieldDamage - this->HP;
+
 		if (residueDamage >= 0)
 		{
-			residueDamage = int((double)(residueDamage) /
-				GeneralUtils::GetWarheadVersusArmor(args->WH, this->Type->Armor)); //only absord percentage damage
+			int actualResidueDamage = Math::max(0, int((double)(originalShieldDamage - this->HP) /
+				GeneralUtils::GetWarheadVersusArmor(args->WH, this->GetArmorType()))); //only absord percentage damage
 
-			this->BreakShield(pWHExt->Shield_BreakAnim.Get(nullptr), pWHExt->Shield_BreakWeapon.Get(nullptr));
+			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
 
-			return this->Type->AbsorbOverDamage ? healthDamage : residueDamage + healthDamage;
+			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
 		else
 		{
-			this->WeaponNullifyAnim(pWHExt->Shield_HitAnim.Get(nullptr));
+			if (this->Type->HitFlash && pWHExt->Shield_HitFlash)
+			{
+				int size = this->Type->HitFlash_FixedSize.Get((shieldDamage * 2));
+				SpotlightFlags flags = SpotlightFlags::NoColor;
+
+				if (this->Type->HitFlash_Black)
+				{
+					flags = SpotlightFlags::NoColor;
+				}
+				else
+				{
+					if (!this->Type->HitFlash_Red)
+						flags = SpotlightFlags::NoRed;
+					if (!this->Type->HitFlash_Green)
+						flags |= SpotlightFlags::NoGreen;
+					if (!this->Type->HitFlash_Blue)
+						flags |= SpotlightFlags::NoBlue;
+				}
+
+				MapClass::FlashbangWarheadAt(size, args->WH, this->Techno->Location, true, flags);
+			}
+
+			if (!pWHExt->Shield_SkipHitAnim)
+				this->WeaponNullifyAnim(pWHExt->Shield_HitAnim);
+
 			this->HP = -residueDamage;
+
+			this->UpdateIdleAnim();
 
 			return healthDamage;
 		}
@@ -152,9 +275,11 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	else if (shieldDamage < 0)
 	{
 		const int nLostHP = this->Type->Strength - this->HP;
+
 		if (!nLostHP)
 		{
 			int result = *args->Damage;
+
 			if (result * GeneralUtils::GetWarheadVersusArmor(args->WH, this->Techno->GetTechnoType()->Armor) > 0)
 				result = 0;
 
@@ -168,6 +293,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		else
 			this->HP -= shieldDamage;
 
+		this->UpdateIdleAnim();
+
 		return 0;
 	}
 
@@ -177,51 +304,64 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 void ShieldClass::ResponseAttack()
 {
-	if (this->Techno->Owner != HouseClass::Player)
+	if (this->Techno->Owner != HouseClass::CurrentPlayer)
 		return;
 
-	if (this->Techno->WhatAmI() == AbstractType::Building)
+	if (const auto pBld = abstract_cast<BuildingClass*>(this->Techno))
 	{
-		const auto pBld = abstract_cast<BuildingClass*>(this->Techno);
 		this->Techno->Owner->BuildingUnderAttack(pBld);
 	}
-	else if (this->Techno->WhatAmI() == AbstractType::Unit)
+	else if (const auto pUnit = abstract_cast<UnitClass*>(this->Techno))
 	{
-		const auto pUnit = abstract_cast<UnitClass*>(this->Techno);
 		if (pUnit->Type->Harvester)
 		{
 			const auto pos = pUnit->GetDestination(pUnit);
-
 			if (RadarEventClass::Create(RadarEventType::HarvesterAttacked, CellClass::Coord2Cell(pos)))
-				VoxClass::Play("EVA_OreMinerUnderAttack");
+				VoxClass::Play(GameStrings::EVA_OreMinerUnderAttack);
 		}
 	}
 }
 
 void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 {
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim.Get(nullptr);
+	if (this->AreAnimsHidden)
+		return;
+
+	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
-		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+	{
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+	}
 }
 
-bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon)
+bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
 {
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+	if (!pWeapon)
+		return false;
 
-	if ((pWHExt && CanBePenetrated(pWHExt->OwnerObject())) || !this->HP)
+	if (this->CanBePenetrated(pWeapon->Warhead) || !this->HP)
 		return true;
 
-	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->Type->Armor) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, this->GetArmorType()) != 0.0;
 }
 
-bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead)
+bool ShieldClass::CanBePenetrated(WarheadTypeClass* pWarhead) const
 {
+	if (!pWarhead)
+		return false;
+
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (pWHExt->Shield_AffectTypes.size() > 0 && !pWHExt->Shield_AffectTypes.Contains(this->Type))
+	const auto affectedTypes = pWHExt->Shield_Penetrate_Types.GetElements(pWHExt->Shield_AffectTypes);
+
+	if (affectedTypes.size() > 0 && !affectedTypes.contains(this->Type))
 		return false;
+
+	if (pWarhead->Psychedelic)
+		return !this->Type->ImmuneToBerserk;
 
 	return pWHExt->Shield_Penetrate;
 }
@@ -267,7 +407,7 @@ void ShieldClass::AI()
 	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
 		return;
 
-	if (this->Techno->Health <= 0 || !this->Techno->IsAlive)
+	if (this->Techno->Health <= 0 || !this->Techno->IsAlive || this->Techno->IsSinking)
 	{
 		if (auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno))
 		{
@@ -286,6 +426,7 @@ void ShieldClass::AI()
 		return;
 
 	this->TemporalCheck();
+
 	if (this->Temporal)
 		return;
 
@@ -293,8 +434,24 @@ void ShieldClass::AI()
 	this->RespawnShield();
 	this->SelfHealing();
 
-	if (!this->Cloak && !this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
-		this->CreateAnim();
+	double ratio = this->Techno->GetHealthPercentage();
+
+	if (!this->AreAnimsHidden)
+	{
+		if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
+			UpdateIdleAnim();
+
+		if (!this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
+			this->CreateAnim();
+	}
+
+	if (this->Timers.Respawn_WHModifier.Completed())
+		this->Timers.Respawn_WHModifier.Stop();
+
+	if (this->Timers.SelfHealing_WHModifier.Completed())
+		this->Timers.SelfHealing_WHModifier.Stop();
+
+	this->LastTechnoHealthRatio = ratio;
 }
 
 // The animation is automatically destroyed when the associated unit receives the isCloak statute.
@@ -304,8 +461,8 @@ void ShieldClass::CloakCheck()
 	const auto cloakState = this->Techno->CloakState;
 	this->Cloak = cloakState == CloakState::Cloaked || cloakState == CloakState::Cloaking;
 
-	if (this->Cloak)
-		this->IdleAnim = nullptr;
+	if (this->Cloak && this->IdleAnim && AnimTypeExt::ExtMap.Find(this->IdleAnim->Type)->DetachOnCloak)
+		this->KillAnim();
 }
 
 void ShieldClass::OnlineCheck()
@@ -326,6 +483,9 @@ void ShieldClass::OnlineCheck()
 
 	if (!isActive)
 	{
+		if (this->Online)
+			this->UpdateTint();
+
 		this->Online = false;
 		timer->Pause();
 
@@ -354,6 +514,9 @@ void ShieldClass::OnlineCheck()
 	}
 	else
 	{
+		if (!this->Online)
+			this->UpdateTint();
+
 		this->Online = true;
 		timer->Resume();
 
@@ -382,12 +545,12 @@ void ShieldClass::TemporalCheck()
 	}
 }
 
-// Is used for DeploysInto/UndeploysInto and DeploysInto/UndeploysInto
+// Is used for DeploysInto/UndeploysInto and Type conversion
 bool ShieldClass::ConvertCheck()
 {
-	const auto newID = this->Techno->get_ID();
+	const auto newID = this->Techno->GetTechnoType();
 
-	if (strcmp(this->TechnoID, newID) == 0)
+	if (this->TechnoID == newID)
 		return false;
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
@@ -401,6 +564,7 @@ bool ShieldClass::ConvertCheck()
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
 		pTechnoExt->Shield = nullptr;
+		this->UpdateTint();
 
 		return true;
 	}
@@ -414,7 +578,10 @@ bool ShieldClass::ConvertCheck()
 	// Update shield properties.
 	if (pNewType->Strength && this->Available)
 	{
-		if (pOldType->IdleAnim.Get() != pNewType->IdleAnim.Get())
+		bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+		double healthRatio = this->GetHealthRatio();
+
+		if (pOldType->GetIdleAnimType(isDamaged, healthRatio) != pNewType->GetIdleAnimType(isDamaged, healthRatio))
 			this->KillAnim();
 
 		this->HP = (int)round(
@@ -439,37 +606,50 @@ bool ShieldClass::ConvertCheck()
 		}
 	}
 
-	strcpy(this->TechnoID, newID);
+	this->TechnoID = newID;
+	this->UpdateTint();
 
 	return false;
 }
 
 void ShieldClass::SelfHealing()
 {
-	const auto pType = this->Type;
-	const auto timer = &this->Timers.SelfHealing;
-	const auto timerWH = &this->Timers.SelfHealing_Warhead;
-
-	if (timerWH->Expired() && timer->InProgress())
+	if (this->Timers.SelfHealing_CombatRestart.InProgress())
 	{
-		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
-		int timeLeft = pType->SelfHealing_Rate - passedTime;
-		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
+		return;
+	}
+	else if (this->Timers.SelfHealing_CombatRestart.Completed())
+	{
+		const int rate = this->Timers.SelfHealing_WHModifier.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+		this->Timers.SelfHealing.Start(rate);
+		this->Timers.SelfHealing_CombatRestart.Stop();
 	}
 
-	const double amount = timerWH->InProgress() ? this->SelfHealing_Warhead : pType->SelfHealing;
-	const int rate = timerWH->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+	const auto pType = this->Type;
+	const auto timer = &this->Timers.SelfHealing;
+	const auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
+
+	if (timerWHModifier->Completed() && timer->InProgress())
+	{
+		double mult = this->SelfHealing_Rate_Warhead > 0 ? Type->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
+		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
+	}
+
+	const double amount = timerWHModifier->InProgress() ? this->SelfHealing_Warhead : pType->SelfHealing;
+	const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
 	const auto percentageAmount = this->GetPercentageAmount(amount);
 
 	if (percentageAmount != 0)
 	{
-		if (this->HP < this->Type->Strength && timer->StartTime == -1)
+		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 
 		if (this->HP > 0 && timer->Completed())
 		{
 			timer->Start(rate);
 			this->HP += percentageAmount;
+
+			this->UpdateIdleAnim();
 
 			if (this->HP > pType->Strength)
 			{
@@ -478,7 +658,7 @@ void ShieldClass::SelfHealing()
 			}
 			else if (this->HP <= 0)
 			{
-				BreakShield();
+				this->BreakShield();
 			}
 		}
 	}
@@ -490,15 +670,9 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 		return 0;
 
 	if (iStatus >= -1.0 && iStatus <= 1.0)
-		return (int)round(this->Type->Strength * iStatus);
+		return (int)std::round(this->Type->Strength * iStatus);
 
-	return (int)trunc(iStatus);
-}
-
-void ShieldClass::InvalidatePointer(void* ptr)
-{
-	if (this->IdleAnim == ptr)
-		this->KillAnim();
+	return (int)std::trunc(iStatus);
 }
 
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
@@ -506,24 +680,28 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	this->HP = 0;
 
 	if (this->Type->Respawn)
-		this->Timers.Respawn.Start(Timers.Respawn_Warhead.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
+		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
-
 	this->KillAnim();
 
-	const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim.Get(nullptr);
-
-	if (pAnimType)
+	if (!this->AreAnimsHidden)
 	{
-		if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
+		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
+
+		if (pAnimType)
 		{
+			auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
+
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		}
 	}
 
-	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon.Get(nullptr);
+	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
+	this->LastBreakFrame = Unsorted::CurrentFrame;
+	this->UpdateTint();
 
 	if (pWeaponType)
 		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
@@ -532,80 +710,84 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 void ShieldClass::RespawnShield()
 {
 	const auto timer = &this->Timers.Respawn;
-	const auto timerWH = &this->Timers.Respawn_Warhead;
+	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
 	if (this->HP <= 0 && timer->Completed())
 	{
 		timer->Stop();
-		double amount = timerWH->InProgress() ? Respawn_Warhead : this->Type->Respawn;
+		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
+		this->UpdateTint();
 	}
-	else if (timerWH->Expired() && timer->InProgress())
+	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
-		int timeLeft = Type->Respawn_Rate - passedTime;
-		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
+		double mult = this->Respawn_Rate_Warhead > 0 ? Type->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
+		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
 
 void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTimer)
 {
 	const auto timer = &this->Timers.Respawn;
-	const auto timerWH = &this->Timers.Respawn_Warhead;
+	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
-	this->Respawn_Warhead = amount > 0 ? amount : Type->Respawn;
+	bool modifierTimerInProgress = timerWHModifier->InProgress();
+	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
 
-	timerWH->Start(duration);
+	timerWHModifier->Start(duration);
 
-	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && (resetTimer || timer->Expired()))
+	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && resetTimer)
 	{
 		timer->Start(Respawn_Rate_Warhead);
 	}
-	else if (timer->InProgress())
+	else if (timer->InProgress() && !modifierTimerInProgress && this->Respawn_Rate_Warhead != Type->Respawn_Rate)
 	{
-		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
-		int timeLeft = Respawn_Rate_Warhead - passedTime;
-		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
+		double mult = Type->Respawn_Rate > 0 ? this->Respawn_Rate_Warhead / Type->Respawn_Rate : 1.0;
+		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
 
-void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool resetTimer)
+void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer)
 {
 	auto timer = &this->Timers.SelfHealing;
-	auto timerWH = &this->Timers.SelfHealing_Warhead;
+	auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
 
+	bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->SelfHealing_Warhead = amount;
 	this->SelfHealing_Rate_Warhead = rate >= 0 ? rate : Type->SelfHealing_Rate;
+	this->SelfHealing_RestartInCombat_Warhead = restartInCombat;
+	this->SelfHealing_RestartInCombatDelay_Warhead = restartInCombatDelay >= 0 ? restartInCombatDelay : Type->SelfHealing_RestartInCombatDelay;
 
-	timerWH->Start(duration);
+	timerWHModifier->Start(duration);
 
-	if (this->HP < this->Type->Strength && (resetTimer || timer->Expired()))
+	if (resetTimer)
 	{
 		timer->Start(this->SelfHealing_Rate_Warhead);
 	}
-	else if (timer->InProgress())
+	else if (timer->InProgress() && !modifierTimerInProgress && this->SelfHealing_Rate_Warhead != Type->SelfHealing_Rate)
 	{
-		int passedTime = Unsorted::CurrentFrame - timer->StartTime;
-		int timeLeft = SelfHealing_Rate_Warhead - passedTime;
-		timer->TimeLeft = timeLeft <= 0 ? 0 : timeLeft;
+		double mult = Type->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / Type->SelfHealing_Rate : 1.0;
+		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
 
 void ShieldClass::CreateAnim()
 {
-	if (!this->IdleAnim && this->Type->IdleAnim.isset())
+	auto idleAnimType = this->GetIdleAnimType();
+
+	if (this->Cloak && (!idleAnimType || AnimTypeExt::ExtMap.Find(idleAnimType)->DetachOnCloak))
+		return;
+
+	if (!this->IdleAnim && idleAnimType)
 	{
-		if (auto const pAnimType = this->Type->IdleAnim.Get())
-		{
-			if (auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location))
-			{
-				pAnim->SetOwnerObject(this->Techno);
-				pAnim->Owner = this->Techno->Owner;
-				pAnim->RemainingIterations = 0xFFu;
-				this->IdleAnim = pAnim;
-			}
-		}
+		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
+
+		pAnim->SetOwnerObject(this->Techno);
+		pAnim->Owner = this->Techno->Owner;
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+		pAnim->RemainingIterations = 0xFFu;
+		this->IdleAnim = pAnim;
 	}
 }
 
@@ -613,125 +795,140 @@ void ShieldClass::KillAnim()
 {
 	if (this->IdleAnim)
 	{
-		GameDelete(this->IdleAnim);
+		this->IdleAnim->UnInit();
 		this->IdleAnim = nullptr;
 	}
 }
 
-void ShieldClass::DrawShieldBar(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::UpdateIdleAnim()
 {
-	if (this->HP > 0 || this->Type->Respawn)
+	if (this->IdleAnim && this->IdleAnim->Type != this->GetIdleAnimType())
 	{
-		if (this->Techno->WhatAmI() == AbstractType::Building)
-			this->DrawShieldBar_Building(iLength, pLocation, pBound);
-		else
-			this->DrawShieldBar_Other(iLength, pLocation, pBound);
+		this->KillAnim();
+		this->CreateAnim();
 	}
 }
 
-void ShieldClass::DrawShieldBar_Building(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::UpdateTint()
 {
-	CoordStruct vCoords = { 0, 0, 0 };
-	this->Techno->GetTechnoType()->Dimension2(&vCoords);
-	Point2D vPos2 = { 0, 0 };
-	CoordStruct vCoords2 = { -vCoords.X / 2, vCoords.Y / 2,vCoords.Z };
-	TacticalClass::Instance->CoordsToScreen(&vPos2, &vCoords2);
+	if (this->Type->HasTint())
+		this->Techno->MarkForRedraw();
+}
 
-	Point2D vLoc = *pLocation;
-	vLoc.X -= 5;
-	vLoc.Y -= 3;
+AnimTypeClass* ShieldClass::GetIdleAnimType()
+{
+	if (!this->Type || !this->Techno)
+		return nullptr;
 
-	Point2D vPos = { 0, 0 };
+	bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
-	const int iTotal = DrawShieldBar_PipAmount(iLength);
+	return this->Type->GetIdleAnimType(isDamaged, this->GetHealthRatio());
+}
+
+bool ShieldClass::IsGreenSP()
+{
+	return this->Type->GetConditionYellow() * this->Type->Strength.Get() < this->HP;
+}
+
+bool ShieldClass::IsYellowSP()
+{
+	return this->Type->GetConditionRed() * this->Type->Strength.Get() < this->HP && this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+}
+
+bool ShieldClass::IsRedSP()
+{
+	return this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+}
+
+void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
+{
+	Point2D position = { 0, 0 };
+	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
 
-	if (iTotal > 0)
+	if (totalLength > 0)
 	{
-		int frameIdx, deltaX, deltaY;
-		for (frameIdx = iTotal, deltaX = 0, deltaY = 0;
+		for (int frameIdx = totalLength, deltaX = 0, deltaY = 0;
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
-			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
+			position = TechnoExt::GetBuildingSelectBracketPosition(Techno, BuildingSelectBracketPosition::Top);
+			position.X -= deltaX + 6;
+			position.Y -= deltaY + 3;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 
-	if (iTotal < iLength)
+	if (totalLength < length)
 	{
-		int frameIdx, deltaX, deltaY;
-		for (frameIdx = iLength - iTotal, deltaX = 4 * iTotal, deltaY = -2 * iTotal;
+		for (int frameIdx = length - totalLength, deltaX = 4 * totalLength, deltaY = -2 * totalLength;
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			vPos.X = vPos2.X + vLoc.X + 4 * iLength + 3 - deltaX;
-			vPos.Y = vPos2.Y + vLoc.Y - 2 * iLength + 4 - deltaY;
+			position = TechnoExt::GetBuildingSelectBracketPosition(Techno, BuildingSelectBracketPosition::Top);
+			position.X -= deltaX + 6;
+			position.Y -= deltaY + 3;
+
+			const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-				0, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+				emptyFrame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 		}
 	}
 }
 
-void ShieldClass::DrawShieldBar_Other(int iLength, Point2D* pLocation, RectangleStruct* pBound)
+void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
-	Point2D vPos = { 0,0 };
-	Point2D vLoc = *pLocation;
-	int frame, XOffset, YOffset;
-	YOffset = this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta;
-	vLoc.Y -= 5;
+	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
+	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
+	int frame;
 
-	if (iLength == 8)
-	{
-		vPos.X = vLoc.X + 11;
-		vPos.Y = vLoc.Y - 25 + YOffset;
-		frame = FileSystem::PIPBRD_SHP->Frames > 2 ? 3 : 1;
-		XOffset = -5;
-		YOffset -= 24;
-	}
+	position.X -= 1;
+	position.Y += this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta - 3;
+
+	if (length == 8)
+		frame = pipBoard->Frames > 2 ? 3 : 1;
 	else
-	{
-		vPos.X = vLoc.X + 1;
-		vPos.Y = vLoc.Y - 26 + YOffset;
-		frame = FileSystem::PIPBRD_SHP->Frames > 2 ? 2 : 0;
-		XOffset = -15;
-		YOffset -= 25;
-	}
+		frame = pipBoard->Frames > 2 ? 2 : 0;
 
 	if (this->Techno->IsSelected)
 	{
-		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPBRD_SHP,
-			frame, &vPos, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		position.X += length + 1 + (length == 8 ? length + 1 : 0);
+		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
+			frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+		position.X -= length + 1 + (length == 8 ? length + 1 : 0);
 	}
 
-	const int iTotal = DrawShieldBar_PipAmount(iLength);
-
 	frame = this->DrawShieldBar_Pip(false);
+	position.Y += 1;
 
-	for (int i = 0; i < iTotal; ++i)
+	const int totalLength = DrawShieldBar_PipAmount(length);
+	for (int i = 0; i < totalLength; ++i)
 	{
-		vPos.X = vLoc.X + XOffset + 2 * i;
-		vPos.Y = vLoc.Y + YOffset;
-
+		position.X += 2;
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
-			frame, &vPos, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+			frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 	}
 }
 
-int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
+int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 {
-	const auto strength = this->Type->Strength;
-	const auto shieldPip = isBuilding ?
-		RulesExt::Global()->Pips_Shield_Buildings.Get() :
-		RulesExt::Global()->Pips_Shield.Get();
+	const int strength = this->Type->Strength.Get();
+	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
+	const auto pipsGlobal = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
 
-	if (this->HP > RulesClass::Instance->ConditionYellow * strength && shieldPip.X != -1)
+	CoordStruct shieldPip;
+
+	if (pipsShield.X != -1)
+		shieldPip = pipsShield;
+	else
+		shieldPip = pipsGlobal;
+
+	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;
-	else if (this->HP > RulesClass::Instance->ConditionRed * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
+	else if (this->HP > this->Type->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
 		return shieldPip.Y == -1 ? shieldPip.X : shieldPip.Y;
 	else if (shieldPip.Z != -1 || shieldPip.X != -1)
 		return shieldPip.Z == -1 ? shieldPip.X : shieldPip.Z;
@@ -739,49 +936,40 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding)
 	return isBuilding ? 5 : 16;
 }
 
-int ShieldClass::DrawShieldBar_PipAmount(int iLength)
+int ShieldClass::DrawShieldBar_PipAmount(int length) const
 {
 	return this->IsActive()
-		? Math::clamp((int)round(this->GetHealthRatio() * iLength), 0, iLength)
+		? Math::clamp((int)round(this->GetHealthRatio() * length), 1, length)
 		: 0;
 }
 
-double ShieldClass::GetHealthRatio()
+ArmorType ShieldClass::GetArmorType() const
 {
-	return static_cast<double>(this->HP) / this->Type->Strength;
+	const auto pShieldType = this->Type;
+
+	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	{
+		const auto pTechnoType = this->Techno->GetTechnoType();
+
+		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
+			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+		{
+			return pTechnoType->Armor;
+		}
+	}
+
+	return pShieldType->Armor.Get();
 }
 
-int ShieldClass::GetHP()
+int ShieldClass::GetFramesSinceLastBroken() const
 {
-	return this->HP;
+	return Unsorted::CurrentFrame - this->LastBreakFrame;
 }
 
-void ShieldClass::SetHP(int amount)
+void ShieldClass::SetAnimationVisibility(bool visible)
 {
-	this->HP = amount;
-	if (this->HP > this->Type->Strength)
-		this->HP = this->Type->Strength;
-}
+	if (!this->AreAnimsHidden && !visible)
+		this->KillAnim();
 
-ShieldTypeClass* ShieldClass::GetType()
-{
-	return this->Type;
-}
-
-bool ShieldClass::IsActive()
-{
-	return
-		this->Available &&
-		this->HP > 0 &&
-		this->Online;
-}
-
-bool ShieldClass::IsAvailable()
-{
-	return this->Available;
-}
-
-bool ShieldClass::IsBrokenAndNonRespawning()
-{
-	return this->HP <= 0 && !this->Type->Respawn;
+	this->AreAnimsHidden = !visible;
 }

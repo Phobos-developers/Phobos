@@ -12,18 +12,18 @@
 #define VERSION_MAJOR 0
 
 // Indicates major changes and significant additions, like new logics
-#define VERSION_MINOR 2
+#define VERSION_MINOR 3
 
 // Indicates minor changes, like vanilla bugfixes, unhardcodings or hacks
-#define VERSION_REVISION 2
+#define VERSION_REVISION 0
 
 // Indicates Phobos-related bugfixes only
-#define VERSION_PATCH 2
+#define VERSION_PATCH 1
 
 #pragma endregion
 
 // Build number. Incremented on each released build.
-#define BUILD_NUMBER 26
+#define BUILD_NUMBER 46
 
 // Nightly defines GIT_COMMIT and GIT_BRANCH in GH Actions
 

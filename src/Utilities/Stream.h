@@ -6,6 +6,18 @@
 
 struct IStream;
 
+class PhobosStreamReader;
+class PhobosStreamWriter;
+
+namespace Savegame
+{
+	template <typename T>
+	bool ReadPhobosStream(PhobosStreamReader& Stm, T& Value, bool RegisterForChange);
+
+	template <typename T>
+	bool WritePhobosStream(PhobosStreamWriter& Stm, const T& Value);
+}
+
 class PhobosByteStream
 {
 public:
@@ -108,7 +120,13 @@ public:
 
 protected:
 	// set to false_type or true_type to disable or enable debugging checks
-	using stream_debugging_t = std::false_type;
+	using stream_debugging_t =
+#ifdef DEBUG
+		std::true_type;
+#else
+		std::false_type;
+#endif // DEBUG
+
 
 	bool IsValid(std::true_type) const
 	{
