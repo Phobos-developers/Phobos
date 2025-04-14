@@ -6499,8 +6499,8 @@ msgid ""
 msgstr "现在你可以通过将 `JumpjetTilt` 设为 true 来使 Jumpjet 单位在向前移动时前倾以及在转向时侧倾。"
 
 #: ../../New-or-Enhanced-Logics.md:1760
-msgid "The maximum tilt angle will not exceed 45 degrees."
-msgstr "最大倾斜角度不会超过 45 度。"
+msgid "The maximum tilt angle will not exceed 90 degrees."
+msgstr "最大倾斜角度不会超过 90 度。"
 
 #: ../../New-or-Enhanced-Logics.md:1761
 msgid ""
