@@ -22,10 +22,10 @@ void NewSWType::Clear()
 
 int NewSWType::GetNewSWTypeIdx(const char* TypeID)
 {
-	for (const auto& it : Array)
+	for (const auto& pNewSWType : Array)
 	{
-		if (!_strcmpi(it->GetTypeID(), TypeID))
-			return it->GetTypeIndex();
+		if (!_strcmpi(pNewSWType->GetTypeID(), TypeID))
+			return pNewSWType->GetTypeIndex();
 	}
 
 	return -1;
@@ -51,7 +51,9 @@ bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
 	Init();
 
 	for (const auto& pNewSWType : Array)
+	{
 		stm.RegisterChange(pNewSWType.get());
+	}
 
 	return stm.Success();
 }
@@ -59,7 +61,9 @@ bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
 bool NewSWType::SaveGlobals(PhobosStreamWriter& stm)
 {
 	for (const auto& pNewSWType : Array)
+	{
 		stm.Save(pNewSWType.get());
+	}
 
 	return stm.Success();
 }

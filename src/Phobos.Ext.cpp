@@ -231,7 +231,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
 	AttachEffectClass,
-  NewSWType
+	NewSWType
 	// other classes
 > ;
 
