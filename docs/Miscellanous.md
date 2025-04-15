@@ -119,15 +119,20 @@ CampaignDefaultGameSpeed=4  ; integer
 Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
 ```
 
-<details>
-<summary>Click to show the generator<br>点击显示生成器</summary>
-<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS                   输入所需的 FPS" oninput="onInput()" style="width:100%";>
-<p>
-Results (remember to replace N with your game speed number!):<br>
-&nbsp;&nbsp;结果&nbsp;（别忘了把 N 替换成你的游戏速度编号）：
+```{dropdown} Click to show the generator
+Enter desired FPS
+<div>
+<input id="customGameSpeedIn" type=number oninput="onInput()" style="width:100%";>
+</div>
+
+Results (remember to replace N with your game speed number!):
+
+<div>
 </p>
 <div id="codeBlockHere1"></div>
-</details>
+</div>
+```
+
 <script>
 makeINICodeBlock(document.getElementById("codeBlockHere1"), "customGameSpeedOut", 400);
 let fpsArray = [];
@@ -159,7 +164,7 @@ function onInput() {
 		j += 1;
 		let content = [];
 		if (foundAny) {
-			content.push({key: null, value: null, comment: "// Or 或"});
+			content.push({key: null, value: null, comment: "// -- Or -- "});
 		}
 		content.push({key: "CustomGSN.DefaultDelay", value: d, comment: null});
 		content.push({key: "CustomGSN.ChangeDelay", value: c, comment: null});
@@ -243,3 +248,7 @@ In **debug** builds the in-game exception handler is **turned off** by default.
 ```{warning}
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
 ```
+
+## Blowfish Dependency
+
+`BLOWFISH.DLL` is no longer required to start the game.
