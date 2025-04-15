@@ -543,7 +543,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]
 ...
 ```
 

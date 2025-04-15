@@ -420,7 +420,7 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 
 	int schemeIndex = pThis->Owner ? pThis->Owner->ColorSchemeIndex - 1 : RulesExt::Global()->AnimRemapDefaultColorScheme;
 	schemeIndex += AnimTypeExt::ExtMap.Find(pThis->Type)->AltPalette_ApplyLighting ? 1 : 0;
-	auto const scheme = ColorScheme::Array->Items[schemeIndex];
+	auto const scheme = ColorScheme::Array[schemeIndex];
 
 	R->ECX(scheme);
 	return SkipGameCode;

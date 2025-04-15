@@ -250,10 +250,10 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	int green = color.G;
 	int blue = color.B;
 
-	if (Drawing::ColorMode() == RGBMode::RGB565)
+	if (Drawing::ColorMode == RGBMode::RGB565)
 		colorValue |= blue | (32 * (green | (red << 6)));
 
-	if (Drawing::ColorMode() != RGBMode::RGB655)
+	if (Drawing::ColorMode != RGBMode::RGB655)
 		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
 
 	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));

@@ -117,13 +117,13 @@ inline static int TickTimeToSeconds(int tickTime)
 		return tickTime / 15;
 
 	if (Phobos::Config::RealTimeTimers_Adaptive
-		|| GameOptionsClass::Instance->GameSpeed == 0
+		|| GameOptionsClass::Instance.GameSpeed == 0
 		|| (Phobos::Misc::CustomGS && !SessionClass::IsMultiplayer()))
 	{
 		return tickTime / std::max((int)FPSCounter::CurrentFrameRate, 1);
 	}
 
-	return tickTime / (60 / GameOptionsClass::Instance->GameSpeed);
+	return tickTime / (60 / GameOptionsClass::Instance.GameSpeed);
 }
 
 void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
@@ -268,7 +268,7 @@ DEFINE_HOOK(0x478E4A, CCToolTip_Draw2_SetSurface, 0x6)
 {
 	if (PhobosToolTip::Instance.SlaveDraw)
 	{
-		R->ESI(DSurface::Composite());
+		R->ESI(DSurface::Composite);
 		return 0x478ED3;
 	}
 	return 0;
@@ -281,7 +281,7 @@ DEFINE_HOOK(0x478EF8, CCToolTip_Draw2_SetMaxWidth, 0x5)
 		if (Phobos::UI::MaxToolTipWidth > 0)
 			R->EAX(Phobos::UI::MaxToolTipWidth);
 		else
-			R->EAX(DSurface::ViewBounds->Width);
+			R->EAX(DSurface::ViewBounds.Width);
 
 	}
 	return 0;
@@ -301,7 +301,7 @@ DEFINE_HOOK(0x478F77, CCToolTip_Draw2_SetY, 0x6)
 	{
 		LEA_STACK(RectangleStruct*, Rect, STACK_OFFSET(0x3C, -0x20));
 
-		int const maxHeight = DSurface::ViewBounds->Height - 32;
+		int const maxHeight = DSurface::ViewBounds.Height - 32;
 
 		if (Rect->Height > maxHeight)
 			Rect->Y += maxHeight - Rect->Height;
@@ -340,7 +340,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	if (isCameo && Phobos::UI::AnchoredToolTips && PhobosToolTip::Instance.IsEnabled() && Phobos::Config::ToolTipDescriptions)
 	{
 		LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
-		auto x = DSurface::SidebarBounds->X - pRect->Width - 2;
+		auto x = DSurface::SidebarBounds.X - pRect->Width - 2;
 		pRect->X = x;
 		a2->Left = x;
 		pRect->Y -= 40;
@@ -350,13 +350,13 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	// Should we make some SideExt items as static to improve the effeciency?
 	// Though it might not be a big improvement... - secsome
 	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
-	if (auto const pSide = SideClass::Array->GetItemOrDefault(nPlayerSideIndex))
+	if (auto const pSide = SideClass::Array.GetItemOrDefault(nPlayerSideIndex))
 	{
 		if (auto const pData = SideExt::ExtMap.Find(pSide))
 		{
 			// Could this flag be lazy?
 			if (isCameo)
-				SidebarClass::Instance->SidebarBackgroundNeedsRedraw = true;
+				SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;
 
 			pThis->FillRectTrans(pRect,
 				pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
@@ -384,9 +384,9 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //
 //	RectangleStruct bounds = pManagerData->Dimension;
 //
-//	if (GameOptionsClass::Instance->SidebarSide == 1)
+//	if (GameOptionsClass::Instance.SidebarSide == 1)
 //	{
-//		int nR = DSurface::ViewBounds->X + DSurface::ViewBounds->Width;
+//		int nR = DSurface::ViewBounds.X + DSurface::ViewBounds.Width;
 //		if (bounds.X + pManagerData->Dimension.Width <= nR)
 //			pSurface = DSurface::Composite;
 //		else
@@ -400,7 +400,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //	}
 //	else
 //	{
-//		int nR = DSurface::SidebarBounds->X + DSurface::SidebarBounds->Width;
+//		int nR = DSurface::SidebarBounds.X + DSurface::SidebarBounds.Width;
 //		if (bounds.X < nR)
 //		{
 //			if (!pThis->FullRedraw || bounds.X + pManagerData->Dimension.Width >= nR)
@@ -419,7 +419,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 //	{
 //		BitFont::Instance->GetTextDimension(
 //			PhobosToolTip::Instance.GetBuffer(), bounds.Width, bounds.Height,
-//			Phobos::UI::MaxToolTipWidth > 0 ? Phobos::UI::MaxToolTipWidth : DSurface::WindowBounds->Width);
+//			Phobos::UI::MaxToolTipWidth > 0 ? Phobos::UI::MaxToolTipWidth : DSurface::WindowBounds.Width);
 //
 //		if (pManagerData->Dimension.Width + bounds.X > pSurface->GetWidth())
 //			bounds.X = pSurface->GetWidth() - pManagerData->Dimension.Width;
