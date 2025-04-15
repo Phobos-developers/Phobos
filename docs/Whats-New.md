@@ -98,8 +98,7 @@ HideLightFlashEffects=false      ; boolean
 
 ### For Map Editor (Final Alert 2)
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+````{dropdown} Click to show
 
   In `FAData.ini`:
   ```ini
@@ -302,14 +301,14 @@ HideLightFlashEffects=false      ; boolean
   26=Global variables,-5
   27=Global variables,-6
   ```
-</details>
+````
 
 ## Changelog
 
 ### Version TBD (develop branch nightly builds)
 
-<details open>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
+:open:
 
 New:
 - Allow using waypoints, area guard and attack move with aircraft (by CrimRecya)
@@ -340,12 +339,12 @@ New:
 - Initial spawns number (by TwinkleStar)
 - Override target under EMP attack behavior (By FS-21)
 - [Aircraft spawner recycling improvements (custom offset, animation etc.)](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by TaranDahl)
-- Technos can maintain a suitable distance after firing (by CrimRecya)
-- Projectile subject to ground check before firing (by CrimRecya)
-- Delay automatic attack on the controlled unit (by CrimRecya)
-- `BombParachute` deglobalization (by TaranDahl)
-- Sinkablity and sinking speed customization (by TaranDahl)
-- Fast access vehicle (by CrimRecya)
+- [Technos can maintain a suitable distance after firing](New-or-Enhanced-Logics.md#keep-range-after-firing) (by CrimRecya)
+- [Projectile subject to ground check before firing](New-or-Enhanced-Logics.md#projectiles-blocked-by-land-or-water) (by CrimRecya)
+- [Delay automatic attack on the controlled unit](Fixed-or-Improved-Logics.md#delay-automatic-attack-on-the-controlled-unit) (by CrimRecya)
+- [`BombParachute` deglobalization](Fixed-or-Improved-Logics.md#bomb-parachute-anim-deglobalization) (by TaranDahl)
+- [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
+- [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
 - [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
 - [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
@@ -353,12 +352,12 @@ New:
 - [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
 - [Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-Logics.md#damaged-speed-customization) (by NetsuNegi)
 - [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
-- Promotion animation deglobalization (by Ollerus)
-- Enhanced reveal & gap warhead (by NetsuNegi)
-- Forcing specific weapon by range (by Ollerus)
-- Jumpjet Tilts While Moving (by CrimRecya)
+- [Promotion animation deglobalization](New-or-Enhanced-Logics.md#promotion-animation) (by Ollerus)
+- Enhanced [reveal](New-or-Enhanced-Logics.md#reveal-map-for-owner-on-impact) & [gap](New-or-Enhanced-Logics.md#shroud-map-for-enemies-on-impact) warhead (by NetsuNegi)
+- [Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)
+- [Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
-- Removed dependency on `blowfish.dll` (by ZivDero)
+- [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)
 - New trajectory system (by CrimRecya)
 - New Missile trajectory (by CrimRecya)
 - New Engrave trajectory (by CrimRecya)
@@ -385,12 +384,12 @@ Phobos fixes:
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
-</details>
+
+```
 
 ### 0.4
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - `Crit.AffectsHouses` for critical hit system (by Starkku)
@@ -730,12 +729,12 @@ Fixes / interactions with other extensions:
 - Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares feature)* of vehicles built from a war factory (by Trsdy, supersedes Aephiex impl.)
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
-</details>
+
+```
 
 ### 0.3.0.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Additional sync logging in case of desync errors occuring (by Starkku)
@@ -761,12 +760,12 @@ Phobos fixes:
 - Fixed `CreateUnit` interaction with bridges (spawning under when shouldn't etc) (by Starkku)
 - `CanTarget` now considers bridges as land like game's normal weapon selection does (by Starkku)
 - `AreaFire.Target` now takes cells with bridges into consideration depending on firer's elevation (by Starkku)
-</details>
+
+```
 
 ### 0.3
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)
@@ -938,26 +937,24 @@ Fixes / interactions with other extensions:
 
 Non-DLL:
 - Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to use latest Phobos tags (by Kerbiter)
-</details>
 
+```
 
 ### 0.2.2.2
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed shield type info not saving properly (by Uranusian)
 - Fixed extended building upgrades logic not properly interacting with Ares' BuildLimit check (by Uranusian)
 - Fix more random crashes for `CameoPriority` (by Uranusian)
 - Fix aircraft weapons causing game freeze when burst index was not correctly reset after firing (by Starkku)
-</details>
 
+```
 
 ### 0.2.2.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed random crashes about `CameoPriority` (by Uranusian)
@@ -966,13 +963,12 @@ Phobos fixes:
 - RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also various fixes to radiation / desolators (by Otamaa)
 - Fixed `Crit.Affects` not functioning properly (by Uranusian)
 - Fixed improper upgrade owner transfer which resulted in built ally / enemy building upgrades keeping the player who built them alive (by Kerbiter)
-</details>
 
+```
 
 ### 0.2.2
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Customizable producing progress "bars" like CnC:Remastered did (by Uranusian)
@@ -986,23 +982,21 @@ Vanilla fixes:
 Phobos fixes:
 - Fixed the critical damage logic not functioning properly (by Uranusian)
 - Fixed the bug when executing the stop command game crashes (by Uranusian)
-</details>
 
+```
 
 ### 0.2.1.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed occasional crashes introduced by `Speed=0` stationary vehicles code (by Starkku)
-</details>
 
+```
 
 ### 0.2.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary (by Starkku)
@@ -1013,13 +1007,13 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed the bug when trigger action `125 Build At...` wasn't actually producing a building when the target cells were occupied (by secsome)
-</details>
+
+```
 
 
 ### 0.2
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with warhead additions (by Starkku)
@@ -1063,23 +1057,21 @@ Phobos fixes:
 - Properly rewritten a fix for mind-controlled vehicles deploying into buildings (by FS-21)
 - Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is deprecated, now always on (by Kerbiter)
 - New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)
-</details>
 
+```
 
 ### 0.1.1
 
-<details>
-  <summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 Phobos fixes:
 - Fixed an occasional crash when selecting units with a selection box (by Kerbiter)
-</details>
 
+```
 
 ### 0.1
 
-<details>
-<summary>Click to show<br>点击展开</summary>
+```{dropdown} Click to show
 
 New:
 - Full-color PCX graphics support (by Belonit)
@@ -1100,4 +1092,5 @@ Vanilla fixes:
 - Fixed QWER hotkey tab switching not hiding the displayed tooltip as it should (by Belonit)
 - Sidebar tooltips now can go over sidebar bounds (by Belonit)
 - Lifted stupidly small limit for tooltip character amount (by Belonit)
-</details>
+
+```
