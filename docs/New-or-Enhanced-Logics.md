@@ -1558,11 +1558,11 @@ In `rulesmd.ini`:
 ```ini
 
 [SOMETECHNO]                  ; TechnoType
-Overload.Count=               ; list of integer, default to OverloadCount in [CombatDamage]
-Overload.Damage=              ; list of integer, default to OverloadDamage in [CombatDamage]
-Overload.Frames=              ; list of integer, default to OverloadFrames in [CombatDamage]
-Overload.DeathSound=          ; Sound entry, default to MasterMindOverloadDeathSound in [AudioVisual]
-Overload.ParticleSys=         ; ParticleSystemType, default to DefaultSparkSystem in [CombatDamage]
+Overload.Count=               ; list of integer, default to [CombatDamage] -> OverloadCount
+Overload.Damage=              ; list of integer, default to [CombatDamage] -> OverloadDamage
+Overload.Frames=              ; list of integer, default to [CombatDamage] -> OverloadFrames
+Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
+Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
 Overload.ParticleSysCount=5   ; integer
 ```
 
