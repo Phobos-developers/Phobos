@@ -122,6 +122,15 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	return true;
 }
 
+// Wrapper for MapClass::DamageArea() that sets a pointer in WarheadTypeExt::ExtData that is used to figure 'intended' target of the Warhead detonation, if set and there's no CellSpread.
+DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
+{
+	this->DamageAreaTarget = pTarget;
+	auto result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
+	this->DamageAreaTarget = nullptr;
+	return result;
+}
+
 // =============================
 // load / save
 
@@ -136,8 +145,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	// Miscs
-	this->SpySat.Read(exINI, pSection, "SpySat");
-	this->BigGap.Read(exINI, pSection, "BigGap");
+	this->Reveal.Read(exINI, pSection, "Reveal");
+	this->CreateGap.Read(exINI, pSection, "CreateGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->TransactMoney_Display.Read(exINI, pSection, "TransactMoney.Display");
 	this->TransactMoney_Display_Houses.Read(exINI, pSection, "TransactMoney.Display.Houses");
@@ -158,6 +167,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Conventional_IgnoreUnits.Read(exINI, pSection, "Conventional.IgnoreUnits");
 	this->RemoveDisguise.Read(exINI, pSection, "RemoveDisguise");
 	this->RemoveMindControl.Read(exINI, pSection, "RemoveMindControl");
+	this->RemoveParasite.Read(exINI, pSection, "RemoveParasite");
 	this->DecloakDamagedTargets.Read(exINI, pSection, "DecloakDamagedTargets");
 	this->ShakeIsLocal.Read(exINI, pSection, "ShakeIsLocal");
 	this->ApplyModifiersOnNegativeDamage.Read(exINI, pSection, "ApplyModifiersOnNegativeDamage");
@@ -170,28 +180,36 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ApplyChancePerTarget.Read(exINI, pSection, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
+	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
+	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
 	this->Crit_AffectsHouses.Read(exINI, pSection, "Crit.AffectsHouses");
 	this->Crit_AnimList.Read(exINI, pSection, "Crit.AnimList");
 	this->Crit_AnimList_PickRandom.Read(exINI, pSection, "Crit.AnimList.PickRandom");
+	this->Crit_AnimList_CreateAll.Read(exINI, pSection, "Crit.AnimList.CreateAll");
+	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
+	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
 
 	// Shields
 	this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
 	this->Shield_Break.Read(exINI, pSection, "Shield.Break");
 	this->Shield_BreakAnim.Read(exINI, pSection, "Shield.BreakAnim");
 	this->Shield_HitAnim.Read(exINI, pSection, "Shield.HitAnim");
+	this->Shield_SkipHitAnim.Read(exINI, pSection, "Shield.SkipHitAnim");
 	this->Shield_HitFlash.Read(exINI, pSection, "Shield.HitFlash");
 	this->Shield_BreakWeapon.Read<true>(exINI, pSection, "Shield.BreakWeapon");
 	this->Shield_AbsorbPercent.Read(exINI, pSection, "Shield.AbsorbPercent");
 	this->Shield_PassPercent.Read(exINI, pSection, "Shield.PassPercent");
 	this->Shield_ReceivedDamage_Minimum.Read(exINI, pSection, "Shield.ReceivedDamage.Minimum");
 	this->Shield_ReceivedDamage_Maximum.Read(exINI, pSection, "Shield.ReceivedDamage.Maximum");
+	this->Shield_ReceivedDamage_MinMultiplier.Read(exINI, pSection, "Shield.ReceivedDamage.MinMultiplier");
+	this->Shield_ReceivedDamage_MaxMultiplier.Read(exINI, pSection, "Shield.ReceivedDamage.MaxMultiplier");
 	this->Shield_Respawn_Duration.Read(exINI, pSection, "Shield.Respawn.Duration");
 	this->Shield_Respawn_Amount.Read(exINI, pSection, "Shield.Respawn.Amount");
 	this->Shield_Respawn_Rate_InMinutes.Read(exINI, pSection, "Shield.Respawn.Rate");
@@ -202,7 +220,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_SelfHealing_Rate_InMinutes.Read(exINI, pSection, "Shield.SelfHealing.Rate");
 	this->Shield_SelfHealing_Rate = (int)(this->Shield_SelfHealing_Rate_InMinutes * 900);
 	this->Shield_SelfHealing_RestartInCombat.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombat");
-	this->Shield_SelfHealing_RestartInCombat.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombatDelay");
+	this->Shield_SelfHealing_RestartInCombatDelay.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombatDelay");
 	this->Shield_SelfHealing_RestartTimer.Read(exINI, pSection, "Shield.SelfHealing.RestartTimer");
 	this->Shield_AttachTypes.Read(exINI, pSection, "Shield.AttachTypes");
 	this->Shield_RemoveTypes.Read(exINI, pSection, "Shield.RemoveTypes");
@@ -231,18 +249,23 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
+	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
 	this->DetonateOnAllMapObjects_RequireVerses.Read(exINI, pSection, "DetonateOnAllMapObjects.RequireVerses");
 	this->DetonateOnAllMapObjects_AffectTargets.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTargets");
 	this->DetonateOnAllMapObjects_AffectHouses.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectHouses");
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
-	this->AttachEffect_AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
-	this->AttachEffect_RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
-	exINI.ParseStringList(this->AttachEffect_RemoveGroups, pSection, "AttachEffect.RemoveGroups");
-	this->AttachEffect_CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
-	this->AttachEffect_CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
-	this->AttachEffect_DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
+
+	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
+	this->CombatLightChance.Read(exINI, pSection, "CombatLightChance");
+	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
+	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
+
+	this->DamageOwnerMultiplier.Read(exINI, pSection, "DamageOwnerMultiplier");
+	this->DamageAlliesMultiplier.Read(exINI, pSection, "DamageAlliesMultiplier");
+	this->DamageEnemiesMultiplier.Read(exINI, pSection, "DamageEnemiesMultiplier");
 
 	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
 	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
@@ -250,8 +273,27 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
 	exINI.ParseStringList(this->SuppressReflectDamage_Groups, pSection, "SuppressReflectDamage.Groups");
 
+	this->BuildingSell.Read(exINI, pSection, "BuildingSell");
+	this->BuildingSell_IgnoreUnsellable.Read(exINI, pSection, "BuildingSell.IgnoreUnsellable");
+	this->BuildingUndeploy.Read(exINI, pSection, "BuildingUndeploy");
+	this->BuildingUndeploy_Leave.Read(exINI, pSection, "BuildingUndeploy.Leave");
+
+	this->CombatAlert_Suppress.Read(exINI, pSection, "CombatAlert.Suppress");
+
+	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
+	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
+	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouses");
+	this->KillWeapon_OnFirer_AffectsHouses.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses");
+	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
+	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
+
+  	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
+
+	// AttachEffect
+	this->AttachEffects.LoadFromINI(pINI, pSection);
 
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
@@ -281,6 +323,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
+	this->Malicious.Read(exINI, pSection, "Malicious");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -296,9 +339,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->Convert_Pairs.size() > 0
 		|| this->InflictLocomotor
 		|| this->RemoveInflictedLocomotor
-		|| this->AttachEffect_AttachTypes.size() > 0
-		|| this->AttachEffect_RemoveTypes.size() > 0
-		|| this->AttachEffect_RemoveGroups.size() > 0
+		|| this->AttachEffects.AttachTypes.size() > 0
+		|| this->AttachEffects.RemoveTypes.size() > 0
+		|| this->AttachEffects.RemoveGroups.size() > 0
+		|| this->BuildingSell
+		|| this->BuildingUndeploy
 	);
 
 	char tempBuffer[32];
@@ -344,8 +389,8 @@ template <typename T>
 void WarheadTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->SpySat)
-		.Process(this->BigGap)
+		.Process(this->Reveal)
+		.Process(this->CreateGap)
 		.Process(this->TransactMoney)
 		.Process(this->TransactMoney_Display)
 		.Process(this->TransactMoney_Display_Houses)
@@ -366,6 +411,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Conventional_IgnoreUnits)
 		.Process(this->RemoveDisguise)
 		.Process(this->RemoveMindControl)
+		.Process(this->RemoveParasite)
 		.Process(this->DecloakDamagedTargets)
 		.Process(this->ShakeIsLocal)
 		.Process(this->ApplyModifiersOnNegativeDamage)
@@ -377,26 +423,35 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
 		.Process(this->Crit_ExtraDamage)
+		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
 		.Process(this->Crit_Warhead)
+		.Process(this->Crit_Warhead_FullDetonation)
 		.Process(this->Crit_Affects)
 		.Process(this->Crit_AffectsHouses)
 		.Process(this->Crit_AnimList)
 		.Process(this->Crit_AnimList_PickRandom)
+		.Process(this->Crit_AnimList_CreateAll)
+		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
+		.Process(this->MindControl_ThreatDelay)
 
 		.Process(this->Shield_Penetrate)
 		.Process(this->Shield_Break)
 		.Process(this->Shield_BreakAnim)
 		.Process(this->Shield_HitAnim)
+		.Process(this->Shield_SkipHitAnim)
+		.Process(this->Shield_HitFlash)
 		.Process(this->Shield_BreakWeapon)
 		.Process(this->Shield_AbsorbPercent)
 		.Process(this->Shield_PassPercent)
 		.Process(this->Shield_ReceivedDamage_Minimum)
 		.Process(this->Shield_ReceivedDamage_Maximum)
+		.Process(this->Shield_ReceivedDamage_MinMultiplier)
+		.Process(this->Shield_ReceivedDamage_MaxMultiplier)
 		.Process(this->Shield_Respawn_Duration)
 		.Process(this->Shield_Respawn_Amount)
 		.Process(this->Shield_Respawn_Rate)
@@ -437,6 +492,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Debris_Conventional)
 
 		.Process(this->DetonateOnAllMapObjects)
+		.Process(this->DetonateOnAllMapObjects_Full)
 		.Process(this->DetonateOnAllMapObjects_RequireVerses)
 		.Process(this->DetonateOnAllMapObjects_AffectTargets)
 		.Process(this->DetonateOnAllMapObjects_AffectHouses)
@@ -444,13 +500,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DetonateOnAllMapObjects_IgnoreTypes)
 
 		.Process(this->Convert_Pairs)
-
-		.Process(this->AttachEffect_AttachTypes)
-		.Process(this->AttachEffect_RemoveTypes)
-		.Process(this->AttachEffect_RemoveGroups)
-		.Process(this->AttachEffect_CumulativeRemoveMinCounts)
-		.Process(this->AttachEffect_CumulativeRemoveMaxCounts)
-		.Process(this->AttachEffect_DurationOverrides)
+		.Process(this->AttachEffects)
 
 		.Process(this->SuppressRevengeWeapons)
 		.Process(this->SuppressRevengeWeapons_Types)
@@ -461,15 +511,44 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
 
+		.Process(this->DamageOwnerMultiplier)
+		.Process(this->DamageAlliesMultiplier)
+		.Process(this->DamageEnemiesMultiplier)
+
+		.Process(this->Nonprovocative)
+
+		.Process(this->CombatLightDetailLevel)
+		.Process(this->CombatLightChance)
+		.Process(this->CLIsBlack)
+		.Process(this->Particle_AlphaImageIsLightFlash)
+
+		.Process(this->BuildingSell)
+		.Process(this->BuildingSell_IgnoreUnsellable)
+		.Process(this->BuildingUndeploy)
+		.Process(this->BuildingUndeploy_Leave)
+
+		.Process(this->CombatAlert_Suppress)
+
+		.Process(this->KillWeapon)
+		.Process(this->KillWeapon_OnFirer)
+		.Process(this->KillWeapon_AffectsHouses)
+		.Process(this->KillWeapon_OnFirer_AffectsHouses)
+		.Process(this->KillWeapon_Affects)
+		.Process(this->KillWeapon_OnFirer_Affects)
+
+    	.Process(this->ElectricAssaultLevel)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->EffectsRequireVerses)
+		.Process(this->Malicious)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
+		.Process(this->DamageAreaTarget)
 		;
 }
 
