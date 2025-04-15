@@ -235,16 +235,31 @@ void PhobosTrajectory::OnUnlimbo()
 			this->GetTechnoFLHCoord();
 		else
 			this->NotMainWeapon = true;
-
-		const auto pFirerExt = TechnoExt::ExtMap.Find(pFirer);
 		// Check trajectory capacity
-		if (pType->CreateCapacity >= 0 && pFirerExt->CurrentTracingCount >= pType->CreateCapacity)
+		if (pType->CreateCapacity >= 0)
 		{
-			pBullet->Health = 0;
-			this->ShouldDetonate = true;
+			const auto pFirerExt = TechnoExt::ExtMap.Find(pFirer);
+
+			if (!pFirerExt->TrajectoryGroup)
+				pFirerExt->TrajectoryGroup = std::make_shared<PhobosMap<DWORD, std::pair<std::vector<DWORD>, std::pair<double, bool>>>>();
+			// Get shared container
+			this->TrajectoryGroup = pFirerExt->TrajectoryGroup;
+			auto& group = (*this->TrajectoryGroup)[pBullet->Type->UniqueID].first;
+			const auto size = static_cast<int>(group.size());
+			// Check trajectory capacity
+			if (size >= pType->CreateCapacity)
+			{
+				// Peaceful vanish
+				pBullet->Health = 0;
+				this->ShouldDetonate = true;
+			}
+			else
+			{
+				// Increase trajectory count
+				this->GroupIndex = size;
+				group.push_back(pBullet->UniqueID);
+			}
 		}
-		// Increase trajectory count
-		++pFirerExt->CurrentTracingCount;
 	}
 	else
 	{
@@ -270,6 +285,9 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	// Check the remaining existence time
 	if (this->DurationTimer.Completed())
 		return true;
+	// Update group index for members by themselves
+	if (this->TrajectoryGroup)
+		this->UpdateGroupIndex();
 	// Check if the firer's target can be synchronized
 	if (this->CheckSynchronize())
 		return true;
@@ -457,9 +475,6 @@ void PhobosTrajectory::OnPreDetonate()
 		this->PrepareDisperseWeapon();
 
 	const auto pBullet = this->Bullet;
-	// Decrease trajectory count, considering that there is no function to transfer the firer, only simple processing will be carried out
-	if (const auto pFirerExt = TechnoExt::ExtMap.Find(pBullet->Owner))
-		--pFirerExt->CurrentTracingCount;
 	// No damage, no anims...
 	if (pType->PeacefulVanish.Get(this->Flag() == TrajectoryFlag::Engrave || pType->ProximityImpact || pType->DisperseCycle))
 	{
@@ -783,6 +798,37 @@ bool PhobosTrajectory::CheckTolerantTime()
 	return false;
 }
 
+// Update trajectory capacity group index
+void PhobosTrajectory::UpdateGroupIndex()
+{
+	const auto pBullet = this->Bullet;
+	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type->UniqueID];
+
+	if (groupData.second.second)
+	{
+		if (const auto size = static_cast<int>(groupData.first.size()))
+		{
+			for (int i = 0; i < size; ++i)
+			{
+				if (groupData.first[i] == pBullet->UniqueID)
+				{
+					this->GroupIndex = i;
+					break;
+				}
+			}
+
+			if (this->GroupIndex == size - 1)
+				groupData.second.second = false;
+		}
+		else
+		{
+			groupData.second.second = false;
+		}
+	}
+
+	return;
+}
+
 // =============================
 // load / save
 
@@ -958,6 +1004,8 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->FLHCoord)
 		.Process(this->CurrentBurst)
 		.Process(this->CountOfBurst)
+		.Process(this->TrajectoryGroup)
+		.Process(this->GroupIndex)
 
 		.Process(this->PassDetonateDamage)
 		.Process(this->PassDetonateTimer)

@@ -741,7 +741,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Engrave`, if it is a non positive number, automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration. At this point, `Trajectory.Engrave.TargetCoord` can be regarded as the endpoint coordinates of the cutting line segment.
     - In `Trajectory=Tracing`, if set to zero, use weapon's `ROF`-10 as the duration. At least 1 frame. If it is negative, do not time it.
   - `Trajectory.TolerantTime` controls how long the projectile will detonate after losing the target. If it is 0, it will detonate directly when switching targets.
-  - `Trajectory.CreateCapacity` controls the capacity of the trajectory projectile that can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of these fired by the firer on the map is less than this value.
+  - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value.
   - `Trajectory.BulletROT` controls the rotational speed of the projectile. When it is 0, it will always face the target. Otherwise, it will rotate towards the target according to this speed.
   - `Trajectory.BulletFacing` controls what direction the projectile should face. This has the following 7 modes.
     - Velocity - Following the direction of velocity. Towards the direction of motion of the projectile. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
@@ -1135,6 +1135,7 @@ Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value
     - RotateCCW - Rotate counterclockwise. Rotate counterclockwise around the H axis with the resultant offset in the FL direction as the radius.
   - `Trajectory.Tracing.TraceTheTarget` controls whether the target tracked by the projectile is the target of the projectile. Otherwise, it will trace the firer, and at the same time, the projectile will detonate if the firer dies.
   - `Trajectory.Tracing.CreateAtTarget` controls whether the projectile is directly generated at the target position.
+  - `Trajectory.Tracing.StableRotation` controls whether the projectile will automatically rotate at the same angle interval when `Trajectory.Tracing.TraceMode` is `RotateCW` or `RotateCCW`. Need to cooperate with `Trajectory.CreateCapacity` records to take effect.
   - `Trajectory.Tracing.CreateCoord` controls the generate position. Not related to `Trajectory.Tracing.TraceMode`.
   - `Trajectory.Tracing.AttachCoord` controls the tracing position on its target, use `Trajectory.Tracing.TraceMode` determines the specific location.
   - `Trajectory.Tracing.ChasableDistance` controls the maximum distance between the target's center of the projectile pursuing and the firer's center. When it is a positive number, the distance will not exceed this value. When it is a negative number, if the distance exceeds this value, the projectile will explode. When it is zero, the weapon's range will be used and considered a positive number.
@@ -1144,6 +1145,7 @@ In `rulesmd.ini`:
 Trajectory.Tracing.TraceMode=Connection  ; TraceMode value enumeration (Connection|Global|Body|Turret|RotateCW|RotateCCW)
 Trajectory.Tracing.TraceTheTarget=true   ; boolean
 Trajectory.Tracing.CreateAtTarget=false  ; boolean
+Trajectory.Tracing.StableRotation=false  ; boolean
 Trajectory.Tracing.CreateCoord=0,0,0     ; integer - Forward,Lateral,Height
 Trajectory.Tracing.AttachCoord=0,0,0     ; integer - Forward,Lateral,Height
 Trajectory.Tracing.ChasableDistance=0    ; floating point value

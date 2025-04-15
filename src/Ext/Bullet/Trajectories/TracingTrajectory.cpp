@@ -46,6 +46,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 		.Process(this->TraceMode)
 		.Process(this->TraceTheTarget)
 		.Process(this->CreateAtTarget)
+		.Process(this->StableRotation)
 		.Process(this->ChasableDistance)
 		;
 }
@@ -76,6 +77,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->TraceMode.Read(exINI, pSection, "Trajectory.Tracing.TraceMode");
 	this->TraceTheTarget.Read(exINI, pSection, "Trajectory.Tracing.TraceTheTarget");
 	this->CreateAtTarget.Read(exINI, pSection, "Trajectory.Tracing.CreateAtTarget");
+	this->StableRotation.Read(exINI, pSection, "Trajectory.Tracing.StableRotation");
 	this->ChasableDistance.Read(exINI, pSection, "Trajectory.Tracing.ChasableDistance");
 }
 
@@ -84,6 +86,7 @@ void TracingTrajectory::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Type)
+		.Process(this->RotateRadian)
 		;
 }
 
@@ -201,6 +204,8 @@ bool TracingTrajectory::ChangeVelocity()
 	// Calculate only when there is an offset value
 	if (offset.X != 0 || offset.Y != 0)
 	{
+		bool cw = false;
+
 		switch (pType->TraceMode)
 		{
 		case TraceTargetMode::Global:
@@ -241,49 +246,41 @@ bool TracingTrajectory::ChangeVelocity()
 		}
 		case TraceTargetMode::RotateCW:
 		{
-			const auto distanceCoords = pBullet->Location - destination;
-			const auto radius = PhobosTrajectory::Get2DDistance(offset);
-			// Rotate around the center only when the distance is less than 1.2 times the radius
-			if ((radius * 1.2) > PhobosTrajectory::Get2DDistance(distanceCoords))
-			{
-				auto rotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
-				// The arc of rotation per frame can be determined by the radius and speed
-				if (std::abs(radius) > 1e-10)
-					rotateRadian += (pType->Speed / radius);
-				// Calculate the actual offset value
-				offset.X = static_cast<int>(radius * Math::cos(rotateRadian));
-				offset.Y = static_cast<int>(radius * Math::sin(rotateRadian));
-			}
-			else
-			{
-				// Otherwise, simply move towards the center position first
-				offset.X = 0;
-				offset.Y = 0;
-			}
-
-			break;
+			cw = true;
 		}
 		case TraceTargetMode::RotateCCW:
 		{
-			const auto distanceCoords = pBullet->Location - destination;
 			const auto radius = PhobosTrajectory::Get2DDistance(offset);
-			// Rotate around the center only when the distance is less than 1.2 times the radius
-			if ((radius * 1.2) > PhobosTrajectory::Get2DDistance(distanceCoords))
+			// Individual or entirety
+			if (!pType->StableRotation || !this->TrajectoryGroup)
 			{
-				auto rotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
-				// The arc of rotation per frame can be determined by the radius and speed
-				if (std::abs(radius) > 1e-10)
-					rotateRadian -= (pType->Speed / radius);
-				// Calculate the actual offset value
-				offset.X = static_cast<int>(radius * Math::cos(rotateRadian));
-				offset.Y = static_cast<int>(radius * Math::sin(rotateRadian));
+				const auto distanceCoords = pBullet->Location - destination;
+				// Rotate around the center only when the distance is less than 1.2 times the radius
+				if ((radius * 1.2) > PhobosTrajectory::Get2DDistance(distanceCoords))
+				{
+					// Recalculate
+					this->RotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
+					// The arc of rotation per frame can be determined by the radius and speed
+					if (std::abs(radius) > 1e-10)
+						this->RotateRadian = cw ? (this->RotateRadian + pType->Speed / radius) : (this->RotateRadian - pType->Speed / radius);
+				}
 			}
 			else
 			{
-				// Otherwise, simply move towards the center position first
-				offset.X = 0;
-				offset.Y = 0;
+				auto& groupData = (*this->TrajectoryGroup)[pBullet->Type->UniqueID];
+				// Valid group
+				if (const auto size = static_cast<int>(groupData.first.size()))
+				{
+					// Record radian by main bullet and add stable interval to others
+					if (!this->GroupIndex)
+						this->RotateRadian = groupData.second.first = cw ? (this->RotateRadian + pType->Speed / 2 / radius) : (this->RotateRadian - pType->Speed / 2 / radius);
+					else
+						this->RotateRadian = groupData.second.first + (Math::TwoPi * this->GroupIndex / size);
+				}
 			}
+			// Calculate the actual offset value
+			offset.X = static_cast<int>(radius * Math::cos(this->RotateRadian));
+			offset.Y = static_cast<int>(radius * Math::sin(this->RotateRadian));
 
 			break;
 		}

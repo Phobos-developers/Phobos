@@ -47,7 +47,7 @@ public:
 			, DispersedTrajectory { false }
 		{ }
 
-		virtual ~ExtData() = default;
+		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 

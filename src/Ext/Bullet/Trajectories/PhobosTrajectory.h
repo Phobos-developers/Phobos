@@ -188,6 +188,8 @@ public:
 		, FLHCoord { CoordStruct::Empty }
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
+		, TrajectoryGroup {}
+		, GroupIndex { -1 }
 
 		, PassDetonateDamage { 0 }
 		, PassDetonateTimer {}
@@ -218,13 +220,15 @@ public:
 	CoordStruct FLHCoord; // Launch FLH
 	int CurrentBurst; // Current burst index, mirror is required for negative numbers
 	int CountOfBurst; // Upper limit of burst counts
+	std::shared_ptr<PhobosMap<DWORD, std::pair<std::vector<DWORD>, std::pair<double, bool>>>> TrajectoryGroup; // For capacity count
+	int GroupIndex; // Index in trajectory group
 
 	int PassDetonateDamage; // Current damage caused by the pass warhead
 	CDTimerClass PassDetonateTimer; // Detonation interval timer
 	int ProximityImpact; // How many times can proximity warhead be triggered
 	int ProximityDamage; // Current damage caused by the proximity warhead
 	TechnoClass* ExtraCheck; // The obstacle, no taken out for use in next frame
-	std::map<int, int> TheCasualty; // <UniqueID, Frames>, only for recording existence to check whether have damaged
+	std::map<DWORD, int> TheCasualty; // <UniqueID, Frames>, only for recording existence to check whether have damaged
 
 	int DisperseIndex; // Launch weapon group Index
 	int DisperseCount; // Launch weapon group remaining times
@@ -335,6 +339,7 @@ public:
 	void DetonateOnObstacle();
 	bool CheckSynchronize();
 	bool CheckTolerantTime();
+	void UpdateGroupIndex();
 
 	std::vector<CellClass*> GetCellsInProximityRadius();
 	bool CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner);

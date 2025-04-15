@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <bitset>
 #include <memory>
 
@@ -65,6 +66,9 @@ namespace Savegame
 	}
 
 	#pragma warning(pop)
+
+	static std::unordered_map<void*, std::shared_ptr<void>> GlobalSharedRegistry;
+	static void ClearSharedRegistry() { GlobalSharedRegistry.clear(); } // Probably useless
 
 	template <typename T>
 	T* RestoreObject(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -324,6 +328,51 @@ namespace Savegame
 	};
 
 	template <typename T>
+	struct Savegame::PhobosStreamObject<std::shared_ptr<T>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::shared_ptr<T>& Value, bool RegisterForChange) const
+		{
+			long useCount = 0;
+			if (Stm.Load(useCount))
+			{
+				T* ptrOld = nullptr;
+				if (Stm.Load(ptrOld) && ptrOld)
+				{
+					std::shared_ptr<T> ptrNew = ObjectFactory<T>()(Stm);
+					if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
+					{
+						auto it = GlobalSharedRegistry.find(ptrOld);
+						if (it != GlobalSharedRegistry.end())
+						{
+							Value = std::static_pointer_cast<T>(it->second);
+						}
+						else
+						{
+							Value = ptrNew;
+							GlobalSharedRegistry[ptrOld] = ptrNew;
+							PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
+						}
+
+						if (Value.use_count() >= (useCount + 1))
+							GlobalSharedRegistry.erase(ptrOld);
+
+						return true;
+					}
+				}
+			}
+
+			Value.reset();
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::shared_ptr<T>& Value) const
+		{
+			Stm.Save(Value.use_count());
+			return PersistObject(Stm, Value.get());
+		}
+	};
+
+	template <typename T>
 	struct Savegame::PhobosStreamObject<std::optional<T>>
 	{
 		bool ReadFromStream(PhobosStreamReader& Stm, std::optional<T>& Value, bool RegisterForChange) const
@@ -393,6 +442,20 @@ namespace Savegame
 			}
 
 			return true;
+		}
+	};
+
+	template <typename TKey, typename TValue>
+	struct Savegame::PhobosStreamObject<std::pair<TKey, TValue>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::pair<TKey, TValue>& Value, bool RegisterForChange) const
+		{
+			return Savegame::ReadPhobosStream(Stm, Value.first, RegisterForChange) && Savegame::ReadPhobosStream(Stm, Value.second, RegisterForChange);
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::pair<TKey, TValue>& Value) const
+		{
+			return Savegame::WritePhobosStream(Stm, Value.first) && Savegame::WritePhobosStream(Stm, Value.second);
 		}
 	};
 

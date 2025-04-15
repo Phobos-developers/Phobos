@@ -10,6 +10,23 @@
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
+BulletExt::ExtData::~ExtData()
+{
+	if (const auto pTraj = this->Trajectory.get())
+	{
+		if (pTraj->GroupIndex != -1)
+		{
+			if (const auto pMap = pTraj->TrajectoryGroup)
+			{
+				auto& groupData = (*pMap)[this->TypeExtData->OwnerObject()->UniqueID];
+				auto& vec = groupData.first;
+				vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()->UniqueID), vec.end());
+				groupData.second.second = true;
+			}
+		}
+	}
+}
+
 void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon)
 {
 	if (!pSource || !pWeapon)

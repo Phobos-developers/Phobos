@@ -19,12 +19,14 @@ public:
 		, TraceMode { TraceTargetMode::Connection }
 		, TraceTheTarget { true }
 		, CreateAtTarget { false }
+		, StableRotation { false }
 		, ChasableDistance { Leptons(0) }
 	{ }
 
 	Valueable<TraceTargetMode> TraceMode;
 	Valueable<bool> TraceTheTarget;
 	Valueable<bool> CreateAtTarget;
+	Valueable<bool> StableRotation;
 	Valueable<Leptons> ChasableDistance;
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
@@ -45,9 +47,11 @@ public:
 	TracingTrajectory(TracingTrajectoryType const* trajType, BulletClass* pBullet)
 		: VirtualTrajectory(trajType, pBullet)
 		, Type { trajType }
+		, RotateRadian { 0.0 }
 	{ }
 
 	const TracingTrajectoryType* Type;
+	double RotateRadian;
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
