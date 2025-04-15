@@ -53,7 +53,6 @@ public:
 		int WHAnimRemainingCreationInterval;
 		WeaponTypeClass* LastWeaponType;
 		CoordStruct LastWeaponFLH;
-		int CurrentTracingCount;
 		std::shared_ptr<PhobosMap<DWORD, std::pair<std::vector<DWORD>, std::pair<double, bool>>>> TrajectoryGroup;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
@@ -102,7 +101,6 @@ public:
 			, WHAnimRemainingCreationInterval { 0 }
 			, LastWeaponType {}
 			, LastWeaponFLH {}
-			, CurrentTracingCount { 0 }
 			, TrajectoryGroup {}
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
