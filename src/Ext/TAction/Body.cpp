@@ -384,13 +384,16 @@ bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, Obje
 
 bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
 	auto setValue = [pThis, pHouse](HouseClass* pTargetHouse)
 	{
 		if (!pTargetHouse || pHouse == pTargetHouse ||
 			pHouse->IsAlliedWith(pTargetHouse))
 			return;
 
-		for (auto pAngerNode : pHouse->AngerNodes)
+		for (auto& pAngerNode : pHouse->AngerNodes)
 		{
 			if (pAngerNode.House != pTargetHouse)
 				continue;
@@ -416,23 +419,21 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 		}
 	};
 
-	if (pHouse->AngerNodes.Count > 0)
+	if (pThis->Value >= 0)
 	{
-		if (pThis->Value >= 0)
-		{
-			HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
-				HouseClass::FindByIndex(pThis->Value) :
-				HouseClass::FindByCountryIndex(pThis->Value);
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
+			HouseClass::FindByIndex(pThis->Value) :
+			HouseClass::FindByCountryIndex(pThis->Value);
 
+		setValue(pTargetHouse);
+		pHouse->UpdateAngerNodes(0, nullptr);
+	}
+	else if (pThis->Value == -1)
+	{
+		for (auto pTargetHouse : HouseClass::Array)
 			setValue(pTargetHouse);
-		}
-		else if (pThis->Value == -1)
-		{
-			for (auto pTargetHouse : HouseClass::Array)
-			{
-				setValue(pTargetHouse);
-			}
-		}
+
+		pHouse->UpdateAngerNodes(0, nullptr);
 	}
 
 	return true;
@@ -440,28 +441,34 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
 	if (pThis->Value >= 0)
 	{
 		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
 			HouseClass::FindByIndex(pThis->Value) :
 			HouseClass::FindByCountryIndex(pThis->Value);
 
-		if (pTargetHouse && pTargetHouse->AngerNodes.Count > 0)
+		if (pTargetHouse)
 		{
-			for (auto pAngerNode : pTargetHouse->AngerNodes)
+			for (auto& pAngerNode : pHouse->AngerNodes)
+			{
+				if (pAngerNode.House != pTargetHouse)
+					continue;
+
 				pAngerNode.AngerLevel = 0;
+				pHouse->UpdateAngerNodes(0, nullptr);
+				break;
+			}
 		}
 	}
-	else  if (pThis->Value == -1)
+	else if (pThis->Value == -1)
 	{
-		for (auto pTargetHouse : HouseClass::Array)
-		{
-			if (pTargetHouse->AngerNodes.Count <= 0)
-				continue;
+		for (auto& pAngerNode : pHouse->AngerNodes)
+			pAngerNode.AngerLevel = 0;
 
-			for (auto pAngerNode : pTargetHouse->AngerNodes)
-				pAngerNode.AngerLevel = 0;
-		}
+		pHouse->UpdateAngerNodes(0, nullptr);
 	}
 
 	return true;
@@ -481,16 +488,17 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 				HouseClass::FindByIndex(pThis->Param3) :
 				HouseClass::FindByCountryIndex(pThis->Param3);
 
-			if (pTargetHouse && !pHouse->IsAlliedWith(pTargetHouse))
+			if (pTargetHouse && pHouse != pTargetHouse &&
+				!pHouse->IsAlliedWith(pTargetHouse))
 			{
 				pHouseExt->SetForceEnemy(pTargetHouse->GetArrayIndex());
-				pHouse->EnemyHouseIndex = pTargetHouse->GetArrayIndex();
+				pHouse->UpdateAngerNodes(0, nullptr);
 			}
 		}
 		else
 		{
 			pHouseExt->SetForceEnemy(-2);
-			pHouse->EnemyHouseIndex = -1;
+			pHouse->UpdateAngerNodes(0, nullptr);
 		}
 	}
 	else if (pThis->Param3 == -1)
