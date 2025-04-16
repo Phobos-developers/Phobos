@@ -1131,7 +1131,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
-	bool unkillable = false
+	bool unkillable = false;
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
