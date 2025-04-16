@@ -1,5 +1,6 @@
 #include "SelectBoxTypeClass.h"
 
+template<>
 const char* Enumerable<SelectBoxTypeClass>::GetMainSection()
 {
 	return "SelectBoxTypes";

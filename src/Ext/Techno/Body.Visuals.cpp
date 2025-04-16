@@ -311,12 +311,16 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		CoordStruct coords = pThis->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 
-		if (!TacticalClass::Instance->CoordsToClient(&coords, &basePoint))
+		const auto& [outClient, visible] = TacticalClass::Instance->CoordsToClient(coords);
+
+		if (!visible)
 			return;
+
+		basePoint = outClient;
 	}
 
 	Point2D drawPoint = basePoint + pSelectBox->Offset;
-	drawPoint.Y += pTypeExt->OwnerObject()->PixelSelectionBracketDelta;
+	drawPoint.Y += pType->PixelSelectionBracketDelta;
 
 	if (whatAmI == AbstractType::Infantry)
 		drawPoint += { 8, -3 };
