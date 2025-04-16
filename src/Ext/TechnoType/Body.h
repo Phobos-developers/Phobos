@@ -241,7 +241,7 @@ public:
 		Nullable<bool> RecountBurst;
 
 		Valueable<double> Skilled_ReverseSpeed;
-		Valueable<double> Skilled_FaceTargetRange;
+		Valueable<Leptons> Skilled_FaceTargetRange;
 		Valueable<bool> Skilled_ConfrontEnemies;
 		Valueable<int> Skilled_RetreatDuration;
 
@@ -541,7 +541,7 @@ public:
 			, RecountBurst {}
 
 			, Skilled_ReverseSpeed { 0.85 }
-			, Skilled_FaceTargetRange { 16.0 }
+			, Skilled_FaceTargetRange { Leptons(4096) }
 			, Skilled_ConfrontEnemies { true }
 			, Skilled_RetreatDuration { 150 }
 

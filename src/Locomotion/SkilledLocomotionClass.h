@@ -282,7 +282,9 @@ public:
 		, IsForward { true }
 		, IsShifting { false }
 		, Piggybacker { nullptr }
-		, Standby { 0 }
+		, ForwardTo { CoordStruct::Empty }
+		, TargetFrame { 0 }
+		, TargetDistance { 0 }
 	{ }
 
 	// Destructor
@@ -307,7 +309,9 @@ public:
 	bool IsForward;
 	bool IsShifting;
 	ILocomotionPtr Piggybacker;
-	int Standby; // No use yet
+	CoordStruct ForwardTo;
+	int TargetFrame;
+	int TargetDistance;
 
 private:
 	// Vanilla auxiliary function

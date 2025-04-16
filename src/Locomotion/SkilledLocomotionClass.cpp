@@ -26,6 +26,39 @@ bool SkilledLocomotionClass::Process()
 		this->SlopeTimer.Start((90 / pLinked->GetTechnoType()->Speed));
 	}
 
+	// Record target cell for reversing
+	if (const auto pTarget = pLinked->Target)
+	{
+		this->ForwardTo = pTarget->GetCoords();
+		this->TargetFrame = Unsorted::CurrentFrame;
+		this->TargetDistance = 0;
+	}
+	else if (pLinked->MegaMissionIsAttackMove())
+	{
+		if (const auto pMegaTarget = pLinked->MegaTarget)
+			this->ForwardTo = pMegaTarget->GetCoords();
+		else if (const auto pMegaDestination = pLinked->MegaDestination)
+			this->ForwardTo = pMegaDestination->GetCoords();
+
+		this->TargetFrame = Unsorted::CurrentFrame;
+		this->TargetDistance = 0;
+	}
+	else if (this->ForwardTo != CoordStruct::Empty)
+	{
+		const auto currentDistance = static_cast<int>(pLinked->Location.DistanceFrom(this->ForwardTo));
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType());
+
+		if (currentDistance > pTypeExt->Skilled_FaceTargetRange.Get()
+			|| (Unsorted::CurrentFrame - this->TargetFrame) > pTypeExt->Skilled_RetreatDuration
+			|| currentDistance < this->TargetDistance)
+		{
+			this->ForwardTo = CoordStruct::Empty;
+			this->TargetFrame = 0;
+		}
+
+		this->TargetDistance = currentDistance;
+	}
+
 	if (!this->InMotion())
 		return false;
 
@@ -65,13 +98,15 @@ void SkilledLocomotionClass::Move_To(CoordStruct to)
 
 void SkilledLocomotionClass::Stop_Moving()
 {
-	if (this->HeadToCoord != CoordStruct::Empty && this->LinkedTo->GetTechnoType()->IsTrain)
-	{
-		const auto pLinked = static_cast<UnitClass*>(this->LinkedTo);
+	const auto pLinked = this->LinkedTo;
 
-		if (!pLinked->IsFollowerCar)
+	if (this->HeadToCoord != CoordStruct::Empty && pLinked->GetTechnoType()->IsTrain)
+	{
+		const auto pUnit = static_cast<UnitClass*>(pLinked);
+
+		if (!pUnit->IsFollowerCar)
 		{
-			if (auto pFollowerCar = pLinked->FollowerCar)
+			if (auto pFollowerCar = pUnit->FollowerCar)
 			{
 				do
 				{
@@ -83,10 +118,14 @@ void SkilledLocomotionClass::Stop_Moving()
 		}
 	}
 
-	if (this->MovementSpeed >= 0.3)
-		this->MovementSpeed = 0.3;
-
-	this->TargetCoord = CoordStruct::Empty;
+	// I think no body want to see slowly~ slowly~ moving, so I change this one
+	if (pLinked->GetTechnoType()->Accelerates)
+	{
+		if (this->MovementSpeed >= 0.5 && pLinked->Location.DistanceFromSquared(this->HeadToCoord) < 16384)
+			this->MovementSpeed = 0.5;
+	}
+	// Slow down according to normal conditions
+	this->TargetCoord = this->HeadToCoord;
 }
 
 void SkilledLocomotionClass::Do_Turn(DirStruct dir)
@@ -243,10 +282,10 @@ bool SkilledLocomotionClass::MovingProcess(bool fix)
 
 			if (pLinked->IsCrushingSomething)
 			{
+				adjustedSpeed = true;
 				// Customized crush slow down speed
-				speed = Math::min( TechnoTypeExt::ExtMap.Find(pType)->CrushSlowdownMultiplier, this->MovementSpeed);
-				pLinked->SetSpeedPercentage(speed);
-				break;
+				speed = Math::min(TechnoTypeExt::ExtMap.Find(pType)->CrushSlowdownMultiplier, this->MovementSpeed);
+				this->MovementSpeed = speed;
 			}
 
 			if (!adjustedSpeed)
@@ -653,19 +692,46 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 	// Reverse movement
 	const int desiredRaw = pathDir << 13;
 
-	if (pLinked->WhatAmI() == AbstractType::Unit)
+	do
 	{
-		if (static_cast<UnitTypeClass*>(pType)->Harvester && pLinked->CurrentMission == Mission::Enter
-			&& !pLinked->MissionStatus && pLinked->DistanceFrom(pLinked->Destination) <= 363
-			&& !pLinked->GetCell()->GetBuilding())
+		if (pLinked->WhatAmI() != AbstractType::Unit)
+			break;
+
+		if (static_cast<UnitTypeClass*>(pType)->Harvester || static_cast<UnitTypeClass*>(pType)->Weeder)
 		{
-			this->IsForward = false;
+			auto IsReturnToRefinery = [pLinked]()
+			{
+				if (pLinked->CurrentMission != Mission::Enter || pLinked->MissionStatus)
+					return false;
+
+				if (pLinked->DistanceFrom(pLinked->Destination) > 363 || pLinked->GetCell()->GetBuilding())
+					return false;
+
+				const auto pLink = pLinked->GetNthLink();
+
+				if (!pLink || pLink->WhatAmI() != AbstractType::Building)
+					return false;
+
+				return static_cast<BuildingClass*>(pLink)->Type->Refinery;
+			};
+
+			if (IsReturnToRefinery())
+			{
+				this->IsForward = false;
+				break;
+			}
+			else if (pLinked->CurrentMission == Mission::Harvest)
+			{
+				this->IsForward = true;
+				break;
+			}
 		}
-		else if (pLinked->Target && (pLinked->DistanceFrom(pLinked->Target)
-			<= Game::F2I(pTypeExt->Skilled_FaceTargetRange * Unsorted::LeptonsPerCell)))
+
+		if (this->ForwardTo != CoordStruct::Empty)
 		{
 			const auto tgtDir = pTypeExt->Skilled_ConfrontEnemies
-				? pLinked->GetTargetDirection(pLinked->Target) : pLinked->PrimaryFacing.Current();
+				? DirStruct(Math::atan2(pLinked->Location.Y - this->ForwardTo.Y, this->ForwardTo.X - pLinked->Location.X))
+				: pLinked->PrimaryFacing.Current();
 			const auto deltaTgtDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
 				- static_cast<short>(tgtDir.Raw)));
 			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
@@ -682,11 +748,21 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 				- static_cast<short>(curDir.Raw)));
 			this->IsForward = deltaCurDir <= deltaOppDir;
 		}
+		else if (pLinked->ArchiveTarget && pLinked->CurrentMission == Mission::Area_Guard)
+		{
+			const auto defDir = pLinked->GetTargetDirection(pLinked->ArchiveTarget);
+			const auto deltaDefDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
+				- static_cast<short>(defDir.Raw)));
+			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
+				- static_cast<short>(defDir.Raw)));
+			this->IsForward = deltaDefDir > deltaOppDir;
+		}
 		else
 		{
 			this->IsForward = true;
 		}
 	}
+	while (false);
 
 	const auto desDir = DirStruct(this->IsForward ? desiredRaw : (desiredRaw + 32768));
 
@@ -869,22 +945,19 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 	if (speedFactor > 1.0)
 		speedFactor = 1.0;
 
-	int currentHeight = MapClass::Instance.GetCellFloorHeight(pLinked->Location);
-	int nextHeight = MapClass::Instance.GetCellFloorHeight(pNextCell->GetCellCoords());
-
-	if (nextHeight > currentHeight)
+	if (pLinked->WhatAmI() == AbstractType::Unit)
 	{
-		if (pLinked->WhatAmI() == AbstractType::Unit)
+		int currentHeight = MapClass::Instance.GetCellFloorHeight(pLinked->Location);
+		int nextHeight = MapClass::Instance.GetCellFloorHeight(pNextCell->GetCellCoords());
+
+		if (nextHeight > currentHeight)
 		{
 			if (pType->SpeedType == SpeedType::Track)
 				speedFactor *= RulesClass::Instance->TrackedUphill;
 			else
 				speedFactor *= RulesClass::Instance->WheeledUphill;
 		}
-	}
-	else if (nextHeight < currentHeight)
-	{
-		if (pLinked->WhatAmI() == AbstractType::Unit)
+		else if (nextHeight < currentHeight)
 		{
 			if (pType->SpeedType == SpeedType::Track)
 				speedFactor *= RulesClass::Instance->TrackedDownhill;
@@ -1404,11 +1477,16 @@ inline int SkilledLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 				if (pNewCell->OverlayTypeIndex != -1)
 				{
 					if ((pType->Crusher || pLinked->HasAbility(Ability::Crusher))
-						&& OverlayTypeClass::Array.Items[pNewCell->OverlayTypeIndex]->Wall && pType->TiltsWhenCrushes)
+						&& OverlayTypeClass::Array.Items[pNewCell->OverlayTypeIndex]->Wall)
 					{
-						// Customized crush tilt speed
-						const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-						pLinked->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
+						pLinked->IsCrushingSomething = true;
+
+						if (pType->TiltsWhenCrushes)
+						{
+							// Customized crush tilt speed
+							const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+							pLinked->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
+						}
 					}
 				}
 
@@ -1423,6 +1501,10 @@ inline int SkilledLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 						pLinked->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
 					}
 				}
+			}
+			else
+			{
+				pLinked->IsCrushingSomething = false;
 			}
 		}
 
