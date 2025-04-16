@@ -45,6 +45,18 @@ bool TechnoExt::CheckMultiWeapon(TechnoClass* const pThis, AbstractClass* const 
 		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
 			return false;
 
+		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		{
+			const auto pShield = pTargetExt->Shield.get();
+
+			if (pShield && pShield->IsActive() &&
+				!pShield->CanBeTargeted(pWeaponType))
+				return false;
+		}
+
+		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+			return false;
+
 		if (pTargetTechno->IsInAir())
 		{
 			if (!pWeaponType->Projectile->AA)
@@ -99,7 +111,7 @@ bool TechnoExt::CheckMultiWeapon(TechnoClass* const pThis, AbstractClass* const 
 			return false;
 
 		if (pWH->MindControl && (pTargetTechno->Owner == pThis->Owner ||
-			pTargetTechno->GetTechnoType()->ImmuneToPsionics))
+			pTargetTechno->IsMindControlled() || pTargetTechno->GetTechnoType()->ImmuneToPsionics))
 			return false;
 
 		if (pWH->Parasite && (pTargetTechno->WhatAmI() == AbstractType::Building ||
