@@ -354,7 +354,7 @@ New:
 - [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
 - [Promotion animation deglobalization](New-or-Enhanced-Logics.md#promotion-animation) (by Ollerus)
 - Enhanced [reveal](New-or-Enhanced-Logics.md#reveal-map-for-owner-on-impact) & [gap](New-or-Enhanced-Logics.md#shroud-map-for-enemies-on-impact) warhead (by NetsuNegi)
-- [Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)
+- [Forcing specific weapon by range and target type](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)
 - [Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
 - [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)

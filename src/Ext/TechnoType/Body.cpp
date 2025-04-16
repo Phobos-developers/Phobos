@@ -398,6 +398,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceAAWeapon_InRange.Read(exINI, pSection, "ForceAAWeapon.InRange");
 	this->ForceAAWeapon_InRange_Overrides.Read(exINI, pSection, "ForceAAWeapon.InRange.Overrides");
 	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceAAWeapon.InRange.ApplyRangeModifiers");
+	this->ForceWeapon_Buildings.Read(exINI, pSection, "ForceWeapon.Buildings");
+	this->ForceWeapon_Defenses.Read(exINI, pSection, "ForceWeapon.Defenses");
+	this->ForceWeapon_Infantry.Read(exINI, pSection, "ForceWeapon.Infantry");
+	this->ForceWeapon_Units.Read(exINI, pSection, "ForceWeapon.Units");
+	this->ForceWeapon_Aircraft.Read(exINI, pSection, "ForceWeapon.Aircraft");
+	this->ForceAAWeapon_Infantry.Read(exINI, pSection, "ForceAAWeapon.Infantry");
+	this->ForceAAWeapon_Units.Read(exINI, pSection, "ForceAAWeapon.Units");
+	this->ForceAAWeapon_Aircraft.Read(exINI, pSection, "ForceAAWeapon.Aircraft");
+
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
@@ -825,6 +834,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceAAWeapon_InRange)
 		.Process(this->ForceAAWeapon_InRange_Overrides)
 		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceWeapon_Buildings)
+		.Process(this->ForceWeapon_Defenses)
+		.Process(this->ForceWeapon_Infantry)
+		.Process(this->ForceWeapon_Units)
+		.Process(this->ForceWeapon_Aircraft)
+		.Process(this->ForceAAWeapon_Infantry)
+		.Process(this->ForceAAWeapon_Units)
+		.Process(this->ForceAAWeapon_Aircraft)
+
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)

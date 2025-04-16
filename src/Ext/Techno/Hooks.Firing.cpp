@@ -122,6 +122,53 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange();
 			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
 		}
+		else
+		{
+			switch (pTarget->WhatAmI())
+			{
+				case AbstractType::Building:
+				{
+					forceWeaponIndex = pTypeExt->ForceWeapon_Buildings;
+
+					if (pTypeExt->ForceWeapon_Defenses >= 0)
+					{
+						auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pTarget->GetTechnoType());
+
+						if (pBuildingType->IsBaseDefense)
+							forceWeaponIndex = pTypeExt->ForceWeapon_Defenses;
+					}
+
+					break;
+				}
+				case AbstractType::Infantry:
+				{
+					if (pTypeExt->ForceAAWeapon_Infantry >= 0 && pTarget->IsInAir())
+						forceWeaponIndex = pTypeExt->ForceAAWeapon_Infantry;
+					else
+						forceWeaponIndex = pTypeExt->ForceWeapon_Infantry;
+
+					break;
+				}
+				case AbstractType::Unit:
+				{
+					if (pTypeExt->ForceAAWeapon_Units >= 0 && pTarget->IsInAir())
+						forceWeaponIndex = pTypeExt->ForceAAWeapon_Units;
+					else
+						forceWeaponIndex = pTypeExt->ForceWeapon_Units;
+
+					break;
+				}
+				case AbstractType::Aircraft:
+				{
+					if (pTypeExt->ForceAAWeapon_Aircraft >= 0 && pTarget->IsInAir())
+						forceWeaponIndex = pTypeExt->ForceAAWeapon_Aircraft;
+					else
+						forceWeaponIndex = pTypeExt->ForceWeapon_Aircraft;
+
+					break;
+				}
+			}
+		}
 
 		if (forceWeaponIndex >= 0)
 		{

@@ -1410,20 +1410,32 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
+  - A series of tags can force specified weapons based on the target's type.
+    - If `ForceWeapon.Defenses` is enabled, it'll be used if the target is a building with `IsBaseDefense=yes`. Otherwise it'll follow `ForceWeapon.Buildings`, if enabled.
+    - `ForceWeapon.Infantry/Units/Aircraft` can be applied to both ground and air target if `ForceAAWeapon.Infantry/Units/Aircraft` is not set.
+    - `ForceAAWeapon.Infantry/Units/Aircraft` do the same things but only for air target. Taking priority to `ForceWeapon.Infantry/Units/Aircraft`, which means that they can only be applied to ground target when they're both set.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1                  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Cloaked=-1                          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Disguised=-1                        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
+ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
+ForceWeapon.Disguised=-1                        ; integer, -1 to disable
+ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
+ForceWeapon.InRange=                            ; List of integers
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange=                          ; List of integers
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceWeapon.Buildings=-1                        ; integer, -1 to disable
+ForceWeapon.Defenses=-1                         ; integer, -1 to disable
+ForceWeapon.Infantry=-1                         ; integer, -1 to disable
+ForceWeapon.Units=-1                            ; integer, -1 to disable
+ForceWeapon.Aircraft=-1                         ; integer, -1 to disable
+ForceAAWeapon.Infantry=-1                       ; integer, -1 to disable
+ForceAAWeapon.Units=-1                          ; integer, -1 to disable
+ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 ```
 
 ```{note}
