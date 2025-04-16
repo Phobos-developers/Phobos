@@ -653,30 +653,39 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 	// Reverse movement
 	const int desiredRaw = pathDir << 13;
 
-	if (pLinked->Target && (pLinked->DistanceFrom(pLinked->Target)
-		<= Game::F2I(pTypeExt->Skilled_FaceTargetRange * Unsorted::LeptonsPerCell)))
+	if (pLinked->WhatAmI() == AbstractType::Unit)
 	{
-		const auto tgtDir = pTypeExt->Skilled_ConfrontEnemies
-			? pLinked->GetTargetDirection(pLinked->Target) : pLinked->PrimaryFacing.Current();
-		const auto deltaTgtDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
-			- static_cast<short>(tgtDir.Raw)));
-		const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
-			- static_cast<short>(tgtDir.Raw)));
-		this->IsForward = deltaTgtDir <= deltaOppDir;
-	}
-	else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame)
-		<= pTypeExt->Skilled_RetreatDuration)
-	{
-		const auto curDir = pLinked->PrimaryFacing.Current();
-		const auto deltaCurDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
-			- static_cast<short>(curDir.Raw)));
-		const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
-			- static_cast<short>(curDir.Raw)));
-		this->IsForward = deltaCurDir <= deltaOppDir;
-	}
-	else
-	{
-		this->IsForward = true;
+		if (static_cast<UnitTypeClass*>(pType)->Harvester && pLinked->CurrentMission == Mission::Enter
+			&& !pLinked->MissionStatus && pLinked->DistanceFrom(pLinked->Destination) <= 363
+			&& !pLinked->GetCell()->GetBuilding())
+		{
+			this->IsForward = false;
+		}
+		else if (pLinked->Target && (pLinked->DistanceFrom(pLinked->Target)
+			<= Game::F2I(pTypeExt->Skilled_FaceTargetRange * Unsorted::LeptonsPerCell)))
+		{
+			const auto tgtDir = pTypeExt->Skilled_ConfrontEnemies
+				? pLinked->GetTargetDirection(pLinked->Target) : pLinked->PrimaryFacing.Current();
+			const auto deltaTgtDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
+				- static_cast<short>(tgtDir.Raw)));
+			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
+				- static_cast<short>(tgtDir.Raw)));
+			this->IsForward = deltaTgtDir <= deltaOppDir;
+		}
+		else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame)
+			<= pTypeExt->Skilled_RetreatDuration)
+		{
+			const auto curDir = pLinked->PrimaryFacing.Current();
+			const auto deltaCurDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
+				- static_cast<short>(curDir.Raw)));
+			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
+				- static_cast<short>(curDir.Raw)));
+			this->IsForward = deltaCurDir <= deltaOppDir;
+		}
+		else
+		{
+			this->IsForward = true;
+		}
 	}
 
 	const auto desDir = DirStruct(this->IsForward ? desiredRaw : (desiredRaw + 32768));
