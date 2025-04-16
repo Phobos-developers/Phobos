@@ -1717,6 +1717,22 @@ NoQueueUpToEnter=         ; boolean
 NoQueueUpToUnload=        ; boolean
 ```
 
+### Multi Weapon
+
+![Multi Weapon](_static/images/multiweapon.gif)
+* NoAmmoWeapon=2 can be used normally after using MultiWeapon=yes in a private mod by @Stormsulfur*
+
+- You are free to decide whether to use Weapon x or not, instead of passively using Primary/secondary.
+ - TechnoType reads `WeaponX` as their weapon when `MultiWeapon=yes`, be careful not to forget `WeaponCount`.
+ - `MultiWeapon.IsSecondary` can only be used for infantry and is responsible for determining which weapons should use `SecondaryFire` in the `Sequence`.
+ - 
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+MultiWeapon=       ; boolean
+MultiWeapon.IsSecondary=       ; list of integer
+```
+
 ## Terrain
 
 ### Destroy animation & sound

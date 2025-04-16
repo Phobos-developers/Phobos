@@ -320,6 +320,10 @@ public:
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
+		Valueable<bool> MultiWeapon;
+		ValueableVector<int> MultiWeapon_IsSecondary;
+		//Valueable<bool> MultiWeapon_SelectWeapon;
+		bool LastMultiWeapon;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -595,6 +599,11 @@ public:
 
 			, Promote_VeteranAnimation { }
 			, Promote_EliteAnimation { }
+
+			, MultiWeapon { false }
+			, MultiWeapon_IsSecondary {}
+			//, MultiWeapon_SelectWeapon { false }
+			, LastMultiWeapon { false }
 		{ }
 
 		virtual ~ExtData() = default;

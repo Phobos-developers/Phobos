@@ -59,7 +59,7 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	char tempBuffer[32];
 	char tempBufferFLH[48];
 	auto pThis = this->OwnerObject();
-	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	bool parseMultiWeapons = this->MultiWeapon.Get() || (pThis->TurretCount > 0 && pThis->WeaponCount > 0);
 	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
 	nFLH.resize(weaponCount);
 	nEFlh.resize(weaponCount);
@@ -970,6 +970,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
+
+		.Process(this->MultiWeapon)
+		.Process(this->MultiWeapon_IsSecondary)
+		//.Process(this->MultiWeapon_SelectWeapon)
+		.Process(this->LastMultiWeapon)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -349,6 +349,7 @@ This page lists all the individual contributions to the project by their author.
    - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
    - Fix `AltNextScenario` not taking effect
    - Fix `Hospital=yes` building can't kick out infantry after loading a save
+   - Use WeaponX freely
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
