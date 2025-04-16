@@ -8,15 +8,34 @@
 #include <Misc/SyncLogging.h>
 
 AnimExt::ExtContainer AnimExt::ExtMap;
+std::vector<AnimClass*> AnimExt::AnimsWithAttachedParticles;
+
+AnimExt::ExtData::~ExtData()
+{
+	this->DeleteAttachedSystem();
+
+	if (this->Invoker)
+		TechnoExt::ExtMap.Find(this->Invoker)->AnimRefCount--;
+
+	if (this->ParentBuilding)
+		TechnoExt::ExtMap.Find(this->ParentBuilding)->AnimRefCount--;
+}
 
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker)
 {
-	this->Invoker = pInvoker;
-	this->InvokerHouse = pInvoker ? pInvoker->Owner : nullptr;
+	this->SetInvoker(pInvoker, pInvoker ? pInvoker->Owner : nullptr);
 }
 
 void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
+	if (pInvoker && this->Invoker != pInvoker)
+	{
+		if (this->Invoker)
+			TechnoExt::ExtMap.Find(this->Invoker)->AnimRefCount--;
+
+		TechnoExt::ExtMap.Find(pInvoker)->AnimRefCount++;
+	}
+
 	this->Invoker = pInvoker;
 	this->InvokerHouse = pInvokerHouse;
 }
@@ -29,6 +48,7 @@ void AnimExt::ExtData::CreateAttachedSystem()
 	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
 		this->AttachedSystem = GameCreate<ParticleSystemClass>(pTypeExt->AttachedSystem.Get(), pThis->Location, pThis->GetCell(), pThis, CoordStruct::Empty, nullptr);
+		AnimExt::AnimsWithAttachedParticles.push_back(pThis);
 	}
 }
 
@@ -39,6 +59,9 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 		this->AttachedSystem->Owner = nullptr;
 		this->AttachedSystem->UnInit();
 		this->AttachedSystem = nullptr;
+
+		auto& vec = AnimExt::AnimsWithAttachedParticles;
+		vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()), vec.end());
 	}
 }
 
@@ -76,7 +99,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 			isRemappable = pTypeExt->CreateUnit_RemapAnim;
 
 		if (isRemappable && !newOwner->Defeated)
-			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
+			pAnim->LightConvert = ColorScheme::Array[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
 	return newOwner;
@@ -101,7 +124,7 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 void AnimExt::VeinAttackAI(AnimClass* pAnim)
 {
 	CellStruct pCoordinates = pAnim->GetMapCoords();
-	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
+	CellClass* pCell = MapClass::Instance.GetCellAt(pCoordinates);
 	ObjectClass* pOccupier = pCell->FirstObject;
 	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
 	constexpr unsigned int weedOverlayIndex = 126;
@@ -164,7 +187,7 @@ void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool res
 		rate = ScenarioClass::Instance->Random.RandomRanged(pNewType->RandomRate.Min, pNewType->RandomRate.Max);
 
 	if (pNewType->Normalized)
-		rate = GameOptionsClass::Instance->GetAnimSpeed(rate);
+		rate = GameOptionsClass::Instance.GetAnimSpeed(rate);
 
 	pAnim->Animation.Start(rate, pNewType->Reverse ? -1 : 1);
 
@@ -262,10 +285,9 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 
 			auto const loopCount = ScenarioClass::Instance->Random.RandomRanged(1, 2);
 			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
-			pAnim->Owner = pThis->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
-			pExtNew->Invoker = pExt->Invoker;
-			pExtNew->InvokerHouse = pExt->InvokerHouse;
+			pExtNew->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 
 			if (attach && pThis->OwnerObject)
 				pAnim->SetOwnerObject(pThis->OwnerObject);
@@ -348,7 +370,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 
 	auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
 
-	if (!pAnim || !pTechno)
+	if (!pTechno)
 		return;
 
 	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse ? pHouse : pTechno->Owner, nullptr, false, true);
@@ -359,9 +381,6 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 	if (invoker)
 	{
 		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-
-		if (!pAnimExt)
-			return;
 
 		if (pHouse)
 			pAnimExt->SetInvoker(pTechno, pHouse);
@@ -393,6 +412,9 @@ void AnimExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<AnimClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	if (this->AttachedSystem)
+		AnimExt::AnimsWithAttachedParticles.push_back(this->OwnerObject());
 }
 
 void AnimExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -410,7 +432,7 @@ void AnimExt::ExtData::InitializeConstants()
 
 void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 {
-	for (auto const& pAnim : *AnimClass::Array)
+	for (auto const& pAnim : AnimClass::Array)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
@@ -430,7 +452,7 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 
 void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem)
 {
-	for (auto const& pAnim : *AnimClass::Array)
+	for (auto const& pAnim : AnimExt::AnimsWithAttachedParticles)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
@@ -441,7 +463,12 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 		}
 
 		if (pExt->AttachedSystem == pParticleSystem)
+		{
 			pExt->AttachedSystem = nullptr;
+
+			auto& vec = AnimExt::AnimsWithAttachedParticles;
+			vec.erase(std::remove(vec.begin(), vec.end(), pAnim), vec.end());
+		}
 	}
 }
 
@@ -491,7 +518,7 @@ DEFINE_HOOK(0x4226F6, AnimClass_CTOR, 0x6)
 	GET(AnimClass*, pItem, ESI);
 
 	// Do this here instead of using a duplicate hook in SyncLogger.cpp
-	if (!SyncLogger::HooksDisabled && pItem->UniqueID != -2)
+	if (!Phobos::Optimizations::DisableSyncLogging && pItem->UniqueID != -2)
 		SyncLogger::AddAnimCreationSyncLogEvent(CTORTemp::coords, CTORTemp::callerAddress);
 
 	AnimExt::ExtMap.Allocate(pItem);
