@@ -47,6 +47,7 @@ public:
 		Valueable<int> Spawner_ExtraLimitRange;
 		Nullable<int> Spawner_DelayFrames;
 		Valueable<bool> Spawner_AttackImmediately;
+		Valueable<bool> Spawner_UseTurretFacing;
 		Nullable<bool> Harvester_Counted;
 		Valueable<bool> Promote_IncludeSpawns;
 		Valueable<bool> ImmuneToCrit;
@@ -160,6 +161,12 @@ public:
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
 		Valueable<int> ForceWeapon_UnderEMP;
+		ValueableVector<int> ForceWeapon_InRange;
+		ValueableVector<double> ForceWeapon_InRange_Overrides;
+		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
+		ValueableVector<int> ForceAAWeapon_InRange;
+		ValueableVector<double> ForceAAWeapon_InRange_Overrides;
+		Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -186,6 +193,12 @@ public:
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
+
+		Valueable<bool> JumpjetTilt;
+		Valueable<double> JumpjetTilt_ForwardAccelFactor;
+		Valueable<double> JumpjetTilt_ForwardSpeedFactor;
+		Valueable<double> JumpjetTilt_SidewaysRotationFactor;
+		Valueable<double> JumpjetTilt_SidewaysSpeedFactor;
 
 		Nullable<bool> TiltsWhenCrushes_Vehicles;
 		Nullable<bool> TiltsWhenCrushes_Overlays;
@@ -284,8 +297,10 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
-
     	Nullable<double> DamagedSpeed;
+
+		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
+		Nullable<AnimTypeClass*> Promote_EliteAnimation;
 
 		struct LaserTrailDataEntry
 		{
@@ -331,6 +346,7 @@ public:
 			, Spawner_ExtraLimitRange { 0 }
 			, Spawner_DelayFrames {}
 			, Spawner_AttackImmediately { false }
+			, Spawner_UseTurretFacing { false }
 			, Harvester_Counted {}
 			, Promote_IncludeSpawns { false }
 			, ImmuneToCrit { false }
@@ -434,6 +450,12 @@ public:
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
 			, ForceWeapon_UnderEMP { -1 }
+			, ForceWeapon_InRange {}
+			, ForceWeapon_InRange_Overrides {}
+			, ForceWeapon_InRange_ApplyRangeModifiers { false }
+			, ForceAAWeapon_InRange {}
+			, ForceAAWeapon_InRange_Overrides {}
+			, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
@@ -468,6 +490,12 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+
+			, JumpjetTilt { false }
+			, JumpjetTilt_ForwardAccelFactor { 1.0 }
+			, JumpjetTilt_ForwardSpeedFactor { 1.0 }
+			, JumpjetTilt_SidewaysRotationFactor { 1.0 }
+			, JumpjetTilt_SidewaysSpeedFactor { 1.0 }
 
 			, TiltsWhenCrushes_Vehicles {}
 			, TiltsWhenCrushes_Overlays {}
@@ -566,12 +594,14 @@ public:
 			, Sinkable_SquidGrab { true }
 			, SinkSpeed { 5 }
 
+			, ProneSpeed { }
 			, DamagedSpeed { }
 
 			, SuppressKillWeapons { false }
-			, SuppressKillWeapons_Types {}
+			, SuppressKillWeapons_Types { }
 
-			, ProneSpeed { }
+			, Promote_VeteranAnimation { }
+			, Promote_EliteAnimation { }
 		{ }
 
 		virtual ~ExtData() = default;
