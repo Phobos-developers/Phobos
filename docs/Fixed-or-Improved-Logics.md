@@ -216,7 +216,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport.
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error.
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead.
-- Fixed the bug that a unit can overlap with `Teleport=yes` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
+- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
 
 ## Fixes / interactions with other extensions
 
