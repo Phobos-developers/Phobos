@@ -150,6 +150,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
 	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
+	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 
@@ -208,6 +210,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_Warhead_Detonate)
 		.Process(this->ReflectDamage_Multiplier)
 		.Process(this->ReflectDamage_AffectsHouses)
+		.Process(this->ReflectDamage_Chance)
+		.Process(this->ReflectDamage_Override)
 		.Process(this->DisableWeapons)
 		.Process(this->Groups)
 		;
