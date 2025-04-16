@@ -440,7 +440,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
   - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
   - Jumpjet Tilts While Moving
-  - New Skilled locomotor
+  - New AdvancedDrive locomotor
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

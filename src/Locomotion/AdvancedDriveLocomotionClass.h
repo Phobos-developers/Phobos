@@ -9,7 +9,7 @@
 #include <comdef.h>
 
 class __declspec(uuid("4A582751-9839-11d1-B709-00A024DDAFD1"))
-	SkilledLocomotionClass : public LocomotionClass, public IPiggyback
+	AdvancedDriveLocomotionClass : public LocomotionClass, public IPiggyback
 {
 public:
 	// IUnknown
@@ -58,7 +58,7 @@ public:
 		if (this)
 		{
 			this->Piggybacker.Detach();
-			new (this) SkilledLocomotionClass(noinit_t());
+			new (this) AdvancedDriveLocomotionClass(noinit_t());
 		}
 
 		bool piggybackerPresent = false;
@@ -104,7 +104,7 @@ public:
 		HRESULT hr = this->LocomotionClass::Link_To_Object(pointer);
 
 		if (SUCCEEDED(hr))
-			Debug::Log("SkilledLocomotionClass - Sucessfully linked to \"%s\"\n", Owner->get_ID());
+			Debug::Log("AdvancedDriveLocomotionClass - Sucessfully linked to \"%s\"\n", Owner->get_ID());
 
 		return hr;
 	}*/
@@ -262,8 +262,8 @@ public:
 	}
 
 	// Constructors
-	inline SkilledLocomotionClass(noinit_t) : LocomotionClass { noinit_t() } { }
-	inline SkilledLocomotionClass() : LocomotionClass { }
+	inline AdvancedDriveLocomotionClass(noinit_t) : LocomotionClass { noinit_t() } { }
+	inline AdvancedDriveLocomotionClass() : LocomotionClass { }
 		, CurrentRamp { 0 }
 		, PreviousRamp { 0 }
 		, SlopeTimer {}
@@ -288,7 +288,7 @@ public:
 	{ }
 
 	// Destructor
-	inline virtual ~SkilledLocomotionClass() override = default;
+	inline virtual ~AdvancedDriveLocomotionClass() override = default;
 
 	// Properties
 	int CurrentRamp;

@@ -1,4 +1,4 @@
-#include "SkilledLocomotionClass.h"
+#include "AdvancedDriveLocomotionClass.h"
 #include <DriveLocomotionClass.h>
 
 #include <InfantryClass.h>
@@ -13,7 +13,7 @@
 
 // Virtual
 
-bool SkilledLocomotionClass::Process()
+bool AdvancedDriveLocomotionClass::Process()
 {
 	const auto pLinked = this->LinkedTo;
 	const auto slopeIndex = pLinked->GetCell()->SlopeIndex;
@@ -48,8 +48,8 @@ bool SkilledLocomotionClass::Process()
 		const auto currentDistance = static_cast<int>(pLinked->Location.DistanceFrom(this->ForwardTo));
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType());
 
-		if (currentDistance > pTypeExt->Skilled_FaceTargetRange.Get()
-			|| (Unsorted::CurrentFrame - this->TargetFrame) > pTypeExt->Skilled_RetreatDuration
+		if (currentDistance > pTypeExt->AdvancedDrive_FaceTargetRange.Get()
+			|| (Unsorted::CurrentFrame - this->TargetFrame) > pTypeExt->AdvancedDrive_RetreatDuration
 			|| currentDistance < this->TargetDistance)
 		{
 			this->ForwardTo = CoordStruct::Empty;
@@ -82,7 +82,7 @@ bool SkilledLocomotionClass::Process()
 	return this->Is_Moving();
 }
 
-void SkilledLocomotionClass::Move_To(CoordStruct to)
+void AdvancedDriveLocomotionClass::Move_To(CoordStruct to)
 {
 	const auto pLinked = this->LinkedTo;
 
@@ -96,7 +96,7 @@ void SkilledLocomotionClass::Move_To(CoordStruct to)
 	}
 }
 
-void SkilledLocomotionClass::Stop_Moving()
+void AdvancedDriveLocomotionClass::Stop_Moving()
 {
 	const auto pLinked = this->LinkedTo;
 
@@ -128,12 +128,12 @@ void SkilledLocomotionClass::Stop_Moving()
 	this->TargetCoord = this->HeadToCoord;
 }
 
-void SkilledLocomotionClass::Do_Turn(DirStruct dir)
+void AdvancedDriveLocomotionClass::Do_Turn(DirStruct dir)
 {
 	this->LinkedTo->PrimaryFacing.SetDesired(dir);
 }
 
-void SkilledLocomotionClass::Force_Track(int track, CoordStruct coord)
+void AdvancedDriveLocomotionClass::Force_Track(int track, CoordStruct coord)
 {
 	this->TrackNumber = track;
 	this->TrackIndex = 0;
@@ -160,13 +160,13 @@ void SkilledLocomotionClass::Force_Track(int track, CoordStruct coord)
 	}
 }
 
-void SkilledLocomotionClass::Mark_All_Occupation_Bits(MarkType mark)
+void AdvancedDriveLocomotionClass::Mark_All_Occupation_Bits(MarkType mark)
 {
 	if (this->HeadToCoord != CoordStruct::Empty)
 		this->MarkOccupation(this->HeadToCoord, mark);
 }
 
-bool SkilledLocomotionClass::Is_Moving_Here(CoordStruct to)
+bool AdvancedDriveLocomotionClass::Is_Moving_Here(CoordStruct to)
 {
 	const auto headToCoord = this->Head_To_Coord();
 
@@ -204,7 +204,7 @@ bool SkilledLocomotionClass::Is_Moving_Here(CoordStruct to)
 		&& std::abs(headToCoord.Z - to.Z) <= Unsorted::CellHeight);
 }
 
-bool SkilledLocomotionClass::Will_Jump_Tracks()
+bool AdvancedDriveLocomotionClass::Will_Jump_Tracks()
 {
 	const auto pathDir = this->LinkedTo->PathDirections[0];
 
@@ -229,7 +229,7 @@ bool SkilledLocomotionClass::Will_Jump_Tracks()
 
 // Non-virtual
 
-bool SkilledLocomotionClass::MovingProcess(bool fix)
+bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 {
 	const auto pLinked = this->LinkedTo;
 	const auto pType = pLinked->GetTechnoType();
@@ -409,7 +409,7 @@ bool SkilledLocomotionClass::MovingProcess(bool fix)
 	}
 
 	const auto ratio = static_cast<float>(this->SpeedAccum * 0.1428571428571428);
-	auto newPos = pLinked->Location + SkilledLocomotionClass::CoordLerp(CoordStruct::Empty, location, ratio);
+	auto newPos = pLinked->Location + AdvancedDriveLocomotionClass::CoordLerp(CoordStruct::Empty, location, ratio);
 
 	const auto pOldCell = MapClass::Instance.GetCellAt(pLinked->Location);
 	auto pNewCell = MapClass::Instance.GetCellAt(newPos);
@@ -441,7 +441,7 @@ bool SkilledLocomotionClass::MovingProcess(bool fix)
 	return false;
 }
 
-bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
+bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 {
 	const auto pLinked = this->LinkedTo;
 	int pathDir = pLinked->PathDirections[0];
@@ -729,7 +729,7 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 
 		if (this->ForwardTo != CoordStruct::Empty)
 		{
-			const auto tgtDir = pTypeExt->Skilled_ConfrontEnemies
+			const auto tgtDir = pTypeExt->AdvancedDrive_ConfrontEnemies
 				? DirStruct(Math::atan2(pLinked->Location.Y - this->ForwardTo.Y, this->ForwardTo.X - pLinked->Location.X))
 				: pLinked->PrimaryFacing.Current();
 			const auto deltaTgtDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
@@ -739,7 +739,7 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 			this->IsForward = deltaTgtDir <= deltaOppDir;
 		}
 		else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame)
-			<= pTypeExt->Skilled_RetreatDuration)
+			<= pTypeExt->AdvancedDrive_RetreatDuration)
 		{
 			const auto curDir = pLinked->PrimaryFacing.Current();
 			const auto deltaCurDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
@@ -971,7 +971,7 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 
 	// Customized backward speed
 	if (!this->IsForward)
-		speedFactor *= pTypeExt->Skilled_ReverseSpeed;
+		speedFactor *= pTypeExt->AdvancedDrive_ReverseSpeed;
 
 	// Customized damaged speed
 	const auto ratio = pLinked->GetHealthPercentage();
@@ -1198,7 +1198,7 @@ bool SkilledLocomotionClass::PassableCheck(bool* pStop, bool force, bool check)
 	return false;
 }
 
-void SkilledLocomotionClass::MarkOccupation(const CoordStruct& to, MarkType mark)
+void AdvancedDriveLocomotionClass::MarkOccupation(const CoordStruct& to, MarkType mark)
 {
 	if (to == CoordStruct::Empty)
 		return;
@@ -1241,7 +1241,7 @@ void SkilledLocomotionClass::MarkOccupation(const CoordStruct& to, MarkType mark
 		this->LinkedTo->MarkAllOccupationBits(to);
 }
 
-CoordStruct SkilledLocomotionClass::GetTrackOffset(const Point2D& base, int& face, int z)
+CoordStruct AdvancedDriveLocomotionClass::GetTrackOffset(const Point2D& base, int& face, int z)
 {
 	const auto dataFlag = DriveLocomotionClass::TurnTrack[this->TrackNumber].Flag;
 	auto pt = base;
@@ -1268,7 +1268,7 @@ CoordStruct SkilledLocomotionClass::GetTrackOffset(const Point2D& base, int& fac
 	return CoordStruct { this->HeadToCoord.X + pt.X, this->HeadToCoord.Y + pt.Y, z };
 }
 
-CoordStruct SkilledLocomotionClass::CoordLerp(const CoordStruct& crd1, const CoordStruct& crd2, float alpha)
+CoordStruct AdvancedDriveLocomotionClass::CoordLerp(const CoordStruct& crd1, const CoordStruct& crd2, float alpha)
 {
 	const float i_alpha = 1.0f - alpha;
 	return CoordStruct
@@ -1281,7 +1281,7 @@ CoordStruct SkilledLocomotionClass::CoordLerp(const CoordStruct& crd1, const Coo
 
 // Auxiliary
 
-inline bool SkilledLocomotionClass::InMotion()
+inline bool AdvancedDriveLocomotionClass::InMotion()
 {
 	const auto pLinked = this->LinkedTo;
 
@@ -1376,7 +1376,7 @@ inline bool SkilledLocomotionClass::InMotion()
 	return false;
 }
 
-inline int SkilledLocomotionClass::UpdateSpeedAccum(int& speedAccum)
+inline int AdvancedDriveLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 {
 	if (speedAccum <= 7)
 		return 0;
@@ -1680,4 +1680,27 @@ inline int SkilledLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 		return 2;
 
 	return pLinked->IsAlive ? 0 : 1;
+}
+
+// Hooks
+
+DEFINE_HOOK(0x4DA9FB, FootClass_Update_WalkedFrames, 0x6)
+{
+	enum { SkipGameCode = 0x4DAA01 };
+
+	GET(FootClass* const, pThis, ESI);
+
+	CLSID locoCLSID {};
+
+	if (SUCCEEDED(static_cast<LocomotionClass*>(pThis->Locomotor.GetInterfacePtr())->GetClassID(&locoCLSID))
+		 && locoCLSID == __uuidof(AdvancedDriveLocomotionClass))
+	{
+		if (!static_cast<AdvancedDriveLocomotionClass*>(pThis->Locomotor.GetInterfacePtr())->IsForward)
+		{
+			--pThis->WalkedFramesSoFar;
+			return SkipGameCode;
+		}
+	}
+
+	return 0; // ++pThis->WalkedFramesSoFar;
 }

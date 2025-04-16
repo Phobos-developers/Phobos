@@ -240,10 +240,10 @@ public:
 
 		Nullable<bool> RecountBurst;
 
-		Valueable<double> Skilled_ReverseSpeed;
-		Valueable<Leptons> Skilled_FaceTargetRange;
-		Valueable<bool> Skilled_ConfrontEnemies;
-		Valueable<int> Skilled_RetreatDuration;
+		Valueable<double> AdvancedDrive_ReverseSpeed;
+		Valueable<Leptons> AdvancedDrive_FaceTargetRange;
+		Valueable<bool> AdvancedDrive_ConfrontEnemies;
+		Valueable<int> AdvancedDrive_RetreatDuration;
 
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
@@ -540,10 +540,10 @@ public:
 
 			, RecountBurst {}
 
-			, Skilled_ReverseSpeed { 0.85 }
-			, Skilled_FaceTargetRange { Leptons(4096) }
-			, Skilled_ConfrontEnemies { true }
-			, Skilled_RetreatDuration { 150 }
+			, AdvancedDrive_ReverseSpeed { 0.85 }
+			, AdvancedDrive_FaceTargetRange { Leptons(4096) }
+			, AdvancedDrive_ConfrontEnemies { true }
+			, AdvancedDrive_RetreatDuration { 150 }
 
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}

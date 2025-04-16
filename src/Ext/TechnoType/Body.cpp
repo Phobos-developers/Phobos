@@ -466,10 +466,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->RecountBurst.Read(exINI, pSection, "RecountBurst");
 
-	this->Skilled_ReverseSpeed.Read(exINI, pSection, "Skilled.ReverseSpeed");
-	this->Skilled_FaceTargetRange.Read(exINI, pSection, "Skilled.FaceTargetRange");
-	this->Skilled_ConfrontEnemies.Read(exINI, pSection, "Skilled.ConfrontEnemies");
-	this->Skilled_RetreatDuration.Read(exINI, pSection, "Skilled.RetreatDuration");
+	this->AdvancedDrive_ReverseSpeed.Read(exINI, pSection, "AdvancedDrive.ReverseSpeed");
+	this->AdvancedDrive_FaceTargetRange.Read(exINI, pSection, "AdvancedDrive.FaceTargetRange");
+	this->AdvancedDrive_ConfrontEnemies.Read(exINI, pSection, "AdvancedDrive.ConfrontEnemies");
+	this->AdvancedDrive_RetreatDuration.Read(exINI, pSection, "AdvancedDrive.RetreatDuration");
 
 	this->BuildLimitGroup_Types.Read(exINI, pSection, "BuildLimitGroup.Types");
 	this->BuildLimitGroup_Nums.Read(exINI, pSection, "BuildLimitGroup.Nums");
@@ -915,10 +915,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->RecountBurst)
 
-		.Process(this->Skilled_ReverseSpeed)
-		.Process(this->Skilled_FaceTargetRange)
-		.Process(this->Skilled_ConfrontEnemies)
-		.Process(this->Skilled_RetreatDuration)
+		.Process(this->AdvancedDrive_ReverseSpeed)
+		.Process(this->AdvancedDrive_FaceTargetRange)
+		.Process(this->AdvancedDrive_ConfrontEnemies)
+		.Process(this->AdvancedDrive_RetreatDuration)
 
 		.Process(this->BuildLimitGroup_Types)
 		.Process(this->BuildLimitGroup_Nums)
