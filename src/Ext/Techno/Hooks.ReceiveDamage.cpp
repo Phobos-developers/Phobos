@@ -193,36 +193,10 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+
 	if (pSource)
-	{
-		auto const pExt = TechnoExt::ExtMap.Find(pThis);
-		auto const pTypeExt = pExt->TypeExtData;
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
-
-		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-		{
-			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
-				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
-		}
-
-		for (auto& attachEffect : pExt->AttachedEffects)
-		{
-			if (!attachEffect->IsActive())
-				continue;
-
-			auto const pType = attachEffect->GetType();
-
-			if (!pType->RevengeWeapon)
-				continue;
-
-			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
-				continue;
-
-			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
-		}
-	}
+		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
 
 	return 0;
 }
@@ -308,7 +282,10 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	if (pWHExt->Reflected)
 		return 0;
 
-	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	const bool suppressByType = pWHExt->SuppressReflectDamage_Types.size() > 0;
+	const bool suppressByGroup = pWHExt->SuppressReflectDamage_Groups.size() > 0;
+
+	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || suppressByType || suppressByGroup))
 	{
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
@@ -320,11 +297,20 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			if (!pType->ReflectDamage)
 				continue;
 
-			if (pWHExt->SuppressReflectDamage && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+			if (pType->ReflectDamage_Chance < ScenarioClass::Instance->Random.RandomDouble())
 				continue;
 
+			if (pWHExt->SuppressReflectDamage)
+			{
+				if (suppressByType && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+					continue;
+
+				if (suppressByGroup && pType->HasGroups(pWHExt->SuppressReflectDamage_Groups, false))
+					continue;
+			}
+
 			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
+			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
 
 			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
 			{
