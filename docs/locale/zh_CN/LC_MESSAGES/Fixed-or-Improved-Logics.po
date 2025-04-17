@@ -2472,7 +2472,7 @@ msgid ""
 " that replaces TechnoType's graphics. If the name in `Image` is also an "
 "entry in the art INI, **no tags will be read from it**."
 msgstr ""
-"这个标签**仅**指定替代科技类型图像的文件名（不带扩展名）。如果 `Image` 中的名称也是 art INI "
+"这个标签**仅**指定替代科技类型图像的文件名（无扩展名）。如果 `Image` 中的名称也是 art INI "
 "中的一个条目，那么**不会从中读取任何标签**。"
 
 #: ../../Fixed-or-Improved-Logics.md:705
