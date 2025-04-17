@@ -13,13 +13,13 @@ void RadSiteExt::ExtData::Initialize()
 	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
-bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage)
 {
 	const auto pWarhead = this->Type->GetWarhead();
 
 	if (!this->Type->GetWarheadDetonate())
 	{
-		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+		if (pTarget->ReceiveDamage(&damage, 0, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
 			return false;
 	}
 	else

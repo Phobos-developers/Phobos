@@ -172,7 +172,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 				if (maxDamageCount > 0)
 					damageCounts[pRadSite]++;
 
-				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage, 0))
+				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage))
 					break;
 			}
 		}
@@ -194,36 +194,34 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe &&
 		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
-		if (const auto pCell = pFoot->GetCell())
+		const auto pCell = pFoot->GetCell();
+		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+
+		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
-			const auto pCellExt = CellExt::ExtMap.Find(pCell);
+			if (radLevel <= 0)
+				continue;
 
-			for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
+			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
+			RadTypeClass* pType = pRadExt->Type;
+
+			if (!pType->GetWarhead())
+				continue;
+
+			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
 			{
-				if (radLevel <= 0)
+				int delay = pType->GetApplicationDelay();
+
+				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
 					continue;
+			}
 
-				const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-				RadTypeClass* pType = pRadExt->Type;
+			if (pFoot->IsAlive || !pFoot->IsSinking)
+			{
+				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
 
-				if (!pType->GetWarhead())
-					continue;
-
-				if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
-				{
-					int delay = pType->GetApplicationDelay();
-
-					if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
-						continue;
-				}
-
-				if (pFoot->IsAlive || !pFoot->IsSinking)
-				{
-					int damage = Game::F2I(radLevel * pType->GetLevelFactor());
-
-					if (!pRadExt->ApplyRadiationDamage(pFoot, damage, 0))
-						break;
-				}
+				if (!pRadExt->ApplyRadiationDamage(pFoot, damage))
+					break;
 			}
 		}
 	}

@@ -101,11 +101,9 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		return;
 
 	const auto pThis = this->OwnerObject();
-
 	const auto pWeapon = pThis->GetWeaponType();
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const auto pRadType = pWeaponExt->RadType;
-	const auto pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 
 	const auto it = std::find_if(pCellExt->RadSites.cbegin(), pCellExt->RadSites.cend(),
@@ -113,7 +111,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		{
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pSite);
 
-      if (pRadExt->Type != pRadType || pWeapon != pRadExt->Weapon)
+			if (pRadExt->Type != pRadType || pWeapon != pRadExt->Weapon)
 				return false;
 
 			if (pRadExt->RadInvoker && pThis->Owner)
@@ -134,6 +132,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 		return;
 	}
 
+	const auto pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
 	RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
 }
 
