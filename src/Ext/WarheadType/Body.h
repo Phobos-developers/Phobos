@@ -155,6 +155,7 @@ public:
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
 		Valueable<bool> SuppressReflectDamage;
 		ValueableVector<AttachEffectTypeClass*> SuppressReflectDamage_Types;
+		std::vector<std::string> SuppressReflectDamage_Groups;
 
 		Valueable<bool> BuildingSell;
 		Valueable<bool> BuildingSell_IgnoreUnsellable;
@@ -330,6 +331,7 @@ public:
 			, SuppressRevengeWeapons_Types {}
 			, SuppressReflectDamage { false }
 			, SuppressReflectDamage_Types {}
+			, SuppressReflectDamage_Groups {}
 
 			, BuildingSell { false }
 			, BuildingSell_IgnoreUnsellable { false }
