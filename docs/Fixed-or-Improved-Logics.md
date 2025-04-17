@@ -1417,13 +1417,15 @@ ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage] -> ForceShi
 - It is now possible for vehicles to retain their target when issued movement command by setting `KeepTargetOnMove` to true.
   - Note that no check is done whether or not the vehicle or the weapon can actually fire while moving, this is on modder's discretion.
   - The target is automatically reset if the vehicle moves beyond the weapon's range from the target.
+- `KeepTargetOnMove.NoMorePursuit` controls whether the unit will restart chasing the target for attack when it stops again, otherwise it will clear the target when it moves away.
 - `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from target (it is added to weapon range), negative values work to reduce the distance.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                     ; VehicleType
-KeepTargetOnMove=false            ; boolean
-KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
+[SOMEVEHICLE]                        ; VehicleType
+KeepTargetOnMove=false               ; boolean
+KeepTargetOnMove.NoMorePursuit=true  ; boolean
+KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 ```
 
 ### Sinking behavior dehardcode

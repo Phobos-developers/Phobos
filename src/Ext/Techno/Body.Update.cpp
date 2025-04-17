@@ -933,36 +933,44 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 		return;
 	}
 
-	if (!this->TypeExtData->KeepTargetOnMove)
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->KeepTargetOnMove)
 	{
 		pThis->SetTarget(nullptr);
 		this->KeepTargetOnMove = false;
 		return;
 	}
 
-	if (pThis->CurrentMission == Mission::Move)
+	if (pThis->CurrentMission == Mission::Guard)
 	{
-		const int weaponIndex = pThis->SelectWeapon(pThis->Target);
-
-		if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+		if (!pTypeExt->KeepTargetOnMove_NoMorePursuit)
 		{
-			const int extraDistance = static_cast<int>(this->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
-			const int range = pWeapon->Range;
-			pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
-
-			if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
-			{
-				pThis->SetTarget(nullptr);
-				this->KeepTargetOnMove = false;
-			}
-
-			pWeapon->Range = range;
+			pThis->QueueMission(Mission::Attack, false);
+			this->KeepTargetOnMove = false;
+			return;
 		}
 	}
-	else if (pThis->CurrentMission == Mission::Guard)
+	else if (pThis->CurrentMission != Mission::Move)
 	{
-		pThis->QueueMission(Mission::Attack, false);
-		this->KeepTargetOnMove = false;
+		return;
+	}
+
+	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+
+	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		const int extraDistance = static_cast<int>(pTypeExt->KeepTargetOnMove_ExtraDistance.Get());
+		const int range = pWeapon->Range;
+		pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
+
+		if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
+		{
+			pThis->SetTarget(nullptr);
+			this->KeepTargetOnMove = false;
+		}
+
+		pWeapon->Range = range;
 	}
 }
 
