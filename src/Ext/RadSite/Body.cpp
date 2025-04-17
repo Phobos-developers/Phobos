@@ -14,21 +14,6 @@ void RadSiteExt::ExtData::Initialize()
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
 {
 	auto const pWarhead = this->Type->GetWarhead();
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-
-	// Check if the WH should affect the techno target or skip it
-	int nDamageTotal = MapClass::GetTotalDamage(damage, pWarhead, pTarget->GetTechnoType()->Armor, 0);
-	const bool unkillable = !pWHExt->CanKill || pTargetExt->AE.Unkillable;
-
-	if (pTarget->Health > 0 && unkillable && nDamageTotal >= pTarget->Health)
-	{
-		damage = 0;
-		pTarget->Health = 1;
-		pTarget->EstimatedHealth = 1;
-
-		return false;
-	}
 
 	if (!this->Type->GetWarheadDetonate())
 	{
@@ -38,9 +23,14 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	else
 	{
 		if (this->Type->GetWarheadDetonateFull())
+		{
 			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
+		}
 		else
+		{
+			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
+		}
 
 		if (!pTarget->IsAlive)
 			return false;
