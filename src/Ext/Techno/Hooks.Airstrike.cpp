@@ -41,6 +41,19 @@ DEFINE_HOOK(0x6F34B7, TechnoClass_WhatWeaponShouldIUse_AllowAirstrike, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x41D97B, AirstrikeClass_Fire_SetAirstrike, 0x7)
+{
+	enum { ContinueIn = 0x41D9A0, Skip = 0x41DA0B };
+
+	GET(AirstrikeClass*, pThis, EDI);
+	GET(TechnoClass*, pTarget, ESI);
+	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	pTargetExt->AirstrikeTargetingMe = pThis;
+	pTarget->StartAirstrikeTimer(100000);
+
+	return pTarget->WhatAmI() == AbstractType::Building ? ContinueIn : Skip;
+}
+
 DEFINE_HOOK_AGAIN(0x41DA80, AirstrikeClass_ResetTarget_SetTarget, 0x6)
 DEFINE_HOOK(0x41DA52, AirstrikeClass_ResetTarget_SetTarget, 0x6)// Allow airstrike target to foot
 {
@@ -56,17 +69,27 @@ DEFINE_HOOK(0x41DA52, AirstrikeClass_ResetTarget_SetTarget, 0x6)// Allow airstri
 	}
 }
 
-DEFINE_HOOK(0x41D97B, AirstrikeClass_Fire_SetAirstrike, 0x7)
+DEFINE_HOOK(0x41DAA4, AirstrikeClass_ResetTarget_ResetForOldTarget, 0xA)
 {
-	enum { ContinueIn = 0x41D9A0, Skip = 0x41DA0B };
+	enum { SkipGameCode = 0x41DAAE };
 
-	GET(AirstrikeClass*, pThis, EDI);
-	GET(TechnoClass*, pTarget, ESI);
-	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	GET(TechnoClass*, pTargetTechno, EDI);
+	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+	pTargetExt->AirstrikeTargetingMe = nullptr;
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x41DAD4, AirstrikeClass_ResetTarget_ResetForNewTarget, 0x6)
+{
+	enum { SkipGameCode = 0x41DADA };
+
+	GET(AirstrikeClass*, pThis, EBP);
+	GET(TechnoClass*, pTargetTechno, ESI);
+	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 	pTargetExt->AirstrikeTargetingMe = pThis;
-	pTarget->StartAirstrikeTimer(100000);
 
-	return pTarget->WhatAmI() == AbstractType::Building ? ContinueIn : Skip;
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
