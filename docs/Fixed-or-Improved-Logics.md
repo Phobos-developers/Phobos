@@ -575,10 +575,10 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]   ; BuildingType
-AllowAirstrike=     ; boolean
+AllowAirstrike=            ; boolean
 
 [SOMEWARHEAD]
-AirstrikeTargets=   ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+AirstrikeTargets=building  ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 ```
 
 ## Particle systems
