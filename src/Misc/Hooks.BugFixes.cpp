@@ -199,6 +199,14 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 	++pThis->CurrentBurstIndex;
 	pThis->CurrentBurstIndex %= pThis->GetWeapon(weaponIndex)->WeaponType->Burst;
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ForceFullRearmDelay)
+	{
+		pExt->ForceFullRearmDelay = false;
+		pThis->CurrentBurstIndex = 0;
+	}
+
 	return 0;
 }
 
@@ -1819,4 +1827,32 @@ DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
 		pUnit->Unloading = false;
 
 	return 0;
+}
+
+DEFINE_JUMP(LJMP, 0x73C41B, 0x73C431)
+
+DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
+{
+	enum { SkipGameCode = 0x73C445 };
+
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, EAX);
+
+	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
+{
+	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
+
+	GET(CellClass*, pCell, EDI);
+	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
+
+	if (onBridge ? pCell->AltObject : pCell->FirstObject)
+		return DontUnmark;
+
+	GET(ObjectClass*, pContent, ESI);
+	R->EAX(pContent->WhatAmI());
+	return ContinueCheck;
 }

@@ -207,14 +207,16 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
 	// KillWeapon can be triggered without the source
-	if (pWHExt->KillWeapon && (!pSource || EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)))
+	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_Affects))))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
 	}
 
 	// KillWeapon.OnFirer must have a source
-	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner))
+	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner)
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_OnFirer_Affects))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
@@ -250,4 +252,63 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
 	}
+}
+
+int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget)
+{
+	int forceWeaponIndex = -1;
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+
+	const bool useAASetting = !pTypeExt->ForceAAWeapon_InRange.empty() && pTarget->IsInAir();
+	auto const& weaponIndices = useAASetting ? pTypeExt->ForceAAWeapon_InRange : pTypeExt->ForceWeapon_InRange;
+	auto const& rangeOverrides = useAASetting ? pTypeExt->ForceAAWeapon_InRange_Overrides : pTypeExt->ForceWeapon_InRange_Overrides;
+	const bool applyRangeModifiers = useAASetting ? pTypeExt->ForceAAWeapon_InRange_ApplyRangeModifiers : pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
+
+	const int defaultWeaponIndex = pThis->SelectWeapon(pTarget);
+	const int currentDistance = pThis->DistanceFrom(pTarget);
+	auto const pDefaultWeapon = pThis->GetWeapon(defaultWeaponIndex)->WeaponType;
+
+	for (size_t i = 0; i < weaponIndices.size(); i++)
+	{
+		int range = 0;
+
+		// Value below 0 means Range won't be overriden
+		if (i < rangeOverrides.size() && rangeOverrides[i] > 0)
+			range = static_cast<int>(rangeOverrides[i] * Unsorted::LeptonsPerCell);
+
+		if (weaponIndices[i] >= 0)
+		{
+			if (range > 0 || applyRangeModifiers)
+			{
+				auto const pWeapon = weaponIndices[i] == defaultWeaponIndex ? pDefaultWeapon : pThis->GetWeapon(weaponIndices[i])->WeaponType;
+				range = range > 0 ? range : pWeapon->Range;
+
+				if (applyRangeModifiers)
+					range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis, range);
+			}
+
+			if (currentDistance <= range)
+			{
+				forceWeaponIndex = weaponIndices[i];
+				break;
+			}
+		}
+		else
+		{
+			if (range > 0 || applyRangeModifiers)
+			{
+				range = range > 0 ? range : pDefaultWeapon->Range;
+
+				if (applyRangeModifiers)
+					range = WeaponTypeExt::GetRangeWithModifiers(pDefaultWeapon, pThis, range);
+			}
+
+			// Don't force weapon if range satisfied
+			if (currentDistance <= range)
+				break;
+		}
+	}
+
+	return forceWeaponIndex;
 }
