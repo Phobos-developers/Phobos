@@ -56,7 +56,7 @@ public:
 		, PeacefulVanish {}
 		, ApplyRangeModifiers { false }
 		, UseDisperseCoord { false }
-		, RecordSourceCoord { false }
+		, RecordSourceCoord {}
 		, Ranged { false }
 
 		, PassDetonate { false }
@@ -113,7 +113,7 @@ public:
 	Nullable<bool> PeacefulVanish; // Disappear directly when about to detonate
 	Valueable<bool> ApplyRangeModifiers; // Apply range bonus
 	Valueable<bool> UseDisperseCoord; // Use the recorded launch location
-	Valueable<bool> RecordSourceCoord; // Record the launch location
+	Nullable<bool> RecordSourceCoord; // Record the launch location
 	bool Ranged; // Auto set
 
 	Valueable<bool> PassDetonate; // Detonate the warhead while moving

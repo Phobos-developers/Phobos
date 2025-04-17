@@ -229,9 +229,8 @@ void PhobosTrajectory::OnUnlimbo()
 		const auto burst = pFirer->CurrentBurstIndex;
 		this->CurrentBurst = (burst & 1) ? (-burst - 1) : burst;
 		this->FirepowerMult = pFirer->FirepowerMultiplier * TechnoExt::ExtMap.Find(pFirer)->AE.FirepowerMultiplier;
-		const auto flag = this->Flag();
 		// Obtain the launch location
-		if (pType->DisperseWeapons.size() && pType->RecordSourceCoord || flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
+		if (pType->RecordSourceCoord.Get(pType->DisperseWeapons.size() || this->Flag() == TrajectoryFlag::Engrave))
 			this->GetTechnoFLHCoord();
 		else
 			this->NotMainWeapon = true;

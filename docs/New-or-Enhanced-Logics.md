@@ -760,7 +760,8 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - `Trajectory.PeacefulVanish` controls whether the projectile disappears directly when it is about to detonate, without producing animation or causing damage. The default value is `Trajectory=Engrave` or `Trajectory.ProximityImpact` not equal to 0 or `Trajectory.DisperseCycle` not equal to 0.
   - `Trajectory.ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the projectile.
   - `Trajectory.UseDisperseCoord` controls whether the fire position need to replaced with the FLH of its superior's trajectory, which set `Trajectory.RecordSourceCoord` to true (Only if the weapon should be fired from the unit position).
-  - `Trajectory.RecordSourceCoord` controls whether the projectile needs to record the launch position, which will be used for the weapons in `Trajectory.DisperseWeapons`. It can be nested and inherited.
+  - `Trajectory.RecordSourceCoord` controls whether the projectile needs to record the launch position, which will be used for the weapons in `Trajectory.DisperseWeapons`. It can be nested and inherited. The default value is `Trajectory=Engrave` or have set `Trajectory.DisperseWeapons`.
+    - In `Trajectory=Engrave`, it will also be used as a starting point for laser drawing.
   - `Trajectory.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate` and `Trajectory.LeadTimeCalculate` on this basis.
     - In `Trajectory=Engrave` or `Trajectory=Tracing`, these are invalid.
     - `Trajectory.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.OffsetCoord` (or `Trajectory.Missile.PreAimCoord` in `Trajectory=Missile`) according to the most superior's weapon's `Burst`. Set to 0 to disable this function.
@@ -794,7 +795,7 @@ Trajectory.Synchronize=false          ; boolean
 Trajectory.PeacefulVanish=            ; boolean
 Trajectory.ApplyRangeModifiers=false  ; boolean
 Trajectory.UseDisperseCoord=false     ; boolean
-Trajectory.RecordSourceCoord=false    ; boolean
+Trajectory.RecordSourceCoord=         ; boolean
 Trajectory.OffsetCoord=0,0,0          ; integer - Forward,Lateral,Height
 Trajectory.RotateCoord=0              ; floating point value
 Trajectory.MirrorCoord=true           ; boolean
