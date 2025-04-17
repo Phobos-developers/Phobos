@@ -1077,9 +1077,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_Update_TrajectoriesDetonateUpdate, 0x5)
 	GET(BulletClass* const, pThis, EBP);
 	REF_STACK(const CoordStruct, position, STACK_OFFSET(0x1AC, -0x188));
 
-	const auto pExt = BulletExt::ExtMap.Find(pThis);
-
-	if (const auto pTraj = pExt->Trajectory.get())
+	if (const auto pTraj = BulletExt::ExtMap.Find(pThis)->Trajectory.get())
 	{
 		switch (pTraj->OnDetonateUpdate(position))
 		{
@@ -1104,9 +1102,7 @@ DEFINE_HOOK(0x467BAC, BulletClass_Update_CheckObstacle_Trajectories, 0x6)
 
 	GET(BulletClass* const, pThis, EBP);
 
-	const auto pExt = BulletExt::ExtMap.Find(pThis);
-
-	if (const auto pTraj = pExt->Trajectory.get())
+	if (const auto pTraj = BulletExt::ExtMap.Find(pThis)->Trajectory.get())
 	{
 		// Already checked when the speed is high
 		if (PhobosTrajectory::Get2DVelocity(pTraj->MovingVelocity) >= Unsorted::LeptonsPerCell)
@@ -1120,10 +1116,17 @@ DEFINE_HOOK(0x467E53, BulletClass_Update_PreDetonation_Trajectories, 0x6)
 {
 	GET(BulletClass* const, pThis, EBP);
 
-	const auto pExt = BulletExt::ExtMap.Find(pThis);
-
-	if (const auto pTraj = pExt->Trajectory.get())
+	if (const auto pTraj = BulletExt::ExtMap.Find(pThis)->Trajectory.get())
 		pTraj->OnPreDetonate();
 
 	return 0;
+}
+
+DEFINE_HOOK(0x468585, BulletClass_PointerExpired_Trajectories, 0x9)
+{
+	enum { SkipSetCellAsTarget = 0x46859C };
+
+	GET(BulletClass* const, pThis, ESI);
+
+	return BulletExt::ExtMap.Find(pThis)->Trajectory ? SkipSetCellAsTarget : 0;
 }
