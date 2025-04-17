@@ -234,14 +234,18 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 	{
 		const auto black = ColorStruct { 0, 0, 0 };
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, pBullet->TargetCoords, ((pWeapon->IsHouseColor && pHouse) ? pHouse->LaserColor : pWeapon->LaserInnerColor), black, black, pWeapon->LaserDuration);
+		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords),
+			((pWeapon->IsHouseColor && pHouse) ? pHouse->LaserColor : pWeapon->LaserInnerColor), black, black, pWeapon->LaserDuration);
+
 		pLaser->IsHouseColor = true;
 		pLaser->Thickness = pWeaponExt->LaserThickness;
 		pLaser->IsSupported = (pLaser->Thickness > 3);
 	}
 	else
 	{
-		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, pBullet->TargetCoords, pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+		const auto pLaser = GameCreate<LaserDrawClass>(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords),
+			pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, pWeapon->LaserDuration);
+
 		pLaser->IsHouseColor = false;
 		pLaser->Thickness = 3;
 		pLaser->IsSupported = false;
@@ -263,7 +267,7 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
 	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
 	weaponStruct.BurstIndex = 0;
-	pEBolt->Fire(pBullet->SourceCoords, pBullet->TargetCoords, 0);
+	pEBolt->Fire(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), 0);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call
@@ -279,11 +283,13 @@ inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* 
 	const auto pRadBeam = RadBeam::Allocate(isTemporal ? RadBeamType::Temporal : RadBeamType::RadBeam);
 
 	pRadBeam->SetCoordsSource(pBullet->SourceCoords);
-	pRadBeam->SetCoordsTarget(pBullet->TargetCoords);
+	pRadBeam->SetCoordsTarget((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords));
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pHouse) ? pHouse->LaserColor : pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
+	pRadBeam->Color = (pWeaponExt->Beam_IsHouseColor && pHouse) ? pHouse->LaserColor
+		: pWeaponExt->Beam_Color.Get(isTemporal ? RulesClass::Instance->ChronoBeamColor : RulesClass::Instance->RadColor);
+
 	pRadBeam->Period = pWeaponExt->Beam_Duration;
 	pRadBeam->Amplitude = pWeaponExt->Beam_Amplitude;
 }
@@ -292,7 +298,10 @@ inline void BulletExt::SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* 
 inline void BulletExt::SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse)
 {
 	if (const auto pPSType = pBullet->WeaponType->AttachedParticleSystem)
-		GameCreate<ParticleSystemClass>(pPSType, pBullet->SourceCoords, pBullet->Target, pBullet->Owner, pBullet->TargetCoords, pHouse);
+	{
+		GameCreate<ParticleSystemClass>(pPSType, pBullet->SourceCoords, pBullet->Target, pBullet->Owner,
+			(pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), pHouse);
+	}
 }
 
 // Make sure pBullet is not empty before call

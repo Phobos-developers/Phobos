@@ -12,6 +12,7 @@
 #include <Utilities/AresFunctions.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+UnitClass* TechnoExt::Deployer = nullptr;
 
 TechnoExt::ExtData::~ExtData()
 {
@@ -41,11 +42,6 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
 
-	this->ClearElectricBolts();
-}
-
-void TechnoExt::ExtData::ClearElectricBolts()
-{
 	for (auto const pBolt : this->ElectricBolts)
 	{
 		pBolt->Owner = nullptr;
@@ -405,21 +401,16 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	if (!pDeployType)
 		return noDeploysIntoDefaultValue;
 
-	bool canDeploy = true;
 	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
 
 	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
 		mapCoords += CellStruct { -1, -1 };
 
-	pThis->Mark(MarkType::Up);
-
-	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Up);
-
-	if (!pDeployType->CanCreateHere(mapCoords, pThis->Owner))
-		canDeploy = false;
-
-	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Down);
-	pThis->Mark(MarkType::Down);
+	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
+	// Now, through additional checks, we can directly exclude the unit who want to deploy.
+	TechnoExt::Deployer = pThis;
+	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
+	TechnoExt::Deployer = nullptr;
 
 	return canDeploy;
 }
@@ -564,7 +555,6 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
 		.Process(this->PreviousType)
-		.Process(this->ElectricBolts)
 		.Process(this->AnimRefCount)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
@@ -610,8 +600,6 @@ void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 {
 	Extension<TechnoClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
-
-	this->ClearElectricBolts();
 }
 
 bool TechnoExt::LoadGlobals(PhobosStreamReader& Stm)

@@ -688,7 +688,7 @@ msgid ""
 "Defined-again hooks are exempt from this scheme due to impossibility to "
 "define different names for the same hook."
 msgstr ""
-"工资函数必须按以下规则命名：`钩上的函数_钩子的功能` 或 "
+"工作函数必须按以下规则命名：`钩上的函数_钩子的功能` 或 "
 "`类名_钩上的方法_钩子的功能`。由于无法为同一钩子定义不同的名称，再次定义（DEFINE_HOOK_AGAIN）的钩子不受此方案的约束。"
 
 #: ../../Contributing.md:198
@@ -868,7 +868,7 @@ msgid ""
 "any other repository, so the changes can be synchronized to Phobos and "
 "you don't need to rename stuff by hand."
 msgstr ""
-"当你递归克隆 Phobos 时，YRpp 会作为子模块一同克隆。子模块本质上就是嵌套的仓库。您可以像操作普通仓库一样打开它，因此变更可以同步到 "
+"当你递归克隆 Phobos 时，YRpp 会作为子模块一同克隆。子模块本质上就是嵌套的仓库。你可以像操作普通仓库一样打开它，因此变更可以同步到 "
 "Phobos，无需手动重命名文件。"
 
 #: ../../Contributing.md:242
@@ -1243,7 +1243,7 @@ msgstr ""
 msgid ""
 "Please, provide screenshots, GIFs and videos in their natural size and "
 "without excess stuff or length."
-msgstr "请提供适当尺寸的截图／GIF／视频，避免冗余内容与过场的时长。"
+msgstr "请提供适当尺寸的截图／GIF／视频，避免冗余内容与过长的时长。"
 
 #: ../../Contributing.md:338
 msgid "Promoting the work"

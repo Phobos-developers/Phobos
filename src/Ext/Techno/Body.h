@@ -29,7 +29,7 @@ public:
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 		AttachEffectTechnoProperties AE;
 		TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
-		std::vector<EBolt*> ElectricBolts;
+		std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 		int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
@@ -51,7 +51,6 @@ public:
 		bool LastRearmWasFullDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
-		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
 		WeaponTypeClass* LastWeaponType;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
@@ -98,7 +97,6 @@ public:
 			, LastRearmWasFullDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
-			, CanCurrentlyDeployIntoBuilding { false }
 			, LastWeaponType {}
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
@@ -144,6 +142,7 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
+		int ApplyForceWeaponInRange(TechnoClass* pTarget);
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
@@ -155,7 +154,6 @@ public:
 	private:
 		template <typename T>
 		void Serialize(T& Stm);
-		void ClearElectricBolts();
 	};
 
 	class ExtContainer final : public Container<TechnoExt>
@@ -166,6 +164,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static UnitClass* Deployer;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
@@ -216,4 +216,6 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
+	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
+	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 };

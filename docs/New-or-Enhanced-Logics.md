@@ -45,8 +45,8 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
-    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
+    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
@@ -125,7 +125,9 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.Chance=1.0                           ; floating point value
+ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
@@ -162,6 +164,7 @@ AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed i
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
+SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
 ```
 
 ### Custom Radiation Types
@@ -925,7 +928,7 @@ Trajectory.Parabola.AxisOfRotation=0,0,1        ; integer - Forward,Lateral,Heig
 
 ### Projectiles blocked by land or water
 
-- It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectToLand/Water` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectToLand/Water.Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
+- It is now possible to make projectiles consider either land or water as obstacles that block their path by setting `SubjectTo(Land/Water)` to true, respectively. Weapons firing such projectiles will consider targets blocked by such obstacles as out of range and will attempt to reposition themselves so they can fire without being blocked by the said obstacles before firing and if `SubjectTo(Land/Water).Detonate` is set to true, the projectiles will detonate if they somehow manage to collide with the said obstacles.
   - `Level=true` projectiles detonate on tiles belonging to non-water tilesets by default, but will not consider such tiles as true obstacles. This behaviour can be overridden by setting these keys.
 - As for `SubjectToGround`, if set it to true ,it will predict the height of the connecting straight line from the bullet's source coordinates to target coordinates. If the predicted height is lower than the ground height of the current predicted position, the firer will also consider targets blocked by such obstacles as out of range and will attempt to reposition themselves. Due to technical reasons, this feature will not be effective for the Air Force and buildings. Technos attacking in `OpenTopped=true` vehicles will not be affected either.
 
@@ -1092,6 +1095,9 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 
 ### Next
 
+![image](_static/images/swnext.gif)
+*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
@@ -1138,6 +1144,7 @@ Detonate.AtFirer=false      ; boolean
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
 - `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
+- `Spawner.UseTurretFacing`, if set, makes spawned aircraft face the same way as turret does upon being created if the spawner has a turret.
 - `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
 - `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled.
 - `Spawner.RecycleCoord` defines the relative position to the carrier that the spawned aircraft will head to.
@@ -1150,6 +1157,7 @@ Spawner.LimitRange=false           ; boolean
 Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
 Spawner.AttackImmediately=false    ; boolean
+Spawner.UseTurretFacing=false      ; boolean
 Spawner.RecycleRange=-1            ; float, range in cells
 Spawner.RecycleAnim=               ; Animation
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
@@ -1398,14 +1406,28 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
+  - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
+    - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
+    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
+    - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Cloaked=-1          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Disguised=-1        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.UnderEMP=-1         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+[SOMETECHNO]                                    ; TechnoType
+ForceWeapon.Naval.Decloaked=-1                  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Cloaked=-1                          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Disguised=-1                        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.InRange.Overrides=                  ; List of floating-point values
+ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
+ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+```
+
+```{note}
+Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
 ### Initial spawns number
@@ -1545,8 +1567,8 @@ Promote.IncludeSpawns=false  ; boolean
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
@@ -1554,6 +1576,10 @@ In `rulesmd.ini`:
 [AudioVisual]
 Promote.VeteranAnimation=         ; AnimationType
 Promote.EliteAnimation=           ; AnimationType
+
+[SOMETECHNO]
+Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
+Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
 ```
 
 ### Raise alert when technos are taking damage
@@ -1619,7 +1645,7 @@ RecountBurst=       ; boolean
 - Similar to `DeathWeapon` in that it is fired after a TechnoType is killed, but with the difference that it will be fired on whoever dealt the damage that killed the TechnoType. If TechnoType died of sources other than direct damage dealt by another TechnoType, `RevengeWeapon` will not be fired.
   - `RevengeWeapon.AffectsHouses` can be used to filter which houses the damage that killed the TechnoType is allowed to come from to fire the weapon.
   - It is possible to grant revenge weapons through [attached effects](#attached-effects) as well.
-  - Ìf a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+  - If a Warhead has `SuppressRevengeWeapons` set to true, it will not trigger revenge weapons. `SuppressRevengeWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
 
 In `rulesmd.ini`:
 ```ini
@@ -1679,6 +1705,21 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType
+NoQueueUpToEnter=         ; boolean
+NoQueueUpToUnload=        ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -1711,6 +1752,26 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Jumpjet Tilts While Moving
+
+![image](_static/images/jumpjet-tilt.gif)
+*Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
+
+- Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
+- The maximum tilt angle will not exceed 90 degrees.
+  - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
+  - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                           ; VehicleType, with Locomotor=Jumpjet
+JumpjetTilt=false                       ; boolean
+JumpjetTilt.ForwardAccelFactor=1.0      ; floating point value
+JumpjetTilt.ForwardSpeedFactor=1.0      ; floating point value
+JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
+JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
 ## Warheads
@@ -1880,6 +1941,29 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
 ```
 
+### Fire weapon when Warhead kills something
+
+- `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.
+- `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed by this Warhead. If the source of this Warhead is not another TechnoType, `KillWeapon.OnFirer` will not be fired.
+- `KillWeapon.AffectsHouses` / `KillWeapon.OnFirer.AffectsHouses` and `KillWeapon.Affects` / `KillWeapon.OnFirer.Affects` can be used to filter which houses targets can belong to and which types of targets are be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+  - If the source of this Warhead is not another TechnoType, `KillWeapon` will be fired regardless of the target's house or type.
+- If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
+
+ In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                         ; WarheadType
+KillWeapon=                           ; WeaponType
+KillWeapon.OnFirer=                   ; WeaponType
+KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+
+[SOMETECHNO]                          ; TechnoType
+SuppressKillWeapons=false             ; boolean
+SuppressKillWeapons.Types=            ; List of WeaponTypes
+```
+
 ### Generate credits on impact
 
 ![image](_static/images/hackerfinallyworks-01.gif)
@@ -1966,13 +2050,13 @@ RemoveDisguise=false  ; boolean
 
 ### Reveal map for owner on impact
 
-- Warheads can now reveal the entire map on impact.
+- Warheads can now reveal an area or the entire map on impact.
   - Reveal only applies to the owner of the warhead.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-SpySat=false   ; boolean
+Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
 ```
 
 ### Sell or undeploy building on impact
@@ -1993,13 +2077,13 @@ BuildingUndeploy.Leave=false         ; boolean
 
 ### Shroud map for enemies on impact
 
-- Warheads can now shroud the entire map on impact.
+- Warheads can now shroud an area or the entire map on impact.
   - Shroud only applies to enemies of the warhead owner.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-BigGap=false   ; boolean
+CreateGap=0    ; integer - cell radius, negative values mean shroud the entire map
 ```
 
 ### Spawn powerup crate
@@ -2140,6 +2224,24 @@ Strafing.Shots=                ; integer
 Strafing.SimulateBurst=false   ; boolean
 Strafing.UseAmmoPerShot=false  ; boolean
 Strafing.EndDelay=             ; integer, game frames
+```
+
+### Visual effect scatter
+
+- You can now add a random offset to visual effect's (`IsLaser=true`, `IsElectricBolt=true` or `IsRadBeam=true`) target location if set `VisualScatter` to true.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+VisualScatter.Min=0.03  ; floating point value, distance in cells
+VisualScatter.Max=0.13  ; floating point value, distance in cells
+
+[SOMEWEAPON]            ; WeaponType
+VisualScatter=false     ; boolean
+```
+
+```{note}
+This function is only used as an additional scattering visual display, which is different from `BallisticScatter.(Min/Max)` and can be used simultaneously, without affecting the actual explosion position of the projectile.
 ```
 
 ### Weapon targeting filter
