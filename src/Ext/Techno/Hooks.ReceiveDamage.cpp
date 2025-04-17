@@ -16,8 +16,6 @@ namespace ReceiveDamageTemp
 // #issue 88 : shield logic
 DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 {
-	enum { SkipGameCode = 0x701A38 };
-
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
@@ -110,7 +108,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		{
 			if (!pShieldData->IsActive())
 			{
-				int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pShieldData->GetArmorType(), 0);
+				int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
 
 				// Check if the warhead can not kill targets
 				if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)

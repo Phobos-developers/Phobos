@@ -592,6 +592,10 @@ In `artmd.ini`:
 IsAnimDelayedBurst=true            ; boolean
 ```
 
+```{note}
+The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore IsAnimDelayedFire.
+```
+
 ### Spy Effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
