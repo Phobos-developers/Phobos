@@ -274,6 +274,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
+	exINI.ParseStringList(this->SuppressReflectDamage_Groups, pSection, "SuppressReflectDamage.Groups");
 
 	this->BuildingSell.Read(exINI, pSection, "BuildingSell");
 	this->BuildingSell_IgnoreUnsellable.Read(exINI, pSection, "BuildingSell.IgnoreUnsellable");
@@ -511,6 +512,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressRevengeWeapons_Types)
 		.Process(this->SuppressReflectDamage)
 		.Process(this->SuppressReflectDamage_Types)
+		.Process(this->SuppressReflectDamage_Groups)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

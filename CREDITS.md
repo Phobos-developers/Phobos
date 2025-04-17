@@ -372,6 +372,7 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced reveal & gap warhead
   - Fix an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
   - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
+  - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Directional armor
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -381,6 +382,7 @@ This page lists all the individual contributions to the project by their author.
    - Unlimited `AlternateFLH` entries
    - Build limit group
    - Customizing whether passengers are kicked out when an aircraft fires
+   - New SuperWeapon Type template
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control
