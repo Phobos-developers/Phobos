@@ -45,8 +45,8 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
-    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
+    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
@@ -125,7 +125,9 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.Chance=1.0                           ; floating point value
+ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
@@ -162,6 +164,7 @@ AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed i
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
+SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
 ```
 
 ### Custom Radiation Types
@@ -1092,6 +1095,9 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 
 ### Next
 
+![image](_static/images/swnext.gif)
+*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
@@ -1402,7 +1408,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
-    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0. Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
+    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
 
 In `rulesmd.ini`:
@@ -1412,12 +1418,16 @@ ForceWeapon.Naval.Decloaked=-1                  ; integer. 0 for primary weapon,
 ForceWeapon.Cloaked=-1                          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1                        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.InRange=                            ; list of integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.InRange.Overrides=                  ; list of floating point value
+ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.InRange.Overrides=                  ; List of floating-point values
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceAAWeapon.InRange=                          ; list of integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceAAWeapon.InRange.Overrides=                ; list of floating point value
+ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+```
+
+```{note}
+Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
 ### Initial spawns number
@@ -1750,7 +1760,7 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 *Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
 
 - Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
-- The maximum tilt angle will not exceed 45 degrees.
+- The maximum tilt angle will not exceed 90 degrees.
   - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
   - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
 
@@ -1948,7 +1958,7 @@ KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none
 KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-     
+
 [SOMETECHNO]                          ; TechnoType
 SuppressKillWeapons=false             ; boolean
 SuppressKillWeapons.Types=            ; List of WeaponTypes
@@ -2046,7 +2056,7 @@ RemoveDisguise=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-Reveal=0     ; integer - cell radius, negative values mean reveal the entire map
+Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
 ```
 
 ### Sell or undeploy building on impact
@@ -2073,7 +2083,7 @@ BuildingUndeploy.Leave=false         ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-CreateGap=0     ; integer - cell radius, negative values mean shroud the entire map
+CreateGap=0    ; integer - cell radius, negative values mean shroud the entire map
 ```
 
 ### Spawn powerup crate
