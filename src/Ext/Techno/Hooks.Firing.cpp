@@ -130,7 +130,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 					{
 						auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pTargetTechno->GetTechnoType());
 
-						if (pBuildingType->IsBaseDefense)
+						if (pBuildingType->BuildCat == BuildCat::Combat)
 							forceWeaponIndex = pTypeExt->ForceWeapon_Defenses;
 					}
 
