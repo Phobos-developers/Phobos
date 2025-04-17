@@ -13,7 +13,7 @@ DEFINE_HOOK(0x43D386, BuildingClass_Draw_TintColor, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	int color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), pThis->Airstrike, false);
+	int color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), true, false);
 	color |= TechnoExt::GetCustomTintColor(pThis);
 	R->EDI(color);
 
@@ -27,7 +27,7 @@ DEFINE_HOOK(0x43DC1C, BuildingClass_Draw2_TintColor, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 	REF_STACK(int, color, STACK_OFFSET(0x12C, -0x110));
 
-	color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), pThis->Airstrike, false);
+	color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), true, false);
 	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	return SkipGameCode;
@@ -96,7 +96,7 @@ DEFINE_HOOK(0x423420, AnimClass_Draw_TintColor, 0x6)
 	if (pBuilding)
 	{
 		int discard = 0;
-		color |= TechnoExt::GetTintColor(pBuilding, pBuilding->IsIronCurtained(), pBuilding->Airstrike, false);
+		color |= TechnoExt::GetTintColor(pBuilding, pBuilding->IsIronCurtained(), true, false);
 		TechnoExt::ApplyCustomTintValues(pBuilding, color, pThis->Type->UseNormalLight ? discard : intensity);
 	}
 
