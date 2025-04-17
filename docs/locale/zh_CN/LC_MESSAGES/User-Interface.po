@@ -159,7 +159,7 @@ msgid ""
 " points and can be turned on or off via a [new hotkey](#toggle-digital-"
 "display)."
 msgstr ""
-"现在你可以配置各种类型的数字化计数器来显示科技类型的属性，例如生命值或护盾值，并且可以通过一个[新的热键](#toggle-digital-"
+"现在你可以配置各种类型的数字化计数器来显示科技类型的属性，例如生命值或护盾值，并且可以通过一个[新的快捷键](#toggle-digital-"
 "display)开启或关闭。"
 
 #: ../../User-Interface.md:38
@@ -514,7 +514,7 @@ msgid ""
 "units to the group if there are no normal priority units among the "
 "appended ones."
 msgstr ""
-"现在你可以为游戏中的对象设置较低的优先级（目前主要影响单位），这意味着如果框选区域内至少有一个正常优先级的单位，则该对象将被排除在框选结果之外。否则它会被正常地选中。适用于带类型选择框选（类型选择热键"
+"现在你可以为游戏中的对象设置较低的优先级（目前主要影响单位），这意味着如果框选区域内至少有一个正常优先级的单位，则该对象将被排除在框选结果之外。否则它会被正常地选中。适用于带类型选择框选（类型选择快捷键"
 " + 拖动）和普通框选。如果要添加的单位中不存在正常优先级的单位那么 Shift 框选时正常将低优先级单位添加到选中的组中。"
 
 #: ../../User-Interface.md:163
@@ -752,7 +752,7 @@ msgid ""
 " hotkey](#toggle-designator-range) in \"Interface\" category."
 msgstr ""
 "此功能可以 *由玩家* 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
-"或 “界面” 类别中的 [“开启指示者范围显示” 热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
+"或 “界面” 类别中的 [“开启指示者范围显示” 快捷键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
 
 #: ../../User-Interface.md:242
 msgid ""
@@ -908,7 +908,7 @@ msgstr ""
 
 #: ../../User-Interface.md:306
 msgid "Hotkey Commands"
-msgstr "热键指令"
+msgstr "快捷键命令"
 
 #: ../../User-Interface.md:308
 msgid "`[ ]` Display Damage Numbers"
@@ -1648,7 +1648,7 @@ msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
 "are excluded from the number you specify)."
-msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。您可以使用新增的标签控制最大文本宽度（不包括边框）。"
+msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。你可以使用新增的标签控制最大文本宽度（不包括边框）。"
 
 #: ../../User-Interface.md:578
 msgid ""
@@ -1741,7 +1741,7 @@ msgstr ""
 msgid ""
 "The blur effect is resource intensive. Please make sure you really want "
 "to enable this effect, otherwise leave it to 0.0 so it stays disabled."
-msgstr "模糊效果非常占用资源，请确保您的确想要启用此效果，否则请保持 0.0 以禁用。"
+msgstr "模糊效果非常占用资源，请确保你的确想要启用此效果，否则请保持 0.0 以禁用。"
 
 #: ../../User-Interface.md:625
 msgid ""

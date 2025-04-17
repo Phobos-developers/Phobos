@@ -192,6 +192,9 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->BuildingWaypoints.Read(exINI, GameStrings::General, "BuildingWaypoints");
 
+	this->VisualScatter_Min.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Min");
+	this->VisualScatter_Max.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Max");
+
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
@@ -242,6 +245,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
 
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
+
+	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
+	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
+
+  	this->DamagedSpeed.Read(exINI, GameStrings::General, "DamagedSpeed");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -413,6 +421,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->VisualScatter_Min)
+		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
 		.Process(this->PodImage)
@@ -451,6 +461,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
 		.Process(this->BuildingTypeSelectable)
+		.Process(this->ProneSpeed_Crawls)
+		.Process(this->ProneSpeed_NoCrawls)
+    	.Process(this->DamagedSpeed)
 		;
 }
 

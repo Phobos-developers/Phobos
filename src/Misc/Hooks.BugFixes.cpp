@@ -20,6 +20,7 @@
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
 #include <TunnelLocomotionClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -197,6 +198,14 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 
 	++pThis->CurrentBurstIndex;
 	pThis->CurrentBurstIndex %= pThis->GetWeapon(weaponIndex)->WeaponType->Burst;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ForceFullRearmDelay)
+	{
+		pExt->ForceFullRearmDelay = false;
+		pThis->CurrentBurstIndex = 0;
+	}
 
 	return 0;
 }
@@ -1274,6 +1283,31 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 
 #pragma endregion
 
+#pragma region JumpjetShadowPointFix
+
+Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *pPoint)
+{
+	__assume(iloco != nullptr);
+	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iloco);
+	const auto pThis = pLoco->LinkedTo;
+	const auto pCell = MapClass::Instance.GetCellAt(pThis->Location);
+	auto height = pThis->Location.Z - MapClass::Instance.GetCellFloorHeight(pThis->Location);
+	// Vanilla GetHeight check OnBridge flag, which can not work on jumpjet
+	// Here, we simulate the drawing of an airplane for altitude calculation
+	if (pCell->ContainsBridge()
+		&& ((pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::North)->ContainsBridge()
+			|| !(pCell->Flags & CellFlags::BridgeDir) && pCell->GetNeighbourCell(FacingType::West)->ContainsBridge()))
+	{
+		height -= CellClass::BridgeHeight;
+	}
+
+	*pPoint = Point2D { 0, TacticalClass::AdjustForZ(height) };
+	return pPoint;
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD98, JumpjetLoco_ILoco_Shadow_Point);
+
+#pragma endregion
+
 #pragma region SpawnerFix
 
 // Enable the carrier on the bridge to retrieve the aircraft normally
@@ -1348,6 +1382,7 @@ size_t __fastcall HexStr2Int_replacement(const char* str)
 	// Fake a pointer to trick Ares
 	return std::hash<std::string_view>{}(str) & 0xFFFFFF;
 }
+
 DEFINE_FUNCTION_JUMP(CALL, 0x6E8305, HexStr2Int_replacement); // TaskForce
 DEFINE_FUNCTION_JUMP(CALL, 0x6E5FA6, HexStr2Int_replacement); // TagType
 
@@ -1640,4 +1675,184 @@ DEFINE_HOOK(0x6F6DEE, TechnoClass_Unlimbo_BarrelFacingBugFix, 0x7)
 	pThis->BarrelFacing.SetCurrent(*pDir);
 
 	return SkipGameCode;
+}
+
+namespace BulletDrawVoxelTemp
+{
+	ConvertClass* Convert = nullptr;
+}
+
+DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
+{
+	GET(BulletClass*, pThis, EAX);
+
+	if (pThis->Type->AnimPalette)
+	{
+		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL;
+	}
+	else if (pThis->Type->FirersPalette)
+	{
+		const int inheritColor = pThis->InheritedColor;
+		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array.Items[colorIndex]->LightConvert;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x46B212, BulletClass_DrawVoxel_SetLightConvert, 0x6)
+{
+	enum { SkipGameCode = 0x46B218 };
+
+	const auto pConvert = BulletDrawVoxelTemp::Convert;
+
+	if (!pConvert)
+		return 0;
+
+	R->ECX(pConvert);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x46B23C, BulletClass_DrawVoxel_SetLightConvert2, 0x6)
+{
+	enum { SkipGameCode = 0x46B242 };
+
+	const auto pConvert = BulletDrawVoxelTemp::Convert;
+
+	if (!pConvert)
+		return 0;
+
+	BulletDrawVoxelTemp::Convert = nullptr;
+	R->ECX(pConvert);
+	return SkipGameCode;
+}
+
+#pragma region StructureFindingFix
+
+// These functions should consider reachablity.
+DEFINE_HOOK(0x4DFC39, FootClass_FindBioReactor_CheckValid, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+}
+
+DEFINE_HOOK(0x4E0024, FootClass_FindTankBunker_CheckValid, 0x8)
+{
+	GET(FootClass*, pThis, EDI);
+	GET(BuildingClass*, pBuilding, ESI);
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+}
+
+DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+}
+
+DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EBX);
+
+	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+}
+
+#pragma endregion
+
+DEFINE_HOOK_AGAIN(0x73A1D3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// UnitClass
+DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// InfantryClass
+{
+	GET(BuildingClass*, pGrinder, EBX);
+	const int enterSound = pGrinder->Type->EnterGrinderSound;
+
+	if (enterSound >= 0)
+	{
+		R->ECX(enterSound);
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
+{
+	enum { SkipGameCode = 0x51A30A };
+
+	GET(BuildingClass*, pReactor, EDI);
+	const int enterSound = pReactor->Type->EnterBioReactorSound;
+
+	if (enterSound >= 0)
+	{
+		R->ECX(enterSound);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
+{
+	enum { SkipGameCode = 0x44DBD5 };
+
+	GET(BuildingClass*, pReactor, EBP);
+	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
+
+	if (leaveSound >= 0)
+	{
+		R->ECX(leaveSound);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
+{
+	GET(FootClass*, pTarget, ESI);
+
+	if (const auto pUnit = abstract_cast<UnitClass*>(pTarget))
+		pUnit->Unloading = false;
+
+	return 0;
+}
+
+DEFINE_JUMP(LJMP, 0x73C41B, 0x73C431)
+
+DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
+{
+	enum { SkipGameCode = 0x73C445 };
+
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, EAX);
+
+	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
+{
+	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
+
+	GET(CellClass*, pCell, EDI);
+	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
+
+	if (onBridge ? pCell->AltObject : pCell->FirstObject)
+		return DontUnmark;
+
+	GET(ObjectClass*, pContent, ESI);
+	R->EAX(pContent->WhatAmI());
+	return ContinueCheck;
 }
