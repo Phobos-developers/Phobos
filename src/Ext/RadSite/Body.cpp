@@ -63,9 +63,8 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadExt->SetRadLevel(amount);
 	pRadExt->CreateLight();
 
-	const auto pCell = MapClass::Instance.TryGetCellAt(location);
-	const auto pCellExt = CellExt::ExtMap.Find(pCell);
-	pCellExt->RadSites.emplace_back(pRadSite);
+	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(location)))
+		pCellExt->RadSites.emplace_back(pRadSite);
 }
 
 //RadSiteClass Activate , Rewritten
