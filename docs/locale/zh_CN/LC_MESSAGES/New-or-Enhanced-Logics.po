@@ -2538,8 +2538,9 @@ msgstr ""
 #: ../../New-or-Enhanced-Logics.md:594
 msgid ""
 "The prism towers' fire is hardcoded to be delayed. Their fire will ignore"
-" this flag, just as they ignore IsAnimDelayedFire."
+" this flag, just as they ignore `IsAnimDelayedFire`."
 msgstr ""
+"光棱塔开火硬编码延迟。就像无视 `IsAnimDelayedFire` 那样，它们同样无视该语句。"
 
 #: ../../New-or-Enhanced-Logics.md:597
 msgid "Spy Effects"
