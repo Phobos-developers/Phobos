@@ -422,6 +422,15 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 	if (pTypeExt->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);
 
+	for (auto& bAnim : pThis->Anims)
+	{
+		if (bAnim && VTable::Get(bAnim) == 0x7E3354)
+		{
+			bAnim->UnInit();
+			bAnim = nullptr;
+		}
+	}
+
 	return 0;
 }
 
