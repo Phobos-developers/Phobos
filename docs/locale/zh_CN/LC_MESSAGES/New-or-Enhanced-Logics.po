@@ -354,7 +354,6 @@ msgid ""
 msgstr "`RevengeWeapon.AffectsHouses` 定义哪些所属方可以触发这个复仇武器。"
 
 #: ../../New-or-Enhanced-Logics.md:48
-#, fuzzy
 msgid ""
 "`ReflectDamage` can be set to true to have any positive damage dealt to "
 "the object the effect is attached to be reflected back to the attacker. "
@@ -370,11 +369,11 @@ msgstr ""
 "`ReflectDamage` 可设为 true 以使 AE "
 "所附加对象所受的任何正值杀伤反弹回攻击者。`ReflectDamage.Warhead` 决定用于反弹伤害的弹头，默认读取自 "
 "`[CombatDamage] -> C4Warhead`。如果 `ReflectDamage.Warhead.Detonate` 设为 true"
-" 那么弹头可以完整的引爆而不仅仅用于造成杀伤。`ReflectDamage.Multiplier` "
-"是返回伤害相对于所接收伤害的倍率。反弹效果不会被另一个反弹来的伤害所触发。"
+" 那么弹头可以完整的引爆而不仅仅用于造成杀伤。`ReflectDamage.Chance` 决定触发反弹的几率，"
+"`ReflectDamage.Multiplier` 是反弹回的伤害值相对于所接收的伤害值的倍率，而 `ReflectDamage.Override` "
+"则定义反弹回了一个固定大小的伤害量。反弹效果不会被另一个反弹来的伤害所触发。"
 
 #: ../../New-or-Enhanced-Logics.md:49
-#, fuzzy
 msgid ""
 "Warheads can prevent reflect damage from occuring by setting "
 "`SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can "
@@ -386,6 +385,7 @@ msgstr ""
 "可以将弹头的 `SuppressReflectDamage` 设为 true "
 "来避免触发伤害反弹效果。`SuppressReflectDamage.Types` 可以控制哪些 AE "
 "类型的反弹伤害效果会被抑制。如果留空则代表所有 AE 类型。"
+"`SuppressReflectDamage.Groups` 的作用与此相同，但用于所列分组名下的所有 AE 类型。"
 
 #: ../../New-or-Enhanced-Logics.md:50
 msgid ""
