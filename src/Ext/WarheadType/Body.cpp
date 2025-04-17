@@ -286,6 +286,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
   	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
 
+	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -531,6 +533,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KillWeapon_OnFirer_AffectsHouses)
 
     	.Process(this->ElectricAssaultLevel)
+
+		.Process(this->AirstrikeTargets)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

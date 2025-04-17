@@ -262,6 +262,8 @@ public:
 
 		Valueable<int> Power;
 
+		Nullable<bool> AllowAirstrike;
+
     	Nullable<UnitTypeClass*> Image_ConditionYellow;
 		Nullable<UnitTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
@@ -543,6 +545,8 @@ public:
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }
+
+			, AllowAirstrike { }
 
       		, Image_ConditionYellow { }
 			, Image_ConditionRed { }

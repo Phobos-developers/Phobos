@@ -396,16 +396,6 @@ In `rulesmd.ini`:
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 ```
 
-### Airstrike target eligibility
-
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]   ; BuildingType
-AllowAirstrike=  ; boolean
-```
-
 ### Allowed / disallowed types for FactoryPlant
 
 - It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
@@ -564,6 +554,23 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 
 [SOMEINFANTRY]                ; InfantryType
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
+```
+
+## Techno
+
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+- For non building situations, the default value is true.
+- Now it is possible to designate air strikes against non building targets.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]   ; BuildingType
+AllowAirstrike=  ; boolean
+
+[SOMEWARHEAD]
+AirstrikeTargets   ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 ```
 
 ## Particle systems
