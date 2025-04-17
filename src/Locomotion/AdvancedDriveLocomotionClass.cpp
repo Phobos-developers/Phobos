@@ -748,7 +748,8 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 				- static_cast<short>(curDir.Raw)));
 			this->IsForward = deltaCurDir <= deltaOppDir;
 		}
-		else if (pLinked->ArchiveTarget && pLinked->CurrentMission == Mission::Area_Guard)
+		else if (pLinked->ArchiveTarget && pLinked->CurrentMission == Mission::Area_Guard
+			&& pLinked->Owner->IsControlledByHuman() && !pType->DefaultToGuardArea)
 		{
 			const auto defDir = pLinked->GetTargetDirection(pLinked->ArchiveTarget);
 			const auto deltaDefDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
