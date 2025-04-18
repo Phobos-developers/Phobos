@@ -271,6 +271,7 @@ public:
 
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
+		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
@@ -568,6 +569,7 @@ public:
 
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_NoMorePursuit { true }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }

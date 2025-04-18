@@ -358,6 +358,7 @@ New:
 - [Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
 - [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)
+- [Warhead that can not kill](New-or-Enhanced-Logics.md#warhead-that-cannot-kill) (by FS-21)
 - Customize airstrike targets (by NetsuNegi)
 
 Vanilla fixes:
