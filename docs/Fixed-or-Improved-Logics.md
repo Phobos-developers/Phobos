@@ -574,18 +574,6 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
-## Techno
-
-### Customize parasite culling targets
-
-- Now you can specify which targets the parasite will culling them.
-
-In `rulesmd.ini`
-```ini
-[SOMEWARHEAD]
-Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-```
-
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
@@ -1665,6 +1653,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Customizing parasite culling targets
+
+- Now you can specify which targets the parasite will culling them.
+
+In `rulesmd.ini`
+```ini
+[SOMEWARHEAD]                     ; WarheadType
+Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 ```
 
 ### Delay automatic attack on the controlled unit
