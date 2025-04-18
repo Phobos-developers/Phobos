@@ -219,6 +219,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
+- Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it.
 
 ## Fixes / interactions with other extensions
 
