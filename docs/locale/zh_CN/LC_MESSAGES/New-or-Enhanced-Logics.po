@@ -2522,35 +2522,6 @@ msgstr ""
 "PowerPlantEnhancer.Amount=0        ; integer\n"
 "PowerPlantEnhancer.Factor=1.0      ; floating point value\n"
 
-#: ../../New-or-Enhanced-Logics.md:584
-msgid "Skip anim delay for burst fire"
-msgstr "跳过 `DelayedFireDelay`"
-
-#: ../../New-or-Enhanced-Logics.md:586
-msgid ""
-"In Red Alert 1, the tesla coil will attack multiple times after charging "
-"animation. This is not possible in Red Alert 2, where the building must "
-"play the charge animation every time it fires."
-msgstr "《红色警戒 1》中的磁暴线圈会在充能后多次攻击。这在《红色警戒 2》中是不可能的，因为建筑必须每次发射时都播放充能动画。"
-
-#: ../../New-or-Enhanced-Logics.md:587
-msgid "Now you can implement the above logic using the following flag."
-msgstr "现在你可以使用下面的标签实现上述逻辑。"
-
-#: ../../New-or-Enhanced-Logics.md:590
-msgid ""
-"[SOMEBUILDING]                     ; BuildingType\n"
-"IsAnimDelayedBurst=true            ; boolean\n"
-msgstr ""
-"[SOMEBUILDING]                     ; BuildingType\n"
-"IsAnimDelayedBurst=true            ; boolean\n"
-
-#: ../../New-or-Enhanced-Logics.md:596
-msgid ""
-"The prism towers' fire is hardcoded to be delayed. Their fire will ignore"
-" this flag, just as they ignore `IsAnimDelayedFire`."
-msgstr "光棱塔开火硬编码延迟。就像无视 `IsAnimDelayedFire` 那样，它们同样无视该语句。"
-
 #: ../../New-or-Enhanced-Logics.md:599
 msgid "Spy Effects"
 msgstr "间谍效果"

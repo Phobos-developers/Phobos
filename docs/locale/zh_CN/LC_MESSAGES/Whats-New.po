@@ -1052,12 +1052,6 @@ msgstr "[增强的直线轨迹](New-or-Enhanced-Logics.md#straight-trajectory)�
 msgid "[Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)"
 msgstr "[启用建筑生产队列](User-Interface.md#building-production-queue)（by CrimRecya）"
 
-#: ../../Whats-New.md:318
-msgid ""
-"Fixed sidebar not updating queued unit numbers when adding or removing "
-"units when the production is on hold (by CrimRecya)"
-msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"
-
 #: ../../Whats-New.md:319
 msgid "[Custom exit cell for infantry factory](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-factory) (by Starkku)"
 msgstr "[自定义兵营退出单元格](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-factory)（by Starkku）"
@@ -1067,8 +1061,8 @@ msgid "[Option for vehicles to keep target when issued move command](Fixed-or-Im
 msgstr "[设置载具在发出移动命令时是否保持目标](Fixed-or-Improved-Logics.md#retain-target-on-movement-command)（by Starkku）"
 
 #: ../../Whats-New.md:321
-msgid "[Skip anim delay for burst fire](New-or-Enhanced-Logics.md#skip-anim-delay-for-burst-fire) (by TaranDahl)"
-msgstr "[为有 `Burst` 的武器跳过建筑开火前摇动画](New-or-Enhanced-Logics.md#skip-anim-delay-for-burst-fire)（by TaranDahl）"
+msgid "[Skip anim delay for burst fire](Fixed-or-Improved-Logics.md#skip-anim-delay-for-burst-fire) (by TaranDahl)"
+msgstr "[为有 `Burst` 的武器跳过建筑开火前摇动画](Fixed-or-Improved-Logics.md#skip-anim-delay-for-burst-fire)（by TaranDahl）"
 
 #: ../../Whats-New.md:322
 msgid "[Extending `Power` to all TechnoTypes](Fixed-or-Improved-Logics.md#power-drain-for-units) (by Morton)"
@@ -1326,6 +1320,12 @@ msgstr ""
 #: ../../Whats-New.md:1087
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
+
+#: ../../Whats-New.md:318
+msgid ""
+"Fixed sidebar not updating queued unit numbers when adding or removing "
+"units when the production is on hold (by CrimRecya)"
+msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:366
 msgid ""

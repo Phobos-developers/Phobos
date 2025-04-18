@@ -530,6 +530,21 @@ In `rulesmd.ini`:
 ExcludeFromMultipleFactoryBonus=false  ; boolean
 ```
 
+### Skip anim delay for burst fire
+
+- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
+- Now you can implement the above logic using the following flag.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+IsAnimDelayedBurst=true            ; boolean
+```
+
+```{note}
+The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore `IsAnimDelayedFire`.
+```
+
 ### Unit repair customization
 
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.

@@ -314,10 +314,9 @@ New:
 - [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
 - [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
 - [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)
-- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - [Custom exit cell for infantry factory](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-factory) (by Starkku)
 - [Option for vehicles to keep target when issued move command](Fixed-or-Improved-Logics.md#retain-target-on-movement-command) (by Starkku)
-- [Skip anim delay for burst fire](New-or-Enhanced-Logics.md#skip-anim-delay-for-burst-fire) (by TaranDahl)
+- [Skip anim delay for burst fire](Fixed-or-Improved-Logics.md#skip-anim-delay-for-burst-fire) (by TaranDahl)
 - [Extending `Power` to all TechnoTypes](Fixed-or-Improved-Logics.md#power-drain-for-units) (by Morton)
 - [New Parabola trajectory](New-or-Enhanced-Logics.md#parabola-trajectory) (by CrimRecya)
 - [Type select for buildings](User-Interface.md#type-select-for-buildings) (code by TaranDahl, doc by Ollerus)
@@ -362,6 +361,7 @@ New:
 - [Customize parasite culling targets](Fixed-or-Improved-Logics.md#customizing-parasite-culling-targets) (by NetsuNegi)
 
 Vanilla fixes:
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
