@@ -320,7 +320,9 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	}
 
 	Point2D drawPoint = basePoint + pSelectBox->Offset;
-	drawPoint.Y += pType->PixelSelectionBracketDelta;
+
+	if (pSelectBox->OverTechno)
+		drawPoint.Y += pType->PixelSelectionBracketDelta;
 
 	if (whatAmI == AbstractType::Infantry)
 		drawPoint += { 8, -3 };
