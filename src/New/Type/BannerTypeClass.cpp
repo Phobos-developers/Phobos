@@ -3,14 +3,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
-Enumerable<BannerTypeClass>::container_t Enumerable<BannerTypeClass>::Array;
-
-BannerTypeClass::BannerTypeClass(const char* pTitle)
-	: Enumerable<BannerTypeClass>(pTitle)
-	, CSF_Color(Drawing::TooltipColor)
-	, BannerType(BannerType::PCX)
-{ }
-
 const char* Enumerable<BannerTypeClass>::GetMainSection()
 {
 	return "BannerTypes";

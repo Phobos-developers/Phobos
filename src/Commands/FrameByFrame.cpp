@@ -26,15 +26,12 @@ const wchar_t* FrameByFrameCommandClass::GetUICategory() const
 
 const wchar_t* FrameByFrameCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_DISPLAY_DAMAGE_DESC", L"Enter or exit frame by frame mode.");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_FRAME_BY_FRAME_DESC", L"Enter or exit frame by frame mode.");
 }
 
 void FrameByFrameCommandClass::Execute(WWKey eInput) const
 {
-	if (this->CheckDebugDeactivated())
-		return;
-
-	if (!SessionClass::Instance->IsSingleplayer())
+	if (!SessionClass::IsSingleplayer())
 		return;
 
 	if (!FrameStep)
@@ -54,11 +51,11 @@ bool FrameByFrameCommandClass::FrameStepMainLoop()
 
 		if (Game::IsFocused && Game::SpecialDialog == 0)
 		{
-			MapClass::Instance->MarkNeedsRedraw(2);
+			MapClass::Instance.MarkNeedsRedraw(2);
 
 			DWORD input;
 			int x, y;
-			MapClass::Instance->GetInputAndUpdate(input, x, y);
+			MapClass::Instance.GetInputAndUpdate(input, x, y);
 			if (input != NULL)
 			{
 				Game::KeyboardProcess(input);
@@ -68,7 +65,7 @@ bool FrameByFrameCommandClass::FrameStepMainLoop()
 					Game::SpecialDialog = 1;
 			}
 
-			MapClass::Instance->Render();
+			MapClass::Instance.Render();
 			TacticalClass::Instance->Update();
 		}
 	}

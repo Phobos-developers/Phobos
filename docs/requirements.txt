@@ -1,3 +1,4 @@
-myst-parser==0.15.2
-Sphinx==4.2.0
-sphinx-rtd-theme==1.0.0
+myst-parser==4.0.0
+Sphinx==7.4.7
+sphinx-rtd-theme==2.0.0
+sphinx-design

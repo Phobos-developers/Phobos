@@ -25,3 +25,7 @@ docs/locale/.doctrees/
 build
 cmake-*
 out
+.idea
+
+# Python virtual environment for docs
+.venv/

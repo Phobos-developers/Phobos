@@ -16,14 +16,14 @@ public:
 
 	static constexpr DWORD Canary = 0x11111111;
 	static constexpr size_t ExtPointerOffset = 0x16098;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
-		std::map<BuildingClass*, BuildingExt::ExtData*> OwnedLimboDeliveredBuildings;
-		std::vector<TechnoExt::ExtData*> OwnedAutoDeathObjects;
-		std::vector<TechnoExt::ExtData*> OwnedTransportReloaders; // Objects that can reload ammo in limbo
+		std::map<int, int> PowerPlantEnhancers;
+		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoClass*> OwnedCountedHarvesters;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -36,17 +36,38 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass CombatAlertTimer;
+		CDTimerClass AISuperWeaponDelayTimer;
+		CDTimerClass AIFireSaleDelayTimer;
+
 		//Read from INI
-		bool RepairBaseNodes[3];
+		Nullable<bool> RepairBaseNodes[3];
+
+		// FactoryPlants with Allow/DisallowTypes set.
+		std::vector<BuildingClass*> RestrictedFactoryPlants;
 
 		int LastBuiltNavalVehicleType;
 		int ProducingNavalUnitTypeIndex;
 
+		// Factories that exist but don't count towards multiple factory bonus.
+		int NumAirpads_NonMFB;
+		int NumBarracks_NonMFB;
+		int NumWarFactories_NonMFB;
+		int NumConYards_NonMFB;
+		int NumShipyards_NonMFB;
+
+		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
+		// standalone? no need and not a good idea
+		struct SWExt
+		{
+			int ShotCount;
+		};
+		std::vector<SWExt> SuperExts;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
-			, OwnedAutoDeathObjects {}
-			, OwnedTransportReloaders {}
+			, OwnedCountedHarvesters {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
@@ -56,17 +77,29 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
-			, RepairBaseNodes { false,false,false }
+			, AISuperWeaponDelayTimer {}
+			, RepairBaseNodes { }
+			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, CombatAlertTimer {}
+			, NumAirpads_NonMFB { 0 }
+			, NumBarracks_NonMFB { 0 }
+			, NumWarFactories_NonMFB { 0 }
+			, NumConYards_NonMFB { 0 }
+			, NumShipyards_NonMFB { 0 }
+			, AIFireSaleDelayTimer {}
+			, SuspendedEMPulseSWs {}
+			, SuperExts(SuperWeaponTypeClass::Array.Count)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
-		void UpdateAutoDeathObjectsInLimbo();
-		void UpdateTransportReloaders();
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);
 		void RemoveFromLimboTracking(TechnoTypeClass* pTechnoType);
 		int CountOwnedPresentAndLimboed(TechnoTypeClass* pTechnoType);
+		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
+		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
+		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		virtual ~ExtData() = default;
 
@@ -85,7 +118,8 @@ public:
 		bool UpdateHarvesterProduction();
 	};
 
-	class ExtContainer final : public Container<HouseExt> {
+	class ExtContainer final : public Container<HouseExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();
@@ -113,8 +147,7 @@ public:
 	static int TotalHarvesterCount(HouseClass* pThis);
 	static HouseClass* GetHouseKind(OwnerHouseKind kind, bool allowRandom, HouseClass* pDefault, HouseClass* pInvoker = nullptr, HouseClass* pVictim = nullptr);
 	static CellClass* GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass* pCurrentHouse, CoordStruct defaultCurrentCoords, SpeedType speedTypeZone, int extraDistance = 0);
-
-	static void SetSkirmishHouseName(HouseClass* pHouse);
+	static void GetAIChronoshiftSupers(HouseClass* pThis, SuperClass*& pSuperCSphere, SuperClass*& pSuperCWarp);
 
 	static bool IsDisabledFromShell(
 	HouseClass const* pHouse, BuildingTypeClass const* pItem);
@@ -149,4 +182,7 @@ public:
 	static std::vector<int> AIProduction_Values;
 	static std::vector<int> AIProduction_BestChoices;
 	static std::vector<int> AIProduction_BestChoicesNaval;
+
+	static CanBuildResult BuildLimitGroupCheck(const HouseClass* pThis, const TechnoTypeClass* pItem, bool buildLimitOnly, bool includeQueued);
+	static bool ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass* pType, bool ignoreQueued);
 };

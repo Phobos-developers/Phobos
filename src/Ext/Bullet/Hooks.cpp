@@ -1,6 +1,8 @@
 #include "Body.h"
 #include <Ext/Anim/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
 
 #include <ScenarioClass.h>
@@ -62,9 +64,10 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
-	// LaserTrails update routine is in BulletClass::AI hook because BulletClass::Draw
-	// doesn't run when the object is off-screen which leads to visual bugs - Kerbiter
-	if (pBulletExt && pBulletExt->LaserTrails.size())
+	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
+	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
+	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
+	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
 		CoordStruct location = pThis->GetCoords();
 		const BulletVelocity& velocity = pThis->Velocity;
@@ -100,13 +103,12 @@ DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 	GET(BulletClass*, pThis, EBP);
 	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
 
-	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1))
-	{
-		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
-		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
-		pTrailerAnimExt->SetInvoker(pThis->Owner);
-	}
+	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
+
+	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
+	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
+	pTrailerAnimExt->SetInvoker(pThis->Owner);
 
 	return SkipGameCode;
 }
@@ -202,50 +204,98 @@ DEFINE_HOOK(0x46A3D6, BulletClass_Shrapnel_Forced, 0xA)
 {
 	enum { Shrapnel = 0x46A40C, Skip = 0x46ADCD };
 
-	GET(BulletClass*, pBullet, EDI);
+	GET(BulletClass*, pThis, EDI);
 
-	auto const pData = BulletTypeExt::ExtMap.Find(pBullet->Type);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	if (auto const pObject = pBullet->GetCell()->FirstObject)
+	if (auto const pObject = pThis->GetCell()->FirstObject)
 	{
-		if (pObject->WhatAmI() != AbstractType::Building || pData->Shrapnel_AffectsBuildings)
+		if (pObject->WhatAmI() != AbstractType::Building || pTypeExt->Shrapnel_AffectsBuildings)
 			return Shrapnel;
 	}
-	else if (pData->Shrapnel_AffectsGround)
+	else if (pTypeExt->Shrapnel_AffectsGround)
+	{
 		return Shrapnel;
+	}
 
 	return Skip;
 }
 
-DEFINE_HOOK(0x469008, BulletClass_Explode_Cluster, 0x8)
+DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
+{
+	enum { SkipObject = 0x46A8EA, Continue = 0x46A50F };
+
+	GET(BulletClass*, pThis, EDI);
+	GET(ObjectClass*, pObject, EBP);
+	GET(TechnoClass*, pSource, EAX);
+	GET(WeaponTypeClass*, pShrapnelWeapon, ESI);
+
+	auto const pOwner = pSource->Owner;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->Shrapnel_UseWeaponTargeting)
+	{
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pShrapnelWeapon);
+		auto const pType = pObject->GetType();
+
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pShrapnelWeapon->Warhead, pType->Armor) == 0.0)
+			return SkipObject;
+		else if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+			return SkipObject;
+
+		if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+		{
+			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+				return SkipObject;
+
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
+				return SkipObject;
+
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+				return SkipObject;
+		}
+
+	}
+	else if (pOwner->IsAlliedWith(pObject))
+	{
+		return SkipObject;
+	}
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 {
 	enum { SkipGameCode = 0x469091 };
 
 	GET(BulletClass*, pThis, ESI);
 	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
-	if (pThis->Type->Cluster > 0)
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	int min = pTypeExt->ClusterScatter_Min.Get();
+	int max = pTypeExt->ClusterScatter_Max.Get();
+	auto coords = origCoords;
+
+	for (int i = 0; i < pThis->Type->Cluster; i++)
 	{
-		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-		{
-			int min = pTypeExt->ClusterScatter_Min.Get(Leptons(256));
-			int max = pTypeExt->ClusterScatter_Max.Get(Leptons(512));
-			auto coords = origCoords;
+		pThis->Detonate(coords);
 
-			for (int i = 0; i < pThis->Type->Cluster; i++)
-			{
-				pThis->Detonate(coords);
+		if (!pThis->IsAlive)
+			break;
 
-				if (!pThis->IsAlive)
-					break;
-
-				int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
-				coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
-			}
-		}
+		int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+		coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
 	}
 
 	return SkipGameCode;
+}
+
+constexpr bool CheckTrajectoryCanNotAlwaysSnap(const TrajectoryFlag flag)
+{
+	return flag != TrajectoryFlag::Invalid;
+/*	return flag == TrajectoryFlag::Straight
+		|| flag == TrajectoryFlag::Bombard
+		|| flag == TrajectoryFlag::Parabola;*/
 }
 
 DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
@@ -262,13 +312,10 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (pExt->Trajectory)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-			{
-				R->EAX(pThis->Type);
-				return SkipChecks;
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -293,13 +340,10 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	}
 	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory)
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-			{
-				R->EAX(pThis->Type);
-				return SkipChecks;
-			}
+			R->EAX(pThis->Type);
+			return SkipChecks;
 		}
 	}
 
@@ -327,11 +371,23 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	// Fixes issues with walls etc.
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		if (pExt->Trajectory)
-		{
-			if (pExt->Trajectory->Flag == TrajectoryFlag::Straight)
-				return SkipSetCoordinate;
-		}
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
+			return SkipSetCoordinate;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
+{
+	enum { SkipCheck = 0x468D73 };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	{
+		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
+			return SkipCheck;
 	}
 
 	return 0;
@@ -393,6 +449,31 @@ DEFINE_HOOK(0x44D23C, BuildingClass_Mission_Missile_ArcingFix, 0x7)
 		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
 			R->EAX(targetHeight);
 	}
+
+	return 0;
+}
+
+// Vanilla inertia effect only for bullets with ROT=0
+DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
+{
+	enum { SkipCheck = 0x4160BC };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
+		return SkipCheck;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5F5A8C, ObjectClass_SpawnParachuted_BombParachute, 0x5)
+{
+	GET(BulletClass*, pThis, ESI);
+
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->BombParachute)
+		R->EDX(pTypeExt->BombParachute.Get());
 
 	return 0;
 }

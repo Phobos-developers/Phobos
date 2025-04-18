@@ -65,7 +65,7 @@ void BannerClass::RenderPCX(int x, int y)
 		ysize = pcx->Height;
 
 		RectangleStruct bounds(x, y, xsize, ysize);
-		PCX::Instance->BlitToSurface(&bounds, DSurface::Composite, pcx);
+		PCX::Instance.BlitToSurface(&bounds, DSurface::Composite, pcx);
 	}
 }
 

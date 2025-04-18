@@ -29,7 +29,7 @@ namespace INIInheritance
 		INI_EX exINI(ini);
 		T result;
 
-		if (!detail::read<T>(result, exINI, section, entry, false))
+		if (!detail::read<T>(result, exINI, section, entry))
 			result = defaultValue;
 		return result;
 	}
@@ -44,7 +44,7 @@ namespace INIInheritance
 		GET_STACK(T*, defaultValue, 0x10);
 		INI_EX exINI(ini);
 
-		if (!detail::read<T>(*result, exINI, section, entry, false))
+		if (!detail::read<T>(*result, exINI, section, entry))
 			*result = *defaultValue;
 		return result;
 	}
@@ -60,7 +60,7 @@ namespace INIInheritance
 		GET_STACK(CLSID, defaultValue, 0x10);
 		INI_EX exINI(ini);
 
-		if (!detail::read<CLSID>(*result, exINI, section, entry, false))
+		if (!detail::read<CLSID>(*result, exINI, section, entry))
 			*result = defaultValue;
 		return result;
 	}
@@ -245,10 +245,9 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 		INIInheritance::SavedIncludes.insert(filename);
 
 		// merge included file into the current CCINIClass
-		const auto file = GameCreate<CCFileClass>(node.Data->Value);
-		if (file->Exists())
-			INIInheritance::LastINIFile->ReadCCFile(file, false, false);
-		GameDelete(file);
+		CCFileClass file (node.Data->Value);
+		if (file.Exists())
+			INIInheritance::LastINIFile->ReadCCFile(&file, false, false);
 	}
 
 	return 0;
@@ -305,4 +304,4 @@ int __fastcall IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper(INIClass* pThis
 	return defaultValue;
 }
 
-DEFINE_JUMP(CALL, 0x545FD4, GET_OFFSET(IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL, 0x545FD4, IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper);

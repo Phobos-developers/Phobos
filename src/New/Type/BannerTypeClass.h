@@ -26,12 +26,21 @@ public:
 
 	BannerType BannerType;
 
-	BannerTypeClass(const char* pTitle = NONE_STR);
-	~BannerTypeClass() override = default;
+	BannerTypeClass(const char* pTitle) : Enumerable<BannerTypeClass>(pTitle)
+		, PCX { }
+		, Shape { }
+		, Palette { }
+		, CSF { }
+		, CSF_Color(Drawing::TooltipColor)
+		, CSF_Background { false }
+		, VariableFormat { }
+		, VariableFormat_Label { }
+		, BannerType(BannerType::PCX)
+	{ }
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& stm) override;
+	virtual void LoadFromINI(CCINIClass* pINI);
+	virtual void LoadFromStream(PhobosStreamReader& stm);
+	virtual void SaveToStream(PhobosStreamWriter& stm);
 
 private:
 

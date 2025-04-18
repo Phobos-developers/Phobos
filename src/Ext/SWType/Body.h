@@ -8,7 +8,7 @@
 #include <Utilities/TemplateDef.h>
 
 #include <Ext/Building/Body.h>
-#include <Misc/TypeConvertHelper.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 class SWTypeExt
 {
@@ -22,6 +22,8 @@ public:
 	{
 	public:
 
+		PhobosFixedString<0x20> TypeID;
+
 		//Ares 0.A
 		Valueable<int> Money_Amount;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
@@ -30,11 +32,15 @@ public:
 		Valueable<bool> SW_AnyDesignator;
 		Valueable<double> SW_RangeMinimum;
 		Valueable<double> SW_RangeMaximum;
+		Valueable<int> SW_Shots;
+
 		DWORD SW_RequiredHouses;
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
+		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
+		Valueable<int> SW_MaxCount;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -52,18 +58,32 @@ public:
 
 		Valueable<int> ShowTimer_Priority;
 
-		Nullable<WarheadTypeClass*> Detonate_Warhead;
-		Nullable<WeaponTypeClass*> Detonate_Weapon;
+		Valueable<WarheadTypeClass*> Detonate_Warhead;
+		Valueable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
+		Valueable<bool> Detonate_Warhead_Full;
 		Valueable<bool> Detonate_AtFirer;
 		Valueable<bool> ShowDesignatorRange;
+
+		Valueable<int> TabIndex;
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
+		Valueable<bool> UseWeeds;
+		Valueable<int> UseWeeds_Amount;
+		Valueable<bool> UseWeeds_StorageTimer;
+		Valueable<double> UseWeeds_ReadinessAnimationPercentage;
+
+		Valueable<int> EMPulse_WeaponIndex;
+		Valueable<bool> EMPulse_SuspendOthers;
+		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
+		Valueable<bool> EMPulse_TargetSelf;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, TypeID { "" }
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
@@ -76,6 +96,9 @@ public:
 			, SW_AuxBuildings {}
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
+			, SW_PostDependent {}
+			, SW_MaxCount { -1 }
+			, SW_Shots { -1 }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -88,6 +111,7 @@ public:
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
 			, Detonate_Damage {}
+			, Detonate_Warhead_Full { true }
 			, Detonate_AtFirer { false }
 			, SW_Next {}
 			, SW_Next_RealLaunch { true }
@@ -98,6 +122,15 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, TabIndex { 1 }
+			, UseWeeds { false }
+			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
+			, UseWeeds_StorageTimer { false }
+			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
+			, EMPulse_WeaponIndex { 0 }
+			, EMPulse_SuspendOthers { false }
+			, EMPulse_Cannons {}
+			, EMPulse_TargetSelf { false }
 		{ }
 
 		// Ares 0.A functions
@@ -117,6 +150,9 @@ public:
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
+		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
+		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
+		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual ~ExtData() = default;
@@ -145,5 +181,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 
 };

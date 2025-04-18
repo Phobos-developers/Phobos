@@ -26,8 +26,10 @@ public:
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
 		std::vector<LaserTrailClass> LaserTrails;
+		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
+		int DamageNumberOffset;
 
-		PhobosTrajectory* Trajectory; // TODO: why not unique_ptr
+		TrajectoryPointer Trajectory;
 
 		ExtData(BulletClass* OwnerObject) : Extension<BulletClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -38,14 +40,13 @@ public:
 			, DetonateOnInterception { true }
 			, LaserTrails {}
 			, Trajectory { nullptr }
+			, SnappedToTarget { false }
+			, DamageNumberOffset { INT32_MIN }
 		{ }
 
 		virtual ~ExtData() = default;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			AnnounceInvalidPointer(FirerHouse, ptr);
-		}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
@@ -64,20 +65,16 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-
-		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
-		{
-			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
-
-			switch (abs)
-			{
-			case AbstractType::House:
-				return false;
-			default:
-				return true;
-			}
-		}
 	};
 
 	static ExtContainer ExtMap;
+
+	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
+	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);
+	static inline void SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach);
+	static inline void SimulatedFiringReport(BulletClass* pBullet);
+	static inline void SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pHouse);
+	static inline void SimulatedFiringElectricBolt(BulletClass* pBullet);
+	static inline void SimulatedFiringRadBeam(BulletClass* pBullet, HouseClass* pHouse);
+	static inline void SimulatedFiringParticleSystem(BulletClass* pBullet, HouseClass* pHouse);
 };

@@ -8,6 +8,9 @@
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/BannerTypeClass.h>
+#include <Utilities/Patch.h>
 
 std::unique_ptr<RulesExt::ExtData> RulesExt::Data = nullptr;
 
@@ -31,7 +34,9 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
-	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art.get());
+	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
+	AttachEffectTypeClass::LoadFromINIList(pINI);
+	BannerTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -62,9 +67,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	if (!pData)
 		return;
 
-	const char* sectionAITargetTypes = "AITargetTypes";
-	const char* sectionAIScriptsList = "AIScriptsList";
-
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
@@ -75,16 +77,32 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
 	this->ChronoSparkleBuildingDisplayPositions.Read(exINI, GameStrings::General, "ChronoSparkleBuildingDisplayPositions");
+	this->ChronoSpherePreDelay.Read(exINI, GameStrings::General, "ChronoSpherePreDelay");
+	this->ChronoSphereDelay.Read(exINI, GameStrings::General, "ChronoSphereDelay");
+	this->AIChronoSphereSW.Read(exINI, GameStrings::General, "AIChronoSphereSW");
+	this->AIChronoWarpSW.Read(exINI, GameStrings::General, "AIChronoWarpSW");
+
+	exINI.ReadSpeed(GameStrings::General, "SubterraneanSpeed", &this->SubterraneanSpeed);
+	this->SubterraneanHeight.Read(exINI, GameStrings::General, "SubterraneanHeight");
+	this->AISuperWeaponDelay.Read(exINI, GameStrings::General, "AISuperWeaponDelay");
 	this->UseGlobalRadApplicationDelay.Read(exINI, GameStrings::Radiation, "UseGlobalRadApplicationDelay");
 	this->RadApplicationDelay_Building.Read(exINI, GameStrings::Radiation, "RadApplicationDelay.Building");
-	this->RadWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
+	this->RadBuildingDamageMaxCount.Read(exINI, GameStrings::Radiation, "RadBuildingDamageMaxCount");
+	this->RadSiteWarhead_Detonate.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate");
+	this->RadSiteWarhead_Detonate_Full.Read(exINI, GameStrings::Radiation, "RadSiteWarhead.Detonate.Full");
 	this->RadHasOwner.Read(exINI, GameStrings::Radiation, "RadHasOwner");
 	this->RadHasInvoker.Read(exINI, GameStrings::Radiation, "RadHasInvoker");
+	this->VeinholeWarhead.Read<true>(exINI, GameStrings::CombatDamage, "VeinholeWarhead");
 	this->MissingCameo.Read(pINI, GameStrings::AudioVisual, "MissingCameo");
 
+	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
+	this->PlacementGrid_TranslucencyWithPreview.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.TranslucencyWithPreview");
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
-	this->PlacementGrid_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.Translucency");
+
+	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
+	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
+	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
 	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Background");
 	this->Pips_Shield_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building");
@@ -100,7 +118,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Pips_Ammo_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Size");
 	this->Pips_Ammo_Buildings_Size.Read(exINI, GameStrings::AudioVisual, "Pips.Ammo.Buildings.Size");
 	this->Pips_Tiberiums_Frames.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.Frames");
+	this->Pips_Tiberiums_EmptyFrame.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.EmptyFrame");
 	this->Pips_Tiberiums_DisplayOrder.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.DisplayOrder");
+	this->Pips_Tiberiums_WeedFrame.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.WeedFrame");
+	this->Pips_Tiberiums_WeedEmptyFrame.Read(exINI, GameStrings::AudioVisual, "Pips.Tiberiums.WeedEmptyFrame");
 	this->ToolTip_Background_Color.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, GameStrings::AudioVisual, "ToolTip.Background.BlurSize");
@@ -109,19 +130,46 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->AnimRemapDefaultColorScheme.Read(exINI, GameStrings::AudioVisual, "AnimRemapDefaultColorScheme");
 	this->TimerBlinkColorScheme.Read(exINI, GameStrings::AudioVisual, "TimerBlinkColorScheme");
 	this->ShowDesignatorRange.Read(exINI, GameStrings::AudioVisual, "ShowDesignatorRange");
+	Nullable<double>AirShadowBaseScale;
+	AirShadowBaseScale.Read(exINI, GameStrings::AudioVisual, "AirShadowBaseScale");
+	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0)
+		this->AirShadowBaseScale_log = -std::log(std::min(AirShadowBaseScale.Get(), 1.0));
+
+	this->HeightShadowScaling.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling");
+	if (AirShadowBaseScale.isset() && AirShadowBaseScale.Get() > 0.98 && this->HeightShadowScaling.Get())
+		this->HeightShadowScaling = false;
+	this->HeightShadowScaling_MinScale.Read(exINI, GameStrings::AudioVisual, "HeightShadowScaling.MinScale");
+
+	this->ExtendedAircraftMissions.Read(exINI, GameStrings::General, "ExtendedAircraftMissions");
+	this->NoQueueUpToEnter.Read(exINI, GameStrings::General, "NoQueueUpToEnter");
+	this->NoQueueUpToUnload.Read(exINI, GameStrings::General, "NoQueueUpToUnload");
+
+	this->BuildingProductionQueue.Read(exINI, GameStrings::General, "BuildingProductionQueue");
 
 	this->AllowParallelAIQueues.Read(exINI, "GlobalControls", "AllowParallelAIQueues");
-	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
+	this->ForbidParallelAIQueues_Aircraft.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Aircraft");
 	this->ForbidParallelAIQueues_Building.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Building");
 	this->ForbidParallelAIQueues_Infantry.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Infantry");
 	this->ForbidParallelAIQueues_Navy.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Navy");
 	this->ForbidParallelAIQueues_Vehicle.Read(exINI, "GlobalControls", "ForbidParallelAIQueues.Vehicle");
 
+	this->EnablePowerSurplus.Read(exINI, GameStrings::AI, "EnablePowerSurplus");
+
 	this->IronCurtain_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KeptOnDeploy");
 	this->IronCurtain_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "IronCurtain.EffectOnOrganics");
-	this->IronCurtain_KillOrganicsWarhead.Read(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
+	this->IronCurtain_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "IronCurtain.KillOrganicsWarhead");
+	this->ForceShield_KeptOnDeploy.Read(exINI, GameStrings::CombatDamage, "ForceShield.KeptOnDeploy");
+	this->ForceShield_EffectOnOrganics.Read(exINI, GameStrings::CombatDamage, "ForceShield.EffectOnOrganics");
+	this->ForceShield_KillOrganicsWarhead.Read<true>(exINI, GameStrings::CombatDamage, "ForceShield.KillOrganicsWarhead");
+	this->AllowWeaponSelectAgainstWalls.Read(exINI, GameStrings::CombatDamage, "AllowWeaponSelectAgainstWalls");
+
+	this->IronCurtain_ExtraTintIntensity.Read(exINI, GameStrings::AudioVisual, "IronCurtain.ExtraTintIntensity");
+	this->ForceShield_ExtraTintIntensity.Read(exINI, GameStrings::AudioVisual, "ForceShield.ExtraTintIntensity");
+	this->ColorAddUse8BitRGB.Read(exINI, GameStrings::AudioVisual, "ColorAddUse8BitRGB");
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
+	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
+	this->FreeMCV_CreditsThreshold.Read(exINI, GameStrings::CrateRules, "FreeMCV.CreditsThreshold");
 
 	this->ROF_RandomDelay.Read(exINI, GameStrings::CombatDamage, "ROF.RandomDelay");
 
@@ -130,19 +178,88 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DisplayIncome_AllowAI.Read(exINI, GameStrings::AudioVisual, "DisplayIncome.AllowAI");
 
 	this->IsVoiceCreatedGlobal.Read(exINI, GameStrings::AudioVisual, "IsVoiceCreatedGlobal");
+	this->SelectionFlashDuration.Read(exINI, GameStrings::AudioVisual, "SelectionFlashDuration");
+	this->DrawInsignia_OnlyOnSelected.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.OnlyOnSelected");
+	this->DrawInsignia_AdjustPos_Infantry.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Infantry");
+	this->DrawInsignia_AdjustPos_Buildings.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Buildings");
+	this->DrawInsignia_AdjustPos_BuildingsAnchor.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.BuildingsAnchor");
+	this->DrawInsignia_AdjustPos_Units.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Units");
+	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
+	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
+
+	Nullable<AnimTypeClass*> droppod_trailer {};
+	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
+	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
+
+	this->BuildingWaypoints.Read(exINI, GameStrings::General, "BuildingWaypoints");
+
+	this->VisualScatter_Min.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Min");
+	this->VisualScatter_Max.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Max");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
 	this->Vehicles_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultDigitalDisplayTypes");
 	this->Aircraft_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultDigitalDisplayTypes");
 
+	this->DamageOwnerMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier");
+	this->DamageAlliesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier");
+	this->DamageEnemiesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier");
+
+	this->AircraftLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "AircraftLevelLightMultiplier");
+	this->JumpjetLevelLightMultiplier.Read(exINI, GameStrings::AudioVisual, "JumpjetLevelLightMultiplier");
+
+	this->VoxelLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelLightSource");
+	// this->VoxelShadowLightSource.Read(exINI, GameStrings::AudioVisual, "VoxelShadowLightSource");
+
+	this->CombatAlert.Read(exINI, GameStrings::AudioVisual, "CombatAlert");
+	this->CombatAlert_Default.Read(exINI, GameStrings::AudioVisual, "CombatAlert.Default");
+	this->CombatAlert_IgnoreBuilding.Read(exINI, GameStrings::AudioVisual, "CombatAlert.IgnoreBuilding");
+	this->CombatAlert_SuppressIfInScreen.Read(exINI, GameStrings::AudioVisual, "CombatAlert.SuppressIfInScreen");
+	this->CombatAlert_Interval.Read(exINI, GameStrings::AudioVisual, "CombatAlert.Interval");
+	this->CombatAlert_SuppressIfAllyDamage.Read(exINI, GameStrings::AudioVisual, "CombatAlert.SuppressIfAllyDamage");
+	this->CombatAlert_MakeAVoice.Read(exINI, GameStrings::AudioVisual, "CombatAlert.MakeAVoice");
+	this->CombatAlert_UseFeedbackVoice.Read(exINI, GameStrings::AudioVisual, "CombatAlert.UseFeedbackVoice");
+	this->CombatAlert_UseAttackVoice.Read(exINI, GameStrings::AudioVisual, "CombatAlert.UseAttackVoice");
+	this->CombatAlert_UseEVA.Read(exINI, GameStrings::AudioVisual, "CombatAlert.UseEVA");
+
+	this->ReplaceVoxelLightSources();
+
+	this->UseFixedVoxelLighting.Read(exINI, GameStrings::AudioVisual, "UseFixedVoxelLighting");
+
+	this->MindControl_ThreatDelay.Read(exINI, GameStrings::General, "MindControl.ThreatDelay");
+
+	this->RecountBurst.Read(exINI, GameStrings::General, "RecountBurst");
+	this->NoRearm_UnderEMP.Read(exINI, GameStrings::General, "NoRearm.UnderEMP");
+	this->NoRearm_Temporal.Read(exINI, GameStrings::General, "NoRearm.Temporal");
+	this->NoReload_UnderEMP.Read(exINI, GameStrings::General, "NoReload.UnderEMP");
+	this->NoReload_Temporal.Read(exINI, GameStrings::General, "NoReload.Temporal");
+	this->NoTurret_TrackTarget.Read(exINI, GameStrings::General, "NoTurret.TrackTarget");
+
+	this->GatherWhenMCVDeploy.Read(exINI, GameStrings::General, "GatherWhenMCVDeploy");
+	this->AIFireSale.Read(exINI, GameStrings::General, "AIFireSale");
+	this->AIFireSaleDelay.Read(exINI, GameStrings::General, "AIFireSaleDelay");
+	this->AIAllToHunt.Read(exINI, GameStrings::General, "AIAllToHunt");
+	this->RepairBaseNodes.Read(exINI, GameStrings::Basic, "RepairBaseNodes");
+
+	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
+	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
+	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
+
+	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
+
+	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
+	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
+
+  	this->DamagedSpeed.Read(exINI, GameStrings::General, "DamagedSpeed");
+
 	// Section AITargetTypes
-	int itemsCount = pINI->GetKeyCount(sectionAITargetTypes);
+	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
 	{
 		std::vector<TechnoTypeClass*> objectsList;
 		char* context = nullptr;
-		pINI->ReadString(sectionAITargetTypes, pINI->GetKeyName(sectionAITargetTypes, i), "", Phobos::readBuffer);
+		pINI->ReadString("AITargetTypes", pINI->GetKeyName("AITargetTypes", i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
@@ -157,13 +274,13 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 
 	// Section AIScriptsList
-	int scriptitemsCount = pINI->GetKeyCount(sectionAIScriptsList);
+	int scriptitemsCount = pINI->GetKeyCount("AIScriptsList");
 	for (int i = 0; i < scriptitemsCount; ++i)
 	{
 		std::vector<ScriptTypeClass*> objectsList;
 
 		char* context = nullptr;
-		pINI->ReadString(sectionAIScriptsList, pINI->GetKeyName(sectionAIScriptsList, i), "", Phobos::readBuffer);
+		pINI->ReadString("AIScriptsList", pINI->GetKeyName("AIScriptsList", i), "", Phobos::readBuffer);
 
 		for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 		{
@@ -203,7 +320,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->AITargetTypesLists)
 		.Process(this->AIScriptsLists)
-		.Process(this->HarvesterTypes)
 		.Process(this->Storage_TiberiumIndex)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
@@ -212,17 +328,31 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)
 		.Process(this->ChronoSparkleBuildingDisplayPositions)
+		.Process(this->ChronoSpherePreDelay)
+		.Process(this->ChronoSphereDelay)
+		.Process(this->AIChronoSphereSW)
+		.Process(this->AIChronoWarpSW)
+		.Process(this->SubterraneanSpeed)
+		.Process(this->SubterraneanHeight)
+		.Process(this->AISuperWeaponDelay)
 		.Process(this->UseGlobalRadApplicationDelay)
 		.Process(this->RadApplicationDelay_Building)
-		.Process(this->RadWarhead_Detonate)
+		.Process(this->RadBuildingDamageMaxCount)
+		.Process(this->RadSiteWarhead_Detonate)
+		.Process(this->RadSiteWarhead_Detonate_Full)
 		.Process(this->RadHasOwner)
 		.Process(this->RadHasInvoker)
 		.Process(this->JumpjetCrash)
 		.Process(this->JumpjetNoWobbles)
+		.Process(this->VeinholeWarhead)
 		.Process(this->MissingCameo)
 		.Process(this->PlacementGrid_Translucency)
+		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->ConditionYellow_Terrain)
+		.Process(this->Shield_ConditionYellow)
+		.Process(this->Shield_ConditionRed)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
 		.Process(this->Pips_Shield_Building)
@@ -238,16 +368,34 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Pips_Ammo_Size)
 		.Process(this->Pips_Ammo_Buildings_Size)
 		.Process(this->Pips_Tiberiums_Frames)
+		.Process(this->Pips_Tiberiums_EmptyFrame)
 		.Process(this->Pips_Tiberiums_DisplayOrder)
+		.Process(this->Pips_Tiberiums_WeedFrame)
+		.Process(this->Pips_Tiberiums_WeedEmptyFrame)
+		.Process(this->AirShadowBaseScale_log)
+		.Process(this->HeightShadowScaling)
+		.Process(this->HeightShadowScaling_MinScale)
+		.Process(this->ExtendedAircraftMissions)
+		.Process(this->NoQueueUpToEnter)
+		.Process(this->NoQueueUpToUnload)
+		.Process(this->BuildingProductionQueue)
 		.Process(this->AllowParallelAIQueues)
 		.Process(this->ForbidParallelAIQueues_Aircraft)
 		.Process(this->ForbidParallelAIQueues_Building)
 		.Process(this->ForbidParallelAIQueues_Infantry)
 		.Process(this->ForbidParallelAIQueues_Navy)
 		.Process(this->ForbidParallelAIQueues_Vehicle)
+		.Process(this->EnablePowerSurplus)
+		.Process(this->IronCurtain_KeptOnDeploy)
 		.Process(this->IronCurtain_EffectOnOrganics)
 		.Process(this->IronCurtain_KillOrganicsWarhead)
-		.Process(this->IronCurtain_KeptOnDeploy)
+		.Process(this->ForceShield_KeptOnDeploy)
+		.Process(this->ForceShield_EffectOnOrganics)
+		.Process(this->ForceShield_KillOrganicsWarhead)
+		.Process(this->IronCurtain_ExtraTintIntensity)
+		.Process(this->ForceShield_ExtraTintIntensity)
+		.Process(this->AllowWeaponSelectAgainstWalls)
+		.Process(this->ColorAddUse8BitRGB)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
@@ -256,16 +404,68 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DisplayIncome_AllowAI)
 		.Process(this->DisplayIncome_Houses)
 		.Process(this->CrateOnlyOnLand)
+		.Process(this->UnitCrateVehicleCap)
+		.Process(this->FreeMCV_CreditsThreshold)
 		.Process(this->RadialIndicatorVisibility)
 		.Process(this->DrawTurretShadow)
 		.Process(this->IsVoiceCreatedGlobal)
+		.Process(this->SelectionFlashDuration)
+		.Process(this->DrawInsignia_OnlyOnSelected)
+		.Process(this->DrawInsignia_AdjustPos_Infantry)
+		.Process(this->DrawInsignia_AdjustPos_Buildings)
+		.Process(this->DrawInsignia_AdjustPos_BuildingsAnchor)
+		.Process(this->DrawInsignia_AdjustPos_Units)
+		.Process(this->Promote_VeteranAnimation)
+		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
 		.Process(this->TimerBlinkColorScheme)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
+		.Process(this->VisualScatter_Min)
+		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
+		.Process(this->DropPodTrailer)
+		.Process(this->PodImage)
+		.Process(this->DamageOwnerMultiplier)
+		.Process(this->DamageAlliesMultiplier)
+		.Process(this->DamageEnemiesMultiplier)
+		.Process(this->AircraftLevelLightMultiplier)
+		.Process(this->JumpjetLevelLightMultiplier)
+		.Process(this->VoxelLightSource)
+		// .Process(this->VoxelShadowLightSource)
+		.Process(this->BuildingWaypoints)
+		.Process(this->CombatAlert)
+		.Process(this->CombatAlert_Default)
+		.Process(this->CombatAlert_IgnoreBuilding)
+		.Process(this->CombatAlert_SuppressIfInScreen)
+		.Process(this->CombatAlert_Interval)
+		.Process(this->CombatAlert_SuppressIfAllyDamage)
+		.Process(this->CombatAlert_MakeAVoice)
+		.Process(this->CombatAlert_UseFeedbackVoice)
+		.Process(this->CombatAlert_UseAttackVoice)
+		.Process(this->CombatAlert_UseEVA)
+		.Process(this->UseFixedVoxelLighting)
+		.Process(this->MindControl_ThreatDelay)
+		.Process(this->RecountBurst)
+		.Process(this->NoRearm_UnderEMP)
+		.Process(this->NoRearm_Temporal)
+		.Process(this->NoReload_UnderEMP)
+		.Process(this->NoReload_Temporal)
+		.Process(this->NoTurret_TrackTarget)
+		.Process(this->GatherWhenMCVDeploy)
+		.Process(this->AIFireSale)
+		.Process(this->AIFireSaleDelay)
+		.Process(this->AIAllToHunt)
+		.Process(this->RepairBaseNodes)
+		.Process(this->WarheadParticleAlphaImageIsLightFlash)
+		.Process(this->CombatLightDetailLevel)
+		.Process(this->LightFlashAlphaImageDetailLevel)
+		.Process(this->BuildingTypeSelectable)
+		.Process(this->ProneSpeed_Crawls)
+		.Process(this->ProneSpeed_NoCrawls)
+    	.Process(this->DamagedSpeed)
 		;
 }
 
@@ -273,6 +473,8 @@ void RulesExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<RulesClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
+
+	this->ReplaceVoxelLightSources();
 }
 
 void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
@@ -281,14 +483,29 @@ void RulesExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool RulesExt::LoadGlobals(PhobosStreamReader& Stm)
+void RulesExt::ExtData::ReplaceVoxelLightSources()
 {
-	return Stm.Success();
-}
+	bool needCacheFlush = false;
 
-bool RulesExt::SaveGlobals(PhobosStreamWriter& Stm)
-{
-	return Stm.Success();
+	if (this->VoxelLightSource.isset())
+	{
+		needCacheFlush = true;
+		auto source = this->VoxelLightSource.Get().Normalized();
+		Game::VoxelLightSource = Matrix3D::VoxelDefaultMatrix * source;
+	}
+
+	/*
+	// doesn't really impact anything from my testing - Kerbiter
+	if (this->VoxelShadowLightSource.isset())
+	{
+		needCacheFlush = true;
+		auto source = this->VoxelShadowLightSource.Get().Normalized();
+		Game::VoxelShadowLightSource = Matrix3D::VoxelDefaultMatrix * source;
+	}
+	*/
+
+	if (needCacheFlush)
+		Game::DestroyVoxelCaches();
 }
 
 // =============================
@@ -386,10 +603,49 @@ DEFINE_HOOK(0x679A15, RulesData_LoadBeforeTypeData, 0x6)
 
 DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 {
-	RulesClass* pItem = RulesClass::Instance();
+	RulesClass* pItem = RulesClass::Instance;
 	GET(CCINIClass*, pINI, ESI);
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
 
 	return 0;
 }
+
+// Reenable obsolete [JumpjetControls] in RA2/YR
+// Author: Uranusian
+DEFINE_HOOK(0x7115AE, TechnoTypeClass_CTOR_JumpjetControls, 0xA)
+{
+	GET(TechnoTypeClass*, pThis, ESI);
+	auto pRules = RulesClass::Instance;
+	auto pRulesExt = RulesExt::Global();
+
+	pThis->JumpjetTurnRate = pRules->TurnRate;
+	pThis->JumpjetSpeed = pRules->Speed;
+	pThis->JumpjetClimb = static_cast<float>(pRules->Climb);
+	pThis->JumpjetCrash = static_cast<float>(pRulesExt->JumpjetCrash);
+	pThis->JumpjetHeight = pRules->CruiseHeight;
+	pThis->JumpjetAccel = static_cast<float>(pRules->Acceleration);
+	pThis->JumpjetWobbles = static_cast<float>(pRules->WobblesPerSecond);
+	pThis->JumpjetNoWobbles = pRulesExt->JumpjetNoWobbles;
+	pThis->JumpjetDeviation = pRules->WobbleDeviation;
+
+	return 0x711601;
+}
+
+DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
+{
+	auto pRulesExt = RulesExt::Global();
+	if (!pRulesExt)
+		return 0;
+
+	GET(CCINIClass*, pINI, EDI);
+	INI_EX exINI(pINI);
+
+	pRulesExt->JumpjetCrash.Read(exINI, GameStrings::JumpjetControls, "Crash");
+	pRulesExt->JumpjetNoWobbles.Read(exINI, GameStrings::JumpjetControls, "NoWobbles");
+
+	return 0;
+}
+
+// skip vanilla JumpjetControls and make it earlier load
+// DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
