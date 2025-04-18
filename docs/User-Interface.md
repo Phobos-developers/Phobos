@@ -121,6 +121,7 @@ Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
 Show=all                                ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ShowObserver=true                       ; boolean
+OverTechno=true                         ; boolean
 
 [SOMETECHNO]
 SelectBox=                              ; Select box
