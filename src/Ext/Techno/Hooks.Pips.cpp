@@ -1,7 +1,25 @@
 #include <AircraftTypeClass.h>
 #include <SpawnManagerClass.h>
 #include <TiberiumClass.h>
+#include <TacticalClass.h>
 #include "Body.h"
+
+DEFINE_HOOK_AGAIN(0x6D90FD, TacticalClass_RenderLayers_DrawBefore, 0x9)// BuildingClass
+DEFINE_HOOK(0x6D9070, TacticalClass_RenderLayers_DrawBefore, 0x6)// FootClass
+{
+	GET(TechnoClass*, pTechno, ESI);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	if (pTypeExt->HealthBar_Hide)
+		return 0;
+
+	const auto location = TacticalClass::Instance->CoordsToClient(pTechno->Location).first;
+
+	if (pTechno->IsSelected && Phobos::Config::EnableSelectBox && !pTypeExt->HideSelectBox)
+		TechnoExt::DrawSelectBox(pTechno, &location, &DSurface::ViewBounds, true);
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {

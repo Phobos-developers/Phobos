@@ -15,6 +15,7 @@ public:
 	TranslucencyLevel Translucency;
 	Valueable<AffectedHouse> Show;
 	Valueable<bool> ShowObserver;
+	Valueable<bool> OverTechno;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
 		, Shape { FileSystem::LoadSHPFile("select.shp") }
@@ -25,6 +26,7 @@ public:
 		, Translucency { 0 }
 		, Show { AffectedHouse::All }
 		, ShowObserver { true }
+		, OverTechno { true }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

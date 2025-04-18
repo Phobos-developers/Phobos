@@ -22,6 +22,7 @@ void SelectBoxTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Translucency.Read(exINI, pSection, "Translucency");
 	this->Show.Read(exINI, pSection, "Show");
 	this->ShowObserver.Read(exINI, pSection, "ShowObserver");
+	this->OverTechno.Read(exINI, pSection, "OverTechno");
 }
 
 template <typename T>
@@ -36,6 +37,7 @@ void SelectBoxTypeClass::Serialize(T& Stm)
 		.Process(this->Translucency)
 		.Process(this->Show)
 		.Process(this->ShowObserver)
+		.Process(this->OverTechno)
 		;
 }
 

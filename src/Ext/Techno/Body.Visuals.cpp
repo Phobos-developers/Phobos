@@ -271,7 +271,7 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return position;
 }
 
-void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds)
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore)
 {
 	const auto whatAmI = pThis->WhatAmI();
 	const auto pType = pThis->GetTechnoType();
@@ -290,7 +290,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 	const auto pShape = pSelectBox->Shape.Get();
 
-	if (!pShape)
+	if (!pShape || pSelectBox->OverTechno == drawBefore)
 		return;
 
 	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->ShowObserver : EnumFunctions::CanTargetHouse(pSelectBox->Show, pThis->Owner, HouseClass::CurrentPlayer);
