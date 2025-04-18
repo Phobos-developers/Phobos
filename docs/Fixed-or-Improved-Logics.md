@@ -216,7 +216,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport.
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error.
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead.
-- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
+- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
+- Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
+- Fixed the bug that buildings will always be tinted as airstrike owner.
 
 ## Fixes / interactions with other extensions
 
@@ -571,10 +573,11 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 - By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
 - For non building situations, the default value is true.
 - Now it is possible to designate air strikes against non building targets.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]   ; BuildingType
+[SOMETECHNO]
 AllowAirstrike=            ; boolean
 
 [SOMEWARHEAD]
