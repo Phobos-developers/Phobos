@@ -81,8 +81,6 @@ public:
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
 	Valueable<double> Block_ChanceMultiplier;
 	Valueable<double> Block_ExtraChance;
-	Valueable<double> Block_DamageMult_Multiplier;
-	Valueable<double> Block_DamageMult_Bonus;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> ReflectDamage;
@@ -90,7 +88,10 @@ public:
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
 
 	std::vector<std::string> Groups;
 
@@ -136,8 +137,6 @@ public:
 		, Crit_DisallowWarheads {}
 		, Block_ChanceMultiplier { 1.0 }
 		, Block_ExtraChance { 0.0 }
-		, Block_DamageMult_Multiplier { 1.0 }
-		, Block_DamageMult_Bonus{ 0.0 }
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage { false }
@@ -145,7 +144,10 @@ public:
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
 		, DisableWeapons { false }
+		, Unkillable { false }
 		, Groups {}
 	{};
 

@@ -13,6 +13,7 @@
 #include <Utilities/AresFunctions.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+UnitClass* TechnoExt::Deployer = nullptr;
 
 TechnoExt::ExtData::~ExtData()
 {
@@ -41,6 +42,13 @@ TechnoExt::ExtData::~ExtData()
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
+
+	for (auto const pBolt : this->ElectricBolts)
+	{
+		pBolt->Owner = nullptr;
+	}
+
+	this->ElectricBolts.clear();
 }
 
 bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
@@ -197,12 +205,12 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	do
 	{
 		placeCoords = pThis->GetMapCoords() - CellStruct { static_cast<short>(extraDistance / 2), static_cast<short>(extraDistance / 2) };
-		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistance, extraDistance, true, false, false, false, CellStruct::Empty, false, false);
+		placeCoords = MapClass::Instance.NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistance, extraDistance, true, false, false, false, CellStruct::Empty, false, false);
 
 		if (placeCoords == CellStruct::Empty)
 			return CoordStruct::Empty;
 
-		const auto pCell = MapClass::Instance->GetCellAt(placeCoords);
+		const auto pCell = MapClass::Instance.GetCellAt(placeCoords);
 
 		if (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) == Move::OK)
 			break;
@@ -211,7 +219,7 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 	while (extraDistance <= maxAttempts);
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(placeCoords))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(placeCoords))
 		return pCell->GetCoordsWithBridge();
 
 	return CoordStruct::Empty;
@@ -226,14 +234,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 		return true;
 
 	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
-	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
+	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
+		int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
@@ -246,14 +254,14 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 				return true;
 
 			auto const speedType = pThis->GetTechnoType()->SpeedType;
-			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+			auto cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,
 				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
 
 			if (cellStruct == CellStruct::Empty)
 				return false;
 
-			auto const pCell = MapClass::Instance->TryGetCellAt(cellStruct);
+			auto const pCell = MapClass::Instance.TryGetCellAt(cellStruct);
 
 			if (!pCell)
 				return false;
@@ -376,7 +384,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	}
 
 	// TODO : Jumpjet locomotor special treatement, some brainfart, must be uncorrect, HELP ME!
-	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet();
+	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
@@ -394,21 +402,16 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	if (!pDeployType)
 		return noDeploysIntoDefaultValue;
 
-	bool canDeploy = true;
 	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
 
 	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
 		mapCoords += CellStruct { -1, -1 };
 
-	pThis->Mark(MarkType::Up);
-
-	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Up);
-
-	if (!pDeployType->CanCreateHere(mapCoords, pThis->Owner))
-		canDeploy = false;
-
-	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Down);
-	pThis->Mark(MarkType::Down);
+	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
+	// Now, through additional checks, we can directly exclude the unit who want to deploy.
+	TechnoExt::Deployer = pThis;
+	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
+	TechnoExt::Deployer = nullptr;
 
 	return canDeploy;
 }
@@ -548,12 +551,8 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 		blockDamageMultipliers = !pOtherBlock->Block_DamageMultipliers.empty() ? pOtherBlock->Block_DamageMultipliers : blockDamageMultipliers;
 	}
 
-	if (!pWHExt->Block_IgnoreAttachEffect)
-	{
-		std::pair<std::vector<double>, std::vector<double>> blockPair = TechnoExt::GetBlockChanceAndDamageMult(pThis, blockChances, blockDamageMultipliers);
-		blockChances = blockPair.first;
-		blockDamageMultipliers = blockPair.second;
-	}
+	if (!pWHExt->Block_IgnoreChanceModifier)
+		blockChances = TechnoExt::GetBlockChance(pThis, blockChances);
 
 	if ((blockChances.size() == 1 && blockChances[0] + pWHExt->Block_ExtraChance > 0.0) || blockChances.size() > 1)
 	{
@@ -630,7 +629,7 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 
 		if (auto const pFoot = abstract_cast<FootClass*>(pThis))
 		{
-			if (pFoot->Locomotor->Is_Moving())
+			if (pFoot->Locomotor->Is_Really_Moving_Now())
 			{
 				if (!blockCanActiveMove)
 					return damage;
@@ -768,18 +767,14 @@ int TechnoExt::CalculateBlockDamage(TechnoClass* pThis, args_ReceiveDamage* args
 	return damage;
 }
 
-std::pair<std::vector<double>, std::vector<double>> TechnoExt::GetBlockChanceAndDamageMult(TechnoClass* pThis, std::vector<double> blockChance, std::vector<double> blockDamageMult)
+std::vector<double> TechnoExt::GetBlockChance(TechnoClass* pThis, std::vector<double> blockChance)
 {
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (blockChance.size() == 0)
 		blockChance.push_back(0.0);
 
-	if (blockDamageMult.size() == 0)
-		blockDamageMult.push_back(0.0);
-
 	double extraChance = 0.0;
-	double extraDamageMult = 0.0;
 
 	for (auto& attachEffect : pExt->AttachedEffects)
 	{
@@ -796,13 +791,7 @@ std::pair<std::vector<double>, std::vector<double>> TechnoExt::GetBlockChanceAnd
 			chance = chance * Math::max(pType->Block_ChanceMultiplier, 0);
 		}
 
-		for (auto& extraDamage : blockDamageMult)
-		{
-			extraDamage = static_cast<int>(extraDamage * pType->Block_DamageMult_Multiplier);
-		}
-
 		extraChance += pType->Block_ExtraChance;
-		extraDamageMult += pType->Block_DamageMult_Bonus;
 	}
 
 	for (auto& chance : blockChance)
@@ -810,12 +799,24 @@ std::pair<std::vector<double>, std::vector<double>> TechnoExt::GetBlockChanceAnd
 		chance += extraChance;
 	}
 
-	for (auto& extraDamage : blockDamageMult)
-	{
-		extraDamage += extraDamageMult;
-	}
+	return blockChance;
+}
 
-	return std::pair<std::vector<double>, std::vector<double>>(blockChance, blockDamageMult);
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+{
+	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	{
+		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		{
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
+				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
+			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
+				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+		}
+	}
+	return nullptr;
 }
 
 // =============================
@@ -830,6 +831,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
+		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
 		.Process(this->ReceiveDamage)
 		.Process(this->PassengerDeletionTimer)
@@ -852,6 +854,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWeaponType)
 		.Process(this->FiringObstacleCell)
 		.Process(this->IsDetachingForCloak)
+		.Process(this->BeControlledThreatFrame)
 		.Process(this->LastTargetID)
 		.Process(this->AccumulatedGattlingValue)
 		.Process(this->ShouldUpdateGattlingValue)
@@ -941,3 +944,4 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
+

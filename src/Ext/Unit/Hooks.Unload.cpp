@@ -3,6 +3,7 @@
 #include <TechnoClass.h>
 #include <TunnelLocomotionClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Building/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -206,6 +207,8 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 		pThis->DeployAnim = pAnim;
 		pAnim->SetOwnerObject(pThis);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 
 		if (pExt->DeployingAnim_UseUnitDrawer)
 			return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;

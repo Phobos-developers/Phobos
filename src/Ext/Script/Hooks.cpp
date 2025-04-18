@@ -9,17 +9,12 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 {
 	GET(TeamClass*, pTeam, ESI);
 
-	if (!pTeam)
-		return 0;
-
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (!pTeamData)
-		return 0;
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
 	// Force a line jump. This should support vanilla YR Actions
 	if (pTeamData->ForceJump_InitialCountdown > 0 && pTeamData->ForceJump_Countdown.Expired())
 	{
-		auto pScript = pTeam->CurrentScript;
+		auto const pScript = pTeam->CurrentScript;
 
 		if (pTeamData->ForceJump_RepeatMode)
 		{
@@ -43,10 +38,7 @@ DEFINE_HOOK(0x6E9443, TeamClass_AI, 0x8)
 
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (pUnit
-				&& pUnit->IsAlive
-				&& pUnit->Health > 0
-				&& !pUnit->InLimbo)
+			if (ScriptExt::IsUnitAvailable(pUnit, false))
 			{
 				pUnit->SetTarget(nullptr);
 				pUnit->SetDestination(nullptr, false);
@@ -75,11 +67,11 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 
 	// if ( NewINIFormat < 4 ) then divide 128
 	// in other times we divide 1000
-	const int nDivisor = ScenarioClass::NewINIFormat() < 4 ? 128 : 1000;
+	const int nDivisor = ScenarioClass::NewINIFormat < 4 ? 128 : 1000;
 	cell.X = static_cast<short>(nCoord % nDivisor);
 	cell.Y = static_cast<short>(nCoord / nDivisor);
 
-	R->EAX(MapClass::Instance->GetCellAt(cell));
+	R->EAX(MapClass::Instance.GetCellAt(cell));
 	return 0x6E959C;
 }
 
