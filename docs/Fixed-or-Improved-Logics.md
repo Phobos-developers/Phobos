@@ -1661,7 +1661,7 @@ DecloakDamagedTargets=true  ; boolean
 
 - Now you can specify which targets the parasite will culling them.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                     ; WarheadType
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
