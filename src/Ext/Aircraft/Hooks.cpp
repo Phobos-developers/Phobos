@@ -190,12 +190,12 @@ DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
 	return 0x4184F1;
 }
 
-DEFINE_HOOK(0x418525, AircraftClass_Mission_Attack_Delay1B, 0x6)
+DEFINE_HOOK(0x418506, AircraftClass_Mission_Attack_Delay1B, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
-	GET(int, status, EDX);
 
-	pThis->MissionStatus = status;
+	pThis->IsLocked = true;
+	pThis->MissionStatus = pThis->Ammo > 0 ? (int)AirAttackStatus::PickAttackLocation : (int)AirAttackStatus::ReturnToBase;
 	R->EAX(GetDelay(pThis, false));
 
 	return 0x418539;
@@ -417,6 +417,17 @@ DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoi
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x4CF408, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x6) // Make aircraft not have to fly directly above the airport before starting to descend
+{
+	enum { SkipGameCode = 0x4CF40E };
+
+	GET(FlyLocomotionClass* const, pThis, EBP);
+	GET(TechnoTypeClass* const, pType, EAX);
+
+	R->ECX(RulesExt::Global()->ExtendedAircraftMissions && pThis->LinkedTo->CurrentMission == Mission::Enter || pType->IsDropship);
+	return SkipGameCode;
+}
+
 // AreaGuard: return when no ammo or first target died
 DEFINE_HOOK_AGAIN(0x41A982, AircraftClass_Mission_AreaGuard, 0x6)
 DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
@@ -566,7 +577,7 @@ DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 }
 
 // Do not untether aircraft when assigning area guard mission by default.
-DEFINE_HOOK(0x4C72F2, EventClass_Execute__AircraftAreaGuard_Untether, 0x6)
+DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Untether, 0x6)
 {
 	enum { SkipGameCode = 0x4C7349 };
 
