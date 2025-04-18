@@ -408,6 +408,7 @@ msgid ""
 "`Unkillable` can be used to prevent the techno from being killed by taken"
 " damage (minimum health will be 1)."
 msgstr ""
+"`Unkillable` 可用于防止科技类型因受到伤害而死亡（最低为 1）。"
 
 #: ../../New-or-Enhanced-Logics.md:53
 msgid ""
@@ -6618,13 +6619,14 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1805
 msgid "Warhead that can not kill"
-msgstr ""
+msgstr "弹头击杀限制"
 
 #: ../../New-or-Enhanced-Logics.md:1807
 msgid ""
 "Warheads can now damage the enemy without killing them (minimum health "
 "will be 1)."
 msgstr ""
+"现在可以让一个弹头可以杀伤敌人但无法击杀它们（至少保留 1 滴血）。"
 
 #: ../../New-or-Enhanced-Logics.md:1810
 msgid ""

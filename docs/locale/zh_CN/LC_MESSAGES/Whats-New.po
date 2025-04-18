@@ -1308,17 +1308,18 @@ msgstr "[移除 `blowfish.dll` 依赖](Miscellanous.md#blowfish-dependency)（by
 #: ../../Whats-New.md:362
 msgid ""
 "[Warhead that can not kill](New-or-Enhanced-Logics.md#warhead-that-"
-"cannot-kill) (by FS-21)"
+"can-not-kill) (by FS-21)"
 msgstr ""
+"[弹头击杀限制](New-or-Enhanced-Logics.md#warhead-that-"
+"can-not-kill)（by FS-21）"
 
 #: ../../Whats-New.md:363
-#, fuzzy
 msgid ""
 "[Customize parasite culling targets](Fixed-or-Improved-Logics.md"
 "#customizing-parasite-culling-targets) (by NetsuNegi)"
 msgstr ""
-"[自定义过载逻辑](Fixed-or-Improved-Logics.md#customize-overpower-logic)（by "
-"NetsuNegi）"
+"[自定义寄生秒杀目标](Fixed-or-Improved-Logics.md"
+"#customizing-parasite-culling-targets)（by NetsuNegi）"
 
 #: ../../Whats-New.md:365 ../../Whats-New.md:556 ../../Whats-New.md:869
 #: ../../Whats-New.md:978 ../../Whats-New.md:1003 ../../Whats-New.md:1042

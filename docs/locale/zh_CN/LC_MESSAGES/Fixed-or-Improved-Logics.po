@@ -5018,6 +5018,7 @@ msgid ""
 "chasing the target for attack when it stops again, otherwise it will "
 "clear the target when it moves away."
 msgstr ""
+"`KeepTargetOnMove.NoMorePursuit` 控制单位是否会在再次停止后重新开始追击目标以发起攻击，否则会在移动时清除目标。"
 
 #: ../../Fixed-or-Improved-Logics.md:1421
 msgid ""
@@ -5667,18 +5668,12 @@ msgstr ""
 "DecloakDamagedTargets=true  ; boolean\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1660
-#, fuzzy
 msgid "Customizing parasite culling targets"
-msgstr "自定义被伤害目标解除隐形"
+msgstr "自定义寄生秒杀目标"
 
 #: ../../Fixed-or-Improved-Logics.md:1662
 msgid "Now you can specify which targets the parasite will culling them."
-msgstr ""
-
-#: ../../Fixed-or-Improved-Logics.md:1664
-#, fuzzy
-msgid "In `rulesmd.ini`"
-msgstr "在 `rulesmd.ini`："
+msgstr "现在你可以指定哪些目标会被寄生所秒杀"
 
 #: ../../Fixed-or-Improved-Logics.md:1665
 msgid ""

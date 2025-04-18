@@ -535,7 +535,7 @@ msgstr "用于检查特定科技类型是否进入单元格的 604 与 605 号�
 
 #: ../../../CREDITS.md:139
 msgid "Warhead that can not kill"
-msgstr ""
+msgstr "弹头击杀限制"
 
 #: ../../../CREDITS.md:140
 msgid "**Starkku**:"
@@ -1510,7 +1510,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:378
 msgid "Customize parasite culling targets"
-msgstr ""
+msgstr "自定义寄生秒杀目标"
 
 #: ../../../CREDITS.md:379
 msgid "**Apollo** - Translucent SHP drawing patches"
