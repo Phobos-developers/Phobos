@@ -45,10 +45,11 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
-    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
+    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+  - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -125,8 +126,11 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.Chance=1.0                           ; floating point value
+ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
+Unkillable=false                                   ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -162,6 +166,7 @@ AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed i
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
+SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
 ```
 
 ### Custom Radiation Types
@@ -585,6 +590,10 @@ In `artmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 IsAnimDelayedBurst=true            ; boolean
+```
+
+```{note}
+The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore IsAnimDelayedFire.
 ```
 
 ### Spy Effects
@@ -1811,6 +1820,16 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### Warhead that can not kill
+
+- Warheads can now damage the enemy without killing them (minimum health will be 1).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; Warhead
+CanKill=true  ; boolean
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
@@ -1971,8 +1990,8 @@ KillWeapon=                           ; WeaponType
 KillWeapon.OnFirer=                   ; WeaponType
 KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 
 [SOMETECHNO]                          ; TechnoType
 SuppressKillWeapons=false             ; boolean

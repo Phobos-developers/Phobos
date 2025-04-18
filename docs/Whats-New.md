@@ -358,6 +358,8 @@ New:
 - [Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
 - [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)
+- [Warhead that can not kill](New-or-Enhanced-Logics.md#warhead-that-cannot-kill) (by FS-21)
+- [Customize parasite culling targets](Fixed-or-Improved-Logics.md#customizing-parasite-culling-targets) (by NetsuNegi)
 - [Overload characteristic dehardcoded](New-or-Enhanced-Logics.md#overload-characteristic-dehardcoded) (by Otamaa)
 
 Vanilla fixes:
@@ -658,6 +660,7 @@ Vanilla fixes:
 - Fixed an issue that aircraft carriers cannot retract its spawned aircraft when on the bridge (by CrimRecya)
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
+- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
