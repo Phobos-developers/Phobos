@@ -1664,6 +1664,16 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
+### Customizing parasite culling targets
+
+- Now you can specify which targets the parasite will culling them.
+
+In `rulesmd.ini`
+```ini
+[SOMEWARHEAD]                     ; WarheadType
+Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+```
+
 ### Delay automatic attack on the controlled unit
 
 - Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead, default to `[General] -> MindControl.ThreatDelay`.
