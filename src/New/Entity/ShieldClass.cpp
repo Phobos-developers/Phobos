@@ -332,7 +332,11 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
-		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+	{
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+	}
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -724,7 +728,8 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 			auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		}
 	}
 
@@ -813,7 +818,8 @@ void ShieldClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
 
 		pAnim->SetOwnerObject(this->Techno);
-		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		pAnim->Owner = this->Techno->Owner;
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
 	}
@@ -870,7 +876,7 @@ bool ShieldClass::IsRedSP()
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
-	if (this->HP == 0 && this->Type->Pips_HideIfNoStrength)
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
 		return;
 
 	Point2D position = { 0, 0 };
@@ -912,8 +918,11 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
-	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
+	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame;
 
 	position.X -= 1;
@@ -923,9 +932,6 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 		frame = pipBoard->Frames > 2 ? 3 : 1;
 	else
 		frame = pipBoard->Frames > 2 ? 2 : 0;
-
-	if (this->HP == 0 && this->Type->Pips_HideIfNoStrength)
-		return;
 
 	if (this->Techno->IsSelected)
 	{
@@ -979,10 +985,20 @@ int ShieldClass::DrawShieldBar_PipAmount(int length) const
 
 ArmorType ShieldClass::GetArmorType() const
 {
-	if (this->Techno && this->Type->InheritArmorFromTechno)
-		return this->Techno->GetTechnoType()->Armor;
+	const auto pShieldType = this->Type;
 
-	return this->Type->Armor.Get();
+	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	{
+		const auto pTechnoType = this->Techno->GetTechnoType();
+
+		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
+			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+		{
+			return pTechnoType->Armor;
+		}
+	}
+
+	return pShieldType->Armor.Get();
 }
 
 int ShieldClass::GetFramesSinceLastBroken() const
