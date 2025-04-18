@@ -13,7 +13,7 @@ DEFINE_HOOK(0x6D9070, TacticalClass_RenderLayers_DrawBefore, 0x6)// FootClass
 	if (pTypeExt->HealthBar_Hide)
 		return 0;
 
-	const auto location = TacticalClass::Instance->CoordsToClient(pTechno->Location).first;
+	const auto location = TacticalClass::Instance->CoordsToClient(pTechno->GetCoords()).first;
 
 	if (pTechno->IsSelected && Phobos::Config::EnableSelectBox && !pTypeExt->HideSelectBox)
 		TechnoExt::DrawSelectBox(pTechno, &location, &DSurface::ViewBounds, true);
