@@ -49,6 +49,7 @@ This page describes all the engine features that are either new and introduced b
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+  - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -129,6 +130,7 @@ ReflectDamage.AffectsHouses=all                    ; list of Affected House Enum
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
+Unkillable=false                                   ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -1800,6 +1802,16 @@ In `rulesmd.ini`:
 RemoveMindControl=false  ; boolean
 ```
 
+### Warhead that can not kill
+
+- Warheads can now damage the enemy without killing them (minimum health will be 1).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; Warhead
+CanKill=true  ; boolean
+```
+
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
 
 - Warheads can now apply additional chance-based damage or Warhead detonation ('critical hits') with the ability to customize chance, damage, affected targets, affected target HP threshold and animations of critical hit.
@@ -1960,8 +1972,8 @@ KillWeapon=                           ; WeaponType
 KillWeapon.OnFirer=                   ; WeaponType
 KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 
 [SOMETECHNO]                          ; TechnoType
 SuppressKillWeapons=false             ; boolean

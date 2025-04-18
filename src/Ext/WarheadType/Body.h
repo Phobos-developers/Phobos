@@ -140,6 +140,8 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Valueable<AffectedTarget> Parasite_CullingTarget;
+
 		Valueable<bool> Nonprovocative;
 
 		Nullable<int> CombatLightDetailLevel;
@@ -190,6 +192,8 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		TechnoClass* DamageAreaTarget;
+
+		Valueable<bool> CanKill;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -316,6 +320,8 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, Parasite_CullingTarget { AffectedTarget::Infantry }
+
 			, Nonprovocative { false }
 
 			, CombatLightDetailLevel {}
@@ -357,6 +363,8 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
+
+			, CanKill { true }
 
 			, KillWeapon {}
 			, KillWeapon_OnFirer {}
