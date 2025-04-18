@@ -582,7 +582,7 @@ In `rulesmd.ini`:
 AllowAirstrike=            ; boolean
 
 [SOMEWARHEAD]
-AirstrikeTargets=building  ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ## Particle systems
