@@ -232,8 +232,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
 	AttachEffectClass,
-	NewSWType
-  SelectBoxTypeClass
+	NewSWType,
+	SelectBoxTypeClass
 	// other classes
 > ;
 
