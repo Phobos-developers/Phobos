@@ -1040,17 +1040,17 @@ msgstr "新增内容："
 
 #: ../../Whats-New.md:315
 msgid ""
-"Allow using waypoints, area guard and attack move with aircraft (by "
+"[Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by "
 "CrimRecya)"
-msgstr "允许战机使用路径点、区域警戒和移动攻击（by CrimRecya）"
+msgstr "[允许战机使用路径点、区域警戒和移动攻击](Fixed-or-Improved-Logics.md#extended-aircraft-missions)（by CrimRecya）"
 
 #: ../../Whats-New.md:316
-msgid "Enhanced Straight trajectory (by CrimRecya)"
-msgstr "增强的直线轨迹（by CrimRecya）"
+msgid "[Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)"
+msgstr "[增强的直线轨迹](New-or-Enhanced-Logics.md#straight-trajectory)（by CrimRecya）"
 
 #: ../../Whats-New.md:317
-msgid "Enable building production queue (by CrimRecya)"
-msgstr "启用建筑生产队列（by CrimRecya）"
+msgid "[Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)"
+msgstr "[启用建筑生产队列](User-Interface.md#building-production-queue)（by CrimRecya）"
 
 #: ../../Whats-New.md:318
 msgid ""
@@ -1059,54 +1059,54 @@ msgid ""
 msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:319
-msgid "Custom exit cell for infantry factory (by Starkku)"
-msgstr "自定义兵营退出单元格（by Starkku）"
+msgid "[Custom exit cell for infantry factory](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-factory) (by Starkku)"
+msgstr "[自定义兵营退出单元格](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-factory)（by Starkku）"
 
 #: ../../Whats-New.md:320
-msgid "Option for vehicles to keep target when issued move command (by Starkku)"
-msgstr "设置载具在发出移动命令时是否保持目标（by Starkku）"
+msgid "[Option for vehicles to keep target when issued move command](Fixed-or-Improved-Logics.md#retain-target-on-movement-command) (by Starkku)"
+msgstr "[设置载具在发出移动命令时是否保持目标](Fixed-or-Improved-Logics.md#retain-target-on-movement-command)（by Starkku）"
 
 #: ../../Whats-New.md:321
-msgid "Skip anim delay for burst fire (by TaranDahl)"
-msgstr "为有 `Burst` 的武器跳过建筑开火前摇动画（by TaranDahl）"
+msgid "[Skip anim delay for burst fire](New-or-Enhanced-Logics.md#skip-anim-delay-for-burst-fire) (by TaranDahl)"
+msgstr "[为有 `Burst` 的武器跳过建筑开火前摇动画](New-or-Enhanced-Logics.md#skip-anim-delay-for-burst-fire)（by TaranDahl）"
 
 #: ../../Whats-New.md:322
-msgid "Extending `Power` to all TechnoTypes (by Morton)"
-msgstr "将 `Power` 拓展到所有科技类型（by Morton）"
+msgid "[Extending `Power` to all TechnoTypes](Fixed-or-Improved-Logics.md#power-drain-for-units) (by Morton)"
+msgstr "[将 `Power` 拓展到所有科技类型](Fixed-or-Improved-Logics.md#power-drain-for-units)（by Morton）"
 
 #: ../../Whats-New.md:323
-msgid "New Parabola trajectory (by CrimRecya)"
-msgstr "新的抛物线轨迹（by CrimRecya）"
+msgid "[New Parabola trajectory](New-or-Enhanced-Logics.md#parabola-trajectory) (by CrimRecya)"
+msgstr "[新的抛物线轨迹](New-or-Enhanced-Logics.md#parabola-trajectory)（by CrimRecya）"
 
 #: ../../Whats-New.md:324
-msgid "Type select for buildings (code by TaranDahl, doc by Ollerus)"
-msgstr "建筑的类型选择（代码 By TaranDahl，文档 by Ollerus）"
+msgid "[Type select for buildings](User-Interface.md#type-select-for-buildings) (code by TaranDahl, doc by Ollerus)"
+msgstr "[建筑的类型选择](User-Interface.md#type-select-for-buildings)（代码 By TaranDahl，文档 by Ollerus）"
 
 #: ../../Whats-New.md:325
-msgid "Raise alert when technos are taking damage (by TaranDahl)"
-msgstr "当科技类型受到伤害时发出警报（by TaranDahl）"
+msgid "[Raise alert when technos are taking damage](New-or-Enhanced-Logics.md#raise-alert-when-technos-are-taking-damage) (by TaranDahl)"
+msgstr "[当科技类型受到伤害时发出警报](New-or-Enhanced-Logics.md#raise-alert-when-technos-are-taking-damage)（by TaranDahl）"
 
 #: ../../Whats-New.md:326
 msgid ""
-"Enhanced Bombard trajectory (by CrimRecya & Ollerus, based on knowledge "
+"[Enhanced Bombard trajectory](New-or-Enhanced-Logics.md#bombard-trajectory) (by CrimRecya & Ollerus, based on knowledge "
 "of NaotoYuuki)"
-msgstr "增强的轰击轨迹（by CrimRecya 与 Ollerus，基于 NaotoYuuki 的知识）"
+msgstr "[增强的轰击轨迹](New-or-Enhanced-Logics.md#bombard-trajectory)（by CrimRecya 与 Ollerus，基于 NaotoYuuki 的知识）"
 
 #: ../../Whats-New.md:327
-msgid "Toggle waypoint for building (by TaranDahl)"
-msgstr "建筑路径点开关（by TaranDahl）"
+msgid "[Toggle waypoint for building](Fixed-or-Improved-Logics.md#waypoints-for-buildings) (by TaranDahl)"
+msgstr "[建筑路径点开关](Fixed-or-Improved-Logics.md#waypoints-for-buildings)（by TaranDahl）"
 
 #: ../../Whats-New.md:328
-msgid "Bunkerable checks dehardcode (by TaranDahl)"
-msgstr "坦克碉堡准入检查的去硬编码化（by TaranDahl）"
+msgid "[Bunkerable checks dehardcode](Fixed-or-Improved-Logics.md#bunker-entering-check-dehardcode) (by TaranDahl)"
+msgstr "[坦克碉堡准入检查的去硬编码化](Fixed-or-Improved-Logics.md#bunker-entering-check-dehardcode)（by TaranDahl）"
 
 #: ../../Whats-New.md:329
-msgid "No turret unit turn to the target (by CrimRecya & TaranDahl)"
-msgstr "无炮塔单位转向目标（by CrimRecya 与 TaranDahl）"
+msgid "[No turret unit turn to the target](Fixed-or-Improved-Logics.md#unit-without-turret-always-turn-to-target) (by CrimRecya & TaranDahl)"
+msgstr "[无炮塔单位转向目标](Fixed-or-Improved-Logics.md#unit-without-turret-always-turn-to-target)（by CrimRecya 与 TaranDahl）"
 
 #: ../../Whats-New.md:330
-msgid "Damage multiplier for different houses (by CrimRecya)"
-msgstr "对不同所属方的伤害修正比（by CrimRecya）"
+msgid "[Damage multiplier for different houses](New-or-Enhanced-Logics.md#damage-multiplier-for-different-houses) (by CrimRecya)"
+msgstr "[对不同所属方的伤害修正比](New-or-Enhanced-Logics.md#damage-multiplier-for-different-houses)（by CrimRecya）"
 
 #: ../../Whats-New.md:331
 msgid "Customizable duration for electric bolts (by Starkku)"
@@ -1117,42 +1117,42 @@ msgid "Customizable FLH tracking for electric bolts (by Starkku)"
 msgstr "自定义 EBolt 跟随 FLH（by Starkku）"
 
 #: ../../Whats-New.md:333
-msgid "Extended gattling rate down logic (by CrimRecya)"
-msgstr "拓展的盖特掉档逻辑（by CrimRecya）"
+msgid "[Extended gattling rate down logic](New-or-Enhanced-Logics.md#extended-gattling-rate-down-logic) (by CrimRecya)"
+msgstr "[拓展的盖特掉档逻辑](New-or-Enhanced-Logics.md#extended-gattling-rate-down-logic)（by CrimRecya）"
 
 #: ../../Whats-New.md:334
-msgid "Sell or undeploy building on impact (by CrimRecya)"
-msgstr "弹头将建筑出售或反部署（by CrimRecya）"
+msgid "[Sell or undeploy building on impact](New-or-Enhanced-Logics.md#sell-or-undeploy-building-on-impact) (by CrimRecya)"
+msgstr "[弹头将建筑出售或反部署](New-or-Enhanced-Logics.md#sell-or-undeploy-building-on-impact)（by CrimRecya）"
 
 #: ../../Whats-New.md:335
-msgid "No rearm and reload in EMP or temporal (by CrimRecya)"
-msgstr "EMP 或超时空停止 CD（by CrimRecya）"
+msgid "[No rearm and reload in EMP or temporal](New-or-Enhanced-Logics.md#no-rearm-and-reload-in-emp-or-temporal) (by CrimRecya)"
+msgstr "[EMP 或超时空停止 CD](New-or-Enhanced-Logics.md#no-rearm-and-reload-in-emp-or-temporal)（by CrimRecya）"
 
 #: ../../Whats-New.md:336
 msgid ""
-"Technos recount current burst index when change the firing weapon (by "
+"[Technos recount current burst index when change the firing weapon](New-or-Enhanced-Logics.md#recount-burst-index) (by "
 "CrimRecya)"
-msgstr "科技类型在更换开火武器时重置当前连发索引（by CrimRecya）"
+msgstr "[科技类型在更换开火武器时重置当前连发索引](New-or-Enhanced-Logics.md#recount-burst-index)（by CrimRecya）"
 
 #: ../../Whats-New.md:337
 msgid "Shield armor inheritance customization (by Ollerus)"
 msgstr "自定义护盾继承单位护甲（by Ollerus）"
 
 #: ../../Whats-New.md:338
-msgid "Damaged unit image changes (by Fryone)"
-msgstr "单位伤残更换图像（by Fryone）"
+msgid "[Damaged unit image changes](New-or-Enhanced-Logics.md#damaged-unit-image-changes) (by Fryone)"
+msgstr "[单位伤残更换图像](New-or-Enhanced-Logics.md#damaged-unit-image-changes)（by Fryone）"
 
 #: ../../Whats-New.md:339
-msgid "Customizable spawns queue (by TwinkleStar)"
-msgstr "自定义子机序列（by TwinkleStar）"
+msgid "[Customizable spawns queue](New-or-Enhanced-Logics.md#customizable-spawns-queue) (by TwinkleStar)"
+msgstr "[自定义子机序列](New-or-Enhanced-Logics.md#customizable-spawns-queue)（by TwinkleStar）"
 
 #: ../../Whats-New.md:340
-msgid "Initial spawns number (by TwinkleStar)"
-msgstr "初始子机数量（by TwinkleStar）"
+msgid "[Initial spawns number](New-or-Enhanced-Logics.md#initial-spawns-number) (by TwinkleStar)"
+msgstr "[初始子机数量](New-or-Enhanced-Logics.md#initial-spawns-number)（by TwinkleStar）"
 
 #: ../../Whats-New.md:341
-msgid "Override target under EMP attack behavior (By FS-21)"
-msgstr "覆盖对被 EMP 瘫痪的目标的攻击行为（by FS-21）"
+msgid "[Override target under EMP attack behavior](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (By FS-21)"
+msgstr "[覆盖对被 EMP 瘫痪的目标的攻击行为](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets)（by FS-21）"
 
 #: ../../Whats-New.md:342
 msgid ""
