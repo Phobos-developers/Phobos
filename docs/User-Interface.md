@@ -131,6 +131,9 @@ HealthBar.Hide=false  ; boolean
 
 ### Universal customize health bar
 
+![image](_static/images/healthbar.png)
+*Customize healthbar in [CnC: Solar Flare](https://www.moddb.com/mods/solar-flare)*
+
 - Now you can specify the type of Health Bar to customize its style.
 - The same applies to Shield.
 - It should also be easy to expand to other types of progress bars.
