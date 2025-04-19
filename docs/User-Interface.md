@@ -129,6 +129,44 @@ In `rulesmd.ini`:
 HealthBar.Hide=false  ; boolean
 ```
 
+### Universal customize health bar
+
+- Now you can specify the type of Health Bar to customize its style.
+- The same applies to Shield.
+- It should also be easy to expand to other types of progress bars.
+
+In `rulesmd.ini`
+```ini
+[AudioVisual]
+DefaultHealthBar=
+Buildings.DefaultHealthBar=
+DefaultShieldBar=
+Buildings.DefaultShieldBar=
+
+[SOMETECHNO]
+HealthBar=
+ShieldBar=
+
+[SOMESHIELD]
+ShieldBar=
+
+[SOMEHEALTHBAR]
+Pips=
+Pips.Building=
+PipsEmpty=
+PipsInterval=
+PipsInterval.Building=
+PipsLength=
+PipsShape=
+PipsPalette=
+
+PipBrd=
+PipBrdShape=
+PipBrdPalette=
+PipBrdXOffset=
+XOffset=
+```
+
 ### Light flash effect toggling
 
 - It is possible to toggle certain light flash effects off. These light flash effects include:

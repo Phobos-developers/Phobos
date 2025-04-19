@@ -1,60 +1,114 @@
 #include <AircraftTypeClass.h>
 #include <SpawnManagerClass.h>
 #include <TiberiumClass.h>
+#include <TacticalClass.h>
 #include "Body.h"
 
-DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+#include <Utilities/AresHelper.h>
+
+struct DummyBuildingTypeExtHere
 {
+	char _[0x5D];
+	bool Firestorm_Wall;
+};
+
+struct DummyTechnoExtHere
+{
+	char _[0x9C];
+	bool DriverKilled;
+};
+
+DEFINE_HOOK(0x6F64A0, TechnoClass_DrawHealthBar, 0x5)
+{
+	enum { SkipDrawCode = 0x6F6ABD };
+
 	GET(TechnoClass*, pThis, ECX);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (pTypeData->HealthBar_Hide)
-		return 0x6F6AB6;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
-{
-	GET(BuildingClass*, pThis, ESI);
-	GET(int, length, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
-
+	GET_STACK(Point2D*, pLocation, 0x4);
+	GET_STACK(RectangleStruct*, pBounds, 0x8);
+	//GET_STACK(bool, drawFullyHealthBar, 0xC);
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
 
-	if (const auto pShieldData = pExt->Shield.get())
+	if (pTypeExt->HealthBar_Hide)
+		return SkipDrawCode;
+
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pBuilding = whatAmI == BuildingClass::AbsID ? static_cast<BuildingClass*>(pThis) : nullptr;
+	Point2D position = *pLocation;
+	Point2D pipsAdjust = Point2D::Empty;
+	int pipsLength = 0;
+
+	HealthBarTypeClass* pHealthBar = nullptr;
+
+	if (pBuilding)
 	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
-			pShieldData->DrawShieldBar_Building(length, pBound);
+		if (AresHelper::CanUseAres && reinterpret_cast<DummyBuildingTypeExtHere*>(pBuilding->Type->align_E24)->Firestorm_Wall)
+			return SkipDrawCode;
+
+		CoordStruct dimension {};
+		pBuilding->Type->Dimension2(&dimension);
+		dimension.X /= -2;
+		dimension.Y /= 2;
+
+		const auto drawAdjust = TacticalClass::CoordsToScreen(dimension);
+		position += drawAdjust;
+
+		dimension.Y = -dimension.Y;
+		const auto drawStart = TacticalClass::CoordsToScreen(dimension);
+
+		dimension.Z = 0;
+		dimension.Y = -dimension.Y;
+		pipsAdjust = TacticalClass::CoordsToScreen(dimension);
+
+		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->Buildings_DefaultHealthBar);
+		pipsLength = (drawAdjust.Y - drawStart.Y) >> 1;
+	}
+	else
+	{
+		pipsAdjust = Point2D { -10, 10 };
+
+		pHealthBar = pTypeExt->HealthBar.Get(RulesExt::Global()->DefaultHealthBar);
+
+		constexpr int defaultInfantryPipsLength = 8;
+		constexpr int defaultUnitPipsLength = 17;
+		pipsLength = pHealthBar->PipsLength.Get(whatAmI == InfantryClass::AbsID ? defaultInfantryPipsLength : defaultUnitPipsLength);
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis);
+	const auto pOwner = pThis->Owner;
+	const bool isAllied = pOwner->IsAlliedWith(HouseClass::CurrentPlayer);
 
-	return 0;
-}
+	if (!RulesClass::Instance->EnemyHealth && !HouseClass::IsCurrentPlayerObserver() && !isAllied)
+		return SkipDrawCode;
 
-DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
-{
-	GET(FootClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	UNREFERENCED_PARAMETER(pLocation);
-	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
+	const auto pShield = pExt->Shield.get();
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
+	if (pShield && pShield->IsAvailable() && !pShield->IsBrokenAndNonRespawning())
 	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
-		{
-			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar_Other(length, pBound);
-		}
+		if (pBuilding)
+			pShield->DrawShieldBar_Building(pipsLength, &position, pBounds);
+		else
+			pShield->DrawShieldBar_Other(pipsLength, &position, pBounds);
 	}
 
-	TechnoExt::ProcessDigitalDisplays(pThis);
+	if (pBuilding)
+		TechnoExt::DrawHealthBar_Building(pThis, pHealthBar, pipsLength, &position, pBounds);
+	else
+		TechnoExt::DrawHealthBar_Other(pThis, pHealthBar, pipsLength, &position, pBounds);
 
-	return 0;
+	TechnoExt::ProcessDigitalDisplays(pThis, &position);
+
+	if (AresHelper::CanUseAres && reinterpret_cast<DummyTechnoExtHere*>(pThis->align_154)->DriverKilled)
+		return SkipDrawCode;
+
+	const bool canShowPips = isAllied || pThis->DisplayProductionTo.Contains(HouseClass::CurrentPlayer) || HouseClass::IsCurrentPlayerObserver();
+
+	if (canShowPips || (pBuilding && pBuilding->Type->CanBeOccupied) || pThis->GetTechnoType()->PipsDrawForAll)
+	{
+		Point2D pipsLocation = *pLocation + pipsAdjust;
+		pThis->DrawPipScalePips(&pipsLocation, pLocation, pBounds);
+	}
+
+	return SkipDrawCode;
 }
 
 DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)

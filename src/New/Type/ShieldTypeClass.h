@@ -6,6 +6,8 @@
 #include <Ext/Rules/Body.h>
 #include <Utilities/TemplateDef.h>
 
+#include "HealthBarTypeClass.h"
+
 class ShieldTypeClass final : public Enumerable<ShieldTypeClass>
 {
 public:
@@ -47,9 +49,10 @@ public:
 
 	Nullable<bool> AllowTransfer;
 
-	Valueable<Vector3D<int>> Pips;
+	Nullable<HealthBarTypeClass*> ShieldBar;
+	Nullable<Vector3D<int>> Pips;
 	Nullable<SHPStruct*> Pips_Background;
-	Valueable<Vector3D<int>> Pips_Building;
+	Nullable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
@@ -95,13 +98,14 @@ public:
 		, ReceivedDamage_Minimum { INT32_MIN }
 		, ReceivedDamage_Maximum { INT32_MAX }
 		, AllowTransfer { }
-		, Pips { { -1,-1,-1 } }
+		, ShieldBar { }
+		, Pips { }
 		, Pips_Background { }
-		, Pips_Building { { -1,-1,-1 } }
+		, Pips_Building { }
 		, Pips_Building_Empty { }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
-		, Tint_Color {}
+		, Tint_Color { }
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };

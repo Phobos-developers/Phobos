@@ -8,6 +8,7 @@
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
 #include <Utilities/Patch.h>
 
@@ -31,6 +32,7 @@ void RulesExt::LoadFromINIFile(RulesClass* pThis, CCINIClass* pINI)
 void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	DigitalDisplayTypeClass::LoadFromINIList(pINI);
+	HealthBarTypeClass::LoadFromINIList(pINI);
 	RadTypeClass::LoadFromINIList(pINI);
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
@@ -50,6 +52,14 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 void RulesExt::ExtData::InitializeConstants()
 {
 
+}
+
+void RulesExt::ExtData::Initialize()
+{
+	this->DefaultHealthBar = HealthBarTypeClass::FindOrAllocate(NONE_STR);
+	this->Buildings_DefaultHealthBar = HealthBarTypeClass::FindOrAllocate(NONE_STR);
+	this->DefaultShieldBar = HealthBarTypeClass::FindOrAllocate(NONE_STR);
+	this->Buildings_DefaultShieldBar = HealthBarTypeClass::FindOrAllocate(NONE_STR);
 }
 
 // earliest loader - can't really do much because nothing else is initialized yet, so lookups won't work
@@ -101,9 +111,12 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
 	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
 	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
+	this->Pips.Read(exINI, GameStrings::AudioVisual, "Pips");
 	this->Pips_Shield.Read(exINI, GameStrings::AudioVisual, "Pips.Shield");
 	this->Pips_Shield_Background.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Background");
+	this->Pips_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Building");
 	this->Pips_Shield_Building.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building");
+	this->Pips_Building_Empty.Read(exINI, GameStrings::AudioVisual, "Pips.Building.Empty");
 	this->Pips_Shield_Building_Empty.Read(exINI, GameStrings::AudioVisual, "Pips.Shield.Building.Empty");
 	this->Pips_SelfHeal_Infantry.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Infantry");
 	this->Pips_SelfHeal_Units.Read(exINI, GameStrings::AudioVisual, "Pips.SelfHeal.Units");
@@ -194,6 +207,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->VisualScatter_Min.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Min");
 	this->VisualScatter_Max.Read(exINI, GameStrings::AudioVisual, "VisualScatter.Max");
+
+	this->DefaultHealthBar.Read(exINI, GameStrings::AudioVisual, "DefaultHealthBar");
+	this->Buildings_DefaultHealthBar.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultHealthBar");
+	this->DefaultShieldBar.Read(exINI, GameStrings::AudioVisual, "DefaultShieldBar");
+	this->Buildings_DefaultShieldBar.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultShieldBar");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
@@ -351,9 +369,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
 		.Process(this->Shield_ConditionRed)
+		.Process(this->Pips)
 		.Process(this->Pips_Shield)
 		.Process(this->Pips_Shield_Background)
+		.Process(this->Pips_Building)
 		.Process(this->Pips_Shield_Building)
+		.Process(this->Pips_Building_Empty)
 		.Process(this->Pips_Shield_Building_Empty)
 		.Process(this->Pips_SelfHeal_Infantry)
 		.Process(this->Pips_SelfHeal_Units)
@@ -417,6 +438,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
 		.Process(this->TimerBlinkColorScheme)
+		.Process(this->DefaultHealthBar)
+		.Process(this->Buildings_DefaultHealthBar)
+		.Process(this->DefaultShieldBar)
+		.Process(this->Buildings_DefaultShieldBar)
 		.Process(this->Buildings_DefaultDigitalDisplayTypes)
 		.Process(this->Infantry_DefaultDigitalDisplayTypes)
 		.Process(this->Vehicles_DefaultDigitalDisplayTypes)

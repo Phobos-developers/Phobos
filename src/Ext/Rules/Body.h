@@ -17,6 +17,7 @@ class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
 class DigitalDisplayTypeClass;
+class HealthBarTypeClass;
 
 class RulesExt
 {
@@ -68,9 +69,12 @@ public:
 		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
 		Nullable<double> Shield_ConditionRed;
+		Valueable<Vector3D<int>> Pips;
 		Valueable<Vector3D<int>> Pips_Shield;
 		Nullable<SHPStruct*> Pips_Shield_Background;
+		Valueable<Vector3D<int>> Pips_Building;
 		Valueable<Vector3D<int>> Pips_Shield_Building;
+		Valueable<int> Pips_Building_Empty;
 		Nullable<int> Pips_Shield_Building_Empty;
 		Valueable<Point2D> Pips_SelfHeal_Infantry;
 		Valueable<Point2D> Pips_SelfHeal_Units;
@@ -136,6 +140,11 @@ public:
 		Valueable<bool> DrawTurretShadow;
 		ValueableIdx<ColorScheme> AnimRemapDefaultColorScheme;
 		ValueableIdx<ColorScheme> TimerBlinkColorScheme;
+
+		Valueable<HealthBarTypeClass*> DefaultHealthBar;
+		Valueable<HealthBarTypeClass*> Buildings_DefaultHealthBar;
+		Valueable<HealthBarTypeClass*> DefaultShieldBar;
+		Valueable<HealthBarTypeClass*> Buildings_DefaultShieldBar;
 
 		ValueableVector<DigitalDisplayTypeClass*> Buildings_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Infantry_DefaultDigitalDisplayTypes;
@@ -242,8 +251,11 @@ public:
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }
+			, Pips { { 16,17,18 } }
 			, Pips_Shield_Background { }
+			, Pips_Building { { 1,2,4 } }
 			, Pips_Shield_Building { { -1,-1,-1 } }
+			, Pips_Building_Empty { 0 }
 			, Pips_Shield_Building_Empty { }
 			, Pips_SelfHeal_Infantry { { 13, 20 } }
 			, Pips_SelfHeal_Units { { 13, 20 } }
@@ -313,6 +325,10 @@ public:
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
 			, TimerBlinkColorScheme { 5 }
+			, DefaultHealthBar {}
+			, Buildings_DefaultHealthBar {}
+			, DefaultShieldBar {}
+			, Buildings_DefaultShieldBar {}
 			, Buildings_DefaultDigitalDisplayTypes {}
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
@@ -370,6 +386,7 @@ public:
 		virtual void LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI);
 		virtual void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 		virtual void InitializeConstants() override;
+		virtual void Initialize() override;
 		void InitializeAfterTypeData(RulesClass* pThis);
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }

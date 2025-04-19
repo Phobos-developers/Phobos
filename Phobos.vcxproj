@@ -80,6 +80,7 @@
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\DroppodTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\HealthBarTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
     <ClCompile Include="src\New\Type\LaserTrailTypeClass.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <ClInclude Include="src\New\Type\Affiliated\DroppodTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
+    <ClInclude Include="src\New\Type\HealthBarTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
     <ClInclude Include="src\New\Type\LaserTrailTypeClass.h" />

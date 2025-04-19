@@ -28,8 +28,8 @@ public:
 	void AI_Temporal();
 	void AI();
 
-	void DrawShieldBar_Building(const int length, RectangleStruct* pBound);
-	void DrawShieldBar_Other(const int length, RectangleStruct* pBound);
+	void DrawShieldBar_Building(const int length, Point2D* pLocation, RectangleStruct* pBound);
+	void DrawShieldBar_Other(const int length, Point2D* pLocation, RectangleStruct* pBound);
 	double GetHealthRatio() const
 	{
 		return static_cast<double>(this->HP) / this->Type->Strength;
@@ -100,7 +100,7 @@ private:
 	void TemporalCheck();
 	bool ConvertCheck();
 
-	int DrawShieldBar_Pip(const bool isBuilding) const;
+	int DrawShieldBar_Pip(Vector3D<int> const& pips, const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
 
 	void UpdateTint();

@@ -181,7 +181,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			break;
 		case AbstractType::Building:
 			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
-				offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
+				offset = GetBuildingSelectBracketPosition(static_cast<BuildingClass*>(pThis)->Type, pLocation, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			else
 				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			break;
@@ -205,13 +205,9 @@ Point2D TechnoExt::GetScreenLocation(TechnoClass* pThis)
 	return TacticalClass::Instance->CoordsToClient(pThis->GetCoords()).first;
 }
 
-Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor)
+Point2D TechnoExt::GetFootSelectBracketPosition(int length, Point2D* pLocation, Anchor anchor)
 {
-	int length = 17;
-	Point2D position = GetScreenLocation(pThis);
-
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-		length = 8;
+	Point2D position = *pLocation;
 
 	RectangleStruct bracketRect =
 	{
@@ -224,18 +220,17 @@ Point2D TechnoExt::GetFootSelectBracketPosition(TechnoClass* pThis, Anchor ancho
 	return anchor.OffsetPosition(bracketRect);
 }
 
-Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition)
+Point2D TechnoExt::GetBuildingSelectBracketPosition(BuildingTypeClass* pType, Point2D* pLocation, BuildingSelectBracketPosition bracketPosition)
 {
-	const auto pBuildingType = static_cast<BuildingTypeClass*>(pThis->GetTechnoType());
-	Point2D position = GetScreenLocation(pThis);
+	Point2D position = *pLocation;
 	CoordStruct dim2 = CoordStruct::Empty;
-	pBuildingType->Dimension2(&dim2);
+	pType->Dimension2(&dim2);
 	dim2 = { -dim2.X / 2, dim2.Y / 2, dim2.Z };
 	Point2D positionFix = TacticalClass::CoordsToScreen(dim2);
 
-	const int foundationWidth = pBuildingType->GetFoundationWidth();
-	const int foundationHeight = pBuildingType->GetFoundationHeight(false);
-	const int height = pBuildingType->Height * 12;
+	const int foundationWidth = pType->GetFoundationWidth();
+	const int foundationHeight = pType->GetFoundationHeight(false);
+	const int height = pType->Height * 12;
 	const int lengthW = foundationWidth * 7 + foundationWidth / 2;
 	const int lengthH = foundationHeight * 7 + foundationHeight / 2;
 
@@ -271,7 +266,108 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return position;
 }
 
-void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
+int TechnoExt::HealthBar_GetPip(Vector3D<int> const& pips, double percentage, const bool isBuilding)
+{
+	if (percentage > RulesClass::Instance->ConditionYellow && pips.X != -1)
+		return pips.X;
+	else if (percentage <= RulesClass::Instance->ConditionYellow && percentage > RulesClass::Instance->ConditionRed && (pips.Y != -1 || pips.X != -1))
+		return pips.Y == -1 ? pips.X : pips.Y;
+	else if (pips.Z != -1 || pips.X != -1)
+		return pips.Z == -1 ? pips.X : pips.Z;
+
+	return isBuilding ? 5 : 16;
+}
+
+int TechnoExt::HealthBar_GetPipAmount(double percentage, int pipsLength)
+{
+	return std::clamp(static_cast<int>(percentage * pipsLength), 1, pipsLength);
+}
+
+void TechnoExt::DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pShape, Point2D* pLocation, RectangleStruct* pBounds, Point2D interval, const int pipsTotal, const int pipsLength, const int emptyFrame, const int frame)
+{
+	if (pipsTotal > 0)
+	{
+		Point2D drawPoint = *pLocation + Point2D { 3 + 4 * pipsLength, 4 - 2 * pipsLength };
+		BlitterFlags blitterFlags = BlitterFlags::Centered | BlitterFlags::bf_400;
+
+		for (int idx = pipsTotal; idx; --idx, drawPoint += interval)
+			DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, blitterFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	if (pipsTotal < pipsLength)
+	{
+		int idx = pipsLength - pipsTotal, deltaX = 4 * pipsTotal, deltaY = -2 * pipsTotal;
+		Point2D drawPoint = *pLocation + Point2D { 3 + 4 * pipsLength - deltaX, 4 - 2 * pipsLength - deltaY };
+		BlitterFlags blitterFlags = BlitterFlags::Centered | BlitterFlags::bf_400;
+
+		for (; idx; --idx, drawPoint += interval)
+			DSurface::Composite->DrawSHP(pPalette, pShape, emptyFrame, &drawPoint, pBounds, blitterFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+}
+
+void TechnoExt::DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int brdFrame, const int frame)
+{
+	if (brdFrame >= 0)
+	{
+		Point2D drawPoint = *pLocation + Point2D { brdXOffset + 16, -1 };
+		BlitterFlags blitterFlags = BlitterFlags::Centered | BlitterFlags::bf_400 | BlitterFlags::Alpha;
+
+		DSurface::Composite->DrawSHP(pBrdPalette, pBrdShape, brdFrame, &drawPoint, pBounds, blitterFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+
+	Point2D drawPoint = *pLocation;
+	BlitterFlags blitterFlags = BlitterFlags::Centered | BlitterFlags::bf_400;
+
+	for (int idx = 0; idx < pipsTotal; ++idx, drawPoint += interval)
+		DSurface::Composite->DrawSHP(pPipsPalette, pPipsShape, frame, &drawPoint, pBounds, blitterFlags, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+}
+
+void TechnoExt::DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
+{
+	const auto pPipsPalette = pHealthBar->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	const auto pPipsShape = pHealthBar->PipsShape.Get();
+
+	auto position = *pLocation;
+
+	const auto interval = pHealthBar->PipsInterval_Building.Get();
+	const int emptyFrame = pHealthBar->PipsEmpty.Get(RulesExt::Global()->Pips_Building_Empty);
+
+	const auto& pips = pHealthBar->Pips_Building.Get(RulesExt::Global()->Pips_Building);
+
+	const double percentage = pThis->GetHealthPercentage();
+	const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, true);
+	const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
+	TechnoExt::DrawBuildingBar(pPipsPalette, pPipsShape, &position, pBounds, interval, pipsTotal, pipsLength, emptyFrame, frame);
+}
+
+void TechnoExt::DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, int pipsLength, Point2D* pLocation, RectangleStruct* pBounds)
+{
+	const auto pBrdPalette = pHealthBar->PipBrdPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	const auto pBrdShape = pHealthBar->PipBrdShape.Get(FileSystem::PIPBRD_SHP);
+	const auto pPipsPalette = pHealthBar->PipsPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	const auto pPipsShape = pHealthBar->PipsShape.Get();
+
+	const auto pipsInterval = pHealthBar->PipsInterval.Get();
+	auto position = *pLocation + Point2D { pHealthBar->XOffset - pipsLength * pipsInterval.X / 2, pThis->GetTechnoType()->PixelSelectionBracketDelta - 24 };
+
+	const auto whatAmI = pThis->WhatAmI();
+
+	if (whatAmI != InfantryClass::AbsID)
+		position += { 2, -1 };
+
+	const int xOffset = pHealthBar->PipBrdXOffset.Get();
+
+	const auto& pips = pHealthBar->Pips.Get(RulesExt::Global()->Pips);
+
+	const double percentage = pThis->GetHealthPercentage();
+	const int brdFrame = pThis->IsSelected ? pHealthBar->PipBrd.Get(whatAmI == InfantryClass::AbsID ? 1 : 0) : -1;
+
+	const int pipsTotal = percentage > 0.0 ? TechnoExt::HealthBar_GetPipAmount(percentage, pipsLength) : 0;
+	const int frame = TechnoExt::HealthBar_GetPip(pips, percentage, false);
+	TechnoExt::DrawOtherBar(pBrdPalette, pBrdShape, pPipsPalette, pPipsShape, &position, pBounds, xOffset, pipsInterval, pipsTotal, brdFrame, frame);
+}
+
+void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis, Point2D* pLocation)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
 		return;
@@ -349,8 +445,8 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
 		const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
 		Point2D position = pThis->WhatAmI() == AbstractType::Building ?
-			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
-			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
+			GetBuildingSelectBracketPosition(static_cast<BuildingClass*>(pThis)->Type, pLocation, pDisplayType->AnchorType_Building)
+			: GetFootSelectBracketPosition(length, pLocation, pDisplayType->AnchorType);
 		position.Y += pType->PixelSelectionBracketDelta;
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)

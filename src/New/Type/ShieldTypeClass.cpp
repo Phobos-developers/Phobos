@@ -85,6 +85,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->AllowTransfer.Read(exINI, pSection, "AllowTransfer");
 
+	this->ShieldBar.Read(exINI, pSection, "ShieldBar");
 	this->Pips.Read(exINI, pSection, "Pips");
 	this->Pips_Background.Read(exINI, pSection, "Pips.Background");
 	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
@@ -136,6 +137,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->AbsorbPercent)
 		.Process(this->PassPercent)
 		.Process(this->AllowTransfer)
+		.Process(this->ShieldBar)
 		.Process(this->Pips)
 		.Process(this->Pips_Background)
 		.Process(this->Pips_Building)

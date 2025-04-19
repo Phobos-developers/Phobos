@@ -11,6 +11,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/HealthBarTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 
 class Matrix3D;
@@ -204,6 +205,9 @@ public:
 		Nullable<double> CrushForwardTiltPerFrame;
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
+
+		Nullable<HealthBarTypeClass*> HealthBar;
+		Nullable<HealthBarTypeClass*> ShieldBar;
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -499,6 +503,9 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+
+			, HealthBar {}
+			, ShieldBar {}
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}

@@ -202,9 +202,15 @@ public:
 	static int GetCustomTintIntensity(TechnoClass* pThis);
 	static void ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity);
 	static Point2D GetScreenLocation(TechnoClass* pThis);
-	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
-	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
-	static void ProcessDigitalDisplays(TechnoClass* pThis);
+	static Point2D GetFootSelectBracketPosition(int length, Point2D* pLocation, Anchor anchor);
+	static Point2D GetBuildingSelectBracketPosition(BuildingTypeClass* pType, Point2D* pLocation, BuildingSelectBracketPosition bracketPosition);
+	static int HealthBar_GetPip(Vector3D<int> const& pips, double percentage, const bool isBuilding);
+	static int HealthBar_GetPipAmount(double percentage, int pipsLength);
+	static void DrawBuildingBar(ConvertClass* pPalette, SHPStruct* pShape, Point2D* pLocation, RectangleStruct* pBounds, Point2D interval, const int pipsTotal, const int pipsLength, const int emptyFrame, const int frame);
+	static void DrawOtherBar(ConvertClass* pBrdPalette, SHPStruct* pBrdShape, ConvertClass* pPipsPalette, SHPStruct* pPipsShape, Point2D* pLocation, RectangleStruct* pBounds, const int brdXOffset, Point2D interval, const int pipsTotal, const int brdFrame, const int frame);
+	static void DrawHealthBar_Building(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
+	static void DrawHealthBar_Other(TechnoClass* pThis, HealthBarTypeClass* pHealthBar, const int pipsLength, Point2D* pLocation, RectangleStruct* pBounds);
+	static void ProcessDigitalDisplays(TechnoClass* pThis, Point2D* pLocation);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 
 	// WeaponHelpers.cpp
