@@ -7,7 +7,7 @@
 // Allow airstrike flare draw to foot
 DEFINE_JUMP(LJMP, 0x6D481D, 0x6D482D)
 
-DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_AirstrikeTargets, 0x7)
+DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 {
 	enum { ContinueCheck = 0x6F349F, Primary = 0x6F37AD, Secondary = 0x6F3807 };
 
@@ -22,23 +22,16 @@ DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_AirstrikeTargets, 0x7)
 	if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
 		return Primary;
 
-	if (pTargetTechno->WhatAmI() == AbstractType::Building)
-		return ContinueCheck;
+	const auto pTargetType = pTargetTechno->GetTechnoType();
 
-	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetTechno->GetTechnoType());
-	return pTargetTypeExt->AllowAirstrike.Get(true) ? Secondary : Primary;
-}
+	if (pTargetTechno->AbstractFlags & AbstractFlags::Foot)
+	{
+		const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+		return pTargetTypeExt->AllowAirstrike.Get(true) ? Secondary : Primary;
+	}
 
-DEFINE_HOOK(0x6F34B7, TechnoClass_WhatWeaponShouldIUse_AllowAirstrike, 0x6)
-{
-	enum { SkipGameCode = 0x6F34BD };
-
-	GET(BuildingTypeClass*, pThis, ECX);
-
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis);
-	R->EAX(pTypeExt->AllowAirstrike.Get(pThis->CanC4));
-
-	return SkipGameCode;
+	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+	return pTargetTypeExt->AllowAirstrike.Get(static_cast<BuildingTypeClass*>(pTargetType)->CanC4) && (!pTargetType->ResourceDestination || !pTargetType->ResourceGatherer) ? Secondary : Primary;
 }
 
 DEFINE_HOOK(0x41D97B, AirstrikeClass_Fire_SetAirstrike, 0x7)
