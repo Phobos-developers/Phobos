@@ -25,29 +25,31 @@ public:
 	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<bool> VisibleInSpecialState;
 	Valueable<DisplayInfoType> InfoType;
+	Valueable<int> InfoIndex;
 	Nullable<int> ValueScaleDivisor;
 	Valueable<bool> ValueAsTimer;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
-		, Text_Color({ 0, 255, 0 }, { 255,255,0 }, { 255,0,0 })
-		, Text_Background(false)
-		, Offset({ 0, 0 })
-		, Offset_ShieldDelta()
-		, Align(TextAlign::Right)
-		, AnchorType(HorizontalPosition::Right, VerticalPosition::Top)
-		, AnchorType_Building(BuildingSelectBracketPosition::Top)
-		, Shape(nullptr)
-		, Palette()
-		, Shape_Spacing()
-		, Shape_PercentageFrame(false)
-		, Percentage(false)
-		, HideMaxValue()
-		, VisibleToHouses(AffectedHouse::All)
-		, VisibleToHouses_Observer(true)
-		, VisibleInSpecialState(true)
-		, InfoType(DisplayInfoType::Health)
-		, ValueScaleDivisor()
-		, ValueAsTimer(false)
+		, Text_Color { { 0, 255, 0 }, { 255, 255, 0 }, { 255, 0, 0 } }
+		, Text_Background { false }
+		, Offset { Point2D::Empty }
+		, Offset_ShieldDelta {}
+		, Align { TextAlign::Right }
+		, AnchorType { HorizontalPosition::Right, VerticalPosition::Top }
+		, AnchorType_Building { BuildingSelectBracketPosition::Top }
+		, Shape { nullptr }
+		, Palette {}
+		, Shape_Spacing {}
+		, Shape_PercentageFrame { false }
+		, Percentage { false }
+		, HideMaxValue {}
+		, VisibleToHouses { AffectedHouse::All }
+		, VisibleToHouses_Observer { true }
+		, VisibleInSpecialState { true }
+		, InfoType { DisplayInfoType::Health }
+		, InfoIndex { 0 }
+		, ValueScaleDivisor {}
+		, ValueAsTimer { false }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

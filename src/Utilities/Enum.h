@@ -286,7 +286,8 @@ enum class DisplayInfoType : BYTE
 	AutoDeath = 16,
 	SuperWeapon = 17,
 	IronCurtain = 18,
-	TemporalLife = 19
+	TemporalLife = 19,
+	FactoryProcess = 20
 };
 
 class MouseCursorHotSpotX

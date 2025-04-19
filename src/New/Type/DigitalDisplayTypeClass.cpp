@@ -36,6 +36,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->VisibleToHouses_Observer.Read(exINI, section, "VisibleToHouses.Observer");
 	this->VisibleInSpecialState.Read(exINI, section, "VisibleInSpecialState");
 	this->InfoType.Read(exINI, section, "InfoType");
+	this->InfoIndex.Read(exINI, section, "InfoIndex");
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
 }
@@ -274,6 +275,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->VisibleToHouses_Observer)
 		.Process(this->VisibleInSpecialState)
 		.Process(this->InfoType)
+		.Process(this->InfoIndex)
 		.Process(this->ValueScaleDivisor)
 		.Process(this->ValueAsTimer)
 		;

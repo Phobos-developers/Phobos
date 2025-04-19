@@ -1291,6 +1291,10 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			{
 				value = DisplayInfoType::TemporalLife;
 			}
+			else if (_strcmpi(str, "factoryprocess") == 0)
+			{
+				value = DisplayInfoType::FactoryProcess;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
