@@ -44,7 +44,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 		this->HasInitialized = true;
 
-	Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+
+	if (this->Type->Duration_ApplyFirepowerMult && pInvoker)
+		this->Duration = static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier);
 
 	AttachEffectClass::Array.emplace_back(this);
 }
@@ -381,6 +384,9 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 		this->Duration = durationOverride;
 	else
 		this->Duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
+
+	if (this->Type->Duration_ApplyFirepowerMult && this->Invoker)
+		this->Duration = static_cast<int>(this->Duration * this->Invoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(this->Invoker)->AE.FirepowerMultiplier);
 
 	if (this->Type->Animation_ResetOnReapply)
 	{
