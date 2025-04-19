@@ -2,6 +2,7 @@
 
 #include <ParticleSystemClass.h>
 #include <Utilities/Macro.h>
+#include <Utilities/EnumFunctions.h>
 
 DEFINE_HOOK(0x471D40, CaptureManagerClass_CaptureUnit, 0x7)
 {
@@ -67,7 +68,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	auto const pAttacker = pThis->Owner;
 	const auto pExt = TechnoTypeExt::ExtMap.Find(pAttacker->GetTechnoType());
 
-	if (pExt->MindControlDrawLink)
+	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
