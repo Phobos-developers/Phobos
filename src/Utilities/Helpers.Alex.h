@@ -145,11 +145,11 @@ namespace Helpers
 			double const spreadMult = spread * Unsorted::LeptonsPerCell;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
-			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
+			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
 			auto const range = static_cast<size_t>(spread + 0.99);
 			for (CellSpreadEnumerator it(range); it; ++it)
 			{
-				auto const pCell = MapClass::Instance->TryGetCellAt(*it + cellCoords);
+				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
 				if (!pCell)continue;
 				bool isCenter = pCell->MapCoords == cellCoords;
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
@@ -176,6 +176,10 @@ namespace Helpers
 							if (dist > spreadMult)
 								continue;
 						}
+						else if (pTechno->Location.DistanceFrom(coords) > spreadMult)
+						{
+							continue;
+						}
 
 						set.insert(pTechno);
 					}
@@ -187,7 +191,7 @@ namespace Helpers
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance;
-				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{

@@ -18,6 +18,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
@@ -231,7 +232,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
 	AttachEffectClass,
-	BarTypeClass
+	BarTypeClass,
+	NewSWType
 	// other classes
 > ;
 
