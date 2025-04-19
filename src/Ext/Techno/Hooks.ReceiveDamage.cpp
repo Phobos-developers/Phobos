@@ -104,6 +104,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+		*args->Damage = TechnoExt::CalculateBlockDamage(pThis, args);
+		int nDamageLeft = *args->Damage;
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())

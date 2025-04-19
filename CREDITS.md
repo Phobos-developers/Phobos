@@ -454,6 +454,7 @@ This page lists all the individual contributions to the project by their author.
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
   - Forcing specific weapon by range
+  - Damage blocking system
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

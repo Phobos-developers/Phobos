@@ -81,6 +81,8 @@ public:
 	Valueable<double> Crit_ExtraChance;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
+	Valueable<double> Block_ChanceMultiplier;
+	Valueable<double> Block_ExtraChance;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> ReflectDamage;
@@ -137,6 +139,8 @@ public:
 		, Crit_ExtraChance { 0.0 }
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
+		, Block_ChanceMultiplier { 1.0 }
+		, Block_ExtraChance { 0.0 }
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage { false }

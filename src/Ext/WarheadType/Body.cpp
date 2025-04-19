@@ -293,11 +293,24 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
   	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
 
+	this->Block_BasedOnWarhead.Read(exINI, pSection, "Block.BasedOnWarhead");
+	this->Block_AllowOverride.Read(exINI, pSection, "Block.AllowOverride");
+	this->Block_IgnoreChanceModifier.Read(exINI, pSection, "Block.IgnoreChanceModifier");
+	this->Block_ChanceMultiplier.Read(exINI, pSection, "Block.ChanceMultiplier");
+	this->Block_ExtraChance.Read(exINI, pSection, "Block.ExtraChance");
+	this->ImmuneToBlock.Read(exINI, pSection, "ImmuneToBlock");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
 	// AttachEffect
 	this->AttachEffects.LoadFromINI(pINI, pSection);
+
+	// Block
+	if (this->BlockType == nullptr)
+		this->BlockType = std::make_unique<BlockTypeClass>();
+
+	this->BlockType->LoadFromINI(pINI, pSection);
 
 #ifdef LOCO_TEST_WARHEADS // Enable warheads parsing
 	this->InflictLocomotor.Read(exINI, pSection, "InflictLocomotor");
@@ -543,6 +556,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KillWeapon_OnFirer_Affects)
 
     	.Process(this->ElectricAssaultLevel)
+
+		.Process(this->BlockType)
+		.Process(this->Block_BasedOnWarhead)
+		.Process(this->Block_AllowOverride)
+		.Process(this->Block_IgnoreChanceModifier)
+		.Process(this->Block_ChanceMultiplier)
+		.Process(this->Block_ExtraChance)
+		.Process(this->ImmuneToBlock)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
