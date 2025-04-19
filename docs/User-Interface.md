@@ -134,37 +134,42 @@ HealthBar.Hide=false  ; boolean
 - Now you can specify the type of Health Bar to customize its style.
 - The same applies to Shield.
 - It should also be easy to expand to other types of progress bars.
+- 
 
 In `rulesmd.ini`
 ```ini
 [AudioVisual]
-DefaultHealthBar=
-Buildings.DefaultHealthBar=
-DefaultShieldBar=
-Buildings.DefaultShieldBar=
+DefaultHealthBar=                  ; healthbar, as default type for non-building technos
+Buildings.DefaultHealthBar=        ; healthbar, as default type for buildings
+DefaultShieldBar=                  ; healthbar, as default type for non-building technos
+Buildings.DefaultShieldBar=        ; healthbar, as default type for buildings
+
+Pips=16,17,18                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=1,2,4                ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building.Empty=0              ; integer
 
 [SOMETECHNO]
-HealthBar=
-ShieldBar=
+HealthBar=                         ; healthbar
+ShieldBar=                         ; healthbar, priority over settings on the shield
 
 [SOMESHIELD]
-ShieldBar=
+ShieldBar=                         ; healthbar
 
 [SOMEHEALTHBAR]
-Pips=
-Pips.Building=
-PipsEmpty=
-PipsInterval=
-PipsInterval.Building=
-PipsLength=
-PipsShape=
-PipsPalette=
+Pips=                              ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+Pips.Building=                     ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
+PipsEmpty=                         ; integer
+PipsInterval=2,0                   ; integer, interval per two pips
+PipsInterval.Building=-4,2         ; integer, interval per two pips
+PipsLength=                        ; integer
+PipsShape=pips.shp                 ; filename - including the .shp/.pcx extension
+PipsPalette=palette.pal            ; filename - including the .pal extension
 
-PipBrd=
-PipBrdShape=
-PipBrdPalette=
-PipBrdXOffset=
-XOffset=
+PipBrd=                            ; integer
+PipBrdShape=                       ; filename - including the .shp extension
+PipBrdPalette=palette.pal          ; filename - including the .pal extension
+PipBrdXOffset=0                    ; integer
+XOffset=0                          ; integer
 ```
 
 ### Light flash effect toggling
