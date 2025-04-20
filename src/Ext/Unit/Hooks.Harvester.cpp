@@ -12,9 +12,7 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 	const float totalAmount = pThis->Tiberium.GetAmount(tiberiumIdx);
 	float dumpAmount = pTypeExt->HarvesterDumpAmount.Get(RulesExt::Global()->HarvesterDumpAmount);
 
-	if (dumpAmount > 0)
-		dumpAmount = std::min(dumpAmount, totalAmount);
-	else
+	if (dumpAmount <= 0.0f || totalAmount < dumpAmount)
 		dumpAmount = totalAmount;
 
 	__asm fld dumpAmount;
