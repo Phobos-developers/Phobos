@@ -760,7 +760,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - FirerTurret - Follow the orientation of the launcher turret. Follow the orientation of the firer's turret, and remain still after the launcher is killed. Only rotates on a horizontal plane.
   - `Trajectory.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. The projectile will search for new target at the original target's location.
     - In `Trajectory=Missile`, if the projectile hasn't arrived `Trajectory.Missile.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will directly self explode in place.
-    - In `Trajectory=Tracing`, the projectile will search for new target at the current position of the itself.
+    - In `Trajectory=Tracing`, the projectile will search for new target at the current position of itself.
     - `Trajectory.RetargetInterval` controls how long it takes to search for new target each time it is searched again.
     - `Trajectory.RetargetHouses` controls the projectile can find new target from which houses.
   - `Trajectory.Synchronize` controls whether the target of the projectile is synchronized with the target of its firer. If not, the projectile will not update the target.
