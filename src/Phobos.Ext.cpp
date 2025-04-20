@@ -18,6 +18,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
@@ -229,7 +230,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	ShieldClass,
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
-	AttachEffectClass
+	AttachEffectClass,
+	NewSWType
 	// other classes
 > ;
 
@@ -239,13 +241,6 @@ DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 	GET(bool const, removed, EDX);
 
 	PhobosTypeRegistry::InvalidatePointer(pInvalid, removed);
-
-	// Fix EBolt Owner not being invalidated
-	for (auto const pBolt : EBolt::Array)
-	{
-		if (pBolt->Owner == pInvalid)
-			pBolt->Owner = nullptr;
-	}
 
 	return 0;
 }

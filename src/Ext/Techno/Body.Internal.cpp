@@ -84,18 +84,18 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf && pInf->IsDeployed() && pExt->EliteDeployedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf && pInf->Crawling && pExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
 			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf && pInf->IsDeployed() && pExt->DeployedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf && pInf->Crawling && pExt->CrouchedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
@@ -230,6 +230,10 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 	if (hasShieldTint)
 	{
 		auto const pShieldType = pExt->Shield->GetType();
+
+		if (!EnumFunctions::CanTargetHouse(pShieldType->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+			return;
+
 		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
 		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
 	}
