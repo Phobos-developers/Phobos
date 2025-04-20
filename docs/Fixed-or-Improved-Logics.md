@@ -1082,6 +1082,16 @@ UnitPowerDrain=false  ; boolean
 Power=0               ; integer, positive means output, negative means drain
 ```
 
+### RadarInvisible for non-enemy house
+
+- In vanilla, `RadarInvisible` is ignored if the techno is allied with the current player. Now you can change this behavior.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                         ; TechnoType
+RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if `RadarInvisible=true`, none otherwise
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.
@@ -1417,13 +1427,15 @@ ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage] -> ForceShi
 - It is now possible for vehicles to retain their target when issued movement command by setting `KeepTargetOnMove` to true.
   - Note that no check is done whether or not the vehicle or the weapon can actually fire while moving, this is on modder's discretion.
   - The target is automatically reset if the vehicle moves beyond the weapon's range from the target.
+- `KeepTargetOnMove.NoMorePursuit` controls whether the unit will restart chasing the target for attack when it stops again, otherwise it will clear the target when it moves away.
 - `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from target (it is added to weapon range), negative values work to reduce the distance.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                     ; VehicleType
-KeepTargetOnMove=false            ; boolean
-KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
+[SOMEVEHICLE]                        ; VehicleType
+KeepTargetOnMove=false               ; boolean
+KeepTargetOnMove.NoMorePursuit=true  ; boolean
+KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 ```
 
 ### Sinking behavior dehardcode
@@ -1471,6 +1483,20 @@ In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
+```
+
+### Customize harvester dump amount
+
+- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
+- Less than or equal to 0 means no limit, it will always dump out all at one time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterDumpAmount=0.0               ; float point value
+
+[SOMEVEHICLE]
+HarvesterDumpAmount=                  ; float point value
 ```
 
 ## Veinholes & Weeds
@@ -1653,6 +1679,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Customizing parasite culling targets
+
+- Now you can specify which targets the parasite will culling them.
+
+In `rulesmd.ini`
+```ini
+[SOMEWARHEAD]                     ; WarheadType
+Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 ```
 
 ### Delay automatic attack on the controlled unit
