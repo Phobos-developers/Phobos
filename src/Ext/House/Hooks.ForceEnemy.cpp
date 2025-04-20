@@ -5,12 +5,15 @@ DEFINE_HOOK(0x5047D0, HouseClass_UpdateAngerNodes_SetForceEnemy, 0x6)
 	GET(HouseClass*, pThis, EAX);
 	enum { ReturnValue = 0x50483F };
 
-	int forceIndex = HouseExt::ExtMap.Find(pThis)->GetForceEnemyIndex();
-
-	if (forceIndex >= 0 || forceIndex == -2)
+	if (pThis)
 	{
-		R->EDX(forceIndex == -2 ? -1 : forceIndex);
-		return ReturnValue;
+		int forceIndex = HouseExt::ExtMap.Find(pThis)->GetForceEnemyIndex();
+
+		if (forceIndex >= 0 || forceIndex == -2)
+		{
+			R->EDX(forceIndex == -2 ? -1 : forceIndex);
+			return ReturnValue;
+		}
 	}
 
 	return 0;
@@ -28,7 +31,7 @@ DEFINE_HOOK(0x4FD772, HouseClass_ClearForceEnemy, 0xA)			// HouseClass_UpdateAI
 
 	if (pThis)
 	{
-		HouseExt::ExtMap.Find(pThis)->SetForceEnemy(-1);
+		HouseExt::ExtMap.Find(pThis)->SetForceEnemyIndex(-1);
 		pThis->UpdateAngerNodes(0, nullptr);
 	}
 

@@ -105,7 +105,7 @@ public:
 		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
 
 		int GetForceEnemyIndex();
-		void SetForceEnemy(int EnemyIndex);
+		void SetForceEnemyIndex(int EnemyIndex);
 
 		virtual ~ExtData() = default;
 

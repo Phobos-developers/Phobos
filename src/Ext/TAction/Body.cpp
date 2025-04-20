@@ -431,7 +431,9 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	else if (pThis->Value == -1)
 	{
 		for (auto pTargetHouse : HouseClass::Array)
+		{
 			setValue(pTargetHouse);
+		}
 
 		pHouse->UpdateAngerNodes(0, nullptr);
 	}
@@ -466,7 +468,9 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 	else if (pThis->Value == -1)
 	{
 		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
 			pAngerNode.AngerLevel = 0;
+		}
 
 		pHouse->UpdateAngerNodes(0, nullptr);
 	}
@@ -477,8 +481,6 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	if (!pHouseExt)
-		return true;
 
 	if (pThis->Param3 >= 0 || pThis->Param3 == -2)
 	{
@@ -491,19 +493,19 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 			if (pTargetHouse && pHouse != pTargetHouse &&
 				!pHouse->IsAlliedWith(pTargetHouse))
 			{
-				pHouseExt->SetForceEnemy(pTargetHouse->GetArrayIndex());
+				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
 				pHouse->UpdateAngerNodes(0, nullptr);
 			}
 		}
 		else
 		{
-			pHouseExt->SetForceEnemy(-2);
+			pHouseExt->SetForceEnemyIndex(-2);
 			pHouse->UpdateAngerNodes(0, nullptr);
 		}
 	}
 	else if (pThis->Param3 == -1)
 	{
-		pHouseExt->SetForceEnemy(-1);
+		pHouseExt->SetForceEnemyIndex(-1);
 		pHouse->UpdateAngerNodes(0, nullptr);
 	}
 
