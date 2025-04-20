@@ -363,6 +363,7 @@ New:
 - [Overload characteristic dehardcoded](New-or-Enhanced-Logics.md#overload-characteristic-dehardcoded) (by Otamaa)
 - [RadarInvisible for non-enemy house](Fixed-or-Improved-Logics.md#radarinvisible-for-non-enemy-house) (By TaranDahl)
 - New `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields (by FS-21)
+- [Customize harvester dump amount](New-or-Enhanced-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
 - Customize airstrike targets (by NetsuNegi)
 
 Vanilla fixes:
