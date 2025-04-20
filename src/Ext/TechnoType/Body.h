@@ -277,7 +277,7 @@ public:
 
 		Valueable<int> Power;
 
-    	Nullable<UnitTypeClass*> Image_ConditionYellow;
+		Nullable<UnitTypeClass*> Image_ConditionYellow;
 		Nullable<UnitTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
@@ -295,10 +295,12 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
-    	Nullable<double> DamagedSpeed;
+		Nullable<double> DamagedSpeed;
 
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+
+		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
 		struct LaserTrailDataEntry
 		{
@@ -605,6 +607,8 @@ public:
 
 			, Promote_VeteranAnimation { }
 			, Promote_EliteAnimation { }
+
+			, RadarInvisibleToHouse {}
 
 			, Overload_Count {}
 			, Overload_Damage {}
