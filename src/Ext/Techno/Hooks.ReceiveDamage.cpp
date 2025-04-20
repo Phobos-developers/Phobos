@@ -1,8 +1,12 @@
 #include "Body.h"
 
+#include <TacticalClass.h>
+#include <RadarEventClass.h>
+
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/TEvent/Body.h>
+#include <Ext/House/Body.h>
 
 namespace ReceiveDamageTemp
 {
@@ -15,16 +19,108 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
+	const auto pSourceHouse = args->SourceHouse;
+	const auto pTargetHouse = pThis->Owner;
+	const bool unkillable = !pWHExt->CanKill || pExt->AE.Unkillable;
 	int nDamageLeft = *args->Damage;
 
+	// Calculate Damage Multiplier
+	if (!args->IgnoreDefenses && *args->Damage)
+	{
+		double multiplier = 1.0;
+
+		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
+			multiplier = pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier);
+		else if (pSourceHouse != pTargetHouse)
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier);
+		else
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
+
+		if (multiplier != 1.0)
+		{
+			const auto sgnDamage = *args->Damage > 0 ? 1 : -1;
+			const auto calculateDamage = static_cast<int>(*args->Damage * multiplier);
+			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+		}
+	}
+
+	// Raise Combat Alert
+	if (pRules->CombatAlert && *args->Damage > 1)
+	{
+		auto raiseCombatAlert = [&]()
+		{
+			if (!pTargetHouse->IsControlledByCurrentPlayer() || (pRules->CombatAlert_SuppressIfAllyDamage && pTargetHouse->IsAlliedWith(pSourceHouse)))
+				return;
+
+			const auto pHouseExt = HouseExt::ExtMap.Find(pTargetHouse);
+
+			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
+				return;
+			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
+				return;
+
+			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+			if (pRules->CombatAlert_IgnoreBuilding && pBuilding && !pTypeExt->CombatAlert_NotBuilding.Get(pBuilding->Type->IsVehicle()))
+				return;
+
+			const auto coordInMap = pThis->GetCoords();
+
+			if (pRules->CombatAlert_SuppressIfInScreen)
+			{
+				const auto pTactical = TacticalClass::Instance;
+				const auto coordInScreen = pTactical->CoordsToScreen(coordInMap) - pTactical->TacticalPos;
+				const auto screenArea = DSurface::Composite->GetRect();
+
+				if (screenArea.Width >= coordInScreen.X && screenArea.Height >= coordInScreen.Y && coordInScreen.X >= 0 && coordInScreen.Y >= 0) // check if the unit is in screen
+					return;
+			}
+
+			pHouseExt->CombatAlertTimer.Start(pRules->CombatAlert_Interval);
+			RadarEventClass::Create(RadarEventType::Combat, CellClass::Coord2Cell(coordInMap));
+			int index = -1;
+
+			if (!pRules->CombatAlert_MakeAVoice) // No one want to play two sound at a time, I guess?
+				return;
+			else if (pTypeExt->CombatAlert_UseFeedbackVoice.Get(pRules->CombatAlert_UseFeedbackVoice) && pType->VoiceFeedback.Count > 0) // Use VoiceFeedback first
+				VocClass::PlayGlobal(pType->VoiceFeedback.GetItem(0), 0x2000, 1.0);
+			else if (pTypeExt->CombatAlert_UseAttackVoice.Get(pRules->CombatAlert_UseAttackVoice) && pType->VoiceAttack.Count > 0) // Use VoiceAttack then
+				VocClass::PlayGlobal(pType->VoiceAttack.GetItem(0), 0x2000, 1.0);
+			else if (pTypeExt->CombatAlert_UseEVA.Get(pRules->CombatAlert_UseEVA)) // Use Eva finally
+				index = pTypeExt->CombatAlert_EVA.Get(VoxClass::FindIndex((const char*)"EVA_UnitsInCombat"));
+
+			if (index != -1)
+				VoxClass::PlayIndex(index);
+		};
+		raiseCombatAlert();
+	}
+
+	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
 			if (!pShieldData->IsActive())
+			{
+				int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
+
+				// Check if the warhead can not kill targets
+				if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+				{
+					*args->Damage = 0;
+					pThis->Health = 1;
+					pThis->EstimatedHealth = 1;
+					ReceiveDamageTemp::SkipLowDamageCheck = true;
+				}
+
 				return 0;
+			}
 
 			nDamageLeft = pShieldData->ReceiveDamage(args);
 
@@ -38,6 +134,17 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (nDamageLeft == 0)
 				ReceiveDamageTemp::SkipLowDamageCheck = true;
+		}
+
+		// Update remaining damage and check if the target will die and should be avoided
+		int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
+
+		if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+		{
+			*args->Damage = 0;
+			pThis->Health = 1;
+			pThis->EstimatedHealth = 1;
+			ReceiveDamageTemp::SkipLowDamageCheck = true;
 		}
 	}
 
@@ -112,36 +219,10 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
+	TechnoExt::ApplyKillWeapon(pThis, pSource, pWarhead);
+
 	if (pSource)
-	{
-		auto const pExt = TechnoExt::ExtMap.Find(pThis);
-		auto const pTypeExt = pExt->TypeExtData;
-		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
-		bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
-
-		if (pTypeExt && pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-		{
-			if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
-				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
-		}
-
-		for (auto& attachEffect : pExt->AttachedEffects)
-		{
-			if (!attachEffect->IsActive())
-				continue;
-
-			auto const pType = attachEffect->GetType();
-
-			if (!pType->RevengeWeapon)
-				continue;
-
-			if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
-				continue;
-
-			if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
-		}
-	}
+		TechnoExt::ApplyRevengeWeapon(pThis, pSource, pWarhead);
 
 	return 0;
 }
@@ -227,7 +308,10 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	if (pWHExt->Reflected)
 		return 0;
 
-	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	const bool suppressByType = pWHExt->SuppressReflectDamage_Types.size() > 0;
+	const bool suppressByGroup = pWHExt->SuppressReflectDamage_Groups.size() > 0;
+
+	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || suppressByType || suppressByGroup))
 	{
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
@@ -239,11 +323,20 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			if (!pType->ReflectDamage)
 				continue;
 
-			if (pWHExt->SuppressReflectDamage && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+			if (pType->ReflectDamage_Chance < ScenarioClass::Instance->Random.RandomDouble())
 				continue;
 
+			if (pWHExt->SuppressReflectDamage)
+			{
+				if (suppressByType && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+					continue;
+
+				if (suppressByGroup && pType->HasGroups(pWHExt->SuppressReflectDamage_Groups, false))
+					continue;
+			}
+
 			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
+			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
 
 			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
 			{

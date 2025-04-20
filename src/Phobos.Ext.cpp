@@ -18,6 +18,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
@@ -229,7 +230,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	ShieldClass,
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
-	AttachEffectClass
+	AttachEffectClass,
+	NewSWType
 	// other classes
 > ;
 
@@ -256,7 +258,6 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::SaveGlobals(pStm);
 	return 0;
 }
@@ -264,7 +265,6 @@ DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::LoadGlobals(pStm);
 	return 0;
 }

@@ -17,6 +17,20 @@
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
+#pragma region CreateGap Calls
+
+static void __stdcall Sub_4ADEE0(char a1, DWORD a2)
+{
+	JMP_STD(0x4ADEE0);
+}
+
+static void __stdcall Sub_4ADCD0(char a1, DWORD a2)
+{
+	JMP_STD(0x4ADCD0);
+}
+
+#pragma endregion
+
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
@@ -31,23 +45,56 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	if (pHouse)
 	{
-		if (this->BigGap)
+		const int createGap = this->CreateGap;
+
+		if (createGap > 0)
 		{
-			for (auto pOtherHouse : *HouseClass::Array)
+			const auto pCurrent = HouseClass::CurrentPlayer;
+
+			if (!pHouse->IsControlledByCurrentPlayer() && !pHouse->IsAlliedWith(pCurrent) && !pCurrent->Defeated && !pCurrent->SpySatActive)
 			{
-				if (pOtherHouse->IsControlledByHuman() && // Not AI
-					!pOtherHouse->IsObserver() &&         // Not Observer
-					!pOtherHouse->Defeated &&             // Not Defeated
-					pOtherHouse != pHouse &&              // Not pThisHouse
-					!pHouse->IsAlliedWith(pOtherHouse))   // Not Allied
-				{
-					pOtherHouse->ReshroudMap();
-				}
+				Sub_4ADEE0(0, 0);
+				CellRangeIterator<CellClass>{}(CellClass::Coord2Cell(coords), this->CreateGap + 0.5, [](CellClass* pCell) {
+						pCell->Flags &= ~CellFlags::Revealed;
+						pCell->AltFlags &= ~AltCellFlags::Clear;
+						pCell->ShroudCounter = 1;
+						pCell->GapsCoveringThisCell = 0;
+						return true;
+				});
+				Sub_4ADCD0(0, 0);
+				pCurrent->Visionary = 0;
+				MapClass::Instance.sub_657CE0();
+				MapClass::Instance.MarkNeedsRedraw(2);
+			}
+		}
+		else if (createGap < 0)
+		{
+			for (const auto pOtherHouse : HouseClass::Array)
+			{
+				if (!pHouse->IsAlliedWith(pOtherHouse) && !pOtherHouse->Defeated && !pOtherHouse->SpySatActive)
+					MapClass::Instance.Reshroud(pOtherHouse);
 			}
 		}
 
-		if (this->SpySat)
-			MapClass::Instance->Reveal(pHouse);
+		const int reveal = this->Reveal;
+
+		if (reveal > 0)
+		{
+			const auto pCurrent = HouseClass::CurrentPlayer;;
+
+			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
+			{
+				Sub_4ADEE0(0, 0);
+				MapClass::Instance.RevealArea2(const_cast<CoordStruct*>(&coords), reveal, pHouse, 0, 0, 0, 0, 1);
+				Sub_4ADCD0(0, 0);
+				MapClass::Instance.sub_657CE0();
+				MapClass::Instance.MarkNeedsRedraw(2);
+			}
+		}
+		else if (reveal < 0)
+		{
+			MapClass::Instance.Reveal(pHouse);
+		}
 
 		if (this->TransactMoney)
 		{
@@ -65,7 +112,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			int index = GeneralUtils::ChooseOneWeighted(ScenarioClass::Instance->Random.RandomDouble(), &this->SpawnsCrate_Weights);
 
 			if (index < static_cast<int>(this->SpawnsCrate_Types.size()))
-				MapClass::Instance->PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
+				MapClass::Instance.PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
 		}
 
 		for (const int swIdx : this->LaunchSW)
@@ -114,7 +161,9 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
 		{
 			int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_ActiveChanceAnims.size() - 1);
-			GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
+			auto const pAnim = GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 
 		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
@@ -145,7 +194,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
-	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking)
+	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
 
 	TechnoExt::ExtData* pTargetExt = nullptr;
@@ -170,6 +219,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
+	if (this->BuildingSell || this->BuildingUndeploy)
+		this->ApplyBuildingUndeploy(pTarget);
+
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
 		this->ApplyLocomotorInfliction(pTarget);
@@ -178,6 +230,108 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyLocomotorInflictionReset(pTarget);
 #endif
 
+}
+
+void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
+{
+	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo)
+		return;
+
+	// Higher priority for selling
+	if (this->BuildingSell)
+	{
+		if ((pBuilding->CanBeSold() && !pBuilding->IsStrange()) || this->BuildingSell_IgnoreUnsellable)
+		{
+			pBuilding->SetArchiveTarget(nullptr); // Reset to ensure it must to be sold
+			pBuilding->Sell(1);
+		}
+
+		return;
+	}
+
+	// CanBeSold() will also check this
+	const auto mission = pBuilding->CurrentMission;
+
+	if (mission == Mission::Construction || mission == Mission::Selling)
+		return;
+
+	const auto pType = pBuilding->Type;
+
+	if (!pType->UndeploysInto || (pType->ConstructionYard && !GameModeOptionsClass::Instance.MCVRedeploy))
+		return;
+
+	auto cell = pBuilding->GetMapCoords();
+	const auto width = pType->GetFoundationWidth();
+	const auto height = pType->GetFoundationHeight(false);
+
+	// Offset of undeployment on large-scale buildings
+	if (width > 2 || height > 2)
+		cell += CellStruct { 1, 1 };
+
+	if (this->BuildingUndeploy_Leave)
+	{
+		const auto pHouse = pBuilding->Owner;
+		const auto pItems = Helpers::Alex::getCellSpreadItems(pBuilding->GetCoords(), 20);
+
+		// Divide the surrounding units into 16 directions and record their costs
+		int record[16] = {0};
+
+		for (const auto& pItem : pItems)
+		{
+			// Only armed units that are not considered allies will be recorded
+			if ((!pHouse || !pHouse->IsAlliedWith(pItem)) && pItem->IsArmed())
+				record[pBuilding->GetTargetDirection(pItem).GetValue<4>()] += pItem->GetTechnoType()->Cost;
+		}
+
+		int costs = 0;
+		int dir = 0;
+
+		// Starting from 16, prevent negative numbers
+		for (int i = 16; i < 32; ++i)
+		{
+			int newCosts = 0;
+
+			// Assign weights to values in the direction
+			// The highest value being 8 times in the positive direction
+			// And the lowest value being 0 times in the opposite direction
+			// The greater difference between positive direction to both sides, the lower value it is
+			for (int j = -7; j < 8; ++j)
+				newCosts += ((8 - std::abs(j)) * record[(i + j) & 15]);
+
+			// Record the direction with the highest weight
+			if (newCosts > costs)
+			{
+				dir = (i - 16);
+				costs = newCosts;
+			}
+		}
+
+		// If there is no threat in the surrounding area, randomly select one side
+		if (!costs)
+			dir = ScenarioClass::Instance->Random.RandomRanged(0, 15);
+
+		// Reverse the direction and convert it into radians
+		const double radian = -(((dir - 4) / 16.0) * Math::TwoPi);
+
+		// Base on a location about 14 grids away
+		cell.X -= static_cast<short>(14 * cos(radian));
+		cell.Y += static_cast<short>(14 * sin(radian));
+
+		// Find a location where the conyard can be deployed
+		const auto newCell = MapClass::Instance.NearByLocation(cell, pType->UndeploysInto->SpeedType, -1, pType->UndeploysInto->MovementZone,
+			false, (width + 2), (height + 2), false, false, false, false, CellStruct::Empty, false, false);
+
+		// If it can find a more suitable location, go to the new one
+		if (newCell != CellStruct::Empty)
+			cell = newCell;
+	}
+
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(cell))
+		pBuilding->SetArchiveTarget(pCell);
+
+	pBuilding->Sell(1);
 }
 
 void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
@@ -336,7 +490,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
 			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
-			pAnim->Owner = pHouse;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 		else
@@ -344,13 +498,16 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 			for (auto const& pType : this->Crit_AnimList)
 			{
 				auto const pAnim = GameCreate<AnimClass>(pType, pTarget->Location);
-				pAnim->Owner = pHouse;
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
 				AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 			}
 		}
 	}
 
 	auto damage = this->Crit_ExtraDamage.Get();
+
+	if (this->Crit_ExtraDamage_ApplyFirepowerMult && pOwner)
+		damage = static_cast<int>(damage * pOwner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pOwner)->AE.FirepowerMultiplier);
 
 	if (this->Crit_Warhead)
 	{
@@ -386,7 +543,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 	}
 	else
 	{
-		for (auto const pBullet : *BulletClass::Array)
+		for (auto const pBullet : BulletClass::Array)
 		{
 			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
 				continue;

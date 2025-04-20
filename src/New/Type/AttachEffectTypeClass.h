@@ -41,6 +41,8 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<bool> Duration_ApplyFirepowerMult;
+	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
@@ -86,12 +88,17 @@ public:
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
 
 	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyFirepowerMult { false }
+		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
@@ -137,7 +144,10 @@ public:
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
 		, DisableWeapons { false }
+		, Unkillable { false }
 		, Groups {}
 	{};
 
@@ -205,7 +215,7 @@ public:
 	ValueableVector<int> DurationOverrides;
 	ValueableVector<int> Delays;
 	ValueableVector<int> InitialDelays;
-	NullableVector<int> RecreationDelays;
+	ValueableVector<int> RecreationDelays;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
