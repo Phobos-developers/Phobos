@@ -744,3 +744,14 @@ DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Dri
 
 	return R->Origin() + 0x6;
 }
+
+DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
+{
+	enum { ExecuteCulling = 0x62A0B7, CannotCulling = 0x62A0D3 };
+
+	GET(ParasiteClass*, pThis, ESI);
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
+}
