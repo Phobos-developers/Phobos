@@ -8,6 +8,8 @@ This page describes all the engine features that are either new and introduced b
 
 - Similar (but not identical) to [Ares' AttachEffect](https://ares-developers.github.io/Ares-docs/new/attacheffect.html), but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
   - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
+    - If `Duration.ApplyFirepowerMult` set to true, the duration will multiply the invoker's firepower multipliers if it's not negative. Can't reduce duration to below 0 by a negative firepower multiplier.
+    - If `Duration.ApplyArmorMultOnTarget` set to true, the duration will divide the target's armor multipliers if it's not negative. This'll also include `ArmorMultiplier` from its own and ignore `ArmorMultiplier.Allow/DisallowWarheads`. Can't reduce duration to below 0 by a negative armor multiplier.
   - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number. If the target already has `Cumulative.MaxCount` number of the same effect applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
   - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
   - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
@@ -45,10 +47,11 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
-  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back. Already reflected damage cannot be further reflected back.
-    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed.
+  - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
+    - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+  - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -81,6 +84,8 @@ In `rulesmd.ini`:
 
 [SOMEATTACHEFFECT]                                 ; AttachEffectType
 Duration=0                                         ; integer - game frames or negative value for indefinite duration
+Duration.ApplyFirepowerMult=false                  ; boolean
+Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
@@ -125,8 +130,11 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.Chance=1.0                           ; floating point value
+ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
+Unkillable=false                                   ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -162,6 +170,7 @@ AttachEffect.CumulativeRemoveMaxCounts=            ; integer - maximum removed i
 AttachEffect.DurationOverrides=                    ; integer - duration overrides (comma-separated) for AttachTypes in order from first to last.
 SuppressReflectDamage=false                        ; boolean
 SuppressReflectDamage.Types=                       ; List of AttachEffectTypes
+SuppressReflectDamage.Groups=                      ; comma-separated list of strings (group IDs)
 ```
 
 ### Custom Radiation Types
@@ -291,6 +300,7 @@ SelfHealing=0.0                             ; floating point value, percents or 
 SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
+SelfHealing.EnabledBy=                      ; List of BuildingType names
 Respawn=0.0                                 ; floating point value, percents or absolute
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
@@ -298,6 +308,7 @@ Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Background=                            ; filename - including the .shp/.pcx extension
 Pips.Building.Empty=                        ; integer, frame of pips.shp (zero-based) for empty building pip
+Pips.HideIfNoStrength=false                 ; boolean
 IdleAnim=                                   ; AnimationType
 IdleAnim.ConditionYellow=                   ; AnimationType
 IdleAnim.ConditionRed=                      ; AnimationType
@@ -386,6 +397,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
+- `SelfHealing.EnabledBy` can be used to control the self-heal of the shield. If the owner has no structures from this list then the shield won't self-heal.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
   - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
   - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
@@ -409,6 +421,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
   - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
+  - `Pips.HideIfNoStrength` can be used to hide the shield's pip frame if the `Strength` is 0.
   - The above customizations are also available on per ShieldType basis, e.g `[ShieldType] -> Pips` instead of `[AudioVisual] -> Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
@@ -585,6 +598,10 @@ In `artmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 IsAnimDelayedBurst=true            ; boolean
+```
+
+```{note}
+The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore IsAnimDelayedFire.
 ```
 
 ### Spy Effects
@@ -1116,6 +1133,9 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 
 ### Next
 
+![image](_static/images/swnext.gif)
+*Use `SW.Next` to link multiple ChronoSphere and ChronoWarp superweapons into a chained SuperWeapon system in [Cylearun](https://www.moddb.com/mods/Cylearun)*
+
 - Superweapons can now launch other superweapons at the same target. Launched types can be additionally randomized using the same rules as with LimboDelivery (see above).
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
@@ -1162,6 +1182,7 @@ Detonate.AtFirer=false      ; boolean
   - `Spawner.ExtraLimitRange` adds extra pursuit range on top of the weapon range.
 - `Spawner.DelayFrames` can be used to set the minimum number of game frames in between each spawn ejecting from the spawner. By default this is 9 frames for missiles and 20 for everything else.
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
+- `Spawner.UseTurretFacing`, if set, makes spawned aircraft face the same way as turret does upon being created if the spawner has a turret.
 - `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
 - `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled.
 - `Spawner.RecycleCoord` defines the relative position to the carrier that the spawned aircraft will head to.
@@ -1174,6 +1195,7 @@ Spawner.LimitRange=false           ; boolean
 Spawner.ExtraLimitRange=0          ; integer, range in cells
 Spawner.DelayFrames=               ; integer, game frames
 Spawner.AttackImmediately=false    ; boolean
+Spawner.UseTurretFacing=false      ; boolean
 Spawner.RecycleRange=-1            ; float, range in cells
 Spawner.RecycleAnim=               ; Animation
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
@@ -1424,7 +1446,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
-    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0. Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
+    - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
 
 In `rulesmd.ini`:
@@ -1434,12 +1456,16 @@ ForceWeapon.Naval.Decloaked=-1                  ; integer. 0 for primary weapon,
 ForceWeapon.Cloaked=-1                          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.Disguised=-1                        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.InRange=                            ; list of integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.InRange.Overrides=                  ; list of floating point value
+ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.InRange.Overrides=                  ; List of floating-point values
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
-ForceAAWeapon.InRange=                          ; list of integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceAAWeapon.InRange.Overrides=                ; list of floating point value
+ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+```
+
+```{note}
+Specifically, if a position has `Force(AA)Weapon.InRange` set to -1 and `Force(AA)Weapon.InRange.Overrides` set to a positive value, it'll use default weapon selection logic once satisfied.
 ```
 
 ### Initial spawns number
@@ -1520,12 +1546,14 @@ AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (non
 *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
+- Mind controllers now can decide which house can see the link drawn between itself and the controlled units.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
+MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
 ```
 
@@ -1561,6 +1589,22 @@ NoRearm.UnderEMP=        ; boolean
 NoRearm.Temporal=        ; boolean
 NoReload.UnderEMP=       ; boolean
 NoReload.Temporal=       ; boolean
+```
+
+### Overload characteristic dehardcoded
+
+- It is now possible to customize `Overload` behaviors for a TechnoType with `InfiniteMindControl=yes` weapon.
+
+In `rulesmd.ini`:
+```ini
+
+[SOMETECHNO]                  ; TechnoType
+Overload.Count=               ; list of integer, default to [CombatDamage] -> OverloadCount
+Overload.Damage=              ; list of integer, default to [CombatDamage] -> OverloadDamage
+Overload.Frames=              ; list of integer, default to [CombatDamage] -> OverloadFrames
+Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
+Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
+Overload.ParticleSysCount=5   ; integer
 ```
 
 ### Promoted Spawns
@@ -1772,7 +1816,7 @@ Note that the VehicleTypes had to be defined under [VehicleTypes] and use same i
 *Jumpjet Tilts in [Project Rush - Conquer](https://www.moddb.com/mods/project-rush-conquer)*
 
 - Now you can make jumpjets tilt forward when moving forward and sideways when turning by setting `JumpjetTilt` to true.
-- The maximum tilt angle will not exceed 45 degrees.
+- The maximum tilt angle will not exceed 90 degrees.
   - The magnitude of the forward tilt is related to the current speed and acceleration. They are additive and have two coefficients that can be adjusted for details.
   - The magnitude of the sideways tilt is related to the current speed and rotation angle. They are multiplied and also have two coefficients that can be adjusted for details.
 
@@ -1806,6 +1850,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 RemoveMindControl=false  ; boolean
+```
+
+### Warhead that can not kill
+
+- Warheads can now damage the enemy without killing them (minimum health will be 1).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; Warhead
+CanKill=true  ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
@@ -1968,9 +2022,9 @@ KillWeapon=                           ; WeaponType
 KillWeapon.OnFirer=                   ; WeaponType
 KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-     
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+
 [SOMETECHNO]                          ; TechnoType
 SuppressKillWeapons=false             ; boolean
 SuppressKillWeapons.Types=            ; List of WeaponTypes
@@ -2068,7 +2122,7 @@ RemoveDisguise=false  ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-Reveal=0     ; integer - cell radius, negative values mean reveal the entire map
+Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
 ```
 
 ### Sell or undeploy building on impact
@@ -2095,7 +2149,7 @@ BuildingUndeploy.Leave=false         ; boolean
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
-CreateGap=0     ; integer - cell radius, negative values mean shroud the entire map
+CreateGap=0    ; integer - cell radius, negative values mean shroud the entire map
 ```
 
 ### Spawn powerup crate

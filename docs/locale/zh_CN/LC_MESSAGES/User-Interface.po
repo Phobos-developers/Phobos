@@ -1648,7 +1648,7 @@ msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
 "are excluded from the number you specify)."
-msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。您可以使用新增的标签控制最大文本宽度（不包括边框）。"
+msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。你可以使用新增的标签控制最大文本宽度（不包括边框）。"
 
 #: ../../User-Interface.md:578
 msgid ""
@@ -1741,7 +1741,7 @@ msgstr ""
 msgid ""
 "The blur effect is resource intensive. Please make sure you really want "
 "to enable this effect, otherwise leave it to 0.0 so it stays disabled."
-msgstr "模糊效果非常占用资源，请确保您的确想要启用此效果，否则请保持 0.0 以禁用。"
+msgstr "模糊效果非常占用资源，请确保你的确想要启用此效果，否则请保持 0.0 以禁用。"
 
 #: ../../User-Interface.md:625
 msgid ""
