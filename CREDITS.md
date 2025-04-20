@@ -137,6 +137,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial strength for cloned infantry
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
+  - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
