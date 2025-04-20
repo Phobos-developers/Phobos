@@ -678,18 +678,21 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
-		else if (selfHealType == SelfHealGainType::Infantry && Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames)
+
+		if ((selfHealType == SelfHealGainType::Infantry)
+			? (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealInfantryFrames)
+			: (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames))
+		{
 			return;
-		else if (Unsorted::CurrentFrame % RulesClass::Instance->SelfHealUnitFrames)
-			return;
+		}
 
 		int amount = 0;
 
 		auto countSelfHealing = [pThis](const bool infantryHeal)
 			{
 				auto const pOwner = pThis->Owner;
-				const bool hasCap = RulesExt::Global()->InfantryGainSelfHealCap.isset();
-				const int cap = RulesExt::Global()->InfantryGainSelfHealCap.Get();
+				const bool hasCap = infantryHeal ? RulesExt::Global()->InfantryGainSelfHealCap.isset() : RulesExt::Global()->UnitsGainSelfHealCap.isset();
+				const int cap = infantryHeal ? RulesExt::Global()->InfantryGainSelfHealCap.Get() : RulesExt::Global()->UnitsGainSelfHealCap.Get();
 				int count = std::max(infantryHeal ? pOwner->InfantrySelfHeal : pOwner->UnitsSelfHeal, 1);
 
 				if (hasCap && count >= cap)
