@@ -762,55 +762,55 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pThis))
 	{
-		auto pCell = pTechno->GetCell();
+		const auto pType = pTechno->GetTechnoType();
+		const auto pCell = pTechno->GetCell();
 
-		if (!pCell ||
-			!pCell->IsClearToMove(pTechno->GetTechnoType()->SpeedType,
-			true, true, -1, pTechno->GetTechnoType()->MovementZone,
+		if (!pCell->IsClearToMove(pType->SpeedType,
+			true, true, -1, pType->MovementZone,
 				pCell->GetLevel(), pCell->ContainsBridge()))
 			return 0;
 
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		double ratio = 0.0;
+
+		if (pCell->Tile_Is_Water() && !pTechno->OnBridge)
+			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+		else
+			ratio = pTypeExt->FallingDownDamage.Get();
+
+		int pDamage = 0;
+
+		if (ratio < 0.0)
+			pDamage = int(pThis->Health * abs(ratio));
+		else if (ratio >= 0.0 && ratio <= 1.0)
+			pDamage = int(pType->Strength * ratio);
+		else
+			pDamage = int(ratio);
+
+		pThis->ReceiveDamage(&pDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
+
+		if (pThis->Health > 0 && pThis->IsAlive)
 		{
-			double ratio = 0.0;
+			pThis->IsABomb = false;
 
-			if (pCell->Tile_Is_Water() && !pTechno->OnBridge)
-				ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
-			else
-				ratio = pTypeExt->FallingDownDamage.Get();
-
-			int pDamage = 0;
-
-			if (ratio < 0.0)
-				pDamage = int(pThis->Health * abs(ratio));
-			else if (ratio >= 0.0 && ratio <= 1.0)
-				pDamage = int(pThis->GetTechnoType()->Strength * ratio);
-			else
-				pDamage = int(ratio);
-
-			pThis->ReceiveDamage(&pDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
-
-			if (pThis->Health > 0 && pThis->IsAlive)
+			if (pThis->WhatAmI() == AbstractType::Infantry)
 			{
-				pThis->IsABomb = false;
+				auto pInf = static_cast<InfantryClass*>(pTechno);
 
-				if (pThis->WhatAmI() == AbstractType::Infantry)
+				if (pCell->Tile_Is_Water())
 				{
-					auto pInf = abstract_cast<InfantryClass*>(pTechno);
-
-					if (pCell->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Swim)
+					if (pInf->SequenceAnim != Sequence::Swim)
 						pInf->PlayAnim(Sequence::Swim, true, false);
-					else if (!pCell->Tile_Is_Water() && pInf->SequenceAnim != Sequence::Guard)
-						pInf->PlayAnim(Sequence::Guard, true, false);
+				}
+				else
+				{
+					if (pInf->SequenceAnim != Sequence::Guard)
+						pInf->PlayAnim(Sequence::Ready, true, false);
 				}
 			}
-			else
-			{
-				pTechno->UpdatePosition(PCPType::During);
-			}
-
-			return 0x5F405B;
 		}
+
+		return 0x5F405B;
 	}
 
 	return 0;

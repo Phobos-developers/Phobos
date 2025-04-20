@@ -230,7 +230,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 						}
 						else if (inAir && !parachuted)
 						{
-				Down = true;
+							pTechno->IsFallingDown = true;
 						}
 					}
 

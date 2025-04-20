@@ -1730,6 +1730,19 @@ NoQueueUpToEnter=         ; boolean
 NoQueueUpToUnload=        ; boolean
 ```
 
+### Customized FallingDown Damage
+
+- Now you can customize the damage a unit receives when it falls from a bridge.
+ - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
+ - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+FallingDownDamage=              ; integer / percentage
+FallingDownDamage.Water=        ; integer / percentage
+```
+
 ## Terrain
 
 ### Destroy animation & sound
