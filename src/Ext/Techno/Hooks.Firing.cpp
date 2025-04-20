@@ -94,46 +94,42 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	enum { UseWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (ForceWeaponInRangeTemp::SelectWeaponByRange || !pThis)
 		return 0;
 
-	if (pThis->Target)
+	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
-
-		if (!pTarget)
-			return 0;
-
 		int forceWeaponIndex = -1;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		auto const pTargetType = pTarget->GetTechnoType();
+		auto const pTargetType = pTargetTechno->GetTechnoType();
 
 		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
 			pTargetType->Cloakable && pTargetType->Naval &&
-			pTarget->CloakState == CloakState::Uncloaked)
+			pTargetTechno->CloakState == CloakState::Uncloaked)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Naval_Decloaked;
 		}
 		else if (pTypeExt->ForceWeapon_Cloaked >= 0 &&
-			pTarget->CloakState == CloakState::Cloaked)
+			pTargetTechno->CloakState == CloakState::Cloaked)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Cloaked;
 		}
 		else if (pTypeExt->ForceWeapon_Disguised >= 0 &&
-			pTarget->IsDisguised())
+			pTargetTechno->IsDisguised())
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
 		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
-			pTarget->IsUnderEMP())
+			pTargetTechno->IsUnderEMP())
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
 		}
 		else if (!pTypeExt->ForceWeapon_InRange.empty() || !pTypeExt->ForceAAWeapon_InRange.empty())
 		{
 			ForceWeaponInRangeTemp::SelectWeaponByRange = true;
-			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange();
+			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTargetTechno);
 			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
 		}
 
