@@ -255,12 +255,11 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	}
 }
 
-int TechnoExt::ExtData::ApplyForceWeaponInRange()
+int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget)
 {
 	int forceWeaponIndex = -1;
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
-	auto const pTarget = pThis->Target;
 
 	const bool useAASetting = !pTypeExt->ForceAAWeapon_InRange.empty() && pTarget->IsInAir();
 	auto const& weaponIndices = useAASetting ? pTypeExt->ForceAAWeapon_InRange : pTypeExt->ForceWeapon_InRange;

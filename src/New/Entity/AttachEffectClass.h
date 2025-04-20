@@ -90,6 +90,7 @@ struct AttachEffectTechnoProperties
 	bool Cloakable;
 	bool ForceDecloak;
 	bool DisableWeapons;
+	bool Unkillable;
 	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
@@ -104,6 +105,7 @@ struct AttachEffectTechnoProperties
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, DisableWeapons { false }
+		, Unkillable { false }
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
