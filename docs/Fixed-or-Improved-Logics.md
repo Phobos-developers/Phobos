@@ -567,24 +567,6 @@ ProneSpeed.NoCrawls=1.5       ; floating point value, multiplier
 ProneSpeed=                   ; floating point value, multiplier, by default, use the corresponding global value according to Crawls
 ```
 
-## Techno
-
-### Airstrike target eligibility
-
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-- For non building situations, the default value is true.
-- Now it is possible to designate air strikes against non building targets.
-- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]
-AllowAirstrike=            ; boolean
-
-[SOMEWARHEAD]
-AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
-```
-
 ## Particle systems
 
 ### Fire particle target coordinate adjustment when firer rotates
@@ -837,6 +819,22 @@ In `artmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 Image=              ; name of the file that will be used as image, without extension
+```
+
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+- For non building situations, the default value is true.
+- Now it is possible to designate air strikes against non building targets.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+AllowAirstrike=            ; boolean
+
+[SOMEWARHEAD]
+AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Customizable veterancy insignias

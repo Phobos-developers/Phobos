@@ -135,6 +135,25 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_GetTintIntensity, 0x6)
+{
+	enum { SkipGameCode = 0x706389 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, intensity, EAX);
+
+	if (pThis->IsIronCurtained())
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
+	R->EBP(intensity);
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)
 {
 	enum { SkipTint = 0x7067E4 };
@@ -156,9 +175,17 @@ DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)
 	// Non-aircraft voxels do not need custom tint color applied again, discard that component for them.
 	int discardColor = 0;
 	TechnoExt::ApplyCustomTintValues(pThis, rtti == AbstractType::Aircraft ? color : discardColor, intensity);
-	R->EAX(intensity);
 
-	return 0;
+	if (pThis->IsIronCurtained())
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
+	R->EDI(intensity);
+	return SkipTint;
 }
 
 DEFINE_HOOK(0x43FA19, BuildingClass_Mark_TintIntensity, 0x7)

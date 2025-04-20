@@ -9,7 +9,7 @@ DEFINE_JUMP(LJMP, 0x6D481D, 0x6D482D)
 
 DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 {
-	enum { ContinueCheck = 0x6F349F, Primary = 0x6F37AD, Secondary = 0x6F3807 };
+	enum { Primary = 0x6F37AD, Secondary = 0x6F3807 };
 
 	GET(TechnoClass*, pTargetTechno, EBP);
 
@@ -47,19 +47,22 @@ DEFINE_HOOK(0x41D97B, AirstrikeClass_Fire_SetAirstrike, 0x7)
 	return pTarget->WhatAmI() == AbstractType::Building ? ContinueIn : Skip;
 }
 
-DEFINE_HOOK_AGAIN(0x41DA80, AirstrikeClass_ResetTarget_SetTarget, 0x6)
-DEFINE_HOOK(0x41DA52, AirstrikeClass_ResetTarget_SetTarget, 0x6)// Allow airstrike target to foot
+DEFINE_HOOK(0x41DA52, AirstrikeClass_ResetTarget_OriginalTarget, 0x6)
 {
-	if (R->Origin() == 0x41DA52)
-	{
-		R->EDI(R->ESI());
-		return 0x41DA7C;
-	}
-	else
-	{
-		R->ESI(R->EBX());
-		return 0x41DA9C;
-	}
+	enum { SkipGameCode = 0x41DA7C };
+
+	R->EDI(R->ESI());
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x41DA80, AirstrikeClass_ResetTarget_NewTarget, 0x6)
+{
+	enum { SkipGameCode = 0x41DA9C };
+
+	R->ESI(R->EBX());
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x41DAA4, AirstrikeClass_ResetTarget_ResetForOldTarget, 0xA)
@@ -230,7 +233,7 @@ DEFINE_HOOK(0x448DF1, BuildingClass_SetOwningHouse_Airstrike, 0x6)
 	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
-DEFINE_HOOK(0x448DF1, BuildingClass_PlayAnim_Airstrike, 0x6)
+DEFINE_HOOK(0x451ABC, BuildingClass_PlayAnim_Airstrike, 0x6)
 {
 	enum { ContinueTintIntensity = 0x451AEB, NonAirstrike = 0x451AF5 };
 
@@ -270,78 +273,4 @@ DEFINE_HOOK(0x456FD3, BuildingClass_GetEffectTintIntensity_Airstrike, 0x6)
 	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
-DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_GetTintIntensity, 0x6)
-{
-	enum { SkipGameCode = 0x706389 };
-
-	GET(TechnoClass*, pThis, ESI);
-	GET(int, intensity, EAX);
-
-	if (pThis->IsIronCurtained())
-		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->AirstrikeTargetingMe)
-		intensity = pThis->GetAirstrikeTintIntensity(intensity);
-
-	R->EBP(intensity);
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_GetTintIntensity, 0x5)
-{
-	enum { SkipGameCode = 0x7067E4 };
-
-	GET(TechnoClass*, pThis, EBP);
-	GET(int, intensity, EAX);
-
-	if (pThis->IsIronCurtained())
-		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
-
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->AirstrikeTargetingMe)
-		intensity = pThis->GetAirstrikeTintIntensity(intensity);
-
-	R->EDI(intensity);
-	return SkipGameCode;
-}
-
 #pragma endregion
-
-DEFINE_HOOK(0x43D386, BuildingClass_Draw_LaserTargetColor, 0x6)
-{
-	enum { SkipGameCode = 0x43D38C };
-
-	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	R->EAX(pExt->AirstrikeTargetingMe);
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x43DC1C, BuildingClass_DrawFogged_LaserTargetColor, 0x6)
-{
-	enum { SkipGameCode = 0x43DC22 };
-
-	GET(BuildingClass*, pThis, EBP);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	R->EAX(pExt->AirstrikeTargetingMe);
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x42342E, AnimClass_Draw_LaserTargetColor, 0x6)
-{
-	enum { SkipGameCode = 0x423434 };
-
-	GET(BuildingClass*, pThis, ECX);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	R->EAX(pExt->AirstrikeTargetingMe);
-
-	return SkipGameCode;
-}
