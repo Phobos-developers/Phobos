@@ -328,95 +328,57 @@ DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 	return 0x65BB6D;
 }
 
-DEFINE_HOOK(0x65BAC1, RadSiteClass_Radiate_Increase, 0x8)
+DEFINE_HOOK_AGAIN(0x65BE01, RadSiteClass_UpdateLevel, 0x6)// RadSiteClass_DecreaseRadiation_Decrease
+DEFINE_HOOK_AGAIN(0x65BC6E, RadSiteClass_UpdateLevel, 0x6)// RadSiteClass_Deactivate_Decrease
+DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Increase
 {
-	enum { SkipGameCode = 0x65BB11 };
+	enum { SkipGameCode = 0x65BB11, SkipGameCode2 = 0x65BCBD, SkipGameCode3 = 0x65BE4C };
 
 	GET(RadSiteClass*, pThis, EDX);
 	GET(int, distance, EAX);
 	const int max = pThis->SpreadInLeptons;
 
-	if (distance > max)
+	if (distance <= max)
+	{
+		CellStruct* cell = nullptr;
+
+		if (R->Origin() == 0x65BAC1)
+			cell = R->lea_Stack<CellStruct*>(STACK_OFFSET(0x60, -0x4C));
+		else if (R->Origin() == 0x65BC6E)
+			cell = R->lea_Stack<CellStruct*>(STACK_OFFSET(0x70, -0x5C));
+		else
+			cell = R->lea_Stack<CellStruct*>(STACK_OFFSET(0x60, -0x50));
+
+		if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(*cell)))
+		{
+			auto& radLevels = pCellExt->RadLevels;
+
+			const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
+
+			if (R->Origin() == 0x65BAC1)
+			{
+				const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
+
+				if (it != radLevels.end())
+					it->Level += amount;
+				else
+					radLevels.emplace_back(pThis, amount);
+			}
+			else
+			{
+				if (it != radLevels.end())
+				{
+					const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
+					it->Level -= amount;
+				}
+			}
+		}
+	}
+
+	if (R->Origin() == 0x65BAC1)
 		return SkipGameCode;
-
-	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x60, -0x4C));
-	const auto pCell = MapClass::Instance.TryGetCellAt(*cell);
-
-	if (!pCell)
-		return SkipGameCode;
-
-	const auto pCellExt = CellExt::ExtMap.Find(pCell);
-	auto& radLevels = pCellExt->RadLevels;
-
-	const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
-	const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
-
-	if (it != radLevels.end())
-		it->Level += amount;
+	else if (R->Origin() == 0x65BC6E)
+		return SkipGameCode2;
 	else
-		radLevels.emplace_back(pThis, amount);
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x65BC6E, RadSiteClass_Deactivate_Decrease, 0x6)
-{
-	enum { SkipGameCode = 0x65BCBD };
-
-	GET(RadSiteClass*, pThis, EDX);
-	GET(int, distance, EAX);
-	const int max = pThis->SpreadInLeptons;
-
-	if (distance > max)
-		return SkipGameCode;
-
-	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x70, -0x5C));
-	const auto pCell = MapClass::Instance.TryGetCellAt(*cell);
-
-	if (!pCell)
-		return SkipGameCode;
-
-	const auto pCellExt = CellExt::ExtMap.Find(pCell);
-	auto& radLevels = pCellExt->RadLevels;
-
-	const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
-
-	if (it != radLevels.end())
-	{
-		const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
-		it->Level -= amount;
-	}
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x65BE01, RadSiteClass_DecreaseRadiation_Decrease, 0x6)
-{
-	enum { SkipGameCode = 0x65BE4C };
-
-	GET(RadSiteClass*, pThis, EDX);
-	GET(int, distance, EAX);
-	const int max = pThis->SpreadInLeptons;
-
-	if (distance > max)
-		return SkipGameCode;
-
-	LEA_STACK(CellStruct*, cell, STACK_OFFSET(0x60, -0x50));
-	const auto pCell = MapClass::Instance.TryGetCellAt(*cell);
-
-	if (!pCell)
-		return SkipGameCode;
-
-	const auto pCellExt = CellExt::ExtMap.Find(pCell);
-	auto& radLevels = pCellExt->RadLevels;
-
-	const auto it = std::find_if(radLevels.begin(), radLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
-
-	if (it != radLevels.end())
-	{
-		const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
-		it->Level -= amount;
-	}
-
-	return SkipGameCode;
+		return SkipGameCode3;
 }
