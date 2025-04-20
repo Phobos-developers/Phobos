@@ -61,6 +61,8 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
 
+		Nullable<float> HarvesterDumpAmount;
+
 		Valueable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
 		Valueable<int> Ammo_AutoDeployMaximumAmount;
@@ -406,6 +408,8 @@ public:
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
+
+			, HarvesterDumpAmount {}
 
 			, Ammo_AddOnDeploy { 0 }
 			, Ammo_AutoDeployMinimumAmount { -1 }

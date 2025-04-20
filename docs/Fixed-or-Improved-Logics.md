@@ -1475,6 +1475,20 @@ In `artmd.ini`:
 TurretShadow=   ; boolean
 ```
 
+### Customize harvester dump amount
+
+- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
+- Equal or less 0 means no limit, it will always dump out all at one time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterDumpAmount=0.0f              ; float point value
+
+[SOMEVEHICLE]
+HarvesterDumpAmount=                  ; float point value
+```
+
 ## Veinholes & Weeds
 
 ### Veinholes
