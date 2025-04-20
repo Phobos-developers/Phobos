@@ -360,7 +360,7 @@ New:
 - [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)
 - [Warhead that can not kill](New-or-Enhanced-Logics.md#warhead-that-cannot-kill) (by FS-21)
 - [Customize parasite culling targets](Fixed-or-Improved-Logics.md#customizing-parasite-culling-targets) (by NetsuNegi)
-- Customize the damage taken when `IsFallingDown=true` (by FlyStar)
+- Customize the damage taken when falling from a bridge (by FlyStar)
 
 Vanilla fixes:
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
