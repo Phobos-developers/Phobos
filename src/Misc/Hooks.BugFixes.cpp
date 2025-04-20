@@ -1647,6 +1647,13 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 	return 0x5F5311;
 }
 
+// I think no one wants to see wild pointers caused by WW's negligence
+DEFINE_HOOK(0x4D9A62, FootClass_PointerExpired_RemoveDestination, 0xA)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x8, 0x4));
+	return removed ? 0x4D9ABD : 0;
+}
+
 #pragma endregion
 
 // IsSonic wave drawing uses fixed-size arrays accessed with index that is determined based on factors like wave lifetime,
