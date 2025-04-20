@@ -1483,7 +1483,7 @@ TurretShadow=   ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-HarvesterDumpAmount=0.0f              ; float point value
+HarvesterDumpAmount=0.0               ; float point value
 
 [SOMEVEHICLE]
 HarvesterDumpAmount=                  ; float point value
