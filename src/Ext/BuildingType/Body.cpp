@@ -152,19 +152,16 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 
 				if (absType == AbstractType::Infantry || absType == AbstractType::Unit)
 				{
-					const auto pCellTechno = static_cast<TechnoClass*>(pObject);
-					const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pCellTechno->GetTechnoType());
+					const auto pFoot = static_cast<FootClass*>(pObject);
 
-					if ((!pTypeExt || !pTypeExt->CanBeBuiltOn) && pCellTechno != pExceptTechno) // No need to check house
+					if (!TechnoTypeExt::ExtMap.Find(pFoot->GetTechnoType())->CanBeBuiltOn && pFoot != pExceptTechno) // No need to check house
 					{
-						const auto pFoot = static_cast<FootClass*>(pCellTechno);
-
 						if (pFoot->GetCurrentSpeed() <= 0 || !pFoot->Locomotor->Is_Moving())
 						{
 							if (absType == AbstractType::Infantry)
 								++infantryCount.X;
 
-							checkedTechnos.push_back(pCellTechno);
+							checkedTechnos.push_back(pFoot);
 						}
 					}
 				}
