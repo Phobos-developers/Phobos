@@ -218,6 +218,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead.
 - Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
+- Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 
 ## Fixes / interactions with other extensions
 
