@@ -446,7 +446,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
   - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
   - Jumpjet Tilts While Moving
-  - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupable building that has been removed and is not real dead
+  - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
