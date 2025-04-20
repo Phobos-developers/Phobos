@@ -767,7 +767,7 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 
 		if (!pCell->IsClearToMove(pType->SpeedType,
 			true, true, -1, pType->MovementZone,
-				pCell->GetLevel(), pCell->ContainsBridge()))
+			pCell->GetLevel(), pCell->ContainsBridge()))
 			return 0;
 
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -814,3 +814,4 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 	}
 
 	return 0;
+}

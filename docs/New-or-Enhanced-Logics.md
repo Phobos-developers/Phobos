@@ -1735,6 +1735,7 @@ NoQueueUpToUnload=        ; boolean
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
  - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
 
 In `rulesmd.ini`:
 ```ini
