@@ -744,3 +744,41 @@ DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Dri
 
 	return R->Origin() + 0x6;
 }
+
+DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
+{
+	enum { ExecuteCulling = 0x62A0B7, CannotCulling = 0x62A0D3 };
+
+	GET(ParasiteClass*, pThis, ESI);
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
+}
+
+#pragma region RadarDrawing
+
+DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
+{
+	enum { Invisible = 0x655E66, GoOtherChecks = 0x655E19 };
+
+	GET_STACK(bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
+	GET(TechnoClass*, pTechno, EBP);
+
+	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
+		return Invisible;
+
+	auto pType = pTechno->GetTechnoType();
+
+	if (pType->RadarInvisible)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
+			return Invisible;
+	}
+
+	return GoOtherChecks;
+}
+
+#pragma endregion

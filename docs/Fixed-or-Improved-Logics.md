@@ -1082,6 +1082,16 @@ UnitPowerDrain=false  ; boolean
 Power=0               ; integer, positive means output, negative means drain
 ```
 
+### RadarInvisible for non-enemy house
+
+- In vanilla, `RadarInvisible` is ignored if the techno is allied with the current player. Now you can change this behavior.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                         ; TechnoType
+RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if `RadarInvisible=true`, none otherwise
+```
+
 ### Re-enable obsolete [JumpjetControls]
 
 - Re-enable obsolete `[JumpjetControls]`, the keys in it will be as the default value of jumpjet units.
@@ -1655,6 +1665,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Customizing parasite culling targets
+
+- Now you can specify which targets the parasite will culling them.
+
+In `rulesmd.ini`
+```ini
+[SOMEWARHEAD]                     ; WarheadType
+Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 ```
 
 ### Delay automatic attack on the controlled unit
