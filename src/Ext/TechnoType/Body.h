@@ -11,6 +11,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 
 class Matrix3D;
@@ -211,6 +212,9 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
+		Nullable<SelectBoxTypeClass*> SelectBox;
+		Valueable<bool> HideSelectBox;
+
 		Valueable<int> AmmoPipFrame;
 		Valueable<int> EmptyAmmoPipFrame;
 		Valueable<int> AmmoPipWrapStartFrame;
@@ -279,6 +283,8 @@ public:
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
+    
+		Nullable<bool> AllowAirstrike;
 
 		Nullable<UnitTypeClass*> Image_ConditionYellow;
 		Nullable<UnitTypeClass*> Image_ConditionRed;
@@ -518,6 +524,9 @@ public:
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
+			, SelectBox {}
+			, HideSelectBox { false }
+
 			, AmmoPipFrame { 13 }
 			, EmptyAmmoPipFrame { -1 }
 			, AmmoPipWrapStartFrame { 14 }
@@ -587,6 +596,8 @@ public:
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }
+
+			, AllowAirstrike { }
 
       		, Image_ConditionYellow { }
 			, Image_ConditionRed { }

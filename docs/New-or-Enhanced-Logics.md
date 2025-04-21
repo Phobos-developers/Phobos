@@ -130,7 +130,7 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
@@ -300,7 +300,7 @@ SelfHealing=0.0                             ; floating point value, percents or 
 SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
-SelfHealing.EnabledBy=                      ; List of BuildingType names
+SelfHealing.EnabledBy=                      ; List of BuildingTypes
 Respawn=0.0                                 ; floating point value, percents or absolute
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
@@ -587,21 +587,6 @@ In `rulesmd.ini`:
 PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
-```
-
-### Skip anim delay for burst fire
-
-- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
-- Now you can implement the above logic using the following flag.
-
-In `artmd.ini`:
-```ini
-[SOMEBUILDING]                     ; BuildingType
-IsAnimDelayedBurst=true            ; boolean
-```
-
-```{note}
-The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore IsAnimDelayedFire.
 ```
 
 ### Spy Effects
@@ -1599,9 +1584,9 @@ In `rulesmd.ini`:
 ```ini
 
 [SOMETECHNO]                  ; TechnoType
-Overload.Count=               ; list of integer, default to [CombatDamage] -> OverloadCount
-Overload.Damage=              ; list of integer, default to [CombatDamage] -> OverloadDamage
-Overload.Frames=              ; list of integer, default to [CombatDamage] -> OverloadFrames
+Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
+Overload.Damage=              ; List of integers, default to [CombatDamage] -> OverloadDamage
+Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
 Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
 Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
 Overload.ParticleSysCount=5   ; integer
@@ -1858,8 +1843,8 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]  ; Warhead
-CanKill=true  ; boolean
+[SOMEWARHEAD]  ; WarheadType
+CanKill=true   ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
