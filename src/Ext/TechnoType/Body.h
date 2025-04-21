@@ -11,6 +11,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 
 class Matrix3D;
@@ -210,6 +211,9 @@ public:
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+
+		Nullable<SelectBoxTypeClass*> SelectBox;
+		Valueable<bool> HideSelectBox;
 
 		Valueable<int> AmmoPipFrame;
 		Valueable<int> EmptyAmmoPipFrame;
@@ -516,6 +520,9 @@ public:
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
+
+			, SelectBox {}
+			, HideSelectBox { false }
 
 			, AmmoPipFrame { 13 }
 			, EmptyAmmoPipFrame { -1 }
