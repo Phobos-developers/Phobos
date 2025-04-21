@@ -117,6 +117,7 @@ This page lists all the individual contributions to the project by their author.
   - Ares detection and integration
   - Help with custom locomotors
   - Extension class optimization
+  - Overload characteristic dehardcoded
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -136,6 +137,7 @@ This page lists all the individual contributions to the project by their author.
   - Initial strength for cloned infantry
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
+  - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -376,6 +378,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Customize parasite culling targets
+  - Customize harvester dump amount
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -444,6 +447,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
   - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
   - Jumpjet Tilts While Moving
+  - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
+  - Fix an issue that game crashes when spawnee has been removed and is not real dead
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -482,6 +487,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that healing weapons could not automatically acquire aerial targets
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
   - Prone speed customization
+  - RadarInvisible for non-enemy house
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

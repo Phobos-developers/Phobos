@@ -275,6 +275,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
+	this->MindControlLink_VisibleToHouse.Read(exINI, pSection, "MindControlLink.VisibleToHouse");
 	this->FactoryPlant_Multiplier.Read(exINI, pSection, "FactoryPlant.Multiplier");
 
 	this->Spawner_LimitRange.Read(exINI, pSection, "Spawner.LimitRange");
@@ -298,6 +299,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ReloadInTransport.Read(exINI, pSection, "ReloadInTransport");
 	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
+
+	this->HarvesterDumpAmount.Read(exINI, pSection, "HarvesterDumpAmount");
 
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
 	this->Ammo_AutoDeployMinimumAmount.Read(exINI, pSection, "Ammo.AutoDeployMinimumAmount");
@@ -526,7 +529,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Promote_VeteranAnimation.Read(exINI, pSection, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, pSection, "Promote.EliteAnimation");
+  
+	this->RadarInvisibleToHouse.Read(exINI, pSection, "RadarInvisibleToHouse");
 
+	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
+	this->Overload_Damage.Read(exINI, pSection, "Overload.Damage");
+	this->Overload_Frames.Read(exINI, pSection, "Overload.Frames");
+	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
+	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
+	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
+  
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
 
@@ -702,6 +714,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
+		.Process(this->MindControlLink_VisibleToHouse)
 		.Process(this->FactoryPlant_Multiplier)
 
 		.Process(this->InterceptorType)
@@ -730,6 +743,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForbidParallelAIQueues)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
+
+		.Process(this->HarvesterDumpAmount)
 
 		.Process(this->Ammo_AddOnDeploy)
 		.Process(this->Ammo_AutoDeployMinimumAmount)
@@ -975,6 +990,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
+    
+		.Process(this->RadarInvisibleToHouse)
+
+		.Process(this->Overload_Count)
+		.Process(this->Overload_Damage)
+		.Process(this->Overload_Frames)
+		.Process(this->Overload_DeathSound)
+		.Process(this->Overload_ParticleSys)
+		.Process(this->Overload_ParticleSysCount)
     
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
