@@ -67,8 +67,8 @@ namespace Savegame
 
 	#pragma warning(pop)
 
-	static std::unordered_map<void*, std::shared_ptr<void>> GlobalSharedRegistry;
-	static void ClearSharedRegistry() { GlobalSharedRegistry.clear(); } // Probably useless
+	static std::unordered_map<void*, std::weak_ptr<void>> GlobalSharedRegistry;
+	static void ClearSharedRegistry() { GlobalSharedRegistry.clear(); }
 
 	template <typename T>
 	T* RestoreObject(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -332,32 +332,25 @@ namespace Savegame
 	{
 		bool ReadFromStream(PhobosStreamReader& Stm, std::shared_ptr<T>& Value, bool RegisterForChange) const
 		{
-			long useCount = 0;
-			if (Stm.Load(useCount))
+			T* ptrOld = nullptr;
+			if (Stm.Load(ptrOld) && ptrOld)
 			{
-				T* ptrOld = nullptr;
-				if (Stm.Load(ptrOld) && ptrOld)
+				std::shared_ptr<T> ptrNew = ObjectFactory<T>()(Stm);
+				if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
 				{
-					std::shared_ptr<T> ptrNew = ObjectFactory<T>()(Stm);
-					if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
+					auto it = GlobalSharedRegistry.find(ptrOld);
+					if (it != GlobalSharedRegistry.end())
 					{
-						auto it = GlobalSharedRegistry.find(ptrOld);
-						if (it != GlobalSharedRegistry.end())
-						{
-							Value = std::static_pointer_cast<T>(it->second);
-						}
-						else
-						{
-							Value = ptrNew;
-							GlobalSharedRegistry[ptrOld] = ptrNew;
-							PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
-						}
-
-						if (Value.use_count() >= (useCount + 1))
-							GlobalSharedRegistry.erase(ptrOld);
-
-						return true;
+						Value = std::static_pointer_cast<T>(it->second.lock());
 					}
+					else
+					{
+						Value = ptrNew;
+						GlobalSharedRegistry[ptrOld] = ptrNew;
+						PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
+					}
+
+					return true;
 				}
 			}
 
@@ -367,7 +360,6 @@ namespace Savegame
 
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::shared_ptr<T>& Value) const
 		{
-			Stm.Save(Value.use_count());
 			return PersistObject(Stm, Value.get());
 		}
 	};
