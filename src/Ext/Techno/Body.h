@@ -68,6 +68,8 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 
+		AirstrikeClass* AirstrikeTargetingMe;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -110,6 +112,7 @@ public:
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, AirstrikeTargetingMe { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
