@@ -1360,12 +1360,14 @@ msgid ""
 "Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead."
 msgstr ""
+"修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）。"
 
 #: ../../Fixed-or-Improved-Logics.md:221
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead."
 msgstr ""
+"修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:223
 msgid "Fixes / interactions with other extensions"
@@ -4140,13 +4142,14 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1102
 msgid "RadarInvisible for non-enemy house"
-msgstr ""
+msgstr "不仅限于敌方的 `RadarInvisible`"
 
 #: ../../Fixed-or-Improved-Logics.md:1104
 msgid ""
 "In vanilla, `RadarInvisible` is ignored if the techno is allied with the "
 "current player. Now you can change this behavior."
 msgstr ""
+"在原版游戏中 `RadarInvisible` 仅对当前非友军的玩家有效，现在你可以更改这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:1107
 msgid ""
@@ -5223,21 +5226,22 @@ msgstr ""
 "TurretShadow=   ; boolean\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1505
-#, fuzzy
 msgid "Customize harvester dump amount"
-msgstr "自定义采矿动画"
+msgstr "自定单次倒矿量"
 
 #: ../../Fixed-or-Improved-Logics.md:1507
 msgid ""
 "Now you can limit how much ore the harvester can dump out per time, like "
 "it in Tiberium Sun."
 msgstr ""
+"现在你可以限制矿车每次倒矿时卸载的矿石量，就像《泰伯利亚之日》中的设定"
 
 #: ../../Fixed-or-Improved-Logics.md:1508
 msgid ""
 "Less than or equal to 0 means no limit, it will always dump out all at "
 "one time."
 msgstr ""
+"若该值小于等于 0 则表示一次倒完，就像《红色警戒2》中原本的行为"
 
 #: ../../Fixed-or-Improved-Logics.md:1511
 msgid ""
