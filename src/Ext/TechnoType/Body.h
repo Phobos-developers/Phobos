@@ -293,12 +293,12 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
-    Nullable<double> DamagedSpeed;
+		Nullable<double> DamagedSpeed;
 
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
     
-    Nullable<int> CrushLevel;
+		Nullable<int> CrushLevel;
 		Nullable<int> Vet_CrushLevel;
 		Nullable<int> Elite_CrushLevel;
 		Nullable<int> CrushableLevel;

@@ -50,6 +50,7 @@ DEFINE_HOOK(0x73B013, UnitClass_PerCellProcess_CrusherWall, 0x6)
 
 	GET(OverlayTypeClass*, pOverlay, ESI);
 
+	// WW's code, ArrayIndex=0 is GASAND in default case, I guess it means sand bag is crushable
 	if (!pOverlay->ArrayIndex || pOverlay->Crushable)
 		return CanCrush;
 

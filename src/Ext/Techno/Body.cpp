@@ -433,7 +433,8 @@ bool TechnoExt::IsTypeImmune(TechnoClass* pThis, TechnoClass* pSource)
 
 int TechnoExt::GetCrushLevel(FootClass* pThis)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	switch (pThis->Veterancy.GetRemainingLevel())
 	{
@@ -450,8 +451,6 @@ int TechnoExt::GetCrushLevel(FootClass* pThis)
 			return pTypeExt->CrushLevel.Get();
 	}
 
-	const auto pType = pThis->GetTechnoType();
-
 	if (pType->OmniCrusher)
 		return RulesExt::Global()->OmniCrusherLevel;
 
@@ -463,7 +462,8 @@ int TechnoExt::GetCrushLevel(FootClass* pThis)
 
 int TechnoExt::GetCrushableLevel(FootClass* pThis)
 {
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	const auto rank = pThis->Veterancy.GetRemainingLevel();
 	const auto pInfantry = specific_cast<InfantryClass*>(pThis);
@@ -507,8 +507,6 @@ int TechnoExt::GetCrushableLevel(FootClass* pThis)
 			if (pTypeExt->CrushableLevel.isset())
 				return pTypeExt->CrushableLevel.Get();
 		}
-
-		const auto pType = pThis->GetTechnoType();
 
 		if (pType->OmniCrushResistant)
 			return RulesExt::Global()->OmniCrushResistantLevel;
