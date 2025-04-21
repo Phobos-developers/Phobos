@@ -123,7 +123,7 @@ private:
 	int SelfHealing_RestartInCombatDelay_Warhead;
 	double Respawn_Warhead;
 	int Respawn_Rate_Warhead;
-	std::vector<AnimTypeClass*> Respawn_Anims_Warhead;
+	std::vector<AnimTypeClass*> Respawn_Anim_Warhead;
 	WeaponTypeClass* Respawn_Weapon_Warhead;
 
 	int LastBreakFrame;

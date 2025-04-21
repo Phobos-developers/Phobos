@@ -90,7 +90,7 @@ public:
 		Nullable<double> Shield_Respawn_Amount;
 		Valueable<int> Shield_Respawn_Rate;
 		Valueable<bool> Shield_Respawn_RestartTimer;
-		ValueableVector<AnimTypeClass*> Shield_Respawn_Anims;
+		ValueableVector<AnimTypeClass*> Shield_Respawn_Anim;
 		Nullable<WeaponTypeClass*> Shield_Respawn_Weapon;
 		Valueable<int> Shield_SelfHealing_Duration;
 		Nullable<double> Shield_SelfHealing_Amount;
@@ -265,7 +265,7 @@ public:
 			, Shield_Respawn_Rate { -1 }
 			, Shield_Respawn_Rate_InMinutes { -1.0 }
 			, Shield_Respawn_RestartTimer { false }
-			, Shield_Respawn_Anims { }
+			, Shield_Respawn_Anim { }
 			, Shield_Respawn_Weapon { }
 			, Shield_SelfHealing_Duration { 0 }
 			, Shield_SelfHealing_Amount { }

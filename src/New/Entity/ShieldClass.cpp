@@ -95,7 +95,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
-		.Process(this->Respawn_Anims_Warhead)
+		.Process(this->Respawn_Anim_Warhead)
 		.Process(this->Respawn_Weapon_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
@@ -720,7 +720,7 @@ void ShieldClass::RespawnShield()
 		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
 		this->UpdateTint();
-		const auto pAnimList = timerWHModifier->InProgress() ? this->Respawn_Anims_Warhead : this->Type->Respawn_Anims;
+		const auto pAnimList = timerWHModifier->InProgress() ? this->Respawn_Anim_Warhead : this->Type->Respawn_Anim;
 		const auto pWeapon = timerWHModifier->InProgress() ? this->Respawn_Weapon_Warhead : this->Type->Respawn_Weapon;
 
 		if (!pAnimList.empty())
@@ -753,7 +753,7 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
-	this->Respawn_Anims_Warhead = anim;
+	this->Respawn_Anim_Warhead = anim;
 	this->Respawn_Weapon_Warhead = weapon ? weapon : Type->Respawn_Weapon;
 
 	timerWHModifier->Start(duration);
