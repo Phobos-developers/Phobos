@@ -1648,10 +1648,15 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 }
 
 // I think no one wants to see wild pointers caused by WW's negligence
-DEFINE_HOOK(0x4D9A62, FootClass_PointerExpired_RemoveDestination, 0xA)
+DEFINE_HOOK(0x4D9A1B, FootClass_PointerExpired_RemoveDestination, 0x6)
 {
 	GET_STACK(bool, removed, STACK_OFFSET(0x1C, 0x8));
-	return removed ? 0x4D9ABD : 0;
+
+	if (removed)
+		return 0x4D9ABD;
+
+	R->BL(true);
+	return 0x4D9A25;
 }
 
 namespace RemoveSpawneeHelper
