@@ -283,7 +283,7 @@ public:
 
 		Valueable<int> Power;
     
-    Nullable<bool> AllowAirstrike;
+		Nullable<bool> AllowAirstrike;
 
 		Nullable<UnitTypeClass*> Image_ConditionYellow;
 		Nullable<UnitTypeClass*> Image_ConditionRed;
