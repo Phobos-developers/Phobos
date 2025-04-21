@@ -27,6 +27,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
+	const bool unkillable = !pWHExt->CanKill || pExt->AE.Unkillable;
+	int nDamageLeft = *args->Damage;
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && *args->Damage)
@@ -104,42 +106,47 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
-			if (pShieldData->IsActive())
+			if (!pShieldData->IsActive())
 			{
-				int nDamageLeft = pShieldData->ReceiveDamage(args);
+				int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
 
-				if (nDamageLeft >= 0)
+				// Check if the warhead can not kill targets
+				if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
 				{
-					*args->Damage = nDamageLeft;
-
-					if (auto pTag = pThis->AttachedTag)
-						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
-				}
-
-				if (nDamageLeft == 0)
+					*args->Damage = 0;
+					pThis->Health = 1;
+					pThis->EstimatedHealth = 1;
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
-			}
-			else if (pShieldData->Timers.Respawn.HasStarted())
-			{
-				bool whModifiersApplied = pShieldData->Timers.Respawn_WHModifier.InProgress();
-				bool restart = whModifiersApplied ? pShieldData->Respawn_RestartInCombat_Warhead : pShieldData->Type->Respawn_RestartInCombat;
-
-				if (restart)
-				{
-					int delay = whModifiersApplied ? pShieldData->Respawn_RestartInCombatDelay_Warhead : pShieldData->Type->Respawn_RestartInCombatDelay;
-
-					if (delay > 0)
-					{
-						pShieldData->Timers.Respawn_CombatRestart.Start(pShieldData->Type->Respawn_RestartInCombatDelay);
-						pShieldData->Timers.Respawn.Stop();
-					}
-					else
-					{
-						const int rate = whModifiersApplied ? pShieldData->Respawn_Rate_Warhead : pShieldData->Type->Respawn_Rate;
-						pShieldData->Timers.Respawn.Start(rate); // when attacked, restart the timer
-					}
 				}
+
+				pShieldData->SetRespawnRestartInCombat();
+
+				return 0;
 			}
+
+			nDamageLeft = pShieldData->ReceiveDamage(args);
+
+			if (nDamageLeft >= 0)
+			{
+				*args->Damage = nDamageLeft;
+
+				if (auto pTag = pThis->AttachedTag)
+					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
+			}
+
+			if (nDamageLeft == 0)
+				ReceiveDamageTemp::SkipLowDamageCheck = true;
+		}
+
+		// Update remaining damage and check if the target will die and should be avoided
+		int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
+
+		if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+		{
+			*args->Damage = 0;
+			pThis->Health = 1;
+			pThis->EstimatedHealth = 1;
+			ReceiveDamageTemp::SkipLowDamageCheck = true;
 		}
 	}
 
@@ -303,7 +310,10 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	if (pWHExt->Reflected)
 		return 0;
 
-	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || pWHExt->SuppressReflectDamage_Types.size() > 0))
+	const bool suppressByType = pWHExt->SuppressReflectDamage_Types.size() > 0;
+	const bool suppressByGroup = pWHExt->SuppressReflectDamage_Groups.size() > 0;
+
+	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || suppressByType || suppressByGroup))
 	{
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
@@ -315,11 +325,20 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			if (!pType->ReflectDamage)
 				continue;
 
-			if (pWHExt->SuppressReflectDamage && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+			if (pType->ReflectDamage_Chance < ScenarioClass::Instance->Random.RandomDouble())
 				continue;
 
+			if (pWHExt->SuppressReflectDamage)
+			{
+				if (suppressByType && pWHExt->SuppressReflectDamage_Types.Contains(pType))
+					continue;
+
+				if (suppressByGroup && pType->HasGroups(pWHExt->SuppressReflectDamage_Groups, false))
+					continue;
+			}
+
 			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
-			int damage = static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier);
+			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
 
 			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
 			{

@@ -35,6 +35,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
+	, IsSelfHealingEnabled { true }
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
@@ -101,6 +102,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Respawn_Weapon_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
+		.Process(this->IsSelfHealingEnabled)
 		.Success();
 }
 
@@ -435,8 +437,13 @@ void ShieldClass::AI()
 		return;
 
 	this->OnlineCheck();
-	this->RespawnShield();
-	this->SelfHealing();
+	this->EnabledByCheck();
+
+	if (this->IsSelfHealingEnabled)
+	{
+		this->RespawnShield();
+		this->SelfHealing();
+	}
 
 	double ratio = this->Techno->GetHealthPercentage();
 
@@ -467,6 +474,33 @@ void ShieldClass::CloakCheck()
 
 	if (this->Cloak && this->IdleAnim && AnimTypeExt::ExtMap.Find(this->IdleAnim->Type)->DetachOnCloak)
 		this->KillAnim();
+}
+
+void ShieldClass::EnabledByCheck()
+{
+	if (this->Type->SelfHealing_EnabledBy.empty())
+		return;
+
+	this->IsSelfHealingEnabled = false;
+	auto const pOwner = this->Techno->Owner;
+
+	for (auto const pBuilding : pOwner->Buildings)
+	{
+		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
+
+		if (this->Type->SelfHealing_EnabledBy.Contains(pBuilding->Type) && isActive)
+		{
+			this->IsSelfHealingEnabled = true;
+			break;
+		}
+	}
+
+	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+
+	if (!this->IsSelfHealingEnabled)
+		timer->Pause();
+	else
+		timer->Resume();
 }
 
 void ShieldClass::OnlineCheck()
@@ -635,7 +669,7 @@ void ShieldClass::SelfHealing()
 
 	if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		double mult = this->SelfHealing_Rate_Warhead > 0 ? Type->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
+		double mult = this->SelfHealing_Rate_Warhead > 0 ? pType->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 
@@ -645,7 +679,7 @@ void ShieldClass::SelfHealing()
 
 	if (percentageAmount != 0)
 	{
-		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
+		if ((this->HP < pType->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 
 		if (this->HP > 0 && timer->Completed())
@@ -684,7 +718,10 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	this->HP = 0;
 
 	if (this->Type->Respawn)
-		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
+	{
+		this->Timers.Respawn.Start(this->Timers.Respawn_WHModifier.InProgress() ? this->Respawn_Rate_Warhead : this->Type->Respawn_Rate);
+		this->SetRespawnRestartInCombat();
+	}
 
 	this->Timers.SelfHealing.Stop();
 	this->KillAnim();
@@ -713,17 +750,29 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 
 void ShieldClass::RespawnShield()
 {
+	if (this->Timers.Respawn_CombatRestart.InProgress())
+	{
+		return;
+	}
+	else if (this->Timers.Respawn_CombatRestart.Completed())
+	{
+		const int rate = this->Timers.Respawn_WHModifier.InProgress() ? this->Respawn_Rate_Warhead : this->Type->Respawn_Rate;
+		this->Timers.Respawn.Start(rate);
+		this->Timers.Respawn_CombatRestart.Stop();
+	}
+
+	const auto pType = this->Type;
 	const auto timer = &this->Timers.Respawn;
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
 	if (this->HP <= 0 && timer->Completed())
 	{
 		timer->Stop();
-		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
+		double amount = timerWHModifier->InProgress() ? this->Respawn_Warhead : pType->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
 		this->UpdateTint();
-		const auto pAnimList = timerWHModifier->InProgress() ? this->Respawn_Anim_Warhead : this->Type->Respawn_Anim;
-		const auto pWeapon = timerWHModifier->InProgress() ? this->Respawn_Weapon_Warhead : this->Type->Respawn_Weapon;
+		const auto pAnimList = timerWHModifier->InProgress() ? this->Respawn_Anim_Warhead : pType->Respawn_Anim;
+		const auto pWeapon = timerWHModifier->InProgress() ? this->Respawn_Weapon_Warhead : pType->Respawn_Weapon;
 
 		if (!pAnimList.empty())
 		{
@@ -767,12 +816,37 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool restart
 
 	if (resetTimer)
 	{
-		timer->Start(Respawn_Rate_Warhead);
+		timer->Start(this->Respawn_Rate_Warhead);
 	}
 	else if (timer->InProgress() && !modifierTimerInProgress && this->Respawn_Rate_Warhead != Type->Respawn_Rate)
 	{
 		double mult = Type->Respawn_Rate > 0 ? this->Respawn_Rate_Warhead / Type->Respawn_Rate : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
+	}
+}
+
+void ShieldClass::SetRespawnRestartInCombat()
+{
+	if (this->Timers.Respawn.HasStarted())
+	{
+		bool whModifiersApplied = this->Timers.Respawn_WHModifier.InProgress();
+		bool restart = whModifiersApplied ? this->Respawn_RestartInCombat_Warhead : this->Type->Respawn_RestartInCombat;
+
+		if (restart)
+		{
+			int delay = whModifiersApplied ? this->Respawn_RestartInCombatDelay_Warhead : this->Type->Respawn_RestartInCombatDelay;
+
+			if (delay > 0)
+			{
+				this->Timers.Respawn_CombatRestart.Start(this->Type->Respawn_RestartInCombatDelay);
+				this->Timers.Respawn.Stop();
+			}
+			else
+			{
+				const int rate = whModifiersApplied ? this->Respawn_Rate_Warhead : this->Type->Respawn_Rate;
+				this->Timers.Respawn.Start(rate); // when attacked, restart the timer
+			}
+		}
 	}
 }
 
@@ -870,6 +944,9 @@ bool ShieldClass::IsRedSP()
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	Point2D position = { 0, 0 };
 	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
@@ -909,6 +986,9 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
 	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame;

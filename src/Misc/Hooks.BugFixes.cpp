@@ -199,6 +199,14 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_BurstOffsetFix_2, 0x6)
 	++pThis->CurrentBurstIndex;
 	pThis->CurrentBurstIndex %= pThis->GetWeapon(weaponIndex)->WeaponType->Burst;
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->ForceFullRearmDelay)
+	{
+		pExt->ForceFullRearmDelay = false;
+		pThis->CurrentBurstIndex = 0;
+	}
+
 	return 0;
 }
 
@@ -1764,12 +1772,27 @@ DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 
 #pragma endregion
 
+DEFINE_HOOK_AGAIN(0x73A1D3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// UnitClass
+DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// InfantryClass
+{
+	GET(BuildingClass*, pGrinder, EBX);
+	const int enterSound = pGrinder->Type->EnterGrinderSound;
+
+	if (enterSound >= 0)
+	{
+		R->ECX(enterSound);
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
 {
 	enum { SkipGameCode = 0x51A30A };
 
-	GET(BuildingClass*, pThis, EDI);
-	const int enterSound = pThis->Type->EnterBioReactorSound;
+	GET(BuildingClass*, pReactor, EDI);
+	const int enterSound = pReactor->Type->EnterBioReactorSound;
 
 	if (enterSound >= 0)
 	{
@@ -1784,8 +1807,8 @@ DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
 {
 	enum { SkipGameCode = 0x44DBD5 };
 
-	GET(BuildingClass*, pThis, EBP);
-	const int leaveSound = pThis->Type->LeaveBioReactorSound;
+	GET(BuildingClass*, pReactor, EBP);
+	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
 
 	if (leaveSound >= 0)
 	{
@@ -1804,4 +1827,32 @@ DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
 		pUnit->Unloading = false;
 
 	return 0;
+}
+
+DEFINE_JUMP(LJMP, 0x73C41B, 0x73C431)
+
+DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
+{
+	enum { SkipGameCode = 0x73C445 };
+
+	GET(UnitClass*, pThis, EBP);
+	GET(UnitTypeClass*, pType, EAX);
+
+	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
+{
+	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
+
+	GET(CellClass*, pCell, EDI);
+	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
+
+	if (onBridge ? pCell->AltObject : pCell->FirstObject)
+		return DontUnmark;
+
+	GET(ObjectClass*, pContent, ESI);
+	R->EAX(pContent->WhatAmI());
+	return ContinueCheck;
 }

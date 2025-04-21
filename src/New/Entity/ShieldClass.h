@@ -24,6 +24,7 @@ public:
 
 	void SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon = nullptr);
 	void SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer);
+	void SetRespawnRestartInCombat();
 	void KillAnim();
 	void AI_Temporal();
 	void AI();
@@ -99,6 +100,7 @@ private:
 	void OnlineCheck();
 	void TemporalCheck();
 	bool ConvertCheck();
+	void EnabledByCheck();
 
 	int DrawShieldBar_Pip(const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
@@ -116,6 +118,7 @@ private:
 	bool Available;
 	bool Attached;
 	bool AreAnimsHidden;
+	bool IsSelfHealingEnabled;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
@@ -146,6 +149,7 @@ private:
 		CDTimerClass SelfHealing_CombatRestart;
 		CDTimerClass SelfHealing;
 		CDTimerClass SelfHealing_WHModifier;
+		CDTimerClass Respawn_CombatRestart;
 		CDTimerClass Respawn;
 		CDTimerClass Respawn_WHModifier;
 

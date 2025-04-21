@@ -28,6 +28,7 @@ public:
 	Valueable<int> SelfHealing_Rate;
 	Valueable<bool> SelfHealing_RestartInCombat;
 	Valueable<int> SelfHealing_RestartInCombatDelay;
+	ValueableVector<BuildingTypeClass*> SelfHealing_EnabledBy;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -55,6 +56,7 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
+	Valueable<bool> Pips_HideIfNoStrength;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
@@ -83,6 +85,7 @@ public:
 		, SelfHealing_Rate { 0 }
 		, SelfHealing_RestartInCombat { true }
 		, SelfHealing_RestartInCombatDelay { 0 }
+		, SelfHealing_EnabledBy { }
 		, AbsorbOverDamage { false }
 		, BracketDelta { 0 }
 		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
@@ -107,6 +110,7 @@ public:
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
+		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
 		, Tint_Color {}
