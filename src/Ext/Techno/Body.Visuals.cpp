@@ -293,7 +293,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	if (!pShape || pSelectBox->OverTechno == drawBefore)
 		return;
 
-	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->ShowObserver : EnumFunctions::CanTargetHouse(pSelectBox->Show, pThis->Owner, HouseClass::CurrentPlayer);
+	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->VisibleToObserver : EnumFunctions::CanTargetHouse(pSelectBox->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer);
 
 	if (!canSee)
 		return;

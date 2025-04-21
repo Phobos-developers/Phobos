@@ -13,8 +13,8 @@ public:
 	Valueable<bool> Grounded;
 	Valueable<Point2D> Offset;
 	TranslucencyLevel Translucency;
-	Valueable<AffectedHouse> Show;
-	Valueable<bool> ShowObserver;
+	Valueable<AffectedHouse> VisibleToHouses;
+	Valueable<bool> VisibleToObserver;
 	Valueable<bool> OverTechno;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
@@ -24,8 +24,8 @@ public:
 		, Grounded { false }
 		, Offset { Point2D::Empty }
 		, Translucency { 0 }
-		, Show { AffectedHouse::All }
-		, ShowObserver { true }
+		, VisibleToHouses { AffectedHouse::All }
+		, VisibleToObserver { true }
 		, OverTechno { true }
 	{ }
 

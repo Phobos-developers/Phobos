@@ -20,8 +20,8 @@ void SelectBoxTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Grounded.Read(exINI, pSection, "Grounded");
 	this->Offset.Read(exINI, pSection, "Offset");
 	this->Translucency.Read(exINI, pSection, "Translucency");
-	this->Show.Read(exINI, pSection, "Show");
-	this->ShowObserver.Read(exINI, pSection, "ShowObserver");
+	this->VisibleToHouses.Read(exINI, pSection, "VisibleToHouses");
+	this->VisibleToObserver.Read(exINI, pSection, "VisibleToObserver");
 	this->OverTechno.Read(exINI, pSection, "OverTechno");
 }
 
@@ -35,8 +35,8 @@ void SelectBoxTypeClass::Serialize(T& Stm)
 		.Process(this->Grounded)
 		.Process(this->Offset)
 		.Process(this->Translucency)
-		.Process(this->Show)
-		.Process(this->ShowObserver)
+		.Process(this->VisibleToHouses)
+		.Process(this->VisibleToObserver)
 		.Process(this->OverTechno)
 		;
 }

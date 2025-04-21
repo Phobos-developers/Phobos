@@ -102,6 +102,7 @@ An example shape file for digits can be found on [Phobos supplementaries repo](h
 ### Select Box
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
+- `OverTechno` specific whether it will draw before unit or not. If `OverTechno=true`, it can be obscured by the unit and the draw location will ignore unit's `PixelSelectionBracketDelta` property.
 
 In `rulesmd.ini`:
 ```ini
@@ -119,8 +120,8 @@ Frame=                                  ; integer, frames of shape for Green, Ye
 Grounded=false                          ; boolean - always draw on ground
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
-Show=all                                ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-ShowObserver=true                       ; boolean
+VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToObserver=true                  ; boolean
 OverTechno=true                         ; boolean
 
 [SOMETECHNO]
