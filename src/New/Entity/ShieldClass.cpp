@@ -95,6 +95,8 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Warhead)
 		.Process(this->Respawn_Rate_Warhead)
+		.Process(this->Respawn_RestartInCombat_Warhead)
+		.Process(this->Respawn_RestartInCombatDelay_Warhead)
 		.Process(this->Respawn_Anim_Warhead)
 		.Process(this->Respawn_Weapon_Warhead)
 		.Process(this->LastBreakFrame)
@@ -204,25 +206,6 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 	if (shieldDamage > 0)
 	{
-		bool whModifiersApplied = this->Timers.SelfHealing_WHModifier.InProgress();
-		bool restart = whModifiersApplied ? this->SelfHealing_RestartInCombat_Warhead : this->Type->SelfHealing_RestartInCombat;
-
-		if (restart)
-		{
-			int delay = whModifiersApplied ? this->SelfHealing_RestartInCombatDelay_Warhead : this->Type->SelfHealing_RestartInCombatDelay;
-
-			if (delay > 0)
-			{
-				this->Timers.SelfHealing_CombatRestart.Start(this->Type->SelfHealing_RestartInCombatDelay);
-				this->Timers.SelfHealing.Stop();
-			}
-			else
-			{
-				const int rate = whModifiersApplied ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
-				this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
-			}
-		}
-
 		if (!pWHExt->Nonprovocative)
 			this->ResponseAttack();
 
@@ -242,6 +225,25 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		}
 		else
 		{
+			bool whModifiersApplied = this->Timers.SelfHealing_WHModifier.InProgress();
+			bool restart = whModifiersApplied ? this->SelfHealing_RestartInCombat_Warhead : this->Type->SelfHealing_RestartInCombat;
+
+			if (restart)
+			{
+				int delay = whModifiersApplied ? this->SelfHealing_RestartInCombatDelay_Warhead : this->Type->SelfHealing_RestartInCombatDelay;
+
+				if (delay > 0)
+				{
+					this->Timers.SelfHealing_CombatRestart.Start(this->Type->SelfHealing_RestartInCombatDelay);
+					this->Timers.SelfHealing.Stop();
+				}
+				else
+				{
+					const int rate = whModifiersApplied ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
+					this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
+				}
+			}
+
 			if (this->Type->HitFlash && pWHExt->Shield_HitFlash)
 			{
 				int size = this->Type->HitFlash_FixedSize.Get((shieldDamage * 2));
@@ -745,7 +747,7 @@ void ShieldClass::RespawnShield()
 	}
 }
 
-void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon)
+void ShieldClass::SetRespawn(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer, std::vector<AnimTypeClass*> anim, WeaponTypeClass* weapon)
 {
 	const auto timer = &this->Timers.Respawn;
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
@@ -753,12 +755,17 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
+	this->Respawn_RestartInCombat_Warhead = restartInCombat;
+	this->Respawn_RestartInCombatDelay_Warhead = restartInCombatDelay >= 0 ? restartInCombatDelay : Type->Respawn_RestartInCombatDelay;
 	this->Respawn_Anim_Warhead = anim;
 	this->Respawn_Weapon_Warhead = weapon ? weapon : Type->Respawn_Weapon;
 
 	timerWHModifier->Start(duration);
 
-	if (this->HP <= 0 && Respawn_Rate_Warhead >= 0 && resetTimer)
+	if (this->HP > 0)
+		return;
+
+	if (resetTimer)
 	{
 		timer->Start(Respawn_Rate_Warhead);
 	}

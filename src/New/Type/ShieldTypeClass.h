@@ -20,6 +20,8 @@ public:
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
+	Valueable<bool> Respawn_RestartInCombat;
+	Valueable<int> Respawn_RestartInCombatDelay;
 	ValueableVector<AnimTypeClass*> Respawn_Anim;
 	Valueable<WeaponTypeClass*> Respawn_Weapon;
 	Valueable<double> SelfHealing;
@@ -73,6 +75,8 @@ public:
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
+		, Respawn_RestartInCombat { true }
+		, Respawn_RestartInCombatDelay { 0 }
 		, Respawn_Anim { }
 		, Respawn_Weapon { }
 		, SelfHealing { 0.0 }

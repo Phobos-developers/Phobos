@@ -104,21 +104,42 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
-			if (!pShieldData->IsActive())
-				return 0;
-
-			int nDamageLeft = pShieldData->ReceiveDamage(args);
-
-			if (nDamageLeft >= 0)
+			if (pShieldData->IsActive())
 			{
-				*args->Damage = nDamageLeft;
+				int nDamageLeft = pShieldData->ReceiveDamage(args);
 
-				if (auto pTag = pThis->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
+				if (nDamageLeft >= 0)
+				{
+					*args->Damage = nDamageLeft;
+
+					if (auto pTag = pThis->AttachedTag)
+						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
+				}
+
+				if (nDamageLeft == 0)
+					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
+			else if (pShieldData->Timers.Respawn.HasStarted())
+			{
+				bool whModifiersApplied = pShieldData->Timers.Respawn_WHModifier.InProgress();
+				bool restart = whModifiersApplied ? pShieldData->Respawn_RestartInCombat_Warhead : pShieldData->Type->Respawn_RestartInCombat;
 
-			if (nDamageLeft == 0)
-				ReceiveDamageTemp::SkipLowDamageCheck = true;
+				if (restart)
+				{
+					int delay = whModifiersApplied ? pShieldData->Respawn_RestartInCombatDelay_Warhead : pShieldData->Type->Respawn_RestartInCombatDelay;
+
+					if (delay > 0)
+					{
+						pShieldData->Timers.Respawn_CombatRestart.Start(pShieldData->Type->Respawn_RestartInCombatDelay);
+						pShieldData->Timers.Respawn.Stop();
+					}
+					else
+					{
+						const int rate = whModifiersApplied ? pShieldData->Respawn_Rate_Warhead : pShieldData->Type->Respawn_Rate;
+						pShieldData->Timers.Respawn.Start(rate); // when attacked, restart the timer
+					}
+				}
+			}
 		}
 	}
 
