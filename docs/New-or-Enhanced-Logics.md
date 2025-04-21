@@ -1729,6 +1729,10 @@ TiberiumEater.LeftOffset=         ; List of integers, use cell as unit, multiple
 TiberiumEater.Display=true        ; boolean
 TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
 TiberiumEater.Anims=              ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
 ```
 
