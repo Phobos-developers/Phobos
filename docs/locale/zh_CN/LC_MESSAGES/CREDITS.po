@@ -462,9 +462,8 @@ msgid "Extension class optimization"
 msgstr "扩展类优化"
 
 #: ../../../CREDITS.md:121
-#, fuzzy
 msgid "Overload characteristic dehardcoded"
-msgstr "DropPod 属性去硬编码"
+msgstr "过载特性去硬编码"
 
 #: ../../../CREDITS.md:122
 msgid "**FS-21**:"
@@ -544,7 +543,7 @@ msgstr "弹头击杀限制"
 
 #: ../../../CREDITS.md:141
 msgid "`Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields"
-msgstr ""
+msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
 
 #: ../../../CREDITS.md:142
 msgid "**Starkku**:"
@@ -1523,7 +1522,7 @@ msgstr "自定义寄生秒杀目标"
 
 #: ../../../CREDITS.md:381
 msgid "Customize harvester dump amount"
-msgstr ""
+msgstr "自定单次倒矿量"
 
 #: ../../../CREDITS.md:382
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1816,12 +1815,14 @@ msgid ""
 "Fix an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead"
 msgstr ""
+"修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题"
 
 #: ../../../CREDITS.md:451
 msgid ""
 "Fix an issue that game crashes when spawnee has been removed and is not "
 "real dead"
 msgstr ""
+"修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题"
 
 #: ../../../CREDITS.md:452
 msgid "**Ollerus**:"
@@ -1976,7 +1977,7 @@ msgstr "自定义匍匐速度"
 
 #: ../../../CREDITS.md:490
 msgid "RadarInvisible for non-enemy house"
-msgstr ""
+msgstr "不仅限于敌方的 `RadarInvisible`"
 
 #: ../../../CREDITS.md:491
 msgid "**tyuah8**:"
