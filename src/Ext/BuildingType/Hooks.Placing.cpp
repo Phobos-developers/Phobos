@@ -34,7 +34,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 	{
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (const auto pTechno = real_abstract_cast<TechnoClass*>(pObject))
+			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pObject))
 			{
 				if (TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->CanBeBuiltOn)
 				{
@@ -44,7 +44,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 					pTechno->UnInit();
 				}
 			}
-			else if (const auto pTerrain = real_abstract_cast<TerrainClass*>(pObject))
+			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
 				if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 				{
@@ -70,7 +70,7 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 
 	for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
-		if (const auto pTerrain = real_abstract_cast<TerrainClass*>(pObject))
+		if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 		{
 			if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 				return NoUnlimbo;
@@ -308,7 +308,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (const auto pBuilding = real_abstract_cast<BuildingClass*>(pObject))
+			if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pObject))
 			{
 				if (!TechnoTypeExt::ExtMap.Find(pBuilding->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
@@ -738,7 +738,7 @@ DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 
 	if (RulesExt::Global()->ExtendedBuildingPlacing)
 	{
-		if (const auto pBuilding = real_abstract_cast<BuildingClass*>(pTechno))
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 		{
 			if (const auto pCurrentType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingType))
 			{
