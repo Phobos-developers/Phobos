@@ -1392,37 +1392,35 @@ msgstr ""
 "targets)（by NetsuNegi）"
 
 #: ../../Whats-New.md:363
-#, fuzzy
 msgid ""
 "[Overload characteristic dehardcoded](New-or-Enhanced-Logics.md#overload-"
 "characteristic-dehardcoded) (by Otamaa)"
 msgstr ""
-"[坦克碉堡准入检查的去硬编码化](Fixed-or-Improved-Logics.md#bunker-entering-check-"
-"dehardcode)（by TaranDahl）"
+"[过载特性去硬编码](New-or-Enhanced-Logics.md#overload-"
+"characteristic-dehardcoded)（by Otamaa）"
 
 #: ../../Whats-New.md:364
-#, fuzzy
 msgid ""
 "[RadarInvisible for non-enemy house](Fixed-or-Improved-Logics.md"
 "#radarinvisible-for-non-enemy-house) (By TaranDahl)"
 msgstr ""
-"[为有 `Burst` 的武器跳过建筑开火前摇动画](Fixed-or-Improved-Logics.md#skip-anim-delay-"
-"for-burst-fire)（by TaranDahl）"
+"[不仅限于敌方的 `RadarInvisible`](Fixed-or-Improved-Logics.md"
+"#radarinvisible-for-non-enemy-house)（By TaranDahl）"
 
 #: ../../Whats-New.md:365
 msgid ""
 "New `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for "
 "shields (by FS-21)"
 msgstr ""
+"护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`（by FS-21）"
 
 #: ../../Whats-New.md:366
-#, fuzzy
 msgid ""
 "[Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-"
 "harvester-dump-amount) (by NetsuNegi)"
 msgstr ""
-"[自定义过载逻辑](Fixed-or-Improved-Logics.md#customize-overpower-logic)（by "
-"NetsuNegi）"
+"[自定单次倒矿量](Fixed-or-Improved-Logics.md#customize-"
+"harvester-dump-amount)（by NetsuNegi）"
 
 #: ../../Whats-New.md:368 ../../Whats-New.md:562 ../../Whats-New.md:875
 #: ../../Whats-New.md:984 ../../Whats-New.md:1009 ../../Whats-New.md:1048
@@ -1531,12 +1529,14 @@ msgid ""
 "enter an occupiable building that has been removed and is not real dead "
 "(by CrimRecya)"
 msgstr ""
+"修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）（by CrimRecya）"
 
 #: ../../Whats-New.md:384
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead (by CrimRecya)"
 msgstr ""
+"修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题（by CrimRecya）"
 
 #: ../../Whats-New.md:386 ../../Whats-New.md:670 ../../Whats-New.md:747
 #: ../../Whats-New.md:911 ../../Whats-New.md:952 ../../Whats-New.md:964
