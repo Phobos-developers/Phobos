@@ -439,16 +439,16 @@ int TechnoExt::GetCrushLevel(FootClass* pThis)
 	switch (pThis->Veterancy.GetRemainingLevel())
 	{
 	case Rank::Elite:
-		if (pTypeExt->Elite_CrushLevel.isset())
-			return pTypeExt->Elite_CrushLevel.Get();
+		if (pTypeExt->CrushLevel.Elite >= 0)
+			return pTypeExt->CrushLevel.Elite;
 
 	case Rank::Veteran:
-		if (pTypeExt->Vet_CrushLevel.isset())
-			return pTypeExt->Vet_CrushLevel.Get();
+		if (pTypeExt->CrushLevel.Veteran >= 0)
+			return pTypeExt->CrushLevel.Veteran;
 
 	default:
-		if (pTypeExt->CrushLevel.isset())
-			return pTypeExt->CrushLevel.Get();
+		if (pTypeExt->CrushLevel.Rookie >= 0)
+			return pTypeExt->CrushLevel.Rookie;
 	}
 
 	if (pType->OmniCrusher)
@@ -468,21 +468,21 @@ int TechnoExt::GetCrushableLevel(FootClass* pThis)
 	const auto rank = pThis->Veterancy.GetRemainingLevel();
 	const auto pInfantry = specific_cast<InfantryClass*>(pThis);
 
-	if (pInfantry && pInfantry->IsDeployed())
+	if (pInfantry && pInfantry->Uncrushable)
 	{
 		switch (rank)
 		{
 		case Rank::Elite:
-			if (pTypeExt->Elite_DeployedCrushableLevel.isset())
-				return pTypeExt->Elite_DeployedCrushableLevel.Get();
+			if (pTypeExt->DeployedCrushableLevel.Elite >= 0)
+				return pTypeExt->DeployedCrushableLevel.Elite;
 
 		case Rank::Veteran:
-			if (pTypeExt->Vet_DeployedCrushableLevel.isset())
-				return pTypeExt->Vet_DeployedCrushableLevel.Get();
+			if (pTypeExt->DeployedCrushableLevel.Veteran >= 0)
+				return pTypeExt->DeployedCrushableLevel.Veteran;
 
 		default:
-			if (pTypeExt->DeployedCrushableLevel.isset())
-				return pTypeExt->DeployedCrushableLevel.Get();
+			if (pTypeExt->DeployedCrushableLevel.Rookie >= 0)
+				return pTypeExt->DeployedCrushableLevel.Rookie;
 		}
 
 		if (pInfantry->Type->OmniCrushResistant)
@@ -496,16 +496,16 @@ int TechnoExt::GetCrushableLevel(FootClass* pThis)
 		switch (rank)
 		{
 		case Rank::Elite:
-			if (pTypeExt->Elite_CrushableLevel.isset())
-				return pTypeExt->Elite_CrushableLevel.Get();
+			if (pTypeExt->CrushableLevel.Elite >= 0)
+				return pTypeExt->CrushableLevel.Elite;
 
 		case Rank::Veteran:
-			if (pTypeExt->Vet_CrushableLevel.isset())
-				return pTypeExt->Vet_CrushableLevel.Get();
+			if (pTypeExt->CrushableLevel.Veteran >= 0)
+				return pTypeExt->CrushableLevel.Veteran;
 
 		default:
-			if (pTypeExt->CrushableLevel.isset())
-				return pTypeExt->CrushableLevel.Get();
+			if (pTypeExt->CrushableLevel.Rookie >= 0)
+				return pTypeExt->CrushableLevel.Rookie;
 		}
 
 		if (pType->OmniCrushResistant)

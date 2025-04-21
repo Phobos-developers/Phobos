@@ -298,15 +298,9 @@ public:
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
     
-		Nullable<int> CrushLevel;
-		Nullable<int> Vet_CrushLevel;
-		Nullable<int> Elite_CrushLevel;
-		Nullable<int> CrushableLevel;
-		Nullable<int> Vet_CrushableLevel;
-		Nullable<int> Elite_CrushableLevel;
-		Nullable<int> DeployedCrushableLevel;
-		Nullable<int> Vet_DeployedCrushableLevel;
-		Nullable<int> Elite_DeployedCrushableLevel;
+		Promotable<int> CrushLevel;
+		Promotable<int> CrushableLevel;
+		Promotable<int> DeployedCrushableLevel;
 
 		struct LaserTrailDataEntry
 		{
@@ -600,15 +594,9 @@ public:
 			, ProneSpeed { }
 			, DamagedSpeed { }
 
-			, CrushLevel {}
-			, Vet_CrushLevel {}
-			, Elite_CrushLevel {}
-			, CrushableLevel {}
-			, Vet_CrushableLevel {}
-			, Elite_CrushableLevel {}
-			, DeployedCrushableLevel {}
-			, Vet_DeployedCrushableLevel {}
-			, Elite_DeployedCrushableLevel {}
+			, CrushLevel { -1 }
+			, CrushableLevel { -1 }
+			, DeployedCrushableLevel { -1 }
 
 			, SuppressKillWeapons { false }
 			, SuppressKillWeapons_Types { }
