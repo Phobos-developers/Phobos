@@ -587,7 +587,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->LastSensorsMapCoords)
-		.Process(this->TiberiumEater_Timer)
+    .Process(this->TiberiumEater_Timer)
+		.Process(this->AirstrikeTargetingMe)
 		;
 }
 
