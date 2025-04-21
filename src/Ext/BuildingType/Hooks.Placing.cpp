@@ -1086,15 +1086,15 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 
 			for(auto const& pConYard : pHouse->ConYards)
 			{
-				if (pConYard->InLimbo || !pConYard->HasPower)
+				if (pConYard->InLimbo || !pConYard->HasPower || pConYard->Deactivated)
 					continue;
 
 				if (pConYard->CurrentMission == Mission::Selling || pConYard->QueuedMission == Mission::Selling)
 					continue;
 
-				auto const pType = pConYard->Type;
+				const auto pConYardType = pConYard->Type;
 
-				if (pType->Factory != AbstractType::Building || !pType->InOwners(bitsOwners))
+				if (pConYardType->Factory != AbstractType::BuildingType || !pConYardType->InOwners(bitsOwners))
 					continue;
 
 				return true;
@@ -1103,7 +1103,7 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 			return false;
 		};
 
-		if (currentCanBuild())
+		if (!currentCanBuild())
 		{
 			ClearPlacingBuildingData(pType->BuildCat != BuildCat::Combat ? &pHouseExt->Common : &pHouseExt->Combat);
 
