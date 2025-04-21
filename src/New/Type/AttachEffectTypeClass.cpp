@@ -96,6 +96,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Duration.Read(exINI, pSection, "Duration");
+	this->Duration_ApplyFirepowerMult.Read(exINI, pSection, "Duration.ApplyFirepowerMult");
+	this->Duration_ApplyArmorMultOnTarget.Read(exINI, pSection, "Duration.ApplyArmorMultOnTarget");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
@@ -154,6 +156,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
+	this->Unkillable.Read(exINI, pSection, "Unkillable");
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -165,6 +168,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Duration)
+		.Process(this->Duration_ApplyFirepowerMult)
+		.Process(this->Duration_ApplyArmorMultOnTarget)
 		.Process(this->Cumulative)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
@@ -213,6 +218,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_Chance)
 		.Process(this->ReflectDamage_Override)
 		.Process(this->DisableWeapons)
+		.Process(this->Unkillable)
 		.Process(this->Groups)
 		;
 }

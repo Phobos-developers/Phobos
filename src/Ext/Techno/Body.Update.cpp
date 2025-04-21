@@ -924,21 +924,53 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 {
 	auto const pThis = this->OwnerObject();
 
-	if (this->KeepTargetOnMove && this->TypeExtData->KeepTargetOnMove && pThis->Target && pThis->CurrentMission == Mission::Move)
+	if (!this->KeepTargetOnMove)
+		return;
+
+	if (!pThis->Target)
 	{
-		int weaponIndex = pThis->SelectWeapon(pThis->Target);
+		this->KeepTargetOnMove = false;
+		return;
+	}
 
-		if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->KeepTargetOnMove)
+	{
+		pThis->SetTarget(nullptr);
+		this->KeepTargetOnMove = false;
+		return;
+	}
+
+	if (pThis->CurrentMission == Mission::Guard)
+	{
+		if (!pTypeExt->KeepTargetOnMove_NoMorePursuit)
 		{
-			int extraDistance = static_cast<int>(this->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
-			int range = pWeapon->Range;
-			pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
-
-			if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
-				pThis->SetTarget(nullptr);
-
-			pWeapon->Range = range;
+			pThis->QueueMission(Mission::Attack, false);
+			this->KeepTargetOnMove = false;
+			return;
 		}
+	}
+	else if (pThis->CurrentMission != Mission::Move)
+	{
+		return;
+	}
+
+	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+
+	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		const int extraDistance = static_cast<int>(pTypeExt->KeepTargetOnMove_ExtraDistance.Get());
+		const int range = pWeapon->Range;
+		pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
+
+		if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
+		{
+			pThis->SetTarget(nullptr);
+			this->KeepTargetOnMove = false;
+		}
+
+		pWeapon->Range = range;
 	}
 }
 
@@ -1131,6 +1163,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
+	bool unkillable = false;
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
@@ -1150,6 +1183,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
+		unkillable |= type->Unkillable;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
@@ -1164,6 +1198,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE.Cloakable = cloak;
 	this->AE.ForceDecloak = forceDecloak;
 	this->AE.DisableWeapons = disableWeapons;
+	this->AE.Unkillable = unkillable;
 	this->AE.HasRangeModifier = hasRangeModifier;
 	this->AE.HasTint = hasTint;
 	this->AE.ReflectDamage = reflectsDamage;
