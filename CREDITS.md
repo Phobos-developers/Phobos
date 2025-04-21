@@ -378,6 +378,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Customize parasite culling targets
   - Customize harvester dump amount
+  - Select box logic
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
@@ -450,6 +451,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that MCV will self-destruct when using trigger 107 to teleport
   - Fix an issue that moving MCV with Teleport locomotion will cause reconnection error
   - Jumpjet Tilts While Moving
+  - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
+  - Fix an issue that game crashes when spawnee has been removed and is not real dead
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
