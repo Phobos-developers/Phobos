@@ -193,7 +193,6 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		TechnoClass* DamageAreaTarget;
-		int HitDirection;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -364,7 +363,6 @@ public:
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
-			, HitDirection { -1 }
 
 			, KillWeapon {}
 			, KillWeapon_OnFirer {}
@@ -417,6 +415,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+	static int HitDirection;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 

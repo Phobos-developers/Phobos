@@ -40,10 +40,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		else
 			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
 
-		if (pTypeExt->DirectionalArmor.Get(RulesExt::Global()->DirectionalArmor) && pThis->WhatAmI() == AbstractType::Unit && pWHExt->HitDirection >= 0 && args->DistanceToEpicenter <= 64)
+		if (pTypeExt->DirectionalArmor.Get(RulesExt::Global()->DirectionalArmor) && pThis->WhatAmI() == AbstractType::Unit && WarheadTypeExt::HitDirection >= 0 && args->DistanceToEpicenter <= 64)
 		{
 			const int tarFacing = pThis->PrimaryFacing.Current().GetValue<16>();
-			const int angle = abs(pWHExt->HitDirection - tarFacing);
+			const int angle = abs(WarheadTypeExt::HitDirection - tarFacing);
 			const int frontField = static_cast<int>(16384 * pTypeExt->DirectionalArmor_FrontField.Get(RulesExt::Global()->DirectionalArmor_FrontField));
 			const int backField = static_cast<int>(16384 * pTypeExt->DirectionalArmor_BackField.Get(RulesExt::Global()->DirectionalArmor_BackField));
 
