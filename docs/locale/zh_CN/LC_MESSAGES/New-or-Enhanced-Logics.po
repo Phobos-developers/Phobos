@@ -58,6 +58,8 @@ msgid ""
 "the invoker's firepower multipliers if it's not negative. Can't reduce "
 "duration to below 0 by a negative firepower multiplier."
 msgstr ""
+"如果 `Duration.ApplyFirepowerMult` 设为 true，那么持续时间会乘以调用者的火力加成倍率，"
+"前提是倍率非负。即无法通过负值火力加成倍率将持续时间降低至 0 以下。"
 
 #: ../../New-or-Enhanced-Logics.md:12
 msgid ""
@@ -67,6 +69,9 @@ msgid ""
 "`ArmorMultiplier.Allow/DisallowWarheads`. Can't reduce duration to below "
 "0 by a negative armor multiplier."
 msgstr ""
+"如果 `Duration.ApplyArmorMultOnTarget` 设为 true，那么持续时间会除以调用者的装甲加成倍率，"
+"前提是倍率非负。即无法通过负值装甲加成倍率将持续时间降至 0 以下。"
+"此处计算会考虑目标自身的 `ArmorMultiplier` 并忽略 `ArmorMultiplier.Allow/DisallowWarheads`。"
 
 #: ../../New-or-Enhanced-Logics.md:13
 msgid ""
@@ -1665,6 +1670,7 @@ msgid ""
 "shield. If the owner has no structures from this list then the shield "
 "won't self-heal."
 msgstr ""
+"`SelfHealing.EnabledBy` 可用于控制护盾自愈行为。只有拥有此列表中的建筑时才可以自愈。"
 
 #: ../../New-or-Enhanced-Logics.md:401
 msgid ""
@@ -1870,6 +1876,7 @@ msgid ""
 "`Pips.HideIfNoStrength` can be used to hide the shield's pip frame if the"
 " `Strength` is 0."
 msgstr ""
+"`Pips.HideIfNoStrength` 可用于在 `Strength` 归 0 时隐藏护盾条而不是留下一个空框。"
 
 #: ../../New-or-Enhanced-Logics.md:425
 msgid ""
@@ -5849,6 +5856,7 @@ msgid ""
 "Mind controllers now can decide which house can see the link drawn "
 "between itself and the controlled units."
 msgstr ""
+"心灵控制者现在可以设置哪些所属方可以看到它与被心灵控制单位之间的连线。"
 
 #: ../../New-or-Enhanced-Logics.md:1511
 msgid ""
@@ -5943,13 +5951,14 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1555
 msgid "Overload characteristic dehardcoded"
-msgstr ""
+msgstr "过载特性去硬编码"
 
 #: ../../New-or-Enhanced-Logics.md:1557
 msgid ""
 "It is now possible to customize `Overload` behaviors for a TechnoType "
 "with `InfiniteMindControl=yes` weapon."
 msgstr ""
+"现在可以为一个使用 `InfiniteMindControl=yes` 武器的单位自定义其过载相关特性。"
 
 #: ../../New-or-Enhanced-Logics.md:1560
 msgid ""
