@@ -304,7 +304,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
 	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
-	Point2D basePoint = *pLocation;
+	Point2D drawPoint = *pLocation;
 
 	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
 	{
@@ -316,10 +316,10 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		if (!visible)
 			return;
 
-		basePoint = outClient;
+		drawPoint = outClient;
 	}
 
-	Point2D drawPoint = basePoint + pSelectBox->Offset;
+	drawPoint += pSelectBox->Offset;
 
 	if (pSelectBox->DrawAboveTechno)
 		drawPoint.Y += pType->PixelSelectionBracketDelta;

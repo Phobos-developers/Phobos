@@ -4,31 +4,18 @@
 #include <TacticalClass.h>
 #include "Body.h"
 
-DEFINE_HOOK(0x6D9070, TacticalClass_RenderLayers_DrawBefore_Foot, 0x6)
+DEFINE_HOOK_AGAIN(0x6D9134, TacticalClass_RenderLayers_DrawBefore, 0x5)// BuildingClass
+DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 {
 	GET(TechnoClass*, pTechno, ESI);
-	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x100, -0xE8));
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+	GET(Point2D*, pLocation, EAX);
 
-	if (!pTypeExt->HealthBar_Hide)
+	if (pTechno->IsSelected && Phobos::Config::EnableSelectBox)
 	{
-		if (pTechno->IsSelected && Phobos::Config::EnableSelectBox && !pTypeExt->HideSelectBox)
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+		if (!pTypeExt->HealthBar_Hide && !pTypeExt->HideSelectBox)
 			TechnoExt::DrawSelectBox(pTechno, pLocation, &DSurface::ViewBounds, true);
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x6D912B, TacticalClass_RenderLayers_DrawBefore_Building, 0x9)
-{
-	GET(BuildingClass*, pBuilding, ESI);
-	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x100, -0x6C));
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
-
-	if (!pTypeExt->HealthBar_Hide)
-	{
-		if (pBuilding->IsSelected && Phobos::Config::EnableSelectBox && !pTypeExt->HideSelectBox)
-			TechnoExt::DrawSelectBox(pBuilding, pLocation, &DSurface::ViewBounds, true);
 	}
 
 	return 0;
