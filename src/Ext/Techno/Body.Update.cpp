@@ -363,7 +363,6 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 	CoordStruct flh {};
 	bool active = false;
 	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
-	const int animCount = static_cast<int>(pEaterType->Anims.size());
 	int facing = pThis->PrimaryFacing.Current().GetFacing<8>();
 
 	if (facing >= 7)
@@ -383,7 +382,8 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 
 		if (const int contained = pCell->GetContainedTiberiumValue())
 		{
-			const int tiberiumValue = TiberiumClass::Array[pCell->GetContainedTiberiumIndex()]->Value;
+			const int tiberiumIdx = pCell->GetContainedTiberiumIndex();
+			const int tiberiumValue = TiberiumClass::Array[tiberiumIdx]->Value;
 			const int tiberiumAmount = static_cast<int>(static_cast<double>(contained) / tiberiumValue);
 			const int amount = pEaterType->AmountPerCell > 0 ? std::min(pEaterType->AmountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
 			pCell->ReduceTiberium(amount);
@@ -399,6 +399,9 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 				FlyingStrings::AddMoneyString(value, pOwner, pEaterType->DisplayToHouse, cellCoords, pEaterType->DisplayOffset);
 			}
 
+			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(pEaterType->Anims);
+			const int animCount = static_cast<int>(anims.size());
+
 			if (animCount == 0)
 				continue;
 
@@ -407,15 +410,15 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 			switch (animCount)
 			{
 			case 1:
-				pAnimType = pEaterType->Anims[0];
+				pAnimType = anims[0];
 				break;
 
 			case 8:
-				pAnimType = pEaterType->Anims[facing];
+				pAnimType = anims[facing];
 				break;
 
 			default:
-				pAnimType = pEaterType->Anims[ScenarioClass::Instance->Random.RandomRanged(0, pEaterType->Anims.size() - 1)];
+				pAnimType = anims[ScenarioClass::Instance->Random.RandomRanged(0, animCount - 1)];
 				break;
 			}
 

@@ -6,6 +6,7 @@
 void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 {
 	INI_EX exINI(pINI);
+	char tempBuffer[32];
 
 	this->TransDelay.Read(exINI, pSection, "TiberiumEater.TransDelay");
 	this->CashMultiplier.Read(exINI, pSection, "TiberiumEater.CashMultiplier");
@@ -16,6 +17,13 @@ void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->DisplayToHouse.Read(exINI, pSection, "TiberiumEater.DisplayToHouse");
 	this->DisplayOffset.Read(exINI, pSection, "TiberiumEater.DisplayOffset");
 	this->Anims.Read(exINI, pSection, "TiberiumEater.Anims");
+
+	for (size_t idx = 0; idx < 4; ++idx)
+	{
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TiberiumEater.Anims.Tiberium%d", idx);
+		this->Anims_Tiberiums[idx].Read(exINI, pSection, tempBuffer);
+	}
+
 	this->AnimMove.Read(exINI, pSection, "TiberiumEater.AnimMove");
 }
 
@@ -32,6 +40,7 @@ bool TiberiumEaterTypeClass::Serialize(T& stm)
 		.Process(this->DisplayToHouse)
 		.Process(this->DisplayOffset)
 		.Process(this->Anims)
+		.Process(this->Anims_Tiberiums)
 		.Process(this->AnimMove)
 		.Success();
 }
