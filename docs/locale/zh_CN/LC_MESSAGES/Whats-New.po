@@ -2021,12 +2021,13 @@ msgid ""
 msgstr "修复了使用悬浮运动模式的载具被 `IsLocomotor=yes` 弹头抬起时显示的错误阴影（by NetsuNegi）"
 
 #: ../../Whats-New.md:588
-#, fuzzy
 msgid ""
 "Fixed the bug that a unit can overlap with `Teleport` units after it's "
 "been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads (by "
 "NetsuNegi)"
-msgstr "修复了使用悬浮运动模式的载具被 `IsLocomotor=yes` 弹头抬起时显示的错误阴影（by NetsuNegi）"
+msgstr ""
+"修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 `Teleport` "
+"运动模式的单位作为超时空移动的目的地的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:590 ../../Whats-New.md:665 ../../Whats-New.md:827
 #: ../../Whats-New.md:868 ../../Whats-New.md:880 ../../Whats-New.md:903

@@ -1301,6 +1301,8 @@ msgid ""
 "Fixed the bug that a unit can overlap with `Teleport` units after it's "
 "been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads"
 msgstr ""
+"修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 `Teleport` "
+"运动模式的单位作为超时空移动的目的地的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:214
 msgid "Fixes / interactions with other extensions"
