@@ -365,6 +365,8 @@ New:
 - [Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
 - Select box logic (by NetsuNegi)
 - Customize airstrike targets (by NetsuNegi)
+- Aggressive attack move mission (by CrimRecya)
+- Amphibious access vehicle (by CrimRecya)
 - Crush level system (by NetsuNegi)
 
 Vanilla fixes:
