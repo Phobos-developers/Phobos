@@ -80,46 +80,42 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	enum { UseWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (ForceWeaponInRangeTemp::SelectWeaponByRange || !pThis)
 		return 0;
 
-	if (pThis->Target)
+	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
-
-		if (!pTarget)
-			return 0;
-
 		int forceWeaponIndex = -1;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		auto const pTargetType = pTarget->GetTechnoType();
+		auto const pTargetType = pTargetTechno->GetTechnoType();
 
 		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
 			pTargetType->Cloakable && pTargetType->Naval &&
-			pTarget->CloakState == CloakState::Uncloaked)
+			pTargetTechno->CloakState == CloakState::Uncloaked)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Naval_Decloaked;
 		}
 		else if (pTypeExt->ForceWeapon_Cloaked >= 0 &&
-			pTarget->CloakState == CloakState::Cloaked)
+			pTargetTechno->CloakState == CloakState::Cloaked)
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Cloaked;
 		}
 		else if (pTypeExt->ForceWeapon_Disguised >= 0 &&
-			pTarget->IsDisguised())
+			pTargetTechno->IsDisguised())
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
 		}
 		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
-			pTarget->IsUnderEMP())
+			pTargetTechno->IsUnderEMP())
 		{
 			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
 		}
 		else if (!pTypeExt->ForceWeapon_InRange.empty() || !pTypeExt->ForceAAWeapon_InRange.empty())
 		{
 			ForceWeaponInRangeTemp::SelectWeaponByRange = true;
-			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange();
+			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTargetTechno);
 			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
 		}
 
@@ -280,8 +276,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	if (const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH))
+	if (pWHExt)
 	{
 		const int nMoney = pWHExt->TransactMoney;
 
@@ -333,6 +330,15 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
 				return CannotFire;
+
+			if (pWH->Airstrike)
+			{
+				if (!pWHExt || !EnumFunctions::IsTechnoEligible(pTechno, pWHExt->AirstrikeTargets))
+					return CannotFire;
+
+				if (!TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->AllowAirstrike.Get(pTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTechno)->Type->CanC4))
+					return CannotFire;
+			}
 		}
 	}
 
@@ -813,16 +819,8 @@ DEFINE_HOOK(0x6FD054, TechnoClass_RearmDelay_ForceFullDelay, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->LastRearmWasFullDelay = false;
 
-	// Currently only used with infantry, so a performance saving measure.
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-	{
-		if (pExt->ForceFullRearmDelay)
-		{
-			pExt->ForceFullRearmDelay = false;
-			pThis->CurrentBurstIndex = 0;
-			return ApplyFullRearmDelay;
-		}
-	}
+	if (pExt->ForceFullRearmDelay)
+		return ApplyFullRearmDelay;
 
 	return 0;
 }
@@ -833,6 +831,7 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
+	GET(int, idxCurrentBurst, ECX);
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
@@ -844,7 +843,6 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	}
 
 	// Restore overridden instructions
-	GET(int, idxCurrentBurst, ECX);
 	return idxCurrentBurst <= 0 || idxCurrentBurst > 4 ? 0x6FD084 : 0x6FD067;
 }
 
