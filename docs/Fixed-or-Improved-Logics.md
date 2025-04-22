@@ -219,6 +219,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
+- Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
+- Fixed the bug that buildings will always be tinted as airstrike owner.
+- Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it.
 
 ## Fixes / interactions with other extensions
 
@@ -404,16 +407,6 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]          ; BuildingType
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
-```
-
-### Airstrike target eligibility
-
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]   ; BuildingType
-AllowAirstrike=  ; boolean
 ```
 
 ### Allowed / disallowed types for FactoryPlant
@@ -843,6 +836,22 @@ In `artmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 Image=              ; name of the file that will be used as image, without extension
+```
+
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+- For non building situations, the default value is true.
+- Now it is possible to designate air strikes against non building targets.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+AllowAirstrike=            ; boolean
+
+[SOMEWARHEAD]
+AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Customizable veterancy insignias
