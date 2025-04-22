@@ -262,6 +262,18 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x6B74F0, SpawnManagerClass_AI_UseTurretFacing, 0x5)
+{
+	GET(SpawnManagerClass* const, pThis, ESI);
+
+	auto const pTechno = pThis->Owner;
+
+	if (pTechno->HasTurret() && TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->Spawner_UseTurretFacing)
+		R->EAX(pTechno->SecondaryFacing.Current().Raw);
+
+	return 0;
+}
+
 #pragma endregion
 
 #pragma region WakeAnims
@@ -461,6 +473,51 @@ DEFINE_HOOK(0x74691D, UnitClass_UpdateDisguise_EMP, 0x6)
 	}
 
 	return 0x746931;
+}
+
+#pragma endregion
+
+#pragma region AttackMindControlledDelay
+
+bool __fastcall CanAttackMindControlled(TechnoClass* pControlled, TechnoClass* pRetaliator)
+{
+	const auto pMind = pControlled->MindControlledBy;
+
+	if (!pMind || pRetaliator->Berzerk)
+		return true;
+
+	const auto pManager = pMind->CaptureManager;
+
+	if (!pManager || !pRetaliator->Owner->IsAlliedWith(pManager->GetOriginalOwner(pControlled)))
+		return true;
+
+	return TechnoExt::ExtMap.Find(pControlled)->BeControlledThreatFrame <= Unsorted::CurrentFrame;
+}
+
+DEFINE_HOOK(0x7089E8, TechnoClass_AllowedToRetaliate_AttackMindControlledDelay, 0x6)
+{
+	enum { CannotRetaliate = 0x708B17 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pAttacker, EBP);
+
+	return CanAttackMindControlled(pAttacker, pThis) ? 0 : CannotRetaliate;
+}
+
+DEFINE_HOOK(0x6F88BF, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay, 0x6)
+{
+	enum { CannotSelect = 0x6F894F };
+
+	GET(TechnoClass* const, pThis, EDI);
+	GET(ObjectClass* const, pTarget, ESI);
+
+	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (!CanAttackMindControlled(pTechno, pThis))
+			return CannotSelect;
+	}
+
+	return 0;
 }
 
 #pragma endregion

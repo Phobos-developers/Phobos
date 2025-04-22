@@ -28,7 +28,6 @@ public:
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
-		Nullable<bool> AllowAirstrike;
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
@@ -82,6 +81,9 @@ public:
 
 		Nullable<Point2D> BarracksExitCell;
 
+		Valueable<int> Overpower_KeepOnline;
+		Valueable<int> Overpower_ChargeWeapon;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -90,7 +92,6 @@ public:
 			, PowerPlantEnhancer_Factor { 1.0 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
-			, AllowAirstrike {}
 			, CanC4_AllowZeroDamage { false }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, ExcludeFromMultipleFactoryBonus { false }
@@ -132,6 +133,8 @@ public:
 			, Adjacent_Allowed {}
 			, Adjacent_Disallowed {}
 			, BarracksExitCell {}
+			, Overpower_KeepOnline { 2 }
+			, Overpower_ChargeWeapon { 1 }
 		{ }
 
 		// Ares 0.A functions
