@@ -175,6 +175,8 @@ public:
 
     	Valueable<int> ElectricAssaultLevel;
 
+		Valueable<AffectedTarget> AirstrikeTargets;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -347,6 +349,8 @@ public:
 			, CombatAlert_Suppress {}
 
 			, ElectricAssaultLevel { 1 }
+
+			, AirstrikeTargets { AffectedTarget::Building }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
