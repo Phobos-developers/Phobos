@@ -282,7 +282,7 @@ public:
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
-    
+
 		Nullable<bool> AllowAirstrike;
 
 		Nullable<UnitTypeClass*> Image_ConditionYellow;
