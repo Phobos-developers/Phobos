@@ -439,6 +439,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
 
+	this->SelectBox.Read(exINI, pSection, "SelectBox");
+	this->HideSelectBox.Read(exINI, pSection, "HideSelectBox");
+
 	this->AmmoPipFrame.Read(exINI, pSection, "AmmoPipFrame");
 	this->EmptyAmmoPipFrame.Read(exINI, pSection, "EmptyAmmoPipFrame");
 	this->AmmoPipWrapStartFrame.Read(exINI, pSection, "AmmoPipWrapStartFrame");
@@ -498,11 +501,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
+	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
+	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
+
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_NoMorePursuit.Read(exINI, pSection, "KeepTargetOnMove.NoMorePursuit");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
 	this->Power.Read(exINI, pSection, "Power");
+
+	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
 	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
 	this->Image_ConditionRed.Read(exINI, pSection, "Image.ConditionRed");
@@ -893,6 +901,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
 
+		.Process(this->SelectBox)
+		.Process(this->HideSelectBox)
+
 		.Process(this->AmmoPipFrame)
 		.Process(this->EmptyAmmoPipFrame)
 		.Process(this->AmmoPipWrapStartFrame)
@@ -955,12 +966,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
+		.Process(this->AttackMove_Aggressive)
+		.Process(this->AttackMove_UpdateTarget)
+
 		.Process(this->BunkerableAnyway)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->KeepTargetOnMove_NoMorePursuit)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 
 		.Process(this->Power)
+
+		.Process(this->AllowAirstrike)
 
 		.Process(this->Image_ConditionYellow)
 		.Process(this->Image_ConditionRed)

@@ -363,6 +363,9 @@ New:
 - [RadarInvisible for non-enemy house](Fixed-or-Improved-Logics.md#radarinvisible-for-non-enemy-house) (By TaranDahl)
 - New `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields (by FS-21)
 - [Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
+- Select box logic (by NetsuNegi)
+- Customize airstrike targets (by NetsuNegi)
+- Aggressive attack move mission (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -381,10 +384,13 @@ Vanilla fixes:
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead (by NetsuNegi)
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead (by CrimRecya)
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
+- Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues (by NetsuNegi)
+- Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
 - Fixed the bug that impassive barrier could caused by selling the war factory during the production of `BallonHover=yes` vehicles (by NetsuNegi)
 
 Phobos fixes:
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport (by CrimRecya)
+- Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)

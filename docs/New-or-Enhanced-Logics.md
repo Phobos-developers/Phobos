@@ -1724,7 +1724,7 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Fast access vehicle
 
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
 
 In `rulesmd.ini`:
 ```ini
@@ -1733,8 +1733,24 @@ NoQueueUpToEnter=false    ; boolean
 NoQueueUpToUnload=false   ; boolean
 
 [SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean
-NoQueueUpToUnload=        ; boolean
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
+```
+
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```
 
 ## Terrain

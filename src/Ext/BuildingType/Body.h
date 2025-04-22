@@ -28,7 +28,6 @@ public:
 
 		std::vector<Point2D> OccupierMuzzleFlashes;
 		Valueable<bool> Powered_KillSpawns;
-		Nullable<bool> AllowAirstrike;
 		Valueable<bool> CanC4_AllowZeroDamage;
 		Valueable<bool> Refinery_UseStorage;
 		Valueable<PartialVector2D<double>> InitialStrength_Cloning;
@@ -93,7 +92,6 @@ public:
 			, PowerPlantEnhancer_Factor { 1.0 }
 			, OccupierMuzzleFlashes()
 			, Powered_KillSpawns { false }
-			, AllowAirstrike {}
 			, CanC4_AllowZeroDamage { false }
 			, InitialStrength_Cloning { { 1.0, 0.0 } }
 			, ExcludeFromMultipleFactoryBonus { false }

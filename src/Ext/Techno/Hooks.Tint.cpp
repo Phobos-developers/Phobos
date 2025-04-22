@@ -13,7 +13,7 @@ DEFINE_HOOK(0x43D386, BuildingClass_Draw_TintColor, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	int color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), pThis->Airstrike, false);
+	int color = TechnoExt::GetTintColor(pThis, true, true, false);
 	color |= TechnoExt::GetCustomTintColor(pThis);
 	R->EDI(color);
 
@@ -27,7 +27,7 @@ DEFINE_HOOK(0x43DC1C, BuildingClass_Draw2_TintColor, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 	REF_STACK(int, color, STACK_OFFSET(0x12C, -0x110));
 
-	color = TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), pThis->Airstrike, false);
+	color = TechnoExt::GetTintColor(pThis, true, true, false);
 	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	return SkipGameCode;
@@ -43,12 +43,13 @@ DEFINE_HOOK(0x73BF95, UnitClass_DrawAsVoxel_Tint, 0x7)
 
 	intensity = flashIntensity;
 
-	bool isInvulnerable = pThis->IsIronCurtained();
-
-	if (isInvulnerable)
+	if (pThis->IsIronCurtained())
 		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
 
-	int color = TechnoExt::GetTintColor(pThis, isInvulnerable, false, pThis->Berzerk);
+	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
+	int color = TechnoExt::GetTintColor(pThis, true, true, true);
 	TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
 
 	R->ESI(color);
@@ -63,7 +64,7 @@ DEFINE_HOOK(0x518FC8, InfantryClass_Draw_TintColor, 0x6)
 	REF_STACK(int, color, STACK_OFFSET(0x54, -0x40));
 
 	color = 0;
-	color |= TechnoExt::GetTintColor(pThis, pThis->IsIronCurtained(), false, pThis->Berzerk);
+	color |= TechnoExt::GetTintColor(pThis, true, true, true);
 	color |= TechnoExt::GetCustomTintColor(pThis);
 
 	return SkipGameCode;
@@ -74,7 +75,12 @@ DEFINE_HOOK(0x51946D, InfantryClass_Draw_TintIntensity, 0x6)
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, intensity, ESI);
 
-	intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+	if (pThis->IsIronCurtained())
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
 	intensity += TechnoExt::GetCustomTintIntensity(pThis);
 	R->ESI(intensity);
 
@@ -96,7 +102,7 @@ DEFINE_HOOK(0x423420, AnimClass_Draw_TintColor, 0x6)
 	if (pBuilding)
 	{
 		int discard = 0;
-		color |= TechnoExt::GetTintColor(pBuilding, pBuilding->IsIronCurtained(), pBuilding->Airstrike, false);
+		color |= TechnoExt::GetTintColor(pBuilding, true, true, false);
 		TechnoExt::ApplyCustomTintValues(pBuilding, color, pThis->Type->UseNormalLight ? discard : intensity);
 	}
 
@@ -116,7 +122,7 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	// SHP vehicles and aircraft
 	if (rtti == AbstractType::Unit || isAircraft)
 	{
-		color |= TechnoExt::GetTintColor(pThis, true, false, !isAircraft);
+		color |= TechnoExt::GetTintColor(pThis, true, true, !isAircraft);
 		TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
 	}
 	else if (pThis->WhatAmI() != AbstractType::Infantry)
@@ -127,6 +133,25 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	R->EBP(intensity);
 
 	return 0;
+}
+
+DEFINE_HOOK(0x70632E, TechnoClass_DrawShape_GetTintIntensity, 0x6)
+{
+	enum { SkipGameCode = 0x706389 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(int, intensity, EAX);
+
+	if (pThis->IsIronCurtained())
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
+	R->EBP(intensity);
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)
@@ -145,14 +170,22 @@ DEFINE_HOOK(0x706786, TechnoClass_DrawVoxel_TintColor, 0x5)
 	REF_STACK(int, color, STACK_OFFSET(0x50, 0x24));
 
 	if (rtti == AbstractType::Aircraft)
-		color = TechnoExt::GetTintColor(pThis, true, false, false);
+		color = TechnoExt::GetTintColor(pThis, true, true, false);
 
 	// Non-aircraft voxels do not need custom tint color applied again, discard that component for them.
 	int discardColor = 0;
 	TechnoExt::ApplyCustomTintValues(pThis, rtti == AbstractType::Aircraft ? color : discardColor, intensity);
-	R->EAX(intensity);
 
-	return 0;
+	if (pThis->IsIronCurtained())
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
+	R->EDI(intensity);
+	return SkipTint;
 }
 
 DEFINE_HOOK(0x43FA19, BuildingClass_Mark_TintIntensity, 0x7)

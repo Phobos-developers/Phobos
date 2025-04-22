@@ -11,6 +11,7 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 
 class Matrix3D;
@@ -211,6 +212,9 @@ public:
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
 
+		Nullable<SelectBoxTypeClass*> SelectBox;
+		Valueable<bool> HideSelectBox;
+
 		Valueable<int> AmmoPipFrame;
 		Valueable<int> EmptyAmmoPipFrame;
 		Valueable<int> AmmoPipWrapStartFrame;
@@ -272,12 +276,17 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Nullable<bool> AttackMove_Aggressive;
+		Nullable<bool> AttackMove_UpdateTarget;
+
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
 		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
+
+		Nullable<bool> AllowAirstrike;
 
 		Nullable<UnitTypeClass*> Image_ConditionYellow;
 		Nullable<UnitTypeClass*> Image_ConditionRed;
@@ -517,6 +526,9 @@ public:
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
 
+			, SelectBox {}
+			, HideSelectBox { false }
+
 			, AmmoPipFrame { 13 }
 			, EmptyAmmoPipFrame { -1 }
 			, AmmoPipWrapStartFrame { 14 }
@@ -579,6 +591,9 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, AttackMove_Aggressive {}
+			, AttackMove_UpdateTarget {}
+
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_NoMorePursuit { true }
@@ -586,7 +601,9 @@ public:
 
 			, Power { }
 
-      		, Image_ConditionYellow { }
+			, AllowAirstrike { }
+
+			, Image_ConditionYellow { }
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
