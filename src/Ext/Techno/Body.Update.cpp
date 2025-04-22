@@ -351,16 +351,8 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 	if (transDelay && this->TiberiumEater_Timer.InProgress())
 		return;
 
-	const size_t frontSize = pEaterType->FrontOffset.size();
-	const size_t leftSize = pEaterType->LeftOffset.size();
-	size_t cellCount = std::max(frontSize, leftSize);
-
-	if (!cellCount)
-		cellCount = 1;
-
 	const auto pThis = this->OwnerObject();
 	const auto pOwner = pThis->Owner;
-	CoordStruct flh {};
 	bool active = false;
 	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
 	int facing = pThis->PrimaryFacing.Current().GetFacing<8>();
@@ -370,11 +362,12 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 	else
 		facing++;
 
-	for (size_t idx = 0; idx < cellCount; idx++)
+	const int cellCount = static_cast<int>(pEaterType->Cells.size());
+
+	for (int idx = 0; idx < cellCount; idx++)
 	{
-		flh.X = frontSize > idx ? pEaterType->FrontOffset[idx] * Unsorted::LeptonsPerCell : 0;
-		flh.Y = leftSize > idx ? pEaterType->LeftOffset[idx] * Unsorted::LeptonsPerCell : 0;
-		const auto pos = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, false);
+		const auto& cellOffset = pEaterType->Cells[idx];
+		const auto pos = TechnoExt::GetFLHAbsoluteCoords(pThis, CoordStruct { cellOffset.X, cellOffset.Y, 0 }, false);
 		const auto pCell = MapClass::Instance.TryGetCellAt(pos);
 
 		if (!pCell)

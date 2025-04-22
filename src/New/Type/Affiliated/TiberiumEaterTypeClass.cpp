@@ -11,8 +11,29 @@ void TiberiumEaterTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->TransDelay.Read(exINI, pSection, "TiberiumEater.TransDelay");
 	this->CashMultiplier.Read(exINI, pSection, "TiberiumEater.CashMultiplier");
 	this->AmountPerCell.Read(exINI, pSection, "TiberiumEater.AmountPerCell");
-	this->FrontOffset.Read(exINI, pSection, "TiberiumEater.FrontOffset");
-	this->LeftOffset.Read(exINI, pSection, "TiberiumEater.LeftOffset");
+
+	for (size_t idx = 0; ; ++idx)
+	{
+		Nullable<Vector2D<int>> cell;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "TiberiumEater.Cell%d", idx);
+		cell.Read(exINI, pSection, tempBuffer);
+
+		if (idx >= this->Cells.size())
+		{
+			if (!cell.isset())
+				break;
+
+			this->Cells.emplace_back(cell.Get().X * Unsorted::LeptonsPerCell, cell.Get().Y * Unsorted::LeptonsPerCell);
+		}
+		else
+		{
+			if (!cell.isset())
+				continue;
+
+			this->Cells[idx] = Vector2D<int> { cell.Get().X * Unsorted::LeptonsPerCell, cell.Get().Y * Unsorted::LeptonsPerCell };
+		}
+	}
+
 	this->Display.Read(exINI, pSection, "TiberiumEater.Display");
 	this->DisplayToHouse.Read(exINI, pSection, "TiberiumEater.DisplayToHouse");
 	this->DisplayOffset.Read(exINI, pSection, "TiberiumEater.DisplayOffset");
@@ -34,8 +55,7 @@ bool TiberiumEaterTypeClass::Serialize(T& stm)
 		.Process(this->TransDelay)
 		.Process(this->CashMultiplier)
 		.Process(this->AmountPerCell)
-		.Process(this->FrontOffset)
-		.Process(this->LeftOffset)
+		.Process(this->Cells)
 		.Process(this->Display)
 		.Process(this->DisplayToHouse)
 		.Process(this->DisplayOffset)

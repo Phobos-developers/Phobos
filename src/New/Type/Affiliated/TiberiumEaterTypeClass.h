@@ -10,8 +10,7 @@ public:
 	Valueable<int> TransDelay { -1 };
 	Valueable<float>  CashMultiplier { 1.0 };
 	Valueable<int> AmountPerCell { 0 };
-	ValueableVector<int> FrontOffset {};
-	ValueableVector<int> LeftOffset {};
+	std::vector<Vector2D<int>> Cells { std::vector<Vector2D<int>>(1) };
 	Valueable<bool> Display { true };
 	Valueable<AffectedHouse> DisplayToHouse { AffectedHouse::All };
 	Valueable<Point2D> DisplayOffset { Point2D::Empty };
