@@ -250,6 +250,11 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	const auto pTransportType = pTransport->Type;
+
+	// Added to fit with AmphibiousEnter
+	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+		return false;
+
 	const auto bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
 	const auto passengerSize = bySize ? Game::F2I(pPassenger->GetTechnoType()->Size) : 1;
 
