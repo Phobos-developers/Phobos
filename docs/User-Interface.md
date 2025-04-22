@@ -117,7 +117,7 @@ In `rulesmd.ini`:
 DefaultInfantrySelectBox=               ; Select box for infantry
 DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 
-[SOMESELECTBOXTYPE]
+[SOMESELECTBOXTYPE]                     ; Select box Type name
 Shape=select.shp                        ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
@@ -128,12 +128,12 @@ VisibleToHouses=all                     ; Affected House Enumeration (none|owner
 VisibleToHouses.Observer=true           ; boolean
 DrawAboveTechno=true                    ; boolean
 
-[SOMETECHNO]
+[SOMETECHNO]                            ; TechnoType
 SelectBox=                              ; Select box
 HideSelectBox=false                     ; boolean
 ```
 
-In `RA2MD.INI`
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 EnableSelectBox=false                   ; boolean

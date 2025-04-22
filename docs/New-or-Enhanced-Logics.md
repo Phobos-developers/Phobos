@@ -1748,7 +1748,7 @@ In `rulesmd.ini`:
 AttackMove.Aggressive=false    ; boolean
 AttackMove.UpdateTarget=false  ; boolean
 
-[SOMETECHNO]
+[SOMETECHNO]                   ; TechnoType
 AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```

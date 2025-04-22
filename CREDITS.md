@@ -382,7 +382,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
-  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
+  - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
