@@ -9,17 +9,24 @@
 
 #include <Utilities/Macro.h>
 
+namespace AnimLoggingTemp
+{
+	DWORD UniqueID = 0;
+	AnimTypeClass* pType = nullptr;
+}
+
 DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 {
 	GET(AnimClass* const, pThis, ESI);
 	GET(AnimTypeClass* const, pType, EDX);
 
+	AnimLoggingTemp::UniqueID = pThis->UniqueID;
+	AnimLoggingTemp::pType = pThis->Type;
+
 	if (pType->HideIfNoOre)
 	{
 		auto nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
-		auto pCell = pThis->GetCell();
-
-		pThis->Invisible = !pCell || pCell->GetContainedTiberiumValue() <= nThreshold;
+		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
 	return 0x423BBF;
@@ -97,7 +104,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		{
 			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
 
-			if (pInvoker)
+			if (pInvoker && !pOwner)
 				pOwner = pInvoker->Owner;
 		}
 	}
@@ -140,19 +147,43 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	return Continue;
 }
 
+DEFINE_HOOK(0x42465D, AnimClass_AI_NullTypeCheck, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	if (!pThis->Type)
+	{
+		char buffer[28];
+
+		if (AnimLoggingTemp::UniqueID == pThis->UniqueID && AnimLoggingTemp::pType)
+			sprintf_s(buffer, sizeof(buffer), " [%s]", AnimLoggingTemp::pType->get_ID());
+		else
+			sprintf_s(buffer, sizeof(buffer), "");
+
+		auto coords = pThis->Location;
+		auto mapCoords = pThis->GetMapCoords();
+		Debug::FatalErrorAndExit("AnimClass_AI_NullTypeCheck: Animation%s has null type. Active: %d | Inert: %d | Coords: %d,%d,%d | Cell: %d,%d\n",
+			buffer, pThis->IsAlive, pThis->IsInert, coords.X, coords.Y, coords.Z, mapCoords.X, mapCoords.Y);
+	}
+
+	AnimLoggingTemp::UniqueID = 0;
+	AnimLoggingTemp::pType = nullptr;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4242E1, AnimClass_AI_TrailerAnim, 0x5)
 {
 	enum { SkipGameCode = 0x424322 };
 
 	GET(AnimClass*, pThis, ESI);
 
-	if (auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->TrailerAnim, pThis->GetCoords(), 1, 1))
-	{
-		auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
-		auto const pExt = AnimExt::ExtMap.Find(pThis);
-		AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
-		pTrailerAnimExt->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
-	}
+	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->TrailerAnim, pThis->GetCoords(), 1, 1);
+
+	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
+	auto const pExt = AnimExt::ExtMap.Find(pThis);
+	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->Owner, nullptr, false, true);
+	pTrailerAnimExt->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 
 	return SkipGameCode;
 }
@@ -171,7 +202,8 @@ DEFINE_HOOK(0x62E08B, ParticleSystemClass_DTOR_DetachAttachedSystem, 0x7)
 {
 	GET(ParticleSystemClass*, pParticleSystem, EDI);
 
-	AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
+	if (pParticleSystem->Owner && pParticleSystem->Owner->WhatAmI() == AbstractType::Anim)
+		AnimExt::InvalidateParticleSystemPointers(pParticleSystem);
 
 	return 0;
 }
@@ -247,7 +279,7 @@ DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
 
 	if (pThis->OwnerObject)
 	{
-		auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
 		if (pTypeExt->Layer_UseObjectLayer.isset())
 		{
@@ -270,7 +302,7 @@ DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_CenterCoords, 0x6)
 
 	GET(AnimClass*, pThis, ESI);
 
-	auto pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pExt->UseCenterCoordsIfAttached)
 	{
@@ -286,7 +318,7 @@ DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 {
 	GET(AnimClass*, pThis, ESI);
 
-	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
 	R->EDX(pTypeExt->Palette.GetOrDefaultConvert(FileSystem::ANIM_PAL));
 
@@ -301,7 +333,7 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 
 	if (pThis->HasExtras)
 	{
-		const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+		auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
 		if (!pTypeExt->ExtraShadow)
 			return SkipExtraShadow;
@@ -310,6 +342,71 @@ DEFINE_HOOK(0x423365, AnimClass_DrawIt_ExtraShadow, 0x8)
 	}
 
 	return SkipExtraShadow;
+}
+
+// Apply cell lighting on UseNormalLight=no MakeInfantry anims.
+DEFINE_HOOK(0x4232BF, AnimClass_DrawIt_MakeInfantry, 0x6)
+{
+	enum { SkipGameCode = 0x4232C5 };
+
+	GET(AnimClass*, pThis, ESI);
+
+	if (pThis->Type->MakeInfantry != -1)
+	{
+		auto const pCell = pThis->GetCell();
+		R->EAX(pCell->Intensity_Normal);
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x423061, AnimClass_DrawIt_Visibility, 0x6)
+{
+	enum { SkipDrawing = 0x4238A3 };
+
+	GET(AnimClass* const, pThis, ESI);
+
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt->RestrictVisibilityIfCloaked && pTypeExt->VisibleTo == AffectedHouse::All)
+		return 0;
+
+	auto pTechno = abstract_cast<TechnoClass*>(pThis->OwnerObject);
+	HouseClass* const pCurrentHouse = HouseClass::CurrentPlayer;
+
+	if (!pTechno)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pThis);
+
+		if (pExt->IsTechnoTrailerAnim)
+			pTechno = pExt->Invoker;
+	}
+
+	if (pTypeExt->RestrictVisibilityIfCloaked && !HouseClass::IsCurrentPlayerObserver()
+		&& pTechno && (pTechno->CloakState == CloakState::Cloaked || pTechno->CloakState == CloakState::Cloaking)
+		&& !pTechno->Owner->IsAlliedWith(pCurrentHouse)
+		&& !pTechno->GetCell()->Sensors_InclHouse(pCurrentHouse->ArrayIndex))
+	{
+		return SkipDrawing;
+	}
+
+	auto pOwner = pThis->OwnerObject ? pThis->OwnerObject->GetOwningHouse() : pThis->Owner;
+
+	if (pTypeExt->VisibleTo_ConsiderInvokerAsOwner)
+	{
+		auto const pExt = AnimExt::ExtMap.Find(pThis);
+
+		if (pExt->Invoker)
+			pOwner = pExt->Invoker->Owner;
+		else if (pExt->InvokerHouse)
+			pOwner = pExt->InvokerHouse;
+	}
+
+	if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pTypeExt->VisibleTo, pCurrentHouse, pOwner))
+		return SkipDrawing;
+
+	return 0;
 }
 
 #pragma region AltPalette
@@ -323,7 +420,7 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 
 	int schemeIndex = pThis->Owner ? pThis->Owner->ColorSchemeIndex - 1 : RulesExt::Global()->AnimRemapDefaultColorScheme;
 	schemeIndex += AnimTypeExt::ExtMap.Find(pThis->Type)->AltPalette_ApplyLighting ? 1 : 0;
-	auto const scheme = ColorScheme::Array->Items[schemeIndex];
+	auto const scheme = ColorScheme::Array[schemeIndex];
 
 	R->ECX(scheme);
 	return SkipGameCode;
@@ -341,3 +438,49 @@ DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x425174, AnimClass_Detach_Cloak, 0x6)
+{
+	enum { SkipDetaching = 0x4251A3 };
+
+	GET(AnimClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EDI);
+
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt && !pTypeExt->DetachOnCloak)
+	{
+		if (auto const pTechno = abstract_cast<TechnoClass*>(pTarget))
+		{
+			auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+			if (pTechnoExt->IsDetachingForCloak)
+				return SkipDetaching;
+		}
+	}
+
+	return 0;
+}
+
+#pragma region ScorchFlamer
+
+// Disable Ares' implementation.
+DEFINE_PATCH(0x42511B, 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x20);
+DEFINE_PATCH(0x4250C9, 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x20);
+DEFINE_PATCH(0x42513F, 0x5F, 0x5E, 0x5D, 0x5B, 0x83, 0xC4, 0x20);
+
+DEFINE_HOOK(0x425060, AnimClass_Expire_ScorchFlamer, 0x6)
+{
+	GET(AnimClass*, pThis, ESI);
+
+	auto const pType = pThis->Type;
+
+	if (pType->Flamer || pType->Scorch)
+		AnimExt::SpawnFireAnims(pThis);
+
+	return 0;
+}
+
+#pragma endregion
+
+

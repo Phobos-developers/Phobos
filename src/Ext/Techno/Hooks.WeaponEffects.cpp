@@ -15,10 +15,18 @@
 
 namespace FireAtTemp
 {
+	BulletClass* FireBullet = nullptr;
 	CoordStruct originalTargetCoords;
 	CellClass* pObstacleCell = nullptr;
 	AbstractClass* pOriginalTarget = nullptr;
 	AbstractClass* pWaveOwnerTarget = nullptr;
+}
+
+DEFINE_HOOK(0x6FF08B, TechnoClass_Fire_RecordBullet, 0x6)
+{
+	GET(BulletClass*, pBullet, EBX);
+	FireAtTemp::FireBullet = pBullet;
+	return 0;
 }
 
 // Set obstacle cell.
@@ -87,8 +95,8 @@ DEFINE_HOOK(0x62D685, ParticleSystemClass_Fire_Coords, 0x5)
 	REF_STACK(CoordStruct, previousCoords, STACK_OFFSET(0x24, -0xC));
 
 	auto const sourceLocation = pThis->ParticleSystem ? pThis->ParticleSystem->Location : CoordStruct { INT_MAX, INT_MAX, INT_MAX };
-	auto const pCell = MapClass::Instance->TryGetCellAt(currentCoords);
-	int cellFloor = MapClass::Instance->GetCellFloorHeight(currentCoords);
+	auto const pCell = MapClass::Instance.TryGetCellAt(currentCoords);
+	int cellFloor = MapClass::Instance.GetCellFloorHeight(currentCoords);
 	bool downwardTrajectory = currentCoords.Z < previousCoords.Z;
 	bool isBelowSource = cellFloor < sourceLocation.Z - Unsorted::LevelHeight * 2;
 	bool isRamp = pCell ? pCell->SlopeIndex : false;
@@ -126,7 +134,7 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 
 	REF_STACK(CoordStruct const, coords, STACK_OFFSET(0xC0, -0x80));
 
-	auto pCell = MapClass::Instance->GetCellAt(coords);
+	auto pCell = MapClass::Instance.GetCellAt(coords);
 
 	if (pCell == FireAtTemp::pObstacleCell)
 		return Stop;
@@ -190,18 +198,34 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 	return 0;
 }
 
-// Adjust target coordinates for laser drawing.
-DEFINE_HOOK(0x6FD38D, TechnoClass_LaserZap_Obstacles, 0x7)
+DEFINE_HOOK_AGAIN(0x6FD70D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x6) // CreateRBeam
+DEFINE_HOOK_AGAIN(0x6FD514, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateEBolt
+DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) // CreateLaser
 {
 	GET(CoordStruct*, pTargetCoords, EAX);
 
-	auto coords = *pTargetCoords;
-	auto const pObstacleCell = FireAtTemp::pObstacleCell;
+	if (const auto pBullet = FireAtTemp::FireBullet)
+	{
+		// The weapon may not have been set up
+		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
 
-	if (pObstacleCell)
-		coords = pObstacleCell->GetCoordsWithBridge();
+		if (pWeaponExt && pWeaponExt->VisualScatter)
+		{
+			const auto& pRulesExt = RulesExt::Global();
+			const auto radius = ScenarioClass::Instance->Random.RandomRanged(pRulesExt->VisualScatter_Min.Get(), pRulesExt->VisualScatter_Max.Get());
+			*pTargetCoords = MapClass::GetRandomCoordsNear((pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), radius, false);
+		}
+		else
+		{
+			*pTargetCoords = (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords);
+		}
+	}
+	else if (const auto pObstacleCell = FireAtTemp::pObstacleCell)
+	{
+		*pTargetCoords = pObstacleCell->GetCoordsWithBridge();
+	}
 
-	R->EAX(&coords);
+	R->EAX(pTargetCoords);
 	return 0;
 }
 
@@ -235,6 +259,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 	R->EDI(FireAtTemp::pOriginalTarget);
 
 	// Reset temp values
+	FireAtTemp::FireBullet = nullptr;
 	FireAtTemp::originalTargetCoords = CoordStruct::Empty;
 	FireAtTemp::pObstacleCell = nullptr;
 	FireAtTemp::pOriginalTarget = nullptr;

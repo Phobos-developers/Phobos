@@ -14,32 +14,28 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
+		return;
+
+	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
+	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
+	bool isOrganic = false;
+
+	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
+		isOrganic = true;
+
+	if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
 	{
-		if (pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::None)
-			return;
-
-		bool hasInfantrySelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
-		bool hasUnitSelfHeal = pExt->SelfHealGainType.isset() && pExt->SelfHealGainType.Get() == SelfHealGainType::Units;
-		bool isOrganic = false;
-
-		if (pThis->WhatAmI() == AbstractType::Infantry ||
-			pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit)
-		{
-			isOrganic = true;
-		}
-
-		if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
-			isInfantryHeal = true;
-		}
-		else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
-		{
-			drawPip = true;
-			selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
-		}
+		drawPip = true;
+		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
+		isInfantryHeal = true;
+	}
+	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
+	{
+		drawPip = true;
+		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
 	}
 
 	if (drawPip)
@@ -273,6 +269,69 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	}
 
 	return position;
+}
+
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore)
+{
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	SelectBoxTypeClass* pSelectBox = nullptr;
+
+	if (pTypeExt->SelectBox.isset())
+		pSelectBox = pTypeExt->SelectBox.Get();
+	else if (whatAmI == InfantryClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultInfantrySelectBox.Get();
+	else if (whatAmI != BuildingClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultUnitSelectBox.Get();
+
+	if (!pSelectBox || pSelectBox->DrawAboveTechno == drawBefore)
+		return;
+
+	const auto pShape = pSelectBox->Shape.Get();
+
+	if (!pShape)
+		return;
+
+	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->VisibleToHouses_Observer : EnumFunctions::CanTargetHouse(pSelectBox->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer);
+
+	if (!canSee)
+		return;
+
+	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+	const double healthPercentage = pThis->GetHealthPercentage();
+	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
+	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+
+	Point2D drawPoint = *pLocation;
+
+	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
+	{
+		CoordStruct coords = pThis->GetCenterCoords();
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+
+		const auto& [outClient, visible] = TacticalClass::Instance->CoordsToClient(coords);
+
+		if (!visible)
+			return;
+
+		drawPoint = outClient;
+	}
+
+	drawPoint += pSelectBox->Offset;
+
+	if (pSelectBox->DrawAboveTechno)
+		drawPoint.Y += pType->PixelSelectionBracketDelta;
+
+	if (whatAmI == AbstractType::Infantry)
+		drawPoint += { 8, -3 };
+	else
+		drawPoint += { 1, -4 };
+
+	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
+
+	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 }
 
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)

@@ -49,7 +49,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 		}
 	}
 
-	return std::vector<AttachEffectTypeClass*> (types.begin(), types.end());;
+	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());;
 }
 
 AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
@@ -96,6 +96,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Duration.Read(exINI, pSection, "Duration");
+	this->Duration_ApplyFirepowerMult.Read(exINI, pSection, "Duration.ApplyFirepowerMult");
+	this->Duration_ApplyArmorMultOnTarget.Read(exINI, pSection, "Duration.ApplyArmorMultOnTarget");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
@@ -106,6 +108,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->Animation.Read(exINI, pSection, "Animation");
 	this->CumulativeAnimations.Read(exINI, pSection, "CumulativeAnimations");
+	this->CumulativeAnimations_RestartOnChange.Read(exINI, pSection, "CumulativeAnimations.RestartOnChange");
 	this->Animation_ResetOnReapply.Read(exINI, pSection, "Animation.ResetOnReapply");
 	this->Animation_OfflineAction.Read(exINI, pSection, "Animation.OfflineAction");
 	this->Animation_TemporalAction.Read(exINI, pSection, "Animation.TemporalAction");
@@ -122,6 +125,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
+	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
+	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
 	this->ROFMultiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->ROFMultiplier_ApplyOnCurrentTimer.Read(exINI, pSection, "ROFMultiplier.ApplyOnCurrentTimer");
@@ -147,8 +152,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
 	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
+	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
+	this->Unkillable.Read(exINI, pSection, "Unkillable");
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -160,6 +168,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Duration)
+		.Process(this->Duration_ApplyFirepowerMult)
+		.Process(this->Duration_ApplyArmorMultOnTarget)
 		.Process(this->Cumulative)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
@@ -169,6 +179,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->PenetratesForceShield)
 		.Process(this->Animation)
 		.Process(this->CumulativeAnimations)
+		.Process(this->CumulativeAnimations_RestartOnChange)
 		.Process(this->Animation_ResetOnReapply)
 		.Process(this->Animation_OfflineAction)
 		.Process(this->Animation_TemporalAction)
@@ -182,6 +193,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_VisibleToHouses)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
+		.Process(this->ArmorMultiplier_AllowWarheads)
+		.Process(this->ArmorMultiplier_DisallowWarheads)
 		.Process(this->SpeedMultiplier)
 		.Process(this->ROFMultiplier)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)
@@ -202,7 +215,10 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_Warhead_Detonate)
 		.Process(this->ReflectDamage_Multiplier)
 		.Process(this->ReflectDamage_AffectsHouses)
+		.Process(this->ReflectDamage_Chance)
+		.Process(this->ReflectDamage_Override)
 		.Process(this->DisableWeapons)
+		.Process(this->Unkillable)
 		.Process(this->Groups)
 		;
 }
@@ -217,3 +233,194 @@ void AttachEffectTypeClass::SaveToStream(PhobosStreamWriter& Stm)
 {
 	this->Serialize(Stm);
 }
+
+// AE type-related enum etc. parsers
+namespace detail
+{
+	template <>
+	inline bool read<DiscardCondition>(DiscardCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DiscardCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= DiscardCondition::None;
+				}
+				else if (!_strcmpi(cur, "entry"))
+				{
+					parsed |= DiscardCondition::Entry;
+				}
+				else if (!_strcmpi(cur, "move"))
+				{
+					parsed |= DiscardCondition::Move;
+				}
+				else if (!_strcmpi(cur, "stationary"))
+				{
+					parsed |= DiscardCondition::Stationary;
+				}
+				else if (!_strcmpi(cur, "drain"))
+				{
+					parsed |= DiscardCondition::Drain;
+				}
+				else if (!_strcmpi(cur, "inrange"))
+				{
+					parsed |= DiscardCondition::InRange;
+				}
+				else if (!_strcmpi(cur, "outofrange"))
+				{
+					parsed |= DiscardCondition::OutOfRange;
+				}
+				else if (!_strcmpi(cur, "firing"))
+				{
+					parsed |= DiscardCondition::Firing;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a discard condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
+	inline bool read<ExpireWeaponCondition>(ExpireWeaponCondition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = ExpireWeaponCondition::None;
+
+			auto str = parser.value();
+			char* context = nullptr;
+			for (auto cur = strtok_s(str, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+			{
+				if (!_strcmpi(cur, "none"))
+				{
+					parsed |= ExpireWeaponCondition::None;
+				}
+				else if (!_strcmpi(cur, "expire"))
+				{
+					parsed |= ExpireWeaponCondition::Expire;
+				}
+				else if (!_strcmpi(cur, "remove"))
+				{
+					parsed |= ExpireWeaponCondition::Remove;
+				}
+				else if (!_strcmpi(cur, "death"))
+				{
+					parsed |= ExpireWeaponCondition::Death;
+				}
+				else if (!_strcmpi(cur, "discard"))
+				{
+					parsed |= ExpireWeaponCondition::Discard;
+				}
+				else if (!_strcmpi(cur, "all"))
+				{
+					parsed |= ExpireWeaponCondition::All;
+				}
+				else
+				{
+					Debug::INIParseFailed(pSection, pKey, cur, "Expected a expire weapon trigger condition type");
+					return false;
+				}
+			}
+
+			value = parsed;
+			return true;
+		}
+
+		return false;
+	}
+}
+
+// AEAttachInfoTypeClass
+
+void AEAttachInfoTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
+{
+	INI_EX exINI(pINI);
+
+	this->AttachTypes.Read(exINI, pSection, "AttachEffect.AttachTypes");
+	this->CumulativeRefreshAll.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll");
+	this->CumulativeRefreshAll_OnAttach.Read(exINI, pSection, "AttachEffect.CumulativeRefreshAll.OnAttach");
+	this->CumulativeRefreshSameSourceOnly.Read(exINI, pSection, "AttachEffect.CumulativeRefreshSameSourceOnly");
+	this->RemoveTypes.Read(exINI, pSection, "AttachEffect.RemoveTypes");
+	exINI.ParseStringList(this->RemoveGroups, pSection, "AttachEffect.RemoveGroups");
+	this->CumulativeRemoveMinCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMinCounts");
+	this->CumulativeRemoveMaxCounts.Read(exINI, pSection, "AttachEffect.CumulativeRemoveMaxCounts");
+	this->DurationOverrides.Read(exINI, pSection, "AttachEffect.DurationOverrides");
+	this->Delays.Read(exINI, pSection, "AttachEffect.Delays");
+	this->InitialDelays.Read(exINI, pSection, "AttachEffect.InitialDelays");
+	this->RecreationDelays.Read(exINI, pSection, "AttachEffect.RecreationDelays");
+}
+
+AEAttachParams AEAttachInfoTypeClass::GetAttachParams(unsigned int index, bool selfOwned) const
+{
+	AEAttachParams info { };
+
+	if (this->DurationOverrides.size() > 0)
+		info.DurationOverride = this->DurationOverrides[this->DurationOverrides.size() > index ? index : this->DurationOverrides.size() - 1];
+
+	if (selfOwned)
+	{
+		if (this->Delays.size() > 0)
+			info.Delay = this->Delays[this->Delays.size() > index ? index : this->Delays.size() - 1];
+
+		if (this->InitialDelays.size() > 0)
+			info.InitialDelay = this->InitialDelays[this->InitialDelays.size() > index ? index : this->InitialDelays.size() - 1];
+
+		if (this->RecreationDelays.size() > 0)
+			info.RecreationDelay = this->RecreationDelays[this->RecreationDelays.size() > index ? index : this->RecreationDelays.size() - 1];
+	}
+	else
+	{
+		info.CumulativeRefreshAll = this->CumulativeRefreshAll;
+		info.CumulativeRefreshAll_OnAttach = this->CumulativeRefreshAll_OnAttach;
+		info.CumulativeRefreshSameSourceOnly = this->CumulativeRefreshSameSourceOnly;
+	}
+
+	return info;
+}
+
+#pragma region(save/load)
+
+template <class T>
+bool AEAttachInfoTypeClass::Serialize(T& stm)
+{
+	return stm
+		.Process(this->AttachTypes)
+		.Process(this->CumulativeRefreshAll)
+		.Process(this->CumulativeRefreshAll_OnAttach)
+		.Process(this->CumulativeRefreshSameSourceOnly)
+		.Process(this->RemoveTypes)
+		.Process(this->RemoveGroups)
+		.Process(this->CumulativeRemoveMinCounts)
+		.Process(this->CumulativeRemoveMaxCounts)
+		.Process(this->DurationOverrides)
+		.Process(this->Delays)
+		.Process(this->InitialDelays)
+		.Process(this->RecreationDelays)
+		.Success();
+}
+
+bool AEAttachInfoTypeClass::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool AEAttachInfoTypeClass::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<AEAttachInfoTypeClass*>(this)->Serialize(stm);
+}
+
+#pragma endregion(save/load)

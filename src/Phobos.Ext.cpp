@@ -18,6 +18,7 @@
 #include <Ext/Script/Body.h>
 #include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
+#include <Ext/SWType/NewSWType/NewSWType.h>
 #include <Ext/TAction/Body.h>
 #include <Ext/Team/Body.h>
 #include <Ext/Techno/Body.h>
@@ -32,6 +33,7 @@
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/SelectBoxTypeClass.h>
 
 #include <utility>
 
@@ -182,7 +184,7 @@ private:
 	// TAction: the method dispatcher class to call with each type
 	// ArgTypes: the argument types to call the method dispatcher's Process() method
 	template <typename TAction, typename... ArgTypes>
-	requires (DispatchesAction<TAction, RegisteredTypes, ArgTypes...> && ...)
+		requires (DispatchesAction<TAction, RegisteredTypes, ArgTypes...> && ...)
 	__forceinline static bool dispatch_mass_action(ArgTypes... args)
 	{
 		// (pack expression op ...) is a fold expression which
@@ -194,7 +196,7 @@ private:
 #pragma endregion
 
 // Add more class names as you like
-using PhobosTypeRegistry = TypeRegistry<
+using PhobosTypeRegistry = TypeRegistry <
 	// Ext classes
 	AircraftExt,
 	AnimTypeExt,
@@ -229,9 +231,11 @@ using PhobosTypeRegistry = TypeRegistry<
 	ShieldClass,
 	DigitalDisplayTypeClass,
 	AttachEffectTypeClass,
-	AttachEffectClass
+	AttachEffectClass,
+	NewSWType,
+	SelectBoxTypeClass
 	// other classes
->;
+> ;
 
 DEFINE_HOOK(0x7258D0, AnnounceInvalidPointer, 0x6)
 {
@@ -256,7 +260,6 @@ DEFINE_HOOK(0x685659, Scenario_ClearClasses, 0xa)
 DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::SaveGlobals(pStm);
 	return 0;
 }
@@ -264,7 +267,6 @@ DEFINE_HOOK(0x67D32C, SaveGame_Phobos, 0x5)
 DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 {
 	GET(IStream*, pStm, ESI);
-	//UNREFERENCED_PARAMETER(pStm);
 	PhobosTypeRegistry::LoadGlobals(pStm);
 	return 0;
 }
@@ -301,24 +303,24 @@ DEFINE_HOOK(0x67FDB1, LoadOptionsClass_GetFileInfo, 0x7)
 bool Phobos::DetachFromDebugger()
 {
 	auto GetDebuggerProcessId = [](DWORD dwSelfProcessId) -> DWORD
-	{
-		DWORD dwParentProcessId = -1;
-		HANDLE hSnapshot = CreateToolhelp32Snapshot(2, 0);
-		PROCESSENTRY32 pe32;
-		pe32.dwSize = sizeof(PROCESSENTRY32);
-		Process32First(hSnapshot, &pe32);
-		do
 		{
-			if (pe32.th32ProcessID == dwSelfProcessId)
+			DWORD dwParentProcessId = -1;
+			HANDLE hSnapshot = CreateToolhelp32Snapshot(2, 0);
+			PROCESSENTRY32 pe32;
+			pe32.dwSize = sizeof(PROCESSENTRY32);
+			Process32First(hSnapshot, &pe32);
+			do
 			{
-				dwParentProcessId = pe32.th32ParentProcessID;
-				break;
+				if (pe32.th32ProcessID == dwSelfProcessId)
+				{
+					dwParentProcessId = pe32.th32ParentProcessID;
+					break;
+				}
 			}
-		}
-		while (Process32Next(hSnapshot, &pe32));
-		CloseHandle(hSnapshot);
-		return dwParentProcessId;
-	};
+			while (Process32Next(hSnapshot, &pe32));
+			CloseHandle(hSnapshot);
+			return dwParentProcessId;
+		};
 
 	HMODULE hModule = LoadLibrary("ntdll.dll");
 	if (hModule != NULL)
