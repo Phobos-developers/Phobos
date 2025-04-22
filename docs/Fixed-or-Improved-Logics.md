@@ -219,6 +219,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
+- Fixed the bug that impassive barrier could caused by selling the war factory during the production of `BallonHover=yes` vehicles.
 
 ## Fixes / interactions with other extensions
 

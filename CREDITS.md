@@ -378,6 +378,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Customize parasite culling targets
   - Customize harvester dump amount
+  - Fix the bug that impassive barrier could caused by selling the war factory during the production of `BallonHover=yes` vehicles
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
