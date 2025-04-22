@@ -1,4 +1,5 @@
 #include <UnitClass.h>
+#include <HouseClass.h>
 
 #include <Ext/TechnoType/Body.h>
 
