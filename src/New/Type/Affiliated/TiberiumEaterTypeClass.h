@@ -16,7 +16,7 @@ public:
 	Valueable<AffectedHouse> DisplayToHouse { AffectedHouse::All };
 	Valueable<Point2D> DisplayOffset { Point2D::Empty };
 	ValueableVector<AnimTypeClass*> Anims {};
-	std::vector<NullableVector<AnimTypeClass*>> Anims_Tiberiums {};
+	NullableVector<AnimTypeClass*> Anims_Tiberiums[4] {};
 	Valueable<bool> AnimMove { true };
 
 	TiberiumEaterTypeClass() = default;
