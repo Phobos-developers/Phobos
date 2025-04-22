@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-22 22:20+0800\n"
+"POT-Creation-Date: 2025-04-22 23:13+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1422,20 +1422,30 @@ msgstr ""
 " NetsuNegi）"
 
 #: ../../Whats-New.md:367
-msgid "Select box logic (by NetsuNegi)"
-msgstr "选择框逻辑"
+msgid "[Select box logic](User-Interface.md#select-box) (by NetsuNegi)"
+msgstr "[选择框逻辑](User-Interface.md#select-box)（by NetsuNegi）"
 
 #: ../../Whats-New.md:368
-msgid "Customize airstrike targets (by NetsuNegi)"
-msgstr "自定义空袭目标（by NetsuNegi）"
+msgid ""
+"[Customize airstrike targets](Fixed-or-Improved-Logics.md#airstrike-"
+"target-eligibility) (by NetsuNegi)"
+msgstr ""
+"[自定义空袭目标](Fixed-or-Improved-Logics.md#airstrike-"
+"target-eligibility)（by NetsuNegi）"
 
 #: ../../Whats-New.md:369
-msgid "Aggressive attack move mission (by CrimRecya)"
-msgstr "侵略性移动攻击命令（by CrimRecya）"
+msgid ""
+"[Aggressive attack move mission](New-or-Enhanced-Logics.md#aggressive-"
+"attack-move-mission) (by CrimRecya)"
+msgstr "[侵略性移动攻击命令](New-or-Enhanced-Logics.md#aggressive-"
+"attack-move-mission)（by CrimRecya）"
 
 #: ../../Whats-New.md:370
-msgid "Amphibious access vehicle (by CrimRecya)"
-msgstr "两栖载具装载拓展（by CrimRecya）"
+msgid ""
+"[Amphibious access vehicle](New-or-Enhanced-Logics.md#amphibious-access-"
+"vehicle) (by CrimRecya)"
+msgstr "[两栖载具装载拓展](New-or-Enhanced-Logics.md#amphibious-access-"
+"vehicle)（by CrimRecya）"
 
 #: ../../Whats-New.md:372 ../../Whats-New.md:569 ../../Whats-New.md:882
 #: ../../Whats-New.md:991 ../../Whats-New.md:1016 ../../Whats-New.md:1055
