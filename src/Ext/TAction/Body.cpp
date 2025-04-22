@@ -360,7 +360,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		if (pExecuteHouse)
 		{
 			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
-	
+
 			CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
@@ -381,7 +381,7 @@ bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, Obje
 
 bool TActionExt::SetDropCrate(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto pTechno : TechnoClass::Array)
 	{
 		const auto pAttachedTag = pTechno->AttachedTag;
 

@@ -1370,7 +1370,7 @@ UseDisguiseMovementSpeed=false    ; boolean
 ![image](_static/images/dropcrate-01.gif)
 *Drop crates on infantry and vehicles example in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
-- Ìf `DropCrate` is declared then the specified crate will be spawned when the object is destroyed.
+- If `DropCrate` is declared then the specified crate will be spawned when the object is destroyed.
 
 In `rulesmd.ini`:
 ```ini

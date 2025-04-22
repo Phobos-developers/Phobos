@@ -361,7 +361,7 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	R->EAX(speed);
 
 	// Drop crate if is dead
-	if (!pThis->Health)
+	if (pThis->Health <= 0)
 	{
 		const auto pExt = TechnoExt::ExtMap.Find(pThis);
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());

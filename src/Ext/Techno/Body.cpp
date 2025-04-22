@@ -526,41 +526,41 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 }
 
 // Check adjacent cells from the center
-// The current MapClass::Instance->PlacePowerupCrate(...) doesn't like slopes and maybe other cases
+// The current MapClass::Instance.PlacePowerupCrate(...) doesn't like slopes and maybe other cases
 bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, int maxCellRange)
 {
 	CellStruct centerCell = CellClass::Coord2Cell(location);
-	int currentRange = 0;
+	short currentRange = 0;
 	bool placed = false;
 
 	do
 	{
-		int x = -currentRange;
-		int y = -currentRange;
+		short x = -currentRange;
+		short y = -currentRange;
 
 		CellStruct checkedCell;
 		checkedCell.Y = centerCell.Y + y;
 
 		// Check upper line
-		for (int i = -currentRange; i <= currentRange; i++)
+		for (short i = -currentRange; i <= currentRange; i++)
 		{
 			checkedCell.X = centerCell.X + i;
 
-			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
 				break;
 		}
 
 		if (placed)
 			break;
 
-		checkedCell.Y = centerCell.Y + std::abs(y);
+		checkedCell.Y = centerCell.Y + (int)std::abs(y);
 
 		// Check lower line
-		for (int i = -currentRange; i <= currentRange; i++)
+		for (short i = -currentRange; i <= currentRange; i++)
 		{
 			checkedCell.X = centerCell.X + i;
 
-			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
 				break;
 		}
 
@@ -570,31 +570,31 @@ bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, 
 		checkedCell.X = centerCell.X + x;
 
 		// Check left line
-		for (int j = -currentRange + 1; j < currentRange; j++)
+		for (short j = -currentRange + 1; j < currentRange; j++)
 		{
 			checkedCell.Y = centerCell.Y + j;
 
-			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
 				break;
 		}
 
 		if (placed)
 			break;
 
-		checkedCell.X = centerCell.X + std::abs(x);
+		checkedCell.X = centerCell.X + (int)std::abs(x);
 
 		// Check right line
-		for (int j = -currentRange + 1; j < currentRange; j++)
+		for (short j = -currentRange + 1; j < currentRange; j++)
 		{
 			checkedCell.Y = centerCell.Y + j;
 
-			if (placed = MapClass::Instance->PlacePowerupCrate(checkedCell, selectedPowerup))
+			if (placed = MapClass::Instance.PlacePowerupCrate(checkedCell, selectedPowerup))
 				break;
 		}
 
 		currentRange++;
 	}
-	while (!placed && currentRange < maxCellRange);
+	while (!placed && currentRange < (short)maxCellRange);
 
 	if (!placed)
 		Debug::Log(__FUNCTION__": Failed to place a crate in the cell (%d,%d) and around that location.\n", centerCell.X, centerCell.Y, maxCellRange);
