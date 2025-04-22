@@ -1786,6 +1786,24 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
+namespace RemoveCellContentTemp
+{
+	bool CheckBeforeUnmark = false;
+}
+
+DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
+{
+	enum { SkipGameCode = 0x737F80 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	RemoveCellContentTemp::CheckBeforeUnmark = true;
+	pThis->Mark(MarkType::Up);
+	RemoveCellContentTemp::CheckBeforeUnmark = false;
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 {
 	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
@@ -1793,7 +1811,7 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	GET(CellClass*, pCell, EDI);
 	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
 
-	if (onBridge ? pCell->AltObject : pCell->FirstObject)
+	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
 		return DontUnmark;
 
 	GET(ObjectClass*, pContent, ESI);
