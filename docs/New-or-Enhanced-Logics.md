@@ -1753,7 +1753,7 @@ In `rulesmd.ini`:
 TiberiumEater.TransDelay=-1       ; integer
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
-TiberiumEater.CellsN=             ; List of integers, use cell as unit, multiple values mean that they are effective in multiple cells at the same time
+TiberiumEater.CellsN=             ; x, y , use cell as unit, multiple values mean that they are effective in multiple cells at the same time
 TiberiumEater.Display=true        ; boolean
 TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
 TiberiumEater.Anims=              ; List of AnimationTypes
