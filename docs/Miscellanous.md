@@ -31,16 +31,16 @@ Due to technical incompatibilities, enabling this feature disables [Ares' Custom
 
 - Phobos writes additional information to the `SYNC#.txt` log files when a desynchronization occurs such as calls to random number generator functions, facing / target / destination changes etc.
 
+### Display Damage Numbers
+
+- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
+
 ### Dump Object Info
 
 ![image](_static/images/objectinfo-01.png)
 *Object info dump from [CnC: Reloaded](https://www.moddb.com/mods/cncreloaded/)*
 
 - There's a [new hotkey](User-Interface.md#dump-object-info) to dump selected/hovered object info on press. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
-
-### Display Damage Numbers
-
-- There's a [new hotkey](User-Interface.md#display-damage-numbers) to show exact numbers of damage dealt on units & buildings. The numbers are shown in red (blue against shields) for damage, and for healing damage in green (cyan against shields). They are shown on the affected units and will move upwards after appearing. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
 
 ### Frame Step In
 
@@ -50,7 +50,7 @@ Due to technical incompatibilities, enabling this feature disables [Ares' Custom
 ### Save variables to file
 
 - There's a [new hotkey](User-Interface.md#save-variables) to write all local variables to `locals.ini` and all global variables to `globals.ini`. Available only if `DebugKeysEnabled` under `[GlobalControls]` is set to true in `rulesmd.ini`.
-- Variables will be also automatically saved to file on scenario end if `[General]->SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`.
+- Variables will be also automatically saved to file on scenario end if `[General] -> SaveVariablesOnScenarioEnd=true` is set in `rulesmd.ini`.
 - Variable section will use the same name as the mission file name in capital letters, i.e. `[MYCAMPAIGN.MAP]`.
   - Variables will be written as key-value pairs, i.e. `MyVariable=1`.
 - If an INI file with the same name (`locals.ini`/`globals.ini`) doesn't exist, it will be created. If it exists, all sections will be preserved.
@@ -66,7 +66,7 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 - It's now possible to write locomotor aliases instead of their CLSIDs in the `Locomotor` tag value. Use the table below to find the needed alias for a locomotor.
 
 | *Alias* | *CLSID*                                  |
-| ------: | :--------------------------------------: |
+|--------:|:----------------------------------------:|
 |Drive    | `{4A582741-9839-11d1-B709-00A024DDAFD1}` |
 |Jumpjet  | `{92612C46-F71F-11d1-AC9F-006008055BB5}` |
 |Hover    | `{4A582742-9839-11d1-B709-00A024DDAFD1}` |
@@ -118,15 +118,20 @@ CampaignDefaultGameSpeed=4  ; integer
 Currently there is no way to set desired FPS directly. Use the generator below to get required values. The generator supports values from 10 to 60.
 ```
 
-<details>
-<summary>Click to show the generator<br>点击显示生成器</summary>
-<input id="customGameSpeedIn" type=number placeholder="Enter desired FPS                   输入所需的 FPS" oninput="onInput()" style="width:100%";>
-<p>
-Results (remember to replace N with your game speed number!):<br>
-&nbsp;&nbsp;结果&nbsp;（别忘了把 N 替换成你的游戏速度编号）：
+```{dropdown} Click to show the generator
+Enter desired FPS
+<div>
+<input id="customGameSpeedIn" type=number oninput="onInput()" style="width:100%";>
+</div>
+
+Results (remember to replace N with your game speed number!):
+
+<div>
 </p>
 <div id="codeBlockHere1"></div>
-</details>
+</div>
+```
+
 <script>
 makeINICodeBlock(document.getElementById("codeBlockHere1"), "customGameSpeedOut", 400);
 let fpsArray = [];
@@ -158,7 +163,7 @@ function onInput() {
 		j += 1;
 		let content = [];
 		if (foundAny) {
-			content.push({key: null, value: null, comment: "// Or 或"});
+			content.push({key: null, value: null, comment: "// -- Or -- "});
 		}
 		content.push({key: "CustomGSN.DefaultDelay", value: d, comment: null});
 		content.push({key: "CustomGSN.ChangeDelay", value: c, comment: null});
@@ -198,7 +203,7 @@ Due to a technical issue, there is a chance that ***the first line of a included
 ```
 
 ```{warning}
-When this feature is enabled, the [Ares equivalent of `[$Include]`](https://ares-developers.github.io/Ares-docs/new/misc/include.html) is disabled!
+When this feature is enabled, `[#include]` (equivalent [Ares feature](https://ares-developers.github.io/Ares-docs/new/misc/include.html)) is disabled because of technical incompatibilities.
 ```
 
 ### Section inheritance
@@ -230,3 +235,19 @@ When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) 
 ```{warning}
 This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
 ```
+
+### Turning off/on in-game exception handling
+
+You can turn on/off the exception handler of the game's main loop using the following command line arg: `-ExceptionHandler=boolean` where `boolean` is `(true|false|yes|no|1|0)`.
+
+```{note}
+In **debug** builds the in-game exception handler is **turned off** by default.
+```
+
+```{warning}
+The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
+```
+
+## Blowfish Dependency
+
+`BLOWFISH.DLL` is no longer required to start the game.

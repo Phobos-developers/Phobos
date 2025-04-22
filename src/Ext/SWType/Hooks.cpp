@@ -4,6 +4,20 @@
 
 #include <Ext/House/Body.h>
 
+//this hook just for phobos NewSWType
+DEFINE_HOOK(0x6CC390, SuperClass_Launch, 0x6)
+{
+	GET(SuperClass* const, pSuper, ECX);
+	GET_STACK(CellStruct const* const, pCell, 0x4);
+	GET_STACK(bool const, isPlayer, 0x8);
+
+	Debug::Log("[Phobos Launch] %s\n", pSuper->Type->get_ID());
+
+	auto const handled = SWTypeExt::Activate(pSuper, *pCell, isPlayer);
+
+	return handled ? 0x6CDE40 : 0;
+}
+
 // Ares hooked at 0x6CC390 and jumped to 0x6CDE40
 // If a super is not handled by Ares however, we do it at the original entry point
 DEFINE_HOOK_AGAIN(0x6CC390, SuperClass_Place_FireExt, 0x6)
@@ -26,9 +40,9 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 {
 	GET(SuperClass*, pThis, ESI);
 
-	if (SuperClass::ShowTimers->AddItem(pThis))
+	if (SuperClass::ShowTimers.AddItem(pThis))
 	{
-		std::sort(SuperClass::ShowTimers->begin(), SuperClass::ShowTimers->end(),
+		std::sort(SuperClass::ShowTimers.begin(), SuperClass::ShowTimers.end(),
 			[](SuperClass* a, SuperClass* b)
 			{
 				auto aExt = SWTypeExt::ExtMap.Find(a->Type);
@@ -46,13 +60,13 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 	if (!Phobos::Config::ShowDesignatorRange || !(RulesExt::Global()->ShowDesignatorRange) || Unsorted::CurrentSWType == -1)
 		return 0;
 
-	const auto pSuperType = SuperWeaponTypeClass::Array()->GetItem(Unsorted::CurrentSWType);
+	const auto pSuperType = SuperWeaponTypeClass::Array.GetItem(Unsorted::CurrentSWType);
 	const auto pExt = SWTypeExt::ExtMap.Find(pSuperType);
 
 	if (!pExt->ShowDesignatorRange)
 		return 0;
 
-	for (const auto pCurrentTechno : *TechnoClass::Array)
+	for (const auto pCurrentTechno : TechnoClass::Array)
 	{
 		const auto pCurrentTechnoType = pCurrentTechno->GetTechnoType();
 		const auto pOwner = pCurrentTechno->Owner;
@@ -73,7 +87,7 @@ DEFINE_HOOK(0x6DBE74, Tactical_SuperLinesCircles_ShowDesignatorRange, 0x7)
 			: (float)(pTechnoTypeExt->InhibitorRange.Get(pCurrentTechnoType->Sight));
 
 		CoordStruct coords = pCurrentTechno->GetCenterCoords();
-		coords.Z = MapClass::Instance->GetCellFloorHeight(coords);
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto color = pOwner->Color;
 		Game::DrawRadialIndicator(false, true, coords, color, radius, false, true);
 	}
@@ -229,10 +243,10 @@ DEFINE_HOOK(0x6ABC9D, SidebarClass_GetObjectTabIndex_Super, 0x5)
 
 	GET(int const, typeIdx, EDX);
 
-	if (typeIdx < 0 || typeIdx >= SuperWeaponTypeClass::Array->Count)
+	if (typeIdx < 0 || typeIdx >= SuperWeaponTypeClass::Array.Count)
 		return 0;
 
-	const auto pSWType = SuperWeaponTypeClass::Array->Items[typeIdx];
+	const auto pSWType = SuperWeaponTypeClass::Array[typeIdx];
 	const auto pSWTypExt = SWTypeExt::ExtMap.Find(pSWType);
 
 	R->EAX(pSWTypExt->TabIndex);

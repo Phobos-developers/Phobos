@@ -32,7 +32,7 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 
 	auto const pWeapon = pThis->GetWeaponType();
 
-	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance->IsWithinUsableArea((*pCoords)))
+	if (pWeapon && pWeapon->RadLevel > 0 && MapClass::Instance.IsWithinUsableArea((*pCoords)))
 	{
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
 		auto const pWH = pThis->WH;
@@ -63,14 +63,14 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 	auto const pWeapon = pInf->GetDeployWeapon()->WeaponType;
 	int radLevel = 0;
 
-	if (RadSiteClass::Array->Count > 0 && pWeapon)
+	if (RadSiteClass::Array.Count > 0 && pWeapon)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto const pRadType = pWeaponExt->RadType;
 		auto const warhead = pWeapon->Warhead;
 		auto currentCoord = pInf->GetCell()->MapCoords;
 
-		for (auto const pRadSite : *RadSiteClass::Array)
+		for (auto const pRadSite : RadSiteClass::Array)
 		{
 			if (pRadSite->BaseCell == currentCoord &&
 				pRadSite->Spread == (int)warhead->CellSpread &&
@@ -106,7 +106,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
 		pThis->CloakDelayTimer.Start(nDeployFrame);
 
-		pTarget = MapClass::Instance->TryGetCellAt(pThis->GetCoords());
+		pTarget = MapClass::Instance.TryGetCellAt(pThis->GetCoords());
 	}
 
 	pThis->SetTarget(pTarget); //Here we go
@@ -137,7 +137,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	{
 		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
 
-		for (auto const pRadSite : *RadSiteClass::Array)
+		for (auto const pRadSite : RadSiteClass::Array)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 			RadTypeClass* pType = pRadExt->Type;
@@ -197,7 +197,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 		CellStruct CurrentCoord = pFoot->GetCell()->MapCoords;
 
 		// Loop for each different radiation stored in the RadSites container
-		for (auto const pRadSite : *RadSiteClass::Array)
+		for (auto const pRadSite : RadSiteClass::Array)
 		{
 			auto const pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 			// Check the distance, if not in range, just skip this one

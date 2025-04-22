@@ -85,7 +85,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 	std::vector<int> waypoints;
 	waypoints.reserve(ScenarioExt::Global()->Waypoints.size());
 
-	auto const pScen = ScenarioClass::Instance();
+	auto const pScen = ScenarioClass::Instance;
 
 	for (auto pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
@@ -205,7 +205,7 @@ bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, Obj
 	if (itr != variables.end())
 	{
 		CRT::swprintf(Phobos::wideBuffer, L"%d", itr->second.Value);
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer);
 	}
 
 	return true;
@@ -278,7 +278,7 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 
 bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
-	if (SuperWeaponTypeClass::Array->Count > 0)
+	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
 		int swIdx = pThis->Param3;
 		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
@@ -288,18 +288,18 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		do
 		{
 			if (X < 0)
-				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
+				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
 
 			if (Y < 0)
-				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
+				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
 		}
-		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
+		while (!MapClass::Instance.IsWithinUsableArea(targetLocation, false));
 
 		switch (pThis->Param4)
 		{
 		case -1:
 			// Random non-neutral
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pHouse : HouseClass::Array)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
@@ -318,7 +318,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -2:
 			// Find first Neutral
-			for (auto pHouseNeutral : *HouseClass::Array)
+			for (auto pHouseNeutral : HouseClass::Array)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
@@ -331,7 +331,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -3:
 			// Random Human Player
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pHouse : HouseClass::Array)
 			{
 				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated
@@ -374,7 +374,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	GameModeOptionsClass::Instance.MCVRedeploy = pThis->Param3 != 0;
 	return true;
 }
 

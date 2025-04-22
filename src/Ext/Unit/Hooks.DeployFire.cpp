@@ -60,7 +60,7 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 		return SkipGameCode;
 	}
 
-	auto pCell = MapClass::Instance->GetCellAt(pThis->GetMapCoords());
+	auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
 	pThis->SetTarget(pCell);
 
 	if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK)

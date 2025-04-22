@@ -44,7 +44,13 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 		this->HasInitialized = true;
 
-	Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+
+	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
+		this->Duration = Math::max(static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
+
+	if (this->Type->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // count its own ArmorMultiplier as well
+		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / this->Type->ArmorMultiplier), 0);
 
 	AttachEffectClass::Array.emplace_back(this);
 }
@@ -308,16 +314,15 @@ void AttachEffectClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
 		pAnim->SetOwnerObject(this->Techno);
-		pAnim->Owner = this->Type->Animation_UseInvokerAsOwner ? InvokerHouse : this->Techno->Owner;
+		auto const pOwner = this->Type->Animation_UseInvokerAsOwner ? this->InvokerHouse : this->Techno->Owner;
+		pAnim->Owner = pOwner;
 		pAnim->RemainingIterations = 0xFFu;
 		this->Animation = pAnim;
 
 		if (this->Type->Animation_UseInvokerAsOwner)
-		{
-			auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-			pAnimExt->SetInvoker(Invoker);
-		}
-
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Invoker, this->InvokerHouse);
+		else
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 	}
 }
 
@@ -382,6 +387,12 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 		this->Duration = durationOverride;
 	else
 		this->Duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
+
+	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && this->Invoker)
+		this->Duration = Math::max(static_cast<int>(this->Duration * this->Invoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(this->Invoker)->AE.FirepowerMultiplier), 0);
+
+	if (this->Type->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // no need to count its own effect again
+		this->Duration = Math::max(static_cast<int>(this->Duration / this->Techno->ArmorMultiplier / TechnoExt::ExtMap.Find(this->Techno)->AE.ArmorMultiplier), 0);
 
 	if (this->Type->Animation_ResetOnReapply)
 	{
