@@ -453,6 +453,7 @@ This page lists all the individual contributions to the project by their author.
   - Jumpjet Tilts While Moving
   - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
   - Fix an issue that game crashes when spawnee has been removed and is not real dead
+  - Aggressive attack move mission
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

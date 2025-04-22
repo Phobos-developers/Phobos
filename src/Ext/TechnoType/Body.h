@@ -276,6 +276,9 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Nullable<bool> AttackMove_Aggressive;
+		Nullable<bool> AttackMove_UpdateTarget;
+
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
 		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
@@ -588,6 +591,9 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, AttackMove_Aggressive {}
+			, AttackMove_UpdateTarget {}
+
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_NoMorePursuit { true }
@@ -597,7 +603,7 @@ public:
 
 			, AllowAirstrike { }
 
-      		, Image_ConditionYellow { }
+			, Image_ConditionYellow { }
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }

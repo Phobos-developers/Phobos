@@ -365,6 +365,7 @@ New:
 - [Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
 - Select box logic (by NetsuNegi)
 - Customize airstrike targets (by NetsuNegi)
+- Aggressive attack move mission (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
