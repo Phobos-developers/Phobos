@@ -493,6 +493,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
   - Prone speed customization
   - RadarInvisible for non-enemy house
+  - Make harvesters do addtional scan after unload
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
