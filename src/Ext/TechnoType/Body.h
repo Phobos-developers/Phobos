@@ -342,6 +342,8 @@ public:
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
 
+		Nullable<bool> HarvesterScanAfterUnload;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -637,6 +639,8 @@ public:
 			, Overload_DeathSound {}
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount { 5 }
+
+			, HarvesterScanAfterUnload {}
 		{ }
 
 		virtual ~ExtData() = default;
