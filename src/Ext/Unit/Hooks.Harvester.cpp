@@ -31,7 +31,7 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 	if (pFocus && TechnoTypeExt::ExtMap.Find(pThis->Type)->HarvesterScanAfterUnload.Get(RulesExt::Global()->HarvesterScanAfterUnload))
 	{
 		auto cellBuffer = CellStruct::Empty;
-		const auto pCellStru = pThis->ScanForTiberium(&cellBuffer, RulesClass::Instance->TiberiumLongScan / 256, 0);
+		const auto pCellStru = pThis->ScanForTiberium(&cellBuffer, RulesClass::Instance->TiberiumLongScan / Unsorted::LeptonsPerCell, 0);
 
 		if (*pCellStru != CellStruct::Empty)
 		{
