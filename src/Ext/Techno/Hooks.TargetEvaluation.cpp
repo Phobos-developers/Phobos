@@ -156,7 +156,7 @@ static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
 	if (!pTarget || pTarget == pThis->MegaTarget)
 		return false;
 
-	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget);
 
 	if (!pTargetTechno || pTargetTechno->IsArmed())
 		return false;
