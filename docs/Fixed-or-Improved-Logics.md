@@ -216,7 +216,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport.
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error.
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead.
-- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
+- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
+- Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
+- Fixed an issue that game crashes when spawnee has been removed and is not real dead.
+- Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
+- Fixed the bug that buildings will always be tinted as airstrike owner.
+- Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it.
 
 ## Fixes / interactions with other extensions
 
@@ -404,16 +409,6 @@ In `rulesmd.ini`:
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 ```
 
-### Airstrike target eligibility
-
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEBUILDING]   ; BuildingType
-AllowAirstrike=  ; boolean
-```
-
 ### Allowed / disallowed types for FactoryPlant
 
 - It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
@@ -528,6 +523,21 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Skip anim delay for burst fire
+
+- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
+- Now you can implement the above logic using the following flag.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+IsAnimDelayedBurst=true            ; boolean
+```
+
+```{note}
+The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore `IsAnimDelayedFire`.
 ```
 
 ### Unit repair customization
@@ -828,6 +838,22 @@ In `artmd.ini`:
 Image=              ; name of the file that will be used as image, without extension
 ```
 
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+- For non building situations, the default value is true.
+- Now it is possible to designate air strikes against non building targets.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]
+AllowAirstrike=            ; boolean
+
+[SOMEWARHEAD]
+AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
+```
+
 ### Customizable veterancy insignias
 
 - You can now customize veterancy insignia of TechnoTypes.
@@ -1080,6 +1106,16 @@ UnitPowerDrain=false  ; boolean
 
 [SOMETECHNO]          ; TechnoType
 Power=0               ; integer, positive means output, negative means drain
+```
+
+### RadarInvisible for non-enemy house
+
+- In vanilla, `RadarInvisible` is ignored if the techno is allied with the current player. Now you can change this behavior.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                         ; TechnoType
+RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if `RadarInvisible=true`, none otherwise
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -1417,13 +1453,15 @@ ForceShield.KeptOnDeploy=       ; boolean, default to [CombatDamage] -> ForceShi
 - It is now possible for vehicles to retain their target when issued movement command by setting `KeepTargetOnMove` to true.
   - Note that no check is done whether or not the vehicle or the weapon can actually fire while moving, this is on modder's discretion.
   - The target is automatically reset if the vehicle moves beyond the weapon's range from the target.
+- `KeepTargetOnMove.NoMorePursuit` controls whether the unit will restart chasing the target for attack when it stops again, otherwise it will clear the target when it moves away.
 - `KeepTargetOnMove.ExtraDistance` can be used to modify the distance considered 'out of range' from target (it is added to weapon range), negative values work to reduce the distance.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]                     ; VehicleType
-KeepTargetOnMove=false            ; boolean
-KeepTargetOnMove.ExtraDistance=0  ; floating point value, distance in cells
+[SOMEVEHICLE]                        ; VehicleType
+KeepTargetOnMove=false               ; boolean
+KeepTargetOnMove.NoMorePursuit=true  ; boolean
+KeepTargetOnMove.ExtraDistance=0     ; floating point value, distance in cells
 ```
 
 ### Sinking behavior dehardcode
@@ -1471,6 +1509,20 @@ In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
+```
+
+### Customize harvester dump amount
+
+- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
+- Less than or equal to 0 means no limit, it will always dump out all at one time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterDumpAmount=0.0               ; float point value
+
+[SOMEVEHICLE]
+HarvesterDumpAmount=                  ; float point value
 ```
 
 ## Veinholes & Weeds
@@ -1653,6 +1705,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
 DecloakDamagedTargets=true  ; boolean
+```
+
+### Customizing parasite culling targets
+
+- Now you can specify which targets the parasite will culling them.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                     ; WarheadType
+Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
 ```
 
 ### Delay automatic attack on the controlled unit
