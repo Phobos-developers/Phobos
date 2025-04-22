@@ -1753,6 +1753,21 @@ AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Agg
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```
 
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface. Defaults to `[General]->AmphibiousEnter` or `[General]->AmphibiousUnload`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType
+AmphibiousEnter=         ; boolean
+AmphibiousUnload=        ; boolean
+```
+
 ## Terrain
 
 ### Destroy animation & sound

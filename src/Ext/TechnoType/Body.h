@@ -257,6 +257,8 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> AmphibiousEnter;
+		Nullable<bool> AmphibiousUnload;
 		Nullable<bool> NoQueueUpToEnter;
 		Nullable<bool> NoQueueUpToUnload;
 		Valueable<bool> Passengers_BySize;
@@ -572,6 +574,8 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
+			, AmphibiousEnter {}
+			, AmphibiousUnload {}
 			, NoQueueUpToEnter {}
 			, NoQueueUpToUnload {}
 			, Passengers_BySize { true }
