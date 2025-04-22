@@ -386,7 +386,6 @@ Vanilla fixes:
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues (by NetsuNegi)
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
-- Fixed the bug that impassive barrier could caused by selling the war factory during the production of `BallonHover=yes` vehicles (by NetsuNegi)
 
 Phobos fixes:
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport (by CrimRecya)

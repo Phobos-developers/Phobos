@@ -222,7 +222,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
 - Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it.
-- Fixed the bug that impassive barrier could caused by selling the war factory during the production of `BallonHover=yes` vehicles.
 
 ## Fixes / interactions with other extensions
 

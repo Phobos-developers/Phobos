@@ -383,7 +383,6 @@ This page lists all the individual contributions to the project by their author.
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
   - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
-  - Fix the bug that impassive barrier could caused by selling the war factory during the production of `BallonHover=yes` vehicles
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
