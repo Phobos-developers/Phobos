@@ -99,46 +99,6 @@ DigitalDisplay.Enable=false             ; boolean
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
-### Select Box
-
-- Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
-  - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
-  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
-  - Select box's translucency setting can be adjusted via `Translucency`.
-  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
-  - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
-
-In `rulesmd.ini`:
-```ini
-[SelectBoxTypes]
-0=SOMESELECTBOXTYPE
-
-[AudioVisual]
-DefaultInfantrySelectBox=               ; Select box for infantry
-DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
-
-[SOMESELECTBOXTYPE]                     ; Select box Type name
-Shape=select.shp                        ; filename with .shp extension
-Palette=palette.pal                     ; filename with .pal extension
-Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
-Grounded=false                          ; boolean
-Offset=0,0                              ; integers - horizontal, vertical
-Translucency=0                          ; translucency level (0/25/50/75)
-VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-VisibleToHouses.Observer=true           ; boolean
-DrawAboveTechno=true                    ; boolean
-
-[SOMETECHNO]                            ; TechnoType
-SelectBox=                              ; Select box
-HideSelectBox=false                     ; boolean
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-EnableSelectBox=false                   ; boolean
-```
-
 ### Flashing Technos on selecting
 
 - Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
@@ -269,6 +229,46 @@ In `RA2MD.INI`:
 [Phobos]
 RealTimeTimers=false            ; boolean
 RealTimeTimers.Adaptive=false   ; boolean
+```
+
+### Select Box
+
+- Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
+  - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
+  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
+  - Select box's translucency setting can be adjusted via `Translucency`.
+  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
+  - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
+
+In `rulesmd.ini`:
+```ini
+[SelectBoxTypes]
+0=SOMESELECTBOXTYPE
+
+[AudioVisual]
+DefaultInfantrySelectBox=               ; Select box for infantry
+DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
+
+[SOMESELECTBOXTYPE]                     ; Select box Type name
+Shape=select.shp                        ; filename with .shp extension
+Palette=palette.pal                     ; filename with .pal extension
+Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Grounded=false                          ; boolean
+Offset=0,0                              ; integers - horizontal, vertical
+Translucency=0                          ; translucency level (0/25/50/75)
+VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true           ; boolean
+DrawAboveTechno=true                    ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+SelectBox=                              ; Select box
+HideSelectBox=false                     ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+EnableSelectBox=false                   ; boolean
 ```
 
 ### Show designator & inhibitor range

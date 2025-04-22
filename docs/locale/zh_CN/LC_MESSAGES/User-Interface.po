@@ -984,7 +984,6 @@ msgid ""
 msgstr "`[AudioVisual] -> DisplayIncome` 还允许在维修厂出售单位时显示资金点数。"
 
 #: ../../User-Interface.md:334
-#, fuzzy
 msgid ""
 "[AudioVisual]\n"
 "DisplayIncome=false       ; boolean\n"
@@ -1001,7 +1000,7 @@ msgid ""
 msgstr ""
 "[AudioVisual]\n"
 "DisplayIncome=false       ; boolean\n"
-"DisplayIncome.Houses=All  ; Affected House Enumeration "
+"DisplayIncome.Houses=all  ; Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "DisplayIncome.AllowAI=yes ; boolean\n"
 "\n"

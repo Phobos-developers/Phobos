@@ -701,6 +701,22 @@ BallisticScatter.Max= ; floating point value, distance in cells
 
 ## Technos
 
+### Airstrike target eligibility
+
+- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
+- For non building situations, the default value is true.
+- Now it is possible to designate air strikes against non building targets.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]               ; TechnoType
+AllowAirstrike=            ; boolean
+
+[SOMEWARHEAD]              ; WarheadType
+AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
+```
+
 ### Alternate FLH customizations
 
 - `AlternateFLH.OnTurret` can be used to customize whether or not `AlternateFLHN` used for `OpenTopped` transport firing coordinates, multiple mind control link offsets etc. is calculated relative to the unit's turret if available or body.
@@ -836,22 +852,6 @@ In `artmd.ini`:
 ```ini
 [SOMETECHNO]        ; TechnoType
 Image=              ; name of the file that will be used as image, without extension
-```
-
-### Airstrike target eligibility
-
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-- For non building situations, the default value is true.
-- Now it is possible to designate air strikes against non building targets.
-- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]               ; TechnoType
-AllowAirstrike=            ; boolean
-
-[SOMEWARHEAD]              ; WarheadType
-AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Customizable veterancy insignias

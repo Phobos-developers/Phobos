@@ -1134,6 +1134,22 @@ Detonate.AtFirer=false      ; boolean
 
 ## Technos
 
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]                   ; TechnoType
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -1722,52 +1738,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
-```
-
-### Aggressive attack move mission
-
-- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
-- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
-
-In `rulesmd.ini`:
-```ini
-[General]
-AttackMove.Aggressive=false    ; boolean
-AttackMove.UpdateTarget=false  ; boolean
-
-[SOMETECHNO]                   ; TechnoType
-AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
-AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
-```
-
-### Amphibious access vehicle
-
-- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AmphibiousEnter=false    ; boolean
-AmphibiousUnload=false   ; boolean
-
-[SOMEVEHICLE]            ; VehicleType
-AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
-AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -1782,6 +1752,21 @@ DestroySound=      ; Sound entry
 ```
 
 ## Vehicles
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType, transport
+AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
+```
 
 ### Damaged unit image changes
 
@@ -1800,6 +1785,21 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType, transport
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
