@@ -372,7 +372,7 @@ msgstr ""
 
 #: ../../User-Interface.md:102
 msgid "Select Box"
-msgstr ""
+msgstr "自定义选择框"
 
 #: ../../User-Interface.md:104
 msgid ""
@@ -380,6 +380,7 @@ msgid ""
 "aircraft. No select box for buildings in default case, but you still can "
 "specific for some building if you want."
 msgstr ""
+"现在你可以为每个单位自定义选择框。默认建筑没有选择框但你可以为其开启。"
 
 #: ../../User-Interface.md:105
 msgid ""
@@ -388,16 +389,18 @@ msgid ""
 "percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, "
 "respectively."
 msgstr ""
+"`Frames` 可用于列举 `Shape` 文件中用于绘制选择框的帧，对应单位生命值处于满血／低于 `[AudioVisual] -> ConditionYellow/ConditionRed` 的百分比时的不同状态。"
 
 #: ../../User-Interface.md:106
 msgid ""
 "If `Grounded` set to true, the select box will be drawn on the ground "
 "below the TechnoType."
 msgstr ""
+"如果 `Grounded` 设为 true 那么选择框将绘制在单位正下方的地面上。"
 
 #: ../../User-Interface.md:107
 msgid "Select box's translucency setting can be adjusted via `Translucency`."
-msgstr ""
+msgstr "选择框的半透明效果可以通过 `Translucency` 来进行调整。"
 
 #: ../../User-Interface.md:109
 msgid ""
@@ -406,6 +409,7 @@ msgid ""
 "by the TechnoType, and the draw location will ignore "
 "`PixelSelectionBracketDelta`."
 msgstr ""
+"`DrawAboveTechno` 决定选择框是否在相对于单位本体更高的图层绘制。若为 false 则选择框可以被单位本体遮挡，且绘制位置将忽略 `PixelSelectionBracketDelta`。"
 
 #: ../../User-Interface.md:112
 msgid ""

@@ -1525,30 +1525,30 @@ msgid "Customize harvester dump amount"
 msgstr "自定单次倒矿量"
 
 #: ../../../CREDITS.md:382
-#, fuzzy
 msgid "Select box logic"
-msgstr "护盾逻辑"
+msgstr "选择框逻辑"
 
 #: ../../../CREDITS.md:383
-#, fuzzy
 msgid "Customize airstrike targets"
-msgstr "自定义寄生秒杀目标"
+msgstr "自定义空袭目标"
 
 #: ../../../CREDITS.md:384
 msgid ""
 "Separate the AirstrikeClass pointer between the attacker/aircraft and the"
 " target to avoid erroneous overwriting issues"
 msgstr ""
+"分离了 AirstrikeClass 中攻击者／战机与目标的指针以避免错误覆盖问题"
 
 #: ../../../CREDITS.md:385
 msgid "Fix the bug that buildings will always be tinted as airstrike owner"
-msgstr ""
+msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug"
 
 #: ../../../CREDITS.md:386
 msgid ""
 "Fix the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it"
 msgstr ""
+"修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug"
 
 #: ../../../CREDITS.md:387
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1850,12 +1850,11 @@ msgstr "修复了当子机已被移除但并未真正死亡时导致的游戏崩
 
 #: ../../../CREDITS.md:457
 msgid "Aggressive attack move mission"
-msgstr ""
+msgstr "侵略性移动攻击命令"
 
 #: ../../../CREDITS.md:458
-#, fuzzy
 msgid "Amphibious access vehicle"
-msgstr "快速上车"
+msgstr "两栖载具装载拓展"
 
 #: ../../../CREDITS.md:459
 msgid "**Ollerus**:"

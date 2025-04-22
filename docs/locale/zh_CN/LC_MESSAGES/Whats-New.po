@@ -1423,20 +1423,19 @@ msgstr ""
 
 #: ../../Whats-New.md:367
 msgid "Select box logic (by NetsuNegi)"
-msgstr ""
+msgstr "选择框逻辑"
 
 #: ../../Whats-New.md:368
-#, fuzzy
 msgid "Customize airstrike targets (by NetsuNegi)"
-msgstr "自定义抛射体轨迹（by secsome）"
+msgstr "自定义空袭目标（by NetsuNegi）"
 
 #: ../../Whats-New.md:369
 msgid "Aggressive attack move mission (by CrimRecya)"
-msgstr ""
+msgstr "侵略性移动攻击命令（by CrimRecya）"
 
 #: ../../Whats-New.md:370
 msgid "Amphibious access vehicle (by CrimRecya)"
-msgstr ""
+msgstr "两栖载具装载拓展（by CrimRecya）"
 
 #: ../../Whats-New.md:372 ../../Whats-New.md:569 ../../Whats-New.md:882
 #: ../../Whats-New.md:991 ../../Whats-New.md:1016 ../../Whats-New.md:1055
@@ -1557,12 +1556,13 @@ msgid ""
 "Separated the AirstrikeClass pointer between the attacker/aircraft and "
 "the target to avoid erroneous overwriting issues (by NetsuNegi)"
 msgstr ""
+"分离了 AirstrikeClass 中攻击者／战机与目标的指针以避免错误覆盖问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:390
 msgid ""
 "Fixed the bug that buildings will always be tinted as airstrike owner (by"
 " NetsuNegi)"
-msgstr ""
+msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:392 ../../Whats-New.md:677 ../../Whats-New.md:754
 #: ../../Whats-New.md:918 ../../Whats-New.md:959 ../../Whats-New.md:971
@@ -1582,6 +1582,7 @@ msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it (by NetsuNegi)"
 msgstr ""
+"修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:396 ../../Whats-New.md:729 ../../Whats-New.md:947
 msgid "Fixes / interactions with other extensions:"

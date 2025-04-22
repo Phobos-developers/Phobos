@@ -1372,16 +1372,18 @@ msgid ""
 "Separated the AirstrikeClass pointer between the attacker/aircraft and "
 "the target to avoid erroneous overwriting issues."
 msgstr ""
+"分离了 AirstrikeClass 中攻击者／战机与目标的指针以避免错误覆盖问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:223
 msgid "Fixed the bug that buildings will always be tinted as airstrike owner."
-msgstr ""
+msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:224
 msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it."
 msgstr ""
+"修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:226
 msgid "Fixes / interactions with other extensions"
@@ -3336,7 +3338,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:841
 msgid "Airstrike target eligibility"
-msgstr "空袭目标资格"
+msgstr "空袭目标筛选"
 
 #: ../../Fixed-or-Improved-Logics.md:843
 msgid ""
@@ -3350,17 +3352,17 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:844
 msgid "For non building situations, the default value is true."
-msgstr ""
+msgstr "对非建筑单位默认为 true。"
 
 #: ../../Fixed-or-Improved-Logics.md:845
 msgid "Now it is possible to designate air strikes against non building targets."
-msgstr ""
+msgstr "现在可以对非建筑类目标进行空袭引导。"
 
 #: ../../Fixed-or-Improved-Logics.md:846
 msgid ""
 "The airstrike aircraft will now aim at the target itself rather than the "
 "cell beneath its feet."
-msgstr ""
+msgstr "空袭的战机会将目标设为单位而不再是单位脚下的单元格。"
 
 #: ../../Fixed-or-Improved-Logics.md:849
 msgid ""

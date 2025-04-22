@@ -6468,13 +6468,11 @@ msgid "Fast access vehicle"
 msgstr "快速上车"
 
 #: ../../New-or-Enhanced-Logics.md:1727
-#, fuzzy
 msgid ""
 "Now you can let infantry or vehicle passengers quickly enter or leave the"
 " transport vehicles without queuing."
 msgstr ""
-"现在你可以让步兵或载具类载员无需排队地快速进入或离开运输载具。默认为 `[General] -> NoQueueUpToEnter` 或 "
-"`[General] -> NoQueueUpToUnload`。"
+"现在你可以让步兵或载具类载员无需排队地快速进入或离开运输载具。"
 
 #: ../../New-or-Enhanced-Logics.md:1730
 msgid ""
@@ -6500,19 +6498,21 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1740
 msgid "Aggressive attack move mission"
-msgstr ""
+msgstr "侵略性移动攻击命令"
 
 #: ../../New-or-Enhanced-Logics.md:1742
 msgid ""
 "`AttackMove.Aggressive` allows your technos to attack the enemy's unarmed"
 " buildings more aggressively when in attack move mission (Ctrl+Shift)."
 msgstr ""
+"`AttackMove.Aggressive` 允许你的单位在执行移动攻击（Ctrl+Shift）任务时主动攻击敌方的无武装建筑。"
 
 #: ../../New-or-Enhanced-Logics.md:1743
 msgid ""
 "`AttackMove.UpdateTarget` allows your technos to automatically change and"
 " select a higher threat target when in attack move mission (Ctrl+Shift)."
 msgstr ""
+"`AttackMove.UpdateTarget` 允许你的单位在执行移动攻击（Ctrl+Shift）任务时自动切换威胁值更高的目标。"
 
 #: ../../New-or-Enhanced-Logics.md:1746
 msgid ""
@@ -6538,7 +6538,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1756
 msgid "Amphibious access vehicle"
-msgstr ""
+msgstr "两栖载具装载拓展"
 
 #: ../../New-or-Enhanced-Logics.md:1758
 msgid ""
@@ -6546,6 +6546,7 @@ msgid ""
 "amphibious transport vehicles on water surface. Defaults to "
 "`[General]->AmphibiousEnter` or `[General]->AmphibiousUnload`."
 msgstr ""
+"现在两栖步兵或载具可以在水中进入或离开两栖运输工具。默认为 `[General]->AmphibiousEnter` 或 `[General]->AmphibiousUnload`。"
 
 #: ../../New-or-Enhanced-Logics.md:1761
 msgid ""
