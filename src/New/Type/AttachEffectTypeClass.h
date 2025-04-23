@@ -41,6 +41,7 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<WarheadTypeClass*> Duration_ApplyVersus_Warhead;
 	Valueable<bool> Duration_ApplyFirepowerMult;
 	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
@@ -48,6 +49,10 @@ public:
 	Valueable<bool> Powered;
 	Valueable<DiscardCondition> DiscardOn;
 	Nullable<Leptons> DiscardOn_RangeOverride;
+	Valueable<double> DiscardOn_AbovePercent;
+	Valueable<double> DiscardOn_BelowPercent;
+	Valueable<double> AffectAbovePercent;
+	Valueable<double> AffectBelowPercent;
 	Valueable<bool> PenetratesIronCurtain;
 	Nullable<bool> PenetratesForceShield;
 	Valueable<AnimTypeClass*> Animation;
@@ -97,6 +102,7 @@ public:
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyVersus_Warhead {}
 		, Duration_ApplyFirepowerMult { false }
 		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
@@ -104,6 +110,10 @@ public:
 		, Powered { false }
 		, DiscardOn { DiscardCondition::None }
 		, DiscardOn_RangeOverride {}
+		, DiscardOn_AbovePercent { 0.0 }
+		, DiscardOn_BelowPercent { 0.0 }
+		, AffectAbovePercent { 0.0 }
+		, AffectBelowPercent { 0.0 }
 		, PenetratesIronCurtain { false }
 		, PenetratesForceShield {}
 		, Animation {}
