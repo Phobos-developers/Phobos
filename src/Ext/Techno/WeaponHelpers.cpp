@@ -1,7 +1,9 @@
 #include "Body.h"
 
 #include <OverlayTypeClass.h>
+#include <BulletClass.h>
 
+#include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -219,7 +221,24 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_OnFirer_Affects))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
-			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
+		{
+			if (pWHExt->KillWeapon_OnFirer_RealLaunch)
+			{
+				auto const pWeapon = pWHExt->KillWeapon_OnFirer;
+
+				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pSource,
+					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				{
+					pBullet->WeaponType = pWeapon;
+					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
+					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pSource->Owner;
+				}
+			}
+			else
+			{
+				WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
+			}
+		}
 	}
 }
 
@@ -233,7 +252,24 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 	{
 		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
-			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+		{
+			if (pTypeExt->RevengeWeapon_RealLaunch)
+			{
+				auto const pWeapon = pTypeExt->RevengeWeapon;
+
+				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
+					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				{
+					pBullet->WeaponType = pWeapon;
+					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
+					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pThis->Owner;
+				}
+			}
+			else
+			{
+				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
+			}
+		}
 	}
 
 	for (auto& attachEffect : pExt->AttachedEffects)
@@ -250,7 +286,24 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			continue;
 
 		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
-			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+		{
+			if (pType->RevengeWeapon_RealLaunch)
+			{
+				auto const pWeapon = pType->RevengeWeapon;
+
+				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
+					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				{
+					pBullet->WeaponType = pWeapon;
+					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
+					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pThis->Owner;
+				}
+			}
+			else
+			{
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+			}
+		}
 	}
 }
 
