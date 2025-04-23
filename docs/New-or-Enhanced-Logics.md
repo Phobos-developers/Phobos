@@ -1780,11 +1780,11 @@ AmphibiousUnload=        ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                      ; InfantryType, UnitType or AircraftType
+[SOMETECHNO]                      ; InfantryType, VehicleType or AircraftType
 TiberiumEater.TransDelay=-1       ; integer
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
-TiberiumEater.CellN=              ; x, y , use cell as unit, multiple values mean that they are effective in multiple cells at the same time
+TiberiumEater.CellN=              ; x, y , use cell as unit, multiple values mean that they are effective in multiple cells at the same time. N is zero-based.
 TiberiumEater.Display=true        ; boolean
 TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
 TiberiumEater.Anims=              ; List of AnimationTypes
