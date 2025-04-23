@@ -586,6 +586,22 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 		}
 	}
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->AE.HasFeedbackWeapon)
+	{
+		for (auto const& pAE : pExt->AttachedEffects)
+		{
+			if (auto const pWeaponFeedback = pAE->GetType()->FeedbackWeapon)
+			{
+				if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
+					return 0;
+
+				WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
+			}
+		}
+	}
+
 	return 0;
 }
 

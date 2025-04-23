@@ -3,6 +3,7 @@
 
 #include <AnimClass.h>
 #include <BuildingClass.h>
+#include <MapClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
@@ -57,7 +58,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 				pArmor = pShieldData->GetArmorType();
 		}
 
-		this->Duration = Math::max(static_cast<int>(this->Duration * GeneralUtils::GetWarheadVersusArmor(this->Type->Duration_ApplyVersus_Warhead, pArmor)), 0);
+		this->Duration = Math::max(MapClass::GetTotalDamage(this->Duration, this->Type->Duration_ApplyVersus_Warhead, pArmor, 0), 0);
 	}
 
 	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
@@ -413,7 +414,7 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 				pArmor = pShieldData->GetArmorType();
 		}
 
-		this->Duration = Math::max(static_cast<int>(this->Duration * GeneralUtils::GetWarheadVersusArmor(this->Type->Duration_ApplyVersus_Warhead, pArmor)), 0);
+		this->Duration = Math::max(MapClass::GetTotalDamage(this->Duration, this->Type->Duration_ApplyVersus_Warhead, pArmor, 0), 0);
 	}
 
 	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && this->Invoker)

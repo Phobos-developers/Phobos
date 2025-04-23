@@ -129,6 +129,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
 
+	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
+
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
@@ -207,6 +209,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->ExtraWarheads_FullDetonation)
+		.Process(this->FeedbackWeapon)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)

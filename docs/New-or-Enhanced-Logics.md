@@ -41,6 +41,8 @@ This page describes all the engine features that are either new and introduced b
     - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
     - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
     - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
+  - `FeedbackWeapon` can specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
+    - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -121,6 +123,7 @@ ExtraWarheads=                                     ; List of WarheadTypes
 ExtraWarheads.DamageOverrides=                     ; List of integers
 ExtraWarheads.DetonationChances=                   ; List of floating-point values (percentage or absolute)
 ExtraWarheads.FullDetonation=                      ; List of booleans
+FeedbackWeapon=                                    ; WeaponType
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)

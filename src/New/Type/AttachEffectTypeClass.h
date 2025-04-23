@@ -70,6 +70,7 @@ public:
 	ValueableVector<int> ExtraWarheads_DamageOverrides;
 	ValueableVector<double> ExtraWarheads_DetonationChances;
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
+	Valueable<WeaponTypeClass*> FeedbackWeapon;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -135,6 +136,7 @@ public:
 		, ExtraWarheads_DamageOverrides {}
 		, ExtraWarheads_DetonationChances {}
 		, ExtraWarheads_FullDetonation {}
+		, FeedbackWeapon {}
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
