@@ -297,48 +297,29 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
-	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+	auto const pBulletExt = BulletExt::ExtMap.Find(pThis);
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : pBulletExt->FirerHouse;
 
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
-		int defaultDamage = pThis->WeaponType->Damage;
+		pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides, pWeaponExt->ExtraWarheads_DetonationChances, pWeaponExt->ExtraWarheads_FullDetonation, coords, pOwner);
+	}
 
-		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
+	if (pThis->Owner)
+	{
+		auto const pExt = TechnoExt::ExtMap.Find(pThis->Owner);
+
+		if (pExt->AE.HasExtraWarheads)
 		{
-			auto const pWH = pWeaponExt->ExtraWarheads[i];
-			int damage = defaultDamage;
-			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
+			for (auto const& pAE : pExt->AttachedEffects)
+			{
+				auto const pType = pAE->GetType();
 
-			if (size > i)
-				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
-			else if (size > 0)
-				damage = pWeaponExt->ExtraWarheads_DamageOverrides[size - 1];
-
-			bool detonate = true;
-			size = pWeaponExt->ExtraWarheads_DetonationChances.size();
-
-			if (size > i)
-				detonate = pWeaponExt->ExtraWarheads_DetonationChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
-			else if (size > 0)
-				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
-
-			bool isFull = true;
-			size = pWeaponExt->ExtraWarheads_FullDetonation.size();
-
-			if (size > i)
-				isFull = pWeaponExt->ExtraWarheads_FullDetonation[i];
-			else if (size > 0)
-				isFull = pWeaponExt->ExtraWarheads_FullDetonation[size - 1];
-
-			if (!detonate)
-				continue;
-
-			if (isFull)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
-			else
-				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
+				if (pType->ExtraWarheads.size() > 0)
+					pBulletExt->ApplyExtraWarheads(pType->ExtraWarheads, pType->ExtraWarheads_DamageOverrides, pType->ExtraWarheads_DetonationChances, pType->ExtraWarheads_FullDetonation, coords, pOwner);
+			}
 		}
 	}
 

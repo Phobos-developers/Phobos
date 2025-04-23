@@ -66,6 +66,10 @@ public:
 	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
+	ValueableVector<WarheadTypeClass*> ExtraWarheads;
+	ValueableVector<int> ExtraWarheads_DamageOverrides;
+	ValueableVector<double> ExtraWarheads_DetonationChances;
+	ValueableVector<bool> ExtraWarheads_FullDetonation;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -127,6 +131,10 @@ public:
 		, ExpireWeapon {}
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
+		, ExtraWarheads {}
+		, ExtraWarheads_DamageOverrides {}
+		, ExtraWarheads_DetonationChances {}
+		, ExtraWarheads_FullDetonation {}
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }

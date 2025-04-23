@@ -634,6 +634,10 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 		return critChance;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
+
+	if (!pExt->AE.HasCritModifiers)
+		return critChance;
+
 	double extraChance = 0.0;
 
 	for (auto& attachEffect : pExt->AttachedEffects)

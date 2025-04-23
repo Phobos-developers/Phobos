@@ -154,6 +154,47 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	}
 }
 
+void BulletExt::ExtData::ApplyExtraWarheads(std::vector<WarheadTypeClass*> exWH, std::vector<int> exWHDamageOverrides, std::vector<double> exWHChances, std::vector<bool> exWHFull, CoordStruct* coords, HouseClass* pOwner)
+{
+	auto const pThis = this->OwnerObject();
+	int damage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
+
+	for (size_t i = 0; i < exWH.size(); i++)
+	{
+		auto const pWH = exWH[i];
+		size_t size = exWHDamageOverrides.size();
+
+		if (size > i)
+			damage = exWHDamageOverrides[i];
+		else if (size > 0)
+			damage = exWHDamageOverrides[size - 1];
+
+		bool detonate = true;
+		size = exWHChances.size();
+
+		if (size > i)
+			detonate = exWHChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
+		else if (size > 0)
+			detonate = exWHChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
+
+		bool isFull = true;
+		size = exWHFull.size();
+
+		if (size > i)
+			isFull = exWHFull[i];
+		else if (size > 0)
+			isFull = exWHFull[size - 1];
+
+		if (!detonate)
+			continue;
+
+		if (isFull)
+			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
+		else
+			WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
+	}
+}
+
 static inline int SetBuildingFireAnimZAdjust(BuildingClass* pBuilding, int animY)
 {
 	if (pBuilding->GetOccupantCount() > 0)

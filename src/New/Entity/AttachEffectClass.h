@@ -96,6 +96,8 @@ struct AttachEffectTechnoProperties
 	bool ReflectDamage;
 	bool HasOnFireDiscardables;
 	bool HasRestrictedArmorMultipliers;
+	bool HasCritModifiers;
+	bool HasExtraWarheads;
 
 	AttachEffectTechnoProperties() :
 		FirepowerMultiplier { 1.0 }

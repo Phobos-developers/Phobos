@@ -46,20 +46,25 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
 
-	if (this->Duration > 0)
+	if (this->Type->Duration_ApplyVersus_Warhead && this->Duration > 0)
 	{
-		if (this->Type->Duration_ApplyVersus_Warhead)
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		auto pArmor = pTechno->GetTechnoType()->Armor;
+
+		if (auto const pShieldData = pTechnoExt->Shield.get())
 		{
-			auto const pArmor = pTechno->Shield && pTechno->Shield->IsActive() ? pTechno->Shield->GetArmor() : pTechno->GetTechnoType()->Armor;
-			this->Duration = Math::max(static_cast<int>(this->Duration * GeneralUtils::GetWarheadVersusArmor(this->Type->Duration_ApplyVersus_Warhead, pArmor), 0));
+			if (pShieldData->IsActive())
+				pArmor = pShieldData->GetArmorType();
 		}
 
-		if (this->Type->Duration_ApplyFirepowerMult && pInvoker)
-			this->Duration = Math::max(static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
-
-		if (this->Type->Duration_ApplyArmorMultOnTarget) // count its own ArmorMultiplier as well
-			this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / this->Type->ArmorMultiplier), 0);
+		this->Duration = Math::max(static_cast<int>(this->Duration * GeneralUtils::GetWarheadVersusArmor(this->Type->Duration_ApplyVersus_Warhead, pArmor)), 0);
 	}
+
+	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
+		this->Duration = Math::max(static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
+
+	if (this->Type->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // count its own ArmorMultiplier as well
+		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / this->Type->ArmorMultiplier), 0);
 
 	AttachEffectClass::Array.emplace_back(this);
 }
@@ -399,8 +404,16 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 
 	if (this->Type->Duration_ApplyVersus_Warhead)
 	{
-		auto const pArmor = this->Techno->Shield && this->Techno->Shield->IsActive() ? this->Techno->Shield->GetArmor() : this->Techno->GetTechnoType()->Armor;
-		this->Duration = Math::max(static_cast<int>(this->Duration * GeneralUtils::GetWarheadVersusArmor(this->Type->Duration_ApplyVersus_Warhead, pArmor), 0));
+		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		auto pArmor = this->Techno->GetTechnoType()->Armor;
+
+		if (auto const pShieldData = pTechnoExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+				pArmor = pShieldData->GetArmorType();
+		}
+
+		this->Duration = Math::max(static_cast<int>(this->Duration * GeneralUtils::GetWarheadVersusArmor(this->Type->Duration_ApplyVersus_Warhead, pArmor)), 0);
 	}
 
 	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && this->Invoker)
