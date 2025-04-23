@@ -3077,12 +3077,12 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:745
 msgid ""
-"By default on buildings with `MaxOccupants` higher than 0, chrono sparkle"
+"By default on buildings with `MaxNumberOccupants` higher than 0, chrono sparkle"
 " animation would be shown at each of the `MuzzleFlashX` coordinates. This"
 " behaviour is now customizable, and supports `MuzzleFlashX` indices "
 "higher than 10."
 msgstr ""
-"默认情况下对于 `MaxOccupants` 大于 0 的建筑，超时空闪烁动画会在每个 `MuzzleFlashX` "
+"默认情况下对于 `MaxNumberOccupants` 大于 0 的建筑，超时空闪烁动画会在每个 `MuzzleFlashX` "
 "坐标处显示。现在这种行为可以自定义，并且支持大于 10 的 `MuzzleFlashX` 索引。"
 
 #: ../../Fixed-or-Improved-Logics.md:746
@@ -3100,11 +3100,11 @@ msgstr ""
 msgid ""
 "If `occupants` or `occupantslots` is listed without `building`, a single "
 "chrono sparkle animation is still displayed on building if it doesn't "
-"have any occupants or it has `MaxOccupants` value less than 1, "
+"have any occupants or it has `MaxNumberOccupants` value less than 1, "
 "respectively."
 msgstr ""
 "如果列出了 `occupants` 或 `occupantslots` 而没有 `building`，那么在建筑没有任何驻军或其 "
-"`MaxOccupants` 小于 1 的情况下仍会在建筑上显示一个超时空闪烁动画。"
+"`MaxNumberOccupants` 小于 1 的情况下仍会在建筑上显示一个超时空闪烁动画。"
 
 #: ../../Fixed-or-Improved-Logics.md:748
 msgid ""

@@ -758,9 +758,9 @@ SelfHealGainType=                       ; Self-Heal Gain Type Enumeration (nohea
 ### Chrono sparkle animation customization & improvements
 
 - It is now possible to customize the frame delay between instances of `[General] -> ChronoSparkle1` animations created on objects being warped by setting `[General] -> ChronoSparkleDisplayDelay`.
-- By default on buildings with `MaxOccupants` higher than 0, chrono sparkle animation would be shown at each of the `MuzzleFlashX` coordinates. This behaviour is now customizable, and supports `MuzzleFlashX` indices higher than 10.
+- By default on buildings with `MaxNumberOccupants` higher than 0, chrono sparkle animation would be shown at each of the `MuzzleFlashX` coordinates. This behaviour is now customizable, and supports `MuzzleFlashX` indices higher than 10.
   - `[General] -> ChronoSparkleBuildingDisplayPositions` can be set to show the sparkle animation on the building (`building`), muzzle flash coordinates of current occupants (`occupants`), muzzle flash coordinates of all occupant slots (`occupantslots`) or any combination of these.
-    - If `occupants` or `occupantslots` is listed without `building`, a single chrono sparkle animation is still displayed on building if it doesn't have any occupants or it has `MaxOccupants` value less than 1, respectively.
+    - If `occupants` or `occupantslots` is listed without `building`, a single chrono sparkle animation is still displayed on building if it doesn't have any occupants or it has `MaxNumberOccupants` value less than 1, respectively.
 - The chrono sparkle animation that is displayed on building itself is also now displayed at the center of it rather than at center of its topmost cell.
 
 In `rulesmd.ini`:
