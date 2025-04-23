@@ -1437,6 +1437,9 @@ In `rulesmd.ini`:
 ```ini
 [General]
 HarvesterScanAfterUnload=false     ; boolean
+
+[SOMEVEHICLE]
+HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
 ### Preserve Iron Curtain / Force Shield status on type conversion
