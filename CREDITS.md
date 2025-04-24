@@ -352,6 +352,8 @@ This page lists all the individual contributions to the project by their author.
   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
   - Fix `AltNextScenario` not taking effect
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
+  - `Edit/Clear Hate-Value` Trigger Action
+  - `Set Force Enemy` Trigger Action
   - Use WeaponX freely
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -379,6 +381,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Customize parasite culling targets
   - Customize harvester dump amount
+  - Select box logic
+  - Customize airstrike targets
+  - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
+  - Fix the bug that buildings will always be tinted as airstrike owner
+  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -449,6 +456,8 @@ This page lists all the individual contributions to the project by their author.
   - Jumpjet Tilts While Moving
   - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
   - Fix an issue that game crashes when spawnee has been removed and is not real dead
+  - Aggressive attack move mission
+  - Amphibious access vehicle
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
