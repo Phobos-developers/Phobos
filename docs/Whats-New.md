@@ -170,6 +170,9 @@ HideLightFlashEffects=false      ; boolean
   505=Fire Super Weapon at specified location (Phobos),0,0,20,2,21,22,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified location. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,505
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
+  606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
+  607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
+  608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -365,6 +368,8 @@ New:
 - [Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
 - Select box logic (by NetsuNegi)
 - Customize airstrike targets (by NetsuNegi)
+- Aggressive attack move mission (by CrimRecya)
+- Amphibious access vehicle (by CrimRecya)
 - Building placing and deploying logic enhancement (by CrimRecya)
 
 Vanilla fixes:
