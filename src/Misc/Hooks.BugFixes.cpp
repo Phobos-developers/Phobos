@@ -1139,7 +1139,7 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 		speedType = pType->SpeedType;
 		movementZone = pType->MovementZone;
-		currentZoneType = MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+		currentZoneType = MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
 	}
 
 	return 0;
