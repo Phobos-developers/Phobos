@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-08 13:50+0800\n"
+"POT-Creation-Date: 2025-04-24 21:08+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -429,7 +429,7 @@ msgstr "*重复*"
 msgid "*Target Priority*"
 msgstr "*目标优先级*"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
 msgid "*Description*"
 msgstr "*描述*"
 
@@ -1656,9 +1656,11 @@ msgstr "例如：`盟军战役25: 僵僵の钱 - 钱全被偷光了!`。"
 #: ../../AI-Scripting-and-Mapping.md:530 ../../AI-Scripting-and-Mapping.md:542
 #: ../../AI-Scripting-and-Mapping.md:555 ../../AI-Scripting-and-Mapping.md:581
 #: ../../AI-Scripting-and-Mapping.md:594 ../../AI-Scripting-and-Mapping.md:606
-#: ../../AI-Scripting-and-Mapping.md:620 ../../AI-Scripting-and-Mapping.md:647
-#: ../../AI-Scripting-and-Mapping.md:674 ../../AI-Scripting-and-Mapping.md:699
-#: ../../AI-Scripting-and-Mapping.md:717 ../../AI-Scripting-and-Mapping.md:731
+#: ../../AI-Scripting-and-Mapping.md:619 ../../AI-Scripting-and-Mapping.md:647
+#: ../../AI-Scripting-and-Mapping.md:661 ../../AI-Scripting-and-Mapping.md:675
+#: ../../AI-Scripting-and-Mapping.md:702 ../../AI-Scripting-and-Mapping.md:729
+#: ../../AI-Scripting-and-Mapping.md:754 ../../AI-Scripting-and-Mapping.md:772
+#: ../../AI-Scripting-and-Mapping.md:786
 msgid "In `mycampaign.map`:"
 msgstr "在 `mycampaign.map`："
 
@@ -1844,15 +1846,15 @@ msgstr "在指定位置发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 msgid "`HouseIndex` can take various values:"
 msgstr "`HouseIndex` 可取以下值："
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
 msgid "*House Index*"
 msgstr "*所属方索引*"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
 msgid ">= 0"
 msgstr ">= 0"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
 msgid "The index of the current House in the map"
 msgstr "地图上当前所属方的索引"
 
@@ -1864,7 +1866,7 @@ msgstr "4475-4482"
 msgid "Like in the index range 0-7"
 msgstr "类似范围 0-7 的索引"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
 msgid "-1"
 msgstr "-1"
 
@@ -1872,7 +1874,7 @@ msgstr "-1"
 msgid "Pick a random House that isn't Neutral"
 msgstr "选择一个非中立的随机所属方"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
 msgid "-2"
 msgstr "-2"
 
@@ -1953,18 +1955,93 @@ msgstr ""
 "...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:614
+#, fuzzy
+msgid "`606` Edit Hate-Value"
+msgstr "`501` 编辑变量"
+
+#: ../../AI-Scripting-and-Mapping.md:616
+msgid "Edit the hate-value that trigger houses to other houses."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:617 ../../AI-Scripting-and-Mapping.md:645
+msgid "-1 works for all houses."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:620
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
+"\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]"
+"\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:642
+msgid "`607` Clear Hate-Value"
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:644
+msgid "Clear the hate-value that trigger houses to other houses."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:648
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:655
+msgid "`608` Set Force Enemy"
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:657
+msgid "Force an enemy, it will not change with the change of hate-value."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:658
+msgid "-1 will remove the forced enemy."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:659
+msgid "-2 will never have any enemies."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:662
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:669
 msgid "Trigger events"
 msgstr "触发条件"
 
-#: ../../AI-Scripting-and-Mapping.md:616
+#: ../../AI-Scripting-and-Mapping.md:671
 msgid "`500-511` Variable comparation"
 msgstr "`500-511` 变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:618
+#: ../../AI-Scripting-and-Mapping.md:673
 msgid "Compares the variable's value with given number."
 msgstr "比较变量值与给定值。"
 
-#: ../../AI-Scripting-and-Mapping.md:621
+#: ../../AI-Scripting-and-Mapping.md:676
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2052,15 +2129,15 @@ msgstr "510"
 msgid "511"
 msgstr "511"
 
-#: ../../AI-Scripting-and-Mapping.md:643
+#: ../../AI-Scripting-and-Mapping.md:698
 msgid "`512-523` Variable comparation with local variable"
 msgstr "`512-523` 变量与局部变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:645
+#: ../../AI-Scripting-and-Mapping.md:700
 msgid "Compares the variable's value with given local variable value."
 msgstr "比较变量值与给定局部变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:648
+#: ../../AI-Scripting-and-Mapping.md:703
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2146,15 +2223,15 @@ msgstr "522"
 msgid "523"
 msgstr "523"
 
-#: ../../AI-Scripting-and-Mapping.md:670
+#: ../../AI-Scripting-and-Mapping.md:725
 msgid "`524-535` Variable comparation with global variable"
 msgstr "`524-535` 变量与全局变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:672
+#: ../../AI-Scripting-and-Mapping.md:727
 msgid "Compares the variable's value with given global variable value."
 msgstr "比较变量值与给定全局变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:675
+#: ../../AI-Scripting-and-Mapping.md:730
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2240,11 +2317,11 @@ msgstr "534"
 msgid "535"
 msgstr "535"
 
-#: ../../AI-Scripting-and-Mapping.md:697
+#: ../../AI-Scripting-and-Mapping.md:752
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
 
-#: ../../AI-Scripting-and-Mapping.md:700
+#: ../../AI-Scripting-and-Mapping.md:755
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2256,27 +2333,27 @@ msgstr ""
 "ID=EventCount,...,600,2,0,0,...\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:707
+#: ../../AI-Scripting-and-Mapping.md:762
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
 
-#: ../../AI-Scripting-and-Mapping.md:709
+#: ../../AI-Scripting-and-Mapping.md:764
 msgid ""
 "`601`: Springs when specified house owns at least 1 instance of set "
 "TechnoType."
 msgstr "`601`：当指定所属方至少拥有一个设定的科技类型时触发。"
 
-#: ../../AI-Scripting-and-Mapping.md:710
+#: ../../AI-Scripting-and-Mapping.md:765
 msgid ""
 "`602`: Springs when specified house doesn't own a single instance of set "
 "TechnoType."
 msgstr "`602`：当指定所属方没有任何一个设定的科技类型时触发。"
 
-#: ../../AI-Scripting-and-Mapping.md:711
+#: ../../AI-Scripting-and-Mapping.md:766
 msgid "Multiplayer houses (indices 4475 through 4482) are supported."
 msgstr "多人游戏所属方（索引 4475 至 4482）支持。"
 
-#: ../../AI-Scripting-and-Mapping.md:714
+#: ../../AI-Scripting-and-Mapping.md:769
 msgid ""
 "These events, as opposed to [events 81 & 82 from Ares](https://ares-"
 "developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-"
@@ -2287,7 +2364,7 @@ msgstr ""
 "docs/new/triggerevents.html#house-owns-techno-"
 "type-81-82)不同，这些使用条件中的所属方参数而不是触发的所有者。"
 
-#: ../../AI-Scripting-and-Mapping.md:718
+#: ../../AI-Scripting-and-Mapping.md:773
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2299,27 +2376,27 @@ msgstr ""
 "ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:725
+#: ../../AI-Scripting-and-Mapping.md:780
 msgid "`604-605` Checking if a specific Techno enters in a cell"
 msgstr "`604-605` 检查特定科技类型进入单元格"
 
-#: ../../AI-Scripting-and-Mapping.md:727
+#: ../../AI-Scripting-and-Mapping.md:782
 msgid ""
 "`604`: Checks if the techno that entered in the cell has the same ID "
 "specified in the event."
 msgstr "`604`：检查进入单元格的科技类型是否与条件中指定的 ID相同。"
 
-#: ../../AI-Scripting-and-Mapping.md:728
+#: ../../AI-Scripting-and-Mapping.md:783
 msgid ""
 "`605`: Checks if the techno that entered in the cell appears in the "
 "selected list in `AITargetTypes`."
 msgstr "`605`：检查进入单元格的科技类型是否出现在选定的 `AITargetTypes` 列表中。"
 
-#: ../../AI-Scripting-and-Mapping.md:729
+#: ../../AI-Scripting-and-Mapping.md:784
 msgid "`HouseIndex` can be customized to focus in a specified house."
 msgstr "`HouseIndex` 可以自定义为指定所属方。"
 
-#: ../../AI-Scripting-and-Mapping.md:732
+#: ../../AI-Scripting-and-Mapping.md:787
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2333,11 +2410,11 @@ msgstr ""
 "ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md:768
 msgid "This value is ignored (any house is valid)"
 msgstr "该值将被忽略（任何所属方均有效）"
 
-#: ../../AI-Scripting-and-Mapping.md:713
+#: ../../AI-Scripting-and-Mapping.md:768
 msgid "Pick the owner of the map trigger"
 msgstr "选择地图触发的所有者"
 

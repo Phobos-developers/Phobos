@@ -49,7 +49,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		mtx.MakeIdentity();
 
 	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && pThis->HasTurret())
+	if (isOnTurret && (pThis->HasTurret() || !pFoot))
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
