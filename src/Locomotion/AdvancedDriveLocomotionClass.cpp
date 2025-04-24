@@ -23,7 +23,8 @@ bool AdvancedDriveLocomotionClass::Process()
 		this->PreviousRamp = this->CurrentRamp;
 		this->CurrentRamp = slopeIndex;
 		// Dynamic slope change
-		this->SlopeTimer.Start((90 / pLinked->GetTechnoType()->Speed));
+		const auto speed = pLinked->GetTechnoType()->Speed;
+		this->SlopeTimer.Start((speed > 0) ? (90 / speed) : 0);
 	}
 
 	// Record target cell for reversing
