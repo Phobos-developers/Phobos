@@ -122,7 +122,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 					pFoot->QueueMission(Mission::Move, false);
 					CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pFoot, 10);
 					coord = coord != CoordStruct::Empty ? coord : selectedTarget->Location;
-					CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+					CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
 					pFoot->SetDestination(pCellDestination, true);
 
 					// Aircraft hack. I hate how this game auto-manages the aircraft missions.
@@ -201,14 +201,14 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
 
 			if (pFoot->Team->Type->OnlyTargetHouseEnemy && enemyHouseIndex >= 0)
-				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+				enemyHouse = HouseClass::Array.GetItem(enemyHouseIndex);
 		}
 	}
 
 	// Generic method for targeting
-	for (int i = 0; i < TechnoClass::Array->Count; i++)
+	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
-		auto object = TechnoClass::Array->GetItem(i);
+		auto object = TechnoClass::Array.GetItem(i);
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
 
@@ -280,7 +280,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 					}
 
 					// Is Defender house targeting Attacker House? if "yes" then more Threat
-					if (pTechno->Owner == HouseClass::Array->GetItem(object->Owner->EnemyHouseIndex))
+					if (pTechno->Owner == HouseClass::Array.GetItem(object->Owner->EnemyHouseIndex))
 					{
 						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
 						objectThreatValue += EnemyHouseThreatBonus;
@@ -384,10 +384,10 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			// Finding the objects from the list that actually exists in the map
-			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			for (int i = 0; i < TechnoClass::Array.Count; i++)
 			{
-				auto pTechno = TechnoClass::Array->GetItem(i);
-				auto pTechnoType = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				auto pTechno = TechnoClass::Array.GetItem(i);
+				auto pTechnoType = TechnoClass::Array.GetItem(i)->GetTechnoType();
 				bool found = false;
 
 				for (auto j = 0u; j < objectsList.size() && !found; j++)

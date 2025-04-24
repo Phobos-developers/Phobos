@@ -69,7 +69,7 @@ DEFINE_HOOK(0x62AA32, ParasiteClass_TryInfect_MissBehaviorFix, 0x5)
 	if (!pType)
 		return 0;
 
-	auto cell = MapClass::Instance->NearByLocation(pParasiteTechno->LastMapCoords,
+	auto cell = MapClass::Instance.NearByLocation(pParasiteTechno->LastMapCoords,
 				pType->SpeedType, -1, pType->MovementZone, false, 1, 1, false,
 				false, false, true, CellStruct::Empty, false, false);
 	auto crd = CellClass::Cell2Coord(cell);
@@ -307,7 +307,7 @@ DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITr
 {
 	GET(HouseClass*, pHouse, EDX);
 	GET(int, idxBld, EBP);
-	auto const pType = BuildingTypeClass::Array->Items[idxBld];
+	auto const pType = BuildingTypeClass::Array[idxBld];
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
 	if (count == -1)
@@ -339,7 +339,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 	GET(CellClass*, pThis, EBP);
 	GET(int, idxOverlay, EBX);
 	GET_STACK(int, state, STACK_OFFSET(0x10, 0x8));
-	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array->GetItem(idxOverlay)->Wall;
+	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array.GetItem(idxOverlay)->Wall;
 	enum { Attachable = 0x480549 };
 
 	if (isWall)
@@ -431,7 +431,7 @@ DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
 	GET(BuildingClass* const, pThis, ESI);
 	GET(CellClass* const, pTarget, EAX);
 
-	auto pWeapon = SuperWeaponTypeClass::Array->GetItem(pThis->FiringSWType)->WeaponType;
+	auto pWeapon = SuperWeaponTypeClass::Array.GetItem(pThis->FiringSWType)->WeaponType;
 	BulletClass* pBullet = nullptr;
 
 	if (pWeapon)
@@ -537,7 +537,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 	auto nCoord = *pCoord;
 	auto nDamageAreaResult = WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget
 	(nCoord, nDamage, pSource, pWarhead, pWarhead->Tiberium, pThisBomb->OwnerHouse, abstract_cast<TechnoClass*>(pThisBomb->Target));
-	auto nLandType = MapClass::Instance()->GetCellAt(nCoord)->LandType;
+	auto nLandType = MapClass::Instance.GetCellAt(nCoord)->LandType;
 
 	if (auto pAnimType = MapClass::SelectDamageAnimation(nDamage, pWarhead, nLandType, nCoord))
 	{
@@ -818,7 +818,7 @@ DEFINE_HOOK(0x6B75AC, SpawnManagerClass_AI_SetDestinationForMissiles, 0x5)
 	GET(TechnoClass*, pSpawnTechno, EDI);
 
 	CoordStruct coord = pSpawnManager->Target->GetCenterCoords();
-	CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+	CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
 
 	pSpawnTechno->SetDestination(pCellDestination, true);
 
@@ -864,7 +864,7 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 	if (range < 1)
 		range = 1;
 
-	auto const bounds = MapClass::Instance->MapCoordBounds;
+	auto const bounds = MapClass::Instance.MapCoordBounds;
 	auto const mapCoords = pCell->MapCoords;
 	int sectorWidth = bounds.Right / 20;
 	int sectorHeight = bounds.Bottom / 20;
@@ -1123,6 +1123,30 @@ DEFINE_HOOK(0x71872C, TeleportLocomotionClass_MakeRoom_OccupationFix, 0x9)
 
 #pragma endregion
 
+#pragma region AmphibiousHarvester
+
+DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
+{
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pType = pThis->Type;
+
+	if (!pType->Teleporter)
+	{
+		REF_STACK(SpeedType, speedType, STACK_OFFSET(0xA0, -0x98));
+		REF_STACK(int, currentZoneType, STACK_OFFSET(0xA0, -0x94));
+		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xA0, -0x90));
+
+		speedType = pType->SpeedType;
+		movementZone = pType->MovementZone;
+		currentZoneType = MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), movementZone, pThis->OnBridge);
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
 #pragma region StopEventFix
 
 DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
@@ -1249,8 +1273,8 @@ Point2D *__stdcall JumpjetLoco_ILoco_Shadow_Point(ILocomotion * iloco, Point2D *
 	__assume(iloco != nullptr);
 	const auto pLoco = static_cast<JumpjetLocomotionClass*>(iloco);
 	const auto pThis = pLoco->LinkedTo;
-	const auto pCell = MapClass::Instance->GetCellAt(pThis->Location);
-	auto height = pThis->Location.Z - MapClass::Instance->GetCellFloorHeight(pThis->Location);
+	const auto pCell = MapClass::Instance.GetCellAt(pThis->Location);
+	auto height = pThis->Location.Z - MapClass::Instance.GetCellFloorHeight(pThis->Location);
 	// Vanilla GetHeight check OnBridge flag, which can not work on jumpjet
 	// Here, we simulate the drawing of an airplane for altitude calculation
 	if (pCell->ContainsBridge()
@@ -1279,7 +1303,7 @@ DEFINE_HOOK(0x4CF3F9, FlyLocomotionClass_FlightUpdate_FixFlightLevel, 0x5)
 	const auto pFoot = pThis->LinkedTo;
 
 	if (pFoot->GetMapCoords() == CellClass::Coord2Cell(pThis->MovingDestination) // Maintain height until on same cell to prevent poor visual display
-		&& MapClass::Instance->GetCellAt(pFoot->Location)->ContainsBridge() // Only effective when on the bridge
+		&& MapClass::Instance.GetCellAt(pFoot->Location)->ContainsBridge() // Only effective when on the bridge
 		&& pThis->FlightLevel >= CellClass::BridgeHeight) // Not lower than the ground level
 	{
 		// Subtract the excess bridge height to allow the aircraft to return to the correct altitude
@@ -1431,7 +1455,7 @@ DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
 	if (pTechno->WhatAmI() == BuildingClass::AbsID)
 		return 0;
 
-	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
 	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
@@ -1447,7 +1471,7 @@ DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
 	if (pTechno->WhatAmI() == BuildingClass::AbsID)
 		return 0;
 
-	const auto pCell = MapClass::Instance->GetCellAt(*pCoords);
+	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
 	return pCell->IsClearToMove(pTechnoType->SpeedType, false, false, -1, pTechnoType->MovementZone, -1, 1) ? 0 : NotUsableArea;
@@ -1462,9 +1486,9 @@ DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
 	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
 	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
 	const auto movementZone = pFreeUnit->Type->MovementZone;
-	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
 	return SkipGameCode;
 }
 
@@ -1477,9 +1501,9 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
 	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
 	const auto movementZone = pFreeUnit->Type->MovementZone;
-	const auto currentZone = MapClass::Instance->GetMovementZoneType(mapCoords, movementZone, false);
+	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance->NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
 	return SkipGameCode;
 }
 
@@ -1489,7 +1513,7 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 
 	GET(BuildingTypeClass*, pType, EAX);
 	LEA_STACK(CellStruct*, pDest, 0x4);
-	const auto pCell = MapClass::Instance->GetCellAt(*pDest);
+	const auto pCell = MapClass::Instance.GetCellAt(*pDest);
 	const auto pUndeploysInto = pType->UndeploysInto;
 
 	R->AL(pCell->IsClearToMove(pUndeploysInto->SpeedType, false, false, -1, pUndeploysInto->MovementZone, -1, 1));
@@ -1591,6 +1615,41 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 	return 0x5F5311;
 }
 
+// I think no one wants to see wild pointers caused by WW's negligence
+DEFINE_HOOK(0x4D9A1B, FootClass_PointerExpired_RemoveDestination, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x1C, 0x8));
+
+	if (removed)
+		return 0x4D9ABD;
+
+	R->BL(true);
+	return 0x4D9A25;
+}
+
+namespace RemoveSpawneeHelper
+{
+	bool removed = false;
+}
+
+DEFINE_HOOK(0x707B23, TechnoClass_PointerExpired_RemoveSpawnee, 0x6)
+{
+	GET(SpawnManagerClass*, pSpawnManager, ECX);
+	GET(AbstractClass*, pRemove, EBP);
+	GET_STACK(bool, removed, STACK_OFFSET(0x20, 0x8));
+
+	RemoveSpawneeHelper::removed = removed;
+	pSpawnManager->UnlinkPointer(pRemove);
+	RemoveSpawneeHelper::removed = false;
+
+	return 0x707B29;
+}
+
+DEFINE_HOOK(0x6B7CE4, SpawnManagerClass_UnlinkPointer_RemoveSpawnee, 0x6)
+{
+	return RemoveSpawneeHelper::removed ? 0x6B7CF4 : 0;
+}
+
 #pragma endregion
 
 // IsSonic wave drawing uses fixed-size arrays accessed with index that is determined based on factors like wave lifetime,
@@ -1638,7 +1697,7 @@ DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
 	{
 		const int inheritColor = pThis->InheritedColor;
 		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;
-		BulletDrawVoxelTemp::Convert = ColorScheme::Array->Items[colorIndex]->LightConvert;
+		BulletDrawVoxelTemp::Convert = ColorScheme::Array.Items[colorIndex]->LightConvert;
 	}
 
 	return 0;
@@ -1786,6 +1845,24 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
+namespace RemoveCellContentTemp
+{
+	bool CheckBeforeUnmark = false;
+}
+
+DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
+{
+	enum { SkipGameCode = 0x737F80 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	RemoveCellContentTemp::CheckBeforeUnmark = true;
+	pThis->Mark(MarkType::Up);
+	RemoveCellContentTemp::CheckBeforeUnmark = false;
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 {
 	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
@@ -1793,7 +1870,7 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	GET(CellClass*, pCell, EDI);
 	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
 
-	if (onBridge ? pCell->AltObject : pCell->FirstObject)
+	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
 		return DontUnmark;
 
 	GET(ObjectClass*, pContent, ESI);

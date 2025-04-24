@@ -99,7 +99,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 			isRemappable = pTypeExt->CreateUnit_RemapAnim;
 
 		if (isRemappable && !newOwner->Defeated)
-			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
+			pAnim->LightConvert = ColorScheme::Array[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
 	return newOwner;
@@ -124,7 +124,7 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 void AnimExt::VeinAttackAI(AnimClass* pAnim)
 {
 	CellStruct pCoordinates = pAnim->GetMapCoords();
-	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
+	CellClass* pCell = MapClass::Instance.GetCellAt(pCoordinates);
 	ObjectClass* pOccupier = pCell->FirstObject;
 	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
 	constexpr unsigned int weedOverlayIndex = 126;
@@ -187,7 +187,7 @@ void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool res
 		rate = ScenarioClass::Instance->Random.RandomRanged(pNewType->RandomRate.Min, pNewType->RandomRate.Max);
 
 	if (pNewType->Normalized)
-		rate = GameOptionsClass::Instance->GetAnimSpeed(rate);
+		rate = GameOptionsClass::Instance.GetAnimSpeed(rate);
 
 	pAnim->Animation.Start(rate, pNewType->Reverse ? -1 : 1);
 
@@ -401,7 +401,7 @@ void AnimExt::ExtData::InitializeConstants()
 
 void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 {
-	for (auto const& pAnim : *AnimClass::Array)
+	for (auto const& pAnim : AnimClass::Array)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 

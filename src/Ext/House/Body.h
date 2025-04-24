@@ -88,7 +88,7 @@ public:
 			, NumShipyards_NonMFB { 0 }
 			, AIFireSaleDelayTimer {}
 			, SuspendedEMPulseSWs {}
-			, SuperExts(SuperWeaponTypeClass::Array->Count)
+			, SuperExts(SuperWeaponTypeClass::Array.Count)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);

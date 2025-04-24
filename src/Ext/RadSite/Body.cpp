@@ -1,8 +1,10 @@
 #include "Body.h"
-#include <New/Type/RadTypeClass.h>
-#include <Ext/WarheadType/Body.h>
 #include <LightSourceClass.h>
 #include <Notifications.h>
+
+#include <New/Type/RadTypeClass.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/Cell/Body.h>
 
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
 
@@ -11,13 +13,13 @@ void RadSiteExt::ExtData::Initialize()
 	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
-bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance)
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage)
 {
-	auto const pWarhead = this->Type->GetWarhead();
+	const auto pWarhead = this->Type->GetWarhead();
 
 	if (!this->Type->GetWarheadDetonate())
 	{
-		if (pTarget->ReceiveDamage(&damage, distance, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+		if (pTarget->ReceiveDamage(&damage, 0, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
 			return false;
 	}
 	else
@@ -28,7 +30,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 		}
 		else
 		{
-			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
 		}
 
@@ -43,7 +45,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
-	auto const pRadSite = GameCreate<RadSiteClass>();
+	const auto pRadSite = GameCreate<RadSiteClass>();
 	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
@@ -60,6 +62,9 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, Wea
 	pRadSite->SetSpread(spread);
 	pRadExt->SetRadLevel(amount);
 	pRadExt->CreateLight();
+
+	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(location)))
+		pCellExt->RadSites.emplace_back(pRadSite);
 }
 
 //RadSiteClass Activate , Rewritten
@@ -102,9 +107,9 @@ void RadSiteExt::ExtData::CreateLight()
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
 	}
-	else if (auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell))
+	else if (auto const pCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell))
 	{
-		auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
+		const auto pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
 		pThis->LightSource = pLight;
 		pLight->DetailLevel = 0;
 		pLight->Activate(update);
@@ -117,7 +122,7 @@ void RadSiteExt::ExtData::CreateLight()
 void RadSiteExt::ExtData::Add(int amount)
 {
 	const auto pThis = this->OwnerObject();
-	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
+	const auto RadExt = RadSiteExt::ExtMap.Find(pThis);
 	int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
 	pThis->Deactivate();
 	pThis->RadLevel = value + amount;
@@ -140,8 +145,8 @@ void RadSiteExt::ExtData::SetRadLevel(int amount)
 double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
 	const auto pThis = this->OwnerObject();
-	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
-	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	const auto base = MapClass::Instance.GetCellAt(pThis->BaseCell)->GetCoords();
+	const auto coords = MapClass::Instance.GetCellAt(cell)->GetCoords();
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
 	double radLevel = pThis->RadLevel;
@@ -202,7 +207,7 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 	GET(RadSiteClass*, pThis, ESI);
 
 	RadSiteExt::ExtMap.TryAllocate(pThis, pThis->WhatAmI() == AbstractType::RadSite, "Attempted to allocate RadSiteExt from unknown pointer!");
-	PointerExpiredNotification::NotifyInvalidObject->Add(pThis);
+	PointerExpiredNotification::NotifyInvalidObject.Add(pThis);
 
 	return 0;
 }
@@ -211,8 +216,31 @@ DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
 
+	const auto pBaseCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell);
+
+	if (pBaseCell)
+	{
+		const auto pBaseCellExt = CellExt::ExtMap.Find(pBaseCell);
+		const auto it_Rad = std::find(pBaseCellExt->RadSites.begin(), pBaseCellExt->RadSites.end(), pThis);
+
+		if (it_Rad != pBaseCellExt->RadSites.end())
+			pBaseCellExt->RadSites.erase(it_Rad);
+	}
+
+	for (CellRangeEnumerator it(pThis->BaseCell, pThis->Spread + 0.5); it; it++)
+	{
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(*it))
+		{
+			const auto pCellExt = CellExt::ExtMap.Find(pCell);
+			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
+
+			if (it_Rad != pCellExt->RadLevels.end())
+				pCellExt->RadLevels.erase(it_Rad);
+		}
+	}
+
 	RadSiteExt::ExtMap.Remove(pThis);
-	PointerExpiredNotification::NotifyInvalidObject->Remove(pThis);
+	PointerExpiredNotification::NotifyInvalidObject.Remove(pThis);
 
 	return 0;
 }

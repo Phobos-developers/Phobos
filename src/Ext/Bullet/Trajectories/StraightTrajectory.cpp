@@ -179,7 +179,7 @@ int StraightTrajectory::GetTargetZPosition(BulletClass* pBullet)
 
 	if (pBullet->Target)
 	{
-		auto const pCell = MapClass::Instance()->TryGetCellAt(pBullet->Target->GetCoords());
+		auto const pCell = MapClass::Instance.TryGetCellAt(pBullet->Target->GetCoords());
 
 		if (pCell)
 			coords = pCell->GetCoordsWithBridge();
@@ -198,9 +198,9 @@ bool StraightTrajectory::ElevationDetonationCheck(BulletClass* pBullet)
 	auto const target = pBullet->TargetCoords;
 
 	// Special case - detonate if it is on same cell as target and lower or at same level as it and beneath the cell floor.
-	if (pBullet->GetCell() == MapClass::Instance->TryGetCellAt(pBullet->TargetCoords)
+	if (pBullet->GetCell() == MapClass::Instance.TryGetCellAt(pBullet->TargetCoords)
 		&& pBullet->Location.Z <= pBullet->TargetCoords.Z
-		&& pBullet->Location.Z < MapClass::Instance->GetCellFloorHeight(pBullet->TargetCoords))
+		&& pBullet->Location.Z < MapClass::Instance.GetCellFloorHeight(pBullet->TargetCoords))
 	{
 		return true;
 	}

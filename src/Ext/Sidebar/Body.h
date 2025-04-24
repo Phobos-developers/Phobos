@@ -51,7 +51,7 @@ public:
 
 	static void Clear()
 	{
-		Allocate(SidebarClass::Instance);
+		Allocate(&SidebarClass::Instance);
 	}
 
 	static void PointerGotInvalid(void* ptr, bool removed)

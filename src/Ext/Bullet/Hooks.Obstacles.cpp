@@ -30,9 +30,9 @@ public:
 		if (SubjectToObstacles(pBulletType, pBulletTypeExt))
 		{
 			auto sourceCell = CellClass::Coord2Cell(pSourceCoords);
-			auto const pSourceCell = MapClass::Instance->GetCellAt(sourceCell);
+			auto const pSourceCell = MapClass::Instance.GetCellAt(sourceCell);
 			auto targetCell = CellClass::Coord2Cell(pTargetCoords);
-			auto const pTargetCell = MapClass::Instance->GetCellAt(targetCell);
+			auto const pTargetCell = MapClass::Instance.GetCellAt(targetCell);
 
 			auto const sub = sourceCell - targetCell;
 			auto const delta = CellStruct { (short)std::abs(sub.X), (short)std::abs(sub.Y) };
@@ -47,7 +47,7 @@ public:
 					return pCell;
 
 				crdCur += step;
-				pCellCur = MapClass::Instance->GetCellAt(crdCur);
+				pCellCur = MapClass::Instance.GetCellAt(crdCur);
 			}
 		}
 
@@ -124,9 +124,9 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 
 	if (BulletObstacleHelper::SubjectToObstacles(pThis->Type, pBulletTypeExt))
 	{
-		auto const pCellSource = MapClass::Instance->GetCellAt(pThis->SourceCoords);
-		auto const pCellTarget = MapClass::Instance->GetCellAt(pThis->TargetCoords);
-		auto const pCellCurrent = MapClass::Instance->GetCellAt(pThis->LastMapCoords);
+		auto const pCellSource = MapClass::Instance.GetCellAt(pThis->SourceCoords);
+		auto const pCellTarget = MapClass::Instance.GetCellAt(pThis->TargetCoords);
+		auto const pCellCurrent = MapClass::Instance.GetCellAt(pThis->LastMapCoords);
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		const auto pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pThis->Type, pBulletTypeExt, false);
 
@@ -175,7 +175,7 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 		pTechno->Location = *pSourceCoords; // Temporarily adjust the coordinates based on the path finding
 
 		if (reinterpret_cast<bool(__thiscall*)(const TechnoClass*)>(0x703B10)(pTechno)) // Near by elevated bridge
-			pObstacleCell = MapClass::Instance->GetCellAt(*pSourceCoords);
+			pObstacleCell = MapClass::Instance.GetCellAt(*pSourceCoords);
 
 		pTechno->Location = coords;
 	}

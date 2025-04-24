@@ -882,7 +882,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
 	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
-	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
+	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame;
 
 	position.X -= 1;
