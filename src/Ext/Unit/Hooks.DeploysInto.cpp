@@ -163,11 +163,9 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			{
 				return CanNotExistHere;
 			}
-			else if (const auto pTerrain = abstract_cast<TerrainClass*>(pObject))
+			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				const auto pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-				if (!pTypeExt || !pTypeExt->CanBeBuiltOn)
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 			}
 		}
@@ -178,11 +176,9 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (const auto pTerrain = abstract_cast<TerrainClass*>(pObject))
+			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				const auto pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-				if (!pTypeExt || !pTypeExt->CanBeBuiltOn)
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 			}
 			else if (pObject->AbstractFlags & AbstractFlags::Techno)
@@ -191,11 +187,12 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 				{
 					skipFlag = true;
 				}
-				else if (pObject->WhatAmI() != AbstractType::Building
-					|| pOwner != static_cast<BuildingClass*>(pObject)->Owner
-					|| !static_cast<BuildingClass*>(pObject)->Type->LaserFence)
+				else
 				{
-					return CanNotExistHere;
+					const auto pBuilding = abstract_cast<BuildingClass*, true>(pObject);
+
+					if (!pBuilding || pOwner != pBuilding->Owner || !pBuilding->Type->LaserFence)
+						return CanNotExistHere;
 				}
 			}
 		}
@@ -232,11 +229,9 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 				else
 					return CanNotExistHere;
 			}
-			else if (const auto pTerrain = abstract_cast<TerrainClass*>(pObject))
+			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
 			{
-				const auto pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-				if (!pTypeExt || !pTypeExt->CanBeBuiltOn)
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 					return CanNotExistHere;
 			}
 		}
