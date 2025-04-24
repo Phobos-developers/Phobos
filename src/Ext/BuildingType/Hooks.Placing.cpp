@@ -68,16 +68,13 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 	if (!Game::IsActive)
 		return Unlimbo;
 
-	for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+	if (auto const pTerrain = pCell->GetTerrain(false))
 	{
-		if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
-		{
-			if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
-				return NoUnlimbo;
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			return NoUnlimbo;
 
-			pCell->RemoveContent(pTerrain, false);
-			TerrainTypeExt::Remove(pTerrain);
-		}
+		pCell->RemoveContent(pTerrain, false);
+		TerrainTypeExt::Remove(pTerrain);
 	}
 
 	return Unlimbo;
