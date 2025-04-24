@@ -1062,7 +1062,7 @@ msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 
 
 #: ../../Fixed-or-Improved-Logics.md:172
 msgid "Stop command (`[S]` by default) behavior is now more correct:"
-msgstr "停止命令（默认 `[S]`）的行为现在更加正确："
+msgstr "停止命令（默认为 `[S]`）的行为现在更加正确："
 
 #: ../../Fixed-or-Improved-Logics.md:173
 msgid "Jumpjets no longer fall into a state of standing by idly."
@@ -1966,7 +1966,7 @@ msgid ""
 "`Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` "
 "are played when entering the grinder. Default to `yes`."
 msgstr ""
-"`Grinding.PlayDieSound` 控制单位的 `DieSound` 和 `VoiceDie` 是否都会在进入回收站时播放。默认 "
+"`Grinding.PlayDieSound` 控制单位的 `DieSound` 和 `VoiceDie` 是否都会在进入回收站时播放。默认为 "
 "`yes`。"
 
 #: ../../Fixed-or-Improved-Logics.md:450
@@ -2046,7 +2046,7 @@ msgstr "在 `UnitReload=true` 的建筑上将此值设置为负数将完全禁�
 msgid ""
 "`Units.RepairStep` how much `Strength` is restored per repair tick. "
 "Defaults to `[General] -> RepairStep`."
-msgstr "`Units.RepairStep` 设置每次维修时恢复多少点 `Strength`。默认 `[General] -> RepairStep`。"
+msgstr "`Units.RepairStep` 设置每次维修时恢复多少点 `Strength`。默认为 `[General] -> RepairStep`。"
 
 #: ../../Fixed-or-Improved-Logics.md:484
 msgid ""
@@ -2055,14 +2055,14 @@ msgid ""
 "RepairPercent`. Note that the final cost is set to 1 if it is less than "
 "that."
 msgstr ""
-"`Units.RepairPercent` 是维修成本的倍率［`Cost`/(`Strength`/`RepairStep`)］。默认值为 `[General] "
+"`Units.RepairPercent` 是维修成本的倍率［`Cost`/(`Strength`/`RepairStep`)］。默认为 `[General] "
 "-> RepairPercent`。注意如果最终的成本低于 1 那么会设为 1。"
 
 #: ../../Fixed-or-Improved-Logics.md:485
 msgid ""
 "`Units.UseRepairCost` can be used to customize if repair cost is applied "
 "at all. Defaults to false for infantry, true for everything else."
-msgstr "`Units.UseRepairCost` 可以用于自定义是否使用维修成本。步兵默认 false，其他默认 true。"
+msgstr "`Units.UseRepairCost` 可以用于自定义是否使用维修成本。步兵默认为 false，其他默认为 true。"
 
 #: ../../Fixed-or-Improved-Logics.md:496
 msgid "Particle systems"
@@ -2886,13 +2886,13 @@ msgid ""
 " to 5 for tiberium type index 1, otherwise 2."
 msgstr ""
 "`Pips.Tiberiums.Frames` 可用于列出用于泰伯利亚类型的 `pips.shp`（用于建筑）或 "
-"`pips2.shp`（用于其他）中（从 0 开始的）帧，按与泰伯利亚类型序数对应的列表排列顺序，泰伯利亚类型为 1 时默认 5，否则为 2。"
+"`pips2.shp`（用于其他）中（从 0 开始的）帧，按与泰伯利亚类型序数对应的列表排列顺序，泰伯利亚类型为 1 时默认为 5，否则为 2。"
 
 #: ../../Fixed-or-Improved-Logics.md:919
 msgid ""
 "`Pips.Tiberiums.EmptyFrame` can be used to set the frame for empty slots,"
 " defaults to 0."
-msgstr "`Pips.Tiberiums.EmptyFrame` 可用于设置空槽的帧，默认 0。"
+msgstr "`Pips.Tiberiums.EmptyFrame` 可用于设置空槽的帧，默认为 0。"
 
 #: ../../Fixed-or-Improved-Logics.md:920
 msgid ""
@@ -2911,7 +2911,7 @@ msgid ""
 "(for buildings) or `pips2.shp` (for others). Defaults to 1."
 msgstr ""
 "`Pips.Tiberiums.WeedFrame` 控制在 `Weeder=yes` 科技类型上显示的帧，使用 "
-"`pips.shp`（用于建筑）或 `pips2.shp`（用于其他）中（从 0 开始的）索引，默认 1。"
+"`pips.shp`（用于建筑）或 `pips2.shp`（用于其他）中（从 0 开始的）索引，默认为 1。"
 
 #: ../../Fixed-or-Improved-Logics.md:922
 msgid ""

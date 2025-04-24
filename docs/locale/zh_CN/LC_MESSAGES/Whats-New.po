@@ -328,7 +328,7 @@ msgid ""
 msgstr ""
 "`PassengerDeletion.SoylentFriendlies` 已被替换为 "
 "`PassengerDeletion.SoylentAllowedHouses`。目前设定默认值 "
-"`PassengerDeletion.SoylentAllowedHouses=enemies` 对应原本默认 "
+"`PassengerDeletion.SoylentAllowedHouses=enemies` 对应原本默认为 "
 "`PassengerDeletion.SoylentFriendlies=false` 的行为。"
 
 #: ../../Whats-New.md:49
