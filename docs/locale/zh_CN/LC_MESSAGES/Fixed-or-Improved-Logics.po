@@ -2481,21 +2481,21 @@ msgid ""
 "for each docked aircraft. Setting this overrides that behaviour. For "
 "`UnitRepair=true` buildings this defaults to `[General] -> URepairRate`."
 msgstr ""
-"`Units.RepairRate` 自定义单位的维修速度。如果 `UnitReload=true` 则默认为 `[General] -> "
-"ReloadRate` 并覆盖每个战机类型独立的时间设置（*Ares 功能*）。对于 `UnitRepair=true` 的建筑此默认值为 "
+"`Units.RepairRate` 自定义单位的维修速度。如果 `UnitReload=true` 那么默认为 `[General] -> "
+"ReloadRate` 并覆盖每个战机类型独立的时间设置（*Ares 功能*）。对于 `UnitRepair=true` 的建筑啧默认为 "
 "`[General] -> URepairRate`。"
 
 #: ../../Fixed-or-Improved-Logics.md:547
 msgid ""
 "On `UnitReload=true` building setting this to negative value will fully "
 "disable the repair functionality."
-msgstr "在 `UnitReload=true` 的建筑上将此值设置为附属将完全禁用维修功能。"
+msgstr "在 `UnitReload=true` 的建筑上将此值设置为负数将完全禁用维修功能。"
 
 #: ../../Fixed-or-Improved-Logics.md:548
 msgid ""
 "`Units.RepairStep` how much `Strength` is restored per repair tick. "
 "Defaults to `[General] -> RepairStep`."
-msgstr "`Units.RepairStep` 设置每次维修时恢复多少 `Strength`。默认 `[General] -> RepairStep`。"
+msgstr "`Units.RepairStep` 设置每次维修时恢复多少点 `Strength`。默认 `[General] -> RepairStep`。"
 
 #: ../../Fixed-or-Improved-Logics.md:549
 msgid ""
@@ -2504,7 +2504,7 @@ msgid ""
 "RepairPercent`. Note that the final cost is set to 1 if it is less than "
 "that."
 msgstr ""
-"`Units.RepairPercent` 是维修成本的倍率（Cost/（最大生命值/RepairStep））。默认值为 `[General] "
+"`Units.RepairPercent` 是维修成本的倍率［`Cost`/(`Strength`/`RepairStep`)］。默认值为 `[General] "
 "-> RepairPercent`。注意如果最终的成本低于 1 那么会设为 1。"
 
 #: ../../Fixed-or-Improved-Logics.md:550
@@ -2975,19 +2975,19 @@ msgstr ""
 msgid ""
 "It is also possible to change the pip frames displayed from `pips.shp` "
 "individually for infantry, units and buildings by setting the frames for "
-"infantry & unit self-healing on `Pips.SelfHeal.Infantry/Units/Buildings` "
+"infantry & unit self-healing on `Pips.SelfHeal.(Infantry/Units/Buildings)` "
 "under `[AudioVisual]`, respectively."
 msgstr ""
 "还可以分别为步兵、载具和建筑在 `[AudioVisual]` 中使用 "
-"`Pips.SelfHeal.Infantry/Units/Buildings` 设置各自 `pips.shp` 中用于显示的 pip 帧。"
+"`Pips.SelfHeal.(Infantry/Units/Buildings)` 设置各自 `pips.shp` 中用于显示的 pip 帧。"
 
 #: ../../Fixed-or-Improved-Logics.md:719
 msgid ""
-"`Pips.SelfHeal.Infantry/Units/Buildings.Offset` can be used to customize "
+"`Pips.SelfHeal.(Infantry/Units/Buildings).Offset` can be used to customize "
 "the pixel offsets for the displayed pips, individually for infantry, "
 "units and buildings."
 msgstr ""
-"`Pips.SelfHeal.Infantry/Units/Buildings.Offset` 可以被用于分别自定义步兵、载具和建筑显示 pip "
+"`Pips.SelfHeal.(Infantry/Units/Buildings).Offset` 可以被用于分别自定义步兵、载具和建筑显示 pip "
 "使用的像素偏移量。"
 
 #: ../../Fixed-or-Improved-Logics.md:720
