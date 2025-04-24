@@ -2035,12 +2035,14 @@ msgid ""
 "enter an occupiable building that has been removed and is not real dead "
 "(by CrimRecya)"
 msgstr ""
+"修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）（by CrimRecya）"
 
 #: ../../Whats-New.md:590
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead (by CrimRecya)"
 msgstr ""
+"修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题（by CrimRecya）"
 
 #: ../../Whats-New.md:592 ../../Whats-New.md:668 ../../Whats-New.md:830
 #: ../../Whats-New.md:871 ../../Whats-New.md:883 ../../Whats-New.md:906
@@ -2465,6 +2467,7 @@ msgid ""
 "Taking over Ares' AlphaImage respawn logic to reduce lags from it (by "
 "NetsuNegi)"
 msgstr ""
+"接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿（by NetsuNegi）"
 
 #: ../../Whats-New.md:661
 msgid "0.3.0.1"

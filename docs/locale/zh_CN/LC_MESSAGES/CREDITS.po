@@ -1415,6 +1415,7 @@ msgid ""
 "Fix amphibious harvesters can not automatically return to refineries with"
 " `WaterBound`"
 msgstr ""
+"修复了两栖矿车无法自动返回拥有 `WaterBound` 的矿场的问题"
 
 #: ../../../CREDITS.md:360
 msgid ""
@@ -1474,7 +1475,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:369
 msgid "Taking over Ares' AlphaImage respawn logic to reduce lags from it"
-msgstr ""
+msgstr "接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿"
 
 #: ../../../CREDITS.md:370
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1653,12 +1654,14 @@ msgid ""
 "Fix an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead"
 msgstr ""
+"修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题"
 
 #: ../../../CREDITS.md:412
 msgid ""
 "Fix an issue that game crashes when spawnee has been removed and is not "
 "real dead"
 msgstr ""
+"修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题"
 
 #: ../../../CREDITS.md:413
 msgid "**Ollerus**:"

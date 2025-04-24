@@ -1309,12 +1309,14 @@ msgid ""
 "Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead."
 msgstr ""
+"修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）。"
 
 #: ../../Fixed-or-Improved-Logics.md:214
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead."
 msgstr ""
+"修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:216
 msgid "Fixes / interactions with other extensions"
@@ -1405,6 +1407,7 @@ msgid ""
 "every frame for buildings, static techno and techno without turret, in "
 "order to reduce lags from it."
 msgstr ""
+"接管了 Ares 的 AlphaImage 重绘逻辑，使其用于建筑、静止单位和无炮塔单位时不会每帧重绘，以减少其造成的卡顿。"
 
 #: ../../Fixed-or-Improved-Logics.md:232
 msgid "Aircraft"
