@@ -1955,17 +1955,16 @@ msgstr ""
 "...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:614
-#, fuzzy
 msgid "`606` Edit Hate-Value"
-msgstr "`501` 编辑变量"
+msgstr "`606` 编辑仇恨值"
 
 #: ../../AI-Scripting-and-Mapping.md:616
 msgid "Edit the hate-value that trigger houses to other houses."
-msgstr ""
+msgstr "编辑触发所属方对指定所属方的仇恨值。"
 
 #: ../../AI-Scripting-and-Mapping.md:617 ../../AI-Scripting-and-Mapping.md:645
 msgid "-1 works for all houses."
-msgstr ""
+msgstr "-1为 所有国家。"
 
 #: ../../AI-Scripting-and-Mapping.md:620
 msgid ""
@@ -1983,11 +1982,11 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:642
 msgid "`607` Clear Hate-Value"
-msgstr ""
+msgstr "`607` 清除仇恨值"
 
 #: ../../AI-Scripting-and-Mapping.md:644
 msgid "Clear the hate-value that trigger houses to other houses."
-msgstr ""
+msgstr "清空触发所属方对指定所属方的仇恨值。"
 
 #: ../../AI-Scripting-and-Mapping.md:648
 msgid ""
@@ -2003,19 +2002,19 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:655
 msgid "`608` Set Force Enemy"
-msgstr ""
+msgstr "`608` 强制宣战"
 
 #: ../../AI-Scripting-and-Mapping.md:657
 msgid "Force an enemy, it will not change with the change of hate-value."
-msgstr ""
+msgstr "强制和指定所属方成为敌人且不会因任何因素发生改变。"
 
 #: ../../AI-Scripting-and-Mapping.md:658
 msgid "-1 will remove the forced enemy."
-msgstr ""
+msgstr "-1 会解除强制宣战。"
 
 #: ../../AI-Scripting-and-Mapping.md:659
 msgid "-2 will never have any enemies."
-msgstr ""
+msgstr "-2 则强制没有敌人。"
 
 #: ../../AI-Scripting-and-Mapping.md:662
 msgid ""

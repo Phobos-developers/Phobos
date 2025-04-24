@@ -1396,12 +1396,11 @@ msgstr "修复了 `Hospital=yes` 的建筑在读档后无法让步兵离开的�
 
 #: ../../../CREDITS.md:356
 msgid "`Edit/Clear Hate-Value` Trigger Action"
-msgstr ""
+msgstr "`606 编辑仇恨值`、`607 清除仇恨值` 触发结果"
 
 #: ../../../CREDITS.md:357
-#, fuzzy
 msgid "`Set Force Enemy` Trigger Action"
-msgstr "保存游戏触发结果"
+msgstr "`608` 强制宣战` 触发结果"
 
 #: ../../../CREDITS.md:358
 msgid "**NetsuNegi**:"
