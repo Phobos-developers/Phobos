@@ -457,6 +457,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that game crashes when spawnee has been removed and is not real dead
   - Aggressive attack move mission
   - Amphibious access vehicle
+  - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
