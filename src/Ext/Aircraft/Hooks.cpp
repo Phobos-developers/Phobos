@@ -170,7 +170,9 @@ static int GetDelay(AircraftClass* pThis, bool isLastShot)
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int delay = pWeapon->ROF;
 
-	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots || (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
+	if (isLastShot
+		|| (pWeaponExt->Strafing_Shots.isset() && pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get())
+		|| (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
 	{
 		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
 		delay = pWeaponExt->Strafing_EndDelay.Get((pWeapon->Range + (Unsorted::LeptonsPerCell * 4)) / pThis->Type->Speed);
