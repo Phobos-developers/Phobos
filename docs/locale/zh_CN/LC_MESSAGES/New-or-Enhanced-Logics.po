@@ -496,6 +496,7 @@ msgid ""
 "Note that neither `InitialDelays` or `RecreationDelays` count down if the"
 " effect cannot currently be active due to `DiscardOn` condition."
 msgstr ""
+"需要注意的是 `InitialDelays` 或 `RecreationDelays` 在由于 `DiscardOn` 导致 AE 当前不生效的情况下都不会进行计时。"
 
 #: ../../New-or-Enhanced-Logics.md:65
 msgid ""
