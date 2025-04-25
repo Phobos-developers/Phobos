@@ -21,7 +21,25 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 
 	if (pType->Turret && !pType->HasTurret) // 0x736F92
 	{
-		pThis->SecondaryFacing.SetDesired(tgtDir);
+		if (RulesExt::Global()->ExpandTurretRotation)
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+			if (pTypeExt->Turret_BodyOrientation && !pThis->Destination && !pThis->Locomotor->Is_Moving())
+			{
+				const auto curDir = pThis->PrimaryFacing.Current();
+				const auto dir = pTypeExt->GetBodyDesiredDir(curDir, tgtDir);
+
+				if (std::abs(static_cast<short>(static_cast<short>(dir.Raw) - static_cast<short>(curDir.Raw))) >= 8192)
+					pThis->PrimaryFacing.SetDesired(dir);
+			}
+
+			pTypeExt->SetTurretLimitedDir(pThis, tgtDir);
+		}
+		else
+		{
+			pThis->SecondaryFacing.SetDesired(tgtDir);
+		}
 	}
 	else // 0x736FB6
 	{
