@@ -18,6 +18,8 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, LastDiscardCheckFrame { -1 }
+	, LastDiscardCheckValue { false }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -38,6 +40,8 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, LastDiscardCheckFrame { -1 }
+	, LastDiscardCheckValue { false }
 {
 	this->HasInitialized = false;
 
@@ -114,10 +118,13 @@ void AttachEffectClass::AI()
 
 	if (this->CurrentDelay > 0)
 	{
-		this->CurrentDelay--;
+		if (!this->ShouldBeDiscardedNow())
+		{
+			this->CurrentDelay--;
 
-		if (this->CurrentDelay == 0)
-			this->NeedsDurationRefresh = true;
+			if (this->CurrentDelay == 0)
+				this->NeedsDurationRefresh = true;
+		}
 
 		return;
 	}
@@ -408,10 +415,18 @@ bool AttachEffectClass::HasExpired() const
 	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
-bool AttachEffectClass::ShouldBeDiscardedNow() const
+bool AttachEffectClass::ShouldBeDiscardedNow()
 {
+	if (this->LastDiscardCheckFrame == Unsorted::CurrentFrame)
+		return this->LastDiscardCheckValue;
+
+	this->LastDiscardCheckFrame = Unsorted::CurrentFrame;
+
 	if (this->ShouldBeDiscarded)
+	{
+		this->LastDiscardCheckValue = true;
 		return true;
+	}
 
 	auto const pTechno = this->Techno;
 
@@ -420,14 +435,23 @@ bool AttachEffectClass::ShouldBeDiscardedNow() const
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
+		{
+			this->LastDiscardCheckValue = true;
 			return true;
+		}
 
 		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		{
+			this->LastDiscardCheckValue = true;
 			return true;
+		}
 	}
 
 	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
+	{
+		this->LastDiscardCheckValue = true;
 		return true;
+	}
 
 	if (pTechno->Target)
 	{
@@ -448,16 +472,20 @@ bool AttachEffectClass::ShouldBeDiscardedNow() const
 				auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
 
 				if (pWeapon)
-					distance = pWeapon->Range;
+					distance = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno);
 			}
 
 			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
 
 			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
+			{
+				this->LastDiscardCheckValue = true;
 				return true;
+			}
 		}
 	}
 
+	this->LastDiscardCheckValue = false;
 	return false;
 }
 
