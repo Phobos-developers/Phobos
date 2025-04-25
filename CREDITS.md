@@ -354,6 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
+  - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
