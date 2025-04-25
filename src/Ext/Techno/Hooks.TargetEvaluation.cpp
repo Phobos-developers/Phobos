@@ -72,6 +72,13 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 	return AllowedObject;
 }
 
+// Fix the hardcode of healing weapon can't acquire in air target.
+DEFINE_HOOK(0x6F9222, TechnoClass_SelectAutoTarget_HealingTargetAir, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	return pThis->CombatDamage(-1) < 0 ? 0x6F922E : 0;
+}
+
 #pragma endregion
 
 #pragma region Walls
@@ -137,6 +144,75 @@ int __fastcall TechnoClass_EvaluateCellGetWeaponRangeWrapper(TechnoClass* pThis,
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x6F8CE3, TechnoClass_EvaluateCellGetWeaponWrapper);
 DEFINE_FUNCTION_JUMP(CALL6, 0x6F8DD2, TechnoClass_EvaluateCellGetWeaponRangeWrapper);
+
+#pragma endregion
+
+#pragma region AggressiveAttackMove
+
+static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
+{
+	const auto pTarget = pThis->Target;
+
+	if (!pTarget || pTarget == pThis->MegaTarget)
+		return false;
+
+	const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget);
+
+	if (!pTargetTechno || pTargetTechno->IsArmed())
+		return false;
+
+	if (pThis->TargetingTimer.InProgress())
+		return false;
+
+	const auto pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
+
+	if (!pPrimaryWeapon)
+		return false;
+
+	const auto pNewTarget = abstract_cast<TechnoClass*>(pThis->GreatestThreat(ThreatType::Range, &pThis->Location, false));
+
+	if (!pNewTarget || pNewTarget->GetTechnoType() == pTargetTechno->GetTechnoType())
+		return false;
+
+	const auto pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
+
+	if (!pSecondaryWeapon || !pSecondaryWeapon->NeverUse) // Melee unit's virtual scanner
+		return true;
+
+	return pSecondaryWeapon->Range <= pPrimaryWeapon->Range;
+}
+
+DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
+{
+	GET(FootClass* const, pThis, ECX);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_UpdateTarget) && CheckAttackMoveCanResetTarget(pThis))
+	{
+		pThis->Target = nullptr;
+		pThis->HaveAttackMoveTarget = false;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
+{
+	enum { ContinueCheck = 0x6F85BA, CanTarget = 0x6F8604 };
+
+	GET(TechnoClass* const, pThis, EDI);
+
+	if (!pThis->Owner->IsControlledByHuman())
+		return CanTarget;
+
+	if (!pThis->MegaMissionIsAttackMove())
+		return ContinueCheck;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
+}
 
 #pragma endregion
 

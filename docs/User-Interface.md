@@ -99,26 +99,61 @@ DigitalDisplay.Enable=false             ; boolean
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
-### Show designator & inhibitor range
+### Select Box
 
-- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
-  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`.
-- This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`.
-- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
+- Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
+  - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
+  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
+  - Select box's translucency setting can be adjusted via `Translucency`.
+  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
+  - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
+
+In `rulesmd.ini`:
+```ini
+[SelectBoxTypes]
+0=SOMESELECTBOXTYPE
+
+[AudioVisual]
+DefaultInfantrySelectBox=               ; Select box for infantry
+DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
+
+[SOMESELECTBOXTYPE]
+Shape=select.shp                        ; filename with .shp extension
+Palette=palette.pal                     ; filename with .pal extension
+Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Grounded=false                          ; boolean
+Offset=0,0                              ; integers - horizontal, vertical
+Translucency=0                          ; translucency level (0/25/50/75)
+VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true           ; boolean
+DrawAboveTechno=true                    ; boolean
+
+[SOMETECHNO]
+SelectBox=                              ; Select box
+HideSelectBox=false                     ; boolean
+```
+
+In `RA2MD.INI`
+```ini
+[Phobos]
+EnableSelectBox=false                   ; boolean
+```
+
+### Flashing Technos on selecting
+
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.INI`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ShowDesignatorRange=true    ; boolean
-
-[SOMESW]                    ; SuperWeaponType
-ShowDesignatorRange=true    ; boolean
+SelectionFlashDuration=0    ; integer, number of frames
 ```
 
 In `RA2MD.INI`:
 ```ini
 [Phobos]
-ShowDesignatorRange=false             ; boolean
+ShowFlashOnSelecting=false  ; boolean
 ```
 
 ### Hide health bars
@@ -176,28 +211,6 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 PrioritySelectionFiltering=true  ; boolean
-```
-
-### Visual indication of income from grinders and refineries
-
-- `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
-- Multiple income within less than one in-game second have their amounts coalesced into single display.
-  - `DisplayIncome.Houses` determines which houses can see the credits display.
-    - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
-  - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at building's center.
-  - `[AudioVisual] -> DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-DisplayIncome=false       ; boolean
-DisplayIncome.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisplayIncome.AllowAI=yes ; boolean
-
-[SOMEBUILDING]            ; BuildingType
-DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
-DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
-DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ### Placement preview
@@ -258,6 +271,28 @@ RealTimeTimers=false            ; boolean
 RealTimeTimers.Adaptive=false   ; boolean
 ```
 
+### Show designator & inhibitor range
+
+- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
+  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`.
+- This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`.
+- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+ShowDesignatorRange=true    ; boolean
+
+[SOMESW]                    ; SuperWeaponType
+ShowDesignatorRange=true    ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowDesignatorRange=false             ; boolean
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
@@ -286,21 +321,26 @@ In Vanilla, you can type select a building by holding down the T key in advance 
 Due to technical limitations, this feature is forcibly disabled without Ares.
 ```
 
-### Flashing Technos on selecting
+### Visual indication of income from grinders and refineries
 
-- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.INI`.
+- `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
+- Multiple income within less than one in-game second have their amounts coalesced into single display.
+  - `DisplayIncome.Houses` determines which houses can see the credits display.
+    - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
+  - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at building's center.
+  - `[AudioVisual] -> DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectionFlashDuration=0    ; integer, number of frames
-```
+DisplayIncome=false       ; boolean
+DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.AllowAI=yes ; boolean
 
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowFlashOnSelecting=false  ; boolean
+[SOMEBUILDING]            ; BuildingType
+DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
+DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
+DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ## Hotkey Commands
@@ -503,36 +543,6 @@ ShowPowerDelta=true  ; boolean
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
 ```
 
-### Weeds counter
-
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
-  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
-  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-WeedsCounter.Show=false          ; boolean
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                       ; Side
-Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowWeedsCounter=true  ; boolean
-```
-
-```{note}
-Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
-```
-
 ### Producing Progress
 
 ![image](_static/images/producing-progress-01.gif)
@@ -561,6 +571,36 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]             ; Side
 Sidebar.GDIPositions=  ; boolean
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ## Tooltips
