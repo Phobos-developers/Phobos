@@ -390,6 +390,7 @@ Vanilla fixes:
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues (by NetsuNegi)
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
+- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 
 Phobos fixes:
 - Fixed an issue that MCV will self-destruct when using trigger 107 to teleport (by CrimRecya)
@@ -677,7 +678,6 @@ Vanilla fixes:
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
 - Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads (by NetsuNegi)
-- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
