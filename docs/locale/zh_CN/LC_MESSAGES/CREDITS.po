@@ -1499,7 +1499,7 @@ msgstr ""
 msgid ""
 "Fix the bug that harvester dont stop unloading and cannot unload cargos "
 "anymore when lifting by `IsLocomotor=yes` warhead"
-msgstr "修复了矿车被 `IsLocomotor=yes` 的弹头抬起也不会停止倒矿状态且无法继续正常倒矿的 Bug"
+msgstr "修复了矿车被 `IsLocomotor=yes` 的弹头抬起也不会停止卸载状态且无法继续正常卸载的 Bug"
 
 #: ../../../CREDITS.md:378 ../../../CREDITS.md:452
 msgid "Fix an issue that units on the slope tilted at an excessive angle"
