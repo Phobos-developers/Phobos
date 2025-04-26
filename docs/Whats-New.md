@@ -370,6 +370,7 @@ New:
 - Customize airstrike targets (by NetsuNegi)
 - Aggressive attack move mission (by CrimRecya)
 - Amphibious access vehicle (by CrimRecya)
+- Allow miners do area guard (by TaranDahl)
 - Make harvesters do addtional scan after unload (by TaranDahl)
 
 Vanilla fixes:

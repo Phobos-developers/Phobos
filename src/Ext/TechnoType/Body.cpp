@@ -549,6 +549,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
+	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
 	// Ares 0.2
@@ -1019,6 +1020,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
 
+		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
 		;
 }

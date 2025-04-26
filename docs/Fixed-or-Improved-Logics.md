@@ -1334,6 +1334,17 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Vehicles
 
+### Allow miners do area guard
+
+- In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
+  - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                      ; VehicleType
+Harvester.CanGuardArea=no          ; boolean
+```
+
 ### Bunker entering check dehardcode
 
 - In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
@@ -1349,7 +1360,6 @@ BunkerableAnyway=false     ; boolean
 ```{warning}
 Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
-
 
 ### Customizing crushing tilt and slowdown
 
