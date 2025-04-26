@@ -499,6 +499,7 @@ This page lists all the individual contributions to the project by their author.
   - Prone speed customization
   - RadarInvisible for non-enemy house
   - Allow miners do area guard
+  - Make harvesters do addtional scan after unload
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

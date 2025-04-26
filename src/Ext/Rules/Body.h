@@ -217,6 +217,8 @@ public:
 
     	Valueable<double> DamagedSpeed;
 
+		Valueable<bool> HarvesterScanAfterUnload;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -379,6 +381,8 @@ public:
 			, ProneSpeed_NoCrawls { 1.5 }
 
       		, DamagedSpeed { 0.75 }
+			
+			, HarvesterScanAfterUnload { false }
 		{ }
 
 		virtual ~ExtData() = default;

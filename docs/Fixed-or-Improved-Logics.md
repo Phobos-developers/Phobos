@@ -1440,6 +1440,20 @@ DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
 ```
 
+### Make harvesters do addtional scan after unload
+
+- In vanilla, miners will remember their current location when they reach full load and move to that location after unloading. This makes miners to gradually move deeper into the mine and ignore the closer minerals.
+- Now you can have the miner search for the nearest mineral again after unloading. If a closer mineral is found, the miner will go to that location instead of the previously recorded location.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterScanAfterUnload=false     ; boolean
+
+[SOMEVEHICLE]
+HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
+```
+
 ### Preserve Iron Curtain / Force Shield status on type conversion
 
 ![image](_static/images/preserve-ic.gif)
