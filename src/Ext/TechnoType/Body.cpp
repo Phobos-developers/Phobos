@@ -550,6 +550,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
 	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
+	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1018,8 +1019,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_DeathSound)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
-		
+
 		.Process(this->Harvester_CanGuardArea)
+		.Process(this->HarvesterScanAfterUnload)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
