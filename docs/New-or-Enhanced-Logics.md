@@ -759,7 +759,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Tracing`, if set to zero, use weapon's `ROF`-10 as the duration. At least 1 frame. If it is negative, do not time it.
   - `Trajectory.TolerantTime` controls how long the projectile will detonate after losing the target. If it is 0, it will detonate directly when switching targets.
   - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value.
-  - `Trajectory.BulletROT` controls the rotational speed of the projectile. When it is 0, it will always face the target. Otherwise, it will rotate towards the target according to this speed.
+  - `Trajectory.BulletROT` controls the rotational speed of the projectile. When it is 0, it will always face the direction defined by `Trajectory.BulletFacing`. Otherwise, it will rotate towards the target according to this speed.
   - `Trajectory.BulletFacing` controls what direction the projectile should face. This has the following 7 modes.
     - Velocity - Following the direction of velocity. Towards the direction of motion of the projectile. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
     - Spin - Continuous self rotation. Continuously rotating on a horizontal plane. The positive and negative of `Trajectory.BulletROT` can control the direction.
