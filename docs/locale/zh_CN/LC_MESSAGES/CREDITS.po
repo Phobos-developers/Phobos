@@ -2032,7 +2032,7 @@ msgstr "不仅限于敌方的 `RadarInvisible`"
 
 #: ../../../CREDITS.md:502
 msgid "Allow miners do area guard"
-msgstr ""
+msgstr "允许矿车区域警戒"
 
 #: ../../../CREDITS.md:503
 msgid "Make harvesters do addtional scan after unload"

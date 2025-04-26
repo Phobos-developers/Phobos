@@ -1468,6 +1468,8 @@ msgid ""
 "[Allow miners do area guard](Fixed-or-Improved-Logics.md#allow-miners-do-"
 "area-guard) (by TaranDahl)"
 msgstr ""
+"[允许矿车区域警戒](Fixed-or-Improved-Logics.md#allow-miners-do-"
+"area-guard)（by TaranDahl）"
 
 #: ../../Whats-New.md:375
 msgid ""
@@ -4912,7 +4914,3 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 #: ../../Whats-New.md:1113
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
-
-#~ msgid "Allow miners do area guard (by TaranDahl)"
-#~ msgstr ""
-
