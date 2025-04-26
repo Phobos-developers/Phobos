@@ -1407,6 +1407,7 @@ msgid ""
 "Fix the issue where computer players did not search for new enemies after"
 " defeating them or forming alliances with them"
 msgstr ""
+"修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题"
 
 #: ../../../CREDITS.md:359
 msgid "**NetsuNegi**:"
@@ -1874,6 +1875,7 @@ msgid ""
 "be able to return normally if aircraft carriers moved a short distance "
 "when the aircraft is landing"
 msgstr ""
+"修复了 `Strafe` 状态的子机返航时如果航母移动了一小段距离会导致无法正常返航而一直绕圈的问题"
 
 #: ../../../CREDITS.md:463
 msgid "**Ollerus**:"

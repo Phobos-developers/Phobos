@@ -1580,6 +1580,7 @@ msgid ""
 "Fixed the issue where computer players did not search for new enemies "
 "after defeating them or forming alliances with them (by FlyStar)"
 msgstr ""
+"修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题（FlyStar）"
 
 #: ../../Whats-New.md:394 ../../Whats-New.md:683 ../../Whats-New.md:760
 #: ../../Whats-New.md:924 ../../Whats-New.md:965 ../../Whats-New.md:977
@@ -1606,6 +1607,7 @@ msgid ""
 "not be able to return normally if aircraft carriers moved a short "
 "distance when the aircraft is landing (by CrimRecya)"
 msgstr ""
+"修复了 `Strafe` 状态的子机返航时如果航母移动了一小段距离会导致无法正常返航而一直绕圈的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:399 ../../Whats-New.md:735 ../../Whats-New.md:953
 msgid "Fixes / interactions with other extensions:"

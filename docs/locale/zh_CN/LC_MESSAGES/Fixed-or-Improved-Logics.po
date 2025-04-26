@@ -1388,6 +1388,7 @@ msgid ""
 "Fixed the issue where computer players did not search for new enemies "
 "after defeating them or forming alliances with them."
 msgstr ""
+"修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:226
 msgid ""
@@ -1395,6 +1396,7 @@ msgid ""
 "not be able to return normally if aircraft carriers moved a short "
 "distance when the aircraft is landing."
 msgstr ""
+"修复了 `Strafe` 状态的子机返航时如果航母移动了一小段距离会导致无法正常返航而一直绕圈的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:228
 msgid "Fixes / interactions with other extensions"
@@ -4807,7 +4809,7 @@ msgstr "载具类型"
 
 #: ../../Fixed-or-Improved-Logics.md:1337
 msgid "Allow miners do area guard"
-msgstr ""
+msgstr "允许矿车区域警戒"
 
 #: ../../Fixed-or-Improved-Logics.md:1339
 msgid ""
@@ -4815,12 +4817,15 @@ msgid ""
 " to harvest mission. Now you can make them perform area guard mission "
 "normally like other technos."
 msgstr ""
+"在原版中档一个矿车进入 `Area Guard` 任务时会立即切换为 `Havrest` 任务。"
+"现在你可以让它们像其他单位那样正常执行 `Area Guard` 任务了。"
 
 #: ../../Fixed-or-Improved-Logics.md:1340
 msgid ""
 "We made it work only for miners controlled by the player, because this "
 "will prevent AI's miners from going work."
 msgstr ""
+"这进队玩家控制的矿车有效，因为这会阻断 AI 矿车正常工作。"
 
 #: ../../Fixed-or-Improved-Logics.md:1343
 msgid ""
