@@ -370,6 +370,7 @@ New:
 - Customize airstrike targets (by NetsuNegi)
 - Aggressive attack move mission (by CrimRecya)
 - Amphibious access vehicle (by CrimRecya)
+- Allow miners do area guard (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
