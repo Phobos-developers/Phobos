@@ -70,6 +70,8 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 
+		AirstrikeClass* AirstrikeTargetingMe;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -114,6 +116,7 @@ public:
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, AirstrikeTargetingMe { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -208,6 +211,7 @@ public:
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 

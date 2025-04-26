@@ -60,7 +60,8 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
-
+    - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
+    
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
@@ -130,7 +131,7 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
@@ -300,7 +301,7 @@ SelfHealing=0.0                             ; floating point value, percents or 
 SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
-SelfHealing.EnabledBy=                      ; List of BuildingType names
+SelfHealing.EnabledBy=                      ; List of BuildingTypes
 Respawn=0.0                                 ; floating point value, percents or absolute
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
@@ -587,21 +588,6 @@ In `rulesmd.ini`:
 PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
-```
-
-### Skip anim delay for burst fire
-
-- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
-- Now you can implement the above logic using the following flag.
-
-In `artmd.ini`:
-```ini
-[SOMEBUILDING]                     ; BuildingType
-IsAnimDelayedBurst=true            ; boolean
-```
-
-```{note}
-The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore IsAnimDelayedFire.
 ```
 
 ### Spy Effects
@@ -1804,9 +1790,9 @@ In `rulesmd.ini`:
 ```ini
 
 [SOMETECHNO]                  ; TechnoType
-Overload.Count=               ; list of integer, default to [CombatDamage] -> OverloadCount
-Overload.Damage=              ; list of integer, default to [CombatDamage] -> OverloadDamage
-Overload.Frames=              ; list of integer, default to [CombatDamage] -> OverloadFrames
+Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
+Overload.Damage=              ; List of integers, default to [CombatDamage] -> OverloadDamage
+Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
 Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
 Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
 Overload.ParticleSysCount=5   ; integer
@@ -1968,7 +1954,7 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Fast access vehicle
 
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
 
 In `rulesmd.ini`:
 ```ini
@@ -1977,8 +1963,39 @@ NoQueueUpToEnter=false    ; boolean
 NoQueueUpToUnload=false   ; boolean
 
 [SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean
-NoQueueUpToUnload=        ; boolean
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
+```
+
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface. Defaults to `[General]->AmphibiousEnter` or `[General]->AmphibiousUnload`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType
+AmphibiousEnter=         ; boolean
+AmphibiousUnload=        ; boolean
 ```
 
 ## Terrain
@@ -2063,8 +2080,8 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]  ; Warhead
-CanKill=true  ; boolean
+[SOMEWARHEAD]  ; WarheadType
+CanKill=true   ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
