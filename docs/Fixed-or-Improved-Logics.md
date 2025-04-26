@@ -222,6 +222,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
 - Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it.
+- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing.
 
 ## Fixes / interactions with other extensions
