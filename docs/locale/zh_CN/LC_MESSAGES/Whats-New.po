@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-24 21:08+0800\n"
+"POT-Creation-Date: 2025-04-26 21:18+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1046,9 +1046,9 @@ msgstr "更新日志"
 msgid "Version TBD (develop branch nightly builds)"
 msgstr "待定版本（开发分支每夜构建）"
 
-#: ../../Whats-New.md:317 ../../Whats-New.md:408 ../../Whats-New.md:754
-#: ../../Whats-New.md:785 ../../Whats-New.md:988 ../../Whats-New.md:1016
-#: ../../Whats-New.md:1033 ../../Whats-New.md:1091
+#: ../../Whats-New.md:317 ../../Whats-New.md:408 ../../Whats-New.md:757
+#: ../../Whats-New.md:788 ../../Whats-New.md:991 ../../Whats-New.md:1019
+#: ../../Whats-New.md:1036 ../../Whats-New.md:1094
 msgid "New:"
 msgstr "新增内容："
 
@@ -1463,30 +1463,29 @@ msgstr ""
 "[两栖载具装载拓展](New-or-Enhanced-Logics.md#amphibious-access-vehicle)（by "
 "CrimRecya）"
 
-#: ../../Whats-New.md:375 ../../Whats-New.md:572 ../../Whats-New.md:885
-#: ../../Whats-New.md:994 ../../Whats-New.md:1019 ../../Whats-New.md:1058
-#: ../../Whats-New.md:1103
+#: ../../Whats-New.md:374
+msgid ""
+"[Allow miners do area guard](Fixed-or-Improved-Logics.md#allow-miners-do-"
+"area-guard) (by TaranDahl)"
+msgstr ""
+
+#: ../../Whats-New.md:376 ../../Whats-New.md:572 ../../Whats-New.md:888
+#: ../../Whats-New.md:997 ../../Whats-New.md:1022 ../../Whats-New.md:1061
+#: ../../Whats-New.md:1106
 msgid "Vanilla fixes:"
 msgstr "原版问题修复："
 
-#: ../../Whats-New.md:376
+#: ../../Whats-New.md:377
 msgid ""
 "Fixed sidebar not updating queued unit numbers when adding or removing "
 "units when the production is on hold (by CrimRecya)"
 msgstr "修复侧边栏在生产暂停时添加或去除订单未能更新预购单位队列数量的问题（by CrimRecya）"
 
-#: ../../Whats-New.md:377
+#: ../../Whats-New.md:378
 msgid ""
 "Prevent the units with locomotors that cause problems from entering the "
 "tank bunker (by TaranDahl)"
 msgstr "防止使用了可能导致问题的运动模式的单位进入坦克碉堡（by TaranDahl）"
-
-#: ../../Whats-New.md:378
-msgid ""
-"Fixed an issue that harvesters with amphibious movement zone can not "
-"automatically return to refineries with `WaterBound` on water surface (by"
-" NetsuNegi)"
-msgstr "修复了两栖矿车无法自动返回拥有 `WaterBound` 的矿场的问题（by NetsuNegi）"
 
 #: ../../Whats-New.md:379
 msgid ""
@@ -1566,49 +1565,49 @@ msgstr "修复了使用悬浮运动模式的载具被 `IsLocomotor=yes` 弹头�
 
 #: ../../Whats-New.md:390
 msgid ""
-"Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
-"enter an occupiable building that has been removed and is not real dead "
-"(by CrimRecya)"
-msgstr "修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）（by CrimRecya）"
-
-#: ../../Whats-New.md:391
-msgid ""
-"Fixed an issue that game crashes when spawnee has been removed and is not"
-" real dead (by CrimRecya)"
-msgstr "修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题（by CrimRecya）"
-
-#: ../../Whats-New.md:392
-msgid ""
 "Separated the AirstrikeClass pointer between the attacker/aircraft and "
 "the target to avoid erroneous overwriting issues (by NetsuNegi)"
 msgstr "分离了 AirstrikeClass 中攻击者／战机与目标的指针以避免错误覆盖问题（by NetsuNegi）"
 
-#: ../../Whats-New.md:393
+#: ../../Whats-New.md:391
 msgid ""
 "Fixed the bug that buildings will always be tinted as airstrike owner (by"
 " NetsuNegi)"
 msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug（by NetsuNegi）"
 
-#: ../../Whats-New.md:395 ../../Whats-New.md:680 ../../Whats-New.md:757
-#: ../../Whats-New.md:921 ../../Whats-New.md:962 ../../Whats-New.md:974
-#: ../../Whats-New.md:997 ../../Whats-New.md:1007 ../../Whats-New.md:1023
-#: ../../Whats-New.md:1071 ../../Whats-New.md:1082
+#: ../../Whats-New.md:392
+msgid ""
+"Fixed the issue where computer players did not search for new enemies "
+"after defeating them or forming alliances with them (by FlyStar)"
+msgstr ""
+
+#: ../../Whats-New.md:394 ../../Whats-New.md:683 ../../Whats-New.md:760
+#: ../../Whats-New.md:924 ../../Whats-New.md:965 ../../Whats-New.md:977
+#: ../../Whats-New.md:1000 ../../Whats-New.md:1010 ../../Whats-New.md:1026
+#: ../../Whats-New.md:1074 ../../Whats-New.md:1085
 msgid "Phobos fixes:"
 msgstr "Phobos 过往版本问题修复："
 
-#: ../../Whats-New.md:396
+#: ../../Whats-New.md:395
 msgid ""
 "Fixed an issue that MCV will self-destruct when using trigger 107 to "
 "teleport (by CrimRecya)"
 msgstr "修复了使用 107 号触发传送时 MCV 会自毁的问题（by CrimRecya）"
 
-#: ../../Whats-New.md:397
+#: ../../Whats-New.md:396
 msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it (by NetsuNegi)"
 msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug（by NetsuNegi）"
 
-#: ../../Whats-New.md:399 ../../Whats-New.md:732 ../../Whats-New.md:950
+#: ../../Whats-New.md:397
+msgid ""
+"Fixed an issue that spawned `Strafe` aircraft on aircraft carriers may "
+"not be able to return normally if aircraft carriers moved a short "
+"distance when the aircraft is landing (by CrimRecya)"
+msgstr ""
+
+#: ../../Whats-New.md:399 ../../Whats-New.md:735 ../../Whats-New.md:953
 msgid "Fixes / interactions with other extensions:"
 msgstr "其他扩展引擎相关的修复／交互："
 
@@ -1618,7 +1617,7 @@ msgid ""
 "upgrades (by Ollerus)"
 msgstr "允许加载物被正常计入 `AuxBuilding` 和 Ares 的 `SW.Aux/NegBuildings`（by Ollerus）"
 
-#: ../../Whats-New.md:401 ../../Whats-New.md:746
+#: ../../Whats-New.md:401 ../../Whats-New.md:749
 msgid ""
 "Taking over Ares' AlphaImage respawn logic to reduce lags from it (by "
 "NetsuNegi)"
@@ -3095,35 +3094,55 @@ msgstr ""
 "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 `Teleport` "
 "运动模式的单位作为超时空移动的目的地的问题（by NetsuNegi）"
 
+#: ../../Whats-New.md:679
+msgid ""
+"Fixed an issue that harvesters with amphibious movement zone can not "
+"automatically return to refineries with `WaterBound` on water surface (by"
+" NetsuNegi)"
+msgstr "修复了两栖矿车无法自动返回拥有 `WaterBound` 的矿场的问题（by NetsuNegi）"
+
+#: ../../Whats-New.md:680
+msgid ""
+"Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
+"enter an occupiable building that has been removed and is not real dead "
+"(by CrimRecya)"
+msgstr "修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）（by CrimRecya）"
+
 #: ../../Whats-New.md:681
+msgid ""
+"Fixed an issue that game crashes when spawnee has been removed and is not"
+" real dead (by CrimRecya)"
+msgstr "修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题（by CrimRecya）"
+
+#: ../../Whats-New.md:684
 msgid ""
 "Fixed a few errors of calling for superweapon launch by `LaunchSW` or "
 "building infiltration (by Trsdy)"
 msgstr "修复了通过 `LaunchSW` 或渗透建筑来调用超级武器发射相关的若干错误（by Trsdy）"
 
-#: ../../Whats-New.md:682
+#: ../../Whats-New.md:685
 msgid "Add `ImmuneToCrit` for shields (by Trsdy)"
 msgstr "添加护盾版的 `ImmuneToCrit`（by Trsdy）"
 
-#: ../../Whats-New.md:683
+#: ../../Whats-New.md:686
 msgid ""
 "Reimplemented the bugfix for jumpjet units' facing when firing, discard "
 "the inappropriate `JumpjetTurnToTarget` tag (by Trsdy)"
 msgstr "重新实现了 Jumpjet 开火朝向 Bug 修复，弃用不合适的 `JumpjetTurnToTarget` 标签（by Trsdy）"
 
-#: ../../Whats-New.md:684
+#: ../../Whats-New.md:687
 msgid ""
 "`Gunner=true` transports now correctly change turret if a passenger is "
 "removed by `PassengerDeletion` (by Starkku)"
 msgstr "现在 `Gunner=true` 的运输工具可以在载员被 `PassengerDeletion` 删除时正确更换炮塔图像（by Starkku）"
 
-#: ../../Whats-New.md:685
+#: ../../Whats-New.md:688
 msgid ""
 "`PassengerDeletion.Soylent` now correctly calculates refund value if "
 "removed passenger has no explicitly set `Soylent` value (by Starkku)"
 msgstr "现在 `PassengerDeletion.Soylent` 可以在载员未设置 `Soylent` 的情况下正确计算退款金额（by Starkku）"
 
-#: ../../Whats-New.md:686
+#: ../../Whats-New.md:689
 msgid ""
 "Superweapon `Detonate.Weapon` & `Detonate.Warhead` now use the firing "
 "house to deal damage and apply Phobos warhead effects even if no firing "
@@ -3132,68 +3151,68 @@ msgstr ""
 "现在超武的 `Detonate.Weapon` 和 `Detonate.Warhead` 即便找不到发射建筑也会使用发射者的所属方来造成伤害并使用"
 " Phobos 弹头效果（by Starkku）"
 
-#: ../../Whats-New.md:687
+#: ../../Whats-New.md:690
 msgid ""
 "`CreateUnit` now uses civilian house as owner instead if the intended "
 "owner house has been defeated (this is in-line with how `MakeInfantry` "
 "works) (by Starkku)"
 msgstr "现在 `CreateUnit` 会在目标所属方失败时转为中立所属方（与 `MakeInfantry` 的工作方式一致）（by Starkku）"
 
-#: ../../Whats-New.md:688
+#: ../../Whats-New.md:691
 msgid ""
 "`IsHouseColor` laser trails on techno now correctly change color when it "
 "changes owner (by Trsdy)"
 msgstr "现在 `IsHouseColor` 的激光尾迹可以在所属方变更时正确改变颜色（by Trsdy）"
 
-#: ../../Whats-New.md:689
+#: ../../Whats-New.md:692
 msgid ""
 "Fixed `Layer.UseObjectLayer=true` to work correctly for all cases where "
 "object changes layer (by Starkku)"
 msgstr "修复了 `Layer.UseObjectLayer=true` 以在所有对象改变层级的情形下都能正确工作（by Starkku）"
 
-#: ../../Whats-New.md:690
+#: ../../Whats-New.md:693
 msgid ""
 "Fixed `DetonateOnAllMapObjects.RequireVerses` not considering shield "
 "armor types (by Starkku)"
 msgstr "修复了 `DetonateOnAllMapObjects.RequireVerses` 未考虑护甲类型的问题（by Starkku）"
 
-#: ../../Whats-New.md:691
+#: ../../Whats-New.md:694
 msgid ""
 "Fixed new Phobos script actions not picking team leader correctly based "
 "on `LeadershipRating` (by Starkku)"
 msgstr "修复了 Phobos 新增动作脚本未能正确根据 `LeadershipRating` 选择队长的问题（by Starkku）"
 
-#: ../../Whats-New.md:692
+#: ../../Whats-New.md:695
 msgid ""
 "Fixed an issue with `Gunner=true` vehicles not correctly using the first "
 "passenger's mode with multiple passengers inside (by Starkku)"
 msgstr "修复了 `Gunner=true` 载具存在多名载员时未能正确使用首位载员 `IFVMode` 的问题（by Starkku）"
 
-#: ../../Whats-New.md:693
+#: ../../Whats-New.md:696
 msgid ""
 "Used `MindControl.Anim` for buildings deployed from mind-controlled "
 "vehicles (by Trsdy)"
 msgstr "为从被心灵控制的载具部署而来的建筑应用 `MindControl.Anim` 动画（by Trsdy）"
 
-#: ../../Whats-New.md:694
+#: ../../Whats-New.md:697
 msgid ""
 "Optimized extension class implementation, should improve performance all "
 "around (by Otamaa & Starkku)"
 msgstr "优化了扩展类的实现，应该能提高整体性能（by Otamaa 与 Starkku）"
 
-#: ../../Whats-New.md:695
+#: ../../Whats-New.md:698
 msgid ""
 "Fixed `Interceptor` not resetting target if the intercepted projectile "
 "changes type to non-interceptable one afterwards (by Starkku)"
 msgstr "修复了 `Interceptor` 在拦截的抛射体变为不可拦截抛射体后未能重置目标的问题（by Starkku）"
 
-#: ../../Whats-New.md:696
+#: ../../Whats-New.md:699
 msgid ""
 "Fixed `PlacementPreview` setting for BuildingTypes not being parsed from "
 "INI (by Starkku)"
 msgstr "修复了 `[BuildingType] -> PlacementPreview` 未从 INI 解析的问题（by Starkku）"
 
-#: ../../Whats-New.md:697
+#: ../../Whats-New.md:700
 msgid ""
 "Fixed Phobos animation additions that support `CreateUnit.Owner` not also"
 " checking `MakeInfantryOwner` (by Starkku)"
@@ -3201,13 +3220,13 @@ msgstr ""
 "修复使用了 `CreateUnit.Owner` 的 Phobos 动画新增逻辑后导致不再检查 `MakeInfantryOwner` "
 "的问题（by Starkku）"
 
-#: ../../Whats-New.md:698
+#: ../../Whats-New.md:701
 msgid ""
 "Fixed `AutoDeath` to consider all conditions for objects in limbo (by "
 "Starkku)"
 msgstr "修复 `AutoDeath` 未考虑 Limbo 单位作为条件的问题（by Starkku）"
 
-#: ../../Whats-New.md:699
+#: ../../Whats-New.md:702
 msgid ""
 "Shields will no longer take damage if the parent techno has `Immune=true`"
 " or has `TypeImmune=true` and the damage comes from instance of same "
@@ -3216,42 +3235,42 @@ msgstr ""
 "护盾现在可以正常根据单位上的 `Immune=true` 和 `TypeImmune=true` 正常忽略这些语句所免疫的伤害（by "
 "Starkku）"
 
-#: ../../Whats-New.md:700
+#: ../../Whats-New.md:703
 msgid "Fixed interceptors causing multiplayer games to desync (by Starkku)"
 msgstr "修复了抛射体拦截导致的 Reconnection Error 问题（by Starkku）"
 
-#: ../../Whats-New.md:701
+#: ../../Whats-New.md:704
 msgid ""
 "Optimized performance for map trigger retint action light source fix (by "
 "Starkku)"
 msgstr "优化了地图触发器重绘光源修复的性能表现（by Starkku）"
 
-#: ../../Whats-New.md:702
+#: ../../Whats-New.md:705
 msgid ""
 "Fixed a number of issues with Warhead Shield respawn / self heal rate "
 "modifiers like timers getting reset unnecessarily, the timer being "
 "adjusted wrong after the Warhead effect runs out etc. (by Starkku)"
 msgstr "修复了弹头护盾重生／自愈相关的多个问题例如计时器在不必要的情况下重置以及弹头效果结束后计时器被错误地调整等（by Starkku）"
 
-#: ../../Whats-New.md:703
+#: ../../Whats-New.md:706
 msgid ""
 "Fixed a problem with disguise visibility logic that could cause game to "
 "crash on loading a map (by Starkku)"
 msgstr "修复了伪装可见性可能导致地图加载时崩溃的问题（by Starkku）"
 
-#: ../../Whats-New.md:704
+#: ../../Whats-New.md:707
 msgid ""
 "Fixed owned `LimboDelivery` buildings not being saved correctly in "
 "savegames (by Starkku)"
 msgstr "修复了已有 `LimboDelivery` 建筑没有正确写入存档的问题（by Starkku）"
 
-#: ../../Whats-New.md:705
+#: ../../Whats-New.md:708
 msgid ""
 "Fixed a typo in weapon selector code causing issues with `NoAmmoWeapon` "
 "and related checks (by Starkku)"
 msgstr "修复了武器选择代码中导致 `NoAmmoWeapon` 及相关检查出错的拼写错误（by Starkku）"
 
-#: ../../Whats-New.md:706
+#: ../../Whats-New.md:709
 msgid ""
 "Fixed `DetonateOnAllMapObjects` behaving erratically or potentially "
 "crashing if it destroys buildings using Ares' advanced rubble (by "
@@ -3260,67 +3279,67 @@ msgstr ""
 "修复了 `DetonateOnAllMapObjects` 在摧毁使用了 Ares 的高级废墟逻辑的建筑上行为异常甚至存在潜在崩溃风险的问题（by"
 " Starkku）"
 
-#: ../../Whats-New.md:707
+#: ../../Whats-New.md:710
 msgid ""
 "Fixed game crashing on loading save games if the saved game state had "
 "active radiation sites (by Starkku)"
 msgstr "修复了辐射逻辑导致游戏读档崩溃的问题（by Starkku）"
 
-#: ../../Whats-New.md:708
+#: ../../Whats-New.md:711
 msgid "Fixed a desync error caused by air/top layer sorting (by Starkku)"
 msgstr "修复了 air／top 图层排序引发的 Reconnection Error 文件（by Starkku）"
 
-#: ../../Whats-New.md:709
+#: ../../Whats-New.md:712
 msgid ""
 "Fixed heal / repair weapons being unable to remove parasites from "
 "shielded targets if they were unable to heal / repair the parent unit (by"
 " Starkku)"
 msgstr "修复了寄生在无法治疗／维修的单位中的寄生者无法被自愈／维修武器驱逐的问题"
 
-#: ../../Whats-New.md:710
+#: ../../Whats-New.md:713
 msgid ""
 "Fixed `Inviso=true` interceptor projectiles applying damage on "
 "interceptable, armor type-having projectiles twice (by Starkku)"
 msgstr "修复了拦截者使用 `Inviso=true` 抛射体会对可拦截且拥有护甲类型的被拦截抛射体造成两次伤害的问题（by Starkku）"
 
-#: ../../Whats-New.md:711
+#: ../../Whats-New.md:714
 msgid ""
 "Fixed `AutoDeath` causing crashes when used to kill a parasite unit "
 "inside an another unit (by Starkku)"
 msgstr "修复了 `AutoDeath` 在击杀当前寄生在另一个单位中的寄生者时导致崩溃的问题（by Starkku）"
 
-#: ../../Whats-New.md:712
+#: ../../Whats-New.md:715
 msgid ""
 "Phobos Warhead effects combined with `CellSpread` now correctly apply to "
 "buildings if any of the foundation cells are hit (by Starkku)"
 msgstr "现在 Phobos 弹头效果可以在 `CellSpread` 套住建筑所占据的任意单元格时均可正确作用（by Starkku）"
 
-#: ../../Whats-New.md:713
+#: ../../Whats-New.md:716
 msgid ""
 "Phobos Warhead effects on zero-`CellSpread` Warheads no longer apply to "
 "target if projectile detonates prematurely, far-away from target (by "
 "Starkku)"
 msgstr "现在 Phobos 弹头效果在 `CellSpread` 为 0 时不会在抛射体提前引爆的情况下依旧作用于目标（by Starkku）"
 
-#: ../../Whats-New.md:714
+#: ../../Whats-New.md:717
 msgid ""
 "Fixed radiation site damage not taking the radiation level reduction into"
 " accord (by Starkku)"
 msgstr "修复了辐射伤害未考虑辐射等级衰减的问题（by Starkku）"
 
-#: ../../Whats-New.md:715
+#: ../../Whats-New.md:718
 msgid ""
 "Correctly update laser trail position while techno is cloaked even if "
 "trail is not drawn (by Starkku)"
 msgstr "现在在单位隐形时即便没有绘制尾迹也会正确更新激光尾迹的位置（by Starkku）"
 
-#: ../../Whats-New.md:716
+#: ../../Whats-New.md:719
 msgid ""
 "Fixed `Shield.Respawn.Amount` not defaulting to shield type default if "
 "not set (by Starkku)"
 msgstr "修复了 `Shield.Respawn.Amount` 在未设置时未正确使用护盾类型默认值的问题（by Starkku）"
 
-#: ../../Whats-New.md:717
+#: ../../Whats-New.md:720
 msgid ""
 "Fixed an issue where the hotkey message text in frame-by-frame mode "
 "incorrectly referenced `TXT_DISPLAY_DAMAGE_DESC` instead of "
@@ -3329,7 +3348,7 @@ msgstr ""
 "修复了逐帧模式快捷键的消息提示文本读取了 `TXT_DISPLAY_DAMAGE_DESC` 而不是 "
 "`TXT_FRAME_BY_FRAME_DESC` 的问题（by DeathFish）"
 
-#: ../../Whats-New.md:718
+#: ../../Whats-New.md:721
 msgid ""
 "Buildings considered vehicles (`ConsideredVehicle=true` or not set in "
 "conjunction with `UndeploysInto` & 1x1 foundation) are now considered "
@@ -3338,29 +3357,29 @@ msgstr ""
 "现在被视为载具的建筑（`ConsideredVehicle=true` 或同时拥有 `UndeploysInto` 与 "
 "`Foundation=1x1` 的建筑）在目标类型检查时被视为载具（by Starkku）"
 
-#: ../../Whats-New.md:719
+#: ../../Whats-New.md:722
 msgid ""
 "Fixed Phobos Warhead effects not reliably being applied on damage area as"
 " opposed to full weapon-based Warhead detonation (by Starkku)"
 msgstr "修复了 Phobos 弹头效果未能像由武器引爆的完整弹头那样可靠地作用于伤害区域的问题（by Starkku）"
 
-#: ../../Whats-New.md:720
+#: ../../Whats-New.md:723
 msgid "Fixed `LimboKill` not working reliably (by CrimRecya)"
 msgstr "修复了 `LimboKill` 未能可靠地移除虚拟建筑的问题（by CrimRecya）"
 
-#: ../../Whats-New.md:721
+#: ../../Whats-New.md:724
 msgid ""
 "Fixed `SelfHealGainType=none` not working (changed to `noheal`) (by "
 "Starkku)"
 msgstr "修复了 `SelfHealGainType=none` 无效的问题（改为 `noheal`）（by Starkku）"
 
-#: ../../Whats-New.md:722
+#: ../../Whats-New.md:725
 msgid ""
 "Fixed AircraftTypes gaining self-healing from `UnitsGainSelfHeal` by "
 "default (while not displaying the pip) when they should not (by Starkku)"
 msgstr "修复了默认情况下战机类型错误地通过 `UnitsGainSelfHeal` 获得自愈能力（同时也不现实 pip）的问题（by Starkku）"
 
-#: ../../Whats-New.md:723
+#: ../../Whats-New.md:726
 msgid ""
 "Fixed `LaunchSW.IgnoreInhibitors` and `SW.Next.IgnoreInhibitors` "
 "overriding corresponding `IgnoreDesignators` and `IgnoreInhibitors` "
@@ -3369,14 +3388,14 @@ msgstr ""
 "修复了 `LaunchSW.IgnoreInhibitors` 和 `SW.Next.IgnoreInhibitors` 覆盖对应 "
 "`IgnoreDesignators` 和 `IgnoreInhibitors` 设置的问题（by Ollerus）"
 
-#: ../../Whats-New.md:724
+#: ../../Whats-New.md:727
 msgid ""
 "Type conversion on Warheads and Superweapons will no longer recursively "
 "convert units if applicable conversion pairs are listed, and only first "
 "applicable pair takes effect (by Starkku)"
 msgstr "单位转换弹头和超武在存在有效的转换对应关系时不再递归执行而是仅使用列表中更早读到的那组对应关系（by Starkku）"
 
-#: ../../Whats-New.md:725
+#: ../../Whats-New.md:728
 msgid ""
 "Fixed `Ammo.DeployUnlockMinimumAmount`/`Ammo.DeployUnlockMaximumAmount` "
 "behavior inside tank bunkers (by Fryone)"
@@ -3385,39 +3404,39 @@ msgstr ""
 "`Ammo.DeployUnlockMinimumAmount`／`Ammo.DeployUnlockMaximumAmount` 行为（by "
 "Fryone）"
 
-#: ../../Whats-New.md:726
+#: ../../Whats-New.md:729
 msgid ""
 "Fixed `Ammo.AddOnDeploy` behavior inside tank bunkers for non-converters "
 "(by Fryone)"
 msgstr "修复了坦克碉堡内无 `Convert.Deploy` 载具的 `Ammo.AddOnDeploy` 行为（by Fryone）"
 
-#: ../../Whats-New.md:727
+#: ../../Whats-New.md:730
 msgid ""
 "Fixed an issue that caused new attack and move script actions to pick "
 "buildings with `InvisibleInGame=yes` as targets (by FS-21)"
 msgstr "修复了新攻击和移动脚本将 `InvisibleInGame=yes` 建筑视为目标的问题（by FS-21）"
 
-#: ../../Whats-New.md:728
+#: ../../Whats-New.md:731
 msgid "Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)"
 msgstr "修复了地图内置 `Insignia.Weapon` 解析失败的问题（by Ollerus）"
 
-#: ../../Whats-New.md:729
+#: ../../Whats-New.md:732
 msgid "Fixed `AltNextScenario` not taking effect (by FlyStar)"
 msgstr "修复了 `AltNextScenario` 无效的问题（by FlyStar）"
 
-#: ../../Whats-New.md:730
+#: ../../Whats-New.md:733
 msgid ""
 "Fixed `DefaultDisguise` showing wrong house colors for different players "
 "(by NetsuNegi & Ollerus)"
 msgstr "修复了 `DefaultDisguise` 为不同玩家显示不同所属方颜色的问题（by NetsuNegi 与 Ollerus）"
 
-#: ../../Whats-New.md:733
+#: ../../Whats-New.md:736
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect "
 "the firing building's FLH (by Starkku)"
 msgstr "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器将完全遵照发射建筑的 FLH 设置（by Starkku）"
 
-#: ../../Whats-New.md:734
+#: ../../Whats-New.md:737
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* now respect "
 "`Floater` and Phobos-added `Gravity` setting (by Starkku)"
@@ -3425,7 +3444,7 @@ msgstr ""
 "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器遵守 `Floater` 与 Phobos 添加的 `Gravity` 设定（by"
 " Starkku）"
 
-#: ../../Whats-New.md:735
+#: ../../Whats-New.md:738
 msgid ""
 "`IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no "
 "longer get stuck after deploying or play their move sound indefinitely "
@@ -3434,7 +3453,7 @@ msgstr ""
 "拥有 Hover 运动模式的 `IsSimpleDeployer` 且 `DeployToLand` "
 "的单位在部署后不再会卡住或无限播放移动音效（by Starkku）"
 
-#: ../../Whats-New.md:736
+#: ../../Whats-New.md:739
 msgid ""
 "All forms of type conversion (including Ares') now correctly update the "
 "warp-in delay if unit with teleport `Locomotor` was converted while the "
@@ -3443,26 +3462,26 @@ msgstr ""
 "现在所有单位转换形式（包括 Ares 的）在使用超时空 `Locomotor` 的单位处于僵直状态被转换时可以正确的更新传送延迟（by "
 "Starkku）"
 
-#: ../../Whats-New.md:737
+#: ../../Whats-New.md:740
 msgid ""
 "All forms of type conversion (including Ares') now correctly update "
 "`MoveSound` if a moving unit has their type changed (by Starkku)"
 msgstr "现在所有单位转换形式（包括 Ares 的）在移动单位的类型被转换时可以正确更新 `MoveSound`（by Starkku）"
 
-#: ../../Whats-New.md:738
+#: ../../Whats-New.md:741
 msgid ""
 "All forms of type conversion (including Ares') now correctly update "
 "`OpenTopped` state of passengers in transport that is converted (by "
 "Starkku)"
 msgstr "现在所有单位转换形式（包括 Ares 的）在运输工具被转换时可以正确更新乘客的 `OpenTopped` 状态"
 
-#: ../../Whats-New.md:739
+#: ../../Whats-New.md:742
 msgid ""
 "Infantry type conversion from `Deployer=yes` to `no` now correctly update"
 " the sequence anim (by Trsdy)"
 msgstr "现在从由于类型转换导致 `Deployer=yes` 变为 `no` 的步兵能够正确更新序列动画（by Trsdy）"
 
-#: ../../Whats-New.md:740
+#: ../../Whats-New.md:743
 msgid ""
 "Fixed an issue introduced by Ares that caused building `ActiveAnim` to be"
 " incorrectly restored while `SpecialAnim` was playing and the building "
@@ -3471,23 +3490,23 @@ msgstr ""
 "修复了 Ares 引入的建筑正在播放 `SpecialAnim` 时被出售／抹除／摧毁会错误恢复 `ActiveAnim` 的问题（by "
 "Starkku 与 Trsdy）"
 
-#: ../../Whats-New.md:741
+#: ../../Whats-New.md:744
 msgid "Appended Ares' `SW.Shots` usage to extended tooltips (by Trsdy)"
 msgstr "允许将 Ares 的 `SW.Shots` 添加至扩展拓展工具条（by Trsdy）"
 
-#: ../../Whats-New.md:742
+#: ../../Whats-New.md:745
 msgid ""
 "Fixed Ares' Abductor weapon leaves permanent placement stats when "
 "abducting moving vehicles (by Trsdy)"
 msgstr "修复了 Ares 超时空监狱吸取移动载具时会留下空气墙的问题（by Trsdy）"
 
-#: ../../Whats-New.md:743
+#: ../../Whats-New.md:746
 msgid ""
 "Suppressed Ares' swizzle warning when parsing `Tags` and `TaskForces` (by"
 " Trsdy)"
 msgstr "在解析标签和特遣部队时抑制 Ares 的 swizzle 警告（by Trsdy）"
 
-#: ../../Whats-New.md:744
+#: ../../Whats-New.md:747
 msgid ""
 "Fixed Academy *(Ares feature)* not working on the initial payloads *(Ares"
 " feature)* of vehicles built from a war factory (by Trsdy, supersedes "
@@ -3496,43 +3515,43 @@ msgstr ""
 "修复了训练所（*Ares 功能*）在由战车工厂所生产载具的初始载员（*Ares 功能*）上不起作用的问题（by Trsdy，取代了 Aephiex"
 " 的实现）"
 
-#: ../../Whats-New.md:745
+#: ../../Whats-New.md:748
 msgid ""
 "Fixed Ares' InitialPayload not being created for vehicles spawned by "
 "trigger actions (by Trsdy)"
 msgstr "修复了 Ares 的初始荷载未为触发行为生成的载具创建的问题（by Trsdy）"
 
-#: ../../Whats-New.md:750
+#: ../../Whats-New.md:753
 msgid "0.3.0.1"
 msgstr "0.3.0.1"
 
-#: ../../Whats-New.md:755
+#: ../../Whats-New.md:758
 msgid "Additional sync logging in case of desync errors occuring (by Starkku)"
 msgstr "现在发生 Reconnection Error 时所生成的 `SYNC#.txt` 将记录更多信息（by Starkku）"
 
-#: ../../Whats-New.md:758
+#: ../../Whats-New.md:761
 msgid "`AutoDeath` support for objects in limbo (by Trsdy)"
 msgstr "`AutoDeath` 也支持 Limbo 的对象了（by Trsdy）"
 
-#: ../../Whats-New.md:759
+#: ../../Whats-New.md:762
 msgid ""
 "Buildings sold by `AutoDeath` no longer play a click sound effect (by "
 "Trsdy)"
 msgstr "建筑被 `AutoDeath` 出售时不再播放点击音效（by Trsdy）"
 
-#: ../../Whats-New.md:760
+#: ../../Whats-New.md:763
 msgid ""
 "Fixed shield animation being hidden while underground or in tunnels fix "
 "not working correctly (by Starkku)"
 msgstr "修复了护盾动画在地下或隧道中被隐藏的问题，之前的修复未能解决（by Starkku）"
 
-#: ../../Whats-New.md:761
+#: ../../Whats-New.md:764
 msgid ""
 "Restore the `MindClearedSound` when deploying a mind-controlled unit into"
 " a building loses the mind-control (by Trsdy)"
 msgstr "复原当被心控载具部署成建筑而解除心控时播放的 `MindClearedSound`（by Trsdy）"
 
-#: ../../Whats-New.md:762
+#: ../../Whats-New.md:765
 msgid ""
 "Fixed `RadSiteWarhead.Detonate` not detonating precisely on the affected "
 "object (thus requiring `CellSpread`) (by Starkku)"
@@ -3540,23 +3559,23 @@ msgstr ""
 "修复了 `RadSiteWarhead.Detonate` 未能在受影响对象上精确引爆（因此需要 `CellSpread`）的问题（by "
 "Starkku）"
 
-#: ../../Whats-New.md:763
+#: ../../Whats-New.md:766
 msgid ""
 "Fixed script action 10103 'Load Into Transports' unintentionally skipping"
 " next action (by FS-21)"
 msgstr "修复了动作脚本 `10103 - 装载入运输载具` 会意外跳过下一个动作的问题（by FS-21）"
 
-#: ../../Whats-New.md:764
+#: ../../Whats-New.md:767
 msgid ""
 "Changed mission retry dialog button order to better match old order "
 "people are used to (by Trsdy)"
 msgstr "更改了任务重开对话框按钮顺序以更好地符合人们旧有习惯的顺序（by Trsdy）"
 
-#: ../../Whats-New.md:765
+#: ../../Whats-New.md:768
 msgid "Allow PowerPlant Enhancer to be affected by EMP (by Trsdy)"
 msgstr "允许电厂增幅器受到 EMP 影响（by Trsdy）"
 
-#: ../../Whats-New.md:766
+#: ../../Whats-New.md:769
 msgid ""
 "Animation `Weapon` with `Damage.DealtByInvoker=true` now uses the "
 "invoker's house to deal damage and apply Phobos warhead effects even if "
@@ -3565,561 +3584,561 @@ msgstr ""
 "现在动画 `Damage.DealtByInvoker=true` 时其 `Weapon` "
 "即便调用者在武器开火时已死亡也会使用调用者的所属方来造成伤害并应用 Phobos 弹头效果（by Starkku）"
 
-#: ../../Whats-New.md:767
+#: ../../Whats-New.md:770
 msgid ""
 "Fixed a crash when trying to create radiation outside map bounds (by "
 "Otamaa)"
 msgstr "修复了尝试在地图边界外创建辐射时导致的崩溃（by Otamaa）"
 
-#: ../../Whats-New.md:768
+#: ../../Whats-New.md:771
 msgid ""
 "Fixed new AI attack scripts not allowing zero damage weapons to pick "
 "targets (by Starkku)"
 msgstr "修复了新的 AI 攻击脚本不允许 0 伤害武器选择目标的问题（by Starkku）"
 
-#: ../../Whats-New.md:769
+#: ../../Whats-New.md:772
 msgid ""
 "Fixed floating point value parsing precision to match the game (by "
 "Starkku)"
 msgstr "修复了浮点值解析精度以匹配游戏（by Starkku）"
 
-#: ../../Whats-New.md:770
+#: ../../Whats-New.md:773
 msgid ""
 "Power output / drain should now correctly be applied for buildings "
 "created via `LimboDelivery` in campaigns (by Starkku)"
 msgstr "现在战役中通过 `LimboDelivery` 创建的建筑的电力／负载可以正确生效（by Starkku）"
 
-#: ../../Whats-New.md:771
+#: ../../Whats-New.md:774
 msgid ""
 "Fixed shield health bar showing empty bar when shield is still on very "
 "low health instead of depleted (by Starkku)"
 msgstr "修复了护盾在丝血状态下会直接显示空血条而非即将耗尽的问题（by Starkku）"
 
-#: ../../Whats-New.md:772
+#: ../../Whats-New.md:775
 msgid ""
 "Fixed `CanTarget` not considering objects on bridges when checking if "
 "cell is empty (by Starkku)"
 msgstr "修复了 `CanTarget` 在检查单元格是否为空时未考虑桥上物体的问题（by Starkku）"
 
-#: ../../Whats-New.md:773
+#: ../../Whats-New.md:776
 msgid ""
 "Fixed vehicle deploy weapons not working if the unit is cloaked and "
 "weapon has `DecloakToFire=true` (by NetsuNegi & Starkku)"
 msgstr "修复了单位在隐形状态无法使用 `DecloakToFire=true` 的武器开火的问题（by NetsuNegi 与 Starkku）"
 
-#: ../../Whats-New.md:774
+#: ../../Whats-New.md:777
 msgid ""
 "Fixed `IsAnimated` terrain not updating correctly in all circumstances "
 "(by Starkku)"
 msgstr "修复了 `IsAnimated` 地形对象在所有情况下都不会正确更新的问题（by Starkku）"
 
-#: ../../Whats-New.md:775
+#: ../../Whats-New.md:778
 msgid ""
 "Fixed `CreateUnit` interaction with bridges (spawning under when "
 "shouldn't etc) (by Starkku)"
 msgstr "修复了 `CreateUnit` 与桥的交互问题（不应生成在桥下时仍会生成等）（by Starkku）"
 
-#: ../../Whats-New.md:776
+#: ../../Whats-New.md:779
 msgid ""
 "`CanTarget` now considers bridges as land like game's normal weapon "
 "selection does (by Starkku)"
 msgstr "现在 `CanTarget` 会像常规武器目标选择逻辑一样将桥梁视为陆地（by Starkku）"
 
-#: ../../Whats-New.md:777
+#: ../../Whats-New.md:780
 msgid ""
 "`AreaFire.Target` now takes cells with bridges into consideration "
 "depending on firer's elevation (by Starkku)"
 msgstr "现在 `AreaFire.Target` 会根据开火者所在高度处理桥梁所在的单元格（by Starkku）"
 
-#: ../../Whats-New.md:781
+#: ../../Whats-New.md:784
 msgid "0.3"
 msgstr "0.3"
 
-#: ../../Whats-New.md:786
+#: ../../Whats-New.md:789
 msgid "LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)"
 msgstr "激光尾迹初始实现（by Kerbiter 与 ChrisLv_CN）"
 
-#: ../../Whats-New.md:787
+#: ../../Whats-New.md:790
 msgid "Anim-to-Unit logic and ability to randomize `DestroyAnim` (by Otamaa)"
 msgstr "动画生成单位逻辑与随机 `DestroyAnim`（by Otamaa）"
 
-#: ../../Whats-New.md:788
+#: ../../Whats-New.md:791
 msgid "Shield modification warheads (by Starkku)"
 msgstr "护盾修改弹头（by Starkku）"
 
-#: ../../Whats-New.md:789
+#: ../../Whats-New.md:792
 msgid "Shield BreakWeapon & InitialStrength (by Starkku)"
 msgstr "护盾 `BreakWeapon` 与 `InitialStrength`（by Starkku）"
 
-#: ../../Whats-New.md:790
+#: ../../Whats-New.md:793
 msgid "Initial Strength for TechnoTypes (by Uranusian)"
 msgstr "单位的 `InitialStrength`（by Uranusian）"
 
-#: ../../Whats-New.md:791
+#: ../../Whats-New.md:794
 msgid ""
 "Re-enable obsolete `[JumpjetControls]` for TechnoTypes' default Jumpjet "
 "properties (by Uranusian)"
 msgstr "重启废弃的`[JumpjetControls]`作为单位的 Jumpjet 参数默认值（by Uranusian）"
 
-#: ../../Whats-New.md:792
+#: ../../Whats-New.md:795
 msgid "Weapon targeting filter (by Uranusian & Starkku)"
 msgstr "武器瞄准筛选（by Uranusian 与 Starkku）"
 
-#: ../../Whats-New.md:793
+#: ../../Whats-New.md:796
 msgid "Secondary weapon fallback customization (by Starkku)"
 msgstr "禁用副武器自动推算（by Starkku）"
 
-#: ../../Whats-New.md:794
+#: ../../Whats-New.md:797
 msgid "Burst-specific FLHs for TechnoTypes (by Starkku)"
 msgstr "Burst 开火坐标（by Starkku）"
 
-#: ../../Whats-New.md:795
+#: ../../Whats-New.md:798
 msgid "Burst delays for weapons (by Starkku)"
 msgstr "武器自定义 `BurstDelays`（by Starkku）"
 
-#: ../../Whats-New.md:796
+#: ../../Whats-New.md:799
 msgid "AreaFire weapon target customization (by Starkku)"
 msgstr "自定义 `AreaFire` 目标（by Starkku）"
 
-#: ../../Whats-New.md:797
+#: ../../Whats-New.md:800
 msgid "Auto-firing TechnoType weapons (by Starkku)"
 msgstr "自动发射武器（by Starkku）"
 
-#: ../../Whats-New.md:798
+#: ../../Whats-New.md:801
 msgid "PowerPlant Enhancer (by secsome)"
 msgstr "电厂增幅器（by secsome）"
 
-#: ../../Whats-New.md:799
+#: ../../Whats-New.md:802
 msgid "Unlimited Global / Local Variables (by secsome)"
 msgstr "无限制数量的全局／局部变量（by secsome）"
 
-#: ../../Whats-New.md:800
+#: ../../Whats-New.md:803
 msgid ""
 "Adds a \"Load Game\" button to the retry dialog on mission failure (by "
 "secsome)"
 msgstr "在任务失败的重开对话框中添加了一个「载入游戏」按钮（by secsome）"
 
-#: ../../Whats-New.md:801
+#: ../../Whats-New.md:804
 msgid "Default disguise for individual InfantryTypes (by secsome)"
 msgstr "步兵类型微观定义默认伪装（by secsome）"
 
-#: ../../Whats-New.md:802
+#: ../../Whats-New.md:805
 msgid "Quicksave hotkey command (by secsome)"
 msgstr "快速存档快捷键（by secsome）"
 
-#: ../../Whats-New.md:803
+#: ../../Whats-New.md:806
 msgid "Save Game trigger action (by secsome)"
 msgstr "保存游戏的触发结果（by secsome）"
 
-#: ../../Whats-New.md:804
+#: ../../Whats-New.md:807
 msgid "Numeric Variables (by secsome)"
 msgstr "数字化变量（by secsome）"
 
-#: ../../Whats-New.md:805
+#: ../../Whats-New.md:808
 msgid "TechnoType's tooltip would display it's build time now (by secsome)"
 msgstr "现在单位的拓展工具条会显示生产时间（by secsome）"
 
-#: ../../Whats-New.md:806
+#: ../../Whats-New.md:809
 msgid "Customizable tooltip background color and opacity (by secsome)"
 msgstr "可自定义的拓展工具条背景颜色和透明度（by secsome）"
 
-#: ../../Whats-New.md:807
+#: ../../Whats-New.md:810
 msgid "FrameByFrame & FrameStep hotkey command (by secsome)"
 msgstr "逐帧模式及逐帧步进快捷键（by secsome）"
 
-#: ../../Whats-New.md:808
+#: ../../Whats-New.md:811
 msgid ""
 "Allow `NotHuman=yes` infantry to use random `Death` anim sequence (by "
 "Otamaa)"
 msgstr "允许 `NotHuman=yes` 的步兵可以使用随机的 `Death` 动画序列（by Otamaa）"
 
-#: ../../Whats-New.md:809
+#: ../../Whats-New.md:812
 msgid ""
 "Ability for warheads to trigger specific `NotHuman=yes` infantry `Death` "
 "anim sequence (by Otamaa)"
 msgstr "允许弹头触发 `NotHuman=yes` 步兵的特定 `Death` 动画序列（by Otamaa）"
 
-#: ../../Whats-New.md:810
+#: ../../Whats-New.md:813
 msgid "XDrawOffset for animations (by Morton)"
 msgstr "动画的 `XDrawOffset`（by Morton）"
 
-#: ../../Whats-New.md:811
+#: ../../Whats-New.md:814
 msgid "Customizable OpenTopped properties (by Otamaa)"
 msgstr "自定义 `OpenTopped` 属性（by Otamaa）"
 
-#: ../../Whats-New.md:812
+#: ../../Whats-New.md:815
 msgid "Automatic Passenger Deletion (by FS-21)"
 msgstr "自动删除乘客（by FS-21）"
 
-#: ../../Whats-New.md:813
+#: ../../Whats-New.md:816
 msgid "Script actions for new AI attacks (by FS-21)"
 msgstr "新的 AI 攻击动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:814
+#: ../../Whats-New.md:817
 msgid "Script actions for modifying AI Trigger Current Weight (by FS-21)"
 msgstr "修改 AI 触发器当前权重的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:815
+#: ../../Whats-New.md:818
 msgid ""
 "Script action for waiting & repeat the same new AI attack if no target "
 "was found (by FS-21)"
 msgstr "未发现目标时等待并重复原有动作的 AI 攻击脚本（by FS-21）"
 
-#: ../../Whats-New.md:816
+#: ../../Whats-New.md:819
 msgid ""
 "Script action that modifies the Team's Trigger Weight when ends the new "
 "attack action (by FS-21)"
 msgstr "在当前新攻击动作结束时修改 AI 触发器当前权重的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:817
+#: ../../Whats-New.md:820
 msgid "Script action for picking a random script from a list (by FS-21)"
 msgstr "从列表中随机选择脚本的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:818
+#: ../../Whats-New.md:821
 msgid "Script action for new AI movements towards certain objects (by FS-21)"
 msgstr "向特定对象移动的新 AI 移动脚本（by FS-21）"
 
-#: ../../Whats-New.md:819
+#: ../../Whats-New.md:822
 msgid ""
 "Script action that modify target distance in the new move actions (by "
 "FS-21)"
 msgstr "修改新移动动作中目标距离的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:820
+#: ../../Whats-New.md:823
 msgid "Script action that modify how ends the new move actions (by FS-21)"
 msgstr "修改新移动动作结束条件的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:821
+#: ../../Whats-New.md:824
 msgid "Script action that un-register Team success (by FS-21)"
 msgstr "取消注册小队成功的脚本动作（by FS-21）"
 
-#: ../../Whats-New.md:822
+#: ../../Whats-New.md:825
 msgid "Script action to regroup temporarily around the Team Leader (by FS-21)"
 msgstr "围绕队长临时集合的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:823
+#: ../../Whats-New.md:826
 msgid "Script action to randomly skip next action (by FS-21)"
 msgstr "随机跳过下一个动作的动作脚本（by FS-21）"
 
-#: ../../Whats-New.md:824
+#: ../../Whats-New.md:827
 msgid "Script action for timed script action jumps (by FS-21)"
 msgstr "定时跳转脚本动作（by FS-21）"
 
-#: ../../Whats-New.md:825
+#: ../../Whats-New.md:828
 msgid "ObjectInfo now shows current Target and AI Trigger data (by FS-21)"
 msgstr "现在 Object 信息可以显示当前的目标和 AI 触发数据（by FS-21）"
 
-#: ../../Whats-New.md:826
+#: ../../Whats-New.md:829
 msgid "Shield absorption and passthrough customization (by Morton)"
 msgstr "自定义护盾吸收和穿透（by Morton）"
 
-#: ../../Whats-New.md:827
+#: ../../Whats-New.md:830
 msgid "Limbo Delivery of buildings (by Morton)"
 msgstr "虚拟投放（by Morton）"
 
-#: ../../Whats-New.md:828
+#: ../../Whats-New.md:831
 msgid "Ore stage threshold for `HideIfNoOre` (by Otamaa)"
 msgstr "`HideIfNoOre` 的矿石阶段阈值（by Otamaa）"
 
-#: ../../Whats-New.md:829
+#: ../../Whats-New.md:832
 msgid "Image reading in art rules for all TechnoTypes (by Morton)"
 msgstr "在 art 中为所有科技类型使用 `Image` 指定图像（by Morton）"
 
-#: ../../Whats-New.md:830
+#: ../../Whats-New.md:833
 msgid "Attached animation layer customization (by Starkku)"
 msgstr "自定义附着动画图层（by Starkku）"
 
-#: ../../Whats-New.md:831
+#: ../../Whats-New.md:834
 msgid "Jumpjet unit layer deviation customization (by Starkku)"
 msgstr "自定义 Jumpjet 单位图层偏移（by Starkku）"
 
-#: ../../Whats-New.md:832
+#: ../../Whats-New.md:835
 msgid "IsSimpleDeployer deploy direction & animation customizations (by Starkku)"
 msgstr "自定义 `IsSimpleDeployer` 载具部署（by Starkku）"
 
-#: ../../Whats-New.md:833
+#: ../../Whats-New.md:836
 msgid "Customizable projectile gravity (by secsome)"
 msgstr "自定义抛射体重力（by secsome）"
 
-#: ../../Whats-New.md:834
+#: ../../Whats-New.md:837
 msgid ""
 "Gates can now link with walls correctly via `NSGates` or `EWGates` (by "
 "Uranusian)"
 msgstr "现在由 `NSGates` `EWGates` 设定的闸门可以正常与围墙连接（by Uranusian）"
 
-#: ../../Whats-New.md:835
+#: ../../Whats-New.md:838
 msgid "Per-warhead toggle for decloak of damaged targets (by Starkku)"
 msgstr "自定义被伤害目标解除隐形（by Starkku）"
 
-#: ../../Whats-New.md:836
+#: ../../Whats-New.md:839
 msgid ""
 "`DeployFireWeapon=-1` now allows the deployed infantries using both "
 "weapons as undeployed (by Uranusian)"
 msgstr "现在 `DeployFireWeapon=-1` 可以让部署状态的步兵像未部署的步兵那样使用两种武器（by Uranusian）"
 
-#: ../../Whats-New.md:837
+#: ../../Whats-New.md:840
 msgid "Power delta (surplus) counter for sidebar (by Morton)"
 msgstr "在侧边栏显示电力变动（盈余）计数器（by Morton）"
 
-#: ../../Whats-New.md:838
+#: ../../Whats-New.md:841
 msgid "Added Production and Money to Dump Object Info command (by FS-21)"
 msgstr "输出对象信息快捷键现在可以显示建筑生产与资金信息（by FS-21）"
 
-#: ../../Whats-New.md:839
+#: ../../Whats-New.md:842
 msgid "`EnemyUIName=` Now also works for other TechnoTypes (by Otamaa)"
 msgstr "现在 `EnemyUIName=` 已扩展至所有科技类型（by Otamaa）"
 
-#: ../../Whats-New.md:840
+#: ../../Whats-New.md:843
 msgid "`DestroyAnim` & `DestroySound` for TerrainTypes (by Otamaa)"
 msgstr "地形对象的 `DestroyAnim` 与 `DestroySound`（by Otamaa）"
 
-#: ../../Whats-New.md:841
+#: ../../Whats-New.md:844
 msgid "Weapons fired on warping in / out (by Starkku)"
 msgstr "超时空移动时发射武器（by Starkku）"
 
-#: ../../Whats-New.md:842
+#: ../../Whats-New.md:845
 msgid ""
 "`Storage.TiberiumIndex` for customizing resource storage in structures "
 "(by FS-21)"
 msgstr "使用 `Storage.TiberiumIndex` 自定义建筑存储的矿物类型（by FS-21）"
 
-#: ../../Whats-New.md:843
+#: ../../Whats-New.md:846
 msgid "Grinder improvements & customizations (by Starkku)"
 msgstr "回收站增强与自定义（by Starkku）"
 
-#: ../../Whats-New.md:844
+#: ../../Whats-New.md:847
 msgid "Attached animation position customization (by Starkku)"
 msgstr "自定义附着动画位置（by Starkku）"
 
-#: ../../Whats-New.md:845
+#: ../../Whats-New.md:848
 msgid "Trigger Action 505 for Firing SW at specified location (by FS-21)"
 msgstr "触发结果 `505 在坐标释放超级武器...`（by FS-21）"
 
-#: ../../Whats-New.md:846
+#: ../../Whats-New.md:849
 msgid "Trigger Action 506 for Firing SW at waypoint (by FS-21)"
 msgstr "触发动作 `506 在路径点释放超级武器...`（by FS-21）"
 
-#: ../../Whats-New.md:847
+#: ../../Whats-New.md:850
 msgid ""
 "New behaviors for objects' self-destruction under certain conditions (by "
 "Trsdy & FS-21)"
 msgstr "单位在特定情况下自毁的新增行为（by Trsdy 与 FS-21）"
 
-#: ../../Whats-New.md:848
+#: ../../Whats-New.md:851
 msgid ""
 "Slaves' ownership decision when corresponding slave miner is destroyed "
 "(by Trsdy)"
 msgstr "奴隶矿场被毁后的奴隶归属判定（by Trsdy）"
 
-#: ../../Whats-New.md:849
+#: ../../Whats-New.md:852
 msgid "Customize buildings' selling sound and EVA voice (by Trsdy)"
 msgstr "自定义建筑出售音效与 EVA 播报（by Trsdy）"
 
-#: ../../Whats-New.md:850
+#: ../../Whats-New.md:853
 msgid ""
 "`ForceWeapon.Naval.Decloacked` for overriding uncloaked underwater attack"
 " behavior (by FS-21)"
 msgstr "使用 `ForceWeapon.Naval.Decloacked` 覆盖攻击未隐形水下单位时的行为（by FS-21）"
 
-#: ../../Whats-New.md:851
+#: ../../Whats-New.md:854
 msgid "Shrapnel enhancement (by secsome)"
 msgstr "溅射增强（by secsome）"
 
-#: ../../Whats-New.md:852
+#: ../../Whats-New.md:855
 msgid "Shared Ammo for transports to passengers (by FS-21)"
 msgstr "运输工具与乘客共享弹药（by FS-21）"
 
-#: ../../Whats-New.md:853
+#: ../../Whats-New.md:856
 msgid "Additional critical hit logic customizations (by Starkku)"
 msgstr "额外暴击逻辑自定义项（by Starkku）"
 
-#: ../../Whats-New.md:854
+#: ../../Whats-New.md:857
 msgid "Laser trails for VoxelAnims (by Otamaa)"
 msgstr "Voxel 碎片激光尾焰（by Otamaa）"
 
-#: ../../Whats-New.md:855
+#: ../../Whats-New.md:858
 msgid "Local warhead screen shaking (by Starkku)"
 msgstr "限制屏幕抖动于当前视角（by Starkku）"
 
-#: ../../Whats-New.md:856
+#: ../../Whats-New.md:859
 msgid "Feedback weapon (by Starkku)"
 msgstr "反馈武器（by Starkku）"
 
-#: ../../Whats-New.md:857
+#: ../../Whats-New.md:860
 msgid "TerrainType & ore minimap color customization (by Starkku)"
 msgstr "自定义地形对象与矿石的小地图颜色（by Starkku）"
 
-#: ../../Whats-New.md:858
+#: ../../Whats-New.md:861
 msgid "Single-color weapon lasers (by Starkku)"
 msgstr "单色激光（by Starkku）"
 
-#: ../../Whats-New.md:859
+#: ../../Whats-New.md:862
 msgid "Customizable projectile trajectory (by secsome)"
 msgstr "自定义抛射体轨迹（by secsome）"
 
-#: ../../Whats-New.md:860
+#: ../../Whats-New.md:863
 msgid "Display damage numbers debug hotkey command (by Starkku)"
 msgstr "显示伤害数字快捷键（by Starkku）"
 
-#: ../../Whats-New.md:861
+#: ../../Whats-New.md:864
 msgid "Toggleable display of TransactMoney amounts (by Starkku)"
 msgstr "可开关的金币弹金额显示（by Starkku）"
 
-#: ../../Whats-New.md:862
+#: ../../Whats-New.md:865
 msgid "Building-provided self-healing customization (by Starkku)"
 msgstr "自定义建筑提供的自愈（by Starkku）"
 
-#: ../../Whats-New.md:863
+#: ../../Whats-New.md:866
 msgid "Building placement preview (by Otamaa & Belonit)"
 msgstr "建筑放置预览（by Otamaa 与 Belonit）"
 
-#: ../../Whats-New.md:864
+#: ../../Whats-New.md:867
 msgid "Passable & buildable-upon TerrainTypes (by Starkku)"
 msgstr "可通行和可建造于其上的地形对象（by Starkku）"
 
-#: ../../Whats-New.md:865
+#: ../../Whats-New.md:868
 msgid ""
 "Toggle for passengers to automatically change owner if transport owner "
 "changes (by Starkku)"
 msgstr "可开关的载员跟随运输供给转换所属方效果（by Starkku）"
 
-#: ../../Whats-New.md:866
+#: ../../Whats-New.md:869
 msgid "Superweapon launch on warhead detonation (by Trsdy)"
 msgstr "弹头发射超武（by Trsdy）"
 
-#: ../../Whats-New.md:867
+#: ../../Whats-New.md:870
 msgid "Preserve IronCurtain status upon `DeploysInto`/`UndeploysInto` (by Trsdy)"
 msgstr "`DeploysInto`／`UndeploysInto`保留铁幕状态（by Trsdy）"
 
-#: ../../Whats-New.md:868
+#: ../../Whats-New.md:871
 msgid ""
 "Correct owner house for Warhead Anim/SplashList & Play Animation trigger "
 "animations (by Starkku)"
 msgstr "现在弹头 `AnimList` 与 `SplashList` 以及播放动画触发所生成的动画均拥有所属方（by Starkku）"
 
-#: ../../Whats-New.md:869
+#: ../../Whats-New.md:872
 msgid "Customizable FLH When Infantry Is Crouched Or Deployed (by FS-21)"
 msgstr "自定义步兵匍匐与部署 FLH（by FS-21）"
 
-#: ../../Whats-New.md:870
+#: ../../Whats-New.md:873
 msgid ""
 "Enhanced projectile interception logic, including projectile strength & "
 "armor types (by Starkku)"
 msgstr "增强的抛射体拦截逻辑，包括抛射体的 `Strength` 与 `Armor` 设定（by Starkku）"
 
-#: ../../Whats-New.md:871
+#: ../../Whats-New.md:874
 msgid "Initial Strength for Cloned Infantry (by FS-21)"
 msgstr "克隆步兵的初始生命值（by FS-21）"
 
-#: ../../Whats-New.md:872
+#: ../../Whats-New.md:875
 msgid ""
 "OpenTopped transport rangefinding & deactivated state customizations (by "
 "Starkku)"
 msgstr "自定义 `OpenTopped` 载具测距与瘫痪状态行为（by Starkku）"
 
-#: ../../Whats-New.md:873
+#: ../../Whats-New.md:876
 msgid "Forbidding parallel AI queues by type (by NetsuNegi & Trsdy)"
 msgstr "按类禁止 AI 克隆生产（by NetsuNegi 与 Trsdy）"
 
-#: ../../Whats-New.md:874
+#: ../../Whats-New.md:877
 msgid "Animation damage / weapon improvements (by Starkku)"
 msgstr "动画伤害／武器增强（by Starkku）"
 
-#: ../../Whats-New.md:875
+#: ../../Whats-New.md:878
 msgid "Warhead self-damaging toggle (by Starkku)"
 msgstr "弹头自伤开关（by Starkku）"
 
-#: ../../Whats-New.md:876
+#: ../../Whats-New.md:879
 msgid "Trailer animations inheriting owner (by Starkku)"
 msgstr "尾烟动画能够继承所属方（by Starkku）"
 
-#: ../../Whats-New.md:877
+#: ../../Whats-New.md:880
 msgid "Warhead detonation on all objects on map (by Starkku)"
 msgstr "全图弹头（by Starkku）"
 
-#: ../../Whats-New.md:878
+#: ../../Whats-New.md:881
 msgid ""
 "Implemented support for PCX images for campaign loading screen (by "
 "FlyStar)"
 msgstr "实现了战役载入图的 PCX 图像支持（by FlyStar）"
 
-#: ../../Whats-New.md:879
+#: ../../Whats-New.md:882
 msgid ""
 "Implemented support for PCX images for observer loading screen (by "
 "Uranusian)"
 msgstr "实现了观察者载入图的 PCX支持（by Uranusian）"
 
-#: ../../Whats-New.md:880
+#: ../../Whats-New.md:883
 msgid "Animated (non-tiberium spawning) TerrainTypes (by Starkku)"
 msgstr "可动（且非矿柱的）地形对象（by Starkku）"
 
-#: ../../Whats-New.md:881
+#: ../../Whats-New.md:884
 msgid "Toggleable passenger killing for `Explodes=true` units (by Starkku)"
 msgstr "可开关的 `Explodes=true` 单位乘客祭天（by Starkku）"
 
-#: ../../Whats-New.md:882
+#: ../../Whats-New.md:885
 msgid ""
 "New condition for automatic self-destruction logic when TechnoTypes "
 "exist/don't exist (by FlyStar)"
 msgstr "当科技类型存在／不存在时自动自毁逻辑的新行为（by FlyStar）"
 
-#: ../../Whats-New.md:883
+#: ../../Whats-New.md:886
 msgid ""
 "For developers: now you can use command line arg to control main "
 "exception handler (by Multfinite)"
 msgstr "开发者功能：现在可以通过命令行参数控制主循环的异常处理程序"
 
-#: ../../Whats-New.md:886
+#: ../../Whats-New.md:889
 msgid ""
 "Fixed laser drawing code to allow for thicker lasers in house color draw "
 "mode (by Kerbiter & ChrisLv_CN)"
 msgstr "修复了激光绘制代码以允许其可在所属方颜色模式下绘制更粗的激光（by Kerbiter 与 ChrisLv_CN）"
 
-#: ../../Whats-New.md:887
+#: ../../Whats-New.md:890
 msgid "Fixed `DeathWeapon` not detonating properly (by Uranusian)"
 msgstr "修复了 `DeathWeapon` 没有正确引爆的问题（by Uranusian）"
 
-#: ../../Whats-New.md:888
+#: ../../Whats-New.md:891
 msgid ""
 "Fixed lasers & other effects drawing from wrong offset with weapons that "
 "use `Burst` (by Starkku)"
 msgstr "修复了激光和其他特效在使用 `Burst` 的武器上从错误的偏移位置绘制的问题（by Starkku）"
 
-#: ../../Whats-New.md:889
+#: ../../Whats-New.md:892
 msgid ""
 "Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to"
 " place onto water (by Uranusian)"
 msgstr "修复了建筑拥有 `Naval=yes` 会无视 `WaterBound=no` 强制只能放置在水域的问题（by Uranusian）"
 
-#: ../../Whats-New.md:890
+#: ../../Whats-New.md:893
 msgid ""
 "Fixed temporal weapon crash under certain conditions where stack dump "
 "starts with 0051BB7D (by secsome)"
 msgstr "修复了 Stack Dump 以 0051BB7D 开头的特定情况下超时空武器崩溃（by secsome）"
 
-#: ../../Whats-New.md:891
+#: ../../Whats-New.md:894
 msgid ""
 "Fixed the bug when retinting map lighting with a map action corrupted "
 "light sources (by secsome)"
 msgstr "修复了通过地图触发结果重绘地图光照时建筑光源不正常的 Bug（by secsome）"
 
-#: ../../Whats-New.md:892
+#: ../../Whats-New.md:895
 msgid ""
 "Fixed the bug when reading a map which puts `Preview(Pack)` after `Map` "
 "lead to the game fail to draw the preview (by secsome)"
 msgstr "修复了读取地图时若地图的 `Preview(Pack)` 节被放置于 Map 之后会导致无法绘制预览图的 Bug（by secsome）"
 
-#: ../../Whats-New.md:893
+#: ../../Whats-New.md:896
 msgid "Fixed the bug that GameModeOptions are not correctly saved (by secsome)"
 msgstr "修复了游戏模式选项未能正确保存的 Bug（by secsome）"
 
-#: ../../Whats-New.md:894
+#: ../../Whats-New.md:897
 msgid ""
 "Fixed the bug that AITriggerTypes do not recognize building upgrades (by "
 "Uranusian)"
 msgstr "修复了 AITriggerTypes 没能识别建筑加载物的 Bug（by Uranusian）"
 
-#: ../../Whats-New.md:895
+#: ../../Whats-New.md:898
 msgid ""
 "Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> "
 "AllowParallelAIQueues=no` is set (by FS-21)"
@@ -4127,13 +4146,13 @@ msgstr ""
 "修复了当设置 Ares 标签 `[GlobalControls] -> AllowParallelAIQueues=no` 时 AI "
 "战机对接机场的 Bug（by FS-21）"
 
-#: ../../Whats-New.md:896
+#: ../../Whats-New.md:899
 msgid ""
 "Fixed the bug when occupied building's `MuzzleFlashX` is drawn on the "
 "center of the building when `X` goes past 10 (by Otamaa)"
 msgstr "修复了当驻军建筑的 `MuzzleFlashX` 在 `X` 超过 10 后绘制在建筑中心的 Bug（by Otamaa）"
 
-#: ../../Whats-New.md:897
+#: ../../Whats-New.md:900
 msgid ""
 "Fixed jumpjet units that are `Crashable` not crashing to ground properly "
 "if destroyed while being pulled by a `Locomotor` warhead (by Starkku)"
@@ -4141,85 +4160,85 @@ msgstr ""
 "修复了拥有 `Crashable` 的 Jumpjet 类单位在被 `Locomotor` 弹头牵引时被摧毁则无法正常坠毁的 Bug（by "
 "Starkku）"
 
-#: ../../Whats-New.md:898
+#: ../../Whats-New.md:901
 msgid ""
 "Fixed aircraft & jumpjet units not being affected by speed modifiers (by "
 "Starkku)"
 msgstr "修复了战机与 Jumpjet 单位不受速度加成影响的问题（by Starkku）"
 
-#: ../../Whats-New.md:899
+#: ../../Whats-New.md:902
 msgid "Fixed vehicles (both voxel & SHP) to fully respect `Palette` (by Starkku)"
 msgstr "修复了（Voxel 与 Shape）载具不完全遵循 `Palette` 设定的问题（by Starkku）"
 
-#: ../../Whats-New.md:900
+#: ../../Whats-New.md:903
 msgid ""
 "Fixed mind control indicator animations not reappearing on mind "
 "controlled objects that are cloaked and then uncloaked (by Starkku)"
 msgstr "修复了心灵控制指示动画在被心控对象隐形并重新显形后未能重新出现的问题（by Starkku）"
 
-#: ../../Whats-New.md:901
+#: ../../Whats-New.md:904
 msgid ""
 "Fixed Nuke carrier and payload weapons not respecting `Bright` setting on"
 " weapon (by Starkku)"
 msgstr "修复了核弹载体与载荷武器不尊重过武器 `Bright` 设定的问题（by Starkku）"
 
-#: ../../Whats-New.md:902
+#: ../../Whats-New.md:905
 msgid ""
 "Fixed buildings not reverting to undamaged graphics when HP was restored "
 "above `[AudioVisual] -> ConditionYellow` via `SelfHealing` (by Starkku)"
 msgstr "修复了建筑自愈恢复到 `[AudioVisual] -> ConditionYellow` 以上却没有恢复非残损图像的问题（by Starkku）"
 
-#: ../../Whats-New.md:903
+#: ../../Whats-New.md:906
 msgid ""
 "Fixed jumpjet units being unable to turn to the target when firing from a"
 " different direction (by Trsdy)"
 msgstr "修复了 Jumpjet 单位从其他方向开火时无法转向目标的 Bug（by Trsdy）"
 
-#: ../../Whats-New.md:904
+#: ../../Whats-New.md:907
 msgid ""
 "Fixed turreted jumpjet units always facing bottom-right direction when "
 "stop moving (by Trsdy)"
 msgstr "修复了 Jumpjet 单位总是在停止移动时朝向右下方向的 Bug（by Trsdy）"
 
-#: ../../Whats-New.md:905
+#: ../../Whats-New.md:908
 msgid ""
 "Fixed jumpjet objects being unable to detect cloaked objects beneath (by "
 "Trsdy)"
 msgstr "修复了 Jumpjet 单位无法探测下方隐形物体的问题（by Trsdy）"
 
-#: ../../Whats-New.md:906
+#: ../../Whats-New.md:909
 msgid ""
 "Anim owner is now set for warhead AnimList/SplashList anims and Play Anim"
 " at Waypoint trigger animations (by Starkku)"
 msgstr "现在弹头 `AnimList`／`SplashList` 及在路径点播放动画触发的动画拥有所属方了（by Starkku）"
 
-#: ../../Whats-New.md:907
+#: ../../Whats-New.md:910
 msgid ""
 "Fixed AI script action Deploy getting stuck with vehicles with "
 "`DeploysInto` if there was no space to deploy at initial location (by "
 "Starkku)"
 msgstr "修复了 AI 部署脚本动作导致拥有 `DeploysInto` 的载具在其原位置空间不足而卡住的问题（by Starkku）"
 
-#: ../../Whats-New.md:908
+#: ../../Whats-New.md:911
 msgid ""
 "Fixed `Foundation=0x0` causing crashes if used on TerrainTypes (by "
 "Starkku)"
 msgstr "修复了 `Foundation=0x0` 用于地形对象会导致崩溃的问题（by Starkku）"
 
-#: ../../Whats-New.md:909
+#: ../../Whats-New.md:912
 msgid ""
 "Projectiles now remember the house of the firer even if the firer is "
 "destroyed before the projectile detonates. Does not currently apply to "
 "Ares-introduced Warhead effects (by Starkku)"
 msgstr "现在即便开火者在抛射体引爆前被摧毁抛射体也可以保留开火者的所属方。目前暂不适用于某些 Ares 引入的弹头效果（by Starkku）"
 
-#: ../../Whats-New.md:910
+#: ../../Whats-New.md:913
 msgid ""
 "Buildings now correctly use laser parameters set for Secondary weapons "
 "instead of reading them from Primary weapon (by Starkku)"
 msgstr "现在建筑可以正确的使用副武器设置的激光参数而不再是从主武器读取（by Starkku）"
 
-#: ../../Whats-New.md:911
+#: ../../Whats-New.md:914
 msgid ""
 "Fixed an issue that caused vehicles killed by damage dealt by a known "
 "house but without a known source TechnoType (f.ex animation warhead "
@@ -4227,21 +4246,21 @@ msgid ""
 "trigger events etc. (by Starkku)"
 msgstr "修复了只有所属方但没有开火者的杀伤击杀载具时未能正确记录因而无法触发地图事件等问题（by Starkku）"
 
-#: ../../Whats-New.md:912
+#: ../../Whats-New.md:915
 msgid ""
 "Translucent RLE SHPs will now be drawn using a more precise and "
 "performant algorithm that has no green tint and banding (only applies to "
 "Z-aware drawing mode for now) (by Apollo)"
 msgstr "现在半透明的 RLE SHP 将使用更精确且性能更高的算法进行绘制，不会出现绿色色调和条纹（by Apollo）"
 
-#: ../../Whats-New.md:913
+#: ../../Whats-New.md:916
 msgid ""
 "Fixed transports recursively put into each other not having a correct "
 "killer set after second transport when being killed by something (by "
 "Kerbiter)"
 msgstr "修复了被递归嵌套放置的运输工具被击杀时从第二层运输工具开始击杀来源设置不正确的问题（by Kerbiter）"
 
-#: ../../Whats-New.md:914
+#: ../../Whats-New.md:917
 msgid ""
 "Fixed projectiles with `Inviso=true` suffering from potential inaccuracy "
 "problems if combined with `Airburst=yes` or Warhead with `EMEffect=true` "
@@ -4250,56 +4269,56 @@ msgstr ""
 "修复了带有 `Inviso=true` 的抛射体在与 `Airburst=yes` 或拥有 `EMEffect=true` "
 "的弹头结合使用时可能出现的精度问题（by Starkku）"
 
-#: ../../Whats-New.md:915
+#: ../../Whats-New.md:918
 msgid ""
 "Fixed the bug when `MakeInfantry` logic on BombClass resulted in "
 "`Neutral` side infantry (by Otamaa)"
 msgstr "修复了 `MakeInfantry` 逻辑在 BombClass（伊文炸弹）上导致生成 `Neutral` 阵营步兵的 Bug（by Otamaa）"
 
-#: ../../Whats-New.md:916
+#: ../../Whats-New.md:919
 msgid ""
 "Fixed railgun particles being drawn to wrong coordinate against buildings"
 " with non-default `TargetCoordOffset` or when force-firing on bridges (by"
 " Starkku)"
 msgstr "修复了轨道炮粒子对于具有非默认 `TargetCoordOffset` 的建筑或在桥上强制开火时被绘制到错误坐标的问题（by Starkku）"
 
-#: ../../Whats-New.md:917
+#: ../../Whats-New.md:920
 msgid ""
 "Fixed building `TargetCoordOffset` not being taken into accord for "
 "several things like fire angle calculations and target lines (by Starkku)"
 msgstr "修复了建筑 `TargetCoordOffset` 未将开火角度和目标指示线考虑在内的问题（by Starkku）"
 
-#: ../../Whats-New.md:918
+#: ../../Whats-New.md:921
 msgid "Allowed observers to see a selected building's radial indicator (by Trsdy)"
 msgstr "允许了观察者查看选中建筑的范围指示器（by Trsdy）"
 
-#: ../../Whats-New.md:919
+#: ../../Whats-New.md:922
 msgid ""
 "Allow voxel projectiles to use `AnimPalette` and `FirersPalette` (by "
 "NetsuNegi)"
 msgstr "允许了 Voxel 抛射体使用 `AnimPalette` 和 `FirersPalette`（by NetsuNegi）"
 
-#: ../../Whats-New.md:922
+#: ../../Whats-New.md:925
 msgid ""
 "Fixed shields being able to take damage when the parent TechnoType was "
 "under effects of a `Temporal` Warhead (by Starkku)"
 msgstr "修复了单位被 `Temporal` 弹头冻结时其护盾仍可受伤的问题（by Starkku）"
 
-#: ../../Whats-New.md:923
+#: ../../Whats-New.md:926
 msgid "Improved shield behavior for forced damage (by Uranusian)"
 msgstr "改进了护盾在强制承受伤害时的行为（by Uranusian）"
 
-#: ../../Whats-New.md:924
+#: ../../Whats-New.md:927
 msgid ""
 "Fixed `SplashList` animations playing when a unit is hit on a bridge over"
 " water (by Uranusian)"
 msgstr "修复了命中桥上单位时会播放 `SplashList` 动画的问题（by Uranusian）"
 
-#: ../../Whats-New.md:925
+#: ../../Whats-New.md:928
 msgid "Fixed shielded objects not decloaking if shield takes damage (by Starkku)"
 msgstr "修复了带有护盾的物体在受击时不会解除隐形的问题（by Starkku）"
 
-#: ../../Whats-New.md:926
+#: ../../Whats-New.md:929
 msgid ""
 "Fixed critical hit animation playing even if no critical hits were dealt "
 "due to `Crit.Affects` or `ImmuneToCrit` settings (by Starkku)"
@@ -4307,13 +4326,13 @@ msgstr ""
 "修复了即便修复了由于 `Crit.Affects` 或`ImmuneToCrit` 设定未能造成暴击伤害时仍会播放暴击动画的问题（by "
 "Starkku）"
 
-#: ../../Whats-New.md:927
+#: ../../Whats-New.md:930
 msgid ""
 "Fixed `RemoveDisguise` not working on `PermaDisguise` infantry (by "
 "Starkku)"
 msgstr "修复了 `RemoveDisguise` 未能在 `PermaDisguise` 步兵上工作的问题（by Starkku）"
 
-#: ../../Whats-New.md:928
+#: ../../Whats-New.md:931
 msgid ""
 "Fixed single-color laser (IsHouseColor, IsSingleColor, LaserTrails) glow "
 "falloff to match the vanilla appearance (by Starkku)"
@@ -4321,47 +4340,47 @@ msgstr ""
 "修复了单色激光（`IsHouseColor`、`IsSingleColor`、LaserTrails）的光照算法以保持与原版效果一致（by "
 "Starkku）"
 
-#: ../../Whats-New.md:929
+#: ../../Whats-New.md:932
 msgid ""
 "Fixed a potential cause of crashes concerning shield animations (such in "
 "conjunction with cloaking) (by Starkku)"
 msgstr "修复了一个可能导致崩溃的护盾动画问题（by Starkku）"
 
-#: ../../Whats-New.md:930
+#: ../../Whats-New.md:933
 msgid ""
 "Fixed interceptors intercepting projectiles fired by friendly objects if "
 "the said object died after firing the projectile (by Starkku)"
 msgstr "修复了友军对象在死亡后其发射的抛射体会被抛射体拦截逻辑视为应拦截目标的问题（by Starkku）"
 
-#: ../../Whats-New.md:931
+#: ../../Whats-New.md:934
 msgid ""
 "Fixed interceptor weapons with `Inviso=true` projectiles detonating the "
 "projectile at wrong coordinates (by Starkku)"
 msgstr "修复了  `Inviso=true` 抛射体拦截武器在错误左边处引爆的问题（by Starkku）"
 
-#: ../../Whats-New.md:932
+#: ../../Whats-New.md:935
 msgid ""
 "Fixed some possible configuration reading issues when using Phobos with "
 "patches that rename `uimd.ini` (by Belonit)"
 msgstr "修复了 Phobos 与重命名 `uimd.ini` 的补丁共用时可能出现的配置文件读取文件（by Belonit）"
 
-#: ../../Whats-New.md:933
+#: ../../Whats-New.md:936
 msgid "Fixed a game crash when using the Map Snapshot command (by Otamaa)"
 msgstr "修复了抓取地图快捷键导致的游戏崩溃（by Otamaa）"
 
-#: ../../Whats-New.md:934
+#: ../../Whats-New.md:937
 msgid ""
 "Fixed issue with incorrect input in edit dialog element when using IME "
 "(by Belonit)"
 msgstr "修复了使用输入法时编辑对话框内容输入错误的问题（by Belonit）"
 
-#: ../../Whats-New.md:935
+#: ../../Whats-New.md:938
 msgid ""
 "Fixed an issue where tooltip text could be clipped by tooltip rectangle "
 "border if using `MaxWidth` > 0 (by Starkku)"
 msgstr "修复了 `MaxWidth` > 0 时拓展工具条文本可能被拓展工具条矩形边框截断的问题（by Starkku）"
 
-#: ../../Whats-New.md:936
+#: ../../Whats-New.md:939
 msgid ""
 "Fixed projectiles with `Trajectory=Straight` suffering from potential "
 "inaccuracy problems if combined with `Airburst=yes` or Warhead with "
@@ -4370,75 +4389,75 @@ msgstr ""
 "修复了带有 `Trajectory=Straight` 的抛射体在与 `Airburst=yes` 或拥有 `EMEffect=true` "
 "的弹头结合使用时可能出现的精度问题（by Starkku）"
 
-#: ../../Whats-New.md:937
+#: ../../Whats-New.md:940
 msgid "Minor performance optimization related to shields (by Trsdy)"
 msgstr "对护盾进行了轻微的性能优化（by Trsdy）"
 
-#: ../../Whats-New.md:938
+#: ../../Whats-New.md:941
 msgid ""
 "Fixed teleporting miners (Chrono Miner) considered to be idle by "
 "harvester counter, improved related game performance (by Trsdy)"
 msgstr "修复了超时空矿车被矿车计数器误判为摆烂的问题，并进行了相关的性能优化（by Trsdy）"
 
-#: ../../Whats-New.md:939
+#: ../../Whats-New.md:942
 msgid ""
 "Fixed negative damage weapons considering shield health when evaluating "
 "targets even if Warhead had `Shield.Penetrate` set to true (by Starkku)"
 msgstr "修复了负伤害武器在选择目标时即便在弹头 `Shield.Penetrate` 设为 true 也仍会考虑护盾值的问题（by Starkku）"
 
-#: ../../Whats-New.md:940
+#: ../../Whats-New.md:943
 msgid ""
 "Fixed engineers considering shield health instead of building health when"
 " determining if they can repair or capture a building (by Starkku)"
 msgstr "修复了工程师在判断能否维修／占领建筑时考虑护盾值而非建筑生命值的问题（by Starkku）"
 
-#: ../../Whats-New.md:941
+#: ../../Whats-New.md:944
 msgid ""
 "Fixed shield animations (`IdleAnim`, `BreakAnim` and `HitAnim`) showing "
 "up even if the object shield is attached to is currently underground (by "
 "Starkku)"
 msgstr "修复了护盾动画（`IdleAnim`、`BreakAnim` 和 `HitAnim`）在其附着对象处于地下时仍然显示的问题（by Starkku）"
 
-#: ../../Whats-New.md:942
+#: ../../Whats-New.md:945
 msgid ""
 "Fixed shields not being removed from sinking units until they have fully "
 "finished sinking (by Starkku)"
 msgstr "修复了护盾在单位完全沉没前未被移除的问题（by Starkku）"
 
-#: ../../Whats-New.md:943
+#: ../../Whats-New.md:946
 msgid "Fixed techno-extdata update after type conversion (by Trsdy)"
 msgstr "修复了单位转换后的数据更新问题（by Trsdy）"
 
-#: ../../Whats-New.md:944
+#: ../../Whats-New.md:947
 msgid ""
 "Fixed Phobos Warhead effects (crits, new shield modifiers etc.) "
 "considering sinking units valid targets (by Starkku)"
 msgstr "修复了 Phobos 弹头效果（暴击、护盾修改等）将正在下沉的单位视为有效目标的问题（by Starkku）"
 
-#: ../../Whats-New.md:945
+#: ../../Whats-New.md:948
 msgid ""
 "Fixed an issue where `FireOnce=yes` deploy weapons on vehicles would "
 "still fire multiple times if deploy command is issued repeatedly or when "
 "not idle (by Starkku)"
 msgstr "修复了拥有 `FireOnce=yes` 的部署武器在重复下达部署质量或非闲置状态仍会多次开火的问题（by Starkku）"
 
-#: ../../Whats-New.md:946
+#: ../../Whats-New.md:949
 msgid ""
 "Fixed a game crash when checking `BuildLimit` if Phobos is running "
 "without Ares (by Belonit)"
 msgstr "修复了当 Phobos 未与 Ares 共同使用时检查 `BuildLimit` 会导致游戏崩溃的问题（by Belonit）"
 
-#: ../../Whats-New.md:947
+#: ../../Whats-New.md:950
 msgid ""
 "Corrected the misinterpretation in the definition of `DiskLaser.Radius` "
 "(by Trsdy)"
 msgstr "更正了定义 `DiskLaser.Radius` 错误解释的问题（by Trsdy）"
 
-#: ../../Whats-New.md:948
+#: ../../Whats-New.md:951
 msgid "Fixed GlobalVariables failed working among scenarios (by Trsdy)"
 msgstr "修复了全局变量在多个场景失效的问题（by Trsdy）"
 
-#: ../../Whats-New.md:951
+#: ../../Whats-New.md:954
 msgid ""
 "Weapons fired by EMPulse superweapons *(Ares feature)* without "
 "`EMPulse.TargetSelf=true` can now create radiation (by Starkku)"
@@ -4446,57 +4465,57 @@ msgstr ""
 "现在由 EMPulse 超级武器（*Ares 功能*）发射的武器在没有 `EMPulse.TargetSelf=true` "
 "的情况下也可以正常产生辐射（by Starkku）"
 
-#: ../../Whats-New.md:953
+#: ../../Whats-New.md:956
 msgid "Non-DLL:"
 msgstr "非 DLL 内容："
 
-#: ../../Whats-New.md:954
+#: ../../Whats-New.md:957
 msgid ""
 "Implemented a tool (sed wrapper) to semi-automatically upgrade INIs to "
 "use latest Phobos tags (by Kerbiter)"
 msgstr "做了一个 sed 脚本工具来半自动的更新 INI 内容为最新版 Phobos 的对应标签（by Kerbiter）"
 
-#: ../../Whats-New.md:958
+#: ../../Whats-New.md:961
 msgid "0.2.2.2"
 msgstr "0.2.2.2"
 
-#: ../../Whats-New.md:963
+#: ../../Whats-New.md:966
 msgid "Fixed shield type info not saving properly (by Uranusian)"
 msgstr "修复了护盾类型信息未能正确保存的问题（by Uranusian）"
 
-#: ../../Whats-New.md:964
+#: ../../Whats-New.md:967
 msgid ""
 "Fixed extended building upgrades logic not properly interacting with "
 "Ares' BuildLimit check (by Uranusian)"
 msgstr "修复了拓展的建筑加载物逻辑与 Ares 的 BuildLimit 检查交互异常的问题（by Uranusian）"
 
-#: ../../Whats-New.md:965
+#: ../../Whats-New.md:968
 msgid "Fix more random crashes for `CameoPriority` (by Uranusian)"
 msgstr "修复了更多由 `CameoPriority` 导致的随机崩溃问题（by Uranusian）"
 
-#: ../../Whats-New.md:966
+#: ../../Whats-New.md:969
 msgid ""
 "Fix aircraft weapons causing game freeze when burst index was not "
 "correctly reset after firing (by Starkku)"
 msgstr "修复了战机开火后 Burst 索引未能正确重置导致的游戏卡死问题（by Starkku）"
 
-#: ../../Whats-New.md:970
+#: ../../Whats-New.md:973
 msgid "0.2.2.1"
 msgstr "0.2.2.1"
 
-#: ../../Whats-New.md:975
+#: ../../Whats-New.md:978
 msgid "Fixed random crashes about `CameoPriority` (by Uranusian)"
 msgstr "修复了 `CameoPriority` 导致的随机崩溃（by Uranusian）"
 
-#: ../../Whats-New.md:976
+#: ../../Whats-New.md:979
 msgid "Fixed trigger action 125 not functioning properly (by Uranusian)"
 msgstr "修复了触发结果 125 号未能正常工作的问题（by Uranusian）"
 
-#: ../../Whats-New.md:977
+#: ../../Whats-New.md:980
 msgid "Fixed area warhead detonation not falling back to firer house (by Otamaa)"
 msgstr "修复了范围弹头的所属问题（by Otamaa）"
 
-#: ../../Whats-New.md:978
+#: ../../Whats-New.md:981
 msgid ""
 "RadSite hook adjustment for `FootClass` to support Ares `RadImmune`; also"
 " various fixes to radiation / desolators (by Otamaa)"
@@ -4504,83 +4523,83 @@ msgstr ""
 "对 `FootClass` 的钩子进行调整以支持 Ares 的 `RadImmune` 相关逻辑；同时对辐射／辐射工兵进行了多项修复（by "
 "Otamaa）"
 
-#: ../../Whats-New.md:979
+#: ../../Whats-New.md:982
 msgid "Fixed `Crit.Affects` not functioning properly (by Uranusian)"
 msgstr "修复了 `Crit.Affects` 未能正常工作的问题（by Uranusian）"
 
-#: ../../Whats-New.md:980
+#: ../../Whats-New.md:983
 msgid ""
 "Fixed improper upgrade owner transfer which resulted in built ally / "
 "enemy building upgrades keeping the player who built them alive (by "
 "Kerbiter)"
 msgstr "修复了建造在其他所属方建筑上的加载物会导致本应战败的所属方保持存活的问题（by Kerbiter）"
 
-#: ../../Whats-New.md:984
+#: ../../Whats-New.md:987
 msgid "0.2.2"
 msgstr "0.2.2"
 
-#: ../../Whats-New.md:989
+#: ../../Whats-New.md:992
 msgid ""
 "Customizable producing progress \"bars\" like CnC:Remastered did (by "
 "Uranusian)"
 msgstr "自定义像 CNC 重置版那样的生产进度「条」（by Uranusian）"
 
-#: ../../Whats-New.md:990
+#: ../../Whats-New.md:993
 msgid "Customizable cameo sorting priority (by Uranusian)"
 msgstr "自定义图标排序优先级（by Uranusian）"
 
-#: ../../Whats-New.md:991
+#: ../../Whats-New.md:994
 msgid "Customizable harvester ore gathering animation (by secsome, Uranusian)"
 msgstr "自定义矿车采矿动画（by secsome, Uranusian）"
 
-#: ../../Whats-New.md:992
+#: ../../Whats-New.md:995
 msgid ""
 "Allow making technos unable to be issued with movement order (by "
 "Uranusian)"
 msgstr "允许设置单位无法被下达移动指令（by Uranusian）"
 
-#: ../../Whats-New.md:995
+#: ../../Whats-New.md:998
 msgid ""
 "Fixed non-IME keyboard input to be working correctly for languages / "
 "keyboard layouts that use character ranges other than Basic Latin and "
 "Latin-1 Supplement (by Belonit)"
 msgstr "修复了非输入法键盘输入在基础拉丁或拉丁 -1 以外的语言／键盘布局中无法正常工作的问题（by Belonit）"
 
-#: ../../Whats-New.md:998
+#: ../../Whats-New.md:1001
 msgid "Fixed the critical damage logic not functioning properly (by Uranusian)"
 msgstr "修复了暴击伤害逻辑无法正常工作的问题（by Uranusian）"
 
-#: ../../Whats-New.md:999
+#: ../../Whats-New.md:1002
 msgid "Fixed the bug when executing the stop command game crashes (by Uranusian)"
 msgstr "修复了执行停止命令时游戏崩溃的 Bug（by Uranusian）"
 
-#: ../../Whats-New.md:1003
+#: ../../Whats-New.md:1006
 msgid "0.2.1.1"
 msgstr "0.2.1.1"
 
-#: ../../Whats-New.md:1008
+#: ../../Whats-New.md:1011
 msgid ""
 "Fixed occasional crashes introduced by `Speed=0` stationary vehicles code"
 " (by Starkku)"
 msgstr "修复了由 `Speed=0` 静止载具代码引起的偶发性崩溃问题（by Starkku）"
 
-#: ../../Whats-New.md:1012
+#: ../../Whats-New.md:1015
 msgid "0.2.1"
 msgstr "0.2.1"
 
-#: ../../Whats-New.md:1017
+#: ../../Whats-New.md:1020
 msgid ""
 "Setting VehicleType `Speed` to 0 now makes game treat them as stationary "
 "(by Starkku)"
 msgstr "现在载具将在 `Speed` 设置为 0 时使游戏将它们视为静止（by Starkku）"
 
-#: ../../Whats-New.md:1020
+#: ../../Whats-New.md:1023
 msgid ""
 "Fixed the bug when after a failed placement the building/defence tab "
 "hotkeys won't trigger placement mode again (by Uranusian)"
 msgstr "修复了在摆放失败后使用切换到建筑栏和防御栏的快捷键无法再次进入放置模式的问题（by Uranusian）"
 
-#: ../../Whats-New.md:1021
+#: ../../Whats-New.md:1024
 msgid ""
 "Fixed the bug when building with `UndeployInto` plays "
 "`EVA_NewRallypointEstablished` while undeploying (by secsome)"
@@ -4588,189 +4607,189 @@ msgstr ""
 "修复了拥有 `UndeployInto` 的建筑在反部署时会播放 `EVA_NewRallypointEstablished` 的问题（by "
 "secsome）"
 
-#: ../../Whats-New.md:1024
+#: ../../Whats-New.md:1027
 msgid ""
 "Fixed the bug when trigger action `125 Build At...` wasn't actually "
 "producing a building when the target cells were occupied (by secsome)"
 msgstr "修复了触发结果 `125 将建筑建于...` 在目标单元格被占用时无法生产建筑的问题（by secsome）"
 
-#: ../../Whats-New.md:1029
+#: ../../Whats-New.md:1032
 msgid "0.2"
 msgstr "0.2"
 
-#: ../../Whats-New.md:1034
+#: ../../Whats-New.md:1037
 msgid ""
 "Shield logic for TechnoTypes (by Uranusian, secsome, Belonit) with "
 "warhead additions (by Starkku)"
 msgstr "护盾逻辑（by Uranusian、secsome、Belonit）及对应新增弹头功能（by Starkku）"
 
-#: ../../Whats-New.md:1035
+#: ../../Whats-New.md:1038
 msgid "Custom Radiation Types (by AlexB, Otamaa, Belonit, Uranusian)"
 msgstr "自定义辐射（by AlexB、Otamaa、Belonit、Uranusian）"
 
-#: ../../Whats-New.md:1036
+#: ../../Whats-New.md:1039
 msgid ""
 "New ScriptType actions `71 Timed Area Guard`, `72 Load Onto Transports`, "
 "`73 Wait until ammo is full` (by FS-21)"
 msgstr "新增动作脚本 `71 区域警戒(时间计数)`、`72 装载入运输载具`、`73 等待弹药装满`（by FS-21）"
 
-#: ../../Whats-New.md:1037
+#: ../../Whats-New.md:1040
 msgid ""
 "Ore drills now have customizable ore type, range, ore growth stage and "
 "amount of cells generated (by Kerbiter)"
 msgstr "现在矿柱可以自定义矿石的类型、范围、生长阶段和生长的单元格数（by Kerbiter）"
 
-#: ../../Whats-New.md:1038
+#: ../../Whats-New.md:1041
 msgid ""
 "Basic projectile interception logic (by AutoGavy, ChrisLv_CN, Kerbiter, "
 "Erzoid/SukaHati)"
 msgstr "基础的抛射体拦截逻辑（by AutoGavy、ChrisLv_CN、Kerbiter、Erzoid／SukaHati）"
 
-#: ../../Whats-New.md:1039
+#: ../../Whats-New.md:1042
 msgid ""
 "Customizable harvester active/total counter next to credits counter (by "
 "Uranusian)"
 msgstr "在资金计数器旁自定义「工作矿车／矿车总量」计数器（by Uranusian）"
 
-#: ../../Whats-New.md:1040
+#: ../../Whats-New.md:1043
 msgid "Select Next Idle Harvester hotkey command (by Kerbiter)"
 msgstr "选择下一个空闲矿车快捷键（by Kerbiter）"
 
-#: ../../Whats-New.md:1041
+#: ../../Whats-New.md:1044
 msgid "Dump Object Info hotkey command (by secsome & FS-21)"
 msgstr "输出对象信息快捷键（by secsome 与 FS-21）"
 
-#: ../../Whats-New.md:1042
+#: ../../Whats-New.md:1045
 msgid "Remove Disguise and Remove Mind Control warhead effects (by secsome)"
 msgstr "解除伪装和解除心控弹头效果（by secsome）"
 
-#: ../../Whats-New.md:1043
+#: ../../Whats-New.md:1046
 msgid "Custom per-warhead `SplashLists` (by Uranusian)"
 msgstr "弹头微观定义 `SplashLists`（by Uranusian）"
 
-#: ../../Whats-New.md:1044
+#: ../../Whats-New.md:1047
 msgid ""
 "`AnimList.PickRandom` used to randomize `AnimList` with no side effects "
 "(by secsome)"
 msgstr "添加了 `AnimList.PickRandom` 用于实现没有副作用的随机 `AnimList`（by secsome）"
 
-#: ../../Whats-New.md:1045
+#: ../../Whats-New.md:1048
 msgid "Chance-based critical damage system on warheads (by AutoGavy)"
 msgstr "基于概率的弹头暴击伤害系统（by AutoGavy）"
 
-#: ../../Whats-New.md:1046
+#: ../../Whats-New.md:1049
 msgid "Optional mind control range limit (by Uranusian)"
 msgstr "自定义心控有效距离上限（by Uranusian）"
 
-#: ../../Whats-New.md:1047
+#: ../../Whats-New.md:1050
 msgid ""
 "Multiple mind controllers can now release units on overload (by Uranusian"
 " & secsome)"
 msgstr "多重心控单位（原版脑车）可以在过载时及时释放单位（by Uranusian & secsome）"
 
-#: ../../Whats-New.md:1048
+#: ../../Whats-New.md:1051
 msgid ""
 "Spawns now can be killed on low power and have limited pursuing range (by"
 " FS-21)"
 msgstr "现在子机可以在母舰断电时坠毁并且具有有限的追击范围（by FS-21）"
 
-#: ../../Whats-New.md:1049
+#: ../../Whats-New.md:1052
 msgid "Spawns can now have the same exp. level as owner techno (by Uranusian)"
 msgstr "现在子机可以同步母舰的经验等级（by Uranusian）"
 
-#: ../../Whats-New.md:1050
+#: ../../Whats-New.md:1053
 msgid ""
 "`TurretOffset` now accepts `F,L,H` and `F,L` values instead of just `F` "
 "value (by Kerbiter)"
 msgstr "现在 `TurretOffset` 可以接受 `F,L,H` 和 `F,L` 那样的值而不仅限于一个 `F`（by Kerbiter）"
 
-#: ../../Whats-New.md:1051
+#: ../../Whats-New.md:1054
 msgid "ElectricBolt arc visuals can now be disabled per-arc (by Otamaa)"
 msgstr "现在可以单独关闭 EBolt 特效中的特定电弧（by Otamaa）"
 
-#: ../../Whats-New.md:1052
+#: ../../Whats-New.md:1055
 msgid "Semantic locomotor aliases for modder convenience (by Belonit)"
 msgstr "为 modder 们添加了简化的 Locomotor 别称（by Belonit）"
 
-#: ../../Whats-New.md:1053
+#: ../../Whats-New.md:1056
 msgid ""
 "Ability to specify amount of shots for strafing aircraft and burst "
 "simulation (by Starkku)"
 msgstr "可以为战机扫射指定次数以及模拟 `Burst`（by Starkku）"
 
-#: ../../Whats-New.md:1054
+#: ../../Whats-New.md:1057
 msgid ""
 "Customizeable Teleport/Chrono Locomotor properties per TechnoType (by "
 "Otamaa)"
 msgstr "自定义超时空运动模式的参数（by Otamaa）"
 
-#: ../../Whats-New.md:1055
+#: ../../Whats-New.md:1058
 msgid "Maximum waypoints amount increased from 702 to 2147483647 (by secsome)"
 msgstr "路径点数量上限由 702 提升到 2147483647（by secsome）"
 
-#: ../../Whats-New.md:1056
+#: ../../Whats-New.md:1059
 msgid "Customizeable Missing Cameo file (by Uranusian)"
 msgstr "自定义缺省图标（by Uranusian）"
 
-#: ../../Whats-New.md:1059
+#: ../../Whats-New.md:1062
 msgid ""
 "Map previews with zero size won't crash the game anymore (by Kerbiter & "
 "Belonit)"
 msgstr "0 尺寸的地图预览图不再会导致游戏崩溃（by Kerbiter 与 Belonit）"
 
-#: ../../Whats-New.md:1060
+#: ../../Whats-New.md:1063
 msgid "Tileset 255+ bridge fix (by E1 Elite)"
 msgstr "Tileset 255+ 情况的桥梁修复（by E1 Elite）"
 
-#: ../../Whats-New.md:1061
+#: ../../Whats-New.md:1064
 msgid ""
 "Fixed fatal errors when `Blowfish.dll` couldn't be registered in the "
 "system properly due to missing admin rights (by Belonit)"
 msgstr "修复了由于确实管理员权限导致 `Blowfish.dll` 无法正确注册而引发的 Fatal Error（by Belonit）"
 
-#: ../../Whats-New.md:1062
+#: ../../Whats-New.md:1065
 msgid ""
 "Fix to take Burst into account for aircraft weapon shots beyond the first"
 " one (by Starkku)"
 msgstr "修复了战机扫射武器仅有第一发考虑 `Burst` 的问题（by Starkku）"
 
-#: ../../Whats-New.md:1063
+#: ../../Whats-New.md:1066
 msgid ""
 "Fixed the bug when units are already dead but still in map (for sinking, "
 "crashing, dying animation, etc.), they could die again (by Uranusian)"
 msgstr "修复了已经死亡但仍存在于地图上的单位（例如沉没、坠毁、播放死亡动画等）可以再次死亡的 Bug（by Uranusian）"
 
-#: ../../Whats-New.md:1064
+#: ../../Whats-New.md:1067
 msgid ""
 "Fixed the bug when cloaked Desolator was unable to fire his deploy weapon"
 " (by Otamaa)"
 msgstr "修复了隐形的辐射工兵无法部署发射武器的 Bug（by Otamaa）"
 
-#: ../../Whats-New.md:1065
+#: ../../Whats-New.md:1068
 msgid ""
 "Fixed the bug when `InfiniteMindControl` with `Damage=1` will auto-"
 "release the victim to control new one (by Uranusian)"
 msgstr "修复了 `InfiniteMindControl` 在 `Damage=1` 的情况下只能控制 1 个单位的问题（by Uranusian）"
 
-#: ../../Whats-New.md:1066
+#: ../../Whats-New.md:1069
 msgid ""
 "Fixed the bug that script action `Move to cell` was still using leftover "
 "cell calculations from previous games (by secsome)"
 msgstr "修复了脚本动作 `移动到单元格` 使用先代游戏残留单元格算法的 Bug（by secsome）"
 
-#: ../../Whats-New.md:1067
+#: ../../Whats-New.md:1070
 msgid ""
 "Fixed the bug when trigger action `125 Build At...` didn't play buildup "
 "anim (by secsome)"
 msgstr "修复了触发结果 `125 将建筑建于...` 不播放建造动画的 Bug（by secsome）"
 
-#: ../../Whats-New.md:1068
+#: ../../Whats-New.md:1071
 msgid ""
 "Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond "
 "specified maximums anymore) (by Otamaa)"
 msgstr "修复了 `DebrisMaximums`（生成的碎片不再超过其对应的最大数量）（by Otamaa）"
 
-#: ../../Whats-New.md:1069
+#: ../../Whats-New.md:1072
 msgid ""
 "Fixes to `DeployFire` logic (`DeployFireWeapon`, `FireOnce`, stop command"
 " now work properly) (by Starkku)"
@@ -4778,13 +4797,13 @@ msgstr ""
 "修复了 `DeployFire` 逻辑（现在 `DeployFireWeapon`、`FireOnce`、停止命令可以正常工作）（by "
 "Starkku）"
 
-#: ../../Whats-New.md:1072
+#: ../../Whats-New.md:1075
 msgid ""
 "Properly rewritten a fix for mind-controlled vehicles deploying into "
 "buildings (by FS-21)"
 msgstr "彻底重写了被心控载具部署成建筑的修复方案（by FS-21）"
 
-#: ../../Whats-New.md:1073
+#: ../../Whats-New.md:1076
 msgid ""
 "Properly rewritten `DeployToFire` fix, tag `Deployed.RememberTarget` is "
 "deprecated, now always on (by Kerbiter)"
@@ -4792,97 +4811,100 @@ msgstr ""
 "彻底重写了 `DeployToFire` 的修复，标签 `Deployed.RememberTarget` 已弃用，现在总是启用（by "
 "Kerbiter）"
 
-#: ../../Whats-New.md:1074
+#: ../../Whats-New.md:1077
 msgid "New warheads now work with Ares' `GenericWarhead` superweapon (by Belonit)"
 msgstr "现在新的弹头效果可以用于 Ares 的 `GenericWarhead` 类超级武器（by Belonit）"
 
-#: ../../Whats-New.md:1078
+#: ../../Whats-New.md:1081
 msgid "0.1.1"
 msgstr "0.1.1"
 
-#: ../../Whats-New.md:1083
+#: ../../Whats-New.md:1086
 msgid ""
 "Fixed an occasional crash when selecting units with a selection box (by "
 "Kerbiter)"
 msgstr "修复了框选单位时偶尔崩溃的问题（by Kerbiter）"
 
-#: ../../Whats-New.md:1087
+#: ../../Whats-New.md:1090
 msgid "0.1"
 msgstr "0.1"
 
-#: ../../Whats-New.md:1092
+#: ../../Whats-New.md:1095
 msgid "Full-color PCX graphics support (by Belonit)"
 msgstr "全彩 PCX 支持（by Belonit）"
 
-#: ../../Whats-New.md:1093
+#: ../../Whats-New.md:1096
 msgid "Support for PCX loading screens of any size (by Belonit)"
 msgstr "支持了任意尺寸的 PCX 载入图（by Belonit）"
 
-#: ../../Whats-New.md:1094
+#: ../../Whats-New.md:1097
 msgid ""
 "Extended sidebar tooltips with descriptions, recharge time and power "
 "consumption/generation (by Kerbiter & Belonit)"
 msgstr "扩展侧边栏拓展工具条时其带有描述、充能时间和电力能耗／产出（by Kerbiter 与 Belonit）"
 
-#: ../../Whats-New.md:1095
+#: ../../Whats-New.md:1098
 msgid "Selection priority filtering for box selection (by Kerbiter)"
 msgstr "低优先级框选（by Kerbiter）"
 
-#: ../../Whats-New.md:1096
+#: ../../Whats-New.md:1099
 msgid "Shroud, reveal and money transact warheads (by Belonit)"
 msgstr "黑幕弹、揭示弹、金币弹（by Belonit）"
 
-#: ../../Whats-New.md:1097
+#: ../../Whats-New.md:1100
 msgid "Custom game icon command line arg (by Belonit)"
 msgstr "使用命令行参数自定义游戏图标（by Belonit）"
 
-#: ../../Whats-New.md:1098
+#: ../../Whats-New.md:1101
 msgid "Ability to disable black spawn position dots on map preview (by Belonit)"
 msgstr "允许禁用空置出生点黑点（by Belonit）"
 
-#: ../../Whats-New.md:1099
+#: ../../Whats-New.md:1102
 msgid ""
 "Ability to specify applicable building owner for building upgrades (by "
 "Kerbiter)"
 msgstr "允许为建筑加载物指定适当的建筑所属方，也就是可以建造在别人的建筑上（by Kerbiter）"
 
-#: ../../Whats-New.md:1100
+#: ../../Whats-New.md:1103
 msgid "Customizable disk laser radius (by Belonit & Kerbiter)"
 msgstr "自定义飞碟激光半径（by Belonit 与 Kerbiter）"
 
-#: ../../Whats-New.md:1101
+#: ../../Whats-New.md:1104
 msgid "Ability to switch to GDI sidebar layout for any side (by Belonit)"
 msgstr "允许为任意阵营 UI 切换 GDI 式侧边栏布局（by Belonit）"
 
-#: ../../Whats-New.md:1104
+#: ../../Whats-New.md:1107
 msgid ""
 "Deploying mind-controlled TechnoTypes won't make them permanently mind-"
 "controlled anymore (unfinished fix by DCoder)"
 msgstr "部署被心灵控制的单位不再会时其永远处于被心控状态（实际上直接刷漆了）（DCoder 未完成的修复）"
 
-#: ../../Whats-New.md:1105
+#: ../../Whats-New.md:1108
 msgid ""
 "SHP debris hardcoded shadows now respect `Shadow=no` tag value (by "
 "Kerbiter)"
 msgstr "SHP 碎片硬编码显示的阴影现在遵守 `Shadow=no` 设置（by Kerbiter）"
 
-#: ../../Whats-New.md:1106
+#: ../../Whats-New.md:1109
 msgid ""
 "`DeployToFire` vehicles won't lose target on deploy anymore (unfinished "
 "fix by DCoder)"
 msgstr "`DeployToFire` 的载具不再会于部署时丢失目标（DCoder 未完成的修复）"
 
-#: ../../Whats-New.md:1107
+#: ../../Whats-New.md:1110
 msgid ""
 "Fixed QWER hotkey tab switching not hiding the displayed tooltip as it "
 "should (by Belonit)"
 msgstr "修复了当通过 QWER 快捷键切换标签页时未能正确隐藏拓展工具条的问题（by Belonit）"
 
-#: ../../Whats-New.md:1108
+#: ../../Whats-New.md:1111
 msgid "Sidebar tooltips now can go over sidebar bounds (by Belonit)"
 msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit）"
 
-#: ../../Whats-New.md:1109
+#: ../../Whats-New.md:1112
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
+
+#~ msgid "Allow miners do area guard (by TaranDahl)"
+#~ msgstr ""
 
