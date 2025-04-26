@@ -22,6 +22,8 @@ public:
 	{
 	public:
 
+		PhobosFixedString<0x20> TypeID;
+
 		//Ares 0.A
 		Valueable<int> Money_Amount;
 		ValueableIdx<VoxClass> EVA_Impatient;
@@ -101,6 +103,7 @@ public:
 		Valueable<bool> EMPulse_TargetSelf;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, TypeID { "" }
 			, Money_Amount { 0 }
 			, EVA_Impatient { -1 }
 			, EVA_InsufficientFunds { -1 }
@@ -218,5 +221,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 
 };
