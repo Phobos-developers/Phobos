@@ -1474,6 +1474,8 @@ msgid ""
 "[Make harvesters do addtional scan after unload](Fixed-or-Improved-"
 "Logics.md#make-harvesters-do-addtional-scan-after-unload) (by TaranDahl)"
 msgstr ""
+"[使矿车卸载后重新扫描较近的矿区](Fixed-or-Improved-"
+"Logics.md#make-harvesters-do-addtional-scan-after-unload)（by TaranDahl）"
 
 #: ../../Whats-New.md:377 ../../Whats-New.md:573 ../../Whats-New.md:889
 #: ../../Whats-New.md:998 ../../Whats-New.md:1023 ../../Whats-New.md:1062

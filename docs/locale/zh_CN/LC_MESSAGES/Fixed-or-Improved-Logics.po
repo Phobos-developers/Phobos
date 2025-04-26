@@ -5092,7 +5092,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1443
 msgid "Make harvesters do addtional scan after unload"
-msgstr ""
+msgstr "使矿车卸载后重新扫描较近的矿区"
 
 #: ../../Fixed-or-Improved-Logics.md:1445
 msgid ""
@@ -5100,6 +5100,8 @@ msgid ""
 "full load and move to that location after unloading. This makes miners to"
 " gradually move deeper into the mine and ignore the closer minerals."
 msgstr ""
+"在原版中矿车在满载时会记录当前位置并在卸载后返回该坐标。"
+"这一机制会让矿车逐渐向原矿区深处探索但却容易忽略距离更近的矿区。"
 
 #: ../../Fixed-or-Improved-Logics.md:1446
 msgid ""
@@ -5107,6 +5109,8 @@ msgid ""
 "unloading. If a closer mineral is found, the miner will go to that "
 "location instead of the previously recorded location."
 msgstr ""
+"现在你可以让矿车在卸载后重新搜索最近的矿区。"
+"如果发现了更近的矿区那么矿车会优先前往它而不是返回先前记录的坐标。"
 
 #: ../../Fixed-or-Improved-Logics.md:1449
 msgid ""

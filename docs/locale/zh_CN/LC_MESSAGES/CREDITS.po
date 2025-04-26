@@ -2036,7 +2036,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:503
 msgid "Make harvesters do addtional scan after unload"
-msgstr ""
+msgstr "使矿车卸载后重新扫描较近的矿区"
 
 #: ../../../CREDITS.md:504
 msgid "**tyuah8**:"
