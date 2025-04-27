@@ -219,7 +219,7 @@ msgstr ""
 msgid ""
 "Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for "
 "others."
-msgstr "对于 `InfoType=Shield` 其默认 `Offset.ShieldDelta` 为 `0,-10`，其他为 `0,0`。"
+msgstr "对于 `InfoType=Shield` 其默认为 `Offset.ShieldDelta` 为 `0,-10`，其他为 `0,0`。"
 
 #: ../../User-Interface.md:48
 msgid "Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others."

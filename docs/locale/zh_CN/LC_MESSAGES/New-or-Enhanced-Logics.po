@@ -80,7 +80,7 @@ msgid ""
 "`DiscardOn` accepts a list of values corresponding to conditions where "
 "the attached effect should be discarded. Defaults to `none`, meaning it "
 "is never discarded."
-msgstr "`DiscardOn` 是一个控制什么情况下弃用该 AE 的条件列表。默认 `none` 表示永远不会弃用。"
+msgstr "`DiscardOn` 是一个控制什么情况下弃用该 AE 的条件列表。默认为 `none` 表示永远不会弃用。"
 
 #: ../../New-or-Enhanced-Logics.md:14
 msgid ""
@@ -433,7 +433,7 @@ msgid ""
 "position in `AttachTypes` is used for that type, or the last listed delay"
 " if not available."
 msgstr ""
-"`AttachEffect.Delays` 可用于设置 AE 在科技类型上自然结束后重新创建所需的时间间隔。默认 0（立即），负值表示 AE "
+"`AttachEffect.Delays` 可用于设置 AE 在科技类型上自然结束后重新创建所需的时间间隔。默认为 0（立即），负值表示 AE "
 "不会被重新创建。该列表中的值与 `AttachTypes` 中的 AE 类型一一对应，如果一个 AE 类型没有对应的项目则使用该列表中的最后一个。"
 
 #: ../../New-or-Enhanced-Logics.md:58
@@ -443,7 +443,7 @@ msgid ""
 "matching the position in `AttachTypes` is used for that type, or the last"
 " listed delay if not available."
 msgstr ""
-"`AttachEffect.InitialDelays` 可用于设置 AE 在科技类型上首次创建所需的初始间隔。默认 0（立即）。该列表中的值与 "
+"`AttachEffect.InitialDelays` 可用于设置 AE 在科技类型上首次创建所需的初始间隔。默认为 0（立即）。该列表中的值与 "
 "`AttachTypes` 中的 AE 类型一一对应，如果一个 AE 类型没有对应的项目则使用该列表中的最后一个。"
 
 #: ../../New-or-Enhanced-Logics.md:59
@@ -455,7 +455,7 @@ msgid ""
 "the last listed delay if not available."
 msgstr ""
 "`AttachEffect.RecreationDelays` 用于决定如果 AE 被完全移除（例如使用 "
-"`AttachEffect.RemoveTypes`）是否可以重新创建 AE，如果可以则这里设置了重新创建所需的时间间隔。默认 -1 "
+"`AttachEffect.RemoveTypes`）是否可以重新创建 AE，如果可以则这里设置了重新创建所需的时间间隔。默认为 -1 "
 "表示不允许重新创建。该列表中的值与 `AttachTypes` 中的 AE 类型一一对应，如果一个 AE "
 "类型没有对应的项目则使用该列表中的最后一个。"
 
@@ -1040,7 +1040,7 @@ msgid ""
 "`Shield.AttachTypes`, otherwise false."
 msgstr ""
 "`AllowTransfer` 控制如果科技类型发生变化（例如 `(Un)DeploysInto` 或 Ares "
-"的单位转换）时护盾能否转移。如果未设置，通过 `Shield.AttachTypes` 被赋予来的护盾默认 true 其他默认 false。"
+"的单位转换）时护盾能否转移。如果未设置，通过 `Shield.AttachTypes` 被赋予来的护盾默认为 true 其他默认为 false。"
 
 #: ../../New-or-Enhanced-Logics.md:399
 msgid ""
@@ -2917,7 +2917,7 @@ msgid ""
 "following:"
 msgstr ""
 "现在如果 `(Elite)Primary` 武器无法对选定目标开火那么可以通过将 `NoSecondaryWeaponFallback` 设为 "
-"true（默认 false）来禁用其尝试换用 `(Elite)Secondary` "
+"true（默认为 false）来禁用其尝试换用 `(Elite)Secondary` "
 "武器。`NoSecondaryWeaponFallback.AllowAA` 控制对抛射体拥有 `AA` 且应对空中目标的情况。这不适用于总是选择"
 " `(Elite)Secondary` 武器的特殊情况，包括但不限于以下几种："
 
