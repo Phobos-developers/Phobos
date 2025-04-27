@@ -354,7 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
-  - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -385,7 +385,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
-  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
+  - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
