@@ -225,9 +225,10 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 			if (pWHExt->KillWeapon_OnFirer_RealLaunch)
 			{
 				auto const pWeapon = pWHExt->KillWeapon_OnFirer;
+				auto const damage = static_cast<int>(pWeapon->Damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
 
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pSource,
-					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
 					pBullet->WeaponType = pWeapon;
 					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
@@ -256,9 +257,10 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			if (pTypeExt->RevengeWeapon_RealLaunch)
 			{
 				auto const pWeapon = pTypeExt->RevengeWeapon;
+				auto const damage = static_cast<int>(pWeapon->Damage * pThis->FirepowerMultiplier * pExt->AE.FirepowerMultiplier);
 
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
-					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
 					pBullet->WeaponType = pWeapon;
 					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
@@ -290,9 +292,10 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			if (pType->RevengeWeapon_RealLaunch)
 			{
 				auto const pWeapon = pType->RevengeWeapon;
+				auto const damage = static_cast<int>(pWeapon->Damage * pThis->FirepowerMultiplier * pExt->AE.FirepowerMultiplier);
 
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
-					pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
 					pBullet->WeaponType = pWeapon;
 					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
@@ -364,4 +367,112 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget)
 	}
 
 	return forceWeaponIndex;
+}
+
+bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting, bool allowZeroDamage)
+{
+	auto const pWH = pWeapon->Warhead;
+
+	if (useWeaponTargeting)
+	{
+		auto const pType = pTarget->GetTechnoType();
+
+		if (!pType->LegalTarget || (!allowZeroDamage && GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0))
+			return false;
+
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
+			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
+		{
+			return false;
+		}
+
+		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
+			return false;
+	}
+	else
+	{
+		if (!WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
+			return false;
+	}
+
+	return true;
+}
+
+void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
+{
+	auto const pThis = this->OwnerObject();
+	if (pThis->InOpenToppedTransport && !pAuxWeapon->FireInTransport)
+		return;
+
+	TechnoClass* pTargetTechno = nullptr;
+	CellClass* pTargetCell = nullptr;
+
+	if (retarget && accuracy < ScenarioClass::Instance->Random.RandomDouble())
+	{
+		auto const coord = aroundFirer ? pThis->Location : pTarget->GetCoords();
+		auto cellSpread = static_cast<float>(pAuxWeapon->Retarget_Range.Get(aroundFirer ? pAuxWeapon->Range : 0));
+
+		std::vector<TechnoClass*> targets;
+
+		for (auto const pTechno : Helpers::Alex::getCellSpreadItems(coord, cellSpread, true))
+		{
+			if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo && pTechno != pThis)
+			{
+				if ((pAuxWeapon->Projectile->AA || !pTechno->IsInAir()) && TechnoExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTechno, true, zeroDamage))
+					targets.push_back(pTechno);
+			}
+		}
+
+		if (!targets.empty())
+		{
+			pTargetTechno = targets[ScenarioClass::Instance->Random.RandomRanged(0, targets.size() - 1)];
+		}
+		else
+		{
+			auto const cellTarget = CellClass::Coord2Cell(coord);
+			int x = ScenarioClass::Instance->Random.RandomRanged(-cellSpread, cellSpread);
+			int y = ScenarioClass::Instance->Random.RandomRanged(-cellSpread, cellSpread);
+			CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
+			pTargetCell = MapClass::Instance.GetCellAt(cell);
+		}
+	}
+	else
+	{
+		pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+		if (pTargetTechno && ((!pAuxWeapon->Projectile->AA && pTargetTechno->IsInAir()) || !TechnoExt::IsAllowedSplitsTarget(pThis, pThis->Owner, pAuxWeapon, pTargetTechno, true, zeroDamage)))
+			return;
+
+		if (!pTargetTechno)
+		{
+			if (auto const pCell = abstract_cast<CellClass*>(pTarget))
+				pTargetCell = pCell;
+			else if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
+				pTargetCell = pObject->GetCell();
+
+			if (!EnumFunctions::IsCellEligible(pTargetCell, WeaponTypeExt::ExtMap.Find(pAuxWeapon)->CanTarget, true, true))
+				return;
+		}
+	}
+
+	if (!pTargetTechno && !pTargetCell)
+		return;
+
+	auto location = TechnoExt::GetFLHAbsoluteCoords(pThis, offset, onTurret);
+	auto damage = pAuxWeapon->Damage;
+
+	if (firepowerMult)
+		damage = static_cast<int>(damage * pThis->FirepowerMultiplier * this->AE.FirepowerMultiplier);
+
+	if (BulletClass* pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetTechno ? pTargetTechno : pTargetCell, pThis->Owner,
+		damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright))
+	{
+		pBullet->WeaponType = pAuxWeapon;
+		pBullet->MoveTo(location, BulletVelocity::Empty);
+		BulletExt::ExtMap.Find(pBullet)->FirerHouse = pThis->Owner;
+		AnimExt::CreateRandomAnim(location, pAuxWeapon->Anim, pThis, pThis->Owner, true);
+	}
 }

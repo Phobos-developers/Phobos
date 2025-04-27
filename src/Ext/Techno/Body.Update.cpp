@@ -1171,7 +1171,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool hasRestrictedArmorMultipliers = false;
 	bool hasCritModifiers = false;
 	bool hasExtraWarheads = false;
-	bool hasFeedbackWeapon = false;
+	bool hasFeedbackOrAuxWeapon = false;
 
 	for (const auto& attachEffect : this->AttachedEffects)
 	{
@@ -1194,7 +1194,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 		hasCritModifiers |= (type->Crit_Multiplier != 1.0 || type->Crit_ExtraChance != 0.0);
 		hasExtraWarheads |= type->ExtraWarheads.size() > 0;
-		hasFeedbackWeapon |= type->FeedbackWeapon != nullptr;
+		hasFeedbackOrAuxWeapon |= type->FeedbackWeapon != nullptr || type->AuxWeapon != nullptr;
 	}
 
 	this->AE.FirepowerMultiplier = firepower;
@@ -1212,7 +1212,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 	this->AE.HasCritModifiers = hasCritModifiers;
 	this->AE.HasExtraWarheads = hasExtraWarheads;
-	this->AE.HasFeedbackWeapon = hasFeedbackWeapon;
+	this->AE.HasFeedbackOrAuxWeapon = hasFeedbackOrAuxWeapon;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);

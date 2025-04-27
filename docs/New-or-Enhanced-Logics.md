@@ -41,7 +41,15 @@ This page describes all the engine features that are either new and introduced b
     - `ExtraWarheads.DetonationChances` can be used to customize the chance of each extra Warhead detonation occuring. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, every extra Warhead detonation is guaranteed to occur.
     - `ExtraWarheads.FullDetonation` can be used to customize whether or not each individual Warhead is detonated fully (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects. Value from position matching the position from `ExtraWarheads` is used if found, or last listed value if not found. If list is empty, defaults to true.
     - Note that the listed Warheads must be listed in `[Warheads]` for them to work.
-  - `FeedbackWeapon` can specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
+  - You can now specify an auxiliary weapon to be fired when a weapon is fired.
+    - `FireInTransport` setting of the auxiliary weapons are respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If auxiliary weapons are fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on auxiliary weapons.
+  - `AuxWeapon` is fired at the original target, or another nearby target if `AuxWeapon.Retarget` set to true.
+    - `AuxWeapon.Offset` defines the relative position to the firer that the auxiliary weapon will be fired from. `AuxWeapon.FireOnTurret` defines if the FLH is relative to the turret rather than the body.
+    - If `AuxWeapon.AllowZeroDamage` set to true, the auxiliary weapon will be fired even if its damage on the set target is 0.
+    - `AuxWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
+    - `AuxWeapon.Retarget.AroundFirer` determines whether the original target or the firer will be the center of the retargeting. `AuxWeapon.Retarget.Range` determines the radius of the retargeting, default to the auxiliary weapon's `Range` if the center is the firer, and 0 if the center is the original target.
+    - `AuxWeapon.Retarget.Accuracy` defines the probability that the auxiliary weapon is fired to the original target.
+  - `FeedbackWeapon` is fired at the firer.
     - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
@@ -124,6 +132,15 @@ ExtraWarheads=                                     ; List of WarheadTypes
 ExtraWarheads.DamageOverrides=                     ; List of integers
 ExtraWarheads.DetonationChances=                   ; List of floating-point values (percentage or absolute)
 ExtraWarheads.FullDetonation=                      ; List of booleans
+AuxWeapon=                                         ; WeaponType
+AuxWeapon.Offset=0,0,0                             ; integer - Forward,Lateral,Height
+AuxWeapon.FireOnTurret=false                       ; boolean
+AuxWeapon.AllowZeroDamage=true                     ; boolean
+AuxWeapon.ApplyFirepowerMult=false                 ; boolean
+AuxWeapon.Retarget=false                           ; boolean
+AuxWeapon.Retarget.Range=                          ; floating point value
+AuxWeapon.Retarget.Accuracy=                       ; floating point value, percents or absolute (0.0-1.0)
+AuxWeapon.Retarget.AroundFirer=false               ; boolean
 FeedbackWeapon=                                    ; WeaponType
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
@@ -966,11 +983,13 @@ SubjectToGround=false         ; boolean
 ### Return weapon
 
 - It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+  - `ReturnWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]  ; Projectile
-ReturnWeapon=     ; WeaponType
+[SOMEPROJECTILE]                        ; Projectile
+ReturnWeapon=                           ; WeaponType
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
 ```{note}
@@ -2241,18 +2260,34 @@ ExtraWarheads.DetonationChances=  ; List of floating-point values (percentage or
 ExtraWarheads.FullDetonation=     ; List of booleans
 ```
 
-### Feedback weapon
+### Auxiliary weapon
 
 ![image](_static/images/feedbackweapon.gif)
 *`FeedbackWeapon` used to apply healing aura upon firing a weapon in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
-- You can now specify an auxiliary weapon to be fired on the firer itself when a weapon is fired.
-  - `FireInTransport` setting of the feedback weapon is respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If feedback weapon is fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on feedback weapons.
+- You can now specify an auxiliary weapon to be fired when a weapon is fired.
+  - `FireInTransport` setting of the auxiliary weapons are respected to determine if it can be fired when the original weapon is fired from inside `OpenTopped=true` transport. If auxiliary weapons are fired, it is fired on the transport. `OpenToppedDamageMultiplier` is not applied on auxiliary weapons.
+- `AuxWeapon` is fired at the original target, or another nearby target if `AuxWeapon.Retarget` set to true.
+  - `AuxWeapon.Offset` defines the relative position to the firer that the auxiliary weapon will be fired from. `AuxWeapon.FireOnTurret` defines if the FLH is relative to the turret rather than the body.
+  - If `AuxWeapon.AllowZeroDamage` set to true, the auxiliary weapon will be fired even if its damage on the set target is 0.
+  - `AuxWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
+  - `AuxWeapon.Retarget.AroundFirer` determines whether the original target or the firer will be the center of the retargeting. `AuxWeapon.Retarget.Range` determines the radius of the retargeting, default to the auxiliary weapon's `Range` if the center is the firer, and 0 if the center is the original target.
+  - `AuxWeapon.Retarget.Accuracy` defines the probability that the auxiliary weapon is fired to the original target.
+- `FeedbackWeapon` is fired at the firer.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]     ; WeaponType
-FeedbackWeapon=  ; WeaponType
+[SOMEWEAPON]                              ; WeaponType
+AuxWeapon=                                ; WeaponType
+AuxWeapon.Offset=0,0,0                    ; integer - Forward,Lateral,Height
+AuxWeapon.FireOnTurret=false              ; boolean
+AuxWeapon.AllowZeroDamage=true            ; boolean
+AuxWeapon.ApplyFirepowerMult=false        ; boolean
+AuxWeapon.Retarget=false                  ; boolean
+AuxWeapon.Retarget.Range=                 ; floating point value
+AuxWeapon.Retarget.Accuracy=              ; floating point value, percents or absolute (0.0-1.0)
+AuxWeapon.Retarget.AroundFirer=false      ; boolean
+FeedbackWeapon=                           ; WeaponType
 ```
 
 ### Keep Range After Firing

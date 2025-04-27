@@ -330,8 +330,13 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 
 		if (auto const pWeapon = pTypeExt->ReturnWeapon)
 		{
+			auto damage = pWeapon->Damage;
+
+			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
+				damage = static_cast<int>(damage * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis->Owner)->AE.FirepowerMultiplier);
+
 			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
-				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
 				pBullet->WeaponType = pWeapon;
 				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
@@ -346,38 +351,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 }
 
 #pragma region Airburst
-
-static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting)
-{
-	auto const pWH = pWeapon->Warhead;
-
-	if (useWeaponTargeting)
-	{
-		auto const pType = pTarget->GetTechnoType();
-
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
-			return false;
-
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
-			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
-		{
-			return false;
-		}
-
-		if (!pWeaponExt->HasRequiredAttachedEffects(pTarget, pSource))
-			return false;
-	}
-	else
-	{
-		if (!WarheadTypeExt::ExtMap.Find(pWH)->CanTargetHouse(pOwner, pTarget))
-			return false;
-	}
-
-	return true;
-}
 
 // Disable Ares' Airburst implementation.
 DEFINE_PATCH(0x469EBA, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90);
@@ -494,7 +467,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 					if (coordsTarget.DistanceFrom(coords) < pTypeExt->Splits_TargetingDistance.Get()
 						&& (pType->AA || !pTechno->IsInAir())
-						&& IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
+						&& TechnoExt::IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
 					{
 						targets.AddItem(pTechno);
 					}

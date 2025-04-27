@@ -131,6 +131,16 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 
+	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
+	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
+	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
+	this->AuxWeapon_AllowZeroDamage.Read(exINI, pSection, "AuxWeapon.AllowZeroDamage");
+	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
+	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
+	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
+	this->AuxWeapon_Retarget_Range.Read(exINI, pSection, "AuxWeapon.Retarget.Range");
+	this->AuxWeapon_Retarget_Accuracy.Read(exINI, pSection, "AuxWeapon.Retarget.Accuracy");
+
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
 	this->Tint_VisibleToHouses.Read(exINI, pSection, "Tint.VisibleToHouses");
@@ -211,6 +221,15 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->ExtraWarheads_FullDetonation)
 		.Process(this->FeedbackWeapon)
+		.Process(this->AuxWeapon)
+		.Process(this->AuxWeapon_Offset)
+		.Process(this->AuxWeapon_FireOnTurret)
+		.Process(this->AuxWeapon_AllowZeroDamage)
+		.Process(this->AuxWeapon_ApplyFirepowerMult)
+		.Process(this->AuxWeapon_Retarget)
+		.Process(this->AuxWeapon_Retarget_AroundFirer)
+		.Process(this->AuxWeapon_Retarget_Range)
+		.Process(this->AuxWeapon_Retarget_Accuracy)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)

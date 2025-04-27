@@ -71,6 +71,15 @@ public:
 	ValueableVector<double> ExtraWarheads_DetonationChances;
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
 	Valueable<WeaponTypeClass*> FeedbackWeapon;
+	Valueable<WeaponTypeClass*> AuxWeapon;
+	Valueable<CoordStruct> AuxWeapon_Offset;
+	Valueable<bool> AuxWeapon_FireOnTurret;
+	Valueable<bool> AuxWeapon_AllowZeroDamage;
+	Valueable<bool> AuxWeapon_ApplyFirepowerMult;
+	Valueable<bool> AuxWeapon_Retarget;
+	Valueable<bool> AuxWeapon_Retarget_AroundFirer;
+	Nullable<Leptons> AuxWeapon_Retarget_Range;
+	Valueable<double> AuxWeapon_Retarget_Accuracy;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -138,6 +147,15 @@ public:
 		, ExtraWarheads_DetonationChances {}
 		, ExtraWarheads_FullDetonation {}
 		, FeedbackWeapon {}
+		, AuxWeapon {}
+		, AuxWeapon_Offset { (0, 0, 0) }
+		, AuxWeapon_FireOnTurret { false }
+		, AuxWeapon_AllowZeroDamage { true }
+		, AuxWeapon_ApplyFirepowerMult { false }
+		, AuxWeapon_Retarget { false }
+		, AuxWeapon_Retarget_AroundFirer { false }
+		, AuxWeapon_Retarget_Range {}
+		, AuxWeapon_Retarget_Accuracy { 0.0 }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }

@@ -146,6 +146,7 @@ public:
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(TechnoClass* pTarget);
+		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult);
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
@@ -222,4 +223,5 @@ public:
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
+	static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting = true, bool allowZeroDamage = false);
 };

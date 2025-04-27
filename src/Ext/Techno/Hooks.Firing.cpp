@@ -574,31 +574,40 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
+	GET_BASE(AbstractClass*, pTarget, 0x8);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
-			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
-				return 0;
-
-			WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
+			if (!pThis->InOpenToppedTransport || pWeaponFeedback->FireInTransport)
+				WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
 		}
+
+		if (auto const pAuxWeapon = pWeaponExt->AuxWeapon)
+			pExt->ApplyAuxWeapon(pThis, pAuxWeapon, pTarget, pWeaponExt->AuxWeapon_Offset, pWeaponExt->AuxWeapon_Retarget_Accuracy, pWeaponExt->AuxWeapon_FireOnTurret,
+				pWeaponExt->AuxWeapon_Retarget, pWeaponExt->AuxWeapon_Retarget_AroundFirer, pWeaponExt->AuxWeapon_AllowZeroDamage, pWeaponExt->AuxWeapon_ApplyFirepowerMult);
 	}
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->AE.HasFeedbackWeapon)
+	if (pExt->AE.HasFeedbackOrAuxWeapon)
 	{
 		for (auto const& pAE : pExt->AttachedEffects)
 		{
-			if (auto const pWeaponFeedback = pAE->GetType()->FeedbackWeapon)
+			auto const pAEType = pAE->GetType();
+
+			if (auto const pWeaponFeedback = pAEType->FeedbackWeapon)
 			{
 				if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
-					return 0;
+					continue;
 
 				WeaponTypeExt::DetonateAt(pWeaponFeedback, pThis, pThis);
 			}
+
+			if (auto const pAuxWeapon = pAEType->AuxWeapon)
+				pExt->ApplyAuxWeapon(pAuxWeapon, pTarget, pAEType->AuxWeapon_Offset, pAEType->AuxWeapon_Retarget_Accuracy, pAEType->AuxWeapon_FireOnTurret,
+					pAEType->AuxWeapon_Retarget, pAEType->AuxWeapon_Retarget_AroundFirer, pAEType->AuxWeapon_AllowZeroDamage, pAEType->AuxWeapon_ApplyFirepowerMult);
 		}
 	}
 
