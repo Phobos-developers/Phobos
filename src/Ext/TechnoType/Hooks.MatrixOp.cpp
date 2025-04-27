@@ -302,6 +302,16 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	return 0x4CF6A0;
 }
 
+namespace JumpjetTiltReference
+{
+	constexpr auto BaseSpeed = 32;
+	constexpr auto BaseTilt = Math::HalfPi / 4;
+	constexpr auto BaseTurnRaw = 32768;
+	constexpr auto MaxTilt = static_cast<float>(Math::HalfPi);
+	constexpr auto ForwardBaseTilt = BaseTilt / BaseSpeed;
+	constexpr auto SidewaysBaseTilt = BaseTilt / (BaseTurnRaw * BaseSpeed);
+}
+
 // Just rewrite this completely to avoid headache
 Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, int* pIndex)
 {
@@ -346,32 +356,25 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
 
-		if (pTypeExt->JumpjetTilt && !onGround && linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+		if (pTypeExt->JumpjetTilt && !onGround && pThis->CurrentSpeed > 0.0
+			&& linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
 		{
-			if (pThis->CurrentSpeed > 0.0)
+			const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
+			const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
+
+			arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+				* JumpjetTiltReference::ForwardBaseTilt));
+
+			const auto& locoFace = pThis->LocomotionFacing;
+
+			if (locoFace.IsRotating())
 			{
-				constexpr auto maxTilt = static_cast<float>(Math::HalfPi / 2);
-				constexpr auto baseSpeed = 32;
-				constexpr auto baseTilt = Math::HalfPi / 4;
+				const auto sidewaysSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor;
+				const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
+					* pTypeExt->JumpjetTilt_SidewaysRotationFactor;
 
-				constexpr auto forwardBaseTilt = baseTilt / baseSpeed;
-				const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
-				const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
-
-				arf += std::min(maxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor) * forwardBaseTilt));
-
-				const auto& locoFace = pThis->LocomotionFacing;
-
-				if (locoFace.IsRotating())
-				{
-					constexpr auto baseTurnRaw = 32768;
-
-					constexpr auto sidewaysBaseTilt = baseTilt / (baseTurnRaw * baseSpeed);
-					const auto sidewaysSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor;
-					const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw) * pTypeExt->JumpjetTilt_SidewaysRotationFactor;
-
-					ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor * sidewaysBaseTilt), -maxTilt, maxTilt);
-				}
+				ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 			}
 
 			if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
@@ -575,7 +578,6 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	auto const main_vxl = GetMainVoxel();
 
-
 	auto shadow_point = loco->Shadow_Point();
 	auto why = *pt + shadow_point;
 
@@ -590,6 +592,34 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_matrix.TranslateY(float(Math::sgn(-ars) * pType->VoxelScaleY * (1 - Math::cos(ars))));
 		shadow_matrix.RotateY(arf);
 		shadow_matrix.RotateX(ars);
+	}
+	else if (jjloco && uTypeExt->JumpjetTilt && jjloco->State != JumpjetLocomotionClass::State::Grounded
+		&& jjloco->CurrentSpeed > 0.0 && pThis->IsAlive && pThis->Health > 0 && !pThis->IsAttackedByLocomotor)
+	{
+		const auto forwardSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor;
+		const auto forwardAccelFactor = jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor;
+
+		arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+			* JumpjetTiltReference::ForwardBaseTilt));
+
+		const auto& locoFace = jjloco->LocomotionFacing;
+
+		if (locoFace.IsRotating())
+		{
+			const auto sidewaysSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor;
+			const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
+				* uTypeExt->JumpjetTilt_SidewaysRotationFactor;
+
+			ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+		}
+
+		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+		{
+			vxl_index_key.Invalidate();
+			shadow_matrix.RotateX(ars);
+			shadow_matrix.RotateY(arf);
+		}
 	}
 
 	auto mtx = Matrix3D::VoxelDefaultMatrix * shadow_matrix;
