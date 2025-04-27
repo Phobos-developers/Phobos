@@ -426,7 +426,7 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 			HouseClass::FindByCountryIndex(pThis->Value);
 
 		setValue(pTargetHouse);
-		pHouse->UpdateAngerNodes(0, nullptr);
+		pHouse->UpdateAngerNodes(0, pHouse);
 	}
 	else if (pThis->Value == -1)
 	{
@@ -435,7 +435,7 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 			setValue(pTargetHouse);
 		}
 
-		pHouse->UpdateAngerNodes(0, nullptr);
+		pHouse->UpdateAngerNodes(0, pHouse);
 	}
 
 	return true;
@@ -460,7 +460,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 					continue;
 
 				pAngerNode.AngerLevel = 0;
-				pHouse->UpdateAngerNodes(0, nullptr);
+				pHouse->UpdateAngerNodes(0, pHouse);
 				break;
 			}
 		}
@@ -472,7 +472,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 			pAngerNode.AngerLevel = 0;
 		}
 
-		pHouse->UpdateAngerNodes(0, nullptr);
+		pHouse->UpdateAngerNodes(0, pHouse);
 	}
 
 	return true;
@@ -494,19 +494,19 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 				!pHouse->IsAlliedWith(pTargetHouse))
 			{
 				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
-				pHouse->UpdateAngerNodes(0, nullptr);
+				pHouse->UpdateAngerNodes(0, pHouse);
 			}
 		}
 		else
 		{
 			pHouseExt->SetForceEnemyIndex(-2);
-			pHouse->UpdateAngerNodes(0, nullptr);
+			pHouse->UpdateAngerNodes(0, pHouse);
 		}
 	}
 	else if (pThis->Param3 == -1)
 	{
 		pHouseExt->SetForceEnemyIndex(-1);
-		pHouse->UpdateAngerNodes(0, nullptr);
+		pHouse->UpdateAngerNodes(0, pHouse);
 	}
 
 	return true;

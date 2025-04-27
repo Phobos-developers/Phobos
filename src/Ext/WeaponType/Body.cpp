@@ -100,6 +100,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
 	this->AuxWeapon_FireOnTurret.Read(exINI, pSection, "AuxWeapon.FireOnTurret");
 	this->AuxWeapon_AllowZeroDamage.Read(exINI, pSection, "AuxWeapon.AllowZeroDamage");
+	this->AuxWeapon_ApplyFirepowerMult.Read(exINI, pSection, "AuxWeapon.ApplyFirepowerMult");
 	this->AuxWeapon_Retarget.Read(exINI, pSection, "AuxWeapon.Retarget");
 	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
 	this->AuxWeapon_Retarget_Range.Read(exINI, pSection, "AuxWeapon.Retarget.Range");
@@ -166,6 +167,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AuxWeapon_Offset)
 		.Process(this->AuxWeapon_FireOnTurret)
 		.Process(this->AuxWeapon_AllowZeroDamage)
+		.Process(this->AuxWeapon_ApplyFirepowerMult)
 		.Process(this->AuxWeapon_Retarget)
 		.Process(this->AuxWeapon_Retarget_AroundFirer)
 		.Process(this->AuxWeapon_Retarget_Range)

@@ -46,6 +46,7 @@ public:
 		Valueable<CoordStruct> AuxWeapon_Offset;
 		Valueable<bool> AuxWeapon_FireOnTurret;
 		Valueable<bool> AuxWeapon_AllowZeroDamage;
+		Valueable<bool> AuxWeapon_ApplyFirepowerMult;
 		Valueable<bool> AuxWeapon_Retarget;
 		Valueable<bool> AuxWeapon_Retarget_AroundFirer;
 		Valueable<Leptons> AuxWeapon_Retarget_Range;
@@ -105,13 +106,14 @@ public:
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, AuxWeapon {}
-			, AuxWeapon_Offset { (0, 0, 0) }
+			, AuxWeapon_Offset { {0, 0, 0} }
 			, AuxWeapon_FireOnTurret { false }
-			, AuxWeapon_AllowZeroDamage { false }
+			, AuxWeapon_AllowZeroDamage { true }
+			, AuxWeapon_ApplyFirepowerMult { true }
 			, AuxWeapon_Retarget { false }
 			, AuxWeapon_Retarget_AroundFirer { false }
-			, AuxWeapon_Retarget_Range { 0 }
-			, AuxWeapon_Retarget_Accuracy { 0 }
+			, AuxWeapon_Retarget_Range { Leptons(0) }
+			, AuxWeapon_Retarget_Accuracy { 1.0 }
 			, Laser_IsSingleColor { false }
 			, VisualScatter { false }
 			, ROF_RandomDelay {}

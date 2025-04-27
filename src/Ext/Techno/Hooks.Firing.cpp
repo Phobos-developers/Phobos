@@ -587,8 +587,11 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 		}
 
 		if (auto const pAuxWeapon = pWeaponExt->AuxWeapon)
-			pExt->ApplyAuxWeapon(pThis, pAuxWeapon, pTarget, pWeaponExt->AuxWeapon_Offset, pWeaponExt->AuxWeapon_Retarget_Accuracy, pWeaponExt->AuxWeapon_FireOnTurret,
+		{
+			float range = static_cast<float>(pWeaponExt->AuxWeapon_Retarget_Range.Get());
+			pExt->ApplyAuxWeapon(pThis, pAuxWeapon, pTarget, range, pWeaponExt->AuxWeapon_Retarget_Accuracy, pWeaponExt->AuxWeapon_FireOnTurret,
 				pWeaponExt->AuxWeapon_Retarget, pWeaponExt->AuxWeapon_Retarget_AroundFirer, pWeaponExt->AuxWeapon_AllowZeroDamage, pWeaponExt->AuxWeapon_ApplyFirepowerMult);
+		}
 	}
 
 	if (pExt->AE.HasFeedbackOrAuxWeapon)
@@ -606,8 +609,11 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 			}
 
 			if (auto const pAuxWeapon = pAEType->AuxWeapon)
-				pExt->ApplyAuxWeapon(pAuxWeapon, pTarget, pAEType->AuxWeapon_Offset, pAEType->AuxWeapon_Retarget_Accuracy, pAEType->AuxWeapon_FireOnTurret,
+			{
+				float range = static_cast<float>(pAEType->AuxWeapon_Retarget_Range.Get());
+				pExt->ApplyAuxWeapon(pAuxWeapon, pTarget, pAEType->AuxWeapon_Offset, range, pAEType->AuxWeapon_Retarget_Accuracy, pAEType->AuxWeapon_FireOnTurret,
 					pAEType->AuxWeapon_Retarget, pAEType->AuxWeapon_Retarget_AroundFirer, pAEType->AuxWeapon_AllowZeroDamage, pAEType->AuxWeapon_ApplyFirepowerMult);
+			}
 		}
 	}
 

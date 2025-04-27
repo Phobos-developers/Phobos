@@ -28,7 +28,7 @@ public:
 	bool ResetIfRecreatable();
 	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
-	bool ShouldBeDiscardedNow() const;
+	bool ShouldBeDiscardedNow();
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
@@ -74,6 +74,8 @@ private:
 	bool IsCloaked;
 	bool HasInitialized;
 	bool NeedsDurationRefresh;
+	int LastDiscardCheckFrame;
+	bool LastDiscardCheckValue;
 
 public:
 	bool HasCumulativeAnim;

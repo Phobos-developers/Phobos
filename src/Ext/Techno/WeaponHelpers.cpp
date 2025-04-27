@@ -3,9 +3,11 @@
 #include <OverlayTypeClass.h>
 #include <BulletClass.h>
 
+#include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
 
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
@@ -401,7 +403,7 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 	return true;
 }
 
-void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
+void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, float range, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
 {
 	auto const pThis = this->OwnerObject();
 	if (pThis->InOpenToppedTransport && !pAuxWeapon->FireInTransport)
@@ -413,7 +415,7 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 	if (retarget && accuracy < ScenarioClass::Instance->Random.RandomDouble())
 	{
 		auto const coord = aroundFirer ? pThis->Location : pTarget->GetCoords();
-		auto cellSpread = static_cast<float>(pAuxWeapon->Retarget_Range.Get(aroundFirer ? pAuxWeapon->Range : 0));
+		auto cellSpread = range > 0 ? range : (aroundFirer ? pAuxWeapon->Range : 0);
 
 		std::vector<TechnoClass*> targets;
 

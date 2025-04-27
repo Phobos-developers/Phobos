@@ -107,6 +107,11 @@ msgid ""
 "without adding too much code to handle the customization"
 msgstr "去硬编码／自定义功能——仅通过 Modder 可用的 INI 或其他方式使得某些功能得以自定义而不增加过多代码。"
 
+msgid ""
+"Restored featues (from TS, RA2 etc.), assuming no extra changes or additions apart from the ones necessary to function in YR with extensions (the reviewer has to verify that)"
+msgstr ""
+"复原功能（来自 TS、RA2 等），要求 **除** 在 YR 中与扩展共同工作所 **必须** 的更改外 **未** 进行其他添改（需审查人员验证该情况）"
+
 #: ../../Contributing.md:28
 msgid "New features"
 msgstr "新功能"

@@ -222,6 +222,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
 - Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it.
+- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
+- Fixed an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing.
 
 ## Fixes / interactions with other extensions
 
@@ -1332,6 +1334,17 @@ MinimapColor=  ; integer - Red,Green,Blue
 
 ## Vehicles
 
+### Allow miners do area guard
+
+- In vanilla, when miners enter area guard mission, they immediately switch to harvest mission. Now you can make them perform area guard mission normally like other technos.
+  - We made it work only for miners controlled by the player, because this will prevent AI's miners from going work.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                      ; VehicleType
+Harvester.CanGuardArea=no          ; boolean
+```
+
 ### Bunker entering check dehardcode
 
 - In vanilla, vehicles entering tank bunkers are subject to a series of hardcoding restrictions, including having to have turrets, having to have weapons, and not having Hover speed types. Now you can skip these restrictions.
@@ -1347,7 +1360,6 @@ BunkerableAnyway=false     ; boolean
 ```{warning}
 Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
-
 
 ### Customizing crushing tilt and slowdown
 
@@ -1426,6 +1438,20 @@ DeployingAnim.AllowAnyDirection=false  ; boolean
 DeployingAnim.KeepUnitVisible=false    ; boolean
 DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
+```
+
+### Make harvesters do addtional scan after unload
+
+- In vanilla, miners will remember their current location when they reach full load and move to that location after unloading. This makes miners to gradually move deeper into the mine and ignore the closer minerals.
+- Now you can have the miner search for the nearest mineral again after unloading. If a closer mineral is found, the miner will go to that location instead of the previously recorded location.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterScanAfterUnload=false     ; boolean
+
+[SOMEVEHICLE]
+HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
 ### Preserve Iron Curtain / Force Shield status on type conversion
