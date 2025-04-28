@@ -111,16 +111,21 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 
 	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
-	if (!RulesExt::Global()->Promote_VeteranAnimation && !RulesExt::Global()->Promote_EliteAnimation)
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(RulesExt::Global()->Promote_VeteranAnimation);
+	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(RulesExt::Global()->Promote_EliteAnimation);
+
+	if (!pVeteranAnim && !pEliteAnim)
 		return aresProcess();
 
 	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
 		AnimClass* promAnim = nullptr;
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation)
-			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords());
-		else if (RulesExt::Global()->Promote_EliteAnimation)
-			promAnim = GameCreate<AnimClass>(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords());
+
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && pVeteranAnim)
+			promAnim = GameCreate<AnimClass>(pVeteranAnim, pThis->GetCenterCoords());
+		else if (pEliteAnim)
+			promAnim = GameCreate<AnimClass>(pEliteAnim, pThis->GetCenterCoords());
 
 		if (promAnim)
 		{
@@ -739,3 +744,41 @@ DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Dri
 
 	return R->Origin() + 0x6;
 }
+
+DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
+{
+	enum { ExecuteCulling = 0x62A0B7, CannotCulling = 0x62A0D3 };
+
+	GET(ParasiteClass*, pThis, ESI);
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
+}
+
+#pragma region RadarDrawing
+
+DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
+{
+	enum { Invisible = 0x655E66, GoOtherChecks = 0x655E19 };
+
+	GET_STACK(bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
+	GET(TechnoClass*, pTechno, EBP);
+
+	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
+		return Invisible;
+
+	auto pType = pTechno->GetTechnoType();
+
+	if (pType->RadarInvisible)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
+			return Invisible;
+	}
+
+	return GoOtherChecks;
+}
+
+#pragma endregion
