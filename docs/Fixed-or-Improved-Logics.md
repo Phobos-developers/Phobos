@@ -222,6 +222,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that buildings will always be tinted as airstrike owner.
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
+- Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 
 ## Fixes / interactions with other extensions
 
