@@ -422,6 +422,10 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 	if (pTypeExt->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);
 
+	// only remove animation when the building is destroyed or sold
+	if (pThis->Health > 0 && pThis->IsAlive && pThis->GetCurrentMission() != Mission::Selling)
+		return 0;
+
 	for (auto& bAnim : pThis->Anims)
 	{
 		if (bAnim && VTable::Get(bAnim) == 0x7E3354)

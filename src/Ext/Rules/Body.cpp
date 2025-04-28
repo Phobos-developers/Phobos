@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <Utilities/Patch.h>
 
@@ -37,6 +38,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
+	InsigniaTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
@@ -271,6 +273,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
   	this->DamagedSpeed.Read(exINI, GameStrings::General, "DamagedSpeed");
 
+	this->HarvesterScanAfterUnload.Read(exINI, GameStrings::General, "HarvesterScanAfterUnload");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -499,6 +503,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ProneSpeed_Crawls)
 		.Process(this->ProneSpeed_NoCrawls)
     	.Process(this->DamagedSpeed)
+		.Process(this->HarvesterScanAfterUnload)
 		;
 }
 
