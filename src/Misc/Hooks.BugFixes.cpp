@@ -1610,7 +1610,9 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 	GET(ObjectClass*, pThis, ESI);
 	GET_STACK(bool, removed, STACK_OFFSET(0x8, 0x4));
 	R->ECX(pThis);
-	R->EDX(((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None) ? Disappear::removed : removed);
+	// Do not working for buildings for now, because it will break some vanilla building tracking. 
+	// Hoping someone could investigate thoroughly and enable it for buildings.
+	R->EDX(((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None) ? Disappear::removed : removed);
 	Disappear::removed = false;
 	return 0x5F5311;
 }
