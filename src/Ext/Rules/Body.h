@@ -17,6 +17,7 @@ class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
 class DigitalDisplayTypeClass;
+class SelectBoxTypeClass;
 
 class RulesExt
 {
@@ -30,9 +31,9 @@ public:
 	public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
-		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
+		Valueable<float> HarvesterDumpAmount;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> GainSelfHealAllowMultiplayPassive;
@@ -44,6 +45,7 @@ public:
 		Valueable<int> ChronoSphereDelay;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoSphereSW;
 		ValueableIdx<SuperWeaponTypeClass> AIChronoWarpSW;
+		int SubterraneanSpeed;
 		Valueable<int> SubterraneanHeight;
 		Nullable<int> AISuperWeaponDelay;
 		Valueable<bool> UseGlobalRadApplicationDelay;
@@ -92,6 +94,14 @@ public:
 		Valueable<double> HeightShadowScaling_MinScale;
 		double AirShadowBaseScale_log;
 
+		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<bool> AmphibiousEnter;
+		Valueable<bool> AmphibiousUnload;
+		Valueable<bool> NoQueueUpToEnter;
+		Valueable<bool> NoQueueUpToUnload;
+
+		Valueable<bool> BuildingProductionQueue;
+
 		Valueable<bool> AllowParallelAIQueues;
 		Valueable<bool> ForbidParallelAIQueues_Aircraft;
 		Valueable<bool> ForbidParallelAIQueues_Building;
@@ -111,6 +121,8 @@ public:
 		Valueable<bool> ForceShield_KeptOnDeploy;
 		Valueable<IronCurtainEffect> ForceShield_EffectOnOrganics;
 		Nullable<WarheadTypeClass*> ForceShield_KillOrganicsWarhead;
+
+		Valueable<bool> AllowWeaponSelectAgainstWalls;
 
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
@@ -134,6 +146,12 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<SelectBoxTypeClass*> DefaultInfantrySelectBox;
+		Valueable<SelectBoxTypeClass*> DefaultUnitSelectBox;
+
+		Valueable<Leptons> VisualScatter_Min;
+		Valueable<Leptons> VisualScatter_Max;
+
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
@@ -144,16 +162,43 @@ public:
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
-		Valueable<bool> DrawInsignia_RespectPixelSelectionBracketDelta;
+		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+
+		Valueable<double> DamageOwnerMultiplier;
+		Valueable<double> DamageAlliesMultiplier;
+		Valueable<double> DamageEnemiesMultiplier;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
 
+		Valueable<bool> CombatAlert;
+		Nullable<bool> CombatAlert_Default;
+		Valueable<bool> CombatAlert_IgnoreBuilding;
+		Valueable<bool> CombatAlert_SuppressIfInScreen;
+		Valueable<int> CombatAlert_Interval;
+		Valueable<bool> CombatAlert_SuppressIfAllyDamage;
+		Valueable<bool> CombatAlert_MakeAVoice;
+		Valueable<bool> CombatAlert_UseFeedbackVoice;
+		Valueable<bool> CombatAlert_UseAttackVoice;
+		Valueable<bool> CombatAlert_UseEVA;
+
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> AttackMove_Aggressive;
+		Valueable<bool> AttackMove_UpdateTarget;
+
+		Valueable<int> MindControl_ThreatDelay;
+
+		Valueable<bool> RecountBurst;
+		Valueable<bool> NoRearm_UnderEMP;
+		Valueable<bool> NoRearm_Temporal;
+		Valueable<bool> NoReload_UnderEMP;
+		Valueable<bool> NoReload_Temporal;
+		Valueable<bool> NoTurret_TrackTarget;
 
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
@@ -165,8 +210,19 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Valueable<bool> BuildingWaypoints;
+		Valueable<bool> BuildingTypeSelectable;
+
+		Valueable<double> ProneSpeed_Crawls;
+		Valueable<double> ProneSpeed_NoCrawls;
+
+    	Valueable<double> DamagedSpeed;
+
+		Valueable<bool> HarvesterScanAfterUnload;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
+			, HarvesterDumpAmount { 0.0f }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, GainSelfHealAllowMultiplayPassive { true }
@@ -178,6 +234,7 @@ public:
 			, ChronoSphereDelay { 0 }
 			, AIChronoSphereSW {}
 			, AIChronoWarpSW {}
+			, SubterraneanSpeed { 19 }
 			, SubterraneanHeight { -256 }
 			, AISuperWeaponDelay {}
 			, UseGlobalRadApplicationDelay { true }
@@ -190,7 +247,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
-			, MissingCameo { GameStrings::XXICON_SHP() }
+			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }
 			, PlacementGrid_TranslucencyWithPreview { }
@@ -222,6 +279,14 @@ public:
 			, HeightShadowScaling_MinScale { 0.0 }
 			, AirShadowBaseScale_log { 0.693376137 }
 
+			, ExtendedAircraftMissions { false }
+			, AmphibiousEnter { false }
+			, AmphibiousUnload { false }
+			, NoQueueUpToEnter { false }
+			, NoQueueUpToUnload { false }
+
+			, BuildingProductionQueue { false }
+
 			, AllowParallelAIQueues { true }
 			, ForbidParallelAIQueues_Aircraft { false }
 			, ForbidParallelAIQueues_Building { false }
@@ -239,6 +304,7 @@ public:
 			, ForceShield_KillOrganicsWarhead { }
 			, IronCurtain_ExtraTintIntensity { 0.0 }
 			, ForceShield_ExtraTintIntensity { 0.0 }
+			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, ROF_RandomDelay { { 0 ,2  } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
@@ -259,7 +325,7 @@ public:
 			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
 			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
-			, DrawInsignia_RespectPixelSelectionBracketDelta { { false } }
+			, DrawInsignia_UsePixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
@@ -268,14 +334,41 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, DefaultInfantrySelectBox {}
+			, DefaultUnitSelectBox {}
+			, VisualScatter_Min { Leptons(8) }
+			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, DamageOwnerMultiplier { 1.0 }
+			, DamageAlliesMultiplier { 1.0 }
+			, DamageEnemiesMultiplier { 1.0 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
 			// , VoxelShadowLightSource { }
+
+			, CombatAlert { false }
+			, CombatAlert_Default {}
+			, CombatAlert_IgnoreBuilding { true }
+			, CombatAlert_SuppressIfInScreen { true }
+			, CombatAlert_Interval { 150 }
+			, CombatAlert_SuppressIfAllyDamage { true }
+			, CombatAlert_MakeAVoice { true }
+			, CombatAlert_UseFeedbackVoice { true }
+			, CombatAlert_UseAttackVoice { true }
+			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, AttackMove_Aggressive { false }
+			, AttackMove_UpdateTarget { false }
+			, MindControl_ThreatDelay { 0 }
+			, RecountBurst { false }
+			, NoRearm_UnderEMP { false }
+			, NoRearm_Temporal { false }
+			, NoReload_UnderEMP { false }
+			, NoReload_Temporal { false }
+			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
@@ -284,6 +377,14 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, BuildingWaypoints { false }
+			, BuildingTypeSelectable { false }
+			, ProneSpeed_Crawls { 0.67 }
+			, ProneSpeed_NoCrawls { 1.5 }
+
+      		, DamagedSpeed { 0.75 }
+
+			, HarvesterScanAfterUnload { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -333,5 +434,4 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
 };

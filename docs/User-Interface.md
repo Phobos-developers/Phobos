@@ -8,8 +8,9 @@ This page lists all user interface additions, changes, fixes that are implemente
 - You can specify custom `gamemd.exe` icon via `-icon` command line argument followed by absolute or relative path to an `*.ico` file (f. ex. `gamemd.exe -icon Resources/clienticon.ico`).
 - Fixed `Blowfish.dll`-caused error `***FATAL*** String Manager failed to initialize properly`, which occurred if `Blowfish.dll` could not be registered in the OS, for example, it happened when the player did not have administrator rights. With Phobos, if the game did not find a registered file in the system, it will no longer try to register this file, but will load it bypassing registration.
 - Fixed non-IME keyboard input to be working correctly for languages / keyboard layouts that use character ranges other than Basic Latin and Latin-1 Supplement (font support required).
-- Fixed position and layer of info tip and reveal production cameo on selected building
-- Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual]` -> `TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`.
+- Fixed position and layer of info tip and reveal production cameo on selected building.
+- Timer (superweapon, mission etc) blinking color scheme can be customized by setting `[AudioVisual] -> TimerBlinkColorScheme`. Defaults to third color scheme listed in `[Colors]`.
+- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold.
 
 ```{note}
 You can use the improved vanilla font which can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries) which has way more Unicode character coverage than the default one.
@@ -33,11 +34,13 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 ![image](_static/images/digital_display_shapes.png)
 *Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries).*
 
-- You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points.
- - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
+- You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display).
+  - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
-  - By default, values are displayed in `current/maximum` format (i.e. 20/40). `HideMaxValue=yes` will make the counter show only the current value (i.e. 20). `Percentage=yes` changes the format to `percent%` (i.e. 50%).
-  - `CanSee` and `CanSee.Observer` can limit visibility to specific players.
+  - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
+    - `HideMaxValue=yes` will make the counter show only the current value (i.e. `20`), default to whether the techno is infantry or not.
+    - `Percentage=yes` changes the format to `percent%` (i.e. `50%`).
+  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - The digits can be either a custom shape (.shp) or text drawn using the game font. This depends on whether `Shape` is set.
     - `Text.Color`, `Text.Color.ConditionYellow` and `Text.Color.ConditionRed` allow customization of the font color. `Text.Background=yes` will additionally draw a black rectangle background.
     - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters.
@@ -52,10 +55,10 @@ In `rulesmd.ini`:
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=   ; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=    ; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=   ; List of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
@@ -81,41 +84,36 @@ Shape=                                  ; filename with .shp extension, if not p
 Palette=palette.pal                     ; filename with .pal extension
 Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
 
-[SOMETECHNOTYPE]
+[SOMETECHNO]                            ; TechnoType
 DigitalDisplay.Disable=false            ; boolean
-DigitalDisplayTypes=                    ; list of DigitalDisplayTypes
+DigitalDisplayTypes=                    ; List of DigitalDisplayTypes
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 DigitalDisplay.Enable=false             ; boolean
 ```
 
 ```{note}
-An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
+An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
-### Show designator & inhibitor range
+### Flashing Technos on selecting
 
-- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon]->SW.Designators` will display a circle with radius set in `[TechnoType]->DesignatorRange` or `Sight`.
-  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon]->SW.Inhibitors` will display a circle with radius set in `[TechnoType]->InhibitorRange` or `Sight`.
-- This feature can be disabled globally with `[AudioVisual]->ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon]->ShowDesignatorRange=false`.
-- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `Ra2MD.ini` or with "Toggle Designator Range" hotkey in "Interface" category.
+- Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter higher than 0.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowFlashOnSelecting` setting in `RA2MD.INI`.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ShowDesignatorRange=true    ; boolean
-
-[SOMESW]                    ; SuperWeapon
-ShowDesignatorRange=true    ; boolean
+SelectionFlashDuration=0    ; integer, number of frames
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
-ShowDesignatorRange=false             ; boolean
+ShowFlashOnSelecting=false  ; boolean
 ```
 
 ### Hide health bars
@@ -135,8 +133,8 @@ HealthBar.Hide=false  ; boolean
 
 - It is possible to toggle certain light flash effects off. These light flash effects include:
   - Combat light effects (`Bright=true`) and everything that uses same functionality e.g Iron Curtain / Force Field impact flashes.
-  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual]` -> `WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
-    - Additionally these alpha images are not created if `[AudioVisual]`->`LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
+  - Alpha images attached to ParticleSystems or Particles that are generated through a Warhead's `Particle` if `[AudioVisual] -> WarheadParticleAlphaImageIsLightFlash` or on Warhead `Particle.AlphaImageIsLightFlash` is set to true, latter defaults to former.
+    - Additionally these alpha images are not created if `[AudioVisual] -> LightFlashAlphaImageDetailLevel` is higher than current detail level, regardless of the `HideLightFlashEffects` setting.
 
 In `rulesmd.ini`:
 ```ini
@@ -148,7 +146,7 @@ LightFlashAlphaImageDetailLevel=0            ; integer
 Particle.AlphaImageIsLightFlash=             ; boolean
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 HideLightFlashEffects=false  ; boolean
@@ -157,7 +155,7 @@ HideLightFlashEffects=false  ; boolean
 ### Low priority for box selection
 
 ![smartvesters](_static/images/lowpriority-01.gif)
-*Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast) mod*
+*Harvesters not selected together with battle units in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
 - You can now set lower priority for an ingame object (currently has effect on units mostly), which means it will be excluded from box selection if there's at least one normal priority unit in the box. Otherwise it would be selected as normal. Works with box+type selecting (type select hotkey + drag) and regular box selecting. Box shift-selection adds low-priority units to the group if there are no normal priority units among the appended ones.
 
@@ -169,32 +167,10 @@ LowSelectionPriority=false  ; boolean
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 PrioritySelectionFiltering=true  ; boolean
-```
-
-### Visual indication of income from grinders and refineries
-
-- `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
-- Multiple income within less than one in-game second have their amounts coalesced into single display.
-  - `DisplayIncome.Houses` determines which houses can see the credits display.
-    - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
-  - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default (0,0) at building's center.
-  -`[AudioVisual]->DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
-
-In `rulesmd.ini`:
-```ini
-[AudioVisual]
-DisplayIncome=false       ; boolean
-DisplayIncome.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-DisplayIncome.AllowAI=yes ; boolean
-
-[SOMEBUILDING]            ; BuildingType
-DisplayIncome=            ; boolean, defaults to [AudioVisual]->DisplayIncome
-DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual]->DisplayIncome.Houses
-DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ### Placement preview
@@ -202,38 +178,38 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ![placepreview](_static/images/placepreview.png)
 *Building placement preview using 50% translucency in [Rise of the East](https://www.moddb.com/mods/riseoftheeast)*
 
-- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual]->PlacementPreview` and then further customized for each building with `[SOMEBUILDING]->PlacementPreview`.
+- Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`.
 - The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
   - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
-- `PlacementPreview.ShapeFrame=` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
+- `PlacementPreview.ShapeFrame` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)
-PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementGrid.Translucency
+PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementGrid.Translucency
 
 PlacementPreview=no                  ; boolean
 PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
 
-[SOMEBUILDING]
+[SOMEBUILDING]                       ; BuildingType
 PlacementPreview=yes                 ; boolean
 PlacementPreview.Shape=              ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
 PlacementPreview.ShapeFrame=         ; integer, zero-based frame index used for displaying the preview
 PlacementPreview.Offset=0,-15,1      ; integer, expressed in X,Y,Z used to alter position preview
 PlacementPreview.Remap=yes           ; boolean, does this preview use player remap colors
 PlacementPreview.Palette=            ; filename - including the .pal extension
-PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual]->PlacementPreview.Translucency
+PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementPreview.Translucency
 ```
 
 ```{note}
-The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap=yes` is set to yes. This may change in future.
+The `PlacementPreview.Palette` option is not used when `PlacementPreview.Remap` is set to yes. This may change in future.
 ```
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowPlacementPreview=yes   ; boolean
@@ -248,32 +224,123 @@ ShowPlacementPreview=yes   ; boolean
 
 - This behavior is designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `ra2md.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 RealTimeTimers=false            ; boolean
 RealTimeTimers.Adaptive=false   ; boolean
 ```
 
-### SuperWeapon ShowTimer sorting
+### Select Box
 
-- You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
+- Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
+  - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
+  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
+  - Select box's translucency setting can be adjusted via `Translucency`.
+  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
+  - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
-[SOMESWTYPE]
-ShowTimer=yes
-ShowTimer.Priority=0  ; integer
+[SelectBoxTypes]
+0=SOMESELECTBOXTYPE
+
+[AudioVisual]
+DefaultInfantrySelectBox=               ; Select box for infantry
+DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
+
+[SOMESELECTBOXTYPE]                     ; Select box Type name
+Shape=select.shp                        ; filename with .shp extension
+Palette=palette.pal                     ; filename with .pal extension
+Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Grounded=false                          ; boolean
+Offset=0,0                              ; integers - horizontal, vertical
+Translucency=0                          ; translucency level (0/25/50/75)
+VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true           ; boolean
+DrawAboveTechno=true                    ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+SelectBox=                              ; Select box
+HideSelectBox=false                     ; boolean
 ```
 
-### Flashing Technos on selecting
+In `RA2MD.INI`:
+```ini
+[Phobos]
+EnableSelectBox=false                   ; boolean
+```
 
-Selecting technos, controlled by player, now may show a flash effect by setting `SelectionFlashDuration` parameter. Set `SelectionFlashDuration=0` to disable it.
+### Show designator & inhibitor range
+
+- It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
+  - In a similar manner, each instance of enemy owned techno types listed in `[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in `[TechnoType] -> InhibitorRange` or `Sight`.
+- This feature can be disabled globally with `[AudioVisual] -> ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> ShowDesignatorRange=false`.
+- This feature can be toggled *by the player* (if enabled in the mod) with `ShowDesignatorRange` in `RA2MD.INI` or with ["Toggle Designator Range" hotkey](#toggle-designator-range) in "Interface" category.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-SelectionFlashDuration=0  ; integer, number of frames
+ShowDesignatorRange=true    ; boolean
+
+[SOMESW]                    ; SuperWeaponType
+ShowDesignatorRange=true    ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowDesignatorRange=false             ; boolean
+```
+
+### SuperWeapon ShowTimer sorting
+
+- You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]              ; SuperWeaponType
+ShowTimer=yes
+ShowTimer.Priority=0  ; integer
+```
+
+### Type select for buildings
+- In vanilla game, type select can almost only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingTypeSelectable=false  ; boolean
+```
+
+```{note}
+In Vanilla, you can type select a building by holding down the T key in advance and then clicking on the building. However, other type selection methods (such as selecting a building first and then pressing the T key, or selecting a building first and then pressing the type select button in the bottom sidebar) are not valid for buildings.
+```
+
+```{warning}
+Due to technical limitations, this feature is forcibly disabled without Ares.
+```
+
+### Visual indication of income from grinders and refineries
+
+- `DisplayIncome` can be set to display the amount of credits acquired when a building is grinding units / receiving ore dump from harvesters or slaves.
+- Multiple income within less than one in-game second have their amounts coalesced into single display.
+  - `DisplayIncome.Houses` determines which houses can see the credits display.
+    - If you don't want players to see how AI cheats with `VirtualPurifiers` for example, `DisplayIncome.AllowAI` can be set to false to disable the display. It overrides the previous option.
+  - `DisplayIncome.Offset` is additional pixel offset for the center of the credits display, by default `0,0` at building's center.
+  - `[AudioVisual] -> DisplayIncome` also allows to display the amount of credits when selling a unit on a repair bay.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+DisplayIncome=false       ; boolean
+DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.AllowAI=yes ; boolean
+
+[SOMEBUILDING]            ; BuildingType
+DisplayIncome=            ; boolean, defaults to [AudioVisual] -> DisplayIncome
+DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual] -> DisplayIncome.Houses
+DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
 ## Hotkey Commands
@@ -288,6 +355,26 @@ SelectionFlashDuration=0  ; integer, number of frames
 - Writes currently hovered or last selected object info in log and shows a message. See [this](Miscellanous.md#dump-object-info) for details.
 - For localization add `TXT_DUMP_OBJECT_INFO` and `TXT_DUMP_OBJECT_INFO_DESC` into your `.csf` file.
 
+### `[ ]` Toggle Frame By Frame Mode
+
+- Switches on/off [frame by frame mode](Miscellanous.md#frame-step-in).
+- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
+
+### `[ ]` Save Variables
+
+- Save local & global variables to an INI file. See [this](Miscellanous.md#save-variables-to-file) for details.
+- For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Designator Range
+
+- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
+- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
+
+### `[ ]` Toggle Digital Display
+
+- Switches on/off [digital display types](#digital-display).
+- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
+
 ### `[ ]` Next Idle Harvester
 
 - Selects and centers the camera on the next TechnoType that is counted via the [harvester counter](#harvester-counter) and is currently idle.
@@ -297,35 +384,18 @@ SelectionFlashDuration=0  ; integer, number of frames
 
 - Save the current singleplayer game.
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
-    - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
-    - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`
-
-### `[ ]` Save Variables
-
-- Save local & global variables to an INI file. See [this](Miscellanous.html#save-variables-to-file) for details.
-- For localization add `TXT_SAVE_VARIABLES` and `TXT_SAVE_VARIABLES_DESC` into your `.csf` file.
-
-### `[ ]` Toggle Designator Range
-- Switches on/off super weapon designator range indicator. See [this](#show-designator--inhibitor-range) for details.
-- For localization add `TXT_DESIGNATOR_RANGE` and `TXT_DESIGNATOR_RANGE_DESC` into your `.csf` file.
-
-### `[ ]` Toggle Digital Display
-- Switches on/off [digital display types](#digital-display).
-- For localization add `TXT_DIGITAL_DISPLAY` and `TXT_DIGITAL_DISPLAY_DESC` into your `.csf` file.
-
-### `[ ]` Toggle Frame By Frame Mode
-- Switches on/off [frame by frame mode](Miscellanous.html#frame-step-in).
-- For localization add `TXT_FRAME_BY_FRAME` and `TXT_FRAME_BY_FRAME_DESC` into your `.csf` file.
+  - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
+  - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
 
 ## Loading screen
 
 - PCX files can now be used as loadscreen images.
   - You can specify custom loadscreen with Ares tag `File.LoadScreen`.
-  - Campaign loading screen (`missionmd.ini->[LS800BkgdName]`) can also use PCX image.
+  - Campaign loading screen (`missionmd.ini -> [LS800BkgdName]`) can also use PCX image.
   - Observer loading screen can use `ls800obs.pcx` *(or `ls640obs.pcx` when screen width is 640)* for this feature.
 - The loadscreen size can now be different from the default `800x600` one; if the image is bigger than the screen it's centered and cropped.
   - This feature works in conjunction with CnCNet5 spawner DLL which resizes loadscreen window to actual monitor size and places the image in center. If there's no CnCNet5 spawner loaded, the window resolution will be always `800x600`.
-  - Same applies to campaign loading screen (`missionmd.ini->[LS800BkgdName]`).
+  - Same applies to campaign loading screen (`missionmd.ini -> [LS800BkgdName]`).
 - You can now disable hardcoded black dots that YR engine shows over empty spawn locations, which allows to use prettier and more correctly placed markers that are produced by Map Renderer instead.
 
 In `uimd.ini`:
@@ -335,6 +405,24 @@ DisableEmptySpawnPositions=false  ; boolean
 ```
 
 ## Sidebar / Battle UI
+
+
+### Building Production Queue
+
+![Building Production Queue](_static/images/buildingQueue.png)
+*Queueing multiple buildings*
+
+- Buildings can now be queued for construction like other units if `BuildingProductionQueue` is set to true.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BuildingProductionQueue=false  ; boolean
+```
+
+```{note}
+When the building becomes ready to be placed, the next building's construction will not begin until the player places the current building.
+```
 
 ### Cameo Sorting
 
@@ -359,7 +447,7 @@ CenterPauseMenuBackground=false  ; boolean
 
 ### Custom Missing Cameo (`XXICON.SHP`)
 
-- You can now specify any SHP/PCX file as XXICON.SHP for missing cameo.
+- You can now specify any SHP/PCX file as `XXICON.SHP` for missing cameo.
 
 In `rulesmd.ini`:
 ```ini
@@ -378,7 +466,7 @@ MissingCameo=XXICON.SHP  ; filename - including the .shp/.pcx extension
   - The counter is displayed with the format of `Label(Active Harvesters)/(Total Harvesters)`. The label is `⛏ U+26CF` by default.
   - You can adjust counter position by `Sidebar.HarvesterCounter.Offset`, negative means left/up, positive means right/down.
   - By setting `HarvesterCounter.ConditionYellow` and `HarvesterCounter.ConditionRed`, the game will warn player by changing the color of counter whenever the active percentage of harvesters less than or equals to them, like HP changing with `ConditionYellow` and `ConditionRed`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.ini`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowHarvesterCounter` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
 ```ini
@@ -400,7 +488,7 @@ Sidebar.HarvesterCounter.ColorYellow=255,255,0  ; integer - R,G,B
 Sidebar.HarvesterCounter.ColorRed=255,0,0       ; integer - R,G,B
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowHarvesterCounter=true  ; boolean
@@ -424,7 +512,7 @@ Additionally, default position for harvester counter overlaps with [weeds counte
   - You can adjust counter text alignment by `Sidebar.PowerDelta.Align`, acceptable values are left, right, center/centre.
   - By setting `PowerDelta.ConditionYellow` and `PowerDelta.ConditionRed`, the game will warn player by changing the color of counter whenever the percentage of used power exceeds the value (i.e. when drain to output ratio is above 100%, the counter will turn red).
   - The exception for this rule is when both power output and drain are 0 - in this case the counter will default to yellow.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.ini`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowPowerDelta` setting in `RA2MD.INI`.
 
 In `uimd.ini`:
 ```ini
@@ -445,7 +533,7 @@ Sidebar.PowerDelta.ColorGrey=128,128,128  ; integer - R,G,B
 Sidebar.PowerDelta.Align=left             ; Alignment enumeration - left | center/centre | right
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ShowPowerDelta=true  ; boolean
@@ -453,36 +541,6 @@ ShowPowerDelta=true  ; boolean
 
 ```{note}
 If you use the vanilla font in your mod, you can use the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) which among everything already includes the mentioned icons. Otherwise you'd need to draw them yourself using [WWFontEditor](http://nyerguds.arsaneus-design.com/project_stuff/2016/WWFontEditor/release/?C=M;O=D), for example.
-```
-
-### Weeds counter
-
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds-weed-eaters) can be added near the credits indicator.
-  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
-  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.ini`.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-WeedsCounter.Show=false          ; boolean
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                       ; Side
-Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
-```
-
-In `RA2MD.ini`:
-```ini
-[Phobos]
-ShowWeedsCounter=true  ; boolean
-```
-
-```{note}
-Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ### Producing Progress
@@ -513,6 +571,36 @@ In `rulesmd.ini`:
 ```ini
 [SOMESIDE]             ; Side
 Sidebar.GDIPositions=  ; boolean
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ## Tooltips
@@ -549,7 +637,7 @@ UIDescription=<none>  ; CSF entry key
 
 - The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipDescriptions=true  ; boolean
@@ -563,28 +651,29 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 
 In `rulesmd.ini`:
 ```ini
-[SOMESIDE]
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual]->ToolTip.Background.Color, which defaults to `0,0,0`
-ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual]->ToolTip.Background.Opacity, which defaults to `100`
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual]->ToolTip.Background.BlurSize, which defaults to `0.0`
+[SOMESIDE]                          ; Side
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to `0,0,0`
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to `100`
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to `0.0`
 ```
 
 ```{note}
 The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
 ```
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
+
 ## Miscellanous
 
 ### Skip saving game on starting a new campaign
 
 When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
 
-In `RA2MD.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 SaveGameOnScenarioStart=true ; boolean

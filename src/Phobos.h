@@ -38,6 +38,7 @@ public:
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
+	static void ApplyOptimizations();
 
 	class UI
 	{
@@ -76,6 +77,7 @@ public:
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
@@ -90,6 +92,8 @@ public:
 		static bool ShowWeedsCounter;
 		static bool ShowPlanningPath;
 		static bool HideLightFlashEffects;
+		static bool ShowFlashOnSelecting;
+		static bool UnitPowerDrain;
 	};
 
 	class Misc
@@ -99,5 +103,13 @@ public:
 		static int CustomGS_ChangeInterval[7];
 		static int CustomGS_ChangeDelay[7];
 		static int CustomGS_DefaultDelay[7];
+	};
+
+	class Optimizations
+	{
+	public:
+		static bool Applied;
+		static bool DisableRadDamageOnBuildings;
+		static bool DisableSyncLogging;
 	};
 };

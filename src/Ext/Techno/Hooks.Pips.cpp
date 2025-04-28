@@ -1,21 +1,53 @@
 #include <AircraftTypeClass.h>
 #include <SpawnManagerClass.h>
 #include <TiberiumClass.h>
+#include <TacticalClass.h>
 #include "Body.h"
+
+DEFINE_HOOK_AGAIN(0x6D9134, TacticalClass_RenderLayers_DrawBefore, 0x5)// BuildingClass
+DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
+{
+	GET(TechnoClass*, pTechno, ESI);
+	GET(Point2D*, pLocation, EAX);
+
+	if (pTechno->IsSelected && Phobos::Config::EnableSelectBox)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+		if (!pTypeExt->HealthBar_Hide && !pTypeExt->HideSelectBox)
+			TechnoExt::DrawSelectBox(pTechno, pLocation, &DSurface::ViewBounds, true);
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
+{
+	GET(TechnoClass*, pThis, ECX);
+	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	if (pTypeData->HealthBar_Hide)
+		return 0x6F6AB6;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
+	GET(BuildingClass*, pThis, ESI);
 	GET(int, length, EBX);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
+	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (pShieldData->IsAvailable())
-			pShieldData->DrawShieldBar(length, pLocation, pBound);
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+			pShieldData->DrawShieldBar_Building(length, pBound);
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
@@ -25,18 +57,22 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 {
-	GET(TechnoClass*, pThis, ESI);
+	GET(FootClass*, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+	UNREFERENCED_PARAMETER(pLocation);
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
+	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
+
 	if (const auto pShieldData = pExt->Shield.get())
 	{
-		if (pShieldData->IsAvailable())
+		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
 			const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-			pShieldData->DrawShieldBar(length, pLocation, pBound);
+			pShieldData->DrawShieldBar_Other(length, pBound);
 		}
 	}
 
@@ -257,7 +293,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 	else
 	{
-		std::vector<int> tiberiumPipCounts(TiberiumClass::Array->Count);
+		std::vector<int> tiberiumPipCounts(TiberiumClass::Array.Count);
 
 		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
 		{
@@ -274,14 +310,14 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		for (int index : rawPipOrder)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
-				index >= 0 && index < TiberiumClass::Array->Count)
+				index >= 0 && index < TiberiumClass::Array.Count)
 			{
 				pipOrder.push_back(index);
 			}
 		}
 
 		// Then add any tiberium types that are missing
-		for (int i = 0; i < TiberiumClass::Array->Count; i++)
+		for (int i = 0; i < TiberiumClass::Array.Count; i++)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{
