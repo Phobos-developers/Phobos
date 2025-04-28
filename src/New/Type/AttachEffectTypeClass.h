@@ -78,7 +78,7 @@ public:
 	Valueable<bool> AuxWeapon_ApplyFirepowerMult;
 	Valueable<bool> AuxWeapon_Retarget;
 	Valueable<bool> AuxWeapon_Retarget_AroundFirer;
-	Valueable<Leptons> AuxWeapon_Retarget_Range;
+	Valueable<int> AuxWeapon_Retarget_Range;
 	Valueable<double> AuxWeapon_Retarget_Accuracy;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
@@ -154,7 +154,7 @@ public:
 		, AuxWeapon_ApplyFirepowerMult { true }
 		, AuxWeapon_Retarget { false }
 		, AuxWeapon_Retarget_AroundFirer { false }
-		, AuxWeapon_Retarget_Range { Leptons(0) }
+		, AuxWeapon_Retarget_Range { 0 }
 		, AuxWeapon_Retarget_Accuracy { 1.0 }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }

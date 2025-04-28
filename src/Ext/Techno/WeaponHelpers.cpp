@@ -232,9 +232,9 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pSource,
 					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					pBullet->WeaponType = pWeapon;
-					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
-					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pSource->Owner;
+					pBullet->SetWeaponType(pWeapon);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pThis->Location, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
 				}
 			}
 			else
@@ -264,9 +264,9 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
 					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					pBullet->WeaponType = pWeapon;
-					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
-					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pThis->Owner;
+					pBullet->SetWeaponType(pWeapon);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pWeapon, pThis->Location, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
 				}
 			}
 			else
@@ -299,9 +299,9 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
 					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					pBullet->WeaponType = pWeapon;
-					pBullet->MoveTo(pSource->Location, BulletVelocity::Empty);
-					BulletExt::ExtMap.Find(pBullet)->FirerHouse = pThis->Owner;
+					pBullet->SetWeaponType(pWeapon);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pWeapon, pThis->Location, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
 				}
 			}
 			else
@@ -403,7 +403,7 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 	return true;
 }
 
-void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, float range, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
+void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, int range, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
 {
 	auto const pThis = this->OwnerObject();
 	if (pThis->InOpenToppedTransport && !pAuxWeapon->FireInTransport)
@@ -469,12 +469,17 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 	if (firepowerMult)
 		damage = static_cast<int>(damage * pThis->FirepowerMultiplier * this->AE.FirepowerMultiplier);
 
-	if (BulletClass* pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetTechno ? pTargetTechno : pTargetCell, pThis->Owner,
-		damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright))
+	BulletClass* pBullet = nullptr;
+
+	if (pTargetTechno)
+		pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetTechno, pThis, damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright);
+	else
+		pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetCell, pThis, damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright);
+
+	if (pBullet)
 	{
-		pBullet->WeaponType = pAuxWeapon;
-		pBullet->MoveTo(location, BulletVelocity::Empty);
-		BulletExt::ExtMap.Find(pBullet)->FirerHouse = pThis->Owner;
-		AnimExt::CreateRandomAnim(location, pAuxWeapon->Anim, pThis, pThis->Owner, true);
+		pBullet->SetWeaponType(pAuxWeapon);
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pAuxWeapon, location, true);
+		BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
 	}
 }
