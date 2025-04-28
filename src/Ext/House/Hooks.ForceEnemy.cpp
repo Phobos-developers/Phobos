@@ -32,7 +32,8 @@ DEFINE_HOOK(0x4FD772, HouseClass_ClearForceEnemy, 0xA)			// HouseClass_UpdateAI
 	if (pThis)
 	{
 		HouseExt::ExtMap.Find(pThis)->SetForceEnemyIndex(-1);
-		pThis->UpdateAngerNodes(0, nullptr);
+		pThis->UpdateAngerNodes(0, pThis);
+		return R->Origin() + 0xA;
 	}
 
 	return 0;

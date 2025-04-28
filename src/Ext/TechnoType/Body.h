@@ -343,8 +343,11 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
+
+		Valueable<bool> Harvester_CanGuardArea;
+		Nullable<bool> HarvesterScanAfterUnload;
     
-		Valueable<bool> MultiWeapon;
+    Valueable<bool> MultiWeapon;
 		ValueableVector<int> MultiWeapon_IsSecondary;
 		//Valueable<bool> MultiWeapon_SelectWeapon;
 		bool LastMultiWeapon;
@@ -646,6 +649,9 @@ public:
 			, Overload_DeathSound {}
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount { 5 }
+    
+			, Harvester_CanGuardArea { false }
+			, HarvesterScanAfterUnload {}
     
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}
