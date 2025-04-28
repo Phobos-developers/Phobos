@@ -153,6 +153,9 @@ public:
 		void StopIdleAction();
 		void ApplyIdleAction();
 		void ManualIdleAction();
+		void CheckIdleAction();
+		void UpdateIdleDir();
+		void SetTurretDir(DirStruct desiredDir, bool limited = false);
 		void StopRotateWithNewROT(int ROT = -1);
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(TechnoClass* pTarget);

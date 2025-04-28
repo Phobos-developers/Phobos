@@ -347,7 +347,7 @@ short TechnoTypeExt::ExtData::GetTurretLimitedRaw(short currentDirectionRaw)
 	if (turretRestrictAngle < 0)
 		return 0;
 
-	if (turretRestrictAngle >= 180)
+	if (turretRestrictAngle >= 180.0)
 		return currentDirectionRaw;
 
 	const auto restrictRaw = static_cast<short>(this->Turret_Restriction * TechnoTypeExt::AngleToRaw + 0.5);

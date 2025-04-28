@@ -61,7 +61,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
     - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
-    
+
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
@@ -1769,12 +1769,27 @@ AmphibiousEnter=         ; boolean
 AmphibiousUnload=        ; boolean
 ```
 
+## Terrain
+
+### Destroy animation & sound
+
+- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
+
+In `rulesmd.ini`:
+```ini
+[SOMETERRAINTYPE]  ; TerrainType
+DestroyAnim=       ; AnimationType
+DestroySound=      ; Sound entry
+```
+
+## Vehicles
+
 ### Customized Vehicle Turret Rotation
 
 - When `ExpandTurretRotation` is set to true, the following functions will be enabled.
 - Units with turret without `TurretSpins=true` can looks more vivid when it is in idle.
-  - `Turret.IdleRotate` controls whether units can rotate their turrets when in idle. Defaults to `[AudioVisual]->Turret.IdleRotate`.
-  - `Turret.PointToMouse` controls whether units will turn their turrets to your mouse when in idle. Defaults to `[AudioVisual]->Turret.PointToMouse`.
+  - `Turret.IdleRotate` controls whether units can rotate their turrets when in idle.
+  - `Turret.PointToMouse` controls whether units will turn their turrets to your mouse when in idle.
     - At the present moment, this only functions in singleplayer.
   - `Turret.IdleRestartMin` and `Turret.IdleRestartMax` control the delay from idle to action occurrence together.
   - `Turret.IdleIntervalMin` and `Turret.IdleIntervalMax` control the delay between every idle actions together.
@@ -1800,31 +1815,16 @@ Turret.IdleRestartMax=300             ; integer, number of frames
 Turret.IdleIntervalMin=150            ; integer, number of frames
 Turret.IdleIntervalMax=450            ; integer, number of frames
 
-[SOMEUNIT]                            ; VehicleType, `Turret=yes`
-Turret.IdleRotate=                    ; boolean
-Turret.PointToMouse=                  ; boolean
+[SOMEVEHICLE]                         ; VehicleType, with `Turret=yes`
+Turret.IdleRotate=                    ; boolean, default to [AudioVisual] -> Turret.IdleRotate
+Turret.PointToMouse=                  ; boolean, default to [AudioVisual] -> Turret.PointToMouse
 Turret.Restriction=180.0              ; floating point value
 Turret.ExtraAngle=0                   ; floating point value
-Turret.BodyFoundation=                ; boolean
+Turret.BodyFoundation=                ; boolean, default to [AudioVisual] -> Turret.BodyFoundation
 Turret.BodyOrientation=false          ; boolean
 Turret.BodyOrientationAngle=0         ; floating point value
 Turret.BodyOrientationSymmetric=true  ; boolean
 ```
-
-## Terrain
-
-### Destroy animation & sound
-
-- You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
-
-In `rulesmd.ini`:
-```ini
-[SOMETERRAINTYPE]  ; TerrainType
-DestroyAnim=       ; AnimationType
-DestroySound=      ; Sound entry
-```
-
-## Vehicles
 
 ### Damaged unit image changes
 
