@@ -366,6 +366,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
+  - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

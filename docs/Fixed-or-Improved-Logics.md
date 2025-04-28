@@ -212,6 +212,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Fixed an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing.
+- Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 
 ## Fixes / interactions with other extensions
 

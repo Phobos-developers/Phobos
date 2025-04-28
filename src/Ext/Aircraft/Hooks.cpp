@@ -92,8 +92,6 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 		pWeapon = pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType;
 	else if (pThis->Target)
 		pWeapon = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target))->WeaponType;
-	else if (pExt->LastWeaponType)
-		pWeapon = pExt->LastWeaponType;
 	else
 		pWeapon = pThis->GetWeapon(0)->WeaponType;
 
