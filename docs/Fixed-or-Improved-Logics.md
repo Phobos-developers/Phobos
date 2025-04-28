@@ -858,9 +858,13 @@ Image=              ; name of the file that will be used as image, without exten
 
 - You can now customize veterancy insignia of TechnoTypes.
   - `Insignia.(Rookie|Veteran|Elite)` can be used to set a custom insignia file, optionally for each veterancy stage. Like the original / default file, `pips.shp`, they are drawn using `palette.pal` as palette.
-  - `InsigniaFrame.(Rookie|Veteran|Elite)` can be used to set (zero-based) frame index of the insignia to display, optionally for each veterancy stage. Using -1 uses the default setting. Default settings are -1 (none) for rookie, 14 for veteran and 15 for elite.
-    - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame.(Rookie|Veteran|Elite)` takes priority over this.
-  - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia.(Frame/Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
+  - `InsigniaFrame(.Rookie|Veteran|Elite)` can be used to set (zero-based) frame index of the insignia to display, optionally for each veterancy stage. Using -1 uses the default setting. Default settings are -1 (none) for rookie, 14 for veteran and 15 for elite.
+    - A shorthand `InsigniaFrames` can be used to list them in order from rookie, veteran and elite instead as well. `InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this.
+    - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType` is set.
+  - Normal insignia can be overridden for specific weapon modes of `Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where `N` stands for 1-based weapon mode index. If not set, defaults to non-mode specific insignia settings.
+    - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.WeaponN` is set.
+  - Normal insignia can be overridden when its current passenger size reaches a certain amount by setting `Insignia(.Frame/.Frames).PassengersN` where `N` stands for the current passenger size amount (from 0 to `Passengers` of the transport). If not set, defaults to non-passenger specific insignia settings. Will be overridden by weapon mode insignia settings, if set.
+    - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.PassengersN` is set.
   - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General] -> EnemyInsignia`, which in turn defaults to true.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
@@ -897,6 +901,15 @@ InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-base
 InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.PassengersN=                    ; filename - excluding the .shp extension
+Insignia.PassengersN.Rookie=             ; filename - excluding the .shp extension
+Insignia.PassengersN.Veteran=            ; filename - excluding the .shp extension
+Insignia.PassengersN.Elite=              ; filename - excluding the .shp extension
+InsigniaFrame.PassengersN=-1             ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.PassengersN.Rookie=-1      ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.PassengersN.Veteran=-1     ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.PassengersN.Elite=-1       ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.PassengersN=-1,-1,-1      ; int, frames of insignia shp (zero-based) or -1 for default
 Insignia.ShowEnemy=                      ; boolean
 ```
 

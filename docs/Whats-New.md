@@ -372,6 +372,8 @@ New:
 - [Amphibious access vehicle](New-or-Enhanced-Logics.md#amphibious-access-vehicle) (by CrimRecya)
 - [Allow miners do area guard](Fixed-or-Improved-Logics.md#allow-miners-do-area-guard) (by TaranDahl)
 - [Make harvesters do addtional scan after unload](Fixed-or-Improved-Logics.md#make-harvesters-do-addtional-scan-after-unload) (by TaranDahl)
+- [Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-veterancy-insignias) (by Ollerus)
+- [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
