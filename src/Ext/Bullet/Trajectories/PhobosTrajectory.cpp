@@ -692,7 +692,7 @@ void PhobosTrajectory::OnFacingUpdate()
 			desiredFacing.Z = 0;
 		}
 		// Calculate specifically only when the ROT is reasonable
-		PhobosTrajectory::RotateVector(pBullet->Velocity, desiredFacing, (pType->BulletROT * ratio));
+		PhobosTrajectory::RotateVector(pBullet->Velocity, desiredFacing, (std::abs(pType->BulletROT) * ratio));
 		// Standardizing
 		pBullet->Velocity *= (1 / pBullet->Velocity.Magnitude());
 	}

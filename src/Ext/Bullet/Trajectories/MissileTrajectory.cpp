@@ -416,40 +416,37 @@ bool MissileTrajectory::NotCurveVelocityChange()
 
 	if (this->PreAimDistance > 0)
 		this->PreAimDistance -= this->MovingSpeed;
-
-	bool velocityUp = false;
-	// Calculate speed
-	if (this->Accelerate && std::abs(pType->Acceleration) > 1e-10)
-	{
-		this->MovingSpeed += pType->Acceleration;
-		// Judging whether to accelerate or decelerate based on acceleration
-		if (pType->Acceleration > 0)
-		{
-			if (this->MovingSpeed >= pType->Speed)
-			{
-				this->MovingSpeed = pType->Speed;
-				this->Accelerate = false;
-			}
-		}
-		else if (this->MovingSpeed <= pType->Speed)
-		{
-			this->MovingSpeed = pType->Speed;
-			this->Accelerate = false;
-		}
-
-		velocityUp = true;
-	}
 	// Calculate steering
 	if (!pType->LockDirection || !this->InStraight)
 	{
 		// Make the turn
 		if (this->PreAimDistance <= 0 && this->StandardVelocityChange())
 			return true;
-
-		velocityUp = true;
+		// Recalculate speed after substitute gravity
+	}
+	else if (!this->Accelerate || std::abs(pType->Acceleration) <= 1e-10)
+	{
+		// State remains unchanged
+		return false;
+	}
+	// Calculate speed
+	this->MovingSpeed += pType->Acceleration;
+	// Judging whether to accelerate or decelerate based on acceleration
+	if (pType->Acceleration > 0 || (pType->Acceleration == 0 && pType->LaunchSpeed <= pType->Speed))
+	{
+		if (this->MovingSpeed >= pType->Speed)
+		{
+			this->MovingSpeed = pType->Speed;
+			this->Accelerate = false;
+		}
+	}
+	else if (this->MovingSpeed <= pType->Speed)
+	{
+		this->MovingSpeed = pType->Speed;
+		this->Accelerate = false;
 	}
 	// Calculate velocity vector
-	return velocityUp && this->CalculateBulletVelocity(this->MovingSpeed);
+	return this->CalculateBulletVelocity(this->MovingSpeed);
 }
 
 bool MissileTrajectory::StandardVelocityChange()
@@ -506,10 +503,11 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	const auto pType = this->Type;
 	auto& bulletVelocity = this->MovingVelocity;
 	bulletVelocity.Z -= BulletTypeExt::GetAdjustedGravity(pBullet->Type);
+	this->MovingSpeed = bulletVelocity.Magnitude();
 	const auto targetVelocity = PhobosTrajectory::Coord2Vector(targetLocation - pBullet->Location);
 	// Calculate the new velocity vector based on turning speed
 	const auto dotProduct = (targetVelocity * bulletVelocity);
-	const auto cosTheta = dotProduct / sqrt(targetVelocity.MagnitudeSquared() * bulletVelocity.MagnitudeSquared());
+	const auto cosTheta = dotProduct / (targetVelocity.Magnitude() * this->MovingSpeed);
 	const auto radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0)); // Ensure that the result range of cos is correct
 	const auto turningRadius = pType->TurningSpeed * (Math::TwoPi / 360); // TurningSpeed uses angles as units and requires conversion
 	// The angle that needs to be rotated is relatively large
