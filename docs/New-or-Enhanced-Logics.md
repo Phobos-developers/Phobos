@@ -1041,6 +1041,10 @@ Trajectory.Missile.SuicideAboveRange=-3.0   ; floating point value
 Trajectory.Missile.SuicideShortOfROT=false  ; boolean
 ```
 
+```{hint}
+- The trajectory can be affected by `Gravity`. If you are sure that you do not need it to be affected by it, you can set `Gravity=0` separately.
+```
+
 #### Engrave trajectory
 
 - Visually, like the thermal lance. Calling it 'trajectory' may not be appropriate. It does not read the settings on the weapon.
