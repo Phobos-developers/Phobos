@@ -11,6 +11,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/GeneralUtils.h>
 
@@ -331,6 +332,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForbidParallelAIQueues.Read(exINI, pSection, "ForbidParallelAIQueues");
 	this->ShieldType.Read<true>(exINI, pSection, "ShieldType");
 
+	this->HarvesterDumpAmount.Read(exINI, pSection, "HarvesterDumpAmount");
+
 	this->Ammo_AddOnDeploy.Read(exINI, pSection, "Ammo.AddOnDeploy");
 	this->Ammo_AutoDeployMinimumAmount.Read(exINI, pSection, "Ammo.AutoDeployMinimumAmount");
 	this->Ammo_AutoDeployMaximumAmount.Read(exINI, pSection, "Ammo.AutoDeployMaximumAmount");
@@ -448,9 +451,23 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
-	this->Insignia.Read(exINI, pSection, "Insignia.%s");
-	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
-	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	// insignia type
+	Nullable<InsigniaTypeClass*> InsigniaType;
+	InsigniaType.Read(exINI, pSection, "InsigniaType");
+
+	if (InsigniaType.isset())
+	{
+		this->Insignia = InsigniaType.Get()->Insignia;
+		this->InsigniaFrame = InsigniaType.Get()->InsigniaFrame;
+		this->InsigniaFrames = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+	}
+	else
+	{
+		this->Insignia.Read(exINI, pSection, "Insignia.%s");
+		this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
+		this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	}
+
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	this->JumpjetTilt.Read(exINI, pSection, "JumpjetTilt");
@@ -467,6 +484,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
+
+	this->SelectBox.Read(exINI, pSection, "SelectBox");
+	this->HideSelectBox.Read(exINI, pSection, "HideSelectBox");
 
 	this->AmmoPipFrame.Read(exINI, pSection, "AmmoPipFrame");
 	this->EmptyAmmoPipFrame.Read(exINI, pSection, "EmptyAmmoPipFrame");
@@ -508,6 +528,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_MaxCount.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxCount");
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 
+	this->AmphibiousEnter.Read(exINI, pSection, "AmphibiousEnter");
+	this->AmphibiousUnload.Read(exINI, pSection, "AmphibiousUnload");
 	this->NoQueueUpToEnter.Read(exINI, pSection, "NoQueueUpToEnter");
 	this->NoQueueUpToUnload.Read(exINI, pSection, "NoQueueUpToUnload");
 
@@ -527,11 +549,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
+	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
+	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
+
 	this->KeepTargetOnMove.Read(exINI, pSection, "KeepTargetOnMove");
 	this->KeepTargetOnMove_NoMorePursuit.Read(exINI, pSection, "KeepTargetOnMove.NoMorePursuit");
 	this->KeepTargetOnMove_ExtraDistance.Read(exINI, pSection, "KeepTargetOnMove.ExtraDistance");
 
 	this->Power.Read(exINI, pSection, "Power");
+
+	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
 	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
 	this->Image_ConditionRed.Read(exINI, pSection, "Image.ConditionRed");
@@ -568,6 +595,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
+	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
+	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -602,14 +632,66 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (size_t i = 0; i < weaponCount; i++)
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
-			this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
+			Nullable<InsigniaTypeClass*> InsigniaType_Weapon;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Weapon%d", i + 1);
+			InsigniaType_Weapon.Read(exINI, pSection, tempBuffer);
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
-			this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
+			if (InsigniaType_Weapon.isset())
+			{
+				this->Insignia_Weapon[i] = InsigniaType_Weapon.Get()->Insignia;
+				this->InsigniaFrame_Weapon[i] = InsigniaType_Weapon.Get()->InsigniaFrame;
+				this->InsigniaFrames_Weapon[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
+				this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
-			this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
+				this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
+				this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
+			}
+		}
+	}
+
+	if (this->OwnerObject()->Passengers > 0)
+	{
+		size_t passengers = this->OwnerObject()->Passengers + 1;
+
+		if (this->Insignia_Passengers.empty() || this->Insignia_Passengers.size() != passengers)
+		{
+			this->Insignia_Passengers.resize(passengers);
+			this->InsigniaFrame_Passengers.resize(passengers, Promotable<int>(-1));
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			this->InsigniaFrames_Passengers.resize(passengers, frames);
+		}
+
+		for (size_t i = 0; i < passengers; i++)
+		{
+			Nullable<InsigniaTypeClass*> InsigniaType_Passengers;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Passengers%d", i);
+			InsigniaType_Passengers.Read(exINI, pSection, tempBuffer);
+
+			if (InsigniaType_Passengers.isset())
+			{
+				this->Insignia_Passengers[i] = InsigniaType_Passengers.Get()->Insignia;
+				this->InsigniaFrame_Passengers[i] = InsigniaType_Passengers.Get()->InsigniaFrame;
+				this->InsigniaFrames_Passengers[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
+				this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
+				this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
+				this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
+			}
 		}
 	}
 
@@ -775,6 +857,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShieldType)
 		.Process(this->PassengerDeletionType)
 
+		.Process(this->HarvesterDumpAmount)
+
 		.Process(this->Ammo_AddOnDeploy)
 		.Process(this->Ammo_AutoDeployMinimumAmount)
 		.Process(this->Ammo_AutoDeployMaximumAmount)
@@ -909,6 +993,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Insignia_Weapon)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
+		.Process(this->Insignia_Passengers)
+		.Process(this->InsigniaFrame_Passengers)
+		.Process(this->InsigniaFrames_Passengers)
 
 		.Process(this->JumpjetTilt)
 		.Process(this->JumpjetTilt_ForwardAccelFactor)
@@ -924,6 +1011,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
+
+		.Process(this->SelectBox)
+		.Process(this->HideSelectBox)
 
 		.Process(this->AmmoPipFrame)
 		.Process(this->EmptyAmmoPipFrame)
@@ -968,6 +1058,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxCount)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
+		.Process(this->AmphibiousEnter)
+		.Process(this->AmphibiousUnload)
 		.Process(this->NoQueueUpToEnter)
 		.Process(this->NoQueueUpToUnload)
 		.Process(this->Passengers_BySize)
@@ -987,12 +1079,17 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
+		.Process(this->AttackMove_Aggressive)
+		.Process(this->AttackMove_UpdateTarget)
+
 		.Process(this->BunkerableAnyway)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->KeepTargetOnMove_NoMorePursuit)
 		.Process(this->KeepTargetOnMove_ExtraDistance)
 
 		.Process(this->Power)
+
+		.Process(this->AllowAirstrike)
 
 		.Process(this->Image_ConditionYellow)
 		.Process(this->Image_ConditionRed)
@@ -1028,6 +1125,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_DeathSound)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
+
+		.Process(this->Harvester_CanGuardArea)
+		.Process(this->HarvesterScanAfterUnload)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

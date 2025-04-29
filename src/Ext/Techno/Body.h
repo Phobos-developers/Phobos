@@ -69,6 +69,8 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 
+		AirstrikeClass* AirstrikeTargetingMe;
+
 		// cache tint values
 		int TintColorOwner;
 		int TintColorAllies;
@@ -119,6 +121,7 @@ public:
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, AirstrikeTargetingMe { nullptr }
 			, AttachedEffectInvokerCount { 0 }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
@@ -221,6 +224,7 @@ public:
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 

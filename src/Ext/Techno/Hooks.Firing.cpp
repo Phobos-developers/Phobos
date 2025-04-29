@@ -276,10 +276,14 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	const int nMoney = pWHExt->TransactMoney;
 
-	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-		return CannotFire;
+	if (pWHExt)
+	{
+		const int nMoney = pWHExt->TransactMoney;
+
+		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
+			return CannotFire;
+	}
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -326,6 +330,15 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
 				return CannotFire;
+
+			if (pWH->Airstrike)
+			{
+				if (!pWHExt || !EnumFunctions::IsTechnoEligible(pTechno, pWHExt->AirstrikeTargets))
+					return CannotFire;
+
+				if (!TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->AllowAirstrike.Get(pTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTechno)->Type->CanC4))
+					return CannotFire;
+			}
 		}
 	}
 

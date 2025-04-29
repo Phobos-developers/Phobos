@@ -1641,9 +1641,46 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 	GET(ObjectClass*, pThis, ESI);
 	GET_STACK(bool, removed, STACK_OFFSET(0x8, 0x4));
 	R->ECX(pThis);
-	R->EDX(((pThis->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None) ? Disappear::removed : removed);
+	// Do not working for buildings for now, because it will break some vanilla building tracking. 
+	// Hoping someone could investigate thoroughly and enable it for buildings.
+	R->EDX(((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None) ? Disappear::removed : removed);
 	Disappear::removed = false;
 	return 0x5F5311;
+}
+
+// I think no one wants to see wild pointers caused by WW's negligence
+DEFINE_HOOK(0x4D9A1B, FootClass_PointerExpired_RemoveDestination, 0x6)
+{
+	GET_STACK(bool, removed, STACK_OFFSET(0x1C, 0x8));
+
+	if (removed)
+		return 0x4D9ABD;
+
+	R->BL(true);
+	return 0x4D9A25;
+}
+
+namespace RemoveSpawneeHelper
+{
+	bool removed = false;
+}
+
+DEFINE_HOOK(0x707B23, TechnoClass_PointerExpired_RemoveSpawnee, 0x6)
+{
+	GET(SpawnManagerClass*, pSpawnManager, ECX);
+	GET(AbstractClass*, pRemove, EBP);
+	GET_STACK(bool, removed, STACK_OFFSET(0x20, 0x8));
+
+	RemoveSpawneeHelper::removed = removed;
+	pSpawnManager->UnlinkPointer(pRemove);
+	RemoveSpawneeHelper::removed = false;
+
+	return 0x707B29;
+}
+
+DEFINE_HOOK(0x6B7CE4, SpawnManagerClass_UnlinkPointer_RemoveSpawnee, 0x6)
+{
+	return RemoveSpawneeHelper::removed ? 0x6B7CF4 : 0;
 }
 
 #pragma endregion
@@ -1818,6 +1855,16 @@ DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
+{
+	enum { CannotEnter = 0x51A4BF };
+
+	GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pDestination, EDI);
+
+	return pDestination->Passengers.NumPassengers + 1 <= pDestination->Type->Passengers && static_cast<int>(pThis->GetTechnoType()->Size) <= pDestination->Type->SizeLimit ? 0 : CannotEnter;
+}
+
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
 {
 	GET(FootClass*, pTarget, ESI);
@@ -1841,6 +1888,24 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
+namespace RemoveCellContentTemp
+{
+	bool CheckBeforeUnmark = false;
+}
+
+DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
+{
+	enum { SkipGameCode = 0x737F80 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	RemoveCellContentTemp::CheckBeforeUnmark = true;
+	pThis->Mark(MarkType::Up);
+	RemoveCellContentTemp::CheckBeforeUnmark = false;
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 {
 	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
@@ -1848,7 +1913,7 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	GET(CellClass*, pCell, EDI);
 	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
 
-	if (onBridge ? pCell->AltObject : pCell->FirstObject)
+	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
 		return DontUnmark;
 
 	GET(ObjectClass*, pContent, ESI);

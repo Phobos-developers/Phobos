@@ -60,6 +60,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+    - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -130,7 +131,7 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
@@ -300,6 +301,7 @@ SelfHealing=0.0                             ; floating point value, percents or 
 SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
+SelfHealing.EnabledBy=                      ; List of BuildingTypes
 Respawn=0.0                                 ; floating point value, percents or absolute
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
@@ -307,6 +309,7 @@ Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Background=                            ; filename - including the .shp/.pcx extension
 Pips.Building.Empty=                        ; integer, frame of pips.shp (zero-based) for empty building pip
+Pips.HideIfNoStrength=false                 ; boolean
 IdleAnim=                                   ; AnimationType
 IdleAnim.ConditionYellow=                   ; AnimationType
 IdleAnim.ConditionRed=                      ; AnimationType
@@ -395,6 +398,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
+- `SelfHealing.EnabledBy` can be used to control the self-heal of the shield. If the owner has no structures from this list then the shield won't self-heal.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
   - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
   - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
@@ -418,6 +422,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
   - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
+  - `Pips.HideIfNoStrength` can be used to hide the shield's pip frame if the `Strength` is 0.
   - The above customizations are also available on per ShieldType basis, e.g `[ShieldType] -> Pips` instead of `[AudioVisual] -> Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
@@ -583,21 +588,6 @@ In `rulesmd.ini`:
 PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
-```
-
-### Skip anim delay for burst fire
-
-- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
-- Now you can implement the above logic using the following flag.
-
-In `artmd.ini`:
-```ini
-[SOMEBUILDING]                     ; BuildingType
-IsAnimDelayedBurst=true            ; boolean
-```
-
-```{note}
-The prism towers' fire is hardcoded to be delayed. Their fire will ignore this flag, just as they ignore IsAnimDelayedFire.
 ```
 
 ### Spy Effects
@@ -1145,6 +1135,22 @@ Detonate.AtFirer=false      ; boolean
 
 ## Technos
 
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]                   ; TechnoType
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -1571,9 +1577,9 @@ In `rulesmd.ini`:
 ```ini
 
 [SOMETECHNO]                  ; TechnoType
-Overload.Count=               ; list of integer, default to [CombatDamage] -> OverloadCount
-Overload.Damage=              ; list of integer, default to [CombatDamage] -> OverloadDamage
-Overload.Frames=              ; list of integer, default to [CombatDamage] -> OverloadFrames
+Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
+Overload.Damage=              ; List of integers, default to [CombatDamage] -> OverloadDamage
+Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
 Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
 Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
 Overload.ParticleSysCount=5   ; integer
@@ -1733,21 +1739,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean
-NoQueueUpToUnload=        ; boolean
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -1762,6 +1753,21 @@ DestroySound=      ; Sound entry
 ```
 
 ## Vehicles
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType, transport
+AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
+```
 
 ### Damaged unit image changes
 
@@ -1780,6 +1786,21 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType, transport
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
@@ -1830,8 +1851,8 @@ RemoveMindControl=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]  ; Warhead
-CanKill=true  ; boolean
+[SOMEWARHEAD]  ; WarheadType
+CanKill=true   ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
@@ -1955,7 +1976,7 @@ DamageEnemiesMultiplier=      ; floating point value
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectHouses` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.

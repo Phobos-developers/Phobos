@@ -35,6 +35,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
+	, IsSelfHealingEnabled { true }
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
@@ -112,6 +113,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
+		.Process(this->IsSelfHealingEnabled)
 		.Success();
 }
 
@@ -440,8 +442,13 @@ void ShieldClass::AI()
 		return;
 
 	this->OnlineCheck();
-	this->RespawnShield();
-	this->SelfHealing();
+	this->EnabledByCheck();
+
+	if (this->IsSelfHealingEnabled)
+	{
+		this->RespawnShield();
+		this->SelfHealing();
+	}
 
 	double ratio = this->Techno->GetHealthPercentage();
 
@@ -472,6 +479,33 @@ void ShieldClass::CloakCheck()
 
 	if (this->Cloak && this->IdleAnim && AnimTypeExt::ExtMap.Find(this->IdleAnim->Type)->DetachOnCloak)
 		this->KillAnim();
+}
+
+void ShieldClass::EnabledByCheck()
+{
+	if (this->Type->SelfHealing_EnabledBy.empty())
+		return;
+
+	this->IsSelfHealingEnabled = false;
+	auto const pOwner = this->Techno->Owner;
+
+	for (auto const pBuilding : pOwner->Buildings)
+	{
+		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
+
+		if (this->Type->SelfHealing_EnabledBy.Contains(pBuilding->Type) && isActive)
+		{
+			this->IsSelfHealingEnabled = true;
+			break;
+		}
+	}
+
+	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+
+	if (!this->IsSelfHealingEnabled)
+		timer->Pause();
+	else
+		timer->Resume();
 }
 
 void ShieldClass::OnlineCheck()
@@ -859,6 +893,9 @@ bool ShieldClass::IsRedSP()
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	Point2D position = { 0, 0 };
 	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
@@ -898,6 +935,9 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
 	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame;

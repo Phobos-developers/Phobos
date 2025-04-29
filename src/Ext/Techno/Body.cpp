@@ -510,7 +510,7 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
-	int cap = pAttachEffectType->Cumulative_MaxCount > -1 ? pAttachEffectType->Cumulative_MaxCount : INT_MAX;
+	unsigned int cap = pAttachEffectType->Cumulative_MaxCount > -1 ? pAttachEffectType->Cumulative_MaxCount : INT_MAX;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
@@ -561,12 +561,14 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->PreviousType)
 		.Process(this->AnimRefCount)
 		.Process(this->ReceiveDamage)
+		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
 		.Process(this->ChargeTurretTimer)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
+		.Process(this->DamageNumberOffset)
 		.Process(this->Strafe_BombsDroppedThisRound)
 		.Process(this->CurrentAircraftWeaponIndex)
 		.Process(this->IsInTunnel)
@@ -591,6 +593,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->LastSensorsMapCoords)
+		.Process(this->AirstrikeTargetingMe)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)

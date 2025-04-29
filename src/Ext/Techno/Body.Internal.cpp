@@ -36,7 +36,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
 	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*>(pThis);
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	Matrix3D mtx;
 
 	// Step 1: get body transform matrix
@@ -46,7 +46,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		mtx.MakeIdentity();
 
 	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && pThis->HasTurret())
+	if (isOnTurret && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
@@ -160,7 +160,7 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	{
 		if (invulnerability && pThis->IsIronCurtained())
 			tintColor |= pThis->ForceShielded ? RulesExt::Global()->TintColorForceShield : RulesExt::Global()->TintColorIronCurtain;
-		if (airstrike && pThis->Airstrike && pThis->Airstrike->Target == pThis)
+		if (airstrike && TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
 			tintColor |= RulesExt::Global()->TintColorAirstrike;
 		if (berserk && pThis->Berzerk)
 			tintColor |= RulesExt::Global()->TintColorBerserk;
