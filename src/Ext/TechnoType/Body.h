@@ -196,6 +196,9 @@ public:
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
+		std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
+		std::vector<Promotable<int>> InsigniaFrame_Passengers;
+		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
 		Valueable<bool> JumpjetTilt;
 		Valueable<double> JumpjetTilt_ForwardAccelFactor;
@@ -343,6 +346,9 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
+		
+		Valueable<bool> Harvester_CanGuardArea;
+		Nullable<bool> HarvesterScanAfterUnload;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -512,6 +518,9 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+			, Insignia_Passengers {}
+			, InsigniaFrame_Passengers {}
+			, InsigniaFrames_Passengers {}
 
 			, JumpjetTilt { false }
 			, JumpjetTilt_ForwardAccelFactor { 1.0 }
@@ -641,6 +650,9 @@ public:
 			, Overload_DeathSound {}
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount { 5 }
+
+			, Harvester_CanGuardArea { false }
+			, HarvesterScanAfterUnload {}
 		{ }
 
 		virtual ~ExtData() = default;
