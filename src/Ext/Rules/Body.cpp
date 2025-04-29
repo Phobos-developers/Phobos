@@ -9,6 +9,7 @@
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <Utilities/Patch.h>
 
@@ -37,6 +38,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
+	InsigniaTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
 }
