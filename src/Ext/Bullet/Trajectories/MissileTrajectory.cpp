@@ -434,9 +434,10 @@ bool MissileTrajectory::StandardVelocityChange()
 		const auto pType = this->Type;
 		const auto pTarget = pBullet->Target;
 		const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-		const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno));
+		const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno))
+			&& (!pType->LockDirection || !this->InStraight);
 		// Follow and track the target like a missile
-		if (checkValid && (!pType->LockDirection || !this->InStraight))
+		if (checkValid)
 			pBullet->TargetCoords = pTarget->GetCoords();
 		// Add calculated fixed offset
 		targetLocation = pBullet->TargetCoords + this->OffsetCoord;
