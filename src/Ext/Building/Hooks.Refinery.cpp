@@ -44,7 +44,7 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 
 	int money = slaveMiner->Owner->Available_Money() - OwnerBalanceBefore::SlaveComesBack;
 
-	if (auto pBld = abstract_cast<BuildingClass*>(slaveMiner))
+	if (auto pBld = abstract_cast<BuildingClass*, true>(slaveMiner))
 	{
 		auto pBldExt = BuildingExt::ExtMap.Find(pBld);
 		pBldExt->AccumulatedIncome += money;

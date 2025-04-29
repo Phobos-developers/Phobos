@@ -333,7 +333,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
-				if (auto const pAircraft = abstract_cast<AircraftClass*>(pUnit))
+				if (auto const pAircraft = abstract_cast<AircraftClass*, true>(pUnit))
 				{
 					if (pAircraft->Type->AirportBound)
 					{
@@ -444,11 +444,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		{
 			if (!ScriptExt::IsUnitAvailable(pUnit, true))
 			{
-				auto pTypeUnit = pUnit->GetTechnoType();
-
-				if (!pTypeUnit)
-					continue;
-
 				if (pUnit == pLeaderUnit)
 				{
 					nUnits++;
@@ -456,16 +451,17 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				}
 
 				// Aircraft case
-				if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pTypeUnit->Ammo > 0)
+				if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo <= 0)
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
-
-					if (pAircraft->AirportBound)
+					if (auto const pAircraft = abstract_cast<AircraftTypeClass*, true>(pUnit->GetTechnoType()))
 					{
-						// This aircraft won't count for the script action
-						pUnit->EnterIdleMode(false, true);
+						if (pAircraft->AirportBound)
+						{
+							// This aircraft won't count for the script action
+							pUnit->EnterIdleMode(false, true);
 
-						continue;
+							continue;
+						}
 					}
 				}
 
@@ -730,6 +726,8 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 			&& !pUnit->TemporalTargetingMe
 			&& !pUnit->BeingWarpedOut)
 		{
+			auto const whatAmI = pUnit->WhatAmI() == AbstractType::Aircraft;
+
 			if (mode == 2)
 			{
 				// Default mode: all members in range
@@ -737,14 +735,14 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 				{
 					bForceNextAction = false;
 
-					if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
+					if (whatAmI && pUnit->Ammo > 0)
 						pUnit->QueueMission(Mission::Move, false);
 
 					continue;
 				}
 				else
 				{
-					if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
+					if (whatAmI && pUnit->Ammo <= 0)
 					{
 						pUnit->EnterIdleMode(false, true);
 
@@ -759,7 +757,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					// Any member in range
 					if ((pUnit->DistanceFrom(pFocus->GetCell()) / 256.0) > closeEnough)
 					{
-						if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
+						if (whatAmI && pUnit->Ammo > 0)
 							pUnit->QueueMission(Mission::Move, false);
 
 						continue;
@@ -768,7 +766,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					{
 						bForceNextAction = true;
 
-						if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
+						if (whatAmI && pUnit->Ammo <= 0)
 						{
 							pUnit->EnterIdleMode(false, true);
 
@@ -783,7 +781,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 					{
 						if ((pUnit->DistanceFrom(pFocus->GetCell()) / 256.0) > closeEnough)
 						{
-							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo > 0)
+							if (whatAmI && pUnit->Ammo > 0)
 								pUnit->QueueMission(Mission::Move, false);
 
 							continue;
@@ -793,7 +791,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 							if (pUnit->IsInitiated)
 								bForceNextAction = true;
 
-							if (pUnit->WhatAmI() == AbstractType::Aircraft && pUnit->Ammo <= 0)
+							if (whatAmI && pUnit->Ammo <= 0)
 							{
 								pUnit->EnterIdleMode(false, true);
 

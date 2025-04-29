@@ -92,7 +92,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 	{
 		auto pLink = pThis->GetNthLink(0);
 
-		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*>(pLink))
+		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*, true>(pLink))
 		{
 			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 			int docks = pBuilding->Type->NumberOfDocks;

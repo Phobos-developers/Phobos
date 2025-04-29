@@ -279,9 +279,10 @@ void TechnoExt::ExtData::EatPassengers()
 				{
 					// Use explicit rate optionally multiplied by unit size as countdown.
 					timerLength = pDelType->Rate;
+					auto const size = pPassenger->GetTechnoType()->Size;
 
-					if (pDelType->Rate_SizeMultiply && pPassenger->GetTechnoType()->Size > 1.0)
-						timerLength *= (int)(pPassenger->GetTechnoType()->Size + 0.5);
+					if (pDelType->Rate_SizeMultiply && size > 1.0)
+						timerLength *= (int)(size->Size + 0.5);
 				}
 
 				this->PassengerDeletionTimer.Start(timerLength);
@@ -299,54 +300,50 @@ void TechnoExt::ExtData::EatPassengers()
 				if (pThis->Passengers.NumPassengers <= 0)
 					pThis->Passengers.FirstPassenger = nullptr;
 
-				if (auto const pPassengerType = pPassenger->GetTechnoType())
+				if (pDelType->ReportSound >= 0)
+					VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
+
+				if (const auto pAnimType = pDelType->Anim.Get())
 				{
-					if (pDelType->ReportSound >= 0)
-						VocClass::PlayAt(pDelType->ReportSound.Get(), pThis->GetCoords(), nullptr);
-
-					if (const auto pAnimType = pDelType->Anim.Get())
-					{
-						auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
-						pAnim->SetOwnerObject(pThis);
-						AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-						AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
-					}
-
-					// Check if there is money refund
-					if (pDelType->Soylent &&
-						EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
-					{
-						int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
-
-						if (nMoneyToGive > 0)
-						{
-							pThis->Owner->GiveMoney(nMoneyToGive);
-							if (pDelType->DisplaySoylent)
-							{
-								FlyingStrings::AddMoneyString(nMoneyToGive, pThis->Owner,
-									pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
-							}
-						}
-					}
-
-					// Handle gunner change.
-					if (pThis->GetTechnoType()->Gunner)
-					{
-						if (auto const pFoot = abstract_cast<FootClass*>(pThis))
-						{
-							pFoot->RemoveGunner(pPassenger);
-
-							if (pThis->Passengers.NumPassengers > 0)
-								pFoot->ReceiveGunner(pLastPassenger ? abstract_cast<FootClass*>(pLastPassenger) : pPreviousPassenger);
-						}
-					}
-
-					auto pSource = pDelType->DontScore ? nullptr : pThis;
-					pPassenger->KillPassengers(pSource);
-					pPassenger->RegisterDestruction(pSource);
-					pPassenger->UnInit();
+					auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+					pAnim->SetOwnerObject(pThis);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 				}
 
+				// Check if there is money refund
+				if (pDelType->Soylent && EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
+				{
+					int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
+
+					if (nMoneyToGive > 0)
+					{
+						pThis->Owner->GiveMoney(nMoneyToGive);
+
+						if (pDelType->DisplaySoylent)
+						{
+							FlyingStrings::AddMoneyString(nMoneyToGive, pThis->Owner,
+								pDelType->DisplaySoylentToHouses, pThis->Location, pDelType->DisplaySoylentOffset);
+						}
+					}
+				}
+
+				// Handle gunner change.
+				if (pThis->GetTechnoType()->Gunner)
+				{
+					if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
+					{
+						pFoot->RemoveGunner(pPassenger);
+
+						if (pThis->Passengers.NumPassengers > 0)
+							pFoot->ReceiveGunner(pLastPassenger ? abstract_cast<FootClass*, true>(pLastPassenger) : pPreviousPassenger);
+					}
+				}
+
+				auto pSource = pDelType->DontScore ? nullptr : pThis;
+				pPassenger->KillPassengers(pSource);
+				pPassenger->RegisterDestruction(pSource);
+				pPassenger->UnInit();
 				this->PassengerDeletionTimer.Stop();
 			}
 		}
@@ -499,7 +496,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 		}
 	}
 
-	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+	if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 	{
 		// It's still not recommended to have such idea, please avoid using this
 		if (static_cast<InfantryTypeClass*>(pOldType)->Deployer && !static_cast<InfantryTypeClass*>(pCurrentType)->Deployer)
@@ -560,7 +557,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			}
 
 			// Update Gunner
-			if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+			if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
 			{
 				if (addGunner)
 					pFoot->ReceiveGunner(pLastPassenger);
@@ -628,7 +625,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 			auto coords = pThis->GetCoords();
 			int offset = 0;
 
-			if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
+			if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 				offset = Unsorted::LevelHeight * pBuilding->Type->Height;
 			else
 				offset = pThis->GetTechnoType()->MindControlRingOffset;
@@ -695,19 +692,21 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	int healthDeficit = pThis->GetTechnoType()->Strength - pThis->Health;
+	auto const pType = pThis->GetTechnoType();
+	int& health = pThis->Health;
+	int healthDeficit = pType->Strength - health;
 
-	if (pThis->Health && healthDeficit > 0)
+	if (health && healthDeficit > 0)
 	{
 		auto defaultSelfHealType = SelfHealGainType::NoHeal;
+		auto const whatAmI = pThis->WhatAmI();
 
-		if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic))
+		if (whatAmI == AbstractType::Infantry || (whatAmI == AbstractType::Unit && pType->Organic))
 			defaultSelfHealType = SelfHealGainType::Infantry;
-		else if (pThis->WhatAmI() == AbstractType::Unit)
+		else if (whatAmI == AbstractType::Unit)
 			defaultSelfHealType = SelfHealGainType::Units;
 
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		auto selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
+		auto selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
@@ -741,13 +740,12 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 				amount = healthDeficit;
 
 			bool wasDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
-
-			pThis->Health += amount;
+			health += amount;
 
 			if (wasDamaged && (pThis->GetHealthPercentage() > RulesClass::Instance->ConditionYellow
 				|| pThis->GetHeight() < -10))
 			{
-				if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+				if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 				{
 					pBuilding->Mark(MarkType::Change);
 					pBuilding->ToggleDamagedAnims(false);
@@ -784,14 +782,14 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	if (isInLimbo)
 	{
 		// Remove parasite units first before deleting them.
-		if (auto const pFoot = abstract_cast<FootClass*>(pThis))
+		if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
 		{
 			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
 				pFoot->ParasiteImUsing->ExitUnit();
 		}
 
 		// Remove limbo buildings' tracking here because their are not truely InLimbo
-		if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+		if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 		{
 			if (!pBuilding->InLimbo && !pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
 				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
@@ -825,7 +823,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 	case AutoDeathBehavior::Sell:
 	{
-		if (auto pBld = abstract_cast<BuildingClass*>(pThis))
+		if (auto pBld = abstract_cast<BuildingClass*, true>(pThis))
 		{
 			if (pBld->HasBuildUp)
 			{

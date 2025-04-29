@@ -18,7 +18,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 
 	if (explicitEmptyCells)
 	{
-		auto pTechno = pCell->GetContent() ? abstract_cast<TechnoClass*>(pCell->GetContent()) : nullptr;
+		auto pTechno = abstract_cast<TechnoClass*>(pCell->GetContent());
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;
@@ -84,7 +84,7 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 
 	while (object)
     {
-        if (auto pTechno = abstract_cast<TechnoClass*>(object))
+        if (auto pTechno = abstract_cast<TechnoClass*, true>(object))
         {
             if (owner && !EnumFunctions::CanTargetHouse(allowedHouses, owner, pTechno->Owner))
                 return false;

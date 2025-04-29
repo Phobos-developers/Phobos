@@ -178,15 +178,14 @@ DEFINE_HOOK(0x5F5416, ObjectClass_ReceiveDamage_CanC4DamageRounding, 0x6)
 	GET(ObjectClass*, pThis, ESI);
 	GET(int*, pDamage, EDI);
 
-	if (*pDamage == 0 && pThis->WhatAmI() == AbstractType::Building)
+	if (*pDamage)
+		return SkipGameCode;
+
+	if (auto const pBld = abstract_cast<BuildingClass*, true>(pThis))
 	{
-		auto const pType = static_cast<BuildingClass*>(pThis)->Type;
-
-		if (!pType->CanC4)
+		if (!pBld->Type->CanC4)
 		{
-			auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-
-			if (!pTypeExt->CanC4_AllowZeroDamage)
+			if (!BuildingTypeExt::ExtMap.Find(pBld->Type)->CanC4_AllowZeroDamage)
 				*pDamage = 1;
 		}
 	}

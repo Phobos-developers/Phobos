@@ -196,7 +196,6 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 
 	GET(SpawnManagerClass* const, pThis, ESI);
 	GET(AircraftClass* const, pSpawner, EDI);
-	GET(CellStruct* const, pCarrierMapCrd, EBP);
 
 	auto const pCarrier = pThis->Owner;
 	auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
@@ -215,6 +214,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 		{
 			// This is a fix to vanilla behavior. Buildings bigger than 1x1 will recycle the spawner correctly.
 			// 182 is √2/2 * 256. 20 is same to vanilla behavior.
+			GET(CellStruct* const, pCarrierMapCrd, EBP);
 			return (pCarrier->WhatAmI() == AbstractType::Building)
 				? (deltaCrd.X <= 182 && deltaCrd.Y <= 182 && deltaCrd.Z < 20)
 				: (pSpawner->GetMapCoords() == *pCarrierMapCrd && deltaCrd.Z < 20);
@@ -244,7 +244,6 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 {
 	GET(FootClass* const, pThis, EBP);
-	GET(CoordStruct*, pDestCrd, EAX);
 
 	auto pCarrier = pThis->SpawnOwner;
 
@@ -254,7 +253,10 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
 
 		if (FLH != CoordStruct::Empty)
+		{
+			GET(CoordStruct*, pDestCrd, EAX);
 			*pDestCrd += TechnoExt::GetFLHAbsoluteCoords(pCarrier, FLH, pCarrierTypeExt->Spawner_RecycleOnTurret) - pCarrier->GetCoords();
+		}
 	}
 
 	return 0;

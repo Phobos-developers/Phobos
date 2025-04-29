@@ -6,15 +6,8 @@
 
 void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pickAllies = false, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
 {
-	auto pScript = pTeam->CurrentScript;
-	int scriptArgument = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
-	TechnoClass* selectedTarget = nullptr;
-	bool noWaitLoop = false;
-	FootClass* pLeaderUnit = nullptr;
-	TechnoTypeClass* pLeaderUnitType = nullptr;
-	bool bAircraftsWithoutAmmo = false;
-	TechnoClass* pFocus = nullptr;
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	bool noWaitLoop = false;
 
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeamData->WaitNoTargetCounter > 0)
@@ -29,6 +22,8 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 		if (pTeamData->WaitNoTargetAttempts > 0)
 			pTeamData->WaitNoTargetAttempts--;
 	}
+
+	bool bAircraftsWithoutAmmo = false;
 
 	for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
@@ -47,7 +42,8 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 	}
 
 	// Find the Leader
-	pLeaderUnit = pTeamData->TeamLeader;
+	auto pLeaderUnit = pTeamData->TeamLeader;
+	auto pScript = pTeam->CurrentScript;
 
 	if (!IsUnitAvailable(pLeaderUnit, true))
 	{
@@ -76,13 +72,13 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 		return;
 	}
 
-	pLeaderUnitType = pLeaderUnit->GetTechnoType();
-	pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
+	TechnoClass* selectedTarget = nullptr;
+	auto pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
-		int targetMask = scriptArgument;
+		int targetMask = pScript->Type->ScriptActions[pScript->CurrentMission].Argument; // This is the target type
 		selectedTarget = FindBestObject(pLeaderUnit, targetMask, calcThreatMode, pickAllies, attackAITargetType, idxAITargetTypeItem);
 
 		if (selectedTarget)
@@ -162,11 +158,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 	else
 	{
 		// This part of the code is used for updating the "Move" mission in each team unit
-		int moveDestinationMode = 0;
-		moveDestinationMode = pTeamData->MoveMissionEndMode;
-		bool bForceNextAction = ScriptExt::MoveMissionEndStatus(pTeam, pFocus, pLeaderUnit, moveDestinationMode);
-
-		if (bForceNextAction)
+		if (ScriptExt::MoveMissionEndStatus(pTeam, pFocus, pLeaderUnit, pTeamData->MoveMissionEndMode))
 		{
 			pTeamData->MoveMissionEndMode = 0;
 			pTeamData->IdxSelectedObjectFromAIList = -1;
@@ -192,8 +184,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 	// Favorite Enemy House case. If set, AI will focus against that House
 	if (!pickAllies && pTechno->BelongsToATeam())
 	{
-		auto pFoot = abstract_cast<FootClass*>(pTechno);
-		if (pFoot)
+		if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 		{
 			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
 
@@ -206,28 +197,31 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
 		auto object = TechnoClass::Array.GetItem(i);
-		auto objectType = object->GetTechnoType();
-		auto pTechnoType = pTechno->GetTechnoType();
 
-		if (!object || !objectType || !pTechnoType)
+		if (!object)
 			continue;
 
 		if (enemyHouse && enemyHouse != object->Owner)
 			continue;
 
+		auto objectType = object->GetTechnoType();
+		auto pTechnoType = pTechno->GetTechnoType();
+
 		// Discard invisible structures
-		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
+		auto const pTypeBuilding = abstract_cast<BuildingTypeClass*, true>(objectType);
 
 		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
 			continue;
 
 		if (objectType->Naval)
 		{
+			auto const navalTargeting = pTechnoType->NavalTargeting;
+
 			// Submarines aren't a valid target
 			if (object->CloakState == CloakState::Cloaked
 				&& objectType->Underwater
-				&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
-					|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+				&& (navalTargeting == NavalTargetingType::Underwater_Never
+					|| navalTargeting == NavalTargetingType::Naval_None))
 			{
 				continue;
 			}

@@ -247,7 +247,7 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 			if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
 				return SkipObject;
 
-			if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
+			if (auto const pTechno = abstract_cast<TechnoClass*, true>(pObject))
 			{
 				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
 					return SkipObject;

@@ -596,13 +596,13 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	int maxSpeed = pThis->GetTechnoType()->Speed;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pType = pThis->GetTechnoType();
+	int maxSpeed = pType->Speed;
 
-	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
+	if (TechnoTypeExt::ExtMap.Find(pType)->UseDisguiseMovementSpeed && pThis->IsDisguised())
 	{
-		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
-			maxSpeed = pType->Speed;
+		if (auto const pDisguiseType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			maxSpeed = pDisguiseType->Speed;
 	}
 
 	R->EAX(maxSpeed);
@@ -739,9 +739,8 @@ DEFINE_HOOK_AGAIN(0x6A343F, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)
 DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
 
-	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
+	const double multiplier = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType())->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 	__asm fmul multiplier;
 
 	return R->Origin() + 0x6;

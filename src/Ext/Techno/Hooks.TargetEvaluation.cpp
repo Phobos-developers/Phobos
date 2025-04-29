@@ -246,7 +246,7 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 				if (pShieldData->IsActive())
 				{
 					const auto pWH = EvaluateObjectTemp::PickedWeapon ? EvaluateObjectTemp::PickedWeapon->Warhead : nullptr;
-					const auto pFoot = abstract_cast<FootClass*>(pTechno);
+					const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
 					if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
 						result = pExt->Shield->GetHealthRatio();
@@ -286,7 +286,7 @@ public:
 				if (pShieldData->IsActive())
 				{
 					const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-					const auto pFoot = abstract_cast<FootClass*>(pObj);
+					const auto pFoot = abstract_cast<FootClass*, true>(pObj);
 
 					if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
 					{
@@ -315,7 +315,7 @@ public:
 private:
 	static bool CanApplyEngineerActions(TechnoClass* pThis, ObjectClass* pTarget)
 	{
-		const auto pInf = abstract_cast<InfantryClass*>(pThis);
+		const auto pInf = abstract_cast<InfantryClass*, true>(pThis);
 		const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
 
 		if (!pInf || !pBuilding)

@@ -56,9 +56,6 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	GET(AircraftClass*, pThis, EDI);
 	GET(AbstractClass*, pTarget, EAX);
 
-	if (!pTarget)
-		return 0;
-
 	auto const pObject = abstract_cast<ObjectClass*>(pTarget);
 
 	if (!pObject || !pObject->IsInAir())
@@ -293,7 +290,7 @@ DEFINE_HOOK(0x4CF31C, FlyLocomotionClass_FlightUpdate_LandingDir, 0x9)
 
 	if (pLinkedTo->CurrentMission == Mission::Enter || pLinkedTo->GetMapCoords() == CellClass::Coord2Cell(pLinkedTo->Locomotor->Destination()))
 	{
-		if (auto const pAircraft = abstract_cast<AircraftClass*>(pLinkedTo))
+		if (auto const pAircraft = abstract_cast<AircraftClass*, true>(pLinkedTo))
 			dir = DirStruct(AircraftExt::GetLandingDir(pAircraft)).Raw;
 	}
 

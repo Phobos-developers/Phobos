@@ -210,17 +210,20 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 {
-	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+	auto const pType = pBuilding->Type;
+	auto const whatAmI = pTechno->WhatAmI();
+
+	if (!pType->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
-	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
-		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
-			pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+	if ((pType->InfantryAbsorb || pType->UnitAbsorb) &&
+		(whatAmI == AbstractType::Infantry && !pType->InfantryAbsorb ||
+			whatAmI == AbstractType::Unit && !pType->UnitAbsorb))
 	{
 		return false;
 	}
 
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
 
 	if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
 		return false;

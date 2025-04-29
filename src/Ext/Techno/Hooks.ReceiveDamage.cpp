@@ -65,10 +65,13 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
-			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+			if (pRules->CombatAlert_IgnoreBuilding)
+			{
+				const auto pBuilding = abstract_cast<BuildingClass*, true>(pThis);
 
-			if (pRules->CombatAlert_IgnoreBuilding && pBuilding && !pTypeExt->CombatAlert_NotBuilding.Get(pBuilding->Type->IsVehicle()))
-				return;
+				if (pBuilding && !pTypeExt->CombatAlert_NotBuilding.Get(pBuilding->Type->IsVehicle()))
+					return;
+			}
 
 			const auto coordInMap = pThis->GetCoords();
 

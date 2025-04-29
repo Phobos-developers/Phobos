@@ -78,12 +78,9 @@ AttachEffectClass::~AttachEffectClass()
 void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 {
 	auto const abs = static_cast<AbstractClass*>(ptr);
-	auto const absType = abs->WhatAmI();
 
-	if (absType == AbstractType::Anim)
+	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		auto const pAnim = abstract_cast<AnimClass*>(abs);
-
 		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
 			if (pAnimExt->IsAttachedEffectAnim)
@@ -103,7 +100,7 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 	}
 	else if ((abs->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 	{
-		auto const pTechno = abstract_cast<TechnoClass*>(abs);
+		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
 
 		if (TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
 		{
@@ -471,7 +468,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	auto const pTechno = this->Techno;
 
-	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
+	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 

@@ -76,11 +76,12 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const whatAmI = pPassenger->WhatAmI();
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
 
-		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
@@ -100,9 +101,10 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const whatAmI = pPassenger->WhatAmI();
 
 		// Remove from transport reloader list before switching house
-		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			auto& vec = ScenarioExt::Global()->TransportReloaders;

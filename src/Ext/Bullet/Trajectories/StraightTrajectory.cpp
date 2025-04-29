@@ -660,7 +660,7 @@ bool StraightTrajectory::CheckThroughAndSubjectInCell(BulletClass* pBullet, Cell
 
 	while (pObject)
 	{
-		const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+		const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 		pObject = pObject->NextObject;
 
 		// Non technos and not target friendly forces will be excluded
@@ -796,7 +796,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 
 		while (pObject)
 		{
-			const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+			const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 			pObject = pObject->NextObject;
 
 			if (!pTechno || !pTechno->IsAlive || !pTechno->IsOnMap || pTechno->Health <= 0 || pTechno->InLimbo || pTechno->IsSinking)

@@ -19,9 +19,7 @@ DEFINE_HOOK(0x444113, BuildingClass_ExitObject_NavalProductionFix1, 0x6)
 
 	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
 	{
-		if (auto const pHouseExt = HouseExt::ExtMap.Find(pHouse))
-			pHouseExt->ProducingNavalUnitTypeIndex = -1;
-
+		HouseExt::ExtMap.Find(pHouse)->ProducingNavalUnitTypeIndex = -1;
 		ExitObjectTemp::ProducingUnitIndex = pHouse->ProducingUnitTypeIndex;
 	}
 
@@ -33,10 +31,8 @@ DEFINE_HOOK(0x444137, BuildingClass_ExitObject_NavalProductionFix2, 0x6)
 	GET(BuildingClass* const, pThis, ESI);
 	GET(FootClass* const, pObject, EDI);
 
-	auto const pHouse = pThis->Owner;
-
 	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
-		pHouse->ProducingUnitTypeIndex = ExitObjectTemp::ProducingUnitIndex;
+		pThis->Owner->ProducingUnitTypeIndex = ExitObjectTemp::ProducingUnitIndex;
 
 	return 0;
 }

@@ -203,7 +203,7 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 		return false;
 	}
 
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+	auto const pTechno = abstract_cast<TechnoClass*, true>(pObject);
 	if (!pTechno)
 		return false;
 
@@ -244,7 +244,7 @@ bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject
 		return false;
 	}
 
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+	auto const pTechno = abstract_cast<TechnoClass*, true>(pObject);
 	if (!pTechno)
 		return false;
 

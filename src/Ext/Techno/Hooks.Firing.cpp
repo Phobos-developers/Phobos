@@ -24,9 +24,11 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
+	auto const pType = pThis->GetTechnoType();
+
 	if (pThis && pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pTypeExt->InterceptorType)
 		{
@@ -36,7 +38,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	}
 
 	// Restore overridden instructions.
-	R->EAX(pThis->GetTechnoType());
+	R->EAX(pType);
 
 	return SkipGameCode;
 }
@@ -300,11 +302,11 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (pTarget)
 	{
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+		if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
 		{
 			pTargetCell = pCell;
 		}
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+		else if (const auto pObject = abstract_cast<ObjectClass*, true>(pTarget))
 		{
 			// Ignore target cell for technos that are in air.
 			if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
@@ -520,7 +522,6 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
 
 	GET(TechnoClass* const, pThis, ESI);
-	GET(CellClass* const, pCell, EAX);
 	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFSET(0xB0, -0x70));
 
 	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
@@ -558,6 +559,8 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 			return SkipSetTarget;
 		}
 
+		GET(CellClass* const, pCell, EAX);
+
 		bool allowBridges = pCell && pCell->ContainsBridge() && (pThis->OnBridge || pCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
 		if (!pExt->SkipWeaponPicking && !EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, allowBridges))
@@ -569,13 +572,14 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
 	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
+			GET(TechnoClass*, pThis, ESI);
+
 			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
@@ -605,15 +609,15 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
-	GET_BASE(AbstractClass* const, pTarget, 0x8);
-	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
-	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
-
-	if (pSourceTypeExt->InterceptorType)
+	if (TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType())->InterceptorType)
 	{
+		GET_BASE(AbstractClass* const, pTarget, 0x8);
+
 		if (auto const pTargetObject = abstract_cast<BulletClass* const>(pTarget))
 		{
+			GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
+
 			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
 			{
 				pBulletExt->IsInterceptor = true;
@@ -634,7 +638,7 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
 	{
-		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*, true>(pThis)))
 		{
 			if (!pExt->CurrentLaserWeaponIndex.has_value())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;
@@ -722,7 +726,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 
 		if (!found)
 		{
-			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
+			if (auto const pInf = abstract_cast<InfantryClass*, true>(pThis))
 				flh = TechnoExt::GetSimpleFLH(pInf, weaponIndex, found);
 
 			if (!found)

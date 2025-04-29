@@ -648,7 +648,7 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 		if (pType->WhatAmI() == AbstractType::BuildingType && clicked)
 			return SkipGameCode;
 	}
-	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType))
 	{
 		if (const auto pFactory = HouseClass::CurrentPlayer->GetPrimaryFactory(AbstractType::BuildingType, pType->Naval, pBuildingType->BuildCat))
 		{
