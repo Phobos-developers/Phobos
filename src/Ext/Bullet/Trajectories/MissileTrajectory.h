@@ -12,7 +12,7 @@ public:
 		, FacingCoord { false }
 		, ReduceCoord { true }
 		, PreAimCoord { { 0, 0, 0 } }
-		, LaunchSpeed { 0 }
+		, LaunchSpeed { 0.001 }
 		, Acceleration { 10.0 }
 		, TurningSpeed { 10.0 }
 		, LockDirection { false }

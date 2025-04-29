@@ -62,7 +62,10 @@ void MissileTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 		this->TargetSnapDistance = Leptons(154);
 		// 154 -> 0.5 * Unsorted::LeptonsPerCell (Used to ensure correct hit at the fixed speed)
 		this->DetonationDistance = Leptons(128);
-		this->Acceleration = 5;
+		// Fixed and appropriate final speed
+		this->Speed = 192.0;
+		// Fixed and appropriate acceleration
+		this->Acceleration = 4.0;
 		// Fixed and appropriate steering speed
 		this->TurningSpeed = 10.0;
 		return;
@@ -217,8 +220,7 @@ void MissileTrajectory::OpenFire()
 			// When the distance is short, the initial moving distance will be reduced
 			if (pType->ReduceCoord && this->OriginalDistance < (Unsorted::LeptonsPerCell * 10))
 				this->PreAimDistance *= this->OriginalDistance / (Unsorted::LeptonsPerCell * 10);
-			// The calculation for each frame will be completed before the speed update, make up for the first frame here
-			this->PreAimDistance += pType->LaunchSpeed;
+
 			this->InitializeBulletNotCurve();
 		}
 
@@ -398,16 +400,8 @@ bool MissileTrajectory::CurveVelocityChange()
 			targetLocation.X += static_cast<int>(timeMult * (targetLocation.X - this->LastTargetCoord.X));
 			targetLocation.Y += static_cast<int>(timeMult * (targetLocation.Y - this->LastTargetCoord.Y));
 		}
-		// Stable the fixed flight speed
-		this->MovingSpeed = this->MovingVelocity.Magnitude();
-
-		if (this->MovingSpeed < 192.0)
-			this->MovingSpeed += 4.0;
-
-		if (this->MovingSpeed > 192.0)
-			this->MovingSpeed = 192.0;
 		// Calculate the speed change during gliding phase using common steering algorithm
-		if (this->ChangeBulletVelocity(targetLocation) || this->CalculateBulletVelocity(this->MovingSpeed))
+		if (this->ChangeBulletVelocity(targetLocation))
 			return true;
 	}
 
@@ -416,57 +410,36 @@ bool MissileTrajectory::CurveVelocityChange()
 
 bool MissileTrajectory::NotCurveVelocityChange()
 {
-	const auto pType = this->Type;
-
-	if (this->PreAimDistance > 0)
-		this->PreAimDistance -= this->MovingSpeed;
 	// Calculate steering
 	if (this->StandardVelocityChange())
 		return true;
-	// Calculate new speed
-	this->MovingSpeed += pType->Acceleration;
-	// Judging whether to accelerate or decelerate based on acceleration
-	if (pType->Acceleration > 0 || (pType->Acceleration == 0 && pType->LaunchSpeed <= pType->Speed))
-	{
-		if (this->MovingSpeed > pType->Speed)
-			this->MovingSpeed = pType->Speed;
-	}
-	else
-	{
-		if (this->MovingSpeed < pType->Speed)
-			this->MovingSpeed = pType->Speed;
-	}
+
+	if (this->PreAimDistance > 0)
+		this->PreAimDistance -= this->MovingSpeed;
 	// Calculate velocity vector
-	return this->CalculateBulletVelocity(this->MovingSpeed);
+	return false;
 }
 
 bool MissileTrajectory::StandardVelocityChange()
 {
-	const auto pType = this->Type;
 	const auto pBullet = this->Bullet;
 	auto targetLocation = CoordStruct::Empty;
 
-	if (pType->LockDirection && this->InStraight)
+	if (this->PreAimDistance > 0)
 	{
-		targetLocation = pBullet->TargetCoords;
-	}
-	else if (this->PreAimDistance > 0)
-	{
-		targetLocation = PhobosTrajectory::Vector2Coord(this->MovingVelocity) * 2;
+		targetLocation = pBullet->Location + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
 	}
 	else
 	{
-		targetLocation = pBullet->TargetCoords;
+		const auto pType = this->Type;
 		const auto pTarget = pBullet->Target;
 		const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 		const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno));
 		// Follow and track the target like a missile
-		if (checkValid)
-			targetLocation = pTarget->GetCoords();
-
-		pBullet->TargetCoords = targetLocation;
+		if (checkValid && (!pType->LockDirection || !this->InStraight))
+			pBullet->TargetCoords = pTarget->GetCoords();
 		// Add calculated fixed offset
-		targetLocation += this->OffsetCoord;
+		targetLocation = pBullet->TargetCoords + this->OffsetCoord;
 		// If the speed is too low, it will cause the lead time calculation results to be too far away and unable to be used
 		if (pType->LeadTimeCalculate.Get(true) && checkValid && (pType->UniqueCurve || pType->Speed > 64.0))
 		{
@@ -496,7 +469,7 @@ bool MissileTrajectory::StandardVelocityChange()
 			}
 		}
 	}
-	// Calculate the velocity direction change
+	// Calculate new speed
 	return this->ChangeBulletVelocity(targetLocation);
 }
 
@@ -504,15 +477,32 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
+	// Add gravity
 	auto& bulletVelocity = this->MovingVelocity;
 	bulletVelocity.Z -= BulletTypeExt::GetAdjustedGravity(this->Bullet->Type);
-	this->MovingSpeed = bulletVelocity.Magnitude();
+	const auto currentSpeed = bulletVelocity.Magnitude();
+	this->MovingSpeed = currentSpeed + pType->Acceleration;
+	// Calculate new speed with acceleration
+	if (pType->Acceleration > 0 || (pType->Acceleration == 0 && pType->LaunchSpeed <= pType->Speed))
+	{
+		if (this->MovingSpeed > pType->Speed)
+			this->MovingSpeed = pType->Speed;
+	}
+	else
+	{
+		if (this->MovingSpeed < pType->Speed)
+			this->MovingSpeed = pType->Speed;
+	}
+
+	bulletVelocity *= this->MovingSpeed / currentSpeed;
 	const auto targetVelocity = PhobosTrajectory::Coord2Vector(targetLocation - pBullet->Location);
 	// Calculate the new velocity vector based on turning speed
 	const auto dotProduct = (targetVelocity * bulletVelocity);
 	const auto cosTheta = dotProduct / (targetVelocity.Magnitude() * this->MovingSpeed);
-	const auto radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0)); // Ensure that the result range of cos is correct
-	const auto turningRadius = pType->TurningSpeed * (Math::TwoPi / 360); // TurningSpeed uses angles as units and requires conversion
+	// Ensure that the result range of cos is correct
+	const auto radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0));
+	// TurningSpeed uses angles as units and requires conversion
+	const auto turningRadius = pType->TurningSpeed * (Math::TwoPi / 360);
 	// The angle that needs to be rotated is relatively large
 	if (std::abs(radian) > turningRadius)
 	{
@@ -527,10 +517,12 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	else
 	{
 		bulletVelocity = targetVelocity;
-		this->InStraight = true;
+
+		if (this->PreAimDistance <= 0)
+			this->InStraight = true;
 	}
 	// Record the current value for subsequent checks
 	this->LastDotProduct = dotProduct;
 	this->LastTargetCoord = pBullet->TargetCoords;
-	return false;
+	return this->CalculateBulletVelocity(this->MovingSpeed);
 }
