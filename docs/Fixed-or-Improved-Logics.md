@@ -870,18 +870,20 @@ Image=              ; name of the file that will be used as image, without exten
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
+  - `DrawInsignia.UsePixelSelectionBracketDelta` can be set to use techno's `PixelSelectionBracketDelta` to additionally adjust insignias vertically.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-EnemyInsignia=true                       ; boolean
+EnemyInsignia=true                                          ; boolean
 
 [AudioVisual]
-DrawInsignia.OnlyOnSelected=false        ; boolean
-DrawInsignia.AdjustPos.Infantry=5,2      ; X,Y, position offset from default
-DrawInsignia.AdjustPos.Units=10,6        ; X,Y, position offset from default
-DrawInsignia.AdjustPos.Buildings=10,6    ; X,Y, position offset from default
-DrawInsignia.AdjustPos.BuildingsAnchor=  ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+DrawInsignia.OnlyOnSelected=false                           ; boolean
+DrawInsignia.UsePixelSelectionBracketDelta=false            ; boolean
+DrawInsignia.AdjustPos.Infantry=5,2                         ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Units=10,6                           ; X,Y, position offset from default
+DrawInsignia.AdjustPos.Buildings=10,6                       ; X,Y, position offset from default
+DrawInsignia.AdjustPos.BuildingsAnchor=                     ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 
 [SOMETECHNO]                             ; TechnoType
 Insignia=                                ; filename - excluding the .shp extension
