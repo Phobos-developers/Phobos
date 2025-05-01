@@ -94,7 +94,7 @@ In `rulesmd.ini`:
 [InsigniaTypes]
 0=SOMEINSIGNIATYPE
 
-[SOMEINSIGNIATYPE]						 ; InsigniaType
+[SOMEINSIGNIATYPE]                       ; InsigniaType
 Insignia=                                ; filename - excluding the .shp extension
 Insignia.Rookie=                         ; filename - excluding the .shp extension
 Insignia.Veteran=                        ; filename - excluding the .shp extension
