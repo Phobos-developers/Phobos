@@ -1918,11 +1918,11 @@ msgstr "根据射程选取武器"
 
 #: ../../../CREDITS.md:475
 msgid "Passenger-based insignias"
-msgstr ""
+msgstr "根据乘客切换军衔"
 
 #: ../../../CREDITS.md:476
 msgid "Use `InsigniaType` to set the properties of insignia in a batch"
-msgstr ""
+msgstr "使用 `InsigniaType` 批量设置军衔属性"
 
 #: ../../../CREDITS.md:477
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"

@@ -1480,19 +1480,19 @@ msgstr ""
 "addtional-scan-after-unload)（by TaranDahl）"
 
 #: ../../Whats-New.md:376
-#, fuzzy
 msgid ""
 "[Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-"
 "veterancy-insignias) (by Ollerus)"
 msgstr ""
-"[自定义过载逻辑](Fixed-or-Improved-Logics.md#customize-overpower-logic)（by "
-"NetsuNegi）"
+"[根据乘客切换军衔](Fixed-or-Improved-Logics.md#customizable-"
+"veterancy-insignias)（by Ollerus）"
 
 #: ../../Whats-New.md:377
 msgid ""
 "[Use `InsigniaType` to set the properties of insignia in a "
 "batch](Miscellanous.md#insignia-type) (by Ollerus)"
 msgstr ""
+"[使用 `InsigniaType` 批量设置军衔属性](Miscellanous.md#insignia-type)（by Ollerus）"
 
 #: ../../Whats-New.md:379 ../../Whats-New.md:574 ../../Whats-New.md:890
 #: ../../Whats-New.md:999 ../../Whats-New.md:1024 ../../Whats-New.md:1063

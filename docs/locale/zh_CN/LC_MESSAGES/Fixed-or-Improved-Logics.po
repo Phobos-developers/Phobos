@@ -3406,41 +3406,39 @@ msgstr ""
 "`pips.shp` 一样，它们使用 `palette.pal` 作为色盘进行绘制。"
 
 #: ../../Fixed-or-Improved-Logics.md:862
-#, fuzzy
 msgid ""
 "`InsigniaFrame(.Rookie|Veteran|Elite)` can be used to set (zero-based) "
 "frame index of the insignia to display, optionally for each veterancy "
 "stage. Using -1 uses the default setting. Default settings are -1 (none) "
 "for rookie, 14 for veteran and 15 for elite."
 msgstr ""
-"`InsigniaFrame.(Rookie|Veteran|Elite)` 可用于为每个等级阶段设置军衔的（从 0 开始的）帧索引。使用 -1 "
+"`InsigniaFrame(.Rookie|Veteran|Elite)` 可用于为每个等级阶段设置军衔的（从 0 开始的）帧索引。使用 -1 "
 "表示使用默认设置。默认设置对新兵为 -1（无），对老兵为 14，对精英为 15。"
 
 #: ../../Fixed-or-Improved-Logics.md:863
-#, fuzzy
 msgid ""
 "A shorthand `InsigniaFrames` can be used to list them in order from "
 "rookie, veteran and elite instead as well. "
 "`InsigniaFrame(.Rookie|Veteran|Elite)` takes priority over this."
 msgstr ""
 "也可以使用简写 `InsigniaFrames` "
-"按顺序列出新兵、老兵和精英的帧索引。`InsigniaFrame.(Rookie|Veteran|Elite)` 的优先级高于此。"
+"按顺序列出新兵、老兵和精英的帧索引。`InsigniaFrame(.Rookie|Veteran|Elite)` 的优先级高于此。"
 
 #: ../../Fixed-or-Improved-Logics.md:864
 msgid ""
 "These settings will be overriden by the properties set in "
 "[InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType` is set."
 msgstr ""
+"如果设置了 `InsigniaType` 则上述设置会被 [InsigniaType](Miscellanous.md#insignia-type) 中定义的属性覆盖。"
 
 #: ../../Fixed-or-Improved-Logics.md:865
-#, fuzzy
 msgid ""
 "Normal insignia can be overridden for specific weapon modes of "
 "`Gunner=true` units by setting `Insignia(.Frame/.Frames).WeaponN` where "
 "`N` stands for 1-based weapon mode index. If not set, defaults to non-"
 "mode specific insignia settings."
 msgstr ""
-"可以通过设置 `Insignia.(Frame/Frames).WeaponN` 来为 `Gunner=true` "
+"可以通过设置 `Insignia(.Frame/.Frames).WeaponN` 来为 `Gunner=true` "
 "的单位使用不同武器时换成不同的军衔，其中 `N` 表示基于 1 的武器模式索引。如果不设置，默认使用非特定模式的军衔设置。"
 
 #: ../../Fixed-or-Improved-Logics.md:866
@@ -3449,6 +3447,7 @@ msgid ""
 "[InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.WeaponN` "
 "is set."
 msgstr ""
+"如果设置了 `InsigniaType.WeaponN` 则上述设置会被 [InsigniaType](Miscellanous.md#insignia-type) 中定义的属性覆盖。"
 
 #: ../../Fixed-or-Improved-Logics.md:867
 msgid ""
@@ -3459,6 +3458,9 @@ msgid ""
 "insignia settings. Will be overridden by weapon mode insignia settings, "
 "if set."
 msgstr ""
+"可以通过设置 `Insignia(.Frame/.Frames).PassengersN` 来为运输工具在拥有不同的载员数量时换成不同的军衔，"
+"其中 `N` 表示当前载员数量（从 0 到运输工具 `Passengers` 的值）。如果不设置，默认无载员模式的军衔设置。"
+"如果已经设置了 `Insignia(.Frame/.Frames).WeaponN` 则覆盖该语句的效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:868
 msgid ""
@@ -3466,6 +3468,7 @@ msgid ""
 "[InsigniaType](Miscellanous.md#insignia-type), if "
 "`InsigniaType.PassengersN` is set."
 msgstr ""
+"如果设置了 `InsigniaType.PassengersN` 则上述设置会被 [InsigniaType](Miscellanous.md#insignia-type) 中定义的属性覆盖。"
 
 #: ../../Fixed-or-Improved-Logics.md:869
 msgid ""
@@ -3508,6 +3511,7 @@ msgid ""
 "`DrawInsignia.UsePixelSelectionBracketDelta` can be set to use techno's "
 "`PixelSelectionBracketDelta` to additionally adjust insignias vertically."
 msgstr ""
+"`DrawInsignia.UsePixelSelectionBracketDelta` 可以让军衔位置根据单位的 `PixelSelectionBracketDelta` 在竖直方向上调整位置。"
 
 #: ../../Fixed-or-Improved-Logics.md:876
 msgid ""
