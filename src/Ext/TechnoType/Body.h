@@ -350,7 +350,7 @@ public:
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
     
-    Valueable<bool> MultiWeapon;
+		Valueable<bool> MultiWeapon;
 		ValueableVector<int> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectWeapon;
 		bool LastMultiWeapon;
@@ -658,7 +658,7 @@ public:
     
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
-    
+
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectWeapon { 2 }

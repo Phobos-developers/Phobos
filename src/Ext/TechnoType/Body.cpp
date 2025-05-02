@@ -81,8 +81,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		return -1;
 
 	bool isElite = pThis->Veterancy.IsElite();
-	const auto secondary = isElite ?
-		pType->GetEliteWeapon(1)->WeaponType : pType->GetWeapon(1)->WeaponType;
+	const auto secondary = pType->GetWeapon(1, isElite).WeaponType;
 	const auto secondaryWH = secondary->Warhead;
 	bool secondaryCanTarget = TechnoExt::CheckMultiWeapon(pThis, pTarget, secondary);
 
@@ -130,9 +129,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 			continue;
 		}
 
-		const auto pWeaponType = isElite ?
-			pType->GetEliteWeapon(i)->WeaponType : pType->GetWeapon(i)->WeaponType;
-
+		const auto pWeaponType = pType->GetWeapon(i, isElite).WeaponType;
 		if (!TechnoExt::CheckMultiWeapon(pThis, pTarget, pWeaponType))
 			continue;
 
@@ -1201,6 +1198,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
+
 		.Process(this->MultiWeapon)
 		.Process(this->MultiWeapon_IsSecondary)
 		.Process(this->MultiWeapon_SelectWeapon)
