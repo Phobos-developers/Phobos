@@ -65,7 +65,6 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	if (!this->MultiWeapon.Get() || WeaponCount <= 2)
 		return -1;
 
-	// ���ǵ������ϵ�������⣬�Ҿ�������4���������㹻�ˡ�
 	// considering the issue of performance loss, it is sufficient to expand it to four.
 	int selectweaponCount = this->MultiWeapon_SelectWeapon.Get();
 	int weaponCount = WeaponCount;
