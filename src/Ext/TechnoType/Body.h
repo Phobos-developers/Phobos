@@ -346,7 +346,7 @@ public:
     
 		Valueable<bool> MultiWeapon;
 		ValueableVector<int> MultiWeapon_IsSecondary;
-		//Valueable<bool> MultiWeapon_SelectWeapon;
+		Valueable<int> MultiWeapon_SelectWeapon;
 		bool LastMultiWeapon;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -649,7 +649,7 @@ public:
     
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}
-			//, MultiWeapon_SelectWeapon { false }
+			, MultiWeapon_SelectWeapon { 2 }
 			, LastMultiWeapon { false }
 		{ }
 
@@ -663,6 +663,9 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		bool IsSecondary(const int& nWeaponIndex);
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;

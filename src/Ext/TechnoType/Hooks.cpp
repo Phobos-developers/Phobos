@@ -141,37 +141,38 @@ DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 
 	INI_EX exINI(pINI);
 	const char* pSection = pThis->ID;
+	bool multiWeapon = pThis->HasMultipleTurrets();
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis))
 	{
 		pTypeExt->MultiWeapon.Read(exINI, pSection, "MultiWeapon");
+		multiWeapon = pThis->HasMultipleTurrets() || pTypeExt->MultiWeapon.Get();
+
+		if (pTypeExt->LastMultiWeapon != multiWeapon)
+		{
+			auto clearWeapon = [pThis](int index)
+			{
+				auto& pWeapon = pThis->GetWeapon(index, false);
+				auto& pEliteWeapon = pThis->GetWeapon(index, true);
+
+				pWeapon = WeaponStruct();
+				pEliteWeapon = WeaponStruct();
+			};
+
+			clearWeapon(0);
+			clearWeapon(1);
+
+			pTypeExt->LastMultiWeapon = multiWeapon;
+		}
 
 		if (pTypeExt->MultiWeapon.Get())
 		{
 			pTypeExt->MultiWeapon_IsSecondary.Read(exINI, pSection, "MultiWeapon.IsSecondary");
-			//pTypeExt->MultiWeapon_SelectWeapon.Read(exINI, pSection, "MultiWeapon.SelectWeapon");
-
-			if (!pThis->IsGattling &&
-				pTypeExt->MultiWeapon.Get() != pTypeExt->LastMultiWeapon)
-			{
-				auto clearWeapon = [pThis](int index)
-				{
-					auto& pWeapon = pThis->GetWeapon(index, false);
-					auto& pEliteWeapon = pThis->GetWeapon(index, true);
-
-					pWeapon = WeaponStruct();
-					pEliteWeapon = WeaponStruct();
-				};
-
-				clearWeapon(0);
-				clearWeapon(1);
-			}
-
-			return ReadWeaponX;
+			pTypeExt->MultiWeapon_SelectWeapon.Read(exINI, pSection, "MultiWeapon.SelectWeapon");
 		}
 	}
 
-	return 0;
+	return multiWeapon ? ReadWeaponX : 0;
 }
 
 DEFINE_HOOK(0x715B10, TechnoTypeClass_ReadINI_MultiWeapon2, 0x7)
@@ -181,9 +182,7 @@ DEFINE_HOOK(0x715B10, TechnoTypeClass_ReadINI_MultiWeapon2, 0x7)
 
 	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis))
 	{
-		pTypeExt->LastMultiWeapon = pTypeExt->MultiWeapon.Get();
-
-		if (pTypeExt->MultiWeapon.Get())
+		if (pTypeExt->LastMultiWeapon)
 			return ReadWeaponX;
 	}
 

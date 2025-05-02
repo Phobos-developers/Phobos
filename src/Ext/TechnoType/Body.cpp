@@ -32,6 +32,116 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+bool TechnoTypeExt::ExtData::IsSecondary(const int& nWeaponIndex)
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->IsGattling)
+		return nWeaponIndex != 0 && nWeaponIndex % 2 != 0;
+
+	if (this->MultiWeapon.Get() &&
+		!this->MultiWeapon_IsSecondary.empty())
+	{
+		int index = nWeaponIndex + 1;
+		return this->MultiWeapon_IsSecondary.Contains(index);
+	}
+
+	return nWeaponIndex != 0;
+}
+
+int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
+{
+	if (!pThis || !pTarget)
+		return -1;
+
+	const auto pType = this->OwnerObject();
+	int WeaponCount = pType->WeaponCount;
+
+	if (WeaponCount > 0 && pType->HasMultipleTurrets() &&
+		(pType->IsGattling || pType->Gunner))
+		return -1;
+
+	if (!this->MultiWeapon.Get() || WeaponCount <= 2)
+		return -1;
+
+	// 考虑到性能上的损耗问题，我觉得扩大到4个武器就足够了。
+	// considering the issue of performance loss, it is sufficient to expand it to four.
+	int selectweaponCount = this->MultiWeapon_SelectWeapon.Get();
+	int weaponCount = WeaponCount;
+
+	if (weaponCount > selectweaponCount)
+		weaponCount = selectweaponCount;
+
+	if (weaponCount > 4)
+		weaponCount = 4;
+
+	if (weaponCount < 2)
+		return 0;
+	else if (weaponCount == 2)
+		return -1;
+
+	bool isElite = pThis->Veterancy.IsElite();
+	const auto secondary = isElite ?
+		pType->GetEliteWeapon(1)->WeaponType : pType->GetWeapon(1)->WeaponType;
+	const auto secondaryWH = secondary->Warhead;
+	bool secondaryCanTarget = TechnoExt::CheckMultiWeapon(pThis, pTarget, secondary);
+
+	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (secondaryCanTarget)
+		{
+			bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+
+			if (pTarget->IsInAir())
+				return 1;
+			else if (secondaryWH->Airstrike)
+				return 1;
+			else if (secondary->DrainWeapon &&
+				pTargetTechno->GetTechnoType()->Drainable &&
+				!pThis->DrainTarget && !isAllies)
+				return 1;
+			else if (secondaryWH->ElectricAssault && isAllies &&
+				pTargetTechno->WhatAmI() == AbstractType::Building &&
+				static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
+				return 1;
+		}
+
+		if (const auto pCell = pTargetTechno->GetCell())
+		{
+			bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
+
+			if (!pTargetTechno->OnBridge && targetOnWater)
+			{
+				int result = pThis->SelectNavalTargeting(pTargetTechno);
+
+				if (result == -1)
+					return 1;
+			}
+		}
+	}
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		if (i == 1)
+		{
+			if (secondaryCanTarget)
+				return i;
+
+			continue;
+		}
+
+		const auto pWeaponType = isElite ?
+			pType->GetEliteWeapon(i)->WeaponType : pType->GetWeapon(i)->WeaponType;
+
+		if (!TechnoExt::CheckMultiWeapon(pThis, pTarget, pWeaponType))
+			continue;
+
+		return i;
+	}
+
+	return 0;
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -1017,9 +1127,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Overload_ParticleSys)
 		.Process(this->Overload_ParticleSysCount)
     
-    .Process(this->MultiWeapon)
+		.Process(this->MultiWeapon)
 		.Process(this->MultiWeapon_IsSecondary)
-		//.Process(this->MultiWeapon_SelectWeapon)
+		.Process(this->MultiWeapon_SelectWeapon)
 		.Process(this->LastMultiWeapon)
 		;
 }

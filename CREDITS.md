@@ -354,7 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
-  - Use WeaponX freely
+  - Can use more weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -395,6 +395,7 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
   - New SuperWeapon Type template
+  - Fixed the issue where the manager was not processed after the unit transformation
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control

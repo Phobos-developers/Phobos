@@ -370,7 +370,8 @@ New:
 - Customize airstrike targets (by NetsuNegi)
 - Aggressive attack move mission (by CrimRecya)
 - Amphibious access vehicle (by CrimRecya)
-- Use WeaponX freely (by FlyStar)
+- Can use more weapons (by FlyStar)
+- Fixed the issue where the manager was not processed after the unit transformation (by ststl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

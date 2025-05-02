@@ -138,6 +138,13 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 			R->EAX(forceWeaponIndex);
 			return UseWeaponIndex;
 		}
+
+		int multiWeaponIndex = pTypeExt->SelectMultiWeapon(pThis, pTarget);
+		if (multiWeaponIndex >= 0)
+		{
+			R->EAX(multiWeaponIndex);
+			return UseWeaponIndex;
+		}
 	}
 
 	return 0;
