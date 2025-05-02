@@ -242,11 +242,9 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 
 	if (pType->WeaponCount > 0 && (pType->HasMultipleTurrets() || pTypeExt->MultiWeapon.Get()))
 	{
-		for (int index = 0; index < pType->WeaponCount; index++)
+		for (int index = 0; index < TechnoTypeClass::MaxWeapons; index++)
 		{
-			const auto pWeaponType = isElite ?
-				pType->GetEliteWeapon(index)->WeaponType :
-				pType->GetWeapon(index)->WeaponType;
+			const auto pWeaponType = pType->GetWeapon(index, isElite).WeaponType;
 
 			if (pWeaponType)
 				vWeapons.push_back(pWeaponType);
@@ -254,13 +252,8 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	}
 	else
 	{
-		const auto primary = isElite ?
-			pType->GetEliteWeapon(0)->WeaponType :
-			pType->GetWeapon(0)->WeaponType;
-
-		const auto secondary = isElite ?
-			pType->GetEliteWeapon(1)->WeaponType :
-			pType->GetWeapon(1)->WeaponType;
+		const auto primary = pType->GetWeapon(0, isElite).WeaponType;
+		const auto secondary = pType->GetWeapon(1, isElite).WeaponType;
 
 		if (primary)
 			vWeapons.push_back(primary);
