@@ -72,12 +72,12 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	if (weaponCount > selectweaponCount)
 		weaponCount = selectweaponCount;
 
-	if (weaponCount > 4)
-		weaponCount = 4;
-	else if (weaponCount < 2)
+	if (weaponCount < 2)
 		return 0;
 	else if (weaponCount == 2)
 		return -1;
+	else if (weaponCount > 4)
+		weaponCount = 4;
 
 	bool isElite = pThis->Veterancy.IsElite();
 	const auto secondary = pType->GetWeapon(1, isElite).WeaponType;
