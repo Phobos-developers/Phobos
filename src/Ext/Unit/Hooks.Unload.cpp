@@ -291,4 +291,17 @@ DEFINE_HOOK(0x4DA9C1, FootClass_AI_DeployToLand, 0x6)
 	return 0;
 }
 
-#pragma endregion
+DEFINE_HOOK(0x73DE90, UnitClass_Mi_Unload_SimpleDeployerAfter, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	auto pType = pThis->GetTechnoType();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	// Set only if unset or type is changed
+	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
+	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
+		pExt->UpdateTypeData(pType);
+
+	return 0;
+}

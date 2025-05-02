@@ -79,6 +79,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 			{
 				pSlaveManager->Killed(nullptr);
 				GameDelete(pSlaveManager);
+				pSlaveManager = nullptr;
 			}
 
 			pSlaveManager = GameCreate<SlaveManagerClass>(pThis, pType->Enslaves, pType->SlavesNumber, pType->SlaveRegenRate, pType->SlaveReloadRate);
@@ -148,6 +149,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 			{
 				pSpawnManager->KillNodes();
 				GameDelete(pSpawnManager);
+				pSpawnManager = nullptr;
 			}
 
 			pSpawnManager = GameCreate<SpawnManagerClass>(pThis, pType->Spawns, pType->SpawnsNumber, pType->SpawnRegenRate, pType->SpawnReloadRate);
@@ -295,7 +297,6 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	}
 
 	auto& pCaptureManager = pThis->CaptureManager;
-
 	if (maxCapture > 0)
 	{
 		if (!pCaptureManager)
