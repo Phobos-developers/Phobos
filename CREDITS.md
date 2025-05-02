@@ -354,6 +354,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
+  - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Can use more weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -385,7 +386,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
-  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
+  - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
+  - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -459,6 +461,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that game crashes when spawnee has been removed and is not real dead
   - Aggressive attack move mission
   - Amphibious access vehicle
+  - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -470,6 +473,8 @@ This page lists all the individual contributions to the project by their author.
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
   - Forcing specific weapon by range
+  - Passenger-based insignias
+  - Use `InsigniaType` to set the properties of insignia in a batch
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -498,6 +503,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
   - Prone speed customization
   - RadarInvisible for non-enemy house
+  - Allow miners do area guard
+  - Make harvesters do addtional scan after unload
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

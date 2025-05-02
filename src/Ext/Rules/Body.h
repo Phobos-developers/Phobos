@@ -162,6 +162,7 @@ public:
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
@@ -216,6 +217,8 @@ public:
 		Valueable<double> ProneSpeed_NoCrawls;
 
     	Valueable<double> DamagedSpeed;
+
+		Valueable<bool> HarvesterScanAfterUnload;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -322,6 +325,7 @@ public:
 			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
 			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, DrawInsignia_UsePixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
@@ -379,6 +383,8 @@ public:
 			, ProneSpeed_NoCrawls { 1.5 }
 
       		, DamagedSpeed { 0.75 }
+
+			, HarvesterScanAfterUnload { false }
 		{ }
 
 		virtual ~ExtData() = default;

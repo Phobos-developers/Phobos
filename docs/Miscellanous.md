@@ -85,6 +85,31 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 Correspondingly, if such a writing method causes any errors, it is also not within the scope of responsibility of this function.
 ```
 
+### Insignia Type
+
+- It is now possible to define the properties of insignia in an entity, so that all properties in it will be used once it's applied to a techno.
+
+In `rulesmd.ini`:
+```ini
+[InsigniaTypes]
+0=SOMEINSIGNIATYPE
+
+[SOMEINSIGNIATYPE]						 ; InsigniaType
+Insignia=                                ; filename - excluding the .shp extension
+Insignia.Rookie=                         ; filename - excluding the .shp extension
+Insignia.Veteran=                        ; filename - excluding the .shp extension
+Insignia.Elite=                          ; filename - excluding the .shp extension
+InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
+
+[SOMETECHNO]                             ; TechnoType
+InsigniaType=                            ; InsigniaType
+InsigniaType.WeaponN=                    ; InsigniaType
+InsigniaType.PassengersN=                ; InsigniaType
+```
+
 ## Game Speed
 
 ### Single player game speed

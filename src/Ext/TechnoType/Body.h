@@ -196,6 +196,9 @@ public:
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
+		std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
+		std::vector<Promotable<int>> InsigniaFrame_Passengers;
+		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
 		Valueable<bool> JumpjetTilt;
 		Valueable<double> JumpjetTilt_ForwardAccelFactor;
@@ -343,8 +346,11 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
+
+		Valueable<bool> Harvester_CanGuardArea;
+		Nullable<bool> HarvesterScanAfterUnload;
     
-		Valueable<bool> MultiWeapon;
+    Valueable<bool> MultiWeapon;
 		ValueableVector<int> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectWeapon;
 		bool LastMultiWeapon;
@@ -517,6 +523,9 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+			, Insignia_Passengers {}
+			, InsigniaFrame_Passengers {}
+			, InsigniaFrames_Passengers {}
 
 			, JumpjetTilt { false }
 			, JumpjetTilt_ForwardAccelFactor { 1.0 }
@@ -646,6 +655,9 @@ public:
 			, Overload_DeathSound {}
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount { 5 }
+    
+			, Harvester_CanGuardArea { false }
+			, HarvesterScanAfterUnload {}
     
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}
