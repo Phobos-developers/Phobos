@@ -74,8 +74,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 
 	if (weaponCount > 4)
 		weaponCount = 4;
-
-	if (weaponCount < 2)
+	else if (weaponCount < 2)
 		return 0;
 	else if (weaponCount == 2)
 		return -1;
