@@ -614,7 +614,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 					if (auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(index))
 					{
 						const auto pAircraft = pSpawnNode->Unit;
-						const auto pStatus = pSpawnNode->Status;
+						auto& pStatus = pSpawnNode->Status;
 
 						if (pAircraft && pStatus != SpawnNodeStatus::Dead)
 						{
@@ -628,11 +628,15 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 							}
 							else
 							{
-								pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+								pAircraft->SpawnOwner = nullptr;
+								pAircraft->Crash(nullptr);
 							}
 						}
 
-						pSpawnManager->UnlinkPointer(pAircraft);
+						pSpawnNode->Unit = nullptr;
+						pStatus = SpawnNodeStatus::Dead;
+						pSpawnNode->IsSpawnMissile = false;
+						pSpawnNode->SpawnTimer.Stop();
 						GameDelete(pSpawnNode);
 					}
 
@@ -663,11 +667,13 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 			}
 			else
 			{
-				pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+				pAircraft->SpawnOwner = nullptr;
+				pAircraft->Crash(nullptr);
 			}
 
 			pSpawn->Unit = nullptr;
 			Status = SpawnNodeStatus::Dead;
+			pSpawn->IsSpawnMissile = false;
 			pSpawn->SpawnTimer.Start(pSpawnManager->RegenRate);
 		}
 	}
