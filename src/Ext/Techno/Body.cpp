@@ -618,6 +618,8 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 
 						if (pAircraft && pStatus != SpawnNodeStatus::Dead)
 						{
+							pAircraft->SpawnOwner = nullptr;
+
 							if (pAircraft->InLimbo || pStatus == SpawnNodeStatus::Idle ||
 								pStatus == SpawnNodeStatus::Reloading || pStatus == SpawnNodeStatus::TakeOff)
 							{
@@ -628,7 +630,6 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 							}
 							else
 							{
-								pAircraft->SpawnOwner = nullptr;
 								pAircraft->Crash(nullptr);
 							}
 						}
@@ -660,6 +661,8 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 				Status == SpawnNodeStatus::Idle || Status == SpawnNodeStatus::Reloading)
 				continue;
 
+			pAircraft->SpawnOwner = nullptr;
+
 			if (Status == SpawnNodeStatus::TakeOff)
 			{
 				Kamikaze::Instance.Remove(pAircraft);
@@ -667,7 +670,6 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 			}
 			else
 			{
-				pAircraft->SpawnOwner = nullptr;
 				pAircraft->Crash(nullptr);
 			}
 
@@ -694,12 +696,6 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 			pAirstrike->AirstrikeRechargeTime = pType->AirstrikeRechargeTime;
 			pAirstrike->EliteAirstrikeRechargeTime = pType->EliteAirstrikeRechargeTime;
 		}
-	}
-	else if (pAirstrike)
-	{
-		pAirstrike->StartMission(nullptr);
-		GameDelete(pAirstrike);
-		pAirstrike = nullptr;
 	}
 
 	std::vector<WeaponTypeClass*> vWeapons;
@@ -754,7 +750,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 		}
 		else
 		{
-			if (pCaptureManager->ControlNodes.Count > maxCapture)
+			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
 			{
 				for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
 				{
