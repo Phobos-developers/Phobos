@@ -1741,7 +1741,7 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Multi Weapon
 
-![Multi Weapon](_static/images/multiweapon.gif)
+![Multi Weapon](_static/images/multiweapons.gif)
 *Multi Weapon used to release different weapons against different targets in [Zero Boundary]() by @Stormsulfur*
 
 - You are free to decide whether to use Weapon x or not, instead of passively using Primary/secondary.
