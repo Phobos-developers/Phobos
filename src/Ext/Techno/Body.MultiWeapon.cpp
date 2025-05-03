@@ -7,6 +7,7 @@
 #include <SpawnManagerClass.h>
 #include <SlaveManagerClass.h>
 #include <AirstrikeClass.h>
+#include <Kamikaze.h>
 
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -209,8 +210,31 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	}
 	else if (pSpawnManager)
 	{
-		pSpawnManager->KillNodes();
 		pSpawnManager->ResetTarget();
+
+		for (auto pSpawn : pSpawnManager->SpawnedNodes)
+		{
+			const auto pAircraft = pSpawn->Unit;
+			auto& Status = pSpawn->Status;
+
+			if (!pAircraft || Status == SpawnNodeStatus::Dead ||
+				Status == SpawnNodeStatus::Idle || Status == SpawnNodeStatus::Reloading)
+				continue;
+
+			if (Status == SpawnNodeStatus::TakeOff)
+			{
+				Kamikaze::Instance.Remove(pAircraft);
+				pAircraft->UnInit();
+			}
+			else
+			{
+				pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+			}
+
+			pSpawn->Unit = nullptr;
+			Status = SpawnNodeStatus::Dead;
+			pSpawn->SpawnTimer.Start(pSpawnManager->RegenRate);
+		}
 	}
 
 	auto& pAirstrike = pThis->Airstrike;
