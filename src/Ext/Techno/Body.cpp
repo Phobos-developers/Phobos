@@ -628,7 +628,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 							}
 							else
 							{
-								Kamikaze::Instance.Add(pAircraft);
+								pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
 							}
 						}
 
@@ -663,7 +663,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 			}
 			else
 			{
-				Kamikaze::Instance.Add(pAircraft);
+				pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
 			}
 
 			pSpawn->Unit = nullptr;
@@ -697,7 +697,6 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	}
 
 	std::vector<WeaponTypeClass*> vWeapons;
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	bool isElite = pThis->Veterancy.IsElite();
 
 	for (int index = 0; index < TechnoTypeClass::MaxWeapons; index++)
