@@ -791,22 +791,28 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 }
 #pragma endregion DrawInfoTipAndSpiedSelection
 
-#include <intrin.h>
 bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*, HouseClass* pHouse, bool announce)
 {
 	// Fix : Suppress capture EVA event if ConsideredVehicle=yes
 	if(announce) announce = !pThis->IsStrange();
 
 	bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
-	// TODO: something goes wrong in TAction 36, fix it later
-	DWORD const caller =(DWORD) _ReturnAddress();
-	if(caller > 0x6E0C91 || caller < 0x6E0B60)
+
 	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
-		reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+	{
+		bool on = pThis->IsPowerOnline();
+		if (on != pThis->WasOnline)
+		{
+			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+			pThis->WasOnline = on;
+		}
+	}
 	return res;
 }
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7E4290, BuildingClass_SetOwningHouse_Wrapper);
+DEFINE_JUMP(LJMP, 0x6E0BD4, 0x6E0BFE);
+DEFINE_JUMP(LJMP, 0x6E0C1D, 0x6E0C8B);//Simplify TAction 36
 
 // Fix a glitch related to incorrect target setting for missiles
 // Author: Belonit
