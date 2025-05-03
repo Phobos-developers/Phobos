@@ -459,7 +459,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	FixManagers(pThis);
+	TechnoExt::FixManagers(pThis);
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()

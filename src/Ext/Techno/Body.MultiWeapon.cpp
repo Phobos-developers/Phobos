@@ -210,8 +210,7 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	else if (pSpawnManager)
 	{
 		pSpawnManager->KillNodes();
-		GameDelete(pSpawnManager);
-		pSpawnManager = nullptr;
+		pSpawnManager->ResetTarget();
 	}
 
 	auto& pAirstrike = pThis->Airstrike;
