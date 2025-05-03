@@ -224,5 +224,4 @@ public:
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 
 	static bool CheckMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
-	static void FixManagers(TechnoClass* const pThis);
 };

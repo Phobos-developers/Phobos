@@ -518,7 +518,6 @@ This page lists all the individual contributions to the project by their author.
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
-- **ststl, FlyStar** - Fixed the issue where some units crashed after the deployment transformation
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic

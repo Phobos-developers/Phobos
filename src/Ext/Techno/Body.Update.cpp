@@ -458,8 +458,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
-
-	TechnoExt::FixManagers(pThis);
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
