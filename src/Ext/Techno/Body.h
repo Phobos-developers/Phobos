@@ -127,6 +127,7 @@ public:
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* pCurrentType);
 		void UpdateTypeData_Foot();
+		void UpdateTypeExtData_FixOther();
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
 		void UpdateGattlingRateDownReset();
@@ -222,6 +223,4 @@ public:
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
-
-	static void FixManagers(TechnoClass* const pThis);
 };

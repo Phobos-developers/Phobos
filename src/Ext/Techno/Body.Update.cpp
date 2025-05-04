@@ -3,6 +3,9 @@
 
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
+#include <SlaveManagerClass.h>
+#include <AirstrikeClass.h>
+#include <Kamikaze.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -420,6 +423,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
 	this->UpdateSelfOwnedAttachEffects();
+	this->UpdateTypeExtData_FixOther();
 
 	// Recreate Laser Trails
 	if (this->LaserTrails.size())
@@ -458,8 +462,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
-
-	TechnoExt::FixManagers(pThis);
 }
 
 void TechnoExt::ExtData::UpdateTypeData_Foot()
@@ -548,6 +550,379 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	}
 
 	this->PreviousType = nullptr;
+}
+
+// Powered by ststl-s
+void TechnoExt::ExtData::UpdateTypeExtData_FixOther()
+{
+	TechnoClass* const pThis = this->OwnerObject();
+	TechnoTypeClass* const pType = pThis->GetTechnoType();
+	FootClass* pFoot = nullptr;
+
+	if (pThis->WhatAmI() != AbstractType::Building)
+	{
+		pFoot = static_cast<FootClass*>(pThis);
+
+		if (!pType->CanDisguise || (!pFoot->Disguise && pType->PermaDisguise))
+			pFoot->ClearDisguise();
+
+		if (pFoot->Passengers.NumPassengers > 0)
+		{
+			FootClass* pFirstPassenger = pFoot->Passengers.GetFirstPassenger();
+
+			while (true)
+			{
+				if (pType->OpenTopped)
+				{
+					pFoot->EnteredOpenTopped(pFirstPassenger);
+				}
+				else
+				{
+					// Lose target & destination
+					pFirstPassenger->SetTarget(nullptr);
+					pFirstPassenger->SetCurrentWeaponStage(0);
+					pFirstPassenger->AbortMotion();
+					pFoot->ExitedOpenTopped(pFirstPassenger);
+
+					// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
+					// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
+					LogicClass::Instance.RemoveObject(pFirstPassenger);
+				}
+
+				pFirstPassenger->Transporter = pFoot;
+
+				if (pFirstPassenger->NextObject)
+					pFirstPassenger = abstract_cast<FootClass*>(pFirstPassenger->NextObject);
+				else
+					break;
+			}
+
+			if (pType->Gunner)
+				pFoot->ReceiveGunner(pFirstPassenger);
+		}
+		else if (pType->Gunner)
+		{
+			pFoot->RemoveGunner(nullptr);
+		}
+	}
+
+	const auto pOwner = pThis->Owner;
+	auto& pSlaveManager = pThis->SlaveManager;
+
+	if (pType->Enslaves && pType->SlavesNumber > 0)
+	{
+		if (!pSlaveManager || pSlaveManager->SlaveType != pType->Enslaves)
+		{
+			if (pSlaveManager && pSlaveManager->SlaveType != pType->Enslaves)
+			{
+				pSlaveManager->Killed(nullptr);
+				GameDelete(pSlaveManager);
+				pSlaveManager = nullptr;
+			}
+
+			pSlaveManager = GameCreate<SlaveManagerClass>(pThis, pType->Enslaves, pType->SlavesNumber, pType->SlaveRegenRate, pType->SlaveReloadRate);
+		}
+		else if (pSlaveManager->SlaveCount != pType->SlavesNumber)
+		{
+			if (pSlaveManager->SlaveCount < pType->SlavesNumber)
+			{
+				int count = pType->SlavesNumber - pSlaveManager->SlaveCount;
+
+				for (int index = 0; index < count; index++)
+				{
+					if (auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
+					{
+						pSlaveNode->Slave = nullptr;
+						pSlaveNode->State = SlaveControlStatus::Dead;
+						pSlaveNode->RespawnTimer.Start(pType->SlaveRegenRate);
+						pSlaveManager->SlaveNodes.AddItem(pSlaveNode);
+					}
+				}
+			}
+			else
+			{
+				for (int index = pSlaveManager->SlaveCount - 1; index >= pType->SlavesNumber; --index)
+				{
+					if (auto pSlaveNode = pSlaveManager->SlaveNodes.GetItem(index))
+					{
+						const auto pSlave = pSlaveNode->Slave;
+
+						if (pSlave && pSlaveNode->State != SlaveControlStatus::Dead)
+						{
+							if (pSlave->InLimbo)
+							{
+								pSlave->RegisterDestruction(pThis);
+								pSlave->UnInit();
+								pSlaveManager->LostSlave(pSlave);
+							}
+							else
+							{
+								pSlave->ReceiveDamage(&pSlave->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+							}
+						}
+
+						GameDelete(pSlaveNode);
+					}
+
+					pSlaveManager->SlaveNodes.RemoveItem(index);
+				}
+			}
+
+			pSlaveManager->SlaveCount = pType->SlavesNumber;
+		}
+	}
+	else if (pSlaveManager)
+	{
+		pSlaveManager->Killed(nullptr);
+		GameDelete(pSlaveManager);
+		pSlaveManager = nullptr;
+	}
+
+	auto& pSpawnManager = pThis->SpawnManager;
+	if (pType->Spawns && pType->SpawnsNumber > 0)
+	{
+		if (!pSpawnManager || pType->Spawns != pSpawnManager->SpawnType)
+		{
+			if (pSpawnManager && pType->Spawns != pSpawnManager->SpawnType)
+			{
+				pSpawnManager->KillNodes();
+				GameDelete(pSpawnManager);
+				pSpawnManager = nullptr;
+			}
+
+			pSpawnManager = GameCreate<SpawnManagerClass>(pThis, pType->Spawns, pType->SpawnsNumber, pType->SpawnRegenRate, pType->SpawnReloadRate);
+		}
+		else if (pSpawnManager->SpawnCount != pType->SpawnsNumber)
+		{
+			if (pSpawnManager->SpawnCount < pType->SpawnsNumber)
+			{
+				int count = pType->SpawnsNumber - pSpawnManager->SpawnCount;
+
+				for (int index = 0; index < count; index++)
+				{
+					if (auto pSpawnNode = GameCreate<SpawnControl>())
+					{
+						pSpawnNode->Unit = nullptr;
+						pSpawnNode->Status = SpawnNodeStatus::Dead;
+						pSpawnNode->SpawnTimer.Start(pType->SpawnRegenRate);
+						pSpawnNode->IsSpawnMissile = false;
+						pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
+					}
+				}
+			}
+			else
+			{
+				for (int index = pSpawnManager->SpawnCount - 1; index >= pType->SpawnsNumber; --index)
+				{
+					if (auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(index))
+					{
+						const auto pAircraft = pSpawnNode->Unit;
+						auto& pStatus = pSpawnNode->Status;
+
+						if (pAircraft && pStatus != SpawnNodeStatus::Dead)
+						{
+							pAircraft->SpawnOwner = nullptr;
+
+							if (pAircraft->InLimbo || pStatus == SpawnNodeStatus::Idle ||
+								pStatus == SpawnNodeStatus::Reloading || pStatus == SpawnNodeStatus::TakeOff)
+							{
+								if (pStatus == SpawnNodeStatus::TakeOff)
+									Kamikaze::Instance.Remove(pAircraft);
+
+								pAircraft->UnInit();
+							}
+							else
+							{
+								pAircraft->Crash(nullptr);
+							}
+						}
+
+						pSpawnNode->Unit = nullptr;
+						pStatus = SpawnNodeStatus::Dead;
+						pSpawnNode->IsSpawnMissile = false;
+						pSpawnNode->SpawnTimer.Stop();
+						GameDelete(pSpawnNode);
+					}
+
+					pSpawnManager->SpawnedNodes.RemoveItem(index);
+				}
+			}
+
+			pSpawnManager->SpawnCount = pType->SpawnsNumber;
+		}
+	}
+	else if (pSpawnManager)
+	{
+		pSpawnManager->ResetTarget();
+
+		for (auto pSpawn : pSpawnManager->SpawnedNodes)
+		{
+			const auto pAircraft = pSpawn->Unit;
+			auto& Status = pSpawn->Status;
+
+			if (!pAircraft || Status == SpawnNodeStatus::Dead ||
+				Status == SpawnNodeStatus::Idle || Status == SpawnNodeStatus::Reloading)
+				continue;
+
+			pAircraft->SpawnOwner = nullptr;
+
+			if (Status == SpawnNodeStatus::TakeOff)
+			{
+				Kamikaze::Instance.Remove(pAircraft);
+				pAircraft->UnInit();
+			}
+			else
+			{
+				pAircraft->Crash(nullptr);
+			}
+
+			pSpawn->Unit = nullptr;
+			Status = SpawnNodeStatus::Dead;
+			pSpawn->IsSpawnMissile = false;
+			pSpawn->SpawnTimer.Start(pSpawnManager->RegenRate);
+		}
+	}
+
+	auto& pAirstrike = pThis->Airstrike;
+	if (pType->AirstrikeTeam > 0)
+	{
+		if (!pAirstrike)
+		{
+			pAirstrike = GameCreate<AirstrikeClass>(pThis);
+		}
+		else
+		{
+			pAirstrike->AirstrikeTeam = pType->AirstrikeTeam;
+			pAirstrike->EliteAirstrikeTeam = pType->EliteAirstrikeTeam;
+			pAirstrike->AirstrikeTeamType = pType->AirstrikeTeamType;
+			pAirstrike->EliteAirstrikeTeamType = pType->EliteAirstrikeTeamType;
+			pAirstrike->AirstrikeRechargeTime = pType->AirstrikeRechargeTime;
+			pAirstrike->EliteAirstrikeRechargeTime = pType->EliteAirstrikeRechargeTime;
+		}
+	}
+
+	std::vector<WeaponTypeClass*> vWeapons;
+	bool isElite = pThis->Veterancy.IsElite();
+
+	for (int index = 0; index < TechnoTypeClass::MaxWeapons; index++)
+	{
+		const auto pWeaponType = pType->GetWeapon(index, isElite).WeaponType;
+
+		if (pWeaponType)
+			vWeapons.push_back(pWeaponType);
+	}
+
+	int maxCapture = 0;
+	bool infiniteCapture = false;
+	bool hasTemporal = false;
+	bool hasParasite = false;
+
+	if (!vWeapons.empty())
+	{
+		for (const auto pWeaponType : vWeapons)
+		{
+			const auto pWH = pWeaponType->Warhead;
+
+			if (pWH->MindControl)
+			{
+				if (pWeaponType->Damage > maxCapture)
+					maxCapture = pWeaponType->Damage;
+
+				if (pWeaponType->InfiniteMindControl)
+					infiniteCapture = true;
+			}
+
+			if (pWH->Temporal)
+			{
+				hasTemporal = true;
+			}
+
+			if (pWH->Parasite)
+			{
+				hasParasite = true;
+			}
+		}
+	}
+
+	auto& pCaptureManager = pThis->CaptureManager;
+	auto clearMindControlNode = [pCaptureManager](const int& maxCapture)
+	{
+		if (pCaptureManager->ControlNodes.Count <= maxCapture)
+			return;
+
+		for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
+		{
+			auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
+			pCaptureManager->FreeUnit(pControlNode->Unit);
+		}
+	};
+
+	if (maxCapture > 0)
+	{
+		if (!pCaptureManager)
+		{
+			pCaptureManager = GameCreate<CaptureManagerClass>(pThis, maxCapture, infiniteCapture);
+		}
+		else
+		{
+			if (!infiniteCapture)
+			{
+				clearMindControlNode(maxCapture);
+			}
+
+			pCaptureManager->MaxControlNodes = maxCapture;
+			pCaptureManager->InfiniteMindControl = infiniteCapture;
+		}
+	}
+	else if (pCaptureManager)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->Convert_ResetMindControl.Get())
+		{
+			pCaptureManager->FreeAll();
+			GameDelete(pCaptureManager);
+			pCaptureManager = nullptr;
+		}
+		else
+		{
+			clearMindControlNode(pCaptureManager->MaxControlNodes);
+			pCaptureManager->InfiniteMindControl = false;
+		}
+	}
+
+	auto& pTemporalImUsing = pThis->TemporalImUsing;
+	if (hasTemporal)
+	{
+		if (!pTemporalImUsing)
+			pTemporalImUsing = GameCreate<TemporalClass>(pThis);
+	}
+	else if (pTemporalImUsing)
+	{
+		if (pTemporalImUsing->Target)
+			pTemporalImUsing->Detach();
+
+		GameDelete(pTemporalImUsing);
+		pTemporalImUsing = nullptr;
+	}
+
+	if (pFoot)
+	{
+		auto& pParasiteImUsing = pFoot->ParasiteImUsing;
+		if (hasParasite)
+		{
+			if (!pParasiteImUsing)
+				pParasiteImUsing = GameCreate<ParasiteClass>(pFoot);
+		}
+		else if (pParasiteImUsing)
+		{
+			if (pParasiteImUsing->Victim)
+				pParasiteImUsing->ExitUnit();
+
+			GameDelete(pParasiteImUsing);
+			pParasiteImUsing = nullptr;
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
