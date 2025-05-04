@@ -1741,8 +1741,8 @@ WarpOutWeapon=                          ; WeaponType
 
 ### Reset MindControl after transformation
 
-- Reset its MindControl after the unit conversion is completed.
- - If the unit itself does not have a mind control weapon, units that exceed the maximum value will be released.
+- After the unit conversion is completed, its mind control can be reset.
+ - If units do not use any warhead with `MindControl=yes`, units that exceed the maximum value in the manager will be released.
 
 In `rulesmd.ini`:
 ```ini
