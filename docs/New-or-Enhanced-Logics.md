@@ -1535,6 +1535,24 @@ MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/s
 MultiMindControl.ReleaseVictim=false  ; boolean
 ```
 
+### Multi Weapon
+
+![Multi Weapon](_static/images/multiweapons.gif)
+*Multi Weapon used to release different weapons against different targets in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+
+- You are free to decide whether to use Weapon x or not, instead of passively using Primary/secondary.
+ - TechnoType reads `WeaponX` as their weapon when `MultiWeapon=yes`, be careful not to forget `WeaponCount`.
+ - `MultiWeapon.IsSecondary` can only be used for infantry and is responsible for determining which weapons should use `SecondaryFire` in the `Sequence`.
+ - `MultiWeapon.SelectWeapon` determines how many weapons can be selected. maximum value is 4, minimum value is 1, defaults to 2.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+MultiWeapon=                    ; boolean
+MultiWeapon.IsSecondary=        ; List of integers
+MultiWeapon.SelectWeapon=       ; integer
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
@@ -1737,24 +1755,6 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
-```
-
-### Multi Weapon
-
-![Multi Weapon](_static/images/multiweapons.gif)
-*Multi Weapon used to release different weapons against different targets in [Zero Boundary]() by @Stormsulfur*
-
-- You are free to decide whether to use Weapon x or not, instead of passively using Primary/secondary.
- - TechnoType reads `WeaponX` as their weapon when `MultiWeapon=yes`, be careful not to forget `WeaponCount`.
- - `MultiWeapon.IsSecondary` can only be used for infantry and is responsible for determining which weapons should use `SecondaryFire` in the `Sequence`.
- - `MultiWeapon.SelectWeapon` determines how many weapons can be selected. maximum value is 4, minimum value is 1, defaults to 2.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]        ; TechnoType
-MultiWeapon=       ; boolean
-MultiWeapon.IsSecondary=       ; list of integer
-MultiWeapon.SelectWeapon=       ; integer
 ```
 
 ## Terrain
