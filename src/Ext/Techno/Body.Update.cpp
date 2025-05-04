@@ -423,7 +423,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
 	this->UpdateSelfOwnedAttachEffects();
-	this->UpdateTypeExtData_FixOther();
+	this->UpdateTypeExtData_FixOther(pOldTypeExt);
 
 	// Recreate Laser Trails
 	if (this->LaserTrails.size())
@@ -553,7 +553,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 }
 
 // Powered by ststl-s
-void TechnoExt::ExtData::UpdateTypeExtData_FixOther()
+void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOldTypeExt)
 {
 	TechnoClass* const pThis = this->OwnerObject();
 	TechnoTypeClass* const pType = pThis->GetTechnoType();
@@ -876,9 +876,7 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther()
 	}
 	else if (pCaptureManager)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt->Convert_ResetMindControl.Get())
+		if (pOldTypeExt && pOldTypeExt->Convert_ResetMindControl.Get())
 		{
 			pCaptureManager->FreeAll();
 			GameDelete(pCaptureManager);
