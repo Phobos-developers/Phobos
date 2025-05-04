@@ -220,7 +220,7 @@ This feature must be enabled via a command line argument `-Include`.
 In any file:
 ```ini
 [$Include]
-0=somefile.ini	; file name
+0=somefile.ini  ; file name
 ```
 
 ```{warning}

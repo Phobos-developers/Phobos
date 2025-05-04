@@ -564,10 +564,10 @@ msgstr "在任何文件中："
 #: ../../Miscellanous.md:221
 msgid ""
 "[$Include]\n"
-"0=somefile.ini\t; file name\n"
+"0=somefile.ini  ; file name\n"
 msgstr ""
 "[$Include]\n"
-"0=somefile.ini\t; file name\n"
+"0=somefile.ini  ; file name\n"
 
 #: ../../Miscellanous.md:227
 msgid ""
