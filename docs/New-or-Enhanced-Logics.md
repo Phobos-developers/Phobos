@@ -1739,6 +1739,17 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Reset MindControl after transformation
+
+- Reset its MindControl after the unit conversion is completed.
+ - If the unit itself does not have a mind control weapon, units that exceed the maximum value will be released.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+Convert.ResetMindControl=               ; boolean, default to false
+```
+
 ## Terrain
 
 ### Destroy animation & sound

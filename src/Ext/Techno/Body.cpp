@@ -742,6 +742,18 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	}
 
 	auto& pCaptureManager = pThis->CaptureManager;
+	auto clearMindControlNode = [pCaptureManager](const int& maxCapture)
+	{
+		if (pCaptureManager->ControlNodes.Count <= maxCapture)
+			return;
+
+		for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
+		{
+			auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
+			pCaptureManager->FreeUnit(pControlNode->Unit);
+		}
+	};
+
 	if (maxCapture > 0)
 	{
 		if (!pCaptureManager)
@@ -750,13 +762,9 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 		}
 		else
 		{
-			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
+			if (!infiniteCapture)
 			{
-				for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
-				{
-					auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
-					pCaptureManager->FreeUnit(pControlNode->Unit);
-				}
+				clearMindControlNode(maxCapture);
 			}
 
 			pCaptureManager->MaxControlNodes = maxCapture;
@@ -765,9 +773,19 @@ void TechnoExt::FixManagers(TechnoClass* const pThis)
 	}
 	else if (pCaptureManager)
 	{
-		pCaptureManager->FreeAll();
-		GameDelete(pCaptureManager);
-		pCaptureManager = nullptr;
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->Convert_ResetMindControl.Get())
+		{
+			pCaptureManager->FreeAll();
+			GameDelete(pCaptureManager);
+			pCaptureManager = nullptr;
+		}
+		else
+		{
+			clearMindControlNode(pCaptureManager->MaxControlNodes);
+			pCaptureManager->InfiniteMindControl = false;
+		}
 	}
 
 	auto& pTemporalImUsing = pThis->TemporalImUsing;

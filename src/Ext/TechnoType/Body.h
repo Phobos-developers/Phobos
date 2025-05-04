@@ -236,6 +236,7 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+		Valueable<bool> Convert_ResetMindControl;
 
 		Valueable<double> CrateGoodie_RerollChance;
 
@@ -559,6 +560,7 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Convert_ResetMindControl { false }
 
 			, CrateGoodie_RerollChance { 0.0 }
 

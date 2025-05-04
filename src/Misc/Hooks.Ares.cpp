@@ -6,6 +6,7 @@
 #include <Utilities/Helpers.Alex.h>
 
 #include <Ext/Sidebar/Body.h>
+#include <Ext/Techno/Body.h>
 
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
@@ -23,6 +24,14 @@ ObjectClass* __fastcall CreateInitialPayload(TechnoTypeClass* type, void*, House
 void __fastcall LetGo(TemporalClass* pTemporal)
 {
 	pTemporal->LetGo();
+}
+
+bool  _stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
+{
+	if (pThis->WhatAmI() == AbstractType::Building)
+		return false;
+
+	return TechnoExt::ConvertToType(static_cast<FootClass*>(pThis), pToType);
 }
 
 void Apply_Ares3_0_Patches()
@@ -46,6 +55,12 @@ void Apply_Ares3_0_Patches()
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
+
+	// Convert ManagerFix
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x039DAE, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x046C6D, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x04B397, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x04C099, &ConvertToType);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -71,4 +86,10 @@ void Apply_Ares3_0p1_Patches()
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
+
+	// Convert ManagerFix
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x3A82E, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4780D, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4BFF7, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CCF9, &ConvertToType);
 }

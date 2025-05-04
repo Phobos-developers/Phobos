@@ -292,17 +292,3 @@ DEFINE_HOOK(0x4DA9C1, FootClass_AI_DeployToLand, 0x6)
 }
 
 #pragma endregion
-
-// Ares surprisingly didn't handle their managers after the transformation
-DEFINE_HOOK(0x73DE90, UnitClass_Mi_Unload_SimpleDeployerAfter, 0x6)
-{
-	GET(UnitClass*, pThis, ESI);
-
-	auto pType = pThis->GetTechnoType();
-	const auto pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
-
-	if (!pExt->TypeExtData || pExt->TypeExtData->OwnerObject() != pType)
-		pExt->UpdateTypeData(pType);
-
-	return 0;
-}
