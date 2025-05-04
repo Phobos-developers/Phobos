@@ -335,7 +335,7 @@ msgstr "但与之相对应的，如果这样的书写方式引发了什么错误
 
 #: ../../Miscellanous.md:88
 msgid "Insignia Type"
-msgstr ""
+msgstr "专用的军衔类"
 
 #: ../../Miscellanous.md:90
 msgid ""
