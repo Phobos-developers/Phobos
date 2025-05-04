@@ -1363,11 +1363,9 @@ msgstr ""
 
 #: ../../Whats-New.md:360
 msgid ""
-"[Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-"
-"specific-weapon-against-certain-targets) (by Ollerus)"
+"[Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)"
 msgstr ""
-"[根据射程选取武器](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-"
-"certain-targets)（by Ollerus）"
+"[根据射程选取武器](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets)（by Ollerus）"
 
 #: ../../Whats-New.md:361
 msgid ""
