@@ -14,6 +14,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
+#include <JumpjetLocomotionClass.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -606,27 +607,55 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 			pFoot->RemoveGunner(nullptr);
 		}
 
-		if ((abs == AbstractType::Infantry || abs == AbstractType::Unit) &&
-			pThis->IsInAir() && !pType->JumpJet && !pThis->LocomotorSource)
+		if (abs == AbstractType::Infantry || abs == AbstractType::Unit)
 		{
-			pThis->IsFallingDown = true;
-			const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
-			pThis->OnBridge = pCell ? pCell->ContainsBridge() : false;
-
-			if (!pCell || !pCell->IsClearToMove(pThis->GetTechnoType()->SpeedType, true, true,
-				-1, pThis->GetTechnoType()->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+			if (pFoot->IsInAir() && !pFoot->LocomotorSource)
 			{
-				pThis->IsABomb = true;
+				if (pType->JumpJet)
+				{
+					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+					{
+						pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
+
+						if (pType->BalloonHover)
+						{
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
+							pJJLoco->DestinationCoords = pFoot->Location;
+							pJJLoco->CurrentHeight = pType->JumpjetHeight;
+							pJJLoco->Move_To(pFoot->Location);
+						}
+					}
+				}
+				else
+				{
+					pFoot->IsFallingDown = true;
+					const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
+					pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
+
+					if (!pCell || !pCell->IsClearToMove(pType->SpeedType, true, true,
+						-1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+					{
+						pFoot->IsABomb = true;
+					}
+
+					if (abs == AbstractType::Infantry)
+						static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
+				}
 			}
 
-			if (abs == AbstractType::Infantry)
-				static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
-
-			const auto pOldType = pOldTypeExt->OwnerObject();
-			if (pType->Turret && pOldType->Turret != pType->Turret)
+			if (abs == AbstractType::Unit)
 			{
-				pThis->SecondaryFacing.SetCurrent(pThis->PrimaryFacing.Current());
-				pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
+				const auto pOldType = pOldTypeExt->OwnerObject();
+
+				if (pOldType->Turret != pType->Turret)
+				{
+					const auto primaryFacing = pFoot->PrimaryFacing.Current();
+					auto& secondaryFacing = pFoot->SecondaryFacing;
+
+					secondaryFacing.SetCurrent(primaryFacing);
+					secondaryFacing.SetDesired(primaryFacing);
+				}
 			}
 		}
 	}
