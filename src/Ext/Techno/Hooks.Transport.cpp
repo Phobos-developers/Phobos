@@ -283,7 +283,17 @@ DEFINE_HOOK(0x7196BB, TeleportLocomotionClass_Process_MarkDown, 0xA)
 	// An impassable invisible barrier will be generated on the bridge (the object linked list of the cell will leave it)
 	// And the transport vehicle will board on the vehicle itself (BFRT Passenger:..., BFRT)
 	// If any infantry attempts to pass through this position on the bridge later, it will cause the game to freeze
-	if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+	auto shouldMarkDown = [pLinkedTo]()
+	{
+		if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+			return true;
+
+		const auto pEnter = pLinkedTo->GetNthLink();
+
+		return (!pEnter || pEnter->GetTechnoType()->Passengers <= 0);
+	};
+
+	if (shouldMarkDown())
 		pLinkedTo->Mark(MarkType::Down);
 
 	return SkipGameCode;
