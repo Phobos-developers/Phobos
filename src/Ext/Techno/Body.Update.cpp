@@ -621,6 +621,13 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 
 			if (abs == AbstractType::Infantry)
 				static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
+
+			const auto pOldType = pOldTypeExt->OwnerObject();
+			if (pType->Turret && pOldType->Turret != pType->Turret)
+			{
+				pThis->SecondaryFacing.SetCurrent(pThis->PrimaryFacing.Current());
+				pThis->SecondaryFacing.SetDesired(pThis->PrimaryFacing.Current());
+			}
 		}
 	}
 
