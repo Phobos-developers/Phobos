@@ -783,10 +783,22 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma endregion
 
+#pragma region Customized FallingDown Damage
+
+DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	// Reset value, otherwise it'll keep accelerating.
+	pThis->FallRate = 0;
+	return 0;
+}
+
 DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 {
 	GET(ObjectClass*, pThis, ESI);
 
+	pThis->FallRate = 0;
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pThis))
 	{
 		const auto pType = pTechno->GetTechnoType();
@@ -815,25 +827,33 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 			pDamage = int(ratio);
 
 		pThis->ReceiveDamage(&pDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
+		AbstractType abs = pThis->WhatAmI();
 
 		if (pThis->Health > 0 && pThis->IsAlive)
 		{
 			pThis->IsABomb = false;
 
-			if (pThis->WhatAmI() == AbstractType::Infantry)
+			if (abs == AbstractType::Infantry)
 			{
-				auto pInf = static_cast<InfantryClass*>(pTechno);
+				const auto pInf = static_cast<InfantryClass*>(pTechno);
+				const auto pSequenceAnim = pInf->SequenceAnim;
+				pInf->ShouldDeploy = false;
 
-				if (pCell->Tile_Is_Water())
+				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
 				{
-					if (pInf->SequenceAnim != Sequence::Swim)
+					if (pSequenceAnim != Sequence::Swim)
 						pInf->PlayAnim(Sequence::Swim, true, false);
 				}
-				else
+				else if (pSequenceAnim != Sequence::Guard)
 				{
-					if (pInf->SequenceAnim != Sequence::Guard)
-						pInf->PlayAnim(Sequence::Ready, true, false);
+					pInf->PlayAnim(Sequence::Ready, true, false);
 				}
+
+				pInf->Scatter(pInf->GetCoords(), true, false);
+			}
+			else if (abs == AbstractType::Unit)
+			{
+				static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
 			}
 		}
 
@@ -843,3 +863,4 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 	return 0;
 }
 
+#pragma endregion
