@@ -614,7 +614,10 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 
 			if (pFoot->IsInAir() && !pFoot->LocomotorSource)
 			{
-				if (pType->Locomotor != LocomotionClass::CLSIDs::Fly)
+				auto pLocomotorType = pType->Locomotor;
+
+				if (pLocomotorType != LocomotionClass::CLSIDs::Fly &&
+					pLocomotorType != LocomotionClass::CLSIDs::Hover)
 				{
 					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 					{
@@ -635,6 +638,7 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 					}
 					else
 					{
+						pFoot->FallRate = 0;
 						pFoot->IsFallingDown = true;
 						const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
 						pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
