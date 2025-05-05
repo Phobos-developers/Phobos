@@ -300,8 +300,13 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 	if (AresFunctions::ConvertTypeTo)
 	{
+		int oldHealth = pThis->Health;
+
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
+			if (pType->Strength == pToType->Strength)
+				pThis->Health = oldHealth;
+
 			TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis))->UpdateTypeData(pToType);
 			return true;
 		}

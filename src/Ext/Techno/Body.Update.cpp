@@ -558,8 +558,9 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 	TechnoClass* const pThis = this->OwnerObject();
 	TechnoTypeClass* const pType = pThis->GetTechnoType();
 	FootClass* pFoot = nullptr;
+	AbstractType abs = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() != AbstractType::Building)
+	if (abs != AbstractType::Building)
 	{
 		pFoot = static_cast<FootClass*>(pThis);
 
@@ -603,6 +604,23 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 		else if (pType->Gunner)
 		{
 			pFoot->RemoveGunner(nullptr);
+		}
+
+		if ((abs == AbstractType::Infantry || abs == AbstractType::Unit) &&
+			pThis->IsInAir() && !pType->JumpJet && !pThis->LocomotorSource)
+		{
+			pThis->IsFallingDown = true;
+			const auto pCell = MapClass::Instance.TryGetCellAt(pThis->Location);
+			pThis->OnBridge = pCell ? pCell->ContainsBridge() : false;
+
+			if (!pCell || !pCell->IsClearToMove(pThis->GetTechnoType()->SpeedType, true, true,
+				-1, pThis->GetTechnoType()->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+			{
+				pThis->IsABomb = true;
+			}
+
+			if (abs == AbstractType::Infantry)
+				static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
 		}
 	}
 
@@ -733,7 +751,10 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 							}
 							else
 							{
-								pAircraft->Crash(nullptr);
+								if (pSpawnNode->IsSpawnMissile)
+									pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+								else
+									pAircraft->Crash(nullptr);
 							}
 						}
 
@@ -755,10 +776,10 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 	{
 		pSpawnManager->ResetTarget();
 
-		for (auto pSpawn : pSpawnManager->SpawnedNodes)
+		for (auto pSpawnNode : pSpawnManager->SpawnedNodes)
 		{
-			const auto pAircraft = pSpawn->Unit;
-			auto& Status = pSpawn->Status;
+			const auto pAircraft = pSpawnNode->Unit;
+			auto& Status = pSpawnNode->Status;
 
 			if (!pAircraft || Status == SpawnNodeStatus::Dead ||
 				Status == SpawnNodeStatus::Idle || Status == SpawnNodeStatus::Reloading)
@@ -773,13 +794,16 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 			}
 			else
 			{
-				pAircraft->Crash(nullptr);
+				if (pSpawnNode->IsSpawnMissile)
+					pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+				else
+					pAircraft->Crash(nullptr);
 			}
 
-			pSpawn->Unit = nullptr;
+			pSpawnNode->Unit = nullptr;
 			Status = SpawnNodeStatus::Dead;
-			pSpawn->IsSpawnMissile = false;
-			pSpawn->SpawnTimer.Start(pSpawnManager->RegenRate);
+			pSpawnNode->IsSpawnMissile = false;
+			pSpawnNode->SpawnTimer.Start(pSpawnManager->RegenRate);
 		}
 	}
 
@@ -837,7 +861,7 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 				hasTemporal = true;
 			}
 
-			if (pWH->Parasite)
+			if (pWH->Parasite && pFoot)
 			{
 				hasParasite = true;
 			}
