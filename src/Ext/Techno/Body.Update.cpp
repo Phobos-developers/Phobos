@@ -11,6 +11,7 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
+#include <New/Type/Affiliated/TypeConvertGroup.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -36,6 +37,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
+	this->AmmoAutoConvertActions();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -113,6 +115,44 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 
 	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
 		pThis->QueueMission(Mission::Unload, true);
+}
+
+void TechnoExt::ExtData::AmmoAutoConvertActions()
+{
+	auto const pThis = abstract_cast<TechnoClass*>(this->OwnerObject());
+	if (!pThis || pThis->GetTechnoType()->Ammo <= 0)
+		return;
+
+	const auto pTypeExt = this->TypeExtData;
+	const bool skipMinimum = pTypeExt->Ammo_AutoConvertMinimumAmount < 0;
+	const bool skipMaximum = pTypeExt->Ammo_AutoConvertMaximumAmount < 0;
+
+	if (skipMinimum && skipMaximum)
+		return;
+
+	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoConvertMinimumAmount;
+	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoConvertMaximumAmount;
+
+	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+	{
+		const auto pFoot = abstract_cast<FootClass*>(pThis);
+
+		if (!pFoot)
+			return;
+
+		// Preparing the needed convert stuff
+		std::vector<TypeConvertGroup> convertPair;
+		ValueableVector<TechnoTypeClass*> convertFrom;
+		Nullable<TechnoTypeClass*> convertTo;
+		Nullable<AffectedHouse> convertAffectedHouses;
+
+		convertFrom.emplace_back(pThis->GetTechnoType());
+		convertTo = pTypeExt->Ammo_AutoConvertType;
+		convertAffectedHouses = AffectedHouse::Owner;
+		convertPair.emplace_back(convertFrom, convertTo, convertAffectedHouses);
+
+		TypeConvertGroup::Convert(pFoot, convertPair, pThis->Owner);
+	}
 }
 
 // TODO : Merge into new AttachEffects

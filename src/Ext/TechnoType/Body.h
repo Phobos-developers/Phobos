@@ -350,6 +350,10 @@ public:
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Valueable<int> Ammo_AutoConvertMinimumAmount;
+		Valueable<int> Ammo_AutoConvertMaximumAmount;
+		Nullable<TechnoTypeClass*> Ammo_AutoConvertType;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -653,6 +657,10 @@ public:
 
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
+
+			, Ammo_AutoConvertMinimumAmount { -1 }
+			, Ammo_AutoConvertMaximumAmount { -1 }
+			, Ammo_AutoConvertType { nullptr }
 		{ }
 
 		virtual ~ExtData() = default;

@@ -149,6 +149,8 @@ public:
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
+		void AmmoAutoConvertActions();
+
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
