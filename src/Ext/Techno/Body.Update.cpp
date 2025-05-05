@@ -15,6 +15,7 @@
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 #include <JumpjetLocomotionClass.h>
+#include <FlyLocomotionClass.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -609,22 +610,25 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 
 		if (abs == AbstractType::Infantry || abs == AbstractType::Unit)
 		{
-			if (pFoot->IsInAir() && !pFoot->LocomotorSource)
-			{
-				if (pType->JumpJet)
-				{
-					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
-					{
-						pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
+			const auto pOldType = pOldTypeExt->OwnerObject();
 
-						if (pType->BalloonHover)
-						{
-							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-							pJJLoco->IsMoving = true;
-							pJJLoco->DestinationCoords = pFoot->Location;
-							pJJLoco->CurrentHeight = pType->JumpjetHeight;
-							pJJLoco->Move_To(pFoot->Location);
-						}
+			if (pType->Locomotor != LocomotionClass::CLSIDs::Fly)
+			{
+				if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+				{
+					pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
+
+					if (pType->BalloonHover)
+					{
+						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+						pJJLoco->IsMoving = true;
+						pJJLoco->DestinationCoords = pFoot->Location;
+						pJJLoco->CurrentHeight = pType->JumpjetHeight;
+						pJJLoco->Height = pType->JumpjetHeight;
+					}
+					else
+					{
+						pJJLoco->Move_To(pFoot->Location);
 					}
 				}
 				else
@@ -646,8 +650,6 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 
 			if (abs == AbstractType::Unit)
 			{
-				const auto pOldType = pOldTypeExt->OwnerObject();
-
 				if (pOldType->Turret != pType->Turret)
 				{
 					const auto primaryFacing = pFoot->PrimaryFacing.Current();
