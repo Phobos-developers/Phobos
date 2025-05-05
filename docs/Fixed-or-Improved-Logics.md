@@ -223,6 +223,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
+- Fixed `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on bridge.
 
 ## Fixes / interactions with other extensions
 

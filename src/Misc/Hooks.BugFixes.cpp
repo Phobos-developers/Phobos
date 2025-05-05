@@ -1875,6 +1875,7 @@ DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
 {
 	GET(FootClass*, pTarget, ESI);
+	pTarget->OnBridge = false;
 
 	if (const auto pUnit = abstract_cast<UnitClass*>(pTarget))
 		pUnit->Unloading = false;

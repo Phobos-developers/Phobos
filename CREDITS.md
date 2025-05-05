@@ -387,6 +387,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that buildings will always be tinted as airstrike owner
   - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
+  - Fix `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on bridge
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
