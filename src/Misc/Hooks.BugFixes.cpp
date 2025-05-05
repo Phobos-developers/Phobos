@@ -16,6 +16,7 @@
 #include <JumpjetLocomotionClass.h>
 #include <TeleportLocomotionClass.h>
 #include <BombClass.h>
+#include <cassert>
 #include <ParticleSystemClass.h>
 #include <WarheadTypeClass.h>
 #include <HashTable.h>
@@ -1926,4 +1927,39 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	GET(ObjectClass*, pContent, ESI);
 	R->EAX(pContent->WhatAmI());
 	return ContinueCheck;
+}
+
+// The 2 hooks below trip an assertion and then force the game to crash
+// if something is trying to submit a null pointer to a game layer
+// present for debugging purposes.
+DEFINE_HOOK(0x5519BB, LayerClass_Submit_NullPointerCrash, 0x5)
+{
+	GET_STACK(ObjectClass*, object, 0x8);
+
+	assert(object != nullptr);
+
+	if (object == nullptr)
+	{
+		// force a crash
+		int* p = nullptr;
+		*p = 50;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x551A1A, LayerClass_Submit_NullPointerCrash2, 0x5)
+{
+	GET(ObjectClass*, object, ECX);
+
+	assert(object != nullptr);
+
+	if (object == nullptr)
+	{
+		// force a crash
+		int* p = nullptr;
+		*p = 50;
+	}
+
+	return 0;
 }
