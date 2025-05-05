@@ -612,39 +612,42 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 		{
 			const auto pOldType = pOldTypeExt->OwnerObject();
 
-			if (pType->Locomotor != LocomotionClass::CLSIDs::Fly)
+			if (pFoot->IsInAir() && !pFoot->LocomotorSource)
 			{
-				if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+				if (pType->Locomotor != LocomotionClass::CLSIDs::Fly)
 				{
-					pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
-
-					if (pType->BalloonHover)
+					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 					{
-						pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-						pJJLoco->IsMoving = true;
-						pJJLoco->DestinationCoords = pFoot->Location;
-						pJJLoco->CurrentHeight = pType->JumpjetHeight;
-						pJJLoco->Height = pType->JumpjetHeight;
+						pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
+
+						if (pType->BalloonHover)
+						{
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
+							pJJLoco->DestinationCoords = pFoot->Location;
+							pJJLoco->CurrentHeight = pType->JumpjetHeight;
+							pJJLoco->Height = pType->JumpjetHeight;
+						}
+						else
+						{
+							pJJLoco->Move_To(pFoot->Location);
+						}
 					}
 					else
 					{
-						pJJLoco->Move_To(pFoot->Location);
-					}
-				}
-				else
-				{
-					pFoot->IsFallingDown = true;
-					const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
-					pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
+						pFoot->IsFallingDown = true;
+						const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
+						pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
 
-					if (!pCell || !pCell->IsClearToMove(pType->SpeedType, true, true,
-						-1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
-					{
-						pFoot->IsABomb = true;
-					}
+						if (!pCell || !pCell->IsClearToMove(pType->SpeedType, true, true,
+							-1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+						{
+							pFoot->IsABomb = true;
+						}
 
-					if (abs == AbstractType::Infantry)
-						static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
+						if (abs == AbstractType::Infantry)
+							static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
+					}
 				}
 			}
 
