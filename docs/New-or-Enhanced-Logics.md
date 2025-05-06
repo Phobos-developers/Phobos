@@ -745,7 +745,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Tracing`, if set to zero, use weapon's `ROF`-10 as the duration. At least 1 frame. If it is negative, do not time it.
   - `Trajectory.TolerantTime` controls how long the projectile will detonate after losing the target. If it is 0, it will detonate directly when switching targets.
   - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value.
-  - `Trajectory.BulletROT` controls the rotational speed of the projectile. When it is 0, it will always face the direction defined by `Trajectory.BulletFacing`. Otherwise, it will rotate towards the target according to this speed.
+  - `Trajectory.BulletROT` controls the rotational speed of the projectile's orientation (facing direction). When it is 0, it will always face the direction defined by `Trajectory.BulletFacing`. Otherwise, it will rotate towards the target according to this speed.
   - `Trajectory.BulletFacing` controls what direction the projectile should face. This has the following 7 modes.
     - Velocity - Following the direction of velocity. Towards the direction of motion of the projectile. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
     - Spin - Continuous self rotation. Continuously rotating on a horizontal plane. The positive and negative of `Trajectory.BulletROT` can control the direction.
@@ -1014,7 +1014,7 @@ Trajectory.Bombard.TurningPointAnims=        ; List of AnimationTypes
     - `Trajectory.Missile.ReduceCoord` controls whether `Trajectory.Missile.PreAimCoord` defines the initial movement coordinates when the attack distance is 10 cells, and the actual initial movement coordinates will change with the length of the attack distance. It can be simply understood as an optimization term aimed at ensuring hits at close range.
   - `Trajectory.Missile.LaunchSpeed` controls the initial flight speed of the projectile.
     - `Trajectory.Missile.Acceleration` controls the acceleration of the projectile's flight speed, increasing or decreasing the speed per frame according to this value, the final speed will be `Trajectory.Speed`.
-    - `Trajectory.Missile.TurningSpeed` controls the turning speed of the projectile which refers to the maximum angle that the projectile can rotate per frame in terms of direction.
+    - `Trajectory.Missile.TurningSpeed` controls the turning speed of the projectile's locomotion (moving direction) which refers to the maximum angle that the projectile can rotate per frame in terms of direction.
   - `Trajectory.Missile.LockDirection` controls whether after reaching `Trajectory.Missile.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
   - `Trajectory.Missile.CruiseEnable` controls whether after reaching `Trajectory.Missile.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.
     - `Trajectory.Missile.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Missile.PreAimCoord` is reached, the cruise phase will be skipped.
