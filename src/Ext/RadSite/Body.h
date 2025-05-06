@@ -38,7 +38,7 @@ public:
 
 		virtual ~ExtData() = default;
 
-		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage, int distance);
+		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage);
 		void Add(int amount);
 		void SetRadLevel(int amount);
 		double GetRadLevelAt(CellStruct const& cell) const;
