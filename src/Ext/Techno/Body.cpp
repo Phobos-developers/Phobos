@@ -291,8 +291,8 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
 	const auto pType = pThis->GetTechnoType();
 
-	if (pType == pToType ||
-		pType->WhatAmI() != pToType->WhatAmI())
+	// It really should be at the beginning.
+	if (pType == pToType || pType->WhatAmI() != pToType->WhatAmI())
 	{
 		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
 		return false;
@@ -305,7 +305,10 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
 			if (pType->Strength == pToType->Strength)
-				pThis->Health = oldHealth;
+			{
+				// Fixed an issue where morphing could result in -1 health.
+				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
+			}
 
 			TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis))->UpdateTypeData(pToType);
 			return true;
