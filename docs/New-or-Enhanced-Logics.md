@@ -60,6 +60,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+    - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -1134,6 +1135,22 @@ Detonate.AtFirer=false      ; boolean
 
 ## Technos
 
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]                   ; TechnoType
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -1707,76 +1724,16 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; Sound entry
 ```
 
-### Weapons fired on warping in / out
-
-- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
-  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
-  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                            ; TechnoType
-WarpInWeapon=                           ; WeaponType
-WarpInMinRangeWeapon=                   ; WeaponType
-WarpInWeapon.UseDistanceAsDamage=false  ; boolean
-WarpOutWeapon=                          ; WeaponType
-```
-
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
-```
-
-### Aggressive attack move mission
-
-- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
-- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
-
-In `rulesmd.ini`:
-```ini
-[General]
-AttackMove.Aggressive=false    ; boolean
-AttackMove.UpdateTarget=false  ; boolean
-
-[SOMETECHNO]
-AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
-AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
-```
-
-### Amphibious access vehicle
-
-- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface. Defaults to `[General]->AmphibiousEnter` or `[General]->AmphibiousUnload`.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AmphibiousEnter=false    ; boolean
-AmphibiousUnload=false   ; boolean
-
-[SOMEVEHICLE]            ; VehicleType
-AmphibiousEnter=         ; boolean
-AmphibiousUnload=        ; boolean
-```
-
 ### Tiberium eater
 
 - Units can convert the ore underneath them into cash in real time, like GDI's EPIC unit MARV in Command & Conquer 3 Kane's Wrath, when `TiberiumEater.TransDelay` is 0 or larger.
 - `TiberiumEater.TransDelay` specifies the interval in game frames between two mining "processes", 0 means eat in every frame.
 - `TiberiumEater.AmountPerCell` controls how many "bails" of ore can be mined at each cell at once, <= 0 means no limit.
 - By default, ore mined this way is worth the same as if it was harvested and refined the normal way. This can be adjusted with `TiberiumEater.CashMultiplier`.
-- `TiberiumEater.Display=true` will create a flying text displaying the total cash amount received each mining process. `TiberiumEater.Display.Houses` controlls who can see this text.
+- `TiberiumEater.Display`, if set to true, will create a flying text displaying the total cash amount received each mining process. `TiberiumEater.Display.Houses` controlls who can see this text.
 - An animation will be played at each interval at each mined cell. If `TiberiumEater.Anims` contains 8 entries, then an entry will be picked according to unit facing. Otherwise, an entry will be chosen at random.
-- If `TiberiumEater.AnimMove=true`, the animations will move with the unit.
+  - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when mining corresponding tiberium type.
+  - If `TiberiumEater.AnimMove` set to true, the animations will move with the unit.
 
 In `rulesmd.ini`:
 ```ini
@@ -1795,6 +1752,21 @@ TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
 TiberiumEater.AnimMove=true       ; boolean
 ```
 
+### Weapons fired on warping in / out
+
+- It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
+  - `WarpInMinRangeWeapon` is used instead of `WarpInWeapon` if the distance traveled (in leptons) was less than `ChronoRangeMinimum`. This works regardless of if `ChronoTrigger` is set or not. If `WarpInMinRangeWeapon` is not set, it defaults to `WarpInWeapon`.
+  - If `WarpInWeapon.UseDistanceAsDamage` is set, `Damage` of `WarpIn(MinRange)Weapon` is overriden by the number of whole cells teleported across.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+WarpInWeapon=                           ; WeaponType
+WarpInMinRangeWeapon=                   ; WeaponType
+WarpInWeapon.UseDistanceAsDamage=false  ; boolean
+WarpOutWeapon=                          ; WeaponType
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -1809,6 +1781,21 @@ DestroySound=      ; Sound entry
 ```
 
 ## Vehicles
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType, transport
+AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
+```
 
 ### Damaged unit image changes
 
@@ -1827,6 +1814,21 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType, transport
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
@@ -2002,7 +2004,7 @@ DamageEnemiesMultiplier=      ; floating point value
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectHouses` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.

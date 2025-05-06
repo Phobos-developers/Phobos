@@ -20,6 +20,8 @@
   <ItemGroup>
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
+    <ClCompile Include="src\Ext\Cell\Body.cpp" />
+    <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Airstrike.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
@@ -83,6 +85,7 @@
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\DroppodTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\InsigniaTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\SelectBoxTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
@@ -193,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Blowfish\blowfish.h" />
+    <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
@@ -229,6 +233,7 @@
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <ClInclude Include="src\New\Type\Affiliated\DroppodTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
+    <ClInclude Include="src\New\Type\InsigniaTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\SelectBoxTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />
