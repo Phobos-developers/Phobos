@@ -1214,7 +1214,7 @@ msgid ""
 "[contributing changes section](contributing-changes-to-the-project); the "
 "docs are located in the `docs` folder."
 msgstr ""
-"**本地编辑**：如 [向项目提交更改](#contributing-changes-to-the-project) 中所述，文档位于 "
+"**本地编辑**：如 [向项目提交更改](contributing-changes-to-the-project) 中所述，文档位于 "
 "`docs` 文件夹。"
 
 #: ../../Contributing.md:326
