@@ -317,13 +317,38 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 	// House
 	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
 
-	if (pBullet->Type->FirersPalette)
+	const auto pType = pBullet->Type;
+
+	// Palette
+	if (pType->FirersPalette)
 		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
 
 	// Velocity
 	auto velocity = BulletVelocity::Empty;
 
-	if (randomVelocity)
+	// If someone asks me, I would say Arcing is just a piece of shit
+	// But there are still people who like to use it, so anyway, it has been fixed
+	if (pType->Arcing)
+	{
+		// The target must exist during launch
+		const auto targetCoords = pBullet->Target->GetCenterCoords();
+		const auto gravity = BulletTypeExt::GetAdjustedGravity(pType);
+		const auto horizontalDistance = Point2D{targetCoords.X, targetCoords.Y}.DistanceFrom(Point2D{sourceCoords.X, sourceCoords.Y});
+
+		if (horizontalDistance < 1e-10 || !pBullet->Speed)
+		{
+			velocity.Z = pBullet->Speed;
+		}
+		else
+		{
+			const auto mult = pBullet->Speed / horizontalDistance;
+			const auto distanceCoords = targetCoords - sourceCoords;
+			velocity.X = static_cast<double>(distanceCoords.X) * mult;
+			velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
+			velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * pBullet->Speed);
+		}
+	}
+	else if (randomVelocity)
 	{
 		DirStruct dir;
 		dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));
