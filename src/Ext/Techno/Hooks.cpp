@@ -799,52 +799,51 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 	GET(ObjectClass*, pThis, ESI);
 
 	pThis->FallRate = 0;
-	if (auto const pTechno = abstract_cast<TechnoClass*>(pThis))
+
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
 	{
 		const auto pType = pTechno->GetTechnoType();
 		const auto pCell = pTechno->GetCell();
 
-		if (!pCell->IsClearToMove(pType->SpeedType,
-			true, true, -1, pType->MovementZone,
-			pCell->GetLevel(), pCell->ContainsBridge()))
+		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
 			return 0;
 
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 		double ratio = 0.0;
 
-		if (pCell->Tile_Is_Water() && !pTechno->OnBridge)
+		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
 			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
 		else
 			ratio = pTypeExt->FallingDownDamage.Get();
 
-		int pDamage = 0;
+		int damage = 0;
 
 		if (ratio < 0.0)
-			pDamage = int(pThis->Health * abs(ratio));
+			damage = static_cast<int>(pThis->Health * std::abs(ratio));
 		else if (ratio >= 0.0 && ratio <= 1.0)
-			pDamage = int(pType->Strength * ratio);
+			damage = static_cast<int>(pType->Strength * ratio);
 		else
-			pDamage = int(ratio);
+			damage = static_cast<int>(ratio);
 
-		pThis->ReceiveDamage(&pDamage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
-		AbstractType abs = pThis->WhatAmI();
+		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
 
 		if (pThis->Health > 0 && pThis->IsAlive)
 		{
 			pThis->IsABomb = false;
+			const auto abs = pThis->WhatAmI();
 
 			if (abs == AbstractType::Infantry)
 			{
 				const auto pInf = static_cast<InfantryClass*>(pTechno);
-				const auto pSequenceAnim = pInf->SequenceAnim;
+				const auto sequenceAnim = pInf->SequenceAnim;
 				pInf->ShouldDeploy = false;
 
 				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
 				{
-					if (pSequenceAnim != Sequence::Swim)
+					if (sequenceAnim != Sequence::Swim)
 						pInf->PlayAnim(Sequence::Swim, true, false);
 				}
-				else if (pSequenceAnim != Sequence::Guard)
+				else if (sequenceAnim != Sequence::Guard)
 				{
 					pInf->PlayAnim(Sequence::Ready, true, false);
 				}
