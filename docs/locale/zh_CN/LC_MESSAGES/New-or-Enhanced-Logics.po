@@ -6042,7 +6042,7 @@ msgid ""
 "[Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*"
 msgstr ""
 "![image](_static/images/promotedspawns-01.gif) "
-"*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的子机升级*"
+"*[幻想奇遇](https://www.moddb.com/mods/fantasy-adventure) 中的子机同步升级*"
 
 #: ../../New-or-Enhanced-Logics.md:1593
 msgid "The spawned units will promote as their owner's veterancy."
