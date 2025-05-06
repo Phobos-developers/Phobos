@@ -134,6 +134,29 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	int insigniaFrame = insigniaFrames.X;
 	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
 
+	if (pTechnoType->Passengers > 0)
+	{
+		int passengersIndex = pTechnoTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
+		passengersIndex = Math::min(passengersIndex, pTechnoType->Passengers);
+
+		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Passengers[passengersIndex].Get(pThis))
+		{
+			pShapeFile = pCustomShapeFile;
+			defaultFrameIndex = 0;
+			isCustomInsignia = true;
+		}
+
+		int frame = pTechnoTypeExt->InsigniaFrame_Passengers[passengersIndex].Get(pThis);
+
+		if (frame != -1)
+			frameIndex = frame;
+
+		auto const& frames = pTechnoTypeExt->InsigniaFrames_Passengers[passengersIndex];
+
+		if (frames != Vector3D<int>(-1, -1, -1))
+			insigniaFrames = frames.Get();
+	}
+
 	if (pTechnoType->Gunner)
 	{
 		int weaponIndex = pThis->CurrentWeaponNumber;
@@ -150,10 +173,10 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		if (frame != -1)
 			frameIndex = frame;
 
-		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
+		auto const& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
 
 		if (frames != Vector3D<int>(-1, -1, -1))
-			insigniaFrames = frames;
+			insigniaFrames = frames.Get();
 	}
 
 	if (pVeterancy->IsVeteran())
@@ -189,6 +212,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
 			break;
 		}
+
+		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pThis->GetTechnoType()->PixelSelectionBracketDelta : 0;
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

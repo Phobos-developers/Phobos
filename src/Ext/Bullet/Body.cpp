@@ -154,7 +154,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	}
 }
 
-void BulletExt::ExtData::ApplyExtraWarheads(std::vector<WarheadTypeClass*> exWH, std::vector<int> exWHDamageOverrides, std::vector<double> exWHChances, std::vector<bool> exWHFull, CoordStruct* coords, HouseClass* pOwner)
+void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHDamageOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const CoordStruct& coords, HouseClass* pOwner)
 {
 	auto const pThis = this->OwnerObject();
 	int damage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
@@ -189,9 +189,9 @@ void BulletExt::ExtData::ApplyExtraWarheads(std::vector<WarheadTypeClass*> exWH,
 			continue;
 
 		if (isFull)
-			WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
+			WarheadTypeExt::DetonateAt(pWH, coords, pThis->Owner, damage, pOwner, pThis->Target);
 		else
-			WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
+			WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
 	}
 }
 

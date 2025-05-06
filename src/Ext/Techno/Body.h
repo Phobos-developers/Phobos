@@ -146,7 +146,7 @@ public:
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(TechnoClass* pTarget);
-		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, int range, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult);
+		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult);
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 

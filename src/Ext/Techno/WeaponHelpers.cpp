@@ -232,7 +232,6 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pSource,
 					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					pBullet->SetWeaponType(pWeapon);
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pThis->Location, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
 				}
@@ -264,7 +263,6 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
 					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					pBullet->SetWeaponType(pWeapon);
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pWeapon, pThis->Location, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
 				}
@@ -299,7 +297,6 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
 					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
-					pBullet->SetWeaponType(pWeapon);
 					BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pWeapon, pThis->Location, true);
 					BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
 				}
@@ -403,7 +400,7 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 	return true;
 }
 
-void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, CoordStruct offset, int range, double accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
+void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
 {
 	auto const pThis = this->OwnerObject();
 	if (pThis->InOpenToppedTransport && !pAuxWeapon->FireInTransport)
@@ -478,7 +475,6 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 
 	if (pBullet)
 	{
-		pBullet->SetWeaponType(pAuxWeapon);
 		BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pAuxWeapon, location, true);
 		BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
 	}
