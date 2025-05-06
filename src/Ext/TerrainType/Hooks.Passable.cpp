@@ -103,14 +103,7 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	GET(CellClass*, pCell, ESI);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
-	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-		if (pTypeExt->CanBeBuiltOn)
-			return ContinueChecks;
-
-		return DontDraw;
-	}
+		return TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn ? ContinueChecks : DontDraw;
 
 	return ContinueChecks;
 }
@@ -125,9 +118,7 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	{
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
-			auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
-
-			if (pTypeExt->CanBeBuiltOn)
+			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
 			{
 				pCell->RemoveContent(pTerrain, false);
 				TerrainTypeExt::Remove(pTerrain);
@@ -136,4 +127,26 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 	}
 
 	return 0;
+}
+
+// Buildable-upon TerrainTypes Hook #4 -> Allow placing walls on top of terrain
+DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
+{
+	enum { Unlimbo = 0x5FD2CA, NoUnlimbo = 0x5FD2C3 };
+
+	GET(CellClass* const, pCell, EAX);
+
+	if (!Game::IsActive)
+		return Unlimbo;
+
+	if (auto const pTerrain = pCell->GetTerrain(false))
+	{
+		if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+			return NoUnlimbo;
+
+		pCell->RemoveContent(pTerrain, false);
+		TerrainTypeExt::Remove(pTerrain);
+	}
+
+	return Unlimbo;
 }

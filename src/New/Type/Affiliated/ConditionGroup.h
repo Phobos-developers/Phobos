@@ -48,9 +48,9 @@ public:
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static bool CheckHouseConditions(HouseClass* pOwner, const ConditionGroup condition);
-	static bool CheckTechnoConditions(TechnoClass* pTechno, const ConditionGroup condition);
-	static bool CheckTechnoConditionsWithTimer(TechnoClass* pTechno, const ConditionGroup condition, CDTimerClass& Timer);
+	static bool CheckHouseConditions(HouseClass* pOwner, const ConditionGroup& condition);
+	static bool CheckTechnoConditions(TechnoClass* pTechno, const ConditionGroup& condition);
+	static bool CheckTechnoConditionsWithTimer(TechnoClass* pTechno, const ConditionGroup& condition, CDTimerClass& Timer);
 	static bool BatchCheckTechnoExist(HouseClass* pOwner, const ValueableVector<TechnoTypeClass*>& vTypes, AffectedHouse affectedHouse, bool any, bool allowLimbo);
 	static void ParseAutoDeath(ConditionGroup& condition, INI_EX& exINI, const char* section);
 

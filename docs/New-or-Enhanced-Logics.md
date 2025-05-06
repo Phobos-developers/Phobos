@@ -8,6 +8,8 @@ This page describes all the engine features that are either new and introduced b
 
 - Similar (but not identical) to [Ares' AttachEffect](https://ares-developers.github.io/Ares-docs/new/attacheffect.html), but with some differences and new features. The largest difference is that here attached effects are explicitly defined types.
   - `Duration` determines how long the effect lasts for. It can be overriden by `DurationOverrides` on TechnoTypes and Warheads.
+    - If `Duration.ApplyFirepowerMult` set to true, the duration will multiply the invoker's firepower multipliers if it's not negative. Can't reduce duration to below 0 by a negative firepower multiplier.
+    - If `Duration.ApplyArmorMultOnTarget` set to true, the duration will divide the target's armor multipliers if it's not negative. This'll also include `ArmorMultiplier` from its own and ignore `ArmorMultiplier.Allow/DisallowWarheads`. Can't reduce duration to below 0 by a negative armor multiplier.
   - `Cumulative`, if set to true, allows the same type of effect to be applied on same object multiple times, up to `Cumulative.MaxCount` number or with no limit if `Cumulative.MaxCount` is a negative number. If the target already has `Cumulative.MaxCount` number of the same effect applied on it, trying to attach another will refresh duration of the attached instance with shortest remaining duration.
   - `Powered` controls whether or not the effect is rendered inactive if the object it is attached to is deactivated (`PoweredUnit` or affected by EMP) or on low power. What happens to animation is controlled by `Animation.OfflineAction`.
   - `DiscardOn` accepts a list of values corresponding to conditions where the attached effect should be discarded. Defaults to `none`, meaning it is never discarded.
@@ -49,6 +51,7 @@ This page describes all the engine features that are either new and introduced b
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
+  - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -57,6 +60,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.Delays` can be used to set the delays for recreating the effects on the TechnoType after they expire. Defaults to 0 (immediately), negative values mean the effects are not recreated. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
+    - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
 
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
@@ -81,6 +85,8 @@ In `rulesmd.ini`:
 
 [SOMEATTACHEFFECT]                                 ; AttachEffectType
 Duration=0                                         ; integer - game frames or negative value for indefinite duration
+Duration.ApplyFirepowerMult=false                  ; boolean
+Duration.ApplyArmorMultOnTarget=false              ; boolean
 Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
@@ -125,10 +131,11 @@ ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
 ReflectDamage.Multiplier=1.0                       ; floating point value, percents or absolute
-ReflectDamage.AffectsHouses=all                    ; list of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
 DisableWeapons=false                               ; boolean
+Unkillable=false                                   ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -294,6 +301,7 @@ SelfHealing=0.0                             ; floating point value, percents or 
 SelfHealing.Rate=0.0                        ; floating point value, ingame minutes
 SelfHealing.RestartInCombat=true            ; boolean
 SelfHealing.RestartInCombatDelay=0          ; integer, game frames
+SelfHealing.EnabledBy=                      ; List of BuildingTypes
 Respawn=0.0                                 ; floating point value, percents or absolute
 Respawn.Rate=0.0                            ; floating point value, ingame minutes
 BracketDelta=0                              ; integer - pixels
@@ -301,6 +309,7 @@ Pips=-1,-1,-1                               ; integer, frames of pips.shp (zero-
 Pips.Building=-1,-1,-1                      ; integer, frames of pips.shp (zero-based) for Green, Yellow, Red
 Pips.Background=                            ; filename - including the .shp/.pcx extension
 Pips.Building.Empty=                        ; integer, frame of pips.shp (zero-based) for empty building pip
+Pips.HideIfNoStrength=false                 ; boolean
 IdleAnim=                                   ; AnimationType
 IdleAnim.ConditionYellow=                   ; AnimationType
 IdleAnim.ConditionRed=                      ; AnimationType
@@ -389,6 +398,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - If you want shield recovers/respawns 1 HP per time, currently you need to set tag value to any number between 1 and 2, like `1.1`.
   - If `SelfHealing.RestartInCombat` is set, self-healing timer pauses and then resumes after `SelfHealing.RestartInCombatDelay` frames have passed when the shield gets damaged.
 - `SelfHealing.Rate` and `Respawn.Rate` respect the following settings: 0.0 instantly recovers the shield, other values determine the frequency of shield recovers/respawns in ingame minutes.
+- `SelfHealing.EnabledBy` can be used to control the self-heal of the shield. If the owner has no structures from this list then the shield won't self-heal.
 - `IdleAnim`, if set, will be played while the shield is intact. This animation is automatically set to loop indefinitely.
   - `IdleAnim.ConditionYellow` and `IdleAnim.ConditionRed` can be used to set different animations for when shield health is at or below the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively. If `IdleAnim.ConditionRed` is not set it falls back to `IdleAnim.ConditionYellow`, which in turn falls back to `IdleAnim`.
   - `IdleAnimDamaged`, `IdleAnimDamaged.ConditionYellow` and `IdleAnimDamaged.ConditionRed` are used in an identical manner, but only when health of the object the shield is attached to is at or below `[AudioVisual] -> ConditionYellow`. Follows similar fallback sequence to regular `IdleAnim` variants and if none are set, falls back to the regular `IdleAnim` or variants thereof.
@@ -412,6 +422,7 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Pips.Shield` can be used to specify which pip frame should be used as shield strength. If only 1 digit is set, then it will always display that frame, or if 3 digits are set, it will use those if shield's current strength is at or below `ConditionYellow` and `ConditionRed`, respectively. `Pips.Shield.Building` is used for BuildingTypes. -1 as value will use the default frame, whether it is fallback to first value or the aforementioned hardcoded defaults.
   - `Pips.Shield.Background` can be used to set the background or 'frame' for non-building pips, which defaults to `pipbrd.shp`. 4th frame is used to display an infantry's shield strength and the 3th frame for other units, or 2nd and 1st respectively if not enough frames are available.
   - `Pips.Shield.Building.Empty` can be used to set the frame of `pips.shp` displayed for empty building strength pips, defaults to 1st frame of `pips.shp`.
+  - `Pips.HideIfNoStrength` can be used to hide the shield's pip frame if the `Strength` is 0.
   - The above customizations are also available on per ShieldType basis, e.g `[ShieldType] -> Pips` instead of `[AudioVisual] -> Pips.Shield` and so on. ShieldType settings take precedence over the global ones, but will fall back to them if not set.
   - `BracketDelta` can be used as additional vertical offset (negative shifts it up) for shield strength bar. Much like `PixelSelectionBracketDelta`, it is not applied on buildings.
 - Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
@@ -577,17 +588,6 @@ In `rulesmd.ini`:
 PowerPlantEnhancer.PowerPlants=    ; List of BuildingTypes
 PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
-```
-
-### Skip anim delay for burst fire
-
-- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
-- Now you can implement the above logic using the following flag.
-
-In `artmd.ini`:
-```ini
-[SOMEBUILDING]                     ; BuildingType
-IsAnimDelayedBurst=true            ; boolean
 ```
 
 ### Spy Effects
@@ -1135,6 +1135,22 @@ Detonate.AtFirer=false      ; boolean
 
 ## Technos
 
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]                   ; TechnoType
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -1463,7 +1479,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
 ### Kill Object Automatically
 
 - Objects can be destroyed automatically if *any* of these conditions is met. If `OnAnyCondition` set to false, it'll check if *all* conditions are met instead:
-  - `OnAmmoDepletion`: The object will die if the remaining ammo reaches 0.
+  - `AmmoExceed` / `AmmoBelow`: The object will die if the remaining ammo is greater / smaller than (or equal to) set value.
   - `AfterDelay`: The object will die if the countdown (in frames) reaches 0.
   - `OwnedByPlayer` / `OwnedByAI`: The object will die if its owner house is / isn't a human player.
   - `MoneyExceed` / `MoneyBelow`: The object will die if its owner house has credits greater / smaller than (or equal to) set value.
@@ -1481,7 +1497,7 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
   - `convert`: If the object is a **unit**, it will be changed into the TechnoType in `Convert.AutoDeath` instead of destroyed.
 
-If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
+If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen. `AutoDeath.Weapon` can be set to fire a weapon at object's location if a self-destruction is triggered.
 
 ```{note}
 Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
@@ -1493,8 +1509,10 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell | convert), default not set
+AutoDeath.Weapon=                              ; WeaponType
 AutoDeath.VanishAnimation=                     ; Animation
-AutoDeath.OnAmmoDepletion=false                ; boolean
+AutoDeath.AmmoExceed=-1                        ; integer
+AutoDeath.AmmoBelow=-1                         ; integer
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.OwnedByPlayer=false                  ; boolean
 AutoDeath.OwnedByAI=false                      ; boolean
@@ -1527,12 +1545,14 @@ Convert.AutoDeath=                             ; TechnoType
 *Multiple Mind Control unit auto-releases the first victim in [Fantasy ADVENTURE](https://www.moddb.com/mods/fantasy-adventure)*
 
 - Mind controllers now can have the upper limit of the control distance. Tag values greater than 0 will activate this feature.
+- Mind controllers now can decide which house can see the link drawn between itself and the controlled units.
 - Mind controllers with multiple controlling slots can now release the first controlled unit when they have reached the control limit and are ordered to control a new target.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                          ; TechnoType
 MindControlRangeLimit=-1.0            ; floating point value
+MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
 ```
 
@@ -1568,6 +1588,22 @@ NoRearm.UnderEMP=        ; boolean
 NoRearm.Temporal=        ; boolean
 NoReload.UnderEMP=       ; boolean
 NoReload.Temporal=       ; boolean
+```
+
+### Overload characteristic dehardcoded
+
+- It is now possible to customize `Overload` behaviors for a TechnoType with `InfiniteMindControl=yes` weapon.
+
+In `rulesmd.ini`:
+```ini
+
+[SOMETECHNO]                  ; TechnoType
+Overload.Count=               ; List of integers, default to [CombatDamage] -> OverloadCount
+Overload.Damage=              ; List of integers, default to [CombatDamage] -> OverloadDamage
+Overload.Frames=              ; List of integers, default to [CombatDamage] -> OverloadFrames
+Overload.DeathSound=          ; Sound entry, default to [AudioVisual] -> MasterMindOverloadDeathSound
+Overload.ParticleSys=         ; ParticleSystemType, default to [CombatDamage] -> DefaultSparkSystem
+Overload.ParticleSysCount=5   ; integer
 ```
 
 ### Promoted Spawns
@@ -1724,21 +1760,6 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing. Defaults to `[General] -> NoQueueUpToEnter` or `[General] -> NoQueueUpToUnload`.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean
-NoQueueUpToUnload=        ; boolean
-```
-
 ## Terrain
 
 ### Destroy animation & sound
@@ -1753,6 +1774,21 @@ DestroySound=      ; Sound entry
 ```
 
 ## Vehicles
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType, transport
+AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
+```
 
 ### Damaged unit image changes
 
@@ -1771,6 +1807,21 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType, transport
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
@@ -1813,6 +1864,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]            ; WarheadType
 RemoveMindControl=false  ; boolean
+```
+
+### Warhead that can not kill
+
+- Warheads can now damage the enemy without killing them (minimum health will be 1).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]  ; WarheadType
+CanKill=true   ; boolean
 ```
 
 ### Chance-based extra damage or Warhead detonation / 'critical hits'
@@ -1936,7 +1997,7 @@ DamageEnemiesMultiplier=      ; floating point value
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectHouses` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.
@@ -1975,8 +2036,8 @@ KillWeapon=                           ; WeaponType
 KillWeapon.OnFirer=                   ; WeaponType
 KillWeapon.AffectsHouses=all          ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 KillWeapon.OnFirer.AffectsHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+KillWeapon.Affects=all                ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
+KillWeapon.OnFirer.Affects=all        ; List of Affected Target Enumeration (none|aircraft|buildings|infantry|units|all)
 
 [SOMETECHNO]                          ; TechnoType
 SuppressKillWeapons=false             ; boolean

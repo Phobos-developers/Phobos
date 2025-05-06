@@ -11,11 +11,12 @@
 #include <New/Type/Affiliated/InterceptorTypeClass.h>
 #include <New/Type/Affiliated/PassengerDeletionTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/ConditionGroup.h>
 
 class Matrix3D;
-
+class ParticleSystemTypeClass;
 class TechnoTypeExt
 {
 public:
@@ -36,6 +37,7 @@ public:
 		Nullable<int> DesignatorRange;
 		Valueable<float> FactoryPlant_Multiplier;
 		Valueable<Leptons> MindControlRangeLimit;
+		Valueable<AffectedHouse> MindControlLink_VisibleToHouse;
 
 		std::unique_ptr<InterceptorTypeClass> InterceptorType;
 
@@ -62,6 +64,8 @@ public:
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
 
+		Nullable<float> HarvesterDumpAmount;
+
 		Valueable<int> Ammo_AddOnDeploy;
 		Valueable<int> Ammo_AutoDeployMinimumAmount;
 		Valueable<int> Ammo_AutoDeployMaximumAmount;
@@ -70,6 +74,7 @@ public:
 
 		Nullable<AutoDeathBehavior> AutoDeath_Behavior;
 		Valueable<TechnoTypeClass*> Convert_AutoDeath;
+		Valueable<WeaponTypeClass*> AutoDeath_Weapon;
 		Valueable<AnimTypeClass*> AutoDeath_VanishAnimation;
 		ConditionGroup AutoDeath_Condition;
 
@@ -185,6 +190,9 @@ public:
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
+		std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
+		std::vector<Promotable<int>> InsigniaFrame_Passengers;
+		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
 		Valueable<bool> JumpjetTilt;
 		Valueable<double> JumpjetTilt_ForwardAccelFactor;
@@ -200,6 +208,9 @@ public:
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
+
+		Nullable<SelectBoxTypeClass*> SelectBox;
+		Valueable<bool> HideSelectBox;
 
 		Valueable<int> AmmoPipFrame;
 		Valueable<int> EmptyAmmoPipFrame;
@@ -243,6 +254,8 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> AmphibiousEnter;
+		Nullable<bool> AmphibiousUnload;
 		Nullable<bool> NoQueueUpToEnter;
 		Nullable<bool> NoQueueUpToUnload;
 		Valueable<bool> Passengers_BySize;
@@ -262,13 +275,19 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Nullable<bool> AttackMove_Aggressive;
+		Nullable<bool> AttackMove_UpdateTarget;
+
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
+		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
 		Valueable<int> Power;
 
-    	Nullable<UnitTypeClass*> Image_ConditionYellow;
+		Nullable<bool> AllowAirstrike;
+
+		Nullable<UnitTypeClass*> Image_ConditionYellow;
 		Nullable<UnitTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
@@ -286,10 +305,12 @@ public:
 		Valueable<int> SinkSpeed;
 
 		Nullable<double> ProneSpeed;
-    	Nullable<double> DamagedSpeed;
+		Nullable<double> DamagedSpeed;
 
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
+
+		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
 		struct LaserTrailDataEntry
 		{
@@ -313,6 +334,15 @@ public:
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
+		NullableVector<int> Overload_Count;
+		NullableVector<int> Overload_Damage;
+		NullableVector<int> Overload_Frames;
+		NullableIdx<VocClass> Overload_DeathSound;
+		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
+		Valueable<int> Overload_ParticleSysCount;
+
+		Valueable<bool> Harvester_CanGuardArea;
+		Nullable<bool> HarvesterScanAfterUnload;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -324,6 +354,7 @@ public:
 			, DesignatorRange { }
 			, FactoryPlant_Multiplier { 1.0 }
 			, MindControlRangeLimit {}
+			, MindControlLink_VisibleToHouse{ AffectedHouse::All }
 
 			, InterceptorType { nullptr }
 
@@ -399,6 +430,8 @@ public:
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
 
+			, HarvesterDumpAmount {}
+
 			, Ammo_AddOnDeploy { 0 }
 			, Ammo_AutoDeployMinimumAmount { -1 }
 			, Ammo_AutoDeployMaximumAmount { -1 }
@@ -407,6 +440,7 @@ public:
 
 			, AutoDeath_Behavior { }
 			, Convert_AutoDeath { }
+			, AutoDeath_Weapon { }
 			, AutoDeath_VanishAnimation {}
 			, AutoDeath_Condition {}
 
@@ -471,6 +505,9 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+			, Insignia_Passengers {}
+			, InsigniaFrame_Passengers {}
+			, InsigniaFrames_Passengers {}
 
 			, JumpjetTilt { false }
 			, JumpjetTilt_ForwardAccelFactor { 1.0 }
@@ -486,6 +523,9 @@ public:
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
+
+			, SelectBox {}
+			, HideSelectBox { false }
 
 			, AmmoPipFrame { 13 }
 			, EmptyAmmoPipFrame { -1 }
@@ -530,6 +570,8 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
+			, AmphibiousEnter {}
+			, AmphibiousUnload {}
 			, NoQueueUpToEnter {}
 			, NoQueueUpToUnload {}
 			, Passengers_BySize { true }
@@ -549,13 +591,19 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, AttackMove_Aggressive {}
+			, AttackMove_UpdateTarget {}
+
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
+			, KeepTargetOnMove_NoMorePursuit { true }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
 
 			, Power { }
 
-      		, Image_ConditionYellow { }
+			, AllowAirstrike { }
+
+			, Image_ConditionYellow { }
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
@@ -580,6 +628,18 @@ public:
 
 			, Promote_VeteranAnimation { }
 			, Promote_EliteAnimation { }
+
+			, RadarInvisibleToHouse {}
+
+			, Overload_Count {}
+			, Overload_Damage {}
+			, Overload_Frames {}
+			, Overload_DeathSound {}
+			, Overload_ParticleSys {}
+			, Overload_ParticleSysCount { 5 }
+
+			, Harvester_CanGuardArea { false }
+			, HarvesterScanAfterUnload {}
 		{ }
 
 		virtual ~ExtData() = default;
