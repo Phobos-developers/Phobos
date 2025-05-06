@@ -283,21 +283,27 @@ DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
 
 DEFINE_HOOK(0x4CF31C, FlyLocomotionClass_FlightUpdate_LandingDir, 0x9)
 {
-	enum { SkipGameCode = 0x4CF351 };
+	enum { SkipGameCode = 0x4CF3D0, SetSecondaryFacing = 0x4CF351 };
 
-	GET(FootClass**, pLinkedToPtr, ESI);
+	GET(FootClass** const, pFootPtr, ESI);
+	GET_STACK(IFlyControl* const, iFly, STACK_OFFSET(0x48, -0x38));
 	REF_STACK(unsigned int, dir, STACK_OFFSET(0x48, 0x8));
 
-	auto const pLinkedTo = *pLinkedToPtr;
+	const auto pFoot = *pFootPtr;
 	dir = 0;
 
-	if (pLinkedTo->CurrentMission == Mission::Enter || pLinkedTo->GetMapCoords() == CellClass::Coord2Cell(pLinkedTo->Locomotor->Destination()))
-	{
-		if (auto const pAircraft = abstract_cast<AircraftClass*>(pLinkedTo))
-			dir = DirStruct(AircraftExt::GetLandingDir(pAircraft)).Raw;
-	}
+	if (!iFly)
+		return SetSecondaryFacing;
 
-	return SkipGameCode;
+	if (iFly->Is_Locked())
+		return SkipGameCode;
+
+	if (const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot))
+		dir = DirStruct(AircraftExt::GetLandingDir(pAircraft)).Raw;
+	else
+		dir = (iFly->Landing_Direction() << 13);
+
+	return SetSecondaryFacing;
 }
 
 namespace SeparateAircraftTemp
@@ -314,11 +320,10 @@ DEFINE_HOOK(0x446F57, BuildingClass_GrandOpening_PoseDir_SetContext, 0x6)
 	return 0;
 }
 
-DirType _fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
+DirType __fastcall AircraftClass_PoseDir_Wrapper(AircraftClass* pThis)
 {
 	return AircraftExt::GetLandingDir(pThis, SeparateAircraftTemp::pBuilding);
 }
-
 DEFINE_FUNCTION_JUMP(CALL, 0x446F67, AircraftClass_PoseDir_Wrapper); // BuildingClass_GrandOpening
 
 DEFINE_HOOK(0x443FC7, BuildingClass_ExitObject_PoseDir1, 0x8)
@@ -337,7 +342,10 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 	GET(AircraftClass*, pAircraft, EBP);
 
 	auto dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
-	// pAircraft->PrimaryFacing.SetCurrent(dir);
+
+	if (RulesExt::Global()->ExtendedAircraftMissions)
+		pAircraft->PrimaryFacing.SetCurrent(dir);
+
 	pAircraft->SecondaryFacing.SetCurrent(dir);
 
 	return 0;
@@ -395,8 +403,8 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
 
 	// When the horizontal distance between the aircraft and its destination is greater than half of its deceleration distance
-	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning waypoint
-	if (distance > std::max((pType->SlowdownDistance >> 1), (2048 / pType->ROT)))
+	// or its turning radius (about 8 cells / rate of turing), continue to move forward, otherwise return to airbase or execute the next planning waypoint
+	if (distance > std::max((pType->SlowdownDistance / 2), (2048 / pType->ROT)))
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
 	// Try next planning waypoint first, then return to air base if it does not exist or cannot be taken
@@ -421,14 +429,133 @@ DEFINE_HOOK(0x4DDD66, FootClass_IsLandZoneClear_ReplaceHardcode, 0x6) // To avoi
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x4CF408, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x6) // Make aircraft not have to fly directly above the airport before starting to descend
+DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // Make aircraft not to fly directly to the airport before starting to land
 {
-	enum { SkipGameCode = 0x4CF40E };
+	enum { SkipGameCode = 0x4CF29A };
 
-	GET(FlyLocomotionClass* const, pThis, EBP);
-	GET(TechnoTypeClass* const, pType, EAX);
+	GET(IFlyControl* const, iFly, EAX);
 
-	R->ECX(RulesExt::Global()->ExtendedAircraftMissions && pThis->LinkedTo->CurrentMission == Mission::Enter || pType->IsDropship);
+	if (!iFly || !iFly->Is_Locked())
+	{
+		GET(FootClass** const, pFootPtr, ESI);
+		GET(const int, distance, EBX);
+
+		const auto pFoot = *pFootPtr;
+		const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot);
+
+		// Rewrite vanilla implement
+		if (!RulesExt::Global()->ExtendedAircraftMissions || !pAircraft)
+		{
+			REF_STACK(const CoordStruct, destination, STACK_OFFSET(0x48, 0x8));
+
+			const auto footCoords = pFoot->GetCoords();
+			const auto desired = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
+
+			if (!iFly || !iFly->Is_Strafe() || distance > 768 // I don't know why it's 3 cells' length, but its vanilla, keep it
+				|| std::abs(static_cast<short>(static_cast<short>(desired.Raw) - static_cast<short>(pFoot->PrimaryFacing.Current().Raw))) >= 8192)
+			{
+				pFoot->PrimaryFacing.SetDesired(desired);
+			}
+		}
+		else
+		{
+			// No const because it also need to be used by SecondaryFacing
+			REF_STACK(CoordStruct, destination, STACK_OFFSET(0x48, 0x8));
+
+			const auto footCoords = pAircraft->GetCoords();
+			const auto landingDir = DirStruct(AircraftExt::GetLandingDir(pAircraft));
+
+			// Try to land from the rear
+			if (pAircraft->Destination && (pAircraft->DockNowHeadingTo == pAircraft->Destination || pAircraft->SpawnOwner == pAircraft->Destination))
+			{
+				const auto pType = pAircraft->Type;
+
+				// Like smooth moving
+				const auto turningRadius = Math::max((pType->SlowdownDistance / 512), (8 / pType->ROT));
+
+				// The direction of the airport
+				const auto currentDir = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
+
+				// Included angle's raw
+				const auto difference = static_cast<short>(static_cast<short>(currentDir.Raw) - static_cast<short>(landingDir.Raw));
+
+				// Land from this direction of the airport
+				const auto landingFace = landingDir.GetFacing<8>(4);
+				auto cellOffset = Unsorted::AdjacentCoord[landingFace];
+
+				// When the direction is opposite, moving to the side first, then automatically shorten based on the current distance
+				if (std::abs(difference) >= 12288) // 12288 -> 3/16 * 65536 (1/8 < 3/16 < 1/4, so the landing can begin at the appropriate location)
+					cellOffset = (cellOffset + Unsorted::AdjacentCoord[((difference > 0) ? (landingFace + 2) : (landingFace - 2)) & 7]) * turningRadius;
+				else // The purpose of doubling is like using two offsets above, to keep the destination point on the range circle (diameter = 2 * radius)
+					cellOffset *= Math::min((turningRadius * 2), ((landingFace & 1) ? (distance / 724) : (distance / 512))); // 724 -> 512√2
+
+				// On the way back, increase the offset value of the destination so that it looks like a real airplane
+				destination.X += cellOffset.X;
+				destination.Y += cellOffset.Y;
+			}
+
+			if (footCoords.Y != destination.Y && footCoords.X != destination.X)
+				pAircraft->PrimaryFacing.SetDesired(DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X)));
+			else
+				pAircraft->PrimaryFacing.SetDesired(landingDir);
+		}
+	}
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Make aircraft not have to fly directly above the airport before starting to descend
+{
+	if (!RulesExt::Global()->ExtendedAircraftMissions)
+		return 0;
+
+	GET(FootClass** const, pFootPtr, ESI);
+
+	const auto pAircraft = abstract_cast<AircraftClass*, true>(*pFootPtr);
+
+	if (!pAircraft)
+		return 0;
+
+	const auto pType = pAircraft->Type;
+
+	// Ares hook
+	if (pType->HunterSeeker)
+		return 0;
+
+	enum { SkipGameCode = 0x4CF4D2 };
+
+	GET_STACK(FlyLocomotionClass* const, pThis, STACK_OFFSET(0x48, -0x28));
+	GET(const int, distance, EBX);
+
+	// Restore skipped code
+	R->EBP(pThis);
+
+	// Same as vanilla
+	if (pThis->IsElevating && distance < 768)
+	{
+		// Fast descent
+		const auto floorHeight = MapClass::Instance.GetCellFloorHeight(pThis->MovingDestination);
+		pThis->FlightLevel = pThis->MovingDestination.Z - floorHeight;
+		return SkipGameCode;
+	}
+
+	const auto flightLevel = pType->GetFlightLevel();
+
+	// Check returning actions
+	if (distance < pType->SlowdownDistance && pAircraft->Destination
+		&& (pAircraft->DockNowHeadingTo == pAircraft->Destination || pAircraft->SpawnOwner == pAircraft->Destination))
+	{
+		// Slow descent
+		const auto floorHeight = MapClass::Instance.GetCellFloorHeight(pThis->MovingDestination);
+		const auto destinationHeight = pThis->MovingDestination.Z - floorHeight + 1;
+		pThis->FlightLevel = static_cast<int>((flightLevel - destinationHeight) * (static_cast<double>(distance) / pType->SlowdownDistance)) + destinationHeight;
+	}
+	else
+	{
+		// Horizontal flight
+		pThis->FlightLevel = flightLevel;
+	}
+
 	return SkipGameCode;
 }
 
