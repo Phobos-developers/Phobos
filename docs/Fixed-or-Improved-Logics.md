@@ -256,7 +256,7 @@ VoicePickup=    ; Sound entry
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
-- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or 8 cell distances divided by `ROT`, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend (also work for aircraft spawned by aircraft carriers). Aircraft will also start landing at the airport from the opposite direction of `LandingDir`.
+- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or its turning radius, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend (also work for aircraft spawned by aircraft carriers). Aircraft will also start landing at the airport from the opposite direction of `LandingDir`.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.

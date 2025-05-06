@@ -403,8 +403,11 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
 
 	// When the horizontal distance between the aircraft and its destination is greater than half of its deceleration distance
-	// or its turning radius (about 8 cells / rate of turing), continue to move forward, otherwise return to airbase or execute the next planning waypoint
-	if (distance > std::max((pType->SlowdownDistance / 2), (2048 / pType->ROT)))
+	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning waypoint
+	const auto rotRadian = std::abs(pThis->PrimaryFacing.ROT.Raw * (Math::TwoPi / 65536)); // GetRadian<65536>() is an incorrect method
+	const auto turningRadius = rotRadian > 1e-10 ? static_cast<int>(pType->Speed / rotRadian) : 0;
+
+	if (distance > std::max((pType->SlowdownDistance / 2), turningRadius))
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
 	// Try next planning waypoint first, then return to air base if it does not exist or cannot be taken
@@ -471,7 +474,11 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 				const auto pType = pAircraft->Type;
 
 				// Like smooth moving
-				const auto turningRadius = Math::max((pType->SlowdownDistance / 512), (8 / pType->ROT));
+				const auto rotRadian = std::abs(pAircraft->PrimaryFacing.ROT.Raw * (Math::TwoPi / 65536));
+				const auto turningRadius = rotRadian > 1e-10 ? static_cast<int>(pType->Speed / rotRadian) : 0;
+
+				// diameter = 2 * radius
+				const auto cellCounts = Math::max((pType->SlowdownDistance / 256), (turningRadius / 128));
 
 				// The direction of the airport
 				const auto currentDir = DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X));
@@ -485,9 +492,9 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 
 				// When the direction is opposite, moving to the side first, then automatically shorten based on the current distance
 				if (std::abs(difference) >= 12288) // 12288 -> 3/16 * 65536 (1/8 < 3/16 < 1/4, so the landing can begin at the appropriate location)
-					cellOffset = (cellOffset + Unsorted::AdjacentCoord[((difference > 0) ? (landingFace + 2) : (landingFace - 2)) & 7]) * turningRadius;
-				else // The purpose of doubling is like using two offsets above, to keep the destination point on the range circle (diameter = 2 * radius)
-					cellOffset *= Math::min((turningRadius * 2), ((landingFace & 1) ? (distance / 724) : (distance / 512))); // 724 -> 512√2
+					cellOffset = (cellOffset + Unsorted::AdjacentCoord[((difference > 0) ? (landingFace + 2) : (landingFace - 2)) & 7]) * cellCounts;
+				else // 724 -> 512√2
+					cellOffset *= Math::min(cellCounts, ((landingFace & 1) ? (distance / 724) : (distance / 512)));
 
 				// On the way back, increase the offset value of the destination so that it looks like a real airplane
 				destination.X += cellOffset.X;
