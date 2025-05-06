@@ -954,7 +954,7 @@ Trajectory.DisperseCoord=0,0,0       ; integer - Forward,Lateral,Height
 ```{note}
 - The listed Weapons in `Trajectory.DisperseWeapons` must be listed in `[WeaponTypes]` for them to work.
 - If you set `Trajectory.DisperseRetarget=true`, also make sure you set `Trajectory.DisperseWeapons` a low `Range` value unless necessary.
-- `Trajectory.DisperseWeapons` now not support `Arcing=true` projectiles and customized `Bolt.ColorN`.
+- `Trajectory.DisperseWeapons` now not support customized `Bolt.ColorN`.
 ```
 
 ```{hint}
@@ -1127,7 +1127,6 @@ Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value
 ```
 
 ```{hint}
-- Compared to vanilla `Arcing`, this can also be used for aircrafts and airburst weapon.
 - Be aware that `Trajectory.DetonationDistance` do not conflict with `Trajectory.Parabola.BounceTimes` and will take effect simultaneously. So if you want to explode the bullet only after the times of bounces is exhausted, you should set `Trajectory.DetonationDistance` to a non positive value.
 ```
 
