@@ -136,7 +136,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (pTechnoType->Passengers > 0)
 	{
-		int passengersIndex = pThis->Passengers.GetTotalSize();
+		int passengersIndex = pTechnoTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
+		passengersIndex = Math::min(passengersIndex, pTechnoType->Passengers);
 
 		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Passengers[passengersIndex].Get(pThis))
 		{
