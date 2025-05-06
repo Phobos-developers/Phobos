@@ -2,28 +2,9 @@
 
 This page describes every change in Phobos that wasn't categorized into a proper category yet.
 
-## Player colors
+## Blowfish Dependency
 
-### Unlimited skirmish colors
-
-- It is now possible to have an unlimited number of skirmish/multiplayer player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares.
-- This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
-- When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
-  - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
-
-In `rulesmd.ini`:
-```ini
-[General]
-SkirmishUnlimitedColors=false  ; boolean
-```
-
-```{note}
-This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
-```
-
-```{warning}
-Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
-```
+`BLOWFISH.DLL` is no longer required to start the game.
 
 ## Developer tools
 
@@ -273,6 +254,25 @@ In **debug** builds the in-game exception handler is **turned off** by default.
 The CnCNet 5 spawner uses the main loop exception handler for fixes. If you get any issues (crashes, bugs) in combination with that then please first test with the exception handler enabled.
 ```
 
-## Blowfish Dependency
+## Player colors
 
-`BLOWFISH.DLL` is no longer required to start the game.
+### Unlimited skirmish colors
+
+- It is now possible to have an unlimited number of skirmish/multiplayer player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares.
+- This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
+- When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
+  - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SkirmishUnlimitedColors=false  ; boolean
+```
+
+```{note}
+This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
+```
+
+```{warning}
+Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
+```
