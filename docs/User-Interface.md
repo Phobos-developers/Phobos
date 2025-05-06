@@ -339,6 +339,18 @@ In `uimd.ini`:
 DisableEmptySpawnPositions=false  ; boolean
 ```
 
+## Miscellanous
+
+### Skip saving game on starting a new campaign
+
+When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+SaveGameOnScenarioStart=true ; boolean
+```
+
 ## Sidebar / Battle UI
 
 ### Cameo Sorting
@@ -582,16 +594,4 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
-```
-
-## Miscellanous
-
-### Skip saving game on starting a new campaign
-
-When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-SaveGameOnScenarioStart=true ; boolean
 ```
