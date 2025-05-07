@@ -37,6 +37,7 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 		pExt->UpdateTypeData_Foot();
 
 	pExt->UpdateWarpInDelay();
+	pExt->UpdateTiberiumEater();
 
 	return 0;
 }
@@ -111,15 +112,21 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 
 	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
-	if (!RulesExt::Global()->Promote_VeteranAnimation.size() && !RulesExt::Global()->Promote_EliteAnimation.size())
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pVeteranAnim = !pTypeExt->Promote_VeteranAnimation.empty() ? pTypeExt->Promote_VeteranAnimation : RulesExt::Global()->Promote_VeteranAnimation;
+	auto const pEliteAnim = !pTypeExt->Promote_EliteAnimation.empty() ? pTypeExt->Promote_EliteAnimation : RulesExt::Global()->Promote_EliteAnimation;
+
+	if (pVeteranAnim.empty() && pEliteAnim.empty())
 		return aresProcess();
 
 	if (pThis->CurrentRanking != pThis->Veterancy.GetRemainingLevel() && pThis->CurrentRanking != Rank::Invalid && (pThis->Veterancy.GetRemainingLevel() != Rank::Rookie))
 	{
-		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && RulesExt::Global()->Promote_VeteranAnimation.size() > 0)
-			AnimExt::CreateRandomAnim(RulesExt::Global()->Promote_VeteranAnimation, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
-		else if (RulesExt::Global()->Promote_EliteAnimation.size() > 0)
-			AnimExt::CreateRandomAnim(RulesExt::Global()->Promote_EliteAnimation, pThis->GetCenterCoords(), pThis, pThis->Owner, true);
+		AnimClass* promAnim = nullptr;
+
+		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && !pVeteranAnim.empty())
+			AnimExt::CreateRandomAnim(pVeteranAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
+		else if (!pEliteAnim.empty())
+			AnimExt::CreateRandomAnim(pEliteAnim, pThis->GetCenterCoords(), pThis, pThis->Owner, true, true);
 	}
 
 	return aresProcess();
@@ -731,3 +738,41 @@ DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Dri
 
 	return R->Origin() + 0x6;
 }
+
+DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
+{
+	enum { ExecuteCulling = 0x62A0B7, CannotCulling = 0x62A0D3 };
+
+	GET(ParasiteClass*, pThis, ESI);
+	GET(WarheadTypeClass*, pWarhead, EBP);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
+}
+
+#pragma region RadarDrawing
+
+DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
+{
+	enum { Invisible = 0x655E66, GoOtherChecks = 0x655E19 };
+
+	GET_STACK(bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
+	GET(TechnoClass*, pTechno, EBP);
+
+	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
+		return Invisible;
+
+	auto pType = pTechno->GetTechnoType();
+
+	if (pType->RadarInvisible)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
+			return Invisible;
+	}
+
+	return GoOtherChecks;
+}
+
+#pragma endregion
