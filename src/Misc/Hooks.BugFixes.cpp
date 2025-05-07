@@ -1929,3 +1929,42 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	R->EAX(pContent->WhatAmI());
 	return ContinueCheck;
 }
+
+#pragma region BalloonHoverPathingFix
+
+DEFINE_HOOK(0x64D592, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal1, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D575, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal2, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D598 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x64D5C5, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal3, 0x6)
+{
+	enum { SkipTargetCrdRecal = 0x64D659 };
+	GET(TechnoClass*, pTechno, EBP);
+	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
+}
+
+DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
+{
+	enum { MoveOK = 0x51C02D };
+	GET(InfantryClass*, pThis, EBP);
+	return pThis->IsInAir() && pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? MoveOK : 0;
+}
+
+DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
+{
+	enum { MoveOK = 0x73F23F };
+	GET(UnitClass*, pThis, ECX);
+	return pThis->IsInAir() && pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? MoveOK : 0;
+}
+
+#pragma endregion

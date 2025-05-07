@@ -220,6 +220,8 @@ public:
 
 		Valueable<bool> HarvesterScanAfterUnload;
 
+		Valueable<bool> BalloonHoverPathingFix;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -385,6 +387,7 @@ public:
 			, DamagedSpeed { 0.75 }
 
 			, HarvesterScanAfterUnload { false }
+			, BalloonHoverPathingFix { false }
 		{ }
 
 		virtual ~ExtData() = default;
