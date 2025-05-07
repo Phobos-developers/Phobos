@@ -37,6 +37,7 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 		pExt->UpdateTypeData_Foot();
 
 	pExt->UpdateWarpInDelay();
+	pExt->UpdateTiberiumEater();
 
 	return 0;
 }
