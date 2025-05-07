@@ -992,10 +992,6 @@ ReturnWeapon=                           ; WeaponType
 ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
-```{note}
-This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
-```
-
 ### Shrapnel enhancements
 
 ![image](_static/images/shrapnel.gif)
@@ -1764,6 +1760,35 @@ IsVoiceCreatedGlobal=false   ; boolean
 
 [SOMETECHNO]                 ; TechnoType
 VoiceCreated=                ; Sound entry
+```
+
+### Tiberium eater
+
+- TechnoTypes can convert the ores underneath them into credits in real time, like GDI's MARV in Command & Conquer 3 Kane's Wrath.
+- `TiberiumEater.TransDelay` specifies the interval frames between two eating processes, 0 means eat in every frame. When it's below 0, the logic will be turned off for this TechnoType.
+- `TiberiumEater.CellN` set a list of cells that'll process tiberium eating, where `N` is 0-based and the values are offset related to the TechnoType's current cell. If not set, only the ores on the TechnoType's current cell will be eaten.
+- `TiberiumEater.AmountPerCell` controls the amount of ores that can be eaten at each cell at once. No limit when it's below 0.
+- By default, ores mined in this way worth the same as regular harvesting. This can be adjusted by `TiberiumEater.CashMultiplier`.
+- `TiberiumEater.Display`, if set to true, will create a flying text to display the total credits received in each eating process. `TiberiumEater.Display.Houses` determines which houses can see the credits display.
+- An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
+  - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
+  - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; InfantryType, VehicleType or AircraftType
+TiberiumEater.TransDelay=-1       ; integer
+TiberiumEater.CellN=              ; X,Y - cell offset
+TiberiumEater.CashMultiplier=1.0  ; floating point value
+TiberiumEater.AmountPerCell=0     ; integer
+TiberiumEater.Display=true        ; boolean
+TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
+TiberiumEater.Anims=              ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
+TiberiumEater.AnimMove=true       ; boolean
 ```
 
 ### Weapons fired on warping in / out

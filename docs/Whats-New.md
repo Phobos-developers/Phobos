@@ -374,6 +374,7 @@ New:
 - [Make harvesters do addtional scan after unload](Fixed-or-Improved-Logics.md#make-harvesters-do-addtional-scan-after-unload) (by TaranDahl)
 - [Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-veterancy-insignias) (by Ollerus)
 - [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
+- [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
 - Attached effect attach/discard by health (by Ollerus)
 - Attached effect with `ExtraWarheads` and `FeedbackWeapon` (by Ollerus)
 - [AuxWeapon](New-or-Enhanced-Logics.md#auxiliary-weapon) (by Ollerus)

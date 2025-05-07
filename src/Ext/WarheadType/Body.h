@@ -174,7 +174,7 @@ public:
 		Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
 		Valueable<bool> KillWeapon_OnFirer_RealLaunch;
 
-    	Valueable<int> ElectricAssaultLevel;
+		Valueable<int> ElectricAssaultLevel;
 
 		Valueable<AffectedTarget> AirstrikeTargets;
 
