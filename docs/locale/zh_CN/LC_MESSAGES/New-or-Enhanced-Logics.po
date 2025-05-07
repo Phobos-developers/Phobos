@@ -4055,7 +4055,7 @@ msgstr ""
 msgid ""
 "`ReturnWeapon.ApplyFirepowerMult` determines whether or not the auxiliary"
 " weapon's damage should multiply the firer's firepower multipliers."
-msgstr ""
+msgstr "`ReturnWeapon.ApplyFirepowerMult` 决定归返武器的伤害是否受益于科技类型所拥有的火力加成。"
 
 #: ../../New-or-Enhanced-Logics.md:951
 msgid ""
@@ -6468,12 +6468,15 @@ msgstr ""
 "VoiceCreated=                ; Sound entry\n"
 
 #: ../../New-or-Enhanced-Logics.md:1725
+msgid "Tiberium eater"
+msgstr "马夫逻辑"
 
 #: ../../New-or-Enhanced-Logics.md:1727
 msgid ""
 "TechnoTypes can convert the ores underneath them into credits in real "
 "time, like GDI's MARV in Command & Conquer 3 Kane's Wrath."
 msgstr ""
+"可以让单位实时将自身脚下的矿石直接转化为资金，就像《凯恩之怒》中 GDI 的 MARV 那样。"
 
 #: ../../New-or-Enhanced-Logics.md:1728
 msgid ""
@@ -6481,6 +6484,7 @@ msgid ""
 "eating processes, 0 means eat in every frame. When it's below 0, the "
 "logic will be turned off for this TechnoType."
 msgstr ""
+"`TiberiumEater.TransDelay` 指定了两次吃矿之间间隔的帧数，0 代表逐帧。负值禁用。"
 
 #: ../../New-or-Enhanced-Logics.md:1729
 msgid ""
@@ -6489,18 +6493,21 @@ msgid ""
 "TechnoType's current cell. If not set, only the ores on the TechnoType's "
 "current cell will be eaten."
 msgstr ""
+"`TiberiumEater.CellN` 用于设定吃矿位置以单元格为单位的偏移列表，`N` 为 0 始序号，数值表示相对于单位所在单元格的偏移坐标。如果不设置则只吃脚下的。"
 
 #: ../../New-or-Enhanced-Logics.md:1730
 msgid ""
 "`TiberiumEater.AmountPerCell` controls the amount of ores that can be "
 "eaten at each cell at once. No limit when it's below 0."
 msgstr ""
+"`TiberiumEater.AmountPerCell` 控制单次吃矿对与每个单元格而言可吃进去的矿石量上限。负值喂不饱。"
 
 #: ../../New-or-Enhanced-Logics.md:1731
 msgid ""
 "By default, ores mined in this way worth the same as regular harvesting. "
 "This can be adjusted by `TiberiumEater.CashMultiplier`."
 msgstr ""
+"默认通过此方式采集的矿石价值与常规采矿相同。这可以通过 `TiberiumEater.CashMultiplier` 加以调整。"
 
 #: ../../New-or-Enhanced-Logics.md:1732
 msgid ""
@@ -6509,6 +6516,7 @@ msgid ""
 "`TiberiumEater.Display.Houses` determines which houses can see the "
 "credits display."
 msgstr ""
+"若 `TiberiumEater.Display` 设为 true 则每次吃矿时都会飘起一个代表所得总资金量的数字。`TiberiumEater.Display.Houses` 则决定了哪些所属方能看见。"
 
 #: ../../New-or-Enhanced-Logics.md:1733
 msgid ""
@@ -6517,18 +6525,21 @@ msgid ""
 "the TechnoType's current facing will be chosen. Otherwise, an entry will "
 "be chosen randomly."
 msgstr ""
+"每次吃矿时都会在被吃的单元格播放动画。若 `TiberiumEater.Anims` 包含 8 个条目则根据单位当前朝向选择动画，否则随机选取。"
 
 #: ../../New-or-Enhanced-Logics.md:1734
 msgid ""
 "`TiberiumEater.Anims.TiberiumN`, if set, will override "
 "`TiberiumEater.Anims` when eating corresponding tiberium type."
 msgstr ""
+"若设置了 `TiberiumEater.Anims.TiberiumN` 则在吃进去对应类型的矿石时使用对应序列的 `TiberiumEater.Anims`。"
 
 #: ../../New-or-Enhanced-Logics.md:1735
 msgid ""
 "If `TiberiumEater.AnimMove` set to true, the animations will move with "
 "the TechnoType."
 msgstr ""
+"若 `TiberiumEater.AnimMove` 设为 true 则单位会跟随单位移动。"
 
 #: ../../New-or-Enhanced-Logics.md:1738
 msgid ""

@@ -1498,13 +1498,16 @@ msgid ""
 "[Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by "
 "NetsuNegi)"
 msgstr ""
-"[使用 `InsigniaType` 批量设置军衔属性](Miscellanous.md#insignia-type)（by Ollerus）"
+"[马夫逻辑](New-or-Enhanced-Logics.md#tiberium-eater)（by "
+"NetsuNegi）"
 
 #: ../../Whats-New.md:379
 msgid ""
 "[Customize the damage taken when falling from a bridge](Fixed-or-"
 "Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)"
 msgstr ""
+"[自定义桥上坠落伤害](Fixed-or-"
+"Improved-Logics.md#customize-bridge-falling-down-damage)（by FlyStar）"
 
 #: ../../Whats-New.md:381 ../../Whats-New.md:576 ../../Whats-New.md:892
 #: ../../Whats-New.md:1001 ../../Whats-New.md:1026 ../../Whats-New.md:1065

@@ -1410,6 +1410,7 @@ msgstr "修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索�
 
 #: ../../../CREDITS.md:359
 msgid "Customize the damage taken when falling from a bridge"
+msgstr "自定义桥上坠落伤害"
 
 #: ../../../CREDITS.md:360
 msgid "**NetsuNegi**:"
@@ -1573,6 +1574,7 @@ msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bu
 
 #: ../../../CREDITS.md:392
 msgid "Tiberium eater logic"
+msgstr "马夫逻辑"
 
 #: ../../../CREDITS.md:393
 msgid "**Apollo** - Translucent SHP drawing patches"

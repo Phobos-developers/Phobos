@@ -3708,30 +3708,35 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:936
 msgid "Customize bridge falling down damage"
+msgstr "自定义桥上坠落伤害"
 
 #: ../../Fixed-or-Improved-Logics.md:938
 msgid ""
 "Now you can customize the damage a unit receives when it falls from a "
 "bridge."
 msgstr ""
+"现在你可以自定义单位从桥上坠落时受到的伤害。"
 
 #: ../../Fixed-or-Improved-Logics.md:939
 msgid ""
 "`FallingDownDamage` customizes the damage a unit receives at the end of a"
 " fall. It can be a percentage or an integer."
 msgstr ""
+"`FallingDownDamage` 用于自定义单位坠落触底时所受到的伤害值，可以是比率或固定整数值。"
 
 #: ../../Fixed-or-Improved-Logics.md:940
 msgid ""
 "`FallingDownDamage.Water` customizes the damage a unit receives when it "
 "falls onto the water. Defaults to `FallingDownDamage`."
 msgstr ""
+"`FallingDownDamage.Water` 用于自定义单位坠落到水中时所受的伤害值，默认同 `FallingDownDamage`。"
 
 #: ../../Fixed-or-Improved-Logics.md:941
 msgid ""
 "If it is a negative percentage, corresponding damage will be dealt based "
 "on the current health of the unit."
 msgstr ""
+"若设置负百分比则会根据单位当前生命值按比例造成对应伤害。"
 
 #: ../../Fixed-or-Improved-Logics.md:944
 msgid ""
