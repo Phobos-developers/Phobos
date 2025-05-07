@@ -355,6 +355,7 @@ This page lists all the individual contributions to the project by their author.
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Customize the damage taken when falling from a bridge
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

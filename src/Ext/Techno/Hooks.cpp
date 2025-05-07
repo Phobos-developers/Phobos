@@ -783,3 +783,84 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 }
 
 #pragma endregion
+
+#pragma region Customized FallingDown Damage
+
+DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	// Reset value, otherwise it'll keep accelerating.
+	pThis->FallRate = 0;
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	pThis->FallRate = 0;
+
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
+	{
+		const auto pType = pTechno->GetTechnoType();
+		const auto pCell = pTechno->GetCell();
+
+		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+			return 0;
+
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		double ratio = 0.0;
+
+		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
+			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+		else
+			ratio = pTypeExt->FallingDownDamage.Get();
+
+		int damage = 0;
+
+		if (ratio < 0.0)
+			damage = static_cast<int>(pThis->Health * std::abs(ratio));
+		else if (ratio >= 0.0 && ratio <= 1.0)
+			damage = static_cast<int>(pType->Strength * ratio);
+		else
+			damage = static_cast<int>(ratio);
+
+		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
+
+		if (pThis->Health > 0 && pThis->IsAlive)
+		{
+			pThis->IsABomb = false;
+			const auto abs = pThis->WhatAmI();
+
+			if (abs == AbstractType::Infantry)
+			{
+				const auto pInf = static_cast<InfantryClass*>(pTechno);
+				const auto sequenceAnim = pInf->SequenceAnim;
+				pInf->ShouldDeploy = false;
+
+				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
+				{
+					if (sequenceAnim != Sequence::Swim)
+						pInf->PlayAnim(Sequence::Swim, true, false);
+				}
+				else if (sequenceAnim != Sequence::Guard)
+				{
+					pInf->PlayAnim(Sequence::Ready, true, false);
+				}
+
+				pInf->Scatter(pInf->GetCoords(), true, false);
+			}
+			else if (abs == AbstractType::Unit)
+			{
+				static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+			}
+		}
+
+		return 0x5F405B;
+	}
+
+	return 0;
+}
+
+#pragma endregion

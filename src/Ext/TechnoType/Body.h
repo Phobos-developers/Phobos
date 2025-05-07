@@ -348,9 +348,12 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
-		
+
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
+
+		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -656,6 +659,9 @@ public:
 
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
+
+			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
 		{ }
 
 		virtual ~ExtData() = default;
