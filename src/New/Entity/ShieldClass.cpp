@@ -322,15 +322,12 @@ void ShieldClass::ResponseAttack()
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim(std::vector<AnimTypeClass*>& pHitAnim)
+void ShieldClass::WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim)
 {
 	if (this->AreAnimsHidden)
 		return;
 
-	if (pHitAnim.empty())
-		pHitAnim = this->Type->HitAnim;
-
-	AnimExt::CreateRandomAnim(pHitAnim, this->Techno->GetCoords(), this->Techno, nullptr, true, true);
+	AnimExt::CreateRandomAnim((pHitAnim.empty() ? this->Type->HitAnim : pHitAnim), this->Techno->GetCoords(), this->Techno, nullptr, true, true);
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -672,7 +669,7 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 	return (int)std::trunc(iStatus);
 }
 
-void ShieldClass::BreakShield(std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
+void ShieldClass::BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
 
@@ -683,12 +680,7 @@ void ShieldClass::BreakShield(std::vector<AnimTypeClass*>& pBreakAnim, WeaponTyp
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
-	{
-		if (pBreakAnim.empty())
-			pBreakAnim = this->Type->BreakAnim;
-
-		AnimExt::CreateRandomAnim(pBreakAnim, this->Techno->Location, this->Techno, nullptr, true, true);
-	}
+		AnimExt::CreateRandomAnim(pBreakAnim.empty() ? this->Type->BreakAnim : pBreakAnim, this->Techno->Location, this->Techno, nullptr, true, true);
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;

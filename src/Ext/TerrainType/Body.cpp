@@ -6,7 +6,6 @@
 #include <TerrainTypeClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/Scenario/Body.h>
 #include <Utilities/GeneralUtils.h>
 
 TerrainTypeExt::ExtContainer TerrainTypeExt::ExtMap;
