@@ -317,9 +317,9 @@ public:
 
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
-    
+
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
-    
+
 		struct LaserTrailDataEntry
 		{
 			ValueableIdx<LaserTrailTypeClass> idxType;
@@ -341,18 +341,18 @@ public:
 
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
-    
+
 		NullableVector<int> Overload_Count;
 		NullableVector<int> Overload_Damage;
 		NullableVector<int> Overload_Frames;
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
-    
+
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
-    
-    Valueable<double> FallingDownDamage;
+
+		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -647,7 +647,7 @@ public:
 
 			, Promote_VeteranAnimation { }
 			, Promote_EliteAnimation { }
-    
+
 			, RadarInvisibleToHouse {}
 
 			, Overload_Count {}
@@ -656,11 +656,11 @@ public:
 			, Overload_DeathSound {}
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount { 5 }
-    
+
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
-    
-      , FallingDownDamage { 1.0 }
+
+			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 		{ }
 

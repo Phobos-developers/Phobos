@@ -554,7 +554,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Promote_VeteranAnimation.Read(exINI, pSection, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, pSection, "Promote.EliteAnimation");
-  
+
 	this->RadarInvisibleToHouse.Read(exINI, pSection, "RadarInvisibleToHouse");
 
 	this->Overload_Count.Read(exINI, pSection, "Overload.Count");
@@ -563,7 +563,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_DeathSound.Read(exINI, pSection, "Overload.DeathSound");
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
-  
+
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
 
@@ -1099,7 +1099,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
-    
+
 		.Process(this->RadarInvisibleToHouse)
 
 		.Process(this->Overload_Count)
@@ -1111,8 +1111,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
-    
-    .Process(this->FallingDownDamage)
+
+		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
 		;
 }
