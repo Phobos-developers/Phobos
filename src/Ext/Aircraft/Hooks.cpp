@@ -543,6 +543,11 @@ DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Ma
 		// Fast descent
 		const auto floorHeight = MapClass::Instance.GetCellFloorHeight(pThis->MovingDestination);
 		pThis->FlightLevel = pThis->MovingDestination.Z - floorHeight;
+
+		// Bug fix
+		if (MapClass::Instance.GetCellAt(pAircraft->Location)->ContainsBridge() && pThis->FlightLevel >= CellClass::BridgeHeight)
+			pThis->FlightLevel -= CellClass::BridgeHeight;
+
 		return SkipGameCode;
 	}
 
