@@ -945,15 +945,13 @@ SubjectToGround=false         ; boolean
 ### Return weapon
 
 - It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+  - `ReturnWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]  ; Projectile
-ReturnWeapon=     ; WeaponType
-```
-
-```{note}
-This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
+[SOMEPROJECTILE]                        ; Projectile
+ReturnWeapon=                           ; WeaponType
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
 ### Shrapnel enhancements
