@@ -333,6 +333,7 @@ public:
 		Valueable<double> ExtraThreatCoefficient_InRangeDistance;
 		Valueable<double> ExtraThreatCoefficient_Facing;
 		Valueable<double> ExtraThreatCoefficient_DistanceToLastTarget;
+		Valueable<bool> BalloonHoverPathingFix;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -609,6 +610,8 @@ public:
 			, ExtraThreatCoefficient_InRangeDistance { 0.0 }
 			, ExtraThreatCoefficient_Facing { 0.0 }
 			, ExtraThreatCoefficient_DistanceToLastTarget { 0.0 }
+			
+			, BalloonHoverPathingFix { false }
 		{ }
 
 		virtual ~ExtData() = default;

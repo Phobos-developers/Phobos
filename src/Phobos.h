@@ -129,6 +129,7 @@ public:
 	{
 	public:
 		static bool Applied;
+		static bool DisableBalloonHoverPathingFix;
 		static bool DisableRadDamageOnBuildings;
 		static bool DisableSyncLogging;
 	};
