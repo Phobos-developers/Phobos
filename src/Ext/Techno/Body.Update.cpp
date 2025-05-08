@@ -875,6 +875,17 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
+		// Handle extra power
+		if (pThis->Transporter)
+		{
+			if (auto const pBld = abstract_cast<BuildingClass*, true>(pThis->Transporter))
+			{
+				if (pBld->HasExtraPowerBonus)
+					pBld->Owner->RecheckPower = true;
+			}
+		}
+
 		return;
 	}
 
