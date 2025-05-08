@@ -66,7 +66,7 @@ public:
 	void SetAnimationVisibility(bool visible);
 
 	static void SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo);
-	static bool ShieldIsBrokenTEvent(ObjectClass* pAttached);
+	static bool ShieldIsBrokenTEvent(int iEvent, ObjectClass* pAttached);
 
 	bool IsGreenSP();
 	bool IsYellowSP();

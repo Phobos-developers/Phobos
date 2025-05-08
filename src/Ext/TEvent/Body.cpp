@@ -118,7 +118,7 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
 	case PhobosTriggerEvent::ShieldBroken:
-		return ShieldClass::ShieldIsBrokenTEvent(pObject);
+		return ShieldClass::ShieldIsBrokenTEvent(iEvent, pObject);
 	case PhobosTriggerEvent::HouseOwnsTechnoType:
 		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
 	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
