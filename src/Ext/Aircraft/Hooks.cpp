@@ -392,12 +392,17 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	GET(AircraftClass* const, pThis, ESI);
 	GET(CoordStruct* const, pCoords, EAX);
 
-	if (!RulesExt::Global()->ExtendedAircraftMissions)
+	if (pThis->Team || pThis->Airstrike || pThis->Spawned)
 		return 0;
 
 	const auto pType = pThis->Type;
 
-	if (!pType->AirportBound || pThis->Team || pThis->Airstrike || pThis->Spawned)
+	if (!pType->AirportBound)
+		return 0;
+
+	const auto extendedMissions = RulesExt::Global()->ExtendedAircraftMissions;
+
+	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftActions_SmoothMoving.Get(extendedMissions))
 		return 0;
 
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
@@ -411,7 +416,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
 	// Try next planning waypoint first, then return to air base if it does not exist or cannot be taken
-	if (!pThis->TryNextPlanningTokenNode())
+	if (!extendedMissions || !pThis->TryNextPlanningTokenNode())
 		pThis->EnterIdleMode(false, true);
 
 	return EnterIdleAndReturn;
@@ -447,7 +452,7 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 		const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot);
 
 		// Rewrite vanilla implement
-		if (!RulesExt::Global()->ExtendedAircraftMissions || !pAircraft)
+		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftActions_RearApproach.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		{
 			REF_STACK(const CoordStruct, destination, STACK_OFFSET(0x48, 0x8));
 
@@ -513,9 +518,6 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 
 DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Make aircraft not have to fly directly above the airport before starting to descend
 {
-	if (!RulesExt::Global()->ExtendedAircraftMissions)
-		return 0;
-
 	GET(FootClass** const, pFootPtr, ESI);
 
 	const auto pAircraft = abstract_cast<AircraftClass*, true>(*pFootPtr);
@@ -527,6 +529,9 @@ DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Ma
 
 	// Ares hook
 	if (pType->HunterSeeker)
+		return 0;
+
+	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftActions_EarlyDescend.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		return 0;
 
 	enum { SkipGameCode = 0x4CF4D2 };

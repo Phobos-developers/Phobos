@@ -256,16 +256,24 @@ VoicePickup=    ; Sound entry
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
-- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or its turning radius, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend (also work for aircraft spawned by aircraft carriers). When the distance between the aircraft and the landing point is less than `SlowdownDistance`, it will begin to descend. Aircraft will also start landing at the airport from the opposite direction of `LandingDir`.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
   - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
+- In addition, the actions of aircraft are also changed.
+  - `ExtendedAircraftActions.SmoothMoving` controls whether the aircraft will return to the airport when the distance to the destination is less than half of `SlowdownDistance` or its turning radius.
+  - `ExtendedAircraftActions.EarlyDescend` controls whether the aircraft not have to fly directly above the airport before starting to descend when the distance between the aircraft and the landing point is less than `SlowdownDistance` (also work for aircraft spawned by aircraft carriers).
+  - `ExtendedAircraftActions.RearApproach` controls whether the aircraft should start landing at the airport from the opposite direction of `LandingDir`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false  ; boolean
+ExtendedAircraftMissions=false         ; boolean
+
+[SOMEAIRCRAFT]                         ; AircraftType
+ExtendedAircraftActions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftActions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftActions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft

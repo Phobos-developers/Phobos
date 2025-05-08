@@ -346,9 +346,16 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
-		
+
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
+
+		Nullable<bool> ExtendedAircraftActions_SmoothMoving;
+		Nullable<bool> ExtendedAircraftActions_EarlyDescend;
+		Nullable<bool> ExtendedAircraftActions_RearApproach;
+
+		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -653,6 +660,13 @@ public:
 
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
+
+			, ExtendedAircraftActions_SmoothMoving {}
+			, ExtendedAircraftActions_EarlyDescend {}
+			, ExtendedAircraftActions_RearApproach {}
+
+			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
 		{ }
 
 		virtual ~ExtData() = default;
