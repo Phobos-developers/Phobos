@@ -6512,11 +6512,15 @@ msgstr ""
 #: ../../New-or-Enhanced-Logics.md:1732
 msgid ""
 "`TiberiumEater.Display`, if set to true, will create a flying text to "
-"display the total credits received in each eating process. "
+"display the total credits received in each eating process."
+msgstr ""
+"若 `TiberiumEater.Display` 设为 true 则每次吃矿时都会飘起一个代表所得总资金量的数字。"
+
+msgid ""
 "`TiberiumEater.Display.Houses` determines which houses can see the "
 "credits display."
 msgstr ""
-"若 `TiberiumEater.Display` 设为 true 则每次吃矿时都会飘起一个代表所得总资金量的数字。`TiberiumEater.Display.Houses` 则决定了哪些所属方能看见。"
+"`TiberiumEater.Display.Houses` 决定了哪些所属方能看见。"
 
 #: ../../New-or-Enhanced-Logics.md:1733
 msgid ""
@@ -6532,7 +6536,7 @@ msgid ""
 "`TiberiumEater.Anims.TiberiumN`, if set, will override "
 "`TiberiumEater.Anims` when eating corresponding tiberium type."
 msgstr ""
-"若设置了 `TiberiumEater.Anims.TiberiumN` 则在吃进去对应类型的矿石时使用对应序列的 `TiberiumEater.Anims`。"
+"若设置了 `TiberiumEater.Anims.TiberiumN` 则在吃进去对应类型（`N` = `[0,3]`）的矿石时使用对应序列的 `TiberiumEater.Anims`。"
 
 #: ../../New-or-Enhanced-Logics.md:1735
 msgid ""
