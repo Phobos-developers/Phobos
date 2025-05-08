@@ -25,6 +25,8 @@ To distribute the workload and make the project more manageable, we have establi
   - `T1` complexity by default
 - Unhardcodings/customizations - contributions that only make something customizable through the INI or other way (by the modder usually), without adding too much code to handle the customization
   - `T1` complexity by default
+- Restored featues (from TS, RA2 etc.), assuming no extra changes or additions apart from the ones necessary to function in YR with extensions (the reviewer has to verify that)
+  - `T1` complexity by default
 - New features
   - Extensions of existing systems - add logic to existing systems, doesn't warrant it's own entity or type classes generally, but may introduce new hooks
     - Examples: feedback weapon logic, superweapon launch warhead logic, a new type of trajectory that uses existing custom trajectory framework, etc.
@@ -241,7 +243,7 @@ When you clone Phobos recursively - you also clone YRpp as a submodule. Basicall
 
 The suggested workflow is as follows:
 1. In your IDE of choice rename fields and functions using symbol renaming feature (`Rename...` feature in Visual Studio (regular or Code), `[F2]` by default), then you will have two "levels" of changes displayed in your Git client:
-   - for Phobos repository - changes in the Phobos code (as regular changes) and changes to YRpp (as one submodule change)
+   - for Phobos repository - changes in the Phobos code (as regular changes) and changes to YRpp (as one submodule change).
    - for YRpp repository - changes to the field names and function names in YRpp as regular changes.
 2. Create a branch in YRpp repository (create a fork of it if you didn't yet), commit and push the changes and submit it as a pull request. After pushing it you have two options in Phobos repository:
    - wait until it's accepted, then checkout YRpp at the newest commit, then commit and push - this will save you having to commit and push multiple times, but you won't be able to get a nightly build for people to test;

@@ -169,7 +169,7 @@ x=i,n             ; For i values check the next table
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
 | 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
-| 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
+| 12      | Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
 | 15      | Naval                    | Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
@@ -543,7 +543,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]
 ...
 ```
 
@@ -608,6 +608,61 @@ In `mycampaign.map`:
 [Actions]
 ...
 ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
+...
+```
+
+### `606` Edit Hate-Value
+
+- Edit the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]
+...
+```
+
+| *Operation* | *Description*                                 |
+|------------:|:----------------------------------------------|
+| 0           | CurrentValue = Number                         |
+| 1           | CurrentValue = CurrentValue + Number          |
+| 2           | CurrentValue = CurrentValue - Number          |
+| 3           | CurrentValue = CurrentValue * Number          |
+| 4           | CurrentValue = CurrentValue / Number          |
+| 5           | CurrentValue = CurrentValue % Number          |
+| 6           | CurrentValue = CurrentValue leftshift Number  |
+| 7           | CurrentValue = CurrentValue rightshift Number |
+| 8           | CurrentValue = ~CurrentValue                  |
+| 9           | CurrentValue = CurrentValue xor Number        |
+| 10          | CurrentValue = CurrentValue or Number         |
+| 11          | CurrentValue = CurrentValue and Number        |
+
+### `607` Clear Hate-Value
+
+- Clear the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]
+...
+```
+
+### `608` Set Force Enemy
+
+- Force an enemy, it will not change with the change of hate-value.
+- -1 will remove the forced enemy.
+- -2 will never have any enemies.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 

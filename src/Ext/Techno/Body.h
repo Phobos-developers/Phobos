@@ -28,6 +28,8 @@ public:
 		std::vector<LaserTrailClass> LaserTrails;
 		std::vector<std::unique_ptr<AttachEffectClass>> AttachedEffects;
 		AttachEffectTechnoProperties AE;
+		TechnoTypeClass* PreviousType; // Type change registered in TechnoClass::AI on current frame and used in FootClass::AI on same frame and reset after.
+		std::vector<EBolt*> ElectricBolts; // EBolts are not serialized so do not serialize this either.
 		int AnimRefCount; // Used to keep track of how many times this techno is referenced in anims f.ex Invoker, ParentBuilding etc., for pointer invalidation.
 		bool ReceiveDamage;
 		bool LastKillWasTeamTarget;
@@ -49,9 +51,13 @@ public:
 		bool LastRearmWasFullDelay;
 		bool CanCloakDuringRearm; // Current rearm timer was started by DecloakToFire=no weapon.
 		int WHAnimRemainingCreationInterval;
-		bool CanCurrentlyDeployIntoBuilding; // Only set on UnitClass technos with DeploysInto set in multiplayer games, recalculated once per frame so no need to serialize.
+		WeaponTypeClass* LastWeaponType;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
+		int BeControlledThreatFrame;
+		DWORD LastTargetID;
+		int AccumulatedGattlingValue;
+		bool ShouldUpdateGattlingValue;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -61,6 +67,9 @@ public:
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
+		CDTimerClass TiberiumEater_Timer;
+
+		AirstrikeClass* AirstrikeTargetingMe;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -68,6 +77,8 @@ public:
 			, LaserTrails {}
 			, AttachedEffects {}
 			, AE {}
+			, PreviousType { nullptr }
+			, ElectricBolts {}
 			, AnimRefCount { 0 }
 			, ReceiveDamage { false }
 			, LastKillWasTeamTarget { false }
@@ -89,15 +100,21 @@ public:
 			, LastRearmWasFullDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
-			, CanCurrentlyDeployIntoBuilding { false }
+			, LastWeaponType {}
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
+			, BeControlledThreatFrame { 0 }
+			, LastTargetID { 0xFFFFFFFF }
+			, AccumulatedGattlingValue { 0 }
+			, ShouldUpdateGattlingValue { false }
 			, OriginalPassengerOwner {}
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, TiberiumEater_Timer {}
+			, AirstrikeTargetingMe { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -106,21 +123,34 @@ public:
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();
 		void EatPassengers();
+		void UpdateTiberiumEater();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
+		void UpdateOnTunnelExit();
 		void ApplySpawnLimitRange();
-		void UpdateTypeData(TechnoTypeClass* currentType);
+		void UpdateTypeData(TechnoTypeClass* pCurrentType);
+		void UpdateTypeData_Foot();
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
+		void UpdateGattlingRateDownReset();
+		void UpdateKeepTargetOnMove();
+		void UpdateWarpInDelay();
 		void UpdateCumulativeAttachEffects(AttachEffectTypeClass* pAttachEffectType, AttachEffectClass* pRemoved = nullptr);
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
+		void UpdateRecountBurst();
+		void UpdateRearmInEMPState();
+		void UpdateRearmInTemporal();
 		void InitializeLaserTrails();
 		void InitializeAttachEffects();
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void ApplyMindControlRangeLimit();
+		int ApplyForceWeaponInRange(TechnoClass* pTarget);
+
+		UnitTypeClass* GetUnitTypeExtra() const;
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
@@ -141,6 +171,8 @@ public:
 
 	static ExtContainer ExtMap;
 
+	static UnitClass* Deployer;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
@@ -158,7 +190,6 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
-	static void ApplyMindControlRangeLimit(TechnoClass* pThis);
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
@@ -179,6 +210,7 @@ public:
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 
@@ -191,4 +223,6 @@ public:
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, int& weaponIndex, bool getSecondary = false);
 	static WeaponTypeClass* GetCurrentWeapon(TechnoClass* pThis, bool getSecondary = false);
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
+	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
+	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 };

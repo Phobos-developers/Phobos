@@ -35,6 +35,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 	, Attached { isAttached }
 	, SelfHealing_Rate_Warhead { -1 }
 	, Respawn_Rate_Warhead { -1 }
+	, IsSelfHealingEnabled { true }
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
@@ -97,6 +98,7 @@ bool ShieldClass::Serialize(T& Stm)
 		.Process(this->Respawn_Rate_Warhead)
 		.Process(this->LastBreakFrame)
 		.Process(this->LastTechnoHealthRatio)
+		.Process(this->IsSelfHealingEnabled)
 		.Success();
 }
 
@@ -330,7 +332,11 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
-		GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+	{
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
+		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+	}
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -427,8 +433,13 @@ void ShieldClass::AI()
 		return;
 
 	this->OnlineCheck();
-	this->RespawnShield();
-	this->SelfHealing();
+	this->EnabledByCheck();
+
+	if (this->IsSelfHealingEnabled)
+	{
+		this->RespawnShield();
+		this->SelfHealing();
+	}
 
 	double ratio = this->Techno->GetHealthPercentage();
 
@@ -459,6 +470,33 @@ void ShieldClass::CloakCheck()
 
 	if (this->Cloak && this->IdleAnim && AnimTypeExt::ExtMap.Find(this->IdleAnim->Type)->DetachOnCloak)
 		this->KillAnim();
+}
+
+void ShieldClass::EnabledByCheck()
+{
+	if (this->Type->SelfHealing_EnabledBy.empty())
+		return;
+
+	this->IsSelfHealingEnabled = false;
+	auto const pOwner = this->Techno->Owner;
+
+	for (auto const pBuilding : pOwner->Buildings)
+	{
+		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
+
+		if (this->Type->SelfHealing_EnabledBy.Contains(pBuilding->Type) && isActive)
+		{
+			this->IsSelfHealingEnabled = true;
+			break;
+		}
+	}
+
+	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
+
+	if (!this->IsSelfHealingEnabled)
+		timer->Pause();
+	else
+		timer->Resume();
 }
 
 void ShieldClass::OnlineCheck()
@@ -690,7 +728,8 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 			auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
 
 			pAnim->SetOwnerObject(this->Techno);
-			pAnim->Owner = this->Techno->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		}
 	}
 
@@ -779,7 +818,8 @@ void ShieldClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
 
 		pAnim->SetOwnerObject(this->Techno);
-		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
+		pAnim->Owner = this->Techno->Owner;
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
 	}
@@ -836,6 +876,9 @@ bool ShieldClass::IsRedSP()
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	Point2D position = { 0, 0 };
 	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
@@ -875,8 +918,11 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
+	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
+		return;
+
 	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
-	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP()));
+	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame;
 
 	position.X -= 1;
@@ -939,10 +985,20 @@ int ShieldClass::DrawShieldBar_PipAmount(int length) const
 
 ArmorType ShieldClass::GetArmorType() const
 {
-	if (this->Techno && this->Type->InheritArmorFromTechno)
-		return this->Techno->GetTechnoType()->Armor;
+	const auto pShieldType = this->Type;
 
-	return this->Type->Armor.Get();
+	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	{
+		const auto pTechnoType = this->Techno->GetTechnoType();
+
+		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
+			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))
+		{
+			return pTechnoType->Armor;
+		}
+	}
+
+	return pShieldType->Armor.Get();
 }
 
 int ShieldClass::GetFramesSinceLastBroken() const

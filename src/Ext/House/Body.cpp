@@ -34,11 +34,11 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	auto& bestChoices = HouseExt::AIProduction_BestChoices;
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
 
-	auto const count = static_cast<unsigned int>(UnitTypeClass::Array->Count);
+	auto const count = static_cast<unsigned int>(UnitTypeClass::Array.Count);
 	creationFrames.assign(count, 0x7FFFFFFF);
 	values.assign(count, 0);
 
-	for (auto currentTeam : *TeamClass::Array)
+	for (auto currentTeam : TeamClass::Array)
 	{
 		if (!currentTeam || currentTeam->Owner != pThis)
 			continue;
@@ -71,7 +71,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 		}
 	}
 
-	for (auto unit : *UnitClass::Array)
+	for (auto unit : UnitClass::Array)
 	{
 		auto const index = static_cast<unsigned int>(unit->GetType()->GetArrayIndex());
 
@@ -91,7 +91,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 
 	for (auto i = 0u; i < count; ++i)
 	{
-		auto const type = UnitTypeClass::Array->Items[static_cast<int>(i)];
+		auto const type = UnitTypeClass::Array[static_cast<int>(i)];
 		int currentValue = values[i];
 
 		if (currentValue <= 0
@@ -232,7 +232,7 @@ bool HouseExt::IsDisabledFromShell(
 {
 	// SWAllowed does not apply to campaigns any more
 	if (SessionClass::IsCampaign()
-		|| GameModeOptionsClass::Instance->SWAllowed)
+		|| GameModeOptionsClass::Instance.SWAllowed)
 	{
 		return false;
 	}
@@ -322,12 +322,12 @@ CellClass* HouseExt::GetEnemyBaseGatherCell(HouseClass* pTargetHouse, HouseClass
 	auto newCoords = GeneralUtils::CalculateCoordsFromDistance(currentCoords, targetCoords, distance);
 
 	auto cellStruct = CellClass::Coord2Cell(newCoords);
-	cellStruct = MapClass::Instance->NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
+	cellStruct = MapClass::Instance.NearByLocation(cellStruct, speedTypeZone, -1, MovementZone::Normal, false, 3, 3, false, false, false, true, cellStruct, false, false);
 
 	if (cellStruct == CellStruct::Empty)
 		return nullptr;
 
-	return MapClass::Instance->TryGetCellAt(cellStruct);
+	return MapClass::Instance.TryGetCellAt(cellStruct);
 }
 
 // Gets the superweapons used by AI for Chronoshift script actions.
@@ -385,8 +385,8 @@ HouseClass* HouseExt::GetHouseKind(OwnerHouseKind const kind, bool const allowRa
 		if (allowRandom)
 		{
 			auto& Random = ScenarioClass::Instance->Random;
-			return HouseClass::Array->GetItem(
-				Random.RandomRanged(0, HouseClass::Array->Count - 1));
+			return HouseClass::Array.GetItem(
+				Random.RandomRanged(0, HouseClass::Array.Count - 1));
 		}
 		else
 		{
@@ -602,6 +602,23 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 }
 
+int HouseExt::ExtData::GetForceEnemyIndex()
+{
+	auto const pHouse = this->OwnerObject();
+	if (!pHouse)
+		return -1;
+
+	return this->ForceEnemyIndex;
+}
+
+void HouseExt::ExtData::SetForceEnemyIndex(int EnemyIndex)
+{
+	if (EnemyIndex < 0 && EnemyIndex != -2)
+		this->ForceEnemyIndex = -1;
+	else
+		this->ForceEnemyIndex = EnemyIndex;
+}
+
 // =============================
 // load / save
 
@@ -635,6 +652,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIFireSaleDelayTimer)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
+		.Process(this->ForceEnemyIndex)
 		;
 }
 
