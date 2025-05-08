@@ -37,7 +37,9 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
 {
 	bHandled = true;
-	switch (static_cast<PhobosTriggerEvent>(pThis->EventKind))
+	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
+
+	switch (eventKind)
 	{
 		// helper struct
 		struct and_with { bool operator()(int a, int b) { return a & b; } };
@@ -117,8 +119,6 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
 		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
 
-	case PhobosTriggerEvent::ShieldBroken:
-		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 	case PhobosTriggerEvent::HouseOwnsTechnoType:
 		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
 	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
@@ -127,6 +127,27 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
 	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
 		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+
+	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
+//	case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+	case PhobosTriggerEvent::ShieldBroken:
+		// They must be the same.
+		if (eventKind == static_cast<PhobosTriggerEvent>(iEvent))
+		{
+			switch (eventKind)
+			{
+			// SomeTriggerAttachedToObject needs to be restricted to situations where ...
+//			case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+//				return ...::ThisAttachedToObjectTEvent(pObject, ...);
+
+			// ShieldBroken needs to be restricted to situations where the shield is being attacked.
+			case PhobosTriggerEvent::ShieldBroken:
+				return ShieldClass::ShieldIsBrokenTEvent(pObject);
+
+			default:
+				break;
+			}
+		}
 
 	default:
 		bHandled = false;

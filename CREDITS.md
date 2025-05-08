@@ -345,6 +345,7 @@ This page lists all the individual contributions to the project by their author.
   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
   - Fix `AltNextScenario` not taking effect
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
+  - `600 The shield of the attached object is broken` bug fix for the triggered event
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

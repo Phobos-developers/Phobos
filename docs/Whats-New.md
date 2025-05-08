@@ -642,6 +642,7 @@ Phobos fixes:
 - Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)
 - Fixed `AltNextScenario` not taking effect (by FlyStar)
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
+- `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)
