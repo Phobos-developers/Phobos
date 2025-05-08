@@ -33,7 +33,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool TEventExt::IsConfined(PhobosTriggerEvent eventKind)
+bool TEventExt::InAttachedObject(PhobosTriggerEvent eventKind)
 {
 	// If it requires an additional object as like mapping events 7 or 48, please fill it in here. you can use "||".
 	return eventKind == PhobosTriggerEvent::ShieldBroken;
@@ -45,7 +45,7 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	bHandled = true;
 	PhobosTriggerEvent eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
 
-	if (TEventExt::IsConfined(eventKind))
+	if (TEventExt::InAttachedObject(eventKind))
 	{
 		// They must be the same.
 		if (eventKind != static_cast<PhobosTriggerEvent>(iEvent))
