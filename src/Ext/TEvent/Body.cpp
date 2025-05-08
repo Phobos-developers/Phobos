@@ -128,16 +128,27 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
 		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
 
-		// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
-		// case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
+//	case PhobosTriggerEvent::SomeTriggerAttachedToObject:
 	case PhobosTriggerEvent::ShieldBroken:
-	{
 		// They must be the same.
-		if (eventKind != static_cast<PhobosTriggerEvent>(iEvent))
-			return false;
+		if (eventKind == static_cast<PhobosTriggerEvent>(iEvent))
+		{
+			switch (eventKind)
+			{
+			// SomeTriggerAttachedToObject needs to be restricted to situations where ...
+//			case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+//				return ...::ThisAttachedToObjectTEvent(pObject, ...);
 
-		return ShieldClass::ShieldIsBrokenTEvent(pObject);
-	}
+			// ShieldBroken needs to be restricted to situations where the shield is being attacked.
+			case PhobosTriggerEvent::ShieldBroken:
+				return ShieldClass::ShieldIsBrokenTEvent(pObject);
+
+			default:
+				break;
+			}
+		}
+
 	default:
 		bHandled = false;
 		return true;
