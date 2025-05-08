@@ -33,132 +33,115 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool TEventExt::InAttachedObject(PhobosTriggerEvent eventKind)
-{
-	// If it requires an additional object as like mapping events 7 or 48, please fill it in here. you can use "||".
-	return eventKind == PhobosTriggerEvent::ShieldBroken;
-}
-
 bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
 	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
 {
 	bHandled = true;
-	PhobosTriggerEvent eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
+	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
 
-	if (TEventExt::InAttachedObject(eventKind))
+	switch (eventKind)
+	{
+		// helper struct
+		struct and_with { bool operator()(int a, int b) { return a & b; } };
+
+	case PhobosTriggerEvent::LocalVariableGreaterThan:
+		return TEventExt::VariableCheck<false, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThan:
+		return TEventExt::VariableCheck<false, std::less<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableEqualsTo:
+		return TEventExt::VariableCheck<false, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsTo:
+		return TEventExt::VariableCheck<false, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanOrEqualsTo:
+		return TEventExt::VariableCheck<false, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableAndIsTrue:
+		return TEventExt::VariableCheck<false, and_with>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThan:
+		return TEventExt::VariableCheck<true, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThan:
+		return TEventExt::VariableCheck<true, std::less<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableEqualsTo:
+		return TEventExt::VariableCheck<true, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsTo:
+		return TEventExt::VariableCheck<true, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsTo:
+		return TEventExt::VariableCheck<true, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableAndIsTrue:
+		return TEventExt::VariableCheck<true, and_with>(pThis);
+
+	case PhobosTriggerEvent::LocalVariableGreaterThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::less<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableAndIsTrueLocalVariable:
+		return TEventExt::VariableCheckBinary<false, false, and_with>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::less<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsToLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableAndIsTrueLocalVariable:
+		return TEventExt::VariableCheckBinary<false, true, and_with>(pThis);
+
+	case PhobosTriggerEvent::LocalVariableGreaterThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::less<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableLessThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::LocalVariableAndIsTrueGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, false, and_with>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::greater<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::less<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::equal_to<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::greater_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsToGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, std::less_equal<int>>(pThis);
+	case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
+		return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
+
+	case PhobosTriggerEvent::HouseOwnsTechnoType:
+		return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
+		return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
+	case PhobosTriggerEvent::CellHasTechnoType:
+		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
+		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+
+		// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
+		// case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+	case PhobosTriggerEvent::ShieldBroken:
 	{
 		// They must be the same.
 		if (eventKind != static_cast<PhobosTriggerEvent>(iEvent))
 			return false;
 
-		switch (eventKind)
-		{
-			// ShieldBroken needs to be restricted to situations where the shield is being attacked.
-		case PhobosTriggerEvent::ShieldBroken:
-			return ShieldClass::ShieldIsBrokenTEvent(pObject);
-
-		default:
-			break;
-		};
+		return ShieldClass::ShieldIsBrokenTEvent(pObject);
 	}
-	else
-	{
-		switch (eventKind)
-		{
-			// helper struct
-			struct and_with { bool operator()(int a, int b) { return a & b; } };
-
-		case PhobosTriggerEvent::LocalVariableGreaterThan:
-			return TEventExt::VariableCheck<false, std::greater<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableLessThan:
-			return TEventExt::VariableCheck<false, std::less<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableEqualsTo:
-			return TEventExt::VariableCheck<false, std::equal_to<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsTo:
-			return TEventExt::VariableCheck<false, std::greater_equal<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableLessThanOrEqualsTo:
-			return TEventExt::VariableCheck<false, std::less_equal<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableAndIsTrue:
-			return TEventExt::VariableCheck<false, and_with>(pThis);
-		case PhobosTriggerEvent::GlobalVariableGreaterThan:
-			return TEventExt::VariableCheck<true, std::greater<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableLessThan:
-			return TEventExt::VariableCheck<true, std::less<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableEqualsTo:
-			return TEventExt::VariableCheck<true, std::equal_to<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsTo:
-			return TEventExt::VariableCheck<true, std::greater_equal<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsTo:
-			return TEventExt::VariableCheck<true, std::less_equal<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableAndIsTrue:
-			return TEventExt::VariableCheck<true, and_with>(pThis);
-
-		case PhobosTriggerEvent::LocalVariableGreaterThanLocalVariable:
-			return TEventExt::VariableCheckBinary<false, false, std::greater<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableLessThanLocalVariable:
-			return TEventExt::VariableCheckBinary<false, false, std::less<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableEqualsToLocalVariable:
-			return TEventExt::VariableCheckBinary<false, false, std::equal_to<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsToLocalVariable:
-			return TEventExt::VariableCheckBinary<false, false, std::greater_equal<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableLessThanOrEqualsToLocalVariable:
-			return TEventExt::VariableCheckBinary<false, false, std::less_equal<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableAndIsTrueLocalVariable:
-			return TEventExt::VariableCheckBinary<false, false, and_with>(pThis);
-		case PhobosTriggerEvent::GlobalVariableGreaterThanLocalVariable:
-			return TEventExt::VariableCheckBinary<false, true, std::greater<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableLessThanLocalVariable:
-			return TEventExt::VariableCheckBinary<false, true, std::less<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableEqualsToLocalVariable:
-			return TEventExt::VariableCheckBinary<false, true, std::equal_to<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsToLocalVariable:
-			return TEventExt::VariableCheckBinary<false, true, std::greater_equal<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsToLocalVariable:
-			return TEventExt::VariableCheckBinary<false, true, std::less_equal<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableAndIsTrueLocalVariable:
-			return TEventExt::VariableCheckBinary<false, true, and_with>(pThis);
-
-		case PhobosTriggerEvent::LocalVariableGreaterThanGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, false, std::greater<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableLessThanGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, false, std::less<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableEqualsToGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, false, std::equal_to<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableGreaterThanOrEqualsToGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, false, std::greater_equal<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableLessThanOrEqualsToGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, false, std::less_equal<int>>(pThis);
-		case PhobosTriggerEvent::LocalVariableAndIsTrueGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, false, and_with>(pThis);
-		case PhobosTriggerEvent::GlobalVariableGreaterThanGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, true, std::greater<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableLessThanGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, true, std::less<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableEqualsToGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, true, std::equal_to<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableGreaterThanOrEqualsToGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, true, std::greater_equal<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableLessThanOrEqualsToGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, true, std::less_equal<int>>(pThis);
-		case PhobosTriggerEvent::GlobalVariableAndIsTrueGlobalVariable:
-			return TEventExt::VariableCheckBinary<true, true, and_with>(pThis);
-
-		case PhobosTriggerEvent::HouseOwnsTechnoType:
-			return TEventExt::HouseOwnsTechnoTypeTEvent(pThis);
-		case PhobosTriggerEvent::HouseDoesntOwnTechnoType:
-			return TEventExt::HouseDoesntOwnTechnoTypeTEvent(pThis);
-		case PhobosTriggerEvent::CellHasTechnoType:
-			return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
-		case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
-			return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
-
-		default:
-			break;
-		};
-	}
-
-	bHandled = false;
-	return true;
+	default:
+		bHandled = false;
+		return true;
+	};
 }
 
 template<bool IsGlobal, class _Pr>
