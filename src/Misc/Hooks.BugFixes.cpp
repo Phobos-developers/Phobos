@@ -1252,7 +1252,9 @@ DEFINE_HOOK(0x6F4C50, TechnoClass_ReceiveCommand_NotifyUnlink, 0x6)
 	if (!pCall->InLimbo // Has not already entered
 		&& (pCall->AbstractFlags & AbstractFlags::Foot) // Is foot
 		&& pCall->CurrentMission == Mission::Enter // Is entering
-		&& static_cast<FootClass*>(pCall)->Destination == pThis) // Is entering techno B
+		&& static_cast<FootClass*>(pCall)->Destination == pThis // Is entering techno B
+		&& pCall->WhatAmI() != AbstractType::Aircraft // Not aircraft
+		&& pThis->GetTechnoType()->Passengers > 0) // Have passenger seats
 	{
 		pCall->SetDestination(pThis->GetCell(), false); // Set the destination at its feet
 		pCall->QueueMission(Mission::Move, false); // Replace entering with moving

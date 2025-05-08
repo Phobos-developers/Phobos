@@ -28,6 +28,7 @@
     <ClCompile Include="src\Ext\Unit\Hooks.Sinking.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
+    <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
+    <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />

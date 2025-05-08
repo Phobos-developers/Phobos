@@ -54,6 +54,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AAOnly.Read(exINI, pSection, "AAOnly");
 	this->Arcing_AllowElevationInaccuracy.Read(exINI, pSection, "Arcing.AllowElevationInaccuracy");
 	this->ReturnWeapon.Read<true>(exINI, pSection, "ReturnWeapon");
+	this->ReturnWeapon_ApplyFirepowerMult.Read(exINI, pSection, "ReturnWeapon.ApplyFirepowerMult");
 	this->SubjectToSolid.Read(exINI, pSection, "SubjectToBuildings");
 	this->SubjectToGround.Read(exINI, pSection, "SubjectToGround");
 
@@ -165,6 +166,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AAOnly)
 		.Process(this->Arcing_AllowElevationInaccuracy)
 		.Process(this->ReturnWeapon)
+		.Process(this->ReturnWeapon_ApplyFirepowerMult)
 		.Process(this->SubjectToSolid)
 		.Process(this->SubjectToGround)
 		.Process(this->Splits)
