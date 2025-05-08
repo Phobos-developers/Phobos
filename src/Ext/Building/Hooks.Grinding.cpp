@@ -5,35 +5,34 @@
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
-	enum { ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };
+	enum { ContinueAresCheck = 0x43C326, ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };
 
 	GET(BuildingClass*, pThis, ESI);
 	GET(TechnoClass*, pFrom, EDI);
 
+	if (!pThis->Owner->IsAlliedWith(pFrom))
+		return ReturnStatic;
+
+	// Ares perfectly replicated this issue, rewrite it here
+	const auto pFromType = pFrom->GetTechnoType();
+	const auto movementZone = pFromType->MovementZone;
+	const bool isAmphibious = movementZone == MovementZone::Amphibious || movementZone == MovementZone::AmphibiousCrusher
+		|| movementZone == MovementZone::AmphibiousDestroyer;
+
+	if (!isAmphibious && (pThis->GetTechnoType()->Naval != pFromType->Naval))
+		return ReturnNegative;
+
 	if (pThis->Type->Grinding)
 	{
-		if (!pThis->Owner->IsAlliedWith(pFrom))
-			return ReturnStatic;
+		const auto mission = pThis->GetCurrentMission();
 
-		if (pThis->GetCurrentMission() == Mission::Construction || pThis->GetCurrentMission() == Mission::Selling ||
-			pThis->BState == 0 || !pThis->HasPower || pFrom->GetTechnoType()->BalloonHover)
-		{
+		if (mission == Mission::Construction || mission == Mission::Selling || pThis->BState == 0 || !pThis->HasPower || pFromType->BalloonHover)
 			return ReturnNegative;
-		}
-
-		bool isAmphibious = pFrom->GetTechnoType()->MovementZone == MovementZone::Amphibious || pFrom->GetTechnoType()->MovementZone == MovementZone::AmphibiousCrusher ||
-			pFrom->GetTechnoType()->MovementZone == MovementZone::AmphibiousDestroyer;
-
-		if (!isAmphibious && (pThis->GetTechnoType()->Naval && !pFrom->GetTechnoType()->Naval ||
-			!pThis->GetTechnoType()->Naval && pFrom->GetTechnoType()->Naval))
-		{
-			return ReturnNegative;
-		}
 
 		return BuildingExt::CanGrindTechno(pThis, pFrom) ? ReturnRoger : ReturnNegative;
 	}
 
-	return 0;
+	return ContinueAresCheck;
 }
 
 
@@ -53,6 +52,38 @@ DEFINE_HOOK(0x4D4CD3, FootClass_Mission_Eaten_Grinding, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
+{
+	GET(InfantryClass*, pThis, EDI);
+	enum { LosesDestination = 0x4D4BD1 };
+
+	if (!pThis || pThis->Target)
+		return 0;
+
+	auto pBld = specific_cast<BuildingClass*>(pThis->Destination);
+	if (!pBld)
+		return 0;
+
+	if (pThis->Type->Engineer)
+		return 0;
+
+	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
+	if (pThis->Type->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+		return 0;
+	if (pBld->IsStrange())
+		return 0;
+
+	if (pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter))
+		return 0;
+
+	if (pThis->Type->C4 || pThis->HasAbility(Ability::C4))
+		return 0;
+
+	// If you can't do any of these then why are you here?
+	pThis->SetDestination(nullptr, false);
+	return LosesDestination;
 }
 
 DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)

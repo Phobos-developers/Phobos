@@ -2,15 +2,15 @@
 #include <Phobos.version.h>
 #include <Windows.h>
 
-#define CAN_USE_ARES 1
+#include <string>
 
 class CCINIClass;
 class AbstractClass;
 
 constexpr auto NONE_STR = "<none>";
 constexpr auto NONE_STR2 = "none";
-constexpr auto TOOLTIPS_SECTION = "ToolTips";
 constexpr auto SIDEBAR_SECTION = "Sidebar";
+constexpr auto UISETTINGS_SECTION = "UISettings";
 
 class Phobos
 {
@@ -26,15 +26,19 @@ public:
 	static const size_t readLength = 2048;
 	static char readBuffer[readLength];
 	static wchar_t wideBuffer[readLength];
-	static const char readDelims[4];
+	static constexpr auto readDelims = ",";
 
 	static const char* AppIconPath;
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
-
+	static bool IsLoadingSaveGame;
+	static bool ShouldQuickSave;
+	static std::wstring CustomGameSaveDescription;
+	static void PassiveSaveGame();
 #ifdef DEBUG
 	static bool DetachFromDebugger();
 #endif
+	static void ApplyOptimizations();
 
 	class UI
 	{
@@ -42,20 +46,25 @@ public:
 		static bool DisableEmptySpawnPositions;
 		static bool ExtendedToolTips;
 		static int MaxToolTipWidth;
-		static bool ShowHarvesterCounter;
+		static bool HarvesterCounter_Show;
 		static double HarvesterCounter_ConditionYellow;
 		static double HarvesterCounter_ConditionRed;
-		static bool ShowProducingProgress;
-		static bool ShowPowerDelta;
+		static bool ProducingProgress_Show;
+		static bool PowerDelta_Show;
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool WeedsCounter_Show;
+		static bool AnchoredToolTips;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
 		static const wchar_t* PowerBlackoutLabel;
 		static const wchar_t* TimeLabel;
 		static const wchar_t* HarvesterLabel;
+		static const wchar_t* ShowBriefingResumeButtonLabel;
+		static const wchar_t* SWShotsFormat;
+		static char ShowBriefingResumeButtonStatusLabel[0x20];
 	};
 
 	class Config
@@ -68,11 +77,23 @@ public:
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
 		static bool SkirmishUnlimitedColors;
+		static bool ShowDesignatorRange;
+		static bool SaveVariablesOnScenarioEnd;
+		static bool SaveGameOnScenarioStart;
+		static bool ShowBriefing;
+		static bool ShowPowerDelta;
+		static bool ShowHarvesterCounter;
+		static bool ShowWeedsCounter;
+		static bool ShowPlanningPath;
+		static bool HideLightFlashEffects;
+		static bool ShowFlashOnSelecting;
+		static bool UnitPowerDrain;
 	};
 
 	class Misc
@@ -82,5 +103,13 @@ public:
 		static int CustomGS_ChangeInterval[7];
 		static int CustomGS_ChangeDelay[7];
 		static int CustomGS_DefaultDelay[7];
+	};
+
+	class Optimizations
+	{
+	public:
+		static bool Applied;
+		static bool DisableRadDamageOnBuildings;
+		static bool DisableSyncLogging;
 	};
 };
