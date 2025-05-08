@@ -82,6 +82,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
+	static bool IsConfined(PhobosTriggerEvent eventKind);
+
 	static bool Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
 					CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled);
 
