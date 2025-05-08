@@ -68,6 +68,7 @@ public:
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
+		CDTimerClass TiberiumEater_Timer;
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
@@ -114,6 +115,7 @@ public:
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 		{ }
 
@@ -123,6 +125,7 @@ public:
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();
 		void EatPassengers();
+		void UpdateTiberiumEater();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
 		void UpdateOnTunnelExit();

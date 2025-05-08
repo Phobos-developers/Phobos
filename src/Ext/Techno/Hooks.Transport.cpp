@@ -300,6 +300,7 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->OnBridge = false; // Don't swap order casually, important
 	pPassenger->NextObject = nullptr; // Don't swap order casually, very important
 
+	pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
 	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
@@ -521,7 +522,17 @@ DEFINE_HOOK(0x7196BB, TeleportLocomotionClass_Process_MarkDown, 0xA)
 	// An impassable invisible barrier will be generated on the bridge (the object linked list of the cell will leave it)
 	// And the transport vehicle will board on the vehicle itself (BFRT Passenger:..., BFRT)
 	// If any infantry attempts to pass through this position on the bridge later, it will cause the game to freeze
-	if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+	auto shouldMarkDown = [pLinkedTo]()
+	{
+		if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+			return true;
+
+		const auto pEnter = pLinkedTo->GetNthLink();
+
+		return (!pEnter || pEnter->GetTechnoType()->Passengers <= 0);
+	};
+
+	if (shouldMarkDown())
 		pLinkedTo->Mark(MarkType::Down);
 
 	return SkipGameCode;

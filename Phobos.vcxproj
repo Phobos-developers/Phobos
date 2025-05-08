@@ -28,6 +28,7 @@
     <ClCompile Include="src\Ext\Unit\Hooks.Sinking.cpp" />
     <ClCompile Include="src\Misc\Hooks.AlphaImage.cpp" />
     <ClCompile Include="src\New\Entity\AttachEffectClass.cpp" />
+    <ClCompile Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.cpp" />
     <ClCompile Include="src\New\Type\AttachEffectTypeClass.cpp" />
     <ClCompile Include="src\Commands\Commands.cpp" />
     <ClCompile Include="src\Commands\DamageDisplay.cpp" />
@@ -85,6 +86,7 @@
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\DroppodTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
+    <ClCompile Include="src\New\Type\InsigniaTypeClass.cpp" />
     <ClCompile Include="src\New\Type\RadTypeClass.cpp" />
     <ClCompile Include="src\New\Type\SelectBoxTypeClass.cpp" />
     <ClCompile Include="src\New\Type\ShieldTypeClass.cpp" />
@@ -197,6 +199,7 @@
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
+    <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
     <ClInclude Include="src\Commands\FrameByFrame.h" />
     <ClInclude Include="src\Commands\FrameStep.h" />
@@ -232,6 +235,7 @@
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <ClInclude Include="src\New\Type\Affiliated\DroppodTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
+    <ClInclude Include="src\New\Type\InsigniaTypeClass.h" />
     <ClInclude Include="src\New\Type\RadTypeClass.h" />
     <ClInclude Include="src\New\Type\SelectBoxTypeClass.h" />
     <ClInclude Include="src\New\Type\ShieldTypeClass.h" />

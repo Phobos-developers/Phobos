@@ -61,7 +61,7 @@ This page describes all the engine features that are either new and introduced b
   - `AttachEffect.InitialDelays` can be used to set the delays before first creating the effects on TechnoType. Defaults to 0 (immediately). Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
   - `AttachEffect.RecreationDelays` is used to determine if the effect can be recreated if it is removed completely (e.g `AttachEffect.RemoveTypes`), and if yes, how long this takes. Defaults to -1, meaning no recreation. Delay matching the position in `AttachTypes` is used for that type, or the last listed delay if not available.
     - Note that neither `InitialDelays` or `RecreationDelays` count down if the effect cannot currently be active due to `DiscardOn` condition.
-    
+
 - AttachEffectTypes can be attached to objects via Warheads using `AttachEffect.AttachTypes`.
   - `AttachEffect.DurationOverrides` can be used to override the default durations. Duration matching the position in `AttachTypes` is used for that type, or the last listed duration if not available.
   - `AttachEffect.CumulativeRefreshAll` if set to true makes it so that trying to attach `Cumulative=true` effect to a target that already has `Cumulative.MaxCount` amount of effects will refresh duration of all attached effects of the same type instead of only the one with shortest remaining duration. If `AttachEffect.CumulativeRefreshAll.OnAttach` is also set to true, this refresh applies even if the target does not have maximum allowed amount of effects of same type.
@@ -604,6 +604,29 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
+## Locomotor
+
+### AdvancedDrive Locomotor
+
+- `AdvancedDrive` locomotor (`{4A582751-9839-11d1-B709-00A024DDAFD1}`) is an improved `Drive` locomotor (`{4A582741-9839-11d1-B709-00A024DDAFD1}`) that can serve as a complete upper level replacement for it.
+- It fixes the issue where `Drive` cannot correctly crush objects during rapid turns.
+- It has smoother uphill and downhill dynamic visual effects.
+- It has the function of driving the unit backwards.
+  - `AdvancedDrive.ReverseSpeed` controls the speed ratio when reversing.
+  - `AdvancedDrive.FaceTargetRange` controls how close the unit is to its target, allowing reversing.
+  - `AdvancedDrive.ConfrontEnemies` controls whether to maitain the frontal movement towards the enemy within the aforementioned distance and no longer automatically selects by the current orientation.
+  - `AdvancedDrive.RetreatDuration` controls how long since the unit was last injured, allowing reversing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                  ; VehicleType
+Locomotor=AdvancedDrive              ; Locomotor
+AdvancedDrive.ReverseSpeed=0.85      ; floating point value
+AdvancedDrive.FaceTargetRange=16.0   ; floating point value
+AdvancedDrive.ConfrontEnemies=true   ; boolean
+AdvancedDrive.RetreatDuration=150    ; integer, game frames
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -945,15 +968,13 @@ SubjectToGround=false         ; boolean
 ### Return weapon
 
 - It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+  - `ReturnWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]  ; Projectile
-ReturnWeapon=     ; WeaponType
-```
-
-```{note}
-This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
+[SOMEPROJECTILE]                        ; Projectile
+ReturnWeapon=                           ; WeaponType
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
 ### Shrapnel enhancements
@@ -1134,6 +1155,22 @@ Detonate.AtFirer=false      ; boolean
 ```
 
 ## Technos
+
+### Aggressive attack move mission
+
+- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
+- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.Aggressive=false    ; boolean
+AttackMove.UpdateTarget=false  ; boolean
+
+[SOMETECHNO]                   ; TechnoType
+AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
+AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
 
 ### Aircraft spawner customizations
 
@@ -1708,6 +1745,35 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; Sound entry
 ```
 
+### Tiberium eater
+
+- TechnoTypes can convert the ores underneath them into credits in real time, like GDI's MARV in Command & Conquer 3 Kane's Wrath.
+- `TiberiumEater.TransDelay` specifies the interval frames between two eating processes, 0 means eat in every frame. When it's below 0, the logic will be turned off for this TechnoType.
+- `TiberiumEater.CellN` set a list of cells that'll process tiberium eating, where `N` is 0-based and the values are offset related to the TechnoType's current cell. If not set, only the ores on the TechnoType's current cell will be eaten.
+- `TiberiumEater.AmountPerCell` controls the amount of ores that can be eaten at each cell at once. No limit when it's below 0.
+- By default, ores mined in this way worth the same as regular harvesting. This can be adjusted by `TiberiumEater.CashMultiplier`.
+- `TiberiumEater.Display`, if set to true, will create a flying text to display the total credits received in each eating process. `TiberiumEater.Display.Houses` determines which houses can see the credits display.
+- An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
+  - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
+  - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; InfantryType, VehicleType or AircraftType
+TiberiumEater.TransDelay=-1       ; integer
+TiberiumEater.CellN=              ; X,Y - cell offset
+TiberiumEater.CashMultiplier=1.0  ; floating point value
+TiberiumEater.AmountPerCell=0     ; integer
+TiberiumEater.Display=true        ; boolean
+TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
+TiberiumEater.Anims=              ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
+TiberiumEater.AnimMove=true       ; boolean
+```
+
 ### Weapons fired on warping in / out
 
 - It is now possible to add weapons that are fired on a teleporting TechnoType when it warps in or out. They are at the same time as the appropriate animations (`WarpIn` / `WarpOut`) are displayed.
@@ -1721,75 +1787,6 @@ WarpInWeapon=                           ; WeaponType
 WarpInMinRangeWeapon=                   ; WeaponType
 WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
-```
-
-### Fast access vehicle
-
-- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
-
-In `rulesmd.ini`:
-```ini
-[General]
-NoQueueUpToEnter=false    ; boolean
-NoQueueUpToUnload=false   ; boolean
-
-[SOMEVEHICLE]             ; VehicleType
-NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
-NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
-```
-
-### Aggressive attack move mission
-
-- `AttackMove.Aggressive` allows your technos to attack the enemy's unarmed buildings more aggressively when in attack move mission (Ctrl+Shift).
-- `AttackMove.UpdateTarget` allows your technos to automatically change and select a higher threat target when in attack move mission (Ctrl+Shift).
-
-In `rulesmd.ini`:
-```ini
-[General]
-AttackMove.Aggressive=false    ; boolean
-AttackMove.UpdateTarget=false  ; boolean
-
-[SOMETECHNO]
-AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
-AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
-```
-
-### Amphibious access vehicle
-
-- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface. Defaults to `[General]->AmphibiousEnter` or `[General]->AmphibiousUnload`.
-
-In `rulesmd.ini`:
-```ini
-[General]
-AmphibiousEnter=false    ; boolean
-AmphibiousUnload=false   ; boolean
-
-[SOMEVEHICLE]            ; VehicleType
-AmphibiousEnter=         ; boolean
-AmphibiousUnload=        ; boolean
-```
-
-## Locomotor
-
-### AdvancedDrive Locomotor
-
-- `AdvancedDrive` locomotor (`{4A582751-9839-11d1-B709-00A024DDAFD1}`) is an improved `Drive` locomotor (`{4A582741-9839-11d1-B709-00A024DDAFD1}`) that can serve as a complete upper level replacement for it.
-- It fixes the issue where `Drive` cannot correctly crush objects during rapid turns.
-- It has smoother uphill and downhill dynamic visual effects.
-- It has the function of driving the unit backwards.
-  - `AdvancedDrive.ReverseSpeed` controls the speed ratio when reversing.
-  - `AdvancedDrive.FaceTargetRange` controls how close the unit is to its target, allowing reversing.
-  - `AdvancedDrive.ConfrontEnemies` controls whether to maitain the frontal movement towards the enemy within the aforementioned distance and no longer automatically selects by the current orientation.
-  - `AdvancedDrive.RetreatDuration` controls how long since the unit was last injured, allowing reversing.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                  ; VehicleType
-Locomotor=AdvancedDrive              ; Locomotor
-AdvancedDrive.ReverseSpeed=0.85      ; floating point value
-AdvancedDrive.FaceTargetRange=16.0   ; floating point value
-AdvancedDrive.ConfrontEnemies=true   ; boolean
-AdvancedDrive.RetreatDuration=150    ; integer, game frames
 ```
 
 ## Terrain
@@ -1806,6 +1803,21 @@ DestroySound=      ; Sound entry
 ```
 
 ## Vehicles
+
+### Amphibious access vehicle
+
+- Now you can let amphibious infantry or vehicle passengers enter or leave amphibious transport vehicles on water surface.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AmphibiousEnter=false    ; boolean
+AmphibiousUnload=false   ; boolean
+
+[SOMEVEHICLE]            ; VehicleType, transport
+AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
+AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
+```
 
 ### Damaged unit image changes
 
@@ -1824,6 +1836,21 @@ WaterImage.ConditionRed=              ; VehicleType entry
 
 ```{warning}
 Note that the VehicleTypes had to be defined under [VehicleTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+```
+
+### Fast access vehicle
+
+- Now you can let infantry or vehicle passengers quickly enter or leave the transport vehicles without queuing.
+
+In `rulesmd.ini`:
+```ini
+[General]
+NoQueueUpToEnter=false    ; boolean
+NoQueueUpToUnload=false   ; boolean
+
+[SOMEVEHICLE]             ; VehicleType, transport
+NoQueueUpToEnter=         ; boolean, default to [General] -> NoQueueUpToEnter
+NoQueueUpToUnload=        ; boolean, default to [General] -> NoQueueUpToUnload
 ```
 
 ### Jumpjet Tilts While Moving
@@ -1999,7 +2026,7 @@ DamageEnemiesMultiplier=      ; floating point value
 
 ### Detonate Warhead on all objects on map
 
-- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `Airburst/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
+- Setting `DetonateOnAllMapObjects` to true allows a Warhead that is detonated by a projectile (for an example, this excludes things like animation `Warhead` and Ares' GenericWarhead superweapon but includes `Crit.Warhead` and animation `Weapon`) and consequently any `AirburstWeapon/ShrapnelWeapon` that may follow to detonate on each object currently alive and existing on the map regardless of its actual target, with optional filters. Note that this is done immediately prior Warhead detonation so after `PreImpactAnim` *(Ares feature)* has been displayed.
   - `DetonateOnAllMapObjects.Full` customizes whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `DetonateOnAllMapObjects.AffectTargets` is used to filter which types of targets (TechnoTypes) are considered valid and must be set to a valid value other than `none` for this feature to work. Only `none`, `all`, `aircraft`, `buildings`, `infantry` and `units` are valid values. This is set to `none` by default as inclusion of all object types can be performance-heavy.
   - `DetonateOnAllMapObjects.AffectHouses` is used to filter which houses targets can belong to be considered valid and must be set to a valid value other than `none` for this feature to work. Only applicable if the house that fired the projectile is known. This is set to `none` by default as inclusion of all houses can be performance-heavy.

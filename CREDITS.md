@@ -354,7 +354,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
-  - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Customize the damage taken when falling from a bridge
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -385,7 +386,9 @@ This page lists all the individual contributions to the project by their author.
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
-  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
+  - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
+  - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
+  - Tiberium eater logic
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -471,6 +474,8 @@ This page lists all the individual contributions to the project by their author.
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
   - Forcing specific weapon by range
+  - Passenger-based insignias
+  - Use `InsigniaType` to set the properties of insignia in a batch
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

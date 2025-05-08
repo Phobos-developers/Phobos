@@ -11,6 +11,7 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <New/Type/InsigniaTypeClass.h>
 
 #include <Utilities/GeneralUtils.h>
 
@@ -419,9 +420,23 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployFireWeapon.Read(exINI, pSection, "DeployFireWeapon");
 	this->TargetZoneScanType.Read(exINI, pSection, "TargetZoneScanType");
 
-	this->Insignia.Read(exINI, pSection, "Insignia.%s");
-	this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
-	this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	// insignia type
+	Nullable<InsigniaTypeClass*> InsigniaType;
+	InsigniaType.Read(exINI, pSection, "InsigniaType");
+
+	if (InsigniaType.isset())
+	{
+		this->Insignia = InsigniaType.Get()->Insignia;
+		this->InsigniaFrame = InsigniaType.Get()->InsigniaFrame;
+		this->InsigniaFrames = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+	}
+	else
+	{
+		this->Insignia.Read(exINI, pSection, "Insignia.%s");
+		this->InsigniaFrames.Read(exINI, pSection, "InsigniaFrames");
+		this->InsigniaFrame.Read(exINI, pSection, "InsigniaFrame.%s");
+	}
+
 	this->Insignia_ShowEnemy.Read(exINI, pSection, "Insignia.ShowEnemy");
 
 	this->JumpjetTilt.Read(exINI, pSection, "JumpjetTilt");
@@ -554,6 +569,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
+	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
+
 	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
@@ -591,14 +609,66 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		for (size_t i = 0; i < weaponCount; i++)
 		{
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
-			this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
+			Nullable<InsigniaTypeClass*> InsigniaType_Weapon;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Weapon%d", i + 1);
+			InsigniaType_Weapon.Read(exINI, pSection, tempBuffer);
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
-			this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
+			if (InsigniaType_Weapon.isset())
+			{
+				this->Insignia_Weapon[i] = InsigniaType_Weapon.Get()->Insignia;
+				this->InsigniaFrame_Weapon[i] = InsigniaType_Weapon.Get()->InsigniaFrame;
+				this->InsigniaFrames_Weapon[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Weapon%d.%s", i + 1, "%s");
+				this->Insignia_Weapon[i].Read(exINI, pSection, tempBuffer);
 
-			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
-			this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Weapon%d.%s", i + 1, "%s");
+				this->InsigniaFrame_Weapon[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Weapon%d", i + 1);
+				this->InsigniaFrames_Weapon[i].Read(exINI, pSection, tempBuffer);
+			}
+		}
+	}
+
+	if (this->OwnerObject()->Passengers > 0)
+	{
+		size_t passengers = this->OwnerObject()->Passengers + 1;
+
+		if (this->Insignia_Passengers.empty() || this->Insignia_Passengers.size() != passengers)
+		{
+			this->Insignia_Passengers.resize(passengers);
+			this->InsigniaFrame_Passengers.resize(passengers, Promotable<int>(-1));
+			Valueable<Vector3D<int>> frames;
+			frames = Vector3D<int>(-1, -1, -1);
+			this->InsigniaFrames_Passengers.resize(passengers, frames);
+		}
+
+		for (size_t i = 0; i < passengers; i++)
+		{
+			Nullable<InsigniaTypeClass*> InsigniaType_Passengers;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaType.Passengers%d", i);
+			InsigniaType_Passengers.Read(exINI, pSection, tempBuffer);
+
+			if (InsigniaType_Passengers.isset())
+			{
+				this->Insignia_Passengers[i] = InsigniaType_Passengers.Get()->Insignia;
+				this->InsigniaFrame_Passengers[i] = InsigniaType_Passengers.Get()->InsigniaFrame;
+				this->InsigniaFrames_Passengers[i] = Vector3D<int>(-1, -1, -1); // override it so only InsigniaFrame will be used
+			}
+			else
+			{
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "Insignia.Passengers%d.%s", i, "%s");
+				this->Insignia_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrame.Passengers%d.%s", i, "%s");
+				this->InsigniaFrame_Passengers[i].Read(exINI, pSection, tempBuffer);
+
+				_snprintf_s(tempBuffer, sizeof(tempBuffer), "InsigniaFrames.Passengers%d", i);
+				this->InsigniaFrames_Passengers[i].Read(exINI, pSection, tempBuffer);
+			}
 		}
 	}
 
@@ -689,6 +759,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->PassengerDeletionType.reset();
 		else
 			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
+	}
+
+	Nullable<int> transDelay;
+	transDelay.Read(exINI, pSection, "TiberiumEater.TransDelay");
+
+	if (transDelay.Get(-1) >= 0 && !this->TiberiumEaterType)
+		this->TiberiumEaterType = std::make_unique<TiberiumEaterTypeClass>();
+
+	if (this->TiberiumEaterType)
+	{
+		if (transDelay.isset() && transDelay.Get() < 0)
+			this->TiberiumEaterType.reset();
+		else
+			this->TiberiumEaterType->LoadFromINI(pINI, pSection);
 	}
 
 	Nullable<bool> isInterceptor;
@@ -895,6 +979,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Insignia_Weapon)
 		.Process(this->InsigniaFrame_Weapon)
 		.Process(this->InsigniaFrames_Weapon)
+		.Process(this->Insignia_Passengers)
+		.Process(this->InsigniaFrame_Passengers)
+		.Process(this->InsigniaFrames_Passengers)
 
 		.Process(this->JumpjetTilt)
 		.Process(this->JumpjetTilt_ForwardAccelFactor)
@@ -930,6 +1017,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnHeight)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
+
+		.Process(this->TiberiumEaterType)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
@@ -1032,6 +1121,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
+
+		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_Water)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
