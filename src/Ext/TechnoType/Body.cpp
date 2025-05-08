@@ -565,6 +565,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
+	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
+
 	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
@@ -752,6 +755,20 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->PassengerDeletionType.reset();
 		else
 			this->PassengerDeletionType->LoadFromINI(pINI, pSection);
+	}
+
+	Nullable<int> transDelay;
+	transDelay.Read(exINI, pSection, "TiberiumEater.TransDelay");
+
+	if (transDelay.Get(-1) >= 0 && !this->TiberiumEaterType)
+		this->TiberiumEaterType = std::make_unique<TiberiumEaterTypeClass>();
+
+	if (this->TiberiumEaterType)
+	{
+		if (transDelay.isset() && transDelay.Get() < 0)
+			this->TiberiumEaterType.reset();
+		else
+			this->TiberiumEaterType->LoadFromINI(pINI, pSection);
 	}
 
 	Nullable<bool> isInterceptor;
@@ -997,6 +1014,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LandingDir)
 		.Process(this->DroppodType)
 
+		.Process(this->TiberiumEaterType)
+
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
@@ -1094,6 +1113,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
+
+		.Process(this->FallingDownDamage)
+		.Process(this->FallingDownDamage_Water)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
