@@ -465,6 +465,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildLimitGroup_ExtraLimit_MaxNum.Read(exINI, pSection, "BuildLimitGroup.ExtraLimit.MaxNum");
 
 	this->CanManualReload.Read(exINI, pSection, "CanManualReload");
+	this->CanManualReload_WhenFull.Read(exINI, pSection, "CanManualReload.WhenFull");
 	this->CanManualReload_ResetROF.Read(exINI, pSection, "CanManualReload.ResetROF");
 	this->CanManualReload_DetonateWarhead.Read(exINI, pSection, "CanManualReload.DetonateWarhead");
 	this->CanManualReload_DetonateConsume.Read(exINI, pSection, "CanManualReload.DetonateConsume");
@@ -855,6 +856,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildLimitGroup_ExtraLimit_MaxNum)
 
 		.Process(this->CanManualReload)
+		.Process(this->CanManualReload_WhenFull)
 		.Process(this->CanManualReload_ResetROF)
 		.Process(this->CanManualReload_DetonateWarhead)
 		.Process(this->CanManualReload_DetonateConsume)

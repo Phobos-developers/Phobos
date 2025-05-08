@@ -234,6 +234,7 @@ public:
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
 		Valueable<bool> CanManualReload;
+		Valueable<bool> CanManualReload_WhenFull;
 		Valueable<bool> CanManualReload_ResetROF;
 		Valueable<WarheadTypeClass*> CanManualReload_DetonateWarhead;
 		Valueable<int> CanManualReload_DetonateConsume;
@@ -477,6 +478,7 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
 			, CanManualReload { false }
+			, CanManualReload_WhenFull { false }
 			, CanManualReload_ResetROF { true }
 			, CanManualReload_DetonateWarhead {}
 			, CanManualReload_DetonateConsume { 0 }

@@ -1581,8 +1581,9 @@ Convert.ComputerToHuman=    ; TechnoType
 
 - You can now use the shortcut key to manually empty and reload ammo for units. Aircraft still needs to return to the airport to reload.
   - `CanManualReload` controls whether this type of techno can manually empty and reload ammo.
+  - `CanManualReload.WhenFull` controls whether can manually empty and reload ammo when the ammo is full.
   - `CanManualReload.ResetROF` controls whether need to reset rearm timer when manually empty and reload ammo.
-  - `CanManualReload.DetonateWarhead` controls whether need to detonate a warhead at the techno's location with 1 damage when manually empty and reload ammo.
+  - `CanManualReload.DetonateWarhead` controls whether need to detonate a warhead at the techno's location with `Damage=Ammo` when manually empty and reload ammo.
   - `CanManualReload.DetonateConsume` controls whether `CanManualReload.DetonateWarhead` require the techno to have more ammo than this value (or equal to) before reloading in order to detonate.
   - For shortcut keys, see [User Interface -> Manually Reload](User-Interface.md#Manual-Reload).
 
@@ -1590,6 +1591,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                        ; TechnoType
 CanManualReload=false               ; boolean
+CanManualReload.WhenFull=false      ; boolean
 CanManualReload.ResetROF=true       ; boolean
 CanManualReload.DetonateWarhead=    ; WarheadType
 CanManualReload.DetonateConsume=0   ; integer
