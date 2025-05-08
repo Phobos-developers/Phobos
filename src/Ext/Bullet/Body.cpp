@@ -333,19 +333,27 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 		// The target must exist during launch
 		const auto targetCoords = pBullet->Target->GetCenterCoords();
 		const auto gravity = BulletTypeExt::GetAdjustedGravity(pType);
-		const auto horizontalDistance = Point2D{targetCoords.X, targetCoords.Y}.DistanceFrom(Point2D{sourceCoords.X, sourceCoords.Y});
+		const auto distanceCoords = targetCoords - sourceCoords;
+		const auto horizontalDistance = Point2D{distanceCoords.X, distanceCoords.Y}.Magnitude();
+		const bool lobber = pWeapon->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
+		// The lower the horizontal velocity, the higher the trajectory
+		// WW calculates the launch angle (and limits it) before calculating the velocity
+		// Here, some magic numbers are used to directly simulate its calculation
+		const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
+		const auto speed = static_cast<int>(speedMult * sqrt(horizontalDistance * gravity * 1.2)); // 0x48AB90
 
-		if (horizontalDistance < 1e-10 || !pBullet->Speed)
+		// Simulate firing Arcing bullet
+		if (horizontalDistance < 1e-10 || !speed)
 		{
-			velocity.Z = pBullet->Speed;
+			// No solution
+			velocity.Z = speed;
 		}
 		else
 		{
-			const auto mult = pBullet->Speed / horizontalDistance;
-			const auto distanceCoords = targetCoords - sourceCoords;
+			const auto mult = speed / horizontalDistance;
 			velocity.X = static_cast<double>(distanceCoords.X) * mult;
 			velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
-			velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * pBullet->Speed);
+			velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
 		}
 	}
 	else if (randomVelocity)

@@ -13,6 +13,7 @@
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -62,6 +63,7 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
+		std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
 		Nullable<float> HarvesterDumpAmount;
 
@@ -563,6 +565,7 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+			, TiberiumEaterType {}
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
