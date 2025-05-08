@@ -327,6 +327,13 @@ void TechnoExt::ExtData::EatPassengers()
 					pPassenger->KillPassengers(pSource);
 					pPassenger->RegisterDestruction(pSource);
 					pPassenger->UnInit();
+
+					// Handle extra power
+					if (auto const pBld = abstract_cast<BuildingClass*, true>(pThis))
+					{
+						if (pBld->HasExtraPowerBonus)
+							pThis->Owner->RecheckPower = true;
+					}
 				}
 
 				this->PassengerDeletionTimer.Stop();
