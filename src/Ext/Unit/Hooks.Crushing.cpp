@@ -6,7 +6,7 @@
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
 
-DEFINE_HOOK(0x073B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
+DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
 	enum { SkipGameCode = 0x73B074 };
 
@@ -17,12 +17,15 @@ DEFINE_HOOK(0x073B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 	if (!pTypeExt->TiltsWhenCrushes_Overlays.Get(pThis->Type->TiltsWhenCrushes))
 		return SkipGameCode;
 
-	pThis->RockingForwardsPerFrame += static_cast<float>(pTypeExt->CrushOverlayExtraForwardTilt);
+	if (AdvancedDriveLocomotionClass::IsReversing(pThis))
+		pThis->RockingForwardsPerFrame -= static_cast<float>(pTypeExt->CrushOverlayExtraForwardTilt);
+	else
+		pThis->RockingForwardsPerFrame += static_cast<float>(pTypeExt->CrushOverlayExtraForwardTilt);
 
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x0741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
+DEFINE_HOOK(0x741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
 {
 	enum { SkipGameCode = 0x74195E };
 
@@ -33,7 +36,10 @@ DEFINE_HOOK(0x0741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
 	if (!pTypeExt->TiltsWhenCrushes_Vehicles.Get(pThis->Type->TiltsWhenCrushes))
 		return SkipGameCode;
 
-	pThis->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.050000001));
+	if (AdvancedDriveLocomotionClass::IsReversing(pThis))
+		pThis->RockingForwardsPerFrame = static_cast<float>(-pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
+	else
+		pThis->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
 
 	return SkipGameCode;
 }
@@ -65,7 +71,7 @@ DEFINE_HOOK(0x4B19F7, DriveLocomotionClass_WhileMoving_CrushTilt, 0xD)
 
 	auto const pLinkedTo = pThis->LinkedTo;
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
-	pLinkedTo->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.050000001));
+	pLinkedTo->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
 
 	return R->Origin() == 0x4B19F7 ? SkipGameCode1 : SkipGameCode2;
 }
@@ -91,7 +97,7 @@ DEFINE_HOOK(0x6A108D, ShipLocomotionClass_WhileMoving_CrushTilt, 0xD)
 {
 	enum { SkipGameCode = 0x6A109A };
 
-	GET(DriveLocomotionClass*, pThis, EBP);
+	GET(ShipLocomotionClass*, pThis, EBP);
 
 	auto const pLinkedTo = pThis->LinkedTo;
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());

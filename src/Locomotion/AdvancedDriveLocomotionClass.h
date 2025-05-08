@@ -380,4 +380,23 @@ private:
 		}
 	}
 	inline int UpdateSpeedAccum(int& speedAccum); // Avoid using goto
+public:
+	static AdvancedDriveLocomotionClass* TryAs(ILocomotion* iLoco)
+	{
+		CLSID locoCLSID {};
+
+		if (SUCCEEDED(static_cast<LocomotionClass*>(iLoco)->GetClassID(&locoCLSID))
+			&& locoCLSID == __uuidof(AdvancedDriveLocomotionClass))
+		{
+			return static_cast<AdvancedDriveLocomotionClass*>(iLoco);
+		}
+
+		return nullptr;
+	}
+	static bool IsReversing(FootClass* pFoot)
+	{
+		const auto pLoco = AdvancedDriveLocomotionClass::TryAs(pFoot->Locomotor.GetInterfacePtr());
+
+		return pLoco && !pLoco->IsForward;
+	}
 };
