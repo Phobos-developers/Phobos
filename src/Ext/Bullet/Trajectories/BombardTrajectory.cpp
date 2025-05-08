@@ -102,9 +102,9 @@ void BombardTrajectory::OnUnlimbo()
 	this->ActualTrajectory::OnUnlimbo();
 	// Bombard
 	const auto pBullet = this->Bullet;
-	this->Height += pBullet->TargetCoords.Z;
 	// use scaling since RandomRanged only support int
 	this->FallPercent += ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * this->Type->FallPercentShift)) / 100.0;
+	this->Height += std::lerp(pBullet->SourceCoords.Z, pBullet->TargetCoords.Z, std::clamp(this->FallPercent, 0.0, 1.0));
 	// Record the initial target coordinates without offset
 	this->InitialTargetCoord = pBullet->TargetCoords;
 	// Special case: Set the target to the ground
