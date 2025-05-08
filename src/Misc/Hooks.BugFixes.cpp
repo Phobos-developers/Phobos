@@ -1560,6 +1560,19 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73FA9E, UnitClass_IsCellOccupied_LandType, 0x6)
+{
+	const bool containsBridge = R->AL();
+
+	if (containsBridge)
+	{
+		R->EAX(LandType::Road);
+		return R->Origin() + 0x6;
+	}
+
+	return 0;
+}
+
 #pragma region XSurfaceFix
 
 // Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.

@@ -389,6 +389,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Tiberium eater logic
+  - Fix the bug that ships can travel on elevated bridges
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
