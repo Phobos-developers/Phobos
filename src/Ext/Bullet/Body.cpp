@@ -317,13 +317,46 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 	// House
 	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
 
-	if (pBullet->Type->FirersPalette)
+	const auto pType = pBullet->Type;
+
+	// Palette
+	if (pType->FirersPalette)
 		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
 
 	// Velocity
 	auto velocity = BulletVelocity::Empty;
 
-	if (randomVelocity)
+	// If someone asks me, I would say Arcing is just a piece of shit
+	// But there are still people who like to use it, so anyway, it has been fixed
+	if (pType->Arcing)
+	{
+		// The target must exist during launch
+		const auto targetCoords = pBullet->Target->GetCenterCoords();
+		const auto gravity = BulletTypeExt::GetAdjustedGravity(pType);
+		const auto distanceCoords = targetCoords - sourceCoords;
+		const auto horizontalDistance = Point2D{distanceCoords.X, distanceCoords.Y}.Magnitude();
+		const bool lobber = pWeapon->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
+		// The lower the horizontal velocity, the higher the trajectory
+		// WW calculates the launch angle (and limits it) before calculating the velocity
+		// Here, some magic numbers are used to directly simulate its calculation
+		const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
+		const auto speed = static_cast<int>(speedMult * sqrt(horizontalDistance * gravity * 1.2)); // 0x48AB90
+
+		// Simulate firing Arcing bullet
+		if (horizontalDistance < 1e-10 || !speed)
+		{
+			// No solution
+			velocity.Z = speed;
+		}
+		else
+		{
+			const auto mult = speed / horizontalDistance;
+			velocity.X = static_cast<double>(distanceCoords.X) * mult;
+			velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
+			velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
+		}
+	}
+	else if (randomVelocity)
 	{
 		DirStruct dir;
 		dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));

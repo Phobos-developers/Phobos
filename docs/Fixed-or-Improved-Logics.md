@@ -933,6 +933,20 @@ Wake.Grapple=        ; Anim (played when Techno being parasited on the water), d
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
 ```
 
+### Customize bridge falling down damage
+
+- Now you can customize the damage a unit receives when it falls from a bridge.
+ - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
+ - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+FallingDownDamage=              ; integer / percentage
+FallingDownDamage.Water=        ; integer / percentage
+```
+
 ### Customize resource storage
 
 - Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.

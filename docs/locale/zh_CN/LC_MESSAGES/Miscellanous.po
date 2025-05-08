@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-13 16:39+0800\n"
+"POT-Creation-Date: 2025-05-01 20:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,7 +59,8 @@ msgid ""
 "`Orange=25,230,255`."
 msgstr "例如，在原本的规则中，索引 6 将对应颜色 `Orange=25,230,255`。"
 
-#: ../../Miscellanous.md:14 ../../Miscellanous.md:58 ../../Miscellanous.md:101
+#: ../../Miscellanous.md:14 ../../Miscellanous.md:58 ../../Miscellanous.md:92
+#: ../../Miscellanous.md:126
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -333,20 +334,85 @@ msgid ""
 msgstr "但与之相对应的，如果这样的书写方式引发了什么错误，那也并不属于这个功能所涵盖的范围。"
 
 #: ../../Miscellanous.md:88
+msgid "Insignia Type"
+msgstr "专用的军衔类"
+
+#: ../../Miscellanous.md:90
+msgid ""
+"It is now possible to define the properties of insignia in an entity, so "
+"that all properties in it will be used once it's applied to a techno."
+msgstr ""
+"现在可以在一个实体中定义军衔属性，这样一来只要它应用于单位就会同样应用下面的所有属性。"
+
+#: ../../Miscellanous.md:93
+msgid ""
+"[InsigniaTypes]\n"
+"0=SOMEINSIGNIATYPE\n"
+"\n"
+"[SOMEINSIGNIATYPE]                       ; InsigniaType\n"
+"Insignia=                                ; filename - excluding the .shp "
+"extension\n"
+"Insignia.Rookie=                         ; filename - excluding the .shp "
+"extension\n"
+"Insignia.Veteran=                        ; filename - excluding the .shp "
+"extension\n"
+"Insignia.Elite=                          ; filename - excluding the .shp "
+"extension\n"
+"InsigniaFrame=-1                         ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"InsigniaFrame.Elite=-1                   ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"\n"
+"[SOMETECHNO]                             ; TechnoType\n"
+"InsigniaType=                            ; InsigniaType\n"
+"InsigniaType.WeaponN=                    ; InsigniaType\n"
+"InsigniaType.PassengersN=                ; InsigniaType\n"
+msgstr ""
+"[InsigniaTypes]\n"
+"0=SOMEINSIGNIATYPE\n"
+"\n"
+"[SOMEINSIGNIATYPE]                       ; InsigniaType\n"
+"Insignia=                                ; filename - excluding the .shp "
+"extension\n"
+"Insignia.Rookie=                         ; filename - excluding the .shp "
+"extension\n"
+"Insignia.Veteran=                        ; filename - excluding the .shp "
+"extension\n"
+"Insignia.Elite=                          ; filename - excluding the .shp "
+"extension\n"
+"InsigniaFrame=-1                         ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"InsigniaFrame.Elite=-1                   ; int, frame of insignia shp "
+"(zero-based) or -1 for default\n"
+"\n"
+"[SOMETECHNO]                             ; TechnoType\n"
+"InsigniaType=                            ; InsigniaType\n"
+"InsigniaType.WeaponN=                    ; InsigniaType\n"
+"InsigniaType.PassengersN=                ; InsigniaType\n"
+
+#: ../../Miscellanous.md:113
 msgid "Game Speed"
 msgstr "游戏速度"
 
-#: ../../Miscellanous.md:90
+#: ../../Miscellanous.md:115
 msgid "Single player game speed"
 msgstr "单人游戏速度"
 
-#: ../../Miscellanous.md:92
+#: ../../Miscellanous.md:117
 msgid ""
 "It is now possible to change the default (GS4/Fast/30FPS) campaign game "
 "speed with `CampaignDefaultGameSpeed`."
 msgstr "现在可以使用 `CampaignDefaultGameSpeed` 更改默认的（游戏速度 4／快／30FPS）战役游戏速度。"
 
-#: ../../Miscellanous.md:93
+#: ../../Miscellanous.md:118
 msgid ""
 "It is now possible to change the *values* of single player game speed, by"
 " inputing a pair of values. This feature must be enabled with "
@@ -356,13 +422,13 @@ msgstr ""
 "现在可以输入一对值来更改单人游戏速度的值。此功能必须通过设置 `CustomGS=true` 来启用。**只能稳定控制在 10 到 60 FPS "
 "之间的值。**"
 
-#: ../../Miscellanous.md:94
+#: ../../Miscellanous.md:119
 msgid ""
 "Custom game speed is achieved by periodically manipulating the delay "
 "between game frames, thus increasing or decreasing FPS."
 msgstr "自定义游戏速度是通过定期调整游戏帧之间的延迟来实现增加或减少 FPS 的。"
 
-#: ../../Miscellanous.md:95
+#: ../../Miscellanous.md:120
 msgid ""
 "`CustomGSN.ChangeInterval` describes the frame interval between applying "
 "the effect. A value of 2 means \"every other frame\", 3 means \"every 3 "
@@ -371,19 +437,19 @@ msgstr ""
 "`CustomGSN.ChangeInterval` 设置应用该效果的帧间隔。值为 2 表示 “每**隔**一帧执行一次”，3 表示 “每 3 "
 "帧**中**执行一次” 等。加速／减速的改动大致呈对数关系。"
 
-#: ../../Miscellanous.md:96
+#: ../../Miscellanous.md:121
 msgid ""
 "`CustomGSN.ChangeDelay` sets the delay (game speed number) to use every "
 "`CustomGSN.ChangeInterval` frames."
 msgstr "`CustomGSN.ChangeDelay` 设置了每个 `CustomGSN.ChangeInterval` 帧使用的延迟（游戏速度编号）。"
 
-#: ../../Miscellanous.md:97
+#: ../../Miscellanous.md:122
 msgid ""
 "`CustomGSN.DefaultDelay` sets the delay (game speed number) to use on "
 "other frames."
 msgstr "`CustomGSN.DefaultDelay` 设置了在其他帧上应用的延迟（游戏速度编号）。"
 
-#: ../../Miscellanous.md:98
+#: ../../Miscellanous.md:123
 msgid ""
 "Using game speed 6 (Fastest) in either `CustomGSN.ChangeDelay` or "
 "`CustomGSN.DefaultDelay` allows to set FPS above 60."
@@ -391,11 +457,11 @@ msgstr ""
 "在 `CustomGSN.ChangeDelay` 或 `CustomGSN.DefaultDelay` 中使用游戏速度 6（最快）可以将 FPS"
 " 设置为超过 60 的值。"
 
-#: ../../Miscellanous.md:99
+#: ../../Miscellanous.md:124
 msgid "**However, the resulting FPS may vary on different machines.**"
 msgstr "**然而实际的 FPS 可能在不同的机器上有所不同。**"
 
-#: ../../Miscellanous.md:102
+#: ../../Miscellanous.md:127
 msgid ""
 "[General]\n"
 "CustomGS=false              ; boolean\n"
@@ -411,11 +477,11 @@ msgstr ""
 "CustomGSN.DefaultDelay=N    ; integer between 0 and 6\n"
 "; where N = 0, 1, 2, 3, 4, 5, 6\n"
 
-#: ../../Miscellanous.md:111
+#: ../../Miscellanous.md:136
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
 
-#: ../../Miscellanous.md:112
+#: ../../Miscellanous.md:137
 msgid ""
 "[Phobos]\n"
 "CampaignDefaultGameSpeed=4  ; integer\n"
@@ -423,7 +489,7 @@ msgstr ""
 "[Phobos]\n"
 "CampaignDefaultGameSpeed=4  ; integer\n"
 
-#: ../../Miscellanous.md:118
+#: ../../Miscellanous.md:143
 msgid ""
 "Currently there is no way to set desired FPS directly. Use the generator "
 "below to get required values. The generator supports values from 10 to "
@@ -434,83 +500,83 @@ msgstr "目前无法直接设置所需的 FPS。需要使用下面的生成器�
 msgid "Click to show the generator"
 msgstr "点击显示生成器"
 
-#: ../../Miscellanous.md:122
+#: ../../Miscellanous.md:147
 msgid "Enter desired FPS"
 msgstr "输入所需的 FPS"
 
-#: ../../Miscellanous.md:127
+#: ../../Miscellanous.md:152
 msgid "Results (remember to replace N with your game speed number!):"
 msgstr "结果（别忘了把 N 替换成你的游戏速度编号）："
 
-#: ../../Miscellanous.md:180
+#: ../../Miscellanous.md:205
 msgid "INI"
 msgstr "INI"
 
-#: ../../Miscellanous.md:182
+#: ../../Miscellanous.md:207
 msgid "Include files"
 msgstr "包含文件"
 
-#: ../../Miscellanous.md:185
+#: ../../Miscellanous.md:210
 msgid "This feature must be enabled via a command line argument `-Include`."
 msgstr "此功能必须通过命令行参数 `-Include` 来启用。"
 
-#: ../../Miscellanous.md:188
+#: ../../Miscellanous.md:213
 msgid ""
 "INI files can now include other files (merge them into self) using "
 "`[$Include]` section."
 msgstr "现在 INI 文件可以使用 `[$Include]` 小节来包含其他文件（将它们合并到自身中）。"
 
-#: ../../Miscellanous.md:189
+#: ../../Miscellanous.md:214
 msgid ""
 "`[$Include]` section contains a list of files to read and include. Files "
 "can be directly in the Red Alert 2 directory or in a loaded MIX file."
 msgstr "`[$Include]` 小节包括了要读取和包含的文件列表。文件可以直接位于在《红色警戒 2》的目录中或已加载的 MIX 文件。"
 
-#: ../../Miscellanous.md:190
+#: ../../Miscellanous.md:215
 msgid ""
 "Files will be added in the same order they are defined. Index of each "
 "file **must be unique among all included files**."
 msgstr "文件将按照它们定义的顺序添加。每个文件的索引**必须在所有包括文件中唯一**。"
 
-#: ../../Miscellanous.md:191
+#: ../../Miscellanous.md:216
 msgid ""
 "Inclusion can be nested recursively (included files can include files "
 "further). Recursion is depth-first (before including next file, check if "
 "the current one includes anything)."
 msgstr "包含可以递归嵌套（被包含的文件包含其他文件）。递归深度优先（在包含下一个文件之前，检查当前文件是否包含任何内容）。"
 
-#: ../../Miscellanous.md:192
+#: ../../Miscellanous.md:217
 msgid ""
 "When the same entry exists in two files, then the one read later will "
 "overwrite the value."
 msgstr "当两个文件中存在相同条目时，后读取的那个文件将覆盖前面的值。"
 
-#: ../../Miscellanous.md:193 ../../Miscellanous.md:219
+#: ../../Miscellanous.md:218 ../../Miscellanous.md:244
 msgid ""
 "This feature can be used in *any* INI file, be it `rulesmd.ini`, "
 "`artmd.ini`, `soundmd.ini`, map file or anything else."
 msgstr "此功能可以用于任何 INI 文件，无论 `rulesmd.ini`、`artmd.ini`、`soundmd.ini`、地图文件还是其他任何文件。"
 
-#: ../../Miscellanous.md:195 ../../Miscellanous.md:221
+#: ../../Miscellanous.md:220 ../../Miscellanous.md:246
 msgid "In any file:"
 msgstr "在任何文件中："
 
-#: ../../Miscellanous.md:196
+#: ../../Miscellanous.md:221
 msgid ""
 "[$Include]\n"
-"0=somefile.ini\t; file name\n"
+"0=somefile.ini  ; file name\n"
 msgstr ""
 "[$Include]\n"
-"0=somefile.ini\t; file name\n"
+"0=somefile.ini  ; file name\n"
 
-#: ../../Miscellanous.md:202
+#: ../../Miscellanous.md:227
 msgid ""
 "Due to a technical issue, there is a chance that ***the first line of a "
 "included file will be skipped!*** To prevent this, included files should "
 "start with an empty line or a comment."
 msgstr "由于技术问题，包含文件的<b><em>第一行有可能会被跳过！</em></b>为了防止这种情况，包含的文件应以空行或注释开头。"
 
-#: ../../Miscellanous.md:206
+#: ../../Miscellanous.md:231
 msgid ""
 "When this feature is enabled, `[#include]` (equivalent [Ares "
 "feature](https://ares-developers.github.io/Ares-"
@@ -520,42 +586,42 @@ msgstr ""
 "当此功能启用后，由于技术不兼容所以 [Ares 与此等效的 `[#Include]` 功能](https://ares-"
 "developers.github.io/Ares-docs/new/misc/include.html) 将被禁用。"
 
-#: ../../Miscellanous.md:209
+#: ../../Miscellanous.md:234
 msgid "Section inheritance"
 msgstr "段落继承"
 
-#: ../../Miscellanous.md:212
+#: ../../Miscellanous.md:237
 msgid "This feature must be enabled via a command line argument `-Inheritance`."
 msgstr "此功能必须通过命令行参数 `-Inheritance` 来启用。"
 
-#: ../../Miscellanous.md:215
+#: ../../Miscellanous.md:240
 msgid ""
 "You can now make sections (children) inherit entries from other sections "
 "(parents) with `$Inherits` entry."
 msgstr "现在你可以通过 `$Inherits` 条目让段落（子节）继承其他段落（父节）的条目。"
 
-#: ../../Miscellanous.md:216
+#: ../../Miscellanous.md:241
 msgid ""
 "When a section has no value set for an entry (or an entry is missing), "
 "the game will attempt to use parent's value. If no value is found, only "
 "then the default will be used."
 msgstr "当一个小节没有设置某个条目的值（或条目缺失）时，游戏将尝试使用父节中的值。如果也没有找到，那么才会使用默认值。"
 
-#: ../../Miscellanous.md:217
+#: ../../Miscellanous.md:242
 msgid ""
 "When multiple parents are specified, the order of inheritance is \"first "
 "come, first served\", looking up comma separated parents from left to "
 "right."
 msgstr "当指定了多个父节时，继承到顺序是 “先到先得”，从左到右查找逗号分隔的父节。"
 
-#: ../../Miscellanous.md:218
+#: ../../Miscellanous.md:243
 msgid ""
 "Inheritance can be nested recursively (parent sections can have their own"
 " parents). Recursion is depth-first (before inheriting from the next "
 "parent, check if the current parent has parents)."
 msgstr "继承可以递归嵌套（父节可以有自己的父节）。递归是深度优先的（在下一个父节继承之前，检查当前父节是否有父节）。"
 
-#: ../../Miscellanous.md:222
+#: ../../Miscellanous.md:247
 msgid ""
 "[PARENT1SECTION]\n"
 "\n"
@@ -571,7 +637,7 @@ msgstr ""
 "[CHILDSECTION]\n"
 "$Inherits=PARENT1SECTION,PARENT2SECTION...  ; section names\n"
 
-#: ../../Miscellanous.md:232
+#: ../../Miscellanous.md:257
 msgid ""
 "When this feature is enabled, the Ares equivalent of `$Inherits` "
 "(undocumented) is disabled!"
@@ -580,17 +646,17 @@ msgstr ""
 "href=\"https://bbs.ra2diy.com/forum.php?mod=viewthread&tid=24681\" "
 "target=\"_blank\">Ares 的继承功能</a>（未在官方文档中列出）将被禁用！"
 
-#: ../../Miscellanous.md:236
+#: ../../Miscellanous.md:261
 msgid ""
 "This feature may noticeably increase game loading time, depending on the "
 "size of game rules and used hardware."
 msgstr "此功能可能显著增大游戏加载时间，具体取决于游戏规则的大小和硬件环境。"
 
-#: ../../Miscellanous.md:239
+#: ../../Miscellanous.md:264
 msgid "Turning off/on in-game exception handling"
 msgstr "游戏内异常处理开关"
 
-#: ../../Miscellanous.md:241
+#: ../../Miscellanous.md:266
 msgid ""
 "You can turn on/off the exception handler of the game's main loop using "
 "the following command line arg: `-ExceptionHandler=boolean` where "
@@ -599,24 +665,24 @@ msgstr ""
 "你可以使用以下命令行参数来开启／关闭游戏主循环的异常处理程序：`-ExceptionHandler=boolean`，其中 `boolean` 是"
 " `(true|false|yes|no|1|0)`。"
 
-#: ../../Miscellanous.md:244
+#: ../../Miscellanous.md:269
 msgid ""
 "In **debug** builds the in-game exception handler is **turned off** by "
 "default."
 msgstr "在 **debug** 版本中默认情况下游戏内异常处理程序是 **关闭** 的。"
 
-#: ../../Miscellanous.md:248
+#: ../../Miscellanous.md:273
 msgid ""
 "The CnCNet 5 spawner uses the main loop exception handler for fixes. If "
 "you get any issues (crashes, bugs) in combination with that then please "
 "first test with the exception handler enabled."
 msgstr "CNCNet 5 启动器使用主循环异常处理程序进行修复。如果你在使用它时遇到任何问题（崩溃、错误），请先在异常处理程序开启的情况下进行测试。"
 
-#: ../../Miscellanous.md:251
+#: ../../Miscellanous.md:276
 msgid "Blowfish Dependency"
 msgstr "移除 Blowfish 依赖"
 
-#: ../../Miscellanous.md:253
+#: ../../Miscellanous.md:278
 msgid "`BLOWFISH.DLL` is no longer required to start the game."
 msgstr "启动游戏时不再需要 `BLOWFISH.DLL`。"
 
