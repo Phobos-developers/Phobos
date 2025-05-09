@@ -127,7 +127,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 		if (pThis->Health > 0 && (!pWHExt->CanKill || pExt->AE.Unkillable) // Check if the warhead can not kill targets
 			// Update remaining damage and check if the target will die and should be avoided
-			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0) >= pThis->Health)
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
 			*args->Damage = 0;
 			pThis->Health = 1;
