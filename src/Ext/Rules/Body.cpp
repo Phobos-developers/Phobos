@@ -189,6 +189,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DrawInsignia_AdjustPos_Buildings.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Buildings");
 	this->DrawInsignia_AdjustPos_BuildingsAnchor.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.BuildingsAnchor");
 	this->DrawInsignia_AdjustPos_Units.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.AdjustPos.Units");
+	this->DrawInsignia_UsePixelSelectionBracketDelta.Read(exINI, GameStrings::AudioVisual, "DrawInsignia.UsePixelSelectionBracketDelta");
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
@@ -262,7 +263,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
 	this->ProneSpeed_NoCrawls.Read(exINI, GameStrings::General, "ProneSpeed.NoCrawls");
 
-  	this->DamagedSpeed.Read(exINI, GameStrings::General, "DamagedSpeed");
+	this->DamagedSpeed.Read(exINI, GameStrings::General, "DamagedSpeed");
 
 	this->HarvesterScanAfterUnload.Read(exINI, GameStrings::General, "HarvesterScanAfterUnload");
 
@@ -435,6 +436,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DrawInsignia_AdjustPos_Buildings)
 		.Process(this->DrawInsignia_AdjustPos_BuildingsAnchor)
 		.Process(this->DrawInsignia_AdjustPos_Units)
+		.Process(this->DrawInsignia_UsePixelSelectionBracketDelta)
 		.Process(this->Promote_VeteranAnimation)
 		.Process(this->Promote_EliteAnimation)
 		.Process(this->AnimRemapDefaultColorScheme)
@@ -489,7 +491,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingTypeSelectable)
 		.Process(this->ProneSpeed_Crawls)
 		.Process(this->ProneSpeed_NoCrawls)
-    	.Process(this->DamagedSpeed)
+		.Process(this->DamagedSpeed)
 		.Process(this->HarvesterScanAfterUnload)
 		.Process(this->TintColorIronCurtain)
 		.Process(this->TintColorForceShield)

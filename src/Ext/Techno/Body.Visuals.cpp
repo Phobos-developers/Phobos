@@ -135,7 +135,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	if (pTechnoType->Passengers > 0)
 	{
-		int passengersIndex = pThis->Passengers.GetTotalSize();
+		int passengersIndex = pTechnoTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
+		passengersIndex = Math::min(passengersIndex, pTechnoType->Passengers);
 
 		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Passengers[passengersIndex].Get(pThis))
 		{
@@ -210,6 +211,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
 			break;
 		}
+
+		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pThis->GetTechnoType()->PixelSelectionBracketDelta : 0;
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

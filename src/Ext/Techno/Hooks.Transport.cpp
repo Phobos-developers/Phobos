@@ -73,7 +73,6 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 
 	if (pThis && pPassenger)
 	{
-		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 		auto const whatAmI = pPassenger->WhatAmI();
@@ -82,7 +81,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
 
 		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
-			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+			&& pPassenger->GetTechnoType()->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
 		}
@@ -98,14 +97,13 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 
 	if (pThis && pPassenger)
 	{
-		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 		auto const whatAmI = pPassenger->WhatAmI();
 
 		// Remove from transport reloader list before switching house
 		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
-			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
+			&& pPassenger->GetTechnoType()->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			auto& vec = ScenarioExt::Global()->TransportReloaders;
 			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
@@ -295,6 +293,7 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->OnBridge = false; // Don't swap order casually, important
 	pPassenger->NextObject = nullptr; // Don't swap order casually, very important
 
+	pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
 	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
@@ -516,7 +515,17 @@ DEFINE_HOOK(0x7196BB, TeleportLocomotionClass_Process_MarkDown, 0xA)
 	// An impassable invisible barrier will be generated on the bridge (the object linked list of the cell will leave it)
 	// And the transport vehicle will board on the vehicle itself (BFRT Passenger:..., BFRT)
 	// If any infantry attempts to pass through this position on the bridge later, it will cause the game to freeze
-	if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+	auto shouldMarkDown = [pLinkedTo]()
+	{
+		if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+			return true;
+
+		const auto pEnter = pLinkedTo->GetNthLink();
+
+		return (!pEnter || pEnter->GetTechnoType()->Passengers <= 0);
+	};
+
+	if (shouldMarkDown())
 		pLinkedTo->Mark(MarkType::Down);
 
 	return SkipGameCode;
