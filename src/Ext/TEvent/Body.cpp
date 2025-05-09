@@ -33,14 +33,15 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-	CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled)
+std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
+	ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource)
 {
-	bHandled = true;
 	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
 
 	switch (eventKind)
 	{
+	// The triggering conditions that need to be checked at any time are written here
+
 		// helper struct
 		struct and_with { bool operator()(int a, int b) { return a & b; } };
 
@@ -128,30 +129,23 @@ bool TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, Obje
 	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
 		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
 
+
 	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
+
+		// They must be the same, but for other triggers to take effect normally, this cannot be judged outside case.
+		auto isSameEvent = [&]() { return eventKind == static_cast<PhobosTriggerEvent>(iEvent); };
+
+	// SomeTriggerAttachedToObject needs to be restricted to situations where ...
 //	case PhobosTriggerEvent::SomeTriggerAttachedToObject:
+//		return isSameEvent() && ...::ThisAttachedToObjectTEvent(pObject, ...);
+
+	// ShieldBroken needs to be restricted to situations where the shield is being attacked.
 	case PhobosTriggerEvent::ShieldBroken:
-		// They must be the same.
-		if (eventKind == static_cast<PhobosTriggerEvent>(iEvent))
-		{
-			switch (eventKind)
-			{
-			// SomeTriggerAttachedToObject needs to be restricted to situations where ...
-//			case PhobosTriggerEvent::SomeTriggerAttachedToObject:
-//				return ...::ThisAttachedToObjectTEvent(pObject, ...);
+		return isSameEvent() && ShieldClass::ShieldIsBrokenTEvent(pObject);
 
-			// ShieldBroken needs to be restricted to situations where the shield is being attacked.
-			case PhobosTriggerEvent::ShieldBroken:
-				return ShieldClass::ShieldIsBrokenTEvent(pObject);
-
-			default:
-				break;
-			}
-		}
 
 	default:
-		bHandled = false;
-		return true;
+		return std::nullopt;
 	};
 }
 
