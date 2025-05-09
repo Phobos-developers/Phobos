@@ -356,6 +356,7 @@ This page lists all the individual contributions to the project by their author.
   - `Set Force Enemy` Trigger Action
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
+  - `600 The shield of the attached object is broken` bug fix for the triggered event
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
