@@ -21,14 +21,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = pExt->TypeExtData;
-	const auto pType = pTypeExt->OwnerObject();
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
-	const bool unkillable = !pWHExt->CanKill || pExt->AE.Unkillable;
-	int nDamageLeft = *args->Damage;
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && *args->Damage)
@@ -62,7 +58,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
-			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
+
+			const auto pTypeExt = pExt->TypeExtData;
+			const auto pType = pTypeExt->OwnerObject();
+
+			if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
 			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
@@ -109,42 +109,30 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
+		int nDamageLeft = *args->Damage;
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
-			if (!pShieldData->IsActive())
+			if (pShieldData->IsActive())
 			{
-				int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
+				nDamageLeft = pShieldData->ReceiveDamage(args);
 
-				// Check if the warhead can not kill targets
-				if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+				if (nDamageLeft >= 0)
 				{
-					*args->Damage = 0;
-					pThis->Health = 1;
-					pThis->EstimatedHealth = 1;
-					ReceiveDamageTemp::SkipLowDamageCheck = true;
+					*args->Damage = nDamageLeft;
+
+					if (auto pTag = pThis->AttachedTag)
+						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 				}
 
-				return 0;
+				if (nDamageLeft == 0)
+					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
-
-			nDamageLeft = pShieldData->ReceiveDamage(args);
-
-			if (nDamageLeft >= 0)
-			{
-				*args->Damage = nDamageLeft;
-
-				if (auto pTag = pThis->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
-			}
-
-			if (nDamageLeft == 0)
-				ReceiveDamageTemp::SkipLowDamageCheck = true;
 		}
 
-		// Update remaining damage and check if the target will die and should be avoided
-		int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
-
-		if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+		if (pThis->Health > 0 && (!pWHExt->CanKill || pExt->AE.Unkillable) // Check if the warhead can not kill targets
+			// Update remaining damage and check if the target will die and should be avoided
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0) >= pThis->Health)
 		{
 			*args->Damage = 0;
 			pThis->Health = 1;
