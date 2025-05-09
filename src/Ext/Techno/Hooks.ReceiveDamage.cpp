@@ -21,6 +21,8 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pTypeExt = pExt->TypeExtData;
+	const auto pType = pTypeExt->OwnerObject();
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	const auto pSourceHouse = args->SourceHouse;
@@ -58,11 +60,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
-
-			const auto pTypeExt = pExt->TypeExtData;
-			const auto pType = pTypeExt->OwnerObject();
-
-			if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
+			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
 			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
@@ -132,7 +130,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 		if (pThis->Health > 0 && (!pWHExt->CanKill || pExt->AE.Unkillable) // Check if the warhead can not kill targets
 			// Update remaining damage and check if the target will die and should be avoided
-			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0) >= pThis->Health)
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pType->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
 			*args->Damage = 0;
 			pThis->Health = 1;
