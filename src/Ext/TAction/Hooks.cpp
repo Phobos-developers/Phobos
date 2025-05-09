@@ -32,14 +32,13 @@ DEFINE_HOOK(0x6DD8B0, TActionClass_Execute, 0x6)
 // Bugfix: TAction 125 Build At could neither display the buildups nor be AI-repairable in singleplayer mode
 DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 {
-	GET(TActionClass*, pThis, ESI);
 	GET(BuildingTypeClass*, pBldType, ECX);
 	GET(HouseClass*, pHouse, EDI);
-	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
 	bool bPlayBuildUp = pBldType->LoadBuildup();
 	//Param3 can be used for other purposes in the future
 	bool bCreated = false;
+
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
 	{
 		if (bPlayBuildUp)
@@ -53,12 +52,16 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 			pBld->QueueMission(Mission::Guard, false);
 		}
 
+		REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
+
 		if (!pBld->ForceCreate(coord))
 		{
 			pBld->UnInit();
 		}
 		else
 		{
+			GET(TActionClass*, pThis, ESI);
+
 			if (!bPlayBuildUp)
 				pBld->Place(false);
 

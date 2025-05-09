@@ -593,15 +593,15 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 {
 	GET(AircraftClass*, pThis, EBP);
+	enum { FinishDrawing = 0x4148A5 };
+	const auto loco = pThis->Locomotor.GetInterfacePtr();
+	if (pThis->Type->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
+		return FinishDrawing;
+
 	GET(const int, height, EBX);
 	REF_STACK(VoxelIndexKey, key, STACK_OFFSET(0xCC, -0xBC));
 	GET_STACK(Point2D, flor, STACK_OFFSET(0xCC, -0xAC));
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
-	enum { FinishDrawing = 0x4148A5 };
-
-	const auto loco = pThis->Locomotor.GetInterfacePtr();
-	if (pThis->Type->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
-		return FinishDrawing;
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
 	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);

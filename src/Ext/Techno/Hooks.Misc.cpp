@@ -176,14 +176,18 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+	auto const pOwner = pThis->Owner;
+	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
 
 	if (pTypeExt->Promote_IncludeSpawns)
 	{
 		for (auto i : pThis->SpawnedNodes)
 		{
-			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
+			if (auto const pUnit = i->Unit)
+			{
+				if (pUnit->Veterancy.Veterancy < pOwner->Veterancy.Veterancy)
+					pUnit->Veterancy.Add(pOwner->Veterancy.Veterancy - pUnit->Veterancy.Veterancy);
+			}
 		}
 	}
 
@@ -508,11 +512,12 @@ DEFINE_HOOK(0x6F88BF, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay,
 {
 	enum { CannotSelect = 0x6F894F };
 
-	GET(TechnoClass* const, pThis, EDI);
 	GET(ObjectClass* const, pTarget, ESI);
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
+		GET(TechnoClass* const, pThis, EDI);
+
 		if (!CanAttackMindControlled(pTechno, pThis))
 			return CannotSelect;
 	}
@@ -529,7 +534,6 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 	enum { Return = 0x70DE62 };
 
 	GET(BuildingClass* const, pThis, ECX);
-	GET_STACK(int, rateDown, STACK_OFFSET(0x0, 0x4));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
@@ -547,6 +551,7 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 		return Return;
 
 	// Time's up
+	GET_STACK(int, rateDown, STACK_OFFSET(0x0, 0x4));
 	pExt->AccumulatedGattlingValue = 0;
 	pExt->ShouldUpdateGattlingValue = true;
 
@@ -581,7 +586,6 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 	enum { SkipGameCode = 0x70E04D };
 
 	GET(TechnoClass* const, pThis, ESI);
-	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pTypeExt = pExt->TypeExtData;
@@ -589,6 +593,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 	if (pTypeExt->RateDown_Delay < 0)
 		return SkipGameCode;
 
+	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
 	pExt->AccumulatedGattlingValue += rateMult;
 	auto remain = pExt->AccumulatedGattlingValue;
 

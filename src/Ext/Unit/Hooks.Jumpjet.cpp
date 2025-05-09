@@ -50,11 +50,13 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
-	GET(int const, wpIdx, EDI);
+
 	auto pType = pThis->Type;
 
 	if ((pType->Turret && !pType->HasTurret) || pType->TurretSpins)
 		return 0;
+
+	GET(int const, wpIdx, EDI);
 
 	if ((pType->DeployFire || pType->DeployFireWeapon == wpIdx) && pThis->CurrentMission == Mission::Unload)
 		return 0;

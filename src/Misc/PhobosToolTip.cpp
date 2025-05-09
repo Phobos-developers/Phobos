@@ -332,7 +332,6 @@ void __declspec(naked) _CCToolTip_Draw2_FillRect_RET()
 }
 DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 {
-	GET(SurfaceExt*, pThis, ESI);
 	LEA_STACK(RectangleStruct*, pRect, STACK_OFFSET(0x44, -0x10));
 
 	const bool isCameo = PhobosToolTip::Instance.IsCameo;
@@ -354,6 +353,8 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	{
 		if (auto const pData = SideExt::ExtMap.Find(pSide))
 		{
+			GET(SurfaceExt*, pThis, ESI);
+
 			// Could this flag be lazy?
 			if (isCameo)
 				SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;

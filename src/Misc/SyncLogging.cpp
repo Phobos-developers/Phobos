@@ -365,13 +365,15 @@ DEFINE_HOOK(0x443B90, BuildingClass_AssignTarget_SyncLog, 0xB)
 DEFINE_HOOK(0x6FCDB0, TechnoClass_AssignTarget_SyncLog, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(AbstractClass*, pTarget, 0x4);
 	GET_STACK(unsigned int, callerAddress, 0x0);
 
 	auto const RTTI = pThis->WhatAmI();
 
 	if (RTTI != AbstractType::Building && RTTI != AbstractType::Infantry)
+	{
+		GET_STACK(AbstractClass*, pTarget, 0x4);
 		SyncLogger::AddTargetChangeSyncLogEvent(pThis, pTarget, callerAddress);
+	}
 
 	return 0;
 }
@@ -449,11 +451,13 @@ DEFINE_HOOK(0x4D8F40, FootClass_OverrideMission_SyncLog, 0x5)
 DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
-	GET_STACK(unsigned int, callerAddress, 0x0);
 
 	if (pThis->WhatAmI() == AbstractType::Building)
+	{
+		GET_STACK(int, mission, 0x4);
+		GET_STACK(unsigned int, callerAddress, 0x0);
 		SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
+	}
 
 	return 0;
 }

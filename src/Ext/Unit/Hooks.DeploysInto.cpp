@@ -131,10 +131,12 @@ DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 	enum { SkipGameCode = 0x73FFDF };
 
 	GET(UnitClass* const, pThis, ESI);
-	REF_STACK(Action, action, STACK_OFFSET(0x20, 0x8));
 
 	if (!TechnoExt::CanDeployIntoBuilding(pThis))
+	{
+		REF_STACK(Action, action, STACK_OFFSET(0x20, 0x8));
 		action = Action::NoDeploy;
+	}
 
 	return SkipGameCode;
 }
@@ -145,12 +147,11 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 {
 	enum { CanNotExistHere = 0x47C6D1, CanExistHere = 0x47C6A0 };
 
-	GET(const CellClass* const, pCell, EDI);
-	GET(const BuildingTypeClass* const, pBuildingType, EAX);
-	GET_STACK(HouseClass* const, pOwner, STACK_OFFSET(0x18, 0xC));
-
 	if (!Game::IsActive)
 		return CanExistHere;
+
+	GET(const CellClass* const, pCell, EDI);
+	GET(const BuildingTypeClass* const, pBuildingType, EAX);
 
 	if (pBuildingType->LaserFence)
 	{
@@ -189,6 +190,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 				}
 				else
 				{
+					GET_STACK(HouseClass* const, pOwner, STACK_OFFSET(0x18, 0xC));
 					const auto pBuilding = abstract_cast<BuildingClass*, true>(pObject);
 
 					if (!pBuilding || pOwner != pBuilding->Owner || !pBuilding->Type->LaserFence)

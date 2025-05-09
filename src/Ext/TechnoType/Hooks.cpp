@@ -90,28 +90,32 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 
 DEFINE_HOOK(0x711F39, TechnoTypeClass_CostOf_FactoryPlant, 0x8)
 {
-	GET(TechnoTypeClass*, pThis, ESI);
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x8));
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
 	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
+	{
+		GET(TechnoTypeClass*, pThis, ESI);
 		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
+	}
 
 	return 0;
 }
 
 DEFINE_HOOK(0x711FDF, TechnoTypeClass_RefundAmount_FactoryPlant, 0x8)
 {
-	GET(TechnoTypeClass*, pThis, ESI);
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(float, mult, STACK_OFFSET(0x10, -0x4));
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
 	if (pHouseExt->RestrictedFactoryPlants.size() > 0)
+	{
+		GET(TechnoTypeClass*, pThis, ESI);
 		mult *= pHouseExt->GetRestrictedFactoryPlantMult(pThis);
+	}
 
 	return 0;
 }

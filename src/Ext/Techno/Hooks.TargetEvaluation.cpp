@@ -58,12 +58,13 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 {
 	enum { AllowedObject = 0x6F7EA2, DisallowedObject = 0x6F894F };
 
-	GET(TechnoClass*, pThis, EDI);
 	GET(ObjectClass*, pObject, ESI);
-	GET(int, zone, EBP);
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		GET(TechnoClass*, pThis, EDI);
+		GET(int, zone, EBP);
+
 		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
 			return DisallowedObject;
 	}

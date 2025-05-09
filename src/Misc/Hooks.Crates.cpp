@@ -52,12 +52,14 @@ DEFINE_HOOK(0x481BB8, CellClass_GoodieCheck_FreeMCV, 0x6)
 	enum { SkipForcedMCV = 0x481C03, EnableForcedMCV = 0x481BF6 };
 
 	GET(HouseClass*, pHouse, EDI);
-	GET_STACK(UnitTypeClass*, pBaseUnit, STACK_OFFSET(0x188, -0x138));
 
 	if (RulesClass::Instance->FreeMCV && pHouse->Available_Money() > RulesExt::Global()->FreeMCV_CreditsThreshold &&
-		SessionClass::Instance.Config.Bases && !pHouse->OwnedBuildings && !pHouse->CountOwnedNow(pBaseUnit))
+		SessionClass::Instance.Config.Bases && !pHouse->OwnedBuildings)
 	{
-		return EnableForcedMCV;
+		GET_STACK(UnitTypeClass*, pBaseUnit, STACK_OFFSET(0x188, -0x138));
+
+		if (!pHouse->CountOwnedNow(pBaseUnit))
+			return EnableForcedMCV;
 	}
 
 	return SkipForcedMCV;

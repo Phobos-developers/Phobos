@@ -9,12 +9,12 @@ const WeaponTypeExt::ExtData* WeaponTypeExt::BoltWeaponType = nullptr;
 
 DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 {
-	GET(TechnoClass*, pThis, EDI);
-	GET(EBolt*, pBolt, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
 
 	if (pWeapon)
 	{
+		GET(TechnoClass*, pThis, EDI);
+		GET(EBolt*, pBolt, EAX);
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pBolt];
 		weaponStruct.Weapon = pWeaponExt;

@@ -47,11 +47,11 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
 	enum { ReturnWeaponIndex = 0x6F37AF };
 
-	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 	{
+		GET(TechnoClass*, pThis, ESI);
 		auto const pWeaponPrimary = pThis->GetWeapon(0)->WeaponType;
 		auto const pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
 		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
@@ -82,10 +82,11 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	enum { UseWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (ForceWeaponInRangeTemp::SelectWeaponByRange || !pThis)
 		return 0;
+
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
@@ -273,7 +274,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
@@ -287,6 +287,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			return CannotFire;
 	}
 
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 	CellClass* pTargetCell = nullptr;
@@ -442,11 +443,12 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 {
 	enum { CanNotFire = 0x6FDE03 };
 
-	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET(TechnoClass* const, pThis, ESI);
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
+		GET(WeaponTypeClass* const, pWeapon, EBX);
+
 		if (pThis->CurrentBurstIndex && pWeapon != pExt->LastWeaponType && pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
 		{
 			if (pExt->LastWeaponType && pExt->LastWeaponType->Burst)
@@ -521,11 +523,13 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 {
 	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
 
-	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFSET(0xB0, -0x70));
 
 	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
 	{
+		GET(TechnoClass* const, pThis, ESI);
+		GET(CellClass* const, pCell, EAX);
+
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
 			auto const range = WeaponTypeExt::GetRangeWithModifiers(pWeaponType, pThis) / static_cast<double>(Unsorted::LeptonsPerCell);
@@ -559,9 +563,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 			return SkipSetTarget;
 		}
 
-		GET(CellClass* const, pCell, EAX);
-
-		bool allowBridges = pCell && pCell->ContainsBridge() && (pThis->OnBridge || pCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
+		bool allowBridges = pCell->ContainsBridge() && (pThis->OnBridge || pCell->Level + CellClass::BridgeLevels == pThis->GetCell()->Level);
 
 		if (!pExt->SkipWeaponPicking && !EnumFunctions::AreCellAndObjectsEligible(pCell, pExt->CanTarget, pExt->CanTargetHouses, nullptr, false, false, allowBridges))
 			return DoNotFire;
@@ -634,12 +636,13 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
-	GET_BASE(int, weaponIndex, 0xC);
 
 	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
 	{
 		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*, true>(pThis)))
 		{
+			GET_BASE(int, weaponIndex, 0xC);
+
 			if (!pExt->CurrentLaserWeaponIndex.has_value())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;
 			else
@@ -933,6 +936,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	auto const pType = pThis->Type;
+	R->EDI(pType->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pType->DeployFireWeapon);
 	return 0x5223B9;
 }

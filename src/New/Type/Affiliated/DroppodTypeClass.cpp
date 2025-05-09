@@ -180,7 +180,6 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 {
 	GET(ILocomotion*, iloco, EDI);
-	REF_STACK(CoordStruct, to, STACK_OFFSET(0x1C, 0x8));
 	__assume(iloco != nullptr);
 
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
@@ -190,6 +189,7 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 	if (!podType)
 		return 0;
 
+	REF_STACK(CoordStruct, to, STACK_OFFSET(0x1C, 0x8));
 	lThis->DestinationCoords = to;
 	lThis->DestinationCoords.Z = MapClass::Instance.GetCellFloorHeight(to);
 

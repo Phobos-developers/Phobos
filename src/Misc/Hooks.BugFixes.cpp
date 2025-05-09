@@ -236,11 +236,12 @@ DEFINE_HOOK(0x4438B4, BuildingClass_SetRallyPoint_Naval, 0x6)
 
 	GET(BuildingTypeClass*, pBuildingType, EAX);
 	GET_STACK(bool, playEVA, STACK_OFFSET(0xA4, 0x8));
-	REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
+
 	if (!playEVA)// assuming the hook above is the only place where it's set to false when UndeploysInto
 	{
 		if (auto pInto = pBuildingType->UndeploysInto)// r u sure this is not too OP?
 		{
+			REF_STACK(SpeedType, spdtp, STACK_OFFSET(0xA4, -0x84));
 			R->ESI(pInto->MovementZone);
 			spdtp = pInto->SpeedType;
 			return NotNaval;
@@ -335,14 +336,15 @@ DEFINE_HOOK(0x4410E1, BuildingClass_Unlimbo_NSGate, 0x6)
 
 DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 {
-	GET(CellClass*, pThis, EBP);
 	GET(int, idxOverlay, EBX);
-	GET_STACK(int, state, STACK_OFFSET(0x10, 0x8));
 	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array.GetItem(idxOverlay)->Wall;
 	enum { Attachable = 0x480549 };
 
 	if (isWall)
 	{
+		GET(CellClass*, pThis, EBP);
+		GET_STACK(int, state, STACK_OFFSET(0x10, 0x8));
+
 		for (auto pObject = pThis->FirstObject; pObject; pObject = pObject->NextObject)
 		{
 			if (pObject->Health > 0)
@@ -428,13 +430,15 @@ DEFINE_HOOK(0x44CABA, BuildingClass_Mission_Missile_BulletParams, 0x7)
 	enum { SkipGameCode = 0x44CAF2 };
 
 	GET(BuildingClass* const, pThis, ESI);
-	GET(CellClass* const, pTarget, EAX);
 
 	auto pWeapon = SuperWeaponTypeClass::Array.GetItem(pThis->FiringSWType)->WeaponType;
 	BulletClass* pBullet = nullptr;
 
 	if (pWeapon)
+	{
+		GET(CellClass* const, pTarget, EAX);
 		pBullet = pWeapon->Projectile->CreateBullet(pTarget, pThis, pWeapon->Damage, pWeapon->Warhead, 255, pWeapon->Bright);
+	}
 
 	R->EAX(pBullet);
 	R->EBX(pWeapon);
@@ -611,7 +615,6 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 {
 	enum { ContinueChecks = 0x51A9A0, SkipKilling = 0x51A9EB };
 
-	GET(InfantryClass*, pThis, ESI);
 	GET(LandType, landType, EBX);
 
 	if (landType == LandType::Rock)
@@ -619,6 +622,7 @@ DEFINE_HOOK(0x51A996, InfantryClass_PerCellProcess_KillOnImpassable, 0x5)
 
 	if (landType == LandType::Water)
 	{
+		GET(InfantryClass*, pThis, ESI);
 		float multiplier = GroundType::Array[static_cast<int>(landType)].Cost[static_cast<int>(pThis->Type->SpeedType)];
 
 		if (multiplier == 0.0)
@@ -658,11 +662,11 @@ DEFINE_HOOK(0x44643E, BuildingClass_Place_SuperAnim, 0x6)
 {
 	enum { UseSuperAnimOne = 0x4464F6 };
 
-	GET(BuildingClass*, pThis, EBP);
 	GET(SuperClass*, pSuper, EAX);
 
 	if (pSuper->RechargeTimer.StartTime == 0 && pSuper->RechargeTimer.TimeLeft == 0 && !SWTypeExt::ExtMap.Find(pSuper->Type)->SW_InitialReady)
 	{
+		GET(BuildingClass*, pThis, EBP);
 		R->ECX(pThis);
 		return UseSuperAnimOne;
 	}
@@ -774,7 +778,6 @@ DEFINE_JUMP(LJMP, 0x6D9430, 0x6D95A1); // Tactical_RenderLayers
 DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 {
 	GET(BuildingClass*, pBuilding, EBX);
-	GET(Point2D*, pLocation, EAX);
 
 	if (pBuilding->IsSelected && pBuilding->IsOnMap && pBuilding->WhatAmI() == AbstractType::Building)
 	{
@@ -782,6 +785,7 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 		const int typeHeight = pBuilding->Type->Height;
 		const int yOffest = (Unsorted::CellHeightInPixels * (foundationHeight + typeHeight)) >> 2;
 
+		GET(Point2D*, pLocation, EAX);
 		Point2D centeredPoint = { pLocation->X, pLocation->Y - yOffest };
 		pBuilding->DrawInfoTipAndSpiedSelection(&centeredPoint, &DSurface::ViewBounds);
 	}
@@ -1062,10 +1066,9 @@ DEFINE_HOOK(0x7435DE, UnitClass_ReadFromINI_Follower1, 0x6)
 // Add vehicles that were not successfully created to list of parsed vehicles as well as to followers list.
 DEFINE_HOOK(0x74364C, UnitClass_ReadFromINI_Follower2, 0x8)
 {
-	REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xD0, -0xC0));
-
 	if (!UnitParseTemp::WasCreated)
 	{
+		REF_STACK(TypeList<int>, followers, STACK_OFFSET(0xD0, -0xC0));
 		followers.AddItem(-1);
 		UnitParseTemp::ParsedUnits.push_back(nullptr);
 	}
@@ -1450,11 +1453,11 @@ DEFINE_HOOK(0x4DBEE7, FootClass_SetOwningHouse_RemoveSensors, 0x6)
 DEFINE_HOOK(0x54C036, JumpjetLocomotionClass_State3_UpdateSensors, 0x7)
 {
 	GET(FootClass* const, pLinkedTo, ECX);
-	GET(CellStruct const, currentCell, EAX);
 
 	// Copied from FootClass::UpdatePosition
 	if (pLinkedTo->GetTechnoType()->SensorsSight)
 	{
+		GET(CellStruct const, currentCell, EAX);
 		const auto pExt = TechnoExt::ExtMap.Find(pLinkedTo);
 		CellStruct const lastCell = pExt->LastSensorsMapCoords;
 
@@ -1489,11 +1492,11 @@ DEFINE_HOOK(0x688F8C, ScenarioClass_ScanPlaceUnit_CheckMovement, 0x5)
 	enum { NotUsableArea = 0x688FB9 };
 
 	GET(TechnoClass*, pTechno, EBX);
-	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
 
 	if (pTechno->WhatAmI() == BuildingClass::AbsID)
 		return 0;
 
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0x30));
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
@@ -1505,11 +1508,11 @@ DEFINE_HOOK(0x68927B, ScenarioClass_ScanPlaceUnit_CheckMovement2, 0x5)
 	enum { NotUsableArea = 0x689295 };
 
 	GET(TechnoClass*, pTechno, EDI);
-	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
 
 	if (pTechno->WhatAmI() == BuildingClass::AbsID)
 		return 0;
 
+	LEA_STACK(CoordStruct*, pCoords, STACK_OFFSET(0x6C, -0xC));
 	const auto pCell = MapClass::Instance.GetCellAt(*pCoords);
 	const auto pTechnoType = pTechno->GetTechnoType();
 
@@ -1870,7 +1873,8 @@ DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pDestination, EDI);
 
-	return pDestination->Passengers.NumPassengers + 1 <= pDestination->Type->Passengers && static_cast<int>(pThis->GetTechnoType()->Size) <= pDestination->Type->SizeLimit ? 0 : CannotEnter;
+	auto const pType = pDestination->Type;
+	return pDestination->Passengers.NumPassengers + 1 <= pType->Passengers && static_cast<int>(pThis->GetTechnoType()->Size) <= pType->SizeLimit ? 0 : CannotEnter;
 }
 
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)

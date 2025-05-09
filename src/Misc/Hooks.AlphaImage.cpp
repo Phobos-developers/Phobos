@@ -112,10 +112,11 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 DEFINE_HOOK(0x5F3E78, ObjectClass_AI_UpdateAlphaShape, 0x6)
 {
-	GET(ObjectClass*, pThis, ESI);
-
 	if (AresFunctions::AlphaExtMap)
+	{
+		GET(ObjectClass*, pThis, ESI);
 		UpdateAlphaShape(pThis);
+	}
 
 	return 0;
 }

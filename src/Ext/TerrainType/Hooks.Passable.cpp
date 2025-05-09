@@ -101,10 +101,11 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableTerrain, 0x6)
 {
 	GET(ObjectClass*, pObject, EDI);
-	GET(CellClass*, pCell, EAX);
 
 	if (pObject->WhatAmI() == AbstractType::Building)
 	{
+		GET(CellClass*, pCell, EAX);
+
 		if (auto const pTerrain = pCell->GetTerrain(false))
 		{
 			if (TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
@@ -123,10 +124,10 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 {
 	enum { Unlimbo = 0x5FD2CA, NoUnlimbo = 0x5FD2C3 };
 
-	GET(CellClass* const, pCell, EAX);
-
 	if (!Game::IsActive)
 		return Unlimbo;
+
+	GET(CellClass* const, pCell, EAX);
 
 	if (auto const pTerrain = pCell->GetTerrain(false))
 	{

@@ -68,14 +68,14 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		}
 		else
 		{
-			auto pType = static_cast<BuildingClass*>(pThis)->Type;
-			int fHeight = pType->GetFoundationHeight(false);
+			auto pBldType = static_cast<BuildingClass*>(pThis)->Type;
+			int fHeight = pBldType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
-			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
+			yOffset = offset.Y + yAdjust * fHeight + pBldType->Height * yAdjust;
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;

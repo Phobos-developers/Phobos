@@ -28,11 +28,13 @@ DEFINE_HOOK(0x444113, BuildingClass_ExitObject_NavalProductionFix1, 0x6)
 
 DEFINE_HOOK(0x444137, BuildingClass_ExitObject_NavalProductionFix2, 0x6)
 {
-	GET(BuildingClass* const, pThis, ESI);
 	GET(FootClass* const, pObject, EDI);
 
 	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
+	{
+		GET(BuildingClass* const, pThis, ESI);
 		pThis->Owner->ProducingUnitTypeIndex = ExitObjectTemp::ProducingUnitIndex;
+	}
 
 	return 0;
 }
@@ -96,7 +98,9 @@ DEFINE_HOOK(0x4CA0A1, FactoryClass_Abandon_NavalProductionFix, 0x5)
 
 	GET(FactoryClass* const, pThis, ESI);
 
-	if (pThis->Object->WhatAmI() == AbstractType::Unit && pThis->Object->GetTechnoType()->Naval)
+	auto const pObject = pThis->Object;
+
+	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
 	{
 		if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner))
 		{
@@ -164,12 +168,12 @@ DEFINE_HOOK(0x4FB6FC, HouseClass_JustBuilt_NavalProductionFix, 0x6)
 {
 	enum { SkipGameCode = 0x4FB702 };
 
-	GET(HouseClass* const, pThis, EDI);
 	GET(UnitTypeClass* const, pUnitType, EDX);
-	GET(int const, ID, EAX);
 
 	if (pUnitType->Naval)
 	{
+		GET(HouseClass* const, pThis, EDI);
+		GET(int const, ID, EAX);
 		HouseExt::ExtMap.Find(pThis)->LastBuiltNavalVehicleType = ID;
 		return SkipGameCode;
 	}

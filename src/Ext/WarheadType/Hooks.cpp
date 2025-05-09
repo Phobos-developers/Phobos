@@ -74,12 +74,12 @@ DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
 	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
+		GET(int, nDamage, EDI);
 		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
 			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
 			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
@@ -157,14 +157,13 @@ DEFINE_HOOK(0x48A4F3, SelectDamageAnimation_NegativeZeroDamage, 0x6)
 {
 	enum { SkipGameCode = 0x48A507, NoAnim = 0x48A618 };
 
-	GET(int, damage, ECX);
 	GET(WarheadTypeClass* const, warhead, EDX);
 
 	if (!warhead)
 		return NoAnim;
 
+	GET(int, damage, ECX);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(warhead);
-
 	pWHExt->Splashed = false;
 
 	if (damage == 0 && !pWHExt->CreateAnimsOnZeroDamage)
@@ -291,16 +290,15 @@ DEFINE_HOOK(0x7027E6, TechnoClass_ReceiveDamage_Nonprovocative, 0x8)
 {
 	enum { SkipGameCode = 0x7027EE };
 
-	GET(TechnoClass*, pThis, ESI);
-	GET(TechnoClass*, pSource, EAX);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (!pTypeExt->Nonprovocative)
 	{
+		GET(TechnoClass*, pThis, ESI);
+		GET(TechnoClass*, pSource, EAX);
 		pThis->BaseIsAttacked(pSource);
-
 		return SkipGameCode;
 	}
 
@@ -313,11 +311,11 @@ DEFINE_HOOK(0x4D7493, FootClass_ReceiveDamage_Nonprovocative, 0x5)
 	enum { SkipChecks = 0x4D74CD, SkipEvents = 0x4D74A3 };
 
 	GET(TechnoClass*, pSource, EBX);
-	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x1C, 0xC));
 
 	if (!pSource)
 		return SkipChecks;
 
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x1C, 0xC));
 	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 	return pTypeExt->Nonprovocative ? SkipEvents : 0;
 }

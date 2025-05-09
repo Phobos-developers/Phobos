@@ -90,8 +90,6 @@ DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 {
 	GET(BuildingClass* const, pBuilding, EDI);
-	GET(int const, idxTiberium, EBP);
-	REF_STACK(float, amount, 0x1C);
 
 	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
@@ -99,6 +97,8 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 
 	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
 	{
+		GET(int const, idxTiberium, EBP);
+		REF_STACK(float, amount, 0x1C);
 		BuildingExt::StoreTiberium(pBuilding, amount, idxTiberium, storageTiberiumIndex);
 		amount = 0.0f;
 	}
@@ -346,12 +346,17 @@ static inline bool CheckShouldDisableDefensesCameo(HouseClass* pHouse, TechnoTyp
 
 DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
-	GET(HouseClass*, pThis, ECX);
-	GET_STACK(TechnoTypeClass*, pType, 0x4);
 	GET(bool, aresDisable, EAX);
 
-	if (aresDisable || !pType)
+	if (aresDisable)
 		return 0;
+
+	GET_STACK(TechnoTypeClass*, pType, 0x4);
+
+	if (!pType)
+		return 0;
+
+	GET(HouseClass*, pThis, ECX);
 
 	if (CheckShouldDisableDefensesCameo(pThis, pType) || HouseExt::ReachedBuildLimit(pThis, pType, false))
 		R->EAX(true);
@@ -371,9 +376,12 @@ DEFINE_HOOK(0x4FD77C, HouseClass_ExpertAI_Superweapons, 0x5)
 
 DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 {
+	if (!RulesExt::Global()->AISuperWeaponDelay.isset())
+		return 0;
+
 	GET(HouseClass*, pThis, ESI);
 
-	if (!RulesExt::Global()->AISuperWeaponDelay.isset() || pThis->IsControlledByHuman() || pThis->Type->MultiplayPassive)
+	if (pThis->IsControlledByHuman() || pThis->Type->MultiplayPassive)
 		return 0;
 
 	int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
@@ -399,13 +407,15 @@ DEFINE_HOOK(0x4FF9C9, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->ExcludeFromMultipleFactoryBonus)
+	auto const pType = pBuilding->Type;
+
+	if (BuildingTypeExt::ExtMap.Find(pType)->ExcludeFromMultipleFactoryBonus)
 	{
 		GET(HouseClass*, pThis, EDI);
 		GET(bool, isNaval, ECX);
 
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
-		pExt->UpdateNonMFBFactoryCounts(pBuilding->Type->Factory, R->Origin() == 0x4FF9C9, isNaval);
+		pExt->UpdateNonMFBFactoryCounts(pType->Factory, R->Origin() == 0x4FF9C9, isNaval);
 	}
 
 	return 0;

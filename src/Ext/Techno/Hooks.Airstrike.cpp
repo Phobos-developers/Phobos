@@ -95,11 +95,11 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 {
 	enum { SkipGameCode = 0x41DC3A };
 
-	GET(AirstrikeClass*, pThis, EBP);
 	GET(ObjectClass*, pTarget, ESI);
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
+		GET(AirstrikeClass*, pThis, EBP);
 		const auto& array = Make_Global<DynamicVectorClass<AirstrikeClass*>>(0x889FB8);
 		AirstrikeClass* pLastTargetingMe = nullptr;
 
@@ -186,10 +186,12 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 DEFINE_HOOK(0x70782D, TechnoClass_PointerGotInvalid_Airstrike, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(AbstractClass*, pAbstract, EBP);
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis)) // It's necessary
+	{
+		GET(AbstractClass*, pAbstract, EBP);
 		AnnounceInvalidPointer(pExt->AirstrikeTargetingMe, pAbstract);
+	}
 
 	return 0;
 }

@@ -306,10 +306,10 @@ DEFINE_HOOK(0x762AFF, WaveClass_AI_TargetSet, 0x6)
 
 DEFINE_HOOK(0x762D57, WaveClass_AI_TargetUnset, 0x6)
 {
-	GET(WaveClass*, pThis, ESI);
-
 	if (FireAtTemp::pWaveOwnerTarget)
 	{
+		GET(WaveClass*, pThis, ESI);
+
 		if (pThis->Owner->Target)
 			pThis->Owner->Target = FireAtTemp::pWaveOwnerTarget;
 

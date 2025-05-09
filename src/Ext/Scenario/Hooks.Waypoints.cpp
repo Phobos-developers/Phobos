@@ -199,15 +199,16 @@ DEFINE_HOOK(0x6883B7, ScenStruct_ScenStruct_1, 0x6)
 
 DEFINE_HOOK(0x68843B, ScenStruct_ScenStruct_2, 0x6)
 {
-	REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFSET(0x40, -0x18));
-	REF_STACK(CellStruct, buffer, STACK_OFFSET(0x40, -0x20));
 	GET(int, i, ESI);
 
 	if (ScenarioClass::Instance->IsDefinedWaypoint(i))
 	{
+		REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFSET(0x40, -0x18));
+		REF_STACK(CellStruct, buffer, STACK_OFFSET(0x40, -0x20));
 		waypoints.AddItem(ScenarioExt::Global()->Waypoints[i]);
 		Debug::Log("Multiplayer start waypoint found at cell %d,%d\n", buffer.X, buffer.Y);
 	}
+
 	return 0x6884EF;
 }
 

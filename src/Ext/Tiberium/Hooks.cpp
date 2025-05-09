@@ -10,8 +10,6 @@ DEFINE_HOOK(0x47C210, CellClass_CellColor_TiberiumRadarColor, 0x6)
 	enum { ReturnFromFunction = 0x47C23F };
 
 	GET(CellClass*, pThis, ESI);
-	GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
-	GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 
 	int tiberiumType = OverlayClass::GetTiberiumType(pThis->OverlayTypeIndex);
 
@@ -24,6 +22,8 @@ DEFINE_HOOK(0x47C210, CellClass_CellColor_TiberiumRadarColor, 0x6)
 	{
 		if (pTiberiumExt->MinimapColor.isset())
 		{
+			GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
+			GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 			auto& color = pTiberiumExt->MinimapColor.Get();
 
 			arg0->R = color.R;

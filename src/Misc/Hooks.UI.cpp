@@ -29,11 +29,14 @@ DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
 
 DEFINE_HOOK(0x640B8D, LoadingScreen_DisableEmptySpawnPositions, 0x6)
 {
-	GET(bool, esi, ESI);
-	if (Phobos::UI::DisableEmptySpawnPositions || !esi)
-	{
+	if (Phobos::UI::DisableEmptySpawnPositions)
 		return 0x640CE2;
-	}
+
+	GET(bool, esi, ESI);
+
+	if (!esi)
+		return 0x640CE2;
+
 	return 0x640B93;
 }
 
@@ -55,7 +58,6 @@ DEFINE_HOOK(0x641B41, LoadingScreen_SkipPreview, 0x8)
 
 DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 {
-	GET(PreviewClass*, pThis, ECX);
 	GET_STACK(const char*, lpMapFile, 0x4);
 
 	CCFileClass file(lpMapFile);
@@ -68,6 +70,7 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 		ScenarioClass::Instance->ReadStartPoints(ini);
 
+		GET(PreviewClass*, pThis, ECX);
 		R->EAX(pThis->ReadPreviewPack(ini));
 	}
 	else
@@ -230,11 +233,13 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 	enum { ContinueDraw = 0x456789, DoNotDraw = 0x456962 };
 	GET(BuildingClass* const, pThis, ESI);
 
-	if (HouseClass::IsCurrentPlayerObserver() || pThis->Owner->IsControlledByCurrentPlayer())
+	auto const pOwner = pThis->Owner;
+
+	if (HouseClass::IsCurrentPlayerObserver() || pOwner->IsControlledByCurrentPlayer())
 		return ContinueDraw;
 
 	AffectedHouse const canSee = RulesExt::Global()->RadialIndicatorVisibility.Get();
-	if (pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer) ? canSee & AffectedHouse::Allies : canSee & AffectedHouse::Enemies)
+	if (pOwner->IsAlliedWith(HouseClass::CurrentPlayer) ? canSee & AffectedHouse::Allies : canSee & AffectedHouse::Enemies)
 		return ContinueDraw;
 
 	return DoNotDraw;
@@ -271,10 +276,13 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 {
 	enum { SkipGameCode = 0x683E6B };
 
+	// Don't show briefing dialog for non-campaign games etc.
+	if (!Phobos::Config::ShowBriefing || !ScenarioExt::Global()->ShowBriefing || !SessionClass::IsCampaign())
+		return 0;
+
 	GET_STACK(bool, showBriefing, STACK_OFFSET(0xFC, -0xE9));
 
-	// Don't show briefing dialog for non-campaign games etc.
-	if (!Phobos::Config::ShowBriefing || !ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::IsCampaign())
+	if (!showBriefing)
 		return 0;
 
 	BriefingTemp::ShowBriefing = true;

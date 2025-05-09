@@ -26,16 +26,19 @@ DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 DEFINE_HOOK(0x489671, Damage_at_Cell_Update_Veinhole, 0x6)
 {
 	GET(OverlayTypeClass*, pOverlay, EAX);
-	GET(WarheadTypeClass*, pWH, ESI);
-	GET_STACK(CellStruct, pCell, STACK_OFFSET(0xE0, -0x4C));
-	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
-	GET_STACK(ObjectClass*, pAttacker, STACK_OFFSET(0xE0, 0x8));
-	GET_STACK(HouseClass*, pAttackingHouse, STACK_OFFSET(0xE0, 0x14));
 
 	if (pOverlay->IsVeinholeMonster)
 	{
+		GET_STACK(CellStruct, pCell, STACK_OFFSET(0xE0, -0x4C));
+
 		if (VeinholeMonsterClass* pVeinhole = VeinholeMonsterClass::GetVeinholeMonsterFrom(&pCell))
+		{
+			GET(WarheadTypeClass*, pWH, ESI);
+			GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+			GET_STACK(ObjectClass*, pAttacker, STACK_OFFSET(0xE0, 0x8));
+			GET_STACK(HouseClass*, pAttackingHouse, STACK_OFFSET(0xE0, 0x14));
 			pVeinhole->ReceiveDamage(&damage, 0, pWH, pAttacker, false, false, pAttackingHouse);
+		}
 	}
 
 	return 0;
@@ -170,7 +173,9 @@ DEFINE_HOOK(0x73D0DB, UnitClass_DrawAt_Weeder_Oregath, 0x6)
 
 	GET(UnitClass*, pUnit, ESI);
 
-	if (pUnit->Type->Harvester || pUnit->Type->Weeder || pUnit->IsHarvesting)
+	auto const pType = pUnit->Type;
+
+	if (pType->Harvester || pType->Weeder || pUnit->IsHarvesting)
 		return DrawOregath;
 
 	return Skip;
@@ -205,10 +210,10 @@ DEFINE_HOOK(0x73D49E, UnitClass_Harvesting_Weeder, 0x7)
 	GET(UnitClass*, pUnit, ESI);
 	GET(CellClass*, pCell, EBP);
 	constexpr unsigned char weedOverlayData = 0x30;
-
-	bool harvesterCanHarvest = pUnit->Type->Harvester && pCell->LandType == LandType::Tiberium;
-	bool weederCanWeed = pUnit->Type->Weeder && pCell->LandType == LandType::Weeds && pCell->OverlayData >= weedOverlayData;
-
+	auto const landType = pCell->LandType;
+	auto const pType = pUnit->Type;
+	bool harvesterCanHarvest = pType->Harvester && landType == LandType::Tiberium;
+	bool weederCanWeed = pType->Weeder && landType == LandType::Weeds && pCell->OverlayData >= weedOverlayData;
 
 	if ((harvesterCanHarvest || weederCanWeed) && pUnit->GetStoragePercentage() < 1.0)
 		return Harvest;
@@ -306,10 +311,10 @@ DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 
 	GET(UnitClass*, pUnit, EBP);
 
-	if ((pUnit->Type->Harvester || pUnit->Type->Weeder) && pUnit->GetStoragePercentage() == 1.0)
-	{
+	auto const pType = pUnit->Type;
+
+	if ((pType->Harvester || pType->Weeder) && pUnit->GetStoragePercentage() == 1.0)
 		return StopHarvesting;
-	}
 
 	return Skip;
 }

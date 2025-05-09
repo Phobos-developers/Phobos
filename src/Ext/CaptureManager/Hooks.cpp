@@ -62,7 +62,6 @@ static void __stdcall DrawALinkTo(CoordStruct nFrom, CoordStruct nTo, ColorStruc
 DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 {
 	GET(CaptureManagerClass*, pThis, EDI);
-	GET(TechnoClass*, pVictim, ECX);
 	GET_STACK(int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
 
 	auto const pAttacker = pThis->Owner;
@@ -70,6 +69,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 
 	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
+		GET(TechnoClass*, pVictim, ECX);
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
 		auto nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);

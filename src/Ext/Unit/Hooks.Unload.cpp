@@ -235,8 +235,13 @@ DEFINE_HOOK(0x739CBF, UnitClass_Deploy_DeployToLandHover, 0x5)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Deployed && pThis->Type->DeployToLand && pThis->Type->Locomotor == LocomotionClass::CLSIDs::Hover)
-		SimpleDeployerTemp::HoverDeployedToLand = true;
+	if (pThis->Deployed)
+	{
+		auto const pType = pThis->Type;
+
+		if (pType->DeployToLand && pType->Locomotor == LocomotionClass::CLSIDs::Hover)
+			SimpleDeployerTemp::HoverDeployedToLand = true;
+	}
 
 	return 0;
 }

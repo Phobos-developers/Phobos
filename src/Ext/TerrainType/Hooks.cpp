@@ -23,23 +23,25 @@ DEFINE_HOOK(0x71C84D, TerrainClass_AI_Animated, 0x6)
 
 	GET(TerrainClass*, pThis, ESI);
 
-	if (pThis->Type->IsAnimated)
-	{
-		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
 
-		if (pThis->Animation.Value == pTypeExt->AnimationLength.Get(pThis->Type->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1))))
+	if (pType->IsAnimated)
+	{
+		auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
+
+		if (pThis->Animation.Value == pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1))))
 		{
 			pThis->Animation.Value = 0;
 			pThis->Animation.Start(0);
 
 			// Spawn tiberium if enabled.
-			if (pThis->Type->SpawnsTiberium)
+			if (pType->SpawnsTiberium)
 			{
 				auto pCell = pThis->GetCell();
 				int cellCount = pTypeExt->GetCellsPerAnim();
 
 				// Set context for CellClass hooks.
-				TerrainTypeTemp::pCurrentType = pThis->Type;
+				TerrainTypeTemp::pCurrentType = pType;
 				TerrainTypeTemp::pCurrentExt = pTypeExt;
 
 				for (int i = 0; i < cellCount; i++)
@@ -61,11 +63,12 @@ DEFINE_HOOK(0x71C812, TerrainClass_AI_Crumbling, 0x6)
 
 	GET(TerrainClass*, pThis, ESI);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->HasDamagedFrames && pThis->Health > 0)
 	{
-		if (!pThis->Type->IsAnimated && !pThis->Type->IsFlammable)
+		if (!pType->IsAnimated && !pType->IsFlammable)
 			LogicClass::Instance.Remove(pThis);
 
 		pThis->IsCrumbling = false;
@@ -73,10 +76,10 @@ DEFINE_HOOK(0x71C812, TerrainClass_AI_Crumbling, 0x6)
 		return SkipCheck;
 	}
 
-	int animationLength = pTypeExt->AnimationLength.Get(pThis->Type->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
-	int currentStage = pThis->Animation.Value + (pThis->Type->IsAnimated ? animationLength * (pTypeExt->HasDamagedFrames + 1) : 0 + pTypeExt->HasDamagedFrames);
+	int animationLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
+	int currentStage = pThis->Animation.Value + (pType->IsAnimated ? animationLength * (pTypeExt->HasDamagedFrames + 1) : 0 + pTypeExt->HasDamagedFrames);
 
-	if (currentStage + 1 == pThis->Type->GetImage()->Frames / 2)
+	if (currentStage + 1 == pType->GetImage()->Frames / 2)
 	{
 		pTypeExt->PlayDestroyEffects(pThis->GetCoords());
 		TerrainTypeExt::Remove(pThis);
@@ -93,12 +96,13 @@ DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
 
 	GET(TerrainClass*, pThis, ESI);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
 	bool isDamaged = pTypeExt->HasDamagedFrames && pThis->GetHealthPercentage() <= RulesExt::Global()->ConditionYellow_Terrain.Get(RulesClass::Instance->ConditionYellow);
 
-	if (pThis->Type->IsAnimated)
+	if (pType->IsAnimated)
 	{
-		int animLength = pTypeExt->AnimationLength.Get(pThis->Type->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
+		int animLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
 
 		if (pTypeExt->HasCrumblingFrames && pThis->IsCrumbling)
 			frame = (animLength * (pTypeExt->HasDamagedFrames + 1)) + 1 + pThis->Animation.Value;
@@ -243,10 +247,11 @@ DEFINE_HOOK(0x71B98B, TerrainClass_TakeDamage_RefreshDamageFrame, 0x7)
 {
 	GET(TerrainClass*, pThis, ESI);
 
-	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
 	double condYellow = RulesExt::Global()->ConditionYellow_Terrain.Get(RulesClass::Instance->ConditionYellow);
 
-	if (!pThis->Type->IsAnimated && pTypeExt->HasDamagedFrames && TerrainTypeTemp::PriorHealthRatio > condYellow && pThis->GetHealthPercentage() <= condYellow)
+	if (!pType->IsAnimated && pTypeExt->HasDamagedFrames && TerrainTypeTemp::PriorHealthRatio > condYellow && pThis->GetHealthPercentage() <= condYellow)
 	{
 		pThis->IsCrumbling = true; // Dirty hack to get game to redraw the art reliably.
 		LogicClass::Instance.AddObject(pThis, false);
@@ -286,8 +291,6 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 	enum { SkipTerrainColor = 0x47C0AE, ReturnFromFunction = 0x47C0A3 };
 
 	GET(CellClass*, pThis, ECX);
-	GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
-	GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 
 	auto pTerrain = pThis->GetTerrain(false);
 
@@ -304,6 +307,8 @@ DEFINE_HOOK(0x47C065, CellClass_CellColor_TerrainRadarColor, 0x6)
 
 			if (pTerrainExt->MinimapColor.isset())
 			{
+				GET_STACK(ColorStruct*, arg0, STACK_OFFSET(0x14, 0x4));
+				GET_STACK(ColorStruct*, arg4, STACK_OFFSET(0x14, 0x8));
 				auto& color = pTerrainExt->MinimapColor.Get();
 
 				arg0->R = color.R;

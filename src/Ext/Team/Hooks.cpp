@@ -10,7 +10,6 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 	GET(FootClass* const, pPayload, EAX);
 	GET(FootClass* const, pTransport, ESI);
 	GET(TeamClass* const, pTeam, EBP);
-	GET(TeamTypeClass const*, pThis, EBX);
 
 	auto unmarkPayloadCreated = [](FootClass* member){reinterpret_cast<char*>(member->align_154)[0x9E] = false;};
 
@@ -25,6 +24,7 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 	}
 
 	unmarkPayloadCreated(pTransport);
+	GET(TeamTypeClass const*, pThis, EBX);
 
 	if (!pPayload || !pThis->Full)
 		return 0x65E004;

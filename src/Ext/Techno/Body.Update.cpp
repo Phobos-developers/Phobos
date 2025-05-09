@@ -283,7 +283,7 @@ void TechnoExt::ExtData::EatPassengers()
 					auto const size = pPassenger->GetTechnoType()->Size;
 
 					if (pDelType->Rate_SizeMultiply && size > 1.0)
-						timerLength *= (int)(size->Size + 0.5);
+						timerLength *= (int)(size + 0.5);
 				}
 
 				this->PassengerDeletionTimer.Start(timerLength);
