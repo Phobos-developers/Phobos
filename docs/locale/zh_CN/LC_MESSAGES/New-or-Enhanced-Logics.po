@@ -6314,7 +6314,7 @@ msgid ""
 "without any targets. Defaults to `[General] -> RecountBurst`, which "
 "defaults to false."
 msgstr ""
-"现在你可以让单位在更换了开火武器或一段时间内没有目标的情况下重置当前的连发索引。默认为 `[General] -> "
+"现在你可以让单位在更换了开火武器或一段时间内没有目标（取上一次发射武器的 `ROF` 与 30 帧的较大值）的情况下重置当前的连发索引。默认为 `[General] -> "
 "RecountBurst`，其默认为 false。"
 
 #: ../../New-or-Enhanced-Logics.md:1667
