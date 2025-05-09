@@ -38,6 +38,9 @@ std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClas
 {
 	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
 
+	// They must be the same, but for other triggers to take effect normally, this cannot be judged outside case.
+	auto isSameEvent = [&]() { return eventKind == static_cast<PhobosTriggerEvent>(iEvent); };
+
 	switch (eventKind)
 	{
 	// The triggering conditions that need to be checked at any time are written here
@@ -131,9 +134,6 @@ std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClas
 
 
 	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
-
-		// They must be the same, but for other triggers to take effect normally, this cannot be judged outside case.
-		auto isSameEvent = [&]() { return eventKind == static_cast<PhobosTriggerEvent>(iEvent); };
 
 	// SomeTriggerAttachedToObject needs to be restricted to situations where ...
 //	case PhobosTriggerEvent::SomeTriggerAttachedToObject:
