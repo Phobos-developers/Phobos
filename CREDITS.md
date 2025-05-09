@@ -506,6 +506,7 @@ This page lists all the individual contributions to the project by their author.
   - RadarInvisible for non-enemy house
   - Allow miners do area guard
   - Make harvesters do addtional scan after unload
+  - Fix BalloonHover incorrectly considering ground factors when pathfinding
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
