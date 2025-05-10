@@ -236,3 +236,79 @@ DEFINE_HOOK(0x443CCA, BuildingClass_KickOutUnit_AircraftType_Phobos, 0xA)
 
 	return 0;
 }
+
+inline InfantryClass* CreateInfantryFromFactory(TechnoTypeClass* pType, HouseClass* pOwner)
+{
+	// BuildLimit check goes before creation
+	if (pType->BuildLimit > 0)
+	{
+		int sum = pOwner->CountOwnedNow(pType);
+
+		// copy Ares' deployable units x build limit fix
+		if (auto const pUndeploy = pType->UndeploysInto)
+			sum += pOwner->CountOwnedNow(pUndeploy);
+
+		if (sum >= pType->BuildLimit)
+			return nullptr;
+	}
+
+	if (auto const pInfantry = static_cast<InfantryClass*>(pType->CreateObject(pOwner)))
+	{
+		return pInfantry;
+	}
+
+	return nullptr;
+}
+
+DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
+{
+	GET(BuildingClass*, pFactory, ESI);
+	GET(TechnoClass*, pTechno, EDI);
+
+	const auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+	bool isRallyDest = pFactory->ArchiveTarget != nullptr ? true : false;
+	bool isInitAsTeam = pExtType->isInitAsTeam;
+
+	//Debug::Log("KickOutUnit: Create SquadManager\n");
+	SquadManager* pSquadManager;
+
+	if (isInitAsTeam)
+	{
+		pSquadManager = new SquadManager;
+		pTechnoExt->SquadManager = pSquadManager;
+		pTechnoExt->HasSquad = true;
+		pSquadManager->addTechno(pTechno);
+	}
+
+	if (pExtType->Squad_Members.size() > 0)
+	{
+		for (int i = 0; i < pExtType->Squad_Members.size(); i++)
+		{
+			auto pType = pExtType->Squad_Members[i];
+			auto pInfantry = CreateInfantryFromFactory(pType, pTechno->GetOwningHouse());
+			if (pInfantry != nullptr)
+			{
+				++Unsorted::ScenarioInit;
+				pInfantry->Unlimbo(pTechno->GetCoords(), DirType::North);
+				if (isRallyDest)
+				{
+					pInfantry->QueueMission(Mission::Move, 0);
+					pInfantry->SetDestination(pFactory->ArchiveTarget, 1);
+				}
+				--Unsorted::ScenarioInit;
+				if (isInitAsTeam)
+				{
+					auto tempTechnoExt = TechnoExt::ExtMap.Find(pInfantry);
+					tempTechnoExt->SquadManager = pSquadManager;
+					tempTechnoExt->HasSquad = true;
+					pSquadManager->addTechno(pInfantry);
+				}
+
+			}
+		}
+	}
+
+	return 0x444971;
+}

@@ -863,4 +863,30 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x6FBFD0, TechnoClass_Select_SquadSelect, 0x5)
+{
+
+	GET(TechnoClass*, pTechno, ESI);
+
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (pTechnoExt->HasSquad)
+	{
+		const auto pSquadManager = pTechnoExt->SquadManager;
+		if (!pSquadManager->isSelected)
+		{
+			pSquadManager->isSelected = true;
+			for (int i = 0; i < pSquadManager->Squad_Members.size(); i++)
+			{
+				auto tempTechno = pSquadManager->Squad_Members[i];
+				if ((tempTechno != pTechno) && (tempTechno != nullptr))
+					tempTechno->Select();
+			}
+			pSquadManager->isSelected = false;
+		}
+	}
+
+	return 0;
+}
+
 #pragma endregion

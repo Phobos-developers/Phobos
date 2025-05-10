@@ -48,6 +48,20 @@ TechnoExt::ExtData::~ExtData()
 	}
 
 	this->ElectricBolts.clear();
+
+	if (this->HasSquad)
+	{
+		auto pSquadManager = this->SquadManager;
+		if (pSquadManager->Squad_Members.size() == 1)
+		{
+			pSquadManager->delTechno(pThis);
+			pSquadManager = nullptr;
+		}
+		else
+		{
+			pSquadManager->delTechno(pThis);
+		}
+	}
 }
 
 bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
@@ -591,6 +605,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->SquadManager)
+		.Process(this->HasSquad)
 		;
 }
 

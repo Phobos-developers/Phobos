@@ -9,6 +9,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Entity/SquadManager.h>
 
 class BulletClass;
 
@@ -71,6 +72,9 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		SquadManager* SquadManager;
+		bool HasSquad;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -115,6 +119,8 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, SquadManager { nullptr }
+			, HasSquad { false }
 		{ }
 
 		void OnEarlyUpdate();
