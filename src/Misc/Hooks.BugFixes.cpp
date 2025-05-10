@@ -1967,4 +1967,37 @@ DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
 	return pThis->IsInAir() && pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? MoveOK : 0;
 }
 
+namespace ApproachTargetContext
+{
+	bool IsBalloonHover = false;
+}
+
+DEFINE_HOOK(0x4D5690, FootClass_ApproachTarget_SetContext, 0x6)
+{
+	GET(FootClass*, pThis, ECX);
+	ApproachTargetContext::IsBalloonHover = pThis->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5A42, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK_AGAIN(0x4D5AB5, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK_AGAIN(0x4D68DE, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK_AGAIN(0x4D6A8B, FootClass_ApproachTarget_ResetContext, 0x5);
+DEFINE_HOOK(0x4D5744, FootClass_ApproachTarget_ResetContext, 0x5)
+{
+	ApproachTargetContext::IsBalloonHover = false;
+	return 0;
+}
+
+DEFINE_HOOK(0x4834A0, CellClass_IsClearToMove_Start, 0x5)
+{
+	if (ApproachTargetContext::IsBalloonHover)
+	{
+		R->AL(true);
+		return 0x483605;
+	}
+
+	return 0;
+}
+
 #pragma endregion
