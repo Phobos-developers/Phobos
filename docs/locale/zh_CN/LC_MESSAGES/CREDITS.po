@@ -1684,7 +1684,7 @@ msgstr "单位伤残更换图像"
 
 #: ../../../CREDITS.md:420
 msgid "`VoiceDeploy` through hot-key/command bar fix"
-msgstr ""
+msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题"
 
 #: ../../../CREDITS.md:421
 msgid "**ZivDero**:"

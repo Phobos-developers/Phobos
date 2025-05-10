@@ -3156,6 +3156,7 @@ msgid ""
 "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar"
 " (by Fryone)"
 msgstr ""
+"修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题（by Fryone）"
 
 #: ../../Whats-New.md:690
 msgid ""
