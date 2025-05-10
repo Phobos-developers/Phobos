@@ -2275,6 +2275,44 @@ msgstr ""
 "BallisticScatter` 的随机距离（以单元格为单位）进行散布。现在可以通过在抛射体上设置 `BallisticScatter.Min`"
 " 与 `BallisticScatter.Max` 来自定义这个距离的范围。如果没有设置则使用默认值。"
 
+#: ../../New-or-Enhanced-Logics.md:784
+msgid "Shrapnel enhancements"
+msgstr "溅射增强"
+
+#: ../../New-or-Enhanced-Logics.md:786
+msgid ""
+"![image](_static/images/shrapnel.gif) *Shrapnel appearing against ground "
+"& buildings in [Project Phantom](https://www.moddb.com/mods/project-"
+"phantom)*"
+msgstr ""
+"![image](_static/images/shrapnel.gif) *[幽灵计划](https://www.moddb.com/mods"
+"/project-phantom) 中击中地面和建筑的溅射*"
+
+#: ../../New-or-Enhanced-Logics.md:789
+msgid ""
+"`ShrapnelWeapon` can now be triggered against ground & buildings via "
+"`Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`."
+msgstr "现在可以通过 `Shrapnel.AffectsGround` 和 `Shrapnel.AffectsBuildings` 触发对地面和建筑的溅射。"
+
+#: ../../New-or-Enhanced-Logics.md:790
+msgid ""
+"Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering "
+"to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, "
+"Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon "
+"targeting filters](#weapon-targeting-filter) & [AttachEffect filters"
+"](#attached-effects) will be checked."
+msgstr ""
+"设置 `Shrapnel.UseWeaponTargeting` 现在允许为 `ShrapnelWeapon` 启用武器目标过滤。目标的 "
+"`LegalTarget` 设置、弹头的 `Verses` 对 `Armor` 以及 `ShrapnelWeapon` [武器目标筛选"
+"](#weapon-targeting-filter) 和 [AE 武器过滤](#attached-effects) 将被检查。"
+
+#: ../../New-or-Enhanced-Logics.md:791
+msgid ""
+"Do note that this overrides the normal check of only allowing shrapnels "
+"to hit non-allied objects. Use `CanTargetHouses=enemies` to manually "
+"enable this behaviour again."
+msgstr "注意这会覆盖允许溅射武器选择非盟友对象的默认检查。使用 `CanTargetHouses=enemies` 可手动重新启用此行为。"
+
 #: ../../Fixed-or-Improved-Logics.md:594
 msgid "Technos"
 msgstr "科技类型"
