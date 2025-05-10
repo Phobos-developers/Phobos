@@ -417,38 +417,12 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 // Skip a forced detonation check for Level=true projectiles that is now handled in Hooks.Obstacles.cpp.
 DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
 
-DEFINE_HOOK(0x6FE657, TechnoClass_FireAt_ArcingFix, 0x6)
+DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_ArcingFix, 0x5)
 {
-	GET_STACK(BulletTypeClass*, pBulletType, STACK_OFFSET(0xB0, -0x48));
-	GET(int, targetHeight, EDI);
-	GET(int, fireHeight, EAX);
+	GET(BulletClass*, pThis, EBX);
 
-	if (pBulletType->Arcing && targetHeight > fireHeight)
-	{
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-
-		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
-			R->EAX(targetHeight);
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x44D23C, BuildingClass_Mission_Missile_ArcingFix, 0x7)
-{
-	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET(int, targetHeight, EBX);
-	GET(int, fireHeight, EAX);
-
-	auto const pBulletType = pWeapon->Projectile;
-
-	if (pBulletType->Arcing && targetHeight > fireHeight)
-	{
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-
-		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
-			R->EAX(targetHeight);
-	}
+	if (pThis->Type->Arcing)
+		BulletExt::ExtMap.Find(pThis)->ApplyArcingFix();
 
 	return 0;
 }

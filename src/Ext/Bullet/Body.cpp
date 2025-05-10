@@ -390,6 +390,52 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 	}
 }
 
+void BulletExt::ExtData::ApplyArcingFix()
+{
+	auto pThis = this->OwnerObject();
+	bool inaccutate = pThis->Type->Inaccurate;
+	bool elevationFix = !this->TypeExtData->Arcing_AllowElevationInaccuracy;
+
+	if (!inaccutate && !elevationFix)
+		return;
+	
+	auto theSourceCoords = pThis->GetCoords();
+	auto theTargetCoords = pThis->TargetCoords;
+	int zDelta = 0;
+
+	if (inaccutate)
+	{
+		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+		const auto offsetMult = 0.0004 * theSourceCoords.DistanceFrom(theTargetCoords);
+		const auto offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
+		const auto offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
+		const auto offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);
+		theTargetCoords = MapClass::GetRandomCoordsNear(theTargetCoords, offsetDistance, false);
+	}
+
+	if (elevationFix)
+	{
+		zDelta = theTargetCoords.Z - theTargetCoords.Z;
+		theTargetCoords.Z = 0;
+		theSourceCoords.Z = 0;
+	}
+	
+	double distance = theTargetCoords.DistanceFrom(theSourceCoords);
+
+	if (pThis->WeaponType && pThis->WeaponType->Lobber)
+		pThis->Speed /= 2;
+
+	pThis->Velocity.X = theTargetCoords.X - theSourceCoords.X;
+	pThis->Velocity.Y = theTargetCoords.Y - theSourceCoords.Y;
+	pThis->Velocity *= pThis->Speed / distance;
+	double gravity = (double)RulesClass::Instance->Gravity;
+
+	if (pThis->Type->Floater)
+		gravity = Game::GetFloaterGravity();
+
+	pThis->Velocity.Z = zDelta * pThis->Speed / distance + 0.5 * gravity * distance / pThis->Speed;
+}
+
 // =============================
 // load / save
 
