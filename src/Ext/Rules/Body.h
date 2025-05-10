@@ -387,7 +387,8 @@ public:
 			, DamagedSpeed { 0.75 }
 
 			, HarvesterScanAfterUnload { false }
-			, BalloonHoverPathingFix { false }
+			
+			, BalloonHoverPathingFix { true }
 		{ }
 
 		virtual ~ExtData() = default;

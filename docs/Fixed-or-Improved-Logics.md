@@ -223,7 +223,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
-- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. Use `[General]->BalloonHoverPathingFix=true` to enable this fix.
+- Fixed the bug where technos with `BalloonHover=yes` incorrectly considered ground factors when setting the destination and distributing moving commands. If you don't want this anyway, use `[General]->BalloonHoverPathingFix=false` to disable this fix.
 
 ## Fixes / interactions with other extensions
 
