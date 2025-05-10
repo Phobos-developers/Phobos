@@ -329,11 +329,8 @@ void TechnoExt::ExtData::EatPassengers()
 					pPassenger->UnInit();
 
 					// Handle extra power
-					if (auto const pBld = abstract_cast<BuildingClass*, true>(pThis))
-					{
-						if (pBld->HasExtraPowerBonus)
-							pThis->Owner->RecheckPower = true;
-					}
+					if (pPassenger->Absorbed)
+						pThis->Owner->RecheckPower = true;
 				}
 
 				this->PassengerDeletionTimer.Stop();
@@ -877,14 +874,8 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 		pThis->UnInit();
 
 		// Handle extra power
-		if (pThis->Transporter)
-		{
-			if (auto const pBld = abstract_cast<BuildingClass*, true>(pThis->Transporter))
-			{
-				if (pBld->HasExtraPowerBonus)
-					pBld->Owner->RecheckPower = true;
-			}
-		}
+		if (pThis->Absorbed && pThis->Transporter)
+			pThis->Transporter->Owner->RecheckPower = true;
 
 		return;
 	}
