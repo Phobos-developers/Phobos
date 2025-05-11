@@ -170,8 +170,8 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->AttachEffects.AttachTypes.size() > 0 || this->AttachEffects.RemoveTypes.size() > 0 || this->AttachEffects.RemoveGroups.size() > 0)
 		this->ApplyAttachEffects(pTarget, pHouse, pOwner);
 
-	if (this->GarrisonPenetration)
-		this->ApplyGarrisonPenetration(pHouse, pTarget, pOwner, pBulletExt);
+	if (this->PenetratesGarrison)
+		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, pBulletExt);
 	
 
 #ifdef LOCO_TEST_WARHEADS
@@ -506,30 +506,27 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	return critChance + extraChance;
 }
 
-void WarheadTypeExt::ExtData::ApplyGarrisonPenetration(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt)
+void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt)
 {
 	auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
 	if (!pBuilding || !pBuilding->Occupants.Count || !pBulletExt)
 		return;
 
 	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-	if (pTargetTypeExt->ImmuneToGarrisonPenetration)
+	if (pTargetTypeExt->ImmuneToPenetratesGarrison)
 		return;
 
 	auto const pBullet = pBulletExt->OwnerObject();
-	double multiplierPercentage = GeneralUtils::GetRangedRandomOrSingleValue(this->GarrisonPenetration_DamageMultiplier);
+	double multiplierPercentage = GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier);
 	int damage = static_cast<int>(std::round(pBullet->WeaponType->Damage * multiplierPercentage));
 	WarheadTypeClass* pWH = this->OwnerObject();
 
-	if (multiplierPercentage <= 0.0)
-		return;
-
-	int occupantIndex = this->GarrisonPenetration_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
+	int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
 
 	auto DoDamage = [=](InfantryClass* pPassenger, int damage)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
-		if (pTypeExt->ImmuneToGarrisonPenetration)
+		if (pTypeExt->ImmuneToPenetratesGarrison)
 			return;
 
 		damage = MapClass::GetTotalDamage(damage, pWH, pPassenger->Type->Armor, 0);
@@ -575,6 +572,6 @@ void WarheadTypeExt::ExtData::ApplyGarrisonPenetration(HouseClass* pInvokerHouse
 	}
 
 	// Building fully cleaned!
-	if (!pBuilding->Occupants.Count && GarrisonPenetration_CleanSound.isset())
-		VocClass::PlayAt(GarrisonPenetration_CleanSound.Get(), pInvoker->Location);
+	if (!pBuilding->Occupants.Count && PenetratesGarrison_CleanSound.isset())
+		VocClass::PlayAt(PenetratesGarrison_CleanSound.Get(), pInvoker->Location);
 }

@@ -262,7 +262,7 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
-		Valueable<bool> ImmuneToGarrisonPenetration;
+		Valueable<bool> ImmuneToPenetratesGarrison;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -481,7 +481,7 @@ public:
 
 			, Power { }
 
-			, ImmuneToGarrisonPenetration { false }
+			, ImmuneToPenetratesGarrison { false }
 		{ }
 
 		virtual ~ExtData() = default;

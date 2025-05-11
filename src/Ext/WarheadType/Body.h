@@ -170,10 +170,10 @@ public:
 		bool PossibleCellSpreadDetonate;
 		TechnoClass* DamageAreaTarget;
 
-		Valueable<bool> GarrisonPenetration;
-		Valueable<bool> GarrisonPenetration_RandomTarget;
-		Valueable<PartialVector2D<double>> GarrisonPenetration_DamageMultiplier;
-		NullableIdx<VocClass> GarrisonPenetration_CleanSound;
+		Valueable<bool> PenetratesGarrison;
+		Valueable<bool> PenetratesGarrison_RandomTarget;
+		Valueable<PartialVector2D<double>> PenetratesGarrison_DamageMultiplier;
+		NullableIdx<VocClass> PenetratesGarrison_CleanSound;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -328,10 +328,10 @@ public:
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
 
-			, GarrisonPenetration { false }
-			, GarrisonPenetration_RandomTarget { true }
-			, GarrisonPenetration_DamageMultiplier { { 1.0, 1.0 } }
-			, GarrisonPenetration_CleanSound { }
+			, PenetratesGarrison { false }
+			, PenetratesGarrison_RandomTarget { true }
+			, PenetratesGarrison_DamageMultiplier { { 1.0, 1.0 } }
+			, PenetratesGarrison_CleanSound { }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -366,7 +366,7 @@ public:
 		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		double GetCritChance(TechnoClass* pFirer) const;
-		void ApplyGarrisonPenetration(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt);
+		void ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt);
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>

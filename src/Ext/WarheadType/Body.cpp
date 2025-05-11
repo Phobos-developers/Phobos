@@ -321,7 +321,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
-		|| this->GarrisonPenetration
+		|| this->PenetratesGarrison
 	);
 
 	char tempBuffer[32];
@@ -362,10 +362,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->SpawnsCrate_Weights.push_back(weight);
 	}
 
-	this->GarrisonPenetration.Read(exINI, pSection, "GarrisonPenetration");
-	this->GarrisonPenetration_RandomTarget.Read(exINI, pSection, "GarrisonPenetration.RandomTarget");
-	this->GarrisonPenetration_DamageMultiplier.Read(exINI, pSection, "GarrisonPenetration.DamageMultiplier");
-	this->GarrisonPenetration_CleanSound.Read(exINI, pSection, "GarrisonPenetration.CleanSound");
+	this->PenetratesGarrison.Read(exINI, pSection, "PenetratesGarrison");
+	this->PenetratesGarrison_RandomTarget.Read(exINI, pSection, "PenetratesGarrison.RandomTarget");
+	this->PenetratesGarrison_DamageMultiplier.Read(exINI, pSection, "PenetratesGarrison.DamageMultiplier");
+	this->PenetratesGarrison_CleanSound.Read(exINI, pSection, "PenetratesGarrison.CleanSound");
 }
 
 template <typename T>
@@ -512,10 +512,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
 
-		.Process(this->GarrisonPenetration)
-		.Process(this->GarrisonPenetration_RandomTarget)
-		.Process(this->GarrisonPenetration_DamageMultiplier)
-		.Process(this->GarrisonPenetration_CleanSound)
+		.Process(this->PenetratesGarrison)
+		.Process(this->PenetratesGarrison_RandomTarget)
+		.Process(this->PenetratesGarrison_DamageMultiplier)
+		.Process(this->PenetratesGarrison_CleanSound)
 		;
 }
 
