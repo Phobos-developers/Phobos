@@ -305,7 +305,9 @@ void TechnoExt::ExtData::EatPassengers()
 					}
 
 					// Handle gunner change.
-					if (pThis->GetTechnoType()->Gunner)
+					auto const pTransportType = pThis->GetTechnoType();
+
+					if (pTransportType->Gunner)
 					{
 						if (auto const pFoot = abstract_cast<FootClass*>(pThis))
 						{
@@ -329,8 +331,11 @@ void TechnoExt::ExtData::EatPassengers()
 					pPassenger->UnInit();
 
 					// Handle extra power
-					if (pPassenger->Absorbed)
-						pThis->Owner->RecheckPower = true;
+					if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
+					{
+						if (pBldType->ExtraPowerBonus || pBldType->ExtraPowerDrain)
+							pThis->Owner->RecheckPower = true;
+					}
 				}
 
 				this->PassengerDeletionTimer.Stop();
