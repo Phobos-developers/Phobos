@@ -1024,7 +1024,7 @@ msgid ""
 "absorbed by the shield, and will be dealt to the unit directly even if "
 "the shield is active. Defaults to 0.0 - no penetration."
 msgstr ""
-"`PassPercent` 控制该护盾所 *没* 能吸收（穿透了）伤害的百分比，即使护盾处于激活状态也会直接被施加到单位上。默认为 0.0 - "
+"`PassPercent` 控制该护盾所 **没** 能吸收（穿透了）伤害的百分比，即使护盾处于激活状态也会直接被施加到单位上。默认为 0.0 - "
 "无穿透。"
 
 #: ../../New-or-Enhanced-Logics.md:398
@@ -2158,7 +2158,7 @@ msgid ""
 " units in: transports, occupied buildings, buildings with "
 "`InfantryAbsorb=yes` or `UnitAbsorb=yes`, buildings with `Bunker=yes`."
 msgstr ""
-"转换影响被指定的 *所有* 当前存在的科技类型，包括处于运输工具中的、驻扎在建筑内的、处于 `InfantryAbsorb=yes` 或 "
+"转换影响被指定的 **所有** 当前存在的科技类型，包括处于运输工具中的、驻扎在建筑内的、处于 `InfantryAbsorb=yes` 或 "
 "`UnitAbsorb=yes` 的建筑中的、正在 `Bunker=yes` 建筑里的。"
 
 #: ../../New-or-Enhanced-Logics.md:822
@@ -3090,7 +3090,7 @@ msgstr "自毁"
 msgid ""
 "Objects can be destroyed automatically if *any* of these conditions is "
 "met:"
-msgstr "如果满足以下 *任何* 条件对象将会自毁："
+msgstr "如果满足以下 **任何** 条件对象将会自毁："
 
 #: ../../New-or-Enhanced-Logics.md:1214
 msgid "`OnAmmoDepletion`: The object will die if the remaining ammo reaches 0."
@@ -3830,7 +3830,7 @@ msgstr "由于某些超级武器类型的特性并非所有超级武器都适合
 msgid ""
 "The superweapons are launched on the *cell* where the warhead is "
 "detonated, instead of being click-fired."
-msgstr "超级武器在弹头引爆的 *单元格* 上发射而不是通过点击发射。"
+msgstr "超级武器在弹头引爆的 **单元格** 上发射而不是通过点击发射。"
 
 #: ../../New-or-Enhanced-Logics.md:1595
 msgid "Parasite removal"
