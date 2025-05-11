@@ -334,13 +334,13 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 		const auto targetCoords = pBullet->Target->GetCenterCoords();
 		const auto gravity = BulletTypeExt::GetAdjustedGravity(pType);
 		const auto distanceCoords = targetCoords - sourceCoords;
-		const auto horizontalDistance = Point2D{distanceCoords.X, distanceCoords.Y}.Magnitude();
+		const auto horizontalDistance = Point2D { distanceCoords.X, distanceCoords.Y }.Magnitude();
 		const bool lobber = pWeapon->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
 		// The lower the horizontal velocity, the higher the trajectory
 		// WW calculates the launch angle (and limits it) before calculating the velocity
 		// Here, some magic numbers are used to directly simulate its calculation
 		const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
-		const auto speed = static_cast<int>(speedMult * sqrt(horizontalDistance * gravity * 1.2)); // 0x48AB90
+		const auto speed = speedMult * sqrt(horizontalDistance * gravity * 1.2); // 0x48AB90
 
 		// Simulate firing Arcing bullet
 		if (horizontalDistance < 1e-10 || !speed)
@@ -390,49 +390,30 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 	}
 }
 
-void BulletExt::ExtData::ApplyArcingFix()
+void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity)
 {
-	auto pThis = this->OwnerObject();
-	auto const pType = pThis->Type;
-	bool inaccutate = pType->Inaccurate;
-	bool elevationFix = !this->TypeExtData->Arcing_AllowElevationInaccuracy;
-
-	if (!inaccutate && !elevationFix)
-		return;
-	
-	auto theSourceCoords = pThis->SourceCoords;
-	auto theTargetCoords = pThis->TargetCoords;
-	const auto pWeapon = pThis->WeaponType;
-
-	if (inaccutate)
-	{
-		const auto distance = theSourceCoords.DistanceFrom(theTargetCoords);
-		const auto pTypeExt = BulletTypeExt::ExtMap.Find(pType);
-		// Don't know whether the weapon is correctly set, if not, a fixed value of 10 will be used
-		const auto offsetMult = distance / (pWeapon ? pWeapon->Range : (10.0 * Unsorted::LeptonsPerCell));
-		const auto offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
-		const auto offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
-		const auto offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);
-		// Substitute to calculate random coordinates
-		theTargetCoords = MapClass::GetRandomCoordsNear(theTargetCoords, offsetDistance, false);
-	}
-
-	const auto distanceCoords = theTargetCoords - theSourceCoords;
+	const auto distanceCoords = targetCoords - sourceCoords;
 	const auto horizontalDistance = Point2D { distanceCoords.X, distanceCoords.Y }.Magnitude();
-	const bool lobber = pWeapon->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
+	const bool lobber = pThis->WeaponType->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
 	// The lower the horizontal velocity, the higher the trajectory
 	// WW calculates the launch angle (and limits it) before calculating the velocity
 	// Here, some magic numbers are used to directly simulate its calculation
 	const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
-	const double gravity = BulletTypeExt::GetAdjustedGravity(pType);
+	const double gravity = BulletTypeExt::GetAdjustedGravity(pThis->Type);
 	const double speed = speedMult * sqrt(horizontalDistance * gravity * 1.2); // 0x48AB90
 
-	const auto mult = speed / horizontalDistance;
-	const auto zDelta = elevationFix ? distanceCoords.Z : 0;
-	pThis->Velocity.X = distanceCoords.X * mult;
-	pThis->Velocity.Y = distanceCoords.Y * mult;
-	pThis->Velocity.Z = zDelta * mult + (gravity * horizontalDistance) / (2 * speed);
-	pThis->Speed = static_cast<int>(speed);
+	if (horizontalDistance < 1e-10 || !speed)
+	{
+		// No solution
+		velocity.Z = speed;
+	}
+	else
+	{
+		const auto mult = speed / horizontalDistance;
+		velocity.X = static_cast<double>(distanceCoords.X) * mult;
+		velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
+		velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
+	}
 }
 
 // =============================
