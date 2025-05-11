@@ -571,7 +571,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
 	this->Squad_Members.Read(exINI, pSection, "Squad.Members");
-	this->isInitAsTeam.Read(exINI, pSection, "Squad.isInitAsTeam");
+	this->IsInitAsTeam.Read(exINI, pSection, "Squad.IsInitAsTeam");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1119,7 +1119,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownDamage_Water)
 
 		.Process(this->Squad_Members)
-		.Process(this->isInitAsTeam)
+		.Process(this->IsInitAsTeam)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

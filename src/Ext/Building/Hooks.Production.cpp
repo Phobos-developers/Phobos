@@ -269,16 +269,16 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
 	bool isRallyDest = pFactory->ArchiveTarget != nullptr ? true : false;
-	bool isInitAsTeam = pExtType->isInitAsTeam;
+	bool isInitAsTeam = pExtType->IsInitAsTeam;
 
 	//Debug::Log("KickOutUnit: Create SquadManager\n");
-	SquadManager* pSquadManager;
+	std::shared_ptr<SquadManager> pSquadManager;
 
 	if (isInitAsTeam)
 	{
-		pSquadManager = new SquadManager;
-		pSquadManager->addTechno(pTechno);
-		pTechnoExt->SquadManager.reset(pSquadManager);
+		pSquadManager = std::make_shared<SquadManager>();
+		pSquadManager->AddTechno(pTechno);
+		pTechnoExt->SquadManager = pSquadManager;
 		pTechnoExt->HasSquad = true;
 	}
 
@@ -301,8 +301,8 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 				if (isInitAsTeam)
 				{
 					auto tempTechnoExt = TechnoExt::ExtMap.Find(pInfantry);
-					pSquadManager->addTechno(pInfantry);
-					tempTechnoExt->SquadManager.reset(pSquadManager);
+					pSquadManager->AddTechno(pInfantry);
+					tempTechnoExt->SquadManager = pSquadManager;
 					tempTechnoExt->HasSquad = true;
 				}
 

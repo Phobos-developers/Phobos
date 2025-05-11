@@ -53,12 +53,12 @@ TechnoExt::ExtData::~ExtData()
 	{
 		if (this->SquadManager->Squad_Members.size() == 1)
 		{
-			this->SquadManager->delTechno(pThis);
+			this->SquadManager->RemoveTechno(pThis);
 			this->SquadManager.reset();
 		}
 		else
 		{
-			this->SquadManager->delTechno(pThis);
+			this->SquadManager->RemoveTechno(pThis);
 		}
 	}
 }

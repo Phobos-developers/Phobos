@@ -9,23 +9,13 @@ public:
 	ValueableVector<TechnoClass*> Squad_Members;
 	bool isSelected;
 
-	SquadManager():
-		Squad_Members { },
-		isSelected { false }
-	{
-		SquadManager::Array.emplace_back(this);
-	}
+	SquadManager();
 
-	~SquadManager()
-	{
-		auto it = std::find(SquadManager::Array.begin(), SquadManager::Array.end(), this);
+	~SquadManager();
+	
 
-		if (it != SquadManager::Array.end())
-			SquadManager::Array.erase(it);
-	}
-
-	void addTechno(TechnoClass* pTechno);
-	void delTechno(TechnoClass* pTechno);
+	void AddTechno(TechnoClass* pTechno);
+	void RemoveTechno(TechnoClass* pTechno);
 
 	void PointerGotInvalid(void* ptr, bool removed);
 

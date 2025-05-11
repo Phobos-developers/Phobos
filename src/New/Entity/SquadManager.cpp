@@ -1,20 +1,29 @@
 #include "SquadManager.h"
 
-void SquadManager::addTechno(TechnoClass* pTechno)
+std::vector<SquadManager*> SquadManager::Array;
+
+SquadManager::SquadManager():
+	Squad_Members { },
+	isSelected { false }
+{
+	SquadManager::Array.emplace_back(this);
+}
+
+SquadManager::~SquadManager()
+{
+	auto it = std::find(SquadManager::Array.begin(), SquadManager::Array.end(), this);
+
+	if (it != SquadManager::Array.end())
+		SquadManager::Array.erase(it);
+}
+
+void SquadManager::AddTechno(TechnoClass* pTechno)
 {
 	this->Squad_Members.AddUnique(pTechno);
 }
 
-void SquadManager::delTechno(TechnoClass* pTechno)
+void SquadManager::RemoveTechno(TechnoClass* pTechno)
 {
-	/*
-	int pos = this->Squad_Members.IndexOf(pTechno);
-	if (pos != -1)
-	{
-		auto deletePos = this->Squad_Members.begin() + pos;
-		this->Squad_Members.erase(deletePos, deletePos+1);
-	}
-	*/
 	auto it = std::find(this->Squad_Members.begin(), this->Squad_Members.end(), pTechno);
 	
 	if (it != this->Squad_Members.end())
