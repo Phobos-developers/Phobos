@@ -870,19 +870,18 @@ DEFINE_HOOK(0x6FBFD0, TechnoClass_Select_SquadSelect, 0x5)
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if (pTechnoExt->HasSquad)
+	if ((pTechnoExt->HasSquad)&&(pTechnoExt->SquadManager != nullptr))
 	{
-		const auto pSquadManager = pTechnoExt->SquadManager;
-		if (!pSquadManager->isSelected)
+		if (!pTechnoExt->SquadManager->isSelected)
 		{
-			pSquadManager->isSelected = true;
-			for (int i = 0; i < pSquadManager->Squad_Members.size(); i++)
+			pTechnoExt->SquadManager->isSelected = true;
+			for (int i = 0; i < pTechnoExt->SquadManager->Squad_Members.size(); i++)
 			{
-				auto tempTechno = pSquadManager->Squad_Members[i];
+				auto tempTechno = pTechnoExt->SquadManager->Squad_Members[i];
 				if ((tempTechno != pTechno) && (tempTechno != nullptr))
 					tempTechno->Select();
 			}
-			pSquadManager->isSelected = false;
+			pTechnoExt->SquadManager->isSelected = false;
 		}
 	}
 

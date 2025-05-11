@@ -51,15 +51,14 @@ TechnoExt::ExtData::~ExtData()
 
 	if (this->HasSquad)
 	{
-		auto pSquadManager = this->SquadManager;
-		if (pSquadManager->Squad_Members.size() == 1)
+		if (this->SquadManager->Squad_Members.size() == 1)
 		{
-			pSquadManager->delTechno(pThis);
-			pSquadManager = nullptr;
+			this->SquadManager->delTechno(pThis);
+			this->SquadManager.reset();
 		}
 		else
 		{
-			pSquadManager->delTechno(pThis);
+			this->SquadManager->delTechno(pThis);
 		}
 	}
 }

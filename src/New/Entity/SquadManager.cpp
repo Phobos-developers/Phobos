@@ -7,13 +7,22 @@ void SquadManager::addTechno(TechnoClass* pTechno)
 
 void SquadManager::delTechno(TechnoClass* pTechno)
 {
+	/*
 	int pos = this->Squad_Members.IndexOf(pTechno);
 	if (pos != -1)
 	{
 		auto deletePos = this->Squad_Members.begin() + pos;
 		this->Squad_Members.erase(deletePos, deletePos+1);
 	}
+	*/
+	auto it = std::find(this->Squad_Members.begin(), this->Squad_Members.end(), pTechno);
+	
+	if (it != this->Squad_Members.end())
+		this->Squad_Members.erase(it);
 }
+
+void SquadManager::PointerGotInvalid(void* ptr, bool removed)
+{ }
 
 #pragma region Save/Load
 

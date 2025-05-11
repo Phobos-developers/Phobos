@@ -277,9 +277,9 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 	if (isInitAsTeam)
 	{
 		pSquadManager = new SquadManager;
-		pTechnoExt->SquadManager = pSquadManager;
-		pTechnoExt->HasSquad = true;
 		pSquadManager->addTechno(pTechno);
+		pTechnoExt->SquadManager.reset(pSquadManager);
+		pTechnoExt->HasSquad = true;
 	}
 
 	if (pExtType->Squad_Members.size() > 0)
@@ -301,9 +301,9 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 				if (isInitAsTeam)
 				{
 					auto tempTechnoExt = TechnoExt::ExtMap.Find(pInfantry);
-					tempTechnoExt->SquadManager = pSquadManager;
-					tempTechnoExt->HasSquad = true;
 					pSquadManager->addTechno(pInfantry);
+					tempTechnoExt->SquadManager.reset(pSquadManager);
+					tempTechnoExt->HasSquad = true;
 				}
 
 			}
