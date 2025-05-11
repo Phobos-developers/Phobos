@@ -368,6 +368,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
+  - Fix the bug that ships can travel on elevated bridges
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

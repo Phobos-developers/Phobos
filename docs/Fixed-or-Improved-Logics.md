@@ -213,6 +213,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
+- Fixed the bug that ships can travel on elevated bridges.
 
 ## Fixes / interactions with other extensions
 
