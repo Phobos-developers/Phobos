@@ -201,29 +201,7 @@ void MissileTrajectory::OpenFire()
 	}
 	else // Under normal circumstances, the trajectory is similar to ROT projectile with an initial launch direction
 	{
-		if (pType->SuicideAboveRange < 0)
-			this->RemainingDistance = static_cast<int>(this->OriginalDistance * (-pType->SuicideAboveRange));
-		else if (pType->SuicideAboveRange > 0)
-			this->RemainingDistance = static_cast<int>(Unsorted::LeptonsPerCell * pType->SuicideAboveRange);
-		else
-			this->RemainingDistance = INT_MAX;
-		// Without setting an initial direction, it will be launched directly towards the target
-		if (pType->PreAimCoord == CoordStruct::Empty)
-		{
-			const auto pBullet = this->Bullet;
-			this->InStraight = true;
-			this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - pBullet->SourceCoords);
-		}
-		else
-		{
-			this->PreAimDistance = (pType->PreAimCoord.Get()).Magnitude();
-			// When the distance is short, the initial moving distance will be reduced
-			if (pType->ReduceCoord && this->OriginalDistance < (Unsorted::LeptonsPerCell * 10))
-				this->PreAimDistance *= this->OriginalDistance / (Unsorted::LeptonsPerCell * 10);
-
-			this->InitializeBulletNotCurve();
-		}
-
+		this->InitializeBulletNotCurve();
 		this->MovingSpeed = pType->LaunchSpeed;
 		// Calculate speed
 		if (this->CalculateBulletVelocity(pType->LaunchSpeed))
@@ -272,8 +250,16 @@ bool MissileTrajectory::CalculateBulletVelocity(const double speed)
 
 void MissileTrajectory::InitializeBulletNotCurve()
 {
-	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
+
+	if (pType->SuicideAboveRange < 0)
+		this->RemainingDistance = static_cast<int>(this->OriginalDistance * (-pType->SuicideAboveRange));
+	else if (pType->SuicideAboveRange > 0)
+		this->RemainingDistance = static_cast<int>(Unsorted::LeptonsPerCell * pType->SuicideAboveRange);
+	else
+		this->RemainingDistance = INT_MAX;
+
+	const auto pBullet = this->Bullet;
 	const auto pFirer = pBullet->Owner;
 	const auto& source = pFirer ? pFirer->GetCoords() : pBullet->SourceCoords;
 	const auto& target = pBullet->TargetCoords;
@@ -291,12 +277,25 @@ void MissileTrajectory::InitializeBulletNotCurve()
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 		this->OffsetCoord = this->GetInaccurateTargetCoords(this->OffsetCoord, source.DistanceFrom(target));
-	// Determine the firing velocity vector of the bullet
-	if (!this->CalculateReducedVelocity(rotateRadian))
-		this->MovingVelocity = PhobosTrajectory::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
-	// Rotate the selected angle
-	if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
-		this->DisperseBurstSubstitution(rotateRadian);
+	// Without setting an initial direction, it will be launched directly towards the target
+	if (pType->PreAimCoord == CoordStruct::Empty)
+	{
+		this->InStraight = true;
+		this->MovingVelocity = PhobosTrajectory::Coord2Vector(target + this->OffsetCoord - pBullet->SourceCoords);
+	}
+	else
+	{
+		this->PreAimDistance = (pType->PreAimCoord.Get()).Magnitude();
+		// When the distance is short, the initial moving distance will be reduced
+		if (pType->ReduceCoord && this->OriginalDistance < (Unsorted::LeptonsPerCell * 10))
+			this->PreAimDistance *= this->OriginalDistance / (Unsorted::LeptonsPerCell * 10);
+		// Determine the firing velocity vector of the bullet
+		if (!this->CalculateReducedVelocity(rotateRadian))
+			this->MovingVelocity = PhobosTrajectory::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
+		// Rotate the selected angle
+		if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+			this->DisperseBurstSubstitution(rotateRadian);
+	}
 }
 
 CoordStruct MissileTrajectory::GetPreAimCoordsWithBurst()
