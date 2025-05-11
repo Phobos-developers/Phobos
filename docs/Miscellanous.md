@@ -62,8 +62,6 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 
 ```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
-
-Correspondingly, if such a writing method causes any errors, it is also not within the scope of responsibility of this function.
 ```
 
 ### Insignia Type

@@ -327,12 +327,6 @@ msgstr ""
 "`Chrono` 并不是一个标准的别称，但由于 `Locomotor` 值无效时将使用的默认行为也是 `Teleport`，因此显得好似 "
 "`Chrono` 生效了一般。"
 
-#: ../../Miscellanous.md:85
-msgid ""
-"Correspondingly, if such a writing method causes any errors, it is also "
-"not within the scope of responsibility of this function."
-msgstr "但与之相对应的，如果这样的书写方式引发了什么错误，那也并不属于这个功能所涵盖的范围。"
-
 #: ../../Miscellanous.md:88
 msgid "Insignia Type"
 msgstr "专用的军衔类"

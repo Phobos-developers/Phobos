@@ -3042,8 +3042,8 @@ msgid ""
 "multiple mind control link offsets etc. is calculated relative to the "
 "unit's turret if available or body."
 msgstr ""
-"`AlternateFLH.OnTurret` 可用于自定义 `AlternateFLHN` 用于 `OpenTopped` "
-"运输工具的开火坐标、多重心控链接偏移等时其位置是否相对于炮塔而非车体。"
+"`AlternateFLH.OnTurret` 可自定义 `AlternateFLHN` 用于 `OpenTopped` "
+"运输工具的开火坐标、多重心控链接偏移等逻辑时其位置是否相对于炮塔而非车体。"
 
 #: ../../Fixed-or-Improved-Logics.md:727
 msgid ""
