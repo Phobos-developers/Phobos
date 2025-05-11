@@ -2220,7 +2220,7 @@ msgstr "**Xkein** - 一般性协助、YRpp 编辑"
 
 #: ../../../CREDITS.md:542
 msgid "**mevitar** - honorary shield tester *triple* award"
-msgstr "**mevitar** - 荣誉护盾测试员 *三重* 奖章"
+msgstr "**mevitar** - 荣誉护盾测试员 **三重** 奖章"
 
 #: ../../../CREDITS.md:543
 msgid ""

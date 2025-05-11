@@ -419,7 +419,7 @@ msgid ""
 "`CustomGS=true`. **Only values between 10 and 60 FPS can be consistently "
 "achieved.**"
 msgstr ""
-"现在可以输入一对值来更改单人游戏速度的值。此功能必须通过设置 `CustomGS=true` 来启用。**只能稳定控制在 10 到 60 FPS "
+"现在可以输入一对值来更改单人游戏速度的 **值**。此功能必须通过设置 `CustomGS=true` 来启用。**只能稳定控制在 10 到 60 FPS "
 "之间的值。**"
 
 #: ../../Miscellanous.md:119
@@ -555,7 +555,7 @@ msgstr "当两个文件中存在相同条目时，后读取的那个文件将覆
 msgid ""
 "This feature can be used in *any* INI file, be it `rulesmd.ini`, "
 "`artmd.ini`, `soundmd.ini`, map file or anything else."
-msgstr "此功能可以用于任何 INI 文件，无论 `rulesmd.ini`、`artmd.ini`、`soundmd.ini`、地图文件还是其他任何文件。"
+msgstr "此功能可以用于 **任何** INI 文件，无论 `rulesmd.ini`、`artmd.ini`、`soundmd.ini`、地图文件还是其他任何文件。"
 
 #: ../../Miscellanous.md:220 ../../Miscellanous.md:246
 msgid "In any file:"
