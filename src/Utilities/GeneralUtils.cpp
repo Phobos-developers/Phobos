@@ -74,6 +74,20 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor Ar
 	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
 }
 
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
+{
+	if (!pType)
+		pType = pThis->GetTechnoType();
+
+	auto armorType = pType->Armor;
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(pWH))
+		armorType = pExt->Shield->GetArmorType();
+
+	return GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType);
+}
+
 // Weighted random element choice (weight) - roll for one.
 // Takes a vector of integer type weights, which are then summed to calculate the chances.
 // Returns chosen index or -1 if nothing is chosen.

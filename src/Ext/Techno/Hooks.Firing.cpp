@@ -208,43 +208,29 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	}
 	else if (pTargetTechno)
 	{
-		auto const pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 		auto const pWeaponOdd = pThis->GetWeapon(oddWeaponIndex)->WeaponType;
 		auto const pWeaponEven = pThis->GetWeapon(evenWeaponIndex)->WeaponType;
-		bool skipRemainingChecks = false;
 
-		if (const auto pShield = pTargetExt->Shield.get())
+		if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno) == 0.0)
 		{
-			if (pShield->IsActive() && !pShield->CanBeTargeted(pWeaponOdd))
-			{
-				chosenWeaponIndex = evenWeaponIndex;
-				skipRemainingChecks = true;
-			}
+			chosenWeaponIndex = evenWeaponIndex;
 		}
-
-		if (!skipRemainingChecks)
+		else
 		{
-			if (GeneralUtils::GetWarheadVersusArmor(pWeaponOdd->Warhead, pTargetTechno->GetTechnoType()->Armor) == 0.0)
+			auto const pCell = pTargetTechno->GetCell();
+			bool isOnWater = (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach) && !pTargetTechno->IsInAir();
+
+			if (!pTargetTechno->OnBridge && isOnWater)
+			{
+				int navalTargetWeapon = pThis->SelectNavalTargeting(pTargetTechno);
+
+				if (navalTargetWeapon == 2)
+					chosenWeaponIndex = evenWeaponIndex;
+			}
+			else if ((pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA) ||
+				!pTargetTechno->IsInAir() && pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
 			{
 				chosenWeaponIndex = evenWeaponIndex;
-			}
-			else
-			{
-				auto const pCell = pTargetTechno->GetCell();
-				bool isOnWater = (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach) && !pTargetTechno->IsInAir();
-
-				if (!pTargetTechno->OnBridge && isOnWater)
-				{
-					int navalTargetWeapon = pThis->SelectNavalTargeting(pTargetTechno);
-
-					if (navalTargetWeapon == 2)
-						chosenWeaponIndex = evenWeaponIndex;
-				}
-				else if ((pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA) ||
-					!pTargetTechno->IsInAir() && pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
-				{
-					chosenWeaponIndex = evenWeaponIndex;
-				}
 			}
 		}
 	}

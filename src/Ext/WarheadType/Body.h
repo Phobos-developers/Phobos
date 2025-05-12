@@ -383,7 +383,7 @@ public:
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 	public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
-		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
 
