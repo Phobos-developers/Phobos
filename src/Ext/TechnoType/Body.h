@@ -355,7 +355,7 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
-		ValueableVector<TechnoTypeClass*> Squad_Members;
+		ValueableVector<TechnoTypeClass*> SquadMembers;
 		Valueable<bool> IsInitAsTeam;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -666,7 +666,7 @@ public:
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
-			, Squad_Members {}
+			, SquadMembers {}
 			, IsInitAsTeam { false }
 		{ }
 

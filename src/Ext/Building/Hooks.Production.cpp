@@ -282,11 +282,11 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 		pTechnoExt->HasSquad = true;
 	}
 
-	if (pExtType->Squad_Members.size() > 0)
+	if (pExtType->SquadMembers.size() > 0)
 	{
-		for (int i = 0; i < pExtType->Squad_Members.size(); i++)
+		for (int i = 0; i < pExtType->SquadMembers.size(); i++)
 		{
-			auto pType = pExtType->Squad_Members[i];
+			auto pType = pExtType->SquadMembers[i];
 			auto pInfantry = CreateInfantryFromFactory(pType, pTechno->GetOwningHouse());
 			if (pInfantry != nullptr)
 			{

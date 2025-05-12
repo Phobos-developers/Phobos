@@ -881,14 +881,6 @@ DEFINE_HOOK(0x6FBFD0, TechnoClass_Select_SquadSelect, 0x5)
 				if ((it != pTechno) && (it != nullptr))
 					it->Select();
 			}
-			/*
-			for (int i = 0; i < pTechnoExt->SquadManager->Squad_Members.size(); i++)
-			{
-				auto tempTechno = pTechnoExt->SquadManager->Squad_Members[i];
-				if ((tempTechno != pTechno) && (tempTechno != nullptr))
-					tempTechno->Select();
-			}
-			*/
 			pTechnoExt->SquadManager->isSelected = false;
 		}
 	}
