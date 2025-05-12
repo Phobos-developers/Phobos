@@ -2,29 +2,6 @@
 
 This page describes every change in Phobos that wasn't categorized into a proper category yet.
 
-## Player colors
-
-### Unlimited skirmish colors
-
-- It is now possible to have an unlimited number of skirmish/multiplayer player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares.
-- This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
-- When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
-  - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
-
-In `rulesmd.ini`:
-```ini
-[General]
-SkirmishUnlimitedColors=false  ; boolean
-```
-
-```{note}
-This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
-```
-
-```{warning}
-Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
-```
-
 ## Developer tools
 
 ### Additional sync logging
@@ -81,8 +58,6 @@ SaveVariablesOnScenarioEnd=false    ; boolean
 
 ```{note}
 `Chrono` is not a standard Alias, but since the default behavior of using `Teleport` will be triggered when the value of `Locomotor` is incorrect, the result of the operation will appear as if `Chrono` has taken effect.
-
-Correspondingly, if such a writing method causes any errors, it is also not within the scope of responsibility of this function.
 ```
 
 ## Game Speed
@@ -234,4 +209,27 @@ When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) 
 
 ```{warning}
 This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
+```
+
+## Player colors
+
+### Unlimited skirmish colors
+
+- It is now possible to have an unlimited number of skirmish/multiplayer player colors, as opposed to 8 in Yuri's Revenge and 16 with Ares.
+- This feature must be enabled with `SkirmishUnlimitedColors=true` in `[General]` section of game rules.
+- When enabled, the game will treat color indices passed from spawner as indices for `[Colors]` section entries.
+  - In example, with original rules, index 6 will correspond to color `Orange=25,230,255`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+SkirmishUnlimitedColors=false  ; boolean
+```
+
+```{note}
+This feature should only be used if you use a spawner/outside client (i.e. CNCNet client). Using it in the original YR launcher will produce undesireable effects.
+```
+
+```{warning}
+Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
 ```

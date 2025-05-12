@@ -489,7 +489,7 @@ msgid ""
 "lag."
 msgstr ""
 "默认情况下，时间是根据期望的帧率计算的。当启用 `RealTimeTimers.Adaptive`（对于无限制 FPS 和自定义速度始终为 "
-"true）时，时间将根据 *当前* FPS 计算，同时考虑延迟。"
+"true）时，时间将根据 **当前** FPS 计算，同时考虑延迟。"
 
 #: ../../User-Interface.md:236
 msgid ""
@@ -539,8 +539,8 @@ msgid ""
 "`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
 " hotkey](#toggle-designator-range) in \"Interface\" category."
 msgstr ""
-"此功能可以 *由玩家* 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` "
-"或 “界面” 类别中的 [“开启指示者范围显示” 热键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
+"此功能可以 **由玩家** 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` 或 “界面” 类别中的 "
+"[“开启指示者范围显示” 快捷键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
 
 #: ../../User-Interface.md:270
 msgid "SuperWeapon ShowTimer sorting"

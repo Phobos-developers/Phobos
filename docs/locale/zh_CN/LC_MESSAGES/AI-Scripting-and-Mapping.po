@@ -341,7 +341,7 @@ msgstr "10017"
 
 #: ../../AI-Scripting-and-Mapping.md:156
 msgid "The following values are the *Target Type#* which can be used as second parameter of the new attack script actions:"
-msgstr "下列值为可用于新攻击脚本动作第二个参数的 *目标类型 #* 参数："
+msgstr "下列值为可用于新攻击脚本动作第二个参数的 **目标类型 #** 参数："
 
 #: ../../AI-Scripting-and-Mapping.md:157
 msgid ""
@@ -349,7 +349,7 @@ msgid ""
 "`UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or"
 " buildings with `ConsideredVehicle=true`."
 msgstr ""
-"“被视为载具的建筑” 意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 "
+"「被视为载具的建筑」意为那些同时设置了 `UndeploysInto` 和 `Foundation=1x1` 且没有设置 "
 "`ConsideredVehicle` 或者设置了 `ConsideredVehicle=true` 的建筑。"
 
 #: ../../AI-Scripting-and-Mapping.md:0
@@ -798,7 +798,9 @@ msgstr "第二个参数是 `AITargetTypes` 小节中从 0 开始的索引用于�
 
 #: ../../AI-Scripting-and-Mapping.md:199
 msgid "The *`AITargetTypes` index#* values are obtained in the new `AITargetTypes` section that must be declared in `rulesmd.ini`:"
-msgstr "*`AITargetTypes` 索引 #* 值在新的 `AITargetTypes` 小节中获取，该小节必须在 `rulesmd.ini` 中声明："
+msgstr ""
+"**`AITargetTypes` 索引 #** 值在新的 `AITargetTypes` 小节中获取，该小节必须在 `rulesmd.ini` "
+"中声明："
 
 #: ../../AI-Scripting-and-Mapping.md:201
 #: ../../AI-Scripting-and-Mapping.md:422
