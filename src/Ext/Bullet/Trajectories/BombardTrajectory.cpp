@@ -46,7 +46,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	this->PhobosTrajectoryType::Read(pINI, pSection);
 	INI_EX exINI(pINI);
-	// LiveShell
+	// Actual
 	this->RotateCoord.Read(exINI, pSection, "Trajectory.RotateCoord");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.OffsetCoord");
 	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.AxisOfRotation");

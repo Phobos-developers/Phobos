@@ -954,7 +954,6 @@ Trajectory.DisperseCoord=0,0,0       ; integer - Forward,Lateral,Height
 ```{note}
 - The listed Weapons in `Trajectory.DisperseWeapons` must be listed in `[WeaponTypes]` for them to work.
 - If you set `Trajectory.DisperseRetarget=true`, also make sure you set `Trajectory.DisperseWeapons` a low `Range` value unless necessary.
-- `Trajectory.DisperseWeapons` now not support customized `Bolt.ColorN`.
 ```
 
 ```{hint}
