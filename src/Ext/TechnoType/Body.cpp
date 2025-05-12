@@ -398,6 +398,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceAAWeapon_InRange.Read(exINI, pSection, "ForceAAWeapon.InRange");
 	this->ForceAAWeapon_InRange_Overrides.Read(exINI, pSection, "ForceAAWeapon.InRange.Overrides");
 	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceAAWeapon.InRange.ApplyRangeModifiers");
+	this->ForceWeapon_Naval.Read(exINI, pSection, "ForceWeapon.Naval");
 	this->ForceWeapon_Buildings.Read(exINI, pSection, "ForceWeapon.Buildings");
 	this->ForceWeapon_Defenses.Read(exINI, pSection, "ForceWeapon.Defenses");
 	this->ForceWeapon_Infantry.Read(exINI, pSection, "ForceWeapon.Infantry");
@@ -834,6 +835,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceAAWeapon_InRange)
 		.Process(this->ForceAAWeapon_InRange_Overrides)
 		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceWeapon_Naval)
 		.Process(this->ForceWeapon_Buildings)
 		.Process(this->ForceWeapon_Defenses)
 		.Process(this->ForceWeapon_Infantry)

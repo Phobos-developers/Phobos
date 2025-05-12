@@ -166,6 +166,7 @@ public:
 		ValueableVector<int> ForceAAWeapon_InRange;
 		ValueableVector<double> ForceAAWeapon_InRange_Overrides;
 		Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
+		Valueable<int> ForceWeapon_Naval;
 		Valueable<int> ForceWeapon_Buildings;
 		Valueable<int> ForceWeapon_Defenses;
 		Valueable<int> ForceWeapon_Infantry;
@@ -460,6 +461,7 @@ public:
 			, ForceAAWeapon_InRange {}
 			, ForceAAWeapon_InRange_Overrides {}
 			, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
+			, ForceWeapon_Naval { -1 }
 			, ForceWeapon_Buildings { -1 }
 			, ForceWeapon_Defenses { -1 }
 			, ForceWeapon_Infantry { -1 }

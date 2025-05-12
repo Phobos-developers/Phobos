@@ -118,6 +118,10 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTargetTechno);
 			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
 		}
+		else if (pTypeExt->ForceWeapon_Naval >= 0 && pTargetType->Naval)
+		{
+			forceWeaponIndex = pTypeExt->ForceWeapon_Naval;
+		}
 		else
 		{
 			switch (pTarget->WhatAmI())
@@ -128,7 +132,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 					if (pTypeExt->ForceWeapon_Defenses >= 0)
 					{
-						auto const pBuildingType = abstract_cast<BuildingTypeClass*>(pTargetTechno->GetTechnoType());
+						auto const pBuildingType = static_cast<BuildingTypeClass*>(pTargetType);
 
 						if (pBuildingType->BuildCat == BuildCat::Combat)
 							forceWeaponIndex = pTypeExt->ForceWeapon_Defenses;

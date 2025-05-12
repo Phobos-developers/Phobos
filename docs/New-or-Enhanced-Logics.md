@@ -1402,7 +1402,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 *Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
-  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
+  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked `Naval=yes` targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
@@ -1411,6 +1411,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
   - A series of tags can force specified weapons based on the target's type.
+    - `ForceWeapon.Naval` forces specified weapon to be used against `Naval=yes` targets. Taking priority to other target type-based forced weapons.
     - If `ForceWeapon.Defenses` is enabled, it'll be used if the target is a building with `BuildCat=Combat`. Otherwise it'll follow `ForceWeapon.Buildings`, if enabled.
     - `ForceWeapon.Infantry/Units/Aircraft` can be applied to both ground and air target if `ForceAAWeapon.Infantry/Units/Aircraft` is not set.
     - `ForceAAWeapon.Infantry/Units/Aircraft` do the same things but only for air target. Taking priority to `ForceWeapon.Infantry/Units/Aircraft`, which means that they can only be applied to ground target when they're both set.
@@ -1428,6 +1429,7 @@ ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
 ForceAAWeapon.InRange=                          ; List of integers
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceWeapon.Naval=-1                            ; integer, -1 to disable
 ForceWeapon.Buildings=-1                        ; integer, -1 to disable
 ForceWeapon.Defenses=-1                         ; integer, -1 to disable
 ForceWeapon.Infantry=-1                         ; integer, -1 to disable
