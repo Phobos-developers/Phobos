@@ -3,6 +3,7 @@
 
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
+#include <Conversions.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -304,7 +305,9 @@ void TechnoExt::ExtData::EatPassengers()
 					}
 
 					// Handle gunner change.
-					if (pThis->GetTechnoType()->Gunner)
+					auto const pTransportType = pThis->GetTechnoType();
+
+					if (pTransportType->Gunner)
 					{
 						if (auto const pFoot = abstract_cast<FootClass*>(pThis))
 						{
@@ -326,6 +329,13 @@ void TechnoExt::ExtData::EatPassengers()
 					pPassenger->KillPassengers(pSource);
 					pPassenger->RegisterDestruction(pSource);
 					pPassenger->UnInit();
+
+					// Handle extra power
+					if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
+					{
+						if (pBldType->ExtraPowerBonus || pBldType->ExtraPowerDrain)
+							pThis->Owner->RecheckPower = true;
+					}
 				}
 
 				this->PassengerDeletionTimer.Stop();
@@ -336,6 +346,97 @@ void TechnoExt::ExtData::EatPassengers()
 			this->PassengerDeletionTimer.Stop();
 		}
 	}
+}
+
+void TechnoExt::ExtData::UpdateTiberiumEater()
+{
+	const auto pEaterType = this->TypeExtData->TiberiumEaterType.get();
+
+	if (!pEaterType)
+		return;
+
+	const int transDelay = pEaterType->TransDelay;
+
+	if (transDelay && this->TiberiumEater_Timer.InProgress())
+		return;
+
+	const auto pThis = this->OwnerObject();
+	const auto pOwner = pThis->Owner;
+	bool active = false;
+	const bool displayCash = pEaterType->Display && pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer);
+	int facing = pThis->PrimaryFacing.Current().GetFacing<8>();
+
+	if (facing >= 7)
+		facing = 0;
+	else
+		facing++;
+
+	const int cellCount = static_cast<int>(pEaterType->Cells.size());
+
+	for (int idx = 0; idx < cellCount; idx++)
+	{
+		const auto& cellOffset = pEaterType->Cells[idx];
+		const auto pos = TechnoExt::GetFLHAbsoluteCoords(pThis, CoordStruct { cellOffset.X, cellOffset.Y, 0 }, false);
+		const auto pCell = MapClass::Instance.TryGetCellAt(pos);
+
+		if (!pCell)
+			continue;
+
+		if (const int contained = pCell->GetContainedTiberiumValue())
+		{
+			const int tiberiumIdx = pCell->GetContainedTiberiumIndex();
+			const int tiberiumValue = TiberiumClass::Array[tiberiumIdx]->Value;
+			const int tiberiumAmount = static_cast<int>(static_cast<double>(contained) / tiberiumValue);
+			const int amount = pEaterType->AmountPerCell > 0 ? std::min(pEaterType->AmountPerCell.Get(), tiberiumAmount) : tiberiumAmount;
+			pCell->ReduceTiberium(amount);
+			const float multiplier = pEaterType->CashMultiplier * (1.0f + pOwner->NumOrePurifiers * RulesClass::Instance->PurifierBonus);
+			const int value = static_cast<int>(std::round(amount * tiberiumValue * multiplier));
+			pOwner->TransactMoney(value);
+			active = true;
+
+			if (displayCash)
+			{
+				auto cellCoords = pCell->GetCoords();
+				cellCoords.Z = std::max(pThis->Location.Z, cellCoords.Z);
+				FlyingStrings::AddMoneyString(value, pOwner, pEaterType->DisplayToHouse, cellCoords, pEaterType->DisplayOffset);
+			}
+
+			const auto& anims = pEaterType->Anims_Tiberiums[tiberiumIdx].GetElements(pEaterType->Anims);
+			const int animCount = static_cast<int>(anims.size());
+
+			if (animCount == 0)
+				continue;
+
+			AnimTypeClass* pAnimType = nullptr;
+
+			switch (animCount)
+			{
+			case 1:
+				pAnimType = anims[0];
+				break;
+
+			case 8:
+				pAnimType = anims[facing];
+				break;
+
+			default:
+				pAnimType = anims[ScenarioClass::Instance->Random.RandomRanged(0, animCount - 1)];
+				break;
+			}
+
+			if (pAnimType)
+			{
+				const auto pAnim = GameCreate<AnimClass>(pAnimType, pos);
+				AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+
+				if (pEaterType->AnimMove)
+					pAnim->SetOwnerObject(pThis);
+			}
+		}
+	}
+
+	if (active && transDelay)
+		this->TiberiumEater_Timer.Start(pEaterType->TransDelay);
 }
 
 void TechnoExt::ExtData::UpdateShield()
@@ -776,6 +877,11 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
+		// Handle extra power
+		if (pThis->Absorbed && pThis->Transporter)
+			pThis->Transporter->Owner->RecheckPower = true;
+
 		return;
 	}
 
@@ -924,21 +1030,53 @@ void TechnoExt::ExtData::UpdateKeepTargetOnMove()
 {
 	auto const pThis = this->OwnerObject();
 
-	if (this->KeepTargetOnMove && this->TypeExtData->KeepTargetOnMove && pThis->Target && pThis->CurrentMission == Mission::Move)
+	if (!this->KeepTargetOnMove)
+		return;
+
+	if (!pThis->Target)
 	{
-		int weaponIndex = pThis->SelectWeapon(pThis->Target);
+		this->KeepTargetOnMove = false;
+		return;
+	}
 
-		if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt->KeepTargetOnMove)
+	{
+		pThis->SetTarget(nullptr);
+		this->KeepTargetOnMove = false;
+		return;
+	}
+
+	if (pThis->CurrentMission == Mission::Guard)
+	{
+		if (!pTypeExt->KeepTargetOnMove_NoMorePursuit)
 		{
-			int extraDistance = static_cast<int>(this->TypeExtData->KeepTargetOnMove_ExtraDistance.Get());
-			int range = pWeapon->Range;
-			pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
-
-			if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
-				pThis->SetTarget(nullptr);
-
-			pWeapon->Range = range;
+			pThis->QueueMission(Mission::Attack, false);
+			this->KeepTargetOnMove = false;
+			return;
 		}
+	}
+	else if (pThis->CurrentMission != Mission::Move)
+	{
+		return;
+	}
+
+	const int weaponIndex = pThis->SelectWeapon(pThis->Target);
+
+	if (auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType)
+	{
+		const int extraDistance = static_cast<int>(pTypeExt->KeepTargetOnMove_ExtraDistance.Get());
+		const int range = pWeapon->Range;
+		pWeapon->Range += extraDistance; // Temporarily adjust weapon range based on the extra distance.
+
+		if (!pThis->IsCloseEnough(pThis->Target, weaponIndex))
+		{
+			pThis->SetTarget(nullptr);
+			this->KeepTargetOnMove = false;
+		}
+
+		pWeapon->Range = range;
 	}
 }
 
@@ -1131,6 +1269,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
+	bool unkillable = false;
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
@@ -1150,6 +1289,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
+		unkillable |= type->Unkillable;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
@@ -1164,6 +1304,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	this->AE.Cloakable = cloak;
 	this->AE.ForceDecloak = forceDecloak;
 	this->AE.DisableWeapons = disableWeapons;
+	this->AE.Unkillable = unkillable;
 	this->AE.HasRangeModifier = hasRangeModifier;
 	this->AE.HasTint = hasTint;
 	this->AE.ReflectDamage = reflectsDamage;
