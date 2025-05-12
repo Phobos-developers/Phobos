@@ -51,14 +51,14 @@ TechnoExt::ExtData::~ExtData()
 
 	if (this->HasSquad)
 	{
-		if (this->SquadManager->Squad_Members.size() == 1)
+		if (this->SquadManager != nullptr)
 		{
 			this->SquadManager->RemoveTechno(pThis);
-			this->SquadManager.reset();
-		}
-		else
-		{
-			this->SquadManager->RemoveTechno(pThis);
+			if (this->SquadManager->Squad_Members.size() == 1)
+			{
+				SquadManager::RemoveGlobals(this->SquadManager);
+				this->SquadManager = nullptr;
+			}
 		}
 	}
 }

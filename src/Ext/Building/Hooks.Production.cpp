@@ -272,11 +272,11 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 	bool isInitAsTeam = pExtType->IsInitAsTeam;
 
 	//Debug::Log("KickOutUnit: Create SquadManager\n");
-	std::shared_ptr<SquadManager> pSquadManager;
+	SquadManager* pSquadManager;
 
 	if (isInitAsTeam)
 	{
-		pSquadManager = std::make_shared<SquadManager>();
+		pSquadManager = new SquadManager;
 		pSquadManager->AddTechno(pTechno);
 		pTechnoExt->SquadManager = pSquadManager;
 		pTechnoExt->HasSquad = true;

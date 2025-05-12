@@ -72,7 +72,7 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
-		std::shared_ptr<SquadManager> SquadManager;
+		SquadManager* SquadManager;
 		bool HasSquad;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)

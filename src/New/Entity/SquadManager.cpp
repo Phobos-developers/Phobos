@@ -1,6 +1,6 @@
 #include "SquadManager.h"
 
-std::vector<SquadManager*> SquadManager::Array;
+std::vector<std::unique_ptr<SquadManager>> SquadManager::Array;
 
 SquadManager::SquadManager():
 	Squad_Members { },
@@ -10,12 +10,7 @@ SquadManager::SquadManager():
 }
 
 SquadManager::~SquadManager()
-{
-	auto it = std::find(SquadManager::Array.begin(), SquadManager::Array.end(), this);
-
-	if (it != SquadManager::Array.end())
-		SquadManager::Array.erase(it);
-}
+{ }
 
 void SquadManager::AddTechno(TechnoClass* pTechno)
 {
@@ -30,8 +25,22 @@ void SquadManager::RemoveTechno(TechnoClass* pTechno)
 		this->Squad_Members.erase(it);
 }
 
+void SquadManager::RemoveGlobals(SquadManager* const pSquadManager) noexcept
+{
+	Array.erase(
+		std::remove_if(Array.begin(), Array.end(),
+			[&pSquadManager](const std::unique_ptr<SquadManager>& it) -> bool
+			{
+				return pSquadManager == it.get();
+			}),
+		Array.end()
+	);
+}
+
 void SquadManager::PointerGotInvalid(void* ptr, bool removed)
-{ }
+{
+
+}
 
 #pragma region Save/Load
 
@@ -42,16 +51,17 @@ bool SquadManager::Serialize(T& stm)
 		.Process(this->Squad_Members)
 		.Process(this->isSelected)
 		.Success();
+		//.Success() && stm.RegisterChange(this);
 };
 
-bool SquadManager::Load(PhobosStreamReader& stm, bool RegisterForChange)
+bool SquadManager::Load(PhobosStreamReader& stm)
 {
 	return Serialize(stm);
 }
 
-bool SquadManager::Save(PhobosStreamWriter& stm) const
+bool SquadManager::Save(PhobosStreamWriter& stm)
 {
-	return const_cast<SquadManager*>(this)->Serialize(stm);
+	return Serialize(stm);
 }
 
 #pragma endregion
