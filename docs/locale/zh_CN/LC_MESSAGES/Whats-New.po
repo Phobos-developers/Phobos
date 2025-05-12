@@ -2060,11 +2060,11 @@ msgid ""
 "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar"
 " (by Fryone)"
 msgstr ""
+"修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题（by Fryone）"
 
 #: ../../Whats-New.md:594
-#, fuzzy
 msgid "Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)"
-msgstr "修复了单位被摧毁仍会遗留反隐形探测效果的问题（by tyuah8 与 NetsuNegi）"
+msgstr "修复了船只可以在高架桥上行驶的 Bug（by tyuah8 与 NetsuNegi）"
 
 #: ../../Whats-New.md:596 ../../Whats-New.md:673 ../../Whats-New.md:835
 #: ../../Whats-New.md:876 ../../Whats-New.md:888 ../../Whats-New.md:911
@@ -2394,6 +2394,7 @@ msgid ""
 "`600 The shield of the attached object is broken` bug fix for the "
 "triggered event (by FlyStar)"
 msgstr ""
+"对 `600 对象护盾被摧毁...` 触发条件的修复（by FlyStar）"
 
 #: ../../Whats-New.md:649 ../../Whats-New.md:864
 msgid "Fixes / interactions with other extensions:"

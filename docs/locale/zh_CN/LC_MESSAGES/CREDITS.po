@@ -1367,11 +1367,11 @@ msgid "Fix `Hospital=yes` building can't kick out infantry after loading a save"
 msgstr "修复了 `Hospital=yes` 的建筑在读档后无法让步兵离开的问题"
 
 #: ../../../CREDITS.md:349
-#, fuzzy
 msgid ""
 "`600 The shield of the attached object is broken` bug fix for the "
 "triggered event"
-msgstr "`600 对象护盾被摧毁...` 触发条件"
+msgstr ""
+"对 `600 对象护盾被摧毁...` 触发条件的修复"
 
 #: ../../../CREDITS.md:350
 msgid "**NetsuNegi**:"
@@ -1491,7 +1491,7 @@ msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bu
 
 #: ../../../CREDITS.md:372
 msgid "Fix the bug that ships can travel on elevated bridges"
-msgstr ""
+msgstr "修复了船只可以在高架桥上行驶的 Bug"
 
 #: ../../../CREDITS.md:373
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1575,7 +1575,7 @@ msgstr "升级动画"
 
 #: ../../../CREDITS.md:394
 msgid "`VoiceDeploy` through hot-key/command bar fix"
-msgstr ""
+msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题"
 
 #: ../../../CREDITS.md:395
 msgid "**ZivDero**:"

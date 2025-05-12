@@ -1319,11 +1319,11 @@ msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bu
 
 #: ../../Fixed-or-Improved-Logics.md:215
 msgid "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar."
-msgstr ""
+msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:216
 msgid "Fixed the bug that ships can travel on elevated bridges."
-msgstr ""
+msgstr "修复了船只可以在高架桥上行驶的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:218
 msgid "Fixes / interactions with other extensions"
