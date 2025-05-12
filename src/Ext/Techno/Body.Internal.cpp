@@ -3,6 +3,9 @@
 #include <AirstrikeClass.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 // Unsorted methods
 
@@ -24,6 +27,39 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
 	TechnoClass* pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
 		pKiller->SpawnOwner : pKiller;
+
+	if (pObjectKiller && pKiller->Owner != pVictim->Owner && !pKiller->Owner->IsAlliedWith(pVictim))
+	{
+		auto pOwner = pKiller->Owner;
+		const auto pOwnerTypeExt = HouseTypeExt::ExtMap.Find(pOwner->Type);
+		//bool hasBattlePointsGenerator = false;
+		bool enabledBattlePoints = false;
+
+		//RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get()
+		for (auto const pBuilding : pOwner->Buildings)
+		{
+			const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+			if (pBuildingTypeExt->BattlePointsGenerator.isset() && pBuildingTypeExt->BattlePointsGenerator.Get())
+			{
+				enabledBattlePoints = true;
+				break;
+			}
+		}
+
+		enabledBattlePoints |= pOwnerTypeExt->BattlePoints;
+		enabledBattlePoints |= RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get();
+
+		if (enabledBattlePoints)
+		{
+			auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+			const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
+
+			int points = pVictimTypeExt->BattlePoints.isset() ? pVictimTypeExt->BattlePoints.Get() : 0;
+			points = points == 0 && pOwnerTypeExt->BattlePoints_CanReuseStandardPoints ? pVictim->GetTechnoType()->Points : points;
+			pOwnerExt->BattlePoints += points;
+			pOwnerExt->BattlePoints = pOwnerExt->BattlePoints < 0 ? 0 : pOwnerExt->BattlePoints;
+		}
+	}
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{

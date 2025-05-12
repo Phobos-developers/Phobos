@@ -65,6 +65,7 @@ public:
 		static const wchar_t* ShowBriefingResumeButtonLabel;
 		static const wchar_t* SWShotsFormat;
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
+		static const wchar_t* BattlePointsLabel;
 	};
 
 	class Config
