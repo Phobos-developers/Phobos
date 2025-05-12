@@ -356,9 +356,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
 				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
-				pBullet->WeaponType = pWeapon;
-				pBullet->MoveTo(pThis->Location, BulletVelocity::Empty);
-				BulletExt::ExtMap.Find(pBullet)->FirerHouse = pOwner;
+				BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner->Owner, pWeapon, pThis->Location, true);
+				BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner->Owner, nullptr, false, true);
 			}
 		}
 	}

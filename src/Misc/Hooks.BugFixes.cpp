@@ -1525,6 +1525,17 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73FA92, UnitClass_IsCellOccupied_LandType, 0x8)
+{
+	enum { ContinueCheck = 0x73FC24, NoMove = 0x73FACD };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(CellClass*, pCell, EDI);
+	GET_STACK(bool, containsBridge, STACK_OFFSET(0x90, -0x7D));
+
+	return GroundType::Array[static_cast<int>(containsBridge ? LandType::Road : pCell->LandType)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? NoMove : ContinueCheck;
+}
+
 #pragma region XSurfaceFix
 
 // Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.
@@ -1797,11 +1808,13 @@ DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// Infantr
 	return 0;
 }
 
-DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
+DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x51A30A };
 
 	GET(BuildingClass*, pReactor, EDI);
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = pReactor;
 	const int enterSound = pReactor->Type->EnterBioReactorSound;
 
 	if (enterSound >= 0)
@@ -1813,11 +1826,13 @@ DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x44DBD5 };
 
 	GET(BuildingClass*, pReactor, EBP);
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
 	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
 
 	if (leaveSound >= 0)

@@ -590,6 +590,8 @@ Vanilla fixes:
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead (by CrimRecya)
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
+- Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
+- Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -642,6 +644,7 @@ Phobos fixes:
 - Fixed `Insignia.Weapon` failing to parse in map (by Ollerus)
 - Fixed `AltNextScenario` not taking effect (by FlyStar)
 - Fixed `DefaultDisguise` showing wrong house colors for different players (by NetsuNegi & Ollerus)
+- `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Weapons fired by EMPulse superweapons *(Ares feature)* now fully respect the firing building's FLH (by Starkku)

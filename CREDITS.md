@@ -345,6 +345,7 @@ This page lists all the individual contributions to the project by their author.
   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
   - Fix `AltNextScenario` not taking effect
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
+  - `600 The shield of the attached object is broken` bug fix for the triggered event
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -367,6 +368,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
+  - Fix the bug that ships can travel on elevated bridges
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -388,6 +390,7 @@ This page lists all the individual contributions to the project by their author.
   - Auto-deploy/Deploy block on ammo change
   - Flashing Technos on selecting
   - Promotion animation
+  - `VoiceDeploy` through hot-key/command bar fix
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
