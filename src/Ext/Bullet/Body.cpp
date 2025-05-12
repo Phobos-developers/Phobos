@@ -412,7 +412,7 @@ void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoor
 		const auto mult = speed / horizontalDistance;
 		velocity.X = static_cast<double>(distanceCoords.X) * mult;
 		velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
-		velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
+		velocity.Z = (static_cast<double>(distanceCoords.Z) + velocity.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
 	}
 }
 

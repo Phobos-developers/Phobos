@@ -76,10 +76,8 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->DiscoveredBy(pOwner);
 
 		pOwner->RegisterGain(pBuilding, false);
-		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
 		pOwner->RecheckPower = true;
-		pOwner->RecheckRadar = true;
 		pOwner->Buildings.AddItem(pBuilding);
 
 		// Different types of building logics
