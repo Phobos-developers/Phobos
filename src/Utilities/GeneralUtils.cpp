@@ -5,6 +5,7 @@
 #include <BitFont.h>
 
 #include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Constructs.h>
 
@@ -79,13 +80,13 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoCl
 	if (!pType)
 		pType = pThis->GetTechnoType();
 
-	auto armorType = pType->Armor;
+	auto ArmorType = pType->Armor;
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(pWH))
-		armorType = pExt->Shield->GetArmorType();
+		ArmorType = pExt->Shield->GetArmorType();
 
-	return GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType);
+	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
 }
 
 // Weighted random element choice (weight) - roll for one.

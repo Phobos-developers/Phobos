@@ -200,7 +200,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
 		return;
 
-	this->ApplyShieldModifiers(pTarget, pTargetExt);
+	this->ApplyShieldModifiers(pTarget);
 
 	if (this->RemoveDisguise)
 		this->ApplyRemoveDisguise(pHouse, pTarget);
@@ -209,7 +209,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyRemoveMindControl(pTarget);
 
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
-		this->ApplyCrit(pHouse, pTarget, pOwner, pTargetExt);
+		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
@@ -332,92 +332,90 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	pBuilding->Sell(1);
 }
 
-void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
+void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 {
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto& pShield = pTargetExt->Shield;
+	int shieldIndex = -1;
+	double ratio = 1.0;
 
-	if (pTargetExt)
+	// Remove shield.
+	if (pShield)
 	{
-		int shieldIndex = -1;
-		double ratio = 1.0;
+		const auto shieldType = pShield->GetType();
+		shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
 
-		// Remove shield.
-		if (pTargetExt->Shield)
+		if (shieldIndex >= 0 || this->Shield_RemoveAll)
 		{
-			const auto shieldType = pTargetExt->Shield->GetType();
-			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
+			ratio = pShield->GetHealthRatio();
+			pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+			pShield->KillAnim();
+			pShield = nullptr;
+		}
+	}
 
-			if (shieldIndex >= 0 || this->Shield_RemoveAll)
-			{
-				ratio = pTargetExt->Shield->GetHealthRatio();
-				pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
-				pTargetExt->Shield->KillAnim();
-				pTargetExt->Shield = nullptr;
-			}
+	// Attach shield.
+	if (Shield_AttachTypes.size() > 0)
+	{
+		ShieldTypeClass* shieldType = nullptr;
+
+		if (this->Shield_ReplaceOnly)
+		{
+			if (shieldIndex >= 0)
+				shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+			else if (this->Shield_RemoveAll)
+				shieldType = Shield_AttachTypes[0];
+		}
+		else
+		{
+			shieldType = Shield_AttachTypes[0];
 		}
 
-		// Attach shield.
-		if (Shield_AttachTypes.size() > 0)
+		if (shieldType)
 		{
-			ShieldTypeClass* shieldType = nullptr;
+			if (shieldType->Strength && (!pShield || (this->Shield_ReplaceNonRespawning && pShield->IsBrokenAndNonRespawning() &&
+				pShield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
+			{
+				pTargetExt->CurrentShieldType = shieldType;
+				pShield = std::make_unique<ShieldClass>(pTarget, true);
 
-			if (this->Shield_ReplaceOnly)
-			{
-				if (shieldIndex >= 0)
-					shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
-				else if (this->Shield_RemoveAll)
-					shieldType = Shield_AttachTypes[0];
-			}
-			else
-			{
-				shieldType = Shield_AttachTypes[0];
-			}
-
-			if (shieldType)
-			{
-				if (shieldType->Strength && (!pTargetExt->Shield || (this->Shield_ReplaceNonRespawning && pTargetExt->Shield->IsBrokenAndNonRespawning() &&
-					pTargetExt->Shield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
+				if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 				{
-					pTargetExt->CurrentShieldType = shieldType;
-					pTargetExt->Shield = std::make_unique<ShieldClass>(pTarget, true);
+					pShield->SetHP((int)(shieldType->Strength * ratio));
 
-					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
-					{
-						pTargetExt->Shield->SetHP((int)(shieldType->Strength * ratio));
-
-						if (pTargetExt->Shield->GetHP() == 0)
-							pTargetExt->Shield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
-					}
+					if (pShield->GetHP() == 0)
+						pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
 				}
 			}
 		}
+	}
 
-		// Apply other modifiers.
-		if (pTargetExt->Shield)
+	// Apply other modifiers.
+	if (pShield)
+	{
+		const auto shieldType = pShield->GetType();
+
+		auto isShieldTypeEligible = [pTargetExt, shieldType](Iterator<ShieldTypeClass*> pShieldTypeList) -> bool
+			{
+				return !(pShieldTypeList.size() > 0 && !pShieldTypeList.contains(shieldType));
+			};
+
+		if (this->Shield_Break && pShield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
+			pShield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
+
+		if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 		{
-			auto isShieldTypeEligible = [pTargetExt](Iterator<ShieldTypeClass*> pShieldTypeList) -> bool
-				{
-					return !(pShieldTypeList.size() > 0 && !pShieldTypeList.contains(pTargetExt->Shield->GetType()));
-				};
+			double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
+			pShield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+		}
 
-			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
-				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
+		if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
+		{
+			double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
 
-			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
-			{
-				double amount = this->Shield_Respawn_Amount.Get(pTargetExt->Shield->GetType()->Respawn);
-				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
-			}
-
-			if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
-			{
-				double amount = this->Shield_SelfHealing_Amount.Get(pTargetExt->Shield->GetType()->SelfHealing);
-
-				pTargetExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate,
-					this->Shield_SelfHealing_RestartInCombat.Get(pTargetExt->Shield->GetType()->SelfHealing_RestartInCombat),
-					this->Shield_SelfHealing_RestartInCombatDelay, this->Shield_SelfHealing_RestartTimer);
-			}
+			pShield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate,
+				this->Shield_SelfHealing_RestartInCombat.Get(shieldType->SelfHealing_RestartInCombat),
+				this->Shield_SelfHealing_RestartInCombatDelay, this->Shield_SelfHealing_RestartTimer);
 		}
 	}
 }
@@ -439,7 +437,7 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
 		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
 }
 
-void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt = nullptr)
+void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
 	double dice;
 
@@ -451,23 +449,19 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_CurrentChance < dice)
 		return;
 
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTypeExt = pTargetExt->TypeExtData;
 
-	if (pTargetExt)
-	{
-		auto const pTypeExt = pTargetExt->TypeExtData;
+	if (pTypeExt->ImmuneToCrit)
+		return;
 
-		if (pTypeExt->ImmuneToCrit)
-			return;
+	auto pSld = pTargetExt->Shield.get();
 
-		auto pSld = pTargetExt->Shield.get();
-		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
-			return;
+	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
+		return;
 
-		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
-			return;
-	}
+	if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+		return;
 
 	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
 		return;

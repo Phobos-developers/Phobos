@@ -406,8 +406,8 @@ public:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
-		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
