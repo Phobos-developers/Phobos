@@ -266,3 +266,31 @@ DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
 
 DEFINE_JUMP(LJMP, 0x6A8D07, 0x6A8D17) // Skip tabIndex check
 #pragma endregion
+
+DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
+{
+	GET(SuperClass*, pSuper, ECX);
+
+	enum{ ReturnIsReady = 0x6CC37D, ReturnZero = 0x6CC381, SkipAll = 0x6CC383};
+
+	if (pSuper->IsSuspended)
+		return ReturnZero;
+	
+	if (pSuper->Type->UseChargeDrain)
+	{
+		R->AL(pSuper->ChargeDrainState != ChargeDrainState::Charging);
+		return SkipAll;
+	}
+
+	const auto pOwner = pSuper->Owner;
+	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+	auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+	if (pExt->BattlePoints_Amount > 0)
+	{
+		if (pOwnerExt->BattlePoints < pExt->BattlePoints_Amount)
+			return ReturnZero;
+	}
+
+	return ReturnIsReady;
+}

@@ -268,6 +268,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HarvesterScanAfterUnload.Read(exINI, GameStrings::General, "HarvesterScanAfterUnload");
 
 	this->BattlePoints.Read(exINI, GameStrings::General, "BattlePoints");
+	this->BattlePoints_DefaultKillValue.Read(exINI, GameStrings::General, "BattlePoints.DefaultKillValue");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -492,6 +493,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamagedSpeed)
 		.Process(this->HarvesterScanAfterUnload)
 		.Process(this->BattlePoints)
+		.Process(this->BattlePoints_DefaultKillValue)
 		;
 }
 

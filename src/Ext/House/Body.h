@@ -118,6 +118,10 @@ public:
 
 		void UpdateVehicleProduction();
 
+		void UpdateBattlePoints(int modifier);
+		bool AreBattlePointsEnabled();
+		int CalculateBattlePoints(TechnoClass* pTechno);
+
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 

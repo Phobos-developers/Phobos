@@ -31,33 +31,12 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	if (pObjectKiller && pKiller->Owner != pVictim->Owner && !pKiller->Owner->IsAlliedWith(pVictim))
 	{
 		auto pOwner = pKiller->Owner;
-		const auto pOwnerTypeExt = HouseTypeExt::ExtMap.Find(pOwner->Type);
-		//bool hasBattlePointsGenerator = false;
-		bool enabledBattlePoints = false;
+		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 
-		//RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get()
-		for (auto const pBuilding : pOwner->Buildings)
+		if (pOwnerExt->AreBattlePointsEnabled())
 		{
-			const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-			if (pBuildingTypeExt->BattlePointsGenerator.isset() && pBuildingTypeExt->BattlePointsGenerator.Get())
-			{
-				enabledBattlePoints = true;
-				break;
-			}
-		}
-
-		enabledBattlePoints |= pOwnerTypeExt->BattlePoints;
-		enabledBattlePoints |= RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get();
-
-		if (enabledBattlePoints)
-		{
-			auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
-			const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictim->GetTechnoType());
-
-			int points = pVictimTypeExt->BattlePoints.isset() ? pVictimTypeExt->BattlePoints.Get() : 0;
-			points = points == 0 && pOwnerTypeExt->BattlePoints_CanReuseStandardPoints ? pVictim->GetTechnoType()->Points : points;
-			pOwnerExt->BattlePoints += points;
-			pOwnerExt->BattlePoints = pOwnerExt->BattlePoints < 0 ? 0 : pOwnerExt->BattlePoints;
+			int points = pOwnerExt->CalculateBattlePoints(pVictim);
+			pOwnerExt->UpdateBattlePoints(points);
 		}
 	}
 

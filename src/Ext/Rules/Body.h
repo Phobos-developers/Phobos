@@ -221,6 +221,7 @@ public:
 		Valueable<bool> HarvesterScanAfterUnload;
 
 		Nullable<bool> BattlePoints;
+		Nullable<int> BattlePoints_DefaultKillValue;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -389,6 +390,7 @@ public:
 			, HarvesterScanAfterUnload { false }
 
 			, BattlePoints {}
+			, BattlePoints_DefaultKillValue {}
 		{ }
 
 		virtual ~ExtData() = default;

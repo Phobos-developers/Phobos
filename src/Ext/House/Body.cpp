@@ -3,6 +3,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/HouseType/Body.h>
 
 #include <ScenarioClass.h>
 
@@ -1085,3 +1086,47 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 	return false;
 }
 #pragma endregion
+
+void HouseExt::ExtData::UpdateBattlePoints(int modifier)
+{
+	this->BattlePoints += modifier;
+	this->BattlePoints = this->BattlePoints < 0 ? 0 : this->BattlePoints;
+}
+
+bool HouseExt::ExtData::AreBattlePointsEnabled()
+{
+	auto const pThis = this->OwnerObject();
+	const auto pOwnerTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
+	bool enabledBattlePoints = false;
+
+	for (auto const pBuilding : pThis->Buildings)
+	{
+		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		if (pBuildingTypeExt->BattlePointsGenerator.isset() && pBuildingTypeExt->BattlePointsGenerator.Get())
+		{
+			enabledBattlePoints = true;
+			break;
+		}
+	}
+
+	enabledBattlePoints |= pOwnerTypeExt->BattlePoints;
+	enabledBattlePoints |= RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get();
+
+	return enabledBattlePoints;
+}
+
+int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
+{
+	if (!pTechno)
+		return 0;
+
+	auto const pThis = this->OwnerObject();
+	const auto pThisTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	int points = RulesExt::Global()->BattlePoints_DefaultKillValue.isset() ? RulesExt::Global()->BattlePoints_DefaultKillValue.Get() : 0;
+	points = points == 0 && pTechnoTypeExt->BattlePoints.isset() ? pTechnoTypeExt->BattlePoints.Get() : points;
+	points = points == 0 && pThisTypeExt->BattlePoints_CanReuseStandardPoints ? pTechno->GetTechnoType()->Points : points;
+
+	return points;
+}
