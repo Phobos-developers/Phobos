@@ -448,6 +448,22 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+### Infantry Squad Production and Selection
+
+![image](_static/images/infantrysquad.gif)
+*Infantry Squad used in [Bellum Æternum](https://ra2be.com)*
+
+- `Squad.Members` determines types of additional infantry when produced.
+- `Squad.IsInitAsTeam` determines if selecting above infantries as a squad (behavior likes group) or individuals.
+
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRYTYPE]              ; InfantryType
+Squad.Members=                  ; List of InfantryTypes
+Squad.IsInitAsTeam=false        ; boolean
+```
+
+
 ## Animations
 
 ### Anim-to-Unit
