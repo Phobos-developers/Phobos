@@ -224,6 +224,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
+- Fixed the bug that ships can travel on elevated bridges.
 
 ## Fixes / interactions with other extensions
 
