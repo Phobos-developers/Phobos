@@ -395,6 +395,7 @@ Vanilla fixes:
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
+- Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fix BalloonHover incorrectly considering ground factors when pathfinding
 
 Phobos fixes:
