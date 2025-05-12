@@ -47,10 +47,15 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 }
 
 // For compatibility with previous builds
-DEFINE_HOOK(0x736EE9, UnitClass_UpdateFiring_FireErrorIsOK, 0x6)
+DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 {
+	GET(FireError, err, EBP);
 	GET(UnitClass* const, pThis, ESI);
 	GET(int const, wpIdx, EDI);
+
+	if (err != FireError::OK && err != FireError::REARM)
+		return 0;
+
 	auto pType = pThis->Type;
 
 	if ((pType->Turret && !pType->HasTurret) || pType->TurretSpins)
