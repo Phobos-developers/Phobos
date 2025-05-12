@@ -386,7 +386,7 @@ bool PhobosTrajectory::OnVelocityCheck()
 				// Check one by one towards the direction of the next frame's position
 				for (size_t i = 0; i < largePace; ++i)
 				{
-					if ((subjectToGround && (curCoord.Z + 16) < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level? (16 ->error range)
+					if ((subjectToGround && (curCoord.Z + 16) < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level? (16 -> error range)
 						|| (checkThrough && this->CheckThroughAndSubjectInCell(pCurCell, pOwner)) // Blocked by obstacles?
 						|| (subjectToWCS && TrajectoryHelper::GetObstacle(pSourceCell, pTargetCell, pLastCell, curCoord, pBulletType, pOwner)) // Impact on the wall/cliff/solid?
 						|| (checkLevel ? (pBulletType->Level && pCurCell->IsOnFloor()) // Level or above land/water?
@@ -458,7 +458,7 @@ TrajectoryCheckReturnType PhobosTrajectory::OnDetonateUpdate(const CoordStruct& 
 	// Need to detonate at the next location
 	if (this->ShouldDetonate)
 		return TrajectoryCheckReturnType::Detonate;
-	// Below ground level? (16 ->error range)
+	// Below ground level? (16 -> error range)
 	if (this->GetCanHitGround() && MapClass::Instance.GetCellFloorHeight(position) >= (position.Z + 16))
 		return TrajectoryCheckReturnType::Detonate;
 	// Skip all vanilla checks
@@ -802,7 +802,7 @@ void PhobosTrajectory::UpdateGroupIndex()
 {
 	const auto pBullet = this->Bullet;
 	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type->UniqueID];
-
+	// Should update group index
 	if (groupData.second.second)
 	{
 		if (const auto size = static_cast<int>(groupData.first.size()))
@@ -815,7 +815,7 @@ void PhobosTrajectory::UpdateGroupIndex()
 					break;
 				}
 			}
-
+			// If is the last member, reset flag to false
 			if (this->GroupIndex == size - 1)
 				groupData.second.second = false;
 		}
@@ -1070,6 +1070,19 @@ DEFINE_HOOK(0x46745C, BulletClass_Update_TrajectoriesVelocityUpdate, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x467609, BulletClass_Update_TrajectoriesSkipResetHeight, 0x6)
+{
+	enum { SkipGameCode = 0x46777A };
+
+	GET(BulletClass* const, pThis, EBP);
+
+	if (!BulletExt::ExtMap.Find(pThis)->Trajectory)
+		return 0;
+
+	R->ECX(0);
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x4677D3, BulletClass_Update_TrajectoriesDetonateUpdate, 0x5)
 {
 	enum { SkipCheck = 0x467B7A, ContinueAfterCheck = 0x467879, Detonate = 0x467E53 };
@@ -1096,7 +1109,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_Update_TrajectoriesDetonateUpdate, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x467BAC, BulletClass_Update_CheckObstacle_Trajectories, 0x6)
+DEFINE_HOOK(0x467BAC, BulletClass_Update_TrajectoriesCheckObstacle, 0x6)
 {
 	enum { SkipVanillaCheck = 0x467C0C };
 
@@ -1112,7 +1125,7 @@ DEFINE_HOOK(0x467BAC, BulletClass_Update_CheckObstacle_Trajectories, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x467E53, BulletClass_Update_PreDetonation_Trajectories, 0x6)
+DEFINE_HOOK(0x467E53, BulletClass_Update_TrajectoriesPreDetonation, 0x6)
 {
 	GET(BulletClass* const, pThis, EBP);
 
