@@ -162,7 +162,7 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 	GET(BulletClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
-	auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pType);
+	auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
 	if (BulletObstacleHelper::SubjectToObstacles(pType, pBulletTypeExt))
 	{
@@ -170,7 +170,7 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 		auto const pCellTarget = MapClass::Instance.GetCellAt(pThis->TargetCoords);
 		auto const pCellCurrent = MapClass::Instance.GetCellAt(pThis->LastMapCoords);
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		const auto pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pType, pBulletTypeExt, false);
+		auto const pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pType, pBulletTypeExt, false);
 
 		if (pObstacleCell)
 			return Explode;

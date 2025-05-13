@@ -29,7 +29,7 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
-	const auto currentAction = ppTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission];
+	const auto currentAction = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission];
 	const int action = currentAction.Action;
 	const int argument = currentAction.Argument;
 

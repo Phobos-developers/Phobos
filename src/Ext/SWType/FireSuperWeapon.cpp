@@ -77,10 +77,8 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->DiscoveredBy(pOwner);
 
 		pOwner->RegisterGain(pBuilding, false);
-		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
 		pOwner->RecheckPower = true;
-		pOwner->RecheckRadar = true;
 		pOwner->Buildings.AddItem(pBuilding);
 
 		// Different types of building logics
@@ -320,7 +318,7 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 
 	auto const pOwner = pSW->Owner;
 
-	if (this->EMPulse_SuspendOthers && pOwner->Supers.size() > 0)
+	if (this->EMPulse_SuspendOthers && pOwner->Supers.Count > 0)
 	{
 		auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 		auto const arrayIndex = pSW->Type->ArrayIndex;

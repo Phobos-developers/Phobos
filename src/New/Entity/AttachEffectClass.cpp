@@ -48,7 +48,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 		this->HasInitialized = true;
 
-	auto& duration = this->Duratio;
+	auto& duration = this->Duration;
 	duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)

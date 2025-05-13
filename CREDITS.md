@@ -390,6 +390,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Tiberium eater logic
+  - Fix the bug that ships can travel on elevated bridges
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -416,6 +417,7 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
   - Promotion animation
   - Damaged unit image changes
+  - `VoiceDeploy` through hot-key/command bar fix
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile

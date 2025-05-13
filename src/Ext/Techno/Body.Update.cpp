@@ -329,8 +329,10 @@ void TechnoExt::ExtData::EatPassengers()
 					}
 				}
 
+				auto const pTransportType = pThis->GetTechnoType();
+
 				// Handle gunner change.
-				if (pThis->GetTechnoType()->Gunner)
+				if (pTransportType->Gunner)
 				{
 					if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
 					{
@@ -346,6 +348,13 @@ void TechnoExt::ExtData::EatPassengers()
 				pPassenger->RegisterDestruction(pSource);
 				pPassenger->UnInit();
 				this->PassengerDeletionTimer.Stop();
+
+				// Handle extra power
+				if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
+				{
+					if (pBldType->ExtraPowerBonus || pBldType->ExtraPowerDrain)
+						pThis->Owner->RecheckPower = true;
+				}
 			}
 		}
 		else
@@ -544,7 +553,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 
 	// Remove from harvesters list if no longer a harvester.
-	if (pOldTypeExt->Harvester_Counted && !pNewTypeExt->Harvester_Counted)
+	if (pOldTypeExt->Harvester_Counted && !!pNewTypeExt->Harvester_Counted)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -890,6 +899,11 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
+		// Handle extra power
+		if (pThis->Absorbed && pThis->Transporter)
+			pThis->Transporter->Owner->RecheckPower = true;
+
 		return;
 	}
 
@@ -1013,7 +1027,7 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_UnderEMP.Get(pRules->NoRearm_UnderEMP))
 		pThis->RearmTimer.StartTime++;
 
-	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(pRules)->NoReload_UnderEMP))
+	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(pRules->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
 }
 
