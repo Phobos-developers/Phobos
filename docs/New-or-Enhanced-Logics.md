@@ -732,7 +732,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
 ### Projectile trajectories
 
 - Projectiles can now have customizable trajectories.
-  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file. It also has linkage functions with `Inaccurate`, `BallisticScatter.Min`, `BallisticScatter.Max`, `Gravity`, `SubjectToGround`.
+  - `Trajectory` should not be combined with original game's projectile trajectory logics (`Arcing`, `ROT`, `Vertical` or `Inviso`). Attempt to do so will result in the other logics being disabled and a warning being written to log file.
   - `Trajectory.Speed` defines the speed of the projectile, which unlike `Speed` used by `ROT` > 0 projectiles is defined on projectile not weapon.
     - In `Trajectory=Straight`, it refers to the whole distance speed of the projectile.
     - In `Trajectory=Bombard`, it refers to the initial speed of the projectile.
@@ -740,46 +740,44 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - In `Trajectory=Engrave`, it refers to the horizontal engrave speed of the projectile and it cannot exceed 128. Recommend set as about 40.
     - In `Trajectory=Parabola`, it refers to the horizontal velocity of the projectile and is only used for modes `Speed`, `SpeedAndHeight`, or `SpeedAndAngle`.
     - In `Trajectory=Tracing`, it refers to the moving speed of the projectile.
-  - `Trajectory.Duration` controls the duration the projectile can exist, and at the end of the time, the projectile will detonate. If it is a non positive number, there will be no timing.
+  - `Trajectory.Duration` controls the duration the projectile can exist, and at the end of the time, the projectile will detonate. If it is a non positive number, there will be no timing. The following are exceptions.
     - In `Trajectory=Engrave`, if it is a non positive number, automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration. At this point, `Trajectory.Engrave.TargetCoord` can be regarded as the endpoint coordinates of the cutting line segment.
     - In `Trajectory=Tracing`, if set to zero, use weapon's `ROF`-10 as the duration. At least 1 frame. If it is negative, do not time it.
   - `Trajectory.TolerantTime` controls how long the projectile will detonate after losing the target. If it is 0, it will detonate directly when switching targets.
-  - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value.
-  - `Trajectory.BulletROT` controls the rotational speed of the projectile's orientation (facing direction). When it is 0, it will always face the direction defined by `Trajectory.BulletFacing`. Otherwise, it will rotate towards the target according to this speed.
+  - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value, namely effective.
+  - `Trajectory.BulletROT` controls the rotational speed of the projectile's orientation (facing direction). When it is 0, it will always face the direction defined by `Trajectory.BulletFacing`. Otherwise, it will rotate towards the direction defined by `Trajectory.BulletFacing` according to this speed.
   - `Trajectory.BulletFacing` controls what direction the projectile should face. This has the following 7 modes.
-    - Velocity - Following the direction of velocity. Towards the direction of motion of the projectile. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
-    - Spin - Continuous self rotation. Continuously rotating on a horizontal plane. The positive and negative of `Trajectory.BulletROT` can control the direction.
-    - Stable - Static after launch. No longer rotates towards the direction after launch. If `Trajectory.BulletROT` is negative, only the direction on the horizontal plane exists.
-    - Target - Follow the direction of the target. Towards the direction of the projectile target unit. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
-    - Destination - Follow the direction of the destination. Towards the direction of the projectile destination. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
-    - FirerBody - Follow the direction of the launcher's body. Follow the orientation of the firer's body, and remain still after the launcher is killed. Only rotates on a horizontal plane.
-    - FirerTurret - Follow the orientation of the launcher turret. Follow the orientation of the firer's turret, and remain still after the launcher is killed. Only rotates on a horizontal plane.
-  - `Trajectory.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. The projectile will search for new target at the original target's location.
-    - In `Trajectory=Missile`, if the projectile hasn't arrived `Trajectory.Missile.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will directly self explode in place.
+    - Velocity - Towards the direction of motion of the projectile. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
+    - Spin - Continuously rotating itself on a horizontal plane. The positive and negative of `Trajectory.BulletROT` can control the direction.
+    - Stable - Static after launch and no longer rotates towards the direction. If `Trajectory.BulletROT` is negative, only the direction on the horizontal plane exists.
+    - Target - Towards the direction of the projectile target unit. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
+    - Destination - Towards the direction of the projectile destination. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
+    - FirerBody - Follow the orientation of the firer's body, and remain still after the launcher is killed. Only rotates on a horizontal plane.
+    - FirerTurret - Follow the orientation of the firer's turret, and remain still after the launcher is killed. Only rotates on a horizontal plane.
+  - `Trajectory.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. The projectile will search for new target at the original target's location. The following have exceptions.
+    - In `Trajectory=Missile`, if the projectile hasn't arrived `Trajectory.Missile.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will self explode in place when it starts searching.
     - In `Trajectory=Tracing`, the projectile will search for new target at the current position of itself.
-    - `Trajectory.RetargetInterval` controls how long it takes to search for new target each time it is searched again.
+    - `Trajectory.RetargetInterval` controls the interval between each search for a new target again.
     - `Trajectory.RetargetHouses` controls the projectile can find new target from which houses.
   - `Trajectory.Synchronize` controls whether the target of the projectile is synchronized with the target of its firer. If not, the projectile will not update the target.
   - `Trajectory.PeacefulVanish` controls whether the projectile disappears directly when it is about to detonate, without producing animation or causing damage. The default value is `Trajectory=Engrave` or `Trajectory.ProximityImpact` not equal to 0 or `Trajectory.DisperseCycle` not equal to 0.
-  - `Trajectory.ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the projectile.
-  - `Trajectory.UseDisperseCoord` controls whether the fire position need to replaced with the FLH of its superior's trajectory, which set `Trajectory.RecordSourceCoord` to true (Only if the weapon should be fired from the unit position).
-  - `Trajectory.RecordSourceCoord` controls whether the projectile needs to record the launch position, which will be used for the weapons in `Trajectory.DisperseWeapons`. It can be nested and inherited. The default value is `Trajectory=Engrave` or have set `Trajectory.DisperseWeapons`.
+  - `Trajectory.ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the projectile. Effective options include `Trajectory.Duration`, `Trajectory.DetonationDistance` and `Trajectory.EdgeAttenuation`.
+  - `Trajectory.UseDisperseCoord` controls whether the fire position need to replaced with the FLH of its superior's trajectory, which set `Trajectory.RecordSourceCoord` to true. Only takes effect when it is fired from one of the `Trajectory.DisperseWeapons`.
+  - `Trajectory.RecordSourceCoord` controls whether the projectile needs to record the launch position, which will be used for the appropriate weapons in `Trajectory.DisperseWeapons`. It can be nested and inherited, which need subordinates to enable `Trajectory.UseDisperseCoord`. The default value is `Trajectory=Engrave` or have set `Trajectory.DisperseWeapons`.
     - In `Trajectory=Engrave`, it will also be used as a starting point for laser drawing.
-  - `Trajectory.OffsetCoord` controls the offsets of the target. Projectile will aim at this position to attack. It also supports `Inaccurate` and `Trajectory.LeadTimeCalculate` on this basis.
+  - `Trajectory.OffsetCoord` controls the offsets of the target. Projectile will aim at the relative coordinates of the target to attack. It also supports `Inaccurate` and `Trajectory.LeadTimeCalculate` on this basis.
     - In `Trajectory=Engrave` or `Trajectory=Tracing`, these are invalid.
-    - `Trajectory.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.OffsetCoord` (or `Trajectory.Missile.PreAimCoord` in `Trajectory=Missile`) according to the most superior's weapon's `Burst`. Set to 0 to disable this function.
-    - `Trajectory.MirrorCoord` controls whether `Trajectory.OffsetCoord` need to mirror the lateral value to adapt to the current burst index. At the same time, the rotation direction calculated by `Trajectory.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
-    - `Trajectory.AxisOfRotation` controls the rotation axis when calculating `Trajectory.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position.
+    - `Trajectory.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.OffsetCoord` (or `Trajectory.Missile.PreAimCoord` in `Trajectory=Missile`) according to the most superior's weapon's `Burst`. Set to 0 to disable this function. Negative values will reverse the direction of rotation.
+    - `Trajectory.MirrorCoord` controls whether `Trajectory.OffsetCoord` (and `Trajectory.Missile.PreAimCoord` in `Trajectory=Missile`) need to automatically mirror the lateral value to adapt to the firer's current burst index. At the same time as mirroring, the rotation direction calculated by `Trajectory.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
+    - `Trajectory.AxisOfRotation` controls the rotation axis when calculating `Trajectory.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position. The length is not important, but the direction is important (the opposite vector will also reverse the rotation direction).
   - `Trajectory.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
-  - `Trajectory.DetonationDistance` controls the maximum distance in cells from intended target at which the projectile will be forced to detonate. Set to 0 to disable forced detonation.
-    - In `Trajectory=Straight`, if `Trajectory.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied here as well. By setting `Trajectory.Straight.PassThrough=true`, it refers to the distance that projectile should travel from itself when it above 0, and the distance that projectile should move behind the target when it below 0 (use the absolute value).
-    - In `Trajectory=Bombard`, when it is set to a negative value, if the target is movable, it will change its target to the cell where the target is located (This is a function expanded for `Missile` and `Airburst` purposes).
-    - In `Trajectory=Missile`, just detonate according to the conditions.
-    - In `Trajectory=Parabola`, when it is set to a negative value, if the target is movable, it will change its target to the cell where the target is located (This is a function expanded for `Missile` and `Airburst` purposes).
+  - `Trajectory.DetonationDistance` controls the maximum distance in cells from intended target at which the projectile will be forced to detonate. Set to 0 to disable forced detonation. The following are exceptions.
+    - In `Trajectory=Straight`, if `Trajectory.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied here as well. By setting `Trajectory.Straight.PassThrough=true`, it refers to the distance that projectile should travel from its firer when it above 0, and the distance that projectile should move behind the target when it below 0 (use the absolute value), and keep moving without distance restrictions when it is zero.
+    - In `Trajectory=Bombard` and `Trajectory=Parabola`, when it is set to a negative value, if the target is movable, it will change its target to the cell where the target is located (This is a function expanded for `Trajectory.DisperseWeapons` and `AirburstWeapon`).
   - `Trajectory.TargetSnapDistance` controls the maximum distance in cells from intended target the projectile can be at moment of detonation to make the projectile 'snap' on the intended target. Set to 0 to disable snapping.
   - `Trajectory.DetonationHeight` controls when the projectile is in a descending state and below the height of the launch position plus this value, it will detonate prematurely. Taking effect when it is set to non negative value. If `Trajectory.EarlyDetonation` is set to true, it'll take effect during the ascending stage instead, which makes it detonate when its height is above the launch position plus this value.
     - Only in `Trajectory=Bombard` or `Trajectory=Parabola`, these are valid.
-  - `Trajectory.AllowFirerTurning` controls whether the projectile allow for significant changes in the orientation of the firer, otherwise it will disappear.
+  - `Trajectory.AllowFirerTurning` controls whether the projectile allow for significant changes in the orientation of the firer, otherwise it will be immediately detonated.
 
 In `rulesmd.ini`:
 ```ini
@@ -815,6 +813,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
 - Make sure you set a low `Trajectory.RetargetRadius` value unless necessary.
 ```
 
+- It also has linkage functions with `Inaccurate`, `BallisticScatter.Min`, `BallisticScatter.Max`, `Gravity`, `SubjectToGround`.
 - The following table will briefly display the support of various types for various general functions. (⚪ - effective / · - invalid)
 
 | Key | `Straight` | `Bombard` | `Missile` | `Engrave` | `Parabola` | `Tracing` |
@@ -859,18 +858,18 @@ Trajectory.AllowFirerTurning=true     ; boolean
     - `Trajectory.PassDetonateDelay` controls the delay for detonating the warhead defined by `Trajectory.PassDetonateWarhead`.
     - `Trajectory.PassDetonateInitialDelay` controls the initial delay for detonating the warhead defined by `Trajectory.PassDetonateWarhead`.
     - `Trajectory.PassDetonateLocal` controls whether `Trajectory.PassDetonateWarhead` and weapon's `Warhead` are always detonate at ground level.
-  - `Trajectory.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.ProximityWarhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low versus only to aim at the target, and use the `Trajectory.ProximityWarhead` to causing actual harm. (You can use this to cause non repeated damage to all units encountered during the flight of the projectile.)
+  - `Trajectory.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.ProximityWarhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low `Versus` only to aim at the target, and use the `Trajectory.ProximityWarhead` to causing actual harm. (You can use this to cause non repeated damage to all units encountered during the flight of the projectile.)
     - `Trajectory.ProximityWarhead` defines the warhead detonated by `Trajectory.ProximityImpact`. If not set, use the original warhead of the projectile.
     - `Trajectory.ProximityDamage` defines the damage caused by `Trajectory.ProximityWarhead`. If not set, use the original damage of the projectile.
-    - `Trajectory.ProximityRadius` controls the range of proximity fuse. It can NOT be set as a negative integer.
+    - `Trajectory.ProximityRadius` controls the range of proximity fuse. It can NOT be set as a negative value.
     - `Trajectory.ProximityDirect` controls whether let the target receive damage instead of detonating the warhead.
     - `Trajectory.ProximityMedial` controls whether to detonate `Trajectory.ProximityWarhead` at the bullet's location rather than the proximity target's location. If `Trajectory.ProximityDirect` is set to true, this will only affect the calculation result of `Trajectory.DamageEdgeAttenuation`.
     - `Trajectory.ProximityAllies` controls whether allies will also trigger the proximity fuse.
     - `Trajectory.ProximityFlight` controls whether to count units in the air.
-  - `Trajectory.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.ProximityImpact` times, it will also detonate a `Trajectory.ProximityImpact` at the location of the obstacle. Before the projectile being blocked, `Trajectory.ProximityImpact` will also not cause damage to vehicles or aircrafts.
+  - `Trajectory.ThroughVehicles` controls whether the projectile will not be obstructed by vehicles or aircrafts on the ground. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.ProximityImpact` times, it will also detonate a `Trajectory.ProximityWarhead` at the location of the obstacle. Before the projectile being blocked, `Trajectory.ProximityImpact` will also not cause damage to vehicles or aircrafts.
   - `Trajectory.ThroughBuilding` controls whether the projectile will not be obstructed by buildings. When it is obstructed, it will be directly detonated at its location. If it still have `Trajectory.ProximityImpact` times, it will also detonate a `Trajectory.ProximityImpact` at the location of the obstacle. Before the projectile being blocked, `Trajectory.ProximityImpact` will also not cause damage to buildings.
-  - `Trajectory.DamageEdgeAttenuation` controls the edge attenuation ratio of projectile damage (includes all types of the trajectory's damage), that is, the actual damage caused will be this value multiplied by the ratio of the current distance to the weapon's range. Can NOT be set to a negative integer.
-  - `Trajectory.DamageCountAttenuation` controls the attenuation coefficient of projectile damage (includes all types of the trajectory's damage), that is, how many times the next damage after each bounce is the damage just caused. Can NOT be set to a negative integer.
+  - `Trajectory.DamageEdgeAttenuation` controls the edge attenuation ratio of projectile damage (includes all types of the trajectory's damage), that is, the actual damage caused will be this value multiplied by the ratio of the current distance to the weapon's range. Can NOT be set to a negative value.
+  - `Trajectory.DamageCountAttenuation` controls the attenuation coefficient related to frequency of projectile damage (includes all types of the trajectory's damage), that is, how many times the next damage after each bounce is the damage just caused. Can NOT be set to a negative value.
 
 In `rulesmd.ini`:
 ```ini
@@ -910,7 +909,7 @@ Trajectory.DamageCountAttenuation=1.0  ; floating point value
   - `Trajectory.DisperseWeapons` defines the dispersal weapons of the projectile.
   - `Trajectory.DisperseBursts` defines how many corresponding weapons each time the projectile will fire. When the quantity is lower than `Trajectory.DisperseWeapons`, the last value in the list will be used.
   - `Trajectory.DisperseCounts` controls how many times the projectile can fire the weapon. Set to a negative value means unlimited times. If set to zero, the cooling will be calculated directly without firing the weapon. If the quantity is less than the number of firing groups, the last value in the list will be used.
-  - `Trajectory.DisperseDelays` controls the interval delays for dispersing the weapons. If the quantity is less than the number of firing groups, the last value in the list will be used.
+  - `Trajectory.DisperseDelays` controls the interval delays for dispersing the weapons, at least 1 frame. If the quantity is less than the number of firing groups, the last value in the list will be used.
   - `Trajectory.DisperseCycle` controls how many rounds of weapons the projectile can fire, zero will not fire weapons, and negative numbers are considered infinite.
   - `Trajectory.DisperseInitialDelay` controls the initial delay for dispersing the weapons defined by `Trajectory.DisperseWeapons`.
   - `Trajectory.DisperseEffectiveRange` controls the weapon dispersing timer to start counting only within this distance of reaching the target. Set to 0 to disable this function. Set to a negative value means it will only Disperse the weapon at most once before detonation.
@@ -920,9 +919,9 @@ Trajectory.DamageCountAttenuation=1.0  ; floating point value
   - `Trajectory.DisperseTendency` controls whether the Disperse weapons will choose the original target as the first new target in each group of weapons.
   - `Trajectory.DisperseHolistic` controls whether the Disperse weapons will choose targets that are in different states from the original target (in air and on ground).
   - `Trajectory.DisperseMarginal` controls whether the Disperse weapons will choose unimportant items such as trees (regard as on ground), streetlights (regard as on ground) or bullets (regard as in air) as secondary targets.
-  - `Trajectory.DisperseDoRepeat` controls whether the Disperse weapons will select duplicate targets when the number of targets is insufficient. If it is set to true and the weapon can select both the technos and the ground as targets, the technos will be prioritized, then if all non-repeating technos have been selected and the weapon can still be launched at this time (in each round of salvo), it will start selecting duplicate technos. If it is set to false and the weapon can select both the technos and the ground as targets, the technos will be prioritized, followed by the ground cells, then if all non-repeating technos have been selected and the weapon can still be launched at this time (in each round of salvo), it will stop firing remaining bursts.
+  - `Trajectory.DisperseDoRepeat` controls whether the Disperse weapons will select duplicate targets when the number of targets is insufficient. If it is set to true, when the weapon can select both the technos and the ground as targets, the technos will be prioritized, then if all non-repeating technos have been selected and the weapon can still be launched at this time (in each round of salvo), it will start selecting duplicate technos. If it is set to false, when the weapon can select both the technos and the ground as targets, the technos will be prioritized, followed by the ground cells, then if all non-repeating targets have been selected and the weapon can still be launched at this time (in each round of salvo), it will stop firing remaining bursts. (The priority of secondary targets is between the technos and the ground.)
   - `Trajectory.DisperseSuicide` controls whether the projectile will self destruct after the number of times it spreads the weapon has been exhausted.
-  - `Trajectory.DisperseFromFirer` controls whether the weapons will be fired by the firer towards the projectile. Otherwise, the tracing weapons will be fired from the projectile towards the target. Using different default values, when `Trajectory=Engrave` or `Trajectory=Tracing`, the default is true, while others are false.
+  - `Trajectory.DisperseFromFirer` controls whether the weapons will be fired by the firer towards the projectile. Otherwise, the tracing weapons will be fired from the projectile towards the target. When `Trajectory=Engrave` or `Trajectory=Tracing`, the default is true, while others are false.
   - `Trajectory.DisperseFaceCheck` controls whether the projectile will check its orientation before firing the weapons. Ignore this if `Trajectory.BulletFacing=Velocity` or `Trajectory.BulletFacing=Spin`.
   - `Trajectory.DisperseForceFire` controls whether still fire disperse weapon when the projectile itself has no target or the target is beyond the weapon's range.
   - `Trajectory.DisperseCoord` controls the FLH where the projectile fires the weapon when set `Trajectory.DisperseFromFirer` to false.
@@ -958,6 +957,7 @@ Trajectory.DisperseCoord=0,0,0       ; integer - Forward,Lateral,Height
 
 ```{hint}
 - Although `Trajectory.DisperseDoRepeat=false` will disable duplicate target selection, if the weapon is able to attack the ground, it may still attack duplicate targets by locking onto the cell where the target is located.
+- `Trajectory.DisperseRetarget` will not change the true target of the projectile itself.
 - If `Trajectory.DisperseCycle` is set to non-zero, the default value of `Trajectory.PeacefulVanish` will be changed.
 ```
 
@@ -967,7 +967,7 @@ Trajectory.DisperseCoord=0,0,0       ; integer - Forward,Lateral,Height
 *Straight trajectory used to make blasters in a private mod by @brsajo#9745*
 
 - Self-explanatory, is a straight-shot trajectory.
-  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but instead travels up to a distance defined by `Trajectory.DetonationDistance`. Note that the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
+  - `Trajectory.Straight.PassThrough` enables special case logic where the projectile does not detonate in contact with the target but instead travels up to a distance defined by `Trajectory.DetonationDistance`. Note that if `Trajectory.DetonationDistance` is a non negative value, the firing angle of the projectile is adjusted with this in mind, making it fire straight ahead if the target is on same elevation.
   - `Trajectory.Straight.ConfineAtHeight` controls the height above ground that projectile will try to travel as it can. It can not move down from the cliff by setting `SubjectToCliffs` to true. It can be cancelled by setting as a non positive integer. It will be forcibly cancelled by setting `Trajectory.Speed` above 256. If `Trajectory.PassDetonateLocal` is set to true at the same time, the vertical speed will not be limited.
 
 In `rulesmd.ini`:
@@ -1012,13 +1012,13 @@ Trajectory.Bombard.TurningPointAnims=        ; List of AnimationTypes
     - `Trajectory.Missile.FacingCoord` controls whether the forward direction in `Trajectory.Missile.PreAimCoord` is depending on the orientation of the firer. By default, it will depend on the vector between the firer and the target.
     - `Trajectory.Missile.ReduceCoord` controls whether `Trajectory.Missile.PreAimCoord` defines the initial movement coordinates when the attack distance is 10 cells, and the actual initial movement coordinates will change with the length of the attack distance. It can be simply understood as an optimization term aimed at ensuring hits at close range.
   - `Trajectory.Missile.LaunchSpeed` controls the initial flight speed of the projectile.
-    - `Trajectory.Missile.Acceleration` controls the acceleration of the projectile's flight speed, increasing or decreasing the speed per frame according to this value, the final speed will be `Trajectory.Speed`.
+    - `Trajectory.Missile.Acceleration` controls the acceleration of the projectile's flight speed, increasing or decreasing the speed per frame according to this value, the final speed will be `Trajectory.Speed`. The velocity superposition with gravity will not be limited by this value.
     - `Trajectory.Missile.TurningSpeed` controls the turning speed of the projectile's locomotion (moving direction) which refers to the maximum angle that the projectile can rotate per frame in terms of direction.
   - `Trajectory.Missile.LockDirection` controls whether after reaching `Trajectory.Missile.PreAimCoord` and completing the first turn, the projectile will lock the direction of motion without further adjustment.
-  - `Trajectory.Missile.CruiseEnable` controls whether after reaching `Trajectory.Missile.PreAimCoord` and completing the first turn, the projectile will maintain altitude while moving towards the target.
+  - `Trajectory.Missile.CruiseEnable` controls whether after reaching `Trajectory.Missile.PreAimCoord`, the projectile will maintain altitude while moving towards the target.
     - `Trajectory.Missile.CruiseUnableRange` controls how far away it is from the target to end the cruise phase, no longer maintaining the cruise altitude, and begins to move directly towards the target. If the distance is already below this value by the time `Trajectory.Missile.PreAimCoord` is reached, the cruise phase will be skipped.
-    - `Trajectory.Missile.CruiseAltitude` controls the minimum altitude of the projectile in the cruise phase.
-    - `Trajectory.Missile.CruiseAlongLevel` controls whether to calculate `Trajectory.Missile.CruiseAltitude` by the height of the projectile and the ground height of the current position, otherwise it will be calculated by the height of the projectile and the height of the launch position.
+    - `Trajectory.Missile.CruiseAltitude` controls the altitude of the projectile in the cruise phase.
+    - `Trajectory.Missile.CruiseAlongLevel` controls whether to calculate `Trajectory.Missile.CruiseAltitude` by the ground height of the current position, otherwise it will be calculated by the height of the launch position.
   - `Trajectory.Missile.SuicideAboveRange` controls the projectile to self destruct directly after reaching the flight distance. Set to 0 to disable suicide. When set to a negative number, its absolute value represents a multiple of the initial distance.
   - `Trajectory.Missile.SuicideShortOfROT` controls whether the projectile will explode when it detected its insufficient turning ability.
 
@@ -1042,6 +1042,7 @@ Trajectory.Missile.SuicideShortOfROT=false  ; boolean
 
 ```{hint}
 - The trajectory can be affected by `Gravity`. If you are sure that you do not need it to be affected by it, you can set `Gravity=0` separately.
+- If the value of `Trajectory.Missile.CruiseUnableRange` is too small, it may cause the projectile to be permanently stay in cruise mode.
 ```
 
 #### Engrave trajectory
@@ -1050,13 +1051,13 @@ Trajectory.Missile.SuicideShortOfROT=false  ; boolean
   - `Trajectory.Engrave.SourceCoord` controls the starting point of engraving line segment. Taking the target as the coordinate center. Specifically, it will start from the firing position when set to 0,0 . The height of the point will always at ground level, unless the target is in the air.
   - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. If `Trajectory.Duration` is set to a positive number, it is only used for direction calculation. Taking the target as the coordinate center. The height of the point will always at ground level, unless the target is in the air.
   - `Trajectory.Engrave.IsLaser` controls whether laser drawing is required.
-    - `Trajectory.Engrave.IsIntense` controls whether the engrave laser will be brighter and thicker. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
-    - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's team color. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsIntense`.
-    - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`. These lasers respect `Trajectory.Engrave.LaserThickness` and `Trajectory.Engrave.IsIntense`.
+    - `Trajectory.Engrave.IsIntense` controls whether the engrave laser will be brighter and thicker.
+    - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's house color.
+    - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`.
     - `Trajectory.Engrave.LaserInnerColor` controls the inner color of the engrave laser.
     - `Trajectory.Engrave.LaserOuterColor` controls the outer color of the engrave laser.
     - `Trajectory.Engrave.LaserOuterSpread` controls the spread color of the engrave laser.
-    - `Trajectory.Engrave.LaserThickness` controls the thickness of the engrave laser. Need to set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true.
+    - `Trajectory.Engrave.LaserThickness` controls the thickness of the engrave laser.
     - `Trajectory.Engrave.LaserDuration` controls the duration of the engrave laser.
     - `Trajectory.Engrave.LaserDelay` controls how often to draw the engrave laser.
   - `Trajectory.Engrave.AttachToTarget` controls whether the center position of the engrave laser will update with the target position.
@@ -1082,6 +1083,7 @@ Trajectory.Engrave.UpdateDirection=false   ; boolean
 
 ```{note}
 - It's best not to let it be intercepted.
+- `Trajectory.Engrave.IsIntense` and `Trajectory.Engrave.LaserThickness` require set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true to take effect.
 ```
 
 ```{hint}
@@ -1093,16 +1095,16 @@ Trajectory.Engrave.UpdateDirection=false   ; boolean
 
 - As the name says, this is a completely reset `Arcing` with different enhanced functions.
   - `Trajectory.Parabola.OpenFireMode` controls how should the projectile be launched. This has the following 6 modes.
-    - Speed - Automatic calculation mode with fixed horizontal velocity, using `Trajectory.Speed` and target coordinates as calculation conditions, i.e. the flight time of the projectile is permanently fixed.
+    - Speed - Automatic calculation mode with fixed horizontal velocity, using `Trajectory.Speed` and target coordinates as calculation conditions.
     - Height - Automatic calculation mode with fixed maximum height, useing `Trajectory.Parabola.ThrowHeight` and target coordinates as calculation conditions, i.e. the detonation time of the projectile is relatively fixed.
-    - Angle - Automatic calculation mode with fixed fire angle, useing `Trajectory.Parabola.LaunchAngle` and target coordinates as calculation conditions. In this mode, the performance consumption is high, and may have no solution. It is not recommended to enable `SubjectToCliffs` or enable `AA` with a smaller `MinimumRange` when using this mode.
+    - Angle - Automatic calculation mode with fixed fire angle, useing `Trajectory.Parabola.LaunchAngle` and target coordinates as calculation conditions.
     - SpeedAndHeight - Fixed horizontal velocity and maximum height mode, using `Trajectory.Speed` and `Trajectory.Parabola.ThrowHeight` as calculation conditions, i.e. the trajectory will only undergo altitude changes with the height of the target.
     - HeightAndAngle - Fixed maximum height and fire angle mode, using `Trajectory.Parabola.ThrowHeight` and `Trajectory.Parabola.LaunchAngle` as calculation conditions, i.e. the trajectory will change horizontally with the height of the target.
     - SpeedAndAngle - Fixed horizontal velocity and fire angle mode, using `Trajectory.Speed` and `Trajectory.Parabola.LaunchAngle` as calculation conditions, i.e. the trajectory will be permanently fixed.
   - `Trajectory.Parabola.ThrowHeight` controls the maximum height of the projectile and is only used for modes `Height`, `SpeedAndHeight`, or `HeightAndAngle`. The specific height will be determined by taking the larger of the launch height and the target height then increasing this value. Non positive numbers are not supported.
   - `Trajectory.Parabola.LaunchAngle` controls the fire angle of the projectile and is only used for modes `Angle`, `HeightAndAngle`, or `SpeedAndAngle`. Only supports -90.0 ~ 90.0 (Cannot use boundary values) in Mode `Angle` or `SpeedAndAngle`, and 0.0 ~ 90.0 (Cannot use boundary values) in Mode `HeightAndAngle`.
   - `Trajectory.Parabola.DetonationAngle` controls when the angle between the projectile in the current velocity direction and the horizontal plane is less than this value, it will detonate prematurely. Taking effect when the value is at -90.0 ~ 90.0 (Cannot use boundary values).
-  - `Trajectory.Parabola.BounceTimes` controls how many times can it bounce back when the projectile hits the ground or cliff. Be aware that excessive projectile speed may cause abnormal operation. And `Trajectory.DetonationDistance` do not conflict with this and will take effect simultaneously. So if you want to explode the bullet only after the times of bounces is exhausted, you should set `Trajectory.DetonationDistance` to a non positive value.
+  - `Trajectory.Parabola.BounceTimes` controls how many times can it bounce back when the projectile hits the ground or cliff. Be aware that excessive projectile speed may cause abnormal operation.
     - `Trajectory.Parabola.BounceOnWater` controls whether it can bounce on the water surface.
     - `Trajectory.Parabola.BounceDetonate` controls whether it detonates the warhead once extra during each bounce.
     - `Trajectory.Parabola.BounceAttenuation` controls the attenuation coefficient of projectile bounce damage, that is, how many times the next damage after each bounce is the damage just caused. This will also affect the damage of the final detonation.
@@ -1141,7 +1143,7 @@ Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value
     - RotateCCW - Rotate counterclockwise. Rotate counterclockwise around the H axis with the resultant offset in the FL direction as the radius.
   - `Trajectory.Tracing.TraceTheTarget` controls whether the target tracked by the projectile is the target of the projectile. Otherwise, it will trace the firer, and at the same time, the projectile will detonate if the firer dies.
   - `Trajectory.Tracing.CreateAtTarget` controls whether the projectile is directly generated at the target position.
-  - `Trajectory.Tracing.StableRotation` controls whether the projectile will automatically rotate at the same angle interval when `Trajectory.Tracing.TraceMode` is `RotateCW` or `RotateCCW`. Need to cooperate with `Trajectory.CreateCapacity` records to take effect.
+  - `Trajectory.Tracing.StableRotation` controls whether the projectile will automatically rotate at the same angle interval when `Trajectory.Tracing.TraceMode` is `RotateCW` or `RotateCCW`.
   - `Trajectory.Tracing.CreateCoord` controls the generate position. Not related to `Trajectory.Tracing.TraceMode`.
   - `Trajectory.Tracing.AttachCoord` controls the tracing position on its target, use `Trajectory.Tracing.TraceMode` determines the specific location.
   - `Trajectory.Tracing.ChasableDistance` controls the maximum distance between the target's center of the projectile pursuing and the firer's center. When it is a positive number, the distance will not exceed this value. When it is a negative number, if the distance exceeds this value, the projectile will explode. When it is zero, the weapon's range will be used and considered a positive number.
@@ -1155,6 +1157,10 @@ Trajectory.Tracing.StableRotation=false  ; boolean
 Trajectory.Tracing.CreateCoord=0,0,0     ; integer - Forward,Lateral,Height
 Trajectory.Tracing.AttachCoord=0,0,0     ; integer - Forward,Lateral,Height
 Trajectory.Tracing.ChasableDistance=0    ; floating point value
+```
+
+```{note}
+- `Trajectory.Tracing.StableRotation` need to cooperate with `Trajectory.CreateCapacity` records to take effect.
 ```
 
 ### Projectiles blocked by land or water
