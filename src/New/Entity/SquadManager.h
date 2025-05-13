@@ -18,12 +18,12 @@ public:
 	~SquadManager();
 	
 
-	void AddTechno(TechnoClass* pTechno);
-	void RemoveTechno(TechnoClass* pTechno);
+	void AddTechno(TechnoClass* const pTechno);
+	void RemoveTechno(TechnoClass* const pTechno);
+	void Remove(TechnoClass* const pTechno) noexcept;
 
 	static void RemoveGlobals(SquadManager* const pSquadManager) noexcept;
-
-	void PointerGotInvalid(void* ptr, bool removed);
+	static void PointerGotInvalid(void* ptr, bool removed);
 
 //=====================Save/Load========================
 	bool Load(PhobosStreamReader& stm);

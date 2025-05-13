@@ -449,18 +449,14 @@ Shield.InheritStateOnReplace=false          ; boolean
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ### Infantry Squad Production and Selection
+This feature allows the barracks to produce infantries in a __squad__. A squad can be produced in one click on its icon, and can be selected by one click on any squad member.
+- `Squad.Members` indicates additional squad members beside this infantry.
+- `Squad.isInitAsTeam` controls whether or not this infantry is initialized in squad, if set to true, the infantry will be produced in a squad according to `Squad.Members`, default to false.
 
-![image](_static/images/infantrysquad.gif)
-*Infantry Squad used in [Bellum Æternum](https://ra2be.com)*
-
-- `Squad.Members` determines types of additional infantry when produced.
-- `Squad.IsInitAsTeam` determines if selecting above infantries as a squad (behavior likes group) or individuals.
-
-In `rulesmd.ini`:
-```ini
-[SOMEINFANTRYTYPE]              ; InfantryType
-Squad.Members=                  ; List of InfantryTypes
-Squad.IsInitAsTeam=false        ; boolean
+```
+[SOMEINFANTRYTYPE]
+Squad.Members=E1, E1 ;squad members besides this infantry.
+Squad.isInitAsTeam=yes ;does this infantry initialized in squad.
 ```
 
 

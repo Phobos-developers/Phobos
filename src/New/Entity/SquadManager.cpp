@@ -1,4 +1,5 @@
 #include "SquadManager.h"
+#include <Ext/Techno/Body.h>
 
 std::vector<std::unique_ptr<SquadManager>> SquadManager::Array;
 
@@ -40,6 +41,21 @@ void SquadManager::RemoveGlobals(SquadManager* const pSquadManager) noexcept
 void SquadManager::PointerGotInvalid(void* ptr, bool removed)
 {
 
+}
+
+void SquadManager::Remove(TechnoClass* const pTechno) noexcept
+{
+	auto pExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (pExt->SquadManager)
+	{
+		pExt->SquadManager->RemoveTechno(pTechno);
+		if (pExt->SquadManager->Squad_Members.size() == 1)
+		{
+			SquadManager::RemoveGlobals(pExt->SquadManager);
+			pExt->SquadManager = nullptr;
+		}
+	}
 }
 
 #pragma region Save/Load

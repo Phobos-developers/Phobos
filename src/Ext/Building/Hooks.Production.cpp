@@ -262,16 +262,14 @@ inline InfantryClass* CreateInfantryFromFactory(TechnoTypeClass* pType, HouseCla
 
 DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 {
+	Debug::Log("InfantryFactory Step 0\n");
+
 	GET(BuildingClass*, pFactory, ESI);
 	GET(TechnoClass*, pTechno, EDI);
 
 	const auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-
-	bool isRallyDest = pFactory->ArchiveTarget != nullptr ? true : false;
 	bool isInitAsTeam = pExtType->IsInitAsTeam;
-
-	//Debug::Log("KickOutUnit: Create SquadManager\n");
 	SquadManager* pSquadManager;
 
 	if (isInitAsTeam)
@@ -292,7 +290,7 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 			{
 				++Unsorted::ScenarioInit;
 				pInfantry->Unlimbo(pTechno->GetCoords(), DirType::North);
-				if (isRallyDest)
+				if (pFactory->ArchiveTarget)
 				{
 					pInfantry->QueueMission(Mission::Move, 0);
 					pInfantry->SetDestination(pFactory->ArchiveTarget, 1);
@@ -311,4 +309,45 @@ DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 	}
 
 	return 0x444971;
+}
+
+DEFINE_HOOK(0x444971, BuildingClass_KickOutUnit_PassengerSquad, 0x5)
+{
+	GET(BuildingClass*, pFactory, ESI);
+	GET(TechnoClass*, pTechno, EDI);
+
+	if ( pTechno->WhatAmI() == AbstractType::Unit)
+	{
+		const auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+		if (pExtType->IsInitAsTeam)
+		{
+			if (pTechno->Passengers.NumPassengers > 0)
+			{
+				SquadManager* pSquadManager = new SquadManager;
+				FootClass* pOldPassenger;
+				int PassengersNum = pTechno->Passengers.NumPassengers;
+
+				DynamicVectorClass<FootClass*> passengersList;
+
+				while (pTechno->Passengers.NumPassengers > 0)
+				{
+					pOldPassenger = pTechno->Passengers.RemoveFirstPassenger();
+					passengersList.AddItem(pOldPassenger);
+					auto tempTechnoExt = TechnoExt::ExtMap.Find(pOldPassenger);
+					pSquadManager->AddTechno(pOldPassenger);
+					tempTechnoExt->SquadManager = pSquadManager;
+					tempTechnoExt->HasSquad = true;
+				}
+
+				while (passengersList.Count > 0)
+				{
+					pTechno->Passengers.AddPassenger(passengersList.GetItem(passengersList.Count-1));
+					passengersList.RemoveItem(passengersList.Count-1);
+				}
+			}
+		}
+	}
+	
+	return 0;
 }
