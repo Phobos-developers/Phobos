@@ -13,14 +13,16 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgradeType);
 	if (pUpgradeExt && EnumFunctions::CanTargetHouse(pUpgradeExt->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner))
 	{
+		auto const pBldID = pBuilding->Type->ID;
+
 		// PowersUpBuilding
-		if (_stricmp(pBuilding->Type->ID, pUpgradeType->PowersUpBuilding) == 0)
+		if (_stricmp(pBldID, pUpgradeType->PowersUpBuilding) == 0)
 			return true;
 
 		// PowersUp.Buildings
 		for (auto& pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
 		{
-			if (_stricmp(pBuilding->Type->ID, pPowerUpBuilding->ID) == 0)
+			if (_stricmp(pBldID, pPowerUpBuilding->ID) == 0)
 				return true;
 		}
 	}

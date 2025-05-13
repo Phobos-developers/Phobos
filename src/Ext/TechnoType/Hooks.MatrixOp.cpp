@@ -365,12 +365,13 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	const auto uTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto height = pThis->GetHeight();
-	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
+	const auto pRules = RulesExt::Global();
+	const double baseScale_log = pRules->AirShadowBaseScale_log;
 	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 
-	if (RulesExt::Global()->HeightShadowScaling && height > 0)
+	if (pRules->HeightShadowScaling && height > 0)
 	{
-		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
+		const double minScale = pRules->HeightShadowScaling_MinScale;
 
 		if (jjloco)
 		{
@@ -395,7 +396,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			}
 		}
 	}
-	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
+	else if (!pRules->HeightShadowScaling && pThis->Type->ConsideredAircraft)
 	{
 		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
 	}
@@ -499,7 +500,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			);
 	}
 
-	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
+	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(pRules->DrawTurretShadow)))
 		return SkipDrawing;
 
 	auto GetTurretVoxel = [pType](int idx) ->VoxelStruct*
@@ -595,7 +596,8 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET(AircraftClass*, pThis, EBP);
 	enum { FinishDrawing = 0x4148A5 };
 	const auto loco = pThis->Locomotor.GetInterfacePtr();
-	if (pThis->Type->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
+	const auto pType = pThis->Type;
+	if (pType->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
 	GET(const int, height, EBX);
@@ -604,16 +606,17 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
-		const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
+		const auto pRules = RulesExt::Global();
+		const double baseScale_log = pRules->AirShadowBaseScale_log;
 
-		if (RulesExt::Global()->HeightShadowScaling)
+		if (pRules->HeightShadowScaling)
 		{
-			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
+			const double minScale = pRules->HeightShadowScaling_MinScale;
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pType->GetFlightLevel());
 
 			if (cHeight > 0)
 			{
@@ -622,14 +625,14 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 					key.Invalidate();
 			}
 		}
-		else if (pThis->Type->ConsideredAircraft)
+		else if (pType->ConsideredAircraft)
 		{
 			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 		}
 
 		double arf = pThis->AngleRotatedForwards;
-		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
-			arf += pThis->Type->PitchAngle;
+		if (flyLoco->CurrentSpeed > pType->PitchSpeed)
+			arf += pType->PitchAngle;
 		float ars = pThis->AngleRotatedSideways;
 		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
 			key.Invalidate();
@@ -646,16 +649,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix * shadow_mtx;
 
-	auto const main_vxl = &pThis->Type->MainVoxel;
+	auto const main_vxl = &pType->MainVoxel;
 	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
-		auto const shadow_index = pThis->Type->ShadowIndex;
+		auto const shadow_index = pType->ShadowIndex;
 		if (shadow_index >= 0 && shadow_index < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(main_vxl,
 				shadow_index,
 				key,
-				&pThis->Type->VoxelShadowCache,
+				&pType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
@@ -669,12 +672,12 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				index == pThis->Type->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
-				&pThis->Type->VoxelShadowCache,
+				index == pType->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
+				&pType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				index == pThis->Type->ShadowIndex,
+				index == pType->ShadowIndex,
 				nullptr,
 				{ 0, 0 }
 			);

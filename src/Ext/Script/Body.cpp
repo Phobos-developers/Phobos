@@ -29,8 +29,9 @@ ScriptExt::ExtContainer::~ExtContainer() = default;
 
 void ScriptExt::ProcessAction(TeamClass* pTeam)
 {
-	const int action = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action;
-	const int argument = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+	const auto currentAction = ppTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission];
+	const int action = currentAction.Action;
+	const int argument = currentAction.Argument;
 
 	switch (static_cast<PhobosScripts>(action))
 	{
@@ -287,9 +288,11 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
 				&& pUnit->Health > 0)
 			{
-				if (pUnit->GetTechnoType()->Size > 0
-					&& pUnitType->Size <= pTransportType->SizeLimit
-					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
+				auto const size = pUnitType->Size;
+
+				if (size > 0
+					&& size <= pTransportType->SizeLimit
+					&& size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
 					// If is still flying wait a bit more
 					if (pTransport->IsInAir())
@@ -328,9 +331,11 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 {
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!pUnit->InLimbo && pUnit->Health > 0)
+		if (!pUnit->InLimbo && pUnit->IsAlive && pUnit->Health > 0)
 		{
-			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
+			auto const pType = pUnit->GetTechnoType();
+
+			if (pType->Ammo > 0 && pUnit->Ammo < pType->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
 				if (auto const pAircraft = abstract_cast<AircraftClass*, true>(pUnit))
@@ -347,8 +352,10 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 						return;
 					}
 				}
-				else if (pUnit->GetTechnoType()->Reload != 0) // Don't skip units that can reload themselves
+				else if (pType->Reload != 0) // Don't skip units that can reload themselves
+				{
 					return;
+				}
 			}
 		}
 	}
@@ -450,10 +457,11 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 					continue;
 				}
 
+				auto const pUnitType = pUnit->GetTechnoType();
 				// Aircraft case
-				if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo <= 0)
+				if (pUnitType->Ammo > 0 && pUnit->Ammo <= 0)
 				{
-					if (auto const pAircraft = abstract_cast<AircraftTypeClass*, true>(pUnit->GetTechnoType()))
+					if (auto const pAircraft = abstract_cast<AircraftTypeClass*, true>(pUnitType))
 					{
 						if (pAircraft->AirportBound)
 						{
@@ -560,17 +568,9 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 
 	if (found)
 	{
-		pTriggerType->Weight_Current += modifier;
-
-		if (pTriggerType->Weight_Current > pTriggerType->Weight_Maximum)
-		{
-			pTriggerType->Weight_Current = pTriggerType->Weight_Maximum;
-		}
-		else
-		{
-			if (pTriggerType->Weight_Current < pTriggerType->Weight_Minimum)
-				pTriggerType->Weight_Current = pTriggerType->Weight_Minimum;
-		}
+		auto& weightCurrent = pTriggerType->Weight_Current;
+		weightCurrent += modifier;
+		weightCurrent = std::clamp(weightCurrent, pTriggerType->Weight_Minimum, pTriggerType->Weight_Maximum);
 	}
 }
 
@@ -631,12 +631,13 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 				if (pNewScript->ActionsCount > 0)
 				{
 					changeFailed = false;
-					TeamExt::ExtMap.Find(pTeam)->PreviousScriptList.push_back(pTeam->CurrentScript);
-					pTeam->CurrentScript = nullptr;
-					pTeam->CurrentScript = GameCreate<ScriptClass>(pNewScript);
+					auto& currentScript = pTeam->CurrentScript;
+					TeamExt::ExtMap.Find(pTeam)->PreviousScriptList.push_back(currentScript);
+					currentScript = nullptr;
+					currentScript = GameCreate<ScriptClass>(pNewScript);
 
 					// Ready for jumping to the first line of the new script
-					pTeam->CurrentScript->CurrentMission = -1;
+					currentScript->CurrentMission = -1;
 					pTeam->StepCompleted = true;
 
 					return;
@@ -670,8 +671,7 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1)
 
 	if (distance > 0)
 		pTeamData->CloseEnough = distance;
-
-	if (distance <= 0)
+	else
 		pTeamData->CloseEnough = RulesClass::Instance->CloseEnough / 256.0;
 
 	// This action finished
@@ -1007,9 +1007,10 @@ void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nA
 template<bool IsGlobal, class _Pr>
 void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Number)
 {
-	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(nVariable);
+	auto& variables = ScenarioExt::Global()->Variables;
+	auto itr = variables[IsGlobal].find(nVariable);
 
-	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
+	if (itr != variables[IsGlobal].end())
 	{
 		itr->second.Value = _Pr()(itr->second.Value, Number);
 		if (IsGlobal)
@@ -1024,9 +1025,10 @@ void ScriptExt::VariableOperationHandler(TeamClass* pTeam, int nVariable, int Nu
 template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, int nVarToOperate)
 {
-	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
+	auto& variables = ScenarioExt::Global()->Variables;
+	auto itr = variables[IsSrcGlobal].find(nVarToOperate);
 
-	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
+	if (itr != variables[IsSrcGlobal].end())
 		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
 
 	pTeam->StepCompleted = true;

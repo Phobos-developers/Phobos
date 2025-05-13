@@ -32,38 +32,42 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	if (RulesClass::Instance->ChronoSparkle1)
+	if (auto const chronoSparkle1 = RulesClass::Instance->ChronoSparkle1)
 	{
 		auto const displayPositions = RulesExt::Global()->ChronoSparkleBuildingDisplayPositions;
-		auto const pType = pThis->Type;
+		auto const chronoSparkleDisplayDelay = RulesExt::Global()->ChronoSparkleDisplayDelay;
+		auto const maxNumberOccupants = pThis->Type->MaxNumberOccupants;
 		bool displayOnBuilding = (displayPositions & ChronoSparkleDisplayPosition::Building) != ChronoSparkleDisplayPosition::None;
 		bool displayOnSlots = (displayPositions & ChronoSparkleDisplayPosition::OccupantSlots) != ChronoSparkleDisplayPosition::None;
 		bool displayOnOccupants = (displayPositions & ChronoSparkleDisplayPosition::Occupants) != ChronoSparkleDisplayPosition::None;
-		int occupantCount = displayOnSlots ? pType->MaxNumberOccupants : pThis->GetOccupantCount();
+		int occupantCount = displayOnSlots ? maxNumberOccupants : pThis->GetOccupantCount();
 		bool showOccupy = occupantCount && (displayOnOccupants || displayOnSlots);
 
 		if (showOccupy)
 		{
+			auto const renderCoords = pThis->GetRenderCoords();
+			auto const muzzleFlash = pThis->Type->MuzzleFlash;
+			auto const occupierMuzzleFlashes = BuildingTypeExt::ExtMap.Find(pThis->Type)->OccupierMuzzleFlashes;
+
 			for (int i = 0; i < occupantCount; i++)
 			{
-				if (!((Unsorted::CurrentFrame + i) % RulesExt::Global()->ChronoSparkleDisplayDelay))
+				if (!((Unsorted::CurrentFrame + i) % chronoSparkleDisplayDelay))
 				{
-					auto muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
+					auto muzzleOffset = maxNumberOccupants <= 10 ? muzzleFlash[i] : occupierMuzzleFlashes.at(i);
 					auto coords = CoordStruct::Empty;
-					auto const renderCoords = pThis->GetRenderCoords();
 					auto offset = TacticalClass::Instance->ApplyMatrix_Pixel(muzzleOffset);
 					coords.X += offset.X;
 					coords.Y += offset.Y;
 					coords += renderCoords;
 
-					GameCreate<AnimClass>(RulesClass::Instance->ChronoSparkle1, coords)->ZAdjust = -200;
+					GameCreate<AnimClass>(chronoSparkle1, coords)->ZAdjust = -200;
 				}
 			}
 		}
 
-		if ((!showOccupy || displayOnBuilding) && !(Unsorted::CurrentFrame % RulesExt::Global()->ChronoSparkleDisplayDelay))
+		if ((!showOccupy || displayOnBuilding) && !(Unsorted::CurrentFrame % chronoSparkleDisplayDelay))
 		{
-			GameCreate<AnimClass>(RulesClass::Instance->ChronoSparkle1, pThis->GetCenterCoords());
+			GameCreate<AnimClass>(chronoSparkle1, pThis->GetCenterCoords());
 		}
 
 	}
@@ -151,16 +155,18 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	if (pSWExt->EMPulse_SuspendOthers)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto const arrayIndex = pExt->EMPulseSW->Type->ArrayIndex;
+		auto& suspendedEMPulseSWs = pHouseExt->SuspendedEMPulseSWs;
 
-		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW->Type->ArrayIndex))
+		if (suspendedEMPulseSWs.count(arrayIndex))
 		{
-			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex])
+			for (auto const& swidx : suspendedEMPulseSWs[arrayIndex])
 			{
 				pThis->Owner->Supers[swidx]->IsSuspended = false;
 			}
 
-			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex].clear();
-			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW->Type->ArrayIndex);
+			suspendedEMPulseSWs[arrayIndex].clear();
+			suspendedEMPulseSWs.erase(arrayIndex);
 		}
 	}
 

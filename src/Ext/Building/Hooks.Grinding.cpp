@@ -63,22 +63,26 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 		return 0;
 
 	auto pBld = abstract_cast<BuildingClass*>(pThis->Destination);
+
 	if (!pBld)
 		return 0;
 
-	if (pThis->Type->Engineer)
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
 		return 0;
 
 	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
-	if (pThis->Type->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
 		return 0;
+
 	if (pBld->IsStrange())
 		return 0;
 
-	if (pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter))
+	if (pBld->Type->CanBeOccupied && (pType->Occupier || pType->Assaulter))
 		return 0;
 
-	if (pThis->Type->C4 || pThis->HasAbility(Ability::C4))
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
 		return 0;
 
 	// If you can't do any of these then why are you here?
@@ -138,17 +142,19 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 
 	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
+		auto const grinding = pBuilding->Type->Grinding;
+
 		if (pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-			pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
+			pThis->Owner->IsAlliedWith(pTarget) && (grinding || action == Action::Select))
 		{
 			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 			{
 				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
 				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
-				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
+				action = grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
 				R->EBX(action);
 			}
-			else if (pBuilding->Type->Grinding)
+			else if (grinding)
 			{
 				R->EBX(Action::NoEnter);
 			}

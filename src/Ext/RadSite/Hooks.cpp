@@ -120,13 +120,15 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
 
-	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
+	auto const pRules = RulesExt::Global();
 
-	if (RulesExt::Global()->UseGlobalRadApplicationDelay &&
-		(radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0))
-	{
+	if (pRules->UseGlobalRadApplicationDelay)
 		return 0;
-	}
+
+	int radDelay = pRules->RadApplicationDelay_Building;
+
+	if (radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0)
+		return 0;
 
 	const auto buildingCoords = pBuilding->GetMapCoords();
 	std::unordered_map<RadSiteClass*, int> damageCounts;
@@ -156,7 +158,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			if (!pType->GetWarhead())
 				continue;
 
-			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			if (!pRules->UseGlobalRadApplicationDelay)
 			{
 				int delay = pType->GetBuildingApplicationDelay();
 
@@ -190,8 +192,10 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 	GET(FootClass* const, pFoot, ESI);
 
+	const auto useGlobalDelay = RulesExt::Global()->UseGlobalRadApplicationDelay;
+
 	if (pFoot->IsInPlayfield && !pFoot->TemporalTargetingMe && pFoot->GetCell()->GetRadLevel() &&
-		(!RulesExt::Global()->UseGlobalRadApplicationDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
+		(!useGlobalDelay || Unsorted::CurrentFrame % RulesClass::Instance->RadApplicationDelay == 0))
 	{
 		const auto pCell = pFoot->GetCell();
 		const auto pCellExt = CellExt::ExtMap.Find(pCell);
@@ -207,7 +211,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			if (!pType->GetWarhead())
 				continue;
 
-			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
+			if (!useGlobalDelay)
 			{
 				int delay = pType->GetApplicationDelay();
 

@@ -215,19 +215,20 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 
 	GET(BuildingClass*, pCellBuilding, ESI);
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pCellBuilding->Type);
+	auto const pType = pCellBuilding->Type;
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->NoBuildAreaOnBuildup && pCellBuilding->CurrentMission == Mission::Construction)
 		return SkipBuilding;
 
 	auto const& pBuildingsAllowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Allowed;
 
-	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
+	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pType))
 		return SkipBuilding;
 
 	auto const& pBuildingsDisallowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Disallowed;
 
-	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
+	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pType))
 		return SkipBuilding;
 
 	return 0;

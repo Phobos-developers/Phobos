@@ -95,16 +95,18 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 				pType = index >= 0 ? AircraftTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::UnitType:
-				if (pThis->Type->Naval ? pRulesExt->ForbidParallelAIQueues_Navy : pRulesExt->ForbidParallelAIQueues_Vehicle)
-					return Skip;
-
 				if (pThis->Type->Naval)
 				{
-					auto const pExt = HouseExt::ExtMap.Find(pOwner);
-					index = pExt->ProducingNavalUnitTypeIndex;
+					if (pRulesExt->ForbidParallelAIQueues_Navy)
+						return Skip;
+
+					index = HouseExt::ExtMap.Find(pOwner)->ProducingNavalUnitTypeIndex;
 				}
 				else
 				{
+					if (pRulesExt->ForbidParallelAIQueues_Vehicle)
+						return Skip;
+
 					index = pOwner->ProducingUnitTypeIndex;
 				}
 

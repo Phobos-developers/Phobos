@@ -263,10 +263,9 @@ DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 	else if (NukeFlash::IsFadingIn())
 		level = ScenarioClass::Instance->NukeLighting.Level;
 
-	auto const pRulesExt = RulesExt::Global();
 	int levelIntensity = 0;
 	int cellIntensity = 1000;
-	GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->AircraftLevelLightMultiplier, false);
+	GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->AircraftLevelLightMultiplier, false);
 
 	R->ESI(levelIntensity);
 	R->EBX(cellIntensity);
@@ -284,10 +283,9 @@ DEFINE_HOOK(0x51933B, InfantryClass_DrawIt_LevelIntensity, 0x6)
 	{
 		GET(int, level, EBX);
 
-		auto const pRulesExt = RulesExt::Global();
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
-		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
+		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
 
 		R->ESI(levelIntensity + cellIntensity);
 		return SkipGameCode;
@@ -313,10 +311,9 @@ DEFINE_HOOK(0x73CFA7, UnitClass_DrawIt_LevelIntensity, 0x6)
 		else if (NukeFlash::IsFadingIn())
 			level = ScenarioClass::Instance->NukeLighting.Level;
 
-		auto const pRulesExt = RulesExt::Global();
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
-		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
+		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
 
 		R->EBP(levelIntensity + cellIntensity);
 		return SkipGameCode;

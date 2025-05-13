@@ -152,9 +152,10 @@ std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClas
 template<bool IsGlobal, class _Pr>
 bool TEventExt::VariableCheck(TEventClass* pThis)
 {
-	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(pThis->Value);
+	auto& variables = ScenarioExt::Global()->Variables;
+	auto itr = variables[IsGlobal].find(pThis->Value);
 
-	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
+	if (itr != variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our operator number
 		int nOpt = atoi(pThis->String);
@@ -167,15 +168,16 @@ bool TEventExt::VariableCheck(TEventClass* pThis)
 template<bool IsSrcGlobal, bool IsGlobal, class _Pr>
 bool TEventExt::VariableCheckBinary(TEventClass* pThis)
 {
-	auto itr = ScenarioExt::Global()->Variables[IsGlobal].find(pThis->Value);
+	auto& variables = ScenarioExt::Global()->Variables;
+	auto itr = variables[IsGlobal].find(pThis->Value);
 
-	if (itr != ScenarioExt::Global()->Variables[IsGlobal].end())
+	if (itr != variables[IsGlobal].end())
 	{
 		// We uses TechnoName for our src variable index
 		int nSrcVariable = atoi(pThis->String);
-		auto itrsrc = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nSrcVariable);
+		auto itrsrc = variables[IsSrcGlobal].find(nSrcVariable);
 
-		if (itrsrc != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
+		if (itrsrc != variables[IsSrcGlobal].end())
 			return _Pr()(itr->second.Value, itrsrc->second.Value);
 	}
 
@@ -212,8 +214,10 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 		return false;
 	}
 
-	if (RulesExt::Global()->AITargetTypesLists.size() == 0
-		|| RulesExt::Global()->AITargetTypesLists[desiredListIdx].size() == 0)
+	auto const pRules = RulesExt::Global();
+
+	if (pRules->AITargetTypesLists.size() == 0
+		|| pRules->AITargetTypesLists[desiredListIdx].size() == 0)
 	{
 		return false;
 	}
@@ -225,7 +229,7 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 	auto const pTechnoType = pTechno->GetTechnoType();
 	bool found = false;
 
-	for (auto const pDesiredItem : RulesExt::Global()->AITargetTypesLists[desiredListIdx])
+	for (auto const pDesiredItem : pRules->AITargetTypesLists[desiredListIdx])
 	{
 		if (pDesiredItem == pTechnoType)
 		{

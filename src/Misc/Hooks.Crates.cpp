@@ -71,7 +71,9 @@ DEFINE_HOOK(0x481C27, CellClass_GoodieCheck_UnitCrateVehicleCap, 0x5)
 
 	GET(HouseClass*, pHouse, EDX);
 
-	if (RulesExt::Global()->UnitCrateVehicleCap < 0 || pHouse->OwnedUnits <= RulesExt::Global()->UnitCrateVehicleCap)
+	auto const pRules = RulesExt::Global();
+
+	if (pRules->UnitCrateVehicleCap < 0 || pHouse->OwnedUnits <= pRules->UnitCrateVehicleCap)
 		return NotCapped;
 
 	return Capped;

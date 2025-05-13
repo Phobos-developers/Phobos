@@ -113,8 +113,9 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(RulesExt::Global()->Promote_VeteranAnimation);
-	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(RulesExt::Global()->Promote_EliteAnimation);
+	auto const pRules = RulesExt::Global();
+	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(pRules->Promote_VeteranAnimation);
+	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(pRules->Promote_EliteAnimation);
 
 	if (!pVeteranAnim && !pEliteAnim)
 		return aresProcess();
@@ -534,9 +535,10 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 		return MakeInvulnerable;
 
 	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
-		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pRules = RulesExt::Global();
+	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(pRules->IronCurtain_EffectOnOrganics) :
+		pTypeExt->ForceShield_Effect.Get(pRules->ForceShield_EffectOnOrganics);
 
 	switch (icEffect)
 	{
@@ -550,9 +552,9 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 		auto pWH = RulesClass::Instance->C4Warhead;
 
 		if (!isForceShield)
-			pWH = pTypeExt->IronCurtain_KillWarhead.Get(RulesExt::Global()->IronCurtain_KillOrganicsWarhead.Get(pWH));
+			pWH = pTypeExt->IronCurtain_KillWarhead.Get(pRules->IronCurtain_KillOrganicsWarhead.Get(pWH));
 		else
-			pWH = pTypeExt->ForceShield_KillWarhead.Get(RulesExt::Global()->ForceShield_KillOrganicsWarhead.Get(pWH));
+			pWH = pTypeExt->ForceShield_KillWarhead.Get(pRules->ForceShield_KillOrganicsWarhead.Get(pWH));
 
 		GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
 		R->EAX(pThis->ReceiveDamage(&pThis->Health, 0, pWH, nullptr, true, false, pSource));

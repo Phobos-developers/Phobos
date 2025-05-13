@@ -659,9 +659,7 @@ DEFINE_HOOK(0x739920, UnitClass_TryToDeploy_DisableRegroupAtNewConYard, 0x6)
 {
 	enum { SkipRegroup = 0x73992B, DoNotSkipRegroup = 0 };
 
-	auto const pRules = RulesExt::Global();
-
-	return pRules->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
+	return RulesExt::Global()->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
 }
 
 DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)
@@ -682,9 +680,10 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 	GET(ObjectClass*, pThis, ESI);
 
 	pThis->IsSelected = true;
+	auto const duration = RulesExt::Global()->SelectionFlashDuration;
 
-	if (Phobos::Config::ShowFlashOnSelecting && RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+	if (Phobos::Config::ShowFlashOnSelecting && duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(duration);
 
 	return 0;
 }

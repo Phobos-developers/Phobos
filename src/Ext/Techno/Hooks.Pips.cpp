@@ -310,9 +310,10 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 			tiberiumPipCounts[i] = static_cast<int>(pThis->Tiberium.GetAmount(i) / totalStorage * maxPips + 0.5);
 		}
 
-		auto const rawPipOrder = RulesExt::Global()->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : RulesExt::Global()->Pips_Tiberiums_DisplayOrder;
-		auto const& pipFrames = RulesExt::Global()->Pips_Tiberiums_Frames;
-		int const emptyFrame = RulesExt::Global()->Pips_Tiberiums_EmptyFrame;
+		auto const pRules = RulesExt::Global();
+		auto const rawPipOrder = pRules->Pips_Tiberiums_DisplayOrder.empty() ? std::vector<int>{ 0, 2, 3, 1 } : pRules->Pips_Tiberiums_DisplayOrder;
+		auto const& pipFrames = pRules->Pips_Tiberiums_Frames;
+		int const emptyFrame = pRules->Pips_Tiberiums_EmptyFrame;
 
 		std::vector<int> pipOrder;
 		pipOrder.reserve(TiberiumClass::Array.Count);

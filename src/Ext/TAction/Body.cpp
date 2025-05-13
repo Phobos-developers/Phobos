@@ -87,13 +87,16 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	std::vector<int> waypoints;
-	waypoints.reserve(ScenarioExt::Global()->Waypoints.size());
+	auto& scenWaypoints = ScenarioExt::Global()->Waypoints;
+	waypoints.reserve(scenWaypoints.size());
 
 	auto const pScen = ScenarioClass::Instance;
 
-	for (auto pair : ScenarioExt::Global()->Waypoints)
+	for (auto pair : scenWaypoints)
+	{
 		if (pScen->IsDefinedWaypoint(pair.first))
 			waypoints.push_back(pair.first);
+	}
 
 	if (waypoints.size() > 0)
 	{
@@ -364,7 +367,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		if (pExecuteHouse)
 		{
 			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
-	
+
 			CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);

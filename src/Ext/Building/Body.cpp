@@ -10,15 +10,19 @@ void BuildingExt::ExtData::DisplayIncomeString()
 {
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
-		if ((RulesExt::Global()->DisplayIncome_AllowAI || this->OwnerObject()->Owner->IsControlledByHuman())
-			&& this->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
+		auto const ownerObject = this->OwnerObject();
+		auto const pTypeExt = this->TypeExtData;
+		auto const pRuleExt = RulesExt::Global();
+
+		if ((pRuleExt->DisplayIncome_AllowAI || ownerObject->Owner->IsControlledByHuman())
+			&& pTypeExt->DisplayIncome.Get(pRuleExt->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
-				this->OwnerObject()->Owner,
-				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
-				this->TypeExtData->DisplayIncome_Offset
+				ownerObject->Owner,
+				pTypeExt->DisplayIncome_Houses.Get(pRuleExt->DisplayIncome_Houses.Get()),
+				ownerObject->GetRenderCoords(),
+				pTypeExt->DisplayIncome_Offset
 			);
 		}
 		this->AccumulatedIncome = 0;
@@ -293,7 +297,9 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore)
 {
-	auto pVictimHouse = this->OwnerObject()->Owner;
+	auto const pTypeExt = this->TypeExtData;
+	auto const pThis = this->OwnerObject();
+	auto pVictimHouse = pThis->Owner;
 	this->AccumulatedIncome += pVictimHouse->Available_Money() - moneybefore;
 
 	if (!pVictimHouse->IsControlledByHuman() && !RulesExt::Global()->DisplayIncome_AllowAI)
@@ -302,35 +308,35 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 		FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
 				pVictimHouse,
-				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
-				this->OwnerObject()->GetRenderCoords(),
-				this->TypeExtData->DisplayIncome_Offset
+				pTypeExt->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
+				pThis->GetRenderCoords(),
+				pTypeExt->DisplayIncome_Offset
 		);
 	}
 
-	if (!this->TypeExtData->SpyEffect_Custom)
+	if (!pTypeExt->SpyEffect_Custom)
 		return false;
 
 	if (pInfiltratorHouse != pVictimHouse)
 	{
 		// I assume you were not launching for real, Morton
 
-		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)->void
+		auto launchTheSWHere = [pThis](SuperClass* const pSuper, HouseClass* const pHouse)->void
 			{
 				int oldstart = pSuper->RechargeTimer.StartTime;
 				int oldleft = pSuper->RechargeTimer.TimeLeft;
 				pSuper->SetReadiness(true);
-				pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
+				pSuper->Launch(CellClass::Coord2Cell(pThis->GetCenterCoords()), pHouse->IsCurrentPlayer());
 				pSuper->Reset();
 				pSuper->RechargeTimer.StartTime = oldstart;
 				pSuper->RechargeTimer.TimeLeft = oldleft;
 			};
 
-		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
+		int idx = pTypeExt->SpyEffect_VictimSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
 
-		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
+		idx = pTypeExt->SpyEffect_InfiltratorSuperWeapon;
 		if (idx >= 0)
 			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
 	}

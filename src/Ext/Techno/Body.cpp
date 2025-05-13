@@ -533,16 +533,25 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 
 UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
 
-	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	if (auto pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		if (pUnit->IsRedHP())
 		{
+			auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
 			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
-				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
+				return pData->WaterImage_ConditionRed ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
 			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
-				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+				return pData->Image_ConditionRed ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && pData->WaterImage_ConditionYellow)
+				return pData->WaterImage_ConditionYellow;
+			else if (pData->Image_ConditionYellow)
+				return pData->Image_ConditionYellow;
 		}
 	}
 	return nullptr;

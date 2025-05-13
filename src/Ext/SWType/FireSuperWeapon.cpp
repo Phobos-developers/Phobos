@@ -17,7 +17,8 @@
 
 void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 {
-	auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+	auto const pType = pSW->Type;
+	auto const pTypeExt = SWTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->LimboDelivery_Types.size() > 0)
 		pTypeExt->ApplyLimboDelivery(pSW->Owner);
@@ -34,10 +35,10 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->Convert_Pairs.size() > 0)
 		pTypeExt->ApplyTypeConversion(pSW);
 
-	if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
-	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pSW->Type->ArrayIndex];
+	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pType->ArrayIndex];
 	sw_ext.ShotCount++;
 }
 
@@ -114,8 +115,8 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
 
-		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+		if (!pType->Insignificant && !pType->DontScore)
+			pOwnerExt->AddToLimboTracking(pType);
 
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
@@ -311,45 +312,45 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 
 	for (size_t i = 0; i < pBuildings.size(); i++)
 	{
-		auto const pBuilding = pBuildings[i];
-		auto const pExt = BuildingExt::ExtMap.Find(pBuilding);
-		pExt->EMPulseSW = pSW;
+		BuildingExt::ExtMap.Find(pBuildings[i])->EMPulseSW = pSW;
 
 		if (i + 1 == count)
 			break;
 	}
 
-	if (this->EMPulse_SuspendOthers)
-	{
-		auto const pHouseExt = HouseExt::ExtMap.Find(pSW->Owner);
+	auto const pOwner = pSW->Owner;
 
-		for (auto const& pSuper : pSW->Owner->Supers)
+	if (this->EMPulse_SuspendOthers && pOwner->Supers.size() > 0)
+	{
+		auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+		auto const arrayIndex = pSW->Type->ArrayIndex;
+		auto& suspendedEMPulseSWs = HouseExt::ExtMap.Find(pOwner)->SuspendedEMPulseSWs;
+		bool suspend = false;
+
+		if (this->EMPulse_Cannons.empty() && pTypeExt->EMPulse_Cannons.empty())
+		{
+			suspend = true;
+		}
+		else
+		{
+			// Suspend if the two cannon lists share common items.
+			suspend = std::find_first_of(this->EMPulse_Cannons.begin(), this->EMPulse_Cannons.end(),
+				pTypeExt->EMPulse_Cannons.begin(), pTypeExt->EMPulse_Cannons.end()) != this->EMPulse_Cannons.end();
+		}
+
+		for (auto const& pSuper : pOwner->Supers)
 		{
 			if (static_cast<int>(pSuper->Type->Type) != 28 || pSuper == pSW)
 				continue;
-
-			auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
-			bool suspend = false;
-
-			if (this->EMPulse_Cannons.empty() && pTypeExt->EMPulse_Cannons.empty())
-			{
-				suspend = true;
-			}
-			else
-			{
-				// Suspend if the two cannon lists share common items.
-				suspend = std::find_first_of(this->EMPulse_Cannons.begin(), this->EMPulse_Cannons.end(),
-					pTypeExt->EMPulse_Cannons.begin(), pTypeExt->EMPulse_Cannons.end()) != this->EMPulse_Cannons.end();
-			}
 
 			if (suspend)
 			{
 				pSuper->IsSuspended = true;
 
-				if (pHouseExt->SuspendedEMPulseSWs.count(pSW->Type->ArrayIndex))
-					pHouseExt->SuspendedEMPulseSWs[pSW->Type->ArrayIndex].push_back(pSuper->Type->ArrayIndex);
+				if (suspendedEMPulseSWs.count(arrayIndex))
+					suspendedEMPulseSWs[arrayIndex].push_back(arrayIndex);
 				else
-					pHouseExt->SuspendedEMPulseSWs.insert({ pSW->Type->ArrayIndex, std::vector<int>{pSuper->Type->ArrayIndex} });
+					suspendedEMPulseSWs.insert({ arrayIndex, std::vector<int>{arrayIndex} });
 			}
 		}
 	}
