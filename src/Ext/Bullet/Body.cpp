@@ -7,6 +7,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -256,15 +257,12 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	if (auto const pEBolt = GameCreate<EBolt>())
-	{
-		pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-		//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
-		auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
-		weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
-		weaponStruct.BurstIndex = 0;
-		pEBolt->Fire(pBullet->SourceCoords, pBullet->TargetCoords, 0);
-	}
+	const auto pEBolt = (AresFunctions::CreateAresEBolt ? AresFunctions::CreateAresEBolt(pWeapon) : GameCreate<EBolt>());
+	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
+	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
+	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
+	weaponStruct.BurstIndex = 0;
+	pEBolt->Fire(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), 0);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call
