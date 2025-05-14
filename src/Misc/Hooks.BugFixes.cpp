@@ -1972,14 +1972,14 @@ DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
 {
 	enum { MoveOK = 0x51C02D };
 	GET(InfantryClass*, pThis, EBP);
-	return pThis->IsInAir() && pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? MoveOK : 0;
+	return pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir() ? MoveOK : 0;
 }
 
 DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
 {
 	enum { MoveOK = 0x73F23F };
 	GET(UnitClass*, pThis, ECX);
-	return pThis->IsInAir() && pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? MoveOK : 0;
+	return pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir() ? MoveOK : 0;
 }
 
 namespace ApproachTargetContext
