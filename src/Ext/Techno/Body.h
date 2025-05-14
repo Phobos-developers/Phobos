@@ -67,6 +67,9 @@ public:
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
+		CDTimerClass TiberiumEater_Timer;
+
+		AirstrikeClass* AirstrikeTargetingMe;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -110,6 +113,8 @@ public:
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, TiberiumEater_Timer {}
+			, AirstrikeTargetingMe { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -118,6 +123,7 @@ public:
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();
 		void EatPassengers();
+		void UpdateTiberiumEater();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
 		void UpdateOnTunnelExit();
@@ -142,7 +148,7 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
-		int ApplyForceWeaponInRange();
+		int ApplyForceWeaponInRange(TechnoClass* pTarget);
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
@@ -204,6 +210,7 @@ public:
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
 

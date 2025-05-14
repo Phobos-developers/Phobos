@@ -134,6 +134,29 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	int insigniaFrame = insigniaFrames.X;
 	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
 
+	if (pTechnoType->Passengers > 0)
+	{
+		int passengersIndex = pTechnoTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
+		passengersIndex = Math::min(passengersIndex, pTechnoType->Passengers);
+
+		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Passengers[passengersIndex].Get(pThis))
+		{
+			pShapeFile = pCustomShapeFile;
+			defaultFrameIndex = 0;
+			isCustomInsignia = true;
+		}
+
+		int frame = pTechnoTypeExt->InsigniaFrame_Passengers[passengersIndex].Get(pThis);
+
+		if (frame != -1)
+			frameIndex = frame;
+
+		auto const& frames = pTechnoTypeExt->InsigniaFrames_Passengers[passengersIndex];
+
+		if (frames != Vector3D<int>(-1, -1, -1))
+			insigniaFrames = frames.Get();
+	}
+
 	if (pTechnoType->Gunner)
 	{
 		int weaponIndex = pThis->CurrentWeaponNumber;
@@ -150,10 +173,10 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		if (frame != -1)
 			frameIndex = frame;
 
-		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
+		auto const& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
 
 		if (frames != Vector3D<int>(-1, -1, -1))
-			insigniaFrames = frames;
+			insigniaFrames = frames.Get();
 	}
 
 	if (pVeterancy->IsVeteran())
@@ -189,6 +212,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
 			break;
 		}
+
+		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pThis->GetTechnoType()->PixelSelectionBracketDelta : 0;
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -271,6 +296,69 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return position;
 }
 
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore)
+{
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	SelectBoxTypeClass* pSelectBox = nullptr;
+
+	if (pTypeExt->SelectBox.isset())
+		pSelectBox = pTypeExt->SelectBox.Get();
+	else if (whatAmI == InfantryClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultInfantrySelectBox.Get();
+	else if (whatAmI != BuildingClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultUnitSelectBox.Get();
+
+	if (!pSelectBox || pSelectBox->DrawAboveTechno == drawBefore)
+		return;
+
+	const auto pShape = pSelectBox->Shape.Get();
+
+	if (!pShape)
+		return;
+
+	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->VisibleToHouses_Observer : EnumFunctions::CanTargetHouse(pSelectBox->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer);
+
+	if (!canSee)
+		return;
+
+	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+	const double healthPercentage = pThis->GetHealthPercentage();
+	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
+	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+
+	Point2D drawPoint = *pLocation;
+
+	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
+	{
+		CoordStruct coords = pThis->GetCenterCoords();
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+
+		const auto& [outClient, visible] = TacticalClass::Instance->CoordsToClient(coords);
+
+		if (!visible)
+			return;
+
+		drawPoint = outClient;
+	}
+
+	drawPoint += pSelectBox->Offset;
+
+	if (pSelectBox->DrawAboveTechno)
+		drawPoint.Y += pType->PixelSelectionBracketDelta;
+
+	if (whatAmI == AbstractType::Infantry)
+		drawPoint += { 8, -3 };
+	else
+		drawPoint += { 1, -4 };
+
+	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
+
+	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+}
+
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
@@ -282,9 +370,9 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	if (pTypeExt->DigitalDisplay_Disable)
 		return;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	int length = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
+	const auto whatAmI = pThis->WhatAmI();
 
 	if (!pTypeExt->DigitalDisplayTypes.empty())
 	{
@@ -292,7 +380,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	}
 	else
 	{
-		switch (pThis->WhatAmI())
+		switch (whatAmI)
 		{
 		case AbstractType::Building:
 		{
@@ -323,6 +411,11 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		}
 	}
 
+	const auto pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+	const bool hasShield = pShield && !pShield->IsBrokenAndNonRespawning();
+	const bool isBuilding = whatAmI == AbstractType::Building;
+	const bool isInfantry = whatAmI == AbstractType::Infantry;
+
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
 		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
@@ -345,16 +438,13 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			maxValue = Math::max(maxValue / pDisplayType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
 		}
 
-		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
-		const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		Point2D position = pThis->WhatAmI() == AbstractType::Building ?
+		Point2D position = whatAmI == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
 		position.Y += pType->PixelSelectionBracketDelta;
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
-			position.Y += pExt->Shield->GetType()->BracketDelta;
+			position.Y += pShield->GetType()->BracketDelta;
 
 		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 	}
@@ -363,7 +453,6 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue)
 {
 	const auto pType = pThis->GetTechnoType();
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	switch (infoType)
 	{
@@ -375,11 +464,13 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Shield:
 	{
-		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+		auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+
+		if (!pShield || pShield->IsBrokenAndNonRespawning())
 			return;
 
-		value = pExt->Shield->GetHP();
-		maxValue = pExt->Shield->GetType()->Strength.Get();
+		value = pShield->GetHP();
+		maxValue = pShield->GetType()->Strength.Get();
 		break;
 	}
 	case DisplayInfoType::Ammo:
