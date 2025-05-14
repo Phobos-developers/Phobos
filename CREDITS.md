@@ -68,6 +68,7 @@ This page lists all the individual contributions to the project by their author.
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
   - Observer PCX loading screen
+  - Original `Arcing` elevation inaccuracy fix
   - Official CN docs for Build#29 and previous versions
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -95,6 +96,7 @@ This page lists all the individual contributions to the project by their author.
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
   - Parts of Ares calling code
+  - Original `Arcing` elevation inaccuracy fix
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -217,7 +219,7 @@ This page lists all the individual contributions to the project by their author.
   - `PipScale` pip size & ammo pip frame customization
   - Extension class optimization
   - Additional sync logging
-  - `Arcing` elevation inaccuracy fix
+  - Original `Arcing` elevation inaccuracy fix
   - `EMPulseCannon` projectile gravity fix
   - Custom palette support for wall overlays
   - Warhead animation improvements
@@ -391,6 +393,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Tiberium eater logic
   - Fix the bug that ships can travel on elevated bridges
+  - `Arcing` elevation inaccuracy fix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
