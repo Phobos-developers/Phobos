@@ -255,10 +255,10 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
 				return SkipObject;
 
-			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
+			auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
 
-			if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(pWH))
-				armorType = pExt->Shield->GetArmorType();
+			if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
+				armorType = pShield->GetArmorType();
 		}
 
 		if (GeneralUtils::GetWarheadVersusArmor(pWH, armorType) == 0.0)

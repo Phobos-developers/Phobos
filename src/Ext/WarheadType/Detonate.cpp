@@ -450,9 +450,8 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		return;
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	auto const pTypeExt = pTargetExt->TypeExtData;
 
-	if (pTypeExt->ImmuneToCrit)
+	if (pTargetExt->TypeExtData->ImmuneToCrit)
 		return;
 
 	auto pSld = pTargetExt->Shield.get();

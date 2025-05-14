@@ -81,10 +81,10 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoCl
 		pType = pThis->GetTechnoType();
 
 	auto ArmorType = pType->Armor;
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 
-	if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(pWH))
-		ArmorType = pExt->Shield->GetArmorType();
+	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
+		ArmorType = pShield->GetArmorType();
 
 	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
 }
