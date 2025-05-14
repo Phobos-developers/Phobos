@@ -416,10 +416,10 @@ DEFINE_HOOK(0x468EB3, BulletClass_Explodes_AirburstCheck1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	auto const pType = pThis->Type;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	R->EAX(pType);
-	return !(pType->Airburst || BulletTypeExt::ExtMap.Find(pType)->Splits) ? Continue : Skip;
+	R->EAX(pThis->Type);
+	return !(pThis->Type->Airburst || pTypeExt->Splits) ? Continue : Skip;
 }
 
 DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
@@ -428,10 +428,10 @@ DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	auto const pType = pThis->Type;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	R->EAX(pType);
-	return (pType->Airburst || BulletTypeExt::ExtMap.Find(pType)->Splits) ? Continue : Skip;
+	R->EAX(pThis->Type);
+	return (pThis->Type->Airburst || pTypeExt->Splits) ? Continue : Skip;
 }
 
 DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)

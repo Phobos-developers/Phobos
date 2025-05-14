@@ -384,16 +384,14 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	if (!RulesExt::Global()->ExtendedAircraftMissions)
 		return 0;
 
-	const auto pType = pThis->Type;
-
-	if (!pType->AirportBound || pThis->Team || pThis->Airstrike || pThis->Spawned)
+	if (!pThis->Type->AirportBound || pThis->Team || pThis->Airstrike || pThis->Spawned)
 		return 0;
 
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
 
 	// When the horizontal distance between the aircraft and its destination is greater than half of its deceleration distance
 	// or its turning radius, continue to move forward, otherwise return to airbase or execute the next planning waypoint
-	if (distance > std::max((pType->SlowdownDistance >> 1), (2048 / pType->ROT)))
+	if (distance > std::max((pThis->Type->SlowdownDistance >> 1), (2048 / pThis->Type->ROT)))
 		return (R->Origin() == 0x4168C7 ? ContinueMoving1 : ContinueMoving2);
 
 	// Try next planning waypoint first, then return to air base if it does not exist or cannot be taken

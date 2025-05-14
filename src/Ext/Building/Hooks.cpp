@@ -209,9 +209,7 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 	// So the idle weapon factory is asked to search every second for any units that are stuck
 	if (!(Unsorted::CurrentFrame % 15)) // Check every 15 frames for factories
 	{
-		const auto pType = pThis->Type;
-
-		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		if (pThis->Type->Factory == AbstractType::UnitType && pThis->Type->WeaponsFactory && !pThis->Type->Naval && pThis->QueuedMission != Mission::Unload)
 		{
 			const auto mission = pThis->CurrentMission;
 

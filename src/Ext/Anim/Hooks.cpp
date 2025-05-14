@@ -42,8 +42,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 
 	GET(AnimClass*, pThis, ESI);
 
-	auto const pType = pThis->Type;
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 	int delay = pTypeExt->Damage_Delay.Get();
 	int damageMultiplier = 1;
 	double damage = 0;
@@ -55,13 +54,13 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
 	{
 		if (pThis->Animation.Value == std::max(delay - 1, 1))
-			appliedDamage = static_cast<int>(std::round(pType->Damage)) * damageMultiplier;
+			appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
 		else
 			return SkipDamage;
 	}
-	else if (delay <= 0 || pType->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
+	else if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
 	{
-		damage = damageMultiplier * pType->Damage + pThis->Accum;
+		damage = damageMultiplier * pThis->Type->Damage + pThis->Accum;
 
 		// Deal damage if it is at least 1, otherwise accumulate it for later.
 		if (damage >= 1.0)
@@ -85,7 +84,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 			return SkipDamage;
 
 		// Use Type->Damage as the actually dealt damage.
-		appliedDamage = static_cast<int>(std::round(pType->Damage)) * damageMultiplier;
+		appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
 		pThis->Accum = 0.0;
 	}
 
@@ -137,10 +136,10 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 			}
 		}
 
-		auto pWarhead = pType->Warhead;
+		auto pWarhead = pThis->Type->Warhead;
 
 		if (!pWarhead)
-			pWarhead = strcmp(pType->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
+			pWarhead = strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}

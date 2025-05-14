@@ -14,12 +14,11 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 
 	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
 	{
-		auto const pType = pThis->Type;
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
-		pExt->CurrentStrength = pType->Strength;
-		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
+		pExt->CurrentStrength = pThis->Type->Strength;
+		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-		if (!pType->Inviso)
+		if (!pThis->Type->Inviso)
 			pExt->InitializeLaserTrails();
 	}
 
@@ -333,15 +332,13 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	auto const pType = pThis->Type;
-
 	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
-	if (pType->Inviso)
+	if (pThis->Type->Inviso)
 	{
-		R->EAX(pType);
+		R->EAX(pThis->Type);
 		return SkipChecks;
 	}
-	else if (pType->Arcing || pType->ROT > 0)
+	else if (pThis->Type->Arcing || pThis->Type->ROT > 0)
 	{
 		return 0;
 	}
@@ -351,7 +348,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 		{
-			R->EAX(pType);
+			R->EAX(pThis->Type);
 			return SkipChecks;
 		}
 	}

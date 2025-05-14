@@ -128,10 +128,9 @@ void AttachEffectClass::AI()
 	if (!this->HasInitialized)
 	{
 		this->HasInitialized = true;
-		auto const pType = this->Type;
-		auto const ROFModifier = pType->ROFMultiplier;
+		auto const ROFModifier = this->Type->ROFMultiplier;
 
-		if (ROFModifier != 1.0 && ROFModifier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
+		if (ROFModifier != 1.0 && ROFModifier > 0.0 && this->Type->ROFMultiplier_ApplyOnCurrentTimer)
 		{
 			auto const pTechno = this->Techno;
 			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
@@ -141,7 +140,7 @@ void AttachEffectClass::AI()
 				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
-		if (pType->HasTint())
+		if (this->Type->HasTint())
 			this->Techno->MarkForRedraw();
 	}
 
@@ -419,20 +418,19 @@ void AttachEffectClass::SetAnimationTunnelState(bool visible)
 void AttachEffectClass::RefreshDuration(int durationOverride)
 {
 	auto& duration = this->Duration;
-	auto const pType = this->Type;
 
 	if (durationOverride)
 		duration = durationOverride;
 	else
-		duration = this->DurationOverride ? this->DurationOverride : pType->Duration;
+		duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
 
-	if (pType->Duration_ApplyFirepowerMult && duration > 0 && this->Invoker)
+	if (this->Type->Duration_ApplyFirepowerMult && duration > 0 && this->Invoker)
 		duration = Math::max(static_cast<int>(duration * this->Invoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(this->Invoker)->AE.FirepowerMultiplier), 0);
 
-	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
+	if (this->Type->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
 		duration = Math::max(static_cast<int>(duration / this->Techno->ArmorMultiplier / TechnoExt::ExtMap.Find(this->Techno)->AE.ArmorMultiplier), 0);
 
-	if (pType->Animation_ResetOnReapply)
+	if (this->Type->Animation_ResetOnReapply)
 	{
 		this->KillAnim();
 

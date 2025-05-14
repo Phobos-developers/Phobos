@@ -521,7 +521,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
 	this->PreviousType = pOldType;
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
-	auto const pNewTypeExt = this->TypeExtData;
 
 	this->UpdateSelfOwnedAttachEffects();
 
@@ -529,10 +528,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	if (this->LaserTrails.size())
 		this->LaserTrails.clear();
 
-	this->LaserTrails.reserve(pNewTypeExt->LaserTrailData.size());
+	this->LaserTrails.reserve(this->TypeExtData->LaserTrailData.size());
 
 	// Recreate Laser Trails
-	for (auto const& entry : pNewTypeExt->LaserTrailData)
+	for (auto const& entry : this->TypeExtData->LaserTrailData)
 	{
 		this->LaserTrails.emplace_back(entry.GetType(), pThis->Owner, entry.FLH, entry.IsOnTurret);
 	}
@@ -542,25 +541,25 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		this->AutoDeathTimer.Stop();
 
 	// Reset PassengerDeletion Timer
-	if (this->PassengerDeletionTimer.IsTicking() && pNewTypeExt->PassengerDeletionType && pNewTypeExt->PassengerDeletionType->Rate <= 0)
+	if (this->PassengerDeletionTimer.IsTicking() && this->TypeExtData->PassengerDeletionType && this->TypeExtData->PassengerDeletionType->Rate <= 0)
 		this->PassengerDeletionTimer.Stop();
 
 	// Remove from tracked AutoDeath objects if no longer has AutoDeath
-	if (pOldTypeExt->AutoDeath_Behavior.isset() && !pNewTypeExt->AutoDeath_Behavior.isset())
+	if (pOldTypeExt->AutoDeath_Behavior.isset() && !this->TypeExtData->AutoDeath_Behavior.isset())
 	{
 		auto& vec = ScenarioExt::Global()->AutoDeathObjects;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
 	// Remove from harvesters list if no longer a harvester.
-	if (pOldTypeExt->Harvester_Counted && !!pNewTypeExt->Harvester_Counted)
+	if (pOldTypeExt->Harvester_Counted && !!this->TypeExtData->Harvester_Counted)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 	}
 
 	// Remove from limbo reloaders if no longer applicable
-	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !pNewTypeExt->ReloadInTransport)
+	if (pOldType->Ammo > 0 && pOldTypeExt->ReloadInTransport && !this->TypeExtData->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());

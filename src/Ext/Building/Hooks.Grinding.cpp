@@ -63,26 +63,22 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 		return 0;
 
 	auto pBld = abstract_cast<BuildingClass*>(pThis->Destination);
-
 	if (!pBld)
 		return 0;
 
-	auto const pType = pThis->Type;
-
-	if (pType->Engineer)
+	if (pThis->Type->Engineer)
 		return 0;
 
 	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
-	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+	if (pThis->Type->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
 		return 0;
-
 	if (pBld->IsStrange())
 		return 0;
 
-	if (pBld->Type->CanBeOccupied && (pType->Occupier || pType->Assaulter))
+	if (pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter))
 		return 0;
 
-	if (pType->C4 || pThis->HasAbility(Ability::C4))
+	if (pThis->Type->C4 || pThis->HasAbility(Ability::C4))
 		return 0;
 
 	// If you can't do any of these then why are you here?

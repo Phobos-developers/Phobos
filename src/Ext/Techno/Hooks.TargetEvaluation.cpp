@@ -323,13 +323,12 @@ private:
 			return false;
 
 		bool allied = HouseClass::CurrentPlayer->IsAlliedWith(pBuilding);
-		auto const pType = pBuilding->Type;
 
-		if (allied && pType->Repairable)
+		if (allied && pBuilding->Type->Repairable)
 			return true;
 
-		if (!allied && pType->Capturable &&
-			(!pBuilding->Owner->Type->MultiplayPassive || !pType->CanBeOccupied || pBuilding->IsBeingWarpedOut()))
+		if (!allied && pBuilding->Type->Capturable &&
+			(!pBuilding->Owner->Type->MultiplayPassive || !pBuilding->Type->CanBeOccupied || pBuilding->IsBeingWarpedOut()))
 		{
 			return true;
 		}

@@ -11,18 +11,17 @@ void BuildingExt::ExtData::DisplayIncomeString()
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
 		auto const ownerObject = this->OwnerObject();
-		auto const pTypeExt = this->TypeExtData;
 		auto const pRuleExt = RulesExt::Global();
 
 		if ((pRuleExt->DisplayIncome_AllowAI || ownerObject->Owner->IsControlledByHuman())
-			&& pTypeExt->DisplayIncome.Get(pRuleExt->DisplayIncome))
+			&& this->TypeExtData->DisplayIncome.Get(pRuleExt->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
 				ownerObject->Owner,
-				pTypeExt->DisplayIncome_Houses.Get(pRuleExt->DisplayIncome_Houses.Get()),
+				this->TypeExtData->DisplayIncome_Houses.Get(pRuleExt->DisplayIncome_Houses.Get()),
 				ownerObject->GetRenderCoords(),
-				pTypeExt->DisplayIncome_Offset
+				this->TypeExtData->DisplayIncome_Offset
 			);
 		}
 		this->AccumulatedIncome = 0;
@@ -214,20 +213,19 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 {
-	auto const pType = pBuilding->Type;
 	auto const whatAmI = pTechno->WhatAmI();
 
-	if (!pType->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
+	if (!pBuilding->Type->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
-	if ((pType->InfantryAbsorb || pType->UnitAbsorb) &&
-		(whatAmI == AbstractType::Infantry && !pType->InfantryAbsorb ||
-			whatAmI == AbstractType::Unit && !pType->UnitAbsorb))
+	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
+		(whatAmI == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+			whatAmI == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
 	{
 		return false;
 	}
 
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
+	const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
 	if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
 		return false;

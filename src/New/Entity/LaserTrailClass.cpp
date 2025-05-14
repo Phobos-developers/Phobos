@@ -15,19 +15,17 @@ bool LaserTrailClass::Update(CoordStruct location)
 	}
 	else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
 	{
-		auto const pType = this->Type;
-
-		if (this->Visible && !this->Cloaked && (pType->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
+		if (this->Visible && !this->Cloaked && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
 		{
 			// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
 			LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
 				this->LastLocation.Get(), location,
 				this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
-				pType->FadeDuration.Get());
+				this->Type->FadeDuration.Get());
 
-			pLaser->Thickness = pType->Thickness;
+			pLaser->Thickness = this->Type->Thickness;
 			pLaser->IsHouseColor = true;
-			pLaser->IsSupported = pType->IsIntense;
+			pLaser->IsSupported = this->Type->IsIntense;
 
 			result = true;
 		}

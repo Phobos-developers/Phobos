@@ -15,17 +15,16 @@ void RadSiteExt::ExtData::Initialize()
 
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage)
 {
-	const auto pType = this->Type;
-	const auto pWarhead = pType->GetWarhead();
+	const auto pWarhead = this->Type->GetWarhead();
 
-	if (!pType->GetWarheadDetonate())
+	if (!this->Type->GetWarheadDetonate())
 	{
 		if (pTarget->ReceiveDamage(&damage, 0, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
 			return false;
 	}
 	else
 	{
-		if (pType->GetWarheadDetonateFull())
+		if (this->Type->GetWarheadDetonateFull())
 		{
 			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
 		}

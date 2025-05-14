@@ -190,7 +190,6 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	int nDamage = 0;
 	int shieldDamage = 0;
 	int healthDamage = 0;
-	auto const pType = this->Type;
 
 	if (pWHExt->CanTargetHouse(args->SourceHouse, pTechno) && !pWH->Temporal)
 	{
@@ -199,9 +198,9 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		else
 			nDamage = -MapClass::GetTotalDamage(-damage, pWH, this->GetArmorType(), args->DistanceToEpicenter);
 
-		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(pType);
-		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(pType->AbsorbPercent) : pType->AbsorbPercent;
-		double passPercent = affectsShield ? pWHExt->Shield_PassPercent.Get(pType->PassPercent) : pType->PassPercent;
+		bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(this->Type);
+		double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(this->Type->AbsorbPercent) : this->Type->AbsorbPercent;
+		double passPercent = affectsShield ? pWHExt->Shield_PassPercent.Get(this->Type->PassPercent) : this->Type->PassPercent;
 
 		shieldDamage = (int)((double)nDamage * absorbPercent);
 		// passthrough damage shouldn't be affected by shield armor
@@ -209,8 +208,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 
 	int originalShieldDamage = shieldDamage;
-	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(pType->ReceivedDamage_Minimum);
-	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(pType->ReceivedDamage_Maximum);
+	int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(this->Type->ReceivedDamage_Minimum);
+	int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(this->Type->ReceivedDamage_Maximum);
 	int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
 	int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
 	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
@@ -221,20 +220,20 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	if (shieldDamage > 0)
 	{
 		bool whModifiersApplied = this->Timers.SelfHealing_WHModifier.InProgress();
-		bool restart = whModifiersApplied ? this->SelfHealing_RestartInCombat_Warhead : pType->SelfHealing_RestartInCombat;
+		bool restart = whModifiersApplied ? this->SelfHealing_RestartInCombat_Warhead : this->Type->SelfHealing_RestartInCombat;
 
 		if (restart)
 		{
-			int delay = whModifiersApplied ? this->SelfHealing_RestartInCombatDelay_Warhead : pType->SelfHealing_RestartInCombatDelay;
+			int delay = whModifiersApplied ? this->SelfHealing_RestartInCombatDelay_Warhead : this->Type->SelfHealing_RestartInCombatDelay;
 
 			if (delay > 0)
 			{
-				this->Timers.SelfHealing_CombatRestart.Start(pType->SelfHealing_RestartInCombatDelay);
+				this->Timers.SelfHealing_CombatRestart.Start(this->Type->SelfHealing_RestartInCombatDelay);
 				this->Timers.SelfHealing.Stop();
 			}
 			else
 			{
-				const int rate = whModifiersApplied ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+				const int rate = whModifiersApplied ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
 				this->Timers.SelfHealing.Start(rate); // when attacked, restart the timer
 			}
 		}
@@ -254,26 +253,26 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 			this->BreakShield(pWHExt->Shield_BreakAnim, pWHExt->Shield_BreakWeapon.Get(nullptr));
 
-			return pType->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
+			return this->Type->AbsorbOverDamage ? healthDamage : actualResidueDamage + healthDamage;
 		}
 		else
 		{
-			if (pType->HitFlash && pWHExt->Shield_HitFlash)
+			if (this->Type->HitFlash && pWHExt->Shield_HitFlash)
 			{
-				int size = pType->HitFlash_FixedSize.Get((shieldDamage * 2));
+				int size = this->Type->HitFlash_FixedSize.Get((shieldDamage * 2));
 				SpotlightFlags flags = SpotlightFlags::NoColor;
 
-				if (pType->HitFlash_Black)
+				if (this->Type->HitFlash_Black)
 				{
 					flags = SpotlightFlags::NoColor;
 				}
 				else
 				{
-					if (!pType->HitFlash_Red)
+					if (!this->Type->HitFlash_Red)
 						flags = SpotlightFlags::NoRed;
-					if (!pType->HitFlash_Green)
+					if (!this->Type->HitFlash_Green)
 						flags |= SpotlightFlags::NoGreen;
-					if (!pType->HitFlash_Blue)
+					if (!this->Type->HitFlash_Blue)
 						flags |= SpotlightFlags::NoBlue;
 				}
 
@@ -292,7 +291,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	}
 	else if (shieldDamage < 0)
 	{
-		const int nLostHP = pType->Strength - this->HP;
+		const int nLostHP = this->Type->Strength - this->HP;
 
 		if (!nLostHP)
 		{
@@ -305,7 +304,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		const int nRemainLostHP = nLostHP + shieldDamage;
 
 		if (nRemainLostHP < 0)
-			this->HP = pType->Strength;
+			this->HP = this->Type->Strength;
 		else
 			this->HP -= shieldDamage;
 
@@ -671,24 +670,23 @@ void ShieldClass::SelfHealing()
 		this->Timers.SelfHealing_CombatRestart.Stop();
 	}
 
-	const auto pType = this->Type;
 	const auto timer = &this->Timers.SelfHealing;
 	const auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
 
 	if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		double mult = this->SelfHealing_Rate_Warhead > 0 ? Type->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
+		double mult = this->SelfHealing_Rate_Warhead > 0 ? this->Type->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 
-	const double amount = timerWHModifier->InProgress() ? this->SelfHealing_Warhead : pType->SelfHealing;
+	const double amount = timerWHModifier->InProgress() ? this->SelfHealing_Warhead : this->Type->SelfHealing;
 	const auto percentageAmount = this->GetPercentageAmount(amount);
 
 	if (percentageAmount != 0)
 	{
-		const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+		const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
 
-		if ((this->HP < pType->Strength || percentageAmount < 0) && timer->StartTime == -1)
+		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 
 		if (this->HP > 0 && timer->Completed())
@@ -698,9 +696,9 @@ void ShieldClass::SelfHealing()
 
 			this->UpdateIdleAnim();
 
-			if (this->HP > pType->Strength)
+			if (this->HP > this->Type->Strength)
 			{
-				this->HP = pType->Strength;
+				this->HP = this->Type->Strength;
 				timer->Stop();
 			}
 			else if (this->HP <= 0)
@@ -725,17 +723,16 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
-	const auto pType = this->Type;
 
-	if (pType->Respawn)
-		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? Respawn_Rate_Warhead : pType->Respawn_Rate);
+	if (this->Type->Respawn)
+		this->Timers.Respawn.Start(this->Timers.Respawn_WHModifier.InProgress() ? this->Respawn_Rate_Warhead : this->Type->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
 	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : pType->BreakAnim;
+		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
 
 		if (pAnimType)
 		{
@@ -747,7 +744,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 		}
 	}
 
-	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : pType->BreakWeapon;
+	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;
 	this->UpdateTint();
 
@@ -763,13 +760,13 @@ void ShieldClass::RespawnShield()
 	if (this->HP <= 0 && timer->Completed())
 	{
 		timer->Stop();
-		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
+		double amount = timerWHModifier->InProgress() ? this->Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
 		this->UpdateTint();
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		double mult = this->Respawn_Rate_Warhead > 0 ? Type->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
+		double mult = this->Respawn_Rate_Warhead > 0 ? this->Type->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
@@ -887,8 +884,7 @@ bool ShieldClass::IsGreenSP()
 
 bool ShieldClass::IsYellowSP()
 {
-	auto const pType = this->Type;
-	return pType->GetConditionRed() * pType->Strength.Get() < this->HP && this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
+	return this->Type->GetConditionRed() * this->Type->Strength.Get() < this->HP && this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
 }
 
 bool ShieldClass::IsRedSP()
@@ -977,9 +973,8 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 
 int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 {
-	auto const pType = this->Type;
-	const int strength = pType->Strength.Get();
-	const auto pipsShield = isBuilding ? pType->Pips_Building.Get() : pType->Pips.Get();
+	const int strength = this->Type->Strength.Get();
+	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
 	const auto pipsGlobal = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
 
 	CoordStruct shieldPip;
@@ -989,9 +984,9 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 	else
 		shieldPip = pipsGlobal;
 
-	if (this->HP > pType->GetConditionYellow() * strength && shieldPip.X != -1)
+	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;
-	else if (this->HP > pType->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
+	else if (this->HP > this->Type->GetConditionRed() * strength && (shieldPip.Y != -1 || shieldPip.X != -1))
 		return shieldPip.Y == -1 ? shieldPip.X : shieldPip.Y;
 	else if (shieldPip.Z != -1 || shieldPip.X != -1)
 		return shieldPip.Z == -1 ? shieldPip.X : shieldPip.Z;

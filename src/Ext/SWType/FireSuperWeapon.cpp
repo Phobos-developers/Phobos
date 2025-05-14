@@ -17,8 +17,7 @@
 
 void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 {
-	auto const pType = pSW->Type;
-	auto const pTypeExt = SWTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
 
 	if (pTypeExt->LimboDelivery_Types.size() > 0)
 		pTypeExt->ApplyLimboDelivery(pSW->Owner);
@@ -35,10 +34,10 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->Convert_Pairs.size() > 0)
 		pTypeExt->ApplyTypeConversion(pSW);
 
-	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+	if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
-	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pType->ArrayIndex];
+	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pSW->Type->ArrayIndex];
 	sw_ext.ShotCount++;
 }
 
