@@ -30,7 +30,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr) const
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 {
 	if (!pTarget)
 		return false;
@@ -38,24 +38,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!this->EffectsRequireVerses)
 		return true;
 
-	auto armorType = pTarget->GetTechnoType()->Armor;
-
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-
-	if (pTargetExt)
-	{
-		if (const auto pShieldData = pTargetExt->Shield.get())
-		{
-			if (pShieldData->IsActive())
-			{
-				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
-					armorType = pShieldData->GetArmorType();
-			}
-		}
-	}
-
-	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -109,13 +92,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 
 	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-		auto armorType = pTechno->GetTechnoType()->Armor;
-
-		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
-			armorType = pExt->Shield->GetArmorType();
-
-		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno) == 0.0)
 			return false;
 	}
 
