@@ -396,19 +396,17 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);
-	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 
 	if (pThis->WeaponType)
 	{
-		if (auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-		{
-			int defaultValue = RulesClass::Instance->BallisticScatter;
-			int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-			int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
+		GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
+		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+		int defaultValue = RulesClass::Instance->BallisticScatter;
+		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
-			int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
-			R->EAX(result);
-		}
+		int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
+		R->EAX(result);
 	}
 
 	return 0;

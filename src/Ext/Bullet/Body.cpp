@@ -143,14 +143,13 @@ void BulletExt::ExtData::InitializeLaserTrails()
 
 	auto pThis = this->OwnerObject();
 
-	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-	{
-		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
-		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-		{
-			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
-		}
+	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+	{
+		this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
 	}
 }
 
@@ -196,8 +195,8 @@ inline void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHo
 
 	if (pAttach)
 	{
-		if (pAttach->WhatAmI() == AbstractType::Building)
-			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(static_cast<BuildingClass*>(pAttach), pBullet->SourceCoords.Y);
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pAttach))
+			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(pBuilding, pBullet->SourceCoords.Y);
 		else
 			pAnim->SetOwnerObject(pAttach);
 	}

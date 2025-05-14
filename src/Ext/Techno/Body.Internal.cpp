@@ -11,12 +11,12 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	if (auto pTypeExt = this->TypeExtData)
+	auto pTypeExt = this->TypeExtData;
+	this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
+
+	for (auto const& entry : pTypeExt->LaserTrailData)
 	{
-		for (auto const& entry : pTypeExt->LaserTrailData)
-		{
-			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
-		}
+		this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 	}
 }
 
