@@ -147,12 +147,11 @@ bool MissileTrajectory::OnVelocityCheck()
 	// Calculate new speed
 	if (this->Type->UniqueCurve ? this->CurveVelocityChange() : this->NotCurveVelocityChange())
 		return true;
-
 	// Check if the bullet needs to slow down the speed since it will pass through the target
 	if (this->LastDotProduct > 0)
 	{
 		const auto pBullet = this->Bullet;
-		const auto distance = pBullet->Location.DistanceFrom(pBullet->TargetCoords);
+		const auto distance = pBullet->Location.DistanceFrom(pBullet->TargetCoords + this->OffsetCoord);
 
 		if (this->MovingSpeed > distance)
 			this->MultiplyBulletVelocity(distance / this->MovingSpeed, true);
@@ -334,7 +333,7 @@ bool MissileTrajectory::CurveVelocityChange()
 	const auto pBullet = this->Bullet;
 	const auto pTarget = pBullet->Target;
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-	const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno));
+	const bool checkValid = (pTargetTechno && !PhobosTrajectory::CheckTechnoIsInvalid(pTargetTechno)) || (pTarget && pTarget->WhatAmI() == AbstractType::Bullet);
 	auto targetLocation = pBullet->TargetCoords;
 	// Follow and track the target like a missile
 	if (checkValid)
@@ -356,7 +355,6 @@ bool MissileTrajectory::CurveVelocityChange()
 			this->MovingVelocity.X += horizonMult * horizonVelocity.X;
 			this->MovingVelocity.Y += horizonMult * horizonVelocity.Y;
 			const auto horizonLength = sqrt(this->MovingVelocity.X * this->MovingVelocity.X + this->MovingVelocity.Y * this->MovingVelocity.Y);
-
 			// Limit horizontal maximum speed
 			if (horizonLength > 64.0)
 			{
@@ -376,11 +374,9 @@ bool MissileTrajectory::CurveVelocityChange()
 			this->Accelerate = false;
 			// Predict the lowest position
 			const auto futureHeight = pBullet->Location.Z + 8 * this->MovingVelocity.Z;
-
 			// Start decelerating/accelerating downwards
 			if (this->MovingVelocity.Z > -160.0)
 				this->MovingVelocity.Z -= 4.0;
-
 			// Enter gliding phase below predicted altitude
 			if (futureHeight <= targetLocation.Z || futureHeight <= pBullet->SourceCoords.Z)
 				this->InStraight = true;
@@ -432,9 +428,7 @@ bool MissileTrajectory::StandardVelocityChange()
 	{
 		const auto pType = this->Type;
 		const auto pTarget = pBullet->Target;
-		const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-		const bool checkValid = (pTarget && pTarget->WhatAmI() == AbstractType::Bullet) || (pTargetTechno && !CheckTechnoIsInvalid(pTargetTechno))
-			&& (!pType->LockDirection || !this->InStraight);
+		const bool checkValid = (!pType->LockDirection || !this->InStraight) && pTarget;
 		// Follow and track the target like a missile
 		if (checkValid)
 			pBullet->TargetCoords = pTarget->GetCoords();
@@ -443,9 +437,14 @@ bool MissileTrajectory::StandardVelocityChange()
 		// If the speed is too low, it will cause the lead time calculation results to be too far away and unable to be used
 		if (pType->LeadTimeCalculate.Get(true) && checkValid && (pType->UniqueCurve || pType->Speed > 64.0))
 		{
-			const auto leadSpeed = (pType->Speed + this->MovingSpeed) / 2;
-			const auto timeMult = targetLocation.DistanceFrom(pBullet->Location) / leadSpeed;
-			targetLocation += (pBullet->TargetCoords - this->LastTargetCoord) * timeMult;
+			const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+			// Only movable targets need to be calculated
+			if ((pTargetFoot && !PhobosTrajectory::CheckTechnoIsInvalid(pTargetFoot)) || pTarget->WhatAmI() == AbstractType::Bullet)
+			{
+				const auto leadSpeed = (pType->Speed + this->MovingSpeed) / 2;
+				const auto timeMult = targetLocation.DistanceFrom(pBullet->Location) / leadSpeed;
+				targetLocation += (pBullet->TargetCoords - this->LastTargetCoord) * timeMult;
+			}
 		}
 		// If in the cruise phase, the steering target will be set at the fixed height
 		if (this->CruiseEnable)
