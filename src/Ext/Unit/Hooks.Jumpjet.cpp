@@ -53,7 +53,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 	GET(UnitClass* const, pThis, ESI);
 	GET(int const, wpIdx, EDI);
 
-	if (err != FireError::OK && err != FireError::REARM)
+	if (pThis->IsWarpingIn() || err != FireError::OK && err != FireError::REARM)
 		return 0;
 
 	auto pType = pThis->Type;
