@@ -181,7 +181,7 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 					const auto pFoot = abstract_cast<FootClass*>(pTechno);
 
 					if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
-						result = pExt->Shield->GetHealthRatio();
+						result = pShieldData->GetHealthRatio();
 				}
 			}
 		}
