@@ -484,8 +484,20 @@ DEFINE_HOOK(0x702E4E, TechnoClass_RegisterDestruction_SaveKillerInfo, 0x6)
 	GET(TechnoClass*, pKiller, EDI);
 	GET(TechnoClass*, pVictim, ECX);
 
+	// Note: Some SW never had a "killer" or a "house" (hello "NukeSpecial"), probably never scored to the killer?
 	if (pKiller && pVictim)
 		TechnoExt::ObjectKilledBy(pVictim, pKiller);
+
+	return 0;
+}
+
+// AFAIK, only used by the teleport of the Chronoshift SW
+DEFINE_HOOK(0x70337D, HouseClass_RegisterDestruction_SaveKillerInfo, 0x6)
+{
+	GET(HouseClass*, pHouse, EDI);
+	GET(TechnoClass*, pVictim, ESI);
+
+	TechnoExt::ObjectKilledBy(pVictim, nullptr, pHouse);
 
 	return 0;
 }

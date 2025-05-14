@@ -23,21 +23,17 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	}
 }
 
-void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
+void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller, HouseClass* pHouseKiller)
 {
-	TechnoClass* pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
-		pKiller->SpawnOwner : pKiller;
+	TechnoClass* pObjectKiller = nullptr;
 
-	if (pObjectKiller && pKiller->Owner != pVictim->Owner && !pKiller->Owner->IsAlliedWith(pVictim))
+	if (pKiller)
 	{
-		auto pOwner = pKiller->Owner;
-		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+		pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+			pKiller->SpawnOwner : pKiller;
 
-		if (pOwnerExt->AreBattlePointsEnabled())
-		{
-			int points = pOwnerExt->CalculateBattlePoints(pVictim);
-			pOwnerExt->UpdateBattlePoints(points);
-		}
+		if (!pObjectKiller)
+			return;
 	}
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
@@ -46,6 +42,19 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 		{
 			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
+		}
+	}
+
+	HouseClass* pHouse = pKiller ? pKiller->Owner : pHouseKiller;
+
+	if (pHouse != pVictim->Owner)
+	{
+		auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+		if (pHouseExt->AreBattlePointsEnabled())
+		{
+			int points = pHouseExt->CalculateBattlePoints(pVictim);
+			pHouseExt->UpdateBattlePoints(points);
 		}
 	}
 }

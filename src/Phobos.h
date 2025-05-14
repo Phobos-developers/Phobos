@@ -56,6 +56,7 @@ public:
 		static bool CenterPauseMenuBackground;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
+		static bool BattlePoints_Show;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
@@ -66,6 +67,8 @@ public:
 		static const wchar_t* SWShotsFormat;
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
 		static const wchar_t* BattlePointsLabel;
+		static const wchar_t* BattlePointsSidebarLabel;
+		static bool BattlePointsSidebarLabel_InvertPosition;
 	};
 
 	class Config
@@ -95,6 +98,7 @@ public:
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
+		static bool ShowBattlePoints;
 	};
 
 	class Misc

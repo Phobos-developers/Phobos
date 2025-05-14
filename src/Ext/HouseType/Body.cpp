@@ -23,7 +23,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->BattlePoints.Read(exINI, pSection, "BattlePoints");
-	this->BattlePoints_CanReuseStandardPoints.Read(exINI, pSection, "BattlePoints.CanUseStandardPoints");
+	this->BattlePoints_CanReuseStandardPoints.Read(exINI, pSection, "BattlePoints.CanReuseStandardPoints");
 }
 
 void HouseTypeExt::ExtData::CompleteInitialization()

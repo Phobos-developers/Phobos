@@ -38,6 +38,9 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Sidebar_PowerDelta_Red.Read(exINI, pSection, "Sidebar.PowerDelta.ColorRed");
 	this->Sidebar_PowerDelta_Grey.Read(exINI, pSection, "Sidebar.PowerDelta.ColorGrey");
 	this->Sidebar_PowerDelta_Align.Read(exINI, pSection, "Sidebar.PowerDelta.Align");
+	this->Sidebar_BattlePoints_Offset.Read(exINI, pSection, "Sidebar.BattlePoints.Offset");
+	this->Sidebar_BattlePoints_Color.Read(exINI, pSection, "Sidebar.BattlePoints.Color");
+	this->Sidebar_BattlePoints_Align.Read(exINI, pSection, "Sidebar.BattlePoints.Align");
 	this->ToolTip_Background_Color.Read(exINI, pSection, "ToolTip.Background.Color");
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
@@ -65,6 +68,9 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->Sidebar_PowerDelta_Red)
 		.Process(this->Sidebar_PowerDelta_Grey)
 		.Process(this->Sidebar_PowerDelta_Align)
+		.Process(this->Sidebar_BattlePoints_Offset)
+		.Process(this->Sidebar_BattlePoints_Color)
+		.Process(this->Sidebar_BattlePoints_Align)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
 		.Process(this->ToolTip_Background_BlurSize)

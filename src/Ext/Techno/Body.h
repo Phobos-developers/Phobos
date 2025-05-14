@@ -190,7 +190,7 @@ public:
 
 	static void ChangeOwnerMissionFix(FootClass* pThis);
 	static void KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, AnimTypeClass* pVanishAnimation, bool isInLimbo = false);
-	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
+	static void ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller = nullptr, HouseClass* pHouseKiller = nullptr);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);

@@ -1124,7 +1124,10 @@ int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
 	const auto pThisTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-	int points = RulesExt::Global()->BattlePoints_DefaultKillValue.isset() ? RulesExt::Global()->BattlePoints_DefaultKillValue.Get() : 0;
+	int defaultValue = RulesExt::Global()->BattlePoints_DefaultValue.isset() ? RulesExt::Global()->BattlePoints_DefaultValue.Get() : 0;
+	int defaultFriendlyValue = RulesExt::Global()->BattlePoints_DefaultFriendlyValue.isset() ? RulesExt::Global()->BattlePoints_DefaultFriendlyValue.Get() : 0;
+
+	int points = pThis->IsAlliedWith(pTechno)? defaultFriendlyValue : defaultValue;
 	points = points == 0 && pTechnoTypeExt->BattlePoints.isset() ? pTechnoTypeExt->BattlePoints.Get() : points;
 	points = points == 0 && pThisTypeExt->BattlePoints_CanReuseStandardPoints ? pTechno->GetTechnoType()->Points : points;
 

@@ -32,6 +32,9 @@ public:
 		Valueable<ColorStruct> Sidebar_PowerDelta_Red;
 		Valueable<ColorStruct> Sidebar_PowerDelta_Grey;
 		Valueable<TextAlign> Sidebar_PowerDelta_Align;
+		Valueable<Point2D> Sidebar_BattlePoints_Offset;
+		Nullable<ColorStruct> Sidebar_BattlePoints_Color;
+		Valueable<TextAlign> Sidebar_BattlePoints_Align;
 		Nullable<ColorStruct> ToolTip_Background_Color;
 		Nullable<int> ToolTip_Background_Opacity;
 		Nullable<float> ToolTip_Background_BlurSize;
@@ -54,6 +57,9 @@ public:
 			, Sidebar_PowerDelta_Red { { 255, 0, 0 } }
 			, Sidebar_PowerDelta_Grey { { 0x80,0x80,0x80 } }
 			, Sidebar_PowerDelta_Align { TextAlign::Left }
+			, Sidebar_BattlePoints_Offset { { 0, 0 } }
+			, Sidebar_BattlePoints_Color {}
+			, Sidebar_BattlePoints_Align { TextAlign::Left }
 			, ToolTip_Background_Color { }
 			, ToolTip_Background_Opacity { }
 			, ToolTip_Background_BlurSize { }
