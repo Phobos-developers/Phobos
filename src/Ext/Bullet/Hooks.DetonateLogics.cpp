@@ -378,7 +378,7 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 	{
 		auto const pType = pTarget->GetTechnoType();
 
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pTarget, pType) == 0.0)
 			return false;
 
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
