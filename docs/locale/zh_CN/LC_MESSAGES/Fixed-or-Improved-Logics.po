@@ -614,7 +614,7 @@ msgstr ""
 msgid ""
 "Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly "
 "setting the location for the vehicle to move into when undeployed."
-msgstr "修复了 `WaterBound=true` 且拥有 `UndeployInto` 的建筑在反部署时无法正常设置载具移动位置的问题。"
+msgstr "修复了 `WaterBound=true` 且拥有 `UndeploysInto` 的建筑在反部署时无法正常设置载具移动位置的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:106
 msgid ""
@@ -2863,11 +2863,11 @@ msgstr "现在也可以自定义弹药  pip 的帧。"
 
 #: ../../Fixed-or-Improved-Logics.md:928
 msgid ""
-"`AmmoPipFrame` and `AmmoPipFrame` are frames (zero-based) of `pips2.shp` "
+"`AmmoPipFrame` and `EmptyAmmoPipFrame` are frames (zero-based) of `pips2.shp` "
 "used for ammo pip and empty ammo pip (this is not set by default) for "
 "when `PipWrap=0` (this is the default)."
 msgstr ""
-"`AmmoPipFrame` 和 `AmmoPipFrame` 是在 `PipWrap=0`（这是默认行为）时使用的 `pips2.shp` "
+"`AmmoPipFrame` 和 `EmptyAmmoPipFrame` 是在 `PipWrap=0`（这是默认行为）时使用的 `pips2.shp` "
 "中（从 0 开始的）帧，用于弹药 pip 和空弹药 pip。"
 
 #: ../../Fixed-or-Improved-Logics.md:929

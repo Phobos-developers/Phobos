@@ -1455,7 +1455,7 @@ msgid ""
 "setting the location for the vehicle to move into when undeployed (by "
 "Starkku)"
 msgstr ""
-"修复了 `WaterBound=true` 且拥有 `UndeployInto` 的建筑在反部署时无法正常设置载具移动位置的问题（by "
+"修复了 `WaterBound=true` 且拥有 `UndeploysInto` 的建筑在反部署时无法正常设置载具移动位置的问题（by "
 "Starkku）"
 
 #: ../../Whats-New.md:501

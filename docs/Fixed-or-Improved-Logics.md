@@ -925,7 +925,7 @@ Powered.KillSpawns=false ; boolean
   - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
   - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
 - Ammo pip frames can now also be customized.
-  - `AmmoPipFrame` and `AmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `AmmoPipFrame` and `EmptyAmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
   - `AmmoPipWrapStartFrame` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
   - `AmmoPipOffset` can be used to shift the starting position of ammo pips.
 - Pips for TechnoTypes with `Spawns` can now also be customized.
