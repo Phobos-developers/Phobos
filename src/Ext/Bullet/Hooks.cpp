@@ -102,10 +102,9 @@ DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 	enum { SkipGameCode = 0x4668BD };
 
 	GET(BulletClass*, pThis, EBP);
-	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
+	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
 
 	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
-
 	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
 	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
 	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
@@ -277,11 +276,11 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	enum { SkipGameCode = 0x469091 };
 
 	GET(BulletClass*, pThis, ESI);
-	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
+	REF_STACK(const CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	int min = pTypeExt->ClusterScatter_Min.Get();
-	int max = pTypeExt->ClusterScatter_Max.Get();
+	const int min = pTypeExt->ClusterScatter_Min.Get();
+	const int max = pTypeExt->ClusterScatter_Max.Get();
 	auto coords = origCoords;
 
 	for (int i = 0; i < pThis->Type->Cluster; i++)
@@ -420,19 +419,19 @@ DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
 
 DEFINE_HOOK(0x6FF008, TechnoClass_Fire_BeforeMoveTo, 0x8)
 {
-	GET(BulletClass*, pBullet, EBX);
-	const auto projectile = pBullet->Type;
+	GET(BulletClass* const, pBullet, EBX);
 
-	if (projectile->Arcing && !BulletTypeExt::ExtMap.Find(projectile)->Arcing_AllowElevationInaccuracy)
+	const auto pBulletType = pBullet->Type;
+
+	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy)
 	{
-		LEA_STACK(BulletVelocity*, velocity, STACK_OFFSET(0xB0, -0x60));
-		LEA_STACK(CoordStruct*, crdSrc, STACK_OFFSET(0xB0, -0x6C));
+		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xB0, -0x60));
+		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xB0, -0x6C));
+		REF_STACK(const CoordStruct, crdOffset, STACK_OFFSET(0xB0, -0x1C));
+		REF_STACK(const CoordStruct, fireCoords, STACK_OFFSET(0xB0, -0x6C));
 
-		GET_STACK(CoordStruct, crdOffset, STACK_OFFSET(0xB0, -0x1C));
-		GET_STACK(CoordStruct, fireCoords, STACK_OFFSET(0xB0, -0x6C));
 		const auto crdTgt = crdOffset + fireCoords;
-
-		BulletExt::ApplyArcingFix(pBullet, *crdSrc, crdTgt, *velocity);
+		BulletExt::ApplyArcingFix(pBullet, crdSrc, crdTgt, velocity);
 	}
 
 	return 0;
@@ -440,16 +439,17 @@ DEFINE_HOOK(0x6FF008, TechnoClass_Fire_BeforeMoveTo, 0x8)
 
 DEFINE_HOOK(0x44D46E, BuildingClass_Mission_Missile_BeforeMoveTo, 0x8)
 {
-	GET(BulletClass*, pBullet, EDI);
-	const auto projectile = pBullet->Type;
+	GET(BulletClass* const, pBullet, EDI);
 
-	if (projectile->Arcing && !BulletTypeExt::ExtMap.Find(projectile)->Arcing_AllowElevationInaccuracy)
+	const auto pBulletType = pBullet->Type;
+
+	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy)
 	{
-		LEA_STACK(BulletVelocity*, velocity, STACK_OFFSET(0xE8, -0xD0));
-		LEA_STACK(CoordStruct*, crdSrc, STACK_OFFSET(0xE8, -0x8C));
-		GET_STACK(CoordStruct, crdTgt, STACK_OFFSET(0xE8, -0x4C));
+		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xE8, -0xD0));
+		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xE8, -0x8C));
+		REF_STACK(const CoordStruct, crdTgt, STACK_OFFSET(0xE8, -0x4C));
 
-		BulletExt::ApplyArcingFix(pBullet, *crdSrc, crdTgt, *velocity);
+		BulletExt::ApplyArcingFix(pBullet, crdSrc, crdTgt, velocity);
 	}
 
 	return 0;
