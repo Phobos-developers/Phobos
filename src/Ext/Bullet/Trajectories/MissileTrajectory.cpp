@@ -275,7 +275,7 @@ void MissileTrajectory::InitializeBulletNotCurve()
 		this->OffsetCoord = this->GetOnlyStableOffsetCoords(rotateRadian);
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
-		this->OffsetCoord = this->GetInaccurateTargetCoords(this->OffsetCoord, source.DistanceFrom(target));
+		this->OffsetCoord = this->GetInaccurateTargetCoords((target + this->OffsetCoord), source.DistanceFrom(target)) - target;
 	// Without setting an initial direction, it will be launched directly towards the target
 	if (pType->PreAimCoord == CoordStruct::Empty)
 	{
