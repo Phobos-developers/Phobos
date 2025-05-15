@@ -273,9 +273,11 @@ DEFINE_HOOK(0x67E826, LoadGame_Phobos, 0x6)
 	return 0;
 }
 
+std::unordered_map<void*, std::weak_ptr<void>> SavegameGlobal::GlobalSharedRegistry;
+
 DEFINE_HOOK(0x67F7C8, LoadGame_ClearShared, 0x5)
 {
-	Savegame::ClearSharedRegistry();
+	SavegameGlobal::ClearSharedRegistry();
 	return 0;
 }
 

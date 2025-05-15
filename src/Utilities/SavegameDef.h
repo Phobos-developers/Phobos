@@ -20,6 +20,13 @@
 #include "Swizzle.h"
 #include "Debug.h"
 
+class SavegameGlobal
+{
+public:
+	static std::unordered_map<void*, std::weak_ptr<void>> GlobalSharedRegistry;
+	static void ClearSharedRegistry() { SavegameGlobal::GlobalSharedRegistry.clear(); }
+};
+
 namespace Savegame
 {
 	template <typename T>
@@ -66,9 +73,6 @@ namespace Savegame
 	}
 
 	#pragma warning(pop)
-
-	static std::unordered_map<void*, std::weak_ptr<void>> GlobalSharedRegistry;
-	static void ClearSharedRegistry() { GlobalSharedRegistry.clear(); }
 
 	template <typename T>
 	T* RestoreObject(PhobosStreamReader& Stm, bool RegisterForChange)
@@ -120,7 +124,6 @@ namespace Savegame
 		Stm.Save(Value);
 		return true;
 	}
-
 
 	// specializations
 
@@ -335,18 +338,18 @@ namespace Savegame
 			T* ptrOld = nullptr;
 			if (Stm.Load(ptrOld) && ptrOld)
 			{
-				std::shared_ptr<T> ptrNew = ObjectFactory<T>()(Stm);
+				std::shared_ptr<T> ptrNew = std::make_shared<T>();
 				if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
 				{
-					auto it = GlobalSharedRegistry.find(ptrOld);
-					if (it != GlobalSharedRegistry.end())
+					auto it = SavegameGlobal::GlobalSharedRegistry.find(ptrOld);
+					if (it != SavegameGlobal::GlobalSharedRegistry.end())
 					{
 						Value = std::static_pointer_cast<T>(it->second.lock());
 					}
 					else
 					{
 						Value = ptrNew;
-						GlobalSharedRegistry[ptrOld] = ptrNew;
+						SavegameGlobal::GlobalSharedRegistry[ptrOld] = ptrNew;
 						PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
 					}
 
