@@ -176,7 +176,7 @@ bool TracingTrajectory::ChangeVelocity()
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
 	// Find the outermost transporter
-	const auto pFirer = GetSurfaceFirer(pBullet->Owner);
+	const auto pFirer = this->GetSurfaceFirer(pBullet->Owner);
 	// Tracing the target
 	if (const auto pTarget = pBullet->Target)
 		pBullet->TargetCoords = pTarget->GetCoords();
@@ -269,13 +269,13 @@ bool TracingTrajectory::ChangeVelocity()
 			{
 				auto& groupData = (*this->TrajectoryGroup)[pBullet->Type->UniqueID];
 				// Valid group
-				if (const auto size = static_cast<int>(groupData.first.size()))
+				if (const auto size = static_cast<int>(groupData.Bullets.size()))
 				{
 					// Record radian by main bullet and add stable interval to others
 					if (!this->GroupIndex)
-						this->RotateRadian = groupData.second.first = cw ? (this->RotateRadian + pType->Speed / 2 / radius) : (this->RotateRadian - pType->Speed / 2 / radius);
+						this->RotateRadian = groupData.Angle = cw ? (this->RotateRadian + pType->Speed / 2 / radius) : (this->RotateRadian - pType->Speed / 2 / radius);
 					else
-						this->RotateRadian = groupData.second.first + (Math::TwoPi * this->GroupIndex / size);
+						this->RotateRadian = groupData.Angle + (Math::TwoPi * this->GroupIndex / size);
 				}
 			}
 			// Calculate the actual offset value

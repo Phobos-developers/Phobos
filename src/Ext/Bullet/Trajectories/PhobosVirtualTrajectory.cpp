@@ -64,7 +64,7 @@ void VirtualTrajectory::OnUnlimbo()
 	// Virtual
 	this->RemainingDistance = INT_MAX;
 	// Find the outermost transporter
-	if (const auto pFirer = GetSurfaceFirer(this->Bullet->Owner))
+	if (const auto pFirer = this->GetSurfaceFirer(this->Bullet->Owner))
 		this->SurfaceFirerID = pFirer->UniqueID;
 }
 
@@ -81,7 +81,7 @@ bool VirtualTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 	if (!pTechno)
 		return true;
 	// Find the outermost transporter
-	pTechno = GetSurfaceFirer(pTechno);
+	pTechno = this->GetSurfaceFirer(pTechno);
 
 	if (!TechnoExt::IsActive(pTechno) || this->SurfaceFirerID != pTechno->UniqueID)
 		return true;

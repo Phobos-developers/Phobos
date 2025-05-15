@@ -220,7 +220,24 @@ public:
 	CoordStruct FLHCoord; // Launch FLH
 	int CurrentBurst; // Current burst index, mirror is required for negative numbers
 	int CountOfBurst; // Upper limit of burst counts
-	std::shared_ptr<PhobosMap<DWORD, std::pair<std::vector<DWORD>, std::pair<double, bool>>>> TrajectoryGroup; // For capacity count
+
+	struct GroupData
+	{
+		std::vector<DWORD> Bullets {};
+		double Angle { 0.0 };
+		bool ShouldUpdate { true };
+
+		GroupData() = default;
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
+
+	std::shared_ptr<PhobosMap<DWORD, PhobosTrajectory::GroupData>> TrajectoryGroup; // For capacity count
 	int GroupIndex; // Index in trajectory group
 
 	int PassDetonateDamage; // Current damage caused by the pass warhead

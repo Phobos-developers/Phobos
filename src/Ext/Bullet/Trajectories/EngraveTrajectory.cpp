@@ -306,7 +306,7 @@ void EngraveTrajectory::DrawEngraveLaser()
 	this->LaserTimer.Start(pType->LaserDelay);
 	auto fireCoord = pBullet->SourceCoords;
 	// Find the outermost transporter
-	pFirer = GetSurfaceFirer(pFirer);
+	pFirer = this->GetSurfaceFirer(pFirer);
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
 	if (!this->NotMainWeapon && pFirer && !pFirer->InLimbo)
 		fireCoord = TechnoExt::GetFLHAbsoluteCoords(pFirer, this->FLHCoord, pFirer->HasTurret());
