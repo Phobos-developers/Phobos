@@ -25,27 +25,26 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 
 	GET(InfantryClass*, pSlave, ESI);
 
-	if (const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type))
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->Type);
+
+	switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
 	{
-		switch (pTypeExt->Slaved_OwnerWhenMasterKilled.Get())
+	case SlaveChangeOwnerType::Suicide:
+		return KillTheSlave;
+
+	case SlaveChangeOwnerType::Master:
+		R->EAX(pSlave->Owner);
+		return ChangeSlaveOwner;
+
+	case SlaveChangeOwnerType::Neutral:
+		if (auto pNeutral = HouseClass::FindNeutral())
 		{
-		case SlaveChangeOwnerType::Suicide:
-			return KillTheSlave;
-
-		case SlaveChangeOwnerType::Master:
-			R->EAX(pSlave->Owner);
+			R->EAX(pNeutral);
 			return ChangeSlaveOwner;
-
-		case SlaveChangeOwnerType::Neutral:
-			if (auto pNeutral = HouseClass::FindNeutral())
-			{
-				R->EAX(pNeutral);
-				return ChangeSlaveOwner;
-			}
-
-		default: // SlaveChangeOwnerType::Killer
-			return 0x0;
 		}
+
+	default: // SlaveChangeOwnerType::Killer
+		break;
 	}
 
 	return 0x0;
@@ -66,11 +65,11 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 
 	if (pThis->Owner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
-		{
-			if (pTypeExt->Spawner_DelayFrames.isset())
-				R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
-		}
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+		if (pTypeExt->Spawner_DelayFrames.isset())
+			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
+
 	}
 
 	return 0;
@@ -83,11 +82,10 @@ DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
 
 	if (pThis->Owner)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType()))
-		{
-			if (pTypeExt->Spawner_DelayFrames.isset())
-				R->ECX(pTypeExt->Spawner_DelayFrames.Get());
-		}
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+
+		if (pTypeExt->Spawner_DelayFrames.isset())
+			R->ECX(pTypeExt->Spawner_DelayFrames.Get());
 	}
 
 	return 0;
@@ -347,9 +345,7 @@ DEFINE_HOOK(0x739920, UnitClass_TryToDeploy_DisableRegroupAtNewConYard, 0x6)
 {
 	enum { SkipRegroup = 0x73992B, DoNotSkipRegroup = 0 };
 
-	auto const pRules = RulesExt::Global();
-
-	return pRules->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
+	return RulesExt::Global()->GatherWhenMCVDeploy ? DoNotSkipRegroup : SkipRegroup;
 }
 
 DEFINE_HOOK(0x736234, UnitClass_ChronoSparkleDelay, 0x5)
@@ -371,8 +367,10 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 
 	pThis->IsSelected = true;
 
-	if (RulesExt::Global()->SelectionFlashDuration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
-		pThis->Flash(RulesExt::Global()->SelectionFlashDuration);
+	auto const duration = RulesExt::Global()->SelectionFlashDuration;
+
+	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+		pThis->Flash(duration);
 
 	return 0;
 }
@@ -381,12 +379,15 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 {
 	enum { SkipGameCode = 0x51B255 };
 
-	GET(InfantryClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EBX);
 
+	if (pTarget)
+		return 0;
+
+	GET(InfantryClass*, pThis, ESI);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (!pTarget && pExt->SkipTargetChangeResetSequence)
+	if (pExt->SkipTargetChangeResetSequence)
 	{
 		pThis->IsFiring = false;
 		pExt->SkipTargetChangeResetSequence = false;
@@ -416,12 +417,13 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(Sequence, sequence, EDI);
 
 	R->EBP(0); // Restore overridden instructions.
 
 	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->OnlyUseLandSequences)
 		return SkipWaterSequences;
+
+	GET(Sequence, sequence, EDI);
 
 	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.
 		return UseSwim;

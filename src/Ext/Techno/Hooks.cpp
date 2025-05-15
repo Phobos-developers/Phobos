@@ -169,10 +169,6 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	GET(TechnoClass*, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
-
-	if (!pType)
-		return 0;
-
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
@@ -518,14 +514,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
-	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
@@ -571,22 +567,16 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	int maxSpeed = 0;
+	auto const pThisType = pThis->GetTechnoType();
+	int maxSpeed = pThisType->Speed;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThisType);
 
-	if (pThis)
+	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
 	{
-		maxSpeed = pThis->GetTechnoType()->Speed;
-
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-		if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
-		{
-			if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
-				maxSpeed = pType->Speed;
-		}
+		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
+			maxSpeed = pType->Speed;
 	}
 
 	R->EAX(maxSpeed);
 	return SkipGameCode;
 }
-

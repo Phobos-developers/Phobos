@@ -554,7 +554,7 @@ bool ShieldClass::ConvertCheck()
 		return false;
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
-	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(newID);
 	const auto pOldType = this->Type;
 	bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
 
