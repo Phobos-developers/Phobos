@@ -267,6 +267,7 @@ DEFINE_HOOK(0x6AC67A, SidebarClass_6AC5F0_TabIndex, 0x5)
 DEFINE_JUMP(LJMP, 0x6A8D07, 0x6A8D17) // Skip tabIndex check
 #pragma endregion
 
+// Full rewrite
 DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
 {
 	GET(SuperClass*, pSuper, ECX);
@@ -282,15 +283,33 @@ DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
 		return SkipAll;
 	}
 
-	const auto pOwner = pSuper->Owner;
-	auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
-	auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-
-	if (pExt->BattlePoints_Amount > 0)
+	if (RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get())
 	{
-		if (pOwnerExt->BattlePoints < pExt->BattlePoints_Amount)
-			return ReturnZero;
+		auto pOwnerExt = HouseExt::ExtMap.Find(pSuper->Owner);
+		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+
+		if (pExt->BattlePoints_Amount > 0)
+		{
+			if (pOwnerExt->BattlePoints < pExt->BattlePoints_Amount)
+				return ReturnZero;
+		}
 	}
 
 	return ReturnIsReady;
+}
+
+// Executed before the Ares hook for launching AI super weapons, SW->IsReady property won't be updated anymore
+DEFINE_HOOK(0x4FD77C, ExpertAI_SuperWeaponAI_RecheckIsReady, 0x5)
+{
+	GET(HouseClass*, pHouse, EBX);
+	if (!SessionClass::IsCampaign() || pHouse->IQLevel2 >= RulesClass::Instance->SuperWeapons)
+	{
+		for (auto const& pSuper : pHouse->Supers)
+		{
+			if (pSuper->IsReady)
+				pSuper->IsReady = pSuper->GetIsReady();
+		}
+	}
+
+	return 0;
 }

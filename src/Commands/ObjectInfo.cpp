@@ -13,6 +13,7 @@
 
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/House/Body.h>
 
 const char* ObjectInfoCommandClass::GetName() const
 {
@@ -152,6 +153,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			append(", Ammo = (%d / %d)", pFoot->Ammo, pType->Ammo);
 
 		append("\n");
+		const auto pOwnerExt = HouseExt::ExtMap.Find(pFoot->Owner);
+		append("BP: %d\n", pOwnerExt->BattlePoints);
 		display();
 	};
 
@@ -217,6 +220,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		if (pTechnoExt->CurrentShieldType && pShieldData)
 			append("Current Shield HP = (%d / %d)\n", pShieldData->GetHP(), pTechnoExt->CurrentShieldType->Strength);
 
+		const auto pOwnerExt = HouseExt::ExtMap.Find(pBuilding->Owner);
+		append("BP: %d\n", pOwnerExt->BattlePoints);
 		display();
 	};
 

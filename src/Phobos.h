@@ -56,7 +56,6 @@ public:
 		static bool CenterPauseMenuBackground;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
-		static bool BattlePoints_Show;
 
 		static const wchar_t* CostLabel;
 		static const wchar_t* PowerLabel;
@@ -98,7 +97,6 @@ public:
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
-		static bool ShowBattlePoints;
 	};
 
 	class Misc
