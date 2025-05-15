@@ -69,6 +69,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		auto const originalLocation = pThis->Location;
 		auto const pOriginalTarget = pThis->Target;
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
+		auto const isFull = pWHExt->DetonateOnAllMapObjects_Full;
 		auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
 
 		auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
@@ -78,23 +79,21 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 			return vec;
 		};
 
-		std::function<void(TechnoClass*)> tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
+		auto tryDetonate = [pThis, pWHExt, pOwner, isFull](TechnoClass* pTechno)
 			{
 				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
 				{
-					pThis->Target = pTechno;
-					pThis->Location = pTechno->GetCoords();
-					pThis->Detonate(pTechno->GetCoords());
-				}
-			};
-
-		if (!pWHExt->DetonateOnAllMapObjects_Full)
-			tryDetonate = [pThis, pWHExt, pOwner](TechnoClass* pTechno)
-			{
-				if (pWHExt->EligibleForFullMapDetonation(pTechno, pOwner))
-				{
-					int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
-					pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
+					if (isFull)
+					{
+						pThis->Target = pTechno;
+						pThis->Location = pTechno->GetCoords();
+						pThis->Detonate(pTechno->GetCoords());
+					}
+					else
+					{
+						int damage = (pThis->Health * pThis->DamageMultiplier) >> 8;
+						pWHExt->DamageAreaWithTarget(pTechno->GetCoords(), damage, pThis->Owner, pThis->WH, true, pOwner, pTechno);
+					}
 				}
 			};
 
@@ -164,13 +163,14 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	enum { SkipGameCode = 0x469EBA };
 
 	GET(BulletClass*, pThis, ESI);
-	GET(int, debrisCount, EBX);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 	auto const debrisAnims = pWHExt->DebrisAnims.GetElements(RulesClass::Instance->MetallicDebris);
 
 	if (debrisAnims.size() < 1)
 		return SkipGameCode;
+
+	GET(int, debrisCount, EBX);
 
 	while (debrisCount > 0)
 	{
@@ -204,19 +204,20 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 {
 	enum { SkipGameCode = 0x469C98 };
 
-	GET(BulletClass*, pThis, ESI);
 	GET(AnimTypeClass*, pAnimType, EBX);
-	LEA_STACK(CoordStruct*, coords, STACK_OFFSET(0xA4, -0x40));
 
 	bool createdAnim = false;
 
 	if (pAnimType)
 	{
+		GET(BulletClass*, pThis, ESI);
+		LEA_STACK(CoordStruct*, coords, STACK_OFFSET(0xA4, -0x40));
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
-		int creationInterval = pWHExt->Splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
+		const bool splashed = pWHExt->Splashed;
+		int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
-		int scatterMin = pWHExt->Splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
-		int scatterMax = pWHExt->Splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
+		int scatterMin = splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
+		int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
 		bool allowScatter = scatterMax != 0 || scatterMin != 0;
 
 		if (creationInterval > 0 && pThis->Owner)
@@ -229,16 +230,16 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			HouseClass* pVictim = nullptr;
 
-			if (TechnoClass* Target = generic_cast<TechnoClass*>(pThis->Target))
+			if (auto const Target = abstract_cast<TechnoClass*>(pThis->Target))
 				pVictim = Target->Owner;
 
 			auto types = make_iterator_single(pAnimType);
 
-			if (pWHExt->SplashList_CreateAll && pWHExt->Splashed)
+			if (pWHExt->SplashList_CreateAll && splashed)
 			{
 				types = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 			}
-			else if (!pWHExt->Splashed)
+			else if (!splashed)
 			{
 				bool createAll = pWHExt->AnimList_CreateAll;
 
@@ -295,13 +296,13 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
-	GET_BASE(CoordStruct*, coords, 0x8);
 
 	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
+		GET_BASE(CoordStruct*, coords, 0x8);
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
 		int defaultDamage = pThis->WeaponType->Damage;
 
@@ -378,7 +379,7 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 	{
 		auto const pType = pTarget->GetTechnoType();
 
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pTarget, pType) == 0.0)
 			return false;
 
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
