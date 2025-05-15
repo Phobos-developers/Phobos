@@ -33,11 +33,8 @@ DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)       // Tec
 
 	if (auto pTransport = pThis->Transporter)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			if (pTypeExt->Passengers_SyncOwner)
-				return returnAddress;
-		}
+		if (TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType())->Passengers_SyncOwner)
+			return returnAddress;
 	}
 
 	return 0;
@@ -71,19 +68,24 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EDI);
 
-	if (pThis && pPassenger)
+	if (pPassenger)
 	{
+		GET(TechnoClass*, pThis, ESI);
+
+		if (!pThis)
+			return 0;
+
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
 
-		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
@@ -95,17 +97,22 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 
 DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EAX);
 
-	if (pThis && pPassenger)
+	if (pPassenger)
 	{
+		GET(TechnoClass*, pThis, ESI);
+
+		if (!pThis)
+			return 0;
+
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		// Remove from transport reloader list before switching house
-		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			auto& vec = ScenarioExt::Global()->TransportReloaders;
@@ -177,11 +184,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 	if (auto pTransport = pThis->Transporter)
 	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
-			return 0x6F72DE;
-		}
+		auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+		return 0x6F72DE;
 	}
 
 	return 0;
@@ -193,11 +198,9 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 
 	if (auto pTransport = pThis->Owner->Transporter)
 	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
-			return 0x71A838;
-		}
+		auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
+		return 0x71A838;
 	}
 
 	return 0;
@@ -207,11 +210,11 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 {
 	enum { ReturnFromFunction = 0x71057F };
 
-	GET(TechnoClass* const, pThis, ECX);
 	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x8, 0x4));
 
 	if (pTarget)
 	{
+		GET(TechnoClass* const, pThis, ECX);
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (!pTypeExt->OpenTopped_ShareTransportTarget)
@@ -476,9 +479,13 @@ DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 	enum { NextAction = 0x4D92ED, NotifyUnlink = 0x4D92CE, DoNothing = 0x4D946C };
 
 	GET(UnitClass* const, pThis, ESI);
-	GET(const RadioCommand, answer, EAX);
 	// Restore vanilla check
-	if (pThis->IsTether || answer == RadioCommand::AnswerPositive)
+	if (pThis->IsTether)
+		return NextAction;
+
+	GET(const RadioCommand, answer, EAX);
+
+	if (answer == RadioCommand::AnswerPositive)
 		return NextAction;
 	// The link should not be disconnected while the transporter is in motion (passengers waiting to enter),
 	// as this will result in the first passenger not getting on board
