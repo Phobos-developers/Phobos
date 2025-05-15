@@ -14,7 +14,8 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool isInfantryHeal = false;
 	int selfHealFrames = 0;
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
 		return;
@@ -22,8 +23,9 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
 	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 	bool isOrganic = false;
+	auto const whatAmI = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
+	if (whatAmI == AbstractType::Infantry || (pType->Organic && whatAmI == AbstractType::Unit))
 		isOrganic = true;
 
 	if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
@@ -32,7 +34,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
 		isInfantryHeal = true;
 	}
-	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)))
+	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (whatAmI == AbstractType::Unit && !isOrganic)))
 	{
 		drawPip = true;
 		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
@@ -46,35 +48,35 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		int yOffset = 0;
 
 		if (Unsorted::CurrentFrame % selfHealFrames <= 5
-			&& pThis->Health < pThis->GetTechnoType()->Strength)
+			&& pThis->Health < pType->Strength)
 		{
 			isSelfHealFrame = true;
 		}
 
-		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
+		if (whatAmI == AbstractType::Unit || whatAmI == AbstractType::Aircraft)
 		{
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
 			xOffset = offset.X;
-			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+			yOffset = offset.Y + pType->PixelSelectionBracketDelta;
 		}
-		else if (pThis->WhatAmI() == AbstractType::Infantry)
+		else if (whatAmI == AbstractType::Infantry)
 		{
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
 			xOffset = offset.X;
-			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+			yOffset = offset.Y + pType->PixelSelectionBracketDelta;
 		}
 		else
 		{
-			auto pType = static_cast<BuildingClass*>(pThis)->Type;
-			int fHeight = pType->GetFoundationHeight(false);
+			auto pBldType = static_cast<BuildingClass*>(pThis)->Type;
+			int fHeight = pBldType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
-			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
+			yOffset = offset.Y + yAdjust * fHeight + pBldType->Height * yAdjust;
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
@@ -213,7 +215,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			break;
 		}
 
-		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pThis->GetTechnoType()->PixelSelectionBracketDelta : 0;
+		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pTechnoType->PixelSelectionBracketDelta : 0;
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
