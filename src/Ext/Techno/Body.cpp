@@ -49,16 +49,13 @@ TechnoExt::ExtData::~ExtData()
 
 	this->ElectricBolts.clear();
 
-	if (this->HasSquad)
+	if (this->SquadManager)
 	{
-		if (this->SquadManager != nullptr)
+		this->SquadManager->RemoveTechno(pThis);
+		if (this->SquadManager->Squad_Members.size() == 1)
 		{
-			this->SquadManager->RemoveTechno(pThis);
-			if (this->SquadManager->Squad_Members.size() == 1)
-			{
-				SquadManager::RemoveGlobals(this->SquadManager);
-				this->SquadManager = nullptr;
-			}
+			SquadManager::RemoveGlobals(this->SquadManager);
+			this->SquadManager = nullptr;
 		}
 	}
 }
