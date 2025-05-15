@@ -979,23 +979,6 @@ ReturnWeapon=                           ; WeaponType
 ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
-### Shrapnel enhancements
-
-![image](_static/images/shrapnel.gif)
-*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
-- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
-  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]                   ; Projectile
-Shrapnel.AffectsGround=false       ; boolean
-Shrapnel.AffectsBuildings=false    ; boolean
-Shrapnel.UseWeaponTargeting=false  ; boolean
-```
-
 ## Super Weapons
 
 ### AI Superweapon delay timer
@@ -1289,7 +1272,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; List of TechnoTypes
-BuildLimitGroup.Nums=                           ; integer, or a list of integers
+BuildLimitGroup.Nums=                           ; integer, or a List of integers
 BuildLimitGroup.Factor=1                        ; integer
 BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
 BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
@@ -1686,7 +1669,7 @@ CombatAlert.Suppress=                  ; boolean
 
 ### Recount burst index
 
-- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets. Defaults to `[General] -> RecountBurst`, which defaults to false.
+- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames). Defaults to `[General] -> RecountBurst`, which defaults to false.
 
 In `rulesmd.ini`:
 ```ini
@@ -1754,7 +1737,8 @@ VoiceCreated=                ; Sound entry
 - `TiberiumEater.CellN` set a list of cells that'll process tiberium eating, where `N` is 0-based and the values are offset related to the TechnoType's current cell. If not set, only the ores on the TechnoType's current cell will be eaten.
 - `TiberiumEater.AmountPerCell` controls the amount of ores that can be eaten at each cell at once. No limit when it's below 0.
 - By default, ores mined in this way worth the same as regular harvesting. This can be adjusted by `TiberiumEater.CashMultiplier`.
-- `TiberiumEater.Display`, if set to true, will create a flying text to display the total credits received in each eating process. `TiberiumEater.Display.Houses` determines which houses can see the credits display.
+- `TiberiumEater.Display`, if set to true, will create a flying text to display the total credits received in each eating process.
+  - `TiberiumEater.Display.Houses` determines which houses can see the credits display.
 - An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
   - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
   - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.

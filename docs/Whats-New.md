@@ -376,6 +376,7 @@ New:
 - [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
 - [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
 - [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
+- Dehardcoded 255 limit of `OverlayType` (by secsome)
 - New AdvancedDrive locomotor (by CrimRecya)
 
 Vanilla fixes:
@@ -396,6 +397,7 @@ Vanilla fixes:
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
+- Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -685,6 +687,7 @@ Vanilla fixes:
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead (by CrimRecya)
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
+- Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
