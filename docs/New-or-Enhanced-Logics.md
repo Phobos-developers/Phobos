@@ -450,13 +450,20 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Infantry Squad Production and Selection
 This feature allows the barracks to produce infantries in a __squad__. A squad can be produced in one click on its icon, and can be selected by one click on any squad member.
-- `Squad.Members` indicates additional squad members beside this infantry.
-- `Squad.isInitAsTeam` controls whether or not this infantry is initialized in squad, if set to true, the infantry will be produced in a squad according to `Squad.Members`, default to false.
+- `Squad.Members` indicates additional squad members beside this infantry, and the members will be produced at the same time.
+- `Squad.isInitAsTeam` controls whether or not this infantry is initialized in squad, if set to true, the infantry will be selected in a squad according to `Squad.Members`, default to false.
 
 ```
 [SOMEINFANTRYTYPE]
-Squad.Members=E1, E1 ;squad members besides this infantry.
-Squad.isInitAsTeam=yes ;does this infantry initialized in squad.
+Squad.Members=                  ;List of InfantryTypes
+Squad.isInitAsTeam=false        ;boolean
+```
+
+ARES inital payload can be assigned to a squad as well. `Squad.isInitAsTeam` determines if inital payload is selected as a squad.
+
+```
+[SOMEUNITTYPE]
+Squad.isInitAsTeam=false        ;boolean
 ```
 
 
