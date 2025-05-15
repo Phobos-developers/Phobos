@@ -23,7 +23,7 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->BattlePoints.Read(exINI, pSection, "BattlePoints");
-	this->BattlePoints_CanReuseStandardPoints.Read(exINI, pSection, "BattlePoints.CanReuseStandardPoints");
+	this->BattlePoints_CanUseStandardPoints.Read(exINI, pSection, "BattlePoints.CanUseStandardPoints");
 }
 
 void HouseTypeExt::ExtData::CompleteInitialization()
@@ -37,7 +37,7 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->BattlePoints)
-		.Process(this->BattlePoints_CanReuseStandardPoints)
+		.Process(this->BattlePoints_CanUseStandardPoints)
 		;
 }
 

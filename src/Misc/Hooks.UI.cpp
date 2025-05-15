@@ -83,21 +83,21 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		return 0;
 
 	RectangleStruct vRect = DSurface::Sidebar->GetRect();
+	auto pHouseExt = HouseExt::ExtMap.Find(pPlayer);
 
-	if (RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get())
+	if (pHouseExt->AreBattlePointsEnabled())
 	{
 		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 
 		ColorStruct clrToolTip = pSideExt->Sidebar_BattlePoints_Color.Get(Drawing::TooltipColor);
 
-		auto pHouseExt = HouseExt::ExtMap.Find(pPlayer);
 		int points = pHouseExt->BattlePoints;
 
-		if (Phobos::UI::BattlePointsSidebarLabel_InvertPosition)
-			swprintf_s(counter, L"%d %ls", points, Phobos::UI::BattlePointsSidebarLabel);
+		if (Phobos::UI::BattlePointsSidebar_Label_InvertPosition)
+			swprintf_s(counter, L"%d %ls", points, Phobos::UI::BattlePointsSidebar_Label);
 		else
-			swprintf_s(counter, L"%ls %d", Phobos::UI::BattlePointsSidebarLabel, points);
+			swprintf_s(counter, L"%ls %d", Phobos::UI::BattlePointsSidebar_Label, points);
 
 		Point2D vPos = {
 			DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_BattlePoints_Offset.Get().X,

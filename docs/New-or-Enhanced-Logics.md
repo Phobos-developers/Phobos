@@ -983,6 +983,54 @@ In `rulesmd.ini`:
 AISuperWeaponDelay=  ; integer, game frames
 ```
 
+### Battle Points counter
+- This system displayes a new currency to be used (optionally) in Super Weapons.
+- The new currency will be modified by the kills against other players and the system is enabled.
+- If set `BattlePointsGenerator` in any structure then the system will be enabled if the structure is built.
+- If set `BattlePoints` in houses they will have the system enabled by default.
+- If set [General] -> `BattlePoints` enables/disables the system for every player in the scenario, overriding the country preferences & `BattlePointsGenerator` setting.
+- If set [General] -> `BattlePoints.DefaultValue` and the enemy destroyed object doesn't have a value then this generic value will be used instead.
+- If set [General] -> `BattlePoints.DefaultFriendlyValue` and the friendly destroyed object doesn't have a value then this generic value will be used instead. This tag doesn't work with the own objects of the player.
+- If is set `BattlePoints.CanUseStandardPoints` and the destroyed object doesn't have the `BattlePoints` value then the points are obtained from the `Points` tag of the destroyed object. If `BattlePoints.DefaultValue` is present then this will be ignored.
+- If set `BattlePoints` in the destroyed object the calculation is made with this value. Self-Kills done by the own player doesn't count in this system.
+- If `BattlePoints.Amount` is set with a value different from `0` then the super weapon is influenced by this system. If the value is positive then this super weapon won't be launched until the affected player gathered the required ammount.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+BattlePointsSidebar.Label=<none>                ; CSF entry key `★ <VALUE>`, code U+2605
+BattlePointsSidebar.Label.InvertPosition=false  ; bool, `<VALUE> ★`, code U+2605
+
+[ToolTips]
+BattlePoints.Label=<none>                       ; CSF entry key, default to `★: <VALUE>`, code U+2605
+```
+
+In `rulesmd.ini`:
+```ini
+[General]
+BattlePoints=                            ; bool
+BattlePoints.DefaultValue=               ; int
+BattlePoints.DefaultFriendlyValue=       ; int
+
+[SOMESIDE]                               ; Side
+Sidebar.BattlePoints.Offset=0,0          ; X,Y, pixels relative to default
+Sidebar.BattlePoints.Color=              ; integer - R,G,B
+Sidebar.BattlePoints.Align=Left          ; Left, Right, Center/Centre
+
+[SOMECOUNTRY]                            ; HouseType
+BattlePoints=false                       ; bool
+BattlePoints.CanUseStandardPoints=false  ; bool
+
+[SOMEBUILDING]                           ; BuildingType
+BattlePointsGenerator=                   ; bool
+
+[SOMETECHNO]                             ; TechnoType
+BattlePoints=                            ; int
+
+[SOMESW]
+BattlePoints.Amount=0                    ; int
+```
+
 ### Convert TechnoType
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).

@@ -1110,7 +1110,9 @@ bool HouseExt::ExtData::AreBattlePointsEnabled()
 	}
 
 	enabledBattlePoints |= pOwnerTypeExt->BattlePoints;
-	enabledBattlePoints |= RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get();
+
+	if (RulesExt::Global()->BattlePoints.isset())
+		enabledBattlePoints = RulesExt::Global()->BattlePoints.Get();
 
 	return enabledBattlePoints;
 }
@@ -1129,7 +1131,7 @@ int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
 
 	int points = pThis->IsAlliedWith(pTechno)? defaultFriendlyValue : defaultValue;
 	points = points == 0 && pTechnoTypeExt->BattlePoints.isset() ? pTechnoTypeExt->BattlePoints.Get() : points;
-	points = points == 0 && pThisTypeExt->BattlePoints_CanReuseStandardPoints ? pTechno->GetTechnoType()->Points : points;
+	points = points == 0 && pThisTypeExt->BattlePoints_CanUseStandardPoints ? pTechno->GetTechnoType()->Points : points;
 
 	return points;
 }

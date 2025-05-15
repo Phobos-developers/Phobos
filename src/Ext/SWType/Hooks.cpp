@@ -283,10 +283,10 @@ DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
 		return SkipAll;
 	}
 
-	if (RulesExt::Global()->BattlePoints.isset() && RulesExt::Global()->BattlePoints.Get())
+	const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	if (pExt->BattlePoints_Amount != 0)
 	{
-		auto pOwnerExt = HouseExt::ExtMap.Find(pSuper->Owner);
-		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		const auto pOwnerExt = HouseExt::ExtMap.Find(pSuper->Owner);
 
 		if (pExt->BattlePoints_Amount > 0)
 		{
