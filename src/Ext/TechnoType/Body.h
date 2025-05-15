@@ -355,8 +355,8 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
-		ValueableVector<TechnoTypeClass*> SquadMembers;
-		Valueable<bool> IsInitAsTeam;
+		ValueableVector<TechnoTypeClass*> Squad_Members;
+		Valueable<bool> Squad_IsInitAsTeam;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -666,8 +666,8 @@ public:
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
-			, SquadMembers {}
-			, IsInitAsTeam { false }
+			, Squad_Members {}
+			, Squad_IsInitAsTeam { false }
 		{ }
 
 		virtual ~ExtData() = default;
