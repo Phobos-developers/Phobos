@@ -254,6 +254,7 @@ public:
 
 		Valueable<double> AdvancedDrive_ReverseSpeed;
 		Valueable<Leptons> AdvancedDrive_FaceTargetRange;
+		Valueable<Leptons> AdvancedDrive_MinimumDistance;
 		Valueable<bool> AdvancedDrive_ConfrontEnemies;
 		Valueable<int> AdvancedDrive_RetreatDuration;
 
@@ -586,6 +587,7 @@ public:
 
 			, AdvancedDrive_ReverseSpeed { 0.85 }
 			, AdvancedDrive_FaceTargetRange { Leptons(4096) }
+			, AdvancedDrive_MinimumDistance { Leptons(640) }
 			, AdvancedDrive_ConfrontEnemies { true }
 			, AdvancedDrive_RetreatDuration { 150 }
 

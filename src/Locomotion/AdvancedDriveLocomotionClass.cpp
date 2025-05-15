@@ -739,8 +739,8 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 				- static_cast<short>(tgtDir.Raw)));
 			this->IsForward = deltaTgtDir <= deltaOppDir;
 		}
-		else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame)
-			<= pTypeExt->AdvancedDrive_RetreatDuration)
+		else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame) <= pTypeExt->AdvancedDrive_RetreatDuration
+			|| pLinked->Destination && pLinked->DistanceFrom(pLinked->Destination) <= pTypeExt->AdvancedDrive_MinimumDistance.Get())
 		{
 			const auto curDir = pLinked->PrimaryFacing.Current();
 			const auto deltaCurDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)

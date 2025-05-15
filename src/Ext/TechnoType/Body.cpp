@@ -489,6 +489,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AdvancedDrive_ReverseSpeed.Read(exINI, pSection, "AdvancedDrive.ReverseSpeed");
 	this->AdvancedDrive_FaceTargetRange.Read(exINI, pSection, "AdvancedDrive.FaceTargetRange");
+	this->AdvancedDrive_MinimumDistance.Read(exINI, pSection, "AdvancedDrive.MinimumDistance");
 	this->AdvancedDrive_ConfrontEnemies.Read(exINI, pSection, "AdvancedDrive.ConfrontEnemies");
 	this->AdvancedDrive_RetreatDuration.Read(exINI, pSection, "AdvancedDrive.RetreatDuration");
 
@@ -1038,6 +1039,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AdvancedDrive_ReverseSpeed)
 		.Process(this->AdvancedDrive_FaceTargetRange)
+		.Process(this->AdvancedDrive_MinimumDistance)
 		.Process(this->AdvancedDrive_ConfrontEnemies)
 		.Process(this->AdvancedDrive_RetreatDuration)
 
