@@ -983,7 +983,7 @@ In `rulesmd.ini`:
 AISuperWeaponDelay=  ; integer, game frames
 ```
 
-### Battle Points counter
+### Battle Points economy for super weapons
 - This system displayes a new currency to be used (optionally) in Super Weapons.
 - The new currency will be modified by the kills against other players and the system is enabled.
 - If set `BattlePointsGenerator` in any structure then the system will be enabled if the structure is built.
