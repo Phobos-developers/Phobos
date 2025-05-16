@@ -307,7 +307,7 @@ DEFINE_HOOK(0x4FD77C, ExpertAI_SuperWeaponAI_RecheckIsReady, 0x5)
 		for (auto const& pSuper : pHouse->Supers)
 		{
 			if (pSuper->IsReady)
-				pSuper->IsReady = pSuper->GetIsReady();
+				pSuper->IsReady = pSuper->CanFire();
 		}
 	}
 
