@@ -413,7 +413,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 		if (!agentMode)
 		{
-			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, pTargetType->Armor) == 0.0)
+			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, pTarget, pTargetType) == 0.0)
 				continue;
 
 			if (pTarget->IsInAir() && !unitWeaponsHaveAA)
