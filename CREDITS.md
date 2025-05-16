@@ -97,6 +97,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable tooltip background
   - Parts of Ares calling code
   - Original `Arcing` elevation inaccuracy fix
+  - Dehardcode 255 limit of `OverlayType`
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
