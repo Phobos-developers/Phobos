@@ -4,6 +4,7 @@
  
 class TechnoClass;
 class TechnoTypeClass;
+class EBolt;
 class FootClass;
 class HouseClass;
 class BuildingTypeClass;
@@ -25,6 +26,8 @@ public:
 	static void InitAres3_0p1();
 	// TechnoExt
 	static bool(__stdcall* ConvertTypeTo)(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
+
+	static EBolt* (__stdcall* CreateAresEBolt)(WeaponTypeClass* pWeapon);
 
 	static void(__stdcall* SpawnSurvivors)(FootClass* pThis, TechnoClass* pKiller, bool Select, bool IgnoreDefenses);
 

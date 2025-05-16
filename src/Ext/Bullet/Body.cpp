@@ -7,6 +7,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -143,14 +144,13 @@ void BulletExt::ExtData::InitializeLaserTrails()
 
 	auto pThis = this->OwnerObject();
 
-	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-	{
-		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
-		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-		{
-			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
-		}
+	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+	{
+		this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
 	}
 }
 
@@ -196,8 +196,8 @@ inline void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHo
 
 	if (pAttach)
 	{
-		if (pAttach->WhatAmI() == AbstractType::Building)
-			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(static_cast<BuildingClass*>(pAttach), pBullet->SourceCoords.Y);
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pAttach))
+			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(pBuilding, pBullet->SourceCoords.Y);
 		else
 			pAnim->SetOwnerObject(pAttach);
 	}
@@ -261,9 +261,8 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	const auto pEBolt = GameCreate<EBolt>();
+	const auto pEBolt = (AresFunctions::CreateAresEBolt ? AresFunctions::CreateAresEBolt(pWeapon) : GameCreate<EBolt>());
 	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-	//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
 	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
 	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
 	weaponStruct.BurstIndex = 0;
@@ -317,13 +316,46 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 	// House
 	BulletExt::ExtMap.Find(pBullet)->FirerHouse = pHouse;
 
-	if (pBullet->Type->FirersPalette)
+	const auto pType = pBullet->Type;
+
+	// Palette
+	if (pType->FirersPalette)
 		pBullet->InheritedColor = pHouse->ColorSchemeIndex;
 
 	// Velocity
 	auto velocity = BulletVelocity::Empty;
 
-	if (randomVelocity)
+	// If someone asks me, I would say Arcing is just a piece of shit
+	// But there are still people who like to use it, so anyway, it has been fixed
+	if (pType->Arcing)
+	{
+		// The target must exist during launch
+		const auto targetCoords = pBullet->Target->GetCenterCoords();
+		const auto gravity = BulletTypeExt::GetAdjustedGravity(pType);
+		const auto distanceCoords = targetCoords - sourceCoords;
+		const auto horizontalDistance = Point2D { distanceCoords.X, distanceCoords.Y }.Magnitude();
+		const bool lobber = pWeapon->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
+		// The lower the horizontal velocity, the higher the trajectory
+		// WW calculates the launch angle (and limits it) before calculating the velocity
+		// Here, some magic numbers are used to directly simulate its calculation
+		const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
+		const auto speed = speedMult * sqrt(horizontalDistance * gravity * 1.2); // 0x48AB90
+
+		// Simulate firing Arcing bullet
+		if (horizontalDistance < 1e-10 || speed < 1e-10)
+		{
+			// No solution
+			velocity.Z = speed;
+		}
+		else
+		{
+			const auto mult = speed / horizontalDistance;
+			velocity.X = static_cast<double>(distanceCoords.X) * mult;
+			velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
+			velocity.Z = static_cast<double>(distanceCoords.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
+		}
+	}
+	else if (randomVelocity)
 	{
 		DirStruct dir;
 		dir.SetValue<5>(ScenarioClass::Instance->Random.RandomRanged(0, 31));
@@ -354,6 +386,32 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 		BulletExt::SimulatedFiringElectricBolt(pBullet);
 		BulletExt::SimulatedFiringRadBeam(pBullet, pHouse);
 		BulletExt::SimulatedFiringParticleSystem(pBullet, pHouse);
+	}
+}
+
+void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity)
+{
+	const auto distanceCoords = targetCoords - sourceCoords;
+	const auto horizontalDistance = Point2D { distanceCoords.X, distanceCoords.Y }.Magnitude();
+	const bool lobber = pThis->WeaponType->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
+	// The lower the horizontal velocity, the higher the trajectory
+	// WW calculates the launch angle (and limits it) before calculating the velocity
+	// Here, some magic numbers are used to directly simulate its calculation
+	const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
+	const auto gravity = BulletTypeExt::GetAdjustedGravity(pThis->Type);
+	const auto speed = speedMult * sqrt(horizontalDistance * gravity * 1.2); // 0x48AB90
+
+	if (horizontalDistance < 1e-10 || speed < 1e-10)
+	{
+		// No solution
+		velocity.Z = speed;
+	}
+	else
+	{
+		const auto mult = speed / horizontalDistance;
+		velocity.X = static_cast<double>(distanceCoords.X) * mult;
+		velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
+		velocity.Z = (static_cast<double>(distanceCoords.Z) + velocity.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
 	}
 }
 

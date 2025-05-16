@@ -4,6 +4,7 @@
 #define NOTE_ARES_FUN(name,reladdr) AresFunctions::name = reinterpret_cast<decltype(AresFunctions::name)>(AresHelper::AresBaseAddress + reladdr)
 
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
+decltype(AresFunctions::CreateAresEBolt) AresFunctions::CreateAresEBolt = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
 decltype(AresFunctions::IsTargetConstraintsEligible) AresFunctions::IsTargetConstraintsEligible = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
@@ -18,6 +19,9 @@ void Apply_Ares3_0p1_Patches();
 void AresFunctions::InitAres3_0()
 {
 	NOTE_ARES_FUN(ConvertTypeTo, 0x43650);
+
+	NOTE_ARES_FUN(CreateAresEBolt, 0x550F0);
+
 	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
 	{
 		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0EB, { 0x5C });
@@ -44,6 +48,9 @@ void AresFunctions::InitAres3_0()
 void AresFunctions::InitAres3_0p1()
 {
 	NOTE_ARES_FUN(ConvertTypeTo, 0x44130);
+
+	NOTE_ARES_FUN(CreateAresEBolt, 0x55DA0);
+
 	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
 	{
 		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C });
