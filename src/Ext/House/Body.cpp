@@ -1095,11 +1095,11 @@ void HouseExt::ExtData::UpdateBattlePoints(int modifier)
 
 bool HouseExt::ExtData::AreBattlePointsEnabled()
 {
-	auto const pThis = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 	const auto pOwnerTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
 	bool enabledBattlePoints = false;
 
-	for (auto const pBuilding : pThis->Buildings)
+	for (const auto pBuilding : pThis->Buildings)
 	{
 		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 		if (pBuildingTypeExt->BattlePointsGenerator.isset() && pBuildingTypeExt->BattlePointsGenerator.Get())
@@ -1122,7 +1122,7 @@ int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
 	if (!pTechno)
 		return 0;
 
-	auto const pThis = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 	const auto pThisTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
