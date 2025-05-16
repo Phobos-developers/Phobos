@@ -2147,6 +2147,9 @@ msgid ""
 "owned by first house from Civilian side unless `CreateUnit.RequireOwner` "
 "is set to true in which case no unit will be created."
 msgstr ""
+"`CreateUnit.Owner` 决定创建的单位属于哪个所属方。这仅在动画拥有所有者的情况生效。"
+"如果没有所属方或所属方已败北，除非 `CreateUnit.RequireOwner` 为 true 以禁止生成，"
+"否则被创建的单位将归属于第一个平民所属方"
 
 #: ../../New-or-Enhanced-Logics.md:459
 msgid ""
@@ -8258,10 +8261,4 @@ msgstr ""
 "CanTargetHouses=all  ; List of Affected House Enumeration "
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 
-#~ msgid ""
-#~ "`CreateUnit.Owner` determines which house will"
-#~ " own the created unit. This only "
-#~ "works as expected if the animation "
-#~ "has owner set."
-#~ msgstr "`CreateUnit.Owner` 决定创建的单位属于哪个所属方。这仅在动画拥有所有者的情况生效。"
 

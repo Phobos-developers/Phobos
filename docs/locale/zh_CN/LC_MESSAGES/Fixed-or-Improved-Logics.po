@@ -1396,7 +1396,7 @@ msgstr "修复了船只可以在高架桥上行驶的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:228
 msgid "Dehardcoded 255 limit of `OverlayType`."
-msgstr ""
+msgstr "解除了覆盖物最多 255 个的数量限制。"
 
 #: ../../Fixed-or-Improved-Logics.md:230
 msgid "Fixes / interactions with other extensions"

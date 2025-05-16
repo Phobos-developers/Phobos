@@ -1509,7 +1509,7 @@ msgstr ""
 
 #: ../../Whats-New.md:380
 msgid "Dehardcoded 255 limit of `OverlayType` (by secsome)"
-msgstr ""
+msgstr "解除了覆盖物最多 255 个的数量限制（by secsome）"
 
 #: ../../Whats-New.md:382 ../../Whats-New.md:579 ../../Whats-New.md:896
 #: ../../Whats-New.md:1005 ../../Whats-New.md:1030 ../../Whats-New.md:1069

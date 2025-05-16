@@ -380,7 +380,7 @@ msgstr "部分 Ares 调用代码"
 
 #: ../../../CREDITS.md:101
 msgid "Dehardcode 255 limit of `OverlayType`"
-msgstr ""
+msgstr "解除了覆盖物最多 255 个的数量限制"
 
 #: ../../../CREDITS.md:102
 msgid "**Otamaa (Fahroni, BoredEXE)**:"
