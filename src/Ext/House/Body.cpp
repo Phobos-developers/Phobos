@@ -1130,7 +1130,7 @@ int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
 	int defaultFriendlyValue = RulesExt::Global()->BattlePoints_DefaultFriendlyValue.isset() ? RulesExt::Global()->BattlePoints_DefaultFriendlyValue.Get() : 0;
 
 	int points = pThis->IsAlliedWith(pTechno)? defaultFriendlyValue : defaultValue;
-	points = points == 0 && pTechnoTypeExt->BattlePoints.isset() ? pTechnoTypeExt->BattlePoints.Get() : points;
+	points = pTechnoTypeExt->BattlePoints.isset() ? pTechnoTypeExt->BattlePoints.Get() : points;
 	points = points == 0 && pThisTypeExt->BattlePoints_CanUseStandardPoints ? pTechno->GetTechnoType()->Points : points;
 
 	return points;
