@@ -1102,7 +1102,7 @@ bool HouseExt::ExtData::AreBattlePointsEnabled()
 	for (const auto pBuilding : pThis->Buildings)
 	{
 		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-		if (pBuildingTypeExt->BattlePointsGenerator.isset() && pBuildingTypeExt->BattlePointsGenerator.Get())
+		if (pBuildingTypeExt->BattlePointsCollector.isset() && pBuildingTypeExt->BattlePointsCollector.Get())
 		{
 			enabledBattlePoints = true;
 			break;

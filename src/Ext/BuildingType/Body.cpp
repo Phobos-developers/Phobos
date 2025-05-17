@@ -201,7 +201,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
-	this->BattlePointsGenerator.Read(exINI, pSection, "BattlePointsGenerator");
+	this->BattlePointsCollector.Read(exINI, pSection, "BattlePointsCollector");
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
@@ -307,7 +307,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BarracksExitCell)
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
-		.Process(this->BattlePointsGenerator)
+		.Process(this->BattlePointsCollector)
 		;
 }
 

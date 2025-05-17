@@ -84,7 +84,7 @@ public:
 		Valueable<int> Overpower_KeepOnline;
 		Valueable<int> Overpower_ChargeWeapon;
 
-		Nullable<bool> BattlePointsGenerator;
+		Nullable<bool> BattlePointsCollector;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
@@ -137,7 +137,7 @@ public:
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
-			, BattlePointsGenerator {}
+			, BattlePointsCollector {}
 		{ }
 
 		// Ares 0.A functions

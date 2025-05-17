@@ -970,9 +970,9 @@ AISuperWeaponDelay=  ; integer, game frames
 ### Battle Points economy for super weapons
 - This system displayes a new currency to be used (optionally) in Super Weapons.
 - The new currency will be modified by the kills against other players and the system is enabled.
-- If set `BattlePointsGenerator` in any structure then the system will be enabled if the structure is built.
+- If set `BattlePointsCollector` in any structure then the system will be enabled if the structure is built.
 - If set `BattlePoints` in houses they will have the system enabled by default.
-- If set [General] -> `BattlePoints` enables/disables the system for every player in the scenario, overriding the country preferences & `BattlePointsGenerator` setting.
+- If set [General] -> `BattlePoints` enables/disables the system for every player in the scenario, overriding the country preferences & `BattlePointsCollector` setting.
 - If set [General] -> `BattlePoints.DefaultValue` and the enemy destroyed object doesn't have a value then this generic value will be used instead.
 - If set [General] -> `BattlePoints.DefaultFriendlyValue` and the friendly destroyed object doesn't have a value then this generic value will be used instead. This tag doesn't work with the own objects of the player.
 - If is set `BattlePoints.CanUseStandardPoints` and the destroyed object doesn't have the `BattlePoints` value then the points are obtained from the `Points` tag of the destroyed object. If `BattlePoints.DefaultValue` is present then this will be ignored.
@@ -1006,7 +1006,7 @@ BattlePoints=false                       ; bool
 BattlePoints.CanUseStandardPoints=false  ; bool
 
 [SOMEBUILDING]                           ; BuildingType
-BattlePointsGenerator=                   ; bool
+BattlePointsCollector=                   ; bool
 
 [SOMETECHNO]                             ; TechnoType
 BattlePoints=                            ; int
