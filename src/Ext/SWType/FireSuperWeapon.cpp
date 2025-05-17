@@ -350,5 +350,5 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 void SWTypeExt::ExtData::ApplyBattlePoints(SuperClass* pSW)
 {
 	auto pOwnerExt = HouseExt::ExtMap.Find(pSW->Owner);
-	pOwnerExt->UpdateBattlePoints(this->BattlePoints_Amount * (-1));
+	pOwnerExt->UpdateBattlePoints(this->BattlePoints_Amount);
 }

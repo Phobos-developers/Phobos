@@ -288,9 +288,9 @@ DEFINE_HOOK(0x6CC367, SuperClass_IsReady_BattlePoints, 0xD)
 	{
 		const auto pOwnerExt = HouseExt::ExtMap.Find(pSuper->Owner);
 
-		if (pExt->BattlePoints_Amount > 0)
+		if (pExt->BattlePoints_Amount < 0)
 		{
-			if (pOwnerExt->BattlePoints < pExt->BattlePoints_Amount)
+			if (pOwnerExt->BattlePoints < std::abs(pExt->BattlePoints_Amount))
 				return ReturnZero;
 		}
 	}

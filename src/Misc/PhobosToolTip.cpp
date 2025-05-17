@@ -186,9 +186,9 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		oss << L"\n";
 
 		if (pData->BattlePoints_Amount > 0)
-			oss << Phobos::UI::BattlePoints_Label << L"-" << nPoints;
-		else if (pData->BattlePoints_Amount < 0)
 			oss << Phobos::UI::BattlePoints_Label << L"+" << nPoints;
+		else if (pData->BattlePoints_Amount < 0)
+			oss << Phobos::UI::BattlePoints_Label << L"-" << nPoints;
 
 		showSth = true;
 	}
