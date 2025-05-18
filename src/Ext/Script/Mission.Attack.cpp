@@ -95,8 +95,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		if (ScriptExt::IsUnitAvailable(pFoot, true))
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
+			auto const whatAmI = pFoot->WhatAmI();
 
-			if (pFoot->WhatAmI() == AbstractType::Aircraft
+			if (whatAmI == AbstractType::Aircraft
 				&& !pFoot->IsInAir()
 				&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
 				&& pFoot->Ammo < pTechnoType->Ammo)
@@ -106,7 +107,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 			pacifistTeam &= !ScriptExt::IsUnitArmed(pFoot);
 
-			if (pFoot->WhatAmI() == AbstractType::Infantry)
+			if (whatAmI == AbstractType::Infantry)
 			{
 				auto const pTypeInf = static_cast<InfantryTypeClass*>(pTechnoType);
 
@@ -203,8 +204,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 							continue;
 						}
 
+						auto const whatAmI = pFoot->WhatAmI();
+
 						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
-						if (pFoot->WhatAmI() == AbstractType::Aircraft
+						if (whatAmI == AbstractType::Aircraft
 							&& pFoot->Ammo > 0 && pFoot->GetHeight() <= 0)
 						{
 							pFoot->SetDestination(selectedTarget, false);
@@ -215,10 +218,10 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 						if (pFoot->IsEngineer())
 							pFoot->QueueMission(Mission::Capture, true);
-						else if (pFoot->WhatAmI() != AbstractType::Aircraft) // Aircraft hack. I hate how this game auto-manages the aircraft missions.
+						else if (whatAmI != AbstractType::Aircraft) // Aircraft hack. I hate how this game auto-manages the aircraft missions.
 							pFoot->QueueMission(Mission::Attack, true);
 
-						if (pFoot->WhatAmI() == AbstractType::Infantry)
+						if (whatAmI == AbstractType::Infantry)
 						{
 							auto const pInfantryType = static_cast<InfantryTypeClass*>(pTechnoType);
 
@@ -285,12 +288,13 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 			for (auto pFoot = pTeam->FirstUnit; pFoot && !bForceNextAction; pFoot = pFoot->NextTeamMember)
 			{
-				auto const pTechnoType = pFoot->GetTechnoType();
-
 				if (ScriptExt::IsUnitAvailable(pFoot, true))
 				{
+					auto const pTechnoType = pFoot->GetTechnoType();
+					auto const whatAmI = pFoot->WhatAmI();
+
 					// Aircraft case 1
-					if ((pFoot->WhatAmI() == AbstractType::Aircraft
+					if ((whatAmI == AbstractType::Aircraft
 						&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound)
 						&& pFoot->Ammo > 0
 						&& (pFoot->Target != pFocus && !pFoot->InAir))
@@ -313,10 +317,12 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						continue;
 					}
 
+					auto const currentMission = pFoot->GetCurrentMission();
+
 					// Aircraft case 2
-					if (pFoot->WhatAmI() == AbstractType::Aircraft
-						&& pFoot->GetCurrentMission() != Mission::Attack
-						&& pFoot->GetCurrentMission() != Mission::Enter)
+					if (whatAmI == AbstractType::Aircraft
+						&& currentMission != Mission::Attack
+						&& currentMission != Mission::Enter)
 					{
 						if (pFoot->Ammo > 0)
 						{
@@ -334,9 +340,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					}
 
 					// Tanya / Commando C4 case
-					if ((pFoot->WhatAmI() == AbstractType::Infantry
+					if ((whatAmI == AbstractType::Infantry
 						&& static_cast<InfantryTypeClass*>(pTechnoType)->C4
-						|| pFoot->HasAbility(Ability::C4)) && pFoot->GetCurrentMission() != Mission::Sabotage)
+						|| pFoot->HasAbility(Ability::C4)) && currentMission != Mission::Sabotage)
 					{
 						pFoot->QueueMission(Mission::Sabotage, true);
 
@@ -344,14 +350,14 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					}
 
 					// Other cases
-					if (pFoot->WhatAmI() != AbstractType::Aircraft)
+					if (whatAmI != AbstractType::Aircraft)
 					{
 						if (pFoot->Target != pFocus)
 							pFoot->SetTarget(pFocus);
 
-						if (pFoot->GetCurrentMission() != Mission::Attack
-							&& pFoot->GetCurrentMission() != Mission::Unload
-							&& pFoot->GetCurrentMission() != Mission::Selling)
+						if (currentMission != Mission::Attack
+							&& currentMission != Mission::Unload
+							&& currentMission != Mission::Selling)
 						{
 							pFoot->QueueMission(Mission::Attack, false);
 						}
@@ -383,14 +389,14 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	double bestVal = -1;
 	bool unitWeaponsHaveAA = false;
 	bool unitWeaponsHaveAG = false;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+	auto pTechnoType = pTechno->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 	// Generic method for targeting
 	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
 		auto pTarget = TechnoClass::Array.GetItem(i);
 		auto pTargetType = pTarget->GetTechnoType();
-		auto pTechnoType = pTechno->GetTechnoType();
 
 		if (!pTargetType->LegalTarget)
 			continue;
@@ -572,19 +578,6 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass* pTeamLeader = nullptr)
 {
 	TechnoTypeClass* pTechnoType = pTechno->GetTechnoType();
-	TechnoTypeExt::ExtData* pTypeTechnoExt = nullptr;
-	BuildingTypeClass* pTypeBuilding = pTechno->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(pTechnoType) : nullptr;
-	BuildingTypeExt::ExtData* pBuildingTypeExt = nullptr;
-	UnitTypeClass* pTypeUnit = pTechno->WhatAmI() == AbstractType::Unit ? static_cast<UnitTypeClass*>(pTechnoType) : nullptr;
-	WeaponTypeClass* pWeaponPrimary = nullptr;
-	WeaponTypeClass* pWeaponSecondary = nullptr;
-	TechnoClass* pTarget = nullptr;
-	auto const& baseUnit = RulesClass::Instance->BaseUnit;
-	auto const& buildTech = RulesClass::Instance->BuildTech;
-	auto const& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
-	int nSuperWeapons = 0;
-	double distanceToTarget = 0;
-	bool buildingIsConsideredVehicle = pTypeBuilding && pTypeBuilding->IsVehicle();
 
 	// Special case: validate target if is part of a technos list in [AITargetTypes] section
 	if (attackAITargetType >= 0 && RulesExt::Global()->AITargetTypesLists.size() > 0)
@@ -597,6 +590,21 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		return false;
 	}
+
+	TechnoTypeExt::ExtData* pTypeTechnoExt = nullptr;
+	auto const whatAmI = pTechno->WhatAmI();
+	BuildingTypeClass* pTypeBuilding = whatAmI == AbstractType::Building ? static_cast<BuildingTypeClass*>(pTechnoType) : nullptr;
+	BuildingTypeExt::ExtData* pBuildingTypeExt = nullptr;
+	UnitTypeClass* pTypeUnit = whatAmI == AbstractType::Unit ? static_cast<UnitTypeClass*>(pTechnoType) : nullptr;
+	WeaponTypeClass* pWeaponPrimary = nullptr;
+	WeaponTypeClass* pWeaponSecondary = nullptr;
+	TechnoClass* pTarget = nullptr;
+	auto const& baseUnit = RulesClass::Instance->BaseUnit;
+	auto const& buildTech = RulesClass::Instance->BuildTech;
+	auto const& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
+	int nSuperWeapons = 0;
+	double distanceToTarget = 0;
+	bool buildingIsConsideredVehicle = pTypeBuilding && pTypeBuilding->IsVehicle();
 
 	switch (mask)
 	{
@@ -633,7 +641,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 4:
 		// Infantry
 
-		if (!pTechno->Owner->IsNeutral() && pTechno->WhatAmI() == AbstractType::Infantry)
+		if (!pTechno->Owner->IsNeutral() && whatAmI == AbstractType::Infantry)
 			return true;
 
 		break;
@@ -643,7 +651,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		if (!pTechno->Owner->IsNeutral()
 			&& (buildingIsConsideredVehicle
-				|| pTechno->WhatAmI() == AbstractType::Aircraft
+				|| whatAmI == AbstractType::Aircraft
 				|| pTypeUnit))
 		{
 			return true;
@@ -691,10 +699,10 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 			// Then check if this possible target is too near of the Team Leader
 			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0;
-
+			const int guardRange = pTeamLeader->GetTechnoType()->GuardRange;
 			bool primaryCheck = pWeaponPrimary && distanceToTarget <= (WeaponTypeExt::GetRangeWithModifiers(pWeaponPrimary, pTechno) / 256.0 * 4.0);
 			bool secondaryCheck = pWeaponSecondary && distanceToTarget <= (WeaponTypeExt::GetRangeWithModifiers(pWeaponSecondary, pTechno) / 256.0 * 4.0);
-			bool guardRangeCheck = pTeamLeader->GetTechnoType()->GuardRange > 0 && distanceToTarget <= (pTeamLeader->GetTechnoType()->GuardRange / 256.0 * 2.0);
+			bool guardRangeCheck = guardRange > 0 && distanceToTarget <= (guardRange / 256.0 * 2.0);
 
 			if (!pTechno->Owner->IsNeutral() && (primaryCheck || secondaryCheck || guardRangeCheck))
 				return true;
@@ -730,7 +738,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 11:
 		// Civilian Tech
 
-		if (pTechno->WhatAmI() == AbstractType::Building
+		if (whatAmI == AbstractType::Building
 			&& neutralTechBuildings.Items)
 		{
 			for (int i = 0; i < neutralTechBuildings.Count; i++)
@@ -783,7 +791,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 14:
 		// Aircraft and Air Unit including landed
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechno->WhatAmI() == AbstractType::Aircraft
+			&& (whatAmI == AbstractType::Aircraft
 				|| pTechnoType->JumpJet || pTechno->IsInAir()))
 		{
 			return true;
@@ -886,7 +894,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Radar & SpySat
 
 		if (!pTechno->Owner->IsNeutral()
-			&& (pTechno->WhatAmI() == AbstractType::Building
+			&& (whatAmI == AbstractType::Building
 				&& (pTypeBuilding->Radar
 					|| pTypeBuilding->SpySat)))
 		{
@@ -899,7 +907,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 		// Buildable Tech
 
 		if (!pTechno->Owner->IsNeutral()
-			&& pTechno->WhatAmI() == AbstractType::Building
+			&& whatAmI == AbstractType::Building
 			&& buildTech.Items)
 		{
 			for (int i = 0; i < buildTech.Count; i++)
@@ -1057,13 +1065,13 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	case 34:
 		// Inside the Area Guard of the Team Leader
 
-		if (pTeamLeader)
+		if (pTeamLeader && !pTechno->Owner->IsNeutral())
 		{
 			distanceToTarget = pTeamLeader->DistanceFrom(pTechno) / 256.0; // Caution, DistanceFrom() return leptons
+			const int guardRange = pTeamLeader->GetTechnoType()->GuardRange;
 
-			if (!pTechno->Owner->IsNeutral()
-				&& (pTeamLeader->GetTechnoType()->GuardRange > 0
-					&& distanceToTarget <= ((pTeamLeader->GetTechnoType()->GuardRange / 256.0) * 2.0)))
+			if (guardRange > 0
+					&& distanceToTarget <= ((guardRange / 256.0) * 2.0))
 			{
 				return true;
 			}
