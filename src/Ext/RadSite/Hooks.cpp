@@ -360,9 +360,18 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 				const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
 
 				if (it != radLevels.end())
-					it->Level += amount;
+					it->Level = std::min(it->Level + amount, RadSiteExt::ExtMap.Find(pThis)->Type->GetLevelMax());
 				else
 					radLevels.emplace_back(pThis, amount);
+			}
+			else if (R->Origin() == 0x65BC6E)
+			{
+				if (it != radLevels.end())
+				{
+					GET_STACK(int, timeParam, STACK_OFFSET(0x70, -0x30));
+					const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps * timeParam);
+					it->Level -= amount;
+				}
 			}
 			else
 			{
