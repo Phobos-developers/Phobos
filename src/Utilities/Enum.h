@@ -281,10 +281,11 @@ enum class DisplayInfoType : BYTE
 
 enum class BannerType : int
 {
-	PCX = 0,
-	CSF = 1,
-	SHP = 2,
-	VariableFormat = 3
+	None = 0,
+	PCX = 1,
+	CSF = 2,
+	SHP = 3,
+	VariableFormat = 4
 };
 
 enum class BannerNumberType : int

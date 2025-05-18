@@ -35,7 +35,7 @@ public:
 		, CSF_Background { false }
 		, VariableFormat { }
 		, VariableFormat_Label { }
-		, BannerType(BannerType::PCX)
+		, BannerType(BannerType::None)
 	{ }
 
 	virtual void LoadFromINI(CCINIClass* pINI);

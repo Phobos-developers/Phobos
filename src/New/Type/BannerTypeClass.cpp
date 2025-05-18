@@ -10,14 +10,16 @@ const char* Enumerable<BannerTypeClass>::GetMainSection()
 
 inline void BannerTypeClass::DetermineType()
 {
-	if (PCX)
+	if (this->PCX)
 		BannerType = BannerType::PCX;
-	else if (Shape)
+	else if (this->Shape)
 		BannerType = BannerType::SHP;
-	else if (VariableFormat != BannerNumberType::None)
+	else if (this->VariableFormat != BannerNumberType::None)
 		BannerType = BannerType::VariableFormat;
-	else
+	else if (!this->CSF.Get().empty())
 		BannerType = BannerType::CSF;
+	else
+		Debug::Log("[Developer warning] BannerType [%s] doesn't have an available content.", this->Name);
 }
 
 void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
