@@ -50,16 +50,21 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 {
 	GET(FireError, err, EBP);
-	GET(UnitClass* const, pThis, ESI);
-	GET(int const, wpIdx, EDI);
 
-	if (pThis->IsWarpingIn() || err != FireError::OK && err != FireError::REARM)
+	if (err != FireError::OK && err != FireError::REARM)
+		return 0;
+
+	GET(UnitClass* const, pThis, ESI);
+
+	if (pThis->IsWarpingIn())
 		return 0;
 
 	auto pType = pThis->Type;
 
 	if ((pType->Turret && !pType->HasTurret) || pType->TurretSpins)
 		return 0;
+
+	GET(int const, wpIdx, EDI);
 
 	if ((pType->DeployFire || pType->DeployFireWeapon == wpIdx) && pThis->CurrentMission == Mission::Unload)
 		return 0;
@@ -68,10 +73,10 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 		return 0;
 
 	auto const pWpn = pThis->GetWeapon(wpIdx)->WeaponType;
+
 	if (pWpn->OmniFire)
 	{
-		const auto pTypeExt = WeaponTypeExt::ExtMap.Find(pWpn);
-		if (pTypeExt->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
+		if (WeaponTypeExt::ExtMap.Find(pWpn)->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
 		{
 			CoordStruct& source = pThis->Location;
 			CoordStruct target = pThis->Target->GetCoords();
