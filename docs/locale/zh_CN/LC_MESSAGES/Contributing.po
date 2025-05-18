@@ -43,7 +43,7 @@ msgstr "假设你已经成功克隆并构建了项目，你应当看到以下结
 
 #: ../../Contributing.md:10
 msgid "`src/` - all the project's source code resides here."
-msgstr "`src/` - 项目所有的源代码。`"
+msgstr "`src/` - 项目所有的源代码。"
 
 #: ../../Contributing.md:11
 msgid ""
