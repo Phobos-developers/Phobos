@@ -3465,7 +3465,7 @@ msgstr "`Ammo.AddOnDeploy` 决定单位部署时增加或减少的弹药量。"
 
 #: ../../Fixed-or-Improved-Logics.md:1222
 msgid ""
-"Due to technical constraints, units that use `Convert.Deploy` from [Ares’"
+"Due to technical constraints, units that use `Convert.Deploy` from [Ares'"
 " Type Conversion](https://ares-developers.github.io/Ares-"
 "docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will"
 " add or substract ammo despite of convertion success. This will also "
@@ -3507,7 +3507,7 @@ msgstr "设为负数将禁用弹药数量检查。"
 
 #: ../../Fixed-or-Improved-Logics.md:1243
 msgid ""
-"Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type "
+"Auto-deploy feature requires `Convert.Deploy` from [Ares' Type "
 "Conversion](https://ares-developers.github.io/Ares-"
 "docs/new/typeconversion.html) to change type. Unit without it will "
 "constantly use deploy command on self until ammo is changed."
