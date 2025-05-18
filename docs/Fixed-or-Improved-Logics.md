@@ -1558,7 +1558,7 @@ Sinkable.SquidGrab=true    ; boolean
 
 ### Unit Without Turret Always Turn To Target
 
-- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
+- Now vehicles without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
 
 In `rulesmd.ini`:
 ```ini
@@ -1567,6 +1567,10 @@ NoTurret.TrackTarget=false   ; boolean
 
 [SOMEVEHICLE]                ; VehicleType
 NoTurret.TrackTarget=        ; boolean, defaults to [General] -> NoTurret.TrackTarget
+```
+
+```{note}
+Jumpjet can also be affected by this if firing an `OmniFire` weapon with `OmniFire.TurnToTarget` set to true.
 ```
 
 ### Voxel turret shadow
