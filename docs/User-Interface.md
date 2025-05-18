@@ -231,6 +231,46 @@ RealTimeTimers=false            ; boolean
 RealTimeTimers.Adaptive=false   ; boolean
 ```
 
+### Select Box
+
+- Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
+  - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
+  - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
+  - Select box's translucency setting can be adjusted via `Translucency`.
+  - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
+  - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
+
+In `rulesmd.ini`:
+```ini
+[SelectBoxTypes]
+0=SOMESELECTBOXTYPE
+
+[AudioVisual]
+DefaultInfantrySelectBox=               ; Select box for infantry
+DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
+
+[SOMESELECTBOXTYPE]                     ; Select box Type name
+Shape=select.shp                        ; filename with .shp extension
+Palette=palette.pal                     ; filename with .pal extension
+Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Grounded=false                          ; boolean
+Offset=0,0                              ; integers - horizontal, vertical
+Translucency=0                          ; translucency level (0/25/50/75)
+VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true           ; boolean
+DrawAboveTechno=true                    ; boolean
+
+[SOMETECHNO]                            ; TechnoType
+SelectBox=                              ; Select box
+HideSelectBox=false                     ; boolean
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+EnableSelectBox=false                   ; boolean
+```
+
 ### Show designator & inhibitor range
 
 - It is now possible to display range of designator and inhibitor units when in super weapon targeting mode. Each instance of player owned techno types listed in `[SuperWeapon] -> SW.Designators` will display a circle with radius set in `[TechnoType] -> DesignatorRange` or `Sight`.
@@ -294,7 +334,7 @@ In `rulesmd.ini`:
 ```ini
 [AudioVisual]
 DisplayIncome=false       ; boolean
-DisplayIncome.Houses=All  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+DisplayIncome.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 DisplayIncome.AllowAI=yes ; boolean
 
 [SOMEBUILDING]            ; BuildingType
@@ -362,6 +402,18 @@ In `uimd.ini`:
 ```ini
 [LoadingScreen]
 DisableEmptySpawnPositions=false  ; boolean
+```
+
+## Miscellanous
+
+### Skip saving game on starting a new campaign
+
+When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+SaveGameOnScenarioStart=true ; boolean
 ```
 
 ## Sidebar / Battle UI
@@ -612,9 +664,9 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                          ; Side
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to `0,0,0`
-ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to `100`
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to `0.0`
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
 ```
 
 ```{note}
@@ -625,16 +677,4 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
-```
-
-## Miscellanous
-
-### Skip saving game on starting a new campaign
-
-When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-SaveGameOnScenarioStart=true ; boolean
 ```

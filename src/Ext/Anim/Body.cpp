@@ -70,7 +70,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 {
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
 	bool makeInf = pAnim->Type->MakeInfantry > -1;
-	bool createUnit = pTypeExt->CreateUnit.Get();
+	bool createUnit = pTypeExt->CreateUnitType != nullptr;
 	auto ownerKind = OwnerHouseKind::Default;
 	HouseClass* pDefaultOwner = nullptr;
 
@@ -83,7 +83,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 		ownerKind = pTypeExt->MakeInfantryOwner;
 
 	if (createUnit)
-		ownerKind = pTypeExt->CreateUnit_Owner;
+		ownerKind = pTypeExt->CreateUnitType->Owner;
 
 	auto newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
 
@@ -96,7 +96,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 			isRemappable = true;
 
 		if (createUnit)
-			isRemappable = pTypeExt->CreateUnit_RemapAnim;
+			isRemappable = pTypeExt->CreateUnitType->RemapAnim;
 
 		if (isRemappable && !newOwner->Defeated)
 			pAnim->LightConvert = ColorScheme::Array[newOwner->ColorSchemeIndex]->LightConvert;
