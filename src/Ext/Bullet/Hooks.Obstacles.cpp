@@ -224,7 +224,6 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 		GET_BASE(WeaponTypeClass*, pWeapon, 0x10);
 		REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x3C, -0x1C));
 		GET_BASE(AbstractClass* const, pTarget, 0xC);
-
 		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
 		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);

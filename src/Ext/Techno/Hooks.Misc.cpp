@@ -680,9 +680,13 @@ DEFINE_HOOK(0x5F46AE, ObjectClass_Select, 0x7)
 	GET(ObjectClass*, pThis, ESI);
 
 	pThis->IsSelected = true;
+
+	if (!Phobos::Config::ShowFlashOnSelecting)
+		return 0;
+
 	auto const duration = RulesExt::Global()->SelectionFlashDuration;
 
-	if (Phobos::Config::ShowFlashOnSelecting && duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
+	if (duration > 0 && pThis->GetOwningHouse()->IsControlledByCurrentPlayer())
 		pThis->Flash(duration);
 
 	return 0;
@@ -692,12 +696,15 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 {
 	enum { SkipGameCode = 0x51B255 };
 
-	GET(InfantryClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EBX);
 
+	if (pTarget)
+		return 0;
+
+	GET(InfantryClass*, pThis, ESI);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (!pTarget && pExt->SkipTargetChangeResetSequence)
+	if (pExt->SkipTargetChangeResetSequence)
 	{
 		pThis->IsFiring = false;
 		pExt->SkipTargetChangeResetSequence = false;
@@ -727,12 +734,13 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
 
 	GET(InfantryClass*, pThis, ESI);
-	GET(Sequence, sequence, EDI);
 
 	R->EBP(0); // Restore overridden instructions.
 
 	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->OnlyUseLandSequences)
 		return SkipWaterSequences;
+
+	GET(Sequence, sequence, EDI);
 
 	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.
 		return UseSwim;
@@ -759,10 +767,14 @@ DEFINE_HOOK(0x70FB73, FootClass_IsBunkerableNow_Dehardcode, 0x6)
 {
 	enum { CanEnter = 0x70FBAF, NoEnter = 0x70FB7D };
 
-	GET(TechnoTypeClass*, pType, EAX);
 	GET(FootClass*, pThis, ESI);
 
-	if (!LocomotorCheckForBunkerable(pType) || pThis->ParasiteEatingMe)
+	if (pThis->ParasiteEatingMe)
+		return NoEnter;
+
+	GET(TechnoTypeClass*, pType, EAX);
+
+	if (!LocomotorCheckForBunkerable(pType))
 		return NoEnter;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);

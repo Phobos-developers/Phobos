@@ -90,8 +90,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 		if (ScriptExt::IsUnitAvailable(pFoot, true))
 		{
 			auto const pTechnoType = pFoot->GetTechnoType();
+			auto const whatAmI = pFoot->WhatAmI();
 
-			if (pFoot->WhatAmI() == AbstractType::Aircraft
+			if (whatAmI == AbstractType::Aircraft
 				&& !pFoot->IsInAir()
 				&& static_cast<AircraftTypeClass*>(pTechnoType)->AirportBound
 				&& pFoot->Ammo < pTechnoType->Ammo)
@@ -278,10 +279,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 
 			for (auto pFoot = pTeam->FirstUnit; pFoot && !bForceNextAction; pFoot = pFoot->NextTeamMember)
 			{
-				auto const pTechnoType = pFoot->GetTechnoType();
-
 				if (ScriptExt::IsUnitAvailable(pFoot, true))
 				{
+					auto const pTechnoType = pFoot->GetTechnoType();
 					auto const whatAmI = pFoot->WhatAmI();
 
 					// Aircraft case 1
@@ -333,7 +333,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 					// Tanya / Commando C4 case
 					if ((whatAmI == AbstractType::Infantry
 						&& static_cast<InfantryTypeClass*>(pTechnoType)->C4
-						|| pFoot->HasAbility(Ability::C4)) && pFoot->GetCurrentMission() != Mission::Sabotage)
+						|| pFoot->HasAbility(Ability::C4)) && currentMission != Mission::Sabotage)
 					{
 						pFoot->QueueMission(Mission::Sabotage, true);
 
@@ -346,8 +346,12 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 						if (pFoot->Target != pFocus)
 							pFoot->SetTarget(pFocus);
 
-						if (currentMission != Mission::Attack && currentMission != Mission::Unload && currentMission != Mission::Selling)
+						if (currentMission != Mission::Attack
+							&& currentMission != Mission::Unload
+							&& currentMission != Mission::Selling)
+						{
 							pFoot->QueueMission(Mission::Attack, false);
+						}
 
 						continue;
 					}
@@ -408,7 +412,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 		if (!agentMode)
 		{
-			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, pTargetType->Armor) == 0.0)
+			if (weaponType && GeneralUtils::GetWarheadVersusArmor(weaponType->Warhead, pTarget, pTargetType) == 0.0)
 				continue;
 
 			if (pTarget->IsInAir() && !unitWeaponsHaveAA)
@@ -580,6 +584,21 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 
 		return false;
 	}
+
+	TechnoTypeExt::ExtData* pTypeTechnoExt = nullptr;
+	auto const whatAmI = pTechno->WhatAmI();
+	BuildingTypeClass* pTypeBuilding = whatAmI == AbstractType::Building ? static_cast<BuildingTypeClass*>(pTechnoType) : nullptr;
+	BuildingTypeExt::ExtData* pBuildingTypeExt = nullptr;
+	UnitTypeClass* pTypeUnit = whatAmI == AbstractType::Unit ? static_cast<UnitTypeClass*>(pTechnoType) : nullptr;
+	WeaponTypeClass* pWeaponPrimary = nullptr;
+	WeaponTypeClass* pWeaponSecondary = nullptr;
+	TechnoClass* pTarget = nullptr;
+	auto const& baseUnit = RulesClass::Instance->BaseUnit;
+	auto const& buildTech = RulesClass::Instance->BuildTech;
+	auto const& neutralTechBuildings = RulesClass::Instance->NeutralTechBuildings;
+	int nSuperWeapons = 0;
+	double distanceToTarget = 0;
+	bool buildingIsConsideredVehicle = pTypeBuilding && pTypeBuilding->IsVehicle();
 
 	switch (mask)
 	{

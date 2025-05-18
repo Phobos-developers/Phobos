@@ -231,7 +231,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 			HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			HouseClass* pVictim = nullptr;
 
-			if (TechnoClass* Target = abstract_cast<TechnoClass*>(pThis->Target))
+			if (auto const Target = abstract_cast<TechnoClass*>(pThis->Target))
 				pVictim = Target->Owner;
 
 			auto types = make_iterator_single(pAnimType);
@@ -380,7 +380,7 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 	{
 		auto const pType = pTarget->GetTechnoType();
 
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pType->Armor) == 0.0)
+		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pWH, pTarget, pType) == 0.0)
 			return false;
 
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);

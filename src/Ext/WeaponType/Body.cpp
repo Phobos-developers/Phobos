@@ -289,7 +289,9 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 
 		if (pType->OpenTopped)
 		{
-			if (TechnoTypeExt::ExtMap.Find(pType)->OpenTopped_UseTransportRangeModifiers)
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+			if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
 				pTechno = pTechno->Transporter;
 		}
 	}

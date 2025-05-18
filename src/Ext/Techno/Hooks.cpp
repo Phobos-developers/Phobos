@@ -598,11 +598,10 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 	enum { SkipGameCode = 0x70EFF2 };
 
 	GET(TechnoClass*, pThis, ECX);
+	auto const pThisType = pThis->GetTechnoType();
+	int maxSpeed = pThisType->Speed;
 
-	auto const pType = pThis->GetTechnoType();
-	int maxSpeed = pType->Speed;
-
-	if (TechnoTypeExt::ExtMap.Find(pType)->UseDisguiseMovementSpeed && pThis->IsDisguised())
+	if (TechnoTypeExt::ExtMap.Find(pThisType)->UseDisguiseMovementSpeed && pThis->IsDisguised())
 	{
 		if (auto const pDisguiseType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 			maxSpeed = pDisguiseType->Speed;
@@ -663,13 +662,14 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 		return 0;
 
 	GET(EventClass*, pThis, ESI);
-	GET(AbstractClass*, pTarget, EBX);
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
+	if (mission == Mission::Move && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
 	{
-		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))
+		GET(AbstractClass*, pTarget, EBX);
+
+		if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
 		{
 			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
 			pTechno->SetDestination(pDestination, true);

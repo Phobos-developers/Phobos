@@ -160,7 +160,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 
 		if (onGround)
 		{
-			auto const pType = linked->GetTechnoType();
+			const auto pType = linked->GetTechnoType();
 			double scalex = pType->VoxelScaleX;
 			double scaley = pType->VoxelScaleY;
 			Matrix3D pre = Matrix3D::GetIdentity();
@@ -246,7 +246,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 		if (pIndex)
 			pIndex->Invalidate();
 
-		auto const pType = linked->GetTechnoType();
+		const auto pType = linked->GetTechnoType();
 		double scalex = pType->VoxelScaleX;
 		double scaley = pType->VoxelScaleY;
 
@@ -763,7 +763,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	if (l2 < 0.03) R->Stack(STACK_OFFSET(0xE8, 0x20), true);
 
 	// Recover vanilla instructions
-	if (pThis->GetTechnoType()->UseBuffer)
+	if (pType->UseBuffer)
 		*reinterpret_cast<DWORD*>(0xB43180) = 1;
 
 	REF_STACK(Matrix3D, b, STACK_OFFSET(0xE8, -0x90));

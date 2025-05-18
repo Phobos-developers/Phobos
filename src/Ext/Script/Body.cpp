@@ -333,9 +333,9 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 	{
 		if (!pUnit->InLimbo && pUnit->IsAlive && pUnit->Health > 0)
 		{
-			auto const pType = pUnit->GetTechnoType();
+			auto const pUnitType = pUnit->GetTechnoType();
 
-			if (pType->Ammo > 0 && pUnit->Ammo < pType->Ammo)
+			if (pUnitType->Ammo > 0 && pUnit->Ammo < pUnitType->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
 				if (auto const pAircraft = abstract_cast<AircraftClass*, true>(pUnit))
@@ -352,7 +352,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 						return;
 					}
 				}
-				else if (pType->Reload != 0) // Don't skip units that can reload themselves
+				else if (pUnitType->Reload != 0) // Don't skip units that can reload themselves
 				{
 					return;
 				}
@@ -451,6 +451,8 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		{
 			if (!ScriptExt::IsUnitAvailable(pUnit, true))
 			{
+				auto pTypeUnit = pUnit->GetTechnoType();
+
 				if (pUnit == pLeaderUnit)
 				{
 					nUnits++;
@@ -461,7 +463,9 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				// Aircraft case
 				if (pUnitType->Ammo > 0 && pUnit->Ammo <= 0)
 				{
-					if (auto const pAircraft = abstract_cast<AircraftTypeClass*, true>(pUnitType))
+					auto pAircraft = static_cast<AircraftTypeClass*>(pTypeUnit);
+
+					if (pAircraft->AirportBound)
 					{
 						if (pAircraft->AirportBound)
 						{
@@ -486,8 +490,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				}
 				else
 				{
+					auto mission = pUnit->GetCurrentMission();
+
 					// Is near of the leader, then protect the area
-					if (pUnit->GetCurrentMission() != Mission::Area_Guard || pUnit->GetCurrentMission() != Mission::Attack)
+					if (mission != Mission::Area_Guard || mission != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;

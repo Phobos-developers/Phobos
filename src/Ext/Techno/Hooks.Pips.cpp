@@ -94,15 +94,19 @@ DEFINE_HOOK(0x6F534E, TechnoClass_DrawExtras_Insignia, 0x5)
 	enum { SkipGameCode = 0x6F5388 };
 
 	GET(TechnoClass*, pThis, EBP);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
-	GET(RectangleStruct*, pBounds, ESI);
 
 	if (pThis->VisualCharacter(false, nullptr) != VisualType::Hidden)
 	{
 		if (RulesExt::Global()->DrawInsignia_OnlyOnSelected.Get() && !pThis->IsSelected && !pThis->IsMouseHovering)
+		{
 			return SkipGameCode;
+		}
 		else
+		{
+			GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x98, 0x4));
+			GET(RectangleStruct*, pBounds, ESI);
 			TechnoExt::DrawInsignia(pThis, pLocation, pBounds);
+		}
 	}
 
 	return SkipGameCode;
@@ -188,7 +192,6 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	LEA_STACK(RectangleStruct*, offset, STACK_OFFSET(0x74, -0x24));
 	GET_STACK(RectangleStruct*, rect, STACK_OFFSET(0x74, 0xC));
 	GET(int, pipWrap, EBX);
-	GET_STACK(int, pipCount, STACK_OFFSET(0x74, -0x54));
 	GET_STACK(int, maxPips, STACK_OFFSET(0x74, -0x60));
 	GET(int, yOffset, ESI);
 
@@ -235,6 +238,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	}
 	else
 	{
+		GET_STACK(int, pipCount, STACK_OFFSET(0x74, -0x54));
 		int ammoFrame = pTypeExt->AmmoPipFrame;
 		int emptyFrame = pTypeExt->EmptyAmmoPipFrame;
 
@@ -274,8 +278,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	pipsToDraw.reserve(maxPips);
 
 	bool isWeeder = false;
+	auto const whatAmI = pThis->WhatAmI();
 
-	switch (pThis->WhatAmI())
+	switch (whatAmI)
 	{
 	case AbstractType::Building:
 		isWeeder = static_cast<BuildingClass*>(pThis)->Type->Weeder;
@@ -289,7 +294,7 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	if (isWeeder)
 	{
-		const int fullWeedFrames = pThis->WhatAmI() == AbstractType::Building ?
+		const int fullWeedFrames = whatAmI == AbstractType::Building ?
 			static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5) :
 			static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
 
@@ -303,7 +308,8 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	}
 	else
 	{
-		std::vector<int> tiberiumPipCounts(TiberiumClass::Array.Count);
+		const int count = TiberiumClass::Array.Count;
+		std::vector<int> tiberiumPipCounts(count);
 
 		for (size_t i = 0; i < tiberiumPipCounts.size(); i++)
 		{
@@ -316,20 +322,20 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		int const emptyFrame = pRules->Pips_Tiberiums_EmptyFrame;
 
 		std::vector<int> pipOrder;
-		pipOrder.reserve(TiberiumClass::Array.Count);
+		pipOrder.reserve(count);
 
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
-				index >= 0 && index < TiberiumClass::Array.Count)
+				index >= 0 && index < count)
 			{
 				pipOrder.push_back(index);
 			}
 		}
 
 		// Then add any tiberium types that are missing
-		for (int i = 0; i < TiberiumClass::Array.Count; i++)
+		for (int i = 0; i < count; i++)
 		{
 			if (std::find(pipOrder.begin(), pipOrder.end(), i) == pipOrder.end())
 			{

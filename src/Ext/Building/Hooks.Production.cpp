@@ -149,7 +149,8 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 		return 0;
 
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pFactory->Owner);
-	bool forbid = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->ForbidParallelAIQueues;
+	auto const pType = pTechno->GetTechnoType();
+	bool forbid = TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues;
 
 	switch (pTechno->WhatAmI())
 	{
@@ -158,7 +159,7 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 			pOwnerExt->Factory_BuildingType = nullptr;
 		break;
 	case AbstractType::Unit:
-		if (!pTechno->GetTechnoType()->Naval)
+		if (!pType->Naval)
 		{
 			if (pRulesExt->ForbidParallelAIQueues_Vehicle || forbid)
 				pOwnerExt->Factory_VehicleType = nullptr;

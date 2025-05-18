@@ -1,5 +1,6 @@
 #include "Body.h"
 #include <Ext/Anim/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
@@ -101,10 +102,9 @@ DEFINE_HOOK(0x466897, BulletClass_AI_Trailer, 0x6)
 	enum { SkipGameCode = 0x4668BD };
 
 	GET(BulletClass*, pThis, EBP);
-	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
+	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x1A8, -0x184));
 
 	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
-
 	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
 	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletAITemp::ExtData->FirerHouse;
 	AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pOwner, nullptr, false, true);
@@ -237,17 +237,18 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pShrapnelWeapon);
 		auto const pType = pObject->GetType();
+		auto const pWH = pShrapnelWeapon->Warhead;
+		auto armorType = pType->Armor;
 
-		if (!pType->LegalTarget || GeneralUtils::GetWarheadVersusArmor(pShrapnelWeapon->Warhead, pType->Armor) == 0.0)
-		{
+		if (!pType->LegalTarget)
 			return SkipObject;
-		}
-		else if (!pWeaponExt->SkipWeaponPicking)
-		{
-			if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
-				return SkipObject;
 
-			if (auto const pTechno = abstract_cast<TechnoClass*, true>(pObject))
+		if (!pWeaponExt->SkipWeaponPicking && !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+			return SkipObject;
+
+		if (auto const pTechno = abstract_cast<TechnoClass*, true>(pObject))
+		{
+			if (!pWeaponExt->SkipWeaponPicking)
 			{
 				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
 					return SkipObject;
@@ -258,7 +259,15 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
 					return SkipObject;
 			}
+
+			auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
+
+			if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
+				armorType = pShield->GetArmorType();
 		}
+
+		if (GeneralUtils::GetWarheadVersusArmor(pWH, armorType) == 0.0)
+			return SkipObject;
 	}
 	else if (pOwner->IsAlliedWith(pObject))
 	{
@@ -273,11 +282,11 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	enum { SkipGameCode = 0x469091 };
 
 	GET(BulletClass*, pThis, ESI);
-	GET_STACK(CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
+	REF_STACK(const CoordStruct, origCoords, STACK_OFFSET(0x3C, -0x30));
 
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	int min = pTypeExt->ClusterScatter_Min.Get();
-	int max = pTypeExt->ClusterScatter_Max.Get();
+	const int min = pTypeExt->ClusterScatter_Min.Get();
+	const int max = pTypeExt->ClusterScatter_Max.Get();
 	auto coords = origCoords;
 
 	for (int i = 0; i < pThis->Type->Cluster; i++)
@@ -403,10 +412,10 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);
-	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 
 	if (pThis->WeaponType)
 	{
+		GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 		int defaultValue = RulesClass::Instance->BallisticScatter;
 		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
@@ -422,37 +431,39 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 // Skip a forced detonation check for Level=true projectiles that is now handled in Hooks.Obstacles.cpp.
 DEFINE_JUMP(LJMP, 0x468D08, 0x468D2F);
 
-DEFINE_HOOK(0x6FE657, TechnoClass_FireAt_ArcingFix, 0x6)
+DEFINE_HOOK(0x6FF008, TechnoClass_Fire_BeforeMoveTo, 0x8)
 {
-	GET_STACK(BulletTypeClass*, pBulletType, STACK_OFFSET(0xB0, -0x48));
-	GET(int, targetHeight, EDI);
-	GET(int, fireHeight, EAX);
+	GET(BulletClass* const, pBullet, EBX);
 
-	if (pBulletType->Arcing && targetHeight > fireHeight)
+	const auto pBulletType = pBullet->Type;
+
+	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy)
 	{
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xB0, -0x60));
+		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xB0, -0x6C));
+		REF_STACK(const CoordStruct, crdOffset, STACK_OFFSET(0xB0, -0x1C));
+		REF_STACK(const CoordStruct, fireCoords, STACK_OFFSET(0xB0, -0x6C));
 
-		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
-			R->EAX(targetHeight);
+		const auto crdTgt = crdOffset + fireCoords;
+		BulletExt::ApplyArcingFix(pBullet, crdSrc, crdTgt, velocity);
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x44D23C, BuildingClass_Mission_Missile_ArcingFix, 0x7)
+DEFINE_HOOK(0x44D46E, BuildingClass_Mission_Missile_BeforeMoveTo, 0x8)
 {
-	GET(WeaponTypeClass*, pWeapon, EBP);
-	GET(int, targetHeight, EBX);
-	GET(int, fireHeight, EAX);
+	GET(BulletClass* const, pBullet, EDI);
 
-	auto const pBulletType = pWeapon->Projectile;
+	const auto pBulletType = pBullet->Type;
 
-	if (pBulletType->Arcing && targetHeight > fireHeight)
+	if (pBulletType->Arcing && !BulletTypeExt::ExtMap.Find(pBulletType)->Arcing_AllowElevationInaccuracy)
 	{
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+		REF_STACK(BulletVelocity, velocity, STACK_OFFSET(0xE8, -0xD0));
+		REF_STACK(const CoordStruct, crdSrc, STACK_OFFSET(0xE8, -0x8C));
+		REF_STACK(const CoordStruct, crdTgt, STACK_OFFSET(0xE8, -0x4C));
 
-		if (!pBulletTypeExt->Arcing_AllowElevationInaccuracy)
-			R->EAX(targetHeight);
+		BulletExt::ApplyArcingFix(pBullet, crdSrc, crdTgt, velocity);
 	}
 
 	return 0;

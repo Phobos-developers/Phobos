@@ -228,15 +228,21 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 	const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
 	if (pBuilding->Owner == pTechno->Owner && !pExt->Grinding_AllowOwner)
+	{
+		if (!pExt->Grinding_AllowOwner)
+			return false;
+	}
+	else if (pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
+	{
+		return false;
+	}
+
+	auto const pType = pTechno->GetTechnoType();
+
+	if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pType))
 		return false;
 
-	if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
-		return false;
-
-	if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
-		return false;
-
-	if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+	if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pType))
 		return false;
 
 	return true;
