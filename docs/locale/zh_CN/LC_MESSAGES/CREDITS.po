@@ -1405,7 +1405,7 @@ msgstr "`606 编辑仇恨值`、`607 清除仇恨值` 触发结果"
 
 #: ../../../CREDITS.md:360
 msgid "`Set Force Enemy` Trigger Action"
-msgstr "`608` 强制宣战` 触发结果"
+msgstr "`608 强制宣战` 触发结果"
 
 #: ../../../CREDITS.md:361
 msgid ""
