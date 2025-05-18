@@ -214,22 +214,21 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 		return false;
 	}
 
-	auto const pRules = RulesExt::Global();
-
-	if (pRules->AITargetTypesLists.size() == 0
-		|| pRules->AITargetTypesLists[desiredListIdx].size() == 0)
+	if (RulesExt::Global()->AITargetTypesLists.size() == 0
+		|| RulesExt::Global()->AITargetTypesLists[desiredListIdx].size() == 0)
 	{
 		return false;
 	}
 
 	auto const pTechno = abstract_cast<TechnoClass*, true>(pObject);
+
 	if (!pTechno)
 		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 	bool found = false;
 
-	for (auto const pDesiredItem : pRules->AITargetTypesLists[desiredListIdx])
+	for (auto const pDesiredItem : RulesExt::Global()->AITargetTypesLists[desiredListIdx])
 	{
 		if (pDesiredItem == pTechnoType)
 		{

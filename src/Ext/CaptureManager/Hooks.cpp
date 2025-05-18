@@ -93,14 +93,12 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 
 	if (pThis->InfiniteMindControl)
 	{
-		auto const pRules = RulesClass::Instance;
-
 		if (pThis->OverloadPipState > 0)
 			--pThis->OverloadPipState;
 
 		if (pThis->OverloadDamageDelay <= 0)
 		{
-			auto const& OverloadCount = pOwnerTypeExt->Overload_Count.GetElements(pRules->OverloadCount);
+			auto const& OverloadCount = pOwnerTypeExt->Overload_Count.GetElements(RulesClass::Instance->OverloadCount);
 
 			if (OverloadCount.empty())
 				return;
@@ -119,10 +117,10 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 				return iter.empty() ? 0 : iter[nInput >= (int)iter.size() ? (int)iter.size() - 1 : nInput];
 			};
 
-			auto const& nOverloadfr = pOwnerTypeExt->Overload_Frames.GetElements(pRules->OverloadFrames);
+			auto const& nOverloadfr = pOwnerTypeExt->Overload_Frames.GetElements(RulesClass::Instance->OverloadFrames);
 			pThis->OverloadDamageDelay = FixIdx(nOverloadfr, nCurIdx);
 
-			auto const& nOverloadDmg = pOwnerTypeExt->Overload_Damage.GetElements(pRules->OverloadDamage);
+			auto const& nOverloadDmg = pOwnerTypeExt->Overload_Damage.GetElements(RulesClass::Instance->OverloadDamage);
 			auto nDamage = FixIdx(nOverloadDmg, nCurIdx);
 
 			if (nDamage <= 0)
@@ -132,15 +130,15 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 			else
 			{
 				pThis->OverloadPipState = 10;
-				pOwner->ReceiveDamage(&nDamage, 0, pRules->C4Warhead, 0, 0, 0, 0);
+				pOwner->ReceiveDamage(&nDamage, 0, RulesClass::Instance->C4Warhead, 0, 0, 0, 0);
 
 				if (!pThis->OverloadDeathSoundPlayed)
 				{
-					VocClass::PlayAt(pOwnerTypeExt->Overload_DeathSound.Get(pRules->MasterMindOverloadDeathSound), pOwner->Location, 0);
+					VocClass::PlayAt(pOwnerTypeExt->Overload_DeathSound.Get(RulesClass::Instance->MasterMindOverloadDeathSound), pOwner->Location, 0);
 					pThis->OverloadDeathSoundPlayed = true;
 				}
 
-				if (auto const pParticle = pOwnerTypeExt->Overload_ParticleSys.Get(pRules->DefaultSparkSystem))
+				if (auto const pParticle = pOwnerTypeExt->Overload_ParticleSys.Get(RulesClass::Instance->DefaultSparkSystem))
 				{
 					for (int i = pOwnerTypeExt->Overload_ParticleSysCount; i > 0; --i)
 					{

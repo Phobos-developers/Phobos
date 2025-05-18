@@ -45,7 +45,6 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		bool isSelfHealFrame = false;
 		int xOffset = 0;
 		int yOffset = 0;
-		const auto pRules = RulesExt::Global();
 
 		if (Unsorted::CurrentFrame % selfHealFrames <= 5
 			&& pThis->Health < pType->Strength)
@@ -55,15 +54,15 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 		if (whatAmI == AbstractType::Unit || whatAmI == AbstractType::Aircraft)
 		{
-			auto& offset = pRules->Pips_SelfHeal_Units_Offset.Get();
-			pipFrames = pRules->Pips_SelfHeal_Units;
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
+			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
 			xOffset = offset.X;
 			yOffset = offset.Y + pType->PixelSelectionBracketDelta;
 		}
 		else if (whatAmI == AbstractType::Infantry)
 		{
-			auto& offset = pRules->Pips_SelfHeal_Infantry_Offset.Get();
-			pipFrames = pRules->Pips_SelfHeal_Infantry;
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
+			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
 			xOffset = offset.X;
 			yOffset = offset.Y + pType->PixelSelectionBracketDelta;
 		}
@@ -73,8 +72,8 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 			int fHeight = pBldType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
-			auto& offset = pRules->Pips_SelfHeal_Buildings_Offset.Get();
-			pipFrames = pRules->Pips_SelfHeal_Buildings;
+			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
+			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
 			yOffset = offset.Y + yAdjust * fHeight + pBldType->Height * yAdjust;
 		}
@@ -97,10 +96,9 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 {
 	auto pTechnoType = pThis->GetTechnoType();
 	auto pOwner = pThis->Owner;
-	auto const pRules = RulesExt::Global();
 
 	if (pThis->IsDisguised() && !pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !(HouseClass::IsCurrentPlayerObserver()
-		|| EnumFunctions::CanTargetHouse(pRules->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pOwner)))
+		|| EnumFunctions::CanTargetHouse(RulesExt::Global()->DisguiseBlinkingVisibility, HouseClass::CurrentPlayer, pOwner)))
 	{
 		if (auto const pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
@@ -113,7 +111,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 
 	bool isVisibleToPlayer = (pOwner && pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 		|| HouseClass::IsCurrentPlayerObserver()
-		|| pTechnoTypeExt->Insignia_ShowEnemy.Get(pRules->EnemyInsignia);
+		|| pTechnoTypeExt->Insignia_ShowEnemy.Get(RulesExt::Global()->EnemyInsignia);
 
 	if (!isVisibleToPlayer)
 		return;
@@ -201,20 +199,20 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		switch (pThis->WhatAmI())
 		{
 		case AbstractType::Infantry:
-			offset += pRules->DrawInsignia_AdjustPos_Infantry;
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Infantry;
 			break;
 		case AbstractType::Building:
-			if (pRules->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
-				offset = GetBuildingSelectBracketPosition(pThis, pRules->DrawInsignia_AdjustPos_BuildingsAnchor) + pRules->DrawInsignia_AdjustPos_Buildings;
+			if (RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor.isset())
+				offset = GetBuildingSelectBracketPosition(pThis, RulesExt::Global()->DrawInsignia_AdjustPos_BuildingsAnchor) + RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			else
-				offset += pRules->DrawInsignia_AdjustPos_Buildings;
+				offset += RulesExt::Global()->DrawInsignia_AdjustPos_Buildings;
 			break;
 		default:
-			offset += pRules->DrawInsignia_AdjustPos_Units;
+			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
 			break;
 		}
 
-		offset.Y += pRules->DrawInsignia_UsePixelSelectionBracketDelta ? pTechnoType->PixelSelectionBracketDelta : 0;
+		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pTechnoType->PixelSelectionBracketDelta : 0;
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

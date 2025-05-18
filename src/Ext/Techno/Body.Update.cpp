@@ -1021,12 +1021,11 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 		return;
 
 	const auto pTypeExt = this->TypeExtData;
-	const auto pRules = RulesExt::Global();
 
-	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_UnderEMP.Get(pRules->NoRearm_UnderEMP))
+	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_UnderEMP.Get(RulesExt::Global()->NoRearm_UnderEMP))
 		pThis->RearmTimer.StartTime++;
 
-	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(pRules->NoReload_UnderEMP))
+	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
 }
 
@@ -1034,12 +1033,11 @@ void TechnoExt::ExtData::UpdateRearmInTemporal()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pTypeExt = this->TypeExtData;
-	const auto pRules = RulesExt::Global();
 
-	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_Temporal.Get(pRules->NoRearm_Temporal))
+	if (pThis->RearmTimer.InProgress() && pTypeExt->NoRearm_Temporal.Get(RulesExt::Global()->NoRearm_Temporal))
 		pThis->RearmTimer.StartTime++;
 
-	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_Temporal.Get(pRules->NoReload_Temporal))
+	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_Temporal.Get(RulesExt::Global()->NoReload_Temporal))
 		pThis->ReloadTimer.StartTime++;
 }
 

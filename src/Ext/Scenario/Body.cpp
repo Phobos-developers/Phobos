@@ -185,10 +185,9 @@ DEFINE_HOOK(0x683549, ScenarioClass_CTOR, 0x9)
 	GET(ScenarioClass*, pItem, EAX);
 
 	ScenarioExt::Allocate(pItem);
-	auto const pScenario = ScenarioExt::Global();
-	pScenario->Waypoints.clear();
-	pScenario->Variables[0].clear();
-	pScenario->Variables[1].clear();
+	ScenarioExt::Global()->Waypoints.clear();
+	ScenarioExt::Global()->Variables[0].clear();
+	ScenarioExt::Global()->Variables[1].clear();
 
 	return 0;
 }
@@ -256,9 +255,8 @@ DEFINE_HOOK(0x68AD2F, ScenarioClass_LoadFromINI, 0x5)
 DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 {
 	VeinholeMonsterClass::UpdateAllVeinholes();
-	auto const pScenario = ScenarioExt::Global();
-	pScenario->UpdateAutoDeathObjectsInLimbo();
-	pScenario->UpdateTransportReloaders();
+	ScenarioExt::Global()->UpdateAutoDeathObjectsInLimbo();
+	ScenarioExt::Global()->UpdateTransportReloaders();
 
 	return 0;
 }

@@ -11,15 +11,14 @@ void BuildingExt::ExtData::DisplayIncomeString()
 	if (this->AccumulatedIncome && Unsorted::CurrentFrame % 15 == 0)
 	{
 		auto const ownerObject = this->OwnerObject();
-		auto const pRuleExt = RulesExt::Global();
 
-		if ((pRuleExt->DisplayIncome_AllowAI || ownerObject->Owner->IsControlledByHuman())
-			&& this->TypeExtData->DisplayIncome.Get(pRuleExt->DisplayIncome))
+		if ((RulesExt::Global()->DisplayIncome_AllowAI || ownerObject->Owner->IsControlledByHuman())
+			&& this->TypeExtData->DisplayIncome.Get(RulesExt::Global()->DisplayIncome))
 		{
 			FlyingStrings::AddMoneyString(
 				this->AccumulatedIncome,
 				ownerObject->Owner,
-				this->TypeExtData->DisplayIncome_Houses.Get(pRuleExt->DisplayIncome_Houses.Get()),
+				this->TypeExtData->DisplayIncome_Houses.Get(RulesExt::Global()->DisplayIncome_Houses.Get()),
 				ownerObject->GetRenderCoords(),
 				this->TypeExtData->DisplayIncome_Offset
 			);

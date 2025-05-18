@@ -442,24 +442,22 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	GET(HouseClass*, pThis, EBX);
 
-	auto const pRules = RulesExt::Global();
-
-	if (pRules->AIFireSale)
+	if (RulesExt::Global()->AIFireSale)
 	{
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
+		if (RulesExt::Global()->AIFireSaleDelay <= 0 || !pExt ||
 			pExt->AIFireSaleDelayTimer.Completed())
 		{
 			pThis->Fire_Sale();
 		}
 		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
 		{
-			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
+			pExt->AIFireSaleDelayTimer.Start(RulesExt::Global()->AIFireSaleDelay);
 		}
 	}
 
-	if (pRules->AIAllToHunt)
+	if (RulesExt::Global()->AIAllToHunt)
 	{
 		pThis->All_To_Hunt();
 	}

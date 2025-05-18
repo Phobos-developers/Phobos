@@ -120,12 +120,10 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
 
-	auto const pRules = RulesExt::Global();
-
-	if (pRules->UseGlobalRadApplicationDelay)
+	if (RulesExt::Global()->UseGlobalRadApplicationDelay)
 		return 0;
 
-	int radDelay = pRules->RadApplicationDelay_Building;
+	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
 
 	if (radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0)
 		return 0;
@@ -158,7 +156,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			if (!pType->GetWarhead())
 				continue;
 
-			if (!pRules->UseGlobalRadApplicationDelay)
+			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
 			{
 				int delay = pType->GetBuildingApplicationDelay();
 

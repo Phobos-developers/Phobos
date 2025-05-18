@@ -222,8 +222,7 @@ DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 	if (intensity > 2000)
 		intensity = 2000;
 
-	auto const& rules = RulesExt::Global();
-	int max = static_cast<int>((ICTintTemp::IsForceShield ? rules->ForceShield_ExtraTintIntensity : rules->IronCurtain_ExtraTintIntensity) * 1000);
+	int max = static_cast<int>((ICTintTemp::IsForceShield ? RulesExt::Global()->ForceShield_ExtraTintIntensity : RulesExt::Global()->IronCurtain_ExtraTintIntensity) * 1000);
 
 	R->EAX(intensity + max);
 	return SkipGameCode;

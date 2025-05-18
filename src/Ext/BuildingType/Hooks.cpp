@@ -67,9 +67,7 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	auto pRules = RulesExt::Global();
-
-	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+	if (!RulesExt::Global()->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
 	auto pBuilding = abstract_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
@@ -119,7 +117,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			point.Y += offset.Y;
 		}
 
-		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
+		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(RulesExt::Global()->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 
 		ConvertClass* pPalette = pTypeExt->PlacementPreview_Remap.Get()
@@ -139,10 +137,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 {
-	auto pRules = RulesExt::Global();
-	BlitterFlags translucency = (pRules->PlacementPreview && Phobos::Config::ShowPlacementPreview)
-		? pRules->PlacementGrid_TranslucencyWithPreview.Get(pRules->PlacementGrid_Translucency)
-		: pRules->PlacementGrid_Translucency;
+	BlitterFlags translucency = (RulesExt::Global()->PlacementPreview && Phobos::Config::ShowPlacementPreview)
+		? RulesExt::Global()->PlacementGrid_TranslucencyWithPreview.Get(RulesExt::Global()->PlacementGrid_Translucency)
+		: RulesExt::Global()->PlacementGrid_Translucency;
 
 	if (translucency != BlitterFlags::None)
 	{

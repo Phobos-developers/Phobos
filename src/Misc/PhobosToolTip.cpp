@@ -359,15 +359,13 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 			if (isCameo)
 				SidebarClass::Instance.SidebarBackgroundNeedsRedraw = true;
 
-			auto const pRules = RulesExt::Global();
-
 			pThis->FillRectTrans(pRect,
-				pData->ToolTip_Background_Color.GetEx(&pRules->ToolTip_Background_Color),
-				pData->ToolTip_Background_Opacity.Get(pRules->ToolTip_Background_Opacity)
+				pData->ToolTip_Background_Color.GetEx(&RulesExt::Global()->ToolTip_Background_Color),
+				pData->ToolTip_Background_Opacity.Get(RulesExt::Global()->ToolTip_Background_Opacity)
 			);
 
 			if (Phobos::Config::ToolTipBlur)
-				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(pRules->ToolTip_Background_BlurSize));
+				pThis->BlurRect(*pRect, pData->ToolTip_Background_BlurSize.Get(RulesExt::Global()->ToolTip_Background_BlurSize));
 
 			return (int)_CCToolTip_Draw2_FillRect_RET;
 		}

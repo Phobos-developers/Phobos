@@ -365,38 +365,40 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	const auto uTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	const auto height = pThis->GetHeight();
-	const auto pRules = RulesExt::Global();
-	const double baseScale_log = pRules->AirShadowBaseScale_log;
+	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 
-	if (pRules->HeightShadowScaling && height > 0)
+	if (RulesExt::Global()->HeightShadowScaling)
 	{
-		const double minScale = pRules->HeightShadowScaling_MinScale;
-
-		if (jjloco)
+		if (height > 0)
 		{
-			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
+			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
 
-			if (cHeight > 0)
+			if (jjloco)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
 
-				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
-					vxl_index_key.Invalidate();
+				if (cHeight > 0)
+				{
+					shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+
+					if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
+						vxl_index_key.Invalidate();
+				}
 			}
-		}
-		else
-		{
-			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
-
-			if (cHeight > 0 && height > 208)
+			else
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
-				vxl_index_key.Invalidate();
+				const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
+
+				if (cHeight > 0 && height > 208)
+				{
+					shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+					vxl_index_key.Invalidate();
+				}
 			}
 		}
 	}
-	else if (!pRules->HeightShadowScaling && pThis->Type->ConsideredAircraft)
+	else if (pThis->Type->ConsideredAircraft)
 	{
 		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
 	}
@@ -500,7 +502,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			);
 	}
 
-	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(pRules->DrawTurretShadow)))
+	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
 		return SkipDrawing;
 
 	auto GetTurretVoxel = [pType](int idx) ->VoxelStruct*
@@ -610,12 +612,11 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
-		const auto pRules = RulesExt::Global();
-		const double baseScale_log = pRules->AirShadowBaseScale_log;
+		const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
 
-		if (pRules->HeightShadowScaling)
+		if (RulesExt::Global()->HeightShadowScaling)
 		{
-			const double minScale = pRules->HeightShadowScaling_MinScale;
+			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
 			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pType->GetFlightLevel());
 
 			if (cHeight > 0)

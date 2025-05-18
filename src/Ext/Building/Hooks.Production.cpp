@@ -6,12 +6,11 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
-	auto pRulesExt = RulesExt::Global();
 	HouseClass* pOwner = pBuilding->Owner;
 	int index = pOwner->ProducingAircraftTypeIndex;
 	auto const pType = index >= 0 ? AircraftTypeClass::Array.GetItem(index) : nullptr;
 
-	if (pRulesExt->AllowParallelAIQueues && !pRulesExt->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues))
+	if (RulesExt::Global()->AllowParallelAIQueues && !RulesExt::Global()->ForbidParallelAIQueues_Aircraft && (!pType || !TechnoTypeExt::ExtMap.Find(pType)->ForbidParallelAIQueues))
 		return 0;
 
 	if (pOwner->Type->MultiplayPassive
@@ -33,9 +32,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	HouseClass* pOwner = pThis->Owner;
 
-	auto pRulesExt = RulesExt::Global();
-
-	if (pOwner->Production && pRulesExt->AllowParallelAIQueues)
+	if (pOwner->Production && RulesExt::Global()->AllowParallelAIQueues)
 	{
 		auto pOwnerExt = HouseExt::ExtMap.Find(pOwner);
 		BuildingClass** currFactory = nullptr;
@@ -74,21 +71,21 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			switch (pThis->Type->Factory)
 			{
 			case AbstractType::BuildingType:
-				if (pRulesExt->ForbidParallelAIQueues_Building)
+				if (RulesExt::Global()->ForbidParallelAIQueues_Building)
 					return Skip;
 
 				index = pOwner->ProducingBuildingTypeIndex;
 				pType = index >= 0 ? BuildingTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::InfantryType:
-				if (pRulesExt->ForbidParallelAIQueues_Infantry)
+				if (RulesExt::Global()->ForbidParallelAIQueues_Infantry)
 					return Skip;
 
 				index = pOwner->ProducingInfantryTypeIndex;
 				pType = index >= 0 ? InfantryTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::AircraftType:
-				if (pRulesExt->ForbidParallelAIQueues_Aircraft)
+				if (RulesExt::Global()->ForbidParallelAIQueues_Aircraft)
 					return Skip;
 
 				index = pOwner->ProducingAircraftTypeIndex;
@@ -97,14 +94,14 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			case AbstractType::UnitType:
 				if (pThis->Type->Naval)
 				{
-					if (pRulesExt->ForbidParallelAIQueues_Navy)
+					if (RulesExt::Global()->ForbidParallelAIQueues_Navy)
 						return Skip;
 
 					index = HouseExt::ExtMap.Find(pOwner)->ProducingNavalUnitTypeIndex;
 				}
 				else
 				{
-					if (pRulesExt->ForbidParallelAIQueues_Vehicle)
+					if (RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
 						return Skip;
 
 					index = pOwner->ProducingUnitTypeIndex;
@@ -143,9 +140,7 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 			, pTechno->get_ID());
 	}
 
-	auto pRulesExt = RulesExt::Global();
-
-	if (!pRulesExt->AllowParallelAIQueues)
+	if (!RulesExt::Global()->AllowParallelAIQueues)
 		return 0;
 
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pFactory->Owner);
@@ -155,27 +150,27 @@ DEFINE_HOOK(0x4CA07A, FactoryClass_AbandonProduction_Phobos, 0x8)
 	switch (pTechno->WhatAmI())
 	{
 	case AbstractType::Building:
-		if (pRulesExt->ForbidParallelAIQueues_Building || forbid)
+		if (RulesExt::Global()->ForbidParallelAIQueues_Building || forbid)
 			pOwnerExt->Factory_BuildingType = nullptr;
 		break;
 	case AbstractType::Unit:
 		if (!pType->Naval)
 		{
-			if (pRulesExt->ForbidParallelAIQueues_Vehicle || forbid)
+			if (RulesExt::Global()->ForbidParallelAIQueues_Vehicle || forbid)
 				pOwnerExt->Factory_VehicleType = nullptr;
 		}
 		else
 		{
-			if (pRulesExt->ForbidParallelAIQueues_Navy || forbid)
+			if (RulesExt::Global()->ForbidParallelAIQueues_Navy || forbid)
 				pOwnerExt->Factory_NavyType = nullptr;
 		}
 		break;
 	case AbstractType::Infantry:
-		if (pRulesExt->ForbidParallelAIQueues_Infantry || forbid)
+		if (RulesExt::Global()->ForbidParallelAIQueues_Infantry || forbid)
 			pOwnerExt->Factory_InfantryType = nullptr;
 		break;
 	case AbstractType::Aircraft:
-		if (pRulesExt->ForbidParallelAIQueues_Aircraft || forbid)
+		if (RulesExt::Global()->ForbidParallelAIQueues_Aircraft || forbid)
 			pOwnerExt->Factory_AircraftType = nullptr;
 		break;
 	default:
