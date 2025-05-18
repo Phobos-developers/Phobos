@@ -449,23 +449,32 @@ Shield.InheritStateOnReplace=false          ; boolean
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
 ### Infantry Squad Production and Selection
-This feature allows the barracks to produce infantries in a __squad__. A squad can be produced in one click on its icon, and can be selected by one click on any squad member.
+
+![image](_static/images/infantrysquad.gif)
+*Infantry Squad used in [Bellum Æternum](https://ra2be.com)*
+
+This feature allows the barracks to produce infantries in a **squad**. A squad can be produced in one click on its icon, and can be selected by one click on any squad member.
 - `Squad.Members` indicates additional squad members beside this infantry, and the members will be produced at the same time.
 - `Squad.IsInitAsTeam` controls whether or not this infantry is initialized in squad, if set to true, the infantry will be selected in a squad according to `Squad.Members`, default to false.
 
-```
-[SOMEINFANTRYTYPE]
+In `rulesmd.ini`:
+```ini
+[SOMEINFANTRY]
 Squad.Members=                  ;List of InfantryTypes
 Squad.IsInitAsTeam=false        ;boolean
 ```
 
-ARES inital payload can be assigned to a squad as well. `Squad.IsInitAsTeam` determines if inital payload is selected as a squad.
+[Ares’ Inital Payload](https://ares-developers.github.io/Ares-docs/new/initialpayload.html) can be assigned to a squad as well. `Squad.IsInitAsTeam` determines if inital payload is selected as a squad.
 
-```
-[SOMEUNITTYPE]
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]
 Squad.IsInitAsTeam=false        ;boolean
 ```
 
+```{note}
+The latter usage only supports vehicles that are produced by a War Factory, not those created via [Ares' Unit Delivery super weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/unitdelivery.html) or Map Triggers.
+```
 
 ## Animations
 
