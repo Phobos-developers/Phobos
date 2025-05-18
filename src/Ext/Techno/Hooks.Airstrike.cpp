@@ -143,7 +143,7 @@ DEFINE_HOOK(0x65E97F, HouseClass_CreateAirstrike_SetTaretForUnit, 0x6)
 
 	const auto pOwner = pThis->Owner;
 
-	if (!pOwner || !pOwner->Target)
+	if (!pOwner)
 		return 0;
 
 	if (const auto pTarget = abstract_cast<TechnoClass*>(pOwner->Target))
@@ -168,7 +168,7 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 		{
 			const auto pBuildingType = pBuilding->Type;
 
