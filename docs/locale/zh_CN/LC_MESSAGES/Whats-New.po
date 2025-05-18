@@ -125,6 +125,7 @@ msgid ""
 "Game will now produce fatal error with an error message if any of the "
 "files listed in `[$Include]` in any INI file do not exist."
 msgstr ""
+"如果任何 INI 文件中 `[$Include]` 列出的任何文件都不存在那么游戏现在会产生 Fatal Error 并显示错误信息。"
 
 #: ../../Whats-New.md:25
 msgid ""
