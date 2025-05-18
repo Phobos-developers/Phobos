@@ -483,4 +483,10 @@ DEFINE_HOOK(0x425060, AnimClass_Expire_ScorchFlamer, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x4250E1, AnimClass_Middle_CraterReduceTiberium, 0x6)
+{
+	enum { SkipReduceTiberium = 0x4250EC };
+	GET(AnimTypeClass*, pType, EDX);
+	return AnimTypeExt::ExtMap.Find(pType)->Crater_ReduceTiberium.Get(RulesExt::Global()->AnimCraterReduceTiberium) ? 0 : SkipReduceTiberium;
+}
 

@@ -119,6 +119,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->LargeFireAnims.Read(exINI, pID, "LargeFireAnims");
 	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
 	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
+	this->Crater_ReduceTiberium.Read(exINI, pID, "Crater.ReduceTiberium");
 
 	// Parasitic types
 	Nullable<TechnoTypeClass*> createUnit;
@@ -176,6 +177,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LargeFireAnims)
 		.Process(this->LargeFireChances)
 		.Process(this->LargeFireDistances)
+		.Process(this->Crater_ReduceTiberium)
 		;
 }
 
