@@ -96,6 +96,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Duration.Read(exINI, pSection, "Duration");
+	this->Duration_ApplyFirepowerMult.Read(exINI, pSection, "Duration.ApplyFirepowerMult");
+	this->Duration_ApplyArmorMultOnTarget.Read(exINI, pSection, "Duration.ApplyArmorMultOnTarget");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
 	this->Cumulative_MaxCount.Read(exINI, pSection, "Cumulative.MaxCount");
 	this->Powered.Read(exINI, pSection, "Powered");
@@ -123,6 +125,8 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->FirepowerMultiplier.Read(exINI, pSection, "FirepowerMultiplier");
 	this->ArmorMultiplier.Read(exINI, pSection, "ArmorMultiplier");
+	this->ArmorMultiplier_AllowWarheads.Read(exINI, pSection, "ArmorMultiplier.AllowWarheads");
+	this->ArmorMultiplier_DisallowWarheads.Read(exINI, pSection, "ArmorMultiplier.DisallowWarheads");
 	this->SpeedMultiplier.Read(exINI, pSection, "SpeedMultiplier");
 	this->ROFMultiplier.Read(exINI, pSection, "ROFMultiplier");
 	this->ROFMultiplier_ApplyOnCurrentTimer.Read(exINI, pSection, "ROFMultiplier.ApplyOnCurrentTimer");
@@ -148,8 +152,11 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_Warhead_Detonate.Read(exINI, pSection, "ReflectDamage.Warhead.Detonate");
 	this->ReflectDamage_Multiplier.Read(exINI, pSection, "ReflectDamage.Multiplier");
 	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
+	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
+	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
+	this->Unkillable.Read(exINI, pSection, "Unkillable");
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -161,6 +168,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Duration)
+		.Process(this->Duration_ApplyFirepowerMult)
+		.Process(this->Duration_ApplyArmorMultOnTarget)
 		.Process(this->Cumulative)
 		.Process(this->Cumulative_MaxCount)
 		.Process(this->Powered)
@@ -184,6 +193,8 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Tint_VisibleToHouses)
 		.Process(this->FirepowerMultiplier)
 		.Process(this->ArmorMultiplier)
+		.Process(this->ArmorMultiplier_AllowWarheads)
+		.Process(this->ArmorMultiplier_DisallowWarheads)
 		.Process(this->SpeedMultiplier)
 		.Process(this->ROFMultiplier)
 		.Process(this->ROFMultiplier_ApplyOnCurrentTimer)
@@ -204,7 +215,10 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_Warhead_Detonate)
 		.Process(this->ReflectDamage_Multiplier)
 		.Process(this->ReflectDamage_AffectsHouses)
+		.Process(this->ReflectDamage_Chance)
+		.Process(this->ReflectDamage_Override)
 		.Process(this->DisableWeapons)
+		.Process(this->Unkillable)
 		.Process(this->Groups)
 		;
 }

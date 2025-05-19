@@ -41,7 +41,7 @@ DEFINE_HOOK(0x5F5053, ObjectClass_Unlimbo_AlphaImage, 0x6)
 		detailLevel = RulesExt::Global()->LightFlashAlphaImageDetailLevel;
 	}
 
-	if (detailLevel > GameOptionsClass::Instance->DetailLevel)
+	if (detailLevel > GameOptionsClass::Instance.DetailLevel)
 		return SkipAlphaImage;
 
 	return 0;
@@ -66,7 +66,7 @@ DEFINE_HOOK(0x48A62E, DoFlash_CombatLightOptions, 0x6)
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 		detailLevel = pWHExt->CombatLightDetailLevel.Get(detailLevel);
 
-		if (pWHExt->CombatLightChance < Randomizer::Global->RandomDouble())
+		if (pWHExt->CombatLightChance < Randomizer::Global.RandomDouble())
 			return SkipFlash;
 
 		if (pWHExt->CLIsBlack)

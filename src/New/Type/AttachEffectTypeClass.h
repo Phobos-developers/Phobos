@@ -41,6 +41,8 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<bool> Duration_ApplyFirepowerMult;
+	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
@@ -64,6 +66,8 @@ public:
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
 	Valueable<double> FirepowerMultiplier;
 	Valueable<double> ArmorMultiplier;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_AllowWarheads;
+	ValueableVector<WarheadTypeClass*> ArmorMultiplier_DisallowWarheads;
 	Valueable<double> SpeedMultiplier;
 	Valueable<double> ROFMultiplier;
 	Valueable<bool> ROFMultiplier_ApplyOnCurrentTimer;
@@ -84,12 +88,17 @@ public:
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
 	Valueable<double> ReflectDamage_Multiplier;
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
+	Valueable<double> ReflectDamage_Chance;
+	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
 
 	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyFirepowerMult { false }
+		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
@@ -113,6 +122,8 @@ public:
 		, Tint_VisibleToHouses { AffectedHouse::All }
 		, FirepowerMultiplier { 1.0 }
 		, ArmorMultiplier { 1.0 }
+		, ArmorMultiplier_AllowWarheads {}
+		, ArmorMultiplier_DisallowWarheads {}
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
 		, ROFMultiplier_ApplyOnCurrentTimer { true }
@@ -133,7 +144,10 @@ public:
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
+		, ReflectDamage_Chance { 1.0 }
+		, ReflectDamage_Override {}
 		, DisableWeapons { false }
+		, Unkillable { false }
 		, Groups {}
 	{};
 
@@ -201,7 +215,7 @@ public:
 	ValueableVector<int> DurationOverrides;
 	ValueableVector<int> Delays;
 	ValueableVector<int> InitialDelays;
-	NullableVector<int> RecreationDelays;
+	ValueableVector<int> RecreationDelays;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);

@@ -29,7 +29,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 {
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
-		MessageListClass::Instance->PrintMessage(
+		MessageListClass::Instance.PrintMessage(
 			pMessage,
 			RulesClass::Instance->MessageDelay,
 			HouseClass::CurrentPlayer->ColorSchemeIndex,

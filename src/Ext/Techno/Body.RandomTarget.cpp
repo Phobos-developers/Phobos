@@ -180,7 +180,7 @@ TechnoClass* TechnoExt::FindRandomTarget(TechnoClass* pThis)
 	candidates.push_back(originalTarget);
 
 	// Looking for all valid targeting candidates
-	for (auto pCandidate : *TechnoClass::Array)
+	for (auto pCandidate : TechnoClass::Array)
 	{
 		auto const pCandidateType = pCandidate->GetTechnoType();
 		int candidateNeedsWeaponIdx = pThis->SelectWeapon(pCandidate);
@@ -250,7 +250,7 @@ void TechnoExt::HandleStopRandomTargetTarNav(EventExt* event)
 {
 	DWORD technoUniqueID = event->SyncStopRandomTargetTarNav.TechnoUniqueID;
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto pTechno : TechnoClass::Array)
 	{
 		if (pTechno && pTechno->UniqueID == technoUniqueID)
 		{

@@ -40,6 +40,8 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ConditionRed.Read(exINI, pSection, "ConditionRed");
 	this->Armor.Read(exINI, pSection, "Armor");
 	this->InheritArmorFromTechno.Read(exINI, pSection, "InheritArmorFromTechno");
+	this->InheritArmor_Allowed.Read(exINI, pSection, "InheritArmor.Allowed");
+	this->InheritArmor_Disallowed.Read(exINI, pSection, "InheritArmor.Disallowed");
 	this->Powered.Read(exINI, pSection, "Powered");
 
 	this->Respawn.Read(exINI, pSection, "Respawn");
@@ -56,6 +58,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->SelfHealing_RestartInCombat.Read(exINI, pSection, "SelfHealing.RestartInCombat");
 	this->SelfHealing_RestartInCombatDelay.Read(exINI, pSection, "SelfHealing.RestartInCombatDelay");
+	this->SelfHealing_EnabledBy.Read(exINI, pSection, "SelfHealing.EnabledBy");
 
 	this->AbsorbOverDamage.Read(exINI, pSection, "AbsorbOverDamage");
 	this->BracketDelta.Read(exINI, pSection, "BracketDelta");
@@ -87,6 +90,7 @@ void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Pips_Background.Read(exINI, pSection, "Pips.Background");
 	this->Pips_Building.Read(exINI, pSection, "Pips.Building");
 	this->Pips_Building_Empty.Read(exINI, pSection, "Pips.Building.Empty");
+	this->Pips_HideIfNoStrength.Read(exINI, pSection, "Pips.HideIfNoStrength");
 
 	this->ImmuneToBerserk.Read(exINI, pSection, "ImmuneToBerserk");
 	this->ImmuneToCrit.Read(exINI, pSection, "ImmuneToCrit");
@@ -106,6 +110,8 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->ConditionRed)
 		.Process(this->Armor)
 		.Process(this->InheritArmorFromTechno)
+		.Process(this->InheritArmor_Allowed)
+		.Process(this->InheritArmor_Disallowed)
 		.Process(this->Powered)
 		.Process(this->Respawn)
 		.Process(this->Respawn_Rate)
@@ -113,6 +119,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->SelfHealing_Rate)
 		.Process(this->SelfHealing_RestartInCombat)
 		.Process(this->SelfHealing_RestartInCombatDelay)
+		.Process(this->SelfHealing_EnabledBy)
 		.Process(this->AbsorbOverDamage)
 		.Process(this->BracketDelta)
 		.Process(this->ReceivedDamage_Minimum)
@@ -120,6 +127,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->IdleAnim_OfflineAction)
 		.Process(this->IdleAnim_TemporalAction)
 		.Process(this->IdleAnim)
+		.Process(this->IdleAnimDamaged)
 		.Process(this->BreakAnim)
 		.Process(this->HitAnim)
 		.Process(this->HitFlash)
@@ -136,6 +144,7 @@ void ShieldTypeClass::Serialize(T& Stm)
 		.Process(this->Pips_Background)
 		.Process(this->Pips_Building)
 		.Process(this->Pips_Building_Empty)
+		.Process(this->Pips_HideIfNoStrength)
 		.Process(this->ImmuneToBerserk)
 		.Process(this->ImmuneToCrit)
 		.Process(this->Tint_Color)

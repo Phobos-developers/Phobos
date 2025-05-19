@@ -48,16 +48,30 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-	for (const auto& [pExt, nCount] : pHouseExt->PowerPlantEnhancers)
+	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		if (pExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
+		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
-			fFactor *= std::powf(pExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
-			nAmount += pExt->PowerPlantEnhancer_Amount * nCount;
+			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
+			nAmount += bTypeExt->PowerPlantEnhancer_Amount * nCount;
 		}
 	}
 
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+}
+
+int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
+{
+	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
+
+	if (upgrades != -1)
+		return upgrades;
+
+	if (const auto pUndeploy = pType->UndeploysInto)
+		return pHouse->CountOwnedNow(pType) + pHouse->CountOwnedNow(pUndeploy);
+
+	return pHouse->CountOwnedNow(pType);
 }
 
 int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass* pHouse) // not including producing upgrades
@@ -108,7 +122,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
-	auto pArtINI = &CCINIClass::INI_Art();
+	auto pArtINI = &CCINIClass::INI_Art;
 
 	if (!pINI->GetSection(pSection))
 		return;
@@ -126,7 +140,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
-	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
@@ -155,11 +168,16 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Units_RepairRate.Read(exINI, pSection, "Units.RepairRate");
 	this->Units_RepairStep.Read(exINI, pSection, "Units.RepairStep");
 	this->Units_RepairPercent.Read(exINI, pSection, "Units.RepairPercent");
-	this->Units_DisableRepairCost.Read(exINI, pSection, "Units.DisableRepairCost");
+	this->Units_UseRepairCost.Read(exINI, pSection, "Units.UseRepairCost");
 
 	this->NoBuildAreaOnBuildup.Read(exINI, pSection, "NoBuildAreaOnBuildup");
 	this->Adjacent_Allowed.Read(exINI, pSection, "Adjacent.Allowed");
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
+
+	this->BarracksExitCell.Read(exINI, pSection, "BarracksExitCell");
+
+	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
+	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -185,7 +203,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
-	if (SuperWeaponTypeClass::Array->Count > 0)
+	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
 		this->SuperWeapons.Read(exINI, pSection, "SuperWeapons");
 
@@ -222,7 +240,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Art
-	this->ZShapePointMove_OnBuildup.Read(exArtINI, pSection, "ZShapePointMove.OnBuildup");
+	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
+	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -243,7 +262,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
-		.Process(this->AllowAirstrike)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->ExcludeFromMultipleFactoryBonus)
@@ -275,14 +293,18 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
+		.Process(this->IsAnimDelayedBurst)
 		.Process(this->IsDestroyableObstacle)
 		.Process(this->Units_RepairRate)
 		.Process(this->Units_RepairStep)
 		.Process(this->Units_RepairPercent)
-		.Process(this->Units_DisableRepairCost)
+		.Process(this->Units_UseRepairCost)
 		.Process(this->NoBuildAreaOnBuildup)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
+		.Process(this->BarracksExitCell)
+		.Process(this->Overpower_KeepOnline)
+		.Process(this->Overpower_ChargeWeapon)
 		;
 }
 

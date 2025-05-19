@@ -16,17 +16,6 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 	TechnoClass* pFocus = nullptr;
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 
-	if (!pScript)
-		return;
-
-	if (!pTeamData)
-	{
-		pTeam->StepCompleted = true;
-		ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: ExtData found)\n", pTeam->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->Type->ID, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
-
-		return;
-	}
-
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
 	if (pTeamData->WaitNoTargetCounter > 0)
 	{
@@ -39,19 +28,6 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 
 		if (pTeamData->WaitNoTargetAttempts > 0)
 			pTeamData->WaitNoTargetAttempts--;
-	}
-
-	// This team has no units!
-	if (!pTeam)
-	{
-		if (pTeamData->CloseEnough > 0)
-			pTeamData->CloseEnough = -1;
-
-		// This action finished
-		pTeam->StepCompleted = true;
-		ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reason: No team members alive)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, pScript->CurrentMission + 1, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Action, pScript->Type->ScriptActions[pScript->CurrentMission + 1].Argument);
-
-		return;
 	}
 
 	for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
@@ -146,7 +122,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode = 0, bool pick
 					pFoot->QueueMission(Mission::Move, false);
 					CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pFoot, 10);
 					coord = coord != CoordStruct::Empty ? coord : selectedTarget->Location;
-					CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+					CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
 					pFoot->SetDestination(pCellDestination, true);
 
 					// Aircraft hack. I hate how this game auto-manages the aircraft missions.
@@ -225,14 +201,14 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			int enemyHouseIndex = pFoot->Team->FirstUnit->Owner->EnemyHouseIndex;
 
 			if (pFoot->Team->Type->OnlyTargetHouseEnemy && enemyHouseIndex >= 0)
-				enemyHouse = HouseClass::Array->GetItem(enemyHouseIndex);
+				enemyHouse = HouseClass::Array.GetItem(enemyHouseIndex);
 		}
 	}
 
 	// Generic method for targeting
-	for (int i = 0; i < TechnoClass::Array->Count; i++)
+	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
-		auto object = TechnoClass::Array->GetItem(i);
+		auto object = TechnoClass::Array.GetItem(i);
 		auto objectType = object->GetTechnoType();
 		auto pTechnoType = pTechno->GetTechnoType();
 
@@ -242,25 +218,38 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		if (enemyHouse && enemyHouse != object->Owner)
 			continue;
 
-		// Stealth ground unit check
-		if (object->CloakState == CloakState::Cloaked && !objectType->Naval)
+		// Discard invisible structures
+		BuildingTypeClass* pTypeBuilding = object->WhatAmI() == AbstractType::Building ? static_cast<BuildingTypeClass*>(objectType) : nullptr;
+
+		if (pTypeBuilding && pTypeBuilding->InvisibleInGame)
 			continue;
 
-		// Submarines aren't a valid target
-		if (object->CloakState == CloakState::Cloaked
-			&& objectType->Underwater
-			&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
-				|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+		if (objectType->Naval)
 		{
-			continue;
+			// Submarines aren't a valid target
+			if (object->CloakState == CloakState::Cloaked
+				&& objectType->Underwater
+				&& (pTechnoType->NavalTargeting == NavalTargetingType::Underwater_Never
+					|| pTechnoType->NavalTargeting == NavalTargetingType::Naval_None))
+			{
+				continue;
+			}
+
+			// Land not OK for the Naval unit
+			if (pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
+				&& (object->GetCell()->LandType != LandType::Water))
+			{
+				continue;
+			}
 		}
 
-		// Land not OK for the Naval unit
-		if (objectType->Naval
-			&& pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
-			&& object->GetCell()->LandType != LandType::Water)
+		// Stealth check.
+		if (object->CloakState == CloakState::Cloaked)
 		{
-			continue;
+			auto const pCell = object->GetCell();
+
+			if (!pCell->Sensors_InclHouse(pTechno->Owner->ArrayIndex))
+				continue;
 		}
 
 		if (object != pTechno
@@ -291,7 +280,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 					}
 
 					// Is Defender house targeting Attacker House? if "yes" then more Threat
-					if (pTechno->Owner == HouseClass::Array->GetItem(object->Owner->EnemyHouseIndex))
+					if (pTechno->Owner == HouseClass::Array.GetItem(object->Owner->EnemyHouseIndex))
 					{
 						double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
 						objectThreatValue += EnemyHouseThreatBonus;
@@ -357,8 +346,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 void ScriptExt::Mission_Move_List(TeamClass* pTeam, int calcThreatMode, bool pickAllies, int attackAITargetType)
 {
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
-		pTeamData->IdxSelectedObjectFromAIList = -1;
+	pTeamData->IdxSelectedObjectFromAIList = -1;
 
 	if (attackAITargetType < 0)
 		attackAITargetType = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -376,9 +364,9 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 	bool selected = false;
 	int idxSelectedObject = -1;
 	std::vector<int> validIndexes;
-
 	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData && pTeamData->IdxSelectedObjectFromAIList >= 0)
+
+	if (pTeamData->IdxSelectedObjectFromAIList >= 0)
 	{
 		idxSelectedObject = pTeamData->IdxSelectedObjectFromAIList;
 		selected = true;
@@ -396,10 +384,10 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			// Finding the objects from the list that actually exists in the map
-			for (int i = 0; i < TechnoClass::Array->Count; i++)
+			for (int i = 0; i < TechnoClass::Array.Count; i++)
 			{
-				auto pTechno = TechnoClass::Array->GetItem(i);
-				auto pTechnoType = TechnoClass::Array->GetItem(i)->GetTechnoType();
+				auto pTechno = TechnoClass::Array.GetItem(i);
+				auto pTechnoType = TechnoClass::Array.GetItem(i)->GetTechnoType();
 				bool found = false;
 
 				for (auto j = 0u; j < objectsList.size() && !found; j++)

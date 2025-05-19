@@ -160,7 +160,7 @@ DEFINE_HOOK(0x6B76E3, SpawnerManagerClassAI_RandomTarget_AssignTargetToAircraft2
 DEFINE_HOOK(0x730F00, AIMissionClassUAEXXZ_StopSelected_RandomTarget_ClearRetargets, 0x5)
 {
 	// Makes technos with random targets stop targeting
-	for (auto pObj : ObjectClass::CurrentObjects())
+	for (auto pObj : ObjectClass::CurrentObjects)
 	{
 		auto pTechno = abstract_cast<TechnoClass*>(pObj);
 		if (!pTechno)

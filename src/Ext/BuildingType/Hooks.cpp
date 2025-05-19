@@ -72,7 +72,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
-	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
+	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
 	auto pType = pBuilding ? pBuilding->Type : nullptr;
 	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
 	bool isShow = pTypeExt && pTypeExt->PlacementPreview;
@@ -84,7 +84,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 			CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
 			CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 
-			pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
+			pCell = MapClass::Instance.TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
 			if (!pCell)
 				return 0;
 		}
@@ -124,7 +124,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 		ConvertClass* pPalette = pTypeExt->PlacementPreview_Remap.Get()
 			? pBuilding->GetDrawer()
-			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
+			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL);
 
 		DSurface* pSurface = DSurface::Temp;
 		RectangleStruct rect = pSurface->GetRect();
@@ -151,30 +151,6 @@ DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x6F34B7, TechnoClass_WhatWeaponShouldIUse_AllowAirstrike, 0x6)
-{
-	enum { SkipGameCode = 0x6F34BD };
-
-	GET(BuildingTypeClass*, pThis, ECX);
-
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
-	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x51EAF2, TechnoClass_WhatAction_AllowAirstrike, 0x6)
-{
-	enum { SkipGameCode = 0x51EAF8 };
-
-	GET(BuildingTypeClass*, pThis, ESI);
-
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
-	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));
-
-	return SkipGameCode;
 }
 
 // Rewritten
@@ -225,7 +201,7 @@ namespace ProximityTemp
 	BuildingTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x4A8F20, isplayClass_BuildingProximityCheck_SetContext, 0x5)
+DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
 {
 	GET(BuildingTypeClass*, pType, ESI);
 
