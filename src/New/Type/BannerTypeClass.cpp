@@ -3,6 +3,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/TemplateDef.h>
 
+template<>
 const char* Enumerable<BannerTypeClass>::GetMainSection()
 {
 	return "BannerTypes";
@@ -10,14 +11,12 @@ const char* Enumerable<BannerTypeClass>::GetMainSection()
 
 inline void BannerTypeClass::DetermineType()
 {
-	if (this->PCX)
-		BannerType = BannerType::PCX;
+	if (this->PCX.GetSurface())
+		this->BannerType = BannerType::PCX;
 	else if (this->Shape)
-		BannerType = BannerType::SHP;
-	else if (this->VariableFormat != BannerNumberType::None)
-		BannerType = BannerType::VariableFormat;
-	else if (!this->CSF.Get().empty())
-		BannerType = BannerType::CSF;
+		this->BannerType = BannerType::SHP;
+	else if (!this->CSF.Get().empty() || this->CSF_VariableFormat != BannerNumberType::None)
+		this->BannerType = BannerType::CSF;
 	else
 		Debug::Log("[Developer warning] BannerType [%s] doesn't have an available content.", this->Name);
 }
@@ -28,16 +27,15 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->PCX.Read(exINI, section, "Content.PCX");
-	this->Shape.Read(exINI, section, "Content.SHP");
-	this->Palette.LoadFromINI(pINI, section, "Content.SHP.Palette");
-	this->CSF.Read(exINI, section, "Content.CSF");
-	this->CSF_Color.Read(exINI, section, "Content.CSF.Color");
-	this->CSF_Background.Read(exINI, section, "Content.CSF.DrawBackground");
-	this->VariableFormat.Read(exINI, section, "Content.VariableFormat");
-	this->VariableFormat_Label.Read(exINI, section, "Content.VariableFormat.Label");
+	this->PCX.Read(pINI, section, "PCX");
+	this->Shape.Read(exINI, section, "SHP");
+	this->Palette.LoadFromINI(pINI, section, "SHP.Palette");
+	this->CSF.Read(exINI, section, "CSF");
+	this->CSF_Color.Read(exINI, section, "CSF.Color");
+	this->CSF_Background.Read(exINI, section, "CSF.Background");
+	this->CSF_VariableFormat.Read(exINI, section, "CSF.VariableFormat");
 
-	DetermineType();
+	this->DetermineType();
 }
 
 template <typename T>
@@ -50,8 +48,7 @@ void BannerTypeClass::Serialize(T& stm)
 		.Process(this->CSF)
 		.Process(this->CSF_Color)
 		.Process(this->CSF_Background)
-		.Process(this->VariableFormat)
-		.Process(this->VariableFormat_Label)
+		.Process(this->CSF_VariableFormat)
 		.Process(this->BannerType)
 		;
 }

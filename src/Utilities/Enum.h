@@ -284,8 +284,7 @@ enum class BannerType : int
 	None = 0,
 	PCX = 1,
 	CSF = 2,
-	SHP = 3,
-	VariableFormat = 4
+	SHP = 3
 };
 
 enum class BannerNumberType : int
@@ -293,8 +292,7 @@ enum class BannerNumberType : int
 	None = 0,
 	Variable = 1,
 	Prefixed = 2,
-	Suffixed = 3,
-	Fraction = 4
+	Suffixed = 3
 };
 
 class MouseCursorHotSpotX

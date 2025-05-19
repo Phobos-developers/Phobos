@@ -282,6 +282,7 @@ This page lists all the individual contributions to the project by their author.
   - `601 House owns TechnoType` and `602 House doesn't own TechnoType` trigger events
   - Voxel light source position customization
   - Extending `Power` to all TechnoTypes
+  - Display banner by triggers
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
   - General assistance
@@ -403,6 +404,7 @@ This page lists all the individual contributions to the project by their author.
   - Unlimited `AlternateFLH` entries
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
+  - Display banner by triggers
   - New SuperWeapon Type template
 - **TwinkleStar**:
   - Custom slaves free sound
@@ -482,6 +484,7 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
+  - Display banner improvement and doc
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

@@ -1304,22 +1304,18 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			{
 				parsed = BannerNumberType::Variable;
 			}
-			else if (_strcmpi(str, "prefixed") == 0)
+			else if (_strcmpi(str, "prefix") == 0 || _strcmpi(str, "prefixed") == 0)
 			{
 				parsed = BannerNumberType::Prefixed;
 			}
-			else if (_strcmpi(str, "suffixed") == 0)
+			else if (_strcmpi(str, "suffix") == 0 || _strcmpi(str, "suffixed") == 0)
 			{
 				parsed = BannerNumberType::Suffixed;
 			}
-			else if (_strcmpi(str, "fraction") == 0)
-			{
-				parsed = BannerNumberType::Fraction;
-			}
-			else if (_strcmpi(str, "none") == 0)
+			else if (_strcmpi(str, "none") != 0)
 			{
 				Debug::INIParseFailed(pSection, pKey, parser.value(),
-					"Content.VariableFormat can be either none, prefixed, suffixed or fraction");
+					"CSF.VariableFormat can be either none, variable, prefixed or suffixed");
 				return false;
 			}
 			if (parsed != BannerNumberType::None)

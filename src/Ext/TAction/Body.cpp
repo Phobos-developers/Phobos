@@ -371,7 +371,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		if (pExecuteHouse)
 		{
 			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
-	
+
 			CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
@@ -534,7 +534,8 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 	{
 		const auto& pBanner = *it;
 		pBanner->Type = pBannerType;
-		pBanner->Position = CoordStruct(pTAction->Param4, pTAction->Param5, 0);
+		pBanner->PositionX = static_cast<int>(pTAction->Param4 / 100.0 * DSurface::Composite->Width);
+		pBanner->PositionY = static_cast<int>(pTAction->Param5 / 100.0 * DSurface::Composite->Height);
 		pBanner->Variable = pTAction->Param6;
 		pBanner->IsGlobalVariable = isGlobal;
 	}
@@ -546,7 +547,8 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 			(
 				pBannerType,
 				pTAction->Value,
-				CoordStruct(pTAction->Param4, pTAction->Param5, 0),
+				pTAction->Param4,
+				pTAction->Param5,
 				pTAction->Param6,
 				isGlobal
 			)

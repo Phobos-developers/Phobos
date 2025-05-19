@@ -12,35 +12,31 @@ BannerClass::BannerClass
 (
 	BannerTypeClass* pBannerType,
 	int id,
-	const CoordStruct& position,
+	int positionX,
+	int positionY,
 	int variable,
 	bool isGlobalVariable
 )
 	: Type(pBannerType)
 	, ID(id)
-	, Position(position)
+	, PositionX(static_cast<int>(positionX / 100.0 * DSurface::Composite->Width))
+	, PositionY(static_cast<int>(positionY / 100.0 * DSurface::Composite->Height))
 	, Variable(variable)
 	, IsGlobalVariable(isGlobalVariable)
 { }
 
 void BannerClass::Render()
 {
-	int x = static_cast<int>(this->Position.X / 100.0 * DSurface::Composite->Width);
-	int y = static_cast<int>(this->Position.Y / 100.0 * DSurface::Composite->Height);
-
 	switch (this->Type->BannerType)
 	{
 	case BannerType::PCX:
-		this->RenderPCX(x, y);
+		this->RenderPCX(this->PositionX, this->PositionY);
 		break;
 	case BannerType::SHP:
-		this->RenderSHP(x, y);
+		this->RenderSHP(this->PositionX, this->PositionY);
 		break;
 	case BannerType::CSF:
-		this->RenderCSF(x, y);
-		break;
-	case BannerType::VariableFormat:
-		this->RenderVariable(x, y);
+		this->RenderCSF(this->PositionX, this->PositionY);
 		break;
 	default:
 		break;
@@ -49,64 +45,44 @@ void BannerClass::Render()
 
 void BannerClass::RenderPCX(int x, int y)
 {
-	int xsize = 0;
-	int ysize = 0;
-
-	if (this->Type->BannerType == BannerType::PCX)
-	{
-		BSurface* pcx = this->Type->PCX;
-
-		if (pcx == nullptr)
-			return;
-
-		x = x - pcx->Width / 2;
-		y = y - pcx->Height / 2;
-		xsize = pcx->Width;
-		ysize = pcx->Height;
-
-		RectangleStruct bounds(x, y, xsize, ysize);
-		PCX::Instance.BlitToSurface(&bounds, DSurface::Composite, pcx);
-	}
+	BSurface* pcx = this->Type->PCX.GetSurface();
+	x = x - pcx->Width / 2;
+	y = y - pcx->Height / 2;
+	RectangleStruct bounds(x, y, pcx->Width, pcx->Height);
+	PCX::Instance.BlitToSurface(&bounds, DSurface::Composite, pcx);
 }
 
 void BannerClass::RenderSHP(int x, int y)
 {
-	if (this->Type->BannerType == BannerType::SHP)
-	{
-		SHPStruct* shape = this->Type->Shape;
-		ConvertClass* palette = this->Type->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	SHPStruct* shape = this->Type->Shape;
+	ConvertClass* palette = this->Type->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	x = x - shape->Width / 2;
+	y = y - shape->Height / 2;
+	Point2D pos(x, y);
 
-		if (shape == nullptr)
-			return;
+	DSurface::Composite->DrawSHP
+	(
+		palette,
+		shape,
+		this->ShapeFrameIndex,
+		&pos,
+		&DSurface::ViewBounds,
+		BlitterFlags::None,
+		0,
+		0,
+		ZGradient::Ground,
+		1000,
+		0,
+		nullptr,
+		0,
+		0,
+		0
+	);
 
-		x = x - shape->Width / 2;
-		y = y - shape->Height / 2;
+	this->ShapeFrameIndex++;
 
-		Point2D pos(x, y);
-		DSurface::Composite->DrawSHP
-		(
-			palette,
-			shape,
-			this->ShapeFrameIndex,
-			&pos,
-			&DSurface::ViewBounds,
-			BlitterFlags::None,
-			0,
-			0,
-			ZGradient::Ground,
-			1000,
-			0,
-			nullptr,
-			0,
-			0,
-			0
-		);
-
-		this->ShapeFrameIndex++;
-
-		if (this->ShapeFrameIndex >= shape->Frames)
-			this->ShapeFrameIndex = 0;
-	}
+	if (this->ShapeFrameIndex >= shape->Frames)
+		this->ShapeFrameIndex = 0;
 }
 
 void BannerClass::RenderCSF(int x, int y)
@@ -114,14 +90,26 @@ void BannerClass::RenderCSF(int x, int y)
 	RectangleStruct rect;
 	DSurface::Composite->GetRect(&rect);
 	Point2D pos(x, y);
+	std::wstring text;
 
-	std::wstring text = this->Type->CSF.Get().Text;
+	if (this->Type->CSF_VariableFormat != BannerNumberType::None)
+	{
+		const auto& variables = ScenarioExt::Global()->Variables[this->IsGlobalVariable != 0];
+		const auto& it = variables.find(this->Variable);
 
-	const auto& variables = ScenarioExt::Global()->Variables[this->IsGlobalVariable != 0];
-	const auto& it = variables.find(this->Variable);
-
-	if (it != variables.end())
-		text += std::to_wstring(it->second.Value);
+		if (it != variables.end())
+		{
+			switch (this->Type->CSF_VariableFormat)
+			{
+				case BannerNumberType::Variable:
+					text = std::to_wstring(it->second.Value);
+				case BannerNumberType::Prefixed:
+					text = std::to_wstring(it->second.Value) + this->Type->CSF.Get().Text;
+				case BannerNumberType::Suffixed:
+					text = this->Type->CSF.Get().Text + std::to_wstring(it->second.Value);
+			}
+		}
+	}
 
 	TextPrintType textFlags = TextPrintType::UseGradPal
 		| TextPrintType::Center
@@ -135,15 +123,10 @@ void BannerClass::RenderCSF(int x, int y)
 		text.c_str(),
 		&rect,
 		&pos,
-		Drawing::RGB_To_Int(this->Type->CSF_Color),
+		Drawing::RGB_To_Int(this->Type->CSF_Color.Get(Drawing::TooltipColor)),
 		0,
 		textFlags
 	);
-}
-
-void BannerClass::RenderVariable(int x, int y)
-{
-	//nothing here
 }
 
 template <typename T>
@@ -152,7 +135,8 @@ bool BannerClass::Serialize(T& Stm)
 	return Stm
 		.Process(this->ID)
 		.Process(this->Type)
-		.Process(this->Position)
+		.Process(this->PositionX)
+		.Process(this->PositionY)
 		.Process(this->Variable)
 		.Process(this->ShapeFrameIndex)
 		.Process(this->IsGlobalVariable)

@@ -9,7 +9,7 @@ class BannerTypeClass final : public Enumerable<BannerTypeClass>
 public:
 
 	//PCX
-	Valueable<BSurface*> PCX;
+	PhobosPCXFile PCX;
 
 	//SHP
 	Valueable<SHPStruct*> Shape;
@@ -17,25 +17,21 @@ public:
 
 	//CSF
 	Valueable<CSFText> CSF;
-	Valueable<ColorStruct> CSF_Color;
+	Nullable<ColorStruct> CSF_Color;
 	Valueable<bool> CSF_Background;
-
-	//VariableFormat
-	Valueable<BannerNumberType> VariableFormat;
-	Valueable<CSFText> VariableFormat_Label;
+	Valueable<BannerNumberType> CSF_VariableFormat;
 
 	BannerType BannerType;
 
-	BannerTypeClass(const char* pTitle) : Enumerable<BannerTypeClass>(pTitle)
+	BannerTypeClass(const char* const pTitle) : Enumerable<BannerTypeClass>(pTitle)
 		, PCX { }
 		, Shape { }
 		, Palette { }
 		, CSF { }
-		, CSF_Color(Drawing::TooltipColor)
+		, CSF_Color { }
 		, CSF_Background { false }
-		, VariableFormat { }
-		, VariableFormat_Label { }
-		, BannerType(BannerType::None)
+		, CSF_VariableFormat { BannerNumberType::None }
+		, BannerType { BannerType::None }
 	{ }
 
 	virtual void LoadFromINI(CCINIClass* pINI);

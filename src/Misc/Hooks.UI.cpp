@@ -1,7 +1,8 @@
 #include <Phobos.h>
 
-#include <Surface.h>
+#include <Helpers/Macro.h>
 #include <PreviewClass.h>
+#include <Surface.h>
 #include <ThemeClass.h>
 
 #include <Ext/House/Body.h>
@@ -9,9 +10,7 @@
 #include <Ext/Rules/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/TechnoType/Body.h>
-#include <Ext/Side/Body.h>
 #include <Ext/SWType/Body.h>
-#include <Ext/Rules/Body.h>
 
 #include <Misc/FlyingStrings.h>
 

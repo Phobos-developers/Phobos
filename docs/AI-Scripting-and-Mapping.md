@@ -666,6 +666,47 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+###`8000-8002` Display Banner
+
+- Display a 'banner' at a fixed location that is relative to the screen.
+  - Action `8000` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
+  - Action `8001` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
+  - Action `8002` will delete the banner corresponding to the set Banner ID.
+- To make use of this, you need to set the properties of a `BannerType` in your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) file or a `CSF` text. If multiple are set the first one in the above listed order takes effect.
+  - `SHP.Palette` controls the palette that'll be used when drawing a banner for Shape file.
+  - `CSF.Color` controls the color of the text that'll be used when drawing a text banner.
+  - `CSF.Background` controls whether a black background will be displayed below the text banner.
+  - `CSF.VariableFormat` controls the way to print a variable together with the text banner.
+    - `none` will make the text banner not display the variable.
+    - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
+    - `prefix`/`prefixed` will make the text banner display the variable before any other text.
+    - `surfix`/`surfixed` will make the text banner display the variable after any other text.
+
+In `rulesmd.ini`:
+```ini
+[BannerTypes]
+0=SOMEBANNER
+
+[SOMEBANNER]                ; BannerType
+PCX=                        ; filename - excluding the .pcx extension
+SHP=                        ; filename - excluding the .shp extension
+SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+CSF=                        ; CSF entry key
+CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
+CSF.Background=false        ; boolean
+CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+```
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],8000,[Banner ID],0,[BannerType],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],8001,[Banner ID],0,[BannerType],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],8002,[Banner ID],0,0,0,0,0,A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation

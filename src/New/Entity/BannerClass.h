@@ -15,7 +15,8 @@ public:
 
 	BannerTypeClass* Type;
 	int ID;
-	CoordStruct Position;
+	int PositionX;
+	int PositionY;
 
 	//I don't know what is this for
 	int Variable;
@@ -28,7 +29,8 @@ public:
 	(
 		BannerTypeClass* pBannerType,
 		int id,
-		const CoordStruct& position,
+		int positionX,
+		int positionY,
 		int variable,
 		bool isGlobalVariable
 	);
@@ -49,5 +51,4 @@ private:
 	void RenderPCX(int x, int y);
 	void RenderSHP(int x, int y);
 	void RenderCSF(int x, int y);
-	void RenderVariable(int x, int y);
 };
