@@ -2,8 +2,9 @@
 
 #include <Utilities/Container.h>
 #include <Utilities/Template.h>
-
 #include <Helpers/Template.h>
+
+#include <optional>
 
 #include <TEventClass.h>
 
@@ -83,8 +84,8 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static bool Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-					CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled);
+	static std::optional<bool> Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
+		ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource);
 
 	template<bool IsGlobal, typename _Pr>
 	static bool VariableCheck(TEventClass* pThis);

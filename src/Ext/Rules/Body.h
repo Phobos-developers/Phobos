@@ -17,6 +17,7 @@ class TechnoTypeClass;
 class VocClass;
 class WarheadTypeClass;
 class DigitalDisplayTypeClass;
+class SelectBoxTypeClass;
 
 class RulesExt
 {
@@ -31,9 +32,9 @@ public:
 		std::vector<std::vector<TechnoTypeClass*>> AITargetTypesLists;
 		std::vector<std::vector<ScriptTypeClass*>> AIScriptsLists;
 		std::vector<std::vector<HouseTypeClass*>> AIHousesLists;
-		ValueableVector<TechnoTypeClass*> HarvesterTypes;
 
 		Valueable<int> Storage_TiberiumIndex;
+		Valueable<float> HarvesterDumpAmount;
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> GainSelfHealAllowMultiplayPassive;
@@ -95,6 +96,10 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<bool> AmphibiousEnter;
+		Valueable<bool> AmphibiousUnload;
+		Valueable<bool> NoQueueUpToEnter;
+		Valueable<bool> NoQueueUpToUnload;
 
 		Valueable<bool> BuildingProductionQueue;
 
@@ -142,6 +147,12 @@ public:
 		ValueableVector<DigitalDisplayTypeClass*> Vehicles_DefaultDigitalDisplayTypes;
 		ValueableVector<DigitalDisplayTypeClass*> Aircraft_DefaultDigitalDisplayTypes;
 
+		Valueable<SelectBoxTypeClass*> DefaultInfantrySelectBox;
+		Valueable<SelectBoxTypeClass*> DefaultUnitSelectBox;
+
+		Valueable<Leptons> VisualScatter_Min;
+		Valueable<Leptons> VisualScatter_Max;
+
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
@@ -152,8 +163,13 @@ public:
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
+
+		Valueable<double> DamageOwnerMultiplier;
+		Valueable<double> DamageAlliesMultiplier;
+		Valueable<double> DamageEnemiesMultiplier;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -173,6 +189,18 @@ public:
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
 
+		Valueable<bool> AttackMove_Aggressive;
+		Valueable<bool> AttackMove_UpdateTarget;
+
+		Valueable<int> MindControl_ThreatDelay;
+
+		Valueable<bool> RecountBurst;
+		Valueable<bool> NoRearm_UnderEMP;
+		Valueable<bool> NoRearm_Temporal;
+		Valueable<bool> NoReload_UnderEMP;
+		Valueable<bool> NoReload_Temporal;
+		Valueable<bool> NoTurret_TrackTarget;
+
 		Valueable<bool> GatherWhenMCVDeploy;
 		Valueable<bool> AIFireSale;
 		Valueable<int> AIFireSaleDelay;
@@ -186,8 +214,16 @@ public:
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
 
+		Valueable<double> ProneSpeed_Crawls;
+		Valueable<double> ProneSpeed_NoCrawls;
+
+		Valueable<double> DamagedSpeed;
+
+		Valueable<bool> HarvesterScanAfterUnload;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
+			, HarvesterDumpAmount { 0.0f }
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, GainSelfHealAllowMultiplayPassive { true }
@@ -212,7 +248,7 @@ public:
 			, JumpjetCrash { 5.0 }
 			, JumpjetNoWobbles { false }
 			, VeinholeWarhead {}
-			, MissingCameo { GameStrings::XXICON_SHP() }
+			, MissingCameo { GameStrings::XXICON_SHP }
 
 			, PlacementGrid_Translucency { 0 }
 			, PlacementGrid_TranslucencyWithPreview { }
@@ -245,6 +281,10 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedAircraftMissions { false }
+			, AmphibiousEnter { false }
+			, AmphibiousUnload { false }
+			, NoQueueUpToEnter { false }
+			, NoQueueUpToUnload { false }
 
 			, BuildingProductionQueue { false }
 
@@ -267,7 +307,7 @@ public:
 			, ForceShield_ExtraTintIntensity { 0.0 }
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
-			, ROF_RandomDelay { { 0 ,2  } }
+			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
@@ -282,10 +322,11 @@ public:
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
 			, DrawInsignia_OnlyOnSelected { false }
-			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
-			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2 } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6 } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
-			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Units { { 10, 6 } }
+			, DrawInsignia_UsePixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
@@ -294,9 +335,16 @@ public:
 			, Infantry_DefaultDigitalDisplayTypes {}
 			, Vehicles_DefaultDigitalDisplayTypes {}
 			, Aircraft_DefaultDigitalDisplayTypes {}
+			, DefaultInfantrySelectBox {}
+			, DefaultUnitSelectBox {}
+			, VisualScatter_Min { Leptons(8) }
+			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
 			, PodImage { }
+			, DamageOwnerMultiplier { 1.0 }
+			, DamageAlliesMultiplier { 1.0 }
+			, DamageEnemiesMultiplier { 1.0 }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -313,6 +361,15 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, AttackMove_Aggressive { false }
+			, AttackMove_UpdateTarget { false }
+			, MindControl_ThreatDelay { 0 }
+			, RecountBurst { false }
+			, NoRearm_UnderEMP { false }
+			, NoRearm_Temporal { false }
+			, NoReload_UnderEMP { false }
+			, NoReload_Temporal { false }
+			, NoTurret_TrackTarget { false }
 			, GatherWhenMCVDeploy { true }
 			, AIFireSale { true }
 			, AIFireSaleDelay { 0 }
@@ -323,6 +380,12 @@ public:
 			, LightFlashAlphaImageDetailLevel { 0 }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
+			, ProneSpeed_Crawls { 0.67 }
+			, ProneSpeed_NoCrawls { 1.5 }
+
+			, DamagedSpeed { 0.75 }
+
+			, HarvesterScanAfterUnload { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -372,5 +435,4 @@ public:
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
-
 };
