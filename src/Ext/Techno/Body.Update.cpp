@@ -141,18 +141,8 @@ void TechnoExt::ExtData::AmmoAutoConvertActions()
 		if (!pFoot)
 			return;
 
-		// Preparing the needed convert stuff
-		std::vector<TypeConvertGroup> convertPair;
-		ValueableVector<TechnoTypeClass*> convertFrom;
-		Nullable<TechnoTypeClass*> convertTo;
-		Nullable<AffectedHouse> convertAffectedHouses;
-
-		convertFrom.emplace_back(pThis->GetTechnoType());
-		convertTo = pTypeExt->Ammo_AutoConvertType;
-		convertAffectedHouses = AffectedHouse::Owner;
-		convertPair.emplace_back(convertFrom, convertTo, convertAffectedHouses);
-
-		TypeConvertGroup::Convert(pFoot, convertPair, pThis->Owner);
+		if (pTypeExt->Ammo_AutoConvertType.isset())
+			TechnoExt::ConvertToType(pFoot, pTypeExt->Ammo_AutoConvertType);
 	}
 }
 
