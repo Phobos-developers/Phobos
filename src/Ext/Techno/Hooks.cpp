@@ -360,31 +360,6 @@ DEFINE_HOOK(0x4DB218, FootClass_GetMovementSpeed_SpeedMultiplier, 0x6)
 	speed = static_cast<int>(speed * pExt->AE.SpeedMultiplier);
 	R->EAX(speed);
 
-	// Drop crate if is dead
-	if (pThis->Health <= 0)
-	{
-		const auto pExt = TechnoExt::ExtMap.Find(pThis);
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-		int nSelectedPowerup = -1;
-
-		if (pExt->DropCrate >= 0)
-		{
-			if (pExt->DropCrate == 1)
-				nSelectedPowerup = static_cast<int>(pExt->DropCrateType);
-		}
-		else if (pTypeExt->DropCrate.isset())
-		{
-			nSelectedPowerup = pTypeExt->DropCrate.isset() ? static_cast<int>(pTypeExt->DropCrate.Get()) : -1;
-		}
-
-		if (nSelectedPowerup < 0)
-			return 0;
-
-		Powerup selectedPowerup = static_cast<Powerup>(nSelectedPowerup);
-		TechnoExt::TryToCreateCrate(pThis->Location, selectedPowerup);
-	}
-
 	return 0;
 }
 
