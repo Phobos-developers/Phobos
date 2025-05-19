@@ -1252,7 +1252,9 @@ DEFINE_HOOK(0x6F4C50, TechnoClass_ReceiveCommand_NotifyUnlink, 0x6)
 	if (!pCall->InLimbo // Has not already entered
 		&& (pCall->AbstractFlags & AbstractFlags::Foot) // Is foot
 		&& pCall->CurrentMission == Mission::Enter // Is entering
-		&& static_cast<FootClass*>(pCall)->Destination == pThis) // Is entering techno B
+		&& static_cast<FootClass*>(pCall)->Destination == pThis // Is entering techno B
+		&& pCall->WhatAmI() != AbstractType::Aircraft // Not aircraft
+		&& pThis->GetTechnoType()->Passengers > 0) // Have passenger seats
 	{
 		pCall->SetDestination(pThis->GetCell(), false); // Set the destination at its feet
 		pCall->QueueMission(Mission::Move, false); // Replace entering with moving
@@ -1355,7 +1357,7 @@ DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
 {
 	// At present, it seems that aircraft use their own mapcoords and the team destination's mapcoords to check.
-    // During the previous test, it was found that if the aircraft uses this and needs to return to the airport
+	// During the previous test, it was found that if the aircraft uses this and needs to return to the airport
 	// with the script first, it will interrupt the remaining tasks for unknown reasons - CrimRecya
 	return (pSource->IsInAir() && pSource->WhatAmI() != AbstractType::Aircraft) // Jumpjets or sth in the air
 		? (pSource->DistanceFrom(pTarget) * 2) // 2D distance (2x is the bonus to units in the air)
@@ -1558,6 +1560,17 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73FA92, UnitClass_IsCellOccupied_LandType, 0x8)
+{
+	enum { ContinueCheck = 0x73FC24, NoMove = 0x73FACD };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(CellClass*, pCell, EDI);
+	GET_STACK(bool, containsBridge, STACK_OFFSET(0x90, -0x7D));
+
+	return GroundType::Array[static_cast<int>(containsBridge ? LandType::Road : pCell->LandType)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? NoMove : ContinueCheck;
+}
+
 #pragma region XSurfaceFix
 
 // Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.
@@ -1648,7 +1661,7 @@ DEFINE_HOOK(0x5F530B, ObjectClass_Disappear_AnnounceExpiredPointer, 0x6)
 	GET(ObjectClass*, pThis, ESI);
 	GET_STACK(bool, removed, STACK_OFFSET(0x8, 0x4));
 	R->ECX(pThis);
-	// Do not working for buildings for now, because it will break some vanilla building tracking. 
+	// Do not working for buildings for now, because it will break some vanilla building tracking.
 	// Hoping someone could investigate thoroughly and enable it for buildings.
 	R->EDX(((pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None) ? Disappear::removed : removed);
 	Disappear::removed = false;
@@ -1830,11 +1843,13 @@ DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// Infantr
 	return 0;
 }
 
-DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
+DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x51A30A };
 
 	GET(BuildingClass*, pReactor, EDI);
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = pReactor;
 	const int enterSound = pReactor->Type->EnterBioReactorSound;
 
 	if (enterSound >= 0)
@@ -1846,11 +1861,13 @@ DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x44DBD5 };
 
 	GET(BuildingClass*, pReactor, EBP);
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
 	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
 
 	if (leaveSound >= 0)

@@ -455,7 +455,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 ![image](_static/images/animToUnit.gif)
 
 - Animations can now create (or "convert" to) any unit (vehicles, aircraft and infantry) when they end via `CreateUnit`. This offers more settings than `MakeInfantry` does for infantry.
-  - `CreateUnit.Owner` determines which house will own the created unit. This only works as expected if the animation has owner set.
+  - `CreateUnit.Owner` determines which house will own the created unit. This only works as expected if the animation has owner set. If there is no owner or the owner house has been defeated, the created unit will be owned by first house from Civilian side unless `CreateUnit.RequireOwner` is set to true in which case no unit will be created.
     - Vehicle [destroy animations](Fixed-or-Improved-Logics.md#destroy-animations), animations from Warhead `AnimList/SplashList` and map trigger action `41 Play Anim At` will have the owner set correctly.
     - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
   - `CreateUnit.Mission` determines the initial mission of the created unit. This can be overridden for AI players by setting `CreateUnit.AIMission`.
@@ -473,6 +473,7 @@ In `artmd.ini`:
 [SOMEANIM]                             ; AnimationType
 CreateUnit=                            ; TechnoType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+CreateUnit.RequireOwner=false          ; boolean
 CreateUnit.RemapAnim=false             ; boolean
 CreateUnit.Mission=Guard               ; MissionType
 CreateUnit.AIMission=                  ; MissionType
@@ -945,32 +946,13 @@ SubjectToGround=false         ; boolean
 ### Return weapon
 
 - It is now possible to make another weapon & projectile go off from a detonated projectile (in somewhat similar manner to `AirburstWeapon` or `ShrapnelWeapon`) straight back to the firer by setting `ReturnWeapon`. If the firer perishes before the initial projectile detonates, `ReturnWeapon` is not fired off.
+  - `ReturnWeapon.ApplyFirepowerMult` determines whether or not the auxiliary weapon's damage should multiply the firer's firepower multipliers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]  ; Projectile
-ReturnWeapon=     ; WeaponType
-```
-
-```{note}
-This currently has same limitations as `AirburstWeapon` in that it does not properly support `Arcing=true` projectiles.
-```
-
-### Shrapnel enhancements
-
-![image](_static/images/shrapnel.gif)
-*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
-
-- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
-- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
-  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]                   ; Projectile
-Shrapnel.AffectsGround=false       ; boolean
-Shrapnel.AffectsBuildings=false    ; boolean
-Shrapnel.UseWeaponTargeting=false  ; boolean
+[SOMEPROJECTILE]                        ; Projectile
+ReturnWeapon=                           ; WeaponType
+ReturnWeapon.ApplyFirepowerMult=false   ; boolean
 ```
 
 ## Super Weapons
@@ -1291,7 +1273,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
 BuildLimitGroup.Types=                          ; List of TechnoTypes
-BuildLimitGroup.Nums=                           ; integer, or a list of integers
+BuildLimitGroup.Nums=                           ; integer, or a List of integers
 BuildLimitGroup.Factor=1                        ; integer
 BuildLimitGroup.ContentIfAnyMatch=false         ; boolean
 BuildLimitGroup.NotBuildableIfQueueMatch=false  ; boolean
@@ -1688,7 +1670,7 @@ CombatAlert.Suppress=                  ; boolean
 
 ### Recount burst index
 
-- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets. Defaults to `[General] -> RecountBurst`, which defaults to false.
+- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames). Defaults to `[General] -> RecountBurst`, which defaults to false.
 
 In `rulesmd.ini`:
 ```ini
@@ -1747,6 +1729,36 @@ IsVoiceCreatedGlobal=false   ; boolean
 
 [SOMETECHNO]                 ; TechnoType
 VoiceCreated=                ; Sound entry
+```
+
+### Tiberium eater
+
+- TechnoTypes can convert the ores underneath them into credits in real time, like GDI's MARV in Command & Conquer 3 Kane's Wrath.
+- `TiberiumEater.TransDelay` specifies the interval frames between two eating processes, 0 means eat in every frame. When it's below 0, the logic will be turned off for this TechnoType.
+- `TiberiumEater.CellN` set a list of cells that'll process tiberium eating, where `N` is 0-based and the values are offset related to the TechnoType's current cell. If not set, only the ores on the TechnoType's current cell will be eaten.
+- `TiberiumEater.AmountPerCell` controls the amount of ores that can be eaten at each cell at once. No limit when it's below 0.
+- By default, ores mined in this way worth the same as regular harvesting. This can be adjusted by `TiberiumEater.CashMultiplier`.
+- `TiberiumEater.Display`, if set to true, will create a flying text to display the total credits received in each eating process.
+  - `TiberiumEater.Display.Houses` determines which houses can see the credits display.
+- An animation will be played at each mined cell in an eating process. If `TiberiumEater.Anims` contains 8 entries, entry from position matching the TechnoType's current facing will be chosen. Otherwise, an entry will be chosen randomly.
+  - `TiberiumEater.Anims.TiberiumN`, if set, will override `TiberiumEater.Anims` when eating corresponding tiberium type.
+  - If `TiberiumEater.AnimMove` set to true, the animations will move with the TechnoType.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                      ; InfantryType, VehicleType or AircraftType
+TiberiumEater.TransDelay=-1       ; integer
+TiberiumEater.CellN=              ; X,Y - cell offset
+TiberiumEater.CashMultiplier=1.0  ; floating point value
+TiberiumEater.AmountPerCell=0     ; integer
+TiberiumEater.Display=true        ; boolean
+TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
+TiberiumEater.Anims=              ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium2=    ; List of AnimationTypes
+TiberiumEater.Anims.Tiberium3=    ; List of AnimationTypes
+TiberiumEater.AnimMove=true       ; boolean
 ```
 
 ### Weapons fired on warping in / out

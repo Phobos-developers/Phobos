@@ -125,7 +125,7 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 		color |= TechnoExt::GetTintColor(pThis, true, true, !isAircraft);
 		TechnoExt::ApplyCustomTintValues(pThis, color, intensity);
 	}
-	else if (pThis->WhatAmI() != AbstractType::Infantry)
+	else if (rtti != AbstractType::Infantry)
 	{
 		intensity += TechnoExt::GetCustomTintIntensity(pThis);
 	}

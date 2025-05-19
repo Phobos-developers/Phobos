@@ -230,7 +230,7 @@ msgstr "假设你已经成功克隆并构建了项目，你应当看到以下结
 
 #: ../../Contributing.md:59
 msgid "`src/` - all the project's source code resides here."
-msgstr "`src/` - 项目所有的源代码。`"
+msgstr "`src/` - 项目所有的源代码。"
 
 #: ../../Contributing.md:60
 msgid ""
@@ -1005,7 +1005,7 @@ msgid ""
 "2017/2019](https://visualstudio.microsoft.com) or newer."
 msgstr ""
 "当你理解引擎运作逻辑并确定需要扩展的部分后需要编写代码来实现目标。具体方式是通过声明一个 "
-"*钩子*——即在程序执行到二进制文件特定地址时触发的代码。所有开发工作均使用 C++ 结合[YRpp](https://github.com"
+"**钩子**——即在程序执行到二进制文件特定地址时触发的代码。所有开发工作均使用 C++ 结合[YRpp](https://github.com"
 "/Phobos-developers/YRpp)（提供与 YR 代码交互及通过 Syringe 注入代码的功能），通常需要使用 [Visual "
 "Studio 2017／2019](https://visualstudio.microsoft.com) 或更新的版本。"
 
@@ -1214,7 +1214,7 @@ msgid ""
 "[contributing changes section](contributing-changes-to-the-project); the "
 "docs are located in the `docs` folder."
 msgstr ""
-"**本地编辑**：如 [向项目提交更改](#contributing-changes-to-the-project) 中所述，文档位于 "
+"**本地编辑**：如 [向项目提交更改](contributing-changes-to-the-project) 中所述，文档位于 "
 "`docs` 文件夹。"
 
 #: ../../Contributing.md:326

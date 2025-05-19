@@ -404,6 +404,18 @@ In `uimd.ini`:
 DisableEmptySpawnPositions=false  ; boolean
 ```
 
+## Miscellanous
+
+### Skip saving game on starting a new campaign
+
+When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+SaveGameOnScenarioStart=true ; boolean
+```
+
 ## Sidebar / Battle UI
 
 
@@ -652,9 +664,9 @@ Same as with harvester counter, you can download the improved font (v4 and highe
 In `rulesmd.ini`:
 ```ini
 [SOMESIDE]                          ; Side
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to `0,0,0`
-ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to `100`
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to `0.0`
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
 ```
 
 ```{note}
@@ -665,16 +677,4 @@ In `RA2MD.INI`:
 ```ini
 [Phobos]
 ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
-```
-
-## Miscellanous
-
-### Skip saving game on starting a new campaign
-
-When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-SaveGameOnScenarioStart=true ; boolean
 ```
