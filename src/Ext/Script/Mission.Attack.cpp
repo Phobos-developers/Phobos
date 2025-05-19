@@ -7,7 +7,7 @@
 
 // Contains ScriptExt::Mission_Attack and its helper functions.
 
-void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int calcThreatMode = 0, int attackAITargetType = -1, int idxAITargetTypeItem = -1)
+void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeatAction, int attackAITargetType, int idxAITargetTypeItem)
 {
 	bool noWaitLoop = false;
 	bool bAircraftsWithoutAmmo = false;
@@ -425,7 +425,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, bool repeatAction = true, int c
 	}
 }
 
-TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode = 0, HouseClass* onlyTargetThisHouseEnemy = nullptr, int attackAITargetType = -1, int idxAITargetTypeItem = -1, bool agentMode = false)
+TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int calcThreatMode, HouseClass* onlyTargetThisHouseEnemy, int attackAITargetType, int idxAITargetTypeItem, bool agentMode)
 {
 	TechnoClass* pBestObject = nullptr;
 	double bestVal = -1;
@@ -630,7 +630,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 	return pBestObject;
 }
 
-bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType = -1, int idxAITargetTypeItem = -1, TechnoClass* pTeamLeader = nullptr)
+bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attackAITargetType, int idxAITargetTypeItem, TechnoClass* pTeamLeader)
 {
 	const auto pTechnoType = pTechno->GetTechnoType();
 
@@ -1334,7 +1334,7 @@ bool ScriptExt::EvaluateObjectWithMask(TechnoClass* pTechno, int mask, int attac
 	return false;
 }
 
-void ScriptExt::Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+void ScriptExt::Mission_Attack_List(TeamClass* pTeam, int calcThreatMode, bool repeatAction, int attackAITargetType)
 {
 	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
 	pTeamData->IdxSelectedObjectFromAIList = -1;
@@ -1352,7 +1352,7 @@ void ScriptExt::Mission_Attack_List(TeamClass* pTeam, bool repeatAction, int cal
 	}
 }
 
-void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, bool repeatAction, int calcThreatMode, int attackAITargetType)
+void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode, bool repeatAction, int attackAITargetType)
 {
 	bool selected = false;
 	int idxSelectedObject = -1;
