@@ -33,11 +33,8 @@ DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)       // Tec
 
 	if (auto pTransport = pThis->Transporter)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			if (pTypeExt->Passengers_SyncOwner)
-				return returnAddress;
-		}
+		if (TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType())->Passengers_SyncOwner)
+			return returnAddress;
 	}
 
 	return 0;
@@ -71,19 +68,24 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EDI);
 
-	if (pThis && pPassenger)
+	if (pPassenger)
 	{
+		GET(TechnoClass*, pThis, ESI);
+
+		if (!pThis)
+			return 0;
+
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
 
-		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			ScenarioExt::Global()->TransportReloaders.push_back(pExt);
@@ -95,17 +97,22 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 
 DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EAX);
 
-	if (pThis && pPassenger)
+	if (pPassenger)
 	{
+		GET(TechnoClass*, pThis, ESI);
+
+		if (!pThis)
+			return 0;
+
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
+		auto const whatAmI = pPassenger->WhatAmI();
 		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		// Remove from transport reloader list before switching house
-		if (pPassenger->WhatAmI() != AbstractType::Aircraft && pPassenger->WhatAmI() != AbstractType::Building
+		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 			&& pType->Ammo > 0 && pExt->TypeExtData->ReloadInTransport)
 		{
 			auto& vec = ScenarioExt::Global()->TransportReloaders;
@@ -177,11 +184,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 	if (auto pTransport = pThis->Transporter)
 	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
-			return 0x6F72DE;
-		}
+		auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
+		return 0x6F72DE;
 	}
 
 	return 0;
@@ -193,11 +198,9 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 
 	if (auto pTransport = pThis->Owner->Transporter)
 	{
-		if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
-		{
-			R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
-			return 0x71A838;
-		}
+		auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
+		return 0x71A838;
 	}
 
 	return 0;
@@ -207,11 +210,11 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 {
 	enum { ReturnFromFunction = 0x71057F };
 
-	GET(TechnoClass* const, pThis, ECX);
 	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x8, 0x4));
 
 	if (pTarget)
 	{
+		GET(TechnoClass* const, pThis, ECX);
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (!pTypeExt->OpenTopped_ShareTransportTarget)
@@ -250,6 +253,11 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	const auto pTransportType = pTransport->Type;
+
+	// Added to fit with AmphibiousEnter
+	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+		return false;
+
 	const auto bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
 	const auto passengerSize = bySize ? Game::F2I(pPassenger->GetTechnoType()->Size) : 1;
 
@@ -295,6 +303,7 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->OnBridge = false; // Don't swap order casually, important
 	pPassenger->NextObject = nullptr; // Don't swap order casually, very important
 
+	pPassenger->SetDestination(nullptr, true); // Added, to prevent passengers from return to board position when survive
 	pPassenger->QueueUpToEnter = nullptr; // Added, to prevent passengers from wanting to get on after getting off
 	pPassenger->FrozenStill = true; // Added, to prevent the vehicles from stacking together when unloading
 	pPassenger->SetSpeedPercentage(0.0); // Added, to stop the passengers and let OpenTopped work normally
@@ -359,6 +368,15 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
 	return 0;
 }
 
+// Rewrite from 0x4835D5/0x74004B, replace check pThis->GetCell()->LandType != LandType::Water
+static inline bool CanUnloadNow(UnitClass* pTransport, FootClass* pPassenger)
+{
+	if (TechnoTypeExt::ExtMap.Find(pTransport->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+		return GroundType::Array[static_cast<int>(pTransport->GetCell()->LandType)].Cost[static_cast<int>(pPassenger->GetTechnoType()->SpeedType)] != 0.0;
+
+	return pTransport->GetCell()->LandType != LandType::Water;
+}
+
 namespace TransportUnloadTemp
 {
 	bool ShouldPlaySound = false;
@@ -404,20 +422,28 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 // Within a single frame, cycle to get off the car
 DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 {
-	enum { UnloadLoop = 0x73D8CB, UnloadReturn = 0x73E289 };
+	enum { UnloadLoop = 0x73D8CB, UnloadReturn = 0x73E289, NoUnloadReturn = 0x73D8AA };
 
 	GET(UnitClass* const, pThis, ESI);
 
 	const auto pType = pThis->Type;
+	const auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
 	if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
 	{
-		if (!pThis->Passengers.GetFirstPassenger() || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
+		if (!pPassenger || pThis->Passengers.NumPassengers <= pThis->NonPassengerCount)
 		{
 			// If unloading is required within one frame, the sound will only be played when the last passenger leaves
 			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
 			TransportUnloadTemp::ShouldPlaySound = false;
 			return UnloadReturn;
+		}
+		else if (!CanUnloadNow(pThis, pPassenger))
+		{
+			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
+			TransportUnloadTemp::ShouldPlaySound = false;
+			pThis->MissionStatus = 0; // Retry
+			return NoUnloadReturn;
 		}
 
 		TransportUnloadTemp::ShouldPlaySound = true;
@@ -428,7 +454,11 @@ DEFINE_HOOK(0x73DC1E, UnitClass_Mission_Unload_NoQueueUpToUnloadLoop, 0xA)
 	// PlayAtPos has already handled the situation where Sound is less than 0 internally, so unnecessary checks will be skipped
 	VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
 
-	return UnloadReturn;
+	if (!pPassenger || CanUnloadNow(pThis, pPassenger))
+		return UnloadReturn;
+
+	pThis->MissionStatus = 0; // Retry
+	return NoUnloadReturn;
 }
 
 #pragma endregion
@@ -449,9 +479,13 @@ DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 	enum { NextAction = 0x4D92ED, NotifyUnlink = 0x4D92CE, DoNothing = 0x4D946C };
 
 	GET(UnitClass* const, pThis, ESI);
-	GET(const RadioCommand, answer, EAX);
 	// Restore vanilla check
-	if (pThis->IsTether || answer == RadioCommand::AnswerPositive)
+	if (pThis->IsTether)
+		return NextAction;
+
+	GET(const RadioCommand, answer, EAX);
+
+	if (answer == RadioCommand::AnswerPositive)
 		return NextAction;
 	// The link should not be disconnected while the transporter is in motion (passengers waiting to enter),
 	// as this will result in the first passenger not getting on board
@@ -495,7 +529,17 @@ DEFINE_HOOK(0x7196BB, TeleportLocomotionClass_Process_MarkDown, 0xA)
 	// An impassable invisible barrier will be generated on the bridge (the object linked list of the cell will leave it)
 	// And the transport vehicle will board on the vehicle itself (BFRT Passenger:..., BFRT)
 	// If any infantry attempts to pass through this position on the bridge later, it will cause the game to freeze
-	if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+	auto shouldMarkDown = [pLinkedTo]()
+	{
+		if (pLinkedTo->GetCurrentMission() != Mission::Enter)
+			return true;
+
+		const auto pEnter = pLinkedTo->GetNthLink();
+
+		return (!pEnter || pEnter->GetTechnoType()->Passengers <= 0);
+	};
+
+	if (shouldMarkDown())
 		pLinkedTo->Mark(MarkType::Down);
 
 	return SkipGameCode;
@@ -505,12 +549,60 @@ DEFINE_HOOK(0x7196BB, TeleportLocomotionClass_Process_MarkDown, 0xA)
 
 #pragma region AmphibiousEnterAndUnload
 
+// Related fix
+DEFINE_HOOK(0x4B08EF, DriveLocomotionClass_Process_CheckUnload, 0x5)
+{
+	enum { SkipGameCode = 0x4B078C, ContinueProcess = 0x4B0903 };
+
+	GET(ILocomotion* const, iloco, ESI);
+
+	__assume(iloco != nullptr);
+
+	const auto pFoot = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+
+	if (pFoot->GetCurrentMission() != Mission::Unload)
+		return ContinueProcess;
+
+	return (pFoot->GetTechnoType()->Passengers > 0 && pFoot->Passengers.GetFirstPassenger()) ? ContinueProcess : SkipGameCode;
+}
+
+DEFINE_HOOK(0x69FFB6, ShipLocomotionClass_Process_CheckUnload, 0x5)
+{
+	enum { SkipGameCode = 0x69FE39, ContinueProcess = 0x69FFCA };
+
+	GET(ILocomotion* const, iloco, ESI);
+
+	__assume(iloco != nullptr);
+
+	const auto pFoot = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+
+	if (pFoot->GetCurrentMission() != Mission::Unload)
+		return ContinueProcess;
+
+	return (pFoot->GetTechnoType()->Passengers > 0 && pFoot->Passengers.GetFirstPassenger()) ? ContinueProcess : SkipGameCode;
+}
+
+// Rewrite from 0x718505
+DEFINE_HOOK_AGAIN(0x7190B0, TeleportLocomotionClass_MovingTo_ReplaceMovementZone, 0x6)
+DEFINE_HOOK(0x718F1E, TeleportLocomotionClass_MovingTo_ReplaceMovementZone, 0x6)
+{
+	GET(TechnoTypeClass* const, pType, EAX);
+
+	auto movementZone = pType->MovementZone;
+
+	if (movementZone == MovementZone::Fly || movementZone == MovementZone::Destroyer)
+		movementZone = MovementZone::Normal;
+	else if (movementZone == MovementZone::AmphibiousDestroyer)
+		movementZone = MovementZone::Amphibious;
+
+	R->EBP(movementZone);
+	return R->Origin() + 0x6;
+}
+
 // Enter building
 DEFINE_JUMP(LJMP, 0x43C38D, 0x43C3FF); // Skip amphibious and naval check if no Ares
 
-// TODO Enter unit
-
-
+// Enter unit
 DEFINE_HOOK(0x73796B, UnitClass_ReceiveCommand_AmphibiousEnter, 0x7)
 {
 	enum { ContinueCheck = 0x737990, MoveToPassenger = 0x737974 };
@@ -520,9 +612,112 @@ DEFINE_HOOK(0x73796B, UnitClass_ReceiveCommand_AmphibiousEnter, 0x7)
 	if (pThis->OnBridge)
 		return MoveToPassenger;
 
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+		return ContinueCheck;
+
 	GET(CellClass* const, pCell, EBP);
 
 	return (pCell->LandType != LandType::Water) ? ContinueCheck : MoveToPassenger;
+}
+
+// Unit unload
+
+DEFINE_HOOK(0x7400B5, UnitClass_MouseOverObject_AmphibiousUnload, 0x7)
+{
+	enum { ContinueCheck = 0x7400C6, CannotUnload = 0x7400BE };
+
+	GET(CellClass* const, pCell, EBX);
+
+	if (pCell->LandType == LandType::Water) // I don't know why WW made a reverse judgment here? Because of the coast/beach?
+		return ContinueCheck;
+
+	GET(UnitClass* const, pThis, ESI);
+
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
+}
+
+DEFINE_HOOK(0x70107A, TechnoClass_CanDeploySlashUnload_AmphibiousUnload, 0x7)
+{
+	enum { ContinueCheck = 0x701087, CannotUnload = 0x700DCE };
+
+	GET(CellClass* const, pCell, EBP);
+
+	if (pCell->LandType != LandType::Water)
+		return ContinueCheck;
+
+	GET(UnitClass* const, pThis, ESI);
+
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload) ? ContinueCheck : CannotUnload;
+}
+
+DEFINE_HOOK(0x73D769, UnitClass_Mission_Unload_AmphibiousUnload, 0x7)
+{
+	enum { MoveToLand = 0x73D772, UnloadCheck = 0x73D7E4 };
+
+	GET(UnitClass* const, pThis, ESI);
+
+	const auto pPassenger = pThis->Passengers.GetFirstPassenger();
+
+	return (!pPassenger || CanUnloadNow(pThis, pPassenger)) ? UnloadCheck : MoveToLand;
+}
+
+DEFINE_HOOK(0x73D7AB, UnitClass_Mission_Unload_FindUnloadPosition, 0x5)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	{
+		if (const auto pPassenger = pThis->Passengers.GetFirstPassenger())
+		{
+			REF_STACK(SpeedType, speedType, STACK_OFFSET(0xBC, -0xB4));
+			REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xBC, -0xAC));
+
+			const auto pType = pPassenger->GetTechnoType();
+			speedType = pType->SpeedType; // Replace hard code SpeedType::Wheel
+			movementZone = pType->MovementZone; // Replace hard code MovementZone::Normal
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73D7B7, UnitClass_Mission_Unload_CheckInvalidCell, 0x6)
+{
+	enum { CannotUnload = 0x73D87F };
+
+	GET(const CellStruct, cell, EAX);
+
+	return cell != CellStruct::Empty ? 0 : CannotUnload;
+}
+
+DEFINE_HOOK(0x740C9C, UnitClass_GetUnloadDirection_CheckUnloadPosition, 0x7)
+{
+	GET(UnitClass* const, pThis, EDI);
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	{
+		if (const auto pPassenger = pThis->Passengers.GetFirstPassenger())
+		{
+			GET(const int, speedType, EDX);
+			R->EDX(speedType + static_cast<int>(pPassenger->GetTechnoType()->SpeedType)); // Replace hard code SpeedType::Foot
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x73DAD8, UnitClass_Mission_Unload_PassengerLeavePosition, 0x5)
+{
+	GET(UnitClass* const, pThis, ESI);
+
+	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->AmphibiousUnload.Get(RulesExt::Global()->AmphibiousUnload))
+	{
+		GET(FootClass* const, pPassenger, EDI);
+		REF_STACK(MovementZone, movementZone, STACK_OFFSET(0xBC, -0xAC));
+		movementZone = pPassenger->GetTechnoType()->MovementZone; // Replace hard code MovementZone::Normal
+	}
+
+	return 0;
 }
 
 #pragma endregion

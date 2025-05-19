@@ -21,6 +21,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Game will now produce fatal error with an error message if any of the files listed in `[$Include]` in any INI file do not exist.
 - Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
 - Selecting weapons other than primary against walls based on `Wall=true` on Warhead etc. now requires `[CombatDamage] -> AllowWeaponSelectAgainstWalls` to be set to true first.
 - Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General] -> ApplyLunarFixes` set to true.
@@ -172,6 +173,9 @@ HideLightFlashEffects=false      ; boolean
   506=Fire Super Weapon at specified waypoint (Phobos),0,0,20,2,30,0,0,0,0,Launch a Super Weapon from [SuperWeaponTypes] list at a specified waypoint. House=-1 means random target that isn't neutral. House=-2 means the first neutral house. House=-3 means random human target. Coordinate X=-1 means random. Coordinate Y=-1 means random,0,1,506
   510=Toggle MCV Redeployablility (Phobos),0,0,15,0,0,0,0,0,0, Set MCVRedeploys to the given value,0,1,510
   600=Configure dropped crate (Phobos),0,71,31,0,0,0,0,0,0,Set or overwrite what crate is dropped when they die. Only functions when used as attached triggers within objects. Behaviour -1=default. 1=Overwrites current crate. 0=Clear current crate,0,1,600
+  606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
+  607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
+  608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -365,13 +369,21 @@ New:
 - [RadarInvisible for non-enemy house](Fixed-or-Improved-Logics.md#radarinvisible-for-non-enemy-house) (By TaranDahl)
 - New `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields (by FS-21)
 - [Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
-- Select box logic (by NetsuNegi)
-- Customize airstrike targets (by NetsuNegi)
+- [Select box logic](User-Interface.md#select-box) (by NetsuNegi)
+- [Customize airstrike targets](Fixed-or-Improved-Logics.md#airstrike-target-eligibility) (by NetsuNegi)
+- [Aggressive attack move mission](New-or-Enhanced-Logics.md#aggressive-attack-move-mission) (by CrimRecya)
+- [Amphibious access vehicle](New-or-Enhanced-Logics.md#amphibious-access-vehicle) (by CrimRecya)
+- [Allow miners do area guard](Fixed-or-Improved-Logics.md#allow-miners-do-area-guard) (by TaranDahl)
+- [Make harvesters do addtional scan after unload](Fixed-or-Improved-Logics.md#make-harvesters-do-addtional-scan-after-unload) (by TaranDahl)
+- [Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-veterancy-insignias) (by Ollerus)
+- [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
+- [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
+- [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
+- Dehardcoded 255 limit of `OverlayType` (by secsome)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
 - Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
-- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
 - Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures (by CrimRecya)
 - Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter (by CrimRecya)
@@ -383,14 +395,15 @@ Vanilla fixes:
 - Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash (by NetsuNegi)
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error (by CrimRecya)
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead (by NetsuNegi)
-- Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead (by CrimRecya)
-- Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues (by NetsuNegi)
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
+- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
+- Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
+- Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 
 Phobos fixes:
-- Fixed an issue that MCV will self-destruct when using trigger 107 to teleport (by CrimRecya)
-- Fixed the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it (by NetsuNegi)
+- Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
+- `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -673,6 +686,10 @@ Vanilla fixes:
 - Fixed an issue where the shadow of jumpjet remained on the ground when it was above the elevated bridge (by CrimRecya)
 - Fixed an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc. (by TaranDahl)
 - Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads (by NetsuNegi)
+- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
+- Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead (by CrimRecya)
+- Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
+- Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

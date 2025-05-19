@@ -68,6 +68,7 @@ This page lists all the individual contributions to the project by their author.
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
   - Observer PCX loading screen
+  - Original `Arcing` elevation inaccuracy fix
   - Official CN docs for Build#29 and previous versions
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -95,6 +96,8 @@ This page lists all the individual contributions to the project by their author.
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
   - Parts of Ares calling code
+  - Original `Arcing` elevation inaccuracy fix
+  - Dehardcode 255 limit of `OverlayType`
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -219,7 +222,7 @@ This page lists all the individual contributions to the project by their author.
   - `PipScale` pip size & ammo pip frame customization
   - Extension class optimization
   - Additional sync logging
-  - `Arcing` elevation inaccuracy fix
+  - Original `Arcing` elevation inaccuracy fix
   - `EMPulseCannon` projectile gravity fix
   - Custom palette support for wall overlays
   - Warhead animation improvements
@@ -354,6 +357,11 @@ This page lists all the individual contributions to the project by their author.
   - New condition for automatic self-destruction logic when TechnoTypes exist/don't exist
   - Fix `AltNextScenario` not taking effect
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
+  - `Edit/Clear Hate-Value` Trigger Action
+  - `Set Force Enemy` Trigger Action
+  - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Customize the damage taken when falling from a bridge
+  - `600 The shield of the attached object is broken` bug fix for the triggered event
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -384,7 +392,11 @@ This page lists all the individual contributions to the project by their author.
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
-  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
+  - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
+  - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
+  - Tiberium eater logic
+  - Fix the bug that ships can travel on elevated bridges
+  - Original `Arcing` elevation inaccuracy fix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -411,6 +423,7 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
   - Promotion animation
   - Damaged unit image changes
+  - `VoiceDeploy` through hot-key/command bar fix
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
@@ -455,6 +468,9 @@ This page lists all the individual contributions to the project by their author.
   - Jumpjet Tilts While Moving
   - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
   - Fix an issue that game crashes when spawnee has been removed and is not real dead
+  - Aggressive attack move mission
+  - Amphibious access vehicle
+  - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -466,6 +482,8 @@ This page lists all the individual contributions to the project by their author.
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
   - Forcing specific weapon by range
+  - Passenger-based insignias
+  - Use `InsigniaType` to set the properties of insignia in a batch
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -494,6 +512,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
   - Prone speed customization
   - RadarInvisible for non-enemy house
+  - Allow miners do area guard
+  - Make harvesters do addtional scan after unload
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

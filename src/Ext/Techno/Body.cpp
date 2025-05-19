@@ -19,6 +19,7 @@ TechnoExt::ExtData::~ExtData()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	auto pThis = this->OwnerObject();
+	auto const whatAmI = pThis->WhatAmI();
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
@@ -26,7 +27,7 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+	if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
@@ -168,10 +169,11 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;
+	auto const whatAmI = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
+	if (whatAmI == AbstractType::Aircraft)
 		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (pThis->WhatAmI() == AbstractType::Infantry)
+	else if (whatAmI == AbstractType::Infantry)
 		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
@@ -232,7 +234,8 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	if (pThis->WhatAmI() == AbstractType::Aircraft)
 		return true;
 
-	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
+	auto const pType = pThis->GetTechnoType();
+	MovementZone mZone = pType->MovementZone;
 	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
@@ -252,7 +255,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 			if (currentZone == targetZone)
 				return true;
 
-			auto const speedType = pThis->GetTechnoType()->SpeedType;
+			auto const speedType = pType->SpeedType;
 			auto cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,
 				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
@@ -666,6 +669,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->LastSensorsMapCoords)
+		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->DropCrate)
 		.Process(this->DropCrateType)

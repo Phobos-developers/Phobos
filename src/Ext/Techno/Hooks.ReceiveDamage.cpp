@@ -21,14 +21,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = pExt->TypeExtData;
-	const auto pType = pTypeExt->OwnerObject();
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
 
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
-	const bool unkillable = !pWHExt->CanKill || pExt->AE.Unkillable;
-	int nDamageLeft = *args->Damage;
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && *args->Damage)
@@ -62,7 +58,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 			if (pHouseExt->CombatAlertTimer.HasTimeLeft() || pWHExt->CombatAlert_Suppress.Get(!pWHExt->Malicious || pWHExt->Nonprovocative))
 				return;
-			else if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
+
+			const auto pTypeExt = pExt->TypeExtData;
+			const auto pType = pTypeExt->OwnerObject();
+
+			if (!pTypeExt->CombatAlert.Get(pRules->CombatAlert_Default.Get(!pType->Insignificant && !pType->Spawned)) || !pThis->IsInPlayfield)
 				return;
 
 			const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
@@ -104,42 +104,30 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
+		int nDamageLeft = *args->Damage;
+
 		if (const auto pShieldData = pExt->Shield.get())
 		{
-			if (!pShieldData->IsActive())
+			if (pShieldData->IsActive())
 			{
-				int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
+				nDamageLeft = pShieldData->ReceiveDamage(args);
 
-				// Check if the warhead can not kill targets
-				if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+				if (nDamageLeft >= 0)
 				{
-					*args->Damage = 0;
-					pThis->Health = 1;
-					pThis->EstimatedHealth = 1;
-					ReceiveDamageTemp::SkipLowDamageCheck = true;
+					*args->Damage = nDamageLeft;
+
+					if (auto pTag = pThis->AttachedTag)
+						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 				}
 
-				return 0;
+				if (nDamageLeft == 0)
+					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
-
-			nDamageLeft = pShieldData->ReceiveDamage(args);
-
-			if (nDamageLeft >= 0)
-			{
-				*args->Damage = nDamageLeft;
-
-				if (auto pTag = pThis->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
-			}
-
-			if (nDamageLeft == 0)
-				ReceiveDamageTemp::SkipLowDamageCheck = true;
 		}
 
-		// Update remaining damage and check if the target will die and should be avoided
-		int nDamageTotal = MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, 0);
-
-		if (pThis->Health > 0 && unkillable && nDamageTotal >= pThis->Health)
+		if (pThis->Health > 0 && (!pWHExt->CanKill || pExt->AE.Unkillable) // Check if the warhead can not kill targets
+			// Update remaining damage and check if the target will die and should be avoided
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
 			*args->Damage = 0;
 			pThis->Health = 1;
@@ -170,13 +158,15 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 
 DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 {
-	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
 		if (pExt->DecloakDamagedTargets)
+		{
+			GET(TechnoClass* const, pThis, ESI);
 			pThis->Uncloak(false);
+		}
 	}
 
 	return 0x702823;
@@ -184,11 +174,16 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
-	GET(TechnoClass* const, pThis, ESI);
-	GET(int* const, pDamage, EBX);
+	if (!Phobos::DisplayDamageNumbers)
+		return 0;
 
-	if (Phobos::DisplayDamageNumbers && *pDamage)
+	GET(int* const, pDamage, EBX);
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (*pDamage)
+	{
 		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);
+	}
 
 	// Drop crate if is dead
 	if (pThis->Health <= 0)
@@ -321,23 +316,28 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 {
-	GET(TechnoClass*, pThis, ESI);
 	GET(int*, pDamage, EBX);
-	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
-	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
+
+	if (*pDamage <= 0)
+		return 0;
+
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Reflected)
 		return 0;
 
+	GET(TechnoClass*, pThis, ESI);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool suppressByType = pWHExt->SuppressReflectDamage_Types.size() > 0;
 	const bool suppressByGroup = pWHExt->SuppressReflectDamage_Groups.size() > 0;
 
 	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || suppressByType || suppressByGroup))
 	{
+		GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+		GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
+
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())

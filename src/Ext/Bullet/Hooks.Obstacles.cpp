@@ -161,15 +161,16 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 
 	GET(BulletClass*, pThis, ESI);
 
-	BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
-	if (BulletObstacleHelper::SubjectToObstacles(pThis->Type, pBulletTypeExt))
+	if (BulletObstacleHelper::SubjectToObstacles(pType, pBulletTypeExt))
 	{
 		auto const pCellSource = MapClass::Instance.GetCellAt(pThis->SourceCoords);
 		auto const pCellTarget = MapClass::Instance.GetCellAt(pThis->TargetCoords);
 		auto const pCellCurrent = MapClass::Instance.GetCellAt(pThis->LastMapCoords);
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		const auto pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pThis->Type, pBulletTypeExt, false);
+		auto const pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pType, pBulletTypeExt, false);
 
 		if (pObstacleCell)
 			return Explode;
@@ -212,17 +213,17 @@ DEFINE_HOOK(0x6F737F, TechnoClass_InRange_WeaponMinimumRange, 0x6)
 
 DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 {
-	GET_BASE(WeaponTypeClass*, pWeapon, 0x10);
-	GET(CoordStruct const* const, pSourceCoords, ESI);
-	REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x3C, -0x1C));
-	GET_BASE(AbstractClass* const, pTarget, 0xC);
 	GET(CellClass*, pResult, EAX);
+	GET(CoordStruct const* const, pSourceCoords, ESI);
 
 	auto pObstacleCell = pResult;
 	auto pTechno = InRangeTemp::Techno;
 
 	if (!pObstacleCell)
 	{
+		GET_BASE(WeaponTypeClass*, pWeapon, 0x10);
+		REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x3C, -0x1C));
+		GET_BASE(AbstractClass* const, pTarget, 0xC);
 		auto subjectToGround = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->SubjectToGround.Get();
 		const auto newSourceCoords = subjectToGround ? BulletObstacleHelper::AddFLHToSourceCoords(*pSourceCoords, targetCoords, pTechno, pTarget, pWeapon, subjectToGround) : *pSourceCoords;
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(newSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true, subjectToGround);

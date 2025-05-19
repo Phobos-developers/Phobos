@@ -95,6 +95,8 @@ public:
 		double AirShadowBaseScale_log;
 
 		Valueable<bool> ExtendedAircraftMissions;
+		Valueable<bool> AmphibiousEnter;
+		Valueable<bool> AmphibiousUnload;
 		Valueable<bool> NoQueueUpToEnter;
 		Valueable<bool> NoQueueUpToUnload;
 
@@ -160,6 +162,7 @@ public:
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
@@ -184,6 +187,9 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> AttackMove_Aggressive;
+		Valueable<bool> AttackMove_UpdateTarget;
 
 		Valueable<int> MindControl_ThreatDelay;
 
@@ -210,7 +216,9 @@ public:
 		Valueable<double> ProneSpeed_Crawls;
 		Valueable<double> ProneSpeed_NoCrawls;
 
-    	Valueable<double> DamagedSpeed;
+		Valueable<double> DamagedSpeed;
+
+		Valueable<bool> HarvesterScanAfterUnload;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -272,6 +280,8 @@ public:
 			, AirShadowBaseScale_log { 0.693376137 }
 
 			, ExtendedAircraftMissions { false }
+			, AmphibiousEnter { false }
+			, AmphibiousUnload { false }
 			, NoQueueUpToEnter { false }
 			, NoQueueUpToUnload { false }
 
@@ -296,7 +306,7 @@ public:
 			, ForceShield_ExtraTintIntensity { 0.0 }
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
-			, ROF_RandomDelay { { 0 ,2  } }
+			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
@@ -311,10 +321,11 @@ public:
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
 			, DrawInsignia_OnlyOnSelected { false }
-			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
-			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2 } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6 } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
-			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Units { { 10, 6 } }
+			, DrawInsignia_UsePixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
@@ -349,6 +360,8 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, AttackMove_Aggressive { false }
+			, AttackMove_UpdateTarget { false }
 			, MindControl_ThreatDelay { 0 }
 			, RecountBurst { false }
 			, NoRearm_UnderEMP { false }
@@ -369,7 +382,9 @@ public:
 			, ProneSpeed_Crawls { 0.67 }
 			, ProneSpeed_NoCrawls { 1.5 }
 
-      		, DamagedSpeed { 0.75 }
+			, DamagedSpeed { 0.75 }
+
+			, HarvesterScanAfterUnload { false }
 		{ }
 
 		virtual ~ExtData() = default;

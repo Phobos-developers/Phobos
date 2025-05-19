@@ -13,6 +13,8 @@
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
+#include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -62,6 +64,7 @@ public:
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
 		std::unique_ptr<DroppodTypeClass> DroppodType;
+		std::unique_ptr<TiberiumEaterTypeClass> TiberiumEaterType;
 
 		Nullable<float> HarvesterDumpAmount;
 
@@ -196,6 +199,9 @@ public:
 		std::vector<Promotable<SHPStruct*>> Insignia_Weapon;
 		std::vector<Promotable<int>> InsigniaFrame_Weapon;
 		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Weapon;
+		std::vector<Promotable<SHPStruct*>> Insignia_Passengers;
+		std::vector<Promotable<int>> InsigniaFrame_Passengers;
+		std::vector<Valueable<Vector3D<int>>> InsigniaFrames_Passengers;
 
 		Valueable<bool> JumpjetTilt;
 		Valueable<double> JumpjetTilt_ForwardAccelFactor;
@@ -257,6 +263,8 @@ public:
 		ValueableVector<int> BuildLimitGroup_ExtraLimit_MaxCount;
 		Valueable<int> BuildLimitGroup_ExtraLimit_MaxNum;
 
+		Nullable<bool> AmphibiousEnter;
+		Nullable<bool> AmphibiousUnload;
 		Nullable<bool> NoQueueUpToEnter;
 		Nullable<bool> NoQueueUpToUnload;
 		Valueable<bool> Passengers_BySize;
@@ -275,6 +283,9 @@ public:
 		Nullable<AnimTypeClass*> Wake;
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
+
+		Nullable<bool> AttackMove_Aggressive;
+		Nullable<bool> AttackMove_UpdateTarget;
 
 		Valueable<bool> BunkerableAnyway;
 		Valueable<bool> KeepTargetOnMove;
@@ -338,6 +349,12 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
+
+		Valueable<bool> Harvester_CanGuardArea;
+		Nullable<bool> HarvesterScanAfterUnload;
+
+		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
 
 		Nullable<Powerup> DropCrate;
 
@@ -509,6 +526,9 @@ public:
 			, Insignia_Weapon {}
 			, InsigniaFrame_Weapon {}
 			, InsigniaFrames_Weapon {}
+			, Insignia_Passengers {}
+			, InsigniaFrame_Passengers {}
+			, InsigniaFrames_Passengers {}
 
 			, JumpjetTilt { false }
 			, JumpjetTilt_ForwardAccelFactor { 1.0 }
@@ -544,6 +564,7 @@ public:
 			, SpawnHeight {}
 			, LandingDir {}
 			, DroppodType {}
+			, TiberiumEaterType {}
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
@@ -571,6 +592,8 @@ public:
 			, BuildLimitGroup_ExtraLimit_MaxCount {}
 			, BuildLimitGroup_ExtraLimit_MaxNum { 0 }
 
+			, AmphibiousEnter {}
+			, AmphibiousUnload {}
 			, NoQueueUpToEnter {}
 			, NoQueueUpToUnload {}
 			, Passengers_BySize { true }
@@ -590,6 +613,9 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, AttackMove_Aggressive {}
+			, AttackMove_UpdateTarget {}
+
 			, BunkerableAnyway { false }
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_NoMorePursuit { true }
@@ -599,7 +625,7 @@ public:
 
 			, AllowAirstrike { }
 
-      		, Image_ConditionYellow { }
+			, Image_ConditionYellow { }
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }
 			, WaterImage_ConditionRed { }
@@ -633,6 +659,12 @@ public:
 			, Overload_DeathSound {}
 			, Overload_ParticleSys {}
 			, Overload_ParticleSysCount { 5 }
+
+			, Harvester_CanGuardArea { false }
+			, HarvesterScanAfterUnload {}
+
+			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
 
 			, DropCrate { }
 		{ }
@@ -671,9 +703,8 @@ public:
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
-	static TechnoClass* CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner,
-		TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, AnimTypeClass* pSpawnAnimType = nullptr, int spawnHeight = -1,
-		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);
+	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
+	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
