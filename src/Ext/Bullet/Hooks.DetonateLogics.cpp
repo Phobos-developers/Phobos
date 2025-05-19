@@ -12,7 +12,7 @@
 
 DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
-	enum { SkipShaking = 0x469130, SkipFunction = 0x46A290, GoToExtras = 0x469AA4 };
+	enum { SkipShaking = 0x469130, GoToExtras = 0x469AA4 };
 
 	GET(BulletClass*, pBullet, ESI);
 	GET(WarheadTypeClass*, pWarhead, EAX);
