@@ -8,16 +8,16 @@ DEFINE_HOOK(0x687C9B, ReadScenarioINI_AITeamSelector_PreloadValidTriggers, 0x7)
 	bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
 
 	// For each house save a list with only AI Triggers that can be used
-	for (HouseClass* pHouse : *HouseClass::Array)
+	for (HouseClass* pHouse : HouseClass::Array)
 	{
 		auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 		pHouseExt->AITriggers_ValidList.clear();
 		int houseIdx = pHouse->ArrayIndex;
 		int sideIdx = pHouse->SideIndex + 1;
 
-		for (int i = 0; i < AITriggerTypeClass::Array->Count; i++)
+		for (int i = 0; i < AITriggerTypeClass::Array.Count; i++)
 		{
-			auto pTrigger = AITriggerTypeClass::Array->GetItem(i);
+			auto pTrigger = AITriggerTypeClass::Array.GetItem(i);
 			if (!pTrigger || ignoreGlobalAITriggers == pTrigger->IsGlobal || !pTrigger->Team1)
 				continue;
 

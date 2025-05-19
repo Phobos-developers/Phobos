@@ -215,7 +215,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		// Check if the running teams by the house already reached all the limits
 		DynamicVectorClass<TeamClass*> activeTeamsList;
 
-		for (auto const pRunningTeam : *TeamClass::Array)
+		for (auto const pRunningTeam : TeamClass::Array)
 		{
 			totalActiveTeams++;
 			int teamHouseIdx = pRunningTeam->Owner->ArrayIndex;
@@ -278,7 +278,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		std::map<TechnoTypeClass*, int> ownedRecruitables;
 		std::map<BuildingTypeClass*, int> ownedBuildings;
 
-		for (auto const pTechno : *TechnoClass::Array)
+		for (auto const pTechno : TechnoClass::Array)
 		{
 			if (!TechnoExt::IsValidTechno(pTechno)) continue;
 
@@ -295,7 +295,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 					{
 						CellStruct cell = pTechno->GetCell()->MapCoords;
 
-						if (MapClass::Instance->IsLinkedBridgeDestroyed(cell))
+						if (MapClass::Instance.IsLinkedBridgeDestroyed(cell))
 							destroyedBridgesCount++;
 						else
 							undamagedBridgesCount++;
@@ -323,7 +323,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 
 		HouseClass* targetHouse = nullptr;
 		if (pHouse->EnemyHouseIndex >= 0)
-			targetHouse = HouseClass::Array->GetItem(pHouse->EnemyHouseIndex);
+			targetHouse = HouseClass::Array.GetItem(pHouse->EnemyHouseIndex);
 
 		bool onlyCheckImportantTriggers = false;
 		bool ignoreGlobalAITriggers = ScenarioClass::Instance->IgnoreGlobalAITriggers;
@@ -334,7 +334,7 @@ DEFINE_HOOK(0x4F8A27, TeamTypeClass_SuggestedNewTeam_NewTeamsSelector, 0x5)
 		//for (auto const pTrigger : *AITriggerTypeClass::Array)
 		for (int triggerIdx : pHouseExt->AITriggers_ValidList)
 		{
-			const auto pTrigger = AITriggerTypeClass::Array->GetItem(triggerIdx);
+			const auto pTrigger = AITriggerTypeClass::Array.GetItem(triggerIdx);
 
 			if (!pTrigger || ignoreGlobalAITriggers == pTrigger->IsGlobal || !pTrigger->Team1)
 				continue;
@@ -1073,7 +1073,7 @@ bool TeamExt::HouseOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, bool alli
 	// Count all objects of the list, like an OR operator
 	for (auto pItem : list)
 	{
-		for (auto pObject : *TechnoClass::Array)
+		for (auto pObject : TechnoClass::Array)
 		{
 			if (!TechnoExt::IsValidTechno(pObject)) continue;
 
@@ -1124,7 +1124,7 @@ bool TeamExt::EnemyOwns(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseClas
 	// Count all objects of the list, like an OR operator
 	for (auto const pItem : list)
 	{
-		for (auto const pObject : *TechnoClass::Array)
+		for (auto const pObject : TechnoClass::Array)
 		{
 			if (!TechnoExt::IsValidTechno(pObject)) continue;
 
@@ -1171,15 +1171,15 @@ bool TeamExt::NeutralOwns(AITriggerTypeClass* pThis, std::vector<TechnoTypeClass
 	bool result = false;
 	int counter = 0;
 
-	for (auto const pHouse : *HouseClass::Array)
+	for (auto const pHouse : HouseClass::Array)
 	{
-		if (_stricmp(SideClass::Array->GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
+		if (_stricmp(SideClass::Array.GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
 			continue;
 
 		// Count all objects of the list, like an OR operator
 		for (auto const pItem : list)
 		{
-			for (auto const pObject : *TechnoClass::Array)
+			for (auto const pObject : TechnoClass::Array)
 			{
 				if (!TechnoExt::IsValidTechno(pObject)) continue;
 
@@ -1232,7 +1232,7 @@ bool TeamExt::HouseOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, std::v
 		int counter = 0;
 		result = true;
 
-		for (auto const pObject : *TechnoClass::Array)
+		for (auto const pObject : TechnoClass::Array)
 		{
 			if (!TechnoExt::IsValidTechno(pObject)) continue;
 
@@ -1287,7 +1287,7 @@ bool TeamExt::EnemyOwnsAll(AITriggerTypeClass* pThis, HouseClass* pHouse, HouseC
 		int counter = 0;
 		result = true;
 
-		for (auto const pObject : *TechnoClass::Array)
+		for (auto const pObject : TechnoClass::Array)
 		{
 			if (!TechnoExt::IsValidTechno(pObject)) continue;
 
@@ -1336,14 +1336,14 @@ bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeCl
 		return false;
 
 	// Any neutral house should be capable to meet the prerequisites
-	for (auto const pHouse : *HouseClass::Array)
+	for (auto const pHouse : HouseClass::Array)
 	{
 		if (!result)
 			break;
 
 		bool foundAll = true;
 
-		if (_stricmp(SideClass::Array->GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
+		if (_stricmp(SideClass::Array.GetItem(pHouse->Type->SideIndex)->Name, "Civilian") != 0)
 			continue;
 
 		// Count all objects of the list, like an AND operator
@@ -1354,7 +1354,7 @@ bool TeamExt::NeutralOwnsAll(AITriggerTypeClass* pThis, std::vector<TechnoTypeCl
 
 			int counter = 0;
 
-			for (auto const pObject : *TechnoClass::Array)
+			for (auto const pObject : TechnoClass::Array)
 			{
 				if (!TechnoExt::IsValidTechno(pObject)) continue;
 

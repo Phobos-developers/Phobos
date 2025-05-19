@@ -37,7 +37,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 	// BuildLimit checks
 	int nInstances = 0;
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (const auto pTechno : TechnoClass::Array)
 	{
 		if (pTechno->Owner == pThis
 			&& pTechno->GetTechnoType() == pItem
@@ -68,7 +68,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
+				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
 					prerequisiteNegativeMet = true;
 			}
 
@@ -100,7 +100,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
+				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
 					prerequisiteOverrideMet = true;
 			}
 		}
@@ -121,8 +121,8 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 			}
 			else
 			{
-				auto debugType = BuildingTypeClass::Array->GetItem(idx);
-				if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
+				auto debugType = BuildingTypeClass::Array.GetItem(idx);
+				if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
 					found = true;
 			}
 
@@ -161,7 +161,7 @@ bool HouseExt::PrerequisitesMet(HouseClass* const pThis, TechnoTypeClass* const 
 				{
 					found = false;
 
-					if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idx)) > 0)
+					if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idx)) > 0)
 						found = true;
 				}
 
@@ -195,8 +195,8 @@ bool HouseExt::HasGenericPrerequisite(int idx, std::map<BuildingTypeClass*, int>
 		if (found)
 			break;
 
-		auto debugType = BuildingTypeClass::Array->GetItem(idxItem);
-		if (ownedBuildings.count(BuildingTypeClass::Array->GetItem(idxItem)) > 0)
+		auto debugType = BuildingTypeClass::Array.GetItem(idxItem);
+		if (ownedBuildings.count(BuildingTypeClass::Array.GetItem(idxItem)) > 0)
 			found = true;
 	}
 

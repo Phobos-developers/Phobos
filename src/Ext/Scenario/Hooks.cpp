@@ -10,7 +10,7 @@ DEFINE_HOOK(0x6870D7, ReadScenario_LoadingScreens, 0x5)
 
 	LEA_STACK(CCINIClass*, pINI, STACK_OFFSET(0x174, -0x158));
 
-	auto const pScenario = ScenarioClass::Instance();
+	auto const pScenario = ScenarioClass::Instance;
 	auto const scenarioName = pScenario->FileName;
 	auto const defaultsSection = "Defaults";
 

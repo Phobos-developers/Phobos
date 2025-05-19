@@ -36,6 +36,9 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->SiteWarhead_Detonate_Full.Read(exINI, section, "RadSiteWarhead.Detonate.Full");
 	this->HasOwner.Read(exINI, section, "RadHasOwner");
 	this->HasInvoker.Read(exINI, section, "RadHasInvoker");
+
+	if (this->GetBuildingApplicationDelay())
+		Phobos::Optimizations::DisableRadDamageOnBuildings = false;
 }
 
 template <typename T>
@@ -64,6 +67,9 @@ void RadTypeClass::Serialize(T& Stm)
 void RadTypeClass::LoadFromStream(PhobosStreamReader& Stm)
 {
 	this->Serialize(Stm);
+
+	if (this->GetBuildingApplicationDelay())
+		Phobos::Optimizations::DisableRadDamageOnBuildings = false;
 }
 
 void RadTypeClass::SaveToStream(PhobosStreamWriter& Stm)
