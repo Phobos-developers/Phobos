@@ -31,7 +31,7 @@ DEFINE_HOOK(0x6FF15F, TechnoClass_FireAt_ObstacleCellSet, 0x6)
 
 	auto coords = pTarget->GetCenterCoords();
 
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
 		coords = pBuilding->GetTargetCoords();
 
 	// This is set to a temp variable as well, as accessing it everywhere needed from TechnoExt would be more complicated.
@@ -110,9 +110,9 @@ DEFINE_HOOK(0x70C6B5, TechnoClass_Railgun_TargetCoords, 0x5)
 
 	auto coords = pTarget->GetCenterCoords();
 
-	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
 		coords = pBuilding->GetTargetCoords();
-	else if (const auto pCell = abstract_cast<CellClass*>(pTarget))
+	else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
 		coords = pCell->GetCoordsWithBridge();
 
 	R->EAX(&coords);
@@ -151,10 +151,10 @@ DEFINE_HOOK(0x70CA8B, TechnoClass_Railgun_AmbientDamageIgnoreTarget2, 0x6)
 	enum { IgnoreTarget = 0x70CBB0 };
 
 	GET_BASE(WeaponTypeClass*, pWeapon, 0x14);
-	REF_STACK(DynamicVectorClass<ObjectClass*>, objects, STACK_OFFSET(0xC0, -0xAC));
 
 	if (WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_IgnoreTarget)
 	{
+		REF_STACK(DynamicVectorClass<ObjectClass*>, objects, STACK_OFFSET(0xC0, -0xAC));
 		R->EAX(objects.Count);
 		return IgnoreTarget;
 	}

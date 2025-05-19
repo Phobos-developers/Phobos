@@ -78,9 +78,11 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
-	if (pThis->GetTechnoType()->Ammo > 0)
+	auto const pType = pThis->GetTechnoType();
+
+	if (pType->Ammo > 0)
 	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pType))
 		{
 			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
 				return true;
@@ -92,11 +94,12 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 
 WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
 {
-	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+	auto const pType = pThis->GetTechnoType();
+	weaponIndex = pType->DeployFireWeapon;
 
 	if (pThis->WhatAmI() == AbstractType::Unit)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
 		{
 			// Only apply DeployFireWeapon on vehicles if explicitly set.
 			if (!pTypeExt->DeployFireWeapon.isset())

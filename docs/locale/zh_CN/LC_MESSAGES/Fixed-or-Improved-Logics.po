@@ -1111,12 +1111,10 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:182
 msgid ""
-"`AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares "
-"`Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and "
+"`AirburstWeapon` now supports `IsLaser`, `IsElectricBolt`, `IsRadBeam`, and "
 "`AttachedParticleSystem`."
 msgstr ""
-"现在 `AirburstWeapon` 可以支持绘制 `IsLaser`、`IsElectricBolt`（暂不支持 Ares 的 "
-"`Bolt.Color1`、`Bolt.Color2`、`Bolt.Color3`）、`IsRadBeam` 等视觉效果并允许粒子武器正常创建 "
+"现在 `AirburstWeapon` 可以支持绘制 `IsLaser`、`IsElectricBolt`、`IsRadBeam` 等视觉效果并允许粒子武器正常创建 "
 "`AttachedParticleSystem` 的粒子系统。"
 
 #: ../../Fixed-or-Improved-Logics.md:183
