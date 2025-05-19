@@ -1606,8 +1606,8 @@ HarvesterDumpAmount=                  ; float point value
 ### Unit & infantry auto-conversion on ammo change
 
 - Units & infantry can now be converted into another unit by ammo count.
-- `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically.
-- `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically.
+- `Ammo.AutoConvertMinimumAmount` determines the minimal number of ammo at which a unit converts automatically after the ammo update.
+- `Ammo.AutoConvertMaximumAmount` determines the maximum number of ammo at which a unit converts automatically after the ammo update.
 - `Ammo.AutoConvertType` specify the new techno after the conversion. This unit must be of the same type of the original (vehicle -> vehicle or infantry -> infantry).
 - Setting a negative number will disable ammo count check.
 
@@ -1621,6 +1621,7 @@ Ammo.AutoConvertType=             ; InfantryType or VehicleType
 
 ```{warning}
 This auto-conversion feature requires [Ares](https://github.com/Ares-Developers/Ares).
+Aircrafts weren't tested but if Ares supported them then this feature should work on them too.
 ```
 
 ## Veinholes & Weeds
