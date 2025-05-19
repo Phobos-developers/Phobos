@@ -114,7 +114,7 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 			}
 		}
 
-		// Sometimes the target will DTOR first before it announce invalid pointer, so sanity check is necessary
+		// Sometimes the target techno will DTOR first before it announce invalid pointer, so sanity check is necessary
 		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
 			pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
 
