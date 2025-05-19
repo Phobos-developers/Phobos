@@ -371,7 +371,7 @@ This page lists all the individual contributions to the project by their author.
   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Fix the bug that ships can travel on elevated bridges
-  - `Arcing` elevation inaccuracy fix
+  - Original `Arcing` elevation inaccuracy fix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

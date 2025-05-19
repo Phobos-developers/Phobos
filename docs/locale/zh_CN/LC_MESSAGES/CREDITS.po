@@ -275,9 +275,8 @@ msgstr "观察者 PCX 载入图"
 
 #: ../../../CREDITS.md:72 ../../../CREDITS.md:100 ../../../CREDITS.md:219
 #: ../../../CREDITS.md:375
-#, fuzzy
 msgid "Original `Arcing` elevation inaccuracy fix"
-msgstr "`Arcing` 高差打偏问题修复"
+msgstr "原版 `Arcing` 高差打偏问题修复"
 
 #: ../../../CREDITS.md:73
 msgid "Official CN docs for Build#29 and previous versions"
