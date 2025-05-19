@@ -1097,24 +1097,26 @@ bool HouseExt::ExtData::AreBattlePointsEnabled()
 {
 	const auto pThis = this->OwnerObject();
 	const auto pOwnerTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
-	bool enabledBattlePoints = false;
 
-	for (const auto pBuilding : pThis->Buildings)
+	// Global setting
+	if (RulesExt::Global()->BattlePoints.isset())
+		return RulesExt::Global()->BattlePoints.Get();
+
+	// House specific setting
+	if (!pOwnerTypeExt->BattlePoints)
 	{
-		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-		if (pBuildingTypeExt->BattlePointsCollector.isset() && pBuildingTypeExt->BattlePointsCollector.Get())
+		// Structures can enable this logic overwriting the house's setting
+		for (const auto pBuilding : pThis->Buildings)
 		{
-			enabledBattlePoints = true;
-			break;
+			const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+			if (pBuildingTypeExt->BattlePointsCollector.Get(false))
+				return true;
 		}
+
+		return false;
 	}
 
-	enabledBattlePoints |= pOwnerTypeExt->BattlePoints;
-
-	if (RulesExt::Global()->BattlePoints.isset())
-		enabledBattlePoints = RulesExt::Global()->BattlePoints.Get();
-
-	return enabledBattlePoints;
+	return true;
 }
 
 int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
@@ -1130,7 +1132,7 @@ int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
 	int defaultFriendlyValue = RulesExt::Global()->BattlePoints_DefaultFriendlyValue.isset() ? RulesExt::Global()->BattlePoints_DefaultFriendlyValue.Get() : 0;
 
 	int points = pThis->IsAlliedWith(pTechno)? defaultFriendlyValue : defaultValue;
-	points = pTechnoTypeExt->BattlePoints.isset() ? pTechnoTypeExt->BattlePoints.Get() : points;
+	points = pTechnoTypeExt->BattlePoints.Get(points);
 	points = points == 0 && pThisTypeExt->BattlePoints_CanUseStandardPoints ? pTechno->GetTechnoType()->Points : points;
 
 	return points;
