@@ -665,8 +665,9 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 		return;
 
 	auto const pBullet = pBulletExt->OwnerObject();
-	double multiplierPercentage = GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier);
+	double multiplierPercentage = GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier) * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier;
 	int damage = static_cast<int>(std::round(pBullet->WeaponType->Damage * multiplierPercentage));
+
 	WarheadTypeClass* pWH = this->OwnerObject();
 
 	int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
