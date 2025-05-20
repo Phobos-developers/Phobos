@@ -12,7 +12,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 	// The first time this team runs this kind of script the repair huts list will updated. The only reason of why it isn't stored in ScenarioClass is because always exists the possibility of a modder to make destroyable Repair Huts
 	if (pTeamData->BridgeRepairHuts.size() == 0)
 	{
-		for (auto pTechno : *TechnoClass::Array)
+		for (auto pTechno : TechnoClass::Array)
 		{
 			if (pTechno->WhatAmI() != AbstractType::Building)
 				continue;
@@ -62,7 +62,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 				CellStruct cell = pBuilding->GetCell()->MapCoords;
 
 				// If the Bridge was repaired then the repair hut isn't valid anymore
-				if (!MapClass::Instance->IsLinkedBridgeDestroyed(cell))
+				if (!MapClass::Instance.IsLinkedBridgeDestroyed(cell))
 					pTeam->Focus = nullptr;
 			}
 		}
@@ -133,7 +133,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 			CellStruct cell = pTechno->GetCell()->MapCoords;
 
 			// Skip all huts linked to non-destroyed bridges
-			if (!MapClass::Instance->IsLinkedBridgeDestroyed(cell))
+			if (!MapClass::Instance.IsLinkedBridgeDestroyed(cell))
 				continue;
 
 			if (isEngineerAmphibious)
@@ -247,7 +247,7 @@ void ScriptExt::RepairDestroyedBridge(TeamClass* pTeam, int mode = -1)
 				// Get a cell near the target
 				pFoot->QueueMission(Mission::Move, false);
 				CoordStruct coord = TechnoExt::PassengerKickOutLocation(selectedTarget, pFoot);
-				CellClass* pCellDestination = MapClass::Instance->TryGetCellAt(coord);
+				CellClass* pCellDestination = MapClass::Instance.TryGetCellAt(coord);
 				pFoot->SetDestination(pCellDestination, true);
 			}
 

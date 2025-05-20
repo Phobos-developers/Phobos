@@ -190,3 +190,19 @@ details {
   background-color: #24252d;
   box-shadow: unset;
 }
+
+.sd-summary-title {
+    background-color: rgb(36, 37, 45);
+}
+
+details.sd-dropdown[open].sd-card {
+    background-color: rgb(36, 37, 45);
+}
+
+details.sd-dropdown:not([open]) > .sd-card-header {
+    box-shadow: none;
+}
+
+details.sd-dropdown[open] > .sd-card-header {
+    box-shadow: none;
+}
