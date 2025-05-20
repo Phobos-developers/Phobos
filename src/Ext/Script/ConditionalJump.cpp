@@ -394,7 +394,7 @@ void ScriptExt::ConditionalJump_CheckObjects(TeamClass* pTeam)
 		if (objectsList.size() == 0)
 			return;
 
-		for (const auto pTechno : *TechnoClass::Array())
+		for (const auto pTechno : TechnoClass::Array)
 		{
 			if (auto pTechnoType = pTechno->GetTechnoType())
 			{

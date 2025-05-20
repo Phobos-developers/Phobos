@@ -66,7 +66,7 @@ DEFINE_HOOK(0x71C812, TerrainClass_AI_Crumbling, 0x6)
 	if (pTypeExt->HasDamagedFrames && pThis->Health > 0)
 	{
 		if (!pThis->Type->IsAnimated && !pThis->Type->IsFlammable)
-			LogicClass::Instance->Remove(pThis);
+			LogicClass::Instance.Remove(pThis);
 
 		pThis->IsCrumbling = false;
 
@@ -126,7 +126,7 @@ DEFINE_HOOK(0x71C2BC, TerrainClass_Draw_Palette, 0x6)
 	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
 
 	if (wallOwnerIndex >= 0)
-		colorSchemeIndex = HouseClass::Array->Items[wallOwnerIndex]->ColorSchemeIndex;
+		colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
 
 	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
 
@@ -183,7 +183,7 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 		GET(CellClass*, pThis, EDI);
 		GET(int, tibIndex, EAX);
 
-		TiberiumClass* pTib = TiberiumClass::Array->GetItem(tibIndex);
+		TiberiumClass* pTib = TiberiumClass::Array.GetItem(tibIndex);
 
 		std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Range);
 		size_t size = adjacentCells.size();
@@ -193,7 +193,7 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 		{
 			unsigned int cellIndex = (i + rand) % size;
 			CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
-			CellClass* tgtCell = MapClass::Instance->GetCellAt(tgtPos);
+			CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 
 			if (tgtCell && tgtCell->CanTiberiumGerminate(pTib))
 			{
@@ -221,7 +221,7 @@ DEFINE_HOOK(0x71C6EE, TerrainClass_FireOut_Crumbling, 0x6)
 	if (!pThis->IsCrumbling && pTypeExt->HasCrumblingFrames)
 	{
 		// Needs to be added to the logic layer for the anim to work.
-		LogicClass::Instance->AddObject(pThis, false);
+		LogicClass::Instance.AddObject(pThis, false);
 		VocClass::PlayIndexAtPos(pTypeExt->CrumblingSound, pThis->GetCoords());
 
 		return StartCrumbling;
@@ -249,7 +249,7 @@ DEFINE_HOOK(0x71B98B, TerrainClass_TakeDamage_RefreshDamageFrame, 0x7)
 	if (!pThis->Type->IsAnimated && pTypeExt->HasDamagedFrames && TerrainTypeTemp::PriorHealthRatio > condYellow && pThis->GetHealthPercentage() <= condYellow)
 	{
 		pThis->IsCrumbling = true; // Dirty hack to get game to redraw the art reliably.
-		LogicClass::Instance->AddObject(pThis, false);
+		LogicClass::Instance.AddObject(pThis, false);
 	}
 
 	return 0;
@@ -268,7 +268,7 @@ DEFINE_HOOK(0x71BB2C, TerrainClass_TakeDamage_NowDead_Add, 0x6)
 	if (pThis->IsCrumbling && pTypeExt->HasCrumblingFrames)
 	{
 		// Needs to be added to the logic layer for the anim to work.
-		LogicClass::Instance->AddObject(pThis, false);
+		LogicClass::Instance.AddObject(pThis, false);
 		VocClass::PlayIndexAtPos(pTypeExt->CrumblingSound, pThis->GetCoords());
 		pThis->Mark(MarkType::Change);
 		pThis->Disappear(true);
