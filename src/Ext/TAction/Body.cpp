@@ -10,6 +10,7 @@
 #include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Script/Body.h>
 
 //Static init
@@ -72,6 +73,13 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
 
+	case PhobosTriggerAction::EditAngerNode:
+		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ClearAngerNode:
+		return TActionExt::ClearAngerNode(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetForceEnemy:
+		return TActionExt::SetForceEnemy(pThis, pHouse, pObject, pTrigger, location);
+
 	default:
 		bHandled = false;
 		return true;
@@ -83,7 +91,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 	std::vector<int> waypoints;
 	waypoints.reserve(ScenarioExt::Global()->Waypoints.size());
 
-	auto const pScen = ScenarioClass::Instance();
+	auto const pScen = ScenarioClass::Instance;
 
 	for (auto pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
@@ -203,7 +211,7 @@ bool TActionExt::PrintVariableValue(TActionClass* pThis, HouseClass* pHouse, Obj
 	if (itr != variables.end())
 	{
 		CRT::swprintf(Phobos::wideBuffer, L"%d", itr->second.Value);
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer);
 	}
 
 	return true;
@@ -276,7 +284,7 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 
 bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
-	if (SuperWeaponTypeClass::Array->Count > 0)
+	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
 		int swIdx = pThis->Param3;
 		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
@@ -286,18 +294,18 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		do
 		{
 			if (X < 0)
-				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Right);
+				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
 
 			if (Y < 0)
-				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance->MapCoordBounds.Bottom);
+				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
 		}
-		while (!MapClass::Instance->IsWithinUsableArea(targetLocation, false));
+		while (!MapClass::Instance.IsWithinUsableArea(targetLocation, false));
 
 		switch (pThis->Param4)
 		{
 		case -1:
 			// Random non-neutral
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pHouse : HouseClass::Array)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
@@ -316,7 +324,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -2:
 			// Find first Neutral
-			for (auto pHouseNeutral : *HouseClass::Array)
+			for (auto pHouseNeutral : HouseClass::Array)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
@@ -329,7 +337,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -3:
 			// Random Human Player
-			for (auto pHouse : *HouseClass::Array)
+			for (auto pHouse : HouseClass::Array)
 			{
 				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated
@@ -372,7 +380,137 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	GameModeOptionsClass::Instance->MCVRedeploy = pThis->Param3 != 0;
+	GameModeOptionsClass::Instance.MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
+bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
+	auto setValue = [pThis, pHouse](HouseClass* pTargetHouse)
+	{
+		if (!pTargetHouse || pHouse == pTargetHouse ||
+			pHouse->IsAlliedWith(pTargetHouse))
+			return;
+
+		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
+			if (pAngerNode.House != pTargetHouse)
+				continue;
+
+			switch (pThis->Param3)
+			{
+			case 0: { pAngerNode.AngerLevel = pThis->Param4; break; }
+			case 1: { pAngerNode.AngerLevel += pThis->Param4; break; }
+			case 2: { pAngerNode.AngerLevel -= pThis->Param4; break; }
+			case 3: { pAngerNode.AngerLevel *= pThis->Param4; break; }
+			case 4: { pAngerNode.AngerLevel /= pThis->Param4; break; }
+			case 5: { pAngerNode.AngerLevel %= pThis->Param4; break; }
+			case 6: { pAngerNode.AngerLevel <<= pThis->Param4; break; }
+			case 7: { pAngerNode.AngerLevel >>= pThis->Param4; break; }
+			case 8: { pAngerNode.AngerLevel = ~pAngerNode.AngerLevel; break; }
+			case 9: { pAngerNode.AngerLevel ^= pThis->Param4; break; }
+			case 10: { pAngerNode.AngerLevel |= pThis->Param4; break; }
+			case 11: { pAngerNode.AngerLevel &= pThis->Param4; break; }
+			default:break;
+			}
+
+			break;
+		}
+	};
+
+	if (pThis->Value >= 0)
+	{
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
+			HouseClass::FindByIndex(pThis->Value) :
+			HouseClass::FindByCountryIndex(pThis->Value);
+
+		setValue(pTargetHouse);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+	else if (pThis->Value == -1)
+	{
+		for (auto pTargetHouse : HouseClass::Array)
+		{
+			setValue(pTargetHouse);
+		}
+
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
+	if (pThis->Value >= 0)
+	{
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
+			HouseClass::FindByIndex(pThis->Value) :
+			HouseClass::FindByCountryIndex(pThis->Value);
+
+		if (pTargetHouse)
+		{
+			for (auto& pAngerNode : pHouse->AngerNodes)
+			{
+				if (pAngerNode.House != pTargetHouse)
+					continue;
+
+				pAngerNode.AngerLevel = 0;
+				pHouse->UpdateAngerNodes(0, pHouse);
+				break;
+			}
+		}
+	}
+	else if (pThis->Value == -1)
+	{
+		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
+			pAngerNode.AngerLevel = 0;
+		}
+
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pThis->Param3 >= 0 || pThis->Param3 == -2)
+	{
+		if (pThis->Param3 != -2)
+		{
+			HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Param3) ?
+				HouseClass::FindByIndex(pThis->Param3) :
+				HouseClass::FindByCountryIndex(pThis->Param3);
+
+			if (pTargetHouse && pHouse != pTargetHouse &&
+				!pHouse->IsAlliedWith(pTargetHouse))
+			{
+				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
+				pHouse->UpdateAngerNodes(0, pHouse);
+			}
+		}
+		else
+		{
+			pHouseExt->SetForceEnemyIndex(-2);
+			pHouse->UpdateAngerNodes(0, pHouse);
+		}
+	}
+	else if (pThis->Param3 == -1)
+	{
+		pHouseExt->SetForceEnemyIndex(-1);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
 	return true;
 }
 
@@ -408,7 +546,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 
 		for (const auto pHouseType : housesTypeList)
 		{
-			for (auto pItem : *HouseClass::Array)
+			for (auto pItem : HouseClass::Array)
 			{
 				if (pItem->Type == pHouseType && !pItem->Defeated && !pItem->IsObserver())
 					housesList.push_back(pItem);
@@ -433,14 +571,14 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 			// Is the owner of the trigger ?
 			param3 = pThis->TeamType ? pThis->TeamType->Owner->ArrayIndex : pHouse->ArrayIndex;
 		}
-		else if (param3 > 8997 || HouseClass::Array()->Count <= param3)
+		else if (param3 > 8997 || HouseClass::Array.Count <= param3)
 		{
 			// Is a invalid index value ?
 			Debug::Log("Map action %d: Invalid house index '%d'. This action will be skipped.\n", (int)pThis->ActionKind, pThis->Param3);
 			return true;
 		}
 
-		housesList.push_back(HouseClass::Array->GetItem(param3));
+		housesList.push_back(HouseClass::Array.GetItem(param3));
 	}
 
 	// Read the ID list of technos
@@ -464,7 +602,7 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 	{
 		int nRemaining = 0;
 
-		for (const auto pTechno : *TechnoClass::Array)
+		for (const auto pTechno : TechnoClass::Array)
 		{
 			if (!ScriptExt::IsUnitAvailable(pTechno, false) || pTechno->GetTechnoType() != pType)
 				continue;
@@ -518,11 +656,10 @@ bool TActionExt::PrintMessageRemainingTechnos(TActionClass* pThis, HouseClass* p
 	}
 
 	if (textToShow)
-		MessageListClass::Instance->PrintMessage(message, messageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance.PrintMessage(message, messageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 
 	return true;
 }
-
 
 // =============================
 // container

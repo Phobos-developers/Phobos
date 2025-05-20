@@ -20,6 +20,10 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtWaypoint = 506,
 	PrintMessageRemainingTechnos = 507,
 	ToggleMCVRedeploy = 510,
+
+	EditAngerNode = 606,
+	ClearAngerNode = 607,
+	SetForceEnemy = 608,
 };
 
 class TActionExt
@@ -65,6 +69,10 @@ public:
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 	ACTION_FUNC(PrintMessageRemainingTechnos);
 	ACTION_FUNC(ToggleMCVRedeploy);
+
+	ACTION_FUNC(EditAngerNode);
+	ACTION_FUNC(ClearAngerNode);
+	ACTION_FUNC(SetForceEnemy);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

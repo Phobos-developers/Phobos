@@ -9,6 +9,7 @@ InterceptorTypeClass::InterceptorTypeClass(TechnoTypeClass* OwnedBy)
 	, GuardRange {}
 	, MinimumGuardRange {}
 	, Weapon { 0 }
+	, ApplyFirepowerMult { true }
 	, DeleteOnIntercept {}
 	, WeaponOverride {}
 	, WeaponReplaceProjectile { false }
@@ -24,6 +25,7 @@ void InterceptorTypeClass::LoadFromINI(CCINIClass* pINI, const char* pSection)
 	this->GuardRange.Read(exINI, pSection, "Interceptor.%sGuardRange");
 	this->MinimumGuardRange.Read(exINI, pSection, "Interceptor.%sMinimumGuardRange");
 	this->Weapon.Read(exINI, pSection, "Interceptor.Weapon");
+	this->ApplyFirepowerMult.Read(exINI, pSection, "Interceptor.ApplyFirepowerMult");
 	this->DeleteOnIntercept.Read(exINI, pSection, "Interceptor.DeleteOnIntercept");
 	this->WeaponOverride.Read<true>(exINI, pSection, "Interceptor.WeaponOverride");
 	this->WeaponReplaceProjectile.Read(exINI, pSection, "Interceptor.WeaponReplaceProjectile");
@@ -42,6 +44,7 @@ bool InterceptorTypeClass::Serialize(T& stm)
 		.Process(this->GuardRange)
 		.Process(this->MinimumGuardRange)
 		.Process(this->Weapon)
+		.Process(this->ApplyFirepowerMult)
 		.Process(this->DeleteOnIntercept)
 		.Process(this->WeaponOverride)
 		.Process(this->WeaponReplaceProjectile)
