@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Techno/Body.h>
+
 bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
 	if (pManager->MaxControlNodes == 1)
@@ -47,6 +49,8 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				auto pOriginOwner = pNode->OriginalOwner->Defeated ?
 					HouseClass::FindNeutral() : pNode->OriginalOwner;
 
+				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
+
 				pTarget->SetOwningHouse(pOriginOwner, !silent);
 				pManager->DecideUnitFate(pTarget);
 				pTarget->MindControlledBy = nullptr;
@@ -64,7 +68,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 }
 
 bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* pTarget,
-	bool bRemoveFirst, AnimTypeClass* pControlledAnimType, bool silent)
+	bool bRemoveFirst, AnimTypeClass* pControlledAnimType, bool silent, int threatDelay)
 {
 	if (CaptureManagerExt::CanCapture(pManager, pTarget))
 	{
@@ -81,51 +85,49 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 		}
 
 		auto pControlNode = GameCreate<ControlNode>();
-		if (pControlNode)
+		pControlNode->OriginalOwner = pTarget->Owner;
+		pControlNode->Unit = pTarget;
+
+		pManager->ControlNodes.AddItem(pControlNode);
+		pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+
+		if (threatDelay > 0)
+			TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
+
+		if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
 		{
-			pControlNode->OriginalOwner = pTarget->Owner;
-			pControlNode->Unit = pTarget;
+			pTarget->MindControlledBy = pManager->Owner;
 
-			pManager->ControlNodes.AddItem(pControlNode);
-			pControlNode->LinkDrawTimer.Start(RulesClass::Instance->MindControlAttackLineFrames);
+			pManager->DecideUnitFate(pTarget);
 
-			if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
+			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+			auto const pType = pTarget->GetTechnoType();
+			CoordStruct location = pTarget->GetCoords();
+
+			if (pBld)
+				location.Z += pBld->Type->Height * Unsorted::LevelHeight;
+			else
+				location.Z += pType->MindControlRingOffset;
+
+			if (auto const pAnimType = pControlledAnimType)
 			{
-				pTarget->MindControlledBy = pManager->Owner;
+				auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
 
-				pManager->DecideUnitFate(pTarget);
-
-				auto const pBld = abstract_cast<BuildingClass*>(pTarget);
-				auto const pType = pTarget->GetTechnoType();
-				CoordStruct location = pTarget->GetCoords();
+				pTarget->MindControlRingAnim = pAnim;
+				pAnim->SetOwnerObject(pTarget);
 
 				if (pBld)
-					location.Z += pBld->Type->Height * Unsorted::LevelHeight;
-				else
-					location.Z += pType->MindControlRingOffset;
-
-				if (auto const pAnimType = pControlledAnimType)
-				{
-					auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
-
-					pTarget->MindControlRingAnim = pAnim;
-					pAnim->SetOwnerObject(pTarget);
-
-					if (pBld)
-						pAnim->ZAdjust = -1024;
-
-				}
-
-				return true;
+					pAnim->ZAdjust = -1024;
 			}
 
+			return true;
 		}
 	}
 
 	return false;
 }
 
-bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass* pTechno, AnimTypeClass* pControlledAnimType)
+bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass* pTechno, AnimTypeClass* pControlledAnimType, int threatDelay)
 {
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
@@ -133,7 +135,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
-		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType);
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, false, threatDelay);
 	}
 
 	return false;
