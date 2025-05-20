@@ -52,7 +52,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	{
 		memset(Phobos::wideBuffer, 0, sizeof Phobos::wideBuffer);
 		CRT::mbstowcs(Phobos::wideBuffer, buffer, strlen(buffer));
-		MessageListClass::Instance->PrintMessage(Phobos::wideBuffer, 600, 5, true);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer, 600, 5, true);
 		Debug::Log("%s\n", buffer);
 		buffer[0] = 0;
 	};
@@ -88,15 +88,15 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 			auto pTeamType = pFoot->Team->Type;
 			bool found = false;
-			for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+			for (int i = 0; i < AITriggerTypeClass::Array.Count && !found; i++)
 			{
-				auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-				auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+				auto pTriggerTeam1Type = AITriggerTypeClass::Array.GetItem(i)->Team1;
+				auto pTriggerTeam2Type = AITriggerTypeClass::Array.GetItem(i)->Team2;
 
 				if (pTeamType && ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType) || (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
 				{
 					found = true;
-					auto pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+					auto pTriggerType = AITriggerTypeClass::Array.GetItem(i);
 					append("Trigger ID = %s, weights [Current, Min, Max]: %f, %f, %f", pTriggerType->ID, pTriggerType->Weight_Current, pTriggerType->Weight_Minimum, pTriggerType->Weight_Maximum);
 				}
 			}
@@ -242,7 +242,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		dumped = true;
 	};
 
-	for (auto pTechno : *TechnoClass::Array)
+	for (auto pTechno : TechnoClass::Array)
 	{
 		if (dumped) break;
 		if (pTechno->IsMouseHovering)
@@ -251,12 +251,12 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 
 	if (!dumped)
 	{
-		if (ObjectClass::CurrentObjects->Count > 0)
+		if (ObjectClass::CurrentObjects.Count > 0)
 		{
-			if (ObjectClass::CurrentObjects->Count != 1)
-				MessageListClass::Instance->PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
+			if (ObjectClass::CurrentObjects.Count != 1)
+				MessageListClass::Instance.PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
 
-			dumpInfo(ObjectClass::CurrentObjects->GetItem(ObjectClass::CurrentObjects->Count - 1));
+			dumpInfo(ObjectClass::CurrentObjects.GetItem(ObjectClass::CurrentObjects.Count - 1));
 		}
 	}
 }

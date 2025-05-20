@@ -313,7 +313,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 		if (mask == -4 || mask == -5 || mask == -6)
 			initialValue = -1000000000;
 
-		for (const auto& pHouse : *HouseClass::Array)
+		for (const auto& pHouse : HouseClass::Array)
 		{
 			if (pLeaderUnit->Owner == pHouse
 				|| pHouse->IsObserver()
@@ -364,7 +364,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 				case -8: // Based on number of house's naval units
 					currentNavalUnits = 0;
 
-					for (const auto& pUnit : *TechnoClass::Array)
+					for (const auto& pUnit : TechnoClass::Array)
 					{
 						if (ScriptExt::IsUnitAvailable(pUnit, false)
 							&& pUnit->Owner == pHouse
@@ -404,12 +404,12 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 	else if (mask == -1 || mask > 0)
 	{
 		// Other cases: Check all the technos and depending of the mode compare what house will be selected as the most hated
-		int nHouses = HouseClass::Array->Count;
+		int nHouses = HouseClass::Array.Count;
 		std::vector<double> enemyThreatValue = std::vector<double>(nHouses);
 		enemyThreatValue[nHouses] = { 0.0 };
 		double const& TargetSpecialThreatCoefficientDefault = RulesClass::Instance->TargetSpecialThreatCoefficientDefault;
 
-		for (auto pTechno : *TechnoClass::Array)
+		for (auto pTechno : TechnoClass::Array)
 		{
 			HouseClass* pHouse = pTechno->Owner;
 
@@ -459,7 +459,7 @@ HouseClass* ScriptExt::GetTheMostHatedHouse(TeamClass* pTeam, int mask = 0, int 
 
 			for (std::size_t i = 0; i < nHouses; i++)
 			{
-				auto const pHouse = HouseClass::Array->GetItem(i);
+				auto const pHouse = HouseClass::Array.GetItem(i);
 
 				if (pHouse->Defeated || pHouse->Type->MultiplayPassive || pHouse->IsObserver())
 					continue;
@@ -629,7 +629,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 
 	if (index >= 0) // A specific house
 	{
-		selectedHouse = HouseClass::Array()->GetItem(index);
+		selectedHouse = HouseClass::Array.GetItem(index);
 		objectsList.emplace_back(selectedHouse);
 	}
 	else if (index == -2) // Team's onwer as candidate
@@ -643,7 +643,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 			objectsList.emplace_back(pTeam->Owner);
 
 		// Store the list of possible candidate houses for later
-		for (auto pCandidateHouse : *HouseClass::Array)
+		for (auto pCandidateHouse : HouseClass::Array)
 		{
 			if (pCandidateHouse->Defeated || pCandidateHouse->IsObserver() || (pCandidateHouse == pTeam->Owner))
 				continue;
@@ -687,7 +687,7 @@ void ScriptExt::AggroHouse(TeamClass* pTeam, int index = -1)
 	if (!selectedHouse && index != -3) // Candidates random index. Only humans case is excluded here
 		selectedHouse = objectsList[ScenarioClass::Instance->Random.RandomRanged(0, objectsList.size() - 1)];
 
-	for (auto pHouse : *HouseClass::Array)
+	for (auto pHouse : HouseClass::Array)
 	{
 		if (pHouse->Defeated || pHouse->IsObserver())
 			continue;

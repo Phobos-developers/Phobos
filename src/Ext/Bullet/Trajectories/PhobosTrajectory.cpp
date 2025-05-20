@@ -192,7 +192,7 @@ std::vector<CellClass*> PhobosTrajectoryType::GetCellsInProximityRadius(BulletCl
 
 	for (const auto& pCells : recCells)
 	{
-		if (CellClass* pRecCell = MapClass::Instance->TryGetCellAt(pCells))
+		if (CellClass* pRecCell = MapClass::Instance.TryGetCellAt(pCells))
 			recCellClass.push_back(pRecCell);
 	}
 

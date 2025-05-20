@@ -130,7 +130,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		SP_MCVRedeploy.Read(maINI, GameStrings::Basic, GameStrings::MCVRedeploys);
 		if (!SP_MCVRedeploy.isset())
 			SP_MCVRedeploy.Read(ruINI, GameStrings::Basic, GameStrings::MCVRedeploys);
-		GameModeOptionsClass::Instance->MCVRedeploy = SP_MCVRedeploy.Get(false);
+		GameModeOptionsClass::Instance.MCVRedeploy = SP_MCVRedeploy.Get(false);
 
 		CCINIClass ini_missionmd {};
 		ini_missionmd.LoadFromFile(GameStrings::MISSIONMD_INI);

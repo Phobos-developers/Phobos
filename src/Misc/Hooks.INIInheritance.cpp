@@ -248,6 +248,8 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 		CCFileClass file (node.Data->Value);
 		if (file.Exists())
 			INIInheritance::LastINIFile->ReadCCFile(&file, false, false);
+		else
+			Debug::FatalErrorAndExit("Included INI file %s does not exist", node.Data->Value);
 	}
 
 	return 0;
@@ -304,4 +306,4 @@ int __fastcall IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper(INIClass* pThis
 	return defaultValue;
 }
 
-DEFINE_JUMP(CALL, 0x545FD4, GET_OFFSET(IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL, 0x545FD4, IsometricTileTypeClass_ReadINI_TilesInSet_Wrapper);
