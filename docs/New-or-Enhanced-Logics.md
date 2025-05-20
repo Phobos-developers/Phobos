@@ -229,6 +229,12 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
 
+In `ra2md.ini`:
+```ini
+[Phobos]
+EnableLaserTrails=true           ; boolean
+```
+
 In `artmd.ini`:
 ```ini
 [LaserTrailTypes]

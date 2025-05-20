@@ -82,7 +82,8 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (strlen(pThis->ImageFile))
 		pSection = pThis->ImageFile;
 
-	this->LaserTrail_Types.Read(exArtINI, pSection, "LaserTrail.Types");
+	if (Phobos::Config::EnableLaserTrails)
+		this->LaserTrail_Types.Read(exArtINI, pSection, "LaserTrail.Types");
 
 	this->TrajectoryValidation();
 }

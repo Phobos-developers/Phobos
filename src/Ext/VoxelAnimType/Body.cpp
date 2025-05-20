@@ -10,7 +10,9 @@ void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	const char* pID = this->OwnerObject()->ID;
 	INI_EX exINI(pINI);
 
-	this->LaserTrail_Types.Read(exINI, pID, "LaserTrail.Types");
+	if (Phobos::Config::EnableLaserTrails)
+		this->LaserTrail_Types.Read(exINI, pID, "LaserTrail.Types");
+
 	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");

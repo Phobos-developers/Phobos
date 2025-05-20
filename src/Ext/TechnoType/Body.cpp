@@ -698,24 +698,28 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ShadowIndex_Frame.Read(exArtINI, pArtSection, "ShadowIndex.Frame");
 
 	this->LaserTrailData.clear();
-	for (size_t i = 0; ; ++i)
+
+	if (Phobos::Config::EnableLaserTrails)
 	{
-		NullableIdx<LaserTrailTypeClass> trail;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
-		trail.Read(exArtINI, pArtSection, tempBuffer);
+		for (size_t i = 0; ; ++i)
+		{
+			NullableIdx<LaserTrailTypeClass> trail;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.Type", i);
+			trail.Read(exArtINI, pArtSection, tempBuffer);
 
-		if (!trail.isset())
-			break;
+			if (!trail.isset())
+				break;
 
-		Valueable<CoordStruct> flh;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
-		flh.Read(exArtINI, pArtSection, tempBuffer);
+			Valueable<CoordStruct> flh;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.FLH", i);
+			flh.Read(exArtINI, pArtSection, tempBuffer);
 
-		Valueable<bool> isOnTurret;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
-		isOnTurret.Read(exArtINI, pArtSection, tempBuffer);
+			Valueable<bool> isOnTurret;
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "LaserTrail%d.IsOnTurret", i);
+			isOnTurret.Read(exArtINI, pArtSection, tempBuffer);
 
-		this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
+			this->LaserTrailData.push_back({ ValueableIdx<LaserTrailTypeClass>(trail), flh, isOnTurret });
+		}
 	}
 
 	this->ParseBurstFLHs(exArtINI, pArtSection, this->WeaponBurstFLHs, this->EliteWeaponBurstFLHs, "");
