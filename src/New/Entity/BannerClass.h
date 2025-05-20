@@ -15,8 +15,7 @@ public:
 
 	BannerTypeClass* Type;
 	int ID;
-	int PositionX;
-	int PositionY;
+	Point2D Position;
 
 	//I don't know what is this for
 	int Variable;
@@ -29,8 +28,7 @@ public:
 	(
 		BannerTypeClass* pBannerType,
 		int id,
-		int positionX,
-		int positionY,
+		Point2D position,
 		int variable,
 		bool isGlobalVariable
 	);
@@ -48,7 +46,7 @@ private:
 	template <typename T>
 	bool Serialize(T& Stm);
 
-	void RenderPCX(int x, int y);
-	void RenderSHP(int x, int y);
-	void RenderCSF(int x, int y);
+	void RenderPCX(Point2D position);
+	void RenderSHP(Point2D position);
+	void RenderCSF(Point2D position);
 };

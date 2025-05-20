@@ -15,6 +15,7 @@
 #include <Misc/FlyingStrings.h>
 
 #include <New/Entity/BannerClass.h>
+#include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/Debug.h>
 
@@ -247,9 +248,8 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 DEFINE_HOOK(0x6D4B25, TacticalClass_Render_Banner, 0x5)
 {
 	for (const auto& pBanner : BannerClass::Array)
-	{
 		pBanner->Render();
-	}
+
 	return 0;
 }
 

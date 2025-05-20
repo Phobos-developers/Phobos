@@ -279,14 +279,6 @@ enum class DisplayInfoType : BYTE
 	GattlingStage = 9
 };
 
-enum class BannerType : int
-{
-	None = 0,
-	PCX = 1,
-	CSF = 2,
-	SHP = 3
-};
-
 enum class BannerNumberType : int
 {
 	None = 0,

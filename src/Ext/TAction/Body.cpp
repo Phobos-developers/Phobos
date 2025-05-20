@@ -521,7 +521,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 {
-	BannerTypeClass* pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
+	const auto pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
 	auto& banners = BannerClass::Array;
 
 	const auto it = std::find_if(banners.cbegin(), banners.cend(),
@@ -534,8 +534,7 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 	{
 		const auto& pBanner = *it;
 		pBanner->Type = pBannerType;
-		pBanner->PositionX = static_cast<int>(pTAction->Param4 / 100.0 * DSurface::Composite->Width);
-		pBanner->PositionY = static_cast<int>(pTAction->Param5 / 100.0 * DSurface::Composite->Height);
+		pBanner->Position = { static_cast<int>(pTAction->Param4 / 100.0 * DSurface::Composite->Width), static_cast<int>(pTAction->Param5 / 100.0 * DSurface::Composite->Height) };
 		pBanner->Variable = pTAction->Param6;
 		pBanner->IsGlobalVariable = isGlobal;
 	}
@@ -547,8 +546,7 @@ void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 			(
 				pBannerType,
 				pTAction->Value,
-				pTAction->Param4,
-				pTAction->Param5,
+				Point2D { pTAction->Param4, pTAction->Param5 },
 				pTAction->Param6,
 				isGlobal
 			)

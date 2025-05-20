@@ -9,18 +9,6 @@ const char* Enumerable<BannerTypeClass>::GetMainSection()
 	return "BannerTypes";
 }
 
-inline void BannerTypeClass::DetermineType()
-{
-	if (this->PCX.GetSurface())
-		this->BannerType = BannerType::PCX;
-	else if (this->Shape)
-		this->BannerType = BannerType::SHP;
-	else if (!this->CSF.Get().empty() || this->CSF_VariableFormat != BannerNumberType::None)
-		this->BannerType = BannerType::CSF;
-	else
-		Debug::Log("[Developer warning] BannerType [%s] doesn't have an available content.", this->Name);
-}
-
 void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
@@ -34,8 +22,6 @@ void BannerTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->CSF_Color.Read(exINI, section, "CSF.Color");
 	this->CSF_Background.Read(exINI, section, "CSF.Background");
 	this->CSF_VariableFormat.Read(exINI, section, "CSF.VariableFormat");
-
-	this->DetermineType();
 }
 
 template <typename T>
@@ -49,7 +35,6 @@ void BannerTypeClass::Serialize(T& stm)
 		.Process(this->CSF_Color)
 		.Process(this->CSF_Background)
 		.Process(this->CSF_VariableFormat)
-		.Process(this->BannerType)
 		;
 }
 

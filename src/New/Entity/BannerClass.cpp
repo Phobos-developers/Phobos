@@ -12,60 +12,49 @@ BannerClass::BannerClass
 (
 	BannerTypeClass* pBannerType,
 	int id,
-	int positionX,
-	int positionY,
+	Point2D position,
 	int variable,
 	bool isGlobalVariable
 )
 	: Type(pBannerType)
 	, ID(id)
-	, PositionX(static_cast<int>(positionX / 100.0 * DSurface::Composite->Width))
-	, PositionY(static_cast<int>(positionY / 100.0 * DSurface::Composite->Height))
+	, Position(static_cast<int>(position.X / 100.0 * DSurface::Composite->Width), static_cast<int>(position.Y / 100.0 * DSurface::Composite->Height))
 	, Variable(variable)
 	, IsGlobalVariable(isGlobalVariable)
 { }
 
 void BannerClass::Render()
 {
-	switch (this->Type->BannerType)
-	{
-	case BannerType::PCX:
-		this->RenderPCX(this->PositionX, this->PositionY);
-		break;
-	case BannerType::SHP:
-		this->RenderSHP(this->PositionX, this->PositionY);
-		break;
-	case BannerType::CSF:
-		this->RenderCSF(this->PositionX, this->PositionY);
-		break;
-	default:
-		break;
-	}
+	if (this->Type->PCX.GetSurface())
+		this->RenderPCX(this->Position);
+	else if (this->Type->Shape)
+		this->RenderSHP(this->Position);
+	else if (!this->Type->CSF.Get().empty() || this->Type->CSF_VariableFormat != BannerNumberType::None)
+		this->RenderCSF(this->Position);
 }
 
-void BannerClass::RenderPCX(int x, int y)
+void BannerClass::RenderPCX(Point2D position)
 {
 	BSurface* pcx = this->Type->PCX.GetSurface();
-	x = x - pcx->Width / 2;
-	y = y - pcx->Height / 2;
-	RectangleStruct bounds(x, y, pcx->Width, pcx->Height);
+	position.X -= pcx->Width / 2;
+	position.Y -= pcx->Height / 2;
+	RectangleStruct bounds(position.X, position.Y, pcx->Width, pcx->Height);
 	PCX::Instance.BlitToSurface(&bounds, DSurface::Composite, pcx);
 }
 
-void BannerClass::RenderSHP(int x, int y)
+void BannerClass::RenderSHP(Point2D position)
 {
 	SHPStruct* shape = this->Type->Shape;
 	ConvertClass* palette = this->Type->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-	x = x - shape->Width / 2;
-	y = y - shape->Height / 2;
-	Point2D pos(x, y);
+	position.X -= shape->Width / 2;
+	position.Y -= shape->Height / 2;
 
 	DSurface::Composite->DrawSHP
 	(
 		palette,
 		shape,
 		this->ShapeFrameIndex,
-		&pos,
+		&position,
 		&DSurface::ViewBounds,
 		BlitterFlags::None,
 		0,
@@ -85,11 +74,10 @@ void BannerClass::RenderSHP(int x, int y)
 		this->ShapeFrameIndex = 0;
 }
 
-void BannerClass::RenderCSF(int x, int y)
+void BannerClass::RenderCSF(Point2D position)
 {
 	RectangleStruct rect;
 	DSurface::Composite->GetRect(&rect);
-	Point2D pos(x, y);
 	std::wstring text;
 
 	if (this->Type->CSF_VariableFormat != BannerNumberType::None)
@@ -122,7 +110,7 @@ void BannerClass::RenderCSF(int x, int y)
 	(
 		text.c_str(),
 		&rect,
-		&pos,
+		&position,
 		Drawing::RGB_To_Int(this->Type->CSF_Color.Get(Drawing::TooltipColor)),
 		0,
 		textFlags
@@ -135,8 +123,7 @@ bool BannerClass::Serialize(T& Stm)
 	return Stm
 		.Process(this->ID)
 		.Process(this->Type)
-		.Process(this->PositionX)
-		.Process(this->PositionY)
+		.Process(this->Position)
 		.Process(this->Variable)
 		.Process(this->ShapeFrameIndex)
 		.Process(this->IsGlobalVariable)
