@@ -4,8 +4,10 @@
 #define NOTE_ARES_FUN(name,reladdr) AresFunctions::name = reinterpret_cast<decltype(AresFunctions::name)>(AresHelper::AresBaseAddress + reladdr)
 
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
+decltype(AresFunctions::CreateAresEBolt) AresFunctions::CreateAresEBolt = nullptr;
 decltype(AresFunctions::SpawnSurvivors) AresFunctions::SpawnSurvivors = nullptr;
 std::function<AresSWTypeExtData* (SuperWeaponTypeClass*)> AresFunctions::SWTypeExtMap_Find;
+PhobosMap<ObjectClass*, AlphaShapeClass*>* AresFunctions::AlphaExtMap = nullptr;
 
 void* AresFunctions::_SWTypeExtMap = nullptr;
 decltype(AresFunctions::_SWTypeExtMapFind) AresFunctions::_SWTypeExtMapFind = nullptr;
@@ -16,6 +18,9 @@ void Apply_Ares3_0p1_Patches();
 void AresFunctions::InitAres3_0()
 {
 	NOTE_ARES_FUN(ConvertTypeTo, 0x43650);
+
+	NOTE_ARES_FUN(CreateAresEBolt, 0x550F0);
+
 	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
 	{
 		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4C0EB, { 0x5C });
@@ -28,6 +33,8 @@ void AresFunctions::InitAres3_0()
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC1C54);
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
 
+	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
+
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0_Patches();
 #endif
@@ -36,6 +43,9 @@ void AresFunctions::InitAres3_0()
 void AresFunctions::InitAres3_0p1()
 {
 	NOTE_ARES_FUN(ConvertTypeTo, 0x44130);
+
+	NOTE_ARES_FUN(CreateAresEBolt, 0x55DA0);
+
 	if constexpr (AresFunctions::AresWasWrongAboutSpawnSurvivors)
 	{
 		Patch::Apply_RAW(AresHelper::AresBaseAddress + 0x4CD4B, { 0x5C });
@@ -47,6 +57,8 @@ void AresFunctions::InitAres3_0p1()
 	NOTE_ARES_FUN(_SWTypeExtMapFind, 0x58900);
 	NOTE_ARES_FUN(_SWTypeExtMap, 0xC2C50);
 	SWTypeExtMap_Find = [](SuperWeaponTypeClass* swt) { return _SWTypeExtMapFind(_SWTypeExtMap, swt); };
+
+	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0p1_Patches();
