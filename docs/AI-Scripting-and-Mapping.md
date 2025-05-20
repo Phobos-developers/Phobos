@@ -701,9 +701,9 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],8000,[Banner ID],0,[BannerType],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
-ID=ActionCount,[Action1],8001,[Banner ID],0,[BannerType],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
-ID=ActionCount,[Action1],8002,[Banner ID],0,0,0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],8000,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],8001,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],8002,0,[Unique ID],0,0,0,0,A,[ActionX]
 ...
 ```
 

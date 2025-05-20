@@ -519,37 +519,29 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	return true;
 }
 
-void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
+static void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 {
-	const auto pBannerType = BannerTypeClass::Array[pTAction->Param3].get();
+	const auto pBannerType = BannerTypeClass::Find(pTAction->Text);
 	auto& banners = BannerClass::Array;
 
-	const auto it = std::find_if(banners.cbegin(), banners.cend(),
+	const auto it = std::find_if(banners.begin(), banners.end(),
 		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
 		{
-			return pBanner->ID == pTAction->Value;
+			return pBanner->ID == pTAction->Param3;
 		});
 
-	if (it != banners.cend())
+	if (it != banners.end())
 	{
-		const auto& pBanner = *it;
+		auto& pBanner = *it;
 		pBanner->Type = pBannerType;
-		pBanner->Position = { static_cast<int>(pTAction->Param4 / 100.0 * DSurface::Composite->Width), static_cast<int>(pTAction->Param5 / 100.0 * DSurface::Composite->Height) };
+		pBanner->Position = { static_cast<int>(pTAction->Param4 / 100.0 * DSurface::ViewBounds.Width), static_cast<int>(pTAction->Param5 / 100.0 * DSurface::ViewBounds.Height) };
 		pBanner->Variable = pTAction->Param6;
 		pBanner->IsGlobalVariable = isGlobal;
 	}
 	else
 	{
-		BannerClass::Array.emplace_back
-		(
-			std::make_unique<BannerClass>
-			(
-				pBannerType,
-				pTAction->Value,
-				Point2D { pTAction->Param4, pTAction->Param5 },
-				pTAction->Param6,
-				isGlobal
-			)
+		banners.emplace_back(
+			std::make_unique<BannerClass>(pBannerType, pTAction->Param3, Point2D { pTAction->Param4, pTAction->Param5 }, pTAction->Param6, isGlobal)
 		);
 	}
 }

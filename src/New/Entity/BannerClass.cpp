@@ -18,7 +18,7 @@ BannerClass::BannerClass
 )
 	: Type(pBannerType)
 	, ID(id)
-	, Position(static_cast<int>(position.X / 100.0 * DSurface::Composite->Width), static_cast<int>(position.Y / 100.0 * DSurface::Composite->Height))
+	, Position(static_cast<int>(position.X / 100.0 * DSurface::ViewBounds.Width), static_cast<int>(position.Y / 100.0 * DSurface::ViewBounds.Height))
 	, Variable(variable)
 	, IsGlobalVariable(isGlobalVariable)
 { }
@@ -76,8 +76,7 @@ void BannerClass::RenderSHP(Point2D position)
 
 void BannerClass::RenderCSF(Point2D position)
 {
-	RectangleStruct rect;
-	DSurface::Composite->GetRect(&rect);
+	RectangleStruct rect = DSurface::ViewBounds;
 	std::wstring text;
 
 	if (this->Type->CSF_VariableFormat != BannerNumberType::None)
@@ -91,10 +90,13 @@ void BannerClass::RenderCSF(Point2D position)
 			{
 				case BannerNumberType::Variable:
 					text = std::to_wstring(it->second.Value);
+					break;
 				case BannerNumberType::Prefixed:
 					text = std::to_wstring(it->second.Value) + this->Type->CSF.Get().Text;
+					break;
 				case BannerNumberType::Suffixed:
 					text = this->Type->CSF.Get().Text + std::to_wstring(it->second.Value);
+					break;
 			}
 		}
 	}

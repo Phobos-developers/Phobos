@@ -13,15 +13,15 @@ class BannerClass
 public:
 	static std::vector<std::unique_ptr<BannerClass>> Array;
 
-	BannerTypeClass* Type;
-	int ID;
-	Point2D Position;
+	BannerTypeClass* Type {};
+	int ID {};
+	Point2D Position {};
 
 	//I don't know what is this for
-	int Variable;
+	int Variable {};
 
-	int ShapeFrameIndex;
-	bool IsGlobalVariable;
+	int ShapeFrameIndex {};
+	bool IsGlobalVariable {};
 
 	BannerClass() = default;
 	BannerClass
