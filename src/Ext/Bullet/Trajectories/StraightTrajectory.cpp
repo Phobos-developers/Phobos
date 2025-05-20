@@ -223,7 +223,7 @@ void StraightTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	if (pType->PassDetonateLocal)
 	{
 		CoordStruct detonateCoords = pBullet->Location;
-		detonateCoords.Z = MapClass::Instance->GetCellFloorHeight(detonateCoords);
+		detonateCoords.Z = MapClass::Instance.GetCellFloorHeight(detonateCoords);
 		pBullet->SetLocation(detonateCoords);
 	}
 
@@ -530,12 +530,12 @@ bool StraightTrajectory::BulletDetonatePreCheck(BulletClass* pBullet)
 	if (!pType->PassThrough && pBullet->TargetCoords.DistanceFrom(pBullet->Location) < this->DetonationDistance)
 		return true;
 
-	// Below ground level?
-	if (pType->SubjectToGround && MapClass::Instance->GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 15))
+	// Below ground level? (16 ->error range)
+	if (pType->SubjectToGround && MapClass::Instance.GetCellFloorHeight(pBullet->Location) >= (pBullet->Location.Z + 16))
 		return true;
 
 	// Out of map?
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(pBullet->Location))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(pBullet->Location))
 		return false;
 	else
 		return true;
@@ -558,7 +558,7 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 	if (pType->Trajectory_Speed < 256.0) // Low speed with checkSubject was already done well.
 	{
 		// Blocked by obstacles?
-		if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, MapClass::Instance->GetCellAt(pBullet->Location), pOwner))
+		if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, MapClass::Instance.GetCellAt(pBullet->Location), pOwner))
 		{
 			locationDistance = 0.0;
 			velocityCheck = true;
@@ -566,7 +566,7 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 	}
 	else if (checkThrough || checkSubject) // When in high speed, it's necessary to check each cell on the path that the next frame will pass through
 	{
-		const auto theSourceCoords = pBullet->Location;
+		const auto& theSourceCoords = pBullet->Location;
 		const CoordStruct theTargetCoords
 		{
 			pBullet->Location.X + static_cast<int>(pBullet->Velocity.X),
@@ -582,29 +582,14 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 		auto largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
 		const auto stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
 		auto curCoord = theSourceCoords;
-		auto pCurCell = MapClass::Instance->GetCellAt(sourceCell);
+		auto pCurCell = MapClass::Instance.GetCellAt(sourceCell);
 		double cellDistance = locationDistance;
 
 		for (size_t i = 0; i < largePace; ++i)
 		{
-			// Below ground level?
-			if (pType->SubjectToGround && (curCoord.Z + 15) < MapClass::Instance->GetCellFloorHeight(curCoord))
-			{
-				velocityCheck = true;
-				cellDistance = curCoord.DistanceFrom(theSourceCoords);
-				break;
-			}
-
-			// Impact on the wall?
-			if (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCurCell->OverlayTypeIndex)->Wall)
-			{
-				velocityCheck = true;
-				cellDistance = curCoord.DistanceFrom(theSourceCoords);
-				break;
-			}
-
-			// Blocked by obstacles?
-			if (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))
+			if ((pType->SubjectToGround && (curCoord.Z + 16) < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level? (16 ->error range)
+				|| (pBullet->Type->SubjectToWalls && pCurCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array.GetItem(pCurCell->OverlayTypeIndex)->Wall) // Impact on the wall?
+				|| (checkThrough && this->CheckThroughAndSubjectInCell(pBullet, pCurCell, pOwner))) // Blocked by obstacles?
 			{
 				velocityCheck = true;
 				cellDistance = curCoord.DistanceFrom(theSourceCoords);
@@ -612,7 +597,7 @@ void StraightTrajectory::BulletDetonateVelocityCheck(BulletClass* pBullet, House
 			}
 
 			curCoord += stepCoord;
-			pCurCell = MapClass::Instance->GetCellAt(curCoord);
+			pCurCell = MapClass::Instance.GetCellAt(curCoord);
 		}
 
 		locationDistance = cellDistance;
@@ -771,7 +756,7 @@ void StraightTrajectory::PassWithDetonateAt(BulletClass* pBullet, HouseClass* pO
 
 		// Whether to detonate at ground level?
 		if (pType->PassDetonateLocal)
-			detonateCoords.Z = MapClass::Instance->GetCellFloorHeight(detonateCoords);
+			detonateCoords.Z = MapClass::Instance.GetCellFloorHeight(detonateCoords);
 
 		const auto damage = this->GetTheTrueDamage(this->PassDetonateDamage, pBullet, nullptr, false);
 		WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
@@ -862,7 +847,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 	if (pType->ProximityFlight)
 	{
 		const auto airTracker = &AircraftTrackerClass::Instance;
-		airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(pBullet->Location + velocityCrd * 0.5),
+		airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(pBullet->Location + velocityCrd * 0.5),
 			Game::F2I(sqrt(radius * radius + (velocitySq / 4)) / Unsorted::LeptonsPerCell));
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
@@ -1047,9 +1032,9 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 		pBullet->Location.Z + static_cast<int>(pBullet->Velocity.Z)
 	};
 
-	auto checkDifference = MapClass::Instance->GetCellFloorHeight(futureCoords) - futureCoords.Z;
+	auto checkDifference = MapClass::Instance.GetCellFloorHeight(futureCoords) - futureCoords.Z;
 
-	if (MapClass::Instance->GetCellAt(futureCoords)->ContainsBridge())
+	if (MapClass::Instance.GetCellAt(futureCoords)->ContainsBridge())
 	{
 		const auto differenceOnBridge = checkDifference + CellClass::BridgeHeight;
 
@@ -1057,7 +1042,7 @@ bool StraightTrajectory::PassAndConfineAtHeight(BulletClass* pBullet)
 			checkDifference = differenceOnBridge;
 	}
 
-	// The height does not exceed the cliff, or the cliff can be ignored?
+	// The height does not exceed the cliff, or the cliff can be ignored? (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (std::abs(checkDifference) < 384 || !pBullet->Type->SubjectToCliffs)
 	{
 		const auto pType = this->Type;

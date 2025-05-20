@@ -18,9 +18,10 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	if (pWeapon)
 	{
 		result = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pType = pThis->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		if (pType->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
 		{
 			int smallestRange = INT32_MAX;
 			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.FirstPassenger);
@@ -64,7 +65,14 @@ DEFINE_HOOK(0x6F7248, TechnoClass_InRange_WeaponRange, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	R->EDI(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis));
+	int range = 0;
+
+	if (const auto keepRange = WeaponTypeExt::GetTechnoKeepRange(pWeapon, pThis, false))
+		range = keepRange;
+	else
+		range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+
+	R->EDI(range);
 
 	return SkipGameCode;
 }

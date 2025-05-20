@@ -10,7 +10,7 @@ template <typename T>
 void MakeCommand()
 {
 	T* command = GameCreate<T>();
-	CommandClass::Array->AddItem(command);
+	CommandClass::Array.AddItem(command);
 };
 
 #define CATEGORY_TEAM StringTable::LoadString(GameStrings::TXT_TEAM)
