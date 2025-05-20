@@ -28,7 +28,7 @@ public:
 	bool ResetIfRecreatable();
 	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
-	bool ShouldBeDiscardedNow() const;
+	bool ShouldBeDiscardedNow();
 	bool IsActive() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
@@ -74,6 +74,8 @@ private:
 	bool IsCloaked;
 	bool HasInitialized;
 	bool NeedsDurationRefresh;
+	int LastDiscardCheckFrame;
+	bool LastDiscardCheckValue;
 
 public:
 	bool HasCumulativeAnim;
@@ -90,6 +92,7 @@ struct AttachEffectTechnoProperties
 	bool Cloakable;
 	bool ForceDecloak;
 	bool DisableWeapons;
+	bool Unkillable;
 	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
@@ -104,6 +107,7 @@ struct AttachEffectTechnoProperties
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, DisableWeapons { false }
+		, Unkillable { false }
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }
