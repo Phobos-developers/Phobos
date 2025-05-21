@@ -295,11 +295,15 @@ bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 
 				speed = this->MovementSpeed;
 			}
-			else if (pLinked->SpeedPercentage >= this->MovementSpeed)
+			else if (pLinked->SpeedPercentage < this->MovementSpeed)
 			{
-				if (pLinked->SpeedPercentage <= this->MovementSpeed)
-					break;
+				speed = pType->AccelerationFactor + pLinked->SpeedPercentage;
 
+				if (this->MovementSpeed < speed)
+					speed = this->MovementSpeed;
+			}
+			else if (pLinked->SpeedPercentage > this->MovementSpeed)
+			{
 				speed = pLinked->SpeedPercentage - defaultSpeed * pType->DecelerationFactor;
 
 				if (this->MovementSpeed > speed)
@@ -307,10 +311,7 @@ bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 			}
 			else
 			{
-				speed = pType->AccelerationFactor + pLinked->SpeedPercentage;
-
-				if (this->MovementSpeed < speed)
-					speed = this->MovementSpeed;
+				break;
 			}
 
 			pLinked->SetSpeedPercentage(speed);
