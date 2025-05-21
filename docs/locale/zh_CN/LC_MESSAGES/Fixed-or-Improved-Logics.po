@@ -5461,14 +5461,13 @@ msgid "Unit Without Turret Always Turn To Target"
 msgstr "无炮塔单位始终面向目标"
 
 #: ../../Fixed-or-Improved-Logics.md:1561
-#, fuzzy
 msgid ""
 "Now vehicles without turret will attempt to turn to the target while the "
 "weapon is cooling down, rather than after the weapon has cooled down, by "
 "setting `NoTurret.TrackTarget` to true."
 msgstr ""
-"现在可以通过将 `NoTurret.TrackTarget` 设为 true 来让没有炮塔的载具（不包括 Jumpjet "
-"单位）在武器冷却期间就尝试更改朝向以面向目标而不是等到武器冷却完成后。"
+"现在可以通过将 `NoTurret.TrackTarget` 设为 true 来让没有炮塔的载具"
+"在武器冷却期间就尝试更改朝向以面向目标而不是等到武器冷却完成后。"
 
 #: ../../Fixed-or-Improved-Logics.md:1564
 msgid ""
@@ -5491,6 +5490,7 @@ msgid ""
 "Jumpjet can also be affected by this if firing an `OmniFire` weapon with "
 "`OmniFire.TurnToTarget` set to true."
 msgstr ""
+"如果 Jumpjet 在 `OmniFire.TurnToTarget` 设为 true 的情况下发射一个 `OmniFire` 武器那么也会受到影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:1576
 msgid "Voxel turret shadow"
