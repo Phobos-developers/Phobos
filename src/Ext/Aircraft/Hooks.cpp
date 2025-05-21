@@ -6,6 +6,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Utilities/Macro.h>
 
 #pragma region Mission_Attack
@@ -98,7 +99,8 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 	if (pWeapon)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		return pWeaponExt->Strafing.Get(pWeapon->Projectile->ROT <= 1 && !pWeapon->Projectile->Inviso);
+		auto const pBulletType = pWeapon->Projectile;
+		return pWeaponExt->Strafing.Get(pBulletType->ROT <= 1 && !pBulletType->Inviso && !BulletTypeExt::ExtMap.Find(pBulletType)->TrajectoryType);
 	}
 
 	return false;
