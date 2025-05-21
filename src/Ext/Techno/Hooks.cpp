@@ -180,6 +180,10 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	GET(TechnoClass*, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
+
+	if (!pType) // Critical sanity check in s/l
+		return 0;
+
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
 
