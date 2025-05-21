@@ -259,55 +259,58 @@ bool AdvancedDriveLocomotionClass::MovingProcess(bool fix)
 
 			const auto defaultSpeed = pLinked->GetDefaultSpeed();
 			auto speed = pLinked->SpeedPercentage;
-			bool adjustedSpeed = false;
 
-			if (Game::F2I((pLinked->Location - coords).Magnitude()) >= pType->SlowdownDistance)
+			if (Game::F2I((pLinked->Location - coords).Magnitude()) < pType->SlowdownDistance)
 			{
-				if (pLinked->IsSinking)
-				{
-					adjustedSpeed = true;
-					speed -= defaultSpeed * 0.0015;
-
-					if (speed < 0.1)
-						speed = 0.1;
-				}
-			}
-			else
-			{
-				adjustedSpeed = true;
 				speed -= defaultSpeed * pType->DecelerationFactor;
 
 				if (speed < 0.3)
 					speed = 0.3;
-			}
 
-			if (pLinked->IsCrushingSomething)
+				if (pLinked->IsCrushingSomething)
+				{
+					// Customized crush slow down speed
+					const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+					if (this->MovementSpeed > pTypeExt->CrushSlowdownMultiplier)
+						this->MovementSpeed = pTypeExt->CrushSlowdownMultiplier;
+
+					speed = this->MovementSpeed;
+				}
+			}
+			else if (pLinked->IsSinking)
 			{
-				adjustedSpeed = true;
+				speed -= defaultSpeed * 0.0015;
+
+				if (speed < 0.1)
+					speed = 0.1;
+			}
+			else if (pLinked->IsCrushingSomething)
+			{
 				// Customized crush slow down speed
-				speed = Math::min(TechnoTypeExt::ExtMap.Find(pType)->CrushSlowdownMultiplier, this->MovementSpeed);
-				this->MovementSpeed = speed;
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+				if (this->MovementSpeed > pTypeExt->CrushSlowdownMultiplier)
+					this->MovementSpeed = pTypeExt->CrushSlowdownMultiplier;
+
+				speed = this->MovementSpeed;
 			}
-
-			if (!adjustedSpeed)
+			else if (pLinked->SpeedPercentage >= this->MovementSpeed)
 			{
-				if (pLinked->SpeedPercentage >= this->MovementSpeed)
-				{
-					if (pLinked->SpeedPercentage <= this->MovementSpeed)
-						break;
+				if (pLinked->SpeedPercentage <= this->MovementSpeed)
+					break;
 
-					speed = pLinked->SpeedPercentage - defaultSpeed * pType->DecelerationFactor;
+				speed = pLinked->SpeedPercentage - defaultSpeed * pType->DecelerationFactor;
 
-					if (this->MovementSpeed > speed)
-						speed = this->MovementSpeed;
-				}
-				else
-				{
-					speed = pType->AccelerationFactor + pLinked->SpeedPercentage;
+				if (this->MovementSpeed > speed)
+					speed = this->MovementSpeed;
+			}
+			else
+			{
+				speed = pType->AccelerationFactor + pLinked->SpeedPercentage;
 
-					if (this->MovementSpeed < speed)
-						speed = this->MovementSpeed;
-				}
+				if (this->MovementSpeed < speed)
+					speed = this->MovementSpeed;
 			}
 
 			pLinked->SetSpeedPercentage(speed);
@@ -1052,6 +1055,9 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 		}
 
 		this->IsRocking = false;
+
+		// Reset is crushing flag
+		pLinked->IsCrushingSomething = false;
 	}
 	while (false);
 
@@ -1476,25 +1482,10 @@ inline int AdvancedDriveLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 			{
 				const auto pType = pLinked->GetTechnoType();
 
-				if (pNewCell->OverlayTypeIndex != -1)
-				{
-					if ((pType->Crusher || pLinked->HasAbility(Ability::Crusher))
-						&& OverlayTypeClass::Array.Items[pNewCell->OverlayTypeIndex]->Wall)
-					{
-						pLinked->IsCrushingSomething = true;
-
-						if (pType->TiltsWhenCrushes)
-						{
-							// Customized crush tilt speed
-							const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-							pLinked->RockingForwardsPerFrame = this->IsForward
-								? static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.05))
-								: static_cast<float>(-pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
-						}
-					}
-				}
-
-				if (pType->MovementZone == MovementZone::CrusherAll && pNewCell->GetUnit(false))
+				if ((pType->MovementZone == MovementZone::CrusherAll && pNewCell->GetUnit(false))
+					|| (pNewCell->OverlayTypeIndex != -1
+						&& (pType->Crusher || pLinked->HasAbility(Ability::Crusher))
+						&& OverlayTypeClass::Array.Items[pNewCell->OverlayTypeIndex]->Wall))
 				{
 					pLinked->IsCrushingSomething = true;
 
@@ -1507,10 +1498,6 @@ inline int AdvancedDriveLocomotionClass::UpdateSpeedAccum(int& speedAccum)
 							: static_cast<float>(-pTypeExt->CrushForwardTiltPerFrame.Get(-0.05));
 					}
 				}
-			}
-			else
-			{
-				pLinked->IsCrushingSomething = false;
 			}
 		}
 
