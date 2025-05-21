@@ -305,7 +305,9 @@ void TechnoExt::ExtData::EatPassengers()
 					}
 
 					// Handle gunner change.
-					if (pThis->GetTechnoType()->Gunner)
+					auto const pTransportType = pThis->GetTechnoType();
+
+					if (pTransportType->Gunner)
 					{
 						if (auto const pFoot = abstract_cast<FootClass*>(pThis))
 						{
@@ -327,6 +329,13 @@ void TechnoExt::ExtData::EatPassengers()
 					pPassenger->KillPassengers(pSource);
 					pPassenger->RegisterDestruction(pSource);
 					pPassenger->UnInit();
+
+					// Handle extra power
+					if (auto const pBldType = abstract_cast<BuildingTypeClass*, true>(pTransportType))
+					{
+						if (pBldType->ExtraPowerBonus || pBldType->ExtraPowerDrain)
+							pThis->Owner->RecheckPower = true;
+					}
 				}
 
 				this->PassengerDeletionTimer.Stop();
@@ -761,18 +770,20 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	int healthDeficit = pThis->GetTechnoType()->Strength - pThis->Health;
+	auto const pType = pThis->GetTechnoType();
+	int healthDeficit = pType->Strength - pThis->Health;
 
 	if (pThis->Health && healthDeficit > 0)
 	{
 		auto defaultSelfHealType = SelfHealGainType::NoHeal;
+		auto const whatAmI = pThis->WhatAmI();
 
-		if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->WhatAmI() == AbstractType::Unit && pThis->GetTechnoType()->Organic))
+		if (whatAmI == AbstractType::Infantry || (whatAmI == AbstractType::Unit && pType->Organic))
 			defaultSelfHealType = SelfHealGainType::Infantry;
-		else if (pThis->WhatAmI() == AbstractType::Unit)
+		else if (whatAmI == AbstractType::Unit)
 			defaultSelfHealType = SelfHealGainType::Units;
 
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 		auto selfHealType = pTypeExt->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
@@ -868,6 +879,11 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
+		// Handle extra power
+		if (pThis->Absorbed && pThis->Transporter)
+			pThis->Transporter->Owner->RecheckPower = true;
+
 		return;
 	}
 
