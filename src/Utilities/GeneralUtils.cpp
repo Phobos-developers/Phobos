@@ -5,6 +5,7 @@
 #include <BitFont.h>
 
 #include <Ext/Rules/Body.h>
+#include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Constructs.h>
 
@@ -71,6 +72,20 @@ const double GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<double> 
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType)
 {
+	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+}
+
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
+{
+	if (!pType)
+		pType = pThis->GetTechnoType();
+
+	auto ArmorType = pType->Armor;
+	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+
+	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
+		ArmorType = pShield->GetArmorType();
+
 	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
 }
 
@@ -250,10 +265,10 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	int green = color.G;
 	int blue = color.B;
 
-	if (Drawing::ColorMode() == RGBMode::RGB565)
+	if (Drawing::ColorMode == RGBMode::RGB565)
 		colorValue |= blue | (32 * (green | (red << 6)));
 
-	if (Drawing::ColorMode() != RGBMode::RGB655)
+	if (Drawing::ColorMode != RGBMode::RGB655)
 		colorValue |= blue | (((32 * red) | (green >> 1)) << 6);
 
 	colorValue |= blue | (32 * ((32 * red) | (green >> 1)));

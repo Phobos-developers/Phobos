@@ -25,7 +25,7 @@ void ScriptExt::ManageTriggersFromList(TeamClass* pTeam, int idxAITriggerType = 
 	for (auto obj : RulesExt::Global()->AITriggersLists[idxAITriggerType])
 		objectsList.AddUnique(obj);
 
-	for (auto pTrigger : *AITriggerTypeClass::Array)
+	for (auto pTrigger : AITriggerTypeClass::Array)
 	{
 		if (objectsList.FindItemIndex(pTrigger) >= 0)
 			pTrigger->IsEnabled = isEnabled;
@@ -47,7 +47,7 @@ void ScriptExt::ManageAllTriggersFromHouse(TeamClass* pTeam, HouseClass* pHouse 
 	if (sideIdx < 0)
 		return;
 
-	for (auto pTrigger : *AITriggerTypeClass::Array)
+	for (auto pTrigger : AITriggerTypeClass::Array)
 	{
 		if ((houseIdx == -1 || houseIdx == pTrigger->HouseIndex) && (sideIdx == 0 || sideIdx == pTrigger->SideIndex))
 			pTrigger->IsEnabled = isEnabled;
@@ -163,7 +163,7 @@ void ScriptExt::ManageTriggersWithObjects(TeamClass* pTeam, int idxAITargetType 
 		}
 	};
 
-	for (auto pTrigger : *AITriggerTypeClass::Array)
+	for (auto pTrigger : AITriggerTypeClass::Array)
 	{
 		DynamicVectorClass<TechnoTypeClass*> entriesList;
 
