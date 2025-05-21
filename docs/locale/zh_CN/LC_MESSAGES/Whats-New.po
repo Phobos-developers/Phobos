@@ -1522,6 +1522,7 @@ msgid ""
 "`Strafing` is now disabled by default when using `Trajectory` (by "
 "CrimRecya)"
 msgstr ""
+"现在 `Strafing` 在抛射体使用了 `Trajectory` 时默认禁用（by CrimRecya）"
 
 #: ../../Whats-New.md:384 ../../Whats-New.md:581 ../../Whats-New.md:898
 #: ../../Whats-New.md:1007 ../../Whats-New.md:1032 ../../Whats-New.md:1071

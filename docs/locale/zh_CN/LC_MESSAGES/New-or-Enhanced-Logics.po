@@ -8103,13 +8103,12 @@ msgid "Some of the behavior of strafing aircraft weapons can now be customized."
 msgstr "现在可以自定义战机扫射武器的一些行为。"
 
 #: ../../New-or-Enhanced-Logics.md:2283
-#, fuzzy
 msgid ""
 "`Strafing` controls if the aircraft can strafe when firing at the target."
 " Default to `true` if the projectile's `ROT` < 2 and `Inviso=false` "
 "without `Trajectory`, otherwise `false`."
 msgstr ""
-"`Strafing` 控制战机在目标射击时是否可以扫射。如果抛射体 `ROT` < 2 且 `Inviso=false` 则默认为 `true` "
+"`Strafing` 控制战机在目标射击时是否可以扫射。如果抛射体 `ROT` < 2 且 `Inviso=false` 并且没有 `Trajectory` 则默认为 `true` "
 "其他情况为 `false`。"
 
 #: ../../New-or-Enhanced-Logics.md:2284
