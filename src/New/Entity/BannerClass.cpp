@@ -100,6 +100,10 @@ void BannerClass::RenderCSF(Point2D position)
 			}
 		}
 	}
+	else
+	{
+		text = this->Type->CSF.Get().Text;
+	}
 
 	TextPrintType textFlags = TextPrintType::UseGradPal
 		| TextPrintType::Center

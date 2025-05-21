@@ -16,14 +16,12 @@ public:
 	BannerTypeClass* Type {};
 	int ID {};
 	Point2D Position {};
-
-	//I don't know what is this for
 	int Variable {};
-
 	int ShapeFrameIndex {};
 	bool IsGlobalVariable {};
 
 	BannerClass() = default;
+
 	BannerClass
 	(
 		BannerTypeClass* pBannerType,

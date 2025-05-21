@@ -163,9 +163,6 @@ HideLightFlashEffects=false      ; boolean
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
   604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
   605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
-  8000=Display banner and local variable,104,0,101,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8000,1
-  8001=Display banner and global variable,104,0,101,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8001,1
-  8002=Delete banner,104,0,0,0,0,0,0,0,0,Delete banner with ID,0,1,8002,1
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
@@ -181,6 +178,9 @@ HideLightFlashEffects=false      ; boolean
   606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
+  8000=Display banner and local variable (Phobos),4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8000
+  8001=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8001
+  8002=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,8002
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
