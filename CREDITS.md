@@ -394,7 +394,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Tiberium eater logic
   - Fix the bug that ships can travel on elevated bridges
-  - `Arcing` elevation inaccuracy fix
+  - Original `Arcing` elevation inaccuracy fix
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

@@ -114,16 +114,24 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 	return nullptr;
 }
 
-TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse,
-	AnimTypeClass* pSpawnAnimType, int spawnHeight, bool alwaysOnGround, bool checkPathfinding, bool parachuteIfInAir, Mission mission, Mission* missionAI)
+TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
+	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
+	auto const pType = pCreateUnit->Type;
 	auto const rtti = pType->WhatAmI();
 
 	if (rtti == AbstractType::BuildingType)
 		return nullptr;
 
-	HouseClass* decidedOwner = pOwner && !pOwner->Defeated
-		? pOwner : HouseClass::FindCivilianSide();
+	HouseClass* decidedOwner = pOwner;
+
+	if (!pOwner || pOwner->Defeated)
+	{
+		if (pCreateUnit->RequireOwner)
+			return nullptr;
+
+		decidedOwner = HouseClass::FindCivilianSide();
+	}
 
 	auto pCell = MapClass::Instance.TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
@@ -133,7 +141,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	int baseHeight = location.Z;
 	bool inAir = location.Z >= Unsorted::CellHeight * 2;
 
-	if (checkPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
+	if (pCreateUnit->ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
 	{
 		auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location), speedType, -1, mZone,
 			isBridge, 1, 1, true, false, false, isBridge, CellStruct::Empty, false, false);
@@ -151,11 +159,11 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	{
 		isBridge = allowBridges && pCell->ContainsBridge();
 		int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
-		int zCoord = alwaysOnGround ? INT32_MIN : baseHeight;
+		int zCoord = pCreateUnit->AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
 		int cellFloorHeight = MapClass::Instance.GetCellFloorHeight(location) + bridgeZ;
 
-		if (!alwaysOnGround && spawnHeight >= 0)
-			location.Z = cellFloorHeight + spawnHeight;
+		if (!pCreateUnit->AlwaysSpawnOnGround && pCreateUnit->SpawnHeight >= 0)
+			location.Z = cellFloorHeight + pCreateUnit->SpawnHeight;
 		else
 			location.Z = Math::max(cellFloorHeight, zCoord);
 
@@ -165,12 +173,12 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 			bool parachuted = false;
 			pTechno->OnBridge = isBridge;
 
-			if (rtti != AbstractType::AircraftType && parachuteIfInAir && !alwaysOnGround && inAir)
+			if (rtti != AbstractType::AircraftType && pCreateUnit->SpawnParachutedInAir && !pCreateUnit->AlwaysSpawnOnGround && inAir)
 			{
 				parachuted = true;
 				success = pTechno->SpawnParachuted(location);
 			}
-			else if (!pCell->GetBuilding() || !checkPathfinding)
+			else if (!pCell->GetBuilding() || !pCreateUnit->ConsiderPathfinding)
 			{
 				++Unsorted::ScenarioInit;
 				success = pTechno->Unlimbo(location, facing);
@@ -186,16 +194,16 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 				if (secondaryFacing)
 					pTechno->SecondaryFacing.SetCurrent(DirStruct(*secondaryFacing));
 
-				if (pSpawnAnimType)
+				if (pCreateUnit->SpawnAnim)
 				{
-					auto const pAnim = GameCreate<AnimClass>(pSpawnAnimType, location);
+					auto const pAnim = GameCreate<AnimClass>(pCreateUnit->SpawnAnim, location);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
 					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
 				}
 
 				if (!pTechno->InLimbo)
 				{
-					if (!alwaysOnGround)
+					if (!pCreateUnit->AlwaysSpawnOnGround)
 					{
 						inAir = pTechno->IsInAir();
 						if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pTechno->Locomotor))
@@ -235,12 +243,12 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 						}
 					}
 
-					auto newMission = mission;
+					auto newMission = pCreateUnit->UnitMission;
 
-					if (!decidedOwner->IsControlledByHuman() && missionAI)
-						newMission = *missionAI;
+					if (!decidedOwner->IsControlledByHuman() && pCreateUnit->AIUnitMission.isset())
+						newMission = pCreateUnit->AIUnitMission;
 
-					pTechno->QueueMission(mission, false);
+					pTechno->QueueMission(newMission, false);
 				}
 
 				if (!decidedOwner->Type->MultiplayPassive)

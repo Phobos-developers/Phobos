@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\New\Type\Affiliated\CreateUnitTypeClass.h" />
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />

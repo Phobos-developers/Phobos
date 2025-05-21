@@ -181,7 +181,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	auto const pType = pThis->GetTechnoType();
 
-	if (!pType)
+	if (!pType) // Critical sanity check in s/l
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -525,14 +525,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
-	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
@@ -595,8 +595,9 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	int maxSpeed = pThis->GetTechnoType()->Speed;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pThisType = pThis->GetTechnoType();
+	int maxSpeed = pThisType->Speed;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThisType);
 
 	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
 	{
@@ -653,19 +654,20 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 {
 	enum { SkipGameCode = 0x4C74C0 };
 
-	GET(EventClass*, pThis, ESI);
 	GET(TechnoClass*, pTechno, EDI);
-	GET(AbstractClass*, pTarget, EBX);
 
 	if (pTechno->WhatAmI() != AbstractType::Unit)
 		return 0;
 
+	GET(EventClass*, pThis, ESI);
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
+	if (mission == Mission::Move && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
 	{
-		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))
+		GET(AbstractClass*, pTarget, EBX);
+
+		if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
 		{
 			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
 			pTechno->SetDestination(pDestination, true);

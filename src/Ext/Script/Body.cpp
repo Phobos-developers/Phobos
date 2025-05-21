@@ -287,7 +287,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
 				&& pUnit->Health > 0)
 			{
-				if (pUnit->GetTechnoType()->Size > 0
+				if (pUnitType->Size > 0
 					&& pUnitType->Size <= pTransportType->SizeLimit
 					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
@@ -330,7 +330,9 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 	{
 		if (!pUnit->InLimbo && pUnit->Health > 0)
 		{
-			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
+			auto const pUnitType = pUnit->GetTechnoType();
+
+			if (pUnitType->Ammo > 0 && pUnit->Ammo < pUnitType->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
 				if (auto const pAircraft = abstract_cast<AircraftClass*>(pUnit))
@@ -347,7 +349,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 						return;
 					}
 				}
-				else if (pUnit->GetTechnoType()->Reload != 0) // Don't skip units that can reload themselves
+				else if (pUnitType->Reload != 0) // Don't skip units that can reload themselves
 					return;
 			}
 		}
@@ -446,9 +448,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 			{
 				auto pTypeUnit = pUnit->GetTechnoType();
 
-				if (!pTypeUnit)
-					continue;
-
 				if (pUnit == pLeaderUnit)
 				{
 					nUnits++;
@@ -458,7 +457,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				// Aircraft case
 				if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pTypeUnit->Ammo > 0)
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
+					auto pAircraft = static_cast<AircraftTypeClass*>(pTypeUnit);
 
 					if (pAircraft->AirportBound)
 					{
@@ -482,8 +481,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				}
 				else
 				{
+					auto mission = pUnit->GetCurrentMission();
+
 					// Is near of the leader, then protect the area
-					if (pUnit->GetCurrentMission() != Mission::Area_Guard || pUnit->GetCurrentMission() != Mission::Attack)
+					if (mission != Mission::Area_Guard || mission != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;
