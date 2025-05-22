@@ -369,7 +369,6 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	if (pTypeExt->DigitalDisplay_Disable)
 		return;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	int length = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
 	const auto whatAmI = pThis->WhatAmI();

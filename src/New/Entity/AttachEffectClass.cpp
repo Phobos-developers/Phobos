@@ -638,7 +638,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	}
 
 	int currentTypeCount = 0;
-	int cap = pType->Cumulative_MaxCount > -1 ? pType->Cumulative_MaxCount : INT_MAX;
+	size_t cap = pType->Cumulative_MaxCount > -1 ? pType->Cumulative_MaxCount : INT_MAX;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
 	cumulativeMatches.reserve(targetAEs.size());
