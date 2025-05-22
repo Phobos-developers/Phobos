@@ -12,44 +12,62 @@ class RadTypeClass final : public Enumerable<RadTypeClass>
 private:
 	Nullable<int> DurationMultiple;
 	Nullable<int> ApplicationDelay;
-	Nullable<int> BuildingApplicationDelay;
-	Nullable<double> LevelFactor;
+	Nullable<int> ApplicationDelay_Building;
+	Nullable<int> BuildingDamageMaxCount;
 	Nullable<int> LevelMax;
 	Nullable<int> LevelDelay;
 	Nullable<int> LightDelay;
-	Nullable<WarheadTypeClass*> RadWarhead;
-	Nullable<ColorStruct> RadSiteColor;
+	Nullable<double> LevelFactor;
 	Nullable<double> LightFactor;
 	Nullable<double> TintFactor;
+	Nullable<ColorStruct> Color;
+	Nullable<WarheadTypeClass*> SiteWarhead;
+	Nullable<bool> SiteWarhead_Detonate;
+	Nullable<bool> SiteWarhead_Detonate_Full;
+	Nullable<bool> HasOwner;
+	Nullable<bool> HasInvoker;
 
 public:
 
 	RadTypeClass(const char* const pTitle) : Enumerable<RadTypeClass>(pTitle)
-		, LevelDelay()
-		, LightDelay()
-		, RadSiteColor()
-		, LevelMax()
-		, LevelFactor()
-		, LightFactor()
-		, TintFactor()
-		, RadWarhead()
-		, DurationMultiple()
-		, ApplicationDelay()
-		, BuildingApplicationDelay()
+		, DurationMultiple { }
+		, ApplicationDelay { }
+		, ApplicationDelay_Building { }
+		, BuildingDamageMaxCount { }
+		, LevelMax { }
+		, LevelDelay { }
+		, LightDelay { }
+		, LevelFactor { }
+		, LightFactor { }
+		, TintFactor { }
+		, Color { }
+		, SiteWarhead { }
+		, SiteWarhead_Detonate { }
+		, SiteWarhead_Detonate_Full { }
+		, HasOwner { }
+		, HasInvoker { }
 	{ }
-
-	virtual ~RadTypeClass() override = default;
 
 	static void AddDefaults();
 
 	WarheadTypeClass* GetWarhead() const
 	{
-		return this->RadWarhead.Get(RulesClass::Instance->RadSiteWarhead);
+		return this->SiteWarhead.Get(RulesClass::Instance->RadSiteWarhead);
+	}
+
+	bool GetWarheadDetonate() const
+	{
+		return this->SiteWarhead_Detonate.Get(RulesExt::Global()->RadSiteWarhead_Detonate);
+	}
+
+	bool GetWarheadDetonateFull() const
+	{
+		return this->SiteWarhead_Detonate_Full.Get(RulesExt::Global()->RadSiteWarhead_Detonate_Full);
 	}
 
 	const ColorStruct& GetColor() const
 	{
-		return *this->RadSiteColor.GetEx(&RulesClass::Instance->RadColor);
+		return *this->Color.GetEx(&RulesClass::Instance->RadColor);
 	}
 
 	int GetDurationMultiple() const
@@ -64,7 +82,12 @@ public:
 
 	int GetBuildingApplicationDelay() const
 	{
-		return this->BuildingApplicationDelay.Get(RulesExt::Global()->RadApplicationDelay_Building);
+		return this->ApplicationDelay_Building.Get(RulesExt::Global()->RadApplicationDelay_Building);
+	}
+
+	int GetBuildingDamageMaxCount() const
+	{
+		return this->BuildingDamageMaxCount.Get(RulesExt::Global()->RadBuildingDamageMaxCount);
 	}
 
 	int GetLevelMax() const
@@ -97,9 +120,19 @@ public:
 		return this->TintFactor.Get(RulesClass::Instance->RadTintFactor);
 	}
 
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm);
-	virtual void SaveToStream(PhobosStreamWriter& Stm);
+	bool GetHasOwner() const
+	{
+		return this->HasOwner.Get(RulesExt::Global()->RadHasOwner);
+	}
+
+	bool GetHasInvoker() const
+	{
+		return this->HasInvoker.Get(RulesExt::Global()->RadHasInvoker);
+	}
+
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 private:
 	template <typename T>

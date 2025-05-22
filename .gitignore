@@ -21,3 +21,11 @@ docs/locale/.doctrees/
 /.vscode/c_cpp_properties.json
 /.vscode/cspell.json
 /.vscode/settings.json
+
+build
+cmake-*
+out
+.idea
+
+# Python virtual environment for docs
+.venv/

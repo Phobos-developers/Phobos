@@ -1,51 +1,83 @@
 #include "Body.h"
+#include <LightSourceClass.h>
+#include <Notifications.h>
 
 #include <New/Type/RadTypeClass.h>
-#include <LightSourceClass.h>
+#include <Ext/WarheadType/Body.h>
+#include <Ext/Cell/Body.h>
 
-template<> const DWORD Extension<RadSiteClass>::Canary = 0x87654321;
 RadSiteExt::ExtContainer RadSiteExt::ExtMap;
-
-DynamicVectorClass<RadSiteExt::ExtData*> RadSiteExt::Array;
 
 void RadSiteExt::ExtData::Initialize()
 {
-	this->Type = RadTypeClass::FindOrAllocate("Radiation");
+	this->Type = RadTypeClass::FindOrAllocate(GameStrings::Radiation);
 }
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner)
+bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage)
+{
+	const auto pWarhead = this->Type->GetWarhead();
+
+	if (!this->Type->GetWarheadDetonate())
+	{
+		if (pTarget->ReceiveDamage(&damage, 0, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
+			return false;
+	}
+	else
+	{
+		if (this->Type->GetWarheadDetonateFull())
+		{
+			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
+		}
+		else
+		{
+			const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
+		}
+
+		if (!pTarget->IsAlive)
+			return false;
+	}
+
+	return true;
+}
+
+
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
-	auto const pRadSite = GameCreate<RadSiteClass>();
-	auto pRadExt = RadSiteExt::ExtMap.FindOrAllocate(pRadSite);
+	const auto pRadSite = GameCreate<RadSiteClass>();
+	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 
 	//Adding Owner to RadSite, from bullet
-	if (!pWeaponExt->Rad_NoOwner && pRadExt->RadHouse != pOwner)
+	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
 		pRadExt->RadHouse = pOwner;
 
+	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
+		pRadExt->RadInvoker = pInvoker;
+
+	pRadExt->LastUpdateFrame = Unsorted::CurrentFrame;
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
 	pRadSite->SetBaseCell(&location);
 	pRadSite->SetSpread(spread);
-	RadSiteExt::SetRadLevel(pRadSite, amount);
-	RadSiteExt::CreateLight(pRadSite);
+	pRadExt->SetRadLevel(amount);
+	pRadExt->CreateLight();
 
-	Array.AddUnique(pRadExt);
+	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(location)))
+		pCellExt->RadSites.emplace_back(pRadSite);
 }
 
 //RadSiteClass Activate , Rewritten
-void RadSiteExt::CreateLight(RadSiteClass* pThis)
+void RadSiteExt::ExtData::CreateLight()
 {
-	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
-	auto nLevelDelay = pRadExt->Type->GetLevelDelay();
-	auto nLightDelay = pRadExt->Type->GetLightDelay();
+	const auto pThis = this->OwnerObject();
+	auto nLevelDelay = this->Type->GetLevelDelay();
+	auto nLightDelay = this->Type->GetLightDelay();
 
-	pThis->RadLevelTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLevelTimer.TimeLeft = nLevelDelay;
-	pThis->RadLightTimer.StartTime = Unsorted::CurrentFrame;
-	pThis->RadLightTimer.TimeLeft = nLightDelay;
+	pThis->RadLevelTimer.Start(nLevelDelay);
+	pThis->RadLightTimer.Start(nLightDelay);
 
-	auto nLightFactor = pThis->RadLevel * pRadExt->Type->GetLightFactor();
+	auto nLightFactor = pThis->RadLevel * this->Type->GetLightFactor();
 	nLightFactor = Math::min(nLightFactor, 2000.0);
 	auto nDuration = pThis->RadDuration;
 
@@ -54,11 +86,11 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	pThis->IntensitySteps = nDuration / nLightDelay;
 	pThis->IntensityDecrement = Game::F2I(nLightFactor) / (nDuration / nLightDelay);
 
-	auto nRadcolor = pRadExt->Type->GetColor();
-	auto nTintFactor = pRadExt->Type->GetTintFactor();
+	auto nRadcolor = this->Type->GetColor();
+	auto nTintFactor = this->Type->GetTintFactor();
 
 	//=========Red
-	auto red = ((1000 * nRadcolor.R) / 255)* nTintFactor;
+	auto red = ((1000 * nRadcolor.R) / 255) * nTintFactor;
 	red = Math::min(red, 2000.0);
 	//=========Green
 	auto green = ((1000 * nRadcolor.G) / 255) * nTintFactor;
@@ -67,57 +99,71 @@ void RadSiteExt::CreateLight(RadSiteClass* pThis)
 	auto blue = ((1000 * nRadcolor.B) / 255) * nTintFactor;
 	blue = Math::min(blue, 2000.0);;
 
-	TintStruct nTintBuffer{ Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
+	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;
 	bool update = false;
 
 	if (pThis->LightSource)
 	{
 		pThis->LightSource->ChangeLevels(Game::F2I(nLightFactor), nTintBuffer, update);
-		pThis->Radiate();
 	}
-	else
+	else if (const auto pCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell))
 	{
-		auto const pCell = MapClass::Instance->TryGetCellAt(pThis->BaseCell);
-		if (auto const pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer))
-		{
-			pThis->LightSource = pLight;
-			pLight->DetailLevel = 0;
-			pLight->Activate(update);
-			pThis->Radiate();
-		}
+		const auto pLight = GameCreate<LightSourceClass>(pCell->GetCoords(), pThis->SpreadInLeptons, Game::F2I(nLightFactor), nTintBuffer);
+		pThis->LightSource = pLight;
+		pLight->DetailLevel = 0;
+		pLight->Activate(update);
 	}
+
+	pThis->Radiate();
 }
 
 // Rewrite because of crashing craziness
-void RadSiteExt::Add(RadSiteClass* pThis, int amount)
+void RadSiteExt::ExtData::Add(int amount)
 {
-	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
+	const auto pThis = this->OwnerObject();
+	const auto RadExt = RadSiteExt::ExtMap.Find(pThis);
 	int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
 	pThis->Deactivate();
 	pThis->RadLevel = value + amount;
 	pThis->RadDuration = pThis->RadLevel * RadExt->Type->GetDurationMultiple();
 	pThis->RadTimeLeft = pThis->RadDuration;
-	RadSiteExt::CreateLight(pThis);
+	this->CreateLight();
+	this->LastUpdateFrame = Unsorted::CurrentFrame;
 }
 
-void RadSiteExt::SetRadLevel(RadSiteClass* pThis, int amount)
+void RadSiteExt::ExtData::SetRadLevel(int amount)
 {
-	auto const RadExt = RadSiteExt::ExtMap.Find(pThis);
-	const int mult = RadExt->Type->GetDurationMultiple();
+	const auto pThis = this->OwnerObject();
+	const int mult = this->Type->GetDurationMultiple();
 	pThis->RadLevel = amount;
 	pThis->RadDuration = mult * amount;
 	pThis->RadTimeLeft = mult * amount;
 }
 
 // helper function provided by AlexB
-const double RadSiteExt::GetRadLevelAt(RadSiteClass* pThis, CellStruct const& cell)
+double RadSiteExt::ExtData::GetRadLevelAt(CellStruct const& cell) const
 {
-	const auto base = MapClass::Instance->GetCellAt(pThis->BaseCell)->GetCoords();
-	const auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	const auto pThis = this->OwnerObject();
+	const auto base = MapClass::Instance.GetCellAt(pThis->BaseCell)->GetCoords();
+	const auto coords = MapClass::Instance.GetCellAt(cell)->GetCoords();
 	const auto max = static_cast<double>(pThis->SpreadInLeptons);
 	const auto dist = coords.DistanceFrom(base);
-	return (dist > max) ? 0.0 : (max - dist) / max * pThis->RadLevel;
+	double radLevel = pThis->RadLevel;
+
+	//  will produce `-nan(ind)` result if both dist and max is zero
+	// and used on formula below this check
+	// ,.. -Otamaa
+	if (dist && max)
+		radLevel = (dist > max) ? 0.0 : (max - dist) / max * pThis->RadLevel;
+
+	// Vanilla YR stores & updates the decremented RadLevel on CellClass.
+	// Because we're not storing multiple radiation site data on CellClass (yet?)
+	// we need to fully recalculate this stuff every time we need the radiation level for a cell coord - Starkku
+	int stepCount = (Unsorted::CurrentFrame - this->LastUpdateFrame) / this->Type->GetLevelDelay();
+	radLevel -= (radLevel / pThis->LevelSteps) * stepCount;
+
+	return radLevel;
 }
 
 // =============================
@@ -127,8 +173,10 @@ template <typename T>
 void RadSiteExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->LastUpdateFrame)
 		.Process(this->Weapon)
 		.Process(this->RadHouse)
+		.Process(this->RadInvoker)
 		.Process(this->Type)
 		;
 }
@@ -157,9 +205,9 @@ RadSiteExt::ExtContainer::~ExtContainer() = default;
 DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 {
 	GET(RadSiteClass*, pThis, ESI);
-	auto pRadSiteExt = RadSiteExt::ExtMap.FindOrAllocate(pThis);
 
-	RadSiteExt::Array.AddUnique(pRadSiteExt);
+	RadSiteExt::ExtMap.TryAllocate(pThis, pThis->WhatAmI() == AbstractType::RadSite, "Attempted to allocate RadSiteExt from unknown pointer!");
+	PointerExpiredNotification::NotifyInvalidObject.Add(pThis);
 
 	return 0;
 }
@@ -167,10 +215,32 @@ DEFINE_HOOK(0x65B28D, RadSiteClass_CTOR, 0x6)
 DEFINE_HOOK(0x65B2F4, RadSiteClass_DTOR, 0x5)
 {
 	GET(RadSiteClass*, pThis, ECX);
-	auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
+
+	const auto pBaseCell = MapClass::Instance.TryGetCellAt(pThis->BaseCell);
+
+	if (pBaseCell)
+	{
+		const auto pBaseCellExt = CellExt::ExtMap.Find(pBaseCell);
+		const auto it_Rad = std::find(pBaseCellExt->RadSites.begin(), pBaseCellExt->RadSites.end(), pThis);
+
+		if (it_Rad != pBaseCellExt->RadSites.end())
+			pBaseCellExt->RadSites.erase(it_Rad);
+	}
+
+	for (CellRangeEnumerator it(pThis->BaseCell, pThis->Spread + 0.5); it; it++)
+	{
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(*it))
+		{
+			const auto pCellExt = CellExt::ExtMap.Find(pCell);
+			const auto it_Rad = std::find_if(pCellExt->RadLevels.begin(), pCellExt->RadLevels.end(), [pThis](CellExt::RadLevel const& item) { return item.Rad == pThis; });
+
+			if (it_Rad != pCellExt->RadLevels.end())
+				pCellExt->RadLevels.erase(it_Rad);
+		}
+	}
 
 	RadSiteExt::ExtMap.Remove(pThis);
-	RadSiteExt::Array.Remove(pRadExt);
+	PointerExpiredNotification::NotifyInvalidObject.Remove(pThis);
 
 	return 0;
 }

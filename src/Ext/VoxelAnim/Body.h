@@ -17,19 +17,21 @@ class VoxelAnimExt
 public:
 	using base_type = VoxelAnimClass;
 
+	static constexpr DWORD Canary = 0xAAAAAACC;
+	static constexpr size_t ExtPointerOffset = 0x18;
+
 	class ExtData final : public Extension<VoxelAnimClass>
 	{
 	public:
 
-		ValueableVector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		std::vector<LaserTrailClass> LaserTrails;
 
 		ExtData(VoxelAnimClass* OwnerObject) : Extension<VoxelAnimClass>(OwnerObject)
 			, LaserTrails()
 		{ }
 
 		virtual ~ExtData() = default;
-		virtual size_t Size() const { return sizeof(*this); };
-		virtual void InvalidatePointer(void *ptr, bool bRemoved) override {}
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 		virtual void LoadFromStream(PhobosStreamReader& Stm)override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm)override;
 		virtual void Initialize() override;
@@ -44,7 +46,6 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 	};
 
 	static ExtContainer ExtMap;

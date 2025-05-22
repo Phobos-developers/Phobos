@@ -1,56 +1,42 @@
 {
-	// This is a Phobos project-specific config file for VSCode official C++ extension.
-	// https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools
+  // This is a Phobos project-specific config file for VSCode official C++ extension.
+  // https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools
 
-	// Change those variables to match the installation paths
-	// of the described items in your system.
-	"env": {
-		// Path to Windows SDK v7.1A which was installed with legacy WinXP v141 toolkit.
-		// Edit this if you have a different installation location.
-		"windowsSdk71APath": "${env:ProgramFiles(x86)}/Microsoft SDKs/Windows/v7.1A",
+  // Change those variables to match the installation paths
+  // of the described items in your system.
+  "env": {
+    // Path to Visual Studio or VS Build Tools installation folder.
+    "vsPath": "${env:ProgramFiles(x86)}/Microsoft Visual Studio/2019/Community",
+  },
 
-		// Path to Visual Studio or VS Build Tools installation folder.
-		"vsPath": "${env:ProgramFiles(x86)}/Microsoft Visual Studio/2019/Community",
-
-		// Windows Universal CRT runtime installation location.
-		// For some reason VSCode doesn't want to properly find stuff sometimes
-		// so edit this if UCRT is located at a different path.
-		"ucrtPath": "${env:ProgramFiles(x86)}/Windows Kits/10/Include/10.0.10240.0/ucrt"
-	},
-
-	// Don't change below this line unless you know what you're doing.
-	"configurations": [
-		{
-			"name": "Win32",
-			"includePath": [
-				"${workspaceFolder}/src",
-				"${workspaceFolder}/src/**",
-				"${workspaceFolder}/src/ExtraHeaders",
-				"${workspaceFolder}/src/ExtraHeaders/**",
-				"${workspaceFolder}/YRpp",
-				"${workspaceFolder}/YRpp/**",
-				"${ucrtPath}",
-				"${ucrtPath}/**",
-				"${windowsSdk71APath}/Include",
-				"${windowsSdk71APath}/Include/**"
-			],
-			"defines": [
-				"SYR_VER=2",
-				"HAS_EXCEPTIONS=0",
-				"NOMINMAX",
-				"_CRT_SECURE_NO_WARNINGS",
-				"_USING_V110_SDK71_",
-				"_WINDLL"
-			],
-			"compilerPath": "${vsPath}/VC/Tools/MSVC/14.16.27023/bin/HostX86/x86/cl.exe",
-			"windowsSdkVersion": "10.0.10240.0",
-			"cStandard": "c17",
-			"cppStandard": "c++20",
-			"intelliSenseMode": "windows-msvc-x86",
-			"browse": {
-				"limitSymbolsToIncludedHeaders": false
-			}
-		}
-	],
-	"version": 4
+  // Don't change below this line unless you know what you're doing.
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/YRpp",
+        "${workspaceFolder}/YRpp/**",
+        "${workspaceFolder}/lib",
+        "${workspaceFolder}/lib/**",
+    ],
+      "defines": [
+        "SYR_VER=2",
+        "HAS_EXCEPTIONS=0",
+        "NOMINMAX",
+        "_CRT_SECURE_NO_WARNINGS",
+        "_WINDLL"
+    ],
+      "compilerPath": "${vsPath}/VC/Tools/MSVC/14.29.30133/bin/HostX86/x86/cl.exe",
+      "windowsSdkVersion": "10.0.20348.0",
+      "cStandard": "c17",
+      "cppStandard": "c++20",
+      "intelliSenseMode": "windows-msvc-x86",
+      "browse": {
+        "limitSymbolsToIncludedHeaders": false
+      }
+    }
+  ],
+  "version": 5
 }

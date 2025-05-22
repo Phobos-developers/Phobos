@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Suggest a feature or enhancement
+    url: https://github.com/Phobos-developers/Phobos/discussions/new?category=ideas-and-feedback
+    about: If you want to suggest your idea to the project and/or upvote some idea.
+  - name: Official channels on C&C Mod Haven
+    url: https://discord.gg/an3bDxtksM
+    about: If you want to discuss something with us without filing an issue.

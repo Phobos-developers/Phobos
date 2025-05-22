@@ -1,22 +1,18 @@
 #include "Patch.h"
-
 #include "Macro.h"
-
 #include <Phobos.h>
 
-int GetSection(char* sectionName, void** pVirtualAddress)
+int GetSection(const char* sectionName, void** pVirtualAddress)
 {
-	char buf[MAX_PATH + 1] = { 0 };
-	GetModuleFileName(NULL, buf, sizeof(buf));
-
 	auto hInstance = Phobos::hInstance;
-
 	auto pHeader = reinterpret_cast<PIMAGE_NT_HEADERS>(((PIMAGE_DOS_HEADER)hInstance)->e_lfanew + (long)hInstance);
 
-	for (int i = 0; i < pHeader->FileHeader.NumberOfSections; i++)	{
+	for (int i = 0; i < pHeader->FileHeader.NumberOfSections; i++)
+	{
 		auto sct_hdr = IMAGE_FIRST_SECTION(pHeader) + i;
 
-		if (strncmp(sectionName, (char*)sct_hdr->Name, 8) == 0) {
+		if (strncmp(sectionName, (char*)sct_hdr->Name, 8) == 0)
+		{
 			*pVirtualAddress = (void*)((DWORD)hInstance + sct_hdr->VirtualAddress);
 			return sct_hdr->Misc.VirtualSize;
 		}
@@ -24,26 +20,50 @@ int GetSection(char* sectionName, void** pVirtualAddress)
 	return 0;
 }
 
-void Patch::Apply()
+void Patch::ApplyStatic()
 {
 	void* buffer;
-	int len = GetSection(PATCH_SECTION_NAME, &buffer);
+	const int len = GetSection(PATCH_SECTION_NAME, &buffer);
 
-	int offset = 0;
-	while(offset < len)
+	for (int offset = 0; offset < len; offset += sizeof(Patch))
 	{
-		auto pItem = (patch_decl*)((DWORD)buffer + offset);
-		if (pItem->offset == 0) {
+		const auto pPatch = (Patch*)((DWORD)buffer + offset);
+		if (pPatch->offset == 0)
 			return;
-		}
 
-		auto pAddress = (void*)pItem->offset;
-
-		DWORD protect_flag;
-		VirtualProtect(pAddress, pItem->size, PAGE_EXECUTE_READWRITE, &protect_flag);
-		memcpy(pAddress, pItem->pData, pItem->size);
-		VirtualProtect(pAddress, pItem->size, protect_flag, NULL);
-
-		offset += sizeof(patch_decl);
+		pPatch->Apply();
 	}
+}
+
+void Patch::Apply()
+{
+	void* pAddress = (void*)this->offset;
+
+	DWORD protect_flag;
+	VirtualProtect(pAddress, this->size, PAGE_EXECUTE_READWRITE, &protect_flag);
+	memcpy(pAddress, this->pData, this->size);
+	VirtualProtect(pAddress, this->size, protect_flag, &protect_flag);
+	// NOTE: Instruction cache flush isn't required on x86. This is just to conform with Win32 API docs.
+	FlushInstructionCache(GetCurrentProcess(), pAddress, this->size);
+}
+
+void Patch::Apply_LJMP(DWORD offset, DWORD pointer)
+{
+	const _LJMP data(offset, pointer);
+	Patch patch = { offset, sizeof(data), (byte*)&data };
+	patch.Apply();
+}
+
+void Patch::Apply_CALL(DWORD offset, DWORD pointer)
+{
+	const _CALL data(offset, pointer);
+	Patch patch = { offset, sizeof(data), (byte*)&data };
+	patch.Apply();
+}
+
+void Patch::Apply_CALL6(DWORD offset, DWORD pointer)
+{
+	const _CALL6 data(offset, pointer);
+	Patch patch = { offset, sizeof(data), (byte*)&data };
+	patch.Apply();
 }

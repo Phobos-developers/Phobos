@@ -34,7 +34,7 @@ public:
 	static bool ObjectClass_IsSelectable(ObjectClass* pThis)
 	{
 		const auto pOwner = pThis->GetOwningHouse();
-		return pOwner && pOwner->ControlledByPlayer()
+		return pOwner && pOwner->IsControlledByCurrentPlayer()
 			&& pThis->CanBeSelected() && pThis->CanBeSelectedNow()
 			&& !pThis->InLimbo;
 	}
@@ -48,7 +48,8 @@ public:
 			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
 			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
-				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top)) {
+				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
+			{
 				return true;
 			}
 		}
@@ -65,8 +66,8 @@ public:
 		return false;
 	}
 
-	static // Reversed from Tactical::Select
-	void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
+	// Reversed from Tactical::Select
+	static void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
@@ -92,8 +93,8 @@ public:
 					const auto pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
 					const auto pOwner = pTechno->GetOwningHouse();
 
-					if (pOwner && pOwner->ControlledByPlayer() && pTechno->CanBeSelected()
-						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsUndeployable())))
+					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
+						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsVehicle())))
 					{
 						Unsorted::MoveFeedback = !pTechno->Select();
 					}
@@ -103,10 +104,11 @@ public:
 		Unsorted::MoveFeedback = true;
 	}
 
-	static // Reversed from Tactical::MakeSelection
-	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type check_callback)
+	// Reversed from Tactical::MakeSelection
+	static void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void* _, callback_type check_callback)
 	{
-		if (pThis->Band.Left || pThis->Band.Top) {
+		if (pThis->Band.Left || pThis->Band.Top)
+		{
 			int nLeft = pThis->Band.Left;
 			int nRight = pThis->Band.Right;
 			int nTop = pThis->Band.Top;
@@ -129,7 +131,7 @@ public:
 };
 
 // Replace single call
-DEFINE_POINTER_CALL(0x4ABCEB, ExtSelection::Tactical_MakeFilteredSelection);
+DEFINE_JUMP(CALL, 0x4ABCEB, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))
 
 // Replace vanilla function. For in case another module tries to call the vanilla function at offset
-DEFINE_POINTER_LJMP(0x6D9FF0, ExtSelection::Tactical_MakeFilteredSelection)
+DEFINE_JUMP(LJMP, 0x6D9FF0, GET_OFFSET(ExtSelection::Tactical_MakeFilteredSelection))

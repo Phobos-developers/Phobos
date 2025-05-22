@@ -12,18 +12,25 @@ class HouseClass;
 enum class PhobosTriggerAction : unsigned int
 {
 	SaveGame = 500,
-	EditVariable,
-	GenerateRandomNumber,
-	PrintVariableValue,
-	BinaryOperation,
-	RunSuperWeaponAtLocation,
-	RunSuperWeaponAtWaypoint,
+	EditVariable = 501,
+	GenerateRandomNumber = 502,
+	PrintVariableValue = 503,
+	BinaryOperation = 504,
+	RunSuperWeaponAtLocation = 505,
+	RunSuperWeaponAtWaypoint = 506,
+	ToggleMCVRedeploy = 510,
+
+	EditAngerNode = 606,
+	ClearAngerNode = 607,
+	SetForceEnemy = 608,
 };
 
 class TActionExt
 {
 public:
 	using base_type = TActionClass;
+
+	static constexpr DWORD Canary = 0x91919191;
 
 	class ExtData final : public Extension<TActionClass>
 	{
@@ -59,6 +66,11 @@ public:
 	ACTION_FUNC(BinaryOperation);
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
+	ACTION_FUNC(ToggleMCVRedeploy);
+
+	ACTION_FUNC(EditAngerNode);
+	ACTION_FUNC(ClearAngerNode);
+	ACTION_FUNC(SetForceEnemy);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

@@ -1,9 +1,9 @@
 #include "Body.h"
 
 
-template<> const DWORD Extension<VoxelAnimTypeClass>::Canary = 0xAAAEEEEE;
 VoxelAnimTypeExt::ExtContainer VoxelAnimTypeExt::ExtMap;
-void VoxelAnimTypeExt::ExtData::Initialize() {}
+
+void VoxelAnimTypeExt::ExtData::Initialize() { }
 
 void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
@@ -11,6 +11,11 @@ void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->LaserTrail_Types.Read(exINI, pID, "LaserTrail.Types");
+	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
+	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
+	this->WakeAnim.Read(exINI, pID, "WakeAnim");
+	this->SplashAnims.Read(exINI, pID, "SplashAnims");
+	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
 }
 
 // =============================
@@ -20,6 +25,11 @@ void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(LaserTrail_Types)
+		.Process(this->ExplodeOnWater)
+		.Process(this->Warhead_Detonate)
+		.Process(this->WakeAnim)
+		.Process(this->SplashAnims)
+		.Process(this->SplashAnims_PickRandom)
 		;
 }
 
@@ -34,8 +44,6 @@ void VoxelAnimTypeExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	Extension<VoxelAnimTypeClass>::SaveToStream(Stm);
 	this->Serialize(Stm);
 }
-
-void VoxelAnimTypeExt::ExtContainer::InvalidatePointer(void* ptr, bool bRemoved) {}
 
 bool VoxelAnimTypeExt::LoadGlobals(PhobosStreamReader& Stm)
 {
@@ -52,7 +60,7 @@ bool VoxelAnimTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-VoxelAnimTypeExt::ExtContainer::ExtContainer() : Container("VoxelVoxelAnimTypeClass") {}
+VoxelAnimTypeExt::ExtContainer::ExtContainer() : Container("VoxelVoxelAnimTypeClass") { }
 VoxelAnimTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================
@@ -62,7 +70,8 @@ DEFINE_HOOK(0x74AEB0, VoxelAnimTypeClass_CTOR, 0xB)
 {
 	GET(VoxelAnimTypeClass*, pItem, ESI);
 
-	VoxelAnimTypeExt::ExtMap.FindOrAllocate(pItem);
+	VoxelAnimTypeExt::ExtMap.TryAllocate(pItem);
+
 	return 0;
 }
 

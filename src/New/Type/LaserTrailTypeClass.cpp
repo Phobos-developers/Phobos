@@ -3,8 +3,7 @@
 #include <Utilities/TemplateDef.h>
 #include <HouseClass.h>
 
-Enumerable<LaserTrailTypeClass>::container_t Enumerable<LaserTrailTypeClass>::Array;
-
+template<>
 const char* Enumerable<LaserTrailTypeClass>::GetMainSection()
 {
 	return "LaserTrailTypes";
@@ -24,6 +23,9 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->SegmentLength.Read(exINI, section, "SegmentLength");
 	this->IgnoreVertical.Read(exINI, section, "IgnoreVertical");
 	this->IsIntense.Read(exINI, section, "IsIntense");
+	this->CloakVisible.Read(exINI, section, "CloakVisible");
+	this->CloakVisible_DetectedOnly.Read(exINI, section, "CloakVisible.DetectedOnly");
+	this->DroppodOnly.Read(exINI, section, "DropPodOnly");
 }
 
 template <typename T>
@@ -37,6 +39,9 @@ void LaserTrailTypeClass::Serialize(T& Stm)
 		.Process(this->SegmentLength)
 		.Process(this->IgnoreVertical)
 		.Process(this->IsIntense)
+		.Process(this->CloakVisible)
+		.Process(this->CloakVisible_DetectedOnly)
+		.Process(this->DroppodOnly)
 		;
 }
 
