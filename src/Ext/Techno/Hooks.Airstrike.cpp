@@ -100,6 +100,7 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
 		GET(AirstrikeClass*, pThis, EBP);
+
 		const auto& array = Make_Global<DynamicVectorClass<AirstrikeClass*>>(0x889FB8);
 		AirstrikeClass* pLastTargetingMe = nullptr;
 
@@ -114,12 +115,16 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 			}
 		}
 
-		// Sometimes the target techno will DTOR first before it announce invalid pointer, so sanity check is necessary
+		// Sometimes the target will DTOR first before it announce invalid pointer, so sanity check is necessary!
+		// At this point, the target's vtable has already been reset to AbstractClass_vtbl.
+		// If a virtual function that AbstractClass does not have is called without checking this, it will cause the vtable to exceed its bounds.
 		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		{
 			pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
 
-		if (!pLastTargetingMe && Game::IsActive)
-			pTarget->Mark(MarkType::Change);
+			if (!pLastTargetingMe && Game::IsActive)
+				pTarget->Mark(MarkType::Change);
+		}
 	}
 
 	return SkipGameCode;
