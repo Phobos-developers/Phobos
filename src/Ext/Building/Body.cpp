@@ -62,9 +62,9 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 
 void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
 {
-	auto const pDepositableTiberium = TiberiumClass::Array->GetItem(idxStorageTiberiumType);
+	auto const pDepositableTiberium = TiberiumClass::Array.GetItem(idxStorageTiberiumType);
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
-	auto const pTiberium = TiberiumClass::Array->GetItem(idxTiberiumType);
+	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
 	if (amount > 0.0)
 	{
@@ -90,7 +90,7 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
 		return;
 
-	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
+	AircraftTypeClass* pAircraft = AircraftTypeClass::Array.GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
 	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
@@ -218,12 +218,14 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 {
-	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+	auto const whatAmI = pTechno->WhatAmI();
+
+	if (!pBuilding->Type->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
 	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
-		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
-			pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+		(whatAmI == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+			whatAmI == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
 	{
 		return false;
 	}
@@ -236,10 +238,12 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
 			return false;
 
-		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+		auto const pType = pTechno->GetTechnoType();
+
+		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pType))
 			return false;
 
-		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pType))
 			return false;
 	}
 
@@ -342,6 +346,59 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 	}
 
 	return true;
+}
+
+// For unit's weapons factory only
+void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
+{
+	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
+	{
+		if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
+		{
+			if (const auto pTeam = pUnit->Team)
+				pTeam->LiberateMember(pUnit);
+
+			pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
+			pUnit->QueueMission(Mission::Guard, false);
+			return; // one after another
+		}
+	}
+
+	auto buffer = CoordStruct::Empty;
+	auto pCell = MapClass::Instance.GetCellAt(*pThis->GetExitCoords(&buffer, 0));
+	int i = 0;
+
+	while (true)
+	{
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->WhatAmI() == AbstractType::Unit)
+			{
+				const auto pUnit = static_cast<UnitClass*>(pObject);
+
+				if (pThis->Owner != pUnit->Owner || pUnit->IsTether)
+					continue;
+
+				const auto height = pUnit->GetHeight();
+
+				if (height < 0 || height > Unsorted::CellHeight)
+					continue;
+
+				if (const auto pTeam = pUnit->Team)
+					pTeam->LiberateMember(pUnit);
+
+				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
+				pThis->QueueMission(Mission::Unload, false);
+				return; // one after another
+			}
+		}
+
+		if (++i >= 2)
+			return; // no stuck
+
+		// Continue checking towards the bottom right corner
+		pCell = pCell->GetNeighbourCell(FacingType::East);
+	}
 }
 
 // Get all cells covered by the building, optionally including those covered by OccupyHeight.
@@ -516,7 +573,7 @@ DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 
-	SwizzleManagerClass::Instance->Swizzle((void**)&pThis->LightSource);
+	SwizzleManagerClass::Instance.Swizzle((void**)&pThis->LightSource);
 
 	return 0x45417E;
 }
@@ -548,4 +605,4 @@ void __fastcall BuildingClass_InfiltratedBy_Wrapper(BuildingClass* pThis, void*,
 	BuildingExt::ExtMap.Find(pThis)->HandleInfiltrate(pInfiltratorHouse, oldBalance);
 }
 
-DEFINE_JUMP(CALL, 0x51A00B, GET_OFFSET(BuildingClass_InfiltratedBy_Wrapper));
+DEFINE_FUNCTION_JUMP(CALL, 0x51A00B, BuildingClass_InfiltratedBy_Wrapper);

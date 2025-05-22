@@ -176,9 +176,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				pOldExt->Convert_UniversalDeploy_InProgress = false;
 				pOld->IsFallingDown = false;
 
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 				pOld->Unlimbo(deployerLocation, currentDir);
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 
 				if (selected)
 					pOld->Select();
@@ -199,9 +199,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				pOldExt->Convert_UniversalDeploy_InProgress = false;
 				pOld->IsFallingDown = false;
 
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 				pOld->Unlimbo(deployerLocation, currentDir);
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 
 				pOldFoot->ParalysisTimer.Stop();
 				pOld->ForceMission(Mission::Guard);
@@ -402,9 +402,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 				pOldExt->Convert_UniversalDeploy_InProgress = false;
 				pOld->IsFallingDown = false;
 
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 				pOld->Unlimbo(deployerLocation, currentDir);
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 
 				if (selected)
 					pOld->Select();
@@ -519,9 +519,9 @@ void TechnoExt::UpdateUniversalDeploy(TechnoClass* pThis)
 			pOldExt->Convert_UniversalDeploy_InProgress = false;
 			pOld->IsFallingDown = false;
 
-			++Unsorted::IKnowWhatImDoing;
+			++Unsorted::ScenarioInit;
 			pOld->Unlimbo(deployerLocation, currentDir);
-			--Unsorted::IKnowWhatImDoing;
+			--Unsorted::ScenarioInit;
 
 			pOldFoot->ParalysisTimer.Stop();
 			pOld->ForceMission(Mission::Guard);
@@ -697,24 +697,24 @@ TechnoClass* TechnoExt::UniversalDeployConversion(TechnoClass* pOld, TechnoTypeC
 
 	// Transfer enemies target (part 1/2)
 	DynamicVectorClass<TechnoClass*> enemiesTargetingMeList;
-	for (auto pEnemy : *TechnoClass::Array)
+	for (auto pEnemy : TechnoClass::Array)
 	{
 		if (pEnemy->Target == pOld)
 			enemiesTargetingMeList.AddItem(pEnemy);
 	}
 
-	++Unsorted::IKnowWhatImDoing;
+	++Unsorted::ScenarioInit;
 	pOld->Limbo();
 	bool unlimboed = pNew->Unlimbo(deploymentLocation, currentDir);
-	--Unsorted::IKnowWhatImDoing;
+	--Unsorted::ScenarioInit;
 
 	if (!unlimboed)
 	{
 		// I think here won't enter because I avoided checks
-		++Unsorted::IKnowWhatImDoing;
+		++Unsorted::ScenarioInit;
 		pNew->UnInit();
 		pOld->Unlimbo(deployerLocation, currentDir);
-		--Unsorted::IKnowWhatImDoing;
+		--Unsorted::ScenarioInit;
 	}
 
 	// Transfer enemies target (part 2/2)
@@ -809,7 +809,7 @@ bool TechnoExt::Techno2TechnoPropertiesTransfer(TechnoClass* pOld, TechnoClass* 
 	bool isOldUnit = pOld->WhatAmI() == AbstractType::Unit;
 	bool isNewUnit = pNew->WhatAmI() == AbstractType::Unit;
 
-	++Unsorted::IKnowWhatImDoing;
+	++Unsorted::ScenarioInit;
 
 	// Transfer some stats from the old object to the new:
 	// Health update
@@ -955,7 +955,7 @@ bool TechnoExt::Techno2TechnoPropertiesTransfer(TechnoClass* pOld, TechnoClass* 
 
 	// Transfer AttachEffect (Reminder: add a new tag) - TO-DO: There is a Phobos PR that I should support once is merged into develop branch
 
-	--Unsorted::IKnowWhatImDoing;
+	--Unsorted::ScenarioInit;
 
 	// If the object was selected it should remain selected
 	if (pOld->IsSelected)

@@ -5,21 +5,23 @@
 #include <ScenarioClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include <Ext/House/Body.h>
 #include <Ext/Script/Body.h>
 
 #include <Utilities/AresFunctions.h>
 #include <Ext/CaptureManager/Body.h>
 
 TechnoExt::ExtContainer TechnoExt::ExtMap;
+UnitClass* TechnoExt::Deployer = nullptr;
 
 TechnoExt::ExtData::~ExtData()
 {
 	auto const pTypeExt = this->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	auto pThis = this->OwnerObject();
+	auto const whatAmI = pThis->WhatAmI();
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
@@ -27,14 +29,28 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+	if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	AnimExt::InvalidateTechnoPointers(pThis);
+	if (this->AnimRefCount > 0)
+		AnimExt::InvalidateTechnoPointers(pThis);
+
+	if (this->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+	}
+
+	for (auto const pBolt : this->ElectricBolts)
+	{
+		pBolt->Owner = nullptr;
+	}
+
+	this->ElectricBolts.clear();
 }
 
 void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
@@ -127,8 +143,9 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 	if (!TechnoExt::IsActive(pThis))
 		return false;
 
-	auto slave = pThis->SlaveManager;
-	if (slave && slave->State != SlaveManagerStatus::Ready)
+	auto const pSlaveManager = pThis->SlaveManager;
+
+	if (pSlaveManager && pSlaveManager->State != SlaveManagerStatus::Ready)
 		return true;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
@@ -139,12 +156,33 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		switch (pThis->GetCurrentMission())
 		{
 		case Mission::Harvest:
-		case Mission::Unload:
-		case Mission::Enter:
+			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			{
+				if (pUnit->HasAnyLink() && !TechnoExt::HasRadioLinkWithDock(pUnit)) // Probably still in factory.
+					return false;
+
+				if (pUnit->IsUseless) // Harvesters currently sitting without purpose are idle even if they are on harvest mission.
+					return false;
+			}
 			return true;
-		case Mission::Guard: // issue#603: not exactly correct, but idk how to do better
+		case Mission::Unload:
+			return true;
+		case Mission::Enter:
+			if (pThis->HasAnyLink())
+			{
+				auto const pLink = pThis->GetNthLink(0);
+
+				if (pLink->WhatAmI() != AbstractType::Building) // Enter mission + non-building link = not trying to unload
+					return false;
+			}
+			return true;
+		case Mission::Guard:
 			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
-				return pUnit->IsHarvesting || pUnit->Locomotor->Is_Really_Moving_Now() || pUnit->HasAnyLink();
+			{
+				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
+					return true;
+			}
+			return false;
 		default:
 			return false;
 		}
@@ -158,6 +196,19 @@ bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 	for (auto pBld : pThis->GetTechnoType()->Dock)
 	{
 		if (pThis->Owner->CountOwnedAndPresent(pBld))
+			return true;
+	}
+
+	return false;
+}
+
+bool TechnoExt::HasRadioLinkWithDock(TechnoClass* pThis)
+{
+	if (pThis->HasAnyLink())
+	{
+		auto const pLink = abstract_cast<BuildingClass*>(pThis->GetNthLink(0));
+
+		if (pLink && pThis->GetTechnoType()->Dock.FindItemIndex(pLink->Type) >= 0)
 			return true;
 	}
 
@@ -186,10 +237,11 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;
+	auto const whatAmI = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
+	if (whatAmI == AbstractType::Aircraft)
 		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (pThis->WhatAmI() == AbstractType::Infantry)
+	else if (whatAmI == AbstractType::Infantry)
 		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
@@ -208,14 +260,11 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	if (maxAttempts < 1)
 		maxAttempts = 1;
 
-	CellClass* pCell;
-	CellStruct placeCoords = CellStruct::Empty;
-	auto pTypePassenger = pPassenger->GetTechnoType();
-	CoordStruct finalLocation = CoordStruct::Empty;
-	short extraDistanceX = 1;
-	short extraDistanceY = 1;
-	SpeedType speedType = pTypePassenger->SpeedType;
-	MovementZone movementZone = pTypePassenger->MovementZone;
+	const auto pTypePassenger = pPassenger->GetTechnoType();
+	auto placeCoords = CellStruct::Empty;
+	short extraDistance = 1;
+	auto speedType = pTypePassenger->SpeedType;
+	auto movementZone = pTypePassenger->MovementZone;
 
 	if (pTypePassenger->WhatAmI() == AbstractType::AircraftType)
 	{
@@ -224,20 +273,25 @@ CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* p
 	}
 	do
 	{
-		placeCoords = pThis->GetCell()->MapCoords - CellStruct { (short)(extraDistanceX / 2), (short)(extraDistanceY / 2) };
-		placeCoords = MapClass::Instance->NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistanceX, extraDistanceY, true, false, false, false, CellStruct::Empty, false, false);
+		placeCoords = pThis->GetMapCoords() - CellStruct { static_cast<short>(extraDistance / 2), static_cast<short>(extraDistance / 2) };
+		placeCoords = MapClass::Instance.NearByLocation(placeCoords, speedType, -1, movementZone, false, extraDistance, extraDistance, true, false, false, false, CellStruct::Empty, false, false);
 
-		pCell = MapClass::Instance->GetCellAt(placeCoords);
-		extraDistanceX += 1;
-		extraDistanceY += 1;
+		if (placeCoords == CellStruct::Empty)
+			return CoordStruct::Empty;
+
+		const auto pCell = MapClass::Instance.GetCellAt(placeCoords);
+
+		if (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) == Move::OK)
+			break;
+
+		extraDistance++;
 	}
-	while (extraDistanceX < maxAttempts && (pThis->IsCellOccupied(pCell, FacingType::None, -1, nullptr, false) != Move::OK) && pCell->MapCoords != CellStruct::Empty);
+	while (extraDistance <= maxAttempts);
 
-	pCell = MapClass::Instance->TryGetCellAt(placeCoords);
-	if (pCell)
-		finalLocation = pCell->GetCoordsWithBridge();
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(placeCoords))
+		return pCell->GetCoordsWithBridge();
 
-	return finalLocation;
+	return CoordStruct::Empty;
 }
 
 bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, TargetZoneScanType zoneScanType, WeaponTypeClass* pWeapon, bool useZone, int zone)
@@ -248,15 +302,16 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	if (pThis->WhatAmI() == AbstractType::Aircraft)
 		return true;
 
-	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
-	int currentZone = useZone ? zone : MapClass::Instance->GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
+	auto const pType = pThis->GetTechnoType();
+	MovementZone mZone = pType->MovementZone;
+	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
 	{
 		if (zoneScanType == TargetZoneScanType::Any)
 			return true;
 
-		int targetZone = MapClass::Instance->GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
+		int targetZone = MapClass::Instance.GetMovementZoneType(pTarget->GetMapCoords(), mZone, pTarget->OnBridge);
 
 		if (zoneScanType == TargetZoneScanType::Same)
 		{
@@ -268,11 +323,15 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 			if (currentZone == targetZone)
 				return true;
 
-			auto const speedType = pThis->GetTechnoType()->SpeedType;
-			auto cellStruct = MapClass::Instance->NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+			auto const speedType = pType->SpeedType;
+			auto cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,
 				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
-			auto const pCell = MapClass::Instance->GetCellAt(cellStruct);
+
+			if (cellStruct == CellStruct::Empty)
+				return false;
+
+			auto const pCell = MapClass::Instance.TryGetCellAt(cellStruct);
 
 			if (!pCell)
 				return false;
@@ -336,7 +395,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	// Detach CLEG targeting
 	auto tempUsing = pThis->TemporalImUsing;
 	if (tempUsing && tempUsing->Target)
-		tempUsing->Detach();
+		tempUsing->LetGo();
 
 	HouseClass* const pOwner = pThis->Owner;
 
@@ -395,7 +454,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	}
 
 	// TODO : Jumpjet locomotor special treatement, some brainfart, must be uncorrect, HELP ME!
-	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet();
+	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
@@ -413,21 +472,16 @@ bool TechnoExt::CanDeployIntoBuilding(UnitClass* pThis, bool noDeploysIntoDefaul
 	if (!pDeployType)
 		return noDeploysIntoDefaultValue;
 
-	bool canDeploy = true;
 	auto mapCoords = CellClass::Coord2Cell(pThis->GetCoords());
 
 	if (pDeployType->GetFoundationWidth() > 2 || pDeployType->GetFoundationHeight(false) > 2)
 		mapCoords += CellStruct { -1, -1 };
 
-	pThis->Mark(MarkType::Up);
-
-	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Up);
-
-	if (!pDeployType->CanCreateHere(mapCoords, pThis->Owner))
-		canDeploy = false;
-
-	pThis->Locomotor->Mark_All_Occupation_Bits(MarkType::Down);
-	pThis->Mark(MarkType::Down);
+	// The vanilla game used an inappropriate approach here, resulting in potential risk of desync.
+	// Now, through additional checks, we can directly exclude the unit who want to deploy.
+	TechnoExt::Deployer = pThis;
+	const bool canDeploy = pDeployType->CanCreateHere(mapCoords, pThis->Owner);
+	TechnoExt::Deployer = nullptr;
 
 	return canDeploy;
 }
@@ -674,22 +728,22 @@ void TechnoExt::PassengersTransfer(TechnoClass* pFrom, TechnoClass* pTo, bool fo
 			{
 				// Not enough space inside the garrisonable building, eject the passenger outside
 				CoordStruct newLocation = PassengerKickOutLocation(pTransportReference, pPassenger); //pTransportReference->GetCoords();
-				auto pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(newLocation));
+				auto pCell = MapClass::Instance.TryGetCellAt(CellClass::Coord2Cell(newLocation));
 				int bridgeZ = pCell->ContainsBridge() ? CellClass::BridgeHeight : 0;
 				int baseHeight = pTransportReference->GetCoords().Z;
-				newLocation.Z = Math::max(MapClass::Instance->GetCellFloorHeight(newLocation) + bridgeZ, baseHeight);
+				newLocation.Z = Math::max(MapClass::Instance.GetCellFloorHeight(newLocation) + bridgeZ, baseHeight);
 				bool inAir = newLocation.Z >= Unsorted::CellHeight * 2; // If the source is flying and must eject passengers they should be parachuted
 
 				pPassenger->LastMapCoords = pCell->MapCoords;
 
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 
 				if (inAir)
 					pPassenger->SpawnParachuted(newLocation);
 				else
 					pPassenger->Unlimbo(newLocation, DirType::North);
 
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 			}
 		}
 		else
@@ -698,10 +752,10 @@ void TechnoExt::PassengersTransfer(TechnoClass* pFrom, TechnoClass* pTo, bool fo
 			double nToPassengerSize = pPassenger->GetTechnoType()->Size;
 
 			CoordStruct newLocation = PassengerKickOutLocation(pTransportReference, pPassenger); //pTransportReference->GetCoords();
-			auto pCell = MapClass::Instance->TryGetCellAt(CellClass::Coord2Cell(newLocation));
+			auto pCell = MapClass::Instance.TryGetCellAt(CellClass::Coord2Cell(newLocation));
 			int bridgeZ = pCell->ContainsBridge() ? CellClass::BridgeHeight : 0;
 			int baseHeight = pTransportReference->GetCoords().Z;
-			newLocation.Z = Math::max(MapClass::Instance->GetCellFloorHeight(newLocation) + bridgeZ, baseHeight);
+			newLocation.Z = Math::max(MapClass::Instance.GetCellFloorHeight(newLocation) + bridgeZ, baseHeight);
 			bool inAir = newLocation.Z >= Unsorted::CellHeight * 2; // If the source is flying and must eject passengers they should be parachuted
 
 			if (!kickOutAll && nToPassengerSize > 0 && (nToPassengersLimit - nToPassengers - nToPassengerSize >= 0) && nToPassengerSize <= nToPassengersSizeLimit)
@@ -726,20 +780,38 @@ void TechnoExt::PassengersTransfer(TechnoClass* pFrom, TechnoClass* pTo, bool fo
 			else
 			{
 				// Not enough space inside the new transport, eject the passenger
-				CellClass* pCell = MapClass::Instance->TryGetCellAt(newLocation);
+				CellClass* pCell = MapClass::Instance.TryGetCellAt(newLocation);
 				pPassenger->LastMapCoords = pCell->MapCoords;
 
-				++Unsorted::IKnowWhatImDoing;
+				++Unsorted::ScenarioInit;
 
 				if (inAir)
 					pPassenger->SpawnParachuted(newLocation);
 				else
 					pPassenger->Unlimbo(newLocation, DirType::North);
 
-				--Unsorted::IKnowWhatImDoing;
+				--Unsorted::ScenarioInit;
 			}
 		}
 	}
+}
+
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+{
+
+	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	{
+		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		{
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
+				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
+			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
+				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+		}
+	}
+	return nullptr;
 }
 
 // =============================
@@ -754,13 +826,17 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->AttachedEffects)
 		.Process(this->AE)
+		.Process(this->PreviousType)
+		.Process(this->AnimRefCount)
 		.Process(this->ReceiveDamage)
+		.Process(this->LastKillWasTeamTarget)
 		.Process(this->PassengerDeletionTimer)
 		.Process(this->CurrentShieldType)
 		.Process(this->LastWarpDistance)
 		.Process(this->ChargeTurretTimer)
 		.Process(this->AutoDeathTimer)
 		.Process(this->MindControlRingAnimType)
+		.Process(this->DamageNumberOffset)
 		.Process(this->Strafe_BombsDroppedThisRound)
 		.Process(this->CurrentAircraftWeaponIndex)
 		.Process(this->IsInTunnel)
@@ -772,13 +848,21 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastRearmWasFullDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->LastWeaponType)
 		.Process(this->FiringObstacleCell)
 		.Process(this->IsDetachingForCloak)
+		.Process(this->BeControlledThreatFrame)
+		.Process(this->LastTargetID)
+		.Process(this->AccumulatedGattlingValue)
+		.Process(this->ShouldUpdateGattlingValue)
 		.Process(this->OriginalPassengerOwner)
 		.Process(this->HasRemainingWarpInDelay)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
+		.Process(this->LastSensorsMapCoords)
+		.Process(this->TiberiumEater_Timer)
+		.Process(this->AirstrikeTargetingMe)
 		.Process(this->Convert_UniversalDeploy_DeployAnim)
 		.Process(this->Convert_UniversalDeploy_InProgress)
 		.Process(this->Convert_UniversalDeploy_MakeInvisible)
@@ -865,3 +949,4 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 
 	return 0;
 }
+

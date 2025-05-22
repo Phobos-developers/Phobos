@@ -108,6 +108,7 @@ public:
 	static bool CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno);
 	static bool DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund);
 	static bool CanUndeployOnSell(BuildingClass* pThis);
+	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
 	static void HideBuildingAnimations(BuildingClass* pThis = nullptr);
 	static void UnhideBuildingAnimations(BuildingClass* pThis = nullptr);

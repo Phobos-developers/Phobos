@@ -1,3 +1,7 @@
+#include <TerrainClass.h>
+#include <IsometricTileTypeClass.h>
+
+#include <Ext/TerrainType/Body.h>
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/WarheadType/Body.h>
 
@@ -54,38 +58,129 @@ DEFINE_HOOK(0x7396AD, UnitClass_Deploy_CreateBuilding, 0x6)
 
 // Game removes deploying vehicles from map temporarily to check if there's enough
 // space to deploy into a building when displaying allow/disallow deploy cursor.
-// This can cause desyncs if there are certain types of units around the deploying unit.
-// Only reasonable way to solve this is to perform the cell clear check on every client per frame
-// and use that result in cursor display which is client-specific. This is now implemented in multiplayer games only.
+// This can cause desyncs if there are certain types of units around the deploying
+// unit because the OccupationFlags may be accidentally cleared, or the order of
+// the objects linked list may be scrambled.
 #pragma region DeploysIntoDesyncFix
-
-DEFINE_HOOK(0x73635B, UnitClass_AI_DeploysIntoDesyncFix, 0x6)
-{
-	if (!SessionClass::IsMultiplayer())
-		return 0;
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Type->DeploysInto)
-		TechnoExt::ExtMap.Find(pThis)->CanCurrentlyDeployIntoBuilding = TechnoExt::CanDeployIntoBuilding(pThis);
-
-	return 0;
-}
 
 DEFINE_HOOK(0x73FEC1, UnitClass_WhatAction_DeploysIntoDesyncFix, 0x6)
 {
-	if (!SessionClass::IsMultiplayer())
-		return 0;
-
 	enum { SkipGameCode = 0x73FFDF };
 
-	GET(UnitClass*, pThis, ESI);
-	LEA_STACK(Action*, pAction, STACK_OFFSET(0x20, 0x8));
+	GET(UnitClass* const, pThis, ESI);
+	REF_STACK(Action, action, STACK_OFFSET(0x20, 0x8));
 
-	if (!TechnoExt::ExtMap.Find(pThis)->CanCurrentlyDeployIntoBuilding)
-		*pAction = Action::NoDeploy;
+	if (!TechnoExt::CanDeployIntoBuilding(pThis))
+		action = Action::NoDeploy;
 
 	return SkipGameCode;
+}
+
+// Exclude the specific unit who want to deploy
+// Allow placing buildings on top of TerrainType with CanBeBuiltOn
+DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
+{
+	enum { CanNotExistHere = 0x47C6D1, CanExistHere = 0x47C6A0 };
+
+	GET(const CellClass* const, pCell, EDI);
+	GET(const BuildingTypeClass* const, pBuildingType, EAX);
+	GET_STACK(HouseClass* const, pOwner, STACK_OFFSET(0x18, 0xC));
+
+	if (!Game::IsActive)
+		return CanExistHere;
+
+	if (pBuildingType->LaserFence)
+	{
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->WhatAmI() == AbstractType::Building)
+			{
+				return CanNotExistHere;
+			}
+			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
+			{
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+					return CanNotExistHere;
+			}
+		}
+	}
+	else if (pBuildingType->LaserFencePost || pBuildingType->Gate)
+	{
+		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool builtOnCanBeBuiltOn = false;
+
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
+			{
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+					return CanNotExistHere;
+
+				builtOnCanBeBuiltOn = true;
+			}
+			else if (pObject->AbstractFlags & AbstractFlags::Techno)
+			{
+				if (pObject == TechnoExt::Deployer)
+				{
+					skipFlag = true;
+				}
+				else
+				{
+					const auto pBuilding = abstract_cast<BuildingClass*, true>(pObject);
+
+					if (!pBuilding || pOwner != pBuilding->Owner || !pBuilding->Type->LaserFence)
+						return CanNotExistHere;
+				}
+			}
+		}
+
+		if (!builtOnCanBeBuiltOn && (pCell->OccupationFlags & (skipFlag ? 0x1F : 0x3F)))
+			return CanNotExistHere;
+	}
+	else if (pBuildingType->ToTile)
+	{
+		const auto isoTileTypeIndex = pCell->IsoTileTypeIndex;
+
+		if (isoTileTypeIndex >= 0 && isoTileTypeIndex < IsometricTileTypeClass::Array.Count
+			&& !IsometricTileTypeClass::Array.Items[isoTileTypeIndex]->Morphable)
+		{
+			return CanNotExistHere;
+		}
+
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->WhatAmI() == AbstractType::Building)
+				return CanNotExistHere;
+		}
+	}
+	else
+	{
+		bool skipFlag = TechnoExt::Deployer ? TechnoExt::Deployer->CurrentMapCoords == pCell->MapCoords : false;
+		bool builtOnCanBeBuiltOn = false;
+
+		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
+		{
+			if (pObject->AbstractFlags & AbstractFlags::Techno)
+			{
+				if (pObject == TechnoExt::Deployer)
+					skipFlag = true;
+				else
+					return CanNotExistHere;
+			}
+			else if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pObject))
+			{
+				if (!TerrainTypeExt::ExtMap.Find(pTerrain->Type)->CanBeBuiltOn)
+					return CanNotExistHere;
+
+				builtOnCanBeBuiltOn = true;
+			}
+		}
+
+		if (!builtOnCanBeBuiltOn && (pCell->OccupationFlags & (skipFlag ? 0x1F : 0x3F)))
+			return CanNotExistHere;
+	}
+
+	return CanExistHere; // Continue check the overlays .etc
 }
 
 #pragma endregion

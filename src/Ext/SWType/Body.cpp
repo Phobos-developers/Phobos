@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include "NewSWType/NewSWType.h"
+
 #include <StringTable.h>
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
@@ -11,6 +13,7 @@ template <typename T>
 void SWTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeID)
 		.Process(this->Money_Amount)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
@@ -72,6 +75,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	{
 		return;
 	}
+
+	this->TypeID.Read(pINI, pSection, "Type");
 
 	INI_EX exINI(pINI);
 
@@ -186,6 +191,15 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
 	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
 	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
+
+	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
+
+	if (newidx != -1)
+	{
+		NewSWType* pNewSWType = NewSWType::GetNthItem(newidx);
+		pNewSWType->Initialize(const_cast<SWTypeExt::ExtData*>(this), OwnerObject());
+		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
+	}
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -210,6 +224,19 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
 		.Success();
+}
+
+bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
+{
+	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
+
+	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());
+
+	if (newIdx != -1)
+		return NewSWType::GetNthItem(newIdx)->Activate(pSuper, cell, isPlayer);
+
+	return false;
 }
 
 // =============================
