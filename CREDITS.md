@@ -121,6 +121,9 @@ This page lists all the individual contributions to the project by their author.
   - Help with custom locomotors
   - Extension class optimization
   - Overload characteristic dehardcoded
+  - Customizable garrison and bunker properties
+  - Disable DamageSound for buildings
+  - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -482,6 +485,7 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
+  - Power plant damage factor
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

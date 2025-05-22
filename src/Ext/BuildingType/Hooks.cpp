@@ -236,45 +236,33 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x6FE3F1, TechnoClass_Fireat_OccupyDamageBonus, 0xB)
+DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0xB)
 {
-	enum {
-		ApplyDamageBonus = 0x6FE405,
-		Nothing = 0x0
-	};
+	enum { ApplyDamageBonus = 0x6FE405, Nothing = 0x0 };
 
 	GET(TechnoClass* const, pThis, ESI);
 
 	if (auto const Building = specific_cast<BuildingClass*>(pThis))
 	{
-		if (auto const TypeExt = BuildingTypeExt::ExtMap.Find(Building->Type))
-		{
-			GET_STACK(int, nDamage, 0x2C);
-			R->EAX(Game::F2I(nDamage * TypeExt->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
-			return ApplyDamageBonus;
-		}
+		GET_STACK(int, nDamage, 0x2C);
+		R->EAX(Game::F2I(nDamage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		return ApplyDamageBonus;
 	}
 
 	return Nothing;
 }
 
-DEFINE_HOOK(0x6FE421, TechnoClass_Fireat_BunkerDamageBonus, 0xB)
+DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
 {
-	enum {
-		ApplyDamageBonus = 0x6FE435,
-		Nothing = 0x0
-	};
+	enum { ApplyDamageBonus = 0x6FE435, Nothing = 0x0 };
 
 	GET(TechnoClass* const, pThis, ESI);
 
 	if (auto const Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
-		if (auto const TypeExt = BuildingTypeExt::ExtMap.Find(Building->Type))
-		{
-			GET_STACK(int, nDamage, 0x2C);
-			R->EAX(Game::F2I(nDamage * TypeExt->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
-			return ApplyDamageBonus;
-		}
+		GET_STACK(int, nDamage, 0x2C);
+		R->EAX(Game::F2I(nDamage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		return ApplyDamageBonus;
 	}
 
 	return Nothing;
@@ -282,27 +270,22 @@ DEFINE_HOOK(0x6FE421, TechnoClass_Fireat_BunkerDamageBonus, 0xB)
 
 DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
 {
-	enum {
-		ApplyRofMod = 0x6FD1AB,
-		SkipRofMod = 0x6FD1B1,
-		Nothing = 0x0
-	};
+	enum { ApplyRofMod = 0x6FD1AB, SkipRofMod = 0x6FD1B1, Nothing = 0x0 };
 
 	GET(TechnoClass*, pThis, ESI);
 
 	if (auto const Building = specific_cast<BuildingClass*>(pThis))
 	{
-		if (auto const TypeExt = BuildingTypeExt::ExtMap.Find(Building->Type))
+		auto const nMult = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
+
+		if (nMult > 0.0f)
 		{
-			auto const nMult = TypeExt->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
-			if (nMult > 0.0f)
-			{
-				GET_STACK(int, nROF, STACK_OFFS(0x10, -0x4));
-				R->EAX(Game::F2I(((double)nROF) / nMult));
-				return ApplyRofMod;
-			}
-			return SkipRofMod;
+			GET_STACK(int, nROF, STACK_OFFSET(0x10, -0x4));
+			R->EAX(Game::F2I(((double)nROF) / nMult));
+			return ApplyRofMod;
 		}
+
+		return SkipRofMod;
 	}
 
 	return Nothing;
@@ -310,27 +293,22 @@ DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
 
 DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
 {
-	enum {
-		ApplyRofMod = 0x6FD1EF,
-		SkipRofMod = 0x6FD1F1,
-		Nothing = 0x0
-	};
+	enum { ApplyRofMod = 0x6FD1EF, SkipRofMod = 0x6FD1F1, Nothing = 0x0 };
 
 	GET(TechnoClass*, pThis, ESI);
 
 	if (auto const Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
-		if (auto const TypeExt = BuildingTypeExt::ExtMap.Find(Building->Type))
+		auto const nMult = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
+
+		if (nMult > 0.0f)
 		{
-			auto const nMult = TypeExt->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
-			if (nMult > 0.0f)
-			{
-				GET_STACK(int, nROF, STACK_OFFS(0x10, -0x4));
-				R->EAX(Game::F2I(((double)nROF) / nMult));
-				return ApplyRofMod;
-			}
-			return SkipRofMod;
+			GET_STACK(int, nROF, STACK_OFFSET(0x10, -0x4));
+			R->EAX(Game::F2I(((double)nROF) / nMult));
+			return ApplyRofMod;
 		}
+
+		return SkipRofMod;
 	}
 
 	return Nothing;
@@ -340,7 +318,8 @@ DEFINE_HOOK_AGAIN(0x45933D, BuildingClass_BunkerSound, 0x5)
 DEFINE_HOOK_AGAIN(0x4595D9, BuildingClass_BunkerSound, 0x5)
 DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
 {
-	enum {
+	enum
+	{
 		BunkerWallUpSound = 0x45933D,
 		BunkerWallUpSound_Handled_ret = 0x459374,
 
@@ -349,7 +328,6 @@ DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
 
 		BunkerWallDownSound_02 = 0x459494,
 		BunkerWallDownSound_02_Handled_ret = 0x4594CD
-
 	};
 
 	BuildingClass const* pThis = R->Origin() == BunkerWallDownSound_01 ?
@@ -372,7 +350,8 @@ DEFINE_HOOK_AGAIN(0x4426DB, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 DEFINE_HOOK_AGAIN(0x702777, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 {
-	enum {
+	enum
+	{
 		BuildingClass_TakeDamage_DamageSound = 0x4426DB,
 		BuildingClass_TakeDamage_DamageSound_Handled_ret = 0x44270B,
 
@@ -389,8 +368,7 @@ DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 
 	if (auto const pBuilding = specific_cast<BuildingClass*>(pThis))
 	{
-		auto const pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-		if (pExt && pExt->DisableDamageSound.Get())
+		if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->DisableDamageSound)
 		{
 			switch (R->Origin())
 			{
@@ -409,14 +387,12 @@ DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
 
 DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
 {
-	enum{
-		Handled = 0x44E86F
-	};
+	enum { Handled = 0x44E86F };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(int, nPowMult, STACK_OFFS(0xC, 0x4));
+	GET_STACK(int, nPowMult, STACK_OFFSET(0xC, 0x4));
 
-	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->Power_DamageFactor;
+	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
 
 	R->EAX(Math::max(Game::F2I(nPowMult * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
 

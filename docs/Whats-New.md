@@ -379,6 +379,9 @@ New:
 - [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
+- [Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md#customizable-garrison-and-bunker-properties) (by Otamaa)
+- [Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
+- [Power plant damage factor](New-or-Enhanced-Logics.md#power-plant-damage-factor) (by Otamaa and Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

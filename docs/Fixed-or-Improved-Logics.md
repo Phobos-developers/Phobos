@@ -462,6 +462,22 @@ In `rulesmd.ini`:
 BarracksExitCell=  ; X,Y - cell offset
 ```
 
+### Customizable garrison and bunker properties
+
+- You can now customize damage or ROF multipliers of a garrison or tank bunker building.
+- You can now customize enter or exit sound of a tank bunker building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]              ; BuildingType
+OccupyDamageMultiplier=     ; floating point value, default to [CombatDamage] -> OccupyDamageMultiplier
+OccupyROFMultiplier=        ; floating point value, default to [CombatDamage] -> OccupyROFMultiplier
+BunkerDamageMultiplier=     ; floating point value, default to [CombatDamage] -> BunkerDamageMultiplier
+BunkerROFMultMultiplier=    ; floating point value, default to [CombatDamage] -> BunkerROFMultMultiplier
+BunkerWallsUpSound=         ; Sound entry, default to [AudioVisual] -> BunkerWallsUpSound
+BunkerWallsDownSound=       ; Sound entry, default to [AudioVisual] -> BunkerWallsDownSound
+```
+
 ### Customizable selling buildup sequence length for buildings that can undeploy
 
 - By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
@@ -517,6 +533,16 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 
 ```{note}
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
+```
+
+### Disable DamageSound
+
+- Now you can disable `DamageSound` of a building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]            ; BuildingType
+DisableDamageSound=false  ; boolean
 ```
 
 ### Exclude Factory from providing multiple factory bonus
