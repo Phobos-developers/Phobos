@@ -1437,6 +1437,35 @@ In `rulesmd.ini`:
 InitialSpawnsNumber=      ; integer
 ```
 
+### New Superweapon types
+
+#### EMPulseExtra
+
+- All units as cannons in weapon range will fire to target when launching.
+- Doesn't support `PulseBall` and `PulseDelay`(Ares).
+- `SWTypeName` should be your Superweapon's ID like `NukeSpecial`.
+- `veterancy` can be `Rookie/Veteran/Elite` or none like `EMPulseWeapon.NukeSpecial.Rookie.FLH` or `EMPulseWeapon.NukeSpecial.FLH`.
+- If `EMPulse.IgnoreMission=false`, only cannons in guarding will fire.
+- `EMPulseWeapon` default to `Primay` or `Weapon0` for multiple weapon units.
+
+In `rulesmd.ini`
+```ini
+[SOMESWType]
+Type=EMPulseExtra
+EMPulse.Cannons=                                       ; list of TechnoTypes
+EMPulse.TargetSelf=                                    ; boolean
+EMPulse.IgnoreMission=false                            ; boolean
+
+[TechnoType]
+EMPulseWeapon.SWTypeName(.veterancy)=                  ; WeaponType
+
+[ART]
+EMPulseWeapon.SWTypeName(.veterancy).FLH=              ; x,y,z FLH coords
+EMPulseWeapon.SWTypeName(.veterancy).BarrelLength=     ; integer
+EMPulseWeapon.SWTypeName(.veterancy).BarrelThickness=  ; integer
+EMPulseWepaon.SWTypeName(.veterancy).TurretLocked=     ; boolean
+```
+
 ### Initial strength for TechnoTypes and cloned infantry
 
 ![image](_static/images/initialstrength.cloning-01.png)

@@ -36,6 +36,11 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		std::map<int, std::vector<AircraftClass*>> OwnedAircraft;
+		std::map<int, std::vector<BuildingClass*>> OwnedBuilding;
+		std::map<int, std::vector<InfantryClass*>> OwnedInfantry;
+		std::map<int, std::vector<UnitClass*>> OwnedUnit;
+
 		CDTimerClass CombatAlertTimer;
 		CDTimerClass AISuperWeaponDelayTimer;
 		CDTimerClass AIFireSaleDelayTimer;
@@ -79,6 +84,10 @@ public:
 			, Factory_VehicleType { nullptr }
 			, Factory_NavyType { nullptr }
 			, Factory_AircraftType { nullptr }
+			, OwnedAircraft {}
+			, OwnedBuilding {}
+			, OwnedInfantry {}
+			, OwnedUnit {}
 			, AISuperWeaponDelayTimer {}
 			, RepairBaseNodes { }
 			, RestrictedFactoryPlants {}
@@ -183,6 +192,10 @@ public:
 		auto const index = FindBuildableIndex(pHouse, idxParent, items, start);
 		return index < items.size() ? items[index] : nullptr;
 	}
+
+	static void RegisterGain(HouseClass* pThis, TechnoClass* pTechno);
+	static void RegisterLoss(HouseClass* pThis, TechnoClass* pTechno);
+	static const std::vector<TechnoClass*>& GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType);
 
 	static std::vector<int> AIProduction_CreationFrames;
 	static std::vector<int> AIProduction_Values;

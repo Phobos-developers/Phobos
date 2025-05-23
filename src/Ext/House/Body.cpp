@@ -4,7 +4,11 @@
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
+#include <AircraftClass.h>
 #include <ScenarioClass.h>
+
+#include <Ext/Techno/Body.h>
+#include <Ext/TechnoType/Body.h>
 
 //Static init
 
@@ -619,6 +623,112 @@ void HouseExt::ExtData::SetForceEnemyIndex(int EnemyIndex)
 		this->ForceEnemyIndex = EnemyIndex;
 }
 
+void HouseExt::RegisterGain(HouseClass* pThis, TechnoClass* pTechno)
+{
+	int idxType = pTechno->GetTechnoType()->GetArrayIndex();
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Aircraft:
+	{
+		auto& vOwned = pExt->OwnedAircraft[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedAircraft[idxType].emplace_back(static_cast<AircraftClass*>(pTechno));
+	}break;
+	case AbstractType::Building:
+	{
+		auto& vOwned = pExt->OwnedBuilding[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedBuilding[idxType].emplace_back(static_cast<BuildingClass*>(pTechno));
+	}break;
+	case AbstractType::Infantry:
+	{
+		auto& vOwned = pExt->OwnedInfantry[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedInfantry[idxType].emplace_back(static_cast<InfantryClass*>(pTechno));
+	}break;
+	case AbstractType::Unit:
+	{
+		auto& vOwned = pExt->OwnedUnit[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it == vOwned.end())
+			pExt->OwnedUnit[idxType].emplace_back(static_cast<UnitClass*>(pTechno));
+	}break;
+	default:
+		break;
+	}
+}
+
+void HouseExt::RegisterLoss(HouseClass* pThis, TechnoClass* pTechno)
+{
+	int idxType = pTechno->GetTechnoType()->GetArrayIndex();
+	ExtData* pExt = ExtMap.Find(pThis);
+
+	switch (pTechno->WhatAmI())
+	{
+	case AbstractType::Aircraft:
+	{
+		auto& vOwned = pExt->OwnedAircraft[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedAircraft[idxType].erase(it);
+	}break;
+	case AbstractType::Building:
+	{
+		auto& vOwned = pExt->OwnedBuilding[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedBuilding[idxType].erase(it);
+	}break;
+	case AbstractType::Infantry:
+	{
+		auto& vOwned = pExt->OwnedInfantry[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedInfantry[idxType].erase(it);
+	}break;
+	case AbstractType::Unit:
+	{
+		auto& vOwned = pExt->OwnedUnit[idxType];
+		auto it = std::find(vOwned.begin(), vOwned.end(), pTechno);
+
+		if (it != vOwned.end())
+			pExt->OwnedUnit[idxType].erase(it);
+	}break;
+	default:
+		break;
+	}
+}
+
+const std::vector<TechnoClass*>& HouseExt::GetOwnedTechno(HouseClass* pThis, TechnoTypeClass* pType)
+{
+	ExtData* pExt = ExtMap.Find(pThis);
+	int arrayIdx = pType->GetArrayIndex();
+
+	switch (pType->WhatAmI())
+	{
+	case AbstractType::InfantryType:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedInfantry[arrayIdx]);
+	case AbstractType::UnitType:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedUnit[arrayIdx]);
+	case AbstractType::AircraftType:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedAircraft[arrayIdx]);
+	default:
+		return reinterpret_cast<const std::vector<TechnoClass*>&>(pExt->OwnedBuilding[arrayIdx]);
+	}
+}
+
 // =============================
 // load / save
 
@@ -638,6 +748,10 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->Factory_VehicleType)
 		.Process(this->Factory_NavyType)
 		.Process(this->Factory_AircraftType)
+		.Process(this->OwnedAircraft)
+		.Process(this->OwnedBuilding)
+		.Process(this->OwnedInfantry)
+		.Process(this->OwnedUnit)
 		.Process(this->AISuperWeaponDelayTimer)
 		.Process(this->RepairBaseNodes)
 		.Process(this->RestrictedFactoryPlants)

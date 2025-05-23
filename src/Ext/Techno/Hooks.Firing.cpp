@@ -10,6 +10,44 @@
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 
+DEFINE_HOOK(0x70E140, TechnoClass_GetWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(int, weaponIdx, 0x4);
+
+	enum { retn = 0x70E192 };
+
+	if (weaponIdx < 0)
+	{
+		R->EAX(NULL);
+
+		return retn;
+	}
+
+	auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentFiringSW != nullptr)
+	{
+		TechnoTypeClass* pType = pThis->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		const WeaponStruct* empulseWeapon = nullptr;
+
+		if (pTypeExt->EMPulse_Weapons.count(pExt->CurrentFiringSW->Type->GetArrayIndex()))
+		{
+			empulseWeapon = &pTypeExt->EMPulse_Weapons[pExt->CurrentFiringSW->Type->GetArrayIndex()].Get(pThis);
+		}
+
+		if (empulseWeapon == nullptr || empulseWeapon->WeaponType == nullptr)
+			R->EAX(&pType->GetWeapon(0, pThis->Veterancy.IsElite()));
+		else
+			R->EAX(empulseWeapon);
+
+		return retn;
+	}
+
+	return 0;
+}
+
 #pragma region TechnoClass_SelectWeapon
 
 namespace ForceWeaponInRangeTemp
@@ -872,6 +910,21 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	GET(TechnoClass* const, pThis, ECX);
 
 	TechnoExt::UpdateSharedAmmo(pThis);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FDD6F, TechnoClass_Fire_AfterGetWeapon, 0x8)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentFiringSW != nullptr)
+	{
+		pExt->CurrentFiringSW = nullptr;
+		pExt->FinishSW = true;
+	}
 
 	return 0;
 }

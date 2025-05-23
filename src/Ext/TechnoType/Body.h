@@ -342,6 +342,7 @@ public:
 		std::vector<std::vector<CoordStruct>> DeployedWeaponBurstFLHs;
 		std::vector<std::vector<CoordStruct>> EliteDeployedWeaponBurstFLHs;
 
+		std::map<int, Promotable<WeaponStruct>> EMPulse_Weapons;
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
@@ -564,6 +565,8 @@ public:
 
 			, SpawnDistanceFromTarget {}
 			, SpawnHeight {}
+
+			, EMPulse_Weapons {}
 			, LandingDir {}
 			, DroppodType {}
 			, TiberiumEaterType {}

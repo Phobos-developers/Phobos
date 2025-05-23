@@ -239,6 +239,28 @@ namespace Savegame
 		}
 	};
 
+	template <>
+	struct Savegame::PhobosStreamObject<WeaponStruct>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, WeaponStruct& Value, bool RegisterForChange) const
+		{
+			return Savegame::ReadPhobosStream(Stm, Value.WeaponType, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.FLH, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.BarrelLength, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.BarrelThickness, RegisterForChange)
+				&& Savegame::ReadPhobosStream(Stm, Value.TurretLocked, RegisterForChange);
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const WeaponStruct& Value) const
+		{
+			return Savegame::WritePhobosStream(Stm, Value.WeaponType)
+				&& Savegame::WritePhobosStream(Stm, Value.FLH)
+				&& Savegame::WritePhobosStream(Stm, Value.BarrelLength)
+				&& Savegame::WritePhobosStream(Stm, Value.BarrelThickness)
+				&& Savegame::WritePhobosStream(Stm, Value.TurretLocked);
+		}
+	};
+
 	template <size_t Size>
 	struct Savegame::PhobosStreamObject<std::bitset<Size>>
 	{
@@ -396,10 +418,14 @@ namespace Savegame
 		}
 	};
 
-	template <typename TKey, typename TValue>
-	struct Savegame::PhobosStreamObject<std::map<TKey, TValue>>
+	template <typename TKey, typename TValue, typename Cmp>
+	struct Savegame::PhobosStreamObject<std::map<TKey, TValue, Cmp>>
 	{
-		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue>& Value, bool RegisterForChange) const
+		inline static void is_pointer(std::true_type) = delete;
+
+		inline static void is_pointer(std::false_type) { }
+
+		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
 			static_assert(!std::is_pointer_v<TKey> && !std::is_pointer_v<TValue>);
@@ -413,24 +439,31 @@ namespace Savegame
 
 			for (auto ix = 0u; ix < Count; ++ix)
 			{
-				std::pair<TKey, TValue> buffer;
-				if (!Savegame::ReadPhobosStream(Stm, buffer, RegisterForChange))
-				{
+				TKey key = TKey();
+
+				if (!Savegame::ReadPhobosStream(Stm, key, false))
 					return false;
-				}
-				Value.insert(buffer);
+
+				Value.emplace(key, TValue());
+
+				if (!Savegame::ReadPhobosStream(Stm, Value[key], RegisterForChange))
+					return false;
 			}
 
 			return true;
 		}
 
-		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue>& Value) const
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, TValue, Cmp>& Value) const
 		{
+			// use pointer as key of map is unswizzleable
+			//is_pointer(typename std::is_pointer<TKey>::type());
+
 			Stm.Save(Value.size());
 
 			for (const auto& item : Value)
 			{
-				if (!Savegame::WritePhobosStream(Stm, item))
+				if (!Savegame::WritePhobosStream(Stm, item.first)
+					|| !Savegame::WritePhobosStream(Stm, item.second))
 				{
 					return false;
 				}

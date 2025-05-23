@@ -37,6 +37,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
+	this->UpdateFiringSW();
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -982,6 +983,15 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 				}
 			}
 		}
+	}
+}
+
+void TechnoExt::ExtData::UpdateFiringSW()
+{
+	if (this->FinishSW)
+	{
+		this->FinishSW = false;
+		OwnerObject()->Guard();
 	}
 }
 

@@ -32,6 +32,33 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	return 0;
 }
 
+
+DEFINE_HOOK(0x4FF550, HouseClass_RegisterLoss, 0x6)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	HouseExt::RegisterLoss(pThis, pTechno);
+
+	if (Phobos::Config::UnitPowerDrain)
+		pThis->RecheckPower = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4FF700, HouseClass_RegisterGain, 0x6)
+{
+	GET(HouseClass*, pThis, ECX);
+	GET_STACK(TechnoClass*, pTechno, 0x4);
+
+	HouseExt::RegisterGain(pThis, pTechno);
+
+	if (Phobos::Config::UnitPowerDrain)
+		pThis->RecheckPower = true;
+
+	return 0;
+}
+
 // Power Plant Enhancer #131
 DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 {
@@ -41,20 +68,6 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	pThis->PowerOutput += BuildingTypeExt::GetEnhancedPower(pBld, pThis);
 
 	return 0x508D07;
-}
-
-// Trigger power recalculation on gain/loss of any techno, not just buildings.
-DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
-DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
-{
-	if (!Phobos::Config::UnitPowerDrain)
-		return 0;
-
-	GET(HouseClass*, pThis, ECX);
-
-	pThis->RecheckPower = true;
-
-	return 0;
 }
 
 DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)

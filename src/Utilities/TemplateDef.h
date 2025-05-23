@@ -353,6 +353,18 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<WeaponStruct>(WeaponStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		std::string key = pKey;
+		read(value.WeaponType, parser, pSection, pKey);
+		read(value.FLH, parser, pSection, (key + ".FLH").c_str());
+		read(value.BarrelLength, parser, pSection, (key + ".BarrelLength").c_str());
+		read(value.BarrelThickness, parser, pSection, (key + ".BarrelThickness").c_str());
+		read(value.TurretLocked, parser, pSection, (key + ".TurretLocked").c_str());
+		return true;
+	}
+
+	template <>
 	inline bool read<MouseCursor>(MouseCursor& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		auto ret = false;

@@ -81,6 +81,8 @@ public:
 		Valueable<bool> EMPulse_SuspendOthers;
 		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
 		Valueable<bool> EMPulse_TargetSelf;
+		Valueable<bool> EMPulse_Linked;
+		Valueable<bool> EMPulse_IgnoreMission;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
@@ -131,6 +133,8 @@ public:
 			, EMPulse_SuspendOthers { false }
 			, EMPulse_Cannons {}
 			, EMPulse_TargetSelf { false }
+			, EMPulse_Linked { false }
+			, EMPulse_IgnoreMission { false }
 		{ }
 
 		// Ares 0.A functions

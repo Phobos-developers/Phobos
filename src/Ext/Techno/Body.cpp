@@ -51,7 +51,7 @@ TechnoExt::ExtData::~ExtData()
 	this->ElectricBolts.clear();
 }
 
-bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
+bool __fastcall TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 {
 	return pThis
 		&& pThis->IsAlive
@@ -62,12 +62,22 @@ bool TechnoExt::IsActiveIgnoreEMP(TechnoClass* pThis)
 		;
 }
 
-bool TechnoExt::IsActive(TechnoClass* pThis)
+bool __fastcall TechnoExt::IsActive(TechnoClass* const pThis)
 {
 	return TechnoExt::IsActiveIgnoreEMP(pThis)
 		&& !pThis->Deactivated
 		&& !pThis->IsUnderEMP()
 		;
+}
+
+bool __fastcall TechnoExt::IsActivePower(TechnoClass* const pThis)
+{
+	bool active = IsActive(pThis);
+
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pThis))
+		active &= pBuilding->IsPowerOnline();
+
+	return active;
 }
 
 bool TechnoExt::IsHarvesting(TechnoClass* pThis)
@@ -579,6 +589,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastRearmWasFullDelay)
 		.Process(this->CanCloakDuringRearm)
 		.Process(this->WHAnimRemainingCreationInterval)
+		.Process(this->CurrentFiringSW)
+		.Process(this->FinishSW)
 		.Process(this->LastWeaponType)
 		.Process(this->FiringObstacleCell)
 		.Process(this->IsDetachingForCloak)

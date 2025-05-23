@@ -1,4 +1,5 @@
 #include "NewSWType.h"
+#include "EMPulseExtra.h"
 
 std::vector<std::unique_ptr<NewSWType>> NewSWType::Array;
 
@@ -13,6 +14,8 @@ void NewSWType::Init()
 {
 	if (!Array.empty())
 		return;
+
+	Register(std::make_unique<EMPulseExtra>());
 }
 
 void NewSWType::Clear()
@@ -22,10 +25,10 @@ void NewSWType::Clear()
 
 int NewSWType::GetNewSWTypeIdx(const char* TypeID)
 {
-	for (const auto& pNewSWType : Array)
+	for (const auto& it : Array)
 	{
-		if (!_strcmpi(pNewSWType->GetTypeID(), TypeID))
-			return pNewSWType->GetTypeIndex();
+		if (!_strcmpi(it->GetTypeID(), TypeID))
+			return it->GetTypeIndex();
 	}
 
 	return -1;

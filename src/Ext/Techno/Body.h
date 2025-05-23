@@ -71,6 +71,9 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		SuperClass* CurrentFiringSW;
+		bool FinishSW;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -100,6 +103,8 @@ public:
 			, LastRearmWasFullDelay { false }
 			, CanCloakDuringRearm { false }
 			, WHAnimRemainingCreationInterval { 0 }
+			, CurrentFiringSW { nullptr }
+			, FinishSW { false }
 			, LastWeaponType {}
 			, FiringObstacleCell {}
 			, IsDetachingForCloak { false }
@@ -139,6 +144,7 @@ public:
 		void RecalculateStatMultipliers();
 		void UpdateTemporal();
 		void UpdateMindControlAnim();
+		void UpdateFiringSW();
 		void UpdateRecountBurst();
 		void UpdateRearmInEMPState();
 		void UpdateRearmInTemporal();
@@ -176,8 +182,9 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static bool IsActive(TechnoClass* pThis);
-	static bool IsActiveIgnoreEMP(TechnoClass* pThis);
+	static bool __fastcall IsActive(TechnoClass* pThis);
+	static bool __fastcall IsActivePower(TechnoClass* pThis);
+	static bool __fastcall IsActiveIgnoreEMP(TechnoClass* pThis);
 
 	static bool IsHarvesting(TechnoClass* pThis);
 	static bool HasAvailableDock(TechnoClass* pThis);

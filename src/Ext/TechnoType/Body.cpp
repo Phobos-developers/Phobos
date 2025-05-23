@@ -797,6 +797,30 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->InterceptorType.reset();
 	}
 
+	for (auto const pSW : SuperWeaponTypeClass::Array)
+	{
+		int swIdx = pSW->GetArrayIndex();
+		char key[0x40];
+
+		sprintf_s(key, "EMPulseWeapon.%s.", pSW->get_ID());
+
+		if (!this->EMPulse_Weapons.count(swIdx))
+		{
+			Promotable<WeaponStruct> weapons;
+			weapons.Read(exINI, pSection, key);
+
+			if (weapons.Rookie.WeaponType
+				|| weapons.Veteran.WeaponType
+				|| weapons.Elite.WeaponType)
+				this->EMPulse_Weapons[swIdx] = weapons;
+		}
+		else
+		{
+			this->EMPulse_Weapons[swIdx].Read(exINI, pSection, key);
+			this->EMPulse_Weapons[swIdx].Read(exArtINI, pArtSection, key);
+		}
+	}
+
 	if (this->OwnerObject()->WhatAmI() == AbstractType::InfantryType)
 	{
 		if (this->DroppodType == nullptr)

@@ -404,6 +404,7 @@ This page lists all the individual contributions to the project by their author.
   - Unlimited `AlternateFLH` entries
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
+  - New superweapon type `EMPulseExtra`
   - New SuperWeapon Type template
 - **TwinkleStar**:
   - Custom slaves free sound

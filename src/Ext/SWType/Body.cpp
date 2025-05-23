@@ -61,6 +61,8 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EMPulse_SuspendOthers)
 		.Process(this->EMPulse_Cannons)
 		.Process(this->EMPulse_TargetSelf)
+		.Process(this->EMPulse_Linked)
+		.Process(this->EMPulse_IgnoreMission)
 		;
 }
 
