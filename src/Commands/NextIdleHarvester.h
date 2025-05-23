@@ -3,7 +3,7 @@
 #include "Commands.h"
 
 // Select next idle harvester
-class NextIdleHarvesterCommandClass : public PhobosCommandClass
+class NextIdleHarvesterCommandClass : public CommandClass
 {
 public:
 	// CommandClass

@@ -5,6 +5,7 @@
 
 #include <Helpers/Iterators.h>
 #include <Helpers/Enumerators.h>
+#include <Utilities/Enum.h>
 
 #include <string.h>
 #include <iterator>
@@ -28,15 +29,19 @@ public:
 	static const int GetRangedRandomOrSingleValue(PartialVector2D<int> range);
 	static const double GetRangedRandomOrSingleValue(PartialVector2D<double> range);
 	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType);
+	static const double GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType = nullptr);
 	static int ChooseOneWeighted(const double dice, const std::vector<int>* weights);
 	static bool HasHealthRatioThresholdChanged(double oldRatio, double newRatio);
 	static bool ApplyTheaterSuffixToString(char* str);
 	static std::string IntToDigits(int num);
 	static int CountDigitsInNumber(int number);
 	static CoordStruct CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance);
+	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
+	static int GetColorFromColorAdd(int colorIndex);
+	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
 
 	template<typename T>
-	static T FastPow(T x, size_t n)
+	static constexpr T FastPow(T x, size_t n)
 	{
 		// Real fast pow calc x^n in O(log(n))
 		T result = 1;

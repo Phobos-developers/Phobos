@@ -54,7 +54,7 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 		return;
 
 	SWTypeExt::ExtData* pSWTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
-	
+
 	if (!pSWTypeExt->EMPulse_IgnoreMission && pFirer->GetCurrentMission() != Mission::Guard)
 		return;
 
@@ -84,8 +84,8 @@ inline void EMPulseExtra::FireEMPulse(TechnoClass* pFirer, SuperClass* pSW, cons
 
 		return;
 	}
-	
-	AbstractClass* pCell = MapClass::Instance->TryGetCellAt(cell);
+
+	AbstractClass* pCell = MapClass::Instance.TryGetCellAt(cell);
 
 	int distance = pFirer->DistanceFrom(pCell);
 

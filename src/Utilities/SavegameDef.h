@@ -3,7 +3,7 @@
 // include this file whenever something is to be saved.
 
 #include "Savegame.h"
-
+#include <optional>
 #include <vector>
 #include <map>
 #include <bitset>
@@ -22,14 +22,14 @@
 namespace Savegame
 {
 	template <typename T>
-	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter& stmWriter, PhobosStreamReader& stmReader, T& value, bool registerForChange)
+	concept ImplementsUpperCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
 		value.Save(stmWriter);
 		value.Load(stmReader, registerForChange);
 	};
 
 	template <typename T>
-	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T& value, bool registerForChange)
+	concept ImplementsLowerCaseSaveLoad = requires (PhobosStreamWriter & stmWriter, PhobosStreamReader & stmReader, T & value, bool registerForChange)
 	{
 		value.save(stmWriter);
 		value.load(stmReader, registerForChange);
@@ -79,7 +79,7 @@ namespace Savegame
 
 			if (Savegame::ReadPhobosStream(Stm, *ptrNew, RegisterForChange))
 			{
-				PhobosSwizzle::Instance.RegisterChange(ptrOld, ptrNew.get());
+				PhobosSwizzle::RegisterChange(ptrOld, ptrNew.get());
 				return ptrNew.release();
 			}
 		}
@@ -312,7 +312,7 @@ namespace Savegame
 			{
 				std::vector<char> buffer(size);
 
-				if (!size || Stm.Read(reinterpret_cast<byte*>(&buffer[0]), size))
+				if (!size || Stm.Read(reinterpret_cast<byte*>(buffer.data()), size))
 				{
 					Value.assign(buffer.begin(), buffer.end());
 					return true;
@@ -342,6 +342,34 @@ namespace Savegame
 		bool WriteToStream(PhobosStreamWriter& Stm, const std::unique_ptr<T>& Value) const
 		{
 			return PersistObject(Stm, Value.get());
+		}
+	};
+
+	template <typename T>
+	struct Savegame::PhobosStreamObject<std::optional<T>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::optional<T>& Value, bool RegisterForChange) const
+		{
+			bool hasValue = false;
+			if (!Stm.Load(hasValue))
+				return false;
+
+			if (hasValue)
+				return Savegame::ReadPhobosStream(Stm, *Value, RegisterForChange);
+			else
+				Value.reset();
+
+			return true;
+		}
+
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::optional<T>& Value) const
+		{
+			Stm.Save(Value.has_value());
+
+			if (Value.has_value())
+				return Savegame::WritePhobosStream(Stm, *Value);
+
+			return true;
 		}
 	};
 
@@ -400,10 +428,9 @@ namespace Savegame
 		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue, Cmp>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
-
-			// use pointer as key of map is unswizzleable
-			//is_pointer(typename std::is_pointer<TKey>::type());
-
+			static_assert(!std::is_pointer_v<TKey> && !std::is_pointer_v<TValue>);
+			static_assert(std::is_trivially_constructible_v<TKey> && std::is_trivially_constructible_v<TValue>);
+			static_assert(std::is_trivially_destructible_v<TKey> && std::is_trivially_destructible_v<TValue>);
 			size_t Count = 0;
 			if (!Stm.Load(Count))
 			{
@@ -443,6 +470,47 @@ namespace Savegame
 			}
 			return true;
 		}
+	};
+
+	template <typename TKey, typename TValue> // Why are you doing this, choom
+	struct Savegame::PhobosStreamObject<std::map<TKey, std::vector<TValue>>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, std::vector<TValue>>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				TKey key;
+				std::vector<TValue> vals;
+				if (!(Savegame::ReadPhobosStream(Stm, key, RegisterForChange)&& Savegame::ReadPhobosStream(Stm, vals, RegisterForChange)))
+				{
+					return false;
+				}
+				Value[key] = vals;
+			}
+
+			return true;
+		}
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, std::vector<TValue>>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& [key,vals] : Value)
+			{
+				if (!(Savegame::WritePhobosStream(Stm, key) && Savegame::WritePhobosStream(Stm,vals)))
+				{
+					return false;
+				}
+			}
+			return true;
+		};
 	};
 
 	template <>

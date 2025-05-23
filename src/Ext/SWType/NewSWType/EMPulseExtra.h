@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include <Utilities/Concepts.h>
-
 class EMPulseExtra : public NewSWType
 {
 public:

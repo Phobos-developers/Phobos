@@ -54,7 +54,9 @@ bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
 	Init();
 
 	for (const auto& pNewSWType : Array)
+	{
 		stm.RegisterChange(pNewSWType.get());
+	}
 
 	return stm.Success();
 }
@@ -62,7 +64,9 @@ bool NewSWType::LoadGlobals(PhobosStreamReader& stm)
 bool NewSWType::SaveGlobals(PhobosStreamWriter& stm)
 {
 	for (const auto& pNewSWType : Array)
+	{
 		stm.Save(pNewSWType.get());
+	}
 
 	return stm.Success();
 }
