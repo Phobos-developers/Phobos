@@ -45,156 +45,156 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	case PhobosScripts::RepeatAttackCloserThreat:
 		// Threats that are close have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 0, -1, -1);
+		ScriptExt::Mission_Attack(pTeam);
 		break;
 	case PhobosScripts::RepeatAttackFartherThreat:
 		// Threats that are far have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 1, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 1);
 		break;
 	case PhobosScripts::RepeatAttackCloser:
 		// Closer targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 2, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 2);
 		break;
 	case PhobosScripts::RepeatAttackFarther:
 		// Farther targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack(pTeam, true, 3, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 3);
 		break;
 	case PhobosScripts::SingleAttackCloserThreat:
 		// Threats that are close have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 0, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 0, false);
 		break;
 	case PhobosScripts::SingleAttackFartherThreat:
 		// Threats that are far have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 1, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 1, false);
 		break;
 	case PhobosScripts::SingleAttackCloser:
 		// Closer targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 2, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 2, false);
 		break;
 	case PhobosScripts::SingleAttackFarther:
 		// Farther targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack(pTeam, false, 3, -1, -1);
+		ScriptExt::Mission_Attack(pTeam, 3, false);
 		break;
 	case PhobosScripts::DecreaseCurrentAITriggerWeight:
-		ScriptExt::DecreaseCurrentTriggerWeight(pTeam, true, 0);
+		ScriptExt::DecreaseCurrentTriggerWeight(pTeam);
 		break;
 	case PhobosScripts::IncreaseCurrentAITriggerWeight:
-		ScriptExt::IncreaseCurrentTriggerWeight(pTeam, true, 0);
+		ScriptExt::IncreaseCurrentTriggerWeight(pTeam);
 		break;
 	case PhobosScripts::RepeatAttackTypeCloserThreat:
 		// Threats specific targets that are close have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack_List(pTeam, true, 0, -1);
+		ScriptExt::Mission_Attack_List(pTeam);
 		break;
 	case PhobosScripts::RepeatAttackTypeFartherThreat:
 		// Threats specific targets that are far have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack_List(pTeam, true, 1, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 1);
 		break;
 	case PhobosScripts::RepeatAttackTypeCloser:
 		// Closer specific targets targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack_List(pTeam, true, 2, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 2);
 		break;
 	case PhobosScripts::RepeatAttackTypeFarther:
 		// Farther specific targets targets from Team Leader have more priority. Kill until no more targets.
-		ScriptExt::Mission_Attack_List(pTeam, true, 3, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 3);
 		break;
 	case PhobosScripts::SingleAttackTypeCloserThreat:
 		// Threats specific targets that are close have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack_List(pTeam, false, 0, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 0, false);
 		break;
 	case PhobosScripts::SingleAttackTypeFartherThreat:
 		// Threats specific targets that are far have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack_List(pTeam, false, 1, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 1, false);
 		break;
 	case PhobosScripts::SingleAttackTypeCloser:
 		// Closer specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack_List(pTeam, false, 2, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 2, false);
 		break;
 	case PhobosScripts::SingleAttackTypeFarther:
 		// Farther specific targets from Team Leader have more priority. 1 kill only (good for xx=49,0 combos)
-		ScriptExt::Mission_Attack_List(pTeam, false, 3, -1);
+		ScriptExt::Mission_Attack_List(pTeam, 3, false);
 		break;
 	case PhobosScripts::WaitIfNoTarget:
-		ScriptExt::WaitIfNoTarget(pTeam, -1);
+		ScriptExt::WaitIfNoTarget(pTeam);
 		break;
 	case PhobosScripts::TeamWeightReward:
-		ScriptExt::TeamWeightReward(pTeam, 0);
+		ScriptExt::TeamWeightReward(pTeam);
 		break;
 	case PhobosScripts::PickRandomScript:
-		ScriptExt::PickRandomScript(pTeam, -1);
+		ScriptExt::PickRandomScript(pTeam);
 		break;
 	case PhobosScripts::MoveToEnemyCloser:
 		// Move to the closest enemy target
-		ScriptExt::Mission_Move(pTeam, 2, false, -1, -1);
+		ScriptExt::Mission_Move(pTeam, 2);
 		break;
 	case PhobosScripts::MoveToEnemyFarther:
 		// Move to the farther enemy target
-		ScriptExt::Mission_Move(pTeam, 3, false, -1, -1);
+		ScriptExt::Mission_Move(pTeam, 3);
 		break;
 	case PhobosScripts::MoveToFriendlyCloser:
 		// Move to the closest friendly target
-		ScriptExt::Mission_Move(pTeam, 2, true, -1, -1);
+		ScriptExt::Mission_Move(pTeam, 2, true);
 		break;
 	case PhobosScripts::MoveToFriendlyFarther:
 		// Move to the farther friendly target
-		ScriptExt::Mission_Move(pTeam, 3, true, -1, -1);
+		ScriptExt::Mission_Move(pTeam, 3, true);
 		break;
 	case PhobosScripts::MoveToTypeEnemyCloser:
 		// Move to the closest specific enemy target
-		ScriptExt::Mission_Move_List(pTeam, 2, false, -1);
+		ScriptExt::Mission_Move_List(pTeam, 2);
 		break;
 	case PhobosScripts::MoveToTypeEnemyFarther:
 		// Move to the farther specific enemy target
-		ScriptExt::Mission_Move_List(pTeam, 3, false, -1);
+		ScriptExt::Mission_Move_List(pTeam, 3);
 		break;
 	case PhobosScripts::MoveToTypeFriendlyCloser:
 		// Move to the closest specific friendly target
-		ScriptExt::Mission_Move_List(pTeam, 2, true, -1);
+		ScriptExt::Mission_Move_List(pTeam, 2, true);
 		break;
 	case PhobosScripts::MoveToTypeFriendlyFarther:
 		// Move to the farther specific friendly target
-		ScriptExt::Mission_Move_List(pTeam, 3, true, -1);
+		ScriptExt::Mission_Move_List(pTeam, 3, true);
 		break;
 	case PhobosScripts::ModifyTargetDistance:
 		// AISafeDistance equivalent for Mission_Move()
-		ScriptExt::SetCloseEnoughDistance(pTeam, -1);
+		ScriptExt::SetCloseEnoughDistance(pTeam);
 		break;
 	case PhobosScripts::RandomAttackTypeCloser:
 		// Pick 1 closer random objective from specific list for attacking it
-		ScriptExt::Mission_Attack_List1Random(pTeam, true, 2, -1);
+		ScriptExt::Mission_Attack_List1Random(pTeam, 2);
 		break;
 	case PhobosScripts::RandomAttackTypeFarther:
 		// Pick 1 farther random objective from specific list for attacking it
-		ScriptExt::Mission_Attack_List1Random(pTeam, true, 3, -1);
+		ScriptExt::Mission_Attack_List1Random(pTeam, 3);
 		break;
 	case PhobosScripts::RandomMoveToTypeEnemyCloser:
 		// Pick 1 closer enemy random objective from specific list for moving to it
-		ScriptExt::Mission_Move_List1Random(pTeam, 2, false, -1, -1);
+		ScriptExt::Mission_Move_List1Random(pTeam, 2);
 		break;
 	case PhobosScripts::RandomMoveToTypeEnemyFarther:
 		// Pick 1 farther enemy random objective from specific list for moving to it
-		ScriptExt::Mission_Move_List1Random(pTeam, 3, false, -1, -1);
+		ScriptExt::Mission_Move_List1Random(pTeam, 3);
 		break;
 	case PhobosScripts::RandomMoveToTypeFriendlyCloser:
 		// Pick 1 closer friendly random objective from specific list for moving to it
-		ScriptExt::Mission_Move_List1Random(pTeam, 2, true, -1, -1);
+		ScriptExt::Mission_Move_List1Random(pTeam, 2, true);
 		break;
 	case PhobosScripts::RandomMoveToTypeFriendlyFarther:
 		// Pick 1 farther friendly random objective from specific list for moving to it
-		ScriptExt::Mission_Move_List1Random(pTeam, 3, true, -1, -1);
+		ScriptExt::Mission_Move_List1Random(pTeam, 3, true);
 		break;
 	case PhobosScripts::SetMoveMissionEndMode:
 		// Set the condition for ending the Mission_Move Actions.
-		ScriptExt::SetMoveMissionEndMode(pTeam, -1);
+		ScriptExt::SetMoveMissionEndMode(pTeam);
 		break;
 	case PhobosScripts::UnregisterGreatSuccess:
 		// Un-register success for AITrigger weight adjustment (this is the opposite of 49,0)
 		ScriptExt::UnregisterGreatSuccess(pTeam);
 		break;
 	case PhobosScripts::GatherAroundLeader:
-		ScriptExt::Mission_Gather_NearTheLeader(pTeam, -1);
+		ScriptExt::Mission_Gather_NearTheLeader(pTeam);
 		break;
 	case PhobosScripts::RandomSkipNextAction:
-		ScriptExt::SkipNextAction(pTeam, -1);
+		ScriptExt::SkipNextAction(pTeam);
 		break;
 	case PhobosScripts::StopForceJumpCountdown:
 		// Stop Timed Jump
@@ -202,11 +202,11 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	case PhobosScripts::NextLineForceJumpCountdown:
 		// Start Timed Jump that jumps to the next line when the countdown finish (in frames)
-		ScriptExt::Set_ForceJump_Countdown(pTeam, false, -1);
+		ScriptExt::Set_ForceJump_Countdown(pTeam);
 		break;
 	case PhobosScripts::SameLineForceJumpCountdown:
 		// Start Timed Jump that jumps to the same line when the countdown finish (in frames)
-		ScriptExt::Set_ForceJump_Countdown(pTeam, true, -1);
+		ScriptExt::Set_ForceJump_Countdown(pTeam, true);
 		break;
 	case PhobosScripts::JumpBackToPreviousScript:
 		ScriptExt::JumpBackToPreviousScript(pTeam);
@@ -217,7 +217,7 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	default:
 		// Do nothing because or it is a wrong Action number or it is an Ares/YR action...
-		if (action > 70 && !IsExtVariableAction(action))
+		if (action > 70 && !ScriptExt::IsExtVariableAction(action))
 		{
 			// Unknown new action. This action finished
 			pTeam->StepCompleted = true;
@@ -226,8 +226,8 @@ void ScriptExt::ProcessAction(TeamClass* pTeam)
 		break;
 	}
 
-	if (IsExtVariableAction(action))
-		VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
+	if (ScriptExt::IsExtVariableAction(action))
+		ScriptExt::VariablesHandler(pTeam, static_cast<PhobosScripts>(action), argument);
 }
 
 void ScriptExt::ExecuteTimedAreaGuardAction(TeamClass* pTeam)
@@ -287,7 +287,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
 				&& pUnit->Health > 0)
 			{
-				if (pUnit->GetTechnoType()->Size > 0
+				if (pUnitType->Size > 0
 					&& pUnitType->Size <= pTransportType->SizeLimit
 					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
 				{
@@ -317,12 +317,8 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	}
 
 	auto const pExt = TeamExt::ExtMap.Find(pTeam);
-
-	if (pExt)
-	{
-		FootClass* pLeaderUnit = FindTheTeamLeader(pTeam);
-		pExt->TeamLeader = pLeaderUnit;
-	}
+	FootClass* pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
+	pExt->TeamLeader = pLeaderUnit;
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -334,7 +330,9 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 	{
 		if (!pUnit->InLimbo && pUnit->Health > 0)
 		{
-			if (pUnit->GetTechnoType()->Ammo > 0 && pUnit->Ammo < pUnit->GetTechnoType()->Ammo)
+			auto const pUnitType = pUnit->GetTechnoType();
+
+			if (pUnitType->Ammo > 0 && pUnit->Ammo < pUnitType->Ammo)
 			{
 				// If an aircraft object have AirportBound it must be evaluated
 				if (auto const pAircraft = abstract_cast<AircraftClass*>(pUnit))
@@ -351,7 +349,7 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 						return;
 					}
 				}
-				else if (pUnit->GetTechnoType()->Reload != 0) // Don't skip units that can reload themselves
+				else if (pUnitType->Reload != 0) // Don't skip units that can reload themselves
 					return;
 			}
 		}
@@ -360,20 +358,12 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -1)
+void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 {
 	FootClass* pLeaderUnit = nullptr;
 	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 	bool gatherUnits = false;
 	auto const pExt = TeamExt::ExtMap.Find(pTeam);
-
-	// This team has no units! END
-	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-		return;
-	}
 
 	// Load countdown
 	if (pExt->Countdown_RegroupAtLeader >= 0)
@@ -419,9 +409,9 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Find the Leader
 		pLeaderUnit = pExt->TeamLeader;
 
-		if (!IsUnitAvailable(pLeaderUnit, true))
+		if (!ScriptExt::IsUnitAvailable(pLeaderUnit, true))
 		{
-			pLeaderUnit = FindTheTeamLeader(pTeam);
+			pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
 			pExt->TeamLeader = pLeaderUnit;
 		}
 
@@ -454,12 +444,9 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 		// Check if units are around the leader
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			if (!IsUnitAvailable(pUnit, true))
+			if (!ScriptExt::IsUnitAvailable(pUnit, true))
 			{
 				auto pTypeUnit = pUnit->GetTechnoType();
-
-				if (!pTypeUnit)
-					continue;
 
 				if (pUnit == pLeaderUnit)
 				{
@@ -470,7 +457,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				// Aircraft case
 				if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pTypeUnit->Ammo > 0)
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pUnit->GetTechnoType());
+					auto pAircraft = static_cast<AircraftTypeClass*>(pTypeUnit);
 
 					if (pAircraft->AirportBound)
 					{
@@ -494,8 +481,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 				}
 				else
 				{
+					auto mission = pUnit->GetCurrentMission();
+
 					// Is near of the leader, then protect the area
-					if (pUnit->GetCurrentMission() != Mission::Area_Guard || pUnit->GetCurrentMission() != Mission::Attack)
+					if (mission != Mission::Area_Guard || mission != Mission::Attack)
 						pUnit->QueueMission(Mission::Area_Guard, true);
 
 					nTogether++;
@@ -519,7 +508,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown = -
 	}
 }
 
-void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier)
 {
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -529,7 +518,7 @@ void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 	else
 		modifier = modifier * (-1);
 
-	ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
+	ScriptExt::ModifyCurrentTriggerWeight(pTeam, forceJumpLine, modifier);
 
 	// This action finished
 	if (forceJumpLine)
@@ -538,7 +527,7 @@ void ScriptExt::DecreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 	return;
 }
 
-void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier)
 {
 	if (modifier <= 0)
 		modifier = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -555,23 +544,22 @@ void ScriptExt::IncreaseCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLin
 	return;
 }
 
-void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine = true, double modifier = 0)
+void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine, double modifier)
 {
 	AITriggerTypeClass* pTriggerType = nullptr;
-	auto pTeamType = pTeam->Type;
+	auto const pTeamType = pTeam->Type;
 	bool found = false;
 
-	for (int i = 0; i < AITriggerTypeClass::Array->Count && !found; i++)
+	for (int i = 0; i < AITriggerTypeClass::Array.Count && !found; i++)
 	{
-		auto pTriggerTeam1Type = AITriggerTypeClass::Array->GetItem(i)->Team1;
-		auto pTriggerTeam2Type = AITriggerTypeClass::Array->GetItem(i)->Team2;
+		auto pTriggerTeam1Type = AITriggerTypeClass::Array.GetItem(i)->Team1;
+		auto pTriggerTeam2Type = AITriggerTypeClass::Array.GetItem(i)->Team2;
 
-		if (pTeamType
-			&& ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType)
-				|| (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType)))
+		if ((pTriggerTeam1Type && pTriggerTeam1Type == pTeamType)
+			|| (pTriggerTeam2Type && pTriggerTeam2Type == pTeamType))
 		{
 			found = true;
-			pTriggerType = AITriggerTypeClass::Array->GetItem(i);
+			pTriggerType = AITriggerTypeClass::Array.GetItem(i);
 		}
 	}
 
@@ -591,21 +579,19 @@ void ScriptExt::ModifyCurrentTriggerWeight(TeamClass* pTeam, bool forceJumpLine 
 	}
 }
 
-void ScriptExt::WaitIfNoTarget(TeamClass* pTeam, int attempts = 0)
+void ScriptExt::WaitIfNoTarget(TeamClass* pTeam, int attempts)
 {
 	// This method modifies the new attack actions preventing Team's Trigger to jump to next script action
 	// attempts == number of times the Team will wait if Mission_Attack(...) can't find a new target.
 	if (attempts < 0)
 		attempts = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
-	{
-		if (attempts <= 0)
-			pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
-		else
-			pTeamData->WaitNoTargetAttempts = attempts;
-	}
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (attempts <= 0)
+		pTeamData->WaitNoTargetAttempts = -1; // Infinite waits if no target
+	else
+		pTeamData->WaitNoTargetAttempts = attempts;
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -613,17 +599,15 @@ void ScriptExt::WaitIfNoTarget(TeamClass* pTeam, int attempts = 0)
 	return;
 }
 
-void ScriptExt::TeamWeightReward(TeamClass* pTeam, double award = 0)
+void ScriptExt::TeamWeightReward(TeamClass* pTeam, double award)
 {
 	if (award <= 0)
 		award = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
-	auto pTeamData = TeamExt::ExtMap.Find(pTeam);
-	if (pTeamData)
-	{
-		if (award > 0)
-			pTeamData->NextSuccessWeightAward = award;
-	}
+	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
+
+	if (award > 0)
+		pTeamData->NextSuccessWeightAward = award;
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -631,7 +615,7 @@ void ScriptExt::TeamWeightReward(TeamClass* pTeam, double award = 0)
 	return;
 }
 
-void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
+void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList)
 {
 	if (idxScriptsList <= 0)
 		idxScriptsList = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -681,7 +665,7 @@ void ScriptExt::PickRandomScript(TeamClass* pTeam, int idxScriptsList = -1)
 	}
 }
 
-void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1)
+void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (distance <= 0)
@@ -689,11 +673,8 @@ void ScriptExt::SetCloseEnoughDistance(TeamClass* pTeam, double distance = -1)
 
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
-	if (pTeamData)
-	{
-		if (distance > 0)
-			pTeamData->CloseEnough = distance;
-	}
+	if (distance > 0)
+		pTeamData->CloseEnough = distance;
 
 	if (distance <= 0)
 		pTeamData->CloseEnough = RulesClass::Instance->CloseEnough / 256.0;
@@ -710,7 +691,7 @@ void ScriptExt::UnregisterGreatSuccess(TeamClass* pTeam)
 	pTeam->StepCompleted = true;
 }
 
-void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
+void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode)
 {
 	// This passive method replaces the CloseEnough value from rulesmd.ini by a custom one. Used by Mission_Move()
 	if (mode < 0 || mode > 2)
@@ -718,11 +699,8 @@ void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
 
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
-	if (pTeamData)
-	{
-		if (mode >= 0 && mode <= 2)
-			pTeamData->MoveMissionEndMode = mode;
-	}
+	if (mode >= 0 && mode <= 2)
+		pTeamData->MoveMissionEndMode = mode;
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -730,19 +708,15 @@ void ScriptExt::SetMoveMissionEndMode(TeamClass* pTeam, int mode = 0)
 	return;
 }
 
-bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader = nullptr, int mode = 0)
+bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, FootClass* pLeader, int mode)
 {
-	if (!pTeam || !pFocus || mode < 0)
-		return false;
-
-	if (mode != 2 && mode != 1 && !pLeader)
+	if (!pFocus || mode < 0 || (mode != 2 && mode != 1 && !pLeader))
 		return false;
 
 	double closeEnough = RulesClass::Instance->CloseEnough / 256.0;
-
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
 
-	if (pTeamData && pTeamData->CloseEnough > 0)
+	if (pTeamData->CloseEnough > 0)
 		closeEnough = pTeamData->CloseEnough;
 
 	bool bForceNextAction = false;
@@ -753,7 +727,7 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	// Team already have a focused target
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (IsUnitAvailable(pUnit, true)
+		if (ScriptExt::IsUnitAvailable(pUnit, true)
 			&& !pUnit->TemporalTargetingMe
 			&& !pUnit->BeingWarpedOut)
 		{
@@ -840,21 +814,8 @@ bool ScriptExt::MoveMissionEndStatus(TeamClass* pTeam, TechnoClass* pFocus, Foot
 	return bForceNextAction;
 }
 
-void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage = 0)
+void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage)
 {
-	// This team has no units! END
-	if (!pTeam)
-	{
-		// This action finished
-		pTeam->StepCompleted = true;
-		ScriptExt::Log("AI Scripts - SkipNextAction: [%s] [%s] (line: %d) Jump to next line: %d = %d,%d -> (No team members alive)\n",
-			pTeam->Type->ID, pTeam->CurrentScript->Type->ID, pTeam->CurrentScript->CurrentMission, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Action, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument,
-			pTeam->CurrentScript->CurrentMission + 1, pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Action,
-			pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission + 1].Argument);
-
-		return;
-	}
-
 	if (successPercentage < 0 || successPercentage > 100)
 		successPercentage = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
 
@@ -900,149 +861,149 @@ void ScriptExt::VariablesHandler(TeamClass* pTeam, PhobosScripts eAction, int nA
 	switch (eAction)
 	{
 	case PhobosScripts::LocalVariableSet:
-		VariableOperationHandler<false, operation_set>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_set>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableAdd:
-		VariableOperationHandler<false, operation_add>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_add>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMinus:
-		VariableOperationHandler<false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_minus>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMultiply:
-		VariableOperationHandler<false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableDivide:
-		VariableOperationHandler<false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_divide>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMod:
-		VariableOperationHandler<false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_mod>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableLeftShift:
-		VariableOperationHandler<false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableRightShift:
-		VariableOperationHandler<false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableReverse:
-		VariableOperationHandler<false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableXor:
-		VariableOperationHandler<false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_xor>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableOr:
-		VariableOperationHandler<false, operation_or>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_or>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableAnd:
-		VariableOperationHandler<false, operation_and>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<false, operation_and>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableSet:
-		VariableOperationHandler<true, operation_set>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_set>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableAdd:
-		VariableOperationHandler<true, operation_add>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_add>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMinus:
-		VariableOperationHandler<true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_minus>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMultiply:
-		VariableOperationHandler<true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableDivide:
-		VariableOperationHandler<true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_divide>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMod:
-		VariableOperationHandler<true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_mod>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableLeftShift:
-		VariableOperationHandler<true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableRightShift:
-		VariableOperationHandler<true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableReverse:
-		VariableOperationHandler<true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableXor:
-		VariableOperationHandler<true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_xor>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableOr:
-		VariableOperationHandler<true, operation_or>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_or>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableAnd:
-		VariableOperationHandler<true, operation_and>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableOperationHandler<true, operation_and>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableSetByLocal:
-		VariableBinaryOperationHandler<false, false, operation_set>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_set>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableAddByLocal:
-		VariableBinaryOperationHandler<false, false, operation_add>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_add>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMinusByLocal:
-		VariableBinaryOperationHandler<false, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMultiplyByLocal:
-		VariableBinaryOperationHandler<false, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableDivideByLocal:
-		VariableBinaryOperationHandler<false, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableModByLocal:
-		VariableBinaryOperationHandler<false, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableLeftShiftByLocal:
-		VariableBinaryOperationHandler<false, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableRightShiftByLocal:
-		VariableBinaryOperationHandler<false, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableReverseByLocal:
-		VariableBinaryOperationHandler<false, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableXorByLocal:
-		VariableBinaryOperationHandler<false, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableOrByLocal:
-		VariableBinaryOperationHandler<false, false, operation_or>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_or>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableAndByLocal:
-		VariableBinaryOperationHandler<false, false, operation_and>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, false, operation_and>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableSetByLocal:
-		VariableBinaryOperationHandler<false, true, operation_set>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_set>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableAddByLocal:
-		VariableBinaryOperationHandler<false, true, operation_add>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_add>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMinusByLocal:
-		VariableBinaryOperationHandler<false, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMultiplyByLocal:
-		VariableBinaryOperationHandler<false, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableDivideByLocal:
-		VariableBinaryOperationHandler<false, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableModByLocal:
-		VariableBinaryOperationHandler<false, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableLeftShiftByLocal:
-		VariableBinaryOperationHandler<false, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableRightShiftByLocal:
-		VariableBinaryOperationHandler<false, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableReverseByLocal:
-		VariableBinaryOperationHandler<false, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableXorByLocal:
-		VariableBinaryOperationHandler<false, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableOrByLocal:
-		VariableBinaryOperationHandler<false, true, operation_or>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_or>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableAndByLocal:
-		VariableBinaryOperationHandler<false, true, operation_and>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<false, true, operation_and>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableSetByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_set>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_set>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableAddByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_add>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_add>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMinusByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_minus>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableMultiplyByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_multiply>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableDivideByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_divide>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableModByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_mod>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableLeftShiftByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableRightShiftByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableReverseByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_reverse>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableXorByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_xor>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableOrByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_or>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_or>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::LocalVariableAndByGlobal:
-		VariableBinaryOperationHandler<true, false, operation_and>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, false, operation_and>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableSetByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_set>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_set>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableAddByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_add>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_add>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMinusByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_minus>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableMultiplyByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_multiply>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableDivideByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_divide>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableModByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_mod>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableLeftShiftByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_leftshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableRightShiftByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_rightshift>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableReverseByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_reverse>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableXorByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_xor>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableOrByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_or>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_or>(pTeam, nLoArg, nHiArg); break;
 	case PhobosScripts::GlobalVariableAndByGlobal:
-		VariableBinaryOperationHandler<true, true, operation_and>(pTeam, nLoArg, nHiArg); break;
+		ScriptExt::VariableBinaryOperationHandler<true, true, operation_and>(pTeam, nLoArg, nHiArg); break;
 	}
 }
 
@@ -1069,7 +1030,7 @@ void ScriptExt::VariableBinaryOperationHandler(TeamClass* pTeam, int nVariable, 
 	auto itr = ScenarioExt::Global()->Variables[IsSrcGlobal].find(nVarToOperate);
 
 	if (itr != ScenarioExt::Global()->Variables[IsSrcGlobal].end())
-		VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
+		ScriptExt::VariableOperationHandler<IsGlobal, _Pr>(pTeam, nVariable, itr->second.Value);
 
 	pTeam->StepCompleted = true;
 }
@@ -1079,13 +1040,10 @@ FootClass* ScriptExt::FindTheTeamLeader(TeamClass* pTeam)
 	FootClass* pLeaderUnit = nullptr;
 	int bestUnitLeadershipValue = -1;
 
-	if (!pTeam)
-		return pLeaderUnit;
-
 	// Find the Leader or promote a new one
 	for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 	{
-		if (!IsUnitAvailable(pUnit, true) || !(pUnit->IsInitiated || pUnit->WhatAmI() == AbstractType::Aircraft))
+		if (!ScriptExt::IsUnitAvailable(pUnit, true) || !(pUnit->IsInitiated || pUnit->WhatAmI() == AbstractType::Aircraft))
 			continue;
 
 		// The team Leader will be used for selecting targets, if there are living Team Members then always exists 1 Leader.
@@ -1107,15 +1065,10 @@ bool ScriptExt::IsExtVariableAction(int action)
 	return eAction >= PhobosScripts::LocalVariableAdd && eAction <= PhobosScripts::GlobalVariableAndByGlobal;
 }
 
-void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = false, int count = 0)
+void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine, int count)
 {
-	if (!pTeam)
-		return;
-
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
-
-	if (!pTeamData)
-		return;
+	auto const pScript = pTeam->CurrentScript;
 
 	if (count <= 0)
 		count = 15 * pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
@@ -1133,8 +1086,6 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = fals
 		pTeamData->ForceJump_RepeatMode = false;
 	}
 
-	auto pScript = pTeam->CurrentScript;
-
 	// This action finished
 	pTeam->StepCompleted = true;
 	ScriptExt::Log("AI Scripts - SetForceJumpCountdown: [%s] [%s](line: %d = %d,%d) Set Timed Jump -> (Countdown: %d, repeat action: %d)\n", pTeam->Type->ID, pScript->Type->ID, pScript->CurrentMission, pScript->Type->ScriptActions[pScript->CurrentMission].Action, pScript->Type->ScriptActions[pScript->CurrentMission].Argument, count, repeatLine);
@@ -1142,19 +1093,11 @@ void ScriptExt::Set_ForceJump_Countdown(TeamClass* pTeam, bool repeatLine = fals
 
 void ScriptExt::Stop_ForceJump_Countdown(TeamClass* pTeam)
 {
-	if (!pTeam)
-		return;
-
 	auto const pTeamData = TeamExt::ExtMap.Find(pTeam);
-
-	if (!pTeamData)
-		return;
-
+	auto const pScript = pTeam->CurrentScript;
 	pTeamData->ForceJump_InitialCountdown = -1;
 	pTeamData->ForceJump_Countdown.Stop();
 	pTeamData->ForceJump_RepeatMode = false;
-
-	auto pScript = pTeam->CurrentScript;
 
 	// This action finished
 	pTeam->StepCompleted = true;
@@ -1181,9 +1124,6 @@ void ScriptExt::JumpBackToPreviousScript(TeamClass* pTeam)
 
 void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 {
-	if (!pTeam)
-		return;
-
 	auto pScript = pTeam->CurrentScript;
 	auto const pLeader = ScriptExt::FindTheTeamLeader(pTeam);
 
@@ -1198,7 +1138,7 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 	}
 
 	int houseIndex = pLeader->Owner->EnemyHouseIndex;
-	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array->GetItem(houseIndex) : nullptr;
+	HouseClass* pEnemy = houseIndex != -1 ? HouseClass::Array.GetItem(houseIndex) : nullptr;
 
 	if (!pEnemy)
 	{
@@ -1221,9 +1161,6 @@ void ScriptExt::ChronoshiftToEnemyBase(TeamClass* pTeam, int extraDistance)
 
 void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLeader, AbstractClass* pTarget)
 {
-	if (!pTeam || !pTeamLeader || !pTarget)
-		return;
-
 	auto pScript = pTeam->CurrentScript;
 	HouseClass* pOwner = pTeamLeader->Owner;
 	SuperClass* pSuperCSphere = nullptr;
@@ -1261,7 +1198,7 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 		}
 	}
 
-	auto pTargetCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords());
+	auto pTargetCell = MapClass::Instance.TryGetCellAt(pTarget->GetCoords());
 
 	if (pTargetCell)
 	{
