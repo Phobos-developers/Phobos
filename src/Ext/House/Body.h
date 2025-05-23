@@ -23,6 +23,7 @@ public:
 	public:
 		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoClass*> OwnedCountedHarvesters;
 		bool ForceOnlyTargetHouseEnemy;
 		int ForceOnlyTargetHouseEnemyMode;
 
@@ -65,9 +66,12 @@ public:
 		};
 		std::vector<SWExt> SuperExts;
 
+		int ForceEnemyIndex;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedCountedHarvesters {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
@@ -90,7 +94,8 @@ public:
 			, NumShipyards_NonMFB { 0 }
 			, AIFireSaleDelayTimer {}
 			, SuspendedEMPulseSWs {}
-			, SuperExts(SuperWeaponTypeClass::Array->Count)
+			, SuperExts(SuperWeaponTypeClass::Array.Count)
+			, ForceEnemyIndex(-1)
 			, ForceOnlyTargetHouseEnemy { false }
 			, ForceOnlyTargetHouseEnemyMode { -1 }
 		{ }
@@ -102,6 +107,9 @@ public:
 		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
 		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
 		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
+
+		int GetForceEnemyIndex();
+		void SetForceEnemyIndex(int EnemyIndex);
 
 		virtual ~ExtData() = default;
 

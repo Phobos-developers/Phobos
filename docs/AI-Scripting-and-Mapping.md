@@ -12,14 +12,14 @@ This page describes all AI scripting and mapping related additions and changes i
 - Script action `Deploy` now has vehicles with `DeploysInto` searching for free space to deploy at if failing to do so at initial location, instead of simply getting stuck.
 - Teams spawned by trigger action 7,80,107 can use IFV and opentopped logic normally. `InitialPayload` logic from Ares is not supported yet.
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
-- Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General]` -> `AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
+- Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
 ## Singleplayer Mission Maps
 
 ### Base node repairing
 
 - In singleplayer campaign missions you can now decide whether AI can repair the base nodes / buildings delivered by SW *(Ares feature)*.
-  - You can control it globally by setting `[Basic]->RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
+  - You can control it globally by setting `[Basic] -> RepairBaseNodes`, or locally by setting the flag with same name in `[Some House]` in certain map file. The global one will be overriden if the local one is set.
 
 In `rulesmd.ini`:
 ```ini
@@ -30,7 +30,7 @@ RepairBaseNodes=false              ; boolean
 In map file:
 ```ini
 [Country House]
-RepairBaseNodes=                   ; list of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
+RepairBaseNodes=                   ; List of 3 booleans indicating whether AI repair basenodes in Easy / Normal / Difficult game diffculty.
 ```
 
 ### Default loading screen and briefing offsets
@@ -52,7 +52,7 @@ DefaultLS800BkgdPal=     ; filename - including the .pal extension
 
 ### MCV redeploying
 
-- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic]->MCVRedeploys`. Overrides `[MultiplayerDialogSettings]`->`MCVRedeploys` only in singleplayer campaign missions.
+- You can now decide whether MCV can redeploy in singleplayer campaign missions by setting `[Basic] -> MCVRedeploys`. Overrides `[MultiplayerDialogSettings] -> MCVRedeploys` only in singleplayer campaign missions.
 
 In map file:
 ```ini
@@ -133,7 +133,7 @@ x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*             | *Repeats* | *Target Priority*      | *Description*                                      |
-| :------: | :--------------------: | :-------: | :--------------------: | :------------------------------------------------: |
+|:--------:|:----------------------:|:---------:|:-----------------------|:--------------------------------------------------:|
 | 10000    | Target Type#           | Yes       | Closer                 |                                                    |
 | 10001    | Target Type#           | No        | Closer                 | Ends when a team member kill the designated target |
 | 10002    | `AITargetTypes` index# | Yes       | Closer                 |                                                    |
@@ -157,7 +157,7 @@ x=i,n             ; For i values check the next table
   - 'Buildings considered as vehicles' means buildings with both `UndeploysInto` set & `Foundation=1x1` and `ConsideredVehicle` not set or buildings with `ConsideredVehicle=true`.
 
 | *Value* | *Target Type*            | *Description*                                 |
-| :-----: | :----------------------: | :-------------------------------------------: |
+|:-------:|:------------------------:|:----------------------------------------------|
 | 1       | Anything                 | Any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` |
 | 2       | Structures               | Any enemy `BuildingTypes` that are not considered as vehicles |
 | 3       | Ore Miners               | Any enemy `VehicleTypes` with `Harvester=yes` or `ResourceGatherer=yes`, `BuildingTypes` with `ResourceGatherer=yes` |
@@ -168,8 +168,8 @@ x=i,n             ; For i values check the next table
 | 8       | House Threats            | Any object that targets anything of the Team's House or any enemy that is near to the Team Leader |
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
-| 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI]->NeutralTechBuildings=` list |
-| 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
+| 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
+| 12      | Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
 | 15      | Naval                    | Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
@@ -203,7 +203,7 @@ In `rulesmd.ini`:
 [AITargetTypes]  ; List of TechnoType lists
 0=SOMETECHNOTYPE,SOMEOTHERTECHNOTYPE,SAMPLETECHNOTYPE
 1=ANOTHERTECHNOTYPE,YETANOTHERTECHNOTYPE
-; ...
+...
 ```
 
 #### `10050-10099` Move Team to Techno Location actions
@@ -217,7 +217,7 @@ x=i,n             ; For i values check the next table
 ```
 
 | *Action* | *Argument*              | *Target Owner* | *Target Priority*      | *Description*                                |
-| :------: | :---------------------: | :------------: | :--------------------: | :------------------------------------------: |
+|:--------:|:----------------------:|:---------:|:-----------------------|:--------------------------------------------------:|
 | 10050    | Target Type#            | Enemy          | Closer, higher threat  |                                              |
 | 10051    | `[AITargetType]` index# | Enemy          | Closer, higher threat  |                                              |
 | 10052    | `[AITargetType]` index# | Enemy          | Closer                 | Picks 1 random target from the selected list |
@@ -240,7 +240,7 @@ x=i,n             ; For i values check the next table
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=10100,n            ; integer, time in ingame seconds
+x=10100,n         ; integer, time in ingame seconds
 ```
 
 ##### `10101` Wait Until Ammo is Full
@@ -275,7 +275,7 @@ x=10103,0
 
 ##### `10104` Chronoshift to Enemy Base
 
-- Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General]` -> `AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General]` -> `AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
+- Chronoshifts the members of the TeamType using first available `Type=ChronoSphere` superweapon to a location within `[General] -> AISafeDistance` (plus the additional distance defined in parameter, can be negative) cells from enemy house's base. The superweapon must be charged up to atleast `[General] -> AIMinorSuperReadyPercent` percentage of its recharge time to be available for use by this action.
 
 In `aimd.ini`:
 ```ini
@@ -292,7 +292,7 @@ x=10104,n         ; integer, additional distance in cells
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=12000,n            ; integer n=0
+x=12000,n         ; integer n=0
 ```
 
 #### `12001` Modify Target Distance
@@ -318,7 +318,7 @@ x=12002,n
 - The possible argument values are:
 
 | *Argument* | *Action ends when...*                         |
-| :--------: | :-------------------------------------------: |
+|:----------:|:---------------------------------------------:|
 | 0          | Team Leader reaches the minimum distance      |
 | 1          | One unit reaches the minimum distance         |
 | 2          | All team members reached the minimum distance |
@@ -393,7 +393,7 @@ x=14004,n           ; integer
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16000,n           ; integer n=0, in ingame seconds
+x=16000,n         ; integer n=0, in ingame seconds
 ```
 
 #### `16001` Start a Timed Jump to the Next Line
@@ -403,7 +403,7 @@ x=16000,n           ; integer n=0, in ingame seconds
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16001,n           ; integer n=0, in ingame seconds
+x=16001,n         ; integer n=0, in ingame seconds
 ```
 
 #### `16002` Stop the Timed Jumps
@@ -423,7 +423,7 @@ x=16002,0
 In `aimd.ini`:
 ```ini
 [SOMESCRIPTTYPE]  ; ScriptType
-x=16003,n           ; where 0 > n <= 100
+x=16003,n         ; where 0 > n <= 100
 ```
 
 #### `16004` Pick a Random Script
@@ -443,10 +443,10 @@ In `rulesmd.ini`:
 [AIScriptsList]  ; List of ScriptType lists
 0=SOMESCRIPTTYPE,SOMEOTHERSCRIPTTYPE,SAMPLESCRIPTTYPE
 1=ANOTHERSCRIPTTYPE,YETANOTHERSCRIPTTYPE
-; ...
+...
 ```
 
-### `16005` Jump Back To Previous Script
+#### `16005` Jump Back To Previous Script
 
 - Used in a Random Script picked by action `94`. It can jump back to the previous script, and continue in the line after `x=94,n`.
 
@@ -460,7 +460,7 @@ x=16005,0
 
 #### `18000-18023` Edit Variable
 
-- Operate a variable's value
+- Operate a variable's value.
 - The variable's value type is int16 instead of int32 in trigger actions for some reason, which means it ranges from -2^15 to 2^15-1.
 - **Any numbers exceeding this limit will lead to unexpected results!**
 
@@ -515,7 +515,7 @@ ID=ActionCount,[Action1],500,4,[CSFKey],0,0,0,0,A,[ActionX]
 
 ### `501` Edit Variable
 
-- Operate a variable's value
+- Operate a variable's value.
 - The variable's value type is int32, which means it ranges from -2^31 to 2^31-1.
 - **Any numbers exceeding this limit will lead to unexpected results!**
 
@@ -528,7 +528,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 ```
 
 | *Operation* | *Description*                                 |
-| :---------: | :-------------------------------------------: |
+|------------:|:----------------------------------------------|
 | 0           | CurrentValue = Number                         |
 | 1           | CurrentValue = CurrentValue + Number          |
 | 2           | CurrentValue = CurrentValue - Number          |
@@ -544,7 +544,7 @@ ID=ActionCount,[Action1],501,0,[VariableIndex],[Operation],[Number],[IsGlobalVar
 
 ### `502` Generate random number
 
-- Generate a random integer ranged in [Min, Max] and store it in a given variable
+- Generate a random integer ranged in [Min, Max] and store it in a given variable.
 
 In `mycampaign.map`:
 ```ini
@@ -556,20 +556,20 @@ ID=ActionCount,[Action1],502,0,[VariableIndex],[Min],[Max],[IsGlobalVariable],0,
 
 ### `503` Print variable value
 
-- Print a variable value to the message list
+- Print a variable value to the message list.
 
 In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]
 ...
 ```
 
 ### `504` Binary Operation
 
-- Operate a variable's value with another variable's value
-- Similar to `501`, but the operation number is read from another variable
+- Operate a variable's value with another variable's value.
+- Similar to `501`, but the operation number is read from another variable.
 
 In `mycampaign.map`:
 ```ini
@@ -579,7 +579,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 ...
 ```
 
-`Operation` can be looked up at action `501`
+`Operation` can be looked up at action `501`.
 
 ### `505` Fire Super Weapon at specified location
 
@@ -588,7 +588,7 @@ ID=ActionCount,[Action1],504,0,[VariableIndex],[Operation],[VariableForOperation
 - `HouseIndex` can take various values:
 
 | *House Index* | *Description*                             |
-| :-----------: | :---------------------------------------: |
+|:-------------:|:------------------------------------------|
 | >= 0          | The index of the current House in the map |
 | 4475-4482     | Like in the index range 0-7               |
 | -1            | Pick a random House that isn't Neutral    |
@@ -630,11 +630,66 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `606` Edit Hate-Value
+
+- Edit the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]
+...
+```
+
+| *Operation* | *Description*                                 |
+|------------:|:----------------------------------------------|
+| 0           | CurrentValue = Number                         |
+| 1           | CurrentValue = CurrentValue + Number          |
+| 2           | CurrentValue = CurrentValue - Number          |
+| 3           | CurrentValue = CurrentValue * Number          |
+| 4           | CurrentValue = CurrentValue / Number          |
+| 5           | CurrentValue = CurrentValue % Number          |
+| 6           | CurrentValue = CurrentValue leftshift Number  |
+| 7           | CurrentValue = CurrentValue rightshift Number |
+| 8           | CurrentValue = ~CurrentValue                  |
+| 9           | CurrentValue = CurrentValue xor Number        |
+| 10          | CurrentValue = CurrentValue or Number         |
+| 11          | CurrentValue = CurrentValue and Number        |
+
+### `607` Clear Hate-Value
+
+- Clear the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]
+...
+```
+
+### `608` Set Force Enemy
+
+- Force an enemy, it will not change with the change of hate-value.
+- -1 will remove the forced enemy.
+- -2 will never have any enemies.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation
 
-- Compares the variable's value with given number
+- Compares the variable's value with given number.
 
 In `mycampaign.map`:
 ```ini
@@ -645,7 +700,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 ```
 
 | *Event ID* | *Description*          | *Global* |
-| :--------: | :--------------------: | :------: |
+|:----------:|:-----------------------|:--------:|
 | 500        | CurrentValue > Number  | No       |
 | 501        | CurrentValue < Number  | No       |
 | 502        | CurrentValue = Number  | No       |
@@ -661,7 +716,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[Param],[EventX]
 
 ### `512-523` Variable comparation with local variable
 
-- Compares the variable's value with given local variable value
+- Compares the variable's value with given local variable value.
 
 In `mycampaign.map`:
 ```ini
@@ -672,7 +727,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 ```
 
 | *Event ID* | *Description*                      | *Global* |
-| :--------: | :--------------------------------: | :------: |
+|:----------:|:-----------------------------------|:--------:|
 | 512        | CurrentValue > LocalVariableValue  | No       |
 | 513        | CurrentValue < LocalVariableValue  | No       |
 | 514        | CurrentValue = LocalVariableValue  | No       |
@@ -688,7 +743,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[LocalVariableIndex],[EventX]
 
 ### `524-535` Variable comparation with global variable
 
-- Compares the variable's value with given global variable value
+- Compares the variable's value with given global variable value.
 
 In `mycampaign.map`:
 ```ini
@@ -699,7 +754,7 @@ ID=EventCount,[Event1],[EVENTID],2,[VariableIndex],[GlobalVariableIndex],[EventX
 ```
 
 | *Event ID* | *Description*                       | *Global* |
-| :--------: | :---------------------------------: | :------: |
+|:----------:|:------------------------------------|:--------:|
 | 524        | CurrentValue > GlobalVariableValue  | No       |
 | 525        | CurrentValue < GlobalVariableValue  | No       |
 | 526        | CurrentValue = GlobalVariableValue  | No       |
@@ -757,7 +812,7 @@ ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
 ```
 
 | *House Index* | *Description*                              |
-| :-----------: | :----------------------------------------: |
+|:-------------:|:------------------------------------------:|
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
