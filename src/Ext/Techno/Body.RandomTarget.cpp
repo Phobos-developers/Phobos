@@ -196,7 +196,7 @@ TechnoClass* TechnoExt::FindRandomTarget(TechnoClass* pThis)
 			|| !pWeaponExt->CanOnlyTargetTheseTechnos(pCandidateType)
 			|| (!pWeapon->Projectile->AA && pCandidate->IsInAir())
 			|| (!pWeapon->Projectile->AG && !pCandidate->IsInAir())
-			|| (!friendlyFire && (pThis->Owner->IsAlliedWith(pCandidate) || ScriptExt::IsUnitMindControlledFriendly(pThis->Owner, pCandidate)))
+			|| (!friendlyFire && (pThis->Owner->IsAlliedWith(pCandidate) || ScriptExt::IsMindControlledByEnemy(pThis->Owner, pCandidate)))
 			|| pCandidate->TemporalTargetingMe
 			|| pCandidate->BeingWarpedOut
 			|| (pCandidateType->Underwater && pCandidateType->NavalTargeting == NavalTargetingType::Underwater_Never)
