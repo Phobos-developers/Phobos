@@ -888,3 +888,31 @@ DEFINE_HOOK(0x6FBFD0, TechnoClass_Select_SquadSelect, 0x5)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x737BBE, UnitClass_Unlimbo_CreatePassengerSquad, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	const auto pExtType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if (pExtType->Squad_IsInitAsTeam)
+	{
+		if (pThis->Passengers.NumPassengers > 0)
+		{
+			SquadManager* pSquadManager = new SquadManager;
+			FootClass* pOldPassenger = pThis->Passengers.FirstPassenger;
+			int PassengersNum = pThis->Passengers.NumPassengers;
+
+			while (pOldPassenger)
+			{
+				auto tempTechnoExt = TechnoExt::ExtMap.Find(pOldPassenger);
+				pSquadManager->AddTechno(pOldPassenger);
+				tempTechnoExt->SquadManager = pSquadManager;
+				tempTechnoExt->HasSquad = true;
+				pOldPassenger = static_cast<FootClass*>(pOldPassenger->NextObject);
+			}
+		}
+	}
+
+	return 0;
+}

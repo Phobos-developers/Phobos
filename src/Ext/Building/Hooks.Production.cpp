@@ -252,95 +252,64 @@ inline InfantryClass* CreateInfantryFromFactory(TechnoTypeClass* pType, HouseCla
 			return nullptr;
 	}
 
-	if (auto const pInfantry = static_cast<InfantryClass*>(pType->CreateObject(pOwner)))
-	{
-		return pInfantry;
-	}
+	if(pType->WhatAmI() == AbstractType::InfantryType)
+		if (auto const pInfantry = static_cast<InfantryClass*>(pType->CreateObject(pOwner)))
+		{
+			return pInfantry;
+		}
 
 	return nullptr;
 }
 
 DEFINE_HOOK(0x444DDF, BuildingClass_KickOutUnit_InfantrySquad, 0x5)
 {
-	Debug::Log("InfantryFactory Step 0\n");
-
 	GET(BuildingClass*, pFactory, ESI);
 	GET(TechnoClass*, pTechno, EDI);
 
-	const auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
-	bool isInitAsTeam = pExtType->Squad_IsInitAsTeam;
-	SquadManager* pSquadManager;
-
-	if (isInitAsTeam)
-	{
-		pSquadManager = new SquadManager;
-		pSquadManager->AddTechno(pTechno);
-		pTechnoExt->SquadManager = pSquadManager;
-		pTechnoExt->HasSquad = true;
-	}
-
-	if (pExtType->Squad_Members.size() > 0)
-	{
-		for (int i = 0; i < pExtType->Squad_Members.size(); i++)
-		{
-			auto pType = pExtType->Squad_Members[i];
-			auto pInfantry = CreateInfantryFromFactory(pType, pTechno->GetOwningHouse());
-			if (pInfantry != nullptr)
-			{
-				++Unsorted::ScenarioInit;
-				pInfantry->Unlimbo(pTechno->GetCoords(), DirType::North);
-				if (pFactory->ArchiveTarget)
-				{
-					pInfantry->QueueMission(Mission::Move, 0);
-					pInfantry->SetDestination(pFactory->ArchiveTarget, 1);
-				}
-				--Unsorted::ScenarioInit;
-				if (isInitAsTeam)
-				{
-					auto tempTechnoExt = TechnoExt::ExtMap.Find(pInfantry);
-					pSquadManager->AddTechno(pInfantry);
-					tempTechnoExt->SquadManager = pSquadManager;
-					tempTechnoExt->HasSquad = true;
-				}
-
-			}
-		}
-	}
-
-	return 0x444971;
-}
-
-DEFINE_HOOK(0x444971, BuildingClass_KickOutUnit_PassengerSquad, 0x5)
-{
-	GET(BuildingClass*, pFactory, ESI);
-	GET(TechnoClass*, pTechno, EDI);
-
-	if ( pTechno->WhatAmI() == AbstractType::Unit)
+	if (pTechno->WhatAmI() == AbstractType::Infantry)
 	{
 		const auto pExtType = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		bool isInitAsTeam = pExtType->Squad_IsInitAsTeam;
+		SquadManager* pSquadManager;
 
-		if (pExtType->Squad_IsInitAsTeam)
+		if (isInitAsTeam)
 		{
-			if (pTechno->Passengers.NumPassengers > 0)
+			pSquadManager = new SquadManager;
+			pSquadManager->AddTechno(pTechno);
+			pTechnoExt->SquadManager = pSquadManager;
+			pTechnoExt->HasSquad = true;
+		}
+
+		if (pExtType->Squad_Members.size() > 0)
+		{
+			for (int i = 0; i < pExtType->Squad_Members.size(); i++)
 			{
-				SquadManager* pSquadManager = new SquadManager;
-				FootClass* pOldPassenger = pTechno->Passengers.FirstPassenger;
-				int PassengersNum = pTechno->Passengers.NumPassengers;
-
-				//DynamicVectorClass<FootClass*> passengersList;
-
-				while (pOldPassenger)
+				auto pType = pExtType->Squad_Members[i];
+				auto pInfantry = CreateInfantryFromFactory(pType, pTechno->GetOwningHouse());
+				if (pInfantry != nullptr)
 				{
-					auto tempTechnoExt = TechnoExt::ExtMap.Find(pOldPassenger);
-					pSquadManager->AddTechno(pOldPassenger);
-					tempTechnoExt->SquadManager = pSquadManager;
-					tempTechnoExt->HasSquad = true;
-					pOldPassenger = static_cast<FootClass*>(pOldPassenger->NextObject);
+					++Unsorted::ScenarioInit;
+					pInfantry->Unlimbo(pTechno->GetCoords(), DirType::North);
+					if (pFactory->ArchiveTarget)
+					{
+						pInfantry->QueueMission(Mission::Move, 0);
+						pInfantry->SetDestination(pFactory->ArchiveTarget, 1);
+					}
+					--Unsorted::ScenarioInit;
+					if (isInitAsTeam)
+					{
+						auto tempTechnoExt = TechnoExt::ExtMap.Find(pInfantry);
+						pSquadManager->AddTechno(pInfantry);
+						tempTechnoExt->SquadManager = pSquadManager;
+						tempTechnoExt->HasSquad = true;
+					}
+
 				}
 			}
 		}
+
+		return 0x444971;
 	}
-	
 	return 0;
 }
