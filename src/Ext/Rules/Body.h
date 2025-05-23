@@ -127,6 +127,7 @@ public:
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
+		Valueable<ColorStruct> AirstrikeLineColor;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -310,6 +311,7 @@ public:
 			, ForceShield_ExtraTintIntensity { 0.0 }
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
+			, AirstrikeLineColor { { 255, 0, 0 } }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
