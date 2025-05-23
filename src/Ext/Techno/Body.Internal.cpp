@@ -11,18 +11,19 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	if (auto pTypeExt = this->TypeExtData)
+	auto pTypeExt = this->TypeExtData;
+	this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
+
+	for (auto const& entry : pTypeExt->LaserTrailData)
 	{
-		for (auto const& entry : pTypeExt->LaserTrailData)
-		{
-			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
-		}
+		this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
 	}
 }
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
-	TechnoClass* pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+	auto const pKillerType = pKiller->GetTechnoType();
+	TechnoClass* pObjectKiller = ((pKillerType->Spawned || pKillerType->MissileSpawn) && pKiller->SpawnOwner) ?
 		pKiller->SpawnOwner : pKiller;
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
@@ -208,8 +209,9 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pShield = pExt->Shield.get();
 	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
-	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
+	bool hasShieldTint = pShield && pShield->IsActive() && pShield->GetType()->HasTint();
 
 	// Bail out early if no custom tint is applied.
 	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
@@ -240,7 +242,7 @@ void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& inten
 
 	if (hasShieldTint)
 	{
-		auto const pShieldType = pExt->Shield->GetType();
+		auto const pShieldType = pShield->GetType();
 
 		if (!EnumFunctions::CanTargetHouse(pShieldType->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
 			return;
