@@ -226,6 +226,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
 
 ## Fixes / interactions with other extensions
 
@@ -735,6 +736,22 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 ```
 
 ## Technos
+
+### Airstrike flare customizations
+
+- It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]` defaults to `[AudioVisual]` -> `LaserTargetColor`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual]` -> `AirstrikeLineColor`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue
+
+[SOMETECHNO]                ; TechnoType
+LaserTargetColor=           ; integer - [ColorAdd] index
+AirstrikeLineColor=         ; integer - Red,Green,Blue
+```
 
 ### Airstrike target eligibility
 
