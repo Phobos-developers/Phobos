@@ -522,6 +522,10 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 static void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
 {
 	const auto pBannerType = BannerTypeClass::Find(pTAction->Text);
+
+	if (!pBannerType)
+		return;
+
 	auto& banners = BannerClass::Array;
 
 	const auto it = std::find_if(banners.begin(), banners.end(),
