@@ -264,6 +264,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
+  - Airstrike flare visual customizations
   - Cyborg legs being restored when the soldier enters into transports or structures
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
