@@ -1050,7 +1050,7 @@ msgstr "更新日志"
 
 #: ../../Whats-New.md:312
 msgid "Version TBD (develop branch nightly builds)"
-msgstr "待定版本（开发分支每夜构建）"
+msgstr "待定版本（开发分支自动构建版本）"
 
 #: ../../Whats-New.md:318 ../../Whats-New.md:417 ../../Whats-New.md:767
 #: ../../Whats-New.md:798 ../../Whats-New.md:1001 ../../Whats-New.md:1029
