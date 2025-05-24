@@ -797,3 +797,15 @@ ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
+
+### `606` Checking if an AttachEffect was attached to a Techno
+
+- Checks if an `AttachEffectType` was attached into an object.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,606,2,0,[AttachEffectType],...
+...
+```

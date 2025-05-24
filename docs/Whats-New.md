@@ -380,6 +380,7 @@ New:
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
+- Event 606: Checking if an AttachEffect was attached to a Techno
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
