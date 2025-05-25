@@ -1524,13 +1524,12 @@ msgid ""
 msgstr "现在 `Strafing` 在抛射体使用了 `Trajectory` 时默认禁用（by CrimRecya）"
 
 #: ../../Whats-New.md:383
-#, fuzzy
 msgid ""
 "[Customizable airstrike flare colors](Fixed-or-Improved-Logics.md"
-"#airstrike-flare-customizations) (by Starkku)"
+"#airstrike-flare-visual-customizations) (by Starkku)"
 msgstr ""
-"[自定义空袭目标](Fixed-or-Improved-Logics.md#airstrike-target-eligibility)（by "
-"NetsuNegi）"
+"[自定义空袭引导效果](Fixed-or-Improved-Logics.md"
+"#airstrike-flare-visual-customizations)（by Starkku）"
 
 #: ../../Whats-New.md:385 ../../Whats-New.md:583 ../../Whats-New.md:900
 #: ../../Whats-New.md:1009 ../../Whats-New.md:1034 ../../Whats-New.md:1073
@@ -1659,6 +1658,7 @@ msgid ""
 "Fixed an issue where airstrike flare line drawn to target at lower "
 "elevation would clip (by Starkku)"
 msgstr ""
+"修复了空袭引导激光高打低时会截断的问题（by Starkku）"
 
 #: ../../Whats-New.md:406 ../../Whats-New.md:695 ../../Whats-New.md:772
 #: ../../Whats-New.md:936 ../../Whats-New.md:977 ../../Whats-New.md:989

@@ -1033,15 +1033,15 @@ msgid "Customizable electric bolt duration and electric bolt-related fixes"
 msgstr "自定义 EBolt 持续时间和 EBolt 相关修复"
 
 #: ../../../CREDITS.md:267
-#, fuzzy
 msgid "Airstrike flare visual customizations"
-msgstr "自定义建造区域"
+msgstr "自定义空袭引导效果"
 
 #: ../../../CREDITS.md:268
 msgid ""
 "Fix an issue where airstrike flare line drawn to target at lower "
 "elevation would clip"
 msgstr ""
+"修复了空袭引导激光高打低时会截断的问题"
 
 #: ../../../CREDITS.md:269
 msgid "**Morton (MortonPL)**:"

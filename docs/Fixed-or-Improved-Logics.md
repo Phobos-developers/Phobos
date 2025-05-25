@@ -723,11 +723,11 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 
 ## Technos
 
-### Airstrike flare customizations
+### Airstrike flare visual customizations
 
 - It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
-  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]` defaults to `[AudioVisual]` -> `LaserTargetColor`.
-  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual]` -> `AirstrikeLineColor`.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual] -> AirstrikeLineColor`.
 
 In `rulesmd.ini`:
 ```ini

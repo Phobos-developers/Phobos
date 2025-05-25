@@ -1403,6 +1403,7 @@ msgid ""
 "Fixed an issue where airstrike flare line drawn to target at lower "
 "elevation would clip."
 msgstr ""
+"修复了空袭引导激光高打低时会截断的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:231
 msgid "Fixes / interactions with other extensions"
@@ -3002,9 +3003,8 @@ msgid "Technos"
 msgstr "科技类型"
 
 #: ../../Fixed-or-Improved-Logics.md:726
-#, fuzzy
-msgid "Airstrike flare customizations"
-msgstr "跟随炮塔旋转的 `AlternateFLH`"
+msgid "Airstrike flare visual customizations"
+msgstr "自定义空袭引导效果"
 
 #: ../../Fixed-or-Improved-Logics.md:728
 msgid ""
@@ -3012,18 +3012,21 @@ msgid ""
 "on the TechnoType calling in the airstrike as well as customize the color"
 " of the line drawn to target."
 msgstr ""
+"现在可以在召唤空袭的单位上自定义目标染色效果及引导激光颜色。"
 
 #: ../../Fixed-or-Improved-Logics.md:729
 msgid ""
 "`LaserTargetColor` can be used to set the index of color from "
-"`[ColorAdd]` defaults to `[AudioVisual]` -> `LaserTargetColor`."
+"`[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`."
 msgstr ""
+"`LaserTargetColor` 用于填写颜色在 `[ColorAdd]` 中的索引序号，默认为 `[AudioVisual] -> LaserTargetColor`。"
 
 #: ../../Fixed-or-Improved-Logics.md:730
 msgid ""
 "`AirstrikeLineColor` sets the color of the line and dot drawn from firer "
-"to target, defaults to `[AudioVisual]` -> `AirstrikeLineColor`."
+"to target, defaults to `[AudioVisual] -> AirstrikeLineColor`."
 msgstr ""
+"`AirstrikeLineColor` 用于填写引导激光的颜色，默认为 `[AudioVisual] -> AirstrikeLineColor`。"
 
 #: ../../Fixed-or-Improved-Logics.md:733
 msgid ""
@@ -3034,6 +3037,12 @@ msgid ""
 "LaserTargetColor=           ; integer - [ColorAdd] index\n"
 "AirstrikeLineColor=         ; integer - Red,Green,Blue\n"
 msgstr ""
+"[AudioVisual]\n"
+"AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue\n"
+"\n"
+"[SOMETECHNO]                ; TechnoType\n"
+"LaserTargetColor=           ; integer - [ColorAdd] index\n"
+"AirstrikeLineColor=         ; integer - Red,Green,Blue\n"
 
 #: ../../Fixed-or-Improved-Logics.md:742
 msgid "Airstrike target eligibility"
