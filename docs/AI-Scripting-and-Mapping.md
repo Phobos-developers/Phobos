@@ -729,13 +729,13 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 - `HouseIndex` can be customized to focus in a specified house.
 
 In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
-ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
-...
-```
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Events]</span>
+<span class="na">...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,604,2,[HouseIndex],[TechnoType],...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...</span>
+<span class="na">...</span>
+</pre></div>
+</div>
 
 | *House Index* | *Description*                              |
 |:-------------:|:------------------------------------------:|
