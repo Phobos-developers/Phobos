@@ -723,11 +723,11 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 
 ## Technos
 
-### Airstrike flare customizations
+### Airstrike flare visual customizations
 
 - It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
-  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]` defaults to `[AudioVisual]` -> `LaserTargetColor`.
-  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual]` -> `AirstrikeLineColor`.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual] -> AirstrikeLineColor`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1465,7 +1465,7 @@ Ammo.AddOnDeploy=0      ; integer
 ```
 
 ```{warning}
-Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
+Due to technical constraints, units that use `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
 ```
 
 ### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
@@ -1486,7 +1486,7 @@ Ammo.DeployUnlockMaximumAmount=-1    ; integer
 ```
 
 ```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
 ### IsSimpleDeployer vehicle deploy animation / direction customization
