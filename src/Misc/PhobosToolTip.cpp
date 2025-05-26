@@ -266,20 +266,6 @@ DEFINE_HOOK(0x4AE51E, DisplayClass_GetToolTip_HelpText, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x724B2E, ToolTipManager_SetX, 0x6)
-{
-	if (SWSidebarClass::IsEnabled())
-	{
-		if (const auto button = SWSidebarClass::Instance.CurrentButton)
-		{
-			R->EDX(button->X + button->Width);
-			R->EAX(button->Y + SWButtonClass::ToolTip_Align_Y);
-		}
-	}
-
-	return 0;
-}
-
 // TODO: reimplement CCToolTip::Draw2 completely
 
 DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
@@ -332,7 +318,6 @@ DEFINE_HOOK(0x478EF8, CCToolTip_Draw2_SetMaxWidth, 0x5)
 			R->EAX(Phobos::UI::MaxToolTipWidth);
 		else
 			R->EAX(DSurface::ViewBounds.Width);
-
 	}
 	return 0;
 }
@@ -389,16 +374,55 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 
 	if (isCameo && Phobos::UI::AnchoredToolTips
 		&& PhobosToolTip::Instance.IsEnabled()
-		&& Phobos::Config::ToolTipDescriptions
-		// If inspecting a cameo from the super weapon sidebar, "AnchoredToolTips=true" shouldn't apply.
-		&& !SWSidebarClass::Instance.CurrentButton) 
+		&& Phobos::Config::ToolTipDescriptions)
 	{
-		LEA_STACK(LTRBStruct*, a2, STACK_OFFSET(0x44, -0x20));
-		auto x = DSurface::SidebarBounds.X - pRect->Width - 2;
+		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
+
+		if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
+		{
+			// Being too far away may actually be bad
+			/*
+			const auto& columns = SWSidebarClass::Instance.Columns;
+			const int size = columns.size();
+			const int y = pButton->Y + 3;
+
+			auto pColumn = columns.back();
+			if (columns.size() > 1 && y > (pColumn->Y + pColumn->Height))
+				pColumn = columns[size - 2];
+
+			const int x = pColumn->X + pColumn->Width + 2;
+			*/
+			const auto pColumn = SWSidebarClass::Instance.Columns[pButton->ColumnIndex];
+			const int x = pColumn->X + pColumn->Width + 2;
+			const int y = pButton->Y + 3;
+			pRect->X = x;
+			pTextRect->Right += (x - pTextRect->Left);
+			pTextRect->Left = x;
+			pRect->Y = y;
+			pTextRect->Bottom += (y - pTextRect->Top);
+			pTextRect->Top = y;
+		}
+		else
+		{
+			const int x = DSurface::SidebarBounds.X - pRect->Width - 2;
+			pRect->X = x;
+			pTextRect->Left = x;
+			pRect->Y -= 40;
+			pTextRect->Top -= 40;
+		}
+	}
+	else if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
+	{
+		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
+
+		const int x = pButton->X + pButton->Width;
+		const int y = pButton->Y + 43;
 		pRect->X = x;
-		a2->Left = x;
-		pRect->Y -= 40;
-		a2->Top -= 40;
+		pTextRect->Right += (x - pTextRect->Left);
+		pTextRect->Left = x;
+		pRect->Y = y;
+		pTextRect->Bottom += (y - pTextRect->Top);
+		pTextRect->Top = y;
 	}
 
 	// Should we make some SideExt items as static to improve the effeciency?
