@@ -22,7 +22,8 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
-	TechnoClass* pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+	auto const pKillerType = pKiller->GetTechnoType();
+	TechnoClass* pObjectKiller = ((pKillerType->Spawned || pKillerType->MissileSpawn) && pKiller->SpawnOwner) ?
 		pKiller->SpawnOwner : pKiller;
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
@@ -164,11 +165,22 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	if (pThis)
 	{
 		if (invulnerability && pThis->IsIronCurtained())
+		{
 			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
-		if (airstrike && TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+		}
+		if (airstrike)
+		{
+			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+			{
+				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
+				auto index = pTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor);
+				tintColor |= GeneralUtils::GetColorFromColorAdd(index);
+ 			}
+		}
 		if (berserk && pThis->Berzerk)
+		{
 			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+		}
 	}
 
 	return tintColor;

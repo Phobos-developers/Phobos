@@ -15,6 +15,7 @@ struct OverlayReader
 		{
 			pBuffer = YRMemory::Allocate(512000);
 			uuLength = pINI->ReadUUBlock(pSection, pBuffer, 512000);
+
 			if (this->IsAvailable())
 			{
 				bs.Buffer.Buffer = pBuffer;
@@ -39,6 +40,7 @@ struct OverlayReader
 				ls.Get(&ret, sizeof(ret));
 				return ret;
 			}
+
 			return 0;
 		}
 
@@ -62,7 +64,7 @@ struct OverlayReader
 
 	OverlayReader(CCINIClass* pINI)
 		:ByteReaders{ { pINI, "OverlayPack" }, { pINI, "OverlayPack2" }, { pINI, "OverlayPack3" }, { pINI, "OverlayPack4" }, }
-	{}
+	{ }
 
 private:
 	OverlayByteReader ByteReaders[4];
@@ -151,17 +153,20 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 			{
 				CellStruct mapCoord{ j,i };
 				size_t nOvl = reader.Get();
+
 				if (nOvl != 0xFFFFFFFF)
 				{
-					auto const pType = OverlayTypeClass::Array->GetItem(nOvl);
+					auto const pType = OverlayTypeClass::Array.GetItem(nOvl);
+
 					if (pType->GetImage() || pType->CellAnim)
 					{
-						if (SessionClass::Instance->GameMode != GameMode::Campaign && pType->Crate)
-							continue;
-						if (!MapClass::Instance->CoordinatesLegal(mapCoord))
+						if (SessionClass::Instance.GameMode != GameMode::Campaign && pType->Crate)
 							continue;
 
-						auto pCell = MapClass::Instance->GetCellAt(mapCoord);
+						if (!MapClass::Instance.CoordinatesLegal(mapCoord))
+							continue;
+
+						auto pCell = MapClass::Instance.GetCellAt(mapCoord);
 						auto const nOriginOvlData = pCell->OverlayData;
 						GameCreate<OverlayClass>(pType, mapCoord, -1);
 
@@ -174,6 +179,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 
 		auto pBuffer = YRMemory::Allocate(256000);
 		size_t uuLength = pINI->ReadUUBlock("OverlayDataPack", pBuffer, 256000);
+
 		if (uuLength > 0)
 		{
 			BufferStraw bs(pBuffer, uuLength);
@@ -188,14 +194,15 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 					unsigned char buffer;
 					ls.Get(&buffer, sizeof(buffer));
 
-					if (MapClass::Instance->CoordinatesLegal(mapCoord))
+					if (MapClass::Instance.CoordinatesLegal(mapCoord))
 					{
-						auto pCell = MapClass::Instance->GetCellAt(mapCoord);
+						auto pCell = MapClass::Instance.GetCellAt(mapCoord);
 						pCell->OverlayData = buffer;
 					}
 				}
 			}
 		}
+
 		YRMemory::Deallocate(pBuffer);
 	}
 
@@ -218,7 +225,7 @@ DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
 		for (short j = 0; j < 0x200; ++j)
 		{
 			CellStruct mapCoord { j,i };
-			auto const pCell = MapClass::Instance->GetCellAt(mapCoord);
+			auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
 			writer.Put(pCell->OverlayTypeIndex);
 			dataWriter.Put(pCell->OverlayData);
 		}
