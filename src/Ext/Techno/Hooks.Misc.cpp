@@ -442,28 +442,7 @@ DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
 
 	GET(TechnoClass* const, pThis, ESI);
 
-	const auto whatAmI = pThis->WhatAmI();
-
-	if (whatAmI == AbstractType::Infantry)
-	{
-		const auto pInfantry = static_cast<InfantryClass*>(pThis);
-
-		if (!pInfantry->IsDeploying)
-		{
-			if (pInfantry->IsDeployed())
-				pThis->QueueVoice(pInfantry->Type->VoiceUndeploy);
-			else
-				pThis->QueueVoice(pInfantry->Type->VoiceDeploy);
-		}
-	}
-	else if (whatAmI == AbstractType::Unit)
-	{
-		const auto pUnit = static_cast<UnitClass*>(pThis);
-		const auto pType = pUnit->Type;
-
-		if (pUnit->TryToDeploy() || pType->IsSimpleDeployer)
-			pThis->QueueVoice(pType->VoiceDeploy);
-	}
+	pThis->VoiceDeploy();
 
 	return 0;
 }
