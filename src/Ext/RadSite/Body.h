@@ -56,7 +56,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
+	static void CreateInstance(CellStruct location, int spread, int radLevel, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
 
 	class ExtContainer final : public Container<RadSiteExt>
 	{

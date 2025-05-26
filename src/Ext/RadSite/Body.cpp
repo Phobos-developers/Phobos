@@ -42,24 +42,25 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 }
 
 
-void RadSiteExt::CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
+void RadSiteExt::CreateInstance(CellStruct location, int spread, int radLevel, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker)
 {
 	// use real ctor
 	const auto pRadSite = GameCreate<RadSiteClass>();
-	auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-
-	//Adding Owner to RadSite, from bullet
-	if (pWeaponExt->RadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
-		pRadExt->RadHouse = pOwner;
-
-	if (pWeaponExt->RadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
-		pRadExt->RadInvoker = pInvoker;
-
+	const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 	pRadExt->Weapon = pWeaponExt->OwnerObject();
 	pRadExt->Type = pWeaponExt->RadType;
+	const auto pRadType = pRadExt->Type;
+
+	//Adding Owner to RadSite, from bullet
+	if (pRadType->GetHasOwner() && pRadExt->RadHouse != pOwner)
+		pRadExt->RadHouse = pOwner;
+
+	if (pRadType->GetHasInvoker() && pRadExt->RadInvoker != pInvoker)
+		pRadExt->RadInvoker = pInvoker;
+
 	pRadSite->SetBaseCell(&location);
 	pRadSite->SetSpread(spread);
-	pRadExt->SetRadLevel(amount);
+	pRadExt->SetRadLevel(std::min(radLevel, pRadType->GetLevelMax()));
 	pRadExt->CreateLight();
 
 	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(location)))
