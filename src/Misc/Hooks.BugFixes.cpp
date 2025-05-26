@@ -1929,16 +1929,11 @@ static inline bool CanInfantryEnterBuildingFix(BuildingClass* pTransport, Infant
 	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
 		return false;
 
-	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
-	const int passengerSize = Game::F2I(pPassenger->GetTechnoType()->Size);
-
-	if (passengerSize > Game::F2I(pTransportType->SizeLimit))
+	// Infantry entering the building ignoring Passengers.BySize and is always regarded as 1
+	if (static_cast<int>(pPassenger->GetTechnoType()->Size) > static_cast<int>(pTransportType->SizeLimit))
 		return false;
 
-	const int maxSize = pTransportType->Passengers;
-	const int predictSize = bySize ? (pTransport->Passengers.GetTotalSize() + passengerSize) : (pTransport->Passengers.NumPassengers + 1);
-
-	return predictSize <= maxSize;
+	return (pTransport->Passengers.NumPassengers + 1) <= pTransportType->Passengers;
 }
 
 DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)

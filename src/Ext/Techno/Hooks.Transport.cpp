@@ -259,9 +259,9 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 		return false;
 
 	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
-	const int passengerSize = Game::F2I(pPassenger->GetTechnoType()->Size);
+	const int passengerSize = static_cast<int>(pPassenger->GetTechnoType()->Size);
 
-	if (passengerSize > Game::F2I(pTransportType->SizeLimit))
+	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))
 		return false;
 
 	const int maxSize = pTransportType->Passengers;
@@ -273,9 +273,9 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	if (needCalculate)
 	{
 		if (IsCloseEnoughToEnter(pTransport, pLink))
-			return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
+			return (predictSize <= (maxSize - (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1)));
 
-		if (predictSize > (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)))
+		if (predictSize > (maxSize - (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1)))
 		{
 			pLink->QueueMission(Mission::None, false);
 			pLink->SetDestination(nullptr, true);
