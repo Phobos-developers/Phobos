@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <TechnoTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -15,6 +15,13 @@
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
 #include <New/Type/Affiliated/CreateUnitTypeClass.h>
+
+enum class PassiveAcquireMode : BYTE
+{
+	Normal = 0,
+	Aggressive = 1,
+	CeaseFire = 2,
+};
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -425,6 +432,13 @@ public:
 
 		Nullable<bool> TurretResponse;
 
+		Valueable<PassiveAcquireMode> PassiveAcquireMode;
+		Valueable<bool> PassiveAcquireMode_Togglable;
+		ValueableIdx<VocClass> VoiceEnterAggressiveMode;
+		ValueableIdx<VocClass> VoiceExitAggressiveMode;
+		ValueableIdx<VocClass> VoiceEnterCeaseFireMode;
+		ValueableIdx<VocClass> VoiceExitCeaseFireMode;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, HealthBar_HidePips { false }
@@ -799,6 +813,14 @@ public:
 			, InfantryAutoDeploy {}
 
 			, TurretResponse {}
+				
+			, PassiveAcquireMode { PassiveAcquireMode::Normal }
+			, PassiveAcquireMode_Togglable { true }
+			, VoiceEnterAggressiveMode { -1 }
+			, VoiceExitAggressiveMode { -1 }
+			, VoiceEnterCeaseFireMode { -1 }
+			, VoiceExitCeaseFireMode { -1 }
+
 		{ }
 
 		virtual ~ExtData() = default;

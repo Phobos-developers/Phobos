@@ -32,6 +32,7 @@
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
+    <ClCompile Include="src\Commands\AutoFireMode.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="src\Ext\Cell\Body.h" />
     <ClInclude Include="src\Commands\FireTacticalSW.h" />
     <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
+    <ClInclude Include="src\Commands\AutoFireMode.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.h" />

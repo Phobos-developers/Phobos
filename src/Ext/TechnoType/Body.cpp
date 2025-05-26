@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <AircraftTrackerClass.h>
 #include <AnimClass.h>
@@ -956,7 +956,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
-	
+
+	this->PassiveAcquireMode.Read(exINI, pSection, "PassiveAcquireMode");
+	this->PassiveAcquireMode_Togglable.Read(exINI, pSection, "PassiveAcquireMode.Togglable");
+	this->VoiceEnterAggressiveMode.Read(exINI, pSection, "VoiceEnterAggressiveMode");
+	this->VoiceExitAggressiveMode.Read(exINI, pSection, "VoiceExitAggressiveMode");
+	this->VoiceEnterCeaseFireMode.Read(exINI, pSection, "VoiceEnterCeaseFireMode");
+	this->VoiceExitCeaseFireMode.Read(exINI, pSection, "VoiceExitCeaseFireMode");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1340,6 +1347,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AutoFire)
 		.Process(this->AutoFire_TargetSelf)
+
 		.Process(this->NoSecondaryWeaponFallback)
 		.Process(this->NoSecondaryWeaponFallback_AllowAA)
 		.Process(this->NoAmmoWeapon)
@@ -1599,6 +1607,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryAutoDeploy)
 
 		.Process(this->TurretResponse)
+			
+		.Process(this->PassiveAcquireMode)
+		.Process(this->PassiveAcquireMode_Togglable)
+		.Process(this->VoiceEnterAggressiveMode)
+		.Process(this->VoiceExitAggressiveMode)
+		.Process(this->VoiceEnterCeaseFireMode)
+		.Process(this->VoiceExitCeaseFireMode)
+
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -1701,4 +1717,35 @@ DEFINE_HOOK(0x747E90, UnitTypeClass_LoadFromINI, 0x5)
 	}
 
 	return 0;
+}
+
+namespace detail
+{
+	template <>
+	inline bool read<PassiveAcquireMode>(PassiveAcquireMode& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "Normal") == 0)
+			{
+				value = PassiveAcquireMode::Normal;
+			}
+			else if (_strcmpi(str, "Aggressive") == 0)
+			{
+				value = PassiveAcquireMode::Aggressive;
+			}
+			else if (_strcmpi(str, "CeaseFire") == 0)
+			{
+				value = PassiveAcquireMode::CeaseFire;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected passive acquire mode.");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 }
