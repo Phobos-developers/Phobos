@@ -1913,29 +1913,6 @@ DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 	return 0;
 }
 
-static inline bool CanInfantryEnterBuildingFix(BuildingClass* pTransport, InfantryClass* pPassenger)
-{
-	if (pTransport->IsBeingWarpedOut() || pPassenger->Deactivated || pPassenger->IsUnderEMP() || pPassenger->ParasiteEatingMe)
-		return false;
-
-	const auto pManager = pPassenger->CaptureManager;
-
-	if (pManager && pManager->IsControllingSomething())
-		return false;
-
-	const auto pTransportType = pTransport->Type;
-
-	// Added to fit with AmphibiousEnter
-	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
-		return false;
-
-	// Infantry entering the building ignoring Passengers.BySize and is always regarded as 1
-	if (static_cast<int>(pPassenger->GetTechnoType()->Size) > static_cast<int>(pTransportType->SizeLimit))
-		return false;
-
-	return (pTransport->Passengers.NumPassengers + 1) <= pTransportType->Passengers;
-}
-
 DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
 {
 	enum { CannotEnter = 0x51A4BF };
@@ -1943,12 +1920,8 @@ DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pDestination, EDI);
 	// Compared to `Vehicle entering building` / `Infantry entering vehicle` / `Vehicle entering vehicle`,
-	// `Infantry entering building` lacks the judgment of
-	// `pPassenger->SendCommand(RadioCommand::QueryCanEnter, pTransport) == RadioCommand::AnswerPositive`,
-	// which allows passenger to be a controlled techno or in some other situations.
-	// Here, some features that players are accustomed to are preserved,
-	// but similar checks (in QueryCanEnter) are made to avoid erroneous behavior, such as overloading.
-	return CanInfantryEnterBuildingFix(pDestination, pThis) ? 0 : CannotEnter;
+	// `Infantry entering building` lacks the judgment of this
+	return (pThis->SendCommand(RadioCommand::QueryCanEnter, pDestination) == RadioCommand::AnswerPositive) ? 0 : CannotEnter;
 }
 
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
