@@ -1843,13 +1843,32 @@ DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// Infantr
 	return 0;
 }
 
+DEFINE_HOOK(0x73A2D2, UnitClass_UpdatePosition_EnterBioReactor, 0x5)
+{
+	GET(BuildingClass*, pBuilding, EBX);
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pBuildingType = pBuilding->Type;
+
+	if (pBuildingType->UnitAbsorb)
+	{
+		pThis->Transporter = pBuilding;
+		const int enterSound = pBuildingType->EnterBioReactorSound;
+		VocClass::PlayAt((enterSound >= 0 ? enterSound : RulesClass::Instance->EnterBioReactorSound), pThis->GetCoords(), 0);
+		pThis->Absorbed = true;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x51A30A };
 
 	GET(BuildingClass*, pReactor, EDI);
-	GET(FootClass*, pFoot, ESI);
-	pFoot->Transporter = pReactor;
+	GET(InfantryClass*, pThis, ESI);
+
+	pThis->Transporter = pReactor;
 	const int enterSound = pReactor->Type->EnterBioReactorSound;
 
 	if (enterSound >= 0)
@@ -1861,12 +1880,27 @@ DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x442F9B, BuildingClass_DestroyedByC4_LeaveBioReactor, 0x6)
+{
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x44A541, BuildingClass_Mission_Selling_LeaveBioReactor, 0x7)
+{
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
+	return 0;
+}
+
 DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x44DBD5 };
 
 	GET(BuildingClass*, pReactor, EBP);
 	GET(FootClass*, pFoot, ESI);
+
 	pFoot->Transporter = nullptr;
 	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
 
@@ -1879,14 +1913,47 @@ DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 	return 0;
 }
 
+static inline bool CanInfantryEnterBuildingFix(BuildingClass* pTransport, InfantryClass* pPassenger)
+{
+	if (pTransport->IsBeingWarpedOut() || pPassenger->Deactivated || pPassenger->IsUnderEMP() || pPassenger->ParasiteEatingMe)
+		return false;
+
+	const auto pManager = pPassenger->CaptureManager;
+
+	if (pManager && pManager->IsControllingSomething())
+		return false;
+
+	const auto pTransportType = pTransport->Type;
+
+	// Added to fit with AmphibiousEnter
+	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
+		return false;
+
+	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
+	const int passengerSize = Game::F2I(pPassenger->GetTechnoType()->Size);
+
+	if (passengerSize > Game::F2I(pTransportType->SizeLimit))
+		return false;
+
+	const int maxSize = pTransportType->Passengers;
+	const int predictSize = bySize ? (pTransport->Passengers.GetTotalSize() + passengerSize) : (pTransport->Passengers.NumPassengers + 1);
+
+	return predictSize <= maxSize;
+}
+
 DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
 {
 	enum { CannotEnter = 0x51A4BF };
 
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pDestination, EDI);
-
-	return pDestination->Passengers.NumPassengers + 1 <= pDestination->Type->Passengers && static_cast<int>(pThis->GetTechnoType()->Size) <= pDestination->Type->SizeLimit ? 0 : CannotEnter;
+	// Compared to `Vehicle entering building` / `Infantry entering vehicle` / `Vehicle entering vehicle`,
+	// `Infantry entering building` lacks the judgment of
+	// `pPassenger->SendCommand(RadioCommand::QueryCanEnter, pTransport) == RadioCommand::AnswerPositive`,
+	// which allows passenger to be a controlled techno or in some other situations.
+	// Here, some features that players are accustomed to are preserved,
+	// but similar checks (in QueryCanEnter) are made to avoid erroneous behavior, such as overloading.
+	return CanInfantryEnterBuildingFix(pDestination, pThis) ? 0 : CannotEnter;
 }
 
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
