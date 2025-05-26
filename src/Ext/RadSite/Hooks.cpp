@@ -167,7 +167,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 
 			if (pBuilding->IsAlive) // simple fix for previous issues
 			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+				int damage = Game::F2I(std::min(radLevel, pType->GetLevelMax()) * pType->GetLevelFactor());
 
 				if (maxDamageCount > 0)
 					damageCounts[pRadSite]++;
@@ -218,7 +218,7 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 
 			if (pFoot->IsAlive || !pFoot->IsSinking)
 			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+				int damage = Game::F2I(std::min(radLevel, pType->GetLevelMax()) * pType->GetLevelFactor());
 
 				if (!pRadExt->ApplyRadiationDamage(pFoot, damage))
 					break;
@@ -360,7 +360,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 				const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
 
 				if (it != radLevels.end())
-					it->Level = std::min(it->Level + amount, RadSiteExt::ExtMap.Find(pThis)->Type->GetLevelMax());
+					it->Level += amount;
 				else
 					radLevels.emplace_back(pThis, amount);
 			}

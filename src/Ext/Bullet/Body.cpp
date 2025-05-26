@@ -124,10 +124,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 
 	if (it != pCellExt->RadSites.cend())
 	{
-		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
-			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
-
-		const auto pRadExt = RadSiteExt::ExtMap.Find((*it));
+		const auto pRadExt = RadSiteExt::ExtMap.Find(*it);
 		// Handle It
 		pRadExt->Add(RadLevel);
 		return;
