@@ -1323,7 +1323,7 @@ msgstr "现在单位的 `Speed` 支持小数（by Starkku）"
 msgid ""
 "`Strafing` is now disabled by default when using `Trajectory` (by "
 "CrimRecya)"
-msgstr ""
+msgstr "现在 `Strafing` 在抛射体使用了 `Trajectory` 时默认禁用（by CrimRecya）"
 
 #: ../../Whats-New.md:479 ../../Whats-New.md:801 ../../Whats-New.md:910
 #: ../../Whats-New.md:935 ../../Whats-New.md:973 ../../Whats-New.md:1018
