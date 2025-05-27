@@ -494,11 +494,11 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 			if (MissionControlClass::Array[(int)pTarget->CurrentMission].NoThreat)
 				continue;
 
-			if (object->EstimatedHealth <= 0 && pTechnoType->VHPScan == 2)
+			if (pTarget->EstimatedHealth <= 0 && pTechnoType->VHPScan == 2)
 				continue;
 		}
 
-		if (objectType->Naval)
+		if (pTargetType->Naval)
 		{
 			// Submarines aren't a valid target
 			if (pTarget->CloakState == CloakState::Cloaked
@@ -515,14 +515,14 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 			// Land not OK for the Naval unit
 			if (pTechnoType->LandTargeting == LandTargetingType::Land_Not_OK
-				&& (object->GetCell()->LandType != LandType::Water))
+				&& (pTarget->GetCell()->LandType != LandType::Water))
 			{
 				continue;
 			}
 		}
 
 		// Stealth check.
-		if (object->CloakState == CloakState::Cloaked)
+		if (pTarget->CloakState == CloakState::Cloaked)
 		{
 			const auto pCell = pTarget->GetCell();
 
