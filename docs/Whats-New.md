@@ -380,6 +380,7 @@ New:
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
+- New EVA voice after deploying a building (by FS-21)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

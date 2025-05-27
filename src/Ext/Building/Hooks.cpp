@@ -251,6 +251,11 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
 	GET(BuildingClass* const, pThis, ESI);
 
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->NewEvaVoice.Get(false))
+		BuildingExt::ExtMap.Find(pThis)->UpdateMainEvaVoice();
+
 	if (SessionClass::IsCampaign())
 	{
 		// Preplaced structures are already managed before
@@ -434,6 +439,9 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 			bAnim = nullptr;
 		}
 	}
+
+	if (pTypeExt->NewEvaVoice.Get(false) && pTypeExt->NewEvaVoice_RecheckOnDeath)
+		BuildingExt::ExtMap.Find(pThis)->UpdateMainEvaVoice();
 
 	return 0;
 }

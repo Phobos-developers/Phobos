@@ -42,6 +42,11 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->ToolTip_Background_Opacity.Read(exINI, pSection, "ToolTip.Background.Opacity");
 	this->ToolTip_Background_BlurSize.Read(exINI, pSection, "ToolTip.Background.BlurSize");
 	this->BriefingTheme = pINI->ReadTheme(pSection, "BriefingTheme", this->BriefingTheme);
+
+	pINI->ReadString(pSection, "EVA.Tag", "", Phobos::readBuffer);
+
+	if (std::strlen(Phobos::readBuffer) > 0)
+		this->EVA_Tag = _strdup(Phobos::readBuffer);
 }
 
 // =============================
@@ -71,6 +76,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->IngameScore_WinTheme)
 		.Process(this->IngameScore_LoseTheme)
 		.Process(this->BriefingTheme)
+		.Process(this->EVA_Tag)
 		;
 }
 

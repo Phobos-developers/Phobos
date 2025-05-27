@@ -59,6 +59,7 @@ public:
 		bool HasSuperWeapon(int index, bool withUpgrades) const;
 		bool HandleInfiltrate(HouseClass* pInfiltratorHouse, int moneybefore);
 		void UpdatePrimaryFactoryAI();
+		void UpdateMainEvaVoice();
 		virtual ~ExtData() = default;
 
 		// virtual void LoadFromINIFile(CCINIClass* pINI) override;

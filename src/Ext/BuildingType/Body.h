@@ -84,6 +84,12 @@ public:
 		Valueable<int> Overpower_KeepOnline;
 		Valueable<int> Overpower_ChargeWeapon;
 
+		Nullable<bool> NewEvaVoice;
+		Valueable<int> NewEvaVoice_Index;
+		Valueable<int> NewEvaVoice_Priority;
+		Valueable<bool> NewEvaVoice_RecheckOnDeath;
+		NullableIdx<VoxClass> NewEvaVoice_InitialMessage;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -135,6 +141,11 @@ public:
 			, BarracksExitCell {}
 			, Overpower_KeepOnline { 2 }
 			, Overpower_ChargeWeapon { 1 }
+			, NewEvaVoice {}
+			, NewEvaVoice_Index { 0 }
+			, NewEvaVoice_Priority { 0 }
+			, NewEvaVoice_RecheckOnDeath { false }
+			, NewEvaVoice_InitialMessage { }
 		{ }
 
 		// Ares 0.A functions

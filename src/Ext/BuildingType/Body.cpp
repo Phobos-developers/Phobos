@@ -179,6 +179,12 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
 	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
 
+	this->NewEvaVoice.Read(exINI, pSection, "NewEVAVoice");
+	this->NewEvaVoice_Index.Read(exINI, pSection, "NewEVAVoice.Index");
+	this->NewEvaVoice_Priority.Read(exINI, pSection, "NewEVAVoice.Priority");
+	this->NewEvaVoice_RecheckOnDeath.Read(exINI, pSection, "NewEVAVoice.RecheckOnDeath");
+	this->NewEvaVoice_InitialMessage.Read(exINI, pSection, "NewEVAVoice.InitialMessage");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -305,6 +311,11 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BarracksExitCell)
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
+		.Process(this->NewEvaVoice)
+		.Process(this->NewEvaVoice_Index)
+		.Process(this->NewEvaVoice_Priority)
+		.Process(this->NewEvaVoice_RecheckOnDeath)
+		.Process(this->NewEvaVoice_InitialMessage)
 		;
 }
 
