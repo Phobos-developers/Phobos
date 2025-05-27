@@ -6309,12 +6309,12 @@ msgstr "现在你可以通过一个新的标签来设置飞碟激光动画效果
 #: ../../Fixed-or-Improved-Logics.md:1887
 msgid ""
 "[SOMEWEAPON]          ; WeaponType\n"
-"DiskLaser.Radius=240  ; floating point value\n"
-"                      ; 240 is the default saucer disk radius\n"
+"DiskLaser.Radius=240  ; integer\n"
+"; 240 is the default saucer disk radius\n"
 msgstr ""
 "[SOMEWEAPON]          ; WeaponType\n"
-"DiskLaser.Radius=240  ; floating point value\n"
-"                      ; 240 is the default saucer disk radius\n"
+"DiskLaser.Radius=240  ; integer\n"
+"; 240 is the default saucer disk radius\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1893
 msgid "Customizable ROF random delay"

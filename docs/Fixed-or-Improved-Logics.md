@@ -1886,8 +1886,8 @@ ChargeTurret.Delays=  ; List of integers - game frames
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=240  ; floating point value
-                      ; 240 is the default saucer disk radius
+DiskLaser.Radius=240  ; integer
+; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay
