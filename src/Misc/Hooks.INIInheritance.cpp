@@ -248,6 +248,8 @@ DEFINE_HOOK(0x474230, CCINIClass_Load_Inheritance, 0x5)
 		CCFileClass file (node.Data->Value);
 		if (file.Exists())
 			INIInheritance::LastINIFile->ReadCCFile(&file, false, false);
+		else
+			Debug::FatalErrorAndExit("Included INI file %s does not exist", node.Data->Value);
 	}
 
 	return 0;
