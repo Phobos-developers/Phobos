@@ -706,6 +706,9 @@ SuperWeaponSidebar.MaxColumns=        ; integer
 
 In `rulesmd.ini`
 ```ini
+[GlobalControls]
+SuperWeaponSidebarKeysEnabled=false    ; boolean
+
 [AudioVisual]
 SuperWeaponSidebar.AllowByDefault=false   ; boolean
 

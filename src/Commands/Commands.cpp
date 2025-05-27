@@ -22,18 +22,21 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
-	MakeCommand<ToggleSWSidebar>();
 
-	SWSidebarClass::Commands[0] = MakeCommand<FireTacticalSWCommandClass<0>>();
-	SWSidebarClass::Commands[1] = MakeCommand<FireTacticalSWCommandClass<1>>();
-	SWSidebarClass::Commands[2] = MakeCommand<FireTacticalSWCommandClass<2>>();
-	SWSidebarClass::Commands[3] = MakeCommand<FireTacticalSWCommandClass<3>>();
-	SWSidebarClass::Commands[4] = MakeCommand<FireTacticalSWCommandClass<4>>();
-	SWSidebarClass::Commands[5] = MakeCommand<FireTacticalSWCommandClass<5>>();
-	SWSidebarClass::Commands[6] = MakeCommand<FireTacticalSWCommandClass<6>>();
-	SWSidebarClass::Commands[7] = MakeCommand<FireTacticalSWCommandClass<7>>();
-	SWSidebarClass::Commands[8] = MakeCommand<FireTacticalSWCommandClass<8>>();
-	SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
+	if (Phobos::Config::SuperWeaponSidebarCommands)
+	{
+		SWSidebarClass::Commands[0] = MakeCommand<FireTacticalSWCommandClass<0>>();
+		SWSidebarClass::Commands[1] = MakeCommand<FireTacticalSWCommandClass<1>>();
+		SWSidebarClass::Commands[2] = MakeCommand<FireTacticalSWCommandClass<2>>();
+		SWSidebarClass::Commands[3] = MakeCommand<FireTacticalSWCommandClass<3>>();
+		SWSidebarClass::Commands[4] = MakeCommand<FireTacticalSWCommandClass<4>>();
+		SWSidebarClass::Commands[5] = MakeCommand<FireTacticalSWCommandClass<5>>();
+		SWSidebarClass::Commands[6] = MakeCommand<FireTacticalSWCommandClass<6>>();
+		SWSidebarClass::Commands[7] = MakeCommand<FireTacticalSWCommandClass<7>>();
+		SWSidebarClass::Commands[8] = MakeCommand<FireTacticalSWCommandClass<8>>();
+		SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
+		MakeCommand<ToggleSWSidebar>();
+	}
 
 	if (Phobos::Config::DevelopmentCommands)
 	{
