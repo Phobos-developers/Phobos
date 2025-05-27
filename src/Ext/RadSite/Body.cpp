@@ -98,7 +98,7 @@ void RadSiteExt::ExtData::CreateLight()
 	green = Math::min(green, 2000.0);
 	//=========Blue
 	double blue = ((1000 * radcolor.B) / 255) * tintFactor;
-	blue = Math::min(blue, 2000.0);;
+	blue = Math::min(blue, 2000.0);
 
 	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;

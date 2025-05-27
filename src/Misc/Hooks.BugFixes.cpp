@@ -347,7 +347,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 		{
 			if (pObject->Health > 0)
 			{
-				if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+				if (auto pBuilding = abstract_cast<BuildingClass*, true>(pObject))
 				{
 					auto pBType = pBuilding->Type;
 					if ((RulesClass::Instance->EWGates.FindItemIndex(pBType) != -1) && (state == 2 || state == 6))
@@ -1209,7 +1209,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	}
 	else
 	{
-		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
 		// Clear archive target for infantries and vehicles like receive a mega mission
 		if (pFoot && !pAircraft)
@@ -1791,7 +1791,7 @@ DEFINE_HOOK(0x4DFC39, FootClass_FindBioReactor_CheckValid, 0x6)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EDI);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+	return pThis->IsInAir() || pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
 }
 
 DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
@@ -1799,7 +1799,7 @@ DEFINE_HOOK(0x4DFED2, FootClass_FindGarrisonStructure_CheckValid, 0x6)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
+	return pThis->IsInAir() || pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x6;
 }
 
 DEFINE_HOOK(0x4E0024, FootClass_FindTankBunker_CheckValid, 0x8)
@@ -1807,7 +1807,7 @@ DEFINE_HOOK(0x4E0024, FootClass_FindTankBunker_CheckValid, 0x8)
 	GET(FootClass*, pThis, EDI);
 	GET(BuildingClass*, pBuilding, ESI);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	return pThis->IsInAir() || pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
 }
 
 DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
@@ -1815,7 +1815,7 @@ DEFINE_HOOK(0x4DFD92, FootClass_FindBattleBunker_CheckValid, 0x8)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	return pThis->IsInAir() || pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
 }
 
 DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
@@ -1823,7 +1823,7 @@ DEFINE_HOOK(0x4DFB28, FootClass_FindGrinder_CheckValid, 0x8)
 	GET(FootClass*, pThis, ESI);
 	GET(BuildingClass*, pBuilding, EBX);
 
-	return pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
+	return pThis->IsInAir() || pThis->IsInSameZoneAs(pBuilding) ? 0 : R->Origin() + 0x8;
 }
 
 #pragma endregion

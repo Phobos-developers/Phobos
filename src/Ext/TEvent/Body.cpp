@@ -202,10 +202,13 @@ bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
 
 bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	int desiredListIdx = -1;
+
 	if (sscanf_s(pThis->String, "%d", &desiredListIdx) <= 0 || desiredListIdx < 0)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid index value for [AITargetTypes]\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
@@ -217,10 +220,6 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 	{
 		return false;
 	}
-
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-	if (!pTechno)
-		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 	bool found = false;
@@ -249,19 +248,18 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 
 bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	auto pDesiredType = TechnoTypeClass::Find(pThis->String);
+
 	if (!pDesiredType)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid Techno ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
 		return false;
 	}
-
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-	if (!pTechno)
-		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 

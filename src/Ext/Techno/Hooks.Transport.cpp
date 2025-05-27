@@ -68,15 +68,11 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EDI);
 
-	if (pPassenger)
+	if (pThis && pPassenger)
 	{
-		GET(TechnoClass*, pThis, ESI);
-
-		if (!pThis)
-			return 0;
-
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
@@ -97,15 +93,11 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 
 DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 {
-	GET(FootClass*, pPassenger, EAX);
+	GET(TechnoClass*, pThis, ESI);
+	GET(FootClass*, pPassenger, EDI);
 
-	if (pPassenger)
+	if (pThis && pPassenger)
 	{
-		GET(TechnoClass*, pThis, ESI);
-
-		if (!pThis)
-			return 0;
-
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
@@ -140,19 +132,21 @@ DEFINE_HOOK(0x737F80, TechnoClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 
 		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit)
 		{
-			auto pPassenger = pThis->Passengers.GetFirstPassenger();
-			auto pExt = TechnoExt::ExtMap.Find(pPassenger);
-
-			if (pExt->OriginalPassengerOwner)
-				pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
-
-			while (pPassenger->NextObject)
+			if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 			{
-				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
-				pExt = TechnoExt::ExtMap.Find(pPassenger);
+				auto pExt = TechnoExt::ExtMap.Find(pPassenger);
 
 				if (pExt->OriginalPassengerOwner)
 					pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
+
+				while (pPassenger->NextObject)
+				{
+					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
+					pExt = TechnoExt::ExtMap.Find(pPassenger);
+
+					if (pExt->OriginalPassengerOwner)
+						pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
+				}
 			}
 		}
 	}
@@ -210,11 +204,11 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 {
 	enum { ReturnFromFunction = 0x71057F };
 
+	GET(TechnoClass* const, pThis, ECX);
 	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x8, 0x4));
 
 	if (pTarget)
 	{
-		GET(TechnoClass* const, pThis, ECX);
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (!pTypeExt->OpenTopped_ShareTransportTarget)
@@ -479,13 +473,9 @@ DEFINE_HOOK(0x4D92BF, FootClass_Mission_Enter_CheckLink, 0x5)
 	enum { NextAction = 0x4D92ED, NotifyUnlink = 0x4D92CE, DoNothing = 0x4D946C };
 
 	GET(UnitClass* const, pThis, ESI);
-	// Restore vanilla check
-	if (pThis->IsTether)
-		return NextAction;
-
 	GET(const RadioCommand, answer, EAX);
-
-	if (answer == RadioCommand::AnswerPositive)
+	// Restore vanilla check
+	if (pThis->IsTether || answer == RadioCommand::AnswerPositive)
 		return NextAction;
 	// The link should not be disconnected while the transporter is in motion (passengers waiting to enter),
 	// as this will result in the first passenger not getting on board

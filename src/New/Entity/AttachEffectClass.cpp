@@ -442,7 +442,7 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	auto const pTechno = this->Techno;
 
-	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
+	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
