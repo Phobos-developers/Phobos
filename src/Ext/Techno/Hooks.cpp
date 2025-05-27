@@ -37,6 +37,7 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 		pExt->UpdateTypeData_Foot();
 
 	pExt->UpdateWarpInDelay();
+	pExt->UpdateTiberiumEater();
 
 	return 0;
 }
@@ -180,7 +181,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	auto const pType = pThis->GetTechnoType();
 
-	if (!pType)
+	if (!pType) // Critical sanity check in s/l
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
@@ -524,14 +525,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
-	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
@@ -594,8 +595,9 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	GET(TechnoClass*, pThis, ECX);
 
-	int maxSpeed = pThis->GetTechnoType()->Speed;
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pThisType = pThis->GetTechnoType();
+	int maxSpeed = pThisType->Speed;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThisType);
 
 	if (pTypeExt->UseDisguiseMovementSpeed && pThis->IsDisguised())
 	{
@@ -652,19 +654,20 @@ DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 {
 	enum { SkipGameCode = 0x4C74C0 };
 
-	GET(EventClass*, pThis, ESI);
 	GET(TechnoClass*, pTechno, EDI);
-	GET(AbstractClass*, pTarget, EBX);
 
 	if (pTechno->WhatAmI() != AbstractType::Unit)
 		return 0;
 
+	GET(EventClass*, pThis, ESI);
 	auto const mission = static_cast<Mission>(pThis->MegaMission.Mission);
 	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if ((mission == Mission::Move) && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target && !pTarget)
+	if (mission == Mission::Move && pExt->TypeExtData->KeepTargetOnMove && pTechno->Target)
 	{
-		if (pTechno->IsCloseEnoughToAttack(pTechno->Target))
+		GET(AbstractClass*, pTarget, EBX);
+
+		if (!pTarget && pTechno->IsCloseEnoughToAttack(pTechno->Target))
 		{
 			auto const pDestination = pThis->MegaMission.Destination.As_Abstract();
 			pTechno->SetDestination(pDestination, true);
@@ -755,3 +758,156 @@ DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
 
 	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
 }
+
+#pragma region RadarDrawing
+
+DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
+{
+	enum { Invisible = 0x655E66, GoOtherChecks = 0x655E19 };
+
+	GET_STACK(bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
+	GET(TechnoClass*, pTechno, EBP);
+
+	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
+		return Invisible;
+
+	auto pType = pTechno->GetTechnoType();
+
+	if (pType->RadarInvisible)
+	{
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
+			return Invisible;
+	}
+
+	return GoOtherChecks;
+}
+
+#pragma endregion
+
+#pragma region DrawAirstrikeFlare
+
+namespace DrawAirstrikeFlareTemp
+{
+	TechnoClass* pTechno = nullptr;
+}
+
+DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	// This is not used in vanilla function so ECX gets overwritten later.
+	DrawAirstrikeFlareTemp::pTechno = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
+{
+	enum { SkipGameCode = 0x705976 };
+
+	GET(int, zSrc, EBP);
+	GET(int, zDest, EBX);
+	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
+
+	// Fix depth buffer value.
+	int zValue = Math::min(zSrc, zDest);
+	R->EBP(zValue);
+	R->EBX(zValue);
+
+	// Allow custom colors.
+	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
+	auto const baseColor = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
+	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
+	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
+	R->ESI(Drawing::RGB_To_Int(baseColor));
+
+	return SkipGameCode;
+}
+
+// Skip setting color for the dot, it is already done in previous hook.
+DEFINE_JUMP(LJMP, 0x705986, 0x7059C7);
+
+#pragma endregion
+
+#pragma region Customized FallingDown Damage
+
+DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	// Reset value, otherwise it'll keep accelerating.
+	pThis->FallRate = 0;
+	return 0;
+}
+
+DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
+{
+	GET(ObjectClass*, pThis, ESI);
+
+	pThis->FallRate = 0;
+
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pThis))
+	{
+		const auto pType = pTechno->GetTechnoType();
+		const auto pCell = pTechno->GetCell();
+
+		if (!pCell->IsClearToMove(pType->SpeedType, true, true, -1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+			return 0;
+
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		double ratio = 0.0;
+
+		if (pCell->LandType == LandType::Water && !pTechno->OnBridge)
+			ratio = pTypeExt->FallingDownDamage_Water.Get(pTypeExt->FallingDownDamage.Get());
+		else
+			ratio = pTypeExt->FallingDownDamage.Get();
+
+		int damage = 0;
+
+		if (ratio < 0.0)
+			damage = static_cast<int>(pThis->Health * std::abs(ratio));
+		else if (ratio >= 0.0 && ratio <= 1.0)
+			damage = static_cast<int>(pType->Strength * ratio);
+		else
+			damage = static_cast<int>(ratio);
+
+		pThis->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, nullptr, true, true, nullptr);
+
+		if (pThis->Health > 0 && pThis->IsAlive)
+		{
+			pThis->IsABomb = false;
+			const auto abs = pThis->WhatAmI();
+
+			if (abs == AbstractType::Infantry)
+			{
+				const auto pInf = static_cast<InfantryClass*>(pTechno);
+				const auto sequenceAnim = pInf->SequenceAnim;
+				pInf->ShouldDeploy = false;
+
+				if (pCell->LandType == LandType::Water && !pInf->OnBridge)
+				{
+					if (sequenceAnim != Sequence::Swim)
+						pInf->PlayAnim(Sequence::Swim, true, false);
+				}
+				else if (sequenceAnim != Sequence::Guard)
+				{
+					pInf->PlayAnim(Sequence::Ready, true, false);
+				}
+
+				pInf->Scatter(pInf->GetCoords(), true, false);
+			}
+			else if (abs == AbstractType::Unit)
+			{
+				static_cast<UnitClass*>(pTechno)->UpdatePosition(PCPType::During);
+			}
+		}
+
+		return 0x5F405B;
+	}
+
+	return 0;
+}
+
+#pragma endregion

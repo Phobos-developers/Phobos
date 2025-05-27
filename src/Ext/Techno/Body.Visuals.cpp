@@ -11,20 +11,21 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	bool drawPip = false;
-	bool isInfantryHeal = false;
-	int selfHealFrames = 0;
-
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
 		return;
 
+	bool drawPip = false;
+	bool isInfantryHeal = false;
+	int selfHealFrames = 0;
 	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
 	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
 	bool isOrganic = false;
+	auto const whatAmI = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Infantry || (pThis->GetTechnoType()->Organic && pThis->WhatAmI() == AbstractType::Unit))
+	if (whatAmI == AbstractType::Infantry || (pType->Organic && whatAmI == AbstractType::Unit))
 		isOrganic = true;
 
 	auto hasSelfHeal = [pThis](const bool infantryHeal)
@@ -64,7 +65,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
 		isInfantryHeal = true;
 	}
-	else if ((hasUnitSelfHeal || (pThis->WhatAmI() == AbstractType::Unit && !isOrganic)) && hasSelfHeal(false))
+	else if ((hasUnitSelfHeal || (whatAmI == AbstractType::Unit && !isOrganic)) && hasSelfHeal(false))
 	{
 		drawPip = true;
 		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
@@ -78,35 +79,35 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 		int yOffset = 0;
 
 		if (Unsorted::CurrentFrame % selfHealFrames <= 5
-			&& pThis->Health < pThis->GetTechnoType()->Strength)
+			&& pThis->Health < pType->Strength)
 		{
 			isSelfHealFrame = true;
 		}
 
-		if (pThis->WhatAmI() == AbstractType::Unit || pThis->WhatAmI() == AbstractType::Aircraft)
+		if (whatAmI == AbstractType::Unit || whatAmI == AbstractType::Aircraft)
 		{
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Units_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Units;
 			xOffset = offset.X;
-			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+			yOffset = offset.Y + pType->PixelSelectionBracketDelta;
 		}
-		else if (pThis->WhatAmI() == AbstractType::Infantry)
+		else if (whatAmI == AbstractType::Infantry)
 		{
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Infantry_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Infantry;
 			xOffset = offset.X;
-			yOffset = offset.Y + pThis->GetTechnoType()->PixelSelectionBracketDelta;
+			yOffset = offset.Y + pType->PixelSelectionBracketDelta;
 		}
 		else
 		{
-			auto pType = static_cast<BuildingClass*>(pThis)->Type;
-			int fHeight = pType->GetFoundationHeight(false);
+			auto pBldType = static_cast<BuildingClass*>(pThis)->Type;
+			int fHeight = pBldType->GetFoundationHeight(false);
 			int yAdjust = -Unsorted::CellHeightInPixels / 2;
 
 			auto& offset = RulesExt::Global()->Pips_SelfHeal_Buildings_Offset.Get();
 			pipFrames = RulesExt::Global()->Pips_SelfHeal_Buildings;
 			xOffset = offset.X + Unsorted::CellWidthInPixels / 2 * fHeight;
-			yOffset = offset.Y + yAdjust * fHeight + pType->Height * yAdjust;
+			yOffset = offset.Y + yAdjust * fHeight + pBldType->Height * yAdjust;
 		}
 
 		int pipFrame = isInfantryHeal ? pipFrames.Get().X : pipFrames.Get().Y;
@@ -125,11 +126,6 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
-	Point2D offset = *pLocation;
-
-	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
-	int defaultFrameIndex = -1;
-
 	auto pTechnoType = pThis->GetTechnoType();
 	auto pOwner = pThis->Owner;
 
@@ -152,6 +148,9 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	if (!isVisibleToPlayer)
 		return;
 
+	Point2D offset = *pLocation;
+	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
+	int defaultFrameIndex = -1;
 	bool isCustomInsignia = false;
 
 	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
@@ -165,6 +164,29 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	auto insigniaFrames = pTechnoTypeExt->InsigniaFrames.Get();
 	int insigniaFrame = insigniaFrames.X;
 	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
+
+	if (pTechnoType->Passengers > 0)
+	{
+		int passengersIndex = pTechnoTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
+		passengersIndex = Math::min(passengersIndex, pTechnoType->Passengers);
+
+		if (auto const pCustomShapeFile = pTechnoTypeExt->Insignia_Passengers[passengersIndex].Get(pThis))
+		{
+			pShapeFile = pCustomShapeFile;
+			defaultFrameIndex = 0;
+			isCustomInsignia = true;
+		}
+
+		int frame = pTechnoTypeExt->InsigniaFrame_Passengers[passengersIndex].Get(pThis);
+
+		if (frame != -1)
+			frameIndex = frame;
+
+		auto const& frames = pTechnoTypeExt->InsigniaFrames_Passengers[passengersIndex];
+
+		if (frames != Vector3D<int>(-1, -1, -1))
+			insigniaFrames = frames.Get();
+	}
 
 	if (pTechnoType->Gunner)
 	{
@@ -182,10 +204,10 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 		if (frame != -1)
 			frameIndex = frame;
 
-		auto& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
+		auto const& frames = pTechnoTypeExt->InsigniaFrames_Weapon[weaponIndex];
 
 		if (frames != Vector3D<int>(-1, -1, -1))
-			insigniaFrames = frames;
+			insigniaFrames = frames.Get();
 	}
 
 	if (pVeterancy->IsVeteran())
@@ -221,6 +243,8 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			offset += RulesExt::Global()->DrawInsignia_AdjustPos_Units;
 			break;
 		}
+
+		offset.Y += RulesExt::Global()->DrawInsignia_UsePixelSelectionBracketDelta ? pTechnoType->PixelSelectionBracketDelta : 0;
 
 		DSurface::Temp->DrawSHP(
 			FileSystem::PALETTE_PAL, pShapeFile, frameIndex, &offset, pBounds, BlitterFlags(0xE00), 0, -2, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -303,6 +327,69 @@ Point2D TechnoExt::GetBuildingSelectBracketPosition(TechnoClass* pThis, Building
 	return position;
 }
 
+void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore)
+{
+	const auto whatAmI = pThis->WhatAmI();
+	const auto pType = pThis->GetTechnoType();
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	SelectBoxTypeClass* pSelectBox = nullptr;
+
+	if (pTypeExt->SelectBox.isset())
+		pSelectBox = pTypeExt->SelectBox.Get();
+	else if (whatAmI == InfantryClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultInfantrySelectBox.Get();
+	else if (whatAmI != BuildingClass::AbsID)
+		pSelectBox = RulesExt::Global()->DefaultUnitSelectBox.Get();
+
+	if (!pSelectBox || pSelectBox->DrawAboveTechno == drawBefore)
+		return;
+
+	const auto pShape = pSelectBox->Shape.Get();
+
+	if (!pShape)
+		return;
+
+	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->VisibleToHouses_Observer : EnumFunctions::CanTargetHouse(pSelectBox->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer);
+
+	if (!canSee)
+		return;
+
+	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+	const double healthPercentage = pThis->GetHealthPercentage();
+	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
+	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+
+	Point2D drawPoint = *pLocation;
+
+	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
+	{
+		CoordStruct coords = pThis->GetCenterCoords();
+		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+
+		const auto& [outClient, visible] = TacticalClass::Instance->CoordsToClient(coords);
+
+		if (!visible)
+			return;
+
+		drawPoint = outClient;
+	}
+
+	drawPoint += pSelectBox->Offset;
+
+	if (pSelectBox->DrawAboveTechno)
+		drawPoint.Y += pType->PixelSelectionBracketDelta;
+
+	if (whatAmI == AbstractType::Infantry)
+		drawPoint += { 8, -3 };
+	else
+		drawPoint += { 1, -4 };
+
+	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
+
+	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+}
+
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 {
 	if (!Phobos::Config::DigitalDisplay_Enable)
@@ -314,9 +401,9 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	if (pTypeExt->DigitalDisplay_Disable)
 		return;
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	int length = 17;
 	ValueableVector<DigitalDisplayTypeClass*>* pDisplayTypes = nullptr;
+	const auto whatAmI = pThis->WhatAmI();
 
 	if (!pTypeExt->DigitalDisplayTypes.empty())
 	{
@@ -324,7 +411,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 	}
 	else
 	{
-		switch (pThis->WhatAmI())
+		switch (whatAmI)
 		{
 		case AbstractType::Building:
 		{
@@ -355,6 +442,11 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		}
 	}
 
+	const auto pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+	const bool hasShield = pShield && !pShield->IsBrokenAndNonRespawning();
+	const bool isBuilding = whatAmI == AbstractType::Building;
+	const bool isInfantry = whatAmI == AbstractType::Infantry;
+
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
 		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
@@ -377,16 +469,13 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 			maxValue = Math::max(maxValue / pDisplayType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
 		}
 
-		const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
-		const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
-		const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
-		Point2D position = pThis->WhatAmI() == AbstractType::Building ?
+		Point2D position = whatAmI == AbstractType::Building ?
 			GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
 			: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
 		position.Y += pType->PixelSelectionBracketDelta;
 
 		if (pDisplayType->InfoType == DisplayInfoType::Shield)
-			position.Y += pExt->Shield->GetType()->BracketDelta;
+			position.Y += pShield->GetType()->BracketDelta;
 
 		pDisplayType->Draw(position, length, value, maxValue, isBuilding, isInfantry, hasShield);
 	}
@@ -395,7 +484,6 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue)
 {
 	const auto pType = pThis->GetTechnoType();
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	switch (infoType)
 	{
@@ -407,11 +495,13 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Shield:
 	{
-		if (pExt->Shield == nullptr || pExt->Shield->IsBrokenAndNonRespawning())
+		auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
+
+		if (!pShield || pShield->IsBrokenAndNonRespawning())
 			return;
 
-		value = pExt->Shield->GetHP();
-		maxValue = pExt->Shield->GetType()->Strength.Get();
+		value = pShield->GetHP();
+		maxValue = pShield->GetType()->Strength.Get();
 		break;
 	}
 	case DisplayInfoType::Ammo:
@@ -470,8 +560,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->WhatAmI() != AbstractType::Building)
 			return;
 
-		const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
-		const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
 		if (!pBuildingType->CanBeOccupied)
 			return;

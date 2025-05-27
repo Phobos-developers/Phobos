@@ -8,17 +8,16 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		if (pExt->AutoFire)
-		{
-			if (pExt->AutoFire_TargetSelf)
-				pThis->SetTarget(pThis);
-			else
-				pThis->SetTarget(pThis->GetCell());
+	auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-			return 0x7099B8;
-		}
+	if (pExt->AutoFire)
+	{
+		if (pExt->AutoFire_TargetSelf)
+			pThis->SetTarget(pThis);
+		else
+			pThis->SetTarget(pThis->GetCell());
+
+		return 0x7099B8;
 	}
 
 	return 0;
@@ -59,12 +58,13 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 {
 	enum { AllowedObject = 0x6F7EA2, DisallowedObject = 0x6F894F };
 
-	GET(TechnoClass*, pThis, EDI);
 	GET(ObjectClass*, pObject, ESI);
-	GET(int, zone, EBP);
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
+		GET(TechnoClass*, pThis, EDI);
+		GET(int, zone, EBP);
+
 		if (!TechnoExt::AllowedTargetByZone(pThis, pTechno, MapZoneTemp::zoneScanType, nullptr, true, zone))
 			return DisallowedObject;
 	}
@@ -147,6 +147,75 @@ DEFINE_FUNCTION_JUMP(CALL6, 0x6F8DD2, TechnoClass_EvaluateCellGetWeaponRangeWrap
 
 #pragma endregion
 
+#pragma region AggressiveAttackMove
+
+static inline bool CheckAttackMoveCanResetTarget(FootClass* pThis)
+{
+	const auto pTarget = pThis->Target;
+
+	if (!pTarget || pTarget == pThis->MegaTarget)
+		return false;
+
+	const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget);
+
+	if (!pTargetTechno || pTargetTechno->IsArmed())
+		return false;
+
+	if (pThis->TargetingTimer.InProgress())
+		return false;
+
+	const auto pPrimaryWeapon = pThis->GetWeapon(0)->WeaponType;
+
+	if (!pPrimaryWeapon)
+		return false;
+
+	const auto pNewTarget = abstract_cast<TechnoClass*>(pThis->GreatestThreat(ThreatType::Range, &pThis->Location, false));
+
+	if (!pNewTarget || pNewTarget->GetTechnoType() == pTargetTechno->GetTechnoType())
+		return false;
+
+	const auto pSecondaryWeapon = pThis->GetWeapon(1)->WeaponType;
+
+	if (!pSecondaryWeapon || !pSecondaryWeapon->NeverUse) // Melee unit's virtual scanner
+		return true;
+
+	return pSecondaryWeapon->Range <= pPrimaryWeapon->Range;
+}
+
+DEFINE_HOOK(0x4DF3A0, FootClass_UpdateAttackMove_SelectNewTarget, 0x6)
+{
+	GET(FootClass* const, pThis, ECX);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->TypeExtData->AttackMove_UpdateTarget.Get(RulesExt::Global()->AttackMove_UpdateTarget) && CheckAttackMoveCanResetTarget(pThis))
+	{
+		pThis->Target = nullptr;
+		pThis->HaveAttackMoveTarget = false;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F85AB, TechnoClass_CanAutoTargetObject_AggressiveAttackMove, 0x6)
+{
+	enum { ContinueCheck = 0x6F85BA, CanTarget = 0x6F8604 };
+
+	GET(TechnoClass* const, pThis, EDI);
+
+	if (!pThis->Owner->IsControlledByHuman())
+		return CanTarget;
+
+	if (!pThis->MegaMissionIsAttackMove())
+		return ContinueCheck;
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	return pExt->TypeExtData->AttackMove_Aggressive.Get(RulesExt::Global()->AttackMove_Aggressive) ? CanTarget : ContinueCheck;
+}
+
+#pragma endregion
+
 #pragma region HealingWeapons
 
 #pragma region TechnoClass_EvaluateObject
@@ -181,7 +250,7 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 					const auto pFoot = abstract_cast<FootClass*>(pTechno);
 
 					if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
-						result = pExt->Shield->GetHealthRatio();
+						result = pShieldData->GetHealthRatio();
 				}
 			}
 		}
@@ -211,24 +280,23 @@ public:
 
 		if (const auto pTechno = abstract_cast<TechnoClass*>(pObj))
 		{
-			if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+			const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+
+			if (const auto pShieldData = pExt->Shield.get())
 			{
-				if (const auto pShieldData = pExt->Shield.get())
+				if (pShieldData->IsActive())
 				{
-					if (pShieldData->IsActive())
+					const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+					const auto pFoot = abstract_cast<FootClass*>(pObj);
+
+					if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
 					{
-						const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-						const auto pFoot = abstract_cast<FootClass*>(pObj);
+						const auto shieldRatio = pExt->Shield->GetHealthRatio();
 
-						if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
+						if (shieldRatio < 1.0)
 						{
-							const auto shieldRatio = pExt->Shield->GetHealthRatio();
-
-							if (shieldRatio < 1.0)
-							{
-								LinkedObj = pObj;
-								--LinkedObj->Health;
-							}
+							LinkedObj = pObj;
+							--LinkedObj->Health;
 						}
 					}
 				}
