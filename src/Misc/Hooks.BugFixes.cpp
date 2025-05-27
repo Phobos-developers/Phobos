@@ -1968,44 +1968,18 @@ DEFINE_HOOK(0x64D5C5, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal3, 0x
 	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
 }
 
-bool __fastcall ShouldSkipCellCheck(FootClass* pThis)
+DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
 {
-	return pThis->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir();
+	enum { MoveOK = 0x51C02D };
+	GET(InfantryClass*, pThis, EBP);
+	return pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir() ? MoveOK : 0;
 }
 
-DEFINE_NAKED_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start)
+DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
 {
-	InfantryClass* pThis;
-	_asm { mov pThis, ebp }
-	_asm { mov esi, ecx }
-	if (ShouldSkipCellCheck(pThis))
-	{
-		_asm { mov eax, 0x51C02D }
-	}
-	else
-	{
-		_asm { mov ecx, esi }
-		_asm { test [ecx+140h], ebx }
-		_asm { mov eax, 0x51BFA8 }
-	}
-	_asm { jmp eax }
-}
-
-DEFINE_NAKED_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start)
-{
-	UnitClass* pThis;
-	_asm { mov pThis, ecx }
-	if (ShouldSkipCellCheck(pThis))
-	{
-		_asm { mov eax, 0x73F23F }
-	}
-	else
-	{
-		_asm { mov ebx, ecx }
-		_asm { mov ecx, [esp+88h] }
-		_asm { mov eax, 0x73F0B0 }
-	}
-	_asm { jmp eax }
+	enum { MoveOK = 0x73F23F };
+	GET(UnitClass*, pThis, ECX);
+	return pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir() ? MoveOK : 0;
 }
 
 namespace ApproachTargetContext
@@ -2013,22 +1987,11 @@ namespace ApproachTargetContext
 	bool IsBalloonHover = false;
 }
 
-bool __fastcall ShouldSetContext(FootClass* pThis)
+DEFINE_HOOK(0x4D5690, FootClass_ApproachTarget_SetContext, 0x6)
 {
-	return pThis->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix;
-}
-
-DEFINE_NAKED_HOOK(0x4D5690, FootClass_ApproachTarget_SetContext)
-{
-	FootClass* pThis;
-	_asm { mov pThis, ecx }
-	ShouldSetContext(pThis);
-	_asm { mov ApproachTargetContext::IsBalloonHover, al }
-	_asm { push ebp }
-	_asm { mov ebp, esp }
-	_asm { and esp, 0FFFFFFF8h }
-	_asm { mov eax, 0x4D5696 }
-	_asm { jmp eax }
+	GET(FootClass*, pThis, ECX);
+	ApproachTargetContext::IsBalloonHover = pThis->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix;
+	return 0;
 }
 
 DEFINE_HOOK_AGAIN(0x4D5A42, FootClass_ApproachTarget_ResetContext, 0x5);
