@@ -911,3 +911,16 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->WhatAmI() == AbstractType::Unit)
+	{
+		static_cast<UnitClass*>(pThis)->unknown_int_6C0 = -1;
+		TechnoExt::ExtMap.Find(pThis)->FireUp = 0;
+	}
+
+	return 0;
+}

@@ -358,6 +358,9 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
+		Valueable<int> FireUp;
+		//Nullable<int> SecondaryFire;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -667,6 +670,9 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, FireUp { 0 }
+			//, SecondaryFire {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -679,6 +685,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
