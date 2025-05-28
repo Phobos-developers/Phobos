@@ -770,7 +770,8 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
     - `Trajectory.RotateCoord` controls whether to rotate the projectile's firing direction within the angle bisector of `Trajectory.OffsetCoord` (or `Trajectory.Missile.PreAimCoord` in `Trajectory=Missile`) according to the most superior's weapon's `Burst`. Set to 0 to disable this function. Negative values will reverse the direction of rotation.
     - `Trajectory.MirrorCoord` controls whether `Trajectory.OffsetCoord` (and `Trajectory.Missile.PreAimCoord` in `Trajectory=Missile`) need to automatically mirror the lateral value to adapt to the firer's current burst index. At the same time as mirroring, the rotation direction calculated by `Trajectory.RotateCoord` will also be reversed, and the rotation angle between each adjacent projectile on each side will not change as a result.
     - `Trajectory.AxisOfRotation` controls the rotation axis when calculating `Trajectory.RotateCoord`. The axis will rotates with the unit orientation or the vector that from target position to the source position. The length is not important, but the direction is important (the opposite vector will also reverse the rotation direction).
-  - `Trajectory.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing. Note that this will not affect the facing of the turret.
+  - `Trajectory.LeadTimeCalculate` controls whether the projectile need to calculate the lead time of the target when firing.
+    - `Trajectory.LeadTimeMaximum` controls the projectile to predict how long the target will continue to move (used to prevent the projectile from flying too far).
   - `Trajectory.DetonationDistance` controls the maximum distance in cells from intended target at which the projectile will be forced to detonate. Set to 0 to disable forced detonation. The following are exceptions.
     - In `Trajectory=Straight`, if `Trajectory.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied here as well. By setting `Trajectory.Straight.PassThrough=true`, it refers to the distance that projectile should travel from its firer when it above 0, and the distance that projectile should move behind the target when it below 0 (use the absolute value), and keep moving without distance restrictions when it is zero.
     - In `Trajectory=Bombard` and `Trajectory=Parabola`, when it is set to a negative value, if the target is movable, it will change its target to the cell where the target is located (This is a function expanded for `Trajectory.DisperseWeapons` and `AirburstWeapon`).
@@ -802,6 +803,7 @@ Trajectory.RotateCoord=0              ; floating point value
 Trajectory.MirrorCoord=true           ; boolean
 Trajectory.AxisOfRotation=0,0,1       ; integer - Forward,Lateral,Height
 Trajectory.LeadTimeCalculate=false    ; boolean
+Trajectory.LeadTimeMaximum=0          ; integer, game frames
 Trajectory.DetonationDistance=0.4     ; floating point value
 Trajectory.TargetSnapDistance=0.5     ; floating point value
 Trajectory.EarlyDetonation=false      ; boolean
@@ -811,6 +813,11 @@ Trajectory.AllowFirerTurning=true     ; boolean
 
 ```{note}
 - Make sure you set a low `Trajectory.RetargetRadius` value unless necessary.
+- `Trajectory.LeadTimeCalculate` will not affect the facing of the turret.
+```
+
+```{hint}
+- `Trajectory.LeadTimeCalculate` performs best when the projectile speed is 2 to 3 times the target speed.
 ```
 
 - It also has linkage functions with `Inaccurate`, `BallisticScatter.Min`, `BallisticScatter.Max`, `Gravity`, `SubjectToGround`.
@@ -840,6 +847,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
 | `Trajectory.MirrorCoord` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
 | `Trajectory.AxisOfRotation` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
 | `Trajectory.LeadTimeCalculate` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
+| `Trajectory.LeadTimeMaximum` | ⚪ | ⚪ | · | · | ⚪ | · |
 | `Trajectory.DetonationDistance` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
 | `Trajectory.TargetSnapDistance` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
 | `Trajectory.EarlyDetonation` | · | ⚪ | · | · | ⚪ | · |
@@ -877,8 +885,8 @@ In `rulesmd.ini`:
 Trajectory.PassDetonate=false          ; boolean
 Trajectory.PassDetonateWarhead=        ; WarheadType
 Trajectory.PassDetonateDamage=         ; integer
-Trajectory.PassDetonateDelay=1         ; integer
-Trajectory.PassDetonateInitialDelay=0  ; integer
+Trajectory.PassDetonateDelay=1         ; integer, game frames
+Trajectory.PassDetonateInitialDelay=0  ; integer, game frames
 Trajectory.PassDetonateLocal=false     ; boolean
 Trajectory.ProximityImpact=0           ; integer
 Trajectory.ProximityWarhead=           ; WarheadType
@@ -932,9 +940,9 @@ In `rulesmd.ini`:
 Trajectory.DisperseWeapons=          ; list of WeaponTypes
 Trajectory.DisperseBursts=           ; list of integers
 Trajectory.DisperseCounts=           ; list of integers
-Trajectory.DisperseDelays=           ; list of integers
+Trajectory.DisperseDelays=           ; list of integers, game frames
 Trajectory.DisperseCycle=0           ; integer
-Trajectory.DisperseInitialDelay=0    ; integer
+Trajectory.DisperseInitialDelay=0    ; integer, game frames
 Trajectory.DisperseEffectiveRange=0  ; floating point value
 Trajectory.DisperseSeparate=false    ; boolean
 Trajectory.DisperseRetarget=false    ; boolean
@@ -1076,7 +1084,7 @@ Trajectory.Engrave.LaserOuterColor=0,0,0   ; integer - Red,Green,Blue
 Trajectory.Engrave.LaserOuterSpread=0,0,0  ; integer - Red,Green,Blue
 Trajectory.Engrave.LaserThickness=3        ; integer
 Trajectory.Engrave.LaserDuration=1         ; integer
-Trajectory.Engrave.LaserDelay=1            ; integer
+Trajectory.Engrave.LaserDelay=1            ; integer, game frames
 Trajectory.Engrave.AttachToTarget=false    ; boolean
 Trajectory.Engrave.UpdateDirection=false   ; boolean
 ```

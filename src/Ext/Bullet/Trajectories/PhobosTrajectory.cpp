@@ -380,7 +380,7 @@ bool PhobosTrajectory::OnVelocityCheck()
 				const auto cellDist = sourceCell - targetCell;
 				const auto cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
 				// Take big steps as much as possible to reduce check times, just ensure that each cell is inspected
-				const auto largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
+				const auto largePace = static_cast<size_t>(Math::max(cellPace.X, cellPace.Y));
 				const auto stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
 				auto curCoord = theSourceCoords;
 				auto pCurCell = MapClass::Instance.GetCellAt(sourceCell);
@@ -550,7 +550,7 @@ void PhobosTrajectory::MultiplyBulletVelocity(const double ratio, const bool sho
 
 	\author CrimRecya
 */
-void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity& aim, double turningRadian)
+void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian)
 {
 	const auto baseFactor = sqrt(aim.MagnitudeSquared() * vector.MagnitudeSquared());
 	// Not valid vector
@@ -590,7 +590,7 @@ void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity
 
 	\author CrimRecya
 */
-void PhobosTrajectory::RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, double radian)
+void PhobosTrajectory::RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, const double radian)
 {
 	const auto axisLengthSquared = axis.MagnitudeSquared();
 	// Zero axis vector is not acceptable

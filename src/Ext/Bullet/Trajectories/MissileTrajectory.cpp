@@ -308,7 +308,7 @@ CoordStruct MissileTrajectory::GetPreAimCoordsWithBurst()
 	return preAimCoord;
 }
 
-bool MissileTrajectory::CalculateReducedVelocity(double rotateRadian)
+bool MissileTrajectory::CalculateReducedVelocity(const double rotateRadian)
 {
 	const auto pType = this->Type;
 	// Check if it can reduce

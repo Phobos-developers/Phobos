@@ -81,18 +81,30 @@ public:
 	virtual void MultiplyBulletVelocity(const double ratio, const bool shouldDetonate) override;
 
 private:
-	void CalculateBulletVelocityRightNow(const CoordStruct& pSourceCoords, double gravity);
-	void CalculateBulletVelocityLeadTime(const CoordStruct& pSourceCoords, double gravity);
-	double SearchVelocity(double horizontalDistance, int distanceCoordsZ, double radian, double gravity);
-	double CheckVelocityEquation(double horizontalDistance, int distanceCoordsZ, double velocity, double radian, double gravity);
-	double SolveFixedSpeedMeetTime(const CoordStruct& pSourceCrd, const CoordStruct& pTargetCrd, const CoordStruct& pOffsetCrd, double horizontalSpeed);
-	double SearchFixedHeightMeetTime(const CoordStruct& pSourceCrd, const CoordStruct& pTargetCrd, const CoordStruct& pOffsetCrd, double gravity);
-	double CheckFixedHeightEquation(const CoordStruct& pSourceCrd, const CoordStruct& pTargetCrd, const CoordStruct& pOffsetCrd, double meetTime, double gravity);
-	double SearchFixedAngleMeetTime(const CoordStruct& pSourceCrd, const CoordStruct& pTargetCrd, const CoordStruct& pOffsetCrd, double radian, double gravity);
-	double CheckFixedAngleEquation(const CoordStruct& pSourceCrd, const CoordStruct& pTargetCrd, const CoordStruct& pOffsetCrd, double meetTime, double radian, double gravity);
+	void CalculateBulletVelocityRightNow(const CoordStruct& pSourceCoords, const double gravity);
+	void CalculateBulletVelocityLeadTime(const CoordStruct& pSourceCoords, const double gravity);
+	double SearchVelocity(const double horizontalDistance, int distanceCoordsZ, const double radian, const double gravity);
+	double CheckVelocityEquation(const double horizontalDistance, int distanceCoordsZ, const double velocity, const double radian, const double gravity);
+	double SolveFixedSpeedMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double horizontalSpeed);
+	double SearchFixedHeightMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double gravity);
+	double CheckFixedHeightEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double gravity);
+	double SearchFixedAngleMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double radian, const double gravity);
+	double CheckFixedAngleEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double radian, const double gravity);
 	bool CalculateBulletVelocityAfterBounce(const CellClass* const pCell, const CoordStruct& position);
 	BulletVelocity GetGroundNormalVector(const CellClass* const pCell, const CoordStruct& position);
-	static bool CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight);
+
+	static inline bool CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight)
+	{
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(CellStruct{ X, Y }))
+		{
+			const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
+			// (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
+			if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
+				return true;
+		}
+
+		return false;
+	}
 
 	template <typename T>
 	void Serialize(T& Stm);

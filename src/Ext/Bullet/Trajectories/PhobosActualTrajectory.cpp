@@ -9,6 +9,7 @@ void ActualTrajectoryType::Serialize(T& Stm)
 		.Process(this->RotateCoord)
 		.Process(this->OffsetCoord)
 		.Process(this->AxisOfRotation)
+		.Process(this->LeadTimeMaximum)
 		.Process(this->LeadTimeCalculate)
 		.Process(this->SubjectToGround)
 		.Process(this->EarlyDetonation)
@@ -40,6 +41,7 @@ void ActualTrajectoryType::Read(CCINIClass* const pINI, const char* pSection) //
 	this->RotateCoord.Read(exINI, pSection, "Trajectory.RotateCoord");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.OffsetCoord");
 	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.AxisOfRotation");
+	this->LeadTimeMaximum.Read(exINI, pSection, "Trajectory.LeadTimeMaximum");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.LeadTimeCalculate");
 	this->EarlyDetonation.Read(exINI, pSection, "Trajectory.EarlyDetonation");
 	this->DetonationHeight.Read(exINI, pSection, "Trajectory.DetonationHeight");
@@ -136,7 +138,7 @@ bool ActualTrajectory::BulletPrepareCheck()
 	return false;
 }
 
-CoordStruct ActualTrajectory::GetOnlyStableOffsetCoords(double rotateRadian)
+CoordStruct ActualTrajectory::GetOnlyStableOffsetCoords(const double rotateRadian)
 {
 	const auto pType = static_cast<const ActualTrajectoryType*>(this->GetType());
 	auto offsetCoord = pType->OffsetCoord.Get();
@@ -147,7 +149,7 @@ CoordStruct ActualTrajectory::GetOnlyStableOffsetCoords(double rotateRadian)
 	return PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offsetCoord, rotateRadian));
 }
 
-CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseCoord, double distance)
+CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseCoord, const double distance)
 {
 	const auto pBullet = this->Bullet;
 	const auto pWeapon = pBullet->WeaponType;
@@ -161,7 +163,7 @@ CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseC
 	return MapClass::GetRandomCoordsNear(baseCoord, offsetDistance, false);
 }
 
-void ActualTrajectory::DisperseBurstSubstitution(double baseRadian)
+void ActualTrajectory::DisperseBurstSubstitution(const double baseRadian)
 {
 	const auto pType = static_cast<const ActualTrajectoryType*>(this->GetType());
 	const auto axis = pType->AxisOfRotation.Get();

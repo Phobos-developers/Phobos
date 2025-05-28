@@ -9,6 +9,7 @@ public:
 		, RotateCoord { 0 }
 		, OffsetCoord { { 0, 0, 0 } }
 		, AxisOfRotation { { 0, 0, 1 } }
+		, LeadTimeMaximum { 0 }
 		, LeadTimeCalculate {}
 		, SubjectToGround { false }
 		, EarlyDetonation { false }
@@ -20,6 +21,7 @@ public:
 	Valueable<double> RotateCoord; // The maximum rotation angle of the initial velocity vector on the axis of rotation
 	Valueable<CoordStruct> OffsetCoord; // Offset of target position, refers to the initial target position on Missile
 	Valueable<CoordStruct> AxisOfRotation; // RotateCoord's rotation axis
+	Valueable<int> LeadTimeMaximum; // Maximum prediction time
 	Nullable<bool> LeadTimeCalculate; // Predict the moving direction of the target
 	bool SubjectToGround; // Auto set
 	Valueable<bool> EarlyDetonation; // Calculating DetonationHeight in the rising phase rather than the falling phase
@@ -68,11 +70,17 @@ public:
 				this->ShouldDetonate = true;
 		}
 	}
+	inline double GetLeadTime(const double defaultTime)
+	{
+		const double maximum = static_cast<double>(static_cast<const ActualTrajectoryType*>(this->GetType())->LeadTimeMaximum.Get());
+
+		return (maximum > 0.0 && defaultTime > maximum) ? maximum : defaultTime;
+	}
 
 	bool BulletPrepareCheck();
-	CoordStruct GetOnlyStableOffsetCoords(double rotateRadian);
-	CoordStruct GetInaccurateTargetCoords(const CoordStruct& baseCoord, double distance);
-	void DisperseBurstSubstitution(double baseRadian);
+	CoordStruct GetOnlyStableOffsetCoords(const double rotateRadian);
+	CoordStruct GetInaccurateTargetCoords(const CoordStruct& baseCoord, const double distance);
+	void DisperseBurstSubstitution(const double baseRadian);
 
 private:
 	template <typename T>

@@ -91,7 +91,7 @@ public:
 private:
 	void InitializeBulletNotCurve();
 	CoordStruct GetPreAimCoordsWithBurst();
-	bool CalculateReducedVelocity(double rotateRadian);
+	bool CalculateReducedVelocity(const double rotateRadian);
 	bool CurveVelocityChange();
 	bool NotCurveVelocityChange();
 	bool StandardVelocityChange();

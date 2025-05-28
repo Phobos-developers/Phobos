@@ -489,7 +489,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	}
 	// Step 3: Record each target without repetition.
 	std::vector<int> casualtyChecked;
-	casualtyChecked.reserve(std::max(validTechnos.size(), this->TheCasualty.size()));
+	casualtyChecked.reserve(Math::max(validTechnos.size(), this->TheCasualty.size()));
 	// No impact on firer
 	if (pFirer)
 		this->TheCasualty[pFirer->UniqueID] = 5;

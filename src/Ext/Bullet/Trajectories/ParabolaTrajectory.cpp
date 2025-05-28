@@ -79,6 +79,7 @@ void ParabolaTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->RotateCoord.Read(exINI, pSection, "Trajectory.RotateCoord");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.OffsetCoord");
 	this->AxisOfRotation.Read(exINI, pSection, "Trajectory.AxisOfRotation");
+	this->LeadTimeMaximum.Read(exINI, pSection, "Trajectory.LeadTimeMaximum");
 	this->LeadTimeCalculate.Read(exINI, pSection, "Trajectory.LeadTimeCalculate");
 	this->EarlyDetonation.Read(exINI, pSection, "Trajectory.EarlyDetonation");
 	this->DetonationHeight.Read(exINI, pSection, "Trajectory.DetonationHeight");
@@ -218,7 +219,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			const auto cellDist = sourceCell - targetCell;
 			const auto cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
 			// Take big steps as much as possible to reduce check times, just ensure that each cell is inspected
-			auto largePace = static_cast<size_t>(std::max(cellPace.X, cellPace.Y));
+			auto largePace = static_cast<size_t>(Math::max(cellPace.X, cellPace.Y));
 			const auto stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
 			auto curCoord = theSourceCoords;
 			auto pCurCell = MapClass::Instance.GetCellAt(sourceCell);
@@ -364,7 +365,7 @@ void ParabolaTrajectory::FireTrajectory()
 	if (pTarget)
 		target = pTarget->GetCoords();
 	// Calculate the orientation of the coordinate system
-	const double rotateRadian = this->Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
+	const auto rotateRadian = this->Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
 	// Add the fixed offset value
 	if (pType->OffsetCoord != CoordStruct::Empty)
 		target += this->GetOnlyStableOffsetCoords(rotateRadian);
@@ -405,34 +406,36 @@ void ParabolaTrajectory::MultiplyBulletVelocity(const double ratio, const bool s
 		this->ShouldBounce = true;
 }
 
-void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& source, double gravity)
+void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& source, const double gravity)
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
-	auto target = pBullet->Target->GetCoords();
-	auto offset = pBullet->TargetCoords - target;
+	const auto target = pBullet->Target->GetCoords();
+	const auto offset = pBullet->TargetCoords - target;
 
 	switch (pType->OpenFireMode)
 	{
 	case ParabolaFireMode::Height: // Fixed max height and aim at the target
 	{
 		// Step 1: Using Newton Iteration Method to determine the time of encounter between the projectile and the target
-		const auto meetTime = this->SearchFixedHeightMeetTime(source, target, offset, gravity);
+		const auto meetTime = this->GetLeadTime(this->SearchFixedHeightMeetTime(source, target, offset, gravity));
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (target - this->LastTargetCoord) * meetTime;
 		const auto destinationCoords = pBullet->TargetCoords - source;
 		// Step 3: Check if it is an unsolvable solution
 		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
 			break;
-		// Step 4: Calculate the horizontal component of the projectile velocity
-		this->MovingVelocity.X = destinationCoords.X / meetTime;
-		this->MovingVelocity.Y = destinationCoords.Y / meetTime;
-		// Step 5: Determine the maximum height that the projectile should reach
+		// Step 4: Determine the maximum height that the projectile should reach
 		const auto sourceHeight = source.Z;
-		const auto targetHeight = sourceHeight + destinationCoords.Z;
+		const auto targetHeight = pBullet->TargetCoords.Z;
 		const auto maxHeight = destinationCoords.Z > 0 ? this->ThrowHeight + targetHeight : this->ThrowHeight + sourceHeight;
-		// Step 6: Calculate the vertical component of the projectile velocity
+		// Step 5: Calculate the vertical component of the projectile velocity
 		this->MovingVelocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight)) + gravity / 2;
+		// Step 6: Calculate the total time it takes for the projectile to meet the target using the heights of the ascending and descending phases
+		const auto time = sqrt(2 * (maxHeight - sourceHeight) / gravity) + sqrt(2 * (maxHeight - targetHeight) / gravity);
+		// Step 7: Calculate the horizontal component of the projectile velocity
+		this->MovingVelocity.X = destinationCoords.X / time;
+		this->MovingVelocity.Y = destinationCoords.Y / time;
 		return;
 	}
 	case ParabolaFireMode::Angle: // Fixed fire angle and aim at the target
@@ -441,27 +444,33 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		auto radian = pType->LaunchAngle * Math::Pi / 180.0;
 		radian = (radian >= Math::HalfPi || radian <= -Math::HalfPi) ? (Math::HalfPi / 3) : radian;
 		// Step 2: Using Newton Iteration Method to determine the time of encounter between the projectile and the target
-		const auto meetTime = this->SearchFixedAngleMeetTime(source, target, offset, radian, gravity);
+		const auto meetTime = this->GetLeadTime(this->SearchFixedAngleMeetTime(source, target, offset, radian, gravity));
 		// Step 3: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (target - this->LastTargetCoord) * meetTime;
 		const auto destinationCoords = pBullet->TargetCoords - source;
 		// Step 4: Check if it is an unsolvable solution
 		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
 			break;
-		// Step 5: Calculate each horizontal component of the projectile velocity
+		// Step 5: Recalculate the speed when time is limited
+		if (pType->LeadTimeMaximum > 0)
+		{
+			this->CalculateBulletVelocityRightNow(source, gravity);
+			return;
+		}
+		// Step 6: Calculate each horizontal component of the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X / meetTime;
 		this->MovingVelocity.Y = destinationCoords.Y / meetTime;
-		// Step 6: Calculate whole horizontal component of the projectile velocity
+		// Step 7: Calculate whole horizontal component of the projectile velocity
 		const auto horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
 		const auto horizontalVelocity = horizontalDistance / meetTime;
-		// Step 7: Calculate the vertical component of the projectile velocity
+		// Step 8: Calculate the vertical component of the projectile velocity
 		this->MovingVelocity.Z = horizontalVelocity * Math::tan(radian) + gravity / 2;
 		return;
 	}
 	case ParabolaFireMode::SpeedAndHeight: // Fixed horizontal speed and fixed max height
 	{
 		// Step 1: Calculate the time when the projectile meets the target directly using horizontal velocity
-		const auto meetTime = this->SolveFixedSpeedMeetTime(source, target, offset, pType->Speed);
+		const auto meetTime = this->GetLeadTime(this->SolveFixedSpeedMeetTime(source, target, offset, pType->Speed));
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (target - this->LastTargetCoord) * meetTime;
 		const auto destinationCoords = pBullet->TargetCoords - source;
@@ -485,7 +494,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 	case ParabolaFireMode::HeightAndAngle: // Fixed max height and fixed fire angle
 	{
 		// Step 1: Using Newton Iteration Method to determine the time of encounter between the projectile and the target
-		const auto meetTime = this->SearchFixedHeightMeetTime(source, target, offset, gravity);
+		const auto meetTime = this->GetLeadTime(this->SearchFixedHeightMeetTime(source, target, offset, gravity));
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (target - this->LastTargetCoord) * meetTime;
 		const auto destinationCoords = pBullet->TargetCoords - source;
@@ -512,7 +521,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 	case ParabolaFireMode::SpeedAndAngle: // Fixed horizontal speed and fixed fire angle
 	{
 		// Step 1: Calculate the time when the projectile meets the target directly using horizontal velocity
-		const auto meetTime = this->SolveFixedSpeedMeetTime(source, target, offset, pType->Speed);
+		const auto meetTime = this->GetLeadTime(this->SolveFixedSpeedMeetTime(source, target, offset, pType->Speed));
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (target - this->LastTargetCoord) * meetTime;
 		const auto destinationCoords = pBullet->TargetCoords - source;
@@ -537,7 +546,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 	default: // Fixed horizontal speed and aim at the target
 	{
 		// Step 1: Calculate the time when the projectile meets the target directly using horizontal velocity
-		const auto meetTime = this->SolveFixedSpeedMeetTime(source, target, offset, pType->Speed);
+		const auto meetTime = this->GetLeadTime(this->SolveFixedSpeedMeetTime(source, target, offset, pType->Speed));
 		// Step 2: Substitute the time into the calculation of the attack coordinates
 		pBullet->TargetCoords += (target - this->LastTargetCoord) * meetTime;
 		const auto destinationCoords = pBullet->TargetCoords - source;
@@ -560,7 +569,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 	this->CalculateBulletVelocityRightNow(source, gravity);
 }
 
-void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& source, double gravity)
+void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& source, const double gravity)
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
@@ -586,10 +595,10 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 		// Step 2: Calculate the vertical component of the projectile velocity
 		this->MovingVelocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight));
 		// Step 3: Calculate the total time it takes for the projectile to meet the target using the heights of the ascending and descending phases
-		const auto meetTime = sqrt(2 * (maxHeight - sourceHeight) / gravity) + sqrt(2 * (maxHeight - targetHeight) / gravity);
+		const auto time = sqrt(2 * (maxHeight - sourceHeight) / gravity) + sqrt(2 * (maxHeight - targetHeight) / gravity);
 		// Step 4: Calculate the horizontal component of the projectile velocity
-		this->MovingVelocity.X = distanceCoords.X / meetTime;
-		this->MovingVelocity.Y = distanceCoords.Y / meetTime;
+		this->MovingVelocity.X = distanceCoords.X / time;
+		this->MovingVelocity.Y = distanceCoords.Y / time;
 		break;
 	}
 	case ParabolaFireMode::Angle: // Fixed fire angle and aim at the target
@@ -669,7 +678,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	this->MovingVelocity.Z += gravity / 2;
 }
 
-double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanceCoordsZ, double radian, double gravity)
+double ParabolaTrajectory::SearchVelocity(const double horizontalDistance, int distanceCoordsZ, const double radian, const double gravity)
 {
 	// Estimate initial velocity
 	const auto mult = Math::sin(2 * radian);
@@ -701,7 +710,7 @@ double ParabolaTrajectory::SearchVelocity(double horizontalDistance, int distanc
 	return 10.0;
 }
 
-double ParabolaTrajectory::CheckVelocityEquation(double horizontalDistance, int distanceCoordsZ, double velocity, double radian, double gravity)
+double ParabolaTrajectory::CheckVelocityEquation(const double horizontalDistance, int distanceCoordsZ, const double velocity, const double radian, const double gravity)
 {
 	// Calculate each component of the projectile velocity
 	const auto horizontalVelocity = velocity * Math::cos(radian);
@@ -718,7 +727,7 @@ double ParabolaTrajectory::CheckVelocityEquation(double horizontalDistance, int 
 	return wholeTime - (upTime + downTime);
 }
 
-double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, double horizontalSpeed)
+double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double horizontalSpeed)
 {
 	// Project all conditions onto a horizontal plane
 	const Point2D targetSpeedCrd { target.X - this->LastTargetCoord.X, target.Y - this->LastTargetCoord.Y };
@@ -726,27 +735,34 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	// Establishing a quadratic equation using time as a variable:
 	// (destinationCrd + targetSpeedCrd * time).Magnitude() = horizontalSpeed * time
 	// Solve this quadratic equation
-	const auto divisor = (targetSpeedCrd.MagnitudeSquared() - horizontalSpeed * horizontalSpeed) * 2;
-	const auto factor = 2 * (targetSpeedCrd * destinationCrd);
-	const auto delta = factor * factor - 2 * divisor * destinationCrd.MagnitudeSquared();
-
-	if (delta >= 1e-10)
-	{
-		const auto timeP = (-factor + sqrt(delta)) / divisor;
-		const auto timeM = (-factor - sqrt(delta)) / divisor;
-
-		if (timeM > 1e-10 && timeP > 1e-10)
-			return timeM < timeP ? timeM : timeP;
-		else if (timeM > 1e-10)
-			return timeM;
-		else if (timeP > 1e-10)
-			return timeP;
-	}
-
+	const auto targetSpeedSq = targetSpeedCrd.MagnitudeSquared();
+	const auto destinationSq = destinationCrd.MagnitudeSquared();
+	const auto speedSq = horizontalSpeed * horizontalSpeed;
+	const auto divisor = targetSpeedSq - speedSq;
+	const auto factor = targetSpeedCrd * destinationCrd;
+	const auto cosTheta = factor / (sqrt(targetSpeedSq * destinationSq) + 1e-10);
+	// The target speed is too fast
+	if (speedSq < (1.0 + 0.2 * Math::max(0.0, -cosTheta)) * targetSpeedSq)
+		return -1.0;
+	// Normal solving
+	const auto delta = factor * factor - divisor * destinationSq;
+	// Check if there is no solution
+	if (delta < 1e-10)
+		return (delta >= -1e-10) ? (-factor / divisor) + (factor > 0 ? 1.0 : 0) : -1.0;
+	// Quadratic formula
+	const auto sqrtDelta = sqrt(delta);
+	const auto timeP = (-factor + sqrtDelta) / divisor;
+	const auto timeM = (-factor - sqrtDelta) / divisor;
+	// When the target is moving away, provide an additional frame of correction
+	if (timeM > 1e-10)
+		return ((timeP > 1e-10) ? Math::min(timeM, timeP) : timeM) + (factor > 0 ? 1.0 : 0);
+	else if (timeP > 1e-10)
+		return timeP + (factor > 0 ? 1.0 : 0);
+	// Unsolvable
 	return -1.0;
 }
 
-double ParabolaTrajectory::SearchFixedHeightMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, double gravity)
+double ParabolaTrajectory::SearchFixedHeightMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double gravity)
 {
 	// Similar to method SearchVelocity, no further elaboration will be provided
 	const auto delta = 1e-5;
@@ -772,7 +788,7 @@ double ParabolaTrajectory::SearchFixedHeightMeetTime(const CoordStruct& source, 
 	return -1.0;
 }
 
-double ParabolaTrajectory::CheckFixedHeightEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, double meetTime, double gravity)
+double ParabolaTrajectory::CheckFixedHeightEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double gravity)
 {
 	// Calculate how high the target will reach during this period of time
 	const auto meetHeight = static_cast<int>((target.Z - this->LastTargetCoord.Z) * meetTime) + target.Z + offset.Z;
@@ -782,7 +798,7 @@ double ParabolaTrajectory::CheckFixedHeightEquation(const CoordStruct& source, c
 	return sqrt((maxHeight - source.Z) * 2 / gravity) + sqrt((maxHeight - meetHeight) * 2 / gravity) - meetTime;
 }
 
-double ParabolaTrajectory::SearchFixedAngleMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, double radian, double gravity)
+double ParabolaTrajectory::SearchFixedAngleMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double radian, const double gravity)
 {
 	// Similar to method SearchVelocity, no further elaboration will be provided
 	const auto delta = 1e-5;
@@ -808,7 +824,7 @@ double ParabolaTrajectory::SearchFixedAngleMeetTime(const CoordStruct& source, c
 	return -1.0;
 }
 
-double ParabolaTrajectory::CheckFixedAngleEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, double meetTime, double radian, double gravity)
+double ParabolaTrajectory::CheckFixedAngleEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double radian, const double gravity)
 {
 	// Using the estimated time to obtain the predicted location of the target
 	const auto distanceCoords = (target - this->LastTargetCoord) * meetTime + target + offset - source;
@@ -963,17 +979,4 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(const CellClass* const 
 	}
 	// Just ordinary ground
 	return BulletVelocity{ 0.0, 0.0, 1.0 };
-}
-
-bool ParabolaTrajectory::CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight)
-{
-	if (const auto pCell = MapClass::Instance.TryGetCellAt(CellStruct{ X, Y }))
-	{
-		const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
-		// (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
-		if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
-			return true;
-	}
-
-	return false;
 }

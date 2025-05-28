@@ -347,8 +347,8 @@ public:
 		return pFirer;
 	}
 	static std::vector<CellStruct> GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell);
-	static void RotateVector(BulletVelocity& vector, const BulletVelocity& aim, double turningRadian);
-	static void RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, double radian);
+	static void RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian);
+	static void RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity& axis, const double radian);
 
 	bool OnFacingCheck();
 	void OnFacingUpdate();
