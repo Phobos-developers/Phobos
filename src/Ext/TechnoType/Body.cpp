@@ -823,6 +823,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* 
 	case AbstractType::UnitType:
 	{
 		this->FireUp.Read(exArtINI, pArtSection, "FireUp");
+		this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1149,6 +1150,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownDamage_Water)
 
 		.Process(this->FireUp)
+		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
 		;
 }

@@ -918,8 +918,36 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 
 	if (pThis->WhatAmI() == AbstractType::Unit)
 	{
-		static_cast<UnitClass*>(pThis)->unknown_int_6C0 = -1;
-		TechnoExt::ExtMap.Find(pThis)->FireUp = 0;
+		const auto pUnit = static_cast<UnitClass*>(pThis);
+
+		if (!pUnit->Type->Voxel)
+		{
+			const auto pTarget = pThis->Target;
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			const auto pTypeExt = pExt->TypeExtData;
+
+			if (pTarget && pTypeExt->FireUp.Get() > 0 &&
+				!pTypeExt->FireUp_ResetInRetarget.Get())
+			{
+				FireError fireError = pThis->GetFireError(pTarget, pThis->SelectWeapon(pTarget), true);
+
+				if (fireError == FireError::NONE ||
+					fireError == FireError::AMMO ||
+					fireError == FireError::REARM ||
+					fireError == FireError::ILLEGAL ||
+					fireError == FireError::CANT ||
+					fireError == FireError::RANGE)
+				{
+					pUnit->unknown_int_6C0 = -1;
+					pExt->FireUp = 0;
+				}
+			}
+			else
+			{
+				pUnit->unknown_int_6C0 = -1;
+				pExt->FireUp = 0;
+			}
+		}
 	}
 
 	return 0;

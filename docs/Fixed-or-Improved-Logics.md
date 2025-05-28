@@ -1624,6 +1624,18 @@ HarvesterDumpAmount=0.0               ; float point value
 HarvesterDumpAmount=                  ; float point value
 ```
 
+### FireUp
+
+- `Voxel=no` turretless vehicles now support the use of `FireUp`.
+ - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Defaults to `yes`. forced to be `yes` when there is no target.
+
+In `artmd.ini`:
+```ini
+[SOMEVEHICLE]
+FireUp=                     ; integer
+FireUp.ResetInRetarget=     ; boolean
+```
+
 ## Veinholes & Weeds
 
 ### Veinholes

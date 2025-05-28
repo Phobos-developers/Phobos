@@ -359,6 +359,7 @@ public:
 		Nullable<double> FallingDownDamage_Water;
 
 		Valueable<int> FireUp;
+		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
@@ -672,6 +673,7 @@ public:
 			, FallingDownDamage_Water {}
 
 			, FireUp { 0 }
+			, FireUp_ResetInRetarget { true }
 			//, SecondaryFire {}
 		{ }
 
