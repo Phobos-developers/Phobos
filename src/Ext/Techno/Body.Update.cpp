@@ -1135,9 +1135,13 @@ void TechnoExt::ExtData::UpdateWarpInDelay()
 // Updates state of all AttachEffects on techno.
 void TechnoExt::ExtData::UpdateAttachEffects()
 {
+	if (!this->AttachedEffects.size())
+		return;
+
 	auto const pThis = this->OwnerObject();
-	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
+	const bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
+	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 
@@ -1149,8 +1153,13 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
-		bool hasExpired = attachEffect->HasExpired();
-		bool shouldDiscard = attachEffect->IsActive() && attachEffect->ShouldBeDiscardedNow();
+		const bool isActive = attachEffect->IsActive();
+
+		if (!isActive)
+			altered = true;
+
+		const bool hasExpired = attachEffect->HasExpired();
+		const bool shouldDiscard = isActive && attachEffect->ShouldBeDiscardedNow();
 
 		if (hasExpired || shouldDiscard)
 		{
@@ -1177,6 +1186,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			}
 
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -1184,7 +1194,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		}
 	}
 
-	this->RecalculateStatMultipliers();
+	if (altered)
+		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
 		pThis->MarkForRedraw();
