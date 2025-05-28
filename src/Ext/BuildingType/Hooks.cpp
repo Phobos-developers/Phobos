@@ -280,7 +280,7 @@ DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
 
 		if (multiplier > 0.0f)
 		{
-			GET_STACK(int, rof, STACK_OFFSET(0x10, -0x4));
+			GET_STACK(int, rof, STACK_OFFSET(0x10, 0x4));
 			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
 			return ApplyRofMod;
 		}
@@ -303,7 +303,7 @@ DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
 
 		if (multiplier > 0.0f)
 		{
-			GET_STACK(int, rof, STACK_OFFSET(0x10, -0x4));
+			GET_STACK(int, rof, STACK_OFFSET(0x10, 0x4));
 			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
 			return ApplyRofMod;
 		}
