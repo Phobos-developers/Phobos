@@ -49,22 +49,24 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	{
 		BulletClass* pTargetBullet = nullptr;
 		const auto pInterceptorType = pTypeExt->InterceptorType.get();
-		const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
-		const auto& minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+		const double guardRange = pInterceptorType->GuardRange.Get(pThis);
+		const double guardRangeSq = guardRange * guardRange;
+		const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+		const double minguardRangeSq = minguardRange * minguardRange;
 
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
 		for (auto const& pBullet : BulletClass::Array)
 		{
-			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
-
-			if (distance > guardRange || distance < minguardRange)
-				continue;
-
 			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
 			if (!pBulletTypeExt->Interceptable)
+				continue;
+
+			auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+			if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
 				continue;
 
 			if (pBulletTypeExt->Armor.isset())
@@ -783,10 +785,10 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		auto defaultSelfHealType = SelfHealGainType::NoHeal;
 		auto const whatAmI = pThis->WhatAmI();
 
-		if (whatAmI == AbstractType::Infantry || (whatAmI == AbstractType::Unit && pType->Organic))
+		if (whatAmI == AbstractType::Infantry)
 			defaultSelfHealType = SelfHealGainType::Infantry;
 		else if (whatAmI == AbstractType::Unit)
-			defaultSelfHealType = SelfHealGainType::Units;
+			defaultSelfHealType = (pType->Organic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
 
 		auto selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
 
@@ -806,37 +808,40 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 			{
 				auto const pOwner = pThis->Owner;
 				const bool hasCap = infantryHeal ? RulesExt::Global()->InfantryGainSelfHealCap.isset() : RulesExt::Global()->UnitsGainSelfHealCap.isset();
-				const int cap = infantryHeal ? RulesExt::Global()->InfantryGainSelfHealCap.Get() : RulesExt::Global()->UnitsGainSelfHealCap.Get();
-				int count = std::max(infantryHeal ? pOwner->InfantrySelfHeal : pOwner->UnitsSelfHeal, 1);
+				const int cap = std::max(infantryHeal ? RulesExt::Global()->InfantryGainSelfHealCap.Get() : RulesExt::Global()->UnitsGainSelfHealCap.Get(), 1);
+
+				auto healCount = [infantryHeal](HouseClass* pHouse)
+					{
+						return (infantryHeal ? pHouse->InfantrySelfHeal : pHouse->UnitsSelfHeal);
+					};
+				int count = healCount(pOwner);
 
 				if (hasCap && count >= cap)
-				{
-					count = cap;
-					return count;
-				}
+					return cap;
 
-				const bool allowPlayerControl = RulesExt::Global()->GainSelfHealFromPlayerControl && SessionClass::IsCampaign();
-				const bool allowAlliesInCampaign = RulesExt::Global()->GainSelfHealFromAllies && SessionClass::IsCampaign();
-				const bool allowAlliesDefault = RulesExt::Global()->GainSelfHealFromAllies && !SessionClass::IsCampaign();
+				const bool isCampaign = SessionClass::IsCampaign();
+				const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign;
+				const bool fromAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
-				if (allowPlayerControl || allowAlliesInCampaign || allowAlliesDefault)
+				if (fromPlayer || fromAllies)
 				{
+					auto checkHouse = [fromPlayer, fromAllies, isCampaign, pOwner](HouseClass* pHouse)
+						{
+							if (pHouse == pOwner)
+								return false;
+
+							return (fromPlayer && (pHouse->IsHumanPlayer || pHouse->IsInPlayerControl)) // pHouse->IsControlledByCurrentPlayer()
+								|| (fromAllies && (!isCampaign || (!pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl)) && pHouse->IsAlliedWith(pOwner));
+						};
+
 					for (auto pHouse : HouseClass::Array)
 					{
-						if (pHouse == pOwner)
-							continue;
-
-						if ((allowPlayerControl && pHouse->IsControlledByCurrentPlayer())
-							|| (allowAlliesInCampaign && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner))
-							|| (allowAlliesDefault && pHouse->IsAlliedWith(pOwner)))
+						if (checkHouse(pHouse))
 						{
-							count += infantryHeal ? pHouse->InfantrySelfHeal : pHouse->UnitsSelfHeal;
+							count += healCount(pHouse);
 
 							if (hasCap && count >= cap)
-							{
-								count = cap;
-								return count;
-							}
+								return cap;
 						}
 					}
 				}
