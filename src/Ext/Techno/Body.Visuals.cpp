@@ -38,9 +38,8 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 				return true;
 
 			const bool isCampaign = SessionClass::IsCampaign();
-			const auto pRulesExt = RulesExt::Global();
-			const bool fromPlayer = pRulesExt->GainSelfHealFromPlayerControl && isCampaign;
-			const bool fromAllies = pRulesExt->GainSelfHealFromAllies;
+			const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign;
+			const bool fromAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
 			if (fromPlayer || fromAllies)
 			{
@@ -50,7 +49,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 							return false;
 
 						return (fromPlayer && (pHouse->IsHumanPlayer || pHouse->IsInPlayerControl)) // pHouse->IsControlledByCurrentPlayer()
-							|| (fromAllies && (!isCampaign || !pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl) && pHouse->IsAlliedWith(pOwner));
+							|| (fromAllies && (!isCampaign || (!pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl)) && pHouse->IsAlliedWith(pOwner));
 					};
 
 				for (auto pHouse : HouseClass::Array)
