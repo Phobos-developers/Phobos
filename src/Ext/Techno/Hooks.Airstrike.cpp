@@ -100,6 +100,7 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
 		GET(AirstrikeClass*, pThis, EBP);
+
 		const auto& array = Make_Global<DynamicVectorClass<AirstrikeClass*>>(0x889FB8);
 		AirstrikeClass* pLastTargetingMe = nullptr;
 
@@ -114,10 +115,16 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 			}
 		}
 
-		TechnoExt::ExtMap.Find(pTargetTechno)->AirstrikeTargetingMe = pLastTargetingMe;
+		// Sometimes the target will DTOR first before it announce invalid pointer, so sanity check is necessary!
+		// At this point, the target's vtable has already been reset to AbstractClass_vtbl.
+		// If a virtual function that AbstractClass does not have is called without checking this, it will cause the vtable to exceed its bounds.
+		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		{
+			pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
 
-		if (!pLastTargetingMe && Game::IsActive)
-			pTarget->Mark(MarkType::Change);
+			if (!pLastTargetingMe && Game::IsActive)
+				pTarget->Mark(MarkType::Change);
+		}
 	}
 
 	return SkipGameCode;
@@ -143,7 +150,7 @@ DEFINE_HOOK(0x65E97F, HouseClass_CreateAirstrike_SetTaretForUnit, 0x6)
 
 	const auto pOwner = pThis->Owner;
 
-	if (!pOwner || !pOwner->Target)
+	if (!pOwner)
 		return 0;
 
 	if (const auto pTarget = abstract_cast<TechnoClass*>(pOwner->Target))
@@ -168,7 +175,7 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 	{
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
 
-		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 		{
 			const auto pBuildingType = pBuilding->Type;
 

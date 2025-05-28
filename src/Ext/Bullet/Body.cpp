@@ -111,9 +111,9 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	}
 }
 
-void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
+void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int radLevel)
 {
-	const auto pCell = MapClass::Instance.TryGetCellAt(Cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(cell);
 
 	if (!pCell)
 		return;
@@ -141,17 +141,14 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 
 	if (it != pCellExt->RadSites.cend())
 	{
-		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
-			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
-
-		const auto pRadExt = RadSiteExt::ExtMap.Find((*it));
+		const auto pRadExt = RadSiteExt::ExtMap.Find(*it);
 		// Handle It
-		pRadExt->Add(RadLevel);
+		pRadExt->Add(std::min(radLevel, pRadType->GetLevelMax() - (*it)->GetRadLevel()));
 		return;
 	}
 
 	const auto pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
-	RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
+	RadSiteExt::CreateInstance(cell, spread, radLevel, pWeaponExt, pThisHouse, pThis->Owner);
 }
 
 void BulletExt::ExtData::InitializeLaserTrails()

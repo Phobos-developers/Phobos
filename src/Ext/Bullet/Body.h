@@ -55,7 +55,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon);
-		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
+		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 		void InitializeLaserTrails();
 
 	private:
