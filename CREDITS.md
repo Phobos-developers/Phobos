@@ -266,6 +266,8 @@ This page lists all the individual contributions to the project by their author.
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
+  - Airstrike flare visual customizations
+  - Fix an issue where airstrike flare line drawn to target at lower elevation would clip
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -485,6 +487,7 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
+  - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
   - Power plant damage factor
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`

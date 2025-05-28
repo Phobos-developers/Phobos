@@ -378,6 +378,8 @@ New:
 - [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
 - [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
+- [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
+- Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - [Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md#customizable-garrison-and-bunker-properties) (by Otamaa)
 - [Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
@@ -402,6 +404,7 @@ Vanilla fixes:
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -580,6 +583,7 @@ New:
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
+- `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
