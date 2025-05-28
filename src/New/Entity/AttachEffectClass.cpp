@@ -18,6 +18,7 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 {
@@ -37,9 +38,11 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsUnderTemporal { false }
 	, IsOnline { true }
 	, IsCloaked { false }
+	, LastActiveStat { true }
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 {
@@ -252,6 +255,12 @@ void AttachEffectClass::OnlineCheck()
 
 	this->IsOnline = isActive;
 
+	if (isActive != this->LastActiveStat)
+	{
+		this->NeedsRecalculateStat = true;
+		this->LastActiveStat = isActive;
+	}
+
 	if (!this->Animation)
 		return;
 
@@ -438,6 +447,12 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	{
 		this->LastDiscardCheckValue = true;
 		return true;
+	}
+
+	if (this->Type->DiscardOn == DiscardCondition::None)
+	{
+		this->LastDiscardCheckValue = false;
+		return false;
 	}
 
 	auto const pTechno = this->Techno;
@@ -921,6 +936,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->NeedsDurationRefresh)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
+		.Process(this->LastActiveStat)
+		.Process(this->NeedsRecalculateStat)
 		.Success();
 }
 

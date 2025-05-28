@@ -76,10 +76,12 @@ private:
 	bool NeedsDurationRefresh;
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
+	bool LastActiveStat;
 
 public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
+	bool NeedsRecalculateStat;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.

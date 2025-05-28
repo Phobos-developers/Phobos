@@ -1177,13 +1177,15 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
-		const bool isActive = attachEffect->IsActive();
 
-		if (!isActive)
+		if (attachEffect->NeedsRecalculateStat)
+		{
 			altered = true;
+			attachEffect->NeedsRecalculateStat = false;
+		}
 
 		const bool hasExpired = attachEffect->HasExpired();
-		const bool shouldDiscard = isActive && attachEffect->ShouldBeDiscardedNow();
+		const bool shouldDiscard = attachEffect->IsActive() && attachEffect->ShouldBeDiscardedNow();
 
 		if (hasExpired || shouldDiscard)
 		{
