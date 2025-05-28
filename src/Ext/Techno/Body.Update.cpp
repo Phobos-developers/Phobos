@@ -903,7 +903,9 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	if (isInLimbo)
 	{
 		// Remove parasite units first before deleting them.
-		if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
+		auto const pFoot = abstract_cast<FootClass*, true>(pThis);
+
+		if (pFoot)
 		{
 			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
 				pFoot->ParasiteImUsing->ExitUnit();
@@ -916,12 +918,34 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
 		}
 
+		if (auto const pTransport = pThis->Transporter)
+		{
+			// Handle gunner change.
+			if (pTransport->GetTechnoType()->Gunner)
+			{
+				if (auto const pTransportFoot = abstract_cast<FootClass*, true>(pTransport))
+				{
+					pTransportFoot->RemoveGunner(pFoot);
+
+					if (pTransport->Passengers.NumPassengers > 0)
+					{
+						FootClass* pGunner = nullptr;
+
+						for (auto pNext = pTransport->Passengers.GetFirstPassenger(); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+							pGunner = pNext;
+
+						pTransportFoot->ReceiveGunner(pGunner);
+					}
+				}
+			}
+
+			// Handle extra power
+			if (pThis->Absorbed)
+				pTransport->Owner->RecheckPower = true;
+		}
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
-
-		// Handle extra power
-		if (pThis->Absorbed && pThis->Transporter)
-			pThis->Transporter->Owner->RecheckPower = true;
 
 		return;
 	}
