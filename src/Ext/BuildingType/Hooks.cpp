@@ -238,80 +238,80 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 
 DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0xB)
 {
-	enum { ApplyDamageBonus = 0x6FE405, Nothing = 0x0 };
+	enum { ApplyDamageBonus = 0x6FE405 };
 
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto const Building = specific_cast<BuildingClass*>(pThis))
+	if (const auto Building = specific_cast<BuildingClass*>(pThis))
 	{
-		GET_STACK(int, nDamage, 0x2C);
-		R->EAX(Game::F2I(nDamage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		GET_STACK(int, damage, STACK_OFFSET(0xC8, -0x9C));
+		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 
-	return Nothing;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
 {
-	enum { ApplyDamageBonus = 0x6FE435, Nothing = 0x0 };
+	enum { ApplyDamageBonus = 0x6FE435 };
 
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto const Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
-		GET_STACK(int, nDamage, 0x2C);
-		R->EAX(Game::F2I(nDamage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		GET_STACK(int, damage, STACK_OFFSET(0xC8, -0x9C));
+		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 
-	return Nothing;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
 {
-	enum { ApplyRofMod = 0x6FD1AB, SkipRofMod = 0x6FD1B1, Nothing = 0x0 };
+	enum { ApplyRofMod = 0x6FD1AB, SkipRofMod = 0x6FD1B1 };
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const Building = specific_cast<BuildingClass*>(pThis))
+	if (const auto Building = specific_cast<BuildingClass*>(pThis))
 	{
-		auto const nMult = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
+		const auto multiplier = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
 
-		if (nMult > 0.0f)
+		if (multiplier > 0.0f)
 		{
-			GET_STACK(int, nROF, STACK_OFFSET(0x10, -0x4));
-			R->EAX(Game::F2I(((double)nROF) / nMult));
+			GET_STACK(int, rof, STACK_OFFSET(0x10, -0x4));
+			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
 			return ApplyRofMod;
 		}
 
 		return SkipRofMod;
 	}
 
-	return Nothing;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
 {
-	enum { ApplyRofMod = 0x6FD1EF, SkipRofMod = 0x6FD1F1, Nothing = 0x0 };
+	enum { ApplyRofMod = 0x6FD1EF, SkipRofMod = 0x6FD1F1 };
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
-		auto const nMult = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
+		const auto multiplier = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
 
-		if (nMult > 0.0f)
+		if (multiplier > 0.0f)
 		{
-			GET_STACK(int, nROF, STACK_OFFSET(0x10, -0x4));
-			R->EAX(Game::F2I(((double)nROF) / nMult));
+			GET_STACK(int, rof, STACK_OFFSET(0x10, -0x4));
+			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
 			return ApplyRofMod;
 		}
 
 		return SkipRofMod;
 	}
 
-	return Nothing;
+	return 0;
 }
 
 DEFINE_HOOK_AGAIN(0x45933D, BuildingClass_BunkerSound, 0x5)
@@ -390,11 +390,10 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
 	enum { Handled = 0x44E86F };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(int, nPowMult, STACK_OFFSET(0xC, 0x4));
+	GET_STACK(int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
 
 	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
-
-	R->EAX(Math::max(Game::F2I(nPowMult * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
+	R->EAX(Math::max(Game::F2I(powerMultiplier * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
 
 	return Handled;
 }
