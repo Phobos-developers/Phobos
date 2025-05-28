@@ -105,6 +105,7 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static int SuperWeaponSidebar_RequiredSignificance;
+		static int SkipFrameDelay;
 	};
 
 	class Misc
