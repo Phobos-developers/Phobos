@@ -378,8 +378,8 @@ New:
 - [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
 - [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
-- `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
+- Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
 - Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
 
 Vanilla fixes:
@@ -580,6 +580,7 @@ New:
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
+- `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
