@@ -45,23 +45,25 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	{
 		BulletClass* pTargetBullet = nullptr;
 
+		const auto pInterceptorType = pTypeExt->InterceptorType.get();
+		const double guardRange = pInterceptorType->GuardRange.Get(pThis);
+		const double guardRangeSq = guardRange * guardRange;
+		const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+		const double minguardRangeSq = minguardRange * minguardRange;
+
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
 		for (auto const& pBullet : BulletClass::Array)
 		{
-			const auto pInterceptorType = pTypeExt->InterceptorType.get();
-			const auto& guardRange = pInterceptorType->GuardRange.Get(pThis);
-			const auto& minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-
-			auto distance = pBullet->Location.DistanceFrom(pThis->Location);
-
-			if (distance > guardRange || distance < minguardRange)
-				continue;
-
 			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
 			if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
+				continue;
+
+			auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+			if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
 				continue;
 
 			if (pBulletTypeExt->Armor.isset())
