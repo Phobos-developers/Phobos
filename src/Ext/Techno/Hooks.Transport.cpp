@@ -48,7 +48,7 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 	{
 		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
 		{
-			if (pTypeExt->Passengers_SyncOwner && pThis->Passengers.NumPassengers > 0)
+			if (pTypeExt->Passengers_SyncOwner)
 			{
 				pPassenger->SetOwningHouse(pThis->Owner, false);
 
@@ -126,7 +126,7 @@ DEFINE_HOOK(0x737F80, TechnoClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis && pThis->Passengers.NumPassengers > 0)
+	if (pThis)
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 

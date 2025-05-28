@@ -320,7 +320,7 @@ void TechnoExt::ExtData::EatPassengers()
 						{
 							FootClass* pGunner = nullptr;
 
-							for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+							for (auto pNext = pThis->Passengers.GetFirstPassenger(); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
 								pGunner = pNext;
 
 							pFoot->ReceiveGunner(pGunner);
@@ -625,9 +625,9 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
 	bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
 
-	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)) && pThis->Passengers.NumPassengers > 0)
+	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)))
 	{
-		auto pPassenger = pThis->Passengers.FirstPassenger;
+		auto pPassenger = pThis->Passengers.GetFirstPassenger();
 
 		while (pPassenger)
 		{
@@ -981,16 +981,16 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
 
-	if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+	if (pType->OpenTopped)
 	{
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pExt->Ammo_Shared && pType->Ammo > 0)
 		{
-			auto passenger = pThis->Passengers.FirstPassenger;
+			auto passenger = pThis->Passengers.GetFirstPassenger();
 			TechnoTypeClass* passengerType = nullptr;
 
-			do
+			while (passenger)
 			{
 				passengerType = passenger->GetTechnoType();
 				auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
@@ -1009,7 +1009,6 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 
 				passenger = static_cast<FootClass*>(passenger->NextObject);
 			}
-			while (passenger);
 		}
 	}
 }
