@@ -1185,7 +1185,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		}
 
 		const bool hasExpired = attachEffect->HasExpired();
-		const bool shouldDiscard = attachEffect->IsActive() && attachEffect->ShouldBeDiscardedNow();
+		const bool shouldDiscard = attachEffect->IsActiveIgnorePowered() && attachEffect->ShouldBeDiscardedNow();
 
 		if (hasExpired || shouldDiscard)
 		{

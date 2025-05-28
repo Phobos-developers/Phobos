@@ -30,6 +30,7 @@ public:
 	bool HasExpired() const;
 	bool ShouldBeDiscardedNow();
 	bool IsActive() const;
+	bool IsActiveIgnorePowered() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
 	static void PointerGotInvalid(void* ptr, bool removed);

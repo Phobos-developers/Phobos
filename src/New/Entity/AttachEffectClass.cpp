@@ -516,12 +516,17 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	return false;
 }
 
-bool AttachEffectClass::IsActive() const
+bool AttachEffectClass::IsActiveIgnorePowered() const
 {
 	if (this->IsSelfOwned())
-		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && this->IsOnline && !this->NeedsDurationRefresh;
+		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
 	else
-		return this->Duration && this->IsOnline;
+		return this->Duration;
+}
+
+bool AttachEffectClass::IsActive() const
+{
+	return this->IsOnline && this->IsActiveIgnorePowered();
 }
 
 bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
