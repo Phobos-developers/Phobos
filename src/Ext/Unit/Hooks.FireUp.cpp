@@ -42,6 +42,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		return 0;
 
 	const auto pExt = UnitUpdateFifeTemp::TechnoExtData;
+	UnitUpdateFifeTemp::TechnoExtData = nullptr;
 	const auto pTypeExt = pExt->TypeExtData;
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
