@@ -931,12 +931,9 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 			{
 				FireError fireError = pThis->GetFireError(pTarget, pThis->SelectWeapon(pTarget), true);
 
-				if (fireError == FireError::NONE ||
-					fireError == FireError::AMMO ||
-					fireError == FireError::REARM ||
-					fireError == FireError::ILLEGAL ||
-					fireError == FireError::CANT ||
-					fireError == FireError::RANGE)
+				if (fireError != FireError::OK &&
+					fireError != FireError::FACING &&
+					fireError != FireError::MOVING)
 				{
 					pUnit->unknown_int_6C0 = -1;
 					pExt->FireUp = 0;

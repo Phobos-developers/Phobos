@@ -6,6 +6,33 @@
 
 DEFINE_JUMP(LJMP, 0x741406, 0x741427)
 
+namespace UnitUpdateFifeTemp
+{
+	TechnoExt::ExtData* TechnoExtData = nullptr;
+}
+
+DEFINE_HOOK(0x736E34, UnitClass_UpdateFiring_ResetFireUp, 0x5)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EAX);
+	GET(int, nWeaponIndex, EDI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	UnitUpdateFifeTemp::TechnoExtData = pExt;
+
+	FireError fireError = pThis->GetFireError(pTarget, nWeaponIndex, true);
+
+	if (fireError != FireError::OK &&
+		fireError != FireError::FACING &&
+		fireError != FireError::MOVING)
+	{
+		pExt->FireUp = 0;
+	}
+
+	R->EAX(fireError);
+	return 0x736E40;
+}
+
 DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
@@ -14,7 +41,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	if (pThis->HasTurret() || pThis->Type->Voxel)
 		return 0;
 
-	const auto pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	const auto pExt = UnitUpdateFifeTemp::TechnoExtData;
 	const auto pTypeExt = pExt->TypeExtData;
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
