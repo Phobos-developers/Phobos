@@ -451,18 +451,23 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 
 void BuildingExt::ExtData::UpdateMainEvaVoice()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
+	const auto pTypeExt = this->TypeExtData;
 
 	if (!pTypeExt->NewEvaVoice.Get(false))
 		return;
 
-	auto const pHouse = pThis->Owner;
+	const auto pThis = this->OwnerObject();
+	const auto pHouse = pThis->Owner;
+
+	if (!pHouse->IsControlledByCurrentPlayer())
+		return;
+
 	int newPriority = -1;
 	int newEvaIndex = VoxClass::EVAIndex;
 
 	for (const auto pBuilding : pHouse->Buildings)
 	{
+		// Special case that must be avoided here because can be the current EVA changer
 		if (pBuilding->CurrentMission == Mission::Selling)
 			continue;
 
@@ -484,7 +489,6 @@ void BuildingExt::ExtData::UpdateMainEvaVoice()
 
 	if (newPriority > 0 && VoxClass::EVAIndex != newEvaIndex)
 	{
-		// Note: if the index points to a nonexistant voice index then the player will hear no EVA voices
 		VoxClass::EVAIndex = newEvaIndex;
 
 		// Greeting of the new EVA voice
@@ -496,33 +500,36 @@ void BuildingExt::ExtData::UpdateMainEvaVoice()
 	else if (newPriority < 0)
 	{
 		// Restore the original EVA voice of the owner's side
-		SideClass* pSide = SideClass::Array.GetItem(pHouse->SideIndex);
-		auto pSideExt = SideExt::ExtMap.Find(pSide);
-		int idxEVA = 0; // By default "Allies" EVA voice
+		const auto pSide = SideClass::Array.GetItem(pHouse->SideIndex);
+		const auto pSideExt = SideExt::ExtMap.Find(pSide);
+		newEvaIndex = 0; // By default is set the "Allies" EVA voice
 
 		if (pSideExt->EVA_Tag.isset())
 		{
-			auto evaTag = pSideExt->EVA_Tag.Get();
+			const auto evaTag = pSideExt->EVA_Tag.Get();
 
-			for (size_t i = 0; i < ScenarioExt::Global()->EVAIndexList.size(); i++)
+			for (size_t i = 0; i < RulesExt::Global()->EVAIndexList.size(); i++)
 			{
-				auto item = ScenarioExt::Global()->EVAIndexList[i];
+				const auto item = RulesExt::Global()->EVAIndexList[i].c_str();
 
 				if (_strcmpi(item, evaTag) == 0)
 				{
-					idxEVA = i;
+					newEvaIndex = i;
 					break;
 				}
 			}
 		}
+		else
+		{
+			if (pHouse->SideIndex == 0)
+				newEvaIndex = 0; // Allied
+			if (pHouse->SideIndex == 1)
+				newEvaIndex = 1; // Russian
+			else if (pHouse->SideIndex == 2)
+				newEvaIndex = 2; // Yuri
+		}
 
-		// "Allied" & "none" cases share the same index 0
-		if (pHouse->SideIndex == 1)
-			idxEVA = 1; // Russian
-		else if (pHouse->SideIndex == 2)
-			idxEVA = 2; // Yuri
-
-		VoxClass::EVAIndex = idxEVA;
+		VoxClass::EVAIndex = newEvaIndex;
 	}
 }
 

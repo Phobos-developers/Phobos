@@ -36,8 +36,6 @@ public:
 		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
 
-		std::vector<char*> EVAIndexList;
-
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -45,7 +43,6 @@ public:
 			, Variables { }
 			, AutoDeathObjects {}
 			, TransportReloaders {}
-			, EVAIndexList {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

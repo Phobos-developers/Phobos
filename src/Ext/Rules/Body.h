@@ -221,6 +221,8 @@ public:
 
 		Valueable<bool> HarvesterScanAfterUnload;
 
+		std::vector<std::string> EVAIndexList;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -387,6 +389,8 @@ public:
 			, DamagedSpeed { 0.75 }
 
 			, HarvesterScanAfterUnload { false }
+
+			, EVAIndexList {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -403,6 +407,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ReplaceVoxelLightSources();
+		void LoadEvaVoices();
 
 	private:
 		template <typename T>

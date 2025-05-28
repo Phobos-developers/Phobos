@@ -161,7 +161,6 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->BriefingTheme)
 		.Process(this->AutoDeathObjects)
 		.Process(this->TransportReloaders)
-		.Process(this->EVAIndexList)
 		;
 }
 
@@ -262,43 +261,3 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 
 	return 0;
 }
-
-// Reading Ares [EVATypes] section in evamd.ini
-// Address 0x753000 is used by Ares and replaces the whole function VoxClass::CreateFromINIList so this address must be used
-DEFINE_HOOK(0x752DCC, VoxClass_ReadINI_EVATypes, 0x7)
-{
-	GET(CCINIClass* const, pINI, ECX);
-
-	ScenarioExt::Global()->EVAIndexList.clear();
-	const auto pSection = "EVATypes";
-
-	if (pINI->GetSection(pSection))
-	{
-		auto const count = pINI->GetKeyCount(pSection);
-
-		// The first EVA voices from the original game
-		ScenarioExt::Global()->EVAIndexList.emplace_back(_strdup(GameStrings::Allied));
-		ScenarioExt::Global()->EVAIndexList.emplace_back(_strdup(GameStrings::Russian));
-		ScenarioExt::Global()->EVAIndexList.emplace_back(_strdup(GameStrings::Yuri));
-
-		// New EVA voices
-		for (auto i = 0; i < count; ++i)
-		{
-			auto const pKey = pINI->GetKeyName(pSection, i);
-			if (pINI->ReadString(pSection, pKey, "", Phobos::readBuffer) > 0)
-			{
-				bool found = std::find(ScenarioExt::Global()->EVAIndexList.begin(), ScenarioExt::Global()->EVAIndexList.end(), Phobos::readBuffer) != ScenarioExt::Global()->EVAIndexList.end();
-
-				if (!found)
-				{
-					char* str = _strdup(Phobos::readBuffer);
-					ScenarioExt::Global()->EVAIndexList.emplace_back(str);
-					free(str);
-				}
-			}
-		}
-	}
-
-	return 0;
-}
-
