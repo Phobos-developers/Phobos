@@ -2896,7 +2896,7 @@ msgid ""
 "projectiles to continue traveling as if they were not intercepted, but "
 "effects such as `Interceptor.WeaponOverride` will still be applied."
 msgstr ""
-"`Interceptor.KeepIntact` 可视为 true 以允许被拦截的抛射体继续飞行就像它们没有被拦截一样，不过 "
+"`Interceptor.KeepIntact` 可设为 true 以允许被拦截的抛射体继续飞行就像它们没有被拦截一样，不过 "
 "`Interceptor.WeaponOverride` 等效果仍会应用。"
 
 #: ../../New-or-Enhanced-Logics.md:703
