@@ -751,6 +751,13 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 							pJJLoco->DestinationCoords = pFoot->Location;
 							pJJLoco->CurrentHeight = pType->JumpjetHeight;
 							pJJLoco->Height = pType->JumpjetHeight;
+							pJJLoco->Speed = pType->JumpjetSpeed;
+							pJJLoco->Accel = pType->JumpjetAccel;
+							pJJLoco->Crash = pType->JumpjetCrash;
+							pJJLoco->Deviation = pType->JumpjetDeviation;
+							pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
+							pJJLoco->Wobbles = pType->JumpjetWobbles;
+							pJJLoco->TurnRate = pType->JumpjetTurnRate;
 						}
 						else
 						{
