@@ -172,10 +172,13 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
+	if (!Phobos::DisplayDamageNumbers)
+		return 0;
+
 	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
 
-	if (Phobos::DisplayDamageNumbers && *pDamage)
+	if (*pDamage)
 		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);
 
 	return 0;

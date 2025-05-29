@@ -44,22 +44,16 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (FootClass* pPassenger = pThis->Passengers.GetFirstPassenger())
+	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
+		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->Passengers_SyncOwner)
 		{
-			if (pTypeExt->Passengers_SyncOwner)
+			do
 			{
 				pPassenger->SetOwningHouse(pThis->Owner, false);
-
-				while (pPassenger->NextObject)
-				{
-					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
-
-					if (pPassenger)
-						pPassenger->SetOwningHouse(pThis->Owner, false);
-				}
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			}
+			while (pPassenger);
 		}
 	}
 
@@ -122,32 +116,26 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 }
 
 // Has to be done here, before Ares survivor hook to take effect.
-DEFINE_HOOK(0x737F80, TechnoClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
+DEFINE_HOOK(0x737F80, UnitClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 {
-	GET(TechnoClass*, pThis, ESI);
+	GET(UnitClass*, pThis, ESI);
 
-	if (pThis)
+	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit)
 		{
-			if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
+			do
 			{
-				auto pExt = TechnoExt::ExtMap.Find(pPassenger);
+				auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 
 				if (pExt->OriginalPassengerOwner)
 					pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 
-				while (pPassenger->NextObject)
-				{
-					pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
-					pExt = TechnoExt::ExtMap.Find(pPassenger);
-
-					if (pExt->OriginalPassengerOwner)
-						pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
-				}
+				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			}
+			while (pPassenger);
 		}
 	}
 

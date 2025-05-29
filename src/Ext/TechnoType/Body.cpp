@@ -117,7 +117,7 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
 	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
-	auto const pType = pCreateUnit->Type;
+	auto const pType = pCreateUnit->Type.Get();
 	auto const rtti = pType->WhatAmI();
 
 	if (rtti == AbstractType::BuildingType)
@@ -210,8 +210,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 						if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pTechno->Locomotor))
 						{
 							pTechno->SetLocation(location);
-							const auto pAirType = abstract_cast<AircraftTypeClass*, true>(pType);
-							const bool airportBound = pAirType ? pAirType->AirportBound : false;
+							const bool airportBound = rtti == AbstractType::AircraftType && static_cast<AircraftTypeClass*>(pType)->AirportBound;
 
 							if (pCell->GetContent() || airportBound)
 								pTechno->EnterIdleMode(false, true);

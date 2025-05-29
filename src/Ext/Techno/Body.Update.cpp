@@ -625,13 +625,11 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 	// Update open topped state of potential passengers if transport's OpenTopped value changes.
 	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
-	bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
+	bool toOpenTopped = pCurrentType->OpenTopped;
 
-	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)))
+	if (toOpenTopped != pOldType->OpenTopped)
 	{
-		auto pPassenger = pThis->Passengers.GetFirstPassenger();
-
-		while (pPassenger)
+		for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 		{
 			if (toOpenTopped)
 			{
@@ -648,8 +646,6 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
 				LogicClass::Instance.RemoveObject(pPassenger);
 			}
-
-			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
 
@@ -1016,27 +1012,24 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 
 		if (pExt->Ammo_Shared && pType->Ammo > 0)
 		{
-			auto passenger = pThis->Passengers.GetFirstPassenger();
-			TechnoTypeClass* passengerType = nullptr;
+			TechnoTypeClass* pPassengerType = nullptr;
 
-			while (passenger)
+			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				passengerType = passenger->GetTechnoType();
-				auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+				pPassengerType = pPassenger->GetTechnoType();
+				auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
 
 				if (pPassengerExt && pPassengerExt->Ammo_Shared)
 				{
 					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
-						if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerType->Ammo))
 						{
 							pThis->Ammo--;
-							passenger->Ammo++;
+							pPassenger->Ammo++;
 						}
 					}
 				}
-
-				passenger = static_cast<FootClass*>(passenger->NextObject);
 			}
 		}
 	}

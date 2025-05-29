@@ -37,14 +37,16 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 	GET(int, length, EBX);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+	{
+		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+		UNREFERENCED_PARAMETER(pLocation); // choom thought he was clever and recomputed the same shit again and again
 		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
+	}
 
 	if (const auto pShieldData = pExt->Shield.get())
 	{
@@ -60,14 +62,16 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 {
 	GET(FootClass*, pThis, ESI);
-	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-	UNREFERENCED_PARAMETER(pLocation);
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
+	{
+		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+		UNREFERENCED_PARAMETER(pLocation);
 		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
+	}
 
 	if (const auto pShieldData = pExt->Shield.get())
 	{
