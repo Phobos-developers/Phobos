@@ -618,15 +618,9 @@ msgstr "修复了 `WaterBound=true` 且拥有 `UndeploysInto` 的建筑在反部
 
 #: ../../Fixed-or-Improved-Logics.md:106
 msgid ""
-"Buildings with `CanC4=false` used to take 1 point of damage if hit by "
-"damage below 1 (calculated after `Verses` are applied but before "
-"veterancy, crate and AttachEffect modifiers). This no longer applies to "
-"negative damage under any conditions and can be disabled for zero damage "
-"by setting `CanC4.AllowZeroDamage` to true."
+"`CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything."
 msgstr ""
-"具有 `CanC4=false` 的建筑以前在受到低于 1 的伤害时会强制受到 1 点伤害（计算在 `Verses` 之后但于升级效果、箱子加成与 "
-"AttachEffect 之前）。这不再适用于任何情况下的负值伤害并且可以通过将 `CanC4.AllowZeroDamage` 设为 "
-"true 来禁用 0 伤害。"
+"建筑上的 `CanC4=false` 会导致其受到原始伤害非 0 但因 `Verses` 等伤害修正机制降至 1 点以下的杀伤时强制造成 1 点。`CanC4.AllowZeroDamage=true` 可以禁用这一行为。（经 `Verses` 等机制修正计算完的）负伤害将完全绕过此检查，无需额外启用。"
 
 #: ../../Fixed-or-Improved-Logics.md:107
 msgid ""
