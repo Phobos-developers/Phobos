@@ -920,7 +920,7 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 	{
 		const auto pUnit = static_cast<UnitClass*>(pThis);
 
-		if (!pUnit->Type->Voxel)
+		if (!pUnit->HasTurret() && !pUnit->Type->Voxel)
 		{
 			const auto pTarget = pThis->Target;
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
