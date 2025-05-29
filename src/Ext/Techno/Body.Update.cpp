@@ -740,8 +740,9 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 				{
 					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 					{
+						int turnrate = pType->JumpjetTurnRate >= 127 ? 127 : pType->JumpjetTurnRate;
 						pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
-						pJJLoco->LocomotionFacing.SetROT(pType->JumpjetTurnRate);
+						pJJLoco->LocomotionFacing.SetROT(turnrate);
 
 						// Modify the flight height.
 						if (pType->BalloonHover)
@@ -757,7 +758,7 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 							pJJLoco->Deviation = pType->JumpjetDeviation;
 							pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
 							pJJLoco->Wobbles = pType->JumpjetWobbles;
-							pJJLoco->TurnRate = pType->JumpjetTurnRate;
+							pJJLoco->TurnRate = turnrate;
 						}
 						else
 						{
