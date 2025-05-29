@@ -1835,6 +1835,18 @@ JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
+### Turretless Shape Vehicle FireUp
+
+- `Voxel=no` turretless vehicles now support the use of `FireUp`.
+ - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Defaults to `yes`. forced to be `yes` when there is no target.
+
+In `artmd.ini`:
+```ini
+[SOMEVEHICLE]
+FireUp=                     ; integer
+FireUp.ResetInRetarget=     ; boolean
+```
+
 ## Warheads
 
 ```{hint}
