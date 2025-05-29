@@ -56,6 +56,9 @@ void Apply_Ares3_0_Patches()
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
 
+	// SuperClass_Launch_SkipRelatedTags
+  Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3207C, AresHelper::AresBaseAddress + 0x320DF);
+  
 	// Convert ManagerFix
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x039DAE, &ConvertToType);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x046C6D, &ConvertToType);
@@ -86,7 +89,10 @@ void Apply_Ares3_0p1_Patches()
 
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
-
+  
+	// SuperClass_Launch_SkipRelatedTags
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x32A5C, AresHelper::AresBaseAddress + 0x32ABF);
+  
 	// Convert ManagerFix
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x3A82E, &ConvertToType);
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4780D, &ConvertToType);
