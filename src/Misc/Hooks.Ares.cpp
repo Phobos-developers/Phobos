@@ -26,12 +26,12 @@ void __fastcall LetGo(TemporalClass* pTemporal)
 	pTemporal->LetGo();
 }
 
-bool  _stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
+bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
 {
-	if (pThis->WhatAmI() == AbstractType::Building)
-		return false;
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+		return TechnoExt::ConvertToType(pFoot, pToType);
 
-	return TechnoExt::ConvertToType(static_cast<FootClass*>(pThis), pToType);
+	return false;
 }
 
 void Apply_Ares3_0_Patches()
