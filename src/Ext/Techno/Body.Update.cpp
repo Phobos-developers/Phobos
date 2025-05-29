@@ -318,12 +318,12 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						pFoot->RemoveGunner(pPassenger);
 
-						if (pThis->Passengers.NumPassengers > 0)
+						if (auto pEarliestPassenger = pThis->Passengers.GetFirstPassenger())
 						{
 							FootClass* pGunner = nullptr;
 
-							for (auto pNext = pThis->Passengers.GetFirstPassenger(); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
-								pGunner = pNext;
+							for ( ; pEarliestPassenger; pEarliestPassenger = abstract_cast<FootClass*>(pEarliestPassenger->NextObject))
+								pGunner = pEarliestPassenger;
 
 							pFoot->ReceiveGunner(pGunner);
 						}
@@ -899,9 +899,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 	if (isInLimbo)
 	{
 		// Remove parasite units first before deleting them.
-		auto const pFoot = abstract_cast<FootClass*, true>(pThis);
-
-		if (pFoot)
+		if (auto const pFoot = abstract_cast<FootClass*, true>(pThis))
 		{
 			if (pFoot->ParasiteImUsing && pFoot->ParasiteImUsing->Victim)
 				pFoot->ParasiteImUsing->ExitUnit();
@@ -914,34 +912,33 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
 		}
 
-		if (auto const pTransport = pThis->Transporter)
-		{
-			// Handle gunner change.
-			if (pTransport->GetTechnoType()->Gunner)
-			{
-				if (auto const pTransportFoot = abstract_cast<FootClass*, true>(pTransport))
-				{
-					pTransportFoot->RemoveGunner(pFoot);
+		auto const pTransport = pThis->Transporter;
 
-					if (pTransport->Passengers.NumPassengers > 0)
-					{
-						FootClass* pGunner = nullptr;
-
-						for (auto pNext = pTransport->Passengers.GetFirstPassenger(); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
-							pGunner = pNext;
-
-						pTransportFoot->ReceiveGunner(pGunner);
-					}
-				}
-			}
-
-			// Handle extra power
-			if (pThis->Absorbed)
-				pTransport->Owner->RecheckPower = true;
-		}
+		// Handle extra power
+		if (pTransport && pThis->Absorbed)
+			pTransport->Owner->RecheckPower = true;
 
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
+
+		// Handle gunner change.
+		if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
+		{
+			if (pTransportFoot->GetTechnoType()->Gunner)
+			{
+				pTransportFoot->RemoveGunner(nullptr);
+
+				if (auto pPassenger = pTransportFoot->Passengers.GetFirstPassenger())
+				{
+					FootClass* pGunner = nullptr;
+
+					for ( ; pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+						pGunner = pPassenger;
+
+					pTransportFoot->ReceiveGunner(pGunner);
+				}
+			}
+		}
 
 		return;
 	}
@@ -1012,14 +1009,12 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 
 		if (pExt->Ammo_Shared && pType->Ammo > 0)
 		{
-			TechnoTypeClass* pPassengerType = nullptr;
-
 			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				pPassengerType = pPassenger->GetTechnoType();
-				auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
+				const auto pPassengerType = pPassenger->GetTechnoType();
+				const auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
 
-				if (pPassengerExt && pPassengerExt->Ammo_Shared)
+				if (pPassengerExt->Ammo_Shared)
 				{
 					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
