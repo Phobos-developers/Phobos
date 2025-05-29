@@ -157,8 +157,11 @@ DEFINE_HOOK(0x6F7261, TechnoClass_InRange_SetContext, 0x5)
 
 DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 {
-	GET(CellClass*, pResult, EAX);
+	GET_BASE(WeaponTypeClass*, pWeapon, 0x10);
 	GET(CoordStruct const* const, pSourceCoords, ESI);
+	REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x3C, -0x1C));
+	GET_BASE(AbstractClass* const, pTarget, 0xC);
+	GET(CellClass*, pResult, EAX);
 
 	auto pObstacleCell = pResult;
 	auto pTechno = InRangeTemp::Techno;

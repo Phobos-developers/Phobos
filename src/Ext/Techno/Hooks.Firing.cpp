@@ -41,11 +41,11 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
 	enum { ReturnWeaponIndex = 0x6F37AF };
 
+	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 	{
-		GET(TechnoClass*, pThis, ESI);
 		auto const pWeaponPrimary = pThis->GetWeapon(0)->WeaponType;
 		auto const pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
 		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
@@ -76,11 +76,10 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	enum { UseWeaponIndex = 0x6F37AF };
 
 	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (!pThis)
 		return 0;
-
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
@@ -162,12 +161,12 @@ DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
 {
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3807 };
 
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, -0x4));
 	GET(WeaponTypeClass*, pSecWeapon, EAX);
 
 	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA)
 	{
-		GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 		const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
 		if (pTargetTechno && pTargetTechno->IsInAir())
@@ -264,6 +263,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
@@ -275,8 +275,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
 			return CannotFire;
 	}
-
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 
 	if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
@@ -471,13 +469,12 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 {
 	enum { DoNotFire = 0x6FE4E7, SkipSetTarget = 0x6FE1D5 };
 
+	GET(TechnoClass* const, pThis, ESI);
+	GET(CellClass* const, pCell, EAX);
 	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFSET(0xB0, -0x70));
 
 	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
 	{
-		GET(TechnoClass* const, pThis, ESI);
-		GET(CellClass* const, pCell, EAX);
-
 		if (pExt->AreaFire_Target == AreaFireTarget::Random)
 		{
 			auto const range = WeaponTypeExt::GetRangeWithModifiers(pWeaponType, pThis) / static_cast<double>(Unsorted::LeptonsPerCell);
@@ -522,14 +519,13 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
 	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
 	{
 		if (auto const pWeaponFeedback = pWeaponExt->FeedbackWeapon)
 		{
-			GET(TechnoClass*, pThis, ESI);
-
 			if (pThis->InOpenToppedTransport && !pWeaponFeedback->FireInTransport)
 				return 0;
 
@@ -543,11 +539,10 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
 
 	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
 	{
-		GET(WeaponTypeClass*, pWeapon, EBX);
-
 		if (!WeaponTypeExt::ExtMap.Find(pWeapon)->FireOnce_ResetSequence)
 			TechnoExt::ExtMap.Find(pInf)->SkipTargetChangeResetSequence = true;
 	}
@@ -558,17 +553,15 @@ DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 {
 	GET(TechnoClass* const, pSource, ESI);
+	GET_BASE(AbstractClass* const, pTarget, 0x8);
+	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
 	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
 
 	if (pSourceTypeExt->InterceptorType)
 	{
-		GET_BASE(AbstractClass* const, pTarget, 0x8);
-
 		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
 		{
-			GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
-
 			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
 			{
 				pBulletExt->IsInterceptor = true;
@@ -584,18 +577,13 @@ DEFINE_HOOK_AGAIN(0x6FF660, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(int, weaponIndex, 0xC);
 
-	if (pThis->WhatAmI() == AbstractType::Building)
+	if (pWeapon->IsLaser)
 	{
-		GET(WeaponTypeClass* const, pWeapon, EBX);
-
-		if (!pWeapon->IsLaser)
-			return 0;
-
 		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*, true>(pThis)))
 		{
-			GET_BASE(int, weaponIndex, 0xC);
-
 			if (!pExt->CurrentLaserWeaponIndex.has_value())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;
 			else
