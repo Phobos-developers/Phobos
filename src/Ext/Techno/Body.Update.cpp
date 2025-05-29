@@ -106,8 +106,6 @@ void TechnoExt::ExtData::WebbyUpdate()
 		return;
 
 	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt)
-		return;
 
 	if (pExt->WebbyDurationTimer.Completed())
 	{

@@ -91,9 +91,7 @@ DEFINE_HOOK(0x51AA49, InfantryClass_Assign_Destination_DisallowMoving, 0x6)
 	if (pThis->ParalysisTimer.HasTimeLeft())
 		return 0x51B1D7;
 
-	auto pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt)
-		return 0;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->WebbyDurationCountDown > 0)
 	{

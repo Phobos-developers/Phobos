@@ -926,8 +926,6 @@ DEFINE_HOOK(0x518FBC, InfantryClass_DrawIt_DontRenderSHP, 0x6)
 		return 0;
 
 	auto pExt = TechnoExt::ExtMap.Find(pTechno);
-	if (!pExt)
-		return 0;
 
 	if (pExt->WebbyDurationCountDown > 0)
 		return SkipDrawCode;
@@ -948,15 +946,11 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 		return 0;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	if (!pTypeExt)
-		return 0;
 
 	if (pTypeExt->ImmuneToWeb.Get())
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	if (!pExt)
-		return 0;
 
 	if (!pExt->WebbyAnim)
 	{

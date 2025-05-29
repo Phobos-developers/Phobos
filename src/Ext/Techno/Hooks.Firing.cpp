@@ -117,11 +117,10 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		}
 		else if (pTypeExt->ForceWeapon_Webby >= 0)
 		{
-			if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
-			{
-				if (pTargetExt->WebbyAnim)
-					forceWeaponIndex = pTypeExt->ForceWeapon_Webby;
-			}
+			const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+
+			if (pTargetExt->WebbyAnim)
+				forceWeaponIndex = pTypeExt->ForceWeapon_Webby;
 		}
 		else if (!pTypeExt->ForceWeapon_InRange.empty() || !pTypeExt->ForceAAWeapon_InRange.empty())
 		{
