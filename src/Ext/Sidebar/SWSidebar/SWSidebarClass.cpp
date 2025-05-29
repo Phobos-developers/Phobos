@@ -123,7 +123,22 @@ void SWSidebarClass::InitIO()
 
 bool SWSidebarClass::AddButton(int superIdx)
 {
-	if (this->DisableEntry)
+	if (!Phobos::UI::SuperWeaponSidebar || this->DisableEntry)
+		return false;
+
+	const auto pSWType = SuperWeaponTypeClass::Array.GetItemOrDefault(superIdx);
+
+	if (!pSWType)
+		return false;
+
+	const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
+
+	if (!pSWExt->SW_ShowCameo || !pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
+		return false;
+
+	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+
+	if ((pSWExt->SuperWeaponSidebar_RequiredHouses & ownerBits) == 0)
 		return false;
 
 	auto& columns = this->Columns;
@@ -134,12 +149,7 @@ bool SWSidebarClass::AddButton(int superIdx)
 	if (std::any_of(columns.begin(), columns.end(), [superIdx](SWColumnClass* column) { return std::any_of(column->Buttons.begin(), column->Buttons.end(), [superIdx](SWButtonClass* button) { return button->SuperIndex == superIdx; }); }))
 		return true;
 
-	const bool success = columns.back()->AddButton(superIdx);
-
-	if (success)
-		ScenarioExt::Global()->SWSidebar_Indices.emplace_back(superIdx);
-
-	return success;
+	return columns.back()->AddButton(superIdx);
 }
 
 void SWSidebarClass::SortButtons()
@@ -301,7 +311,10 @@ DEFINE_HOOK(0x6A6316, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 	GET_STACK(int, index, STACK_OFFSET(0x14, 0x8));
 
 	if (SWSidebarClass::Instance.AddButton(index))
+	{
+		ScenarioExt::Global()->SWSidebar_Indices.emplace_back(index);
 		return ReturnFalse;
+	}
 
 	return 0;
 }
@@ -314,8 +327,13 @@ DEFINE_HOOK(0x6AA790, StripClass_RecheckCameo_RemoveCameo, 0x6)
 	const auto pCurrent = HouseClass::CurrentPlayer;
 	const auto& supers = pCurrent->Supers;
 
-	if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent && !SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
-		return ShouldNotRemove;
+	if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
+	{
+		if (SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
+			ScenarioExt::Global()->SWSidebar_Indices.emplace_back(pItem->ItemIndex);
+		else
+			return ShouldNotRemove;
+	}
 
 	return ShouldRemove;
 }

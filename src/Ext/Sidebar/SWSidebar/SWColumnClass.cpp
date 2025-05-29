@@ -74,27 +74,14 @@ bool SWColumnClass::Clicked(DWORD* pKey, GadgetFlag flags, int x, int y, KeyModi
 
 bool SWColumnClass::AddButton(int superIdx)
 {
-	const auto pSWType = SuperWeaponTypeClass::Array.GetItemOrDefault(superIdx);
-
-	if (!pSWType)
-		return false;
-
-	const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
-
-	if (!pSWExt->SW_ShowCameo || !Phobos::UI::SuperWeaponSidebar || !pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
-		return false;
-
-	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
-
-	if ((pSWExt->SuperWeaponSidebar_RequiredHouses & ownerBits) == 0)
-		return false;
-
 	auto& buttons = this->Buttons;
 	const int buttonCount = static_cast<int>(buttons.size());
 	auto& sidebar = SWSidebarClass::Instance;
 
 	if (buttonCount >= this->MaxButtons && !SWSidebarClass::Instance.AddColumn())
 	{
+		const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
+
 		auto Compare = [ownerBits](const int left, const int right)
 		{
 			const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItemOrDefault(left));
