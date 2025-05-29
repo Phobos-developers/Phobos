@@ -599,7 +599,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Ares 2.0
 	this->Passengers_BySize.Read(exINI, pSection, "Passengers.BySize");
 
-	char tempBuffer[32];
+	char tempBuffer[40];
 
 	if (this->OwnerObject()->Gunner)
 	{
