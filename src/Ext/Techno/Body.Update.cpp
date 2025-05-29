@@ -120,21 +120,20 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 
 void TechnoExt::ExtData::AmmoAutoConvertActions()
 {
-	auto const pThis = abstract_cast<TechnoClass*>(this->OwnerObject());
-	if (!pThis || pThis->GetTechnoType()->Ammo <= 0)
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+
+	if (!pTypeExt || pThis->GetTechnoType()->Ammo <= 0)
 		return;
 
-	const auto pTypeExt = this->TypeExtData;
 	const bool skipMinimum = pTypeExt->Ammo_AutoConvertMinimumAmount < 0;
 	const bool skipMaximum = pTypeExt->Ammo_AutoConvertMaximumAmount < 0;
 
 	if (skipMinimum && skipMaximum)
 		return;
 
-	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoConvertMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoConvertMaximumAmount;
-
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+	if ((skipMinimum || pThis->Ammo >= pTypeExt->Ammo_AutoConvertMinimumAmount) // More than minimum
+	&& (skipMaximum || pThis->Ammo <= pTypeExt->Ammo_AutoConvertMaximumAmount)) // Less than maximum
 	{
 		const auto pFoot = abstract_cast<FootClass*>(pThis);
 
