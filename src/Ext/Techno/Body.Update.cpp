@@ -137,7 +137,7 @@ void TechnoExt::ExtData::AmmoAutoConvertActions()
 	if ((skipMinimum || pThis->Ammo >= pTypeExt->Ammo_AutoConvertMinimumAmount) // More than minimum
 	&& (skipMaximum || pThis->Ammo <= pTypeExt->Ammo_AutoConvertMaximumAmount)) // Less than maximum
 	{
-		const auto pFoot = abstract_cast<FootClass*>(pThis);
+		const auto pFoot = pThis && (pThis->AbstractFlags & AbstractFlags::Foot) ? static_cast<FootClass*>(pThis) : nullptr;
 
 		if (!pFoot)
 			return;
