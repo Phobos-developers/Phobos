@@ -751,6 +751,21 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 						pJJLoco->CurrentHeight = pType->JumpjetHeight;
 						pJJLoco->Height = pType->JumpjetHeight;
 						pJJLoco->LocomotionFacing.SetROT(turnrate);
+						bool inMove = pJJLoco->Is_Really_Moving_Now();
+
+						if (pType->BalloonHover)
+						{
+							// Makes the jumpjet think it is hovering without actually moving.
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
+
+							if (!inMove)
+								pJJLoco->DestinationCoords = pThis->Location;
+						}
+						else if (!inMove)
+						{
+							pJJLoco->Move_To(pThis->Location);
+						}
 					}
 					else
 					{
