@@ -65,7 +65,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 	GET(TechnoClass*, pThis, ESI);
 	GET(FootClass*, pPassenger, EDI);
 
-	if (pThis && pPassenger)
+	if (pPassenger)
 	{
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
@@ -88,9 +88,9 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(FootClass*, pPassenger, EDI);
+	GET(FootClass*, pPassenger, EAX);
 
-	if (pThis && pPassenger)
+	if (pPassenger)
 	{
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
