@@ -81,7 +81,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (reveal > 0)
 		{
-			const auto pCurrent = HouseClass::CurrentPlayer;;
+			const auto pCurrent = HouseClass::CurrentPlayer;
 
 			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
 			{
