@@ -258,24 +258,24 @@ static inline bool CanEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	if (pTransport->GetCell()->LandType == LandType::Water && !TechnoTypeExt::ExtMap.Find(pTransportType)->AmphibiousEnter.Get(RulesExt::Global()->AmphibiousEnter))
 		return false;
 
-	const auto bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
-	const auto passengerSize = bySize ? Game::F2I(pPassenger->GetTechnoType()->Size) : 1;
+	const bool bySize = TechnoTypeExt::ExtMap.Find(pTransportType)->Passengers_BySize;
+	const int passengerSize = static_cast<int>(pPassenger->GetTechnoType()->Size);
 
-	if (passengerSize > Game::F2I(pTransportType->SizeLimit))
+	if (passengerSize > static_cast<int>(pTransportType->SizeLimit))
 		return false;
 
-	const auto maxSize = pTransportType->Passengers;
-	const auto predictSize = (bySize ? pTransport->Passengers.GetTotalSize() : pTransport->Passengers.NumPassengers) + passengerSize;
+	const int maxSize = pTransportType->Passengers;
+	const int predictSize = bySize ? (pTransport->Passengers.GetTotalSize() + passengerSize) : (pTransport->Passengers.NumPassengers + 1);
 	const auto pLink = abstract_cast<FootClass*>(pTransport->GetNthLink());
-	const auto needCalculate = pLink && pLink != pPassenger && pLink->Destination == pTransport;
+	const bool needCalculate = pLink && pLink != pPassenger && pLink->Destination == pTransport;
 
 	// When the most important passenger is close, need to prevent overlap
 	if (needCalculate)
 	{
 		if (IsCloseEnoughToEnter(pTransport, pLink))
-			return (predictSize <= (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)));
+			return (predictSize <= (maxSize - (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1)));
 
-		if (predictSize > (maxSize - (bySize ? Game::F2I(pLink->GetTechnoType()->Size) : 1)))
+		if (predictSize > (maxSize - (bySize ? static_cast<int>(pLink->GetTechnoType()->Size) : 1)))
 		{
 			pLink->QueueMission(Mission::None, false);
 			pLink->SetDestination(nullptr, true);
