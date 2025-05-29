@@ -56,8 +56,8 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 			const auto pTag = pTags->GetItem(index);
 
 			// don't be confused as to why (TechnoClass*)(pSW) is there, it's something very much needed..
-			if (pTag->RaiseEvent(static_cast<TriggerEvent>(77), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW)) ||
-				pTag->RaiseEvent(static_cast<TriggerEvent>(75), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW)))
+			if (pTag->RaiseEvent(static_cast<TriggerEvent>(77), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW))
+				|| pTag->RaiseEvent(static_cast<TriggerEvent>(75), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW)))
 			{
 				if (TagCount != pTags->Count)
 				{
