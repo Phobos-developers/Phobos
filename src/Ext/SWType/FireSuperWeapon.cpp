@@ -286,9 +286,6 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 
 void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 {
-	if (this->Convert_Pairs.size() == 0)
-		return;
-
 	for (const auto pTargetFoot : FootClass::Array)
 		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }
