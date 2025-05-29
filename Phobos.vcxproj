@@ -177,7 +177,7 @@
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.SkirmishColors.cpp" />
-	<ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
