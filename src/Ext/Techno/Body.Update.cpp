@@ -747,11 +747,6 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 						// Modify the flight height.
 						if (pType->BalloonHover)
 						{
-							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-							pJJLoco->IsMoving = true;
-							pJJLoco->DestinationCoords = pFoot->Location;
-							pJJLoco->CurrentHeight = pType->JumpjetHeight;
-							pJJLoco->Height = pType->JumpjetHeight;
 							pJJLoco->Speed = pType->JumpjetSpeed;
 							pJJLoco->Accel = pType->JumpjetAccel;
 							pJJLoco->Crash = pType->JumpjetCrash;
@@ -759,6 +754,10 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 							pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
 							pJJLoco->Wobbles = pType->JumpjetWobbles;
 							pJJLoco->TurnRate = turnrate;
+							pJJLoco->CurrentHeight = pType->JumpjetHeight;
+							pJJLoco->Height = pType->JumpjetHeight;
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
 						}
 						else
 						{
