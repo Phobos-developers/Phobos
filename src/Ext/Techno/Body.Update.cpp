@@ -759,10 +759,6 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
 							pJJLoco->IsMoving = true;
 						}
-						else
-						{
-							pJJLoco->Move_To(pFoot->Location);
-						}
 					}
 					else
 					{
