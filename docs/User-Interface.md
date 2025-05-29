@@ -690,6 +690,8 @@ ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enable
   - `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo. That is, the space between the upper and lower cameos is (`SuperWeaponSidebar.CameoHeight` - cameo fixed height 48). This will not be less than 48. When you need to make a background, this is the height of the background.
   - `SuperWeaponSidebar.Max` controls the maximum number of cameos on the leftmost column, which also depends on the current game resolution.
   - `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
+  - Only sw with `SuperWeaponSidebar.Significance` not lower than `SuperWeaponSidebar.RequiredSignificance` are allowed to be added to the sw sidebar.
+- `SuperWeaponSidebarKeysEnabled` should be true that you can use hotkeys about superweapon sidebar.
 - You can also launch first 10 SW by hotkey in INTERFACE category.
   - For localization of hotkey, add `TXT_FIRE_TACTICAL_SW_XX`, `TXT_FIRE_TACTICAL_SW_XX_DESC`, `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` into your `.csf` file.
 
@@ -723,6 +725,13 @@ SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 SuperWeaponSidebar.Allow=             ; boolean
 SuperWeaponSidebar.PriorityHouses=    ; list of house types
 SuperWeaponSidebar.RequiredHouses=    ; list of house types
+SuperWeaponSidebar.Significance=0     ; integer
+```
+
+In `ra2md.ini`
+```ini
+[Phobos]
+SuperWeaponSidebar.RequiredSignificance=0   ; integer
 ```
 
 ## Miscellanous

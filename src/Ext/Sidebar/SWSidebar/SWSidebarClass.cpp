@@ -141,6 +141,9 @@ bool SWSidebarClass::AddButton(int superIdx)
 	if ((pSWExt->SuperWeaponSidebar_RequiredHouses & ownerBits) == 0)
 		return false;
 
+	if (pSWExt->SuperWeaponSidebar_Significance < Phobos::Config::SuperWeaponSidebar_RequiredSignificance)
+		return false;
+
 	auto& columns = this->Columns;
 
 	if (columns.empty() && !this->AddColumn())

@@ -76,6 +76,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeaponSidebar_Allow)
 		.Process(this->SuperWeaponSidebar_PriorityHouses)
 		.Process(this->SuperWeaponSidebar_RequiredHouses)
+		.Process(this->SuperWeaponSidebar_Significance)
 		.Process(this->SidebarPal)
 		.Process(this->SidebarPCX)
 		.Process(this->UseWeeds)
@@ -230,6 +231,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SuperWeaponSidebar_Allow.Read(exINI, pSection, "SuperWeaponSidebar.Allow");
 	this->SuperWeaponSidebar_PriorityHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.PriorityHouses", this->SuperWeaponSidebar_PriorityHouses);
 	this->SuperWeaponSidebar_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.RequiredHouses", this->SuperWeaponSidebar_RequiredHouses);
+	this->SuperWeaponSidebar_Significance.Read(exINI, pSection, "SuperWeaponSidebar.Significance");
 
 	this->SidebarPal.LoadFromINI(pINI, pSection, "SidebarPalette");
 	this->SidebarPCX.Read(pINI, pSection, "SidebarPCX");

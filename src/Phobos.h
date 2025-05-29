@@ -101,6 +101,7 @@ public:
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
+		static int SuperWeaponSidebar_RequiredSignificance;
 	};
 
 	class Misc
