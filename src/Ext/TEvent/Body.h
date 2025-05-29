@@ -83,7 +83,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static int GetFlags(const int& iEvent);
+	static int GetFlags(int iEvent);
 
 	static std::optional<bool> Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
 		ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource);

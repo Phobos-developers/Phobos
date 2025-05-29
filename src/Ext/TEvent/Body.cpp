@@ -33,7 +33,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
-int TEventExt::GetFlags(const int& iEvent)
+int TEventExt::GetFlags(int iEvent)
 {
 	// 0x4 : In MapClass, ZoneEntryBy uses it.
 	// 0x8 : In HouseClass, It will be added to the RelatedTags of the specified house. Ares' TriggerEvent 75/77 uses it.
