@@ -292,8 +292,34 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
+	const auto pType = pThis->GetTechnoType();
+
+	// It really should be at the beginning.
+	if (pType == pToType || pType->WhatAmI() != pToType->WhatAmI())
+	{
+		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		return false;
+	}
+
 	if (AresFunctions::ConvertTypeTo)
-		return AresFunctions::ConvertTypeTo(pThis, pToType);
+	{
+		int oldHealth = pThis->Health;
+
+		if (AresFunctions::ConvertTypeTo(pThis, pToType))
+		{
+			if (pType->Strength == pToType->Strength)
+			{
+				// Fixed an issue where morphing could result in -1 health.
+				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
+			}
+
+			TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis))->UpdateTypeData(pToType);
+			return true;
+		}
+
+		return false;
+	}
+
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
@@ -315,12 +341,6 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		break;
 	default:
 		Debug::Log("%s is not FootClass, conversion not allowed\n", pToType->get_ID());
-		return false;
-	}
-
-	if (pToType->WhatAmI() != rtti)
-	{
-		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
 		return false;
 	}
 
@@ -390,6 +410,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
+	TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis))->UpdateTypeData(pToType);
 	return true;
 }
 

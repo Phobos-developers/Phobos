@@ -5,6 +5,11 @@
 #include <SpawnManagerClass.h>
 #include <ParticleSystemClass.h>
 #include <Conversions.h>
+#include <SlaveManagerClass.h>
+#include <AirstrikeClass.h>
+#include <Kamikaze.h>
+#include <JumpjetLocomotionClass.h>
+#include <FlyLocomotionClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -526,6 +531,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
 
 	this->UpdateSelfOwnedAttachEffects();
+	this->UpdateTypeExtData_FixOther(pOldTypeExt);
 
 	// Recreate Laser Trails
 	if (this->LaserTrails.size())
@@ -654,6 +660,535 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	}
 
 	this->PreviousType = nullptr;
+}
+
+// Powered by ststl-s、Fly-Star
+void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOldTypeExt)
+{
+	TechnoClass* const pThis = this->OwnerObject();
+	TechnoTypeClass* const pType = pThis->GetTechnoType();
+	FootClass* pFoot = nullptr;
+	AbstractType abs = pThis->WhatAmI();
+
+	if (abs != AbstractType::Building)
+	{
+		pFoot = static_cast<FootClass*>(pThis);
+
+		if (!pType->CanDisguise || (!pFoot->Disguise && pType->PermaDisguise))
+		{
+			// When it can't disguise or has lost its disguise, update its disguise.
+			pFoot->ClearDisguise();
+		}
+
+		if (pFoot->Passengers.NumPassengers > 0)
+		{
+			FootClass* pFirstPassenger = pFoot->Passengers.GetFirstPassenger();
+
+			while (true)
+			{
+				if (pType->OpenTopped)
+				{
+					// Add passengers to the logic layer.
+					pFoot->EnteredOpenTopped(pFirstPassenger);
+				}
+				else
+				{
+					// Lose target & destination
+					pFirstPassenger->SetTarget(nullptr);
+					pFirstPassenger->SetCurrentWeaponStage(0);
+					pFirstPassenger->AbortMotion();
+					pFoot->ExitedOpenTopped(pFirstPassenger);
+
+					// OpenTopped adds passengers to logic layer when enabled. Under normal conditions this does not need to be removed since
+					// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
+					LogicClass::Instance.RemoveObject(pFirstPassenger);
+				}
+
+				pFirstPassenger->Transporter = pFoot;
+
+				if (const auto pNextPassenger = abstract_cast<FootClass*>(pFirstPassenger->NextObject))
+				{
+					pFirstPassenger = pNextPassenger;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			if (pType->Gunner)
+			{
+				pFoot->ReceiveGunner(pFirstPassenger);
+			}
+		}
+		else if (pType->Gunner)
+		{
+			pFoot->RemoveGunner(nullptr);
+		}
+
+		if (abs == AbstractType::Infantry || abs == AbstractType::Unit)
+		{
+			const auto pOldType = pOldTypeExt->OwnerObject();
+
+			if (pFoot->IsInAir() && !pFoot->LocomotorSource)
+			{
+				auto pLocomotorType = pType->Locomotor;
+
+				// The Hover movement pattern allows for self-landing.
+				if (pLocomotorType != LocomotionClass::CLSIDs::Fly &&
+					pLocomotorType != LocomotionClass::CLSIDs::Hover)
+				{
+					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+					{
+						pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
+						pJJLoco->LocomotionFacing.SetROT(pType->JumpjetTurnRate);
+
+						// Modify the flight height.
+						if (pType->BalloonHover)
+						{
+							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
+							pJJLoco->IsMoving = true;
+							pJJLoco->DestinationCoords = pFoot->Location;
+							pJJLoco->CurrentHeight = pType->JumpjetHeight;
+							pJJLoco->Height = pType->JumpjetHeight;
+						}
+						else
+						{
+							pJJLoco->Move_To(pFoot->Location);
+						}
+					}
+					else
+					{
+						// Let it go into free fall.
+						pFoot->FallRate = 0;
+						pFoot->IsFallingDown = true;
+
+						const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
+
+						if (pCell && !pCell->IsClearToMove(pType->SpeedType, true, true,
+							-1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+						{
+							// If it's landing position cannot be moved, then it is granted a crash death.
+							pFoot->IsABomb = true;
+						}
+						else
+						{
+							// If it's gonna land on the bridge, then it needs this.
+							pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
+						}
+
+						if (abs == AbstractType::Infantry)
+						{
+							// Infantry changed to parachute status (not required).
+							static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
+						}
+					}
+				}
+			}
+
+			if (abs == AbstractType::Unit)
+			{
+				// Yes, synchronize its turret facing or it will turn strangely.
+				if (pOldType->Turret != pType->Turret)
+				{
+					const auto primaryFacing = pFoot->PrimaryFacing.Current();
+					auto& secondaryFacing = pFoot->SecondaryFacing;
+
+					secondaryFacing.SetCurrent(primaryFacing);
+					secondaryFacing.SetDesired(primaryFacing);
+				}
+			}
+		}
+	}
+
+	const auto pOwner = pThis->Owner;
+	auto& pSlaveManager = pThis->SlaveManager;
+
+	if (pType->Enslaves && pType->SlavesNumber > 0)
+	{
+		// SlaveManager does not exist or they have different slaves.
+		if (!pSlaveManager || pSlaveManager->SlaveType != pType->Enslaves)
+		{
+			if (pSlaveManager)
+			{
+				// Slaves are not the same, so clear out.
+				pSlaveManager->Killed(nullptr);
+				GameDelete(pSlaveManager);
+				pSlaveManager = nullptr;
+			}
+
+			pSlaveManager = GameCreate<SlaveManagerClass>(pThis, pType->Enslaves, pType->SlavesNumber, pType->SlaveRegenRate, pType->SlaveReloadRate);
+		}
+		else if (pSlaveManager->SlaveCount != pType->SlavesNumber)
+		{
+			// Additions/deletions made when quantities are inconsistent.
+			if (pSlaveManager->SlaveCount < pType->SlavesNumber)
+			{
+				// There are too few slaves here. More are needed.
+				int count = pType->SlavesNumber - pSlaveManager->SlaveCount;
+
+				for (int index = 0; index < count; index++)
+				{
+					if (auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
+					{
+						pSlaveNode->Slave = nullptr;
+						pSlaveNode->State = SlaveControlStatus::Dead;
+						pSlaveNode->RespawnTimer.Start(pType->SlaveRegenRate);
+						pSlaveManager->SlaveNodes.AddItem(pSlaveNode);
+					}
+				}
+			}
+			else
+			{
+				for (int index = pSlaveManager->SlaveCount - 1; index >= pType->SlavesNumber; --index)
+				{
+					// I guess you have so many slaves you're overflowing. Clean it up.
+					if (auto pSlaveNode = pSlaveManager->SlaveNodes.GetItem(index))
+					{
+						const auto pSlave = pSlaveNode->Slave;
+
+						if (pSlave)
+						{
+							if (pSlave->InLimbo)
+							{
+								// He wasn't killed, just erased.
+								pSlave->RegisterDestruction(pThis);
+								pSlave->UnInit();
+							}
+							else
+							{
+								// Oh, my God, he's been killed.
+								pSlave->ReceiveDamage(&pSlave->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+							}
+						}
+
+						// Unlink
+						pSlaveNode->Slave = nullptr;
+						pSlaveNode->State = SlaveControlStatus::Dead;
+						GameDelete(pSlaveNode);
+					}
+
+					// Remove it
+					pSlaveManager->SlaveNodes.RemoveItem(index);
+				}
+			}
+
+			pSlaveManager->SlaveCount = pType->SlavesNumber;
+		}
+	}
+	else if (pSlaveManager)
+	{
+		pSlaveManager->Killed(nullptr);
+		GameDelete(pSlaveManager);
+		pSlaveManager = nullptr;
+	}
+
+	auto& pSpawnManager = pThis->SpawnManager;
+
+	if (pType->Spawns && pType->SpawnsNumber > 0)
+	{
+		// No SpawnManager exists, or their SpawnType is inconsistent.
+		if (!pSpawnManager || pType->Spawns != pSpawnManager->SpawnType)
+		{
+			if (pSpawnManager)
+			{
+				// It may be odd that AircraftType is different, I chose to reset it.
+				pSpawnManager->KillNodes();
+				GameDelete(pSpawnManager);
+				pSpawnManager = nullptr;
+			}
+
+			pSpawnManager = GameCreate<SpawnManagerClass>(pThis, pType->Spawns, pType->SpawnsNumber, pType->SpawnRegenRate, pType->SpawnReloadRate);
+		}
+		else if (pSpawnManager->SpawnCount != pType->SpawnsNumber)
+		{
+			// Additions/deletions made when quantities are inconsistent.
+			if (pSpawnManager->SpawnCount < pType->SpawnsNumber)
+			{
+				int count = pType->SpawnsNumber - pSpawnManager->SpawnCount;
+
+				// Add the missing Spawns, but don't intend for them to be born right away.
+				for (int index = 0; index < count; index++)
+				{
+					if (auto pSpawnNode = GameCreate<SpawnControl>())
+					{
+						pSpawnNode->Unit = nullptr;
+						pSpawnNode->Status = SpawnNodeStatus::Dead;
+						pSpawnNode->SpawnTimer.Start(pType->SpawnRegenRate);
+						pSpawnNode->IsSpawnMissile = false;
+						pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
+					}
+				}
+			}
+			else
+			{
+				for (int index = pSpawnManager->SpawnCount - 1; index >= pType->SpawnsNumber; --index)
+				{
+					// Excess Spawns will be eliminated.
+					if (auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(index))
+					{
+						const auto pAircraft = pSpawnNode->Unit;
+						auto& pStatus = pSpawnNode->Status;
+
+						// Spawns that don't die get killed.
+						if (pAircraft)
+						{
+							pAircraft->SpawnOwner = nullptr;
+
+							if (pAircraft->InLimbo || pStatus == SpawnNodeStatus::Idle ||
+								pStatus == SpawnNodeStatus::Reloading || pStatus == SpawnNodeStatus::TakeOff)
+							{
+								if (pStatus == SpawnNodeStatus::TakeOff)
+								{
+									Kamikaze::Instance.Remove(pAircraft);
+								}
+
+								pAircraft->UnInit();
+							}
+							else if (pSpawnNode->IsSpawnMissile)
+							{
+								pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+							}
+							else
+							{
+								pAircraft->Crash(nullptr);
+							}
+						}
+
+						// Unlink
+						pSpawnNode->Unit = nullptr;
+						pStatus = SpawnNodeStatus::Dead;
+						GameDelete(pSpawnNode);
+					}
+
+					// Remove it
+					pSpawnManager->SpawnedNodes.RemoveItem(index);
+				}
+			}
+
+			pSpawnManager->SpawnCount = pType->SpawnsNumber;
+		}
+	}
+	else if (pSpawnManager)
+	{
+		// Reset the target.
+		pSpawnManager->ResetTarget();
+
+		// pSpawnManager->KillNodes() kills all Spawns, but it is not necessary to kill the parts that are not performing tasks.
+		for (auto pSpawnNode : pSpawnManager->SpawnedNodes)
+		{
+			const auto pAircraft = pSpawnNode->Unit;
+			auto& Status = pSpawnNode->Status;
+
+			// A dead or idle Spawn is not killed.
+			if (!pAircraft || Status == SpawnNodeStatus::Dead ||
+				Status == SpawnNodeStatus::Idle || Status == SpawnNodeStatus::Reloading)
+			{
+				continue;
+			}
+
+			pAircraft->SpawnOwner = nullptr;
+
+			if (Status == SpawnNodeStatus::TakeOff)
+			{
+				Kamikaze::Instance.Remove(pAircraft);
+				pAircraft->UnInit();
+			}
+			else if (pSpawnNode->IsSpawnMissile)
+			{
+				pAircraft->ReceiveDamage(&pAircraft->Health, 0, RulesClass::Instance->C4Warhead, nullptr, true, false, pOwner);
+			}
+			else
+			{
+				pAircraft->Crash(nullptr);
+			}
+
+			pSpawnNode->Unit = nullptr;
+			Status = SpawnNodeStatus::Dead;
+			pSpawnNode->IsSpawnMissile = false;
+			pSpawnNode->SpawnTimer.Start(pSpawnManager->RegenRate);
+		}
+	}
+
+	std::vector<WeaponTypeClass*> vWeapons;
+
+	// Get all its weapons.
+	for (int index = 0; index < TechnoTypeClass::MaxWeapons; index++)
+	{
+		const auto pWeaponType = pType->GetWeapon(index, pThis->Veterancy.IsElite()).WeaponType;
+
+		if (pWeaponType)
+		{
+			vWeapons.push_back(pWeaponType);
+		}
+	}
+
+	// Prepare the variables.
+	int maxCapture = 0;
+	bool infiniteCapture = false;
+	bool hasTemporal = false;
+	bool hasAirstrike = false;
+	bool hasParasite = false;
+
+	if (!vWeapons.empty())
+	{
+		for (const auto pWeaponType : vWeapons)
+		{
+			const auto pWH = pWeaponType->Warhead;
+
+			if (pWH->MindControl)
+			{
+				if (pWeaponType->Damage > maxCapture)
+				{
+					// Wow, it can be mind controlled.
+					maxCapture = pWeaponType->Damage;
+				}
+
+				if (pWeaponType->InfiniteMindControl)
+				{
+					// You can overload, right?
+					infiniteCapture = true;
+				}
+			}
+
+			if (pWH->Temporal)
+			{
+				// Wow, it has a temporal device.
+				hasTemporal = true;
+			}
+
+			if (pWH->Airstrike)
+			{
+				// Look at me. I can call in an air strike.
+				hasAirstrike = true;
+			}
+
+			if (pWH->Parasite && pFoot)
+			{
+				// Oh, this is gonna be fun.
+				hasParasite = true;
+			}
+		}
+	}
+
+	auto& pCaptureManager = pThis->CaptureManager;
+	auto clearMindControlNode = [pCaptureManager](const int& maxCapture)
+	{
+		// If not exceeded, then stop.
+		if (pCaptureManager->ControlNodes.Count <= maxCapture)
+			return;
+
+		// Remove excess nodes.
+		for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
+		{
+			auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
+			pCaptureManager->FreeUnit(pControlNode->Unit);
+		}
+	};
+
+	if (maxCapture > 0)
+	{
+		if (!pCaptureManager)
+		{
+			// Rebuild a CaptureManager
+			pCaptureManager = GameCreate<CaptureManagerClass>(pThis, maxCapture, infiniteCapture);
+		}
+		else
+		{
+			if (!infiniteCapture)
+			{
+				// It can't be overloaded, so remove the excess nodes.
+				clearMindControlNode(maxCapture);
+			}
+
+			pCaptureManager->MaxControlNodes = maxCapture;
+			pCaptureManager->InfiniteMindControl = infiniteCapture;
+		}
+	}
+	else if (pCaptureManager)
+	{
+		if (pOldTypeExt && pOldTypeExt->Convert_ResetMindControl.Get())
+		{
+			// Remove CaptureManager completely
+			pCaptureManager->FreeAll();
+			GameDelete(pCaptureManager);
+			pCaptureManager = nullptr;
+		}
+		else
+		{
+			// Remove excess mind control node.
+			clearMindControlNode(pCaptureManager->MaxControlNodes);
+			pCaptureManager->InfiniteMindControl = false;
+		}
+	}
+
+	auto& pTemporalImUsing = pThis->TemporalImUsing;
+	if (hasTemporal)
+	{
+		if (!pTemporalImUsing)
+		{
+			// Rebuild a TemporalClass
+			pTemporalImUsing = GameCreate<TemporalClass>(pThis);
+		}
+	}
+	else if (pTemporalImUsing)
+	{
+		if (pTemporalImUsing->Target)
+		{
+			// Free this afflicted man.
+			pTemporalImUsing->LetGo();
+		}
+
+		// Delete it
+		GameDelete(pTemporalImUsing);
+		pTemporalImUsing = nullptr;
+	}
+
+	auto& pAirstrike = pThis->Airstrike;
+	if (hasAirstrike && pType->AirstrikeTeam > 0)
+	{
+		if (!pAirstrike)
+		{
+			// Rebuild a AirstrikeClass
+			pAirstrike = GameCreate<AirstrikeClass>(pThis);
+		}
+		else
+		{
+			// Modify the parameters of AirstrikeClass.
+			pAirstrike->AirstrikeTeam = pType->AirstrikeTeam;
+			pAirstrike->EliteAirstrikeTeam = pType->EliteAirstrikeTeam;
+			pAirstrike->AirstrikeTeamType = pType->AirstrikeTeamType;
+			pAirstrike->EliteAirstrikeTeamType = pType->EliteAirstrikeTeamType;
+			pAirstrike->AirstrikeRechargeTime = pType->AirstrikeRechargeTime;
+			pAirstrike->EliteAirstrikeRechargeTime = pType->EliteAirstrikeRechargeTime;
+		}
+	}
+
+	// Only FootClass* can use this.
+	if (pFoot)
+	{
+		auto& pParasiteImUsing = pFoot->ParasiteImUsing;
+		if (hasParasite)
+		{
+			if (!pParasiteImUsing)
+			{
+				// Rebuild a ParasiteClass
+				pParasiteImUsing = GameCreate<ParasiteClass>(pFoot);
+			}
+		}
+		else if (pParasiteImUsing)
+		{
+			if (pParasiteImUsing->Victim)
+			{
+				// Release of victims.
+				pParasiteImUsing->ExitUnit();
+			}
+
+			// Delete it
+			GameDelete(pParasiteImUsing);
+			pParasiteImUsing = nullptr;
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateLaserTrails()
