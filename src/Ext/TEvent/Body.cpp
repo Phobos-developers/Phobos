@@ -33,6 +33,24 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+int TEventExt::GetFlags(const int& iEvent)
+{
+	// 0x4 : In MapClass, ZoneEntryBy uses it.
+	// 0x8 : In HouseClass, Ares' TriggerEvent 75/77 uses it.
+	// 0x10 : In LogicClass.
+	switch (static_cast<PhobosTriggerEvent>(iEvent))
+	{
+	case PhobosTriggerEvent::ShieldBroken:
+		return 0;
+	//case
+	//	return 0x4;
+	//case
+	//	return 0x8;
+	default:
+		return 0x10;
+	}
+}
+
 std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
 	ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource)
 {
