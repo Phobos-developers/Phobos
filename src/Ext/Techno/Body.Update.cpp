@@ -318,12 +318,10 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						pFoot->RemoveGunner(pPassenger);
 
-						if (auto pEarliestPassenger = pThis->Passengers.GetFirstPassenger())
+						if (auto pGunner = pFoot->Passengers.GetFirstPassenger())
 						{
-							FootClass* pGunner = nullptr;
-
-							for ( ; pEarliestPassenger; pEarliestPassenger = abstract_cast<FootClass*>(pEarliestPassenger->NextObject))
-								pGunner = pEarliestPassenger;
+							for (auto pNext = abstract_cast<FootClass*>(pGunner->NextObject); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+								pGunner = pNext;
 
 							pFoot->ReceiveGunner(pGunner);
 						}
@@ -928,12 +926,10 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 			{
 				pTransportFoot->RemoveGunner(nullptr);
 
-				if (auto pPassenger = pTransportFoot->Passengers.GetFirstPassenger())
+				if (auto pGunner = pTransportFoot->Passengers.GetFirstPassenger())
 				{
-					FootClass* pGunner = nullptr;
-
-					for ( ; pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
-						pGunner = pPassenger;
+					for (auto pNext = abstract_cast<FootClass*>(pGunner->NextObject); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+						pGunner = pNext;
 
 					pTransportFoot->ReceiveGunner(pGunner);
 				}
