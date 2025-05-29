@@ -3141,12 +3141,14 @@ msgid ""
 "houses with `PlayerControl=true` can be controlled via "
 "`GainSelfHealFromPlayerControl`."
 msgstr ""
+"玩家能否通过带有 `PlayerControl=true` 的所属方获得这些受益可以通过 `GainSelfHealFromPlayerControl` 控制。"
 
 #: ../../Fixed-or-Improved-Logics.md:773
 msgid ""
 "Whether or not these effects can be benefited by allied houses can be "
 "controlled via `GainSelfHealFromAllies`."
 msgstr ""
+"玩家能否通过盟友所属获得这些受益效果可以由 `GainSelfHealFromAllies` 控制。"
 
 #: ../../Fixed-or-Improved-Logics.md:774
 msgid ""

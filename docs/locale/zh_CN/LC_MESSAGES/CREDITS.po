@@ -1965,6 +1965,7 @@ msgid ""
 "Allowed player's self-healing effects to be benefited by allied or "
 "`PlayerControl=true` houses"
 msgstr ""
+"允许玩家的自愈效果可以从友军或 `PlayerControl=true` 的所属方受益"
 
 #: ../../../CREDITS.md:489
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"

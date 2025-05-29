@@ -127,6 +127,7 @@ msgid ""
 "former to vice-versa) due to technical limitations and compatibility "
 "issues with spawner DLL."
 msgstr ""
+"由于技术限制及与 spawner DLL 的兼容性问题，`ShowBriefing` 与 `BriefingTheme` 这两个标签的解析中地图文件与 `missionmd.ini` 的优先级已被对调（从后者优先改为前者优先）。"
 
 #: ../../Whats-New.md:25
 msgid ""
@@ -1526,7 +1527,6 @@ msgid "Dehardcoded 255 limit of `OverlayType` (by secsome)"
 msgstr "解除了覆盖物最多 255 个的数量限制（by secsome）"
 
 #: ../../Whats-New.md:383
-#, fuzzy
 msgid ""
 "[Customizable airstrike flare colors](Fixed-or-Improved-Logics.md"
 "#airstrike-flare-customizations) (by Starkku)"
@@ -1539,6 +1539,7 @@ msgid ""
 "Allowed player's self-healing effects to be benefited by allied or "
 "`PlayerControl=true` houses (by Ollerus)"
 msgstr ""
+"允许玩家的自愈效果可以从友军或 `PlayerControl=true` 的所属方受益（by Ollerus)"
 
 #: ../../Whats-New.md:386 ../../Whats-New.md:585 ../../Whats-New.md:902
 #: ../../Whats-New.md:1011 ../../Whats-New.md:1036 ../../Whats-New.md:1075

@@ -258,7 +258,6 @@ msgid "Show briefing dialog on startup"
 msgstr "启动时显示简报对话框"
 
 #: ../../AI-Scripting-and-Mapping.md:81
-#, fuzzy
 msgid ""
 "You can now have the briefing dialog screen show up on singleplayer "
 "campaign mission startup by setting `ShowBriefing` to true in map file's "
@@ -266,19 +265,18 @@ msgid ""
 "(former takes precedence if available). This can be disabled by user by "
 "setting `ShowBriefing` to false in `RA2MD.INI`."
 msgstr ""
-"现在你可以通过在地图文件的 `[Basic]` 小节或 `missionmd.ini`（后者优先于前者）中设置 `ShowBriefing` 为 "
+"现在你可以通过在地图文件的 `[Basic]` 小节或 `missionmd.ini`（前者优先）中设置 `ShowBriefing` 为 "
 "true 来使简报对话框在单人战役地图启动时显示。用户可以通过在 `RA2MD.INI` 中设置 `ShowBriefing` 为 false "
 "来禁用这一功能。"
 
 #: ../../AI-Scripting-and-Mapping.md:82
-#, fuzzy
 msgid ""
 "`BriefingTheme` (In order of precedence from highest to lowest: map file,"
 " `missionmd.ini`, side entry in `rulesmd.ini`) can be used to define a "
 "custom theme to play on this briefing screen. If not set, the loading "
 "screen theme will keep playing until the scenario starts properly."
 msgstr ""
-"`BriefingTheme`（按优先级从高到低的顺序为：`missionmd.ini`、地图文件、`rulesmd.ini` "
+"`BriefingTheme`（按优先级从高到低的顺序为：地图文件、`missionmd.ini`、`rulesmd.ini` "
 "中的阵营条目）可以用来定义在简报界面播放的自定义主题。若未设置则载入图主题会一直播放直至游戏场景实际开始。"
 
 #: ../../AI-Scripting-and-Mapping.md:83
