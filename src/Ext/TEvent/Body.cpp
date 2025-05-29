@@ -36,7 +36,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 int TEventExt::GetFlags(const int& iEvent)
 {
 	// 0x4 : In MapClass, ZoneEntryBy uses it.
-	// 0x8 : In HouseClass, Ares' TriggerEvent 75/77 uses it.
+	// 0x8 : In HouseClass, It will be added to the RelatedTags of the specified house. Ares' TriggerEvent 75/77 uses it.
 	// 0x10 : In LogicClass.
 	switch (static_cast<PhobosTriggerEvent>(iEvent))
 	{
