@@ -343,9 +343,9 @@ DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
 		return BunkerWallDownSound_01_Handled_ret;
 	case BunkerWallDownSound_02:
 		return BunkerWallDownSound_02_Handled_ret;
+	default:
+		__assume(0); // Just avoiding compilation warnings, shouldn't go this way
 	}
-
-	return 0; // Just avoiding compilation warnings, shouldn't go this way
 }
 
 DEFINE_HOOK_AGAIN(0x4426DB, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
