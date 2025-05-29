@@ -33,6 +33,7 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+// by Fly-Star
 int TEventExt::GetFlags(int iEvent)
 {
 	// 0x4 : In MapClass, ZoneEntryBy uses it.
