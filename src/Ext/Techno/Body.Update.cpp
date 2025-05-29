@@ -729,28 +729,30 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 		if (abs == AbstractType::Infantry || abs == AbstractType::Unit)
 		{
 			const auto pOldType = pOldTypeExt->OwnerObject();
+			auto pLocomotorType = pType->Locomotor;
 
-			if (pFoot->IsInAir() && !pFoot->LocomotorSource)
+			// The Hover movement pattern allows for self-landing.
+			if (pLocomotorType != LocomotionClass::CLSIDs::Fly &&
+				pLocomotorType != LocomotionClass::CLSIDs::Hover)
 			{
-				auto pLocomotorType = pType->Locomotor;
+				bool isinAir = pFoot->IsInAir() && !pThis->LocomotorSource;
 
-				// The Hover movement pattern allows for self-landing.
-				if (pLocomotorType != LocomotionClass::CLSIDs::Fly &&
-					pLocomotorType != LocomotionClass::CLSIDs::Hover)
+				if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 				{
-					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
+					int turnrate = pType->JumpjetTurnRate >= 127 ? 127 : pType->JumpjetTurnRate;
+					pJJLoco->Speed = pType->JumpjetSpeed;
+					pJJLoco->Accel = pType->JumpjetAccel;
+					pJJLoco->Crash = pType->JumpjetCrash;
+					pJJLoco->Deviation = pType->JumpjetDeviation;
+					pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
+					pJJLoco->Wobbles = pType->JumpjetWobbles;
+					pJJLoco->TurnRate = turnrate;
+					pJJLoco->CurrentHeight = pType->JumpjetHeight;
+					pJJLoco->Height = pType->JumpjetHeight;
+					pJJLoco->LocomotionFacing.SetROT(turnrate);
+
+					if (isinAir)
 					{
-						int turnrate = pType->JumpjetTurnRate >= 127 ? 127 : pType->JumpjetTurnRate;
-						pJJLoco->Speed = pType->JumpjetSpeed;
-						pJJLoco->Accel = pType->JumpjetAccel;
-						pJJLoco->Crash = pType->JumpjetCrash;
-						pJJLoco->Deviation = pType->JumpjetDeviation;
-						pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
-						pJJLoco->Wobbles = pType->JumpjetWobbles;
-						pJJLoco->TurnRate = turnrate;
-						pJJLoco->CurrentHeight = pType->JumpjetHeight;
-						pJJLoco->Height = pType->JumpjetHeight;
-						pJJLoco->LocomotionFacing.SetROT(turnrate);
 						bool inMove = pJJLoco->Is_Really_Moving_Now();
 
 						if (pType->BalloonHover)
@@ -767,31 +769,31 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 							pJJLoco->Move_To(pThis->Location);
 						}
 					}
+				}
+				else if (isinAir)
+				{
+					// Let it go into free fall.
+					pFoot->FallRate = 0;
+					pFoot->IsFallingDown = true;
+
+					const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
+
+					if (pCell && !pCell->IsClearToMove(pType->SpeedType, true, true,
+						-1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
+					{
+						// If it's landing position cannot be moved, then it is granted a crash death.
+						pFoot->IsABomb = true;
+					}
 					else
 					{
-						// Let it go into free fall.
-						pFoot->FallRate = 0;
-						pFoot->IsFallingDown = true;
+						// If it's gonna land on the bridge, then it needs this.
+						pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
+					}
 
-						const auto pCell = MapClass::Instance.TryGetCellAt(pFoot->Location);
-
-						if (pCell && !pCell->IsClearToMove(pType->SpeedType, true, true,
-							-1, pType->MovementZone, pCell->GetLevel(), pCell->ContainsBridge()))
-						{
-							// If it's landing position cannot be moved, then it is granted a crash death.
-							pFoot->IsABomb = true;
-						}
-						else
-						{
-							// If it's gonna land on the bridge, then it needs this.
-							pFoot->OnBridge = pCell ? pCell->ContainsBridge() : false;
-						}
-
-						if (abs == AbstractType::Infantry)
-						{
-							// Infantry changed to parachute status (not required).
-							static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
-						}
+					if (abs == AbstractType::Infantry)
+					{
+						// Infantry changed to parachute status (not required).
+						static_cast<InfantryClass*>(pFoot)->PlayAnim(Sequence::Paradrop, true, false);
 					}
 				}
 			}
