@@ -75,27 +75,27 @@ int Phobos::Misc::CustomGS_DefaultDelay[7] = { 0, 1, 2, 3, 4, 5, 6 };
 
 DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 {
-	const auto phobos_Section = "Phobos";
+	const auto phobosSection = "Phobos";
 
-	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ToolTipDescriptions", true);
-	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ToolTipBlur", false);
-	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "PrioritySelectionFiltering", true);
-	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowPlacementPreview", true);
-	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "RealTimeTimers", false);
-	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "RealTimeTimers.Adaptive", false);
-	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "EnableSelectBox", false);
-	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "DigitalDisplay.Enable", false);
-	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "SaveGameOnScenarioStart", true);
-	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowBriefing", true);
-	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowPowerDelta", true);
-	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowHarvesterCounter", true);
-	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowWeedsCounter", true);
-	Phobos::Config::HideLightFlashEffects = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "HideLightFlashEffects", false);
-	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowFlashOnSelecting", false);
-	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "SuperWeaponSidebar.RequiredSignificance", 0);
+	Phobos::Config::ToolTipDescriptions = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ToolTipDescriptions", true);
+	Phobos::Config::ToolTipBlur = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ToolTipBlur", false);
+	Phobos::Config::PrioritySelectionFiltering = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "PrioritySelectionFiltering", true);
+	Phobos::Config::ShowPlacementPreview = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPlacementPreview", true);
+	Phobos::Config::RealTimeTimers = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RealTimeTimers", false);
+	Phobos::Config::RealTimeTimers_Adaptive = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "RealTimeTimers.Adaptive", false);
+	Phobos::Config::EnableSelectBox = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "EnableSelectBox", false);
+	Phobos::Config::DigitalDisplay_Enable = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "DigitalDisplay.Enable", false);
+	Phobos::Config::SaveGameOnScenarioStart = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "SaveGameOnScenarioStart", true);
+	Phobos::Config::ShowBriefing = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowBriefing", true);
+	Phobos::Config::ShowPowerDelta = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowPowerDelta", true);
+	Phobos::Config::ShowHarvesterCounter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowHarvesterCounter", true);
+	Phobos::Config::ShowWeedsCounter = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowWeedsCounter", true);
+	Phobos::Config::HideLightFlashEffects = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "HideLightFlashEffects", false);
+	Phobos::Config::ShowFlashOnSelecting = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowFlashOnSelecting", false);
+	Phobos::Config::SuperWeaponSidebar_RequiredSignificance = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "SuperWeaponSidebar.RequiredSignificance", 0);
 
 	// Custom game speeds, 6 - i so that GS6 is index 0, just like in the engine
-	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobos_Section, "CampaignDefaultGameSpeed", 4);
+	Phobos::Config::CampaignDefaultGameSpeed = 6 - CCINIClass::INI_RA2MD.ReadInteger(phobosSection, "CampaignDefaultGameSpeed", 4);
 	if (Phobos::Config::CampaignDefaultGameSpeed > 6 || Phobos::Config::CampaignDefaultGameSpeed < 0)
 	{
 		Phobos::Config::CampaignDefaultGameSpeed = 2;
@@ -108,7 +108,7 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 		Patch::Apply_RAW(0x55D78D, { temp }); // when speed control is off. Doesn't need a hook.
 	}
 
-	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD.ReadBool(phobos_Section, "ShowDesignatorRange", false);
+	Phobos::Config::ShowDesignatorRange = CCINIClass::INI_RA2MD.ReadBool(phobosSection, "ShowDesignatorRange", false);
 
 	CCINIClass ini_uimd {};
 	ini_uimd.LoadFromFile(GameStrings::UIMD_INI);

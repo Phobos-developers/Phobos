@@ -733,15 +733,3 @@ In `ra2md.ini`
 [Phobos]
 SuperWeaponSidebar.RequiredSignificance=0   ; integer
 ```
-
-## Miscellanous
-
-### Skip saving game on starting a new campaign
-
-When starting a new campaign, the game automatically saves the game. Now you can decide whether you want that to happen or not.
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-SaveGameOnScenarioStart=true ; boolean
-```
