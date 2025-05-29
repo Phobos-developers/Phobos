@@ -741,24 +741,16 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 					if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pFoot->Locomotor))
 					{
 						int turnrate = pType->JumpjetTurnRate >= 127 ? 127 : pType->JumpjetTurnRate;
-						pJJLoco->LocomotionFacing.SetCurrent(pFoot->PrimaryFacing.Current());
+						pJJLoco->Speed = pType->JumpjetSpeed;
+						pJJLoco->Accel = pType->JumpjetAccel;
+						pJJLoco->Crash = pType->JumpjetCrash;
+						pJJLoco->Deviation = pType->JumpjetDeviation;
+						pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
+						pJJLoco->Wobbles = pType->JumpjetWobbles;
+						pJJLoco->TurnRate = turnrate;
+						pJJLoco->CurrentHeight = pType->JumpjetHeight;
+						pJJLoco->Height = pType->JumpjetHeight;
 						pJJLoco->LocomotionFacing.SetROT(turnrate);
-
-						// Modify the flight height.
-						if (pType->BalloonHover)
-						{
-							pJJLoco->Speed = pType->JumpjetSpeed;
-							pJJLoco->Accel = pType->JumpjetAccel;
-							pJJLoco->Crash = pType->JumpjetCrash;
-							pJJLoco->Deviation = pType->JumpjetDeviation;
-							pJJLoco->NoWobbles = pType->JumpjetNoWobbles;
-							pJJLoco->Wobbles = pType->JumpjetWobbles;
-							pJJLoco->TurnRate = turnrate;
-							pJJLoco->CurrentHeight = pType->JumpjetHeight;
-							pJJLoco->Height = pType->JumpjetHeight;
-							pJJLoco->State = JumpjetLocomotionClass::State::Hovering;
-							pJJLoco->IsMoving = true;
-						}
 					}
 					else
 					{
