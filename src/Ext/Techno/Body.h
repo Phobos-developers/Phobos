@@ -218,6 +218,7 @@ public:
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static int GetDropCrateIndex(TechnoClass* pThis);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
