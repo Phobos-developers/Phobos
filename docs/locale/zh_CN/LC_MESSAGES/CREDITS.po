@@ -1434,6 +1434,13 @@ msgid ""
 msgstr "对 `600 对象护盾被摧毁...` 触发条件的修复"
 
 #: ../../../CREDITS.md:366
+msgid ""
+"Fixed an issue where a portion of Ares's trigger event 75/77 was "
+"determined unsuccessfully"
+msgstr ""
+"修复了 Ares 触发条件 75/77 有时判定不成功的问题"
+
+#: ../../../CREDITS.md:367
 msgid "**NetsuNegi**:"
 msgstr "**NetsuNegi**："
 

@@ -1704,7 +1704,14 @@ msgid ""
 "NetsuNegi)"
 msgstr "接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿（by NetsuNegi）"
 
-#: ../../Whats-New.md:416
+#: ../../Whats-New.md:414
+msgid ""
+"Fixed an issue where a portion of Ares's trigger event 75/77 was "
+"determined unsuccessfully (by FlyStar)"
+msgstr ""
+"修复了 Ares 触发条件 75/77 有时判定不成功的问题（by FlyStar）"
+
+#: ../../Whats-New.md:417
 msgid "0.4"
 msgstr "0.4"
 

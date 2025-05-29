@@ -1502,7 +1502,14 @@ msgid ""
 "order to reduce lags from it."
 msgstr "接管了 Ares 的 AlphaImage 重绘逻辑，使其用于建筑、静止单位和无炮塔单位时不会每帧重绘，以减少其造成的卡顿。"
 
-#: ../../Fixed-or-Improved-Logics.md:248
+#: ../../Fixed-or-Improved-Logics.md:247
+msgid ""
+"Fixed an issue where a portion of Ares's trigger event 75/77 was "
+"determined unsuccessfully."
+msgstr ""
+"修复了 Ares 触发条件 75/77 有时判定不成功的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:249
 msgid "Aircraft"
 msgstr "战机类型"
 
