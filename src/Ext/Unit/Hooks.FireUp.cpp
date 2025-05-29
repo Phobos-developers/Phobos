@@ -17,7 +17,7 @@ DEFINE_HOOK(0x736E34, UnitClass_UpdateFiring_ResetFireUp, 0x5)
 	GET(AbstractClass*, pTarget, EAX);
 	GET(int, nWeaponIndex, EDI);
 
-	const auto pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	UnitUpdateFiringTemp::TechnoExtData = pExt;
 
 	FireError fireError = pThis->GetFireError(pTarget, nWeaponIndex, true);

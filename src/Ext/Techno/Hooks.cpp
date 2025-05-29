@@ -916,10 +916,8 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->WhatAmI() == AbstractType::Unit)
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
-		const auto pUnit = static_cast<UnitClass*>(pThis);
-
 		if (!pUnit->HasTurret() && !pUnit->Type->Voxel)
 		{
 			const auto pTarget = pThis->Target;
