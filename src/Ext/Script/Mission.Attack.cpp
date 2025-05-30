@@ -1501,10 +1501,8 @@ bool ScriptExt::CheckUnitTargetingCapability(TechnoClass* pTechno, bool targetIn
 		return false;
 
 	// Special case: a Leader with OpenTopped tag
-	for (NextObject obj(pTechno->Passengers.FirstPassenger->NextObject); obj; ++obj)
+	for (auto pPassenger = pTechno->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 	{
-		const auto pPassenger = abstract_cast<FootClass*>(*obj);
-
 		if (checkWeaponCapability(pPassenger, false) || checkWeaponCapability(pPassenger, true))
 			return true;
 	}
