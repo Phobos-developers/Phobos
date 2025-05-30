@@ -320,11 +320,9 @@ void TechnoExt::ExtData::EatPassengers()
 					{
 						pFoot->RemoveGunner(pPassenger);
 
-						if (pThis->Passengers.NumPassengers > 0)
+						if (auto pGunner = pFoot->Passengers.GetFirstPassenger())
 						{
-							FootClass* pGunner = nullptr;
-
-							for (auto pNext = pThis->Passengers.FirstPassenger; pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+							for (auto pNext = abstract_cast<FootClass*>(pGunner->NextObject); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
 								pGunner = pNext;
 
 							pFoot->ReceiveGunner(pGunner);
@@ -627,13 +625,11 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 	// Update open topped state of potential passengers if transport's OpenTopped value changes.
 	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
-	bool toOpenTopped = pCurrentType->OpenTopped && !pOldType->OpenTopped;
+	bool toOpenTopped = pCurrentType->OpenTopped;
 
-	if ((toOpenTopped || (!pCurrentType->OpenTopped && pOldType->OpenTopped)) && pThis->Passengers.NumPassengers > 0)
+	if (toOpenTopped != pOldType->OpenTopped)
 	{
-		auto pPassenger = pThis->Passengers.FirstPassenger;
-
-		while (pPassenger)
+		for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 		{
 			if (toOpenTopped)
 			{
@@ -650,8 +646,6 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 				// OpenTopped state does not change while passengers are still in transport but in case of type conversion that can happen.
 				LogicClass::Instance.RemoveObject(pPassenger);
 			}
-
-			pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 		}
 	}
 
@@ -712,7 +706,7 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 			auto coords = pThis->GetCoords();
 			int offset = 0;
 
-			if (const auto pBuilding = specific_cast<BuildingClass*>(pThis))
+			if (const auto pBuilding = specific_cast<BuildingClass*, true>(pThis))
 				offset = Unsorted::LevelHeight * pBuilding->Type->Height;
 			else
 				offset = pThis->GetTechnoType()->MindControlRingOffset;
@@ -918,12 +912,31 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 				HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
 		}
 
+		auto const pTransport = pThis->Transporter;
+
+		// Handle extra power
+		if (pTransport && pThis->Absorbed)
+			pTransport->Owner->RecheckPower = true;
+
 		pThis->RegisterKill(pThis->Owner);
 		pThis->UnInit();
 
-		// Handle extra power
-		if (pThis->Absorbed && pThis->Transporter)
-			pThis->Transporter->Owner->RecheckPower = true;
+		// Handle gunner change.
+		if (auto const pTransportFoot = abstract_cast<FootClass*>(pTransport))
+		{
+			if (pTransportFoot->GetTechnoType()->Gunner)
+			{
+				pTransportFoot->RemoveGunner(nullptr);
+
+				if (auto pGunner = pTransportFoot->Passengers.GetFirstPassenger())
+				{
+					for (auto pNext = abstract_cast<FootClass*>(pGunner->NextObject); pNext; pNext = abstract_cast<FootClass*>(pNext->NextObject))
+						pGunner = pNext;
+
+					pTransportFoot->ReceiveGunner(pGunner);
+				}
+			}
+		}
 
 		return;
 	}
@@ -988,35 +1001,29 @@ void TechnoExt::UpdateSharedAmmo(TechnoClass* pThis)
 {
 	const auto pType = pThis->GetTechnoType();
 
-	if (pType->OpenTopped && pThis->Passengers.NumPassengers > 0)
+	if (pType->OpenTopped)
 	{
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pExt->Ammo_Shared && pType->Ammo > 0)
 		{
-			auto passenger = pThis->Passengers.FirstPassenger;
-			TechnoTypeClass* passengerType = nullptr;
-
-			do
+			for (auto pPassenger = pThis->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
 			{
-				passengerType = passenger->GetTechnoType();
-				auto pPassengerExt = TechnoTypeExt::ExtMap.Find(passengerType);
+				const auto pPassengerType = pPassenger->GetTechnoType();
+				const auto pPassengerExt = TechnoTypeExt::ExtMap.Find(pPassengerType);
 
-				if (pPassengerExt && pPassengerExt->Ammo_Shared)
+				if (pPassengerExt->Ammo_Shared)
 				{
 					if (pExt->Ammo_Shared_Group < 0 || pExt->Ammo_Shared_Group == pPassengerExt->Ammo_Shared_Group)
 					{
-						if (pThis->Ammo > 0 && (passenger->Ammo < passengerType->Ammo))
+						if (pThis->Ammo > 0 && (pPassenger->Ammo < pPassengerType->Ammo))
 						{
 							pThis->Ammo--;
-							passenger->Ammo++;
+							pPassenger->Ammo++;
 						}
 					}
 				}
-
-				passenger = static_cast<FootClass*>(passenger->NextObject);
 			}
-			while (passenger);
 		}
 	}
 }
@@ -1138,9 +1145,13 @@ void TechnoExt::ExtData::UpdateWarpInDelay()
 // Updates state of all AttachEffects on techno.
 void TechnoExt::ExtData::UpdateAttachEffects()
 {
+	if (!this->AttachedEffects.size())
+		return;
+
 	auto const pThis = this->OwnerObject();
-	bool inTunnel = this->IsInTunnel || this->IsBurrowed;
+	const bool inTunnel = this->IsInTunnel || this->IsBurrowed;
 	bool markForRedraw = false;
+	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 
@@ -1152,8 +1163,15 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			attachEffect->SetAnimationTunnelState(true);
 
 		attachEffect->AI();
-		bool hasExpired = attachEffect->HasExpired();
-		bool shouldDiscard = attachEffect->IsActive() && attachEffect->ShouldBeDiscardedNow();
+
+		if (attachEffect->NeedsRecalculateStat)
+		{
+			altered = true;
+			attachEffect->NeedsRecalculateStat = false;
+		}
+
+		const bool hasExpired = attachEffect->HasExpired();
+		const bool shouldDiscard = attachEffect->IsActiveIgnorePowered() && attachEffect->ShouldBeDiscardedNow();
 
 		if (hasExpired || shouldDiscard)
 		{
@@ -1180,6 +1198,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			}
 
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -1187,7 +1206,8 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		}
 	}
 
-	this->RecalculateStatMultipliers();
+	if (altered)
+		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
 		pThis->MarkForRedraw();

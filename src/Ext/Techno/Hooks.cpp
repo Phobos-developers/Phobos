@@ -111,9 +111,11 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
+	auto const pType = pThis->GetTechnoType();
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto aresProcess = [pType]() { return (pType->Turret) ? 0x6F9FB7 : 0x6FA054; };
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(RulesExt::Global()->Promote_VeteranAnimation);
 	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(RulesExt::Global()->Promote_EliteAnimation);
 
@@ -526,14 +528,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
-	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
@@ -616,14 +618,10 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	TechnoExt::ExtData* pData = TechnoExt::ExtMap.Find(pThis);
-
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
-		{
+		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
 			R->EBX<ObjectTypeClass*>(pCustomType);
-		}
 	}
 
 	return 0;
@@ -635,11 +633,9 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	TechnoExt::ExtData* pData = TechnoExt::ExtMap.Find(pThis);
-
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
 		{
 			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
