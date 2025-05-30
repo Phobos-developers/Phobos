@@ -656,22 +656,6 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 
 void WarheadTypeExt::ExtData::ApplyAmmoModifier(TechnoClass* pTarget, HouseClass* pInvokerHouse, BulletExt::ExtData* pBulletExt)
 {
-	if (!pTarget)
-		return;
-
-	auto const pWeapon = pBulletExt ? pBulletExt->OwnerObject()->WeaponType : nullptr;
-
-	if (pWeapon)
-	{
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-		if (!EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
-			|| (pInvokerHouse && !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pInvokerHouse, pTarget->Owner)))
-		{
-			return;
-		}
-	}
-
 	int maxAmmo = pTarget->GetTechnoType()->Ammo;
 	int newCurrentAmmo = this->AmmoModifier + pTarget->Ammo;
 
