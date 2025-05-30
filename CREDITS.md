@@ -266,6 +266,7 @@ This page lists all the individual contributions to the project by their author.
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
   - Airstrike flare visual customizations
+  - Fix an issue where airstrike flare line drawn to target at lower elevation would clip
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -363,6 +364,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
+  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -485,6 +487,7 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
+  - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

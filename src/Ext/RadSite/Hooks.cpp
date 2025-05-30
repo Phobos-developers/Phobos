@@ -357,19 +357,29 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 
 			if (R->Origin() == 0x65BAC1)
 			{
-				const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel);
+				const int level = static_cast<int>(static_cast<double>(max - distance) / max * pThis->RadLevel);
 
 				if (it != radLevels.end())
-					it->Level += amount;
+					it->Level = std::min(it->Level + level, RadSiteExt::ExtMap.Find(pThis)->Type->GetLevelMax());
 				else
-					radLevels.emplace_back(pThis, amount);
+					radLevels.emplace_back(pThis, level);
+			}
+			else if (R->Origin() == 0x65BC6E)
+			{
+				if (it != radLevels.end())
+				{
+					GET_STACK(int, stepCount, STACK_OFFSET(0x70, -0x30));
+					const int level = static_cast<int>(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps * stepCount);
+					it->Level = std::max(it->Level - std::max(level, 0), 0);
+				}
 			}
 			else
 			{
 				if (it != radLevels.end())
 				{
-					const int amount = Game::F2I(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps);
-					it->Level -= amount;
+					const int stepCount = pThis->RadTimeLeft / RadSiteExt::ExtMap.Find(pThis)->Type->GetLevelDelay();
+					const int level = static_cast<int>(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps * stepCount);
+					it->Level = std::max(level, 0);
 				}
 			}
 		}

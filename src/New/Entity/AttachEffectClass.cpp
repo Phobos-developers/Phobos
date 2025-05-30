@@ -18,6 +18,7 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 {
@@ -37,9 +38,11 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsUnderTemporal { false }
 	, IsOnline { true }
 	, IsCloaked { false }
+	, LastActiveStat { true }
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, NeedsRecalculateStat { false }
 	, LastDiscardCheckFrame { -1 }
 	, LastDiscardCheckValue { false }
 {
@@ -252,6 +255,12 @@ void AttachEffectClass::OnlineCheck()
 
 	this->IsOnline = isActive;
 
+	if (isActive != this->LastActiveStat)
+	{
+		this->NeedsRecalculateStat = true;
+		this->LastActiveStat = isActive;
+	}
+
 	if (!this->Animation)
 		return;
 
@@ -440,9 +449,15 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		return true;
 	}
 
+	if (this->Type->DiscardOn == DiscardCondition::None)
+	{
+		this->LastDiscardCheckValue = false;
+		return false;
+	}
+
 	auto const pTechno = this->Techno;
 
-	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
+	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
@@ -501,12 +516,17 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	return false;
 }
 
-bool AttachEffectClass::IsActive() const
+bool AttachEffectClass::IsActiveIgnorePowered() const
 {
 	if (this->IsSelfOwned())
-		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && this->IsOnline && !this->NeedsDurationRefresh;
+		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
 	else
-		return this->Duration && this->IsOnline;
+		return this->Duration;
+}
+
+bool AttachEffectClass::IsActive() const
+{
+	return this->IsOnline && this->IsActiveIgnorePowered();
 }
 
 bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
@@ -921,6 +941,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->NeedsDurationRefresh)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
+		.Process(this->LastActiveStat)
+		.Process(this->NeedsRecalculateStat)
 		.Success();
 }
 

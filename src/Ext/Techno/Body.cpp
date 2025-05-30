@@ -88,7 +88,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		switch (pThis->GetCurrentMission())
 		{
 		case Mission::Harvest:
-			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->HasAnyLink() && !TechnoExt::HasRadioLinkWithDock(pUnit)) // Probably still in factory.
 					return false;
@@ -109,7 +109,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			}
 			return true;
 		case Mission::Guard:
-			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
 					return true;
@@ -607,7 +607,7 @@ bool TechnoExt::TryToCreateCrate(CoordStruct location, Powerup selectedPowerup, 
 
 UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 {
-	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+	if (auto pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
 		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 

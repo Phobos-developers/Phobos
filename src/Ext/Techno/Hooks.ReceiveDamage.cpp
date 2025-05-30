@@ -158,15 +158,13 @@ DEFINE_HOOK(0x7019D8, TechnoClass_ReceiveDamage_SkipLowDamageCheck, 0x5)
 
 DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 {
+	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (auto pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
 	{
 		if (pExt->DecloakDamagedTargets)
-		{
-			GET(TechnoClass* const, pThis, ESI);
 			pThis->Uncloak(false);
-		}
 	}
 
 	return 0x702823;
@@ -177,13 +175,11 @@ DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 	if (!Phobos::DisplayDamageNumbers)
 		return 0;
 
-	GET(int* const, pDamage, EBX);
 	GET(TechnoClass* const, pThis, ESI);
+	GET(int* const, pDamage, EBX);
 
 	if (*pDamage)
-	{
 		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);
-	}
 
 	return 0;
 }
@@ -291,28 +287,26 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 {
+	GET(TechnoClass*, pThis, ESI);
 	GET(int*, pDamage, EBX);
+	GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
+	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	if (*pDamage <= 0)
 		return 0;
-
-	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Reflected)
 		return 0;
 
-	GET(TechnoClass*, pThis, ESI);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool suppressByType = pWHExt->SuppressReflectDamage_Types.size() > 0;
 	const bool suppressByGroup = pWHExt->SuppressReflectDamage_Groups.size() > 0;
 
 	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || suppressByType || suppressByGroup))
 	{
-		GET_STACK(TechnoClass*, pSource, STACK_OFFSET(0xC4, 0x10));
-		GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
-
 		for (auto& attachEffect : pExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())
