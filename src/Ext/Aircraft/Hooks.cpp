@@ -57,16 +57,13 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	GET(AircraftClass*, pThis, EDI);
 	GET(AbstractClass*, pTarget, EAX);
 
-	if (!pTarget)
-		return 0;
-
+	// pTarget can be nullptr
 	auto const pObject = abstract_cast<ObjectClass*>(pTarget);
 
 	if (!pObject || !pObject->IsInAir())
 		return 0;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+	int weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
 
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
@@ -295,7 +292,7 @@ DEFINE_HOOK(0x4CF31C, FlyLocomotionClass_FlightUpdate_LandingDir, 0x9)
 
 	if (pLinkedTo->CurrentMission == Mission::Enter || pLinkedTo->GetMapCoords() == CellClass::Coord2Cell(pLinkedTo->Locomotor->Destination()))
 	{
-		if (auto const pAircraft = abstract_cast<AircraftClass*>(pLinkedTo))
+		if (auto const pAircraft = abstract_cast<AircraftClass*, true>(pLinkedTo))
 			dir = DirStruct(AircraftExt::GetLandingDir(pAircraft)).Raw;
 	}
 
@@ -603,11 +600,12 @@ DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Untether, 0x6)
 
 static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType);
 
 	if (!pWeaponExt->Strafing_Shots.isset())
 		return true;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Strafe_BombsDroppedThisRound >= pWeaponExt->Strafing_Shots)
 		return false;
