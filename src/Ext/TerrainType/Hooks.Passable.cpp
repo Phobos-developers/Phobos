@@ -39,15 +39,12 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
 		return 0;
 
-	if (pTarget->WhatAmI() == AbstractType::Terrain)
+	if (const auto pTerrain = abstract_cast<TerrainClass*, true>(pTarget))
 	{
-		if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find((abstract_cast<TerrainClass*>(pTarget))->Type))
+		if (!isForceFire && TerrainTypeExt::ExtMap.Find(pTerrain->Type)->IsPassable)
 		{
-			if (pTypeExt->IsPassable && !isForceFire)
-			{
-				R->EBP(Action::Move);
-				return ReturnAction;
-			}
+			R->EBP(Action::Move);
+			return ReturnAction;
 		}
 	}
 
