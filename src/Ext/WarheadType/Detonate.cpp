@@ -232,7 +232,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 {
-	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
 
 	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo)
 		return;
@@ -424,9 +424,9 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 {
 	if (pTarget->IsDisguised())
 	{
-		if (auto pSpy = specific_cast<InfantryClass*>(pTarget))
+		if (auto pSpy = specific_cast<InfantryClass*, true>(pTarget))
 			pSpy->Disguised = false;
-		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
+		else if (auto pMirage = specific_cast<UnitClass*, true>(pTarget))
 			pMirage->ClearDisguise();
 	}
 }
@@ -551,7 +551,7 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 	auto pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
 	bool bUniversalDeploy = this->Convert_UseUniversalDeploy.Get();
 
@@ -571,7 +571,8 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+
 	if (!pTargetFoot)
 		return;
 
@@ -592,7 +593,7 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
 	if (!pTargetFoot)
 		return;
