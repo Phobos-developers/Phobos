@@ -33,6 +33,26 @@ void TEventExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+// by Fly-Star
+int TEventExt::GetFlags(int iEvent)
+{
+	// 0x0 : If it has to have an AttachedObject in order to use it, then let it return 0.
+	// 0x4 : In MapClass, ZoneEntryBy uses it. borrowed from 0x684D61.
+	// 0x8 : In HouseClass, It will be added to the RelatedTags of the specified house. Ares' TriggerEvent 75/77 uses it. borrowed from 0x684E34.
+	// 0x10 : In LogicClass. borrowed from 0x684DCA.
+	switch (static_cast<PhobosTriggerEvent>(iEvent))
+	{
+	case PhobosTriggerEvent::ShieldBroken:
+		return 0;
+	//case
+	//	return 0x4;
+	//case
+	//	return 0x8;
+	default:
+		return 0x10;
+	}
+}
+
 std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
 	ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource)
 {
@@ -204,10 +224,13 @@ bool TEventExt::HouseDoesntOwnTechnoTypeTEvent(TEventClass* pThis)
 
 bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	int desiredListIdx = -1;
+
 	if (sscanf_s(pThis->String, "%d", &desiredListIdx) <= 0 || desiredListIdx < 0)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid index value for [AITargetTypes]\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
@@ -219,10 +242,6 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 	{
 		return false;
 	}
-
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-	if (!pTechno)
-		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 	bool found = false;
@@ -251,19 +270,18 @@ bool TEventExt::CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectCla
 
 bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pEventHouse)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	auto pDesiredType = TechnoTypeClass::Find(pThis->String);
+
 	if (!pDesiredType)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid Techno ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
 		return false;
 	}
-
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-	if (!pTechno)
-		return false;
 
 	auto const pTechnoType = pTechno->GetTechnoType();
 
