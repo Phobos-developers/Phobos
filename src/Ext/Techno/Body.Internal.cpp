@@ -22,12 +22,13 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
-	TechnoClass* pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+	auto const pKillerType = pKiller->GetTechnoType();
+	TechnoClass* pObjectKiller = ((pKillerType->Spawned || pKillerType->MissileSpawn) && pKiller->SpawnOwner) ?
 		pKiller->SpawnOwner : pKiller;
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
-		if (auto const pFootKiller = generic_cast<FootClass*>(pObjectKiller))
+		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
 			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
@@ -79,7 +80,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
@@ -164,11 +165,22 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	if (pThis)
 	{
 		if (invulnerability && pThis->IsIronCurtained())
+		{
 			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
-		if (airstrike && TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+		}
+		if (airstrike)
+		{
+			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+			{
+				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
+				auto index = pTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor);
+				tintColor |= GeneralUtils::GetColorFromColorAdd(index);
+ 			}
+		}
 		if (berserk && pThis->Berzerk)
+		{
 			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+		}
 	}
 
 	return tintColor;
@@ -269,7 +281,7 @@ void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
 void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 {
 	// Skip if has no attached animations.
-	if (!pThis || !pThis->HasParachute)
+	if (!pThis->HasParachute)
 		return;
 
 	// Could possibly be faster to track the attached anims in TechnoExt but the profiler doesn't show this as a performance hog so whatever.

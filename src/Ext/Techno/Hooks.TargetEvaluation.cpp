@@ -8,17 +8,16 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		if (pExt->AutoFire)
-		{
-			if (pExt->AutoFire_TargetSelf)
-				pThis->SetTarget(pThis);
-			else
-				pThis->SetTarget(pThis->GetCell());
+	auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-			return 0x7099B8;
-		}
+	if (pExt->AutoFire)
+	{
+		if (pExt->AutoFire_TargetSelf)
+			pThis->SetTarget(pThis);
+		else
+			pThis->SetTarget(pThis->GetCell());
+
+		return 0x7099B8;
 	}
 
 	return 0;
@@ -280,24 +279,23 @@ public:
 
 		if (const auto pTechno = abstract_cast<TechnoClass*>(pObj))
 		{
-			if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
+			const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+
+			if (const auto pShieldData = pExt->Shield.get())
 			{
-				if (const auto pShieldData = pExt->Shield.get())
+				if (pShieldData->IsActive())
 				{
-					if (pShieldData->IsActive())
+					const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+					const auto pFoot = abstract_cast<FootClass*>(pObj);
+
+					if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
 					{
-						const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-						const auto pFoot = abstract_cast<FootClass*>(pObj);
+						const auto shieldRatio = pExt->Shield->GetHealthRatio();
 
-						if (pWeapon && (!pShieldData->CanBePenetrated(pWeapon->Warhead) || (pFoot && pFoot->ParasiteEatingMe)))
+						if (shieldRatio < 1.0)
 						{
-							const auto shieldRatio = pExt->Shield->GetHealthRatio();
-
-							if (shieldRatio < 1.0)
-							{
-								LinkedObj = pObj;
-								--LinkedObj->Health;
-							}
+							LinkedObj = pObj;
+							--LinkedObj->Health;
 						}
 					}
 				}

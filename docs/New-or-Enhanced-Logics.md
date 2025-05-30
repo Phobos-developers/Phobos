@@ -455,7 +455,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 ![image](_static/images/animToUnit.gif)
 
 - Animations can now create (or "convert" to) any unit (vehicles, aircraft and infantry) when they end via `CreateUnit`. This offers more settings than `MakeInfantry` does for infantry.
-  - `CreateUnit.Owner` determines which house will own the created unit. This only works as expected if the animation has owner set.
+  - `CreateUnit.Owner` determines which house will own the created unit. This only works as expected if the animation has owner set. If there is no owner or the owner house has been defeated, the created unit will be owned by first house from Civilian side unless `CreateUnit.RequireOwner` is set to true in which case no unit will be created.
     - Vehicle [destroy animations](Fixed-or-Improved-Logics.md#destroy-animations), animations from Warhead `AnimList/SplashList` and map trigger action `41 Play Anim At` will have the owner set correctly.
     - `CreateUnit.RemapAnim`, if set to true, will cause the animation to be drawn in unit palette and remappable to owner's team color.
   - `CreateUnit.Mission` determines the initial mission of the created unit. This can be overridden for AI players by setting `CreateUnit.AIMission`.
@@ -473,6 +473,7 @@ In `artmd.ini`:
 [SOMEANIM]                             ; AnimationType
 CreateUnit=                            ; TechnoType
 CreateUnit.Owner=Victim                ; Owner house kind, Invoker/Killer/Victim/Civilian/Special/Neutral/Random
+CreateUnit.RequireOwner=false          ; boolean
 CreateUnit.RemapAnim=false             ; boolean
 CreateUnit.Mission=Guard               ; MissionType
 CreateUnit.AIMission=                  ; MissionType
@@ -2307,7 +2308,7 @@ OmniFire.TurnToTarget=no  ; boolean
 *Strafing aircraft weapon customization in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - Some of the behavior of strafing aircraft weapons can now be customized.
-  - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false`, otherwise `false`.
+  - `Strafing` controls if the aircraft can strafe when firing at the target. Default to `true` if the projectile's `ROT` < 2 and `Inviso=false` without `Trajectory`, otherwise `false`.
   - `Strafing.Shots` controls the number of times the weapon is fired during a single strafe run, defaults to 5 if not set. `Ammo` is only deducted at the end of the strafe run, regardless of the number of shots fired.
   - `Strafing.SimulateBurst` controls whether or not the shots fired during strafing simulate behavior of `Burst`, allowing for alternating firing offset. Only takes effect if weapon has `Burst` set to 1 or undefined.
   - `Strafing.UseAmmoPerShot`, if set to `true` overrides the usual behaviour of only deducting ammo after a strafing run and instead doing it after each individual shot.

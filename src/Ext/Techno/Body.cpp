@@ -19,6 +19,8 @@ TechnoExt::ExtData::~ExtData()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	auto pThis = this->OwnerObject();
+	// Besides BuildingClass, calling pThis->WhatAmI() here will only result in AbstractType::None
+	auto const whatAmI = pType->WhatAmI();
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
@@ -26,7 +28,7 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+	if (whatAmI != AbstractType::AircraftType && whatAmI != AbstractType::BuildingType
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
@@ -97,7 +99,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		switch (pThis->GetCurrentMission())
 		{
 		case Mission::Harvest:
-			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->HasAnyLink() && !TechnoExt::HasRadioLinkWithDock(pUnit)) // Probably still in factory.
 					return false;
@@ -118,7 +120,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			}
 			return true;
 		case Mission::Guard:
-			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
 					return true;
@@ -178,10 +180,11 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;
+	auto const whatAmI = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
+	if (whatAmI == AbstractType::Aircraft)
 		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (pThis->WhatAmI() == AbstractType::Infantry)
+	else if (whatAmI == AbstractType::Infantry)
 		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
@@ -242,7 +245,8 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	if (pThis->WhatAmI() == AbstractType::Aircraft)
 		return true;
 
-	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
+	auto const pType = pThis->GetTechnoType();
+	MovementZone mZone = pType->MovementZone;
 	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
@@ -262,7 +266,7 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 			if (currentZone == targetZone)
 				return true;
 
-			auto const speedType = pThis->GetTechnoType()->SpeedType;
+			auto const speedType = pType->SpeedType;
 			auto cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,
 				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
@@ -535,9 +539,9 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
-
-	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+{
+	if (auto pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
 		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
