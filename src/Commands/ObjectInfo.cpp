@@ -114,9 +114,8 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 			display();
 		}
 
-		if (pFoot->Passengers.NumPassengers > 0)
+		if (FootClass* pCurrent = pFoot->Passengers.GetFirstPassenger())
 		{
-			FootClass* pCurrent = pFoot->Passengers.FirstPassenger;
 			append("%d Passengers: %s", pFoot->Passengers.NumPassengers, pCurrent->GetTechnoType()->ID);
 			for (pCurrent = abstract_cast<FootClass*>(pCurrent->NextObject); pCurrent; pCurrent = abstract_cast<FootClass*>(pCurrent->NextObject))
 				append(", %s", pCurrent->GetTechnoType()->ID);
