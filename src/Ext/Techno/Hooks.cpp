@@ -13,6 +13,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Ext/TEvent/Body.h>
 
 #pragma region Update
 
@@ -1011,6 +1012,9 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 		pThis->Locomotor->Stop_Moving();
 
 	pThis->ParalysisTimer.Start(duration);
+
+	if (auto pTag = pThis->AttachedTag)
+		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderWebby, pThis, CellStruct::Empty);
 
 	return 0x51804E;
 }

@@ -151,6 +151,8 @@ std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClas
 		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
 	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
 		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::AttachedIsUnderWebby:
+		return TEventExt::AttachedIsUnderWebbyTEvent(pObject);
 
 
 	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
@@ -302,6 +304,19 @@ bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject
 
 		return true;
 	}
+
+	return false;
+}
+
+bool TEventExt::AttachedIsUnderWebbyTEvent(ObjectClass* pObject)
+{
+	if (!pObject)
+		return false;
+
+	const auto pExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*, true>(pObject));
+
+	if (pExt->WebbyDurationCountDown > 0)
+		return true;
 
 	return false;
 }

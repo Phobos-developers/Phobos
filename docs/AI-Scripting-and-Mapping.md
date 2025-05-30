@@ -797,3 +797,13 @@ ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
+
+### `607` A webby weapon hit the tagged infantry
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,607,0,0,...
+...
+```
