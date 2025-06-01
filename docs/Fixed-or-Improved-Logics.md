@@ -103,7 +103,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
-- Buildings with `CanC4=false` used to take 1 point of damage if hit by damage below 1 (calculated after `Verses` are applied but before veterancy, crate and AttachEffect modifiers). This can be disabled for negative damage by setting `CanC4.AllowZeroDamage` to true.
+- `CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything.
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
 - Weapons with `AA=true` projectiles can now be set to fire exclusively at air targets by setting `AAOnly=true`, regardless of other conditions. This is useful because `AG=false` only prevents targeting ground cells (and cannot be changed without breaking existing behaviour) and for cases where `LandTargeting` cannot be used.
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
@@ -1541,8 +1541,8 @@ ChargeTurret.Delays=  ; List of integers - game frames
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=240  ; floating point value
-                      ; 240 is the default saucer disk radius
+DiskLaser.Radius=240  ; integer
+; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay
