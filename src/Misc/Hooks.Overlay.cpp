@@ -32,11 +32,23 @@ struct OverlayReader
 
 		bool IsAvailable() const { return uuLength > 0; }
 
-		unsigned char Get()
+		unsigned char GetByte()
 		{
 			if (IsAvailable())
 			{
 				unsigned char ret;
+				ls.Get(&ret, sizeof(ret));
+				return ret;
+			}
+
+			return 0;
+		}
+
+		unsigned short GetWord()
+		{
+			if (IsAvailable())
+			{
+				unsigned short ret;
 				ls.Get(&ret, sizeof(ret));
 				return ret;
 			}
@@ -50,24 +62,30 @@ struct OverlayReader
 		BufferStraw bs;
 	};
 
-	size_t Get()
+	int Get()
 	{
-		unsigned char ret[4];
+		if (ScenarioClass::NewINIFormat >= 5)
+		{
+			unsigned short shrt = ByteReader.GetWord();
+			if (shrt != static_cast<unsigned short>(-1))
+				return shrt;
+		}
+		else
+		{
+			unsigned char byte = ByteReader.GetByte();
+			if (byte != static_cast<unsigned char>(-1))
+				return byte;
+		}
 
-		ret[0] = ByteReaders[0].Get();
-		ret[1] = ByteReaders[1].Get();
-		ret[2] = ByteReaders[2].Get();
-		ret[3] = ByteReaders[3].Get();
-
-		return ret[0] == 0xFF ? 0xFFFFFFFF : (ret[0] | (ret[1] << 8) | (ret[2] << 16) | (ret[3] << 24));
+		return -1;
 	}
 
 	OverlayReader(CCINIClass* pINI)
-		:ByteReaders{ { pINI, "OverlayPack" }, { pINI, "OverlayPack2" }, { pINI, "OverlayPack3" }, { pINI, "OverlayPack4" }, }
+		: ByteReader{ pINI, "OverlayPack" }
 	{ }
 
 private:
-	OverlayByteReader ByteReaders[4];
+	OverlayByteReader ByteReader;
 };
 
 struct OverlayWriter
@@ -75,7 +93,7 @@ struct OverlayWriter
 	struct OverlayByteWriter
 	{
 		OverlayByteWriter(const char* pSection, size_t nBufferLength)
-			: bp { nullptr,0 }, lp { FALSE,0x2000 }, uuLength { 0 }, lpSectionName { pSection }
+			: lpSectionName { pSection }, uuLength { 0 }, bp { nullptr,0 }, lp { FALSE,0x2000 }
 		{
 			this->Buffer = YRMemory::Allocate(nBufferLength);
 			bp.Buffer.Buffer = this->Buffer;
@@ -89,9 +107,14 @@ struct OverlayWriter
 			YRMemory::Deallocate(this->Buffer);
 		}
 
-		void Put(unsigned char data)
+		void PutByte(unsigned char data)
 		{
-			uuLength += lp.Put(&data, 1);
+			uuLength += lp.Put(&data, sizeof(data));
+		}
+
+		void PutWord(unsigned short data)
+		{
+			uuLength += lp.Put(&data, sizeof(data));
 		}
 
 		void PutBlock(CCINIClass* pINI)
@@ -108,32 +131,24 @@ struct OverlayWriter
 	};
 
 	OverlayWriter(size_t nLen)
-		: ByteWriters { { "OverlayPack", nLen}, { "OverlayPack2", nLen }, { "OverlayPack3", nLen }, { "OverlayPack4", nLen } }
+		: ByteWriter { "OverlayPack", nLen }
 	{ }
 
 	void Put(int nOverlay)
 	{
-		unsigned char bytes[4];
-		bytes[0] = (nOverlay & 0xFF);
-		bytes[1] = ((nOverlay >> 8) & 0xFF);
-		bytes[2] = ((nOverlay >> 16) & 0xFF);
-		bytes[3] = ((nOverlay >> 24) & 0xFF);
-		ByteWriters[0].Put(bytes[0]);
-		ByteWriters[1].Put(bytes[1]);
-		ByteWriters[2].Put(bytes[2]);
-		ByteWriters[3].Put(bytes[3]);
+		if (ScenarioClass::NewINIFormat >= 5)
+			ByteWriter.PutWord(static_cast<unsigned char>(nOverlay));
+		else
+			ByteWriter.PutByte(static_cast<unsigned short>(nOverlay));
 	}
 
 	void PutBlock(CCINIClass* pINI)
 	{
-		ByteWriters[0].PutBlock(pINI);
-		ByteWriters[1].PutBlock(pINI);
-		ByteWriters[2].PutBlock(pINI);
-		ByteWriters[3].PutBlock(pINI);
+		ByteWriter.PutBlock(pINI);
 	}
 
 private:
-	OverlayByteWriter ByteWriters[4];
+	OverlayByteWriter ByteWriter;
 };
 
 DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
@@ -152,7 +167,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 			for (short j = 0; j < 0x200; ++j)
 			{
 				CellStruct mapCoord{ j,i };
-				size_t nOvl = reader.Get();
+				int nOvl = reader.Get();
 
 				if (nOvl != 0xFFFFFFFF)
 				{
@@ -227,7 +242,7 @@ DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
 			CellStruct mapCoord { j,i };
 			auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
 			writer.Put(pCell->OverlayTypeIndex);
-			dataWriter.Put(pCell->OverlayData);
+			dataWriter.PutByte(pCell->OverlayData);
 		}
 	}
 
