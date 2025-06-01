@@ -3021,7 +3021,7 @@ msgstr "你可以用这些标签让 AI 被击败前 “全力以赴”"
 msgid ""
 "Another hardcoded behavior is that, when the AI deploys a MCV, it will "
 "gather all of its forces to that place. This can be toggle off now."
-msgstr "另一个硬编码行为是，当 AI 部署 MCV 时，它会将所有不对集结到该地点。现在可以关闭这一行为。"
+msgstr "另一个硬编码行为是，当 AI 部署 MCV 时，它会将所有部队集结到该地点。现在可以关闭这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:992
 msgid "`[General] -> GatherWhenMCVDeploy` controls this behavior."
