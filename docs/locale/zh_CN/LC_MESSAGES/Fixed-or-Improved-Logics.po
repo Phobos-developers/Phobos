@@ -3465,8 +3465,8 @@ msgid ""
 "happen when unit exits tank bunker."
 msgstr ""
 "由于技术限制，使用 [Ares 单位转换](https://ares-developers.github.io/Ares-"
-"docs/new/typeconversion.html)中 `Convert.Deploy` 的单位通过 `Ammo.AddOnDeploy` "
-"改变类型时无论转换是否成功都会改变弹药量。这同样发生在单位离开坦克碉堡时。"
+"docs/new/typeconversion.html)逻辑 `Convert.Deploy` 的单位通过 `Ammo.AddOnDeploy` "
+"改变类型时无论转换是否成功都会改变弹药量，这同样发生在单位离开坦克碉堡时。"
 
 #: ../../Fixed-or-Improved-Logics.md:1225
 msgid "`IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change"
