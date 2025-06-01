@@ -679,6 +679,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		bool __fastcall IsSecondary(int nWeaponIndex);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
