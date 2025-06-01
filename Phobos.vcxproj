@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\Infantry\Hooks.Gattling.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
