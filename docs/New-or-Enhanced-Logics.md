@@ -2048,7 +2048,7 @@ SuppressKillWeapons.Types=            ; List of WeaponTypes
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; WarheadTypeType
+[SOMEWARHEAD]                        ; WarheadType
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean

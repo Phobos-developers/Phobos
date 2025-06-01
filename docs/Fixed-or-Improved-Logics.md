@@ -1827,7 +1827,7 @@ In `rulesmd.ini`:
 [General]
 MindControl.ThreatDelay=0     ; integer, game frames
 
-[SOMEWARHEAD]                 ; WarheadTypeType
+[SOMEWARHEAD]                 ; WarheadType
 MindControl.ThreatDelay=      ; integer, game frames
 ```
 

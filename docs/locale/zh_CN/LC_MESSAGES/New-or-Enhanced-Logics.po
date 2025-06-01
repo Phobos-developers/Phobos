@@ -7413,7 +7413,7 @@ msgstr "`TransactMoney.Display.Offset` 是资金显示中心的额外像素偏�
 
 #: ../../New-or-Enhanced-Logics.md:2050
 msgid ""
-"[SOMEWARHEAD]                        ; WarheadTypeType\n"
+"[SOMEWARHEAD]                        ; WarheadType\n"
 "TransactMoney=0                      ; integer - credits added or "
 "subtracted\n"
 "TransactMoney.Display=false          ; boolean\n"
@@ -7422,7 +7422,7 @@ msgid ""
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default\n"
 msgstr ""
-"[SOMEWARHEAD]                        ; WarheadTypeType\n"
+"[SOMEWARHEAD]                        ; WarheadType\n"
 "TransactMoney=0                      ; integer - credits added or "
 "subtracted\n"
 "TransactMoney.Display=false          ; boolean\n"
