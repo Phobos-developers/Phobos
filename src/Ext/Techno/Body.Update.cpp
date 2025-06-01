@@ -1034,6 +1034,7 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 	bool infiniteCapture = false;
 	bool hasTemporal = false;
 	bool hasAirstrike = false;
+	bool hasLocomotor = false;
 	bool hasParasite = false;
 
 	if (!vWeapons.empty())
@@ -1067,6 +1068,11 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 			{
 				// Look at me. I can call in an air strike.
 				hasAirstrike = true;
+			}
+
+			if (pWH->IsLocomotor)
+			{
+				hasLocomotor = true;
 			}
 
 			if (pWH->Parasite && pFoot)
@@ -1168,6 +1174,22 @@ void TechnoExt::ExtData::UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOld
 			pAirstrike->AirstrikeRechargeTime = pType->AirstrikeRechargeTime;
 			pAirstrike->EliteAirstrikeRechargeTime = pType->EliteAirstrikeRechargeTime;
 		}
+	}
+	else if (pAirstrike)
+	{
+		pAirstrike->InvalidatePointer(pThis);
+		GameDelete(pAirstrike);
+		pAirstrike = nullptr;
+	}
+
+	if (!hasLocomotor && pThis->LocomotorTarget)
+	{
+		pThis->ReleaseLocomotor(pThis->Target == pThis->LocomotorTarget);
+
+		if (pThis->LocomotorTarget)
+			pThis->LocomotorTarget->LocomotorSource = nullptr;
+
+		pThis->LocomotorTarget = nullptr;
 	}
 
 	// Only FootClass* can use this.
