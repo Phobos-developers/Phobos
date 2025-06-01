@@ -49,6 +49,7 @@ DEFINE_HOOK(0x5209D2, InfantryClass_UpdateFiring_IsGattling2, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x520A03, InfantryClass_UpdateFiring_IsGattling3, 0x7)
 DEFINE_HOOK(0x520AD2, InfantryClass_UpdateFiring_IsGattling3, 0x7)
 {
 	GET(InfantryClass*, pThis, EBP);
