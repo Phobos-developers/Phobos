@@ -1593,7 +1593,7 @@ In `rulesmd.ini`:
 Promote.VeteranAnimation=         ; AnimationType
 Promote.EliteAnimation=           ; AnimationType
 
-[SOMETECHNO]
+[SOMETECHNO]                      ; TechnoType
 Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
 Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
 ```
@@ -1980,7 +1980,7 @@ DamageOwnerMultiplier=1.0     ; floating point value
 DamageAlliesMultiplier=1.0    ; floating point value
 DamageEnemiesMultiplier=1.0   ; floating point value
 
-[SOMEWARHEAD]                 ; Warhead
+[SOMEWARHEAD]                 ; WarheadType
 DamageOwnerMultiplier=        ; floating point value
 DamageAlliesMultiplier=       ; floating point value
 DamageEnemiesMultiplier=      ; floating point value
@@ -2048,7 +2048,7 @@ SuppressKillWeapons.Types=            ; List of WeaponTypes
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; WarheadType
+[SOMEWARHEAD]                        ; WarheadTypeType
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean
@@ -2139,7 +2139,7 @@ Reveal=0       ; integer - cell radius, negative values mean reveal the entire m
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; Warhead
+[SOMEWARHEAD]                        ; WarheadType
 BuildingSell=false                   ; boolean
 BuildingSell.IgnoreUnsellable=false  ; boolean
 BuildingUndeploy=false               ; boolean
