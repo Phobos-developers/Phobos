@@ -67,3 +67,7 @@ void AresFunctions::InitAres3_0p1()
 
 #undef NOTE_ARES_FUN
 
+void AresFunctions::InitNoAres()
+{
+	Patch::Apply_RAW(0x6CDE40, { 0xC2, 0x08, 0x00, 0x90, 0x67 });
+}
