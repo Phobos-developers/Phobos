@@ -19,7 +19,8 @@ TechnoExt::ExtData::~ExtData()
 	auto const pTypeExt = this->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
 	auto pThis = this->OwnerObject();
-	auto const whatAmI = pThis->WhatAmI();
+	// Besides BuildingClass, calling pThis->WhatAmI() here will only result in AbstractType::None
+	auto const whatAmI = pType->WhatAmI();
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
@@ -27,7 +28,7 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
+	if (whatAmI != AbstractType::AircraftType && whatAmI != AbstractType::BuildingType
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
