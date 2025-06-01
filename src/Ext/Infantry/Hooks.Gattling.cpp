@@ -20,7 +20,7 @@ namespace UpdateFiringTemp
 	FireError fireError;
 }
 
-DEFINE_HOOK(0x5206D2, InfantryClass_UpdateFiring_GetContext, 0x6)
+DEFINE_HOOK(0x5206D2, InfantryClass_UpdateFiring_IsGattling, 0x6)
 {
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, WeaponIndex, EDI);
