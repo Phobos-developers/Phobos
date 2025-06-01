@@ -4544,7 +4544,7 @@ msgstr "你可以用这些标签让 AI 被击败前 “全力以赴”"
 msgid ""
 "Another hardcoded behavior is that, when the AI deploys a MCV, it will "
 "gather all of its forces to that place. This can be toggle off now."
-msgstr "另一个硬编码行为是，当 AI 部署 MCV 时，它会将所有不对集结到该地点。现在可以关闭这一行为。"
+msgstr "另一个硬编码行为是，当 AI 部署 MCV 时，它会将所有部队集结到该地点。现在可以关闭这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:1215
 msgid "`[General] -> GatherWhenMCVDeploy` controls this behavior."
@@ -5091,7 +5091,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1417
 msgid "Bunker entering check dehardcode"
-msgstr "进入坦克碉堡去除硬编码检查"
+msgstr "去除坦克碉堡准入检查的硬编码"
 
 #: ../../Fixed-or-Improved-Logics.md:1419
 msgid ""
@@ -5100,18 +5100,18 @@ msgid ""
 " weapons, and not having Hover speed types. Now you can skip these "
 "restrictions."
 msgstr ""
-"在原版，载具进入坦克碉堡时受到一系列硬编码限制，包括必须拥有炮塔、必须拥有武器以及不能使用 "
+"在原版，载具进入坦克碉堡时受到一系列硬编码限制，包括必须拥有炮塔、必须拥有武器以及速度类型不能为 "
 "`SpeedType=Hover`。现在你可以跳过这些限制。"
 
 #: ../../Fixed-or-Improved-Logics.md:1420
 msgid "This needs to be used with `Bunkerable=yes`."
-msgstr "这需要于 `Bunkerable=yes` 共同使用。"
+msgstr "这需要与 `Bunkerable=yes` 共同使用。"
 
 #: ../../Fixed-or-Improved-Logics.md:1421
 msgid ""
 "This flag only skips the static check, that is, the check on the unit "
 "type. The dynamic check (cannot be parasitized) remains unchanged."
-msgstr "这个标签近跳过静态检查，即对单位类型的检查。动态检查（不能处于被寄生状态）保持不变。"
+msgstr "这个标签仅跳过静态检查，即对单位类型的检查。动态检查（不能处于被寄生状态）保持不变。"
 
 #: ../../Fixed-or-Improved-Logics.md:1424
 msgid ""
@@ -5129,7 +5129,7 @@ msgid ""
 "Locomotor. The details about locomotors' bunkerability can be found on "
 "[ModEnc](https://modenc.renegadeprojects.com/Bunkerable)."
 msgstr ""
-"使用此功能跳过检查并不意味着载具和坦克碉堡就可以正确的交互。根据次功能提供者的简单检查，坦克碉堡的效果主要受到运动模式影响。不同运动模式进入坦克碉堡的详细信息可以在"
+"使用此功能跳过检查并不就意味着载具和坦克碉堡可以正确的交互。根据次功能提供者的简单检查，坦克碉堡的效果主要受到运动模式影响。不同运动模式进入坦克碉堡的详细信息可以在"
 " [MODENC](https://modenc.renegadeprojects.com/Bunkerable) 上找到。"
 
 #: ../../Fixed-or-Improved-Logics.md:1433
