@@ -227,6 +227,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
+- Infantry support `IsGattling=yes`.
 
 ## Fixes / interactions with other extensions
 
