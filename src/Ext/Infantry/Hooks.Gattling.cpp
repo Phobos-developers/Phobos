@@ -10,13 +10,18 @@ DEFINE_HOOK(0x5206E4, InfantryClass_UpdateFiring_IsGattling, 0x6)
 	{
 		auto fireError = pThis->GetFireError(pThis->Target, nWeaponIndex, true);
 
-		if (fireError == FireError::OK ||
-			fireError == FireError::REARM ||
-			fireError == FireError::FACING ||
-			fireError == FireError::ROTATING)
+		switch (fireError)
+		{
+		case FireError::OK:
+		case FireError::REARM:
+		case FireError::FACING:
+		case FireError::ROTATING:
 			pThis->GattlingRateUp(1);
-		else
+			break;
+		default:
 			pThis->GattlingRateDown(1);
+			break;
+		}
 
 		R->EAX(fireError);
 		return 0x5206F9;
@@ -34,13 +39,18 @@ DEFINE_HOOK(0x5209D2, InfantryClass_UpdateFiring_IsGattling2, 0x6)
 	{
 		auto fireError = pThis->GetFireError(pThis->Target, nWeaponIndex, true);
 
-		if (fireError == FireError::OK ||
-			fireError == FireError::REARM ||
-			fireError == FireError::FACING ||
-			fireError == FireError::ROTATING)
+		switch (fireError)
+		{
+		case FireError::OK:
+		case FireError::REARM:
+		case FireError::FACING:
+		case FireError::ROTATING:
 			pThis->GattlingRateUp(1);
-		else
+			break;
+		default:
 			pThis->GattlingRateDown(1);
+			break;
+		}
 
 		R->EAX(fireError);
 		return 0x5209E4;
