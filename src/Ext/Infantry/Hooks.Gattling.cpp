@@ -1,6 +1,14 @@
 #include <Helpers/Macro.h>
 #include <InfantryClass.h>
 
+// the function is being called repeatedly. Maybe it doesn't have to do that.
+namespace UpdateFiringTemp
+{
+	bool CanFire;
+	int WeaponIndex;
+	FireError fireError;
+}
+
 DEFINE_HOOK(0x520AD2, InfantryClass_UpdateFiring_NoTarget, 0x7)
 {
 	GET(InfantryClass*, pThis, EBP);
@@ -10,17 +18,11 @@ DEFINE_HOOK(0x520AD2, InfantryClass_UpdateFiring_NoTarget, 0x7)
 		pThis->GattlingRateDown(1);
 	}
 
+	UpdateFiringTemp::CanFire = false;
 	return 0;
 }
 
-// the function is being called repeatedly. Maybe it doesn't have to do that.
-namespace UpdateFiringTemp
-{
-	int WeaponIndex;
-	FireError fireError;
-}
-
-DEFINE_HOOK(0x5206D2, InfantryClass_UpdateFiring_IsGattling, 0x6)
+DEFINE_HOOK(0x5206D2, InfantryClass_UpdateFiring_GetContext, 0x6)
 {
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, WeaponIndex, EDI);
@@ -28,22 +30,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_UpdateFiring_IsGattling, 0x6)
 	const auto pTarget = pThis->Target;
 	UpdateFiringTemp::WeaponIndex = WeaponIndex;
 	UpdateFiringTemp::fireError = pThis->GetFireError(pTarget, WeaponIndex, true);
-
-	if (pThis->Type->IsGattling)
-	{
-		switch (UpdateFiringTemp::fireError)
-		{
-		case FireError::OK:
-		case FireError::REARM:
-		case FireError::FACING:
-		case FireError::ROTATING:
-			pThis->GattlingRateUp(1);
-			break;
-		default:
-			pThis->GattlingRateDown(1);
-			break;
-		}
-	}
+	UpdateFiringTemp::CanFire = true;
 
 	return 0;
 }
@@ -61,4 +48,35 @@ DEFINE_HOOK(0x5206E4, InfantryClass_UpdateFiring_SetFireError, 0x6)
 {
 	R->EAX(UpdateFiringTemp::fireError);
 	return R->Origin() == 0x5206E4 ? 0x5206F9 : 0x5209E4;
+}
+
+// I think it should be executed after the execution of functions like Fire().
+DEFINE_HOOK(0x520AD9, InfantryClass_UpdateFiring_IsGattling, 0x5)
+{
+	GET(InfantryClass*, pThis, EBP);
+
+	if (UpdateFiringTemp::CanFire)
+	{
+		if (pThis->Type->IsGattling)
+		{
+			FireError fireError = UpdateFiringTemp::fireError;
+
+			switch (fireError)
+			{
+			case FireError::OK:
+			case FireError::REARM:
+			case FireError::FACING:
+			case FireError::ROTATING:
+				pThis->GattlingRateUp(1);
+				break;
+			default:
+				pThis->GattlingRateDown(1);
+				break;
+			}
+		}
+
+		UpdateFiringTemp::CanFire = false;
+	}
+
+	return 0;
 }
