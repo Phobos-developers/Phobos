@@ -263,12 +263,13 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 {
+	GET(InfantryClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, ECX);
 
 	if (pType->DeployFireWeapon == -1)
 		return 0x52194E;
 
-	return 0;
+	return pType->IsGattling && !pThis->IsDeployed() ? 0x52194E : 0;
 }
 
 #pragma endregion
