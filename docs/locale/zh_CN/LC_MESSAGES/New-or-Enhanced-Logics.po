@@ -6495,7 +6495,7 @@ msgstr ""
 msgid ""
 "If `TiberiumEater.AnimMove` set to true, the animations will move with "
 "the TechnoType."
-msgstr "若 `TiberiumEater.AnimMove` 设为 true 则单位会跟随单位移动。"
+msgstr "若 `TiberiumEater.AnimMove` 设为 true 则动画会跟随单位移动。"
 
 #: ../../New-or-Enhanced-Logics.md:1723
 msgid ""
