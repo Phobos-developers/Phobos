@@ -33,7 +33,7 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
-bool __fastcall TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
+bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 {
 	const auto pThis = this->OwnerObject();
 
