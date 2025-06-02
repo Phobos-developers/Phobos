@@ -3951,7 +3951,7 @@ msgid ""
 "In vanilla, units using drive/ship loco will has hardcoded speed "
 "multiplier when damaged. Now you can customize it."
 msgstr ""
-"原版中步兵匍匐前进的速度是硬编码的。现在你可以自由定义了。原版中 `Locomotor` 使用 `Drive`／`Ship` "
+"原版中 `Locomotor` 使用 `Drive`／`Ship` "
 "的单位在伤残时有一个硬编码的速度倍率。现在你可以自由定义了。"
 
 #: ../../Fixed-or-Improved-Logics.md:1017
