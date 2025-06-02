@@ -76,11 +76,10 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
 	int weaponIndex = FiringAITemp::weaponIndex;
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
+	if (pWeaponExt->Burst_FireWithinSequence.Get())
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
@@ -105,7 +104,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 
 	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
 	{
-		if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
+		if (pWeaponExt->Burst_FireWithinSequence.Get())
 		{
 			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
@@ -124,7 +123,6 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 	return ReturnFromFunction;
 }
 
-// I think it should be executed after the execution of functions like Fire().
 DEFINE_HOOK(0x520AD9, InfantryClass_FiringAI_IsGattling, 0x5)
 {
 	GET(InfantryClass*, pThis, EBP);
