@@ -1979,29 +1979,3 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	R->EAX(pContent->WhatAmI());
 	return ContinueCheck;
 }
-
-// make a minimally permissible attack judgment.
-bool _fastcall CanElectricAssault(FootClass* pThis, BuildingClass* pBuilding)
-{
-	const auto pWarhead = pThis->GetWeapon(1)->WeaponType->Warhead;
-	return GeneralUtils::GetWarheadVersusArmor(pWarhead, pBuilding, pBuilding->GetTechnoType()) != 0.0;
-}
-
-// make a minimally permissible attack judgment.
-DEFINE_HOOK(0x4D51B2, FootClass_Mission_Guard_ElectricAssult, 0x5)
-{
-	GET(FootClass*, pThis, ESI);
-	GET(BuildingClass*, pBuilding, EDI);
-	enum { SkipGameCode = 0x4D5225 };
-
-	return !CanElectricAssault(pThis, pBuilding) ? SkipGameCode : 0;
-}
-
-DEFINE_HOOK(0x4D7005, FootClass_Mission_AreaGuard_ElectricAssult, 0x5)
-{
-	GET(FootClass*, pThis, ESI);
-	GET(BuildingClass*, pBuilding, EDI);
-	enum { SkipGameCode = 0x4D7025 };
-
-	return !CanElectricAssault(pThis, pBuilding) ? SkipGameCode : 0;
-}
