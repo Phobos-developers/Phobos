@@ -70,52 +70,79 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		return -1;
 
 	bool isElite = pThis->Veterancy.IsElite();
-	const auto secondary = TechnoTypeExt::GetWeapon(pType, 1, isElite);
-	bool secondaryCanTarget = TechnoExt::MultiWeaponCanFire(pThis, pTarget, secondary);
+	std::map<int, bool> secondaryCanTarget {};
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		if (secondaryCanTarget)
+		auto checkSecondary = [pThis, pTargetTechno, &secondaryCanTarget](WeaponTypeClass* pWeapon, int weaponIndex) -> bool
 		{
-			const auto secondaryWH = secondary->Warhead;
+			const auto pWH = pWeapon->Warhead;
 			bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+			bool secondaryPriority = false;
 
-			if (pTarget->IsInAir())
-				return 1;
-			else if (secondaryWH->Airstrike)
-				return 1;
-			else if (secondary->DrainWeapon
+			if (pTargetTechno->IsInAir())
+				secondaryPriority = false;
+			else if (pWH->Airstrike)
+				secondaryPriority = false;
+			else if (pWeapon->DrainWeapon
 				&& pTargetTechno->GetTechnoType()->Drainable
 				&& !pThis->DrainTarget && !isAllies)
-				return 1;
-			else if (secondaryWH->ElectricAssault && isAllies
+				secondaryPriority = false;
+			else if (pWH->ElectricAssault && isAllies
 				&& pTargetTechno->WhatAmI() == AbstractType::Building
 				&& static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
-				return 1;
-		}
+				secondaryPriority = false;
 
-		if (const auto pCell = pTargetTechno->GetCell())
-		{
-			bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
-
-			if (!pTargetTechno->OnBridge && targetOnWater)
+			if (const auto pCell = pTargetTechno->GetCell())
 			{
-				int result = pThis->SelectNavalTargeting(pTargetTechno);
+				bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
 
-				if (result == -1)
-					return 1;
+				if (!pTargetTechno->OnBridge && targetOnWater)
+				{
+					int result = pThis->SelectNavalTargeting(pTargetTechno);
+
+					if (result == -1)
+						secondaryPriority = false;
+				}
 			}
+
+			if (secondaryPriority)
+			{
+				bool canFire = TechnoExt::MultiWeaponCanFire(pThis, pTargetTechno, pWeapon);
+				secondaryCanTarget[weaponIndex] = canFire;
+				return canFire;
+			}
+
+			return false;
+		};
+
+		if (!this->MultiWeapon_IsSecondary.empty())
+		{
+			for (size_t index = 0; index < this->MultiWeapon_IsSecondary.size(); index++)
+			{
+				int weaponIndex = this->MultiWeapon_IsSecondary[index];
+
+				if (checkSecondary(TechnoTypeExt::GetWeapon(pType, weaponIndex, isElite), weaponIndex))
+					return weaponIndex;
+			}
+		}
+		else
+		{
+			if (checkSecondary(TechnoTypeExt::GetWeapon(pType, 1, isElite), 1))
+				return 1;
 		}
 	}
 
 	for (int i = 0; i < weaponCount; i++)
 	{
-		if (i == 1)
-		{
-			if (secondaryCanTarget)
-				return i;
+		auto it = secondaryCanTarget.find(i);
 
-			continue;
+		if (it != secondaryCanTarget.end())
+		{
+			if (it->second)
+				return i;
+			else
+				continue;
 		}
 
 		const auto pWeaponType = pType->GetWeapon(i, isElite).WeaponType;
