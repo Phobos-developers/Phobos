@@ -227,7 +227,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
-- Units with `ElectricAssault=yes` second weapons no longer unconditionally attack their own buildings with `Overpowerable=yes`.
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 
 ## Fixes / interactions with other extensions
 

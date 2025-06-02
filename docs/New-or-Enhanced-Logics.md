@@ -1524,7 +1524,7 @@ MultiMindControl.ReleaseVictim=false  ; boolean
 
 - You are free to decide whether to use Weapon x or not, instead of passively using Primary/secondary.
  - TechnoType reads `WeaponX` as their weapon when `MultiWeapon=yes`, be careful not to forget `WeaponCount`.
- - `MultiWeapon.IsSecondary` can only be used for infantry and is responsible for determining which weapons should use `SecondaryFire` in the `Sequence`.
+ - `MultiWeapon.IsSecondary` can only be used by infantry, who will play the animation `SecondaryFire` when using these weapons.
  - `MultiWeapon.SelectCount` determines the number of weapons that can be selected. The lower the number the better the performance. The default is 2.
 
 In `rulesmd.ini`:
