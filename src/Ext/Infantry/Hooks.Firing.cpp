@@ -9,6 +9,7 @@ namespace FiringAITemp
 {
 	bool canFire;
 	int weaponIndex;
+	bool isSecondary;
 	FireError fireError;
 }
 
@@ -32,6 +33,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 
 	const auto pTarget = pThis->Target;
 	FiringAITemp::weaponIndex = WeaponIndex;
+	FiringAITemp::isSecondary = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->IsSecondary(WeaponIndex);
 	FiringAITemp::fireError = pThis->GetFireError(pTarget, WeaponIndex, true);
 	FiringAITemp::canFire = true;
 
@@ -46,16 +48,22 @@ DEFINE_HOOK(0x5206E4, InfantryClass_FiringAI_SetFireError, 0x6)
 	return R->Origin() == 0x5206E4 ? 0x5206F9 : 0x5209E4;
 }
 
-// Do you think the infantry's way of determining that weapons are secondary is stupid ?
+// Do you think the infantry's way of determining that weapons are secondary is stupid?
+DEFINE_HOOK(0x520968, InfantryClass_UpdateFiring_IsSecondary, 0x6)
+{
+	enum { Secondary = 0x52096C, SkipGameCode = 0x5209A0 };
+
+	return FiringAITemp::isSecondary ? Secondary : SkipGameCode;
+}
+
 // I think it's kind of stupid.
-DEFINE_HOOK(0x520888, InfantryClass_UpdateFiring_IsSecondary, 0x8)
+DEFINE_HOOK(0x520888, InfantryClass_UpdateFiring_IsSecondary2, 0x8)
 {
 	GET(InfantryClass*, pThis, EBP);
-	GET(int, weaponIdx, EDI);
 	enum { Primary = 0x5208D6, Secondary = 0x520890 };
 
 	R->AL(pThis->Crawling);
-	return TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->IsSecondary(weaponIdx) ? Secondary : Primary;
+	return FiringAITemp::isSecondary ? Secondary : Primary;
 }
 
 DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
