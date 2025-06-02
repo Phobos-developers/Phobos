@@ -6,6 +6,7 @@
 #include <Ext/Techno/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Utilities/Macro.h>
 
 #pragma region Mission_Attack
@@ -56,16 +57,13 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	GET(AircraftClass*, pThis, EDI);
 	GET(AbstractClass*, pTarget, EAX);
 
-	if (!pTarget)
-		return 0;
-
+	// pTarget can be nullptr
 	auto const pObject = abstract_cast<ObjectClass*>(pTarget);
 
 	if (!pObject || !pObject->IsInAir())
 		return 0;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+	int weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
 
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
@@ -100,7 +98,8 @@ long __stdcall AircraftClass_IFlyControl_IsStrafe(IFlyControl const* ifly)
 	if (pWeapon)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		return pWeaponExt->Strafing.Get(pWeapon->Projectile->ROT <= 1 && !pWeapon->Projectile->Inviso);
+		auto const pBulletType = pWeapon->Projectile;
+		return pWeaponExt->Strafing.Get(pBulletType->ROT <= 1 && !pBulletType->Inviso && !BulletTypeExt::ExtMap.Find(pBulletType)->TrajectoryType);
 	}
 
 	return false;
@@ -261,7 +260,7 @@ DEFINE_HOOK(0x414F10, AircraftClass_AI_Trailer, 0x5)
 	enum { SkipGameCode = 0x414F47 };
 
 	GET(AircraftClass*, pThis, ESI);
-	GET_STACK(CoordStruct, coords, STACK_OFFSET(0x40, -0xC));
+	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x40, -0xC));
 
 	auto const pTrailerAnim = GameCreate<AnimClass>(pThis->Type->Trailer, coords, 1, 1);
 	auto const pTrailerAnimExt = AnimExt::ExtMap.Find(pTrailerAnim);
@@ -747,11 +746,12 @@ DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Untether, 0x6)
 
 static __forceinline bool CheckSpyPlaneCameraCount(AircraftClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(0)->WeaponType);
 
 	if (!pWeaponExt->Strafing_Shots.isset())
 		return true;
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pExt->Strafe_BombsDroppedThisRound >= pWeaponExt->Strafing_Shots)
 		return false;

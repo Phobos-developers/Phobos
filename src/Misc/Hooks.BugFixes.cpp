@@ -347,7 +347,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 		{
 			if (pObject->Health > 0)
 			{
-				if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+				if (auto pBuilding = abstract_cast<BuildingClass*, true>(pObject))
 				{
 					auto pBType = pBuilding->Type;
 					if ((RulesClass::Instance->EWGates.FindItemIndex(pBType) != -1) && (state == 2 || state == 6))
@@ -1209,7 +1209,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	}
 	else
 	{
-		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
 		// Clear archive target for infantries and vehicles like receive a mega mission
 		if (pFoot && !pAircraft)
@@ -1560,6 +1560,17 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x73FA92, UnitClass_IsCellOccupied_LandType, 0x8)
+{
+	enum { ContinueCheck = 0x73FC24, NoMove = 0x73FACD };
+
+	GET(UnitClass*, pThis, EBX);
+	GET(CellClass*, pCell, EDI);
+	GET_STACK(bool, containsBridge, STACK_OFFSET(0x90, -0x7D));
+
+	return GroundType::Array[static_cast<int>(containsBridge ? LandType::Road : pCell->LandType)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? NoMove : ContinueCheck;
+}
+
 #pragma region XSurfaceFix
 
 // Fix a crash at 0x7BAEA1 when trying to access a point outside of surface bounds.
@@ -1832,11 +1843,32 @@ DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// Infantr
 	return 0;
 }
 
-DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
+DEFINE_HOOK(0x73A2D2, UnitClass_UpdatePosition_EnterBioReactor, 0x5)
+{
+	GET(BuildingClass*, pBuilding, EBX);
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pBuildingType = pBuilding->Type;
+
+	if (pBuildingType->UnitAbsorb)
+	{
+		pThis->Transporter = pBuilding;
+		const int enterSound = pBuildingType->EnterBioReactorSound;
+		VocClass::PlayAt((enterSound >= 0 ? enterSound : RulesClass::Instance->EnterBioReactorSound), pThis->GetCoords(), 0);
+		pThis->Absorbed = true;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x51A30A };
 
 	GET(BuildingClass*, pReactor, EDI);
+	GET(InfantryClass*, pThis, ESI);
+
+	pThis->Transporter = pReactor;
 	const int enterSound = pReactor->Type->EnterBioReactorSound;
 
 	if (enterSound >= 0)
@@ -1848,11 +1880,28 @@ DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactorSound, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
+DEFINE_HOOK(0x442F9B, BuildingClass_DestroyedByC4_LeaveBioReactor, 0x6)
+{
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x44A541, BuildingClass_Mission_Selling_LeaveBioReactor, 0x7)
+{
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x44DBD5 };
 
 	GET(BuildingClass*, pReactor, EBP);
+	GET(FootClass*, pFoot, ESI);
+
+	pFoot->Transporter = nullptr;
 	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
 
 	if (leaveSound >= 0)
@@ -1864,14 +1913,15 @@ DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactorSound, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
+DEFINE_HOOK(0x51A298, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x6)
 {
 	enum { CannotEnter = 0x51A4BF };
 
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pDestination, EDI);
-
-	return pDestination->Passengers.NumPassengers + 1 <= pDestination->Type->Passengers && static_cast<int>(pThis->GetTechnoType()->Size) <= pDestination->Type->SizeLimit ? 0 : CannotEnter;
+	// Compared to `Vehicle entering building` / `Infantry entering vehicle` / `Vehicle entering vehicle`,
+	// `Infantry entering building` lacks the judgment of this
+	return (pThis->SendCommand(RadioCommand::QueryCanEnter, pDestination) == RadioCommand::AnswerPositive) ? 0 : CannotEnter;
 }
 
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)

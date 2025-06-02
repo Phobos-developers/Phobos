@@ -18,12 +18,13 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	if (pWeapon)
 	{
 		result = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pType = pThis->GetTechnoType();
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-		if (pThis->GetTechnoType()->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
+		if (pType->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
 		{
 			int smallestRange = INT32_MAX;
-			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.FirstPassenger);
+			auto pPassenger = abstract_cast<FootClass*>(pThis->Passengers.GetFirstPassenger());
 
 			while (pPassenger)
 			{

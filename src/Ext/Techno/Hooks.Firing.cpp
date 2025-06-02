@@ -24,9 +24,11 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	if (pThis && pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
+	auto const pType = pThis->GetTechnoType();
+
+	if (pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pTypeExt->InterceptorType)
 		{
@@ -36,7 +38,7 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	}
 
 	// Restore overridden instructions.
-	R->EAX(pThis->GetTechnoType());
+	R->EAX(pType);
 
 	return SkipGameCode;
 }
@@ -148,24 +150,23 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	if (!pTargetTechno)
 		return Primary;
 
-	if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
-	{
-		if (const auto pShield = pTargetExt->Shield.get())
-		{
-			if (pShield->IsActive())
-			{
-				auto const secondary = pThis->GetWeapon(1)->WeaponType;
-				bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
 
-				if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
-				{
-					if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
-						return Secondary;
-				}
-				else
-				{
-					return Primary;
-				}
+	if (const auto pShield = pTargetExt->Shield.get())
+	{
+		if (pShield->IsActive())
+		{
+			auto const secondary = pThis->GetWeapon(1)->WeaponType;
+			bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+
+			if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
+			{
+				if (!pShield->CanBeTargeted(pThis->GetWeapon(0)->WeaponType))
+					return Secondary;
+			}
+			else
+			{
+				return Primary;
 			}
 		}
 	}
@@ -181,10 +182,13 @@ DEFINE_HOOK(0x6F37EB, TechnoClass_WhatWeaponShouldIUse_AntiAir, 0x6)
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, -0x4));
 	GET(WeaponTypeClass*, pSecWeapon, EAX);
 
-	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA)
+	{
+		const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 
-	if (!pWeapon->Projectile->AA && pSecWeapon->Projectile->AA && pTargetTechno && pTargetTechno->IsInAir())
-		return Secondary;
+		if (pTargetTechno && pTargetTechno->IsInAir())
+			return Secondary;
+	}
 
 	return Primary;
 }
@@ -230,8 +234,8 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 			}
 			else
 			{
-				auto const pCell = pTargetTechno->GetCell();
-				bool isOnWater = (pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach) && !pTargetTechno->IsInAir();
+				auto const landType = pTargetTechno->GetCell()->LandType;
+				bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir();
 
 				if (!pTargetTechno->OnBridge && isOnWater)
 				{
@@ -240,8 +244,12 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 					if (navalTargetWeapon == 2)
 						chosenWeaponIndex = evenWeaponIndex;
 				}
-				else if ((pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA) ||
-					!pTargetTechno->IsInAir() && pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
+				else if (pTargetTechno->IsInAir())
+				{
+					if (!pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA)
+						chosenWeaponIndex = evenWeaponIndex;
+				}
+				else if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
 				{
 					chosenWeaponIndex = evenWeaponIndex;
 				}
@@ -391,27 +399,28 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 
 	const auto pType = pThis->GetTechnoType();
-	auto pCell = abstract_cast<CellClass*>(pTarget);
 
-	if (pCell)
+	if (const auto pCell = abstract_cast<CellClass*>(pTarget))
 	{
+		const auto landType = pCell->LandType;
+
 		if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
-			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+			(landType == LandType::Water || landType == LandType::Beach))
 		{
 			return DisallowFiring;
 		}
 	}
 	else if (const auto pTerrain = abstract_cast<TerrainClass*>(pTarget))
 	{
-		pCell = pTerrain->GetCell();
+		const auto landType = pTerrain->GetCell()->LandType;
 
 		if (pType->LandTargeting == LandTargetingType::Land_Not_OK &&
-			pCell->LandType != LandType::Water && pCell->LandType != LandType::Beach)
+			landType != LandType::Water && landType != LandType::Beach)
 		{
 			return DisallowFiring;
 		}
 		else if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
-			(pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach))
+			(landType == LandType::Water || landType == LandType::Beach))
 		{
 			return DisallowFiring;
 		}
@@ -440,11 +449,12 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 {
 	enum { CanNotFire = 0x6FDE03 };
 
-	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET(TechnoClass* const, pThis, ESI);
 
 	if (const auto pExt = TechnoExt::ExtMap.Find(pThis))
 	{
+		GET(WeaponTypeClass* const, pWeapon, EBX);
+
 		if (pThis->CurrentBurstIndex && pWeapon != pExt->LastWeaponType && pExt->TypeExtData->RecountBurst.Get(RulesExt::Global()->RecountBurst))
 		{
 			if (pExt->LastWeaponType && pExt->LastWeaponType->Burst)
@@ -592,13 +602,11 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_FeedbackWeapon, 0x6)
 DEFINE_HOOK(0x6FF905, TechnoClass_FireAt_FireOnce, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(WeaponTypeClass*, pWeapon, EBX);
 
 	if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
 	{
-		GET(WeaponTypeClass*, pWeapon, EBX);
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-		if (!pWeaponExt->FireOnce_ResetSequence)
+		if (!WeaponTypeExt::ExtMap.Find(pWeapon)->FireOnce_ResetSequence)
 			TechnoExt::ExtMap.Find(pInf)->SkipTargetChangeResetSequence = true;
 	}
 
@@ -635,9 +643,9 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(int, weaponIndex, 0xC);
 
-	if (pThis->WhatAmI() == AbstractType::Building && pWeapon->IsLaser)
+	if (pWeapon->IsLaser)
 	{
-		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*>(pThis)))
+		if (auto const pExt = BuildingExt::ExtMap.Find(abstract_cast<BuildingClass*, true>(pThis)))
 		{
 			if (!pExt->CurrentLaserWeaponIndex.has_value())
 				pExt->CurrentLaserWeaponIndex = weaponIndex;

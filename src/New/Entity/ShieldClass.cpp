@@ -155,7 +155,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	// Handle a special case where parasite damages shield but not the unit and unit itself cannot be targeted by repair weapons.
 	if (*args->Damage < 0)
 	{
-		if (auto const pFoot = abstract_cast<FootClass*>(this->Techno))
+		if (auto const pFoot = abstract_cast<FootClass*, true>(this->Techno))
 		{
 			if (auto const pParasite = pFoot->ParasiteEatingMe)
 			{
@@ -309,11 +309,11 @@ void ShieldClass::ResponseAttack()
 	if (this->Techno->Owner != HouseClass::CurrentPlayer)
 		return;
 
-	if (const auto pBld = abstract_cast<BuildingClass*>(this->Techno))
+	if (const auto pBld = abstract_cast<BuildingClass*, true>(this->Techno))
 	{
 		this->Techno->Owner->BuildingUnderAttack(pBld);
 	}
-	else if (const auto pUnit = abstract_cast<UnitClass*>(this->Techno))
+	else if (const auto pUnit = abstract_cast<UnitClass*, true>(this->Techno))
 	{
 		if (pUnit->Type->Harvester)
 		{
@@ -588,7 +588,7 @@ bool ShieldClass::ConvertCheck()
 		return false;
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
-	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(this->Techno->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(newID);
 	const auto pOldType = this->Type;
 	bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
 
