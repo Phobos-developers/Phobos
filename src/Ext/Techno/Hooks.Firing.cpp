@@ -12,11 +12,6 @@
 
 #pragma region TechnoClass_SelectWeapon
 
-namespace ForceWeaponInRangeTemp
-{
-	bool SelectWeaponByRange = false;
-}
-
 DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 {
 	enum { SkipGameCode = 0x6F3341, ReturnValue = 0x6F3406 };
@@ -84,48 +79,14 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	if (ForceWeaponInRangeTemp::SelectWeaponByRange || !pThis)
-		return 0;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	// Force weapon
+	const int forceWeaponIndex = pTypeExt->SelectForceWeapon(pThis, pTarget);
+	if (forceWeaponIndex >= 0)
 	{
-		int forceWeaponIndex = -1;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-		auto const pTargetType = pTargetTechno->GetTechnoType();
-
-		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
-			pTargetType->Cloakable && pTargetType->Naval &&
-			pTargetTechno->CloakState == CloakState::Uncloaked)
-		{
-			forceWeaponIndex = pTypeExt->ForceWeapon_Naval_Decloaked;
-		}
-		else if (pTypeExt->ForceWeapon_Cloaked >= 0 &&
-			pTargetTechno->CloakState == CloakState::Cloaked)
-		{
-			forceWeaponIndex = pTypeExt->ForceWeapon_Cloaked;
-		}
-		else if (pTypeExt->ForceWeapon_Disguised >= 0 &&
-			pTargetTechno->IsDisguised())
-		{
-			forceWeaponIndex = pTypeExt->ForceWeapon_Disguised;
-		}
-		else if (pTypeExt->ForceWeapon_UnderEMP >= 0 &&
-			pTargetTechno->IsUnderEMP())
-		{
-			forceWeaponIndex = pTypeExt->ForceWeapon_UnderEMP;
-		}
-		else if (!pTypeExt->ForceWeapon_InRange.empty() || !pTypeExt->ForceAAWeapon_InRange.empty())
-		{
-			ForceWeaponInRangeTemp::SelectWeaponByRange = true;
-			forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTargetTechno);
-			ForceWeaponInRangeTemp::SelectWeaponByRange = false;
-		}
-
-		if (forceWeaponIndex >= 0)
-		{
-			R->EAX(forceWeaponIndex);
-			return UseWeaponIndex;
-		}
+		R->EAX(forceWeaponIndex);
+		return UseWeaponIndex;
 	}
 
 	return 0;
