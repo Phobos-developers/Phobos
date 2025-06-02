@@ -1033,7 +1033,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
-			.Process(this->Convert_ResetMindControl)
+		.Process(this->Convert_ResetMindControl)
 
 		.Process(this->CrateGoodie_RerollChance)
 
