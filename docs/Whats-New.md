@@ -381,6 +381,7 @@ New:
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
+- Support for more optional weapons (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -402,6 +403,7 @@ Vanilla fixes:
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
+- Units with `ElectricAssault=yes` second weapons no longer unconditionally attack their own buildings with `Overpowerable=yes` (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

@@ -358,6 +358,11 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
+		Valueable<bool> MultiWeapon;
+		ValueableVector<int> MultiWeapon_IsSecondary;
+		Valueable<int> MultiWeapon_SelectCount;
+		bool ReadMultiWeapon;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -667,6 +672,11 @@ public:
 
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, MultiWeapon { false }
+			, MultiWeapon_IsSecondary {}
+			, MultiWeapon_SelectCount { 2 }
+			, ReadMultiWeapon { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -679,6 +689,9 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+
+		bool IsSecondary(int nWeaponIndex);
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
@@ -705,6 +718,8 @@ public:
 
 	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
 	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse);
+
+	static WeaponTypeClass* GetWeapon(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

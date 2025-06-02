@@ -33,6 +33,101 @@ void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 	mtx->Translate(x, y, z);
 }
 
+bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
+{
+	const auto pThis = this->OwnerObject();
+
+	if (pThis->IsGattling)
+		return nWeaponIndex != 0 && nWeaponIndex % 2 != 0;
+
+	if (this->MultiWeapon.Get() && !this->MultiWeapon_IsSecondary.empty())
+	{
+		return this->MultiWeapon_IsSecondary.Contains(nWeaponIndex);
+	}
+
+	return nWeaponIndex != 0;
+}
+
+int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
+{
+	const auto pType = this->OwnerObject();
+	int WeaponCount = pType->WeaponCount;
+
+	if (!pThis || !pTarget || !this->MultiWeapon.Get() || WeaponCount <= 2
+		|| (pType->HasMultipleTurrets() && (pType->IsGattling || pType->Gunner)))
+		return -1;
+
+	// considering the issue of performance loss, it is sufficient to expand it to four.
+	int selectweaponCount = this->MultiWeapon_SelectCount.Get();
+	int weaponCount = WeaponCount;
+
+	if (weaponCount > selectweaponCount)
+		weaponCount =  selectweaponCount;
+
+	if (weaponCount < 2)
+		return 0;
+	else if (weaponCount == 2)
+		return -1;
+
+	bool isElite = pThis->Veterancy.IsElite();
+	const auto secondary = TechnoTypeExt::GetWeapon(pType, 1, isElite);
+	bool secondaryCanTarget = TechnoExt::MultiWeaponCanFire(pThis, pTarget, secondary);
+
+	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	{
+		if (secondaryCanTarget)
+		{
+			const auto secondaryWH = secondary->Warhead;
+			bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+
+			if (pTarget->IsInAir())
+				return 1;
+			else if (secondaryWH->Airstrike)
+				return 1;
+			else if (secondary->DrainWeapon
+				&& pTargetTechno->GetTechnoType()->Drainable
+				&& !pThis->DrainTarget && !isAllies)
+				return 1;
+			else if (secondaryWH->ElectricAssault && isAllies
+				&& pTargetTechno->WhatAmI() == AbstractType::Building
+				&& static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
+				return 1;
+		}
+
+		if (const auto pCell = pTargetTechno->GetCell())
+		{
+			bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
+
+			if (!pTargetTechno->OnBridge && targetOnWater)
+			{
+				int result = pThis->SelectNavalTargeting(pTargetTechno);
+
+				if (result == -1)
+					return 1;
+			}
+		}
+	}
+
+	for (int i = 0; i < weaponCount; i++)
+	{
+		if (i == 1)
+		{
+			if (secondaryCanTarget)
+				return i;
+
+			continue;
+		}
+
+		const auto pWeaponType = pType->GetWeapon(i, isElite).WeaponType;
+		if (!TechnoExt::MultiWeaponCanFire(pThis, pTarget, pWeaponType))
+			continue;
+
+		return i;
+	}
+
+	return 0;
+}
+
 // Ares 0.A source
 const char* TechnoTypeExt::ExtData::GetSelectionGroupID() const
 {
@@ -60,7 +155,7 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	char tempBuffer[32];
 	char tempBufferFLH[48];
 	auto pThis = this->OwnerObject();
-	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	bool parseMultiWeapons = this->MultiWeapon.Get() || (pThis->TurretCount > 0 && pThis->WeaponCount > 0);
 	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
 	nFLH.resize(weaponCount);
 	nEFlh.resize(weaponCount);
@@ -266,6 +361,12 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 	}
 
 	return nullptr;
+}
+
+// used for more WeaponX added by Ares.
+WeaponTypeClass* TechnoTypeExt::GetWeapon(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite)
+{
+	return isElite ? pThis->GetEliteWeapon(nWeaponIndex)->WeaponType : pThis->GetWeapon(nWeaponIndex)->WeaponType;
 }
 
 // =============================
@@ -1129,6 +1230,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
+
+		.Process(this->MultiWeapon)
+		.Process(this->MultiWeapon_IsSecondary)
+		.Process(this->MultiWeapon_SelectCount)
+		.Process(this->LastMultiWeapon)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -43,6 +43,20 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6F3360, TechnoClass_WhatWeaponShouldIUse_MultiWeapon, 0x6)
+{
+	GET(TechnoTypeClass*, pType, EAX);
+	enum { SkipGameCode = 0x6F3379 };
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pTypeExt->MultiWeapon.Get()
+		&& (pType->WhatAmI() != AbstractType::UnitType || !pType->Gunner))
+		return SkipGameCode;
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
 	enum { ReturnWeaponIndex = 0x6F37AF };
@@ -124,6 +138,13 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 		if (forceWeaponIndex >= 0)
 		{
 			R->EAX(forceWeaponIndex);
+			return UseWeaponIndex;
+		}
+
+		int multiWeaponIndex = pTypeExt->SelectMultiWeapon(pThis, pTarget);
+		if (multiWeaponIndex >= 0)
+		{
+			R->EAX(multiWeaponIndex);
 			return UseWeaponIndex;
 		}
 	}

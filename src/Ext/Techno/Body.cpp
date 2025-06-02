@@ -3,8 +3,10 @@
 #include <AircraftClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
+#include <OverlayTypeClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -544,6 +546,118 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 		}
 	}
 	return nullptr;
+}
+
+bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
+{
+	if (!pThis || !pTarget || !pWeaponType || pWeaponType->NeverUse
+		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
+		return false;
+
+	const auto WhatAmI = pTarget->WhatAmI();
+	bool isBuilding = WhatAmI == AbstractType::Building;
+	const auto pWH = pWeaponType->Warhead;
+	const auto pBulletType = pWeaponType->Projectile;
+
+	TechnoClass* pTechno = abstract_cast<TechnoClass*, true>(pTarget);
+	const auto pOwner = pThis->Owner;
+	bool isAllies = pTechno ? pOwner->IsAlliedWith(pTechno->Owner) : false;
+
+	if (pTarget->IsInAir())
+	{
+		if (!pBulletType->AA || pWH->Airstrike)
+			return false;
+	}
+	else
+	{
+		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+
+		if (pBulletTypeExt->AAOnly.Get())
+		{
+			return false;
+		}
+		else if (pWH->ElectricAssault)
+		{
+			if (!isBuilding)
+				return false;
+
+			const auto pBuilding = static_cast<BuildingClass*>(pTarget);
+
+			if (!isAllies || !pBuilding->Type || !pBuilding->Type->Overpowerable)
+				return false;
+		}
+		else if (pWH->IsLocomotor)
+		{
+			if (isBuilding)
+				return false;
+		}
+	}
+
+	if (pTechno)
+	{
+		if (pTechno->Health <= 0 || !pTechno->IsAlive)
+			return false;
+
+		if (pTechno->AttachedBomb)
+		{
+			if (pWH->IvanBomb)
+				return false;
+		}
+		else if (pWH->BombDisarm)
+		{
+			return false;
+		}
+
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		if (pWH->MindControl && (pTechnoType->ImmuneToPsionics
+			|| pTechno->IsMindControlled() || pOwner == pTechno->Owner))
+			return false;
+
+		if (pWH->Parasite && (isBuilding
+			|| static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
+			return false;
+
+		if (!pWH->Temporal && pTechno->BeingWarpedOut)
+			return false;
+
+		if (pWeaponType->DrainWeapon && (!pTechnoType->Drainable
+			|| (pTechno->DrainingMe || isAllies)))
+			return false;
+
+		if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
+		{
+			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+				return false;
+		}
+
+		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
+		{
+			return false;
+		}
+	}
+	else
+	{
+		if (WhatAmI == AbstractType::Terrain)
+		{
+			if (!pWH->Wood)
+				return false;
+		}
+		else if (WhatAmI == AbstractType::Cell)
+		{
+			const auto pCell = static_cast<CellClass*>(pTarget);
+
+			if (pCell && pCell->OverlayTypeIndex >= 0)
+			{
+				auto overlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
+
+				if (overlayType->Wall && !pWH->Wall)
+					return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 // =============================
