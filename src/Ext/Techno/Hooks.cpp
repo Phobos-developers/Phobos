@@ -914,7 +914,9 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 
 	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
-		if (!pUnit->HasTurret() && !pUnit->Type->Voxel)
+		const auto pUnitType = pUnit->Type;
+
+		if (!pUnitType->Turret && !pUnitType->Voxel)
 		{
 			const auto pTarget = pThis->Target;
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -930,13 +932,13 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 					fireError != FireError::MOVING)
 				{
 					pUnit->unknown_int_6C0 = -1;
-					pExt->FireUp = 0;
+					pExt->FiringAnimationTimer.Stop();
 				}
 			}
 			else
 			{
 				pUnit->unknown_int_6C0 = -1;
-				pExt->FireUp = 0;
+				pExt->FiringAnimationTimer.Stop();
 			}
 		}
 	}

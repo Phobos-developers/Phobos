@@ -71,7 +71,7 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
-		int FireUp;
+		CDTimerClass FiringAnimationTimer;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -117,7 +117,7 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
-			, FireUp { 0 }
+			, FiringAnimationTimer {}
 		{ }
 
 		void OnEarlyUpdate();

@@ -595,7 +595,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
-		.Process(this->FireUp)
+		.Process(this->FiringAnimationTimer)
 		;
 }
 
