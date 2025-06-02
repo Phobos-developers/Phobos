@@ -5954,7 +5954,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1554
 msgid "Overload characteristic dehardcoded"
-msgstr "过载特性去硬编码"
+msgstr "自定义脑车过载"
 
 #: ../../New-or-Enhanced-Logics.md:1556
 msgid ""

@@ -2414,7 +2414,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:505
 msgid "Customize overpower logic"
-msgstr "自定义过载逻辑"
+msgstr "自定义磁暴线圈充能"
 
 #: ../../Fixed-or-Improved-Logics.md:507
 msgid "Now you can specific how building can be overpowerd."
@@ -5603,7 +5603,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1613
 msgid "Customize harvester dump amount"
-msgstr "自定单次倒矿量"
+msgstr "自定义矿车单次倒矿量"
 
 #: ../../Fixed-or-Improved-Logics.md:1615
 msgid ""

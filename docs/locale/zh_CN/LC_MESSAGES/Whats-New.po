@@ -1357,7 +1357,7 @@ msgid ""
 "[Customize overpower logic](Fixed-or-Improved-Logics.md#customize-"
 "overpower-logic) (by NetsuNegi)"
 msgstr ""
-"[自定义过载逻辑](Fixed-or-Improved-Logics.md#customize-overpower-logic)（by "
+"[自定义磁暴线圈充能](Fixed-or-Improved-Logics.md#customize-overpower-logic)（by "
 "NetsuNegi）"
 
 #: ../../Whats-New.md:360
@@ -1425,7 +1425,7 @@ msgid ""
 "[Overload characteristic dehardcoded](New-or-Enhanced-Logics.md#overload-"
 "characteristic-dehardcoded) (by Otamaa)"
 msgstr ""
-"[过载特性去硬编码](New-or-Enhanced-Logics.md#overload-characteristic-"
+"[自定义脑车过载](New-or-Enhanced-Logics.md#overload-characteristic-"
 "dehardcoded)（by Otamaa）"
 
 #: ../../Whats-New.md:369
@@ -1447,7 +1447,7 @@ msgid ""
 "[Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-"
 "harvester-dump-amount) (by NetsuNegi)"
 msgstr ""
-"[自定单次倒矿量](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount)（by"
+"[自定义矿车单次倒矿量](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount)（by"
 " NetsuNegi）"
 
 #: ../../Whats-New.md:372

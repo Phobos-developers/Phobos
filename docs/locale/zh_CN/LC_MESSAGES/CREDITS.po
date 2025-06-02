@@ -472,7 +472,7 @@ msgstr "扩展类优化"
 
 #: ../../../CREDITS.md:124
 msgid "Overload characteristic dehardcoded"
-msgstr "过载特性去硬编码"
+msgstr "自定义脑车过载"
 
 #: ../../../CREDITS.md:125
 msgid "**FS-21**:"
@@ -1517,7 +1517,7 @@ msgstr "自定义 `Locomotor` 为 `Drive`／`Ship` 的单位伤残状态的速�
 
 #: ../../../CREDITS.md:382
 msgid "Customize overpower logic"
-msgstr "自定义过载逻辑"
+msgstr "自定义磁暴线圈充能"
 
 #: ../../../CREDITS.md:383
 msgid ""
@@ -1568,7 +1568,7 @@ msgstr "自定义寄生秒杀目标"
 
 #: ../../../CREDITS.md:391
 msgid "Customize harvester dump amount"
-msgstr "自定单次倒矿量"
+msgstr "自定义矿车单次倒矿量"
 
 #: ../../../CREDITS.md:392
 msgid "Select box logic"
