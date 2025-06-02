@@ -402,7 +402,7 @@ Vanilla fixes:
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
-- Fixed the bug that uncontrolled scatter when attack by aircraft or some unit try crush it (by NetsuNegi)
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

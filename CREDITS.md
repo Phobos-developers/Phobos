@@ -398,7 +398,7 @@ This page lists all the individual contributions to the project by their author.
   - Tiberium eater logic
   - Fix the bug that ships can travel on elevated bridges
   - Original `Arcing` elevation inaccuracy fix
-  - Fix the bug that uncontrolled scatter when attack by aircraft or some unit try crush it
+  - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
