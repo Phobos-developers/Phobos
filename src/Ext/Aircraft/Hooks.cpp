@@ -590,6 +590,8 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 
 		if (pThis->TargetAndEstimateDamage(coords, ThreatType::Area))
 			pThis->QueueMission(Mission::Attack, false);
+		else if (pThis->Destination && pThis->Destination != pThis->DockNowHeadingTo)
+			pThis->EnterIdleMode(false, true);
 
 		return SkipGameCode;
 	}
