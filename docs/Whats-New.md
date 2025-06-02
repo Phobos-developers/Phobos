@@ -403,7 +403,6 @@ Vanilla fixes:
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
-- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

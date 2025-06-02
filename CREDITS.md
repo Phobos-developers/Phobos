@@ -363,7 +363,6 @@ This page lists all the individual contributions to the project by their author.
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
   - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
-  - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
   - Support for more optional weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
