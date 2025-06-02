@@ -10,6 +10,7 @@ namespace FiringAITemp
 	bool canFire;
 	int weaponIndex;
 	bool isSecondary;
+	WeaponTypeClass* WeaponType;
 	FireError fireError;
 }
 
@@ -30,10 +31,20 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 {
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, WeaponIndex, EDI);
+	enum { SkipGameCode = 0x5209A6 };
+
+	auto const pWeapon = pThis->GetWeapon(WeaponIndex)->WeaponType;
+
+	if (!pWeapon)
+	{
+		R->AL(false);
+		return SkipGameCode;
+	}
 
 	const auto pTarget = pThis->Target;
 	FiringAITemp::weaponIndex = WeaponIndex;
 	FiringAITemp::isSecondary = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->IsSecondary(WeaponIndex);
+	FiringAITemp::WeaponType = pWeapon;
 	FiringAITemp::fireError = pThis->GetFireError(pTarget, WeaponIndex, true);
 	FiringAITemp::canFire = true;
 
@@ -76,7 +87,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
 	int weaponIndex = FiringAITemp::weaponIndex;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(FiringAITemp::WeaponType);
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
 	if (pWeaponExt->Burst_FireWithinSequence.Get())
