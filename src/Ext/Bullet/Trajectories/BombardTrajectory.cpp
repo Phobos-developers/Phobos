@@ -65,7 +65,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->FallScatter_Min.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Min");
 	this->FallScatter_Linear.Read(exINI, pSection, "Trajectory.Bombard.FallScatter.Linear");
 	this->FallSpeed.Read(exINI, pSection, "Trajectory.Bombard.FallSpeed");
-	this->FallSpeed = Math::max(0.001, this->FallSpeed);
+	if (this->FallSpeed.isset()) this->FallSpeed = Math::max(0.001, this->FallSpeed);
 	this->FreeFallOnTarget.Read(exINI, pSection, "Trajectory.Bombard.FreeFallOnTarget");
 	this->NoLaunch.Read(exINI, pSection, "Trajectory.Bombard.NoLaunch");
 	this->TurningPointAnims.Read(exINI, pSection, "Trajectory.Bombard.TurningPointAnims");
