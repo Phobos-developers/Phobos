@@ -723,12 +723,9 @@ DEFINE_HOOK(0x4C7403, EventClass_Execute_AircraftAreaGuard, 0x6)
 
 	GET(TechnoClass* const, pTechno, EDI);
 
-	if (RulesExt::Global()->ExtendedAircraftMissions && pTechno->WhatAmI() == AbstractType::Aircraft)
+	if (RulesExt::Global()->ExtendedAircraftMissions
+		&& pTechno->WhatAmI() == AbstractType::Aircraft)
 	{
-		// If we're on dock reloading but have ammo, untether from dock and try to scan for targets.
-		if (pTechno->CurrentMission == Mission::Sleep && pTechno->Ammo)
-			pTechno->SendToEachLink(RadioCommand::NotifyUnlink);
-
 		// Skip assigning destination / target here.
 		return SkipGameCode;
 	}
@@ -744,9 +741,12 @@ DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Untether, 0x6)
 	GET(EventClass* const, pThis, ESI);
 	GET(TechnoClass* const, pTechno, EDI);
 
-	if (RulesExt::Global()->ExtendedAircraftMissions && pTechno->WhatAmI() == AbstractType::Aircraft
-		&& pThis->MegaMission.Mission == (char)Mission::Area_Guard)
+	if (RulesExt::Global()->ExtendedAircraftMissions
+		&& pTechno->WhatAmI() == AbstractType::Aircraft
+		&& pThis->MegaMission.Mission == (char)Mission::Area_Guard
+		&& (pTechno->CurrentMission != Mission::Sleep || !pTechno->Ammo))
 	{
+		// If we're on dock reloading but have ammo, untether from dock and try to scan for targets.
 		return SkipGameCode;
 	}
 
