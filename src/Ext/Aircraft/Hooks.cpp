@@ -598,6 +598,17 @@ DEFINE_HOOK(0x41A96C, AircraftClass_Mission_AreaGuard, 0x6)
 	return 0;
 }
 
+// Sleep: return to airbase if in incorrect sleep status
+int __fastcall AircraftClass_Mission_Sleep(AircraftClass* pThis)
+{
+	if (!pThis->Destination || pThis->Destination == pThis->DockNowHeadingTo)
+		return 450; // Vanilla MissionClass_Mission_Sleep value
+
+	pThis->EnterIdleMode(false, true);
+	return 1;
+}
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E24A8, AircraftClass_Mission_Sleep)
+
 // AttackMove: return when no ammo or arrived destination
 bool __fastcall AircraftTypeClass_CanAttackMove(AircraftTypeClass* pThis)
 {
