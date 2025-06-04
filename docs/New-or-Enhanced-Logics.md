@@ -1022,12 +1022,17 @@ TabIndex=1  ; integer
   - Note that if you fire another `Type=EMPulse` superweapon with different weapon index that the same building is capable of launching before the first weapon was fired, the latter superweapon's settings will take precedence.
   - Additionally, due to technical limitations the targeting constraints will always default to primary weapon's `Range/MinimumRange` unless `SW.RangeMinimum` / `SW.RangeMaximum` are explicitly set.
 - Is is now also possible to have all other `Type=EMPulse` superweapons that can be fired by same buildings as current one be put on hold until first of the buildings currently set to fire goes off if the firing superweapon has `EMPulse.SuspendOthers=true`.
+- Structures with `Ammo` now fire repeatedly until the weapon no longer has enough ammo.
+- `EMPulseCannon.InaccurateRadius` defines an area around the target location where the projectile can land randomly.
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]                     ; SuperWeaponType
-EMPulse.WeaponIndex=0        ; integer, weapon slot index
-EMPulse.SuspendOthers=false  ; boolean
+[SOMESW]                         ; SuperWeaponType
+EMPulse.WeaponIndex=0            ; integer, weapon slot index
+EMPulse.SuspendOthers=false      ; boolean
+
+[SOMEPROJECTILE]                 ; Projectile
+EMPulseCannon.InaccurateRadius=0 ; integer
 ```
 
 ```{note}

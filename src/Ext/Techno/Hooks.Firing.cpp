@@ -983,6 +983,7 @@ DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadiu
 
 	// Innacurate random strike Area calculation
 	int radius = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->EMPulseCannon_InaccurateRadius;
+	radius = radius < 0 ? 0 : radius;
 
 	if (radius > 0)
 	{
