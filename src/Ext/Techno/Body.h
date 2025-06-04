@@ -130,7 +130,6 @@ public:
 		void ApplySpawnLimitRange();
 		void UpdateTypeData(TechnoTypeClass* pCurrentType);
 		void UpdateTypeData_Foot();
-		void UpdateTypeExtData_FixOther(TechnoTypeExt::ExtData* pOldTypeExt);
 		void UpdateLaserTrails();
 		void UpdateAttachEffects();
 		void UpdateGattlingRateDownReset();

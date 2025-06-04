@@ -314,7 +314,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
 			}
 
-			TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis))->UpdateTypeData(pToType);
+			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+			pTypeExt->UpdateTypeData(pToType);
+			pTypeExt->UpdateTypeData_Foot();
 			return true;
 		}
 
@@ -411,7 +413,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
-	TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis))->UpdateTypeData(pToType);
+	auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	pTypeExt->UpdateTypeData(pToType);
+	pTypeExt->UpdateTypeData_Foot();
 	return true;
 }
 
