@@ -214,6 +214,12 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
+<<<<<<< HEAD
+=======
+- Dehardcoded 255 limit of `OverlayType`.
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
+>>>>>>> 751a94e2 ([Vanilla Fix]Fix the bug that uncontrolled scatter when elite techno attack by aircraft or some unit try crush it (#1694))
 
 ## Fixes / interactions with other extensions
 

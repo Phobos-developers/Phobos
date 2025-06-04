@@ -373,6 +373,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Fix the bug that ships can travel on elevated bridges
   - Original `Arcing` elevation inaccuracy fix
+  - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
