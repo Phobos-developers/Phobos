@@ -1990,8 +1990,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 	enum { SkipGuard = 0x4D5225, SkipAreaGuard = 0x4D7025 };
 
 	bool InGuard = (R->Origin() == 0x4D5116);
-	int weaponRange = Secondary->Range;
-	double spread = static_cast<double>(weaponRange) / Unsorted::LeptonsPerCell;
+	double spread = static_cast<double>(Secondary->Range) / Unsorted::LeptonsPerCell;
 	const auto cellCoords = pThis->GetMapCoords();
 	BuildingClass* pBuilding = nullptr;
 
@@ -2003,7 +2002,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 
 		auto const pTargetBuilding = pCell->GetBuilding();
 		if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner
-			|| pThis->DistanceFrom(pTargetBuilding) > weaponRange)
+			|| !pThis->IsCloseEnough(pTargetBuilding, 1))
 			continue;
 
 		const auto pType = pTargetBuilding->Type;
