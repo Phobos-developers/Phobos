@@ -401,7 +401,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 
 	const auto extendedMissions = RulesExt::Global()->ExtendedAircraftMissions;
 
-	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftActions_SmoothMoving.Get(extendedMissions))
+	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_SmoothMoving.Get(extendedMissions))
 		return 0;
 
 	const int distance = Game::F2I(Point2D { pCoords->X, pCoords->Y }.DistanceFrom(Point2D { pThis->Location.X, pThis->Location.Y }));
@@ -451,7 +451,7 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 		const auto pAircraft = abstract_cast<AircraftClass*, true>(pFoot);
 
 		// Rewrite vanilla implement
-		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftActions_RearApproach.Get(RulesExt::Global()->ExtendedAircraftMissions))
+		if (!pAircraft || !TechnoTypeExt::ExtMap.Find(pAircraft->Type)->ExtendedAircraftMissions_RearApproach.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		{
 			REF_STACK(const CoordStruct, destination, STACK_OFFSET(0x48, 0x8));
 
@@ -530,7 +530,7 @@ DEFINE_HOOK(0x4CF3D0, FlyLocomotionClass_FlightUpdate_SetFlightLevel, 0x7) // Ma
 	if (pType->HunterSeeker)
 		return 0;
 
-	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftActions_EarlyDescend.Get(RulesExt::Global()->ExtendedAircraftMissions))
+	if (!TechnoTypeExt::ExtMap.Find(pType)->ExtendedAircraftMissions_EarlyDescend.Get(RulesExt::Global()->ExtendedAircraftMissions))
 		return 0;
 
 	enum { SkipGameCode = 0x4CF4D2 };

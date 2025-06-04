@@ -580,9 +580,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
 
-	this->ExtendedAircraftActions_SmoothMoving.Read(exINI, pSection, "ExtendedAircraftActions.SmoothMoving");
-	this->ExtendedAircraftActions_EarlyDescend.Read(exINI, pSection, "ExtendedAircraftActions.EarlyDescend");
-	this->ExtendedAircraftActions_RearApproach.Read(exINI, pSection, "ExtendedAircraftActions.RearApproach");
+	this->ExtendedAircraftMissions_SmoothMoving.Read(exINI, pSection, "ExtendedAircraftMissions.SmoothMoving");
+	this->ExtendedAircraftMissions_EarlyDescend.Read(exINI, pSection, "ExtendedAircraftMissions.EarlyDescend");
+	this->ExtendedAircraftMissions_RearApproach.Read(exINI, pSection, "ExtendedAircraftMissions.RearApproach");
 
 	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
 	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
@@ -1131,9 +1131,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
 
-		.Process(this->ExtendedAircraftActions_SmoothMoving)
-		.Process(this->ExtendedAircraftActions_EarlyDescend)
-		.Process(this->ExtendedAircraftActions_RearApproach)
+		.Process(this->ExtendedAircraftMissions_SmoothMoving)
+		.Process(this->ExtendedAircraftMissions_EarlyDescend)
+		.Process(this->ExtendedAircraftMissions_RearApproach)
 
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
