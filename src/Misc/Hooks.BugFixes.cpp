@@ -1982,23 +1982,52 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 
 #pragma region ElectricAssultFix
 
-// make a minimally permissible attack judgment.
-bool _fastcall CanElectricAssault(FootClass* pThis, BuildingClass* pBuilding)
-{
-	const auto pWarhead = pThis->GetWeapon(1)->WeaponType->Warhead;
-	return GeneralUtils::GetWarheadVersusArmor(pWarhead, pBuilding, pBuilding->GetTechnoType()) != 0.0;
-}
-
-DEFINE_HOOK_AGAIN(0x4D51B2, FootClass_ElectricAssultFix, 0x5)	// Mission_Guard
-DEFINE_HOOK(0x4D7005, FootClass_ElectricAssultFix, 0x5)			// Mission_AreaGuard
+DEFINE_HOOK_AGAIN(0x4D5116, FootClass_ElectricAssultFix, 0x8)	// Mission_Guard
+DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 {
 	GET(FootClass*, pThis, ESI);
-	GET(BuildingClass*, pBuilding, EDI);
+	GET(WeaponTypeClass*, Secondary, ECX);
 	enum { SkipGuard = 0x4D5225, SkipAreaGuard = 0x4D7025 };
 
-	return !CanElectricAssault(pThis, pBuilding) ?
-		R->Origin() == 0x4D51B2 ? SkipGuard : SkipAreaGuard
-		: 0;
+	bool InGuard = (R->Origin() == 0x4D5116);
+	int weaponRange = Secondary->Range;
+	double spread = static_cast<double>(weaponRange) / Unsorted::LeptonsPerCell;
+	const auto cellCoords = pThis->GetMapCoords();
+	const auto range = static_cast<size_t>(spread + 0.99);
+	BuildingClass* pBuilding = nullptr;
+
+	for (CellSpreadEnumerator it(range); it; ++it)
+	{
+		const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
+		if (!pCell)
+			continue;
+
+		auto const pTargetBuilding = pCell->GetBuilding();
+		if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner
+			|| pThis->DistanceFrom(pTargetBuilding) > weaponRange)
+			continue;
+
+		const auto pType = pTargetBuilding->Type;
+		if (pType->InvisibleInGame || !pType->Overpowerable
+			|| GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
+			continue;
+
+		pBuilding = pTargetBuilding;
+		break;
+	}
+
+	if (pBuilding)
+	{
+		pThis->SetTarget(pBuilding);
+		pThis->unknown_bool_68E = true;
+		pThis->QueueMission(Mission::Attack, false);
+	}
+	else if (InGuard)
+	{
+		pThis->UpdateIdleAction();
+	}
+
+	return (InGuard ? SkipGuard : SkipAreaGuard);
 }
 
 #pragma endregion
