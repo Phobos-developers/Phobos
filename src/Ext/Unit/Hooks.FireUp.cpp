@@ -40,7 +40,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	{
 		if (frames >= 0)
 		{
-			pThis->unknown_int_6C0 = 2 * frames - 1;
+			pThis->CurrentFiringFrame = 2 * frames - 1;
 			pTimer.Start(frames);
 		}
 	}
