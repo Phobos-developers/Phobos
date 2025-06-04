@@ -57,7 +57,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		|| (pType->HasMultipleTurrets() && (pType->IsGattling || pType->Gunner)))
 		return -1;
 
-	// considering the issue of performance loss, it is sufficient to expand it to four.
+	// It's best not to set the number too large given the performance loss.
 	int selectweaponCount = this->MultiWeapon_SelectCount.Get();
 	int weaponCount = WeaponCount;
 
@@ -70,7 +70,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		return -1;
 
 	bool isElite = pThis->Veterancy.IsElite();
-	std::vector<bool>secondaryCanTargets {};
+	std::vector<bool> secondaryCanTargets {};
 	secondaryCanTargets.resize(weaponCount, false);
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))

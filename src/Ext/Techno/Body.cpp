@@ -554,8 +554,8 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
 		return false;
 
-	const auto WhatAmI = pTarget->WhatAmI();
-	bool isBuilding = WhatAmI == AbstractType::Building;
+	const auto rtti = pTarget->WhatAmI();
+	bool isBuilding = rtti == AbstractType::Building;
 	const auto pWH = pWeaponType->Warhead;
 	const auto pBulletType = pWeaponType->Projectile;
 
@@ -625,35 +625,27 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 			|| (pTechno->DrainingMe || isAllies)))
 			return false;
 
-		if (const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
-		{
-			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
-				return false;
-		}
+		if (!WeaponTypeExt::ExtMap.Find(pWeaponType)->HasRequiredAttachedEffects(pTechno, pThis))
+			return false;
 
 		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
-		{
 			return false;
-		}
 	}
-	else
+	else if (rtti == AbstractType::Terrain)
 	{
-		if (WhatAmI == AbstractType::Terrain)
+		if (!pWH->Wood)
+			return false;
+	}
+	else if (rtti == AbstractType::Cell)
+	{
+		const auto pCell = static_cast<CellClass*>(pTarget);
+
+		if (pCell && pCell->OverlayTypeIndex >= 0)
 		{
-			if (!pWH->Wood)
+			auto overlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
+
+			if (overlayType->Wall && !pWH->Wall)
 				return false;
-		}
-		else if (WhatAmI == AbstractType::Cell)
-		{
-			const auto pCell = static_cast<CellClass*>(pTarget);
-
-			if (pCell && pCell->OverlayTypeIndex >= 0)
-			{
-				auto overlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
-
-				if (overlayType->Wall && !pWH->Wall)
-					return false;
-			}
 		}
 	}
 
