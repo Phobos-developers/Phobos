@@ -38,6 +38,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 			pThis->GattlingRateDown(1);
 
 		R->AL(false);
+		FiringAITemp::canFire = false;
 		return SkipGameCode;
 	}
 
