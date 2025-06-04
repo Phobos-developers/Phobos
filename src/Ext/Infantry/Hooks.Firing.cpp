@@ -61,8 +61,8 @@ DEFINE_HOOK(0x5206E4, InfantryClass_FiringAI_SetFireError, 0x6)
 }
 
 // determine if it is the second.
-DEFINE_HOOK_AGAIN(0x52096A, InfantryClass_FiringAI_IsSecondary, 0x6)
-DEFINE_HOOK(0x520888, InfantryClass_FiringAI_IsSecondary, 0x8)
+DEFINE_HOOK_AGAIN(0x520968, InfantryClass_UpdateFiring_IsSecondary, 0x6)
+DEFINE_HOOK(0x520888, InfantryClass_UpdateFiring_IsSecondary, 0x8)
 {
 	GET(InfantryClass*, pThis, EBP);
 	bool isSecondary = FiringAITemp::isSecondary;
@@ -72,12 +72,13 @@ DEFINE_HOOK(0x520888, InfantryClass_FiringAI_IsSecondary, 0x8)
 		R->AL(pThis->Crawling);
 		return isSecondary ? 0x520890 : 0x5208DC;
 	}
+	else if (isSecondary)
+	{
+		return pThis->Crawling ? 0x520970 : 0x52098A;
+	}
 	else
 	{
-		if (isSecondary)
-			R->CL(pThis->Crawling);
-
-		return isSecondary ? 0x52096C : 0x5209A0;
+		return 0x5209A0;
 	}
 }
 
