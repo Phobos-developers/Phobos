@@ -2008,7 +2008,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 			continue;
 
 		const auto pType = pTargetBuilding->Type;
-		if (pType->InvisibleInGame || !pType->Overpowerable
+		if (!pType->Overpowerable
 			|| GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
 			continue;
 
@@ -2027,7 +2027,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 		pThis->UpdateIdleAction();
 	}
 
-	return (InGuard ? SkipGuard : SkipAreaGuard);
+	return InGuard ? SkipGuard : SkipAreaGuard;
 }
 
 #pragma endregion
