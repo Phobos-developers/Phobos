@@ -139,13 +139,13 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 			{
 				int weaponIndex = this->MultiWeapon_IsSecondary[index];
 
-				if (checkSecondary(TechnoTypeExt::GetWeapon(pType, weaponIndex, isElite), weaponIndex))
+				if (checkSecondary(TechnoTypeExt::GetWeaponStruct(pType, weaponIndex, isElite)->WeaponType, weaponIndex))
 					return weaponIndex;
 			}
 		}
 		else
 		{
-			if (checkSecondary(TechnoTypeExt::GetWeapon(pType, 1, isElite), 1))
+			if (checkSecondary(TechnoTypeExt::GetWeaponStruct(pType, 1, isElite)->WeaponType, 1))
 				return 1;
 		}
 	}
@@ -400,9 +400,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 }
 
 // used for more WeaponX added by Ares.
-WeaponTypeClass* TechnoTypeExt::GetWeapon(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite)
+WeaponStruct* TechnoTypeExt::GetWeaponStruct(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite)
 {
-	return isElite ? pThis->GetEliteWeapon(nWeaponIndex)->WeaponType : pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	return isElite ? pThis->GetEliteWeapon(nWeaponIndex) : pThis->GetWeapon(nWeaponIndex);
 }
 
 // =============================
