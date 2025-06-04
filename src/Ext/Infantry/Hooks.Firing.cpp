@@ -1,6 +1,5 @@
 #include <Helpers/Macro.h>
 #include <InfantryClass.h>
-#include <ScenarioClass.h>
 
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -37,6 +36,11 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 
 	if (!pWeapon)
 	{
+		if (pThis->Type->IsGattling)
+		{
+			pThis->GattlingRateDown(1);
+		}
+
 		R->AL(false);
 		return SkipGameCode;
 	}
@@ -60,7 +64,7 @@ DEFINE_HOOK(0x5206E4, InfantryClass_FiringAI_SetFireError, 0x6)
 }
 
 // Do you think the infantry's way of determining that weapons are secondary is stupid?
-DEFINE_HOOK(0x520968, InfantryClass_UpdateFiring_IsSecondary, 0x6)
+DEFINE_HOOK(0x520968, InfantryClass_FiringAI_IsSecondary, 0x6)
 {
 	enum { Secondary = 0x52096C, SkipGameCode = 0x5209A0 };
 
@@ -68,7 +72,7 @@ DEFINE_HOOK(0x520968, InfantryClass_UpdateFiring_IsSecondary, 0x6)
 }
 
 // I think it's kind of stupid.
-DEFINE_HOOK(0x520888, InfantryClass_UpdateFiring_IsSecondary2, 0x8)
+DEFINE_HOOK(0x520888, InfantryClass_FiringAI_IsSecondary2, 0x8)
 {
 	GET(InfantryClass*, pThis, EBP);
 	enum { Primary = 0x5208D6, Secondary = 0x520890 };
@@ -79,18 +83,18 @@ DEFINE_HOOK(0x520888, InfantryClass_UpdateFiring_IsSecondary2, 0x8)
 
 DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 {
-	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
-
 	GET(InfantryClass*, pThis, EBP);
 	GET(int, firingFrame, EDX);
+	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
 
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
 	int weaponIndex = FiringAITemp::weaponIndex;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(FiringAITemp::WeaponType);
+	bool allowBurst = pWeaponExt->Burst_FireWithinSequence.Get();
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt->Burst_FireWithinSequence.Get())
+	if (allowBurst)
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
@@ -115,7 +119,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 
 	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
 	{
-		if (pWeaponExt->Burst_FireWithinSequence.Get())
+		if (allowBurst)
 		{
 			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
