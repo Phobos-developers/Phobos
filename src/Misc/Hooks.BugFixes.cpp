@@ -1993,10 +1993,9 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 	int weaponRange = Secondary->Range;
 	double spread = static_cast<double>(weaponRange) / Unsorted::LeptonsPerCell;
 	const auto cellCoords = pThis->GetMapCoords();
-	const auto range = static_cast<size_t>(spread + 0.99);
 	BuildingClass* pBuilding = nullptr;
 
-	for (CellSpreadEnumerator it(range); it; ++it)
+	for (CellRangeEnumerator it(cellCoords, spread + 0.5); it; it++)
 	{
 		const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
 		if (!pCell)
