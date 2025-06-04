@@ -2014,13 +2014,19 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 	enum { SkipGuard = 0x4D5225, SkipAreaGuard = 0x4D7025 };
 
 	bool InGuard = (R->Origin() == 0x4D5116);
+	const auto pType = pThis->GetTechnoType();
 
-	if (!pThis->Locomotor->Is_Really_Moving_Now() ||
-		(pThis->WhatAmI() != AbstractType::Infantry &&
-			pThis->GetTechnoType()->OpportunityFire))
+	if (Secondary->Range > 0
+		&& (!pThis->Locomotor->Is_Really_Moving_Now()
+		|| (pThis->WhatAmI() != AbstractType::Infantry
+		&& pType->OpportunityFire)))
 	{
 		const auto cellCoords = pThis->GetMapCoords();
 		BuildingClass* pBuilding = nullptr;
+		int Range = Secondary->Range;
+
+		if (pThis->IsInAir())
+			Range += pType->AirRangeBonus;
 
 		for (CellRangeEnumerator it(cellCoords, Secondary->Range); it; it++)
 		{
@@ -2029,13 +2035,13 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 				continue;
 
 			const auto pTargetBuilding = pCell->GetBuilding();
-			if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner ||
-				!pThis->IsCloseEnough(pTargetBuilding, 1))
+			if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner
+				|| pThis->DistanceFrom(pTargetBuilding) > Range)
 				continue;
 
-			const auto pType = pTargetBuilding->Type;
-			if (!pType->Overpowerable ||
-				GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
+			const auto pBuildingType = pTargetBuilding->Type;
+			if (!pBuildingType->Overpowerable
+				|| GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
 				continue;
 
 			pBuilding = pTargetBuilding;
