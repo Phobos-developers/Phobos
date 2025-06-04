@@ -9,6 +9,8 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Ext/SWType/Body.h>
+#include <Ext/House/Body.h>
 
 #pragma region TechnoClass_SelectWeapon
 
@@ -942,4 +944,83 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	GET(InfantryClass*, pThis, ESI);
 	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
+}
+
+DEFINE_HOOK(0x44CD18, BuildingClass_MissionMissile_EMPulseCannon_InaccurateRadius, 0x6)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	HouseClass* pHouse = pThis->Owner;
+	const auto pCell = MapClass::Instance.TryGetCellAt(pHouse->EMPTarget);
+
+	if (!pThis->Type->EMPulseCannon || !pCell)
+		return 0;
+
+	// Obtain the weapon used by the EMP weapon
+	int weaponIndex = 0;
+	const auto pExt = BuildingExt::ExtMap.Find(pThis);
+
+	if (pExt->EMPulseSW)
+	{
+		const auto pSWExt = SWTypeExt::ExtMap.Find(pExt->EMPulseSW->Type);
+
+		if (pSWExt->EMPulse_WeaponIndex >= 0)
+		{
+			weaponIndex = pSWExt->EMPulse_WeaponIndex;
+		}
+		else
+		{
+			AbstractClass* pTarget = pCell;
+
+			if (const auto pObject = pCell->GetContent())
+				pTarget = pObject;
+
+			weaponIndex = pThis->SelectWeapon(pTarget);
+		}
+	}
+
+	const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+
+	// Innacurate random strike Area calculation
+	int radius = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->EMPulseCannon_InaccurateRadius;
+
+	if (radius > 0)
+	{
+		if (pExt->RandomEMPTarget == CellStruct::Empty)
+		{
+			// Calculate a new valid random target coordinate
+			do
+			{
+				pExt->RandomEMPTarget.X = (short)ScenarioClass::Instance->Random.RandomRanged(pHouse->EMPTarget.X - radius, pHouse->EMPTarget.X + radius);
+				pExt->RandomEMPTarget.Y = (short)ScenarioClass::Instance->Random.RandomRanged(pHouse->EMPTarget.Y - radius, pHouse->EMPTarget.Y + radius);
+			}
+			while (!MapClass::Instance.IsWithinUsableArea(pExt->RandomEMPTarget, false));
+		}
+
+		pHouse->EMPTarget = pExt->RandomEMPTarget; // Value overwrited every frame
+	}
+
+	if (pThis->MissionStatus != 3)
+		return 0;
+
+	pExt->RandomEMPTarget = CellStruct::Empty;
+
+	// Restart the super weapon firing process if there is enough ammo set for the current weapon
+	if (pThis->Type->Ammo > 0 && pThis->Ammo > 0)
+	{
+		int ammo = WeaponTypeExt::ExtMap.Find(pWeapon)->Ammo.Get(1);
+		pThis->Ammo -= ammo;
+		pThis->Ammo = pThis->Ammo < 0 ? 0 : pThis->Ammo;
+
+		if (pThis->Ammo >= ammo)
+			pThis->MissionStatus = 0;
+
+		if (!pThis->ReloadTimer.InProgress())
+			pThis->ReloadTimer.Start(pThis->Type->Reload);
+
+		if (pThis->Ammo == 0 && pThis->Type->EmptyReload >= 0 && pThis->ReloadTimer.GetTimeLeft() > pThis->Type->EmptyReload)
+			pThis->ReloadTimer.Start(pThis->Type->EmptyReload);
+	}
+
+	return 0;
 }
