@@ -18,9 +18,7 @@ DEFINE_HOOK(0x520AD2, InfantryClass_FiringAI_NoTarget, 0x7)
 	GET(InfantryClass*, pThis, EBP);
 
 	if (pThis->Type->IsGattling)
-	{
 		pThis->GattlingRateDown(1);
-	}
 
 	FiringAITemp::canFire = false;
 	return 0;
@@ -37,9 +35,7 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 	if (!pWeapon)
 	{
 		if (pThis->Type->IsGattling)
-		{
 			pThis->GattlingRateDown(1);
-		}
 
 		R->AL(false);
 		return SkipGameCode;
