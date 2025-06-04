@@ -2014,40 +2014,45 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 	enum { SkipGuard = 0x4D5225, SkipAreaGuard = 0x4D7025 };
 
 	bool InGuard = (R->Origin() == 0x4D5116);
-	double spread = static_cast<double>(Secondary->Range) / Unsorted::LeptonsPerCell;
-	const auto cellCoords = pThis->GetMapCoords();
-	BuildingClass* pBuilding = nullptr;
 
-	for (CellRangeEnumerator it(cellCoords, spread + 0.5); it; it++)
+	if (!pThis->Locomotor->Is_Really_Moving_Now() ||
+		(pThis->WhatAmI() != AbstractType::Infantry &&
+			pThis->GetTechnoType()->OpportunityFire))
 	{
-		const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
-		if (!pCell)
-			continue;
+		const auto cellCoords = pThis->GetMapCoords();
+		BuildingClass* pBuilding = nullptr;
 
-		auto const pTargetBuilding = pCell->GetBuilding();
-		if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner
-			|| !pThis->IsCloseEnough(pTargetBuilding, 1))
-			continue;
+		for (CellRangeEnumerator it(cellCoords, Secondary->Range); it; it++)
+		{
+			const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
+			if (!pCell)
+				continue;
 
-		const auto pType = pTargetBuilding->Type;
-		if (!pType->Overpowerable
-			|| GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
-			continue;
+			const auto pTargetBuilding = pCell->GetBuilding();
+			if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner ||
+				!pThis->IsCloseEnough(pTargetBuilding, 1))
+				continue;
 
-		pBuilding = pTargetBuilding;
-		break;
-	}
+			const auto pType = pTargetBuilding->Type;
+			if (!pType->Overpowerable ||
+				GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
+				continue;
 
-	if (pBuilding)
-	{
-		pThis->SetTarget(pBuilding);
-		// I'm not sure what it does, I'll put it in just to be safe.
-		pThis->unknown_bool_68E = true;
-		pThis->QueueMission(Mission::Attack, false);
-	}
-	else if (InGuard)
-	{
-		pThis->UpdateIdleAction();
+			pBuilding = pTargetBuilding;
+			break;
+		}
+
+		if (pBuilding)
+		{
+			pThis->SetTarget(pBuilding);
+			// I'm not sure what it does, I'll put it in just to be safe.
+			pThis->unknown_bool_68E = true;
+			pThis->QueueMission(Mission::Attack, false);
+		}
+		else if (InGuard)
+		{
+			pThis->UpdateIdleAction();
+		}
 	}
 
 	return InGuard ? SkipGuard : SkipAreaGuard;
