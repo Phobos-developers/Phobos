@@ -2019,6 +2019,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 	if (pBuilding)
 	{
 		pThis->SetTarget(pBuilding);
+		// I'm not sure what it does, I'll put it in just to be safe.
 		pThis->unknown_bool_68E = true;
 		pThis->QueueMission(Mission::Attack, false);
 	}
