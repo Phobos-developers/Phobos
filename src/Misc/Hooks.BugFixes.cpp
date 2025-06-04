@@ -1994,8 +1994,12 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 	GET_STACK(const bool, ignoreDestination, STACK_OFFSET(0x2C, 0xC));
 
 	if (ignoreDestination || pTechno->HasAbility(Ability::Scatter)
-		|| (pTechno->Owner->IsControlledByHuman() ? RulesClass::Instance->PlayerScatter : pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
+		|| (pTechno->Owner->IsControlledByHuman()
+		? RulesClass::Instance->PlayerScatter
+		: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
+	{
 		pTechno->Scatter(coords, ignoreMission, ignoreDestination);
+	}
 
 	return NextTechno;
 }
