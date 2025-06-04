@@ -531,7 +531,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	auto& pCaptureManager = pThis->CaptureManager;
 	auto& pTemporalImUsing = pThis->TemporalImUsing;
 	auto& pAirstrike = pThis->Airstrike;
-	std::vector<WeaponTypeClass*> vWeapons;
 
 	// Cache the new type data
 	this->PreviousType = pOldType;
@@ -779,13 +778,6 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		}
 	}
 
-	// Get all its weapons.
-	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
-	{
-		if (const auto pWeaponType = pCurrentType->GetWeapon(i, pThis->Veterancy.IsElite()).WeaponType)
-			vWeapons.push_back(pWeaponType);
-	}
-
 	// Prepare the variables.
 	int maxCapture = 0;
 	bool infiniteCapture = false;
@@ -794,33 +786,39 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	bool hasLocomotor = false;
 	bool hasParasite = false;
 
-	if (!vWeapons.empty())
+	auto checkWeapon = [&maxCapture, &infiniteCapture, &hasTemporal,
+		&hasAirstrike, &hasLocomotor, &hasParasite](WeaponTypeClass* pWeaponType)
 	{
-		for (const auto pWeaponType : vWeapons)
+		if (!pWeaponType)
+			return;
+
+		const auto pWH = pWeaponType->Warhead;
+
+		if (pWH->MindControl)
 		{
-			const auto pWH = pWeaponType->Warhead;
+			if (pWeaponType->Damage > maxCapture)
+				maxCapture = pWeaponType->Damage;
 
-			if (pWH->MindControl)
-			{
-				if (pWeaponType->Damage > maxCapture)
-					maxCapture = pWeaponType->Damage;
-
-				if (pWeaponType->InfiniteMindControl)
-					infiniteCapture = true;
-			}
-
-			if (pWH->Temporal)
-				hasTemporal = true;
-
-			if (pWH->Airstrike)
-				hasAirstrike = true;
-
-			if (pWH->IsLocomotor)
-				hasLocomotor = true;
-
-			if (pWH->Parasite)
-				hasParasite = true;
+			if (pWeaponType->InfiniteMindControl)
+				infiniteCapture = true;
 		}
+
+		if (pWH->Temporal)
+			hasTemporal = true;
+
+		if (pWH->Airstrike)
+			hasAirstrike = true;
+
+		if (pWH->IsLocomotor)
+			hasLocomotor = true;
+
+		if (pWH->Parasite)
+			hasParasite = true;
+	};
+
+	for (int index = 0; index < TechnoTypeClass::MaxWeapons; index++)
+	{
+		checkWeapon(pThis->GetWeapon(index)->WeaponType);
 	}
 
 	auto clearMindControlNode = [pCaptureManager](const int& maxCapture)
