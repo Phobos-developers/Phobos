@@ -225,7 +225,7 @@ public:
 
 		Valueable<bool> HarvesterScanAfterUnload;
 
-		Valueable<bool> AnimCraterReduceTiberium;
+		Valueable<bool> AnimCraterDestroyTiberium;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -398,7 +398,7 @@ public:
 
 			, HarvesterScanAfterUnload { false }
 
-			, AnimCraterReduceTiberium { true }
+			, AnimCraterDestroyTiberium { true }
 		{ }
 
 		virtual ~ExtData() = default;
