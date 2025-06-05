@@ -75,22 +75,27 @@ public:
 			return;
 
 		for (const auto& selected : Array)
+		{
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
 				const auto pTechno = selected.Techno;
 				auto pTechnoType = pTechno->GetTechnoType();
-				auto TypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-				if (bPriorityFiltering && TypeExt && TypeExt->LowSelectionPriority)
+				if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
 					continue;
 
-				if (TypeExt && Game::IsTypeSelecting())
-					Game::UICommands_TypeSelect_7327D0(TypeExt->GetSelectionGroupID());
+				if (pTypeExt && Game::IsTypeSelecting())
+				{
+					Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+				}
 				else if (check_callback)
+				{
 					(*check_callback)(pTechno);
+				}
 				else
 				{
-					const auto pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
+					const auto pBldType = abstract_cast<BuildingTypeClass*, true>(pTechnoType);
 					const auto pOwner = pTechno->GetOwningHouse();
 
 					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
@@ -100,6 +105,7 @@ public:
 					}
 				}
 			}
+		}
 
 		Unsorted::MoveFeedback = true;
 	}

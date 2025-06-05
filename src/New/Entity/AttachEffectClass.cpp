@@ -18,6 +18,9 @@ AttachEffectClass::AttachEffectClass()
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, NeedsRecalculateStat { false }
+	, LastDiscardCheckFrame { -1 }
+	, LastDiscardCheckValue { false }
 {
 	this->HasInitialized = false;
 	AttachEffectClass::Array.emplace_back(this);
@@ -35,16 +38,26 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsUnderTemporal { false }
 	, IsOnline { true }
 	, IsCloaked { false }
+	, LastActiveStat { true }
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
+	, NeedsRecalculateStat { false }
+	, LastDiscardCheckFrame { -1 }
+	, LastDiscardCheckValue { false }
 {
 	this->HasInitialized = false;
 
 	if (this->InitialDelay <= 0)
 		this->HasInitialized = true;
 
-	Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+
+	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
+		this->Duration = Math::max(static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
+
+	if (this->Type->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // count its own ArmorMultiplier as well
+		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / this->Type->ArmorMultiplier), 0);
 
 	AttachEffectClass::Array.emplace_back(this);
 }
@@ -114,10 +127,13 @@ void AttachEffectClass::AI()
 
 	if (this->CurrentDelay > 0)
 	{
-		this->CurrentDelay--;
+		if (!this->ShouldBeDiscardedNow())
+		{
+			this->CurrentDelay--;
 
-		if (this->CurrentDelay == 0)
-			this->NeedsDurationRefresh = true;
+			if (this->CurrentDelay == 0)
+				this->NeedsDurationRefresh = true;
+		}
 
 		return;
 	}
@@ -238,6 +254,12 @@ void AttachEffectClass::OnlineCheck()
 	}
 
 	this->IsOnline = isActive;
+
+	if (isActive != this->LastActiveStat)
+	{
+		this->NeedsRecalculateStat = true;
+		this->LastActiveStat = isActive;
+	}
 
 	if (!this->Animation)
 		return;
@@ -382,6 +404,12 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	else
 		this->Duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
 
+	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && this->Invoker)
+		this->Duration = Math::max(static_cast<int>(this->Duration * this->Invoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(this->Invoker)->AE.FirepowerMultiplier), 0);
+
+	if (this->Type->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // no need to count its own effect again
+		this->Duration = Math::max(static_cast<int>(this->Duration / this->Techno->ArmorMultiplier / TechnoExt::ExtMap.Find(this->Techno)->AE.ArmorMultiplier), 0);
+
 	if (this->Type->Animation_ResetOnReapply)
 	{
 		this->KillAnim();
@@ -408,26 +436,49 @@ bool AttachEffectClass::HasExpired() const
 	return this->IsSelfOwned() && this->Delay >= 0 ? false : !this->Duration;
 }
 
-bool AttachEffectClass::ShouldBeDiscardedNow() const
+bool AttachEffectClass::ShouldBeDiscardedNow()
 {
+	if (this->LastDiscardCheckFrame == Unsorted::CurrentFrame)
+		return this->LastDiscardCheckValue;
+
+	this->LastDiscardCheckFrame = Unsorted::CurrentFrame;
+
 	if (this->ShouldBeDiscarded)
+	{
+		this->LastDiscardCheckValue = true;
 		return true;
+	}
+
+	if (this->Type->DiscardOn == DiscardCondition::None)
+	{
+		this->LastDiscardCheckValue = false;
+		return false;
+	}
 
 	auto const pTechno = this->Techno;
 
-	if (auto const pFoot = abstract_cast<FootClass*>(pTechno))
+	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
 		bool isMoving = pFoot->Locomotor->Is_Really_Moving_Now();
 
 		if (isMoving && (this->Type->DiscardOn & DiscardCondition::Move) != DiscardCondition::None)
+		{
+			this->LastDiscardCheckValue = true;
 			return true;
+		}
 
 		if (!isMoving && (this->Type->DiscardOn & DiscardCondition::Stationary) != DiscardCondition::None)
+		{
+			this->LastDiscardCheckValue = true;
 			return true;
+		}
 	}
 
 	if (pTechno->DrainingMe && (this->Type->DiscardOn & DiscardCondition::Drain) != DiscardCondition::None)
+	{
+		this->LastDiscardCheckValue = true;
 		return true;
+	}
 
 	if (pTechno->Target)
 	{
@@ -448,25 +499,34 @@ bool AttachEffectClass::ShouldBeDiscardedNow() const
 				auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
 
 				if (pWeapon)
-					distance = pWeapon->Range;
+					distance = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno);
 			}
 
 			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
 
 			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
+			{
+				this->LastDiscardCheckValue = true;
 				return true;
+			}
 		}
 	}
 
+	this->LastDiscardCheckValue = false;
 	return false;
+}
+
+bool AttachEffectClass::IsActiveIgnorePowered() const
+{
+	if (this->IsSelfOwned())
+		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && !this->NeedsDurationRefresh;
+	else
+		return this->Duration;
 }
 
 bool AttachEffectClass::IsActive() const
 {
-	if (this->IsSelfOwned())
-		return this->InitialDelay <= 0 && this->CurrentDelay == 0 && this->HasInitialized && this->IsOnline && !this->NeedsDurationRefresh;
-	else
-		return this->Duration && this->IsOnline;
+	return this->IsOnline && this->IsActiveIgnorePowered();
 }
 
 bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const
@@ -881,6 +941,8 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->NeedsDurationRefresh)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
+		.Process(this->LastActiveStat)
+		.Process(this->NeedsRecalculateStat)
 		.Success();
 }
 

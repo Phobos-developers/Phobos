@@ -139,6 +139,15 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
 	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
 	this->LaserThickness.Read(exINI, pSection, "LaserThickness");
+
+	// handle SkipWeaponPicking
+	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
+		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
+		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
+		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
+	{
+		this->SkipWeaponPicking = false;
+	}
 }
 
 template <typename T>
@@ -198,6 +207,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Beam_Amplitude)
 		.Process(this->Beam_IsHouseColor)
 		.Process(this->LaserThickness)
+		.Process(this->SkipWeaponPicking)
 		;
 };
 
@@ -285,12 +295,17 @@ int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pF
 {
 	auto pTechno = pFirer;
 
-	if (pTechno->Transporter && pTechno->Transporter->GetTechnoType()->OpenTopped)
+	if (pTechno->Transporter)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->Transporter->GetTechnoType());
+		auto const pType = pTechno->Transporter->GetTechnoType();
 
-		if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
-			pTechno = pTechno->Transporter;
+		if (pType->OpenTopped)
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+			if (pTypeExt->OpenTopped_UseTransportRangeModifiers)
+				pTechno = pTechno->Transporter;
+		}
 	}
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
