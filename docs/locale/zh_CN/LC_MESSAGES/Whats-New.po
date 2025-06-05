@@ -1542,9 +1542,8 @@ msgid ""
 msgstr "允许玩家的自愈效果可以从友军或 `PlayerControl=true` 的所属方受益（by Ollerus)"
 
 #: ../../Whats-New.md:385
-#, fuzzy
 msgid "Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)"
-msgstr "自定义超级武器所在栏（by NetsuNegi）"
+msgstr "超武侧边栏（by NetsuNegi & CrimRecya）"
 
 #: ../../Whats-New.md:387 ../../Whats-New.md:589 ../../Whats-New.md:906
 #: ../../Whats-New.md:1015 ../../Whats-New.md:1040 ../../Whats-New.md:1079

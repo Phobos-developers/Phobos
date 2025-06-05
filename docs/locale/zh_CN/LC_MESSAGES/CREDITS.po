@@ -1615,9 +1615,8 @@ msgstr ""
 "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug"
 
 #: ../../../CREDITS.md:403 ../../../CREDITS.md:478
-#, fuzzy
 msgid "Exclusive SuperWeapon Sidebar"
-msgstr "自定义超级武器所在栏"
+msgstr "超武侧边栏"
 
 #: ../../../CREDITS.md:404
 msgid "**Apollo** - Translucent SHP drawing patches"
