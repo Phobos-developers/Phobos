@@ -22,6 +22,8 @@ public:
 	{
 	public:
 
+		PhobosFixedString<0x20> TypeID;
+
 		//Ares 0.A
 		Valueable<int> Money_Amount;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
@@ -81,6 +83,7 @@ public:
 		Valueable<bool> EMPulse_TargetSelf;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, TypeID { "" }
 			, Money_Amount { 0 }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
@@ -178,5 +181,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 
 };

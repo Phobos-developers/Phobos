@@ -9,6 +9,27 @@
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)
 {
+	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
+	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
+
+	if (!pWeaponStructOne && !pWeaponStructTwo)
+		return -1;
+	else if (!pWeaponStructTwo)
+		return weaponIndexOne;
+	else if (!pWeaponStructOne)
+		return weaponIndexTwo;
+
+	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
+	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
+	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
+	bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+
+	if (pFirstExt->SkipWeaponPicking && pSecondExt->SkipWeaponPicking)
+	{
+		if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
+			return weaponIndexOne;
+	}
+
 	CellClass* pTargetCell = nullptr;
 
 	// Ignore target cell for airborne target technos.
@@ -20,48 +41,32 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			pTargetCell = pObject->GetCell();
 	}
 
-	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
-	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
-
-	if (!pWeaponStructOne && !pWeaponStructTwo)
-		return -1;
-	else if (!pWeaponStructTwo)
-		return weaponIndexOne;
-	else if (!pWeaponStructOne)
-		return weaponIndexTwo;
-
-	auto const pWeaponOne = pWeaponStructOne->WeaponType;
-	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
-
-	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	if (!pFirstExt->SkipWeaponPicking || !pSecondExt->SkipWeaponPicking)
 	{
-		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
-			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-				!pSecondExt->IsHealthRatioEligible(pTargetTechno) ||
-				!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
+		bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
+
+		if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
+			return weaponIndexOne;
+
+		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true))
+			|| (pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
+			|| !pFirstExt->IsHealthRatioEligible(pTargetTechno)
+			|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) || !firstAllowedAE)))
+		{
+			return weaponIndexTwo;
+		}
+
+		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true))
+			|| (pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
+			|| !pSecondExt->IsHealthRatioEligible(pTargetTechno)
+			|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+			|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
 		{
 			return weaponIndexOne;
-		}
-		else if (auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
-		{
-			bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
-			bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
-
-			if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
-				return weaponIndexOne;
-
-			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
-				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) || !pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
-			{
-				return weaponIndexTwo;
-			}
 		}
 	}
 
 	auto const pType = pThis->GetTechnoType();
-
 	// Handle special case with NavalTargeting / LandTargeting.
 	if (!pTargetTechno && (pType->NavalTargeting == NavalTargetingType::Naval_Primary ||
 		pType->LandTargeting == LandTargetingType::Land_Secondary) &&
@@ -69,7 +74,6 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	{
 		return weaponIndexTwo;
 	}
-
 	return -1;
 }
 
@@ -80,13 +84,14 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
-	if (pThis->GetTechnoType()->Ammo > 0)
+	auto const pType = pThis->GetTechnoType();
+
+	if (pType->Ammo > 0)
 	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
-				return true;
-		}
+		auto const pExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
+			return true;
 	}
 
 	return false;
@@ -94,21 +99,21 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 
 WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
 {
-	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+	auto const pType = pThis->GetTechnoType();
+	weaponIndex = pType->DeployFireWeapon;
 
 	if (pThis->WhatAmI() == AbstractType::Unit)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			// Only apply DeployFireWeapon on vehicles if explicitly set.
-			if (!pTypeExt->DeployFireWeapon.isset())
-			{
-				weaponIndex = 0;
-				auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
-					weaponIndex = 1;
-			}
+		// Only apply DeployFireWeapon on vehicles if explicitly set.
+		if (!pTypeExt->DeployFireWeapon.isset())
+		{
+			weaponIndex = 0;
+			auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
+
+			if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
+				weaponIndex = 1;
 		}
 	}
 
@@ -207,10 +212,20 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
-	if (pWHExt->KillWeapon && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner))
+	// KillWeapon can be triggered without the source
+	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_Affects))))
 	{
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
 			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
+	}
+
+	// KillWeapon.OnFirer must have a source
+	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner)
+		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_OnFirer_Affects))
+	{
+		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
+			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
 	}
 }
 
@@ -243,4 +258,63 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
 	}
+}
+
+int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
+{
+	int forceWeaponIndex = -1;
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = this->TypeExtData;
+
+	const bool useAASetting = !pTypeExt->ForceAAWeapon_InRange.empty() && pTarget->IsInAir();
+	auto const& weaponIndices = useAASetting ? pTypeExt->ForceAAWeapon_InRange : pTypeExt->ForceWeapon_InRange;
+	auto const& rangeOverrides = useAASetting ? pTypeExt->ForceAAWeapon_InRange_Overrides : pTypeExt->ForceWeapon_InRange_Overrides;
+	const bool applyRangeModifiers = useAASetting ? pTypeExt->ForceAAWeapon_InRange_ApplyRangeModifiers : pTypeExt->ForceWeapon_InRange_ApplyRangeModifiers;
+
+	const int defaultWeaponIndex = pThis->SelectWeapon(pTarget);
+	const int currentDistance = pThis->DistanceFrom(pTarget);
+	auto const pDefaultWeapon = pThis->GetWeapon(defaultWeaponIndex)->WeaponType;
+
+	for (size_t i = 0; i < weaponIndices.size(); i++)
+	{
+		int range = 0;
+
+		// Value below 0 means Range won't be overriden
+		if (i < rangeOverrides.size() && rangeOverrides[i] > 0)
+			range = static_cast<int>(rangeOverrides[i] * Unsorted::LeptonsPerCell);
+
+		if (weaponIndices[i] >= 0)
+		{
+			if (range > 0 || applyRangeModifiers)
+			{
+				auto const pWeapon = weaponIndices[i] == defaultWeaponIndex ? pDefaultWeapon : pThis->GetWeapon(weaponIndices[i])->WeaponType;
+				range = range > 0 ? range : pWeapon->Range;
+
+				if (applyRangeModifiers)
+					range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis, range);
+			}
+
+			if (currentDistance <= range)
+			{
+				forceWeaponIndex = weaponIndices[i];
+				break;
+			}
+		}
+		else
+		{
+			if (range > 0 || applyRangeModifiers)
+			{
+				range = range > 0 ? range : pDefaultWeapon->Range;
+
+				if (applyRangeModifiers)
+					range = WeaponTypeExt::GetRangeWithModifiers(pDefaultWeapon, pThis, range);
+			}
+
+			// Don't force weapon if range satisfied
+			if (currentDistance <= range)
+				break;
+		}
+	}
+
+	return forceWeaponIndex;
 }
