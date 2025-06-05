@@ -121,6 +121,9 @@ This page lists all the individual contributions to the project by their author.
   - Help with custom locomotors
   - Extension class optimization
   - Overload characteristic dehardcoded
+  - Customizable garrison and bunker properties
+  - Disable DamageSound for buildings
+  - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -400,6 +403,7 @@ This page lists all the individual contributions to the project by their author.
   - Original `Arcing` elevation inaccuracy fix
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Exclusive SuperWeapon Sidebar
+  - Fix the bug that AlphaImage remained after unit entered tunnel.
   - Weapon target filtering by health percentage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -490,6 +494,7 @@ This page lists all the individual contributions to the project by their author.
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
   - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
+  - Power plant damage factor
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -520,6 +525,8 @@ This page lists all the individual contributions to the project by their author.
   - RadarInvisible for non-enemy house
   - Allow miners do area guard
   - Make harvesters do addtional scan after unload
+  - Customize the scatter caused by aircraft attack mission
+  - Customize whether `Crater=yes` animation would destroy tiberium
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -534,6 +541,7 @@ This page lists all the individual contributions to the project by their author.
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
+- **ststl, FlyStar** - Fixed some units of Ares crashing after deployment conversion
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
