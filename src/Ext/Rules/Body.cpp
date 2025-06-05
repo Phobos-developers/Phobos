@@ -272,8 +272,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->HarvesterScanAfterUnload.Read(exINI, GameStrings::General, "HarvesterScanAfterUnload");
 	
-	this->AircraftFiringForceScatter.Read(exINI, GameStrings::General, "AircraftFiringForceScatter");
-
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -500,7 +498,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ProneSpeed_NoCrawls)
 		.Process(this->DamagedSpeed)
 		.Process(this->HarvesterScanAfterUnload)
-		.Process(this->AircraftFiringForceScatter)
 		;
 }
 

@@ -266,8 +266,8 @@ VoicePickup=    ; Sound entry
 
 In `rulesmd.ini`:
 ```ini
-[General]
-AircraftFiringForceScatter=true    ; boolean
+[SOMEAIRCRAFT]            ; AircraftType
+FiringForceScatter=true   ; boolean
 ```
 
 ### Extended Aircraft Missions

@@ -225,8 +225,6 @@ public:
 
 		Valueable<bool> HarvesterScanAfterUnload;
 
-		Valueable<bool> AircraftFiringForceScatter;
-
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -397,8 +395,6 @@ public:
 			, DamagedSpeed { 0.75 }
 
 			, HarvesterScanAfterUnload { false }
-
-			, AircraftFiringForceScatter { true }
 		{ }
 
 		virtual ~ExtData() = default;
