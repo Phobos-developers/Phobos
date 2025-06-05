@@ -6583,13 +6583,12 @@ msgstr ""
 "WarpOutWeapon=                          ; WeaponType\n"
 
 #: ../../New-or-Enhanced-Logics.md:1755
-#, fuzzy
 msgid "Reset MindControl after transformation"
-msgstr "自定义心灵控制动画"
+msgstr "**暂时无用**"
 
 #: ../../New-or-Enhanced-Logics.md:1757
 msgid "After the unit conversion is completed, its mind control can be reset."
-msgstr ""
+msgstr "**该逻辑实现存在问题，暂时无用**"
 
 #: ../../New-or-Enhanced-Logics.md:1758
 msgid ""
@@ -6597,14 +6596,15 @@ msgid ""
 "that use `MindControl=yes`, then the controlled units that exceed the "
 "maximum value will be released."
 msgstr ""
+"**【原文表述错误】**"
 
 #: ../../New-or-Enhanced-Logics.md:1761
 msgid ""
 "[SOMETECHNO]                            ; TechnoType\n"
-"Convert.ResetMindControl=               ; boolean, default to false\n"
+"Convert.ResetMindControl=false          ; boolean\n"
 msgstr ""
 "[SOMETECHNO]                            ; TechnoType\n"
-"Convert.ResetMindControl=               ; boolean, default to false\n"
+"Convert.ResetMindControl=false          ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:1766
 msgid "Terrain"

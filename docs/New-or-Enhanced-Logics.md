@@ -1760,7 +1760,7 @@ WarpOutWeapon=                          ; WeaponType
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                            ; TechnoType
-Convert.ResetMindControl=               ; boolean, default to false
+Convert.ResetMindControl=false          ; boolean
 ```
 
 ## Terrain

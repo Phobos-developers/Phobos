@@ -2182,7 +2182,7 @@ msgstr "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - 数字化显�
 #: ../../../CREDITS.md:537
 msgid ""
 "**ststl, FlyStar** - Fix the issue where some units crashed after the deployment transformation"
-msgstr ""
+msgstr "**ststl, FlyStar** - 修复了某些单位部署变形后崩溃的问题"
 
 #: ../../../CREDITS.md:538
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"
