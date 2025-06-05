@@ -57,13 +57,13 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	GET(AircraftClass*, pThis, EDI);
 	GET(AbstractClass*, pTarget, EAX);
 
+	// pTarget can be nullptr
 	auto const pObject = abstract_cast<ObjectClass*>(pTarget);
 
 	if (!pObject || !pObject->IsInAir())
 		return 0;
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int weaponIndex = pExt->CurrentAircraftWeaponIndex;
+	int weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
 
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);

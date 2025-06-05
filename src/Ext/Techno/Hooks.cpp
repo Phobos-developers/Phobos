@@ -533,13 +533,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
@@ -621,14 +622,10 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	TechnoExt::ExtData* pData = TechnoExt::ExtMap.Find(pThis);
-
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
-		{
+		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
 			R->EBX<ObjectTypeClass*>(pCustomType);
-		}
 	}
 
 	return 0;
@@ -640,11 +637,9 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	TechnoExt::ExtData* pData = TechnoExt::ExtMap.Find(pThis);
-
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
 		{
 			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -788,6 +783,51 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 	return GoOtherChecks;
 }
+
+#pragma endregion
+
+#pragma region DrawAirstrikeFlare
+
+namespace DrawAirstrikeFlareTemp
+{
+	TechnoClass* pTechno = nullptr;
+}
+
+DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	// This is not used in vanilla function so ECX gets overwritten later.
+	DrawAirstrikeFlareTemp::pTechno = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
+{
+	enum { SkipGameCode = 0x705976 };
+
+	GET(int, zSrc, EBP);
+	GET(int, zDest, EBX);
+	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
+
+	// Fix depth buffer value.
+	int zValue = Math::min(zSrc, zDest);
+	R->EBP(zValue);
+	R->EBX(zValue);
+
+	// Allow custom colors.
+	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
+	auto const baseColor = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
+	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
+	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
+	R->ESI(Drawing::RGB_To_Int(baseColor));
+
+	return SkipGameCode;
+}
+
+// Skip setting color for the dot, it is already done in previous hook.
+DEFINE_JUMP(LJMP, 0x705986, 0x7059C7);
 
 #pragma endregion
 

@@ -80,7 +80,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (reveal > 0)
 		{
-			const auto pCurrent = HouseClass::CurrentPlayer;;
+			const auto pCurrent = HouseClass::CurrentPlayer;
 
 			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
 			{
@@ -424,9 +424,9 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 {
 	if (pTarget->IsDisguised())
 	{
-		if (auto pSpy = abstract_cast<InfantryClass*, true>(pTarget))
+		if (auto pSpy = specific_cast<InfantryClass*, true>(pTarget))
 			pSpy->Disguised = false;
-		else if (auto pMirage = abstract_cast<UnitClass*, true>(pTarget))
+		else if (auto pMirage = specific_cast<UnitClass*, true>(pTarget))
 			pMirage->ClearDisguise();
 	}
 }
@@ -551,7 +551,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 {
 	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
-	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
+	if (!pTargetFoot)
 		return;
 
 	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
@@ -560,6 +560,7 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 {
 	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+
 	if (!pTargetFoot)
 		return;
 

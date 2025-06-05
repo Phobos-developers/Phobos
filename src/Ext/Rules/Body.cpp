@@ -76,6 +76,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->InfantryGainSelfHealCap.Read(exINI, GameStrings::General, "InfantryGainSelfHealCap");
 	this->UnitsGainSelfHealCap.Read(exINI, GameStrings::General, "UnitsGainSelfHealCap");
 	this->GainSelfHealAllowMultiplayPassive.Read(exINI, GameStrings::General, "GainSelfHealAllowMultiplayPassive");
+	this->GainSelfHealFromPlayerControl.Read(exINI, GameStrings::General, "GainSelfHealFromPlayerControl");
+	this->GainSelfHealFromAllies.Read(exINI, GameStrings::General, "GainSelfHealFromAllies");
 	this->EnemyInsignia.Read(exINI, GameStrings::General, "EnemyInsignia");
 	this->DisguiseBlinkingVisibility.Read(exINI, GameStrings::General, "DisguiseBlinkingVisibility");
 	this->ChronoSparkleDisplayDelay.Read(exINI, GameStrings::General, "ChronoSparkleDisplayDelay");
@@ -102,6 +104,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementGrid_TranslucencyWithPreview.Read(exINI, GameStrings::AudioVisual, "PlacementGrid.TranslucencyWithPreview");
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
+
+	this->SuperWeaponSidebar_AllowByDefault.Read(exINI, GameStrings::AudioVisual, "SuperWeaponSidebar.AllowByDefault");
 
 	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
 	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
@@ -171,6 +175,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->IronCurtain_ExtraTintIntensity.Read(exINI, GameStrings::AudioVisual, "IronCurtain.ExtraTintIntensity");
 	this->ForceShield_ExtraTintIntensity.Read(exINI, GameStrings::AudioVisual, "ForceShield.ExtraTintIntensity");
 	this->ColorAddUse8BitRGB.Read(exINI, GameStrings::AudioVisual, "ColorAddUse8BitRGB");
+	this->AirstrikeLineColor.Read(exINI, GameStrings::AudioVisual, "AirstrikeLineColor");
 
 	this->CrateOnlyOnLand.Read(exINI, GameStrings::CrateRules, "CrateOnlyOnLand");
 	this->UnitCrateVehicleCap.Read(exINI, GameStrings::CrateRules, "UnitCrateVehicleCap");
@@ -312,7 +317,6 @@ void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 	// tint color
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->ForceShieldColor);
-	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
 }
 
@@ -343,6 +347,8 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->InfantryGainSelfHealCap)
 		.Process(this->UnitsGainSelfHealCap)
 		.Process(this->GainSelfHealAllowMultiplayPassive)
+		.Process(this->GainSelfHealFromPlayerControl)
+		.Process(this->GainSelfHealFromAllies)
 		.Process(this->EnemyInsignia)
 		.Process(this->DisguiseBlinkingVisibility)
 		.Process(this->ChronoSparkleDisplayDelay)
@@ -369,6 +375,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->SuperWeaponSidebar_AllowByDefault)
 		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
 		.Process(this->Shield_ConditionRed)
@@ -417,6 +424,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceShield_ExtraTintIntensity)
 		.Process(this->AllowWeaponSelectAgainstWalls)
 		.Process(this->ColorAddUse8BitRGB)
+		.Process(this->AirstrikeLineColor)
 		.Process(this->ROF_RandomDelay)
 		.Process(this->ToolTip_Background_Color)
 		.Process(this->ToolTip_Background_Opacity)
@@ -495,7 +503,6 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->HarvesterScanAfterUnload)
 		.Process(this->TintColorIronCurtain)
 		.Process(this->TintColorForceShield)
-		.Process(this->TintColorAirstrike)
 		.Process(this->TintColorBerserk)
 		;
 }

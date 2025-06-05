@@ -28,8 +28,11 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
-		if (auto const pFootKiller = abstract_cast<FootClass*, true>(pObjectKiller))
-			TechnoExt::ExtMap.Find(pObjectKiller)->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
+		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
+		{
+			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
+			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
+		}
 	}
 }
 
@@ -160,11 +163,21 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	if (pThis)
 	{
 		if (invulnerability && pThis->IsIronCurtained())
+		{
 			tintColor |= pThis->ForceShielded ? RulesExt::Global()->TintColorForceShield : RulesExt::Global()->TintColorIronCurtain;
-		if (airstrike && TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
-			tintColor |= RulesExt::Global()->TintColorAirstrike;
+		}
+		if (airstrike)
+		{
+			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+			{
+				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
+				tintColor |= pTypeExt->TintColorAirstrike;
+ 			}
+		}
 		if (berserk && pThis->Berzerk)
+		{
 			tintColor |= RulesExt::Global()->TintColorBerserk;
+		}
 	}
 
 	return tintColor;
