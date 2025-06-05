@@ -24,7 +24,7 @@
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::ExtData::OnEarlyUpdate()
 {
-	auto pType = this->OwnerObject()->GetTechnoType();
+	auto const pType = this->OwnerObject()->GetTechnoType();
 
 	// Set only if unset or type is changed
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
@@ -69,22 +69,22 @@ void TechnoExt::ExtData::ApplyInterceptor()
 			if (!pBulletTypeExt->Interceptable)
 				continue;
 
-			auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+			auto const distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
 
 			if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
 				continue;
 
 			if (pBulletTypeExt->Armor.isset())
 			{
-				int weaponIndex = pThis->SelectWeapon(pBullet);
-				auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-				double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
+				const int weaponIndex = pThis->SelectWeapon(pBullet);
+				const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+				const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
 				if (versus == 0.0)
 					continue;
 			}
 
-			auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+			auto const bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
 			if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
 			{
@@ -214,7 +214,7 @@ void TechnoExt::ExtData::EatPassengers()
 	if (!pTypeExt->PassengerDeletionType || !TechnoExt::IsActiveIgnoreEMP(pThis))
 		return;
 
-	auto pDelType = pTypeExt->PassengerDeletionType.get();
+	auto const pDelType = pTypeExt->PassengerDeletionType.get();
 
 	if (!pDelType->UnderEMP && (pThis->Deactivated || pThis->IsUnderEMP()))
 		return;
@@ -300,7 +300,7 @@ void TechnoExt::ExtData::EatPassengers()
 				if (pDelType->Soylent &&
 					EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pThis->Owner, pPassenger->Owner))
 				{
-					int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
+					const int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
 
 					if (nMoneyToGive > 0)
 					{
@@ -333,7 +333,7 @@ void TechnoExt::ExtData::EatPassengers()
 					}
 				}
 
-				auto pSource = pDelType->DontScore ? nullptr : pThis;
+				auto const pSource = pDelType->DontScore ? nullptr : pThis;
 				pPassenger->KillPassengers(pSource);
 				pPassenger->RegisterDestruction(pSource);
 				pPassenger->UnInit();
@@ -497,7 +497,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			auto pTechnoType = pThis->GetTechnoType();
+			auto const pTechnoType = pThis->GetTechnoType();
 			int weaponRange = 0;
 			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 
@@ -601,7 +601,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			if (pSlaveManager->SlaveCount < pCurrentType->SlavesNumber)
 			{
 				// There are too few slaves here. More are needed.
-				int count = pCurrentType->SlavesNumber - pSlaveManager->SlaveCount;
+				const int count = pCurrentType->SlavesNumber - pSlaveManager->SlaveCount;
 
 				for (int index = 0; index < count; index++)
 				{
@@ -676,7 +676,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			// Additions/deletions made when quantities are inconsistent.
 			if (pSpawnManager->SpawnCount < pCurrentType->SpawnsNumber)
 			{
-				int count = pCurrentType->SpawnsNumber - pSpawnManager->SpawnCount;
+				const int count = pCurrentType->SpawnsNumber - pSpawnManager->SpawnCount;
 
 				// Add the missing Spawns, but don't intend for them to be born right away.
 				for (int index = 0; index < count; index++)
@@ -1014,7 +1014,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	// OpenTopped does not work properly with buildings to begin with which is why this is here rather than in the Techno update one.
 	if (pThis->Passengers.NumPassengers > 0)
 	{
-		bool toOpenTopped = pCurrentType->OpenTopped;
+		const bool toOpenTopped = pCurrentType->OpenTopped;
 		FootClass* pFirstPassenger = pThis->Passengers.GetFirstPassenger();
 
 		while (true)
@@ -1061,16 +1061,16 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 	if (abs != AbstractType::Aircraft)
 	{
-		auto pLocomotorType = pCurrentType->Locomotor;
+		auto const pLocomotorType = pCurrentType->Locomotor;
 
 		// The Hover movement pattern allows for self-landing.
 		if (pLocomotorType != LocomotionClass::CLSIDs::Fly && pLocomotorType != LocomotionClass::CLSIDs::Hover)
 		{
-			bool isinAir = pThis->IsInAir() && !pThis->LocomotorSource;
+			const bool isinAir = pThis->IsInAir() && !pThis->LocomotorSource;
 
 			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			{
-				int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
+				const int turnrate = pCurrentType->JumpjetTurnRate >= 127 ? 127 : pCurrentType->JumpjetTurnRate;
 				pJJLoco->Speed = pCurrentType->JumpjetSpeed;
 				pJJLoco->Accel = pCurrentType->JumpjetAccel;
 				pJJLoco->Crash = pCurrentType->JumpjetCrash;
@@ -1084,7 +1084,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 
 				if (isinAir)
 				{
-					bool inMove = pJJLoco->Is_Really_Moving_Now();
+					const bool inMove = pJJLoco->Is_Really_Moving_Now();
 
 					if (pCurrentType->BalloonHover)
 					{
@@ -1268,7 +1268,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		return;
 
 	auto const pType = pThis->GetTechnoType();
-	int healthDeficit = pType->Strength - pThis->Health;
+	const int healthDeficit = pType->Strength - pThis->Health;
 
 	if (pThis->Health && healthDeficit > 0)
 	{
@@ -1280,7 +1280,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 		else if (whatAmI == AbstractType::Unit)
 			defaultSelfHealType = (pType->Organic ? SelfHealGainType::Infantry : SelfHealGainType::Units);
 
-		auto selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
+		auto const selfHealType = TechnoTypeExt::ExtMap.Find(pType)->SelfHealGainType.Get(defaultSelfHealType);
 
 		if (selfHealType == SelfHealGainType::NoHeal)
 			return;
@@ -1349,7 +1349,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 			if (amount >= healthDeficit)
 				amount = healthDeficit;
 
-			bool wasDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+			const bool wasDamaged = pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
 			pThis->Health += amount;
 
@@ -1362,7 +1362,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 					pBuilding->ToggleDamagedAnims(false);
 				}
 
-				auto dmgParticle = pThis->DamageParticleSystem;
+				auto const dmgParticle = pThis->DamageParticleSystem;
 
 				if (dmgParticle)
 					dmgParticle->UnInit();
@@ -1377,10 +1377,11 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 {
 	auto const pThis = this->OwnerObject();
 
-	if (auto pCapturer = pThis->MindControlledBy)
+	if (auto const pCapturer = pThis->MindControlledBy)
 	{
-		auto pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
-		if (pCapturerExt && pCapturerExt->MindControlRangeLimit.Get() > 0 &&
+		auto const pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
+
+		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
 			pThis->DistanceFrom(pCapturer) > pCapturerExt->MindControlRangeLimit.Get())
 		{
 			pCapturer->CaptureManager->FreeUnit(pThis);
@@ -1458,7 +1459,7 @@ void TechnoExt::KillSelf(TechnoClass* pThis, AutoDeathBehavior deathOption, Anim
 
 	case AutoDeathBehavior::Sell:
 	{
-		if (auto pBld = abstract_cast<BuildingClass*, true>(pThis))
+		if (auto const pBld = abstract_cast<BuildingClass*, true>(pThis))
 		{
 			if (pBld->HasBuildUp)
 			{
@@ -1758,7 +1759,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	}
 
 	// Add new ones.
-	int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
+	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
 	if (!count)
 		this->RecalculateStatMultipliers();
