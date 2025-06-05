@@ -925,11 +925,7 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 			if (pTarget && pTypeExt->FireUp.Get() > 0 &&
 				!pTypeExt->FireUp_ResetInRetarget.Get())
 			{
-				FireError fireError = pThis->GetFireError(pTarget, pThis->SelectWeapon(pTarget), true);
-
-				if (fireError != FireError::OK &&
-					fireError != FireError::FACING &&
-					fireError != FireError::MOVING)
+				if (!pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
 				{
 					pUnit->CurrentFiringFrame = -1;
 					pExt->FiringAnimationTimer.Stop();
