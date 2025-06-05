@@ -41,7 +41,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		if (frames >= 0)
 		{
 			pThis->CurrentFiringFrame = 2 * frames - 1;
-			pTimer.Start(frames);
+			pTimer.Start(2 * frames);
 		}
 	}
 
@@ -76,7 +76,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 
 	if (fireUp > 0 && frames >= 0)
 	{
-		int value = Unsorted::CurrentFrame - pTimer.StartTime;
+		int value = (pTimer.TimeLeft - pTimer.GetTimeLeft()) / 2;
 
 		if (value != fireUp)
 		{
