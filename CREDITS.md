@@ -399,6 +399,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that ships can travel on elevated bridges
   - Original `Arcing` elevation inaccuracy fix
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
+  - Exclusive SuperWeapon Sidebar
   - Weapon target filtering by health percentage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -474,6 +475,7 @@ This page lists all the individual contributions to the project by their author.
   - Aggressive attack move mission
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
+  - Exclusive SuperWeapon Sidebar
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
