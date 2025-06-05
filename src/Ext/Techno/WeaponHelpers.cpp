@@ -9,6 +9,29 @@
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)
 {
+	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
+	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
+
+	if (!pWeaponStructOne && !pWeaponStructTwo)
+		return -1;
+	else if (!pWeaponStructTwo)
+		return weaponIndexOne;
+	else if (!pWeaponStructOne)
+		return weaponIndexTwo;
+
+	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
+	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
+	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
+	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
+	const bool skipSecondaryPicking = pSecondExt->SkipWeaponPicking;
+
+	if (skipPrimaryPicking && skipSecondaryPicking)
+	{
+		if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
+			return weaponIndexOne;
+	}
+
 	CellClass* pTargetCell = nullptr;
 
 	// Ignore target cell for airborne target technos.
@@ -20,43 +43,28 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			pTargetCell = pObject->GetCell();
 	}
 
-	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
-	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
-
-	if (!pWeaponStructOne && !pWeaponStructTwo)
-		return -1;
-	else if (!pWeaponStructTwo)
-		return weaponIndexOne;
-	else if (!pWeaponStructOne)
-		return weaponIndexTwo;
-
-	auto const pWeaponOne = pWeaponStructOne->WeaponType;
-	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
-
-	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	if (!skipPrimaryPicking || !skipSecondaryPicking)
 	{
-		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
+		bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
+
+		if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
+			return weaponIndexOne;
+
+		if (!skipPrimaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
+			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
+				!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+				!pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
+		{
+			return weaponIndexTwo;
+		}
+
+		if (!skipSecondaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
 			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
 				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
 				!pSecondExt->IsHealthRatioEligible(pTargetTechno) ||
 				!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
 		{
 			return weaponIndexOne;
-		}
-		else if (auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
-		{
-			bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
-			bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
-
-			if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
-				return weaponIndexOne;
-
-			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
-				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) || !pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
-			{
-				return weaponIndexTwo;
-			}
 		}
 	}
 

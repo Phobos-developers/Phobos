@@ -140,7 +140,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pThis->PowersUpBuilding[0] == NULL && this->PowersUp_Buildings.size() > 0)
 		strcpy_s(pThis->PowersUpBuilding, this->PowersUp_Buildings[0]->ID);
 
-	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 	this->CanC4_AllowZeroDamage.Read(exINI, pSection, "CanC4.AllowZeroDamage");
 
 	this->InitialStrength_Cloning.Read(exINI, pSection, "InitialStrength.Cloning");
@@ -176,6 +175,9 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Adjacent_Disallowed.Read(exINI, pSection, "Adjacent.Disallowed");
 
 	this->BarracksExitCell.Read(exINI, pSection, "BarracksExitCell");
+
+	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
+	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -260,7 +262,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeapons)
 		.Process(this->OccupierMuzzleFlashes)
 		.Process(this->Powered_KillSpawns)
-		.Process(this->AllowAirstrike)
 		.Process(this->CanC4_AllowZeroDamage)
 		.Process(this->InitialStrength_Cloning)
 		.Process(this->ExcludeFromMultipleFactoryBonus)
@@ -302,6 +303,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Adjacent_Allowed)
 		.Process(this->Adjacent_Disallowed)
 		.Process(this->BarracksExitCell)
+		.Process(this->Overpower_KeepOnline)
+		.Process(this->Overpower_ChargeWeapon)
 		;
 }
 

@@ -43,7 +43,7 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 	{
 		if (!pOwner->IsAlliedWith(pTechno))
 		{
-			if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+			if (auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
 			{
 				if (!pBld->IsPowerOnline())
 					return false;
