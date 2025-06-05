@@ -931,13 +931,13 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 					fireError != FireError::FACING &&
 					fireError != FireError::MOVING)
 				{
-					pUnit->unknown_int_6C0 = -1;
+					pUnit->CurrentFiringFrame = -1;
 					pExt->FiringAnimationTimer.Stop();
 				}
 			}
 			else
 			{
-				pUnit->unknown_int_6C0 = -1;
+				pUnit->CurrentFiringFrame = -1;
 				pExt->FiringAnimationTimer.Stop();
 			}
 		}
