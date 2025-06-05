@@ -362,6 +362,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
+  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -397,6 +398,7 @@ This page lists all the individual contributions to the project by their author.
   - Tiberium eater logic
   - Fix the bug that ships can travel on elevated bridges
   - Original `Arcing` elevation inaccuracy fix
+  - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Exclusive SuperWeapon Sidebar
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:

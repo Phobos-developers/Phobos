@@ -345,13 +345,13 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	{
 		return 0;
 	}
-	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
-		{
-			R->EAX(pThis->Type);
-			return SkipChecks;
-		}
+		R->EAX(pThis->Type);
+		return SkipChecks;
 	}
 
 	return 0;
@@ -376,11 +376,10 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
-			return SkipSetCoordinate;
-	}
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
+		return SkipSetCoordinate;
 
 	return 0;
 }
@@ -391,11 +390,10 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
-			return SkipCheck;
-	}
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
+		return SkipCheck;
 
 	return 0;
 }
@@ -403,10 +401,10 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);
+	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 
 	if (pThis->WeaponType)
 	{
-		GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 		int defaultValue = RulesClass::Instance->BallisticScatter;
 		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));

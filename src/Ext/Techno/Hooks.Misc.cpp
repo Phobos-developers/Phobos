@@ -692,19 +692,19 @@ DEFINE_HOOK(0x51B20E, InfantryClass_AssignTarget_FireOnce, 0x6)
 {
 	enum { SkipGameCode = 0x51B255 };
 
+	GET(InfantryClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EBX);
 
-	if (pTarget)
-		return 0;
-
-	GET(InfantryClass*, pThis, ESI);
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (pExt->SkipTargetChangeResetSequence)
+	if (!pTarget)
 	{
-		pThis->IsFiring = false;
-		pExt->SkipTargetChangeResetSequence = false;
-		return SkipGameCode;
+		auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+		if (pExt->SkipTargetChangeResetSequence)
+		{
+			pThis->IsFiring = false;
+			pExt->SkipTargetChangeResetSequence = false;
+			return SkipGameCode;
+		}
 	}
 
 	return 0;
@@ -730,13 +730,12 @@ DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };
 
 	GET(InfantryClass*, pThis, ESI);
+	GET(Sequence, sequence, EDI);
 
 	R->EBP(0); // Restore overridden instructions.
 
 	if (TechnoTypeExt::ExtMap.Find(pThis->Type)->OnlyUseLandSequences)
 		return SkipWaterSequences;
-
-	GET(Sequence, sequence, EDI);
 
 	if (sequence == Sequence::Walk || sequence == Sequence::Crawl) // Restore overridden instructions.
 		return UseSwim;
