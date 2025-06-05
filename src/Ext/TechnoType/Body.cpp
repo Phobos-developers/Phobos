@@ -16,6 +16,7 @@
 #include <Utilities/GeneralUtils.h>
 
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
+bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
@@ -25,12 +26,60 @@ void TechnoTypeExt::ExtData::Initialize()
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
-	auto offset = this->TurretOffset.GetEx();
-	float x = static_cast<float>(offset->X * factor);
-	float y = static_cast<float>(offset->Y * factor);
-	float z = static_cast<float>(offset->Z * factor);
+	const auto offset = this->TurretOffset.GetEx();
+	const float x = static_cast<float>(offset->X * factor);
+	const float y = static_cast<float>(offset->Y * factor);
+	const float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
+}
+
+int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget)
+{
+	if (TechnoTypeExt::SelectWeaponMutex || !this->ForceWeapon_Check || !pTarget) // In theory, pTarget must exist
+		return -1;
+
+	int forceWeaponIndex = -1;
+	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (pTargetTechno)
+	{
+		const auto pTargetType = pTargetTechno->GetTechnoType();
+
+		if (this->ForceWeapon_Naval_Decloaked >= 0
+			&& pTargetType->Cloakable
+			&& pTargetType->Naval
+			&& pTargetTechno->CloakState == CloakState::Uncloaked)
+		{
+			forceWeaponIndex = this->ForceWeapon_Naval_Decloaked;
+		}
+		else if (this->ForceWeapon_Cloaked >= 0
+			&& pTargetTechno->CloakState == CloakState::Cloaked)
+		{
+			forceWeaponIndex = this->ForceWeapon_Cloaked;
+		}
+		else if (this->ForceWeapon_Disguised >= 0
+			&& pTargetTechno->IsDisguised())
+		{
+			forceWeaponIndex = this->ForceWeapon_Disguised;
+		}
+		else if (this->ForceWeapon_UnderEMP >= 0
+			&& pTargetTechno->IsUnderEMP())
+		{
+			forceWeaponIndex = this->ForceWeapon_UnderEMP;
+		}
+	}
+
+	if (forceWeaponIndex == -1
+		&& (pTargetTechno || !this->ForceWeapon_InRange_TechnoOnly)
+		&& (!this->ForceWeapon_InRange.empty() || !this->ForceAAWeapon_InRange.empty()))
+	{
+		TechnoTypeExt::SelectWeaponMutex = true;
+		forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTarget);
+		TechnoTypeExt::SelectWeaponMutex = false;
+	}
+
+	return forceWeaponIndex;
 }
 
 // Ares 0.A source
@@ -117,7 +166,7 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
 	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse)
 {
-	auto const pType = pCreateUnit->Type;
+	auto const pType = pCreateUnit->Type.Get();
 	auto const rtti = pType->WhatAmI();
 
 	if (rtti == AbstractType::BuildingType)
@@ -136,9 +185,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 	auto pCell = MapClass::Instance.TryGetCellAt(location);
 	auto const speedType = rtti != AbstractType::AircraftType ? pType->SpeedType : SpeedType::Wheel;
 	auto const mZone = rtti != AbstractType::AircraftType ? pType->MovementZone : MovementZone::Normal;
-	bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0;
+	const bool allowBridges = GroundType::Array[static_cast<int>(LandType::Clear)].Cost[static_cast<int>(speedType)] > 0.0;
 	bool isBridge = allowBridges && pCell && pCell->ContainsBridge();
-	int baseHeight = location.Z;
+	const int baseHeight = location.Z;
 	bool inAir = location.Z >= Unsorted::CellHeight * 2;
 
 	if (pCreateUnit->ConsiderPathfinding && (!pCell || !pCell->IsClearToMove(speedType, false, false, -1, mZone, -1, isBridge)))
@@ -158,9 +207,9 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 	if (pCell)
 	{
 		isBridge = allowBridges && pCell->ContainsBridge();
-		int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
-		int zCoord = pCreateUnit->AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
-		int cellFloorHeight = MapClass::Instance.GetCellFloorHeight(location) + bridgeZ;
+		const int bridgeZ = isBridge ? CellClass::BridgeHeight : 0;
+		const int zCoord = pCreateUnit->AlwaysSpawnOnGround ? INT32_MIN : baseHeight;
+		const int cellFloorHeight = MapClass::Instance.GetCellFloorHeight(location) + bridgeZ;
 
 		if (!pCreateUnit->AlwaysSpawnOnGround && pCreateUnit->SpawnHeight >= 0)
 			location.Z = cellFloorHeight + pCreateUnit->SpawnHeight;
@@ -206,10 +255,11 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 					if (!pCreateUnit->AlwaysSpawnOnGround)
 					{
 						inAir = pTechno->IsInAir();
+
 						if (auto const pFlyLoco = locomotion_cast<FlyLocomotionClass*>(pTechno->Locomotor))
 						{
 							pTechno->SetLocation(location);
-							bool airportBound = rtti == AbstractType::AircraftType && abstract_cast<AircraftTypeClass*>(pType)->AirportBound;
+							const bool airportBound = rtti == AbstractType::AircraftType && static_cast<AircraftTypeClass*>(pType)->AirportBound;
 
 							if (pCell->GetContent() || airportBound)
 								pTechno->EnterIdleMode(false, true);
@@ -404,16 +454,27 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
 
 	this->EnemyUIName.Read(exINI, pSection, "EnemyUIName");
+
 	this->ForceWeapon_Naval_Decloaked.Read(exINI, pSection, "ForceWeapon.Naval.Decloaked");
 	this->ForceWeapon_Cloaked.Read(exINI, pSection, "ForceWeapon.Cloaked");
 	this->ForceWeapon_Disguised.Read(exINI, pSection, "ForceWeapon.Disguised");
 	this->ForceWeapon_UnderEMP.Read(exINI, pSection, "ForceWeapon.UnderEMP");
+	this->ForceWeapon_InRange_TechnoOnly.Read(exINI, pSection, "ForceWeapon.InRange.TechnoOnly");
 	this->ForceWeapon_InRange.Read(exINI, pSection, "ForceWeapon.InRange");
 	this->ForceWeapon_InRange_Overrides.Read(exINI, pSection, "ForceWeapon.InRange.Overrides");
 	this->ForceWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceWeapon.InRange.ApplyRangeModifiers");
 	this->ForceAAWeapon_InRange.Read(exINI, pSection, "ForceAAWeapon.InRange");
 	this->ForceAAWeapon_InRange_Overrides.Read(exINI, pSection, "ForceAAWeapon.InRange.Overrides");
 	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceAAWeapon.InRange.ApplyRangeModifiers");
+	this->ForceWeapon_Check = (
+		this->ForceWeapon_Naval_Decloaked >= 0
+		|| this->ForceWeapon_Cloaked >= 0
+		|| this->ForceWeapon_Disguised >= 0
+		|| this->ForceWeapon_UnderEMP >= 0
+		|| !this->ForceWeapon_InRange.empty()
+		|| !this->ForceAAWeapon_InRange.empty()
+	);
+
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
 	this->Ammo_Shared_Group.Read(exINI, pSection, "Ammo.Shared.Group");
 	this->SelfHealGainType.Read(exINI, pSection, "SelfHealGainType");
@@ -487,6 +548,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
+	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
 
 	this->CrateGoodie_RerollChance.Read(exINI, pSection, "CrateGoodie.RerollChance");
 
@@ -942,16 +1004,20 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DeployingAnim_UseUnitDrawer)
 
 		.Process(this->EnemyUIName)
+
+		.Process(this->ForceWeapon_Check)
 		.Process(this->ForceWeapon_Naval_Decloaked)
 		.Process(this->ForceWeapon_Cloaked)
 		.Process(this->ForceWeapon_Disguised)
 		.Process(this->ForceWeapon_UnderEMP)
+		.Process(this->ForceWeapon_InRange_TechnoOnly)
 		.Process(this->ForceWeapon_InRange)
 		.Process(this->ForceWeapon_InRange_Overrides)
 		.Process(this->ForceWeapon_InRange_ApplyRangeModifiers)
 		.Process(this->ForceAAWeapon_InRange)
 		.Process(this->ForceAAWeapon_InRange_Overrides)
 		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
 		.Process(this->SelfHealGainType)
@@ -1031,6 +1097,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
+		.Process(this->Convert_ResetMindControl)
 
 		.Process(this->CrateGoodie_RerollChance)
 
