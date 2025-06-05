@@ -307,114 +307,6 @@ HideLightFlashEffects=false      ; boolean
 
 ## Changelog
 
-<<<<<<< HEAD
-=======
-### Version TBD (develop branch nightly builds)
-
-```{dropdown} Click to show
-:open:
-
-New:
-- [Allow using waypoints, area guard and attack move with aircraft](Fixed-or-Improved-Logics.md#extended-aircraft-missions) (by CrimRecya)
-- [Enhanced Straight trajectory](New-or-Enhanced-Logics.md#straight-trajectory) (by CrimRecya)
-- [Enable building production queue](User-Interface.md#building-production-queue) (by CrimRecya)
-- [Custom exit cell for infantry factory](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-factory) (by Starkku)
-- [Option for vehicles to keep target when issued move command](Fixed-or-Improved-Logics.md#retain-target-on-movement-command) (by Starkku)
-- [Skip anim delay for burst fire](Fixed-or-Improved-Logics.md#skip-anim-delay-for-burst-fire) (by TaranDahl)
-- [Extending `Power` to all TechnoTypes](Fixed-or-Improved-Logics.md#power-drain-for-units) (by Morton)
-- [New Parabola trajectory](New-or-Enhanced-Logics.md#parabola-trajectory) (by CrimRecya)
-- [Type select for buildings](User-Interface.md#type-select-for-buildings) (code by TaranDahl, doc by Ollerus)
-- [Raise alert when technos are taking damage](New-or-Enhanced-Logics.md#raise-alert-when-technos-are-taking-damage) (by TaranDahl)
-- [Enhanced Bombard trajectory](New-or-Enhanced-Logics.md#bombard-trajectory) (by CrimRecya & Ollerus, based on knowledge of NaotoYuuki)
-- [Toggle waypoint for building](Fixed-or-Improved-Logics.md#waypoints-for-buildings) (by TaranDahl)
-- [Bunkerable checks dehardcode](Fixed-or-Improved-Logics.md#bunker-entering-check-dehardcode) (by TaranDahl)
-- [No turret unit turn to the target](Fixed-or-Improved-Logics.md#unit-without-turret-always-turn-to-target) (by CrimRecya & TaranDahl)
-- [Damage multiplier for different houses](New-or-Enhanced-Logics.md#damage-multiplier-for-different-houses) (by CrimRecya)
-- Customizable duration for electric bolts (by Starkku)
-- Customizable FLH tracking for electric bolts (by Starkku)
-- [Extended gattling rate down logic](New-or-Enhanced-Logics.md#extended-gattling-rate-down-logic) (by CrimRecya)
-- [Sell or undeploy building on impact](New-or-Enhanced-Logics.md#sell-or-undeploy-building-on-impact) (by CrimRecya)
-- [No rearm and reload in EMP or temporal](New-or-Enhanced-Logics.md#no-rearm-and-reload-in-emp-or-temporal) (by CrimRecya)
-- [Technos recount current burst index when change the firing weapon](New-or-Enhanced-Logics.md#recount-burst-index) (by CrimRecya)
-- Shield armor inheritance customization (by Ollerus)
-- [Damaged unit image changes](New-or-Enhanced-Logics.md#damaged-unit-image-changes) (by Fryone)
-- [Customizable spawns queue](New-or-Enhanced-Logics.md#customizable-spawns-queue) (by TwinkleStar)
-- [Initial spawns number](New-or-Enhanced-Logics.md#initial-spawns-number) (by TwinkleStar)
-- [Override target under EMP attack behavior](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (By FS-21)
-- [Aircraft spawner recycling improvements (custom offset, animation etc.)](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by TaranDahl)
-- [Technos can maintain a suitable distance after firing](New-or-Enhanced-Logics.md#keep-range-after-firing) (by CrimRecya)
-- [Projectile subject to ground check before firing](New-or-Enhanced-Logics.md#projectiles-blocked-by-land-or-water) (by CrimRecya)
-- [Delay automatic attack on the controlled unit](Fixed-or-Improved-Logics.md#delay-automatic-attack-on-the-controlled-unit) (by CrimRecya)
-- [`BombParachute` deglobalization](Fixed-or-Improved-Logics.md#bomb-parachute-anim-deglobalization) (by TaranDahl)
-- [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
-- [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
-- Laser, electric bolt and rad beam scatter (by CrimRecya)
-- [Airburst weapon firing/source coordinate customizations](Fixed-or-Improved-Logics.md#airburst--splits) (by Starkku)
-- [AlternateFLH on-turret toggle](Fixed-or-Improved-Logics.md#alternate-flh-customizations) (by Starkku)
-- [Fire weapon when Warhead kills something](New-or-Enhanced-Logics.md#fire-weapon-when-warhead-kills-something) (by Ollerus)
-- [Prone speed customization](Fixed-or-Improved-Logics.md#prone-speed-customization) (by TaranDahl)
-- [Customize damaged speed ratio of drive/ship loco](Fixed-or-Improved-Logics.md#damaged-speed-customization) (by NetsuNegi)
-- [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
-- [Promotion animation deglobalization](New-or-Enhanced-Logics.md#promotion-animation) (by Ollerus)
-- Enhanced [reveal](New-or-Enhanced-Logics.md#reveal-map-for-owner-on-impact) & [gap](New-or-Enhanced-Logics.md#shroud-map-for-enemies-on-impact) warhead (by NetsuNegi)
-- [Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)
-- [Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)
-- [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
-- [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)
-- [Warhead that can not kill](New-or-Enhanced-Logics.md#warhead-that-can-not-kill) (by FS-21)
-- [Customize parasite culling targets](Fixed-or-Improved-Logics.md#customizing-parasite-culling-targets) (by NetsuNegi)
-- [Overload characteristic dehardcoded](New-or-Enhanced-Logics.md#overload-characteristic-dehardcoded) (by Otamaa)
-- [RadarInvisible for non-enemy house](Fixed-or-Improved-Logics.md#radarinvisible-for-non-enemy-house) (By TaranDahl)
-- New `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields (by FS-21)
-- [Customize harvester dump amount](Fixed-or-Improved-Logics.md#customize-harvester-dump-amount) (by NetsuNegi)
-- [Select box logic](User-Interface.md#select-box) (by NetsuNegi)
-- [Customize airstrike targets](Fixed-or-Improved-Logics.md#airstrike-target-eligibility) (by NetsuNegi)
-- [Aggressive attack move mission](New-or-Enhanced-Logics.md#aggressive-attack-move-mission) (by CrimRecya)
-- [Amphibious access vehicle](New-or-Enhanced-Logics.md#amphibious-access-vehicle) (by CrimRecya)
-- [Allow miners do area guard](Fixed-or-Improved-Logics.md#allow-miners-do-area-guard) (by TaranDahl)
-- [Make harvesters do addtional scan after unload](Fixed-or-Improved-Logics.md#make-harvesters-do-addtional-scan-after-unload) (by TaranDahl)
-- [Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-veterancy-insignias) (by Ollerus)
-- [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
-- [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
-- [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
-- Dehardcoded 255 limit of `OverlayType` (by secsome)
-- [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
-- Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
-
-Vanilla fixes:
-- Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
-- Prevent the units with locomotors that cause problems from entering the tank bunker (by TaranDahl)
-- Buildings with foundation bigger than 1x1 can now recycle spawned correctly (by TaranDahl)
-- Fixed an issue that `MovementZone=AmphibiousDestroyer` and `MovementZone=AmphibiousCrusher` technos being unable to enter on water structures (by CrimRecya)
-- Fixed an issue that laser, electric bolt and rad beam not support `Inviso=true` projectiles with `FlakScatter=true` to scatter (by CrimRecya)
-- Fixed the bug that `EnterBioReactorSound`, `LeaveBioReactorSound`, `EnterGrinderSound` on technotype does not used (by NetsuNegi)
-- Fixed the bug that harvester dont stop unloading and cannot unload cargos anymore when lifting by `IsLocomotor=yes` warhead (by NetsuNegi)
-- Fixed an issue that units on the slope tilted at an excessive angle (by CrimRecya & NetsuNegi)
-- Fixed an issue that the first passenger who call the transport ship no longer board the transport ship when the land units call for boarding (by CrimRecya)
-- Fixed an issue that impassable invisible barrier generated by the behavior of infantry continuously entering vehicles (by CrimRecya)
-- Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash (by NetsuNegi)
-- Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error (by CrimRecya)
-- Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead (by NetsuNegi)
-- Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues (by NetsuNegi)
-- Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
-- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
-- Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
-- Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
-- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
-- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
-
-Phobos fixes:
-- Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
-- `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
-
-Fixes / interactions with other extensions:
-- Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
-- Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
-- Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
-
-```
-
->>>>>>> 751a94e2 ([Vanilla Fix]Fix the bug that uncontrolled scatter when elite techno attack by aircraft or some unit try crush it (#1694))
 ### 0.4
 
 ```{dropdown} Click to show
@@ -703,6 +595,7 @@ Vanilla fixes:
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -773,6 +666,7 @@ Fixes / interactions with other extensions:
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
+- Fixed the issue where some units crashed after the deployment transformation (by ststl, FlyStar)
 ```
 
 ### 0.3.0.1

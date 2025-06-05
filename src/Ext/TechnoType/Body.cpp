@@ -24,10 +24,10 @@ void TechnoTypeExt::ExtData::Initialize()
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
-	auto offset = this->TurretOffset.GetEx();
-	float x = static_cast<float>(offset->X * factor);
-	float y = static_cast<float>(offset->Y * factor);
-	float z = static_cast<float>(offset->Z * factor);
+	const auto offset = this->TurretOffset.GetEx();
+	const float x = static_cast<float>(offset->X * factor);
+	const float y = static_cast<float>(offset->Y * factor);
+	const float z = static_cast<float>(offset->Z * factor);
 
 	mtx->Translate(x, y, z);
 }
@@ -434,6 +434,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
+	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
 
 	this->CrateGoodie_RerollChance.Read(exINI, pSection, "CrateGoodie.RerollChance");
 
@@ -801,6 +802,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
+		.Process(this->Convert_ResetMindControl)
 
 		.Process(this->CrateGoodie_RerollChance)
 
