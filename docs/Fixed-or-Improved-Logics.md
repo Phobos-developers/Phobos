@@ -227,6 +227,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 
 ## Fixes / interactions with other extensions
 
@@ -245,6 +246,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
+- Fixed some units of Ares crashing after deployment conversion.
 
 ## Aircraft
 
@@ -1827,7 +1829,7 @@ In `rulesmd.ini`:
 [General]
 MindControl.ThreatDelay=0     ; integer, game frames
 
-[SOMEWARHEAD]                 ; WarheadTypeType
+[SOMEWARHEAD]                 ; WarheadType
 MindControl.ThreatDelay=      ; integer, game frames
 ```
 
