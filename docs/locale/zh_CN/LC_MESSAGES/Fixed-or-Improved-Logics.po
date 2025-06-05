@@ -1515,7 +1515,7 @@ msgid ""
 msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:249
-msgid "Fixed some units of Ares crashing after deployment conversion."
+msgid "Fixed the issue where some units crashed after the deployment transformation."
 msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:251

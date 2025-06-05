@@ -362,7 +362,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
-  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Fix an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -533,7 +533,7 @@ This page lists all the individual contributions to the project by their author.
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
-- **ststl, FlyStar** - Fixed some units of Ares crashing after deployment conversion
+- **ststl, FlyStar** - Fix the issue where some units crashed after the deployment transformation
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
