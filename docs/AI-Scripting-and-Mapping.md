@@ -14,7 +14,7 @@ This page describes all AI scripting and mapping related additions and changes i
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
-## Increased Overlay Limit
+### Increased Overlay Limit
 
 - Maps can now contain OverlayTypes with indices up to 65535.
 
