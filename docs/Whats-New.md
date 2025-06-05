@@ -381,6 +381,8 @@ New:
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
+- Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
+- Customize the scatter caused by aircraft attack mission (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -402,6 +404,7 @@ Vanilla fixes:
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

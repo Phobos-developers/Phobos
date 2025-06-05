@@ -1404,7 +1404,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
-  - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
+  - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. If `ForceWeapon.InRange.TechnoOnly` set to true, it'll only be forced on TechnoTypes like other forced weapons, otherwise it'll also be forced when attacking empty grounds. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
@@ -1419,6 +1419,7 @@ ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon,
 ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
+ForceWeapon.InRange.TechnoOnly=true             ; boolean
 ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
@@ -1593,7 +1594,7 @@ In `rulesmd.ini`:
 Promote.VeteranAnimation=         ; AnimationType
 Promote.EliteAnimation=           ; AnimationType
 
-[SOMETECHNO]
+[SOMETECHNO]                      ; TechnoType
 Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
 Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
 ```
@@ -1991,7 +1992,7 @@ DamageOwnerMultiplier=1.0     ; floating point value
 DamageAlliesMultiplier=1.0    ; floating point value
 DamageEnemiesMultiplier=1.0   ; floating point value
 
-[SOMEWARHEAD]                 ; Warhead
+[SOMEWARHEAD]                 ; WarheadType
 DamageOwnerMultiplier=        ; floating point value
 DamageAlliesMultiplier=       ; floating point value
 DamageEnemiesMultiplier=      ; floating point value
@@ -2150,7 +2151,7 @@ Reveal=0       ; integer - cell radius, negative values mean reveal the entire m
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; Warhead
+[SOMEWARHEAD]                        ; WarheadType
 BuildingSell=false                   ; boolean
 BuildingSell.IgnoreUnsellable=false  ; boolean
 BuildingUndeploy=false               ; boolean

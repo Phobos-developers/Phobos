@@ -398,6 +398,8 @@ This page lists all the individual contributions to the project by their author.
   - Tiberium eater logic
   - Fix the bug that ships can travel on elevated bridges
   - Original `Arcing` elevation inaccuracy fix
+  - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
+  - Exclusive SuperWeapon Sidebar
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -472,6 +474,7 @@ This page lists all the individual contributions to the project by their author.
   - Aggressive attack move mission
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
+  - Exclusive SuperWeapon Sidebar
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -516,6 +519,7 @@ This page lists all the individual contributions to the project by their author.
   - RadarInvisible for non-enemy house
   - Allow miners do area guard
   - Make harvesters do addtional scan after unload
+  - Customize the scatter caused by aircraft attack mission
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
