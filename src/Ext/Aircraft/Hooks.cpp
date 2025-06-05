@@ -260,13 +260,13 @@ DEFINE_HOOK_AGAIN(0x418B46, AircraftClass_MissionAttack_ScatterCell1, 0x6);
 DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
-	return TechnoTypeExt::ExtMap.Find(pThis)->FiringForceScatter ? 0 : (R->Origin() + 0x44);
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->FiringForceScatter ? 0 : (R->Origin() + 0x44);
 }
 
 DEFINE_HOOK(0x4186DD, AircraftClass_MissionAttack_ScatterCell2, 0x5)
 {
 	GET(AircraftClass*, pThis, ESI);
-	return TechnoTypeExt::ExtMap.Find(pThis)->FiringForceScatter ? 0 : (R->Origin() + 0x43);
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->FiringForceScatter ? 0 : (R->Origin() + 0x43);
 }
 
 #pragma endregion
