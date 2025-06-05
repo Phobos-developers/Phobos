@@ -4,6 +4,8 @@
 #include <EventClass.h>
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
+#include <AlphaShapeClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -13,6 +15,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
 
 #pragma region Update
 
@@ -79,6 +82,25 @@ DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateOnTunnelEnter();
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pImage = pType->AlphaImage;
+
+	if (pImage && AresHelper::CanUseAres)
+	{
+		auto& alphaExt = *AresFunctions::AlphaExtMap;
+
+		if (const auto pAlpha = alphaExt.get_or_default(pThis))
+		{
+			GameDelete(pAlpha);
+
+			const auto tacticalPos = TacticalClass::Instance->TacticalPos;
+			Point2D off = { tacticalPos.X - (pImage->Width / 2), tacticalPos.Y - (pImage->Height / 2) };
+			const auto point = TacticalClass::Instance->CoordsToClient(pThis->GetCoords()).first + off;
+			RectangleStruct dirty = { point.X - tacticalPos.X, point.Y - tacticalPos.Y, pImage->Width, pImage->Height };
+			TacticalClass::Instance->RegisterDirtyArea(dirty, true);
+		}
+	}
 
 	return 0;
 }

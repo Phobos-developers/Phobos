@@ -247,6 +247,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
 - Fixed some units of Ares crashing after deployment conversion.
+- Fixed the bug that AlphaImage remained after unit entered tunnel.
 
 ## Aircraft
 
@@ -258,6 +259,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 VoicePickup=    ; Sound entry
+```
+
+### Customize the scatter caused by aircraft attack mission
+
+- In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+FiringForceScatter=true   ; boolean
 ```
 
 ### Extended Aircraft Missions
@@ -482,6 +493,22 @@ In `rulesmd.ini`:
 BarracksExitCell=  ; X,Y - cell offset
 ```
 
+### Customizable garrison and bunker properties
+
+- You can now customize damage or ROF multipliers of a garrison or tank bunker building.
+- You can now customize enter or exit sound of a tank bunker building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]              ; BuildingType
+OccupyDamageMultiplier=     ; floating point value, default to [CombatDamage] -> OccupyDamageMultiplier
+OccupyROFMultiplier=        ; floating point value, default to [CombatDamage] -> OccupyROFMultiplier
+BunkerDamageMultiplier=     ; floating point value, default to [CombatDamage] -> BunkerDamageMultiplier
+BunkerROFMultMultiplier=    ; floating point value, default to [CombatDamage] -> BunkerROFMultMultiplier
+BunkerWallsUpSound=         ; Sound entry, default to [AudioVisual] -> BunkerWallsUpSound
+BunkerWallsDownSound=       ; Sound entry, default to [AudioVisual] -> BunkerWallsDownSound
+```
+
 ### Customizable selling buildup sequence length for buildings that can undeploy
 
 - By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
@@ -539,6 +566,16 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Disable DamageSound
+
+- Now you can disable `DamageSound` of a building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]            ; BuildingType
+DisableDamageSound=false  ; boolean
+```
+
 ### Exclude Factory from providing multiple factory bonus
 
 - It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
@@ -547,6 +584,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Power plant damage factor
+
+- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
+  - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+PowerPlant.DamageFactor=1.0        ; floating point value
 ```
 
 ### Skip anim delay for burst fire
