@@ -2035,7 +2035,8 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 				continue;
 
 			const auto pTargetBuilding = pCell->GetBuilding();
-			if (!pTargetBuilding || pTargetBuilding->Owner != pThis->Owner
+			if (!pTargetBuilding
+				|| pTargetBuilding->Owner != pThis->Owner
 				|| !pTargetBuilding->Type->Overpowerable
 				|| pThis->DistanceFrom(pTargetBuilding) > Range
 				|| GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
