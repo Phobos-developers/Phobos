@@ -696,7 +696,7 @@ public:
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
-    bool IsSecondary(int nWeaponIndex);
+		bool IsSecondary(int nWeaponIndex);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
 		// Ares 0.A
