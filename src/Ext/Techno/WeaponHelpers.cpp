@@ -67,6 +67,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	}
 
 	auto const pType = pThis->GetTechnoType();
+
 	// Handle special case with NavalTargeting / LandTargeting.
 	if (!pTargetTechno && (pType->NavalTargeting == NavalTargetingType::Naval_Primary ||
 		pType->LandTargeting == LandTargetingType::Land_Secondary) &&
