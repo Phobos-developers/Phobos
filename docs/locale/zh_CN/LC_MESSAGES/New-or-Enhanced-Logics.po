@@ -5551,7 +5551,6 @@ msgid ""
 msgstr "`ForceWeapon.UnderEMP` 强制指定对与被 EMP 瘫痪了的目标所使用的武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1407
-#, fuzzy
 msgid ""
 "`ForceWeapon.InRange` forces specified a list of weapons to be used once "
 "the target is within their `Range`. If `ForceWeapon.InRange.TechnoOnly` "
@@ -5561,8 +5560,9 @@ msgid ""
 "applied to both ground and air target if `ForceAAWeapon.InRange` is not "
 "set."
 msgstr ""
-"`ForceWeapon.InRange` 强制指定了一个当目标进入武器 `Range` "
-"范围时的可选武器列表。单位会按列表顺序选取首个符合条件的武器。在未设置 `ForceAAWeapon.InRange` "
+"`ForceWeapon.InRange` 强制指定了一个当目标进入武器 `Range` 范围时的可选武器列表。"
+"如果 `ForceWeapon.InRange.TechnoOnly` 设为 true 则仅在目标为单位时才能像其他强制武器效果那样生效，"
+"否则在攻击空地时也会生效。该单位会按列表顺序选取首个符合条件的武器。在未设置 `ForceAAWeapon.InRange` "
 "的情况下这同时用于地面和空中目标。"
 
 #: ../../New-or-Enhanced-Logics.md:1408
