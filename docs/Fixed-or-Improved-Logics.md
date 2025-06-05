@@ -569,6 +569,17 @@ In `rulesmd.ini`:
 ExcludeFromMultipleFactoryBonus=false  ; boolean
 ```
 
+### Power plant damage factor
+
+- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
+  - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+PowerPlant.DamageFactor=1.0        ; floating point value
+```
+
 ### Skip anim delay for burst fire
 
 - In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.

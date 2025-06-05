@@ -23,13 +23,14 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 
 DEFINE_HOOK(0x44043D, BuildingClass_AI_Temporaled_Chronosparkle_MuzzleFix, 0x8)
 {
+	GET(int, nFiringIndex, EBX);
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
+
 	if (pType->MaxNumberOccupants > 10)
 	{
-		GET(int, nFiringIndex, EBX);
-		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 		R->EAX(&pTypeExt->OccupierMuzzleFlashes[nFiringIndex]);
 	}
 
@@ -40,10 +41,11 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
+
 	if (pType->MaxNumberOccupants > 10)
 	{
-		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 		R->EDX(&pTypeExt->OccupierMuzzleFlashes[pThis->FiringOccupantIndex]);
 	}
 
@@ -52,13 +54,14 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 
 DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 {
+	GET(int, nFiringIndex, EDI);
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
+
 	if (pType->MaxNumberOccupants > 10)
 	{
-		GET(int, nFiringIndex, EDI);
-		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 		R->ECX(&pTypeExt->OccupierMuzzleFlashes[nFiringIndex]);
 	}
 
@@ -67,22 +70,20 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	auto pRules = RulesExt::Global();
-
-	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+	if (!RulesExt::Global()->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
-	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
-	auto pType = pBuilding ? pBuilding->Type : nullptr;
-	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
-	bool isShow = pTypeExt && pTypeExt->PlacementPreview;
+	const auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
+	const auto pType = pBuilding ? pBuilding->Type : nullptr;
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	const bool isShow = pTypeExt && pTypeExt->PlacementPreview;
 
 	if (isShow)
 	{
 		CellClass* pCell = nullptr;
 		{
-			CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
-			CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
+			const CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
+			const CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 
 			pCell = MapClass::Instance.TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
 			if (!pCell)
@@ -110,16 +111,16 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 		Point2D point;
 		{
-			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
-			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
+			const CoordStruct offset = pTypeExt->PlacementPreview_Offset;
+			const int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
+			const CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
 
 			point = TacticalClass::Instance->CoordsToClient(coords).first;
 			point.X += offset.X;
 			point.Y += offset.Y;
 		}
 
-		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
+		const BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(RulesExt::Global()->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 
 		ConvertClass* pPalette = pTypeExt->PlacementPreview_Remap.Get()
@@ -139,10 +140,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 {
-	auto pRules = RulesExt::Global();
-	BlitterFlags translucency = (pRules->PlacementPreview && Phobos::Config::ShowPlacementPreview)
-		? pRules->PlacementGrid_TranslucencyWithPreview.Get(pRules->PlacementGrid_Translucency)
-		: pRules->PlacementGrid_Translucency;
+	const BlitterFlags translucency = (RulesExt::Global()->PlacementPreview && Phobos::Config::ShowPlacementPreview)
+		? RulesExt::Global()->PlacementGrid_TranslucencyWithPreview.Get(RulesExt::Global()->PlacementGrid_Translucency)
+		: RulesExt::Global()->PlacementGrid_Translucency;
 
 	if (translucency != BlitterFlags::None)
 	{
@@ -393,7 +393,13 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
 	GET_STACK(int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
 
 	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
-	R->EAX(Math::max(Game::F2I(powerMultiplier * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
+
+	if (factor == 1.0)
+		R->EAX(Game::F2I(powerMultiplier * pThis->GetHealthPercentage()));
+	else if (factor == 0.0)
+		R->EAX(powerMultiplier);
+	else
+		R->EAX(Math::max(Game::F2I(powerMultiplier * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
 
 	return Handled;
 }

@@ -15,11 +15,11 @@ int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 
 int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
 {
-	auto idxSW = this->GetSuperWeaponIndex(index);
+	const int idxSW = this->GetSuperWeaponIndex(index);
 
-	if (auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
+	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
 	{
-		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 		if (!pExt->IsAvailable(pHouse))
 			return -1;
@@ -50,7 +50,8 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		auto const bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+
 		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
 			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
@@ -64,8 +65,9 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 {
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-	auto const nSound = buildUp ? pTypeExt->BunkerWallsUpSound.Get(RulesClass::Instance->BunkerWallsUpSound) :
-		pTypeExt->BunkerWallsDownSound.Get(RulesClass::Instance->BunkerWallsDownSound);
+	auto const nSound = buildUp
+		? pTypeExt->BunkerWallsUpSound.Get(RulesClass::Instance->BunkerWallsUpSound)
+		: pTypeExt->BunkerWallsDownSound.Get(RulesClass::Instance->BunkerWallsDownSound);
 
 	if (nSound != -1)
 		VocClass::PlayAt(nSound, pThis->Location);
@@ -88,7 +90,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 {
 	int result = 0;
 	bool isUpgrade = false;
-	auto pPowersUp = pBuilding->PowersUpBuilding;
+	auto const pPowersUp = pBuilding->PowersUpBuilding;
 
 	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
 	{
@@ -112,7 +114,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 			checkUpgrade(pTPowersUp);
 	}
 
-	if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+	if (auto const pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
 	{
 		for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
 			checkUpgrade(pTPowersUp);
