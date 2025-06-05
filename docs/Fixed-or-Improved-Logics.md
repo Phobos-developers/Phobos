@@ -260,6 +260,16 @@ In `rulesmd.ini`:
 VoicePickup=    ; Sound entry
 ```
 
+### Customize the scatter caused by aircraft attack mission
+
+- In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AircraftFiringForceScatter=true    ; boolean
+```
+
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
