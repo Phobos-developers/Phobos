@@ -165,10 +165,13 @@ public:
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
 		Valueable<CSFText> EnemyUIName;
+
+		bool ForceWeapon_Check;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
 		Valueable<int> ForceWeapon_UnderEMP;
+		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
 		ValueableVector<int> ForceWeapon_InRange;
 		ValueableVector<double> ForceWeapon_InRange_Overrides;
 		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
@@ -489,10 +492,12 @@ public:
 			, VoiceCreated {}
 			, VoicePickup {}
 
+			, ForceWeapon_Check { false }
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
 			, ForceWeapon_UnderEMP { -1 }
+			, ForceWeapon_InRange_TechnoOnly { true }
 			, ForceWeapon_InRange {}
 			, ForceWeapon_InRange_Overrides {}
 			, ForceWeapon_InRange_ApplyRangeModifiers { false }
@@ -690,7 +695,8 @@ public:
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 
-		bool IsSecondary(int nWeaponIndex);
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
+    bool IsSecondary(int nWeaponIndex);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
 		// Ares 0.A
@@ -712,6 +718,7 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+	static bool SelectWeaponMutex;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
