@@ -2516,7 +2516,7 @@ msgid ""
 "`UnitRepair=true` buildings this defaults to `[General] -> URepairRate`."
 msgstr ""
 "`Units.RepairRate` 自定义单位的维修速度。如果 `UnitReload=true` 那么默认为 `[General] -> "
-"ReloadRate` 并覆盖每个战机类型独立的时间设置（*Ares 功能*）。对于 `UnitRepair=true` 的建筑啧默认为 "
+"ReloadRate` 并覆盖每个战机类型独立的时间设置（*Ares 功能*）。对于 `UnitRepair=true` 的建筑则默认为 "
 "`[General] -> URepairRate`。"
 
 #: ../../Fixed-or-Improved-Logics.md:552
