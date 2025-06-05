@@ -383,6 +383,9 @@ New:
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
 - Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
 - Customize the scatter caused by aircraft attack mission (by TaranDahl)
+- [Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md#customizable-garrison-and-bunker-properties) (by Otamaa)
+- [Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
+- [Power plant damage factor](New-or-Enhanced-Logics.md#power-plant-damage-factor) (by Otamaa and Ollerus)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
