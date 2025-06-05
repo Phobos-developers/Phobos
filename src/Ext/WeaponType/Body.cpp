@@ -7,10 +7,10 @@ WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
-	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
-	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
-	bool hasRequiredGroups = this->AttachEffect_RequiredGroups.size() > 0;
-	bool hasDisallowedGroups = this->AttachEffect_DisallowedGroups.size() > 0;
+	const bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
+	const bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
+	const bool hasRequiredGroups = this->AttachEffect_RequiredGroups.size() > 0;
+	const bool hasDisallowedGroups = this->AttachEffect_DisallowedGroups.size() > 0;
 
 	if (hasRequiredTypes || hasDisallowedTypes || hasRequiredGroups || hasDisallowedGroups)
 	{

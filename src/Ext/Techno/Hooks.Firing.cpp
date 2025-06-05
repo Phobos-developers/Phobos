@@ -83,6 +83,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 
 	// Force weapon
 	const int forceWeaponIndex = pTypeExt->SelectForceWeapon(pThis, pTarget);
+
 	if (forceWeaponIndex >= 0)
 	{
 		R->EAX(forceWeaponIndex);
@@ -101,9 +102,9 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
-	bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
-	int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
+	const bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
+	const bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
+	const int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
 
 	if (weaponIndex != -1)
 		return weaponIndex == 1 ? Secondary : Primary;
@@ -117,8 +118,8 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	{
 		if (pShield->IsActive())
 		{
-			auto const secondary = pThis->GetWeapon(1)->WeaponType;
-			bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
+			const auto secondary = pThis->GetWeapon(1)->WeaponType;
+			const bool secondaryIsAA = pTargetTechno && pTargetTechno->IsInAir() && secondary && secondary->Projectile->AA;
 
 			if (secondary && (allowFallback || (allowAAFallback && secondaryIsAA) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1)))
 			{
@@ -162,10 +163,10 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
 	auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-	int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
-	int evenWeaponIndex = oddWeaponIndex + 1;
+	const int oddWeaponIndex = 2 * pThis->CurrentGattlingStage;
+	const int evenWeaponIndex = oddWeaponIndex + 1;
 	int chosenWeaponIndex = oddWeaponIndex;
-	int eligibleWeaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, oddWeaponIndex, evenWeaponIndex, true);
+	const int eligibleWeaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, oddWeaponIndex, evenWeaponIndex, true);
 
 	if (eligibleWeaponIndex != -1)
 	{
@@ -196,7 +197,7 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 			else
 			{
 				auto const landType = pTargetTechno->GetCell()->LandType;
-				bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir();
+				const bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir();
 
 				if (!pTargetTechno->OnBridge && isOnWater)
 				{
@@ -258,7 +259,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	// AAOnly doesn't need to be checked if LandTargeting=1.
 	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
 	{
-		auto const pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
+		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
 
 		if (pBulletTypeExt->AAOnly)
 			return CannotFire;
@@ -514,7 +515,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 			const auto pOwner = pThis->Owner;
 			const auto mapCoords = pCell->MapCoords;
 			std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(static_cast<size_t>(range + 0.99));
-			size_t size = adjacentCells.size();
+			const size_t size = adjacentCells.size();
 
 			for (unsigned int i = 0; i < size; i++)
 			{
@@ -635,9 +636,9 @@ static inline void SetChargeTurretDelay(TechnoClass* pThis, int rearmDelay, Weap
 
 	if (pWeaponExt->ChargeTurret_Delays.size() > 0)
 	{
-		size_t burstIndex = pWeapon->Burst > 1 ? pThis->CurrentBurstIndex - 1 : 0;
-		size_t index = burstIndex < pWeaponExt->ChargeTurret_Delays.size() ? burstIndex : pWeaponExt->ChargeTurret_Delays.size() - 1;
-		int delay = pWeaponExt->ChargeTurret_Delays[index];
+		const size_t burstIndex = pWeapon->Burst > 1 ? pThis->CurrentBurstIndex - 1 : 0;
+		const size_t index = burstIndex < pWeaponExt->ChargeTurret_Delays.size() ? burstIndex : pWeaponExt->ChargeTurret_Delays.size() - 1;
+		const int delay = pWeaponExt->ChargeTurret_Delays[index];
 
 		if (delay <= 0)
 			return;
@@ -779,8 +780,8 @@ DEFINE_HOOK(0x6FD0B5, TechnoClass_RearmDelay_ROF, 0x6)
 
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	auto range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
-	double rof = pWeapon->ROF * pExt->AE.ROFMultiplier;
+	auto const range = pWeaponExt->ROF_RandomDelay.Get(RulesExt::Global()->ROF_RandomDelay);
+	const double rof = pWeapon->ROF * pExt->AE.ROFMultiplier;
 	pExt->LastRearmWasFullDelay = true;
 
 	R->EAX(GeneralUtils::GetRangedRandomOrSingleValue(range));
@@ -813,7 +814,7 @@ DEFINE_HOOK(0x6FD05E, TechnoClass_RearmDelay_BurstDelays, 0x7)
 	GET(int, idxCurrentBurst, ECX);
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	int burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
+	const int burstDelay = pWeaponExt->GetBurstDelay(pThis->CurrentBurstIndex);
 
 	if (burstDelay >= 0)
 	{
@@ -858,7 +859,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
-	int weaponIndex = FiringAITemp::weaponIndex;
+	const int weaponIndex = FiringAITemp::weaponIndex;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
@@ -867,7 +868,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
-			int burstDelay = pWeaponExt->GetBurstDelay(i);
+			const int burstDelay = pWeaponExt->GetBurstDelay(i);
 			int delay = 0;
 
 			if (burstDelay > -1)
@@ -890,7 +891,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 	{
 		if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
 		{
-			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
+			const int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (firingFrame + projectedDelay > frameCount)
