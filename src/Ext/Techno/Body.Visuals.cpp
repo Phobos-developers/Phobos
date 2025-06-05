@@ -1,5 +1,6 @@
 #include "Body.h"
 
+#include <SessionClass.h>
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
 
@@ -10,31 +11,64 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	if (!RulesExt::Global()->GainSelfHealAllowMultiplayPassive && pThis->Owner->Type->MultiplayPassive)
 		return;
 
-	bool drawPip = false;
-	bool isInfantryHeal = false;
-	int selfHealFrames = 0;
-
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::NoHeal)
 		return;
 
+	bool drawPip = false;
+	bool isInfantryHeal = false;
+	int selfHealFrames = 0;
 	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
 	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
-	bool isOrganic = false;
 	auto const whatAmI = pThis->WhatAmI();
+	const bool isOrganic = (whatAmI == AbstractType::Infantry || (pType->Organic && whatAmI == AbstractType::Unit));
 
-	if (whatAmI == AbstractType::Infantry || (pType->Organic && whatAmI == AbstractType::Unit))
-		isOrganic = true;
+	auto hasSelfHeal = [pThis](const bool infantryHeal)
+		{
+			auto const pOwner = pThis->Owner;
 
-	if (pThis->Owner->InfantrySelfHeal > 0 && (hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)))
+			auto haveHeal = [infantryHeal](HouseClass* pHouse)
+				{
+					return (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0);
+				};
+
+			if (haveHeal(pOwner))
+				return true;
+
+			const bool isCampaign = SessionClass::IsCampaign();
+			const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign;
+			const bool fromAllies = RulesExt::Global()->GainSelfHealFromAllies;
+
+			if (fromPlayer || fromAllies)
+			{
+				auto checkHouse = [fromPlayer, fromAllies, isCampaign, pOwner](HouseClass* pHouse)
+					{
+						if (pHouse == pOwner)
+							return false;
+
+						return (fromPlayer && (pHouse->IsHumanPlayer || pHouse->IsInPlayerControl)) // pHouse->IsControlledByCurrentPlayer()
+							|| (fromAllies && (!isCampaign || (!pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl)) && pHouse->IsAlliedWith(pOwner));
+					};
+
+				for (auto pHouse : HouseClass::Array)
+				{
+					if (checkHouse(pHouse) && haveHeal(pHouse))
+						return true;
+				}
+			}
+
+			return false;
+		};
+
+	if ((hasInfantrySelfHeal || (isOrganic && !hasUnitSelfHeal)) && hasSelfHeal(true))
 	{
 		drawPip = true;
 		selfHealFrames = RulesClass::Instance->SelfHealInfantryFrames;
 		isInfantryHeal = true;
 	}
-	else if (pThis->Owner->UnitsSelfHeal > 0 && (hasUnitSelfHeal || (whatAmI == AbstractType::Unit && !isOrganic)))
+	else if ((hasUnitSelfHeal || (whatAmI == AbstractType::Unit && !isOrganic)) && hasSelfHeal(false))
 	{
 		drawPip = true;
 		selfHealFrames = RulesClass::Instance->SelfHealUnitFrames;
@@ -95,11 +129,6 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 
 void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds)
 {
-	Point2D offset = *pLocation;
-
-	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
-	int defaultFrameIndex = -1;
-
 	auto pTechnoType = pThis->GetTechnoType();
 	auto pOwner = pThis->Owner;
 
@@ -122,6 +151,9 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	if (!isVisibleToPlayer)
 		return;
 
+	Point2D offset = *pLocation;
+	SHPStruct* pShapeFile = FileSystem::PIPS_SHP;
+	int defaultFrameIndex = -1;
 	bool isCustomInsignia = false;
 
 	if (SHPStruct* pCustomShapeFile = pTechnoTypeExt->Insignia.Get(pThis))
@@ -531,8 +563,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 		if (pThis->WhatAmI() != AbstractType::Building)
 			return;
 
-		const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
-		const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+		const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+		const auto pBuilding = static_cast<BuildingClass*>(pThis);
 
 		if (!pBuildingType->CanBeOccupied)
 			return;

@@ -103,7 +103,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
-- Buildings with `CanC4=false` used to take 1 point of damage if hit by damage below 1 (calculated after `Verses` are applied but before veterancy, crate and AttachEffect modifiers). This can be disabled for negative damage by setting `CanC4.AllowZeroDamage` to true.
+- `CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything.
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
 - Weapons with `AA=true` projectiles can now be set to fire exclusively at air targets by setting `AAOnly=true`, regardless of other conditions. This is useful because `AG=false` only prevents targeting ground cells (and cannot be changed without breaking existing behaviour) and for cases where `LandTargeting` cannot be used.
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
@@ -226,6 +226,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 
 ## Fixes / interactions with other extensions
 
@@ -243,6 +245,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
+- Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
+- Fixed some units of Ares crashing after deployment conversion.
 
 ## Aircraft
 
@@ -722,6 +726,22 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 
 ## Technos
 
+### Airstrike flare visual customizations
+
+- It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual] -> AirstrikeLineColor`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue
+
+[SOMETECHNO]                ; TechnoType
+LaserTargetColor=           ; integer - [ColorAdd] index
+AirstrikeLineColor=         ; integer - Red,Green,Blue
+```
+
 ### Airstrike target eligibility
 
 - By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
@@ -752,6 +772,8 @@ AlternateFLH.OnTurret=true  ; boolean
 
 - It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
 - Whether or not `MultiplayPassive=true` houses benefit from these effects can be controlled via `GainSelfHealAllowMultiplayPassive`.
+- In campaign, whether or not these effects for player can be benefited by houses with `PlayerControl=true` can be controlled via `GainSelfHealFromPlayerControl`.
+- Whether or not these effects can be benefited by allied houses can be controlled via `GainSelfHealFromAllies`.
 - It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.(Infantry/Units/Buildings)` under `[AudioVisual]`, respectively.
   - `Pips.SelfHeal.(Infantry/Units/Buildings).Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
 - Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
@@ -763,6 +785,8 @@ In `rulesmd.ini`:
 InfantryGainSelfHealCap=                ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
 UnitsGainSelfHealCap=                   ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
 GainSelfHealAllowMultiplayPassive=true  ; boolean
+GainSelfHealFromPlayerControl=false     ; boolean
+GainSelfHealFromAllies=false            ; boolean
 
 [AudioVisual]
 Pips.SelfHeal.Infantry=13,20            ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
@@ -1448,7 +1472,7 @@ Ammo.AddOnDeploy=0      ; integer
 ```
 
 ```{warning}
-Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
+Due to technical constraints, units that use `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
 ```
 
 ### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
@@ -1469,7 +1493,7 @@ Ammo.DeployUnlockMaximumAmount=-1    ; integer
 ```
 
 ```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
 ### IsSimpleDeployer vehicle deploy animation / direction customization
@@ -1869,8 +1893,8 @@ ChargeTurret.Delays=  ; List of integers - game frames
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=240  ; floating point value
-                      ; 240 is the default saucer disk radius
+DiskLaser.Radius=240  ; integer
+; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay

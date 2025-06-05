@@ -163,14 +163,13 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 	enum { SkipGameCode = 0x469EBA };
 
 	GET(BulletClass*, pThis, ESI);
+	GET(int, debrisCount, EBX);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 	auto const debrisAnims = pWHExt->DebrisAnims.GetElements(RulesClass::Instance->MetallicDebris);
 
 	if (debrisAnims.size() < 1)
 		return SkipGameCode;
-
-	GET(int, debrisCount, EBX);
 
 	while (debrisCount > 0)
 	{
@@ -204,14 +203,14 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 {
 	enum { SkipGameCode = 0x469C98 };
 
+	GET(BulletClass*, pThis, ESI);
 	GET(AnimTypeClass*, pAnimType, EBX);
+	LEA_STACK(CoordStruct*, coords, STACK_OFFSET(0xA4, -0x40));
 
 	bool createdAnim = false;
 
 	if (pAnimType)
 	{
-		GET(BulletClass*, pThis, ESI);
-		LEA_STACK(CoordStruct*, coords, STACK_OFFSET(0xA4, -0x40));
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 		const bool splashed = pWHExt->Splashed;
 		int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
@@ -296,13 +295,13 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
+	GET_BASE(CoordStruct*, coords, 0x8);
 
 	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
-		GET_BASE(CoordStruct*, coords, 0x8);
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
 		int defaultDamage = pThis->WeaponType->Damage;
 
