@@ -1679,6 +1679,7 @@ msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it (by NetsuNegi)"
 msgstr ""
+"修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:409 ../../Whats-New.md:701 ../../Whats-New.md:778
 #: ../../Whats-New.md:942 ../../Whats-New.md:983 ../../Whats-New.md:995

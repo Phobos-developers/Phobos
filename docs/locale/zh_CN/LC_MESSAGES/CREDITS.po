@@ -1612,6 +1612,7 @@ msgid ""
 "Fix the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it"
 msgstr ""
+"修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug"
 
 #: ../../../CREDITS.md:403 ../../../CREDITS.md:478
 #, fuzzy

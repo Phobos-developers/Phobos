@@ -1411,6 +1411,7 @@ msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it."
 msgstr ""
+"修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:232
 msgid "Fixes / interactions with other extensions"
