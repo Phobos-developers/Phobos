@@ -615,70 +615,6 @@ ShowWeedsCounter=true  ; boolean
 Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
-## Tooltips
-
-![image](_static/images/tooltips-01.png)
-*Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
-
-- Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
-- TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable).
-- SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
-  - If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`.
-- Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
-- Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
-- The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
-- `AnchoredToolTips` positions the tooltip always to the left of sidebar, only applies to if `ExtendedToolTips` is set to true and they are enabled in user settings.
-
-In `uimd.ini`:
-```ini
-[ToolTips]
-ExtendedToolTips=false     ; boolean
-AnchoredToolTips=false     ; boolean
-CostLabel=<none>           ; CSF entry key
-PowerLabel=<none>          ; CSF entry key
-PowerBlackoutLabel=<none>  ; CSF entry key
-TimeLabel=<none>           ; CSF entry key
-SWShotsFormat=<none>       ; CSF entry key
-MaxWidth=0                 ; integer, pixels
-```
-In `rulesmd.ini`:
-```ini
-[SOMENAME]            ; TechnoType or SWType
-UIDescription=<none>  ; CSF entry key
-```
-
-- The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ToolTipDescriptions=true  ; boolean
-```
-
-```{note}
-Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
-```
-
-- The background color and opacity of tooltips can now be customized globally or per side.
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                          ; Side
-ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
-ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
-ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
-```
-
-```{note}
-The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
-```
-
 ### SuperWeapon Sidebar
 
 ![image](_static/images/sw_sidebar.png)
@@ -749,4 +685,68 @@ SuperWeaponSidebar.RequiredSignificance=0   ; integer
 
 ```{hint}
 While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
+```
+
+## Tooltips
+
+![image](_static/images/tooltips-01.png)
+*Extended tooltips used in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
+
+- Sidebar tooltips can now display extended information about the TechnoType/SWType when hovered over it's cameo. In addition the low character limit is lifted when the feature is enabled via the corresponding tag, allowing for 1024 character long tooltips.
+- TechnoType's tooltip would display it's name, cost, power, build time and description (when applicable).
+- SWType's tooltip would display it's name, cost,  and recharge time (when applicable).
+  - If `SW.Shots` from Ares is used, a C-style format string default to `Shots: %d` is appended. The format is customizable in csf. If a 2-parameter format (like `%d/%d shots left`) is used, the second integer is `SW.Shots`.
+- Extended tooltips don't use `TXT_MONEY_FORMAT_1` and `TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels (displayed before correspoding values) with the corresponding tags. Characters `$ U+0024`, `⚡ U+26A1` and `⌚ U+231A` are used by default.
+- Fixed a bug when switching build queue tabs via QWER didn't make tooltips disappear as they should, resulting in stuck tooltips.
+- The tooltips can now go over the sidebar bounds to accommodate for longer contents. You can control maximum text width with a new tag (paddings are excluded from the number you specify).
+- `AnchoredToolTips` positions the tooltip always to the left of sidebar, only applies to if `ExtendedToolTips` is set to true and they are enabled in user settings.
+
+In `uimd.ini`:
+```ini
+[ToolTips]
+ExtendedToolTips=false     ; boolean
+AnchoredToolTips=false     ; boolean
+CostLabel=<none>           ; CSF entry key
+PowerLabel=<none>          ; CSF entry key
+PowerBlackoutLabel=<none>  ; CSF entry key
+TimeLabel=<none>           ; CSF entry key
+SWShotsFormat=<none>       ; CSF entry key
+MaxWidth=0                 ; integer, pixels
+```
+In `rulesmd.ini`:
+```ini
+[SOMENAME]            ; TechnoType or SWType
+UIDescription=<none>  ; CSF entry key
+```
+
+- The descriptions are designed to be toggleable by users. For now you can only do that externally via client or manually.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ToolTipDescriptions=true  ; boolean
+```
+
+```{note}
+Same as with harvester counter, you can download the improved font (v4 and higher; can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)) or draw your own icons.
+```
+
+- The background color and opacity of tooltips can now be customized globally or per side.
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                          ; Side
+ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to [AudioVisual] -> ToolTip.Background.Color, which defaults to 0,0,0
+ToolTip.Background.Opacity=100      ; integer, ranged in [0, 100], defaults to [AudioVisual] -> ToolTip.Background.Opacity, which defaults to 100
+ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] -> ToolTip.Background.BlurSize, which defaults to 0.0
+```
+
+```{note}
+The blur effect is resource intensive. Please make sure you really want to enable this effect, otherwise leave it to 0.0 so it stays disabled.
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be enabled.
 ```
