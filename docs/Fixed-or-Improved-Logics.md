@@ -350,6 +350,22 @@ SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
 
+### Customize whether the animation with `Crater=yes` would destroy tiberium
+
+- In vanilla, the anim with `Crater=yes` is hardcoded to destroy the tiberium in its cell. Now you can disable this behavior by setting the following tags to `false`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AnimCraterReduceTiberium=true  ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                     ; AnimationType
+Crater.ReduceTiberium=         ; boolean, default to [General]->AnimCraterReduceTiberium
+```
+
 ### Fire animations spawned by Scorch & Flamer
 
 - Tiberian Sun allowed `Scorch=true` and `Flamer=true` animations to spawn fire animations from `[AudioVisual] -> SmallFire` & `LargeFire`. This behaviour has been reimplemented and is fully customizable.

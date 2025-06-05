@@ -382,6 +382,7 @@ New:
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
 - Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
+- Customize whether the animation with `Crater=yes` would destroy tiberium (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
