@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "SWSidebar/SWSidebarClass.h"
 
 #include <EventClass.h>
 #include <HouseClass.h>
@@ -23,13 +24,13 @@ void SidebarExt::Remove(SidebarClass* pThis)
 bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 {
 	const auto pTechnoType = TechnoTypeClass::GetByTypeAndIndex(pItem->ItemType, pItem->ItemIndex);
-	const auto pCurrent = HouseClass::CurrentPlayer();
+	const auto pCurrent = HouseClass::CurrentPlayer;
 
 	if (pTechnoType)
 	{
 		const auto pFactory = pTechnoType->FindFactory(true, false, false, pCurrent);
 
-		if (pFactory && pFactory->Owner->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
+		if (pFactory && pCurrent->CanBuild(pTechnoType, false, true) != CanBuildResult::Unbuildable)
 			return false;
 	}
 	else
@@ -37,37 +38,84 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 		const auto& supers = pCurrent->Supers;
 
 		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
-			return false;
-	}
-
-	if (pItem->CurrentFactory)
-	{
-		EventClass event = EventClass(pCurrent->ArrayIndex, EventType::Abandon, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType && pTechnoType->Naval);
-		EventClass::AddEvent(event);
-	}
-
-	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
-	{
-		DisplayClass::Instance->CurrentBuilding = nullptr;
-		DisplayClass::Instance->CurrentBuildingType = nullptr;
-		DisplayClass::Instance->CurrentBuildingOwnerArrayIndex = -1;
-		DisplayClass::Instance->SetActiveFoundation(nullptr);
-	}
-
-	if (pTechnoType)
-	{
-		const auto absType = pTechnoType->WhatAmI();
-
-		// Here we make correction to the hardcoded BuildCat::DontCare
-		const auto buildCat = absType == AbstractType::BuildingType ? static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat : BuildCat::DontCare;
-
-		if (pCurrent->GetPrimaryFactory(absType, pTechnoType->Naval, buildCat))
 		{
-			EventClass event = EventClass(pCurrent->ArrayIndex, EventType::AbandonAll, static_cast<int>(pItem->ItemType), pItem->ItemIndex, pTechnoType->Naval);
-			EventClass::AddEvent(event);
+			if (SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
+				ScenarioExt::Global()->SWSidebar_Indices.emplace_back(pItem->ItemIndex);
+			else
+				return false;
 		}
 	}
 
+	// The following sections have been modified
+	auto buildCat = BuildCat::DontCare;
+
+	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
+	{
+		__assume(pTechnoType != nullptr);
+		buildCat = static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat;
+		auto& pDisplay = DisplayClass::Instance;
+		pDisplay.SetActiveFoundation(nullptr);
+		pDisplay.CurrentBuilding = nullptr;
+		pDisplay.CurrentBuildingType = nullptr;
+		pDisplay.CurrentBuildingOwnerArrayIndex = -1;
+	}
+
+	// AbandonAll contains Abandon, if the factory cannot be found, it will also cannot be found when respont to this event.
+	// The original version added two events, I think it's to solve the problem of BuildCat::Combat because of the hardcode.
+	// Here make correction to the hardcoded BuildCat::DontCare.
+	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
+	{
+		const EventClass event
+		(
+			pCurrent->ArrayIndex,
+			EventType::AbandonAll,
+			static_cast<int>(pItem->ItemType),
+			pItem->ItemIndex,
+			pTechnoType->Naval
+		);
+		EventClass::AddEvent(event);
+	}
+
+	// The original code is as follows
+/*
+	if (pItem->CurrentFactory)
+	{
+		const EventClass event
+		(
+			pCurrent->ArrayIndex,
+			EventType::Abandon,
+			static_cast<int>(pItem->ItemType),
+			pItem->ItemIndex,
+			pTechnoType && pTechnoType->Naval
+		);
+		EventClass::AddEvent(event);
+	}
+
+	auto buildCat = BuildCat::DontCare;
+
+	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
+	{
+		buildCat = static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat;
+		DisplayClass::Instance.SetActiveFoundation(nullptr);
+		DisplayClass::Instance.CurrentBuilding = nullptr;
+		DisplayClass::Instance.CurrentBuildingType = nullptr;
+		DisplayClass::Instance.CurrentBuildingOwnerArrayIndex = -1;
+	}
+
+	// Here make correction to the hardcoded BuildCat::DontCare.
+	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
+	{
+		const EventClass event
+		(
+			pCurrent->ArrayIndex,
+			EventType::AbandonAll,
+			static_cast<int>(pItem->ItemType),
+			pItem->ItemIndex,
+			pTechnoType->Naval
+		);
+		EventClass::AddEvent(event);
+	}
+*/
 	return true;
 }
 

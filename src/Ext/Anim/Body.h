@@ -46,10 +46,7 @@ public:
 		void CreateAttachedSystem();
 		void DeleteAttachedSystem();
 
-		virtual ~ExtData()
-		{
-			this->DeleteAttachedSystem();
-		}
+		virtual ~ExtData() override;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
@@ -70,6 +67,12 @@ public:
 		~ExtContainer();
 	};
 
+	static void Clear()
+	{
+		AnimExt::AnimsWithAttachedParticles.clear();
+	}
+
+	static std::vector<AnimClass*> AnimsWithAttachedParticles;
 	static ExtContainer ExtMap;
 
 	static bool SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner = true, bool defaultToInvokerOwner = false);
@@ -83,4 +86,5 @@ public:
 
 	static void InvalidateTechnoPointers(TechnoClass* pTechno);
 	static void InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSystem);
+	static void CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, CoordStruct coords, TechnoClass* pTechno = nullptr, HouseClass* pHouse = nullptr, bool invoker = false, bool ownedObject = false);
 };

@@ -2,10 +2,12 @@
 
 #include <AnimTypeClass.h>
 
+#include <New/Type/Affiliated//CreateUnitTypeClass.h>
 #include <Utilities/Container.h>
 #include <Utilities/Enum.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+
 class AnimTypeExt
 {
 public:
@@ -18,20 +20,7 @@ public:
 	{
 	public:
 		CustomPalette Palette;
-		Valueable<TechnoTypeClass*> CreateUnit;
-		Valueable<DirType> CreateUnit_Facing;
-		Valueable<bool> CreateUnit_InheritDeathFacings;
-		Valueable<bool> CreateUnit_InheritTurretFacings;
-		Valueable<bool> CreateUnit_RemapAnim;
-		Valueable<bool> CreateUnit_RandomFacing;
-		Valueable<Mission> CreateUnit_Mission;
-		Nullable<Mission> CreateUnit_AIMission;
-		Valueable<OwnerHouseKind> CreateUnit_Owner;
-		Valueable<bool> CreateUnit_AlwaysSpawnOnGround;
-		Valueable<bool> CreateUnit_SpawnParachutedInAir;
-		Valueable<bool> CreateUnit_ConsiderPathfinding;
-		Valueable<AnimTypeClass*> CreateUnit_SpawnAnim;
-		Valueable<int> CreateUnit_SpawnHeight;
+		std::unique_ptr<CreateUnitTypeClass> CreateUnitType;
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
@@ -68,19 +57,7 @@ public:
 
 		ExtData(AnimTypeClass* OwnerObject) : Extension<AnimTypeClass>(OwnerObject)
 			, Palette { CustomPalette::PaletteMode::Temperate }
-			, CreateUnit_Facing { DirType::North }
-			, CreateUnit_RandomFacing { true }
-			, CreateUnit_InheritDeathFacings { false }
-			, CreateUnit_InheritTurretFacings { false }
-			, CreateUnit_RemapAnim { false }
-			, CreateUnit_Mission { Mission::Guard }
-			, CreateUnit_AIMission {}
-			, CreateUnit_Owner { OwnerHouseKind::Victim }
-			, CreateUnit_AlwaysSpawnOnGround { false }
-			, CreateUnit_SpawnParachutedInAir { false }
-			, CreateUnit_ConsiderPathfinding { false }
-			, CreateUnit_SpawnAnim {}
-			, CreateUnit_SpawnHeight { -1 }
+			, CreateUnitType { nullptr }
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}

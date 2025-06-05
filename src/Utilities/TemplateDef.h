@@ -563,7 +563,7 @@ namespace detail
 			auto const& powerupNames = Powerups::Effects;
 			int index = -1;
 
-			for (size_t i = 0; i < powerupNames.size(); i++)
+			for (size_t i = 0; i < std::size(powerupNames); i++)
 			{
 				if (!_strcmpi(parser.value(), powerupNames[i]))
 				{

@@ -5,35 +5,34 @@
 
 DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 {
-	enum { ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };
+	enum { ContinueAresCheck = 0x43C326, ReturnStatic = 0x43C31A, ReturnNegative = 0x43CB68, ReturnRoger = 0x43CCF2 };
 
 	GET(BuildingClass*, pThis, ESI);
 	GET(TechnoClass*, pFrom, EDI);
 
+	if (!pThis->Owner->IsAlliedWith(pFrom))
+		return ReturnStatic;
+
+	// Ares perfectly replicated this issue, rewrite it here
+	const auto pFromType = pFrom->GetTechnoType();
+	const auto movementZone = pFromType->MovementZone;
+	const bool isAmphibious = movementZone == MovementZone::Amphibious || movementZone == MovementZone::AmphibiousCrusher
+		|| movementZone == MovementZone::AmphibiousDestroyer;
+
+	if (!isAmphibious && (pThis->GetTechnoType()->Naval != pFromType->Naval))
+		return ReturnNegative;
+
 	if (pThis->Type->Grinding)
 	{
-		if (!pThis->Owner->IsAlliedWith(pFrom))
-			return ReturnStatic;
+		const auto mission = pThis->GetCurrentMission();
 
-		if (pThis->GetCurrentMission() == Mission::Construction || pThis->GetCurrentMission() == Mission::Selling ||
-			pThis->BState == 0 || !pThis->HasPower || pFrom->GetTechnoType()->BalloonHover)
-		{
+		if (mission == Mission::Construction || mission == Mission::Selling || pThis->BState == 0 || !pThis->HasPower || pFromType->BalloonHover)
 			return ReturnNegative;
-		}
-
-		bool isAmphibious = pFrom->GetTechnoType()->MovementZone == MovementZone::Amphibious || pFrom->GetTechnoType()->MovementZone == MovementZone::AmphibiousCrusher ||
-			pFrom->GetTechnoType()->MovementZone == MovementZone::AmphibiousDestroyer;
-
-		if (!isAmphibious && (pThis->GetTechnoType()->Naval && !pFrom->GetTechnoType()->Naval ||
-			!pThis->GetTechnoType()->Naval && pFrom->GetTechnoType()->Naval))
-		{
-			return ReturnNegative;
-		}
 
 		return BuildingExt::CanGrindTechno(pThis, pFrom) ? ReturnRoger : ReturnNegative;
 	}
 
-	return 0;
+	return ContinueAresCheck;
 }
 
 

@@ -17,16 +17,18 @@
 
 void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 {
-	auto const pTypeExt = SWTypeExt::ExtMap.Find(pSW->Type);
+	const auto pHouse = pSW->Owner;
+	const auto pType = pSW->Type;
+	auto const pTypeExt = SWTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->LimboDelivery_Types.size() > 0)
-		pTypeExt->ApplyLimboDelivery(pSW->Owner);
+		pTypeExt->ApplyLimboDelivery(pHouse);
 
 	if (pTypeExt->LimboKill_IDs.size() > 0)
-		pTypeExt->ApplyLimboKill(pSW->Owner);
+		pTypeExt->ApplyLimboKill(pHouse);
 
 	if (pTypeExt->Detonate_Warhead || pTypeExt->Detonate_Weapon)
-		pTypeExt->ApplyDetonation(pSW->Owner, cell);
+		pTypeExt->ApplyDetonation(pHouse, cell);
 
 	if (pTypeExt->SW_Next.size() > 0)
 		pTypeExt->ApplySWNext(pSW, cell);
@@ -34,11 +36,36 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->Convert_Pairs.size() > 0)
 		pTypeExt->ApplyTypeConversion(pSW);
 
-	if (static_cast<int>(pSW->Type->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
+	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
 
-	auto& sw_ext = HouseExt::ExtMap.Find(pSW->Owner)->SuperExts[pSW->Type->ArrayIndex];
+	auto& sw_ext = HouseExt::ExtMap.Find(pHouse)->SuperExts[pType->ArrayIndex];
 	sw_ext.ShotCount++;
+
+	const auto pTags = &pHouse->RelatedTags;
+	if (pTags->Count > 0)
+	{
+		int index = 0;
+		int TagCount = pTags->Count;
+
+		while (TagCount > 0 && index < TagCount)
+		{
+			const auto pTag = pTags->GetItem(index);
+
+			// don't be confused as to why (TechnoClass*)(pSW) is there, it's something very much needed..
+			if (pTag->RaiseEvent(static_cast<TriggerEvent>(77), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW))
+				|| pTag->RaiseEvent(static_cast<TriggerEvent>(75), nullptr, CellStruct::Empty, false, (TechnoClass*)(pSW)))
+			{
+				if (TagCount != pTags->Count)
+				{
+					TagCount = pTags->Count;
+					continue;
+				}
+			}
+
+			++index;
+		}
+	}
 }
 
 // ====================================================
@@ -76,10 +103,8 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->DiscoveredBy(pOwner);
 
 		pOwner->RegisterGain(pBuilding, false);
-		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
 		pOwner->RecheckPower = true;
-		pOwner->RecheckRadar = true;
 		pOwner->Buildings.AddItem(pBuilding);
 
 		// Different types of building logics
@@ -166,7 +191,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 {
 	for (int limboKillID : this->LimboKill_IDs)
 	{
-		for (HouseClass* pTargetHouse : *HouseClass::Array)
+		for (HouseClass* pTargetHouse : HouseClass::Array)
 		{
 			if (EnumFunctions::CanTargetHouse(this->LimboKill_Affected, pHouse, pTargetHouse))
 			{
@@ -205,7 +230,7 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 
 void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& cell)
 {
-	auto coords = MapClass::Instance->GetCellAt(cell)->GetCoords();
+	auto coords = MapClass::Instance.GetCellAt(cell)->GetCoords();
 	BuildingClass* pFirer = nullptr;
 
 	for (auto const& pBld : pHouse->Buildings)
@@ -223,7 +248,7 @@ void SWTypeExt::ExtData::ApplyDetonation(HouseClass* pHouse, const CellStruct& c
 	const auto pWeapon = this->Detonate_Weapon;
 	auto const mapCoords = CellClass::Coord2Cell(coords);
 
-	if (!MapClass::Instance->CoordinatesLegal(mapCoords))
+	if (!MapClass::Instance.CoordinatesLegal(mapCoords))
 	{
 		auto const ID = pWeapon ? pWeapon->get_ID() : this->Detonate_Warhead->get_ID();
 		Debug::Log("ApplyDetonation: Superweapon [%s] failed to detonate [%s] - cell at %d, %d is invalid.\n", this->OwnerObject()->get_ID(), ID, mapCoords.X, mapCoords.Y);
@@ -288,10 +313,7 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 
 void SWTypeExt::ExtData::ApplyTypeConversion(SuperClass* pSW)
 {
-	if (this->Convert_Pairs.size() == 0)
-		return;
-
-	for (const auto pTargetFoot : *FootClass::Array)
+	for (const auto pTargetFoot : FootClass::Array)
 		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pSW->Owner);
 }
 

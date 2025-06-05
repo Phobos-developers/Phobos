@@ -43,6 +43,50 @@ DEFINE_HOOK(0x508CF2, HouseClass_UpdatePower_PowerOutput, 0x7)
 	return 0x508D07;
 }
 
+// Trigger power recalculation on gain/loss of any techno, not just buildings.
+DEFINE_HOOK_AGAIN(0x5025F0, HouseClass_RegisterGain, 0x5) // RegisterLoss
+DEFINE_HOOK(0x502A80, HouseClass_RegisterGain, 0x8)
+{
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
+	GET(HouseClass*, pThis, ECX);
+
+	pThis->RecheckPower = true;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x508D8D, HouseClass_UpdatePower_Techno, 0x6)
+{
+	if (!Phobos::Config::UnitPowerDrain)
+		return 0;
+
+	GET(HouseClass*, pThis, ESI);
+
+	auto updateDrainForThisType = [pThis](const TechnoTypeClass* pType)
+	{
+			const int count = pThis->CountOwnedAndPresent(pType);
+			if (count == 0)
+				return;
+			const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
+			if (pExt->Power > 0)
+				pThis->PowerOutput += pExt->Power * count;
+			else
+				pThis->PowerDrain -= pExt->Power * count;
+	};
+
+	for (const auto pType : InfantryTypeClass::Array)
+		updateDrainForThisType(pType);
+	for (const auto pType : UnitTypeClass::Array)
+		updateDrainForThisType(pType);
+	for (const auto pType : AircraftTypeClass::Array)
+		updateDrainForThisType(pType);
+	// Don't do this for buildings, they've already been counted.
+
+	return 0;
+}
+
 DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 {
 	GET(BuildingClass* const, pBuilding, EDI);
@@ -83,13 +127,13 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
+	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords()))
+		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (!MapClass::Instance->CoordinatesLegal(pBuilding->GetMapCoords())
-		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
-	{
+	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
-	}
 
 	return 0;
 }
@@ -100,7 +144,7 @@ DEFINE_HOOK(0x4AC534, DisplayClass_ComputeStartPosition_IllegalCoords, 0x6)
 
 	GET(TechnoClass* const, pTechno, ECX);
 
-	if (!MapClass::Instance->CoordinatesLegal(pTechno->GetMapCoords()))
+	if (!MapClass::Instance.CoordinatesLegal(pTechno->GetMapCoords()))
 		return SkipTechno;
 
 	return 0;
@@ -120,7 +164,7 @@ namespace LimboTrackingTemp
 
 DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 {
-	for (auto const pTechno : *TechnoClass::Array())
+	for (auto const pTechno : TechnoClass::Array)
 	{
 		auto const pType = pTechno->GetTechnoType();
 
@@ -138,12 +182,13 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 
 void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
-	auto const pType = pThis->GetTechnoType();
 
-	if (LimboTrackingTemp::Enabled && pThis->InLimbo && !pType->Insignificant && !pType->DontScore)
+	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		pOwnerExt->RemoveFromLimboTracking(pType);
+		auto const pType = pThis->GetTechnoType();
+
+		if (!pType->Insignificant && !pType->DontScore)
+			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
 	LimboTrackingTemp::IsBeingDeleted = true;
@@ -151,8 +196,8 @@ void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 	LimboTrackingTemp::IsBeingDeleted = false;
 }
 
-DEFINE_JUMP(CALL, 0x4DE60B, GET_OFFSET(TechnoClass_UnInit_Wrapper));   // FootClass
-DEFINE_JUMP(VTABLE, 0x7E3FB4, GET_OFFSET(TechnoClass_UnInit_Wrapper)); // BuildingClass
+DEFINE_FUNCTION_JUMP(CALL, 0x4DE60B, TechnoClass_UnInit_Wrapper);   // FootClass
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E3FB4, TechnoClass_UnInit_Wrapper); // BuildingClass
 
 DEFINE_HOOK(0x6F6BC9, TechnoClass_Limbo_AddTracking, 0x6)
 {
@@ -208,7 +253,15 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
-	if (auto pMe = generic_cast<FootClass*>(pThis))
+	if (pExt->TypeExtData->Harvester_Counted)
+	{
+		auto& vec = pOwnerExt->OwnedCountedHarvesters;
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
+
+		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
+	}
+
+	if (auto pMe = generic_cast<FootClass*, true>(pThis))
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();
 		bool You_are_human = pNewOwner->IsControlledByHuman();
