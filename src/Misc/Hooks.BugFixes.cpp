@@ -2006,57 +2006,38 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 
 #pragma region ElectricAssultFix
 
-DEFINE_HOOK_AGAIN(0x4D5116, FootClass_ElectricAssultFix, 0x8)	// Mission_Guard
-DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
+namespace ElectricAssultTemp
+{
+	WeaponTypeClass* WeaponType;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5102, FootClass_ElectricAssultFix_SetWeaponType, 0x6)	// Mission_Guard
+DEFINE_HOOK(0x4D6F66, FootClass_ElectricAssultFix_SetWeaponType, 0x6)		// Mission_AreaGuard
+{
+	GET(WeaponTypeClass*, Secondary, ECX);
+
+	ElectricAssultTemp::WeaponType = Secondary;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5184, FootClass_ElectricAssultFix2, 0x7)	// Mission_Guard
+DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 {
 	GET(FootClass*, pThis, ESI);
-	GET(WeaponTypeClass*, Secondary, ECX);
-	enum { SkipGuard = 0x4D5225, SkipAreaGuard = 0x4D7025 };
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
+		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
 
-	bool InGuard = (R->Origin() == 0x4D5116);
-	const auto pType = pThis->GetTechnoType();
-	int Range = Secondary->Range;
+	const auto pWeapon = ElectricAssultTemp::WeaponType;
+	bool InGuard = (R->Origin() == 0x4D5184);
 
-	if (Range > 0
-		&& (!pThis->Locomotor->Is_Really_Moving_Now()
-		|| (pThis->WhatAmI() != AbstractType::Infantry
-		&& pType->OpportunityFire)))
+	if (pBuilding->Owner == pThis->Owner &&
+		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->GetTechnoType()) != 0.0)
 	{
-		const auto cellCoords = pThis->GetMapCoords();
-		BuildingClass* pBuilding = nullptr;
-
-		for (CellRangeEnumerator it(cellCoords, static_cast<double>(Range) / Unsorted::LeptonsPerCell); it; it++)
-		{
-			const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
-			if (!pCell)
-				continue;
-
-			const auto pTargetBuilding = pCell->GetBuilding();
-			if (!pTargetBuilding
-				|| pTargetBuilding->Owner != pThis->Owner
-				|| !pTargetBuilding->Type->Overpowerable
-				|| pThis->DistanceFrom(pTargetBuilding) > Range
-				|| GeneralUtils::GetWarheadVersusArmor(Secondary->Warhead, pTargetBuilding) == 0.0)
-				continue;
-
-			pBuilding = pTargetBuilding;
-			break;
-		}
-
-		if (pBuilding)
-		{
-			pThis->SetTarget(pBuilding);
-			// I'm not sure what it does, I'll put it in just to be safe.
-			pThis->unknown_bool_68E = true;
-			pThis->QueueMission(Mission::Attack, false);
-		}
-		else if (InGuard)
-		{
-			pThis->UpdateIdleAction();
-		}
+		return InGuard ? SkipGuard : SkipAreaGuard;
 	}
 
-	return InGuard ? SkipGuard : SkipAreaGuard;
+	return InGuard ? ContinueGuard : ContinueAreaGuard;
 }
 
 #pragma endregion
