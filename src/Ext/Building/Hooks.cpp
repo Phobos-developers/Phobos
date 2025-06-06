@@ -76,18 +76,15 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 {
 	GET(BuildingClass*, pBuilding, ESI);
+
 	if (auto const pInf = abstract_cast<InfantryClass*>(R->EDI<FootClass*>()))
 	{
 		if (pBuilding && pBuilding->Type->Cloning)
 		{
-			if (auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
-			{
-				double percentage = GeneralUtils::GetRangedRandomOrSingleValue(pTypeExt->InitialStrength_Cloning);
-				int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
-
-				pInf->Health = strength;
-				pInf->EstimatedHealth = strength;
-			}
+			double percentage = GeneralUtils::GetRangedRandomOrSingleValue(BuildingTypeExt::ExtMap.Find(pBuilding->Type)->InitialStrength_Cloning);
+			int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
+			pInf->Health = strength;
+			pInf->EstimatedHealth = strength;
 		}
 	}
 
@@ -99,7 +96,8 @@ DEFINE_HOOK(0x449ADA, BuildingClass_MissionConstruction_DeployToFireFix, 0x0)
 	GET(BuildingClass*, pThis, ESI);
 
 	auto pExt = BuildingExt::ExtMap.Find(pThis);
-	if (pExt && pExt->DeployedTechno && pThis->LastTarget)
+
+	if (pExt->DeployedTechno && pThis->LastTarget)
 	{
 		pThis->Target = pThis->LastTarget;
 		pThis->QueueMission(Mission::Attack, false);
@@ -249,10 +247,11 @@ DEFINE_HOOK(0x44FBBF, CreateBuildingFromINIFile_AfterCTOR_BeforeUnlimbo, 0x8)
 DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 {
 	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
-	GET(BuildingClass* const, pThis, ESI);
 
 	if (SessionClass::IsCampaign())
 	{
+		GET(BuildingClass* const, pThis, ESI);
+
 		// Preplaced structures are already managed before
 		if (BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile)
 			return SkipSetShouldRebuild;
@@ -277,8 +276,7 @@ DEFINE_HOOK(0x4519A2, BuildingClass_UpdateAnim_SetParentBuilding, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AnimClass*, pAnim, EBP);
 
-	auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-	pAnimExt->ParentBuilding = pThis;
+	AnimExt::ExtMap.Find(pAnim)->ParentBuilding = pThis;
 	TechnoExt::ExtMap.Find(pThis)->AnimRefCount++;
 
 	return 0;
@@ -288,10 +286,14 @@ DEFINE_HOOK(0x43D6E5, BuildingClass_Draw_ZShapePointMove, 0x5)
 {
 	enum { Apply = 0x43D6EF, Skip = 0x43D712 };
 
-	GET(BuildingClass*, pThis, ESI);
 	GET(Mission, mission, EAX);
 
-	if ((mission != Mission::Selling && mission != Mission::Construction) || BuildingTypeExt::ExtMap.Find(pThis->Type)->ZShapePointMove_OnBuildup)
+	if ((mission != Mission::Selling && mission != Mission::Construction))
+		return Apply;
+
+	GET(BuildingClass*, pThis, ESI);
+
+	if (BuildingTypeExt::ExtMap.Find(pThis->Type)->ZShapePointMove_OnBuildup)
 		return Apply;
 
 	return Skip;
@@ -303,9 +305,7 @@ DEFINE_HOOK(0x4511D6, BuildingClass_AnimationAI_SellBuildup, 0x7)
 
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-
-	return pTypeExt->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
+	return BuildingTypeExt::ExtMap.Find(pThis->Type)->SellBuildupLength == pThis->Animation.Value ? Continue : Skip;
 }
 
 #pragma region FactoryPlant
@@ -358,12 +358,13 @@ DEFINE_HOOK(0x449149, BuildingClass_Captured_FactoryPlant2, 0x6)
 	enum { Skip = 0x449197 };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET(HouseClass*, pNewOwner, EBP);
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
 
 	if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 || pTypeExt->FactoryPlant_DisallowTypes.size() > 0)
 	{
+		GET(HouseClass*, pNewOwner, EBP);
+
 		auto const pHouseExt = HouseExt::ExtMap.Find(pNewOwner);
 		pHouseExt->RestrictedFactoryPlants.push_back(pThis);
 
@@ -405,9 +406,7 @@ DEFINE_HOOK(0x440D01, BuildingClass_Unlimbo_DestroyableObstacle, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pTypeExt->IsDestroyableObstacle)
+	if (BuildingTypeExt::ExtMap.Find(pThis->Type)->IsDestroyableObstacle)
 		RecalculateCells(pThis);
 
 	return 0;
@@ -417,9 +416,7 @@ DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
-
-	if (pTypeExt->IsDestroyableObstacle)
+	if (BuildingTypeExt::ExtMap.Find(pThis->Type)->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);
 
 	// only remove animation when the building is destroyed or sold
@@ -444,9 +441,7 @@ DEFINE_HOOK(0x483D8E, CellClass_CheckPassability_DestroyableObstacle, 0x6)
 
 	GET(BuildingClass*, pBuilding, ESI);
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-
-	if (pTypeExt->IsDestroyableObstacle)
+	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->IsDestroyableObstacle)
 		return IsBlockage;
 
 	return 0;
@@ -529,12 +524,12 @@ DEFINE_HOOK(0x6F4D1A, TechnoClass_ReceiveCommand_Repair, 0x5)
 {
 	enum { AnswerNegative = 0x6F4CB4 };
 
-	GET(TechnoClass*, pThis, ESI);
-	GET(int, repairStep, EAX);
 	GET_STACK(TechnoClass*, pFrom, STACK_OFFSET(0x18, 0x4));
 
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pFrom))
 	{
+		GET(TechnoClass*, pThis, ESI);
+		GET(int, repairStep, EAX);
 		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
 		if (pBuilding->Type->UnitReload && pTypeExt->Units_RepairRate.isset() && !UnitRepairTemp::SeparateRepair)
@@ -632,10 +627,12 @@ DEFINE_HOOK(0x4FAAD8, HouseClass_AbandonProduction_RewriteForBuilding, 0x8)
 DEFINE_HOOK(0x6A9C54, StripClass_DrawStrip_FindFactoryDehardCode, 0x6)
 {
 	GET(TechnoTypeClass* const, pType, ECX);
-	LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x490, -0x490));
 
 	if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	{
+		LEA_STACK(BuildCat*, pBuildCat, STACK_OFFSET(0x490, -0x490));
 		*pBuildCat = pBuildingType->BuildCat;
+	}
 
 	return 0;
 }

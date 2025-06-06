@@ -143,6 +143,7 @@ void AresHelper::Init()
 		break;
 	default:
 		Debug::LogDeferred("[Phobos] Detected a version of Ares that is not supported by Phobos. Disabling integration.\n");
+		AresFunctions::InitNoAres();
 		break;
 	}
 }

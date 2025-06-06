@@ -103,7 +103,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
-- Buildings with `CanC4=false` used to take 1 point of damage if hit by damage below 1 (calculated after `Verses` are applied but before veterancy, crate and AttachEffect modifiers). This can be disabled for negative damage by setting `CanC4.AllowZeroDamage` to true.
+- `CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything.
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
 - Weapons with `AA=true` projectiles can now be set to fire exclusively at air targets by setting `AAOnly=true`, regardless of other conditions. This is useful because `AG=false` only prevents targeting ground cells (and cannot be changed without breaking existing behaviour) and for cases where `LandTargeting` cannot be used.
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
@@ -227,6 +227,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Dehardcoded 255 limit of `OverlayType`.
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 
 ## Fixes / interactions with other extensions
 
@@ -244,6 +245,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
+- Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
+- Fixed some units of Ares crashing after deployment conversion.
+- Fixed the bug that AlphaImage remained after unit entered tunnel.
 
 ## Aircraft
 
@@ -255,6 +259,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]  ; AircraftType
 VoicePickup=    ; Sound entry
+```
+
+### Customize the scatter caused by aircraft attack mission
+
+- In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+FiringForceScatter=true   ; boolean
 ```
 
 ### Extended Aircraft Missions
@@ -345,6 +359,22 @@ WakeAnim=                     ; AnimationType
 SplashAnims=                  ; List of AnimationTypes
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
+```
+
+### Customize whether `Crater=yes` animation would destroy tiberium
+
+- In vanilla, the anim with `Crater=yes` is hardcoded to destroy the tiberium in its cell. Now you can disable this behavior by setting the following tags to `false`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AnimCraterDestroyTiberium=true  ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                      ; AnimationType
+Crater.DestroyTiberium=         ; boolean, default to [General]->AnimCraterDestroyTiberium
 ```
 
 ### Fire animations spawned by Scorch & Flamer
@@ -463,6 +493,22 @@ In `rulesmd.ini`:
 BarracksExitCell=  ; X,Y - cell offset
 ```
 
+### Customizable garrison and bunker properties
+
+- You can now customize damage or ROF multipliers of a garrison or tank bunker building.
+- You can now customize enter or exit sound of a tank bunker building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]              ; BuildingType
+OccupyDamageMultiplier=     ; floating point value, default to [CombatDamage] -> OccupyDamageMultiplier
+OccupyROFMultiplier=        ; floating point value, default to [CombatDamage] -> OccupyROFMultiplier
+BunkerDamageMultiplier=     ; floating point value, default to [CombatDamage] -> BunkerDamageMultiplier
+BunkerROFMultMultiplier=    ; floating point value, default to [CombatDamage] -> BunkerROFMultMultiplier
+BunkerWallsUpSound=         ; Sound entry, default to [AudioVisual] -> BunkerWallsUpSound
+BunkerWallsDownSound=       ; Sound entry, default to [AudioVisual] -> BunkerWallsDownSound
+```
+
 ### Customizable selling buildup sequence length for buildings that can undeploy
 
 - By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
@@ -520,6 +566,16 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Disable DamageSound
+
+- Now you can disable `DamageSound` of a building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]            ; BuildingType
+DisableDamageSound=false  ; boolean
+```
+
 ### Exclude Factory from providing multiple factory bonus
 
 - It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
@@ -528,6 +584,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Power plant damage factor
+
+- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
+  - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+PowerPlant.DamageFactor=1.0        ; floating point value
 ```
 
 ### Skip anim delay for burst fire
@@ -1890,8 +1957,8 @@ ChargeTurret.Delays=  ; List of integers - game frames
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=240  ; floating point value
-                      ; 240 is the default saucer disk radius
+DiskLaser.Radius=240  ; integer
+; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay

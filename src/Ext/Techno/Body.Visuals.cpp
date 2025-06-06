@@ -22,37 +22,40 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 	int selfHealFrames = 0;
 	bool hasInfantrySelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Infantry;
 	bool hasUnitSelfHeal = pTypeExt->SelfHealGainType.isset() && pTypeExt->SelfHealGainType.Get() == SelfHealGainType::Units;
-	bool isOrganic = false;
 	auto const whatAmI = pThis->WhatAmI();
-
-	if (whatAmI == AbstractType::Infantry || (pType->Organic && whatAmI == AbstractType::Unit))
-		isOrganic = true;
+	const bool isOrganic = (whatAmI == AbstractType::Infantry || (pType->Organic && whatAmI == AbstractType::Unit));
 
 	auto hasSelfHeal = [pThis](const bool infantryHeal)
 		{
 			auto const pOwner = pThis->Owner;
 
-			if (infantryHeal ? pOwner->InfantrySelfHeal > 0 : pOwner->UnitsSelfHeal > 0)
+			auto haveHeal = [infantryHeal](HouseClass* pHouse)
+				{
+					return (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0);
+				};
+
+			if (haveHeal(pOwner))
 				return true;
 
-			const bool allowPlayerControl = RulesExt::Global()->GainSelfHealFromPlayerControl && SessionClass::IsCampaign();
-			const bool allowAlliesInCampaign = RulesExt::Global()->GainSelfHealFromAllies && SessionClass::IsCampaign();
-			const bool allowAlliesDefault = RulesExt::Global()->GainSelfHealFromAllies && !SessionClass::IsCampaign();
+			const bool isCampaign = SessionClass::IsCampaign();
+			const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign;
+			const bool fromAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
-			if (allowPlayerControl || allowAlliesInCampaign || allowAlliesDefault)
+			if (fromPlayer || fromAllies)
 			{
+				auto checkHouse = [fromPlayer, fromAllies, isCampaign, pOwner](HouseClass* pHouse)
+					{
+						if (pHouse == pOwner)
+							return false;
+
+						return (fromPlayer && (pHouse->IsHumanPlayer || pHouse->IsInPlayerControl)) // pHouse->IsControlledByCurrentPlayer()
+							|| (fromAllies && (!isCampaign || (!pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl)) && pHouse->IsAlliedWith(pOwner));
+					};
+
 				for (auto pHouse : HouseClass::Array)
 				{
-					if (pHouse == pOwner)
-						continue;
-
-					if ((allowPlayerControl && pHouse->IsControlledByCurrentPlayer())
-						|| (allowAlliesInCampaign && !pHouse->IsControlledByCurrentPlayer() && pHouse->IsAlliedWith(pOwner))
-						|| (allowAlliesDefault && pHouse->IsAlliedWith(pOwner)))
-					{
-						if (infantryHeal ? pHouse->InfantrySelfHeal > 0 : pHouse->UnitsSelfHeal > 0)
-							return true;
-					}
+					if (checkHouse(pHouse) && haveHeal(pHouse))
+						return true;
 				}
 			}
 

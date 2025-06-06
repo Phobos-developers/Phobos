@@ -121,6 +121,9 @@ This page lists all the individual contributions to the project by their author.
   - Help with custom locomotors
   - Extension class optimization
   - Overload characteristic dehardcoded
+  - Customizable garrison and bunker properties
+  - Disable DamageSound for buildings
+  - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -362,6 +365,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
+  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -397,6 +401,9 @@ This page lists all the individual contributions to the project by their author.
   - Tiberium eater logic
   - Fix the bug that ships can travel on elevated bridges
   - Original `Arcing` elevation inaccuracy fix
+  - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
+  - Exclusive SuperWeapon Sidebar
+  - Fix the bug that AlphaImage remained after unit entered tunnel.
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -471,6 +478,7 @@ This page lists all the individual contributions to the project by their author.
   - Aggressive attack move mission
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
+  - Exclusive SuperWeapon Sidebar
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -485,6 +493,7 @@ This page lists all the individual contributions to the project by their author.
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
   - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
+  - Power plant damage factor
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -515,6 +524,8 @@ This page lists all the individual contributions to the project by their author.
   - RadarInvisible for non-enemy house
   - Allow miners do area guard
   - Make harvesters do addtional scan after unload
+  - Customize the scatter caused by aircraft attack mission
+  - Customize whether `Crater=yes` animation would destroy tiberium
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
@@ -529,6 +540,7 @@ This page lists all the individual contributions to the project by their author.
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
+- **ststl, FlyStar** - Fixed some units of Ares crashing after deployment conversion
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
