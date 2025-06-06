@@ -10,9 +10,6 @@ void TiberiumExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->MinimapColor)
-		.Process(this->Overlay)
-		.Process(this->UseSlopes)
-		.Process(this->Variety)
 		;
 }
 
@@ -29,16 +26,16 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
 	// Use whatever the parent object has configured as our default
-	this->Overlay = OwnerObject()->Image;
-	this->Variety = OwnerObject()->NumImages;
-	this->UseSlopes = OwnerObject()->NumSlopes > 0;
+	Valueable Overlay(OwnerObject()->Image);
+	Valueable Variety(OwnerObject()->NumImages);
+	Valueable UseSlopes(OwnerObject()->NumSlopes > 0);
 
-	// Read the overrides. Don't actually use these outside of reading the INI.
-	this->Overlay.Read(exINI, pSection, "Overlay");
-	this->UseSlopes.Read(exINI, pSection, "UseSlopes");
-	this->Variety.Read(exINI, pSection, "Variety");
+	// Read the overrides.
+	Overlay.Read(exINI, pSection, "Overlay");
+	UseSlopes.Read(exINI, pSection, "UseSlopes");
+	Variety.Read(exINI, pSection, "Variety");
 
-	this->Variety = std::max(this->Variety.Get(), 1); // let's ensure at least 1 overlay is used
+	Variety = std::max(Variety.Get(), 1); // let's ensure at least 1 overlay is used
 
 	OwnerObject()->Image = Overlay;
 	OwnerObject()->NumFrames = 12; // Let's keep the frame count at 12 to not mess with the game too much
