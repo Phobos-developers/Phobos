@@ -1474,7 +1474,7 @@ MinimapColor=       ; integer - Red,Green,Blue
 
 - A Tiberium's `Image` can be customized manually.
 
-In `RULES.INI`:
+In `rulesmd.ini`:
 ```ini
 [SOMETIBERIUM]   ; Tiberium
 Overlay=         ; OverlayType, the name of the first overlay that the Tiberium uses, defaults to the value usually used by the Image=, or overlay at index 102 if not specified.
