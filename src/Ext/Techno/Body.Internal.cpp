@@ -120,7 +120,7 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type))
+	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type))
 	{
 		Nullable<CoordStruct> pickedFLH;
 
@@ -154,7 +154,7 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 
 void TechnoExt::ExtData::InitializeAttachEffects()
 {
-	if (auto pTypeExt = this->TypeExtData)
+	if (auto const pTypeExt = this->TypeExtData)
 	{
 		if (pTypeExt->AttachEffects.AttachTypes.size() < 1)
 			return;
