@@ -68,30 +68,26 @@ void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiber
 
 	if (amount > 0.0)
 	{
-		if (auto pBuildingType = pThis->Type)
+		auto const pExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+		if (pExt->Refinery_UseStorage)
 		{
-			if (auto const pExt = BuildingTypeExt::ExtMap.Find(pBuildingType))
-			{
-				if (pExt->Refinery_UseStorage)
-				{
-					// Store Tiberium in structures
-					depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
-					pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
-				}
-			}
+			// Store Tiberium in structures
+			depositableTiberiumAmount = (amount * pTiberium->Value) / pDepositableTiberium->Value;
+			pThis->Owner->GiveTiberium(depositableTiberiumAmount, idxStorageTiberiumType);
 		}
 	}
 }
 
 void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 {
-	auto pOwner = this->OwnerObject()->Owner;
+	auto const pOwner = this->OwnerObject()->Owner;
 
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
 		return;
 
-	AircraftTypeClass* pAircraft = AircraftTypeClass::Array.GetItem(pOwner->ProducingAircraftTypeIndex);
-	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
+	auto const pAircraft = AircraftTypeClass::Array.GetItem(pOwner->ProducingAircraftTypeIndex);
+	auto currFactory = pOwner->GetFactoryProducing(pAircraft);
 	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
 
@@ -102,7 +98,7 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 		if (this->CurrentAirFactory->Type)
 			nDocks = this->CurrentAirFactory->Type->NumberOfDocks;
 
-		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
+		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(this->CurrentAirFactory);
 
 		if (nOccupiedDocks < nDocks)
 			currFactory = this->CurrentAirFactory->Factory;
@@ -111,7 +107,7 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	}
 
 	// Obtain a list of air factories for optimizing the comparisons
-	for (auto pBuilding : pOwner->Buildings)
+	for (auto const pBuilding : pOwner->Buildings)
 	{
 		if (pBuilding->Type->Factory == AbstractType::AircraftType)
 		{
@@ -124,7 +120,7 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 
 	if (this->CurrentAirFactory)
 	{
-		for (auto pBuilding : airFactoryBuilding)
+		for (auto const pBuilding : airFactoryBuilding)
 		{
 			if (pBuilding == this->CurrentAirFactory)
 			{
@@ -150,10 +146,10 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	if (!currFactory)
 		return;
 
-	for (auto pBuilding : airFactoryBuilding)
+	for (auto const pBuilding : airFactoryBuilding)
 	{
-		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
+		const int nDocks = pBuilding->Type->NumberOfDocks;
+		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
 		{
@@ -204,8 +200,8 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 {
 	if (pBuilding->Type->Factory == AbstractType::AircraftType)
 	{
-		int nDocks = pBuilding->Type->NumberOfDocks;
-		int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
+		const int nDocks = pBuilding->Type->NumberOfDocks;
+		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
 
 		if (nOccupiedDocks < nDocks)
 			return true;
@@ -286,10 +282,10 @@ void BuildingExt::ExtData::ApplyPoweredKillSpawns()
 
 	if (pTypeExt->Powered_KillSpawns && pThis->Type->Powered && !pThis->IsPowerOnline())
 	{
-		if (auto pManager = pThis->SpawnManager)
+		if (auto const pManager = pThis->SpawnManager)
 		{
 			pManager->ResetTarget();
-			for (auto pItem : pManager->SpawnedNodes)
+			for (auto const pItem : pManager->SpawnedNodes)
 			{
 				if (pItem->Status == SpawnNodeStatus::Attacking || pItem->Status == SpawnNodeStatus::Returning)
 				{
@@ -327,8 +323,8 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 
 		auto launchTheSWHere = [this](SuperClass* const pSuper, HouseClass* const pHouse)->void
 			{
-				int oldstart = pSuper->RechargeTimer.StartTime;
-				int oldleft = pSuper->RechargeTimer.TimeLeft;
+				const int oldstart = pSuper->RechargeTimer.StartTime;
+				const int oldleft = pSuper->RechargeTimer.TimeLeft;
 				pSuper->SetReadiness(true);
 				pSuper->Launch(CellClass::Coord2Cell(this->OwnerObject()->GetCenterCoords()), pHouse->IsCurrentPlayer());
 				pSuper->Reset();
@@ -336,13 +332,13 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 				pSuper->RechargeTimer.TimeLeft = oldleft;
 			};
 
-		int idx = this->TypeExtData->SpyEffect_VictimSuperWeapon;
-		if (idx >= 0)
-			launchTheSWHere(pVictimHouse->Supers.Items[idx], pVictimHouse);
+		const int idx1 = this->TypeExtData->SpyEffect_VictimSuperWeapon;
+		if (idx1 >= 0)
+			launchTheSWHere(pVictimHouse->Supers.Items[idx1], pVictimHouse);
 
-		idx = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
-		if (idx >= 0)
-			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx], pInfiltratorHouse);
+		const int idx2 = this->TypeExtData->SpyEffect_InfiltratorSuperWeapon;
+		if (idx2 >= 0)
+			launchTheSWHere(pInfiltratorHouse->Supers.Items[idx2], pInfiltratorHouse);
 	}
 
 	return true;

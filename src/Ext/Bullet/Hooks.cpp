@@ -37,7 +37,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
 
-	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
+	const auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
@@ -70,7 +70,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
 	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
-		CoordStruct location = pThis->GetCoords();
+		const CoordStruct location = pThis->GetCoords();
 		const BulletVelocity& velocity = pThis->Velocity;
 
 		// We adjust LaserTrails to account for vanilla bug of drawing stuff one frame ahead.
@@ -290,7 +290,7 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 		if (!pThis->IsAlive)
 			break;
 
-		int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+		const int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
 		coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
 	}
 
@@ -406,11 +406,11 @@ DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 	if (pThis->WeaponType)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-		int defaultValue = RulesClass::Instance->BallisticScatter;
-		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-		int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
+		const int defaultValue = RulesClass::Instance->BallisticScatter;
+		const int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		const int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
-		int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
+		const int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
 		R->EAX(result);
 	}
 

@@ -9,13 +9,13 @@
 DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
-	auto pHouseExt = HouseExt::ExtMap.Find(pThis);
+	auto const pHouseExt = HouseExt::ExtMap.Find(pThis);
 
 	pHouseExt->PowerPlantEnhancers.clear();
 
 	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
 	// as M should be much less than N, this will be a great improvement. - secsome
-	for (auto& pBld : pThis->Buildings)
+	for (auto const& pBld : pThis->Buildings)
 	{
 		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
 		{
@@ -93,9 +93,9 @@ DEFINE_HOOK(0x73E474, UnitClass_Unload_Storage, 0x6)
 	GET(int const, idxTiberium, EBP);
 	REF_STACK(float, amount, 0x1C);
 
-	auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
 
-	auto storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
+	auto const storageTiberiumIndex = RulesExt::Global()->Storage_TiberiumIndex;
 
 	if (pTypeExt->Refinery_UseStorage && storageTiberiumIndex >= 0)
 	{
@@ -263,9 +263,9 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	if (auto pMe = generic_cast<FootClass*, true>(pThis))
 	{
-		bool I_am_human = pThis->Owner->IsControlledByHuman();
-		bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+		const bool I_am_human = pThis->Owner->IsControlledByHuman();
+		const bool You_are_human = pNewOwner->IsControlledByHuman();
+		const auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
 			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
 
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
@@ -293,7 +293,7 @@ DEFINE_HOOK(0x65EB8D, HouseClass_SendSpyPlanes_PlaceAircraft, 0x6)
 	GET(AircraftClass* const, pAircraft, ESI);
 	GET(CellStruct const, edgeCell, EDI);
 
-	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
@@ -305,7 +305,7 @@ DEFINE_HOOK(0x65E997, HouseClass_SendAirstrike_PlaceAircraft, 0x6)
 	GET(AircraftClass* const, pAircraft, ESI);
 	GET(CellStruct const, edgeCell, EDI);
 
-	bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
+	const bool result = AircraftExt::PlaceReinforcementAircraft(pAircraft, edgeCell);
 
 	return result ? SkipGameCode : SkipGameCodeNoSuccess;
 }
@@ -377,7 +377,7 @@ DEFINE_HOOK(0x4F9038, HouseClass_AI_Superweapons, 0x5)
 	if (!RulesExt::Global()->AISuperWeaponDelay.isset() || pThis->IsControlledByHuman() || pThis->Type->MultiplayPassive)
 		return 0;
 
-	int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
+	const int delay = RulesExt::Global()->AISuperWeaponDelay.Get();
 
 	if (delay > 0)
 	{
@@ -433,24 +433,22 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 
 	GET(HouseClass*, pThis, EBX);
 
-	auto const pRules = RulesExt::Global();
-
-	if (pRules->AIFireSale)
+	if (RulesExt::Global()->AIFireSale)
 	{
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-		if (pRules->AIFireSaleDelay <= 0 || !pExt ||
+		if (RulesExt::Global()->AIFireSaleDelay <= 0 || !pExt ||
 			pExt->AIFireSaleDelayTimer.Completed())
 		{
 			pThis->Fire_Sale();
 		}
 		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
 		{
-			pExt->AIFireSaleDelayTimer.Start(pRules->AIFireSaleDelay);
+			pExt->AIFireSaleDelayTimer.Start(RulesExt::Global()->AIFireSaleDelay);
 		}
 	}
 
-	if (pRules->AIAllToHunt)
+	if (RulesExt::Global()->AIAllToHunt)
 	{
 		pThis->All_To_Hunt();
 	}

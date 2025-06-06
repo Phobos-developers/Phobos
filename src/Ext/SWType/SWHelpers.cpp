@@ -142,7 +142,7 @@ bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, Building
 
 	const auto coords = pBuilding->GetCenterCoords();
 	const auto center = CellClass::Coord2Cell(coords);
-	const int distance = Coords.DistanceFrom(center);
+	const int distance = static_cast<int>(Coords.DistanceFrom(center));
 
 	// negative range values just pass the test
 	return (minRange < 0.0 || (double)distance >= minRange)

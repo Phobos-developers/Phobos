@@ -13,8 +13,8 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 {
 	GET(TechnoClass*, pSlave, EDI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
-	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
+	const int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->Location);
 
@@ -156,7 +156,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 
 	std::vector<AircraftTypeClass*> vec = pTypeExt->Spawns_Queue;
 
-	for (auto pNode : pThis->SpawnedNodes)
+	for (auto const pNode : pThis->SpawnedNodes)
 	{
 		if (pNode->Unit)
 		{
@@ -177,10 +177,10 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 	if (pTypeExt->Promote_IncludeSpawns)
 	{
-		for (auto i : pThis->SpawnedNodes)
+		for (auto const i : pThis->SpawnedNodes)
 		{
 			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
 				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
@@ -245,11 +245,11 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 {
 	GET(FootClass* const, pThis, EBP);
 
-	auto pCarrier = pThis->SpawnOwner;
+	auto const pCarrier = pThis->SpawnOwner;
 
 	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
 	{
-		auto pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+		auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
 
 		if (FLH != CoordStruct::Empty)
@@ -416,7 +416,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	REF_STACK(int, height, 0x14);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
-	int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
+	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
 	if (height < subtHeight)
@@ -538,7 +538,7 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 		return Return;
 
 	++pExt->AccumulatedGattlingValue;
-	auto remain = pExt->AccumulatedGattlingValue;
+	int remain = pExt->AccumulatedGattlingValue;
 
 	if (!pExt->ShouldUpdateGattlingValue)
 		remain -= pTypeExt->RateDown_Delay;
@@ -560,8 +560,7 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 		return Return;
 	}
 
-	auto newValue = pThis->GattlingValue;
-	newValue -= (rateDown * remain);
+	const int newValue = pThis->GattlingValue - (rateDown * remain);
 	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
 	return Return;
 }
@@ -591,7 +590,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 
 	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
 	pExt->AccumulatedGattlingValue += rateMult;
-	auto remain = pExt->AccumulatedGattlingValue;
+	int remain = pExt->AccumulatedGattlingValue;
 
 	if (!pExt->ShouldUpdateGattlingValue)
 		remain -= pTypeExt->RateDown_Delay;
@@ -617,8 +616,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 		return SkipGameCode;
 	}
 
-	auto newValue = pThis->GattlingValue;
-	newValue -= (rateDown * remain);
+	const int newValue = pThis->GattlingValue - (rateDown * remain);
 	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
 	return SkipGameCode;
 }

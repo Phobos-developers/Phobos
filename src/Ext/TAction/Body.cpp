@@ -268,7 +268,7 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 		return true;
 
 	auto& waypoints = ScenarioExt::Global()->Waypoints;
-	int nWaypoint = pThis->Param5;
+	const int nWaypoint = pThis->Param5;
 
 	// Check if is a valid Waypoint
 	if (nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end() && waypoints[nWaypoint].X && waypoints[nWaypoint].Y)
@@ -284,7 +284,6 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
 	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
-		int swIdx = pThis->Param3;
 		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
 		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
@@ -363,9 +362,9 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		if (pExecuteHouse)
 		{
-			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
-	
-			CDTimerClass old_timer = pSuper->RechargeTimer;
+			auto const pSuper = pExecuteHouse->Supers.Items[pThis->Param3];
+
+			const CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
 			pSuper->Reset();
@@ -430,7 +429,7 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	}
 	else if (pThis->Value == -1)
 	{
-		for (auto pTargetHouse : HouseClass::Array)
+		for (auto const pTargetHouse : HouseClass::Array)
 		{
 			setValue(pTargetHouse);
 		}
@@ -448,7 +447,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 
 	if (pThis->Value >= 0)
 	{
-		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
+		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
 			HouseClass::FindByIndex(pThis->Value) :
 			HouseClass::FindByCountryIndex(pThis->Value);
 
@@ -486,7 +485,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	{
 		if (pThis->Param3 != -2)
 		{
-			HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Param3) ?
+			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Param3) ?
 				HouseClass::FindByIndex(pThis->Param3) :
 				HouseClass::FindByCountryIndex(pThis->Param3);
 

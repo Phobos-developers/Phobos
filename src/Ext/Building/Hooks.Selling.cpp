@@ -6,7 +6,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 	enum { ReadyToVanish = 0x4D9FCB };
 	GET(FootClass*, pThis, ESI);
 
-	int money = pThis->GetRefund();
+	const int money = pThis->GetRefund();
 	pThis->Owner->GiveMoney(money);
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
@@ -27,12 +27,10 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 // true: undeploy into vehicle; false: sell
 bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 {
-	auto pType = pThis->Type;
-
-	if (!pType->UndeploysInto)
+	if (!pThis->Type->UndeploysInto)
 		return false;
 
-	if (pType->ConstructionYard)
+	if (pThis->Type->ConstructionYard)
 	{
 		// Conyards can't undeploy if MCVRedeploy=no
 		if (!GameModeOptionsClass::Instance.MCVRedeploy)

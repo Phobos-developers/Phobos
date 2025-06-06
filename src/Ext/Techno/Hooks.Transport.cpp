@@ -164,9 +164,9 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	if (auto pTransport = pThis->Transporter)
+	if (auto const pTransport = pThis->Transporter)
 	{
-		auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		auto const pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
 		return 0x6F72DE;
 	}
@@ -178,9 +178,9 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 {
 	GET(TemporalClass* const, pThis, ESI);
 
-	if (auto pTransport = pThis->Owner->Transporter)
+	if (auto const pTransport = pThis->Owner->Transporter)
 	{
-		auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		auto const pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
 		R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
 		return 0x71A838;
 	}

@@ -38,7 +38,7 @@ DEFINE_HOOK(0x519F71, InfantryClass_UpdatePosition_BeforeBuildingChangeHouse, 0x
 {
 	GET(BuildingClass*, pBld, EDI);
 
-	if (auto pBy = pBld->MindControlledBy)
+	if (auto const pBy = pBld->MindControlledBy)
 		CaptureManagerExt::FreeUnit(pBy->CaptureManager, pBld);
 
 	if (std::exchange(pBld->MindControlledByAUnit, false))
@@ -72,7 +72,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	{
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
-		auto nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
+		auto const nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
 		DrawALinkTo(nFLH, nVictimCoord, pAttacker->Owner->Color);
 	}
 
@@ -146,7 +146,7 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 					{
 						auto const nRandomY = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
 						auto const nRamdomX = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
-						CoordStruct nParticleCoord{ pOwner->Location.X + nRamdomX, nRandomY + pOwner->Location.Y, pOwner->Location.Z + 100 };
+						const CoordStruct nParticleCoord{ pOwner->Location.X + nRamdomX, nRandomY + pOwner->Location.Y, pOwner->Location.Z + 100 };
 						GameCreate<ParticleSystemClass>(pParticle, nParticleCoord, nullptr, nullptr, CoordStruct::Empty, nullptr);
 					}
 				}

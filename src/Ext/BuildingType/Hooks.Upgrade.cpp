@@ -10,7 +10,7 @@
 
 bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner)
 {
-	auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgradeType);
+	auto const pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgradeType);
 	if (pUpgradeExt && EnumFunctions::CanTargetHouse(pUpgradeExt->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner))
 	{
 		// PowersUpBuilding
@@ -18,7 +18,7 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 			return true;
 
 		// PowersUp.Buildings
-		for (auto& pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
+		for (auto const pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
 		{
 			if (_stricmp(pBuilding->Type->ID, pPowerUpBuilding->ID) == 0)
 				return true;
@@ -66,7 +66,7 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 
 int BuildLimitRemaining(HouseClass const* const pHouse, BuildingTypeClass const* const pItem)
 {
-	auto const BuildLimit = pItem->BuildLimit;
+	const int BuildLimit = pItem->BuildLimit;
 
 	if (BuildLimit >= 0)
 		return BuildLimit - BuildingTypeExt::GetUpgradesAmount(const_cast<BuildingTypeClass*>(pItem), const_cast<HouseClass*>(pHouse));
@@ -78,8 +78,8 @@ int CheckBuildLimit(HouseClass const* const pHouse, BuildingTypeClass const* con
 {
 	enum { NotReached = 1, ReachedPermanently = -1, ReachedTemporarily = 0 };
 
-	int BuildLimit = pItem->BuildLimit;
-	int Remaining = BuildLimitRemaining(pHouse, pItem);
+	const int BuildLimit = pItem->BuildLimit;
+	const int Remaining = BuildLimitRemaining(pHouse, pItem);
 
 	if (BuildLimit >= 0 && Remaining <= 0)
 		return (includeQueued && FactoryClass::FindByOwnerAndProduct(pHouse, pItem)) ? NotReached : ReachedPermanently;
@@ -219,7 +219,7 @@ DEFINE_HOOK(0x451630, BuildingClass_CreateUpgradeAnims_AnimIndex, 0x7)
 
 	GET(BuildingClass*, pThis, EBP);
 
-	int animIndex = BuildingExt::ExtMap.Find(pThis)->PoweredUpToLevel - 1;
+	const int animIndex = BuildingExt::ExtMap.Find(pThis)->PoweredUpToLevel - 1;
 
 	if (animIndex)
 	{
@@ -237,7 +237,7 @@ static __forceinline bool AllowUpgradeAnim(BuildingClass* pBuilding, BuildingAni
 
 	if (pType->Upgrades != 0 && anim >= BuildingAnimSlot::Upgrade1 && anim <= BuildingAnimSlot::Upgrade3 && !pBuilding->Anims[int(anim)])
 	{
-		int animIndex = BuildingExt::ExtMap.Find(pBuilding)->PoweredUpToLevel - 1;
+		const int animIndex = BuildingExt::ExtMap.Find(pBuilding)->PoweredUpToLevel - 1;
 
 		if (animIndex < 0 || (int)anim != animIndex)
 			return false;

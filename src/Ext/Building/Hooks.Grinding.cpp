@@ -62,7 +62,7 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 	if (!pThis || pThis->Target)
 		return 0;
 
-	auto pBld = specific_cast<BuildingClass*>(pThis->Destination);
+	auto const pBld = specific_cast<BuildingClass*>(pThis->Destination);
 	if (!pBld)
 		return 0;
 
@@ -94,7 +94,7 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 	GET(TechnoClass*, pTarget, ESI);
 	GET(Action, action, EBP);
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
 		{
@@ -118,9 +118,9 @@ DEFINE_HOOK(0x51E63A, InfantryClass_WhatAction_Grinding_Engineer, 0x6)
 	GET(InfantryClass*, pThis, EDI);
 	GET(TechnoClass*, pTarget, ESI);
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
+		const bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 		R->EBP(canBeGrinded ? Action::Repair : Action::NoGRepair);
 		return ReturnValue;
 	}
@@ -139,15 +139,15 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	if (InputManagerClass::Instance->IsForceFireKeyPressed() && pThis->IsArmed())
 		return Continue;
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
 		if (pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
 			pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
 		{
 			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 			{
-				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
-				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
+				const bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
+				const bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
 				R->EBX(action);
 			}
@@ -221,7 +221,7 @@ DEFINE_HOOK(0x73A1C3, UnitClass_PerCellProcess_DoGrindingExtras, 0x5)
 	GET(BuildingClass*, pBuilding, EBX);
 
 	// Calculated like this because it is easier than tallying up individual refunds for passengers and parasites.
-	int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
+	const int totalRefund = pBuilding->Owner->Balance - GrinderRefundTemp::BalanceBefore;
 
 	return BuildingExt::DoGrindingExtras(pBuilding, pThis, totalRefund) ? Continue : 0;
 }

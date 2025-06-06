@@ -222,8 +222,9 @@ DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 	if (intensity > 2000)
 		intensity = 2000;
 
-	auto const& rules = RulesExt::Global();
-	int max = static_cast<int>((ICTintTemp::IsForceShield ? rules->ForceShield_ExtraTintIntensity : rules->IronCurtain_ExtraTintIntensity) * 1000);
+	const int max = static_cast<int>((ICTintTemp::IsForceShield
+		? RulesExt::Global()->ForceShield_ExtraTintIntensity
+		: RulesExt::Global()->IronCurtain_ExtraTintIntensity) * 1000);
 
 	R->EAX(intensity + max);
 	return SkipGameCode;
@@ -235,8 +236,8 @@ static bool __forceinline IsOnBridge(FootClass* pUnit)
 {
 	auto const pCell = MapClass::Instance.GetCellAt(pUnit->GetCoords());
 	auto const pCellAdj = pCell->GetNeighbourCell(FacingType::North);
-	bool containsBridge = pCell->ContainsBridge();
-	bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
+	const bool containsBridge = pCell->ContainsBridge();
+	const bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
 
 	return (containsBridge || containsBridgeDir || pCellAdj->ContainsBridge()) &&
 		(!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge());
@@ -244,9 +245,9 @@ static bool __forceinline IsOnBridge(FootClass* pUnit)
 
 static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, bool applyBridgeBonus)
 {
-	int bridgeHeight = applyBridgeBonus ? 4 : 0;
-	int bridgeBonus = bridgeHeight * level;
-	double currentLevel = (pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight)) - bridgeHeight;
+	const int bridgeHeight = applyBridgeBonus ? 4 : 0;
+	const int bridgeBonus = bridgeHeight * level;
+	const double currentLevel = (pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight)) - bridgeHeight;
 	levelIntensity = static_cast<int>(level * currentLevel * levelMult);
 	cellIntensity = MapClass::Instance.GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
 }
@@ -263,10 +264,9 @@ DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 	else if (NukeFlash::IsFadingIn())
 		level = ScenarioClass::Instance->NukeLighting.Level;
 
-	auto const pRulesExt = RulesExt::Global();
 	int levelIntensity = 0;
 	int cellIntensity = 1000;
-	GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->AircraftLevelLightMultiplier, false);
+	GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->AircraftLevelLightMultiplier, false);
 
 	R->ESI(levelIntensity);
 	R->EBX(cellIntensity);
@@ -284,10 +284,9 @@ DEFINE_HOOK(0x51933B, InfantryClass_DrawIt_LevelIntensity, 0x6)
 	{
 		GET(int, level, EBX);
 
-		auto const pRulesExt = RulesExt::Global();
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
-		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
+		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
 
 		R->ESI(levelIntensity + cellIntensity);
 		return SkipGameCode;
@@ -313,10 +312,9 @@ DEFINE_HOOK(0x73CFA7, UnitClass_DrawIt_LevelIntensity, 0x6)
 		else if (NukeFlash::IsFadingIn())
 			level = ScenarioClass::Instance->NukeLighting.Level;
 
-		auto const pRulesExt = RulesExt::Global();
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
-		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, pRulesExt->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
+		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
 
 		R->EBP(levelIntensity + cellIntensity);
 		return SkipGameCode;

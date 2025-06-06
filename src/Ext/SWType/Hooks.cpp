@@ -45,8 +45,8 @@ DEFINE_HOOK(0x6CB5EB, SuperClass_Grant_ShowTimer, 0x5)
 		std::sort(SuperClass::ShowTimers.begin(), SuperClass::ShowTimers.end(),
 			[](SuperClass* a, SuperClass* b)
 			{
-				auto aExt = SWTypeExt::ExtMap.Find(a->Type);
-				auto bExt = SWTypeExt::ExtMap.Find(b->Type);
+				const auto aExt = SWTypeExt::ExtMap.Find(a->Type);
+				const auto bExt = SWTypeExt::ExtMap.Find(b->Type);
 				return aExt->ShowTimer_Priority.Get() > bExt->ShowTimer_Priority.Get();
 			}
 		);
@@ -109,7 +109,7 @@ DEFINE_HOOK(0x6CBEF4, SuperClass_AnimStage_UseWeeds, 0x6)
 	GET(SuperClass*, pSuper, ECX);
 	GET(SuperWeaponTypeClass*, pSWType, EBX);
 
-	auto pExt = SWTypeExt::ExtMap.Find(pSWType);
+	const auto pExt = SWTypeExt::ExtMap.Find(pSWType);
 
 	if (pExt->UseWeeds)
 	{
@@ -152,7 +152,7 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 
 	GET(SuperClass*, pSuper, ESI);
 
-	auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	if (pExt->UseWeeds)
 	{
@@ -175,7 +175,7 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 			pSuper->RechargeTimer.Start(SWNotReadyTimer); // 61 seconds > 60 seconds (animation activation threshold)
 		}
 
-		int animStage = pSuper->AnimStage();
+		const int animStage = pSuper->AnimStage();
 		if (pSuper->CameoChargeState != animStage)
 		{
 			pSuper->CameoChargeState = animStage;
@@ -195,7 +195,7 @@ DEFINE_HOOK(0x6CC1E6, SuperClass_SetSWCharge_UseWeeds, 0x5)
 
 	GET(SuperClass*, pSuper, EDI);
 
-	auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 	if (pExt->UseWeeds)
 		return Skip;

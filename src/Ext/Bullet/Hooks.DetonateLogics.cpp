@@ -70,7 +70,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		auto const pOriginalTarget = pThis->Target;
 		auto const pExt = BulletExt::ExtMap.Find(pThis);
 		auto const isFull = pWHExt->DetonateOnAllMapObjects_Full;
-		auto pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
 
 		auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 		{
@@ -147,7 +147,7 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris_Checks, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	bool isLand = pThis->GetCell()->LandType != LandType::Water;
+	const bool isLand = pThis->GetCell()->LandType != LandType::Water;
 
 	if (!isLand && WarheadTypeExt::ExtMap.Find(pThis->WH)->Debris_Conventional)
 		return SkipGameCode;
@@ -173,7 +173,7 @@ DEFINE_HOOK(0x469E34, BulletClass_Logics_DebrisAnims, 0x5)
 
 	while (debrisCount > 0)
 	{
-		int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, debrisAnims.size() - 1);
+		const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, debrisAnims.size() - 1);
 		auto const pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], pThis->GetCoords());
 
 		if (pThis->Owner)
@@ -213,11 +213,11 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 		const bool splashed = pWHExt->Splashed;
-		int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
+		const int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
-		int scatterMin = splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
-		int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
-		bool allowScatter = scatterMax != 0 || scatterMin != 0;
+		const int scatterMin = splashed ? pWHExt->SplashList_ScatterMin.Get() : pWHExt->AnimList_ScatterMin.Get();
+		const int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
+		const bool allowScatter = scatterMax != 0 || scatterMin != 0;
 
 		if (creationInterval > 0 && pThis->Owner)
 			remainingInterval = &TechnoExt::ExtMap.Find(pThis->Owner)->WHAnimRemainingCreationInterval;
@@ -264,7 +264,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				if (allowScatter)
 				{
-					int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
+					const int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
@@ -277,7 +277,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				if (pThis->Owner)
 				{
-					auto pExt = AnimExt::ExtMap.Find(pAnim);
+					auto const pExt = AnimExt::ExtMap.Find(pAnim);
 					pExt->SetInvoker(pThis->Owner);
 				}
 			}
@@ -303,7 +303,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	if (pThis->WeaponType)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
-		int defaultDamage = pThis->WeaponType->Damage;
+		const int defaultDamage = pThis->WeaponType->Damage;
 
 		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
 		{
@@ -475,11 +475,11 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				{
 					// Do random cells for amount matching Cluster.
 					int count = 0;
-					int targetCount = targets.Count;
+					const int targetCount = targets.Count;
 
 					while (count < clusterCount)
 					{
-						int index = ScenarioClass::Instance->Random.RandomRanged(0, targetCount);
+						const int index = random.RandomRanged(0, targetCount);
 						auto const pTarget = targets.GetItem(index);
 
 						if (count > targetCount || newTargets.FindItemIndex(pTarget) < 0)
@@ -492,7 +492,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				else
 				{
 					// Do evenly selected cells for amount matching Cluster.
-					double stepSize = (targets.Count - 1.0) / (clusterCount - 1.0);
+					const double stepSize = (targets.Count - 1.0) / (clusterCount - 1.0);
 
 					for (int i = 0; i < clusterCount; i++)
 					{
@@ -524,12 +524,12 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				}
 			}
 
-			int range = pTypeExt->Splits_TargetCellRange;
+			const int range = pTypeExt->Splits_TargetCellRange;
 
 			while (targets.Count < clusterCount)
 			{
-				int x = random.RandomRanged(-range, range);
-				int y = random.RandomRanged(-range, range);
+				const int x = random.RandomRanged(-range, range);
+				const int y = random.RandomRanged(-range, range);
 
 				CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
 				auto const pCell = MapClass::Instance.GetCellAt(cell);
@@ -538,7 +538,6 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			}
 		}
 
-		auto const pTypeSplits = pWeapon->Projectile;
 		int damage = pWeapon->Damage;
 
 		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pSource)
@@ -571,11 +570,11 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 			if (pTarget)
 			{
-				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+				if (auto const pBullet = pWeapon->Projectile->CreateBullet(pTarget, pSource, damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 				{
 					auto coords = pThis->Location;
-					int scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
-					int scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
+					const int scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
+					const int scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
 
 					if (pType->Airburst && pTypeExt->Airburst_TargetAsSource)
 					{
@@ -587,7 +586,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 					if (scatterMin > 0 || scatterMax > 0)
 					{
-						int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
+						const int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 

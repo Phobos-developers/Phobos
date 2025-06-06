@@ -26,7 +26,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 
 	if (pTypeExt->Armor.isset())
 	{
-		double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
+		const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
 
 		if (versus != 0.0)
 		{
@@ -54,21 +54,16 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	if (canAffect)
 	{
 		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride);
-		bool detonate = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
-
-		this->DetonateOnInterception = detonate;
+		this->DetonateOnInterception = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
 
 		if (pWeaponOverride)
 		{
-			bool replaceType = pInterceptorType->WeaponReplaceProjectile;
-			bool cumulative = pInterceptorType->WeaponCumulativeDamage;
-
 			pThis->WeaponType = pWeaponOverride;
-			pThis->Health = cumulative ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
+			pThis->Health = pInterceptorType->WeaponCumulativeDamage ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
 			pThis->WH = pWeaponOverride->Warhead;
 			pThis->Bright = pWeaponOverride->Bright;
 
-			if (replaceType && pWeaponOverride->Projectile != pThis->Type && pWeaponOverride->Projectile)
+			if (pInterceptorType->WeaponReplaceProjectile && pWeaponOverride->Projectile != pThis->Type && pWeaponOverride->Projectile)
 			{
 				pThis->Speed = pWeaponOverride->Speed;
 				pThis->Type = pWeaponOverride->Projectile;
@@ -139,10 +134,9 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	auto pThis = this->OwnerObject();
-
-	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)

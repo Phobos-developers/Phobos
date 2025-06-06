@@ -26,7 +26,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 FireError __fastcall TechnoClass_TargetSomethingNearby_CanFire_Wrapper(TechnoClass* pThis, void* _, AbstractClass* pTarget, int weaponIndex, bool ignoreRange)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool disableWeapons = pExt->AE.DisableWeapons;
+	const bool disableWeapons = pExt->AE.DisableWeapons;
 	pExt->AE.DisableWeapons = false;
 	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, ignoreRange);
 	pExt->AE.DisableWeapons = disableWeapons;
@@ -87,8 +87,7 @@ DEFINE_HOOK(0x70095A, TechnoClass_WhatAction_WallWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET_STACK(OverlayTypeClass*, pOverlayTypeClass, STACK_OFFSET(0x2C, -0x18));
 
-	int weaponIndex = TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass);
-	R->EAX(pThis->GetWeapon(weaponIndex));
+	R->EAX(pThis->GetWeapon(TechnoExt::GetWeaponIndexAgainstWall(pThis, pOverlayTypeClass)));
 
 	return 0;
 }

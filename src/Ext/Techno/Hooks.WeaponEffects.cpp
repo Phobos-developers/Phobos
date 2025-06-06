@@ -134,7 +134,7 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 
 	REF_STACK(CoordStruct const, coords, STACK_OFFSET(0xC0, -0x80));
 
-	auto pCell = MapClass::Instance.GetCellAt(coords);
+	const auto pCell = MapClass::Instance.GetCellAt(coords);
 
 	if (pCell == FireAtTemp::pObstacleCell)
 		return Stop;

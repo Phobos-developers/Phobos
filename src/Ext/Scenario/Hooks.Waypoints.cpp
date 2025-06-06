@@ -63,13 +63,13 @@ DEFINE_HOOK(0x68BDC0, ScenarioClass_ReadWaypoints, 0x8)
 		int id;
 		if (sscanf_s(pName, "%d", &id) != 1 || id < 0)
 			Debug::Log("[Developer warning] Failed to parse waypoint %s.\n", pName);
-		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
+		const int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
 
 		if (nCoord)
 		{
 			buffer.X = static_cast<short>(nCoord % 1000);
 			buffer.Y = static_cast<short>(nCoord / 1000);
-			if (auto pCell = MapClass::Instance.TryGetCellAt(buffer))
+			if (const auto pCell = MapClass::Instance.TryGetCellAt(buffer))
 				pCell->Flags |= CellFlags::IsWaypoint;
 			else if (ScenarioExt::CellParsed)
 				Debug::Log("[Developer warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
@@ -160,7 +160,7 @@ DEFINE_HOOK(0x763690, String_To_Waypoint, 0x7)
 	GET(char*, pString, ECX);
 
 	int n = 0;
-	int len = strlen(pString);
+	const int len = strlen(pString);
 	for (int i = len - 1, j = 1; i >= 0; i--, j *= 26)
 	{
 		int c = toupper(pString[i]);

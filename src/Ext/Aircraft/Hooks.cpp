@@ -35,13 +35,13 @@ DEFINE_HOOK(0x417FF1, AircraftClass_Mission_Attack_StrafeShots, 0x6)
 		return 0;
 	}
 
-	int strafingShots = pWeaponExt->Strafing_Shots.Get(5);
+	const int strafingShots = pWeaponExt->Strafing_Shots.Get(5);
 
 	if (strafingShots > 5)
 	{
 		if (state == AirAttackStatus::FireAtTarget3_Strafe)
 		{
-			int remainingShots = strafingShots - 3 - pExt->Strafe_BombsDroppedThisRound;
+			const int remainingShots = strafingShots - 3 - pExt->Strafe_BombsDroppedThisRound;
 
 			if (remainingShots > 0)
 				pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
@@ -68,7 +68,7 @@ DEFINE_HOOK(0x4197F3, AircraftClass_GetFireLocation_Strafing, 0x5)
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
 
-	auto fireError = pThis->GetFireError(pTarget, weaponIndex, false);
+	auto const fireError = pThis->GetFireError(pTarget, weaponIndex, false);
 
 	if (fireError == FireError::ILLEGAL || fireError == FireError::CANT)
 		return 0;
@@ -168,7 +168,7 @@ DEFINE_HOOK(0x418B1F, AircraftClass_Mission_Attack_FireAtTarget5Strafe_BurstFix,
 static int GetDelay(AircraftClass* pThis, bool isLastShot)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	int weaponIndex = pExt->CurrentAircraftWeaponIndex >= 0 ? pExt->CurrentAircraftWeaponIndex : pThis->SelectWeapon(pThis->Target);
+	const int weaponIndex = pExt->CurrentAircraftWeaponIndex >= 0 ? pExt->CurrentAircraftWeaponIndex : pThis->SelectWeapon(pThis->Target);
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	int delay = pWeapon->ROF;
@@ -351,7 +351,7 @@ DEFINE_HOOK(0x44402E, BuildingClass_ExitObject_PoseDir2, 0x5)
 	GET(BuildingClass*, pThis, ESI);
 	GET(AircraftClass*, pAircraft, EBP);
 
-	auto dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
+	auto const dir = DirStruct(AircraftExt::GetLandingDir(pAircraft, pThis));
 	// pAircraft->PrimaryFacing.SetCurrent(dir);
 	pAircraft->SecondaryFacing.SetCurrent(dir);
 

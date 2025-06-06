@@ -26,7 +26,7 @@ DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	if (pTypeData->HealthBar_Hide)
 		return 0x6F6AB6;
 
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 	REF_STACK(int, pipWidth, STACK_OFFSET(0x74, -0x1C));
 
 	Point2D size;
-	bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 	auto const pType = pThis->GetTechnoType();
 
 	if (pType->PipScale == PipScale::Ammo)
@@ -154,7 +154,7 @@ DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
 	GET_STACK(bool, isBuilding, STACK_OFFSET(0x74, -0x61));
 	GET(int, maxSpawnsCount, EBX);
 
-	int currentSpawnsCount = pThis->SpawnManager->CountDockedSpawns();
+	const int currentSpawnsCount = pThis->SpawnManager->CountDockedSpawns();
 	auto const pipOffset = pTypeExt->SpawnsPipOffset.Get();
 	Point2D position = { offset->X + pipOffset.X, offset->Y + pipOffset.Y };
 	Point2D size;
@@ -196,7 +196,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 
 	if (pipWrap > 0)
 	{
-		int levels = maxPips / pipWrap - 1;
+		const int levels = maxPips / pipWrap - 1;
 
 		for (int i = 0; i < pipWrap; i++)
 		{
@@ -233,15 +233,15 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	}
 	else
 	{
-		int ammoFrame = pTypeExt->AmmoPipFrame;
-		int emptyFrame = pTypeExt->EmptyAmmoPipFrame;
+		const int ammoFrame = pTypeExt->AmmoPipFrame;
+		const int emptyFrame = pTypeExt->EmptyAmmoPipFrame;
 
 		for (int i = 0; i < maxPips; i++)
 		{
 			if (i >= pipCount && emptyFrame < 0)
 				break;
 
-			int frame = i >= pipCount ? emptyFrame : ammoFrame;
+			const int frame = i >= pipCount ? emptyFrame : ammoFrame;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
 				frame, &position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);

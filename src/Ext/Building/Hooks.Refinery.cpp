@@ -42,14 +42,14 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 {
 	GET_STACK(TechnoClass* const, slaveMiner, STACK_OFFSET(0x18, 0x4));
 
-	int money = slaveMiner->Owner->Available_Money() - OwnerBalanceBefore::SlaveComesBack;
+	const int money = slaveMiner->Owner->Available_Money() - OwnerBalanceBefore::SlaveComesBack;
 
-	if (auto pBld = abstract_cast<BuildingClass*>(slaveMiner))
+	if (auto const pBld = abstract_cast<BuildingClass*>(slaveMiner))
 	{
-		auto pBldExt = BuildingExt::ExtMap.Find(pBld);
+		auto const pBldExt = BuildingExt::ExtMap.Find(pBld);
 		pBldExt->AccumulatedIncome += money;
 	}
-	else if (auto pBldTypeExt = BuildingTypeExt::ExtMap.Find(slaveMiner->GetTechnoType()->DeploysInto))
+	else if (auto const pBldTypeExt = BuildingTypeExt::ExtMap.Find(slaveMiner->GetTechnoType()->DeploysInto))
 	{
 		if (pBldTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
 			FlyingStrings::AddMoneyString(money, slaveMiner->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), slaveMiner->Location);

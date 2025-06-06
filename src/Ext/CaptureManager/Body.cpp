@@ -7,12 +7,12 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	if (pManager->MaxControlNodes == 1)
 		return pManager->CanCapture(pTarget);
 
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
 	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
 		// I hate Ares' completely rewritten things - secsome
 		pManager->MaxControlNodes += 1;
-		bool result = pManager->CanCapture(pTarget);
+		const bool result = pManager->CanCapture(pTarget);
 		pManager->MaxControlNodes -= 1;
 		return result;
 	}
@@ -46,7 +46,7 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 				}
 
 				// Fix : Player defeated should not get this unit.
-				auto pOriginOwner = pNode->OriginalOwner->Defeated ?
+				const auto pOriginOwner = pNode->OriginalOwner->Defeated ?
 					HouseClass::FindNeutral() : pNode->OriginalOwner;
 
 				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
@@ -84,7 +84,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 					CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
 		}
 
-		auto pControlNode = GameCreate<ControlNode>();
+		auto const pControlNode = GameCreate<ControlNode>();
 		pControlNode->OriginalOwner = pTarget->Owner;
 		pControlNode->Unit = pTarget;
 
@@ -132,7 +132,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
 		bool bRemoveFirst = false;
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
+		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
 		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, false, threatDelay);

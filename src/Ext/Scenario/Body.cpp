@@ -40,10 +40,10 @@ void ScenarioExt::ExtData::ReadVariables(bool bIsGlobal, CCINIClass* pINI)
 	else if (Global()->Variables[true].size() != 0) // Global variables had been loaded, DO NOT CHANGE THEM
 		return;
 
-	int nCount = pINI->GetKeyCount("VariableNames");
+	const int nCount = pINI->GetKeyCount("VariableNames");
 	for (int i = 0; i < nCount; ++i)
 	{
-		auto pKey = pINI->GetKeyName("VariableNames", i);
+		const auto pKey = pINI->GetKeyName("VariableNames", i);
 		int nIndex;
 		if (sscanf_s(pKey, "%d", &nIndex) == 1)
 		{

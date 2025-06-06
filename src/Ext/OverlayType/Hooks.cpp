@@ -27,7 +27,7 @@ DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)
 	GET_STACK(OverlayTypeClass*, pOverlayType, STACK_OFFSET(0x24, -0x14));
 	REF_STACK(Point2D, pLocation, STACK_OFFSET(0x24, -0x10));
 
-	int wallOwnerIndex = pThis->WallOwnerIndex;
+	const int wallOwnerIndex = pThis->WallOwnerIndex;
 	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
 
 	if (wallOwnerIndex >= 0)

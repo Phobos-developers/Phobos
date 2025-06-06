@@ -13,13 +13,13 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
 
 	int result = 0;
-	auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 
 	if (pWeapon)
 	{
 		result = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
 		auto const pType = pThis->GetTechnoType();
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pType->OpenTopped && !pTypeExt->OpenTopped_IgnoreRangefinding)
 		{
@@ -28,7 +28,7 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 
 			while (pPassenger)
 			{
-				int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
+				const int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
 				int tWeaponIndex = 0;
 
 				if (openTWeaponIndex != -1)
@@ -40,7 +40,7 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 
 				if (pTWeapon && pTWeapon->FireInTransport)
 				{
-					int range = WeaponTypeExt::GetRangeWithModifiers(pTWeapon, pPassenger);
+					const int range = WeaponTypeExt::GetRangeWithModifiers(pTWeapon, pPassenger);
 
 					if (range < smallestRange)
 						smallestRange = range;
@@ -84,8 +84,7 @@ DEFINE_HOOK(0x6F7294, TechnoClass_InRange_OccupyRange, 0x5)
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, range, EDI);
 
-	int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis);
-	occupyRange /= Unsorted::LeptonsPerCell;
+	const int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis) / Unsorted::LeptonsPerCell;
 
 	R->EDI(range + occupyRange);
 
@@ -125,7 +124,7 @@ DEFINE_HOOK(0x41810F, AircraftClass_MissionAttack_WeaponRangeCheck1, 0x6)
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET(int, distance, EAX);
 
-	int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+	const int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
 
 	if (distance < range)
 		return WithinDistance;

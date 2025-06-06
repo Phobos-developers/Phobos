@@ -47,7 +47,7 @@ DEFINE_HOOK(0x450319, BuildingClass_AI_Factory_NavalProductionFix, 0x6)
 
 	GET(BuildingClass* const, pThis, ESI);
 
-	auto pHouse = pThis->Owner;
+	auto const pHouse = pThis->Owner;
 	TechnoTypeClass* pTechnoType = nullptr;
 	int index = -1;
 

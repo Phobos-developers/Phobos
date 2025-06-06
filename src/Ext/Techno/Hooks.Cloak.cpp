@@ -8,7 +8,7 @@ namespace CloakTemp
 bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool cloakable = pThis->Cloakable;
+	const bool cloakable = pThis->Cloakable;
 	int rearm = -1;
 	pThis->Cloakable |= pExt->AE.Cloakable;
 
@@ -19,7 +19,7 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	}
 
 	CloakTemp::IsInReadyToCloak = true;
-	bool retVal = pThis->TechnoClass::IsReadyToCloak();
+	const bool retVal = pThis->TechnoClass::IsReadyToCloak();
 	CloakTemp::IsInReadyToCloak = false;
 
 	pThis->Cloakable = cloakable;
@@ -36,10 +36,10 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool cloakable = pThis->Cloakable;
+	const bool cloakable = pThis->Cloakable;
 	pThis->Cloakable |= pExt->AE.Cloakable;
 
-	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
+	const bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
 
 	pThis->Cloakable = cloakable;
 

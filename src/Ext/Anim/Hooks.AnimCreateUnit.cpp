@@ -63,7 +63,7 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 		auto const pExt = AnimExt::ExtMap.Find(pThis);
 		pThis->UnmarkAllOccupationBits(pThis->GetCell()->GetCoordsWithBridge());
 
-		auto facing = pCreateUnit->RandomFacing
+		auto const facing = pCreateUnit->RandomFacing
 			? static_cast<DirType>(ScenarioClass::Instance->Random.RandomRanged(0, 255)) : pCreateUnit->Facing;
 
 		auto const primaryFacing = pCreateUnit->InheritDeathFacings && pExt->FromDeathUnit ? pExt->DeathUnitFacing : facing;
