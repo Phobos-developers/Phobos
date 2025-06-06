@@ -40,7 +40,7 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	OwnerObject()->Image = Overlay;
 	OwnerObject()->NumFrames = 12; // Let's keep the frame count at 12 to not mess with the game too much
 	OwnerObject()->NumImages = Variety;
-	OwnerObject()->NumSlopes = UseSlopes ? 8 : 0; // Same here, we could i theory try other numbers, but let's keep it at 8
+	OwnerObject()->NumSlopes = UseSlopes ? 8 : 0; // Same here, we could in theory try other numbers, but let's keep it at 8
 }
 
 void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

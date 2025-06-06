@@ -34,8 +34,8 @@ DEFINE_HOOK(0x6851DF, PostGameLoad, 0x5)
 	}
 
 	// hack hack
-	// this is actually a different functions
-	// out original function calls this function at the address we hook at
+	// this is actually a different function
+	// our original function calls this function at the address we hook at
 	// using a `jmp`, so we just jump to that function instead of returning
 	// because Syringe can't restore the jump properly
 	return 0x660C50;
