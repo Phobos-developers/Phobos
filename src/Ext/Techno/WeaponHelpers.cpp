@@ -255,7 +255,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	}
 }
 
-int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget)
+int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 {
 	int forceWeaponIndex = -1;
 	auto const pThis = this->OwnerObject();
