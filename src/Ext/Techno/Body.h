@@ -10,7 +10,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
-#include <New/Entity/PhobosStorageClass.h>
+#include <New/Entity/StorageClassExt.h>
 
 class BulletClass;
 
@@ -118,11 +118,10 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
-			, IsBeingChronoSphered { false }
-			, Tiberium(TiberiumClass::Array->Count, 0.0f)
+			, Tiberium(TiberiumClass::Array.Count, 0.0f)
 		{
 			// Initialize our new storage class inside the owner object
-			new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject->Tiberium)) PhobosStorageClass(&Tiberium);
+			new (reinterpret_cast<StorageClassExt*>(&OwnerObject->Tiberium)) StorageClassExt(Tiberium);
 		}
 
 		void OnEarlyUpdate();

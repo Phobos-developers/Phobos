@@ -4,6 +4,7 @@
 #include <Ext/Scenario/Body.h>
 #include "Ext/Techno/Body.h"
 #include "Ext/Building/Body.h"
+#include <algorithm>
 #include <unordered_map>
 
 #include "Utilities/AresHelper.h"
@@ -467,21 +468,20 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 	GET_STACK(float, amount, 0x4);
 	GET_STACK(int const, idxType, 0x8);
 
-	// If we don't have Ares, don't patch this function since it's a replacement of theirs
+	// If we don't have Ares, don't patch this function since it's a replacement of their patch
 	if (!AresHelper::CanUseAres)
 		return 0;
 
-	pThis->SiloMoney += static_cast<int>(amount * 5.0);
+	pThis->PointTotal += static_cast<int>(amount * 5.0);
 
-	if (SessionClass::Instance->GameMode == GameMode::Campaign || pThis->IsHumanPlayer)
+	if (SessionClass::Instance.GameMode == GameMode::Campaign || pThis->IsHumanPlayer)
 	{
 		// don't change, old values are needed for silo update
 		const auto lastStorage = static_cast<int>(pThis->OwnedTiberium.GetTotalAmount());
 		const auto lastTotalStorage = pThis->TotalStorage;
 
 		// this is the upper limit for stored tiberium
-		if (amount > static_cast<float>(lastTotalStorage - lastStorage))
-			amount = static_cast<float>(lastTotalStorage - lastStorage);
+		amount = std::min(amount, static_cast<float>(lastTotalStorage - lastStorage));
 
 		// go through all buildings and fill them up until all is in there
 		for (auto const& pBuilding : pThis->Buildings)
@@ -513,7 +513,7 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 	else
 	{
 		// just add the money. this is the only original YR logic
-		pThis->Balance += static_cast<int>(amount * static_cast<float>(TiberiumClass::Array->GetItem(idxType)->Value) * pThis->Type->IncomeMult);
+		pThis->Balance += static_cast<int>(amount * static_cast<float>(TiberiumClass::Array.GetItem(idxType)->Value) * pThis->Type->IncomeMult);
 	}
 
 	return 0x4F9664;

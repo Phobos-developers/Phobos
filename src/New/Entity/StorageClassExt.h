@@ -1,15 +1,13 @@
 #pragma once
 
 #include <Utilities/TemplateDef.h>
-#include <TiberiumClass.h>
 
 
-class PhobosStorageClass
+class StorageClassExt
 {
 public:
-	PhobosStorageClass(std::vector<float>* vector) :
-		Tiberiums(vector) {}
-	~PhobosStorageClass() = default;
+	StorageClassExt(std::vector<float> & vector) :
+		Tiberiums(&vector) {}
 
 	int GetTotalValue() const;
 	float GetTotalAmount() const;
@@ -18,8 +16,8 @@ public:
 	float DecreaseAmount(float amount, int index);
 	int FirstUsedSlot() const;
 
-	PhobosStorageClass operator+=(PhobosStorageClass& that);
-	PhobosStorageClass operator-=(PhobosStorageClass& that);
+	StorageClassExt operator+=(StorageClassExt& that);
+	StorageClassExt operator-=(StorageClassExt& that);
 
 private:
 	std::vector<float>* Tiberiums;

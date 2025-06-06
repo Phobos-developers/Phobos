@@ -1,18 +1,19 @@
-#include "PhobosStorageClass.h"
+#include "StorageClassExt.h"
+#include <TiberiumClass.h>
 
-int PhobosStorageClass::GetTotalValue() const
+int StorageClassExt::GetTotalValue() const
 {
 	float total = 0;
 
 	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
-		total += static_cast<int>((*Tiberiums)[i] * TiberiumClass::Array->GetItem(i)->Value);
+		total += static_cast<int>((*Tiberiums)[i] * TiberiumClass::Array[i]->Value);
 	}
 
 	return static_cast<int>(total);
 }
 
-float PhobosStorageClass::GetTotalAmount() const
+float StorageClassExt::GetTotalAmount() const
 {
 	float total = 0;
 
@@ -24,18 +25,18 @@ float PhobosStorageClass::GetTotalAmount() const
 	return total;
 }
 
-float PhobosStorageClass::GetAmount(int index) const
+float StorageClassExt::GetAmount(int index) const
 {
 	return (*Tiberiums)[index];
 }
 
-float PhobosStorageClass::IncreaseAmount(float amount, int index)
+float StorageClassExt::IncreaseAmount(float amount, int index)
 {
 	(*Tiberiums)[index] += amount;
 	return (*Tiberiums)[index];
 }
 
-float PhobosStorageClass::DecreaseAmount(float amount, int index)
+float StorageClassExt::DecreaseAmount(float amount, int index)
 {
 	if (amount < (*Tiberiums)[index])
 		amount = (*Tiberiums)[index];
@@ -44,7 +45,7 @@ float PhobosStorageClass::DecreaseAmount(float amount, int index)
 	return amount;
 }
 
-int PhobosStorageClass::FirstUsedSlot() const
+int StorageClassExt::FirstUsedSlot() const
 {
 	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
@@ -55,7 +56,7 @@ int PhobosStorageClass::FirstUsedSlot() const
 	return -1;
 }
 
-PhobosStorageClass PhobosStorageClass::operator+=(PhobosStorageClass& that)
+StorageClassExt StorageClassExt::operator+=(StorageClassExt& that)
 {
 	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{
@@ -65,7 +66,7 @@ PhobosStorageClass PhobosStorageClass::operator+=(PhobosStorageClass& that)
 	return *this;
 }
 
-PhobosStorageClass PhobosStorageClass::operator-=(PhobosStorageClass& that)
+StorageClassExt StorageClassExt::operator-=(StorageClassExt& that)
 {
 	for (size_t i = 0; i < Tiberiums->size(); i++)
 	{

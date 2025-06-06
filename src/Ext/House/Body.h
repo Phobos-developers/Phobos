@@ -97,12 +97,12 @@ public:
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
 			, ForceEnemyIndex(-1)
-			, Tiberium(TiberiumClass::Array->Count, 0.0f)
-			, Weed(TiberiumClass::Array->Count, 0.0f)
+			, Tiberium(TiberiumClass::Array.Count, 0.0f)
+			, Weed(TiberiumClass::Array.Count, 0.0f)
 		{
 			// Initialize our new storage classes inside the owner object
-			new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject->OwnedTiberium)) PhobosStorageClass(&Tiberium);
-			new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject->OwnedWeed)) PhobosStorageClass(&Weed);
+			new (reinterpret_cast<StorageClassExt*>(&OwnerObject->OwnedTiberium)) StorageClassExt(Tiberium);
+			new (reinterpret_cast<StorageClassExt*>(&OwnerObject->OwnedWeed)) StorageClassExt(Weed);
 		}
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);

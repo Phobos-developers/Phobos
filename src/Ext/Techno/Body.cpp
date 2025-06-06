@@ -8,8 +8,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
-#include "New/Entity/ExtendedStorageClass.h"
-#include "New/Entity/PhobosStorageClass.h"
+#include "New/Entity/StorageClassExt.h"
 #include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
@@ -631,9 +630,6 @@ void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TechnoClass>::LoadFromStream(Stm);
 	this->Serialize(Stm);
-
-	// Restore the pointer to our new Storage class
-	new (reinterpret_cast<PhobosStorageClass*>(&OwnerObject()->Tiberium)) PhobosStorageClass(&Tiberium);
 }
 
 void TechnoExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)

@@ -1460,12 +1460,38 @@ CanBeBuiltOn=false  ; boolean
 
 ### Minimap color customization
 
-- Ore can now be made to display on minimap with different colors by setting `MinimapColor` on Tiberiums.
+- Tiberium can now be displayed on the minimap using different colors by setting `MinimapColor`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEORE]      ; Tiberium
-MinimapColor=  ; integer - Red,Green,Blue
+[SOMETIBERIUM]      ; Tiberium
+MinimapColor=       ; integer - Red,Green,Blue
+```
+
+### New Tiberiums
+
+- Phobos allows mods to create new `Tiberiums` beyond the vanilla 4.
+
+- A Tiberium's `Image` can be customized manually.
+
+In `RULES.INI`:
+```ini
+[SOMETIBERIUM]   ; Tiberium
+Overlay=         ; OverlayType, the name of the first overlay that the Tiberium uses, defaults to the value usually used by the Image=, or overlay at index 102 if not specified.
+Variety=         ; integer, how many non-slope overlays does this Tiberium use, sequentially starting from the one specified by Overlay=?
+UseSlopes=       ; boolean, does this Tiberium have graphics for slopes?
+```
+
+```{note}
+The new graphics keys override defaults set according to `Image=`, please refer to [ModEnc](https://modenc.renegadeprojects.com/Image) about its vanilla behavior. It is not required to set `Image=` if you specify the graphics using new keys.
+```
+
+```{note}
+`Overlay` specifies the first overlay the Tiberium uses. There must be `Variety` overlays, located one after another sequentially. Additionally, is `UseSlopes` is set to yes, another 8 overlays are required after the previous `Variety` overlays.
+```
+
+```{warning}
+All `OverlayTypes` used by a `Tiberium` must have `Tiberium=yes`, and no other `OverlayTypes` may have `Tiberium=yes`, or this will lead to severe lags/crashes.
 ```
 
 ## Vehicles

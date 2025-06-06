@@ -11,7 +11,8 @@ void TiberiumExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->MinimapColor)
 		.Process(this->Overlay)
-		.Process(this->Overlays_UseSlopes)
+		.Process(this->UseSlopes)
+		.Process(this->Variety)
 		;
 }
 
@@ -27,16 +28,22 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
 
+	// Use whatever the parent object has configured as our default
 	this->Overlay = OwnerObject()->Image;
-	this->Overlays_UseSlopes = OwnerObject()->NumSlopes > 0;
+	this->Variety = OwnerObject()->NumImages;
+	this->UseSlopes = OwnerObject()->NumSlopes > 0;
 
+	// Read the overrides. Don't actually use these outside of reading the INI.
 	this->Overlay.Read(exINI, pSection, "Overlay");
-	this->Overlays_UseSlopes.Read(exINI, pSection, "Overlays.UseSlopes");
+	this->UseSlopes.Read(exINI, pSection, "UseSlopes");
+	this->Variety.Read(exINI, pSection, "Variety");
+
+	this->Variety = std::max(this->Variety.Get(), 1); // let's ensure at least 1 overlay is used
 
 	OwnerObject()->Image = Overlay;
-	OwnerObject()->NumFrames = 12;
-	OwnerObject()->NumImages = 12;
-	OwnerObject()->NumSlopes = Overlays_UseSlopes ? 8 : 0;
+	OwnerObject()->NumFrames = 12; // Let's keep the frame count at 12 to not mess with the game too much
+	OwnerObject()->NumImages = Variety;
+	OwnerObject()->NumSlopes = UseSlopes ? 8 : 0; // Same here, we could i theory try other numbers, but let's keep it at 8
 }
 
 void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
