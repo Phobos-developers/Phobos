@@ -822,18 +822,20 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	}
 
 	auto clearMindControlNode = [pCaptureManager](const int& maxCapture)
-		{
-			// If not exceeded, then stop.
-			if (pCaptureManager->ControlNodes.Count <= maxCapture)
-				return;
+	{
+		// If not exceeded, then stop.
+		if (pCaptureManager->ControlNodes.Count <= maxCapture)
+			return;
 
-			// Remove excess nodes.
-			for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
-			{
-				auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
-				pCaptureManager->FreeUnit(pControlNode->Unit);
-			}
-		};
+		// Remove excess nodes.
+		for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
+		{
+			auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
+			pCaptureManager->FreeUnit(pControlNode->Unit);
+		}
+	};
+
+	bool resetMindControl = pOldTypeExt->Convert_ResetMindControl.Get();
 
 	if (maxCapture > 0)
 	{
@@ -842,7 +844,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			// Rebuild a CaptureManager
 			pCaptureManager = GameCreate<CaptureManagerClass>(pThis, maxCapture, infiniteCapture);
 		}
-		else
+		else if (resetMindControl)
 		{
 			if (!infiniteCapture)
 			{
@@ -854,21 +856,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			pCaptureManager->InfiniteMindControl = infiniteCapture;
 		}
 	}
-	else if (pCaptureManager)
+	else if (pCaptureManager && resetMindControl)
 	{
-		if (pOldTypeExt->Convert_ResetMindControl.Get())
-		{
-			// Remove CaptureManager completely
-			pCaptureManager->FreeAll();
-			GameDelete(pCaptureManager);
-			pCaptureManager = nullptr;
-		}
-		else
-		{
-			// Remove excess mind control node.
-			clearMindControlNode(pCaptureManager->MaxControlNodes);
-			pCaptureManager->InfiniteMindControl = false;
-		}
+		// Remove CaptureManager completely
+		pCaptureManager->FreeAll();
+		GameDelete(pCaptureManager);
+		pCaptureManager = nullptr;
 	}
 
 	if (hasTemporal)

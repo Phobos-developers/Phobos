@@ -363,6 +363,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
   - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Fixed some units of Ares crashing after deployment conversion
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -409,6 +410,7 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
   - New SuperWeapon Type template
+  - Fixed some units of Ares crashing after deployment conversion
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control
@@ -534,7 +536,6 @@ This page lists all the individual contributions to the project by their author.
   - AI vehicle production update code
   - parts of TechnoType conversion placeholder code
 - **ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - Digital Display
-- **ststl, FlyStar** - Fixed some units of Ares crashing after deployment conversion
 - **SukaHati (Erzoid)** - Minimum interceptor guard range
 - **E1 Elite** - TileSet 255 and above bridge repair fix
 - **AutoGavy** - interceptor logic, Warhead critical hit logic
