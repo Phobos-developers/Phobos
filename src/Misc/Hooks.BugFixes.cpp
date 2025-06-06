@@ -2015,8 +2015,9 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 
 	bool InGuard = (R->Origin() == 0x4D5116);
 	const auto pType = pThis->GetTechnoType();
+	int Range = Secondary->Range;
 
-	if (Secondary->Range > 0
+	if (Range > 0
 		&& (!pThis->Locomotor->Is_Really_Moving_Now()
 		|| (pThis->WhatAmI() != AbstractType::Infantry
 		&& pType->OpportunityFire)))
@@ -2024,7 +2025,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 		const auto cellCoords = pThis->GetMapCoords();
 		BuildingClass* pBuilding = nullptr;
 
-		for (CellRangeEnumerator it(cellCoords, static_cast<double>(Secondary->Range) / Unsorted::LeptonsPerCell); it; it++)
+		for (CellRangeEnumerator it(cellCoords, static_cast<double>(Range) / Unsorted::LeptonsPerCell); it; it++)
 		{
 			const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
 			if (!pCell)
