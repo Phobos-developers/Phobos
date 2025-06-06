@@ -381,6 +381,12 @@ New:
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
+- Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
+- Customize the scatter caused by aircraft attack mission (by TaranDahl)
+- [Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md#customizable-garrison-and-bunker-properties) (by Otamaa)
+- [Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
+- [Power plant damage factor](Fixed-or-Improved-Logics#power-plant-damage-factor) (by Otamaa and Ollerus)
+- Customize whether `Crater=yes` animation would destroy tiberium (by TaranDahl)
 - Support for more optional weapons (by FlyStar)
 
 Vanilla fixes:
@@ -413,6 +419,8 @@ Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
+- Fixed the issue where some units crashed after the deployment transformation (by ststl, FlyStar)
+- Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 
 ```
 

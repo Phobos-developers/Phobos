@@ -244,6 +244,7 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+		Valueable<bool> Convert_ResetMindControl;
 
 		Valueable<double> CrateGoodie_RerollChance;
 
@@ -361,11 +362,13 @@ public:
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
-		Valueable<bool> MultiWeapon;
+		Valueable<bool> FiringForceScatter;
+    
+    Valueable<bool> MultiWeapon;
 		ValueableVector<int> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
-
+    
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -580,6 +583,7 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Convert_ResetMindControl { false }
 
 			, CrateGoodie_RerollChance { 0.0 }
 
@@ -678,6 +682,8 @@ public:
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
+			, FiringForceScatter { true }
+    
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
