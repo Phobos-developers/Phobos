@@ -1483,7 +1483,7 @@ UseSlopes=       ; boolean, does this Tiberium have graphics for slopes?
 ```
 
 ```{note}
-The new graphics keys override defaults set according to `Image=`, please refer to [ModEnc](https://modenc.renegadeprojects.com/Image) about its vanilla behavior. It is not required to set `Image=` if you specify the graphics using new keys.
+The new graphics keys override defaults set according to `Image=`, please refer to [ModEnc2](https://modenc2.markjfox.net/Image) about its vanilla behavior. It is not required to set `Image=` if you specify the graphics using new keys.
 ```
 
 ```{note}
