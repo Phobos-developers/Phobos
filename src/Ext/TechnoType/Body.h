@@ -672,7 +672,7 @@ public:
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
-			, FireUp { 0 }
+			, FireUp { -1 }
 			, FireUp_ResetInRetarget { true }
 			//, SecondaryFire {}
 		{ }

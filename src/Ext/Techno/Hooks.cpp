@@ -922,7 +922,7 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			const auto pTypeExt = pExt->TypeExtData;
 
-			if (pTarget && pTypeExt->FireUp.Get() > 0 &&
+			if (pTarget && pTypeExt->FireUp.Get() >= 0 &&
 				!pTypeExt->FireUp_ResetInRetarget.Get())
 			{
 				if (!pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))

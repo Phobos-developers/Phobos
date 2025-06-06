@@ -19,13 +19,13 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		return 0;
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pTypeExt = pExt->TypeExtData;
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
+	const auto pTypeExt = pExt->TypeExtData;
 	int fireUp = pTypeExt->FireUp.Get();
 	CDTimerClass& pTimer = pExt->FiringAnimationTimer;
 
-	if (fireUp > 0 && !pType->OpportunityFire &&
+	if (fireUp >= 0 && !pType->OpportunityFire &&
 		pThis->Locomotor->Is_Really_Moving_Now())
 	{
 		if (pTimer.InProgress())
@@ -35,57 +35,53 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	}
 
 	int frames = pType->FiringFrames;
-
-	if (!pTimer.InProgress())
+	if (!pTimer.InProgress() && frames >= 1)
 	{
-		if (frames >= 0)
-		{
-			pThis->CurrentFiringFrame = 2 * frames - 1;
-			pTimer.Start(pThis->CurrentFiringFrame);
-		}
+		pThis->CurrentFiringFrame = 2 * frames - 1;
+		pTimer.Start(pThis->CurrentFiringFrame);
 	}
 
-	int cumulativeDelay = 0;
-	int projectedDelay = 0;
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
+	if (fireUp >= 0 && frames >= 1)
 	{
-		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
+		int cumulativeDelay = 0;
+		int projectedDelay = 0;
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(nWeaponIndex)->WeaponType);
+		bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
+
+		// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
+		if (allowBurst)
 		{
-			int burstDelay = pWeaponExt->GetBurstDelay(i);
-			int delay = 0;
+			for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
+			{
+				int burstDelay = pWeaponExt->GetBurstDelay(i);
+				int delay = 0;
 
-			if (burstDelay > -1)
-				delay = burstDelay;
-			else
-				delay = ScenarioClass::Instance->Random.RandomRanged(3, 5);
+				if (burstDelay > -1)
+					delay = burstDelay;
+				else
+					delay = ScenarioClass::Instance->Random.RandomRanged(3, 5);
 
-			// Other than initial delay, treat 0 frame delays as 1 frame delay due to per-frame processing.
-			if (i != 0)
-				delay = Math::max(delay, 1);
+				// Other than initial delay, treat 0 frame delays as 1 frame delay due to per-frame processing.
+				if (i != 0)
+					delay = Math::max(delay, 1);
 
-			cumulativeDelay += delay;
+				cumulativeDelay += delay;
 
-			if (i == pThis->CurrentBurstIndex)
-				projectedDelay = cumulativeDelay + delay;
+				if (i == pThis->CurrentBurstIndex)
+					projectedDelay = cumulativeDelay + delay;
+			}
 		}
-	}
 
-	if (fireUp > 0 && frames >= 0)
-	{
 		int frame = (pTimer.TimeLeft - pTimer.GetTimeLeft());
 		if (frame % 2 != 0)
 			return SkipGameCode;
 
 		int value = frame / 2;
-		if (value != fireUp)
+		if (value != fireUp + cumulativeDelay)
 		{
 			return SkipGameCode;
 		}
-		else if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
+		else if (allowBurst)
 		{
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (fireUp + projectedDelay > frames)
