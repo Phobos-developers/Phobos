@@ -15,7 +15,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
 
-	bool isStrafe = pThis->Is_Strafe();
+	const bool isStrafe = pThis->Is_Strafe();
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
@@ -66,7 +66,7 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 	}
 
 	++Unsorted::ScenarioInit;
-	bool result = pThis->Unlimbo(coords, DirType::North);
+	const bool result = pThis->Unlimbo(coords, DirType::North);
 	--Unsorted::ScenarioInit;
 
 	pThis->SetHeight(pTypeExt->SpawnHeight.Get(pThis->Type->GetFlightLevel()));
@@ -85,18 +85,18 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 		return poseDir;
 
 	// If this is a spawnee, use the spawner's facing.
-	if (auto pOwner = pThis->SpawnOwner)
+	if (auto const pOwner = pThis->SpawnOwner)
 		return pOwner->PrimaryFacing.Current().GetDir();
 
 	if (pDock || pThis->HasAnyLink())
 	{
-		auto pLink = pThis->GetNthLink(0);
+		auto const pLink = pThis->GetNthLink(0);
 
-		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*>(pLink))
+		if (auto pBuilding = pDock ? pDock : abstract_cast<BuildingClass*, true>(pLink))
 		{
 			auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-			int docks = pBuilding->Type->NumberOfDocks;
-			int linkIndex = pBuilding->FindLinkIndex(pThis);
+			const int docks = pBuilding->Type->NumberOfDocks;
+			const int linkIndex = pBuilding->FindLinkIndex(pThis);
 
 			if (docks > 0 && linkIndex >= 0 && linkIndex < docks)
 			{
@@ -110,7 +110,7 @@ DirType AircraftExt::GetLandingDir(AircraftClass* pThis, BuildingClass* pDock)
 			return pLink->PrimaryFacing.Current().GetDir();
 	}
 
-	int landingDir = TechnoTypeExt::ExtMap.Find(pThis->Type)->LandingDir.Get((int)poseDir);
+	const int landingDir = TechnoTypeExt::ExtMap.Find(pThis->Type)->LandingDir.Get((int)poseDir);
 
 	if (!pThis->Type->AirportBound && landingDir < 0)
 		return pThis->PrimaryFacing.Current().GetDir();

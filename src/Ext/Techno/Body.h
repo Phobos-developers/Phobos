@@ -58,6 +58,7 @@ public:
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
 		bool ShouldUpdateGattlingValue;
+		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -70,6 +71,14 @@ public:
 		CDTimerClass TiberiumEater_Timer;
 
 		AirstrikeClass* AirstrikeTargetingMe;
+
+		// cache tint values
+		int TintColorOwner;
+		int TintColorAllies;
+		int TintColorEnemies;
+		int TintIntensityOwner;
+		int TintIntensityAllies;
+		int TintIntensityEnemies;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -115,6 +124,13 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, AttachedEffectInvokerCount { 0 }
+			, TintColorOwner { 0 }
+			, TintColorAllies { 0 }
+			, TintColorEnemies { 0 }
+			, TintIntensityOwner { 0 }
+			, TintIntensityAllies { 0 }
+			, TintIntensityEnemies { 0 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -149,6 +165,7 @@ public:
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
+		void UpdateTintValues();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 

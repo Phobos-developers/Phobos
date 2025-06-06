@@ -139,7 +139,7 @@ bool TechnoExt::HasRadioLinkWithDock(TechnoClass* pThis)
 {
 	if (pThis->HasAnyLink())
 	{
-		auto const pLink = abstract_cast<BuildingClass*>(pThis->GetNthLink(0));
+		auto const pLink = abstract_cast<BuildingClass*, true>(pThis->GetNthLink(0));
 
 		if (pLink && pThis->GetTechnoType()->Dock.FindItemIndex(pLink->Type) >= 0)
 			return true;
@@ -557,14 +557,35 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 {
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		if (pUnit->IsRedHP())
 		{
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
-				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
-			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
-				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water)
+			{
+				if (auto const imageRed = pData->WaterImage_ConditionRed)
+					return imageRed;
+				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageRed = pData->Image_ConditionRed)
+				return imageRed;
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+				return imageYellow;
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && pData->WaterImage_ConditionYellow)
+			{
+				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
 		}
 	}
 
@@ -620,6 +641,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->AttachedEffectInvokerCount)
+		.Process(this->TintColorOwner)
+		.Process(this->TintColorAllies)
+		.Process(this->TintColorEnemies)
+		.Process(this->TintIntensityOwner)
+		.Process(this->TintIntensityAllies)
+		.Process(this->TintIntensityEnemies)
 		;
 }
 

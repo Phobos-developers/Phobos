@@ -175,7 +175,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size() > i)
 			this->LimboDelivery_RandomWeightsData[i] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	ValueableVector<int> weights;
@@ -185,7 +185,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size())
 			this->LimboDelivery_RandomWeightsData[0] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	// SW.Next.RandomWeights
@@ -201,7 +201,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size() > i)
 			this->SW_Next_RandomWeightsData[i] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	ValueableVector<int> weights2;
@@ -211,7 +211,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size())
 			this->SW_Next_RandomWeightsData[0] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");

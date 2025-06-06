@@ -497,22 +497,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			auto const pTechnoType = pThis->GetTechnoType();
-			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
-
-			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-				{
-					if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-						weaponRange = pWeaponType->Range;
-				};
-
-			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-			weaponRange += weaponRangeExtra;
+			int weaponRange = pThis->Veterancy.IsElite() ? pTypeExt->EliteSpawnerRange : pTypeExt->SpawnerRange;
 
 			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
 				pManager->ResetTarget();
@@ -1724,6 +1709,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	bool markForRedraw = false;
+	bool altered = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1743,6 +1729,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 			markForRedraw |= pType->HasTint();
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -1761,7 +1748,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (!count)
+	if (altered && !count)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -1774,11 +1761,15 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
+	int count = 0;
+	const int cap = pAttachEffectType->Cumulative_MaxCount > -1 ? pAttachEffectType->Cumulative_MaxCount : INT_MAX;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
+
+		count++;
 
 		if (attachEffect->HasCumulativeAnim)
 		{
@@ -1786,7 +1777,7 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 		}
 		else if (attachEffect->CanShowAnim())
 		{
-			int currentDuration = attachEffect->GetRemainingDuration();
+			const int currentDuration = attachEffect->GetRemainingDuration();
 
 			if (currentDuration < 0 || currentDuration > duration)
 			{
@@ -1794,11 +1785,14 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 				duration = currentDuration;
 			}
 		}
+
+		if (count >= cap)
+			break;
 	}
 
 	if (pAEWithAnim)
 	{
-		pAEWithAnim->UpdateCumulativeAnim();
+		pAEWithAnim->UpdateCumulativeAnim(count);
 
 		if (pRemoved == pAEWithAnim)
 		{
@@ -1814,6 +1808,8 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 void TechnoExt::ExtData::RecalculateStatMultipliers()
 {
 	auto const pThis = this->OwnerObject();
+	auto& pAE = this->AE;
+	const bool wasTint = pAE.HasTint;
 
 	double firepower = 1.0;
 	double armor = 1.0;
@@ -1850,20 +1846,113 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 	}
 
-	this->AE.FirepowerMultiplier = firepower;
-	this->AE.ArmorMultiplier = armor;
-	this->AE.SpeedMultiplier = speed;
-	this->AE.ROFMultiplier = ROF;
-	this->AE.Cloakable = cloak;
-	this->AE.ForceDecloak = forceDecloak;
-	this->AE.DisableWeapons = disableWeapons;
-	this->AE.Unkillable = unkillable;
-	this->AE.HasRangeModifier = hasRangeModifier;
-	this->AE.HasTint = hasTint;
-	this->AE.ReflectDamage = reflectsDamage;
-	this->AE.HasOnFireDiscardables = hasOnFireDiscardables;
-	this->AE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
+	pAE.FirepowerMultiplier = firepower;
+	pAE.ArmorMultiplier = armor;
+	pAE.SpeedMultiplier = speed;
+	pAE.ROFMultiplier = ROF;
+	pAE.Cloakable = cloak;
+	pAE.ForceDecloak = forceDecloak;
+	pAE.DisableWeapons = disableWeapons;
+	pAE.Unkillable = unkillable;
+	pAE.HasRangeModifier = hasRangeModifier;
+	pAE.HasTint = hasTint;
+	pAE.ReflectDamage = reflectsDamage;
+	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
+	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
+
+	if (wasTint || hasTint)
+		this->UpdateTintValues();
+}
+
+// Recalculates tint values.
+void TechnoExt::ExtData::UpdateTintValues()
+{
+	// reset values
+	this->TintColorOwner = 0;
+	this->TintColorAllies = 0;
+	this->TintColorEnemies = 0;
+	this->TintIntensityOwner = 0;
+	this->TintIntensityAllies = 0;
+	this->TintIntensityEnemies = 0;
+
+	auto const pTypeExt = this->TypeExtData;
+	const bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
+	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->HasTint();
+
+	// Bail out early if no custom tint is applied.
+	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
+		return;
+
+	auto calculateTint = [this](const int color, const int intensity, const AffectedHouse affectedHouse)
+		{
+			// despite being replicated, this is more time saving than using if statement
+			switch (affectedHouse)
+			{
+				case AffectedHouse::All:
+					this->TintColorOwner |= color;
+					this->TintColorAllies |= color;
+					this->TintColorEnemies |= color;
+					this->TintIntensityOwner += intensity;
+					this->TintIntensityAllies += intensity;
+					this->TintIntensityEnemies += intensity;
+					break;
+				case AffectedHouse::Owner:
+					this->TintColorOwner |= color;
+					this->TintIntensityOwner += intensity;
+					break;
+				case AffectedHouse::Allies:
+					this->TintColorAllies |= color;
+					this->TintIntensityAllies += intensity;
+					break;
+				case AffectedHouse::Enemies:
+					this->TintColorEnemies |= color;
+					this->TintIntensityEnemies += intensity;
+					break;
+				case AffectedHouse::Team:
+					this->TintColorOwner |= color;
+					this->TintColorAllies |= color;
+					this->TintIntensityOwner += intensity;
+					this->TintIntensityAllies += intensity;
+					break;
+				case AffectedHouse::NotAllies:
+					this->TintColorOwner |= color;
+					this->TintColorEnemies |= color;
+					this->TintIntensityOwner += intensity;
+					this->TintIntensityEnemies += intensity;
+					break;
+				case AffectedHouse::NotOwner:
+					this->TintColorAllies |= color;
+					this->TintColorEnemies |= color;
+					this->TintIntensityAllies += intensity;
+					this->TintIntensityEnemies += intensity;
+					break;
+				default:
+					break;
+			}
+		};
+
+	if (hasTechnoTint)
+		calculateTint(Drawing::RGB_To_Int(pTypeExt->Tint_Color), static_cast<int>(pTypeExt->Tint_Intensity * 1000), pTypeExt->Tint_VisibleToHouses);
+
+	if (this->AE.HasTint)
+	{
+		for (auto const& attachEffect : this->AttachedEffects)
+		{
+			auto const type = attachEffect->GetType();
+
+			if (!attachEffect->IsActive() || !type->HasTint())
+				continue;
+
+			calculateTint(Drawing::RGB_To_Int(type->Tint_Color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+		}
+	}
+
+	if (hasShieldTint)
+	{
+		auto const pShieldType = this->Shield->GetType();
+		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
 }
