@@ -1,5 +1,6 @@
 #include "StorageClassExt.h"
 #include <TiberiumClass.h>
+#include <algorithm>
 
 int StorageClassExt::GetTotalValue() const
 {
@@ -34,9 +35,7 @@ float StorageClassExt::IncreaseAmount(float amount, int index)
 
 float StorageClassExt::DecreaseAmount(float amount, int index)
 {
-	if (amount < (*Tiberiums)[index])
-		amount = (*Tiberiums)[index];
-
+	amount = std::min((*Tiberiums)[index], amount);
 	(*Tiberiums)[index] -= amount;
 	return amount;
 }
