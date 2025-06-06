@@ -2028,7 +2028,7 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 		if (pThis->IsInAir())
 			Range += pType->AirRangeBonus;
 
-		for (CellRangeEnumerator it(cellCoords, Secondary->Range); it; it++)
+		for (CellRangeEnumerator it(cellCoords, static_cast<double>(Secondary->Range) / Unsorted::LeptonsPerCell); it; it++)
 		{
 			const auto pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
 			if (!pCell)
