@@ -24,7 +24,6 @@ public:
 		Valueable<bool> UseSlopes;
 		Valueable<int> Variety;
 
-
 		ExtData(TiberiumClass* OwnerObject) : Extension<TiberiumClass>(OwnerObject)
 			, MinimapColor {}
 			, Overlay {}
@@ -32,7 +31,7 @@ public:
 			, Variety {}
 		{ }
 
-		virtual ~ExtData() override = default;
+		virtual ~ExtData() = default;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 
