@@ -392,9 +392,11 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 
 			const int x = pColumn->X + pColumn->Width + 2;
 			*/
+			GET_STACK(int, textHeight, STACK_OFFSET(0x44, -0x28));
+
 			const auto pColumn = SWSidebarClass::Instance.Columns[pButton->ColumnIndex];
 			const int x = pColumn->X + pColumn->Width + 2;
-			const int y = pButton->Y + 3;
+			const int y = std::clamp(pButton->Y + 3, 0, DSurface::ViewBounds.Height - textHeight);
 			pRect->X = x;
 			pTextRect->Right += (x - pTextRect->Left);
 			pTextRect->Left = x;
@@ -414,9 +416,10 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	else if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
 	{
 		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
+		GET_STACK(int, textHeight, STACK_OFFSET(0x44, -0x28));
 
 		const int x = pButton->X + pButton->Width;
-		const int y = pButton->Y + 43;
+		const int y = std::clamp(pButton->Y + 43, 0, DSurface::ViewBounds.Height - textHeight);
 		pRect->X = x;
 		pTextRect->Right += (x - pTextRect->Left);
 		pTextRect->Left = x;
