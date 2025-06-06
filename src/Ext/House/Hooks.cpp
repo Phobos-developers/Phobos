@@ -469,7 +469,7 @@ DEFINE_HOOK(0x4F961A, HouseClass_GiveTiberium_Storage, 0x9)
 	GET_STACK(int const, idxType, 0x8);
 
 	// If we don't have Ares, don't patch this function since it's a replacement of their patch
-	if (!AresHelper::CanUseAres)
+	if (AresHelper::AresBaseAddress == 0)
 		return 0;
 
 	pThis->PointTotal += static_cast<int>(amount * 5.0);
