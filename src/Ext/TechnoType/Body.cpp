@@ -1220,7 +1220,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->FiringForceScatter)
     
-    .Process(this->FireUp)
+		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
 		;

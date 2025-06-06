@@ -364,7 +364,7 @@ public:
 
 		Valueable<bool> FiringForceScatter;
 
-    Valueable<int> FireUp;
+		Valueable<int> FireUp;
 		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
 
@@ -682,10 +682,10 @@ public:
 			, FallingDownDamage_Water {}
 
 			, FiringForceScatter { true }
-    
-    , FireUp { -1 }
-    , FireUp_ResetInRetarget { true }
-    //, SecondaryFire {}
+
+			, FireUp { -1 }
+			, FireUp_ResetInRetarget { true }
+			//, SecondaryFire {}
 		{ }
 
 		virtual ~ExtData() = default;
