@@ -11,7 +11,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 	GET(int, nWeaponIndex, EDI);
-	enum { SkipGameCode = 0x736F73 };
+	enum { SkipFiring = 0x736F73 };
 
 	const auto pType = pThis->Type;
 
@@ -23,22 +23,22 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
 	const auto pTypeExt = pExt->TypeExtData;
 	int fireUp = pTypeExt->FireUp.Get();
-	CDTimerClass& pTimer = pExt->FiringAnimationTimer;
+	CDTimerClass& Timer = pExt->FiringAnimationTimer;
 
 	if (fireUp >= 0 && !pType->OpportunityFire &&
 		pThis->Locomotor->Is_Really_Moving_Now())
 	{
-		if (pTimer.InProgress())
-			pTimer.Stop();
+		if (Timer.InProgress())
+			Timer.Stop();
 
-		return SkipGameCode;
+		return SkipFiring;
 	}
 
 	int frames = pType->FiringFrames;
-	if (!pTimer.InProgress() && frames >= 1)
+	if (!Timer.InProgress() && frames >= 1)
 	{
 		pThis->CurrentFiringFrame = 2 * frames - 1;
-		pTimer.Start(pThis->CurrentFiringFrame);
+		Timer.Start(pThis->CurrentFiringFrame);
 	}
 
 	if (fireUp >= 0 && frames >= 1)
@@ -72,14 +72,14 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			}
 		}
 
-		int frame = (pTimer.TimeLeft - pTimer.GetTimeLeft());
+		int frame = (Timer.TimeLeft - Timer.GetTimeLeft());
 		if (frame % 2 != 0)
-			return SkipGameCode;
+			return SkipFiring;
 
 		int value = frame / 2;
 		if (value != fireUp + cumulativeDelay)
 		{
-			return SkipGameCode;
+			return SkipFiring;
 		}
 		else if (allowBurst)
 		{
