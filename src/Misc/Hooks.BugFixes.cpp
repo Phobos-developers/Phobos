@@ -2023,10 +2023,6 @@ DEFINE_HOOK(0x4D6F78, FootClass_ElectricAssultFix, 0x8)			// Mission_AreaGuard
 	{
 		const auto cellCoords = pThis->GetMapCoords();
 		BuildingClass* pBuilding = nullptr;
-		int Range = Secondary->Range;
-
-		if (pThis->IsInAir())
-			Range += pType->AirRangeBonus;
 
 		for (CellRangeEnumerator it(cellCoords, static_cast<double>(Secondary->Range) / Unsorted::LeptonsPerCell); it; it++)
 		{
