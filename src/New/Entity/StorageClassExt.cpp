@@ -6,9 +6,7 @@ int StorageClassExt::GetTotalValue() const
 	float total = 0;
 
 	for (size_t i = 0; i < Tiberiums->size(); i++)
-	{
 		total += static_cast<int>((*Tiberiums)[i] * TiberiumClass::Array[i]->Value);
-	}
 
 	return static_cast<int>(total);
 }
@@ -18,9 +16,7 @@ float StorageClassExt::GetTotalAmount() const
 	float total = 0;
 
 	for (size_t i = 0; i < Tiberiums->size(); i++)
-	{
 		total += (*Tiberiums)[i];
-	}
 
 	return total;
 }
@@ -59,9 +55,7 @@ int StorageClassExt::FirstUsedSlot() const
 StorageClassExt StorageClassExt::operator+=(StorageClassExt& that)
 {
 	for (size_t i = 0; i < Tiberiums->size(); i++)
-	{
 		(*Tiberiums)[i] += (*that.Tiberiums)[i];
-	}
 
 	return *this;
 }
@@ -69,9 +63,7 @@ StorageClassExt StorageClassExt::operator+=(StorageClassExt& that)
 StorageClassExt StorageClassExt::operator-=(StorageClassExt& that)
 {
 	for (size_t i = 0; i < Tiberiums->size(); i++)
-	{
 		(*Tiberiums)[i] -= (*that.Tiberiums)[i];
-	}
 
 	return *this;
 }
