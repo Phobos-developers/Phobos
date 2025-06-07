@@ -1,6 +1,7 @@
 #pragma once
 #include <InfantryClass.h>
 #include <AnimClass.h>
+#include <TiberiumClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -9,6 +10,7 @@
 #include <New/Entity/ShieldClass.h>
 #include <New/Entity/LaserTrailClass.h>
 #include <New/Entity/AttachEffectClass.h>
+#include <New/Entity/StorageClassExt.h>
 
 class BulletClass;
 
@@ -68,6 +70,7 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 		CDTimerClass TiberiumEater_Timer;
+		std::vector<float> Tiberium;
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
@@ -115,7 +118,11 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
-		{ }
+			, Tiberium(TiberiumClass::Array.Count, 0.0f)
+		{
+			// Initialize our new storage class inside the owner object
+			new (reinterpret_cast<StorageClassExt*>(&OwnerObject->Tiberium)) StorageClassExt(Tiberium);
+		}
 
 		void OnEarlyUpdate();
 

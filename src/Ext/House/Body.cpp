@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <Ext/SWType/Body.h>
+#include <New/Entity/StorageClassExt.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
 
@@ -653,6 +654,8 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
 		.Process(this->ForceEnemyIndex)
+		.Process(this->Tiberium)
+		.Process(this->Weed)
 		;
 }
 

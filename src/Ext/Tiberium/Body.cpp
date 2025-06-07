@@ -24,6 +24,23 @@ void TiberiumExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->MinimapColor.Read(exINI, pSection, "MinimapColor");
+
+	// Use whatever the parent object has configured as our default
+	Valueable Overlay(OwnerObject()->Image);
+	Valueable Variety(OwnerObject()->NumImages);
+	Valueable UseSlopes(OwnerObject()->NumSlopes > 0);
+
+	// Read the overrides.
+	Overlay.Read(exINI, pSection, "Overlay");
+	UseSlopes.Read(exINI, pSection, "UseSlopes");
+	Variety.Read(exINI, pSection, "Variety");
+
+	Variety = std::max(Variety.Get(), 1); // let's ensure at least 1 overlay is used
+
+	OwnerObject()->Image = Overlay;
+	OwnerObject()->NumFrames = 12; // Let's keep the frame count at 12 to not mess with the game too much
+	OwnerObject()->NumImages = Variety;
+	OwnerObject()->NumSlopes = UseSlopes ? 8 : 0; // Same here, we could in theory try other numbers, but let's keep it at 8
 }
 
 void TiberiumExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

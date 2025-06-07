@@ -2,6 +2,7 @@
 
 #include <CellClass.h>
 #include <OverlayClass.h>
+#include <ScenarioClass.h>
 
 #include <Utilities/GeneralUtils.h>
 
@@ -42,4 +43,15 @@ DEFINE_HOOK(0x47C210, CellClass_CellColor_TiberiumRadarColor, 0x6)
 	}
 
 	return 0;
+}
+
+// When placing Tiberium, take into account how many images the Tiberium contains
+DEFINE_HOOK(0x48725C, CellClass_PlaceTiberium_NumImages, 0)
+{
+	GET(TiberiumClass*, pTiberium, EDI);
+
+	int imageNum = ScenarioClass::Instance->Random(0, pTiberium->NumImages - 1);
+	R->EAX(imageNum);
+
+	return 0x48726B;
 }

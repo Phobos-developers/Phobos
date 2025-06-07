@@ -8,6 +8,8 @@
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include "New/Entity/StorageClassExt.h"
+#include <Ext/House/Body.h>
 
 #include <Utilities/AresFunctions.h>
 
@@ -620,6 +622,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->Tiberium)
 		;
 }
 

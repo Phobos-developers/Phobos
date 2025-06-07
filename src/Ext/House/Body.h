@@ -66,6 +66,9 @@ public:
 
 		int ForceEnemyIndex;
 
+		std::vector<float> Tiberium;
+		std::vector<float> Weed;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -94,7 +97,13 @@ public:
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
 			, ForceEnemyIndex(-1)
-		{ }
+			, Tiberium(TiberiumClass::Array.Count, 0.0f)
+			, Weed(TiberiumClass::Array.Count, 0.0f)
+		{
+			// Initialize our new storage classes inside the owner object
+			new (reinterpret_cast<StorageClassExt*>(&OwnerObject->OwnedTiberium)) StorageClassExt(Tiberium);
+			new (reinterpret_cast<StorageClassExt*>(&OwnerObject->OwnedWeed)) StorageClassExt(Weed);
+		}
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
 		void AddToLimboTracking(TechnoTypeClass* pTechnoType);

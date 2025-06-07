@@ -1,10 +1,10 @@
 #pragma once
 #include <TiberiumClass.h>
+#include <OverlayTypeClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
-#include <Utilities/Macro.h>
 #include <Utilities/GeneralUtils.h>
 
 class TiberiumExt
