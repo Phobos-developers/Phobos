@@ -475,19 +475,16 @@ msgid "Overload characteristic dehardcoded"
 msgstr "自定义脑车过载"
 
 #: ../../../CREDITS.md:125
-#, fuzzy
 msgid "Customizable garrison and bunker properties"
-msgstr "自定义 `OpenTopped` 属性"
+msgstr "自定义驻军建筑与坦克碉堡属性"
 
 #: ../../../CREDITS.md:126
-#, fuzzy
 msgid "Disable DamageSound for buildings"
-msgstr "建筑路径点开关"
+msgstr "禁用 `DamageSound`"
 
 #: ../../../CREDITS.md:127 ../../../CREDITS.md:497
-#, fuzzy
 msgid "Power plant damage factor"
-msgstr "电厂增幅器"
+msgstr "伤残电厂电量系数"
 
 #: ../../../CREDITS.md:128
 msgid "**FS-21**:"

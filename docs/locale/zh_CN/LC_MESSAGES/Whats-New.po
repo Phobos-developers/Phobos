@@ -1550,31 +1550,28 @@ msgid "Customize the scatter caused by aircraft attack mission (by TaranDahl)"
 msgstr "自定义战机攻击任务引发分散（by TaranDahl）"
 
 #: ../../Whats-New.md:387
-#, fuzzy
 msgid ""
 "[Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md"
 "#customizable-garrison-and-bunker-properties) (by Otamaa)"
 msgstr ""
-"[自定义矿车单次倒矿量](Fixed-or-Improved-Logics.md#customize-harvester-dump-"
-"amount)（by NetsuNegi）"
+"[自定义驻军建筑与坦克碉堡属性](Fixed-or-Improved-Logics.md"
+"#customizable-garrison-and-bunker-properties)（by Otamaa）"
 
 #: ../../Whats-New.md:388
-#, fuzzy
 msgid ""
 "[Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-"
 "damagesound) (by Otamaa)"
 msgstr ""
-"[建筑路径点开关](Fixed-or-Improved-Logics.md#waypoints-for-buildings)（by "
-"TaranDahl）"
+"[禁用 `DamageSound`](Fixed-or-Improved-Logics.md#disable-"
+"damagesound)（by Otamaa）"
 
 #: ../../Whats-New.md:389
-#, fuzzy
 msgid ""
 "[Power plant damage factor](Fixed-or-Improved-Logics#power-plant-damage-"
 "factor) (by Otamaa and Ollerus)"
 msgstr ""
-"[自定义兵营退出单元格](Fixed-or-Improved-Logics.md#custom-exit-cell-for-infantry-"
-"factory)（by Starkku）"
+"[伤残电厂电量系数](Fixed-or-Improved-Logics#power-plant-damage-"
+"factor)（by Otamaa and Ollerus）"
 
 #: ../../Whats-New.md:390
 msgid ""

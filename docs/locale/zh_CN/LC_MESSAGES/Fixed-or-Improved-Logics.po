@@ -2347,19 +2347,19 @@ msgstr ""
 "BarracksExitCell=  ; X,Y - cell offset\n"
 
 #: ../../Fixed-or-Improved-Logics.md:496
-#, fuzzy
 msgid "Customizable garrison and bunker properties"
-msgstr "自定义 & 新的部队回收站特性"
+msgstr "自定义驻军建筑与坦克碉堡属性"
 
 #: ../../Fixed-or-Improved-Logics.md:498
 msgid ""
 "You can now customize damage or ROF multipliers of a garrison or tank "
 "bunker building."
 msgstr ""
+"现在可以自定义驻军建筑或坦克堡垒的 Damage 或 ROF 倍率。"
 
 #: ../../Fixed-or-Improved-Logics.md:499
 msgid "You can now customize enter or exit sound of a tank bunker building."
-msgstr ""
+msgstr "现在可以自定义坦克碉堡建筑进入和离开时的音效。"
 
 #: ../../Fixed-or-Improved-Logics.md:502
 msgid ""
@@ -2564,11 +2564,11 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:569
 msgid "Disable DamageSound"
-msgstr ""
+msgstr "禁用 `DamageSound`"
 
 #: ../../Fixed-or-Improved-Logics.md:571
 msgid "Now you can disable `DamageSound` of a building."
-msgstr ""
+msgstr "现在你可以禁用一个建筑的 `DamageSound`。"
 
 #: ../../Fixed-or-Improved-Logics.md:574
 msgid ""
@@ -2598,7 +2598,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:589
 msgid "Power plant damage factor"
-msgstr ""
+msgstr "伤残电厂电量系数"
 
 #: ../../Fixed-or-Improved-Logics.md:591
 msgid ""
@@ -2607,12 +2607,15 @@ msgid ""
 "minuses the product of original power decrement and "
 "`Powerplant.DamageFactor`. Can't reduce power output lower than 0."
 msgstr ""
+"现在可以自定义电厂血量与发电功率的关系。`Power * PowerPlant.DamageFactor` 相当于电厂血量无限接近于 0 时损失的发电量，"
+"即 `损失发电量 = [1 - (当前血量 / 最大血量)] * PowerPlant.DamageFactor * Power=`；发电功率无法低于 0。"
 
 #: ../../Fixed-or-Improved-Logics.md:592
 msgid ""
 "Specifically, if the factor is set to 0.0, power output won't be "
 "decreased by losing health for this power plant."
 msgstr ""
+"具体来说，如果该系数设为 0.0，则电厂的发电功率不受血量影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:595
 msgid ""
