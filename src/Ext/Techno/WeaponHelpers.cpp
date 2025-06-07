@@ -9,6 +9,20 @@
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)
 {
+	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
+	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
+
+	if (!pWeaponStructOne && !pWeaponStructTwo)
+		return -1;
+	else if (!pWeaponStructTwo)
+		return weaponIndexOne;
+	else if (!pWeaponStructOne)
+		return weaponIndexTwo;
+
+	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
+	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
+	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
+
 	CellClass* pTargetCell = nullptr;
 
 	// Ignore target cell for airborne target technos.
@@ -20,43 +34,28 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			pTargetCell = pObject->GetCell();
 	}
 
-	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
-	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
-
-	if (!pWeaponStructOne && !pWeaponStructTwo)
-		return -1;
-	else if (!pWeaponStructTwo)
-		return weaponIndexOne;
-	else if (!pWeaponStructOne)
-		return weaponIndexTwo;
-
-	auto const pWeaponOne = pWeaponStructOne->WeaponType;
-	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
-
-	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	if (!pSecondExt->SkipWeaponPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
+		(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
+			!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+			!pSecondExt->IsHealthRatioEligible(pTargetTechno) ||
+			!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
 	{
-		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
-			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-				!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
-		{
-			return weaponIndexOne;
-		}
-		else if (auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
-		{
-			bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
-			bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
+		return weaponIndexOne;
+	}
 
-			if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
-				return weaponIndexOne;
+	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
+	const bool firstAllowedAE = !skipPrimaryPicking && pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
 
-			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
-				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) || !firstAllowedAE)))
-			{
-				return weaponIndexTwo;
-			}
-		}
+	if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
+		return weaponIndexOne;
+
+	if (!skipPrimaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
+		(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
+			!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+			!pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
+	{
+		return weaponIndexTwo;
 	}
 
 	auto const pType = pThis->GetTechnoType();
@@ -180,14 +179,14 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 		return 0;
 
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	bool aeForbidsPrimary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
+	const bool aeForbidsPrimary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1) || aeForbidsPrimary)
 	{
 		int weaponIndexSec = -1;
 		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
 		pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		bool aeForbidsSecondary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
+		const bool aeForbidsSecondary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood))
 			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary) && !aeForbidsSecondary)
@@ -205,7 +204,7 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
+	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
 	// KillWeapon can be triggered without the source
 	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
@@ -229,7 +228,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+	const bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
 	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 	{
