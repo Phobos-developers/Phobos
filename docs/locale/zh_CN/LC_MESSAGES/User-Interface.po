@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-05 22:04+0800\n"
+"POT-Creation-Date: 2025-06-07 21:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,7 +116,8 @@ msgstr "现在你可以指定在胜利或失败时播放哪些音轨的主题曲
 #: ../../User-Interface.md:464 ../../User-Interface.md:492
 #: ../../User-Interface.md:537 ../../User-Interface.md:572
 #: ../../User-Interface.md:582 ../../User-Interface.md:601
-#: ../../User-Interface.md:716 ../../User-Interface.md:736
+#: ../../User-Interface.md:658 ../../User-Interface.md:716
+#: ../../User-Interface.md:736
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -1720,15 +1721,15 @@ msgid ""
 "/Phobos-developers/PhobosSupplementaries)*"
 msgstr ""
 "![image](_static/images/sw_sidebar.png) *使用来自 [Phobos "
-"补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 UI 资产的超武侧边栏*"
+"补充仓库](https://github.com/Phobos-developers/PhobosSupplementaries) 中类原版 UI"
+" 资产的超武侧边栏*"
 
 #: ../../User-Interface.md:623
 msgid ""
 "It is possible to put superweapon cameos on the left of screen like C&C3 "
 "when `SuperWeaponSidebar` is true. Cameos are arranged in a pyramid "
 "shape."
-msgstr ""
-"当 `SuperWeaponSidebar` 为 true 时可以把超级武器的图标像 C&C3 那样放置在屏幕左侧。图标将会呈金字塔状排列。"
+msgstr "当 `SuperWeaponSidebar` 为 true 时可以把超级武器的图标像 C&C3 那样放置在屏幕左侧。图标将会呈金字塔状排列。"
 
 #: ../../User-Interface.md:624
 msgid "Superweapon Sidebar is compatible with Ares superweapons."
@@ -1741,7 +1742,8 @@ msgid ""
 "the width of the background should be (`SuperWeaponSidebar.Interval` + "
 "cameo fixed width 60)."
 msgstr ""
-"`SuperWeaponSidebar.Interval` 控制两列图标之间的间距（不包括背景）。如果你需要制作背景那么背景图像的宽度应当为 `SuperWeaponSidebar.Interval` + 60（图标固定宽度）。"
+"`SuperWeaponSidebar.Interval` 控制两列图标之间的间距（不包括背景）。如果你需要制作背景那么背景图像的宽度应当为 "
+"`SuperWeaponSidebar.Interval` + 60（图标固定宽度）。"
 
 #: ../../User-Interface.md:626
 msgid ""
@@ -1749,7 +1751,8 @@ msgid ""
 "side of cameo and the left side of its column (background). This should "
 "not be greater than `SuperWeaponSidebar.Interval`."
 msgstr ""
-"`SuperWeaponSidebar.LeftOffset` 控制图标左侧与其所在列（背景）左侧的距离，该值不应大于 `SuperWeaponSidebar.Interval`。"
+"`SuperWeaponSidebar.LeftOffset` 控制图标左侧与其所在列（背景）左侧的距离，该值不应大于 "
+"`SuperWeaponSidebar.Interval`。"
 
 #: ../../User-Interface.md:627
 msgid ""
@@ -1759,15 +1762,15 @@ msgid ""
 " cameo fixed height 48). This should not be less than 48. When you need "
 "to make a background, this is the height of the background."
 msgstr ""
-"`SuperWeaponSidebar.CameoHeight` 控制图标顶部到下一个图标顶部的距离。即，上下图标间距为 `SuperWeaponSidebar.CameoHeight` -"
-" 48（图标固定高度）。该值不应小于 48。如果你需要制作背景那么此值即为背景图像的高度。"
+"`SuperWeaponSidebar.CameoHeight` 控制图标顶部到下一个图标顶部的距离。即，上下图标间距为 "
+"`SuperWeaponSidebar.CameoHeight` - 48（图标固定高度）。该值不应小于 "
+"48。如果你需要制作背景那么此值即为背景图像的高度。"
 
 #: ../../User-Interface.md:628
 msgid ""
 "`SuperWeaponSidebar.Max` controls the maximum number of cameos on the "
 "leftmost column, which also depends on the current game resolution."
-msgstr ""
-"`SuperWeaponSidebar.Max` 控制左侧每列最多显示的图标数量，这也取决于游戏分辨率。"
+msgstr "`SuperWeaponSidebar.Max` 控制左侧每列最多显示的图标数量，这也取决于游戏分辨率。"
 
 #: ../../User-Interface.md:629
 msgid "`SuperWeaponSidebar.MaxColumns` controls that maximum count of columns."
@@ -1781,8 +1784,9 @@ msgid ""
 "`SuperWeaponSidebar.RequiredSignificance` are shown on the superweapon "
 "sidebar."
 msgstr ""
-"`SuperWeaponSidebar.Significance` 用于由用户控制哪些超武可以出现在侧边栏。"
-"仅当超武 `SuperWeaponSidebar.Significance` 不低于用户定义的 `SuperWeaponSidebar.RequiredSignificance` 时才会出现。"
+"`SuperWeaponSidebar.Significance` 用于由用户控制哪些超武可以出现在侧边栏。仅当超武 "
+"`SuperWeaponSidebar.Significance` 不低于用户定义的 "
+"`SuperWeaponSidebar.RequiredSignificance` 时才会出现。"
 
 #: ../../User-Interface.md:633
 msgid ""
@@ -1798,51 +1802,51 @@ msgid ""
 "without having to edit the mod files, and you would be able to specify "
 "your exact vision through the default significance value."
 msgstr ""
-"虽然 Mod 作者可以通过设置 `SuperWeaponSidebar.Allow=false` 和 `SuperWeaponSidebar.AllowByDefault=false` 来完全“禁止”某些超武出现在侧边栏上，"
-"但并不建议在移除例如子阵营选择用的跳板性虚拟超武之外使用这些设置。而是应当使用 `SuperWeaponSidebar.Significance` 和 `SuperWeaponSidebar.RequiredSignificance` 来"
-"控制哪些超武出现在侧边栏上。这样一来具有不同偏好和不同显示分辨率的用户就可以通过客户端设置来控制他们希望在侧边栏上看到多少超武而无需编辑 Mod 文件，并且你可以通过默认的 Significance 值来精确指定你的预期效果。"
+"虽然 Mod 作者可以通过设置 `SuperWeaponSidebar.Allow=false` 和 "
+"`SuperWeaponSidebar.AllowByDefault=false` "
+"来完全“禁止”某些超武出现在侧边栏上，但并不建议在移除例如子阵营选择用的跳板性虚拟超武之外使用这些设置。而是应当使用 "
+"`SuperWeaponSidebar.Significance` 和 "
+"`SuperWeaponSidebar.RequiredSignificance` "
+"来控制哪些超武出现在侧边栏上。这样一来具有不同偏好和不同显示分辨率的用户就可以通过客户端设置来控制他们希望在侧边栏上看到多少超武而无需编辑 Mod"
+" 文件，并且你可以通过默认的 Significance 值来精确指定你的预期效果。"
 
 #: ../../User-Interface.md:636
 msgid ""
 "There is a hotkey to toggle the sidebar on/off, which can be bound to a "
 "key in the hotkey settings."
-msgstr ""
-"快捷键设置中新增了一个快捷键条目以用于开关超武侧边栏。"
+msgstr "快捷键设置中新增了一个快捷键条目以用于开关超武侧边栏。"
 
 #: ../../User-Interface.md:637
 msgid ""
 "`TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for "
 "localization of the hotkey."
-msgstr ""
-"`TXT_TOGGLE_SW_SIDEBAR` 与 `TXT_TOGGLE_SW_SIDEBAR_DESC` 用于该快捷键的本地化。"
+msgstr "`TXT_TOGGLE_SW_SIDEBAR` 与 `TXT_TOGGLE_SW_SIDEBAR_DESC` 用于该快捷键的本地化。"
 
 #: ../../User-Interface.md:638
 msgid ""
 "`SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for "
 "superweapons displayed on the sidebar."
-msgstr ""
-"`SuperWeaponSidebarKeysEnabled` 允许用户使用快捷键拉起侧边栏上显示的超武。"
+msgstr "`SuperWeaponSidebarKeysEnabled` 允许用户使用快捷键拉起侧边栏上显示的超武。"
 
 #: ../../User-Interface.md:639
 msgid ""
 "The hotkeys are positional and are only provided for the first 10 "
 "superweapons."
-msgstr ""
-"这些快捷键的位置是定死仅对应前 10 个超武的。"
+msgstr "这些快捷键的位置是定死仅对应前 10 个超武的。"
 
 #: ../../User-Interface.md:640
 msgid ""
 "If assigned, a hotkey will be displayed on a superweapon instead of the "
 "`Ready` (or its alternative) text."
-msgstr ""
-"如果已分配快捷键，则对应的按键会替代 `就绪` 等文本显示在超武图标上。"
+msgstr "如果已分配快捷键，则对应的按键会替代 `就绪` 等文本显示在超武图标上。"
 
 #: ../../User-Interface.md:641
 msgid ""
 "For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and "
 "`TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file."
 msgstr ""
-"为了本地化，请将 `TXT_FIRE_TACTICAL_SW_XX` 和 `TXT_FIRE_TACTICAL_SW_XX_DESC` 添加到你的 `.csf` 文件中。"
+"为了本地化，请将 `TXT_FIRE_TACTICAL_SW_XX` 和 `TXT_FIRE_TACTICAL_SW_XX_DESC` 添加到你的"
+" `.csf` 文件中。"
 
 #: ../../User-Interface.md:644
 msgid ""
@@ -1850,8 +1854,7 @@ msgid ""
 "the user experience may be not polished enough, due to superweapon "
 "positions not being fixed on the sidebar, thus the feature is disabled by"
 " default."
-msgstr ""
-"超武快捷键属于实验性功能并且由于超武在侧边栏上的位置并不固定所以当前用户体验可能不够完善，因此该功默认处于禁用状态。"
+msgstr "超武快捷键属于实验性功能并且由于超武在侧边栏上的位置并不固定所以当前用户体验可能不够完善，因此该功默认处于禁用状态。"
 
 #: ../../User-Interface.md:648
 msgid ""
@@ -1920,6 +1923,11 @@ msgstr ""
 "SuperWeaponSidebar.PriorityHouses=    ; List of house types\n"
 "SuperWeaponSidebar.RequiredHouses=    ; List of house types\n"
 "SuperWeaponSidebar.Significance=0     ; integer\n"
+
+#: ../../User-Interface.md:680
+#, fuzzy
+msgid "In `ra2md.ini`:"
+msgstr "在 `RA2MD.INI`："
 
 #: ../../User-Interface.md:681
 msgid ""
