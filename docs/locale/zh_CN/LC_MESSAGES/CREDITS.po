@@ -2136,7 +2136,7 @@ msgstr "自定义战机攻击任务引发分散"
 
 #: ../../../CREDITS.md:529
 msgid "Customize whether `Crater=yes` animation would destroy tiberium"
-msgstr ""
+msgstr "自定义 `Crater=yes` 的动画能否摧毁矿石"
 
 #: ../../../CREDITS.md:530
 msgid "**tyuah8**:"

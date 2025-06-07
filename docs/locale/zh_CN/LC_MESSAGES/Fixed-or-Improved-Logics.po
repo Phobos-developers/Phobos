@@ -1954,7 +1954,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:364
 msgid "Customize whether `Crater=yes` animation would destroy tiberium"
-msgstr ""
+msgstr "自定义 `Crater=yes` 的动画能否摧毁矿石"
 
 #: ../../Fixed-or-Improved-Logics.md:366
 msgid ""
@@ -1962,6 +1962,7 @@ msgid ""
 "tiberium in its cell. Now you can disable this behavior by setting the "
 "following tags to `false`."
 msgstr ""
+"在原版中带有 `Crater=yes` 的动画硬编码会摧毁其所在单元格的矿石。现在你可以通过将下面的语句设为 `false` 来禁用该行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:369
 msgid ""

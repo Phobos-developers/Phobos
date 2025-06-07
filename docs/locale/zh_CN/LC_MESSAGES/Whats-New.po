@@ -1581,6 +1581,7 @@ msgid ""
 "Customize whether `Crater=yes` animation would destroy tiberium (by "
 "TaranDahl)"
 msgstr ""
+"自定义 `Crater=yes` 的动画能否摧毁矿石（by TaranDahl）"
 
 #: ../../Whats-New.md:392 ../../Whats-New.md:595 ../../Whats-New.md:912
 #: ../../Whats-New.md:1021 ../../Whats-New.md:1046 ../../Whats-New.md:1085
