@@ -22,15 +22,6 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
 	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
 	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
-	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
-	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
-	const bool skipSecondaryPicking = pSecondExt->SkipWeaponPicking;
-
-	if (skipPrimaryPicking && skipSecondaryPicking)
-	{
-		if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1))
-			return weaponIndexOne;
-	}
 
 	CellClass* pTargetCell = nullptr;
 
@@ -43,29 +34,28 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 			pTargetCell = pObject->GetCell();
 	}
 
-	if (!skipPrimaryPicking || !skipSecondaryPicking)
+	if (!pSecondExt->SkipWeaponPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
+		(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
+			!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+			!pSecondExt->IsHealthRatioEligible(pTargetTechno) ||
+			!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
 	{
-		bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
+		return weaponIndexOne;
+	}
 
-		if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
-			return weaponIndexOne;
+	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
+	const bool firstAllowedAE = !skipPrimaryPicking && pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
 
-		if (!skipPrimaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
-			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-				!pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
-		{
-			return weaponIndexTwo;
-		}
+	if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
+		return weaponIndexOne;
 
-		if (!skipSecondaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
-			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-				!pSecondExt->IsHealthRatioEligible(pTargetTechno) ||
-				!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
-		{
-			return weaponIndexOne;
-		}
+	if (!skipPrimaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
+		(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
+			!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
+			!pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
+	{
+		return weaponIndexTwo;
 	}
 
 	auto const pType = pThis->GetTechnoType();
