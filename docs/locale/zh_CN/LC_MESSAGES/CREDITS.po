@@ -1631,7 +1631,7 @@ msgstr "超武侧边栏"
 
 #: ../../../CREDITS.md:407
 msgid "Fix the bug that AlphaImage remained after unit entered tunnel."
-msgstr ""
+msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug。"
 
 #: ../../../CREDITS.md:408
 msgid "**Apollo** - Translucent SHP drawing patches"

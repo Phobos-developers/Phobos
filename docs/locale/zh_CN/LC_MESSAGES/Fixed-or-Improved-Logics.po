@@ -1522,7 +1522,7 @@ msgstr "修复了某些单位部署变形后崩溃的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:250
 msgid "Fixed the bug that AlphaImage remained after unit entered tunnel."
-msgstr ""
+msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:252
 msgid "Aircraft"

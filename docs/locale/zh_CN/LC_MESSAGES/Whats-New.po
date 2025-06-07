@@ -1762,11 +1762,10 @@ msgid ""
 msgstr "修复了某些单位部署变形后崩溃的问题（by ststl, FlyStar）"
 
 #: ../../Whats-New.md:423
-#, fuzzy
 msgid ""
 "Fixed the bug that AlphaImage remained after unit entered tunnel (by "
 "NetsuNegi)"
-msgstr "修复了船只可以在高架桥上行驶的 Bug（by NetsuNegi）"
+msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:426
 msgid "0.4"
