@@ -1976,11 +1976,11 @@ msgstr ""
 msgid ""
 "[SOMEANIM]                      ; AnimationType\n"
 "Crater.DestroyTiberium=         ; boolean, default to "
-"[General]->AnimCraterDestroyTiberium\n"
+"[General] -> AnimCraterDestroyTiberium\n"
 msgstr ""
 "[SOMEANIM]                      ; AnimationType\n"
 "Crater.DestroyTiberium=         ; boolean, default to "
-"[General]->AnimCraterDestroyTiberium\n"
+"[General] -> AnimCraterDestroyTiberium\n"
 
 #: ../../Fixed-or-Improved-Logics.md:380
 msgid "Fire animations spawned by Scorch & Flamer"
@@ -2563,7 +2563,7 @@ msgstr ""
 "docs/new/superweapons/types/battery.html) 不受此影响。"
 
 #: ../../Fixed-or-Improved-Logics.md:569
-msgid "Disable DamageSound"
+msgid "Disable `DamageSound`"
 msgstr "禁用 `DamageSound`"
 
 #: ../../Fixed-or-Improved-Logics.md:571

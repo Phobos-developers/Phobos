@@ -479,7 +479,7 @@ msgid "Customizable garrison and bunker properties"
 msgstr "自定义驻军建筑与坦克碉堡属性"
 
 #: ../../../CREDITS.md:126
-msgid "Disable DamageSound for buildings"
+msgid "Disable `DamageSound` for buildings"
 msgstr "禁用 `DamageSound`"
 
 #: ../../../CREDITS.md:127 ../../../CREDITS.md:497
@@ -1228,7 +1228,7 @@ msgid "Trigger actions that allow/forbid MCV to redeploy in game"
 msgstr "允许／禁止 MCV 重部署的触发结果"
 
 #: ../../../CREDITS.md:317
-msgid "`AlternateFLH` of vehicles in `OpenTopped` transport."
+msgid "`AlternateFLH` of vehicles in `OpenTopped` transport"
 msgstr "载具在 `OpenTopped` 载具中的 `AlternateFLH`"
 
 #: ../../../CREDITS.md:318
@@ -1630,8 +1630,8 @@ msgid "Exclusive SuperWeapon Sidebar"
 msgstr "超武侧边栏"
 
 #: ../../../CREDITS.md:407
-msgid "Fix the bug that AlphaImage remained after unit entered tunnel."
-msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug。"
+msgid "Fix the bug that AlphaImage remained after unit entered tunnel"
+msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug"
 
 #: ../../../CREDITS.md:408
 msgid "**Apollo** - Translucent SHP drawing patches"

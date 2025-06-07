@@ -677,7 +677,7 @@ SuperWeaponSidebar.RequiredHouses=    ; List of house types
 SuperWeaponSidebar.Significance=0     ; integer
 ```
 
-In `ra2md.ini`:
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 SuperWeaponSidebar.RequiredSignificance=0   ; integer

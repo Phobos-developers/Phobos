@@ -374,7 +374,7 @@ AnimCraterDestroyTiberium=true  ; boolean
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                      ; AnimationType
-Crater.DestroyTiberium=         ; boolean, default to [General]->AnimCraterDestroyTiberium
+Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
 ```
 
 ### Fire animations spawned by Scorch & Flamer
@@ -566,7 +566,7 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
-### Disable DamageSound
+### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.
 

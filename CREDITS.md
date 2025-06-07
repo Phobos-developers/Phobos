@@ -122,7 +122,7 @@ This page lists all the individual contributions to the project by their author.
   - Extension class optimization
   - Overload characteristic dehardcoded
   - Customizable garrison and bunker properties
-  - Disable DamageSound for buildings
+  - Disable `DamageSound` for buildings
   - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
@@ -313,7 +313,7 @@ This page lists all the individual contributions to the project by their author.
     - Redeployable MCV in campaigns
     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
     - Trigger actions that allow/forbid MCV to redeploy in game
-  - `AlternateFLH` of vehicles in `OpenTopped` transport.
+  - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
   - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
@@ -403,7 +403,7 @@ This page lists all the individual contributions to the project by their author.
   - Original `Arcing` elevation inaccuracy fix
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Exclusive SuperWeapon Sidebar
-  - Fix the bug that AlphaImage remained after unit entered tunnel.
+  - Fix the bug that AlphaImage remained after unit entered tunnel
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

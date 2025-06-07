@@ -1539,15 +1539,15 @@ msgstr ""
 msgid ""
 "Allowed player's self-healing effects to be benefited by allied or "
 "`PlayerControl=true` houses (by Ollerus)"
-msgstr "允许玩家的自愈效果可以从友军或 `PlayerControl=true` 的所属方受益（by Ollerus)"
+msgstr "允许玩家的自愈效果可以从友军或 `PlayerControl=true` 的所属方受益（by Ollerus）"
 
 #: ../../Whats-New.md:385
-msgid "Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)"
-msgstr "超武侧边栏（by NetsuNegi & CrimRecya）"
+msgid "[Exclusive SuperWeapon Sidebar](User-Interface.md#superweapon-sidebar) (by NetsuNegi & CrimRecya)"
+msgstr "[超武侧边栏](User-Interface.md#superweapon-sidebar)（by NetsuNegi & CrimRecya）"
 
 #: ../../Whats-New.md:386
-msgid "Customize the scatter caused by aircraft attack mission (by TaranDahl)"
-msgstr "自定义战机攻击任务引发分散（by TaranDahl）"
+msgid "[Customize the scatter caused by aircraft attack mission](Fixed-or-Improved-Logics.md#customize-the-scatter-caused-by-aircraft-attack-mission) (by TaranDahl)"
+msgstr "[自定义战机攻击任务引发分散](Fixed-or-Improved-Logics.md#customize-the-scatter-caused-by-aircraft-attack-mission)（by TaranDahl）"
 
 #: ../../Whats-New.md:387
 msgid ""
@@ -1559,7 +1559,7 @@ msgstr ""
 
 #: ../../Whats-New.md:388
 msgid ""
-"[Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-"
+"[Disable `DamageSound` for buildings](Fixed-or-Improved-Logics.md#disable-"
 "damagesound) (by Otamaa)"
 msgstr ""
 "[禁用 `DamageSound`](Fixed-or-Improved-Logics.md#disable-"
@@ -1567,18 +1567,18 @@ msgstr ""
 
 #: ../../Whats-New.md:389
 msgid ""
-"[Power plant damage factor](Fixed-or-Improved-Logics#power-plant-damage-"
+"[Power plant damage factor](Fixed-or-Improved-Logics.md#power-plant-damage-"
 "factor) (by Otamaa and Ollerus)"
 msgstr ""
-"[伤残电厂电量系数](Fixed-or-Improved-Logics#power-plant-damage-"
+"[伤残电厂电量系数](Fixed-or-Improved-Logics.md#power-plant-damage-"
 "factor)（by Otamaa and Ollerus）"
 
 #: ../../Whats-New.md:390
 msgid ""
-"Customize whether `Crater=yes` animation would destroy tiberium (by "
+"[Customize whether `Crater=yes` animation would destroy tiberium](Fixed-or-Improved-Logics.md#customize-whether-crater-yes-animation-would-destroy-tiberium) (by "
 "TaranDahl)"
 msgstr ""
-"自定义 `Crater=yes` 的动画能否摧毁矿石（by TaranDahl）"
+"[自定义 `Crater=yes` 的动画能否摧毁矿石](Fixed-or-Improved-Logics.md#customize-whether-crater-yes-animation-would-destroy-tiberium)（by TaranDahl）"
 
 #: ../../Whats-New.md:392 ../../Whats-New.md:595 ../../Whats-New.md:912
 #: ../../Whats-New.md:1021 ../../Whats-New.md:1046 ../../Whats-New.md:1085

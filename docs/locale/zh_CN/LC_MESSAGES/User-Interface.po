@@ -1924,11 +1924,6 @@ msgstr ""
 "SuperWeaponSidebar.RequiredHouses=    ; List of house types\n"
 "SuperWeaponSidebar.Significance=0     ; integer\n"
 
-#: ../../User-Interface.md:680
-#, fuzzy
-msgid "In `ra2md.ini`:"
-msgstr "在 `RA2MD.INI`："
-
 #: ../../User-Interface.md:681
 msgid ""
 "[Phobos]\n"
