@@ -7,10 +7,10 @@ WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const
 {
-	bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
-	bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
-	bool hasRequiredGroups = this->AttachEffect_RequiredGroups.size() > 0;
-	bool hasDisallowedGroups = this->AttachEffect_DisallowedGroups.size() > 0;
+	const bool hasRequiredTypes = this->AttachEffect_RequiredTypes.size() > 0;
+	const bool hasDisallowedTypes = this->AttachEffect_DisallowedTypes.size() > 0;
+	const bool hasRequiredGroups = this->AttachEffect_RequiredGroups.size() > 0;
+	const bool hasDisallowedGroups = this->AttachEffect_DisallowedGroups.size() > 0;
 
 	if (hasRequiredTypes || hasDisallowedTypes || hasRequiredGroups || hasDisallowedGroups)
 	{
@@ -39,6 +39,15 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	}
 
 	return true;
+}
+
+bool WeaponTypeExt::ExtData::IsHealthRatioEligible(TechnoClass* const pTarget) const
+{
+	if (!pTarget)
+		return true;
+
+	const auto ratio = pTarget->GetHealthPercentage();
+	return ratio <= this->CanTarget_MaxHealth && ratio >= this->CanTarget_MinHealth;
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -108,6 +117,8 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Strafing_EndDelay.Read(exINI, pSection, "Strafing.EndDelay");
 	this->CanTarget.Read(exINI, pSection, "CanTarget");
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
+	this->CanTarget_MaxHealth.Read(exINI, pSection, "CanTarget.MaxHealth");
+	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
@@ -147,6 +158,15 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->RandomTarget.Read(exINI, pSection, "RandomTarget");
 	//this->RandomTarget_DistributeBurst.Read(exINI, pSection, "RandomTarget.DistributeBurst");
 	this->RandomTarget_Spawners_MultipleTargets.Read(exINI, pSection, "RandomTarget.Spawners.MultipleTargets");
+
+	// handle SkipWeaponPicking
+	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
+		|| this->CanTarget_MaxHealth < 1.0 || this->CanTarget_MinHealth > 0.0
+		|| this->AttachEffect_RequiredTypes.size() || this->AttachEffect_RequiredGroups.size()
+		|| this->AttachEffect_DisallowedTypes.size() || this->AttachEffect_DisallowedGroups.size())
+	{
+		this->SkipWeaponPicking = false;
+	}
 }
 
 template <typename T>
@@ -168,6 +188,8 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Strafing_EndDelay)
 		.Process(this->CanTarget)
 		.Process(this->CanTargetHouses)
+		.Process(this->CanTarget_MaxHealth)
+		.Process(this->CanTarget_MinHealth)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)
@@ -207,6 +229,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RandomTarget)
 		//.Process(this->RandomTarget_DistributeBurst)
 		.Process(this->RandomTarget_Spawners_MultipleTargets)
+		.Process(this->SkipWeaponPicking)
 		;
 };
 
