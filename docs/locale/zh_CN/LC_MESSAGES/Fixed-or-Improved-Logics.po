@@ -1633,7 +1633,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:264
 msgid "Customize the scatter caused by aircraft attack mission"
-msgstr ""
+msgstr "自定义战机攻击任务引发分散"
 
 #: ../../Fixed-or-Improved-Logics.md:266
 msgid ""
@@ -1641,6 +1641,7 @@ msgid ""
 "trigger a scatter. Now you can disable this behavior by setting the "
 "following flag to `false`."
 msgstr ""
+"在原版中当一架战机发起攻击它会强制触发目标单元格上的分散效果。现在你可以通过将下面的语句设为 `false` 来禁用该行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:269
 msgid ""

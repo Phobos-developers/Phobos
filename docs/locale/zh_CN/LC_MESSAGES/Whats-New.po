@@ -1547,7 +1547,7 @@ msgstr "超武侧边栏（by NetsuNegi & CrimRecya）"
 
 #: ../../Whats-New.md:386
 msgid "Customize the scatter caused by aircraft attack mission (by TaranDahl)"
-msgstr ""
+msgstr "自定义战机攻击任务引发分散（by TaranDahl）"
 
 #: ../../Whats-New.md:387
 #, fuzzy
