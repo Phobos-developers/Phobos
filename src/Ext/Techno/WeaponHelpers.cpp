@@ -26,46 +26,75 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	CellClass* pTargetCell = nullptr;
 
 	// Ignore target cell for airborne target technos.
-	if (!pTargetTechno || !pTargetTechno->IsInAir())
+	if (pTarget && (!pTargetTechno || !pTargetTechno->IsInAir()))
 	{
-		if (auto const pCell = abstract_cast<CellClass*>(pTarget))
-			pTargetCell = pCell;
-		else if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
+		if (auto const pObject = abstract_cast<ObjectClass*, true>(pTarget))
 			pTargetCell = pObject->GetCell();
+		else if (auto const pCell = abstract_cast<CellClass*, true>(pTarget))
+			pTargetCell = pCell;
 	}
 
-	if (!pSecondExt->SkipWeaponPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
-		(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-			!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-			!pSecondExt->IsHealthRatioEligible(pTargetTechno) ||
-			!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
+	if (!pSecondExt->SkipWeaponPicking)
 	{
-		return weaponIndexOne;
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true))
+			return weaponIndexOne;
+
+		if (pTargetTechno)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pSecondExt->IsHealthRatioEligible(pTargetTechno)
+				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
+			{
+				return weaponIndexOne;
+			}
+		}
 	}
 
 	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
 	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
 	const bool firstAllowedAE = !skipPrimaryPicking && pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
 
-	if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
-		return weaponIndexOne;
-
-	if (!skipPrimaryPicking && (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
-		(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-			!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-			!pFirstExt->IsHealthRatioEligible(pTargetTechno) || !firstAllowedAE)))
+	if (!allowFallback
+		&& (!allowAAFallback || !secondIsAA)
+		&& !TechnoExt::CanFireNoAmmoWeapon(pThis, 1)
+		&& firstAllowedAE)
 	{
-		return weaponIndexTwo;
+		return weaponIndexOne;
 	}
 
-	auto const pType = pThis->GetTechnoType();
+	if (!skipPrimaryPicking)
+	{
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true))
+			return weaponIndexTwo;
+
+		if (pTargetTechno)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pFirstExt->IsHealthRatioEligible(pTargetTechno)
+				|| !firstAllowedAE)
+			{
+				return weaponIndexTwo;
+			}
+		}
+	}
 
 	// Handle special case with NavalTargeting / LandTargeting.
-	if (!pTargetTechno && (pType->NavalTargeting == NavalTargetingType::Naval_Primary ||
-		pType->LandTargeting == LandTargetingType::Land_Secondary) &&
-		pTargetCell->LandType != LandType::Water && pTargetCell->LandType != LandType::Beach)
+	if (!pTargetTechno && pTargetCell)
 	{
-		return weaponIndexTwo;
+		auto const pType = pThis->GetTechnoType();
+
+		if (pType->NavalTargeting == NavalTargetingType::Naval_Primary
+			|| pType->LandTargeting == LandTargetingType::Land_Secondary)
+		{
+			auto const landType = pTargetCell->LandType;
+
+			if (landType != LandType::Water && landType != LandType::Beach)
+			{
+				return weaponIndexTwo;
+			}
+		}
 	}
 
 	return -1;
