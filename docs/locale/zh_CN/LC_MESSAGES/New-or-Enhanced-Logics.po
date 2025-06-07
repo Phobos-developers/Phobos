@@ -3145,7 +3145,7 @@ msgid ""
 "`Inaccurate=yes` and `Trajectory.Straight.LeadTimeCalculate=true` on this"
 " basis."
 msgstr ""
-"`Trajectory.Straight.OffsetCoord` 控制锁定目标的偏移量。抛射体将瞄准此为止进行攻击。在此基础上它也支持 "
+"`Trajectory.Straight.OffsetCoord` 控制锁定目标的偏移量。抛射体将瞄准此位置进行攻击。在此基础上它也支持 "
 "`Inaccurate=yes` 和 `Trajectory.Straight.LeadTimeCalculate=true`。"
 
 #: ../../New-or-Enhanced-Logics.md:764
@@ -3554,7 +3554,7 @@ msgstr "`Trajectory.Bombard.LeadTimeCalculate` 控制抛射体在射击时是否
 msgid ""
 "The following tags further customize the projectile's descending "
 "behaviors when `Trajectory.Bombard.FreeFallOnTarget` set to false."
-msgstr "一下标签在 `Trajectory.Bombard.FreeFallOnTarget` 设为 false 时进一步自定义抛射体的下落行为。"
+msgstr "以下标签在 `Trajectory.Bombard.FreeFallOnTarget` 设为 false 时进一步自定义抛射体的下落行为。"
 
 #: ../../New-or-Enhanced-Logics.md:839
 msgid ""
@@ -3563,7 +3563,7 @@ msgid ""
 "`Inaccurate=yes` and `Trajectory.Bombard.LeadTimeCalculate=true` on this "
 "basis."
 msgstr ""
-"`Trajectory.Bombard.OffsetCoord` 控制锁定目标的偏移量。抛射体将瞄准此为止进行攻击。在此基础上它也支持 "
+"`Trajectory.Bombard.OffsetCoord` 控制锁定目标的偏移量。抛射体将瞄准此位置进行攻击。在此基础上它也支持 "
 "`Inaccurate=yes` 和 `Trajectory.Bombard.LeadTimeCalculate=true`。"
 
 #: ../../New-or-Enhanced-Logics.md:840
@@ -3875,7 +3875,7 @@ msgid ""
 "`Inaccurate=yes` and `Trajectory.Parabola.LeadTimeCalculate=true` on this"
 " basis."
 msgstr ""
-"`Trajectory.Parabola.OffsetCoord` 控制锁定目标的偏移量。抛射体将瞄准此为止进行攻击。在此基础上它也支持 "
+"`Trajectory.Parabola.OffsetCoord` 控制锁定目标的偏移量。抛射体将瞄准此位置进行攻击。在此基础上它也支持 "
 "`Inaccurate=yes` 和 `Trajectory.Parabola.LeadTimeCalculate=true`。"
 
 #: ../../New-or-Enhanced-Logics.md:896
@@ -6157,7 +6157,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1613
 msgid "And the following flags controlls the effect of a combat alert."
-msgstr "一下标签控制战斗警报的效果。"
+msgstr "以下标签控制战斗警报的效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1614
 msgid ""
