@@ -1634,9 +1634,8 @@ msgid "Fix the bug that AlphaImage remained after unit entered tunnel"
 msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug"
 
 #: ../../../CREDITS.md:408
-#, fuzzy
 msgid "Weapon target filtering by health percentage"
-msgstr "武器目标类型过滤"
+msgstr "武器根据血量百分比筛选目标"
 
 #: ../../../CREDITS.md:409
 msgid "**Apollo** - Translucent SHP drawing patches"

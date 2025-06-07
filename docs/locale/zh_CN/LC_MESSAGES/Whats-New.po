@@ -1590,9 +1590,8 @@ msgstr ""
 "whether-crater-yes-animation-would-destroy-tiberium)（by TaranDahl）"
 
 #: ../../Whats-New.md:391
-#, fuzzy
 msgid "Weapon target filtering by health percentage (by NetsuNegi)"
-msgstr "`Shrapnel.UseWeaponTargeting`（by Starkku）"
+msgstr "武器根据血量百分比筛选目标（by NetsuNegi）"
 
 #: ../../Whats-New.md:393 ../../Whats-New.md:596 ../../Whats-New.md:913
 #: ../../Whats-New.md:1022 ../../Whats-New.md:1047 ../../Whats-New.md:1086
