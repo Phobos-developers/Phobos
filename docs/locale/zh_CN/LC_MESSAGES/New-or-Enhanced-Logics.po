@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-08 22:37+0800\n"
+"POT-Creation-Date: 2025-06-08 23:57+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6829,12 +6829,12 @@ msgid "`Voxel=no` turretless vehicles now support the use of `FireUp`."
 msgstr "现在 `Voxel=no` 的无炮塔载具现在已经支持 `FireUp`。"
 
 #: ../../New-or-Enhanced-Logics.md:1855
+#, fuzzy
 msgid ""
 "`FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is "
-"reset when its target changes. Defaults to `yes`. Forced to be `yes` when"
-" there is no target."
-msgstr ""
-"`FireUp.ResetInRetarget` 决定当前载具目标改变时其前摇是否重置。当没有目标时该参数强制 `yes`。"
+"reset when its target changes. Forced to be `yes` when there is no "
+"target."
+msgstr "`FireUp.ResetInRetarget` 决定当前载具目标改变时其前摇是否重置。当没有目标时该参数强制 `yes`。"
 
 #: ../../New-or-Enhanced-Logics.md:1858
 msgid ""
