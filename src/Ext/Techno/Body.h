@@ -71,6 +71,8 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		CDTimerClass FiringAnimationTimer;
+
 		int DropCrate; // Drop crate on death, modified by map action
 		Powerup DropCrateType;
 
@@ -118,6 +120,7 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, FiringAnimationTimer {}
 			, DropCrate { -1 }
 			, DropCrateType { Powerup::Money }
 		{ }
