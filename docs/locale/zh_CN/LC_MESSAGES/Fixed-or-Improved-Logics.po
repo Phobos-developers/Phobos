@@ -1417,6 +1417,7 @@ msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes`."
 msgstr ""
+"有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑。"
 
 #: ../../Fixed-or-Improved-Logics.md:233
 msgid "Fixes / interactions with other extensions"

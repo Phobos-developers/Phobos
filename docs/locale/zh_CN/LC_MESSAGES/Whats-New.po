@@ -1732,6 +1732,7 @@ msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes` (by FlyStar)"
 msgstr ""
+"有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑（by FlyStar）"
 
 #: ../../Whats-New.md:416 ../../Whats-New.md:709 ../../Whats-New.md:786
 #: ../../Whats-New.md:950 ../../Whats-New.md:991 ../../Whats-New.md:1003
