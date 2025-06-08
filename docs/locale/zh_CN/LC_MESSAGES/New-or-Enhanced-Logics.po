@@ -6584,23 +6584,25 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1755
 msgid "Reset MindControl after transformation"
-msgstr "**暂时无用**"
+msgstr "变形后重置心控效果"
 
 #: ../../New-or-Enhanced-Logics.md:1757
 msgid "After the unit conversion is completed, its mind control can be reset."
-msgstr "**该逻辑实现存在问题，暂时无用**"
+msgstr "单位变形完毕后其心控效果可被重置。"
 
 #: ../../New-or-Enhanced-Logics.md:1758
 msgid ""
 "If all warheads don't have `MindControl=yes`, then "
 "`Convert.ResetMindControl=yes` will release all controlled units."
 msgstr ""
+"如果变形后的单位所有弹头都没有 `MindControl=yes`，那么 `Convert.ResetMindControl=yes` 将释放所有被心控的单位。"
 
 #: ../../New-or-Enhanced-Logics.md:1759
 msgid ""
 "If any warhead has `MindControl=yes`, then `Convert.ResetMindControl=yes`"
 " resets its maximum number of controls."
 msgstr ""
+"如果变形后的单位任意弹头拥有 `MindControl=yes`，那么 `Convert.ResetMindControl=yes` 将重置最大控制数量上限。"
 
 #: ../../New-or-Enhanced-Logics.md:1760
 msgid ""
@@ -6608,6 +6610,7 @@ msgid ""
 "`Convert.ResetMindControl=yes` release controlled units that exceed the "
 "limit."
 msgstr ""
+"如果变形后的单位所有武器都没有 `InfiniteMindControl=yes`，那么 `Convert.ResetMindControl=yes` 将释放超出上限的被心控单位。"
 
 #: ../../New-or-Enhanced-Logics.md:1763
 msgid ""
@@ -8306,12 +8309,4 @@ msgstr ""
 "(none|owner/self|allies/ally|team|enemies/enemy|all)\n"
 "CanTarget.MaxHealth=1.0   ; floating point value, percents or absolute\n"
 "CanTarget.MinHealth=0.0   ; floating point value, percents or absolute\n"
-
-#~ msgid ""
-#~ "If `Convert.ResetMindControl=no` and there are"
-#~ " no warheads in the unit that "
-#~ "use `MindControl=yes`, then the controlled "
-#~ "units that exceed the maximum value "
-#~ "will be released."
-#~ msgstr "**【原文表述错误】**"
 
