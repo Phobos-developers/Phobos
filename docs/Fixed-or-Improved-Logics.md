@@ -289,7 +289,7 @@ In `rulesmd.ini`:
 [General]
 ExtendedAircraftMissions=false         ; boolean
 
-[SOMEAIRCRAFT]                         ; AircraftType
+[SOMEAIRCRAFT]                          ; AircraftType
 ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
