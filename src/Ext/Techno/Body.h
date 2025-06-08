@@ -71,6 +71,8 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		CDTimerClass FiringAnimationTimer;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -115,6 +117,7 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, FiringAnimationTimer {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -148,7 +151,7 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
-		int ApplyForceWeaponInRange(TechnoClass* pTarget);
+		int ApplyForceWeaponInRange(AbstractClass* pTarget);
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
