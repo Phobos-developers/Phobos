@@ -1153,7 +1153,7 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 #pragma region StopEventFix
 
-DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
+DEFINE_JUMP(LJMP, 0x4C752A, 0x4C757D); // Skip cell under bridge check
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
@@ -2003,3 +2003,41 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 
 	return NextTechno;
 }
+
+#pragma region ElectricAssultFix
+
+namespace ElectricAssultTemp
+{
+	WeaponTypeClass* WeaponType;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5102, FootClass_ElectricAssultFix_SetWeaponType, 0x6)	// Mission_Guard
+DEFINE_HOOK(0x4D6F66, FootClass_ElectricAssultFix_SetWeaponType, 0x6)		// Mission_AreaGuard
+{
+	GET(WeaponTypeClass*, Secondary, ECX);
+
+	ElectricAssultTemp::WeaponType = Secondary;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5184, FootClass_ElectricAssultFix2, 0x7)	// Mission_Guard
+DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
+		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
+
+	const auto pWeapon = ElectricAssultTemp::WeaponType;
+	bool InGuard = (R->Origin() == 0x4D5184);
+
+	if (pBuilding->Owner == pThis->Owner &&
+		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->GetTechnoType()) != 0.0)
+	{
+		return InGuard ? SkipGuard : SkipAreaGuard;
+	}
+
+	return InGuard ? ContinueGuard : ContinueAreaGuard;
+}
+
+#pragma endregion

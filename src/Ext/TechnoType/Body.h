@@ -359,10 +359,18 @@ public:
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
+		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
+		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
 		Valueable<bool> FiringForceScatter;
+
+		Valueable<int> FireUp;
+		Valueable<bool> FireUp_ResetInRetarget;
+		//Nullable<int> SecondaryFire;
 
 		Nullable<int> BattlePoints;
 
@@ -676,10 +684,18 @@ public:
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions_SmoothMoving {}
+			, ExtendedAircraftMissions_EarlyDescend {}
+			, ExtendedAircraftMissions_RearApproach {}
+
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
 			, FiringForceScatter { true }
+
+			, FireUp { -1 }
+			, FireUp_ResetInRetarget { true }
+			//, SecondaryFire {}
 
 			, BattlePoints {}
 		{ }
@@ -694,6 +710,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 
