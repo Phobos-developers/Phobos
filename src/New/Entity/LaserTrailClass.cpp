@@ -39,26 +39,15 @@ bool LaserTrailClass::Update(CoordStruct location)
 				const COLORREF defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
 				const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 
-				if (this->Type->Bolt_Disable1)
-					pBoltExt->Disable1 = true;
-				else if (this->Type->Bolt_Color1.isset())
-					pBoltExt->Color1 = this->Type->Bolt_Color1.Get();
-				else
-					pBoltExt->Color1 = Drawing::Int_To_RGB(defaultAlternate);
-
-				if (this->Type->Bolt_Disable2)
-					pBoltExt->Disable2 = true;
-				else if (this->Type->Bolt_Color2.isset())
-					pBoltExt->Color2 = this->Type->Bolt_Color2.Get();
-				else
-					pBoltExt->Color2 = Drawing::Int_To_RGB(defaultAlternate);
-
-				if (this->Type->Bolt_Disable3)
-					pBoltExt->Disable3 = true;
-				else if (this->Type->Bolt_Color3.isset())
-					pBoltExt->Color3 = this->Type->Bolt_Color3.Get();
-				else
-					pBoltExt->Color3 = Drawing::Int_To_RGB(defaultWhite);
+				for (int idx = 0; idx < 3; ++idx)
+				{
+					if (this->Type->Bolt_Disable[idx])
+						pBoltExt->Disable[idx] = true;
+					else if (this->Type->Bolt_Color[idx].isset())
+						pBoltExt->Color[idx] = this->Type->Bolt_Color[idx].Get();
+					else
+						pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
+				}
 
 				pBoltExt->Arcs = this->Type->Bolt_Arcs;
 				pBolt->Lifetime = 1 << (std::clamp(this->Type->FadeDuration.Get(17), 1, 31) - 1);

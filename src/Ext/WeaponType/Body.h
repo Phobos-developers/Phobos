@@ -26,12 +26,8 @@ public:
 		Valueable<double> DiskLaser_Radius;
 		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
-		Nullable<ColorStruct> Bolt_Color1;
-		Valueable<bool> Bolt_Disable1;
-		Nullable<ColorStruct> Bolt_Color2;
-		Valueable<bool> Bolt_Disable2;
-		Nullable<ColorStruct> Bolt_Color3;
-		Valueable<bool> Bolt_Disable3;
+		Nullable<ColorStruct> Bolt_Color[3];
+		Valueable<bool> Bolt_Disable[3];
 		Nullable<ParticleSystemTypeClass*> Bolt_ParticleSystem;
 		Valueable<int> Bolt_Arcs;
 		Valueable<int> Bolt_Duration;
@@ -88,12 +84,8 @@ public:
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
 			, RadType {}
-			, Bolt_Color1 {}
-			, Bolt_Disable1 { false }
-			, Bolt_Color2 {}
-			, Bolt_Disable2 { false }
-			, Bolt_Color3 {}
-			, Bolt_Disable3 { false }
+			, Bolt_Color {}
+			, Bolt_Disable { Valueable<bool>(false) }
 			, Bolt_ParticleSystem {}
 			, Bolt_Arcs { 8 }
 			, Bolt_Duration { 17 }

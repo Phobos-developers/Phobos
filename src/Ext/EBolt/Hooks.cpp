@@ -39,26 +39,15 @@ DWORD _cdecl EBoltExt::_TechnoClass_FireEBolt(REGISTERS* R)
 	const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pWeaponExt->Bolt_Disable1)
-		pBoltExt->Disable1 = true;
-	else if (pWeaponExt->Bolt_Color1.isset())
-		pBoltExt->Color1 = pWeaponExt->Bolt_Color1.Get();
-	else
-		pBoltExt->Color1 = Drawing::Int_To_RGB(defaultAlternate);
-
-	if (pWeaponExt->Bolt_Disable2)
-		pBoltExt->Disable2 = true;
-	else if (pWeaponExt->Bolt_Color2.isset())
-		pBoltExt->Color2 = pWeaponExt->Bolt_Color2.Get();
-	else
-		pBoltExt->Color2 = Drawing::Int_To_RGB(defaultAlternate);
-
-	if (pWeaponExt->Bolt_Disable3)
-		pBoltExt->Disable3 = true;
-	else if (pWeaponExt->Bolt_Color3.isset())
-		pBoltExt->Color3 = pWeaponExt->Bolt_Color3.Get();
-	else
-		pBoltExt->Color3 = Drawing::Int_To_RGB(defaultWhite);
+	for (int idx = 0; idx < 3; ++idx)
+	{
+		if (pWeaponExt->Bolt_Disable[idx])
+			pBoltExt->Disable[idx] = true;
+		else if (pWeaponExt->Bolt_Color[idx].isset())
+			pBoltExt->Color[idx] = pWeaponExt->Bolt_Color[idx].Get();
+		else
+			pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
+	}
 
 	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
 	pBoltExt->BurstIndex = pThis->CurrentBurstIndex;
@@ -95,9 +84,9 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 
 	if (const auto pExt = BoltTemp::ExtData)
 	{
-		boltColor1 = Drawing::RGB_To_Int(pExt->Color1);
-		boltColor2 = Drawing::RGB_To_Int(pExt->Color2);
-		boltColor3 = Drawing::RGB_To_Int(pExt->Color3);
+		boltColor1 = Drawing::RGB_To_Int(pExt->Color[0]);
+		boltColor2 = Drawing::RGB_To_Int(pExt->Color[1]);
+		boltColor3 = Drawing::RGB_To_Int(pExt->Color[2]);
 	}
 	else
 	{
@@ -135,7 +124,7 @@ DEFINE_HOOK(0x4C24BE, EBolt_DrawFirst_Color, 0x5)
 
 DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
 {
-	return BoltTemp::ExtData && BoltTemp::ExtData->Disable1 ? 0x4C2515 : 0;
+	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[0] ? 0x4C2515 : 0;
 }
 
 DEFINE_HOOK(0x4C24BE, EBolt_DrawSecond_Color, 0x5)
@@ -146,7 +135,7 @@ DEFINE_HOOK(0x4C24BE, EBolt_DrawSecond_Color, 0x5)
 
 DEFINE_HOOK(0x4C25FD, Ebolt_DrawSecond_Disable, 0xA)
 {
-	return BoltTemp::ExtData && BoltTemp::ExtData->Disable2 ? 0x4C262A : 0;
+	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[1] ? 0x4C262A : 0;
 }
 
 DEFINE_HOOK(0x4C26CF, EBolt_DrawThird_Color, 0x5)
@@ -157,7 +146,7 @@ DEFINE_HOOK(0x4C26CF, EBolt_DrawThird_Color, 0x5)
 
 DEFINE_HOOK(0x4C26EE, Ebolt_DrawThird_Disable, 0x8)
 {
-	return BoltTemp::ExtData && BoltTemp::ExtData->Disable3 ? 0x4C2710 : 0;
+	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[2] ? 0x4C2710 : 0;
 }
 
 #pragma region EBoltTrackingFixes

@@ -15,12 +15,8 @@ public:
 	class ExtData final : public Extension<EBolt>
 	{
 	public:
-		ColorStruct Color1 {};
-		bool Disable1 { false };
-		ColorStruct Color2 {};
-		bool Disable2 { false };
-		ColorStruct Color3 {};
-		bool Disable3 { false };
+		ColorStruct Color[3] {};
+		bool Disable[3] { false };
 		int Arcs { 8 };
 		int BurstIndex { 0 };
 

@@ -9,12 +9,8 @@ template <typename T>
 void EBoltExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Color1)
-		.Process(this->Disable1)
-		.Process(this->Color2)
-		.Process(this->Disable2)
-		.Process(this->Color3)
-		.Process(this->Disable3)
+		.Process(this->Color)
+		.Process(this->Disable)
 		.Process(this->Arcs)
 		.Process(this->BurstIndex)
 		;

@@ -267,26 +267,15 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (pWeaponExt->Bolt_Disable1)
-		pBoltExt->Disable1 = true;
-	else if (pWeaponExt->Bolt_Color1.isset())
-		pBoltExt->Color1 = pWeaponExt->Bolt_Color1.Get();
-	else
-		pBoltExt->Color1 = Drawing::Int_To_RGB(defaultAlternate);
-
-	if (pWeaponExt->Bolt_Disable2)
-		pBoltExt->Disable2 = true;
-	else if (pWeaponExt->Bolt_Color2.isset())
-		pBoltExt->Color2 = pWeaponExt->Bolt_Color2.Get();
-	else
-		pBoltExt->Color2 = Drawing::Int_To_RGB(defaultAlternate);
-
-	if (pWeaponExt->Bolt_Disable3)
-		pBoltExt->Disable3 = true;
-	else if (pWeaponExt->Bolt_Color3.isset())
-		pBoltExt->Color3 = pWeaponExt->Bolt_Color3.Get();
-	else
-		pBoltExt->Color3 = Drawing::Int_To_RGB(defaultWhite);
+	for (int idx = 0; idx < 3; ++idx)
+	{
+		if (pWeaponExt->Bolt_Disable[idx])
+			pBoltExt->Disable[idx] = true;
+		else if (pWeaponExt->Bolt_Color[idx].isset())
+			pBoltExt->Color[idx] = pWeaponExt->Bolt_Color[idx].Get();
+		else
+			pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
+	}
 
 	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
 	pBolt->Lifetime = 1 << (std::clamp(pWeaponExt->Bolt_Duration.Get(), 1, 31) - 1);

@@ -12,8 +12,8 @@ const char* Enumerable<LaserTrailTypeClass>::GetMainSection()
 void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
-
 	INI_EX exINI(pINI);
+	char tempBuffer[0x40];
 
 	this->DrawType.Read(exINI, section, "DrawType");
 
@@ -22,12 +22,16 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Thickness.Read(exINI, section, "Thickness");
 
 	this->IsAlternateColor.Read(exINI, section, "IsAlternateColor");
-	this->Bolt_Color1.Read(exINI, section, "Bolt.Color1");
-	this->Bolt_Disable1.Read(exINI, section, "Bolt.Disable1");
-	this->Bolt_Color2.Read(exINI, section, "Bolt.Color2");
-	this->Bolt_Disable2.Read(exINI, section, "Bolt.Disable2");
-	this->Bolt_Color3.Read(exINI, section, "Bolt.Color3");
-	this->Bolt_Disable3.Read(exINI, section, "Bolt.Disable3");
+
+	for (int idx = 0; idx < 3; ++idx)
+	{
+		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Color%d", idx + 1);
+		this->Bolt_Color[idx].Read(exINI, section, tempBuffer);
+
+		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Disable%d", idx + 1);
+		this->Bolt_Disable[idx].Read(exINI, section, tempBuffer);
+	}
+
 	this->Bolt_Arcs.Read(exINI, section, "Bolt.Arcs");
 
 	this->Beam_Color.Read(exINI, section, "Beam.Color");
@@ -51,12 +55,8 @@ void LaserTrailTypeClass::Serialize(T& Stm)
 		.Process(this->Color)
 		.Process(this->Thickness)
 		.Process(this->IsAlternateColor)
-		.Process(this->Bolt_Color1)
-		.Process(this->Bolt_Disable1)
-		.Process(this->Bolt_Color2)
-		.Process(this->Bolt_Disable2)
-		.Process(this->Bolt_Color3)
-		.Process(this->Bolt_Disable3)
+		.Process(this->Bolt_Color)
+		.Process(this->Bolt_Disable)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Beam_Color)
 		.Process(this->Beam_Amplitude)
