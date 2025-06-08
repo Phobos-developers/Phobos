@@ -25,8 +25,11 @@ public:
 		Valueable<double> DiskLaser_Radius;
 		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
+		Nullable<ColorStruct> Bolt_Color1;
 		Valueable<bool> Bolt_Disable1;
+		Nullable<ColorStruct> Bolt_Color2;
 		Valueable<bool> Bolt_Disable2;
+		Nullable<ColorStruct> Bolt_Color3;
 		Valueable<bool> Bolt_Disable3;
 		Valueable<int> Bolt_Arcs;
 		Valueable<int> Bolt_Duration;
@@ -83,8 +86,11 @@ public:
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
 			, RadType {}
+			, Bolt_Color1 {}
 			, Bolt_Disable1 { false }
+			, Bolt_Color2 {}
 			, Bolt_Disable2 { false }
+			, Bolt_Color3 {}
 			, Bolt_Disable3 { false }
 			, Bolt_Arcs { 8 }
 			, Bolt_Duration { 17 }
@@ -179,6 +185,9 @@ public:
 	static double OldRadius;
 	static PhobosMap<EBolt*, EBoltWeaponStruct> BoltWeaponMap;
 	static const WeaponTypeExt::ExtData* BoltWeaponType;
+	static int* BoltColor1;
+	static int* BoltColor2;
+	static int* BoltColor3;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
@@ -188,4 +197,5 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
 
+	static DWORD _cdecl _EBolt_Draw_Colors(REGISTERS* R);
 };
