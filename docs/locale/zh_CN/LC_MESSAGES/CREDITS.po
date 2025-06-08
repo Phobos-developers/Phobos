@@ -1462,8 +1462,8 @@ msgid "Fix the issue where some units crashed after the deployment transformatio
 msgstr "修复了某些单位部署变形后崩溃的问题"
 
 #: ../../../CREDITS.md:372
-msgid "Turretless vehicles with `Voxel=no` support use `FireUp` like infantry."
-msgstr ""
+msgid "Turretless vehicles with `Voxel=no` support use `FireUp` like infantry"
+msgstr "无炮塔 Shape 载具开火前摇"
 
 #: ../../../CREDITS.md:373
 msgid "**NetsuNegi**:"

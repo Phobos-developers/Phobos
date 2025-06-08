@@ -1595,9 +1595,10 @@ msgstr "武器根据血量百分比筛选目标（by NetsuNegi）"
 
 #: ../../Whats-New.md:392
 msgid ""
-"Turretless vehicles with `Voxel=no` support use `FireUp` like infantry "
+"[Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) "
 "(by FlyStar)"
 msgstr ""
+"[无炮塔 Shape 载具开火前摇](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup)（by FlyStar）"
 
 #: ../../Whats-New.md:394 ../../Whats-New.md:598 ../../Whats-New.md:915
 #: ../../Whats-New.md:1024 ../../Whats-New.md:1049 ../../Whats-New.md:1088

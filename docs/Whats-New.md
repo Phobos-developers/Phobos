@@ -388,7 +388,7 @@ New:
 - [Power plant damage factor](Fixed-or-Improved-Logics.md#power-plant-damage-factor) (by Otamaa and Ollerus)
 - [Customize whether `Crater=yes` animation would destroy tiberium](Fixed-or-Improved-Logics.md#customize-whether-crater-yes-animation-would-destroy-tiberium) (by TaranDahl)
 - Weapon target filtering by health percentage (by NetsuNegi)
-- Turretless vehicles with `Voxel=no` support use `FireUp` like infantry (by FlyStar)
+- [Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
