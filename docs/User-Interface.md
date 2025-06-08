@@ -252,7 +252,7 @@ DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 [SOMESELECTBOXTYPE]                     ; Select box Type name
 Shape=select.shp                        ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
-Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Grounded=false                          ; boolean
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
@@ -657,7 +657,7 @@ SuperWeaponSidebar.Max=0              ; integer
 SuperWeaponSidebar.MaxColumns=        ; integer
 ```
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [GlobalControls]
 SuperWeaponSidebarKeysEnabled=false    ; boolean
@@ -674,19 +674,19 @@ SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 
 [SOMESW]
 SuperWeaponSidebar.Allow=             ; boolean
-SuperWeaponSidebar.PriorityHouses=    ; list of house types
-SuperWeaponSidebar.RequiredHouses=    ; list of house types
+SuperWeaponSidebar.PriorityHouses=    ; List of house types
+SuperWeaponSidebar.RequiredHouses=    ; List of house types
 SuperWeaponSidebar.Significance=0     ; integer
 ```
 
-In `ra2md.ini`
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 SuperWeaponSidebar.RequiredSignificance=0   ; integer
 ```
 
 ```{hint}
-While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
+While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
 ## Tooltips
