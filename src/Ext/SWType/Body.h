@@ -26,6 +26,14 @@ public:
 
 		//Ares 0.A
 		Valueable<int> Money_Amount;
+		ValueableIdx<VoxClass> EVA_Impatient;
+		ValueableIdx<VoxClass> EVA_InsufficientFunds;
+		ValueableIdx<VoxClass> EVA_SelectTarget;
+		Valueable<bool> SW_UseAITargeting;
+		Valueable<bool> SW_AutoFire;
+		Valueable<bool> SW_ManualFire;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
@@ -41,6 +49,11 @@ public:
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
 		Valueable<int> SW_MaxCount;
+
+		Valueable<CSFText> Message_CannotFire;
+		Valueable<CSFText> Message_InsufficientFunds;
+		ValueableIdx<ColorScheme> Message_ColorScheme;
+		Valueable<bool> Message_FirerColor;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -67,6 +80,14 @@ public:
 
 		Valueable<int> TabIndex;
 
+		Nullable<bool> SuperWeaponSidebar_Allow;
+		DWORD SuperWeaponSidebar_PriorityHouses;
+		DWORD SuperWeaponSidebar_RequiredHouses;
+		Valueable<int> SuperWeaponSidebar_Significance;
+
+		CustomPalette SidebarPal;
+		PhobosPCXFile SidebarPCX;
+
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
 
@@ -88,6 +109,14 @@ public:
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
 			, Money_Amount { 0 }
+			, EVA_Impatient { -1 }
+			, EVA_InsufficientFunds { -1 }
+			, EVA_SelectTarget { -1 }
+			, SW_UseAITargeting { false }
+			, SW_AutoFire { false }
+			, SW_ManualFire { true }
+			, SW_ShowCameo { true }
+			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
 			, SW_Designators { }
@@ -102,6 +131,10 @@ public:
 			, SW_PostDependent {}
 			, SW_MaxCount { -1 }
 			, SW_Shots { -1 }
+			, Message_CannotFire {}
+			, Message_InsufficientFunds {}
+			, Message_ColorScheme { -1 }
+			, Message_FirerColor { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -128,6 +161,12 @@ public:
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
 			, Convert_UseUniversalDeploy { false }
+			, SuperWeaponSidebar_Allow {}
+			, SuperWeaponSidebar_PriorityHouses { 0u }
+			, SuperWeaponSidebar_RequiredHouses { 0xFFFFFFFFu }
+			, SuperWeaponSidebar_Significance { 0 }
+			, SidebarPal {}
+			, SidebarPCX {}
 			, UseWeeds { false }
 			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
 			, UseWeeds_StorageTimer { false }
@@ -149,6 +188,7 @@ public:
 		bool IsLaunchSite(BuildingClass* pBuilding) const;
 		std::pair<double, double> GetLaunchSiteRange(BuildingClass* pBuilding = nullptr) const;
 		bool IsAvailable(HouseClass* pHouse) const;
+		void PrintMessage(const CSFText& message, HouseClass* pFirer) const;
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);
@@ -160,6 +200,8 @@ public:
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		virtual void Initialize() override;
+
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }

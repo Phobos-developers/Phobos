@@ -48,11 +48,8 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 		int index = 0;
 		int TagCount = pTags->Count;
 
-		while (true)
+		while (TagCount > 0 && index < TagCount)
 		{
-			if (TagCount <= 0 || index >= TagCount)
-				break;
-
 			const auto pTag = pTags->GetItem(index);
 
 			// don't be confused as to why (TechnoClass*)(pSW) is there, it's something very much needed..
