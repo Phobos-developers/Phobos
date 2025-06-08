@@ -229,7 +229,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
-- - Infantry support `IsGattling=yes`.
+- Infantry support `IsGattling=yes`.
 
 ## Fixes / interactions with other extensions
 

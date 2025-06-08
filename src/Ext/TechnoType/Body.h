@@ -697,9 +697,10 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-    bool IsSecondary(int nWeaponIndex);
 		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+
+		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		bool IsSecondary(int nWeaponIndex);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 

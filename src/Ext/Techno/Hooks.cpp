@@ -46,6 +46,17 @@ DEFINE_HOOK(0x4DA54E, FootClass_AI, 0x6)
 }
 
 // After FootClass_AI
+DEFINE_HOOK(0x51BCB2, InfantryClass_AI, 0x7)
+{
+	GET(InfantryClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	pExt->UpdateGattlingRateDownReset();
+
+	return 0;
+}
+
+// After FootClass_AI
 DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
