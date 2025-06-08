@@ -931,9 +931,9 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 
 #pragma region SetTarget
 
-DEFINE_HOOK_AGAIN(0x4DF3D3, FootClass_vt_entry_4CC_SetTargetAfter, 0xA)
-DEFINE_HOOK_AGAIN(0x4DF46A, FootClass_vt_entry_4CC_SetTargetAfter, 0xA)
-DEFINE_HOOK(0x4DF4A5, FootClass_vt_entry_4CC_SetTargetAfter, 0x6)
+DEFINE_HOOK_AGAIN(0x4DF3D3, FootClass_UpdateAttackMove_SetTargetAfter, 0xA)
+DEFINE_HOOK_AGAIN(0x4DF46A, FootClass_UpdateAttackMove_SetTargetAfter, 0xA)
+DEFINE_HOOK(0x4DF4A5, FootClass_UpdateAttackMove_SetTargetAfter, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 

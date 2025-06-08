@@ -525,7 +525,7 @@ DEFINE_HOOK(0x6F88BF, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay,
 
 #pragma region ExtendedGattlingRateDown
 
-DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
+DEFINE_HOOK(0x70DE40, TechnoClass_GattlingValueRateDown_GattlingRateDownDelay, 0xA)
 {
 	enum { Return = 0x70DE62 };
 
@@ -566,7 +566,7 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 	return Return;
 }
 
-DEFINE_HOOK(0x70DE70, TechnoClass_sub_70DE70_GattlingRateDownReset, 0x5)
+DEFINE_HOOK(0x70DE70, TechnoClass_GattlingRateUp_GattlingRateDownReset, 0x5)
 {
 	GET(TechnoClass* const, pThis, ECX);
 
@@ -577,7 +577,7 @@ DEFINE_HOOK(0x70DE70, TechnoClass_sub_70DE70_GattlingRateDownReset, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
+DEFINE_HOOK(0x70E01E, TechnoClass_GattlingRataDown_GattlingRateDownDelay, 0x6)
 {
 	enum { SkipGameCode = 0x70E04D };
 
@@ -590,6 +590,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 		return SkipGameCode;
 
 	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
+
 	pExt->AccumulatedGattlingValue += rateMult;
 	auto remain = pExt->AccumulatedGattlingValue;
 
