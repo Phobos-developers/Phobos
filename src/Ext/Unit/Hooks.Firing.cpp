@@ -46,14 +46,14 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(nWeaponIndex)->WeaponType);
-		bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
+		bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence.Get();
 
 		// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
 		if (allowBurst)
 		{
 			for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 			{
-				int burstDelay = pWeaponExt->GetBurstDelay(i);
+				const int burstDelay = pWeaponExt->GetBurstDelay(i);
 				int delay = 0;
 
 				if (burstDelay > -1)
