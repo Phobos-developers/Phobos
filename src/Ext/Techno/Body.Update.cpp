@@ -203,7 +203,7 @@ bool TechnoExt::ExtData::CheckDeathConditions(bool isInLimbo)
 					if (affectedHouse == AffectedHouse::Owner)
 						return allowLimbo ? HouseExt::ExtMap.Find(pThis->Owner)->CountOwnedPresentAndLimboed(pType) > 0 : pThis->Owner->CountOwnedAndPresent(pType) > 0;
 
-					for (HouseClass* pHouse : HouseClass::Array)
+					for (auto const pHouse : HouseClass::Array)
 					{
 						if (EnumFunctions::CanTargetHouse(affectedHouse, pThis->Owner, pHouse)
 							&& (allowLimbo ? HouseExt::ExtMap.Find(pHouse)->CountOwnedPresentAndLimboed(pType) > 0 : pHouse->CountOwnedAndPresent(pType) > 0))
@@ -640,7 +640,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// There are too few slaves here. More are needed.
 				const int count = pCurrentType->SlavesNumber - pSlaveManager->SlaveCount;
 
-				for (int index = 0; index < count; index++)
+				for (int i = 0; i < count; i++)
 				{
 					if (auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
 					{
@@ -716,7 +716,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				const int count = pCurrentType->SpawnsNumber - pSpawnManager->SpawnCount;
 
 				// Add the missing Spawns, but don't intend for them to be born right away.
-				for (int index = 0; index < count; index++)
+				for (int i = 0; i < count; i++)
 				{
 					if (auto pSpawnNode = GameCreate<SpawnControl>())
 					{
@@ -780,7 +780,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pSpawnManager->ResetTarget();
 
 		// pSpawnManager->KillNodes() kills all Spawns, but it is not necessary to kill the parts that are not performing tasks.
-		for (auto pSpawnNode : pSpawnManager->SpawnedNodes)
+		for (const auto pSpawnNode : pSpawnManager->SpawnedNodes)
 		{
 			const auto pAircraft = pSpawnNode->Unit;
 			auto& pStatus = pSpawnNode->Status;
@@ -853,24 +853,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			hasParasite = true;
 	};
 
-	for (int index = 0; index < TechnoTypeClass::MaxWeapons; index++)
+	for (int i = 0; i < TechnoTypeClass::MaxWeapons; i++)
 	{
-		checkWeapon(pThis->GetWeapon(index)->WeaponType);
+		checkWeapon(pThis->GetWeapon(i)->WeaponType);
 	}
-
-	auto clearMindControlNode = [pCaptureManager](const int& maxCapture)
-		{
-			// If not exceeded, then stop.
-			if (pCaptureManager->ControlNodes.Count <= maxCapture)
-				return;
-
-			// Remove excess nodes.
-			for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
-			{
-				auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
-				pCaptureManager->FreeUnit(pControlNode->Unit);
-			}
-		};
 
 	if (maxCapture > 0)
 	{
@@ -879,33 +865,28 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			// Rebuild a CaptureManager
 			pCaptureManager = GameCreate<CaptureManagerClass>(pThis, maxCapture, infiniteCapture);
 		}
-		else
+		else if (pOldTypeExt->Convert_ResetMindControl)
 		{
-			if (!infiniteCapture)
+			if (!infiniteCapture && pCaptureManager->ControlNodes.Count > maxCapture)
 			{
-				// It can't be overloaded, so remove the excess nodes.
-				clearMindControlNode(maxCapture);
+				// Remove excess nodes.
+				for (int i = pCaptureManager->ControlNodes.Count - 1; i >= maxCapture; --i)
+				{
+					auto const pControlNode = pCaptureManager->ControlNodes.GetItem(i);
+					pCaptureManager->FreeUnit(pControlNode->Unit);
+				}
 			}
 
 			pCaptureManager->MaxControlNodes = maxCapture;
 			pCaptureManager->InfiniteMindControl = infiniteCapture;
 		}
 	}
-	else if (pCaptureManager)
+	else if (pCaptureManager && pOldTypeExt->Convert_ResetMindControl)
 	{
-		if (pOldTypeExt->Convert_ResetMindControl.Get())
-		{
-			// Remove CaptureManager completely
-			pCaptureManager->FreeAll();
-			GameDelete(pCaptureManager);
-			pCaptureManager = nullptr;
-		}
-		else
-		{
-			// Remove excess mind control node.
-			clearMindControlNode(pCaptureManager->MaxControlNodes);
-			pCaptureManager->InfiniteMindControl = false;
-		}
+		// Remove CaptureManager completely
+		pCaptureManager->FreeAll();
+		GameDelete(pCaptureManager);
+		pCaptureManager = nullptr;
 	}
 
 	if (hasTemporal)
@@ -1008,7 +989,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			if (auto const count = pCurrentType->MoveSound.Count)
 			{
 				// Play a new sound.
-				int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
+				const int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
 				VocClass::PlayAt(soundIndex, pThis->Location, &pThis->MoveSoundAudioController);
 				pThis->IsMoveSoundPlaying = true;
 			}
@@ -1213,7 +1194,7 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 		if (!this->IsInTunnel)
 			trail.Visible = true;
 
-		CoordStruct trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail.FLH, trail.IsOnTurret);
+		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail.FLH, trail.IsOnTurret);
 
 		if (pThis->CloakState == CloakState::Uncloaking && !trail.Type->CloakVisible)
 			trail.LastLocation = trailLoc;
@@ -1361,7 +1342,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 								|| (fromAllies && (!isCampaign || (!pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl)) && pHouse->IsAlliedWith(pOwner));
 						};
 
-					for (auto pHouse : HouseClass::Array)
+					for (auto const pHouse : HouseClass::Array)
 					{
 						if (checkHouse(pHouse))
 						{

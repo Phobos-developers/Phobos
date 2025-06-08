@@ -71,6 +71,8 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		CDTimerClass FiringAnimationTimer;
+
 		int	WebbyDurationCountDown;
 		CDTimerClass WebbyDurationTimer;
 		AnimClass* WebbyAnim;
@@ -121,6 +123,7 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, FiringAnimationTimer {}
 			, WebbyDurationCountDown { -1 }
 			, WebbyDurationTimer {}
 			, WebbyAnim { nullptr }

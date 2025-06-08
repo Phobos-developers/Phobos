@@ -1040,3 +1040,29 @@ DEFINE_HOOK(0x518016, InfantryClass_TakeDamage_Webby, 0x7)
 
 	return 0x51804E;
 }
+
+DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	{
+		const auto pUnitType = pUnit->Type;
+
+		if (!pUnitType->Turret && !pUnitType->Voxel)
+		{
+			const auto pTarget = pThis->Target;
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			const auto pTypeExt = pExt->TypeExtData;
+
+			if (!pTarget || pTypeExt->FireUp < 0 || pTypeExt->FireUp_ResetInRetarget
+				|| !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			{
+				pUnit->CurrentFiringFrame = -1;
+				pExt->FiringAnimationTimer.Stop();
+			}
+		}
+	}
+
+	return 0;
+}
