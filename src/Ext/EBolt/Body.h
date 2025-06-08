@@ -21,7 +21,6 @@ public:
 		bool Disable2 { false };
 		ColorStruct Color3 {};
 		bool Disable3 { false };
-		bool DrawAsLaser { false };
 		int Arcs { 8 };
 		int BurstIndex { 0 };
 

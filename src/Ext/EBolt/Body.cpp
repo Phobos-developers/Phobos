@@ -15,7 +15,6 @@ void EBoltExt::ExtData::Serialize(T& Stm)
 		.Process(this->Disable2)
 		.Process(this->Color3)
 		.Process(this->Disable3)
-		.Process(this->DrawAsLaser)
 		.Process(this->Arcs)
 		.Process(this->BurstIndex)
 		;

@@ -288,7 +288,6 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	else
 		pBoltExt->Color3 = Drawing::Int_To_RGB(defaultWhite);
 
-	pBoltExt->DrawAsLaser = pWeapon->DrawBoltAsLaser;
 	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
 	pBolt->Lifetime = 1 << (std::clamp(pWeaponExt->Bolt_Duration.Get(), 1, 31) - 1);
 	pBolt->AlternateColor = pWeapon->IsAlternateColor;
