@@ -110,6 +110,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->PlacementPreview.Read(exINI, GameStrings::AudioVisual, "PlacementPreview");
 	this->PlacementPreview_Translucency.Read(exINI, GameStrings::AudioVisual, "PlacementPreview.Translucency");
 
+	this->SuperWeaponSidebar_AllowByDefault.Read(exINI, GameStrings::AudioVisual, "SuperWeaponSidebar.AllowByDefault");
+
 	this->ConditionYellow_Terrain.Read(exINI, GameStrings::AudioVisual, "ConditionYellow.Terrain");
 	this->Shield_ConditionYellow.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionYellow");
 	this->Shield_ConditionRed.Read(exINI, GameStrings::AudioVisual, "Shield.ConditionRed");
@@ -275,6 +277,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->HarvesterScanAfterUnload.Read(exINI, GameStrings::General, "HarvesterScanAfterUnload");
 
+	this->AnimCraterDestroyTiberium.Read(exINI, GameStrings::General, "AnimCraterDestroyTiberium");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -394,6 +398,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlacementGrid_TranslucencyWithPreview)
 		.Process(this->PlacementPreview)
 		.Process(this->PlacementPreview_Translucency)
+		.Process(this->SuperWeaponSidebar_AllowByDefault)
 		.Process(this->ConditionYellow_Terrain)
 		.Process(this->Shield_ConditionYellow)
 		.Process(this->Shield_ConditionRed)
@@ -519,6 +524,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->ProneSpeed_NoCrawls)
 		.Process(this->DamagedSpeed)
 		.Process(this->HarvesterScanAfterUnload)
+		.Process(this->AnimCraterDestroyTiberium)
 		;
 }
 
