@@ -387,6 +387,7 @@ New:
 - [Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
 - [Power plant damage factor](Fixed-or-Improved-Logics#power-plant-damage-factor) (by Otamaa and Ollerus)
 - Customize whether `Crater=yes` animation would destroy tiberium (by TaranDahl)
+- Weapon target filtering by health percentage (by NetsuNegi)
 - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry (by FlyStar)
 
 Vanilla fixes:
