@@ -134,12 +134,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// messages and their properties
 	this->Message_FirerColor.Read(exINI, pSection, "Message.FirerColor");
-	if (pINI->ReadString(pSection, "Message.Color", NONE_STR, Phobos::readBuffer))
-	{
-		this->Message_ColorScheme = ColorScheme::FindIndex(Phobos::readBuffer);
-		if (this->Message_ColorScheme < 0)
-			Debug::INIParseFailed(pSection, "Message.Color", Phobos::readBuffer, "Expected a valid color scheme name.");
-	}
+	this->Message_ColorScheme.Read(exINI, pSection, "Message.Color");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");

@@ -366,6 +366,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
   - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
   - Fixed some units of Ares crashing after deployment conversion
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
@@ -405,6 +406,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Exclusive SuperWeapon Sidebar
   - Fix the bug that AlphaImage remained after unit entered tunnel.
+  - Weapon target filtering by health percentage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
