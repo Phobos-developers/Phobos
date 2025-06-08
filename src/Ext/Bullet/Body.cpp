@@ -6,6 +6,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/EBolt/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
@@ -258,12 +259,45 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	const auto pEBolt = (AresFunctions::CreateAresEBolt ? AresFunctions::CreateAresEBolt(pWeapon) : GameCreate<EBolt>());
-	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
-	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
-	weaponStruct.BurstIndex = 0;
-	pEBolt->Fire(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), 0);
+	const auto pBolt = GameCreate<EBolt>();
+	const auto pBoltExt = EBoltExt::ExtMap.Allocate(pBolt);
+
+	const int alternateIdx = pWeapon->IsAlternateColor ? 5 : 10;
+	const COLORREF defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
+	const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->Bolt_Disable1)
+		pBoltExt->Disable1 = true;
+	else if (pWeaponExt->Bolt_Color1.isset())
+		pBoltExt->Color1 = pWeaponExt->Bolt_Color1.Get();
+	else
+		pBoltExt->Color1 = Drawing::Int_To_RGB(defaultAlternate);
+
+	if (pWeaponExt->Bolt_Disable2)
+		pBoltExt->Disable2 = true;
+	else if (pWeaponExt->Bolt_Color2.isset())
+		pBoltExt->Color2 = pWeaponExt->Bolt_Color2.Get();
+	else
+		pBoltExt->Color2 = Drawing::Int_To_RGB(defaultAlternate);
+
+	if (pWeaponExt->Bolt_Disable3)
+		pBoltExt->Disable3 = true;
+	else if (pWeaponExt->Bolt_Color3.isset())
+		pBoltExt->Color3 = pWeaponExt->Bolt_Color3.Get();
+	else
+		pBoltExt->Color3 = Drawing::Int_To_RGB(defaultWhite);
+
+	pBoltExt->DrawAsLaser = pWeapon->DrawBoltAsLaser;
+	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
+	pBolt->Lifetime = 1 << (std::clamp(pWeaponExt->Bolt_Duration.Get(), 1, 31) - 1);
+	pBolt->AlternateColor = pWeapon->IsAlternateColor;
+
+	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
+	pBolt->Fire(pBullet->SourceCoords, targetCoords, 0);
+
+	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+		GameCreate<ParticleSystemClass>(particle, targetCoords, nullptr, nullptr, CoordStruct::Empty, nullptr);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call

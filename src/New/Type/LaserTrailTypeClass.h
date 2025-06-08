@@ -6,11 +6,11 @@
 class LaserTrailTypeClass final : public Enumerable<LaserTrailTypeClass>
 {
 public:
+	Valueable<LaserTrailDrawType> DrawType;
 	Valueable<bool> IsHouseColor;
 	Valueable<ColorStruct> Color;
 	Valueable<int> Thickness;
-	Valueable<bool> IsElectricBolt { false };
-	Valueable<bool> IsAlternateColor { false };
+	Valueable<bool> IsAlternateColor;
 	Nullable<int> FadeDuration;
 	Valueable<int> SegmentLength;
 	Valueable<bool> IgnoreVertical;
@@ -20,10 +20,10 @@ public:
 	Valueable<bool> DroppodOnly;
 
 	LaserTrailTypeClass(const char* pTitle = NONE_STR) : Enumerable<LaserTrailTypeClass>(pTitle)
+		, DrawType { LaserTrailDrawType::Laser }
 		, IsHouseColor { false }
 		, Color { { 255, 0, 0 } }
 		, Thickness { 4 }
-		, IsElectricBolt { false }
 		, IsAlternateColor { false }
 		, FadeDuration {}
 		, SegmentLength { 128 }

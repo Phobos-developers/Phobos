@@ -18,7 +18,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 	{
 		if (this->Visible && !this->Cloaked && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
 		{
-			if (!this->Type->IsElectricBolt)
+			if (this->Type->DrawType == LaserTrailDrawType::Laser)
 			{
 				// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
 				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
@@ -30,7 +30,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 				pLaser->IsHouseColor = true;
 				pLaser->IsSupported = this->Type->IsIntense;
 			}
-			else
+			else if (this->Type->DrawType == LaserTrailDrawType::EBolt)
 			{
 				const auto pBolt = GameCreate<EBolt>();
 				pBolt->Lifetime = 1 << (std::clamp(this->Type->FadeDuration.Get(17), 1, 31) - 1);

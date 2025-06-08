@@ -91,6 +91,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
 	this->Bolt_Color3.Read(exINI, pSection, "Bolt.Color3");
 	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
+	this->Bolt_ParticleSystem.Read(exINI, pSection, "Bolt.ParticleSystem");
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
@@ -165,6 +166,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Bolt_Disable2)
 		.Process(this->Bolt_Color3)
 		.Process(this->Bolt_Disable3)
+		.Process(this->Bolt_ParticleSystem)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
 		.Process(this->Bolt_FollowFLH)

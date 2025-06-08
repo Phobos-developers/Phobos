@@ -240,6 +240,13 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
 
+enum class LaserTrailDrawType : BYTE
+{
+	Laser = 0,
+	EBolt = 1,
+	RadBeam = 2
+};
+
 enum class HorizontalPosition : BYTE
 {
 	Left = 0,

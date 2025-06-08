@@ -2,7 +2,7 @@
 #include "AresHelper.h"
 #include "Patch.h"
 
-#include <Ext/WeaponType/Body.h>
+#include <Ext/EBolt/Body.h>
 
 #define NOTE_ARES_FUN(name,reladdr) AresFunctions::name = reinterpret_cast<decltype(AresFunctions::name)>(AresHelper::AresBaseAddress + reladdr)
 
@@ -43,9 +43,9 @@ void AresFunctions::InitAres3_0()
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC1924);
 
-	WeaponTypeExt::BoltColor1 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC1E30);
-	WeaponTypeExt::BoltColor2 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC1E34);
-	WeaponTypeExt::BoltColor3 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC1E38);
+	EBoltExt::AresBoltColor1 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC1E30);
+	EBoltExt::AresBoltColor2 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC1E34);
+	EBoltExt::AresBoltColor3 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC1E38);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0_Patches();
@@ -76,9 +76,9 @@ void AresFunctions::InitAres3_0p1()
 
 	NOTE_ARES_FUN(AlphaExtMap, 0xC2988);
 
-	WeaponTypeExt::BoltColor1 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC2E2C);
-	WeaponTypeExt::BoltColor2 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC2E30);
-	WeaponTypeExt::BoltColor3 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC2E34);
+	EBoltExt::AresBoltColor1 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC2E2C);
+	EBoltExt::AresBoltColor2 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC2E30);
+	EBoltExt::AresBoltColor3 = reinterpret_cast<int*>(AresHelper::AresBaseAddress + 0xC2E34);
 
 #ifndef USING_MULTIFINITE_SYRINGE
 	Apply_Ares3_0p1_Patches();
