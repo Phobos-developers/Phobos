@@ -1268,7 +1268,7 @@ msgstr ""
 msgid ""
 "When the building becomes ready to be placed, the next building's "
 "construction will not begin until the player places the current building."
-msgstr "当建筑准备好放置时，下一个建筑的建造直到玩家摆下当前建筑前并不会开始。"
+msgstr "只有等玩家摆下当前建筑以后序列中的下一个建筑才会开始生产。"
 
 #: ../../User-Interface.md:427
 msgid "Cameo Sorting"
