@@ -363,7 +363,7 @@ msgid ""
 "You can switch between versions (displays latest develop nightly version "
 "by default) in the bottom right corner, as well as download a PDF "
 "version."
-msgstr "你可以在右下角切换版本（默认显示最新开发的自动构建版本），也可以在官方英文文档下载 PDF 版本。"
+msgstr "你可以在右下角切换版本（默认显示开发分支最新一次提交对应的版本），也可以在官方英文文档下载 PDF 版本。"
 
 #: ../../../README.md:65
 msgid ""
