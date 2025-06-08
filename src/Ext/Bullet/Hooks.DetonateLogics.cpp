@@ -383,9 +383,13 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
+		if (pWeaponExt->SkipWeaponPicking)
+			return true;
+
 		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthRatioEligible(pTarget))
 		{
 			return false;
 		}
