@@ -1696,7 +1696,7 @@ msgstr "如果在过程中自动选择的目标被摧毁但弹药尚未耗尽，
 
 #: ../../Fixed-or-Improved-Logics.md:282
 msgid "In addition, the actions of aircraft are also changed."
-msgstr ""
+msgstr "此外，战机的行为也可以更改。"
 
 #: ../../Fixed-or-Improved-Logics.md:283
 msgid ""
@@ -1704,6 +1704,7 @@ msgid ""
 "will return to the airport when the distance to the destination is less "
 "than half of `SlowdownDistance` or its turning radius."
 msgstr ""
+"`ExtendedAircraftMissions.SmoothMoving` 控制战机距离目的地距离小于 `SlowdownDistance` 的一半或其转弯半径时是否会返回机场。"
 
 #: ../../Fixed-or-Improved-Logics.md:284
 msgid ""
@@ -1712,6 +1713,7 @@ msgid ""
 "the distance between the aircraft and the landing point is less than "
 "`SlowdownDistance` (also work for aircraft spawned by aircraft carriers)."
 msgstr ""
+"`ExtendedAircraftMissions.EarlyDescend` 控制战机距离着陆点小于 `SlowdownDistance` 时是否无需飞越机场正上方即可开始下降（对航母舰载机同样有效）。"
 
 #: ../../Fixed-or-Improved-Logics.md:285
 msgid ""
@@ -1719,6 +1721,7 @@ msgid ""
 "should start landing at the airport from the opposite direction of "
 "`LandingDir`."
 msgstr ""
+"`ExtendedAircraftMissions.RearApproach` 控制战机返回机场时是否应从与 `LandingDir` 相反的方向飞入，即下降时向 `LandingDir` 的方向飞行并着陆。"
 
 #: ../../Fixed-or-Improved-Logics.md:288
 msgid ""
