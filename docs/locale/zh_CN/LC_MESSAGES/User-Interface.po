@@ -1726,11 +1726,10 @@ msgstr ""
 " 资产的超武侧边栏*"
 
 #: ../../User-Interface.md:623
-#, fuzzy
 msgid ""
 "It is possible to put superweapon cameos on the left of screen like C&C3 "
 "when `SuperWeaponSidebar` is true."
-msgstr "当 `SuperWeaponSidebar` 为 true 时可以把超级武器的图标像 C&C3 那样放置在屏幕左侧。图标将会呈金字塔状排列。"
+msgstr "当 `SuperWeaponSidebar` 为 true 时可以把超级武器的图标像 C&C3 那样放置在屏幕左侧。"
 
 #: ../../User-Interface.md:624
 msgid "Superweapon Sidebar is compatible with Ares superweapons."
@@ -1741,6 +1740,7 @@ msgid ""
 "`SuperWeaponSidebar.Pyramid` controls whether cameos are arranged in a "
 "pyramid or rectangle."
 msgstr ""
+"`SuperWeaponSidebar.Pyramid` 决定图标以金字塔形而不是矩形排列。"
 
 #: ../../User-Interface.md:626
 msgid ""
