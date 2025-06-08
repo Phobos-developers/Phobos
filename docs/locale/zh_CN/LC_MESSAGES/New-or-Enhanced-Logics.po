@@ -7843,7 +7843,7 @@ msgid ""
 "InfantryTypes, and setting it to true allows infantry to fire multiple "
 "`Burst` shots within same firing sequence."
 msgstr ""
-"`Burst.FireWithinSequence` 仅在步兵发射武器时使用，将其设为 true 以允许步兵在同一射击序列内射出多发 "
+"`Burst.FireWithinSequence` 仅在步兵或`Voxel=no`的无炮塔载具发射武器时使用，将其设为 true 以允许步兵/载具在同一射击序列内射出多发 "
 "`Burst`。"
 
 #: ../../New-or-Enhanced-Logics.md:2204

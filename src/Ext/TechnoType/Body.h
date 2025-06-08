@@ -364,6 +364,10 @@ public:
 
 		Valueable<bool> FiringForceScatter;
 
+		Valueable<int> FireUp;
+		Valueable<bool> FireUp_ResetInRetarget;
+		//Nullable<int> SecondaryFire;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -678,6 +682,10 @@ public:
 			, FallingDownDamage_Water {}
 
 			, FiringForceScatter { true }
+
+			, FireUp { -1 }
+			, FireUp_ResetInRetarget { true }
+			//, SecondaryFire {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -690,7 +698,8 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
-		bool IsSecondary(int nWeaponIndex);
+    bool IsSecondary(int nWeaponIndex);
+		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 
