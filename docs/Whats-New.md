@@ -381,13 +381,14 @@ New:
 - Dehardcoded 255 limit of `OverlayType` (by secsome)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
-- Exclusive SuperWeapon Sidebar (by NetsuNegi & CrimRecya)
-- Customize the scatter caused by aircraft attack mission (by TaranDahl)
+- [Exclusive SuperWeapon Sidebar](User-Interface.md#superweapon-sidebar) (by NetsuNegi & CrimRecya)
+- [Customize the scatter caused by aircraft attack mission](Fixed-or-Improved-Logics.md#customize-the-scatter-caused-by-aircraft-attack-mission) (by TaranDahl)
 - [Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md#customizable-garrison-and-bunker-properties) (by Otamaa)
-- [Disable DamageSound for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
-- [Power plant damage factor](Fixed-or-Improved-Logics#power-plant-damage-factor) (by Otamaa and Ollerus)
-- Customize whether `Crater=yes` animation would destroy tiberium (by TaranDahl)
+- [Disable `DamageSound` for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
+- [Power plant damage factor](Fixed-or-Improved-Logics.md#power-plant-damage-factor) (by Otamaa and Ollerus)
+- [Customize whether `Crater=yes` animation would destroy tiberium](Fixed-or-Improved-Logics.md#customize-whether-crater-yes-animation-would-destroy-tiberium) (by TaranDahl)
 - Weapon target filtering by health percentage (by NetsuNegi)
+- [Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) (by FlyStar)
 - Event 606: Checking if an AttachEffect was attached to a Techno
 
 Vanilla fixes:
@@ -411,6 +412,7 @@ Vanilla fixes:
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
