@@ -1153,7 +1153,7 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 #pragma region StopEventFix
 
-DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
+DEFINE_JUMP(LJMP, 0x4C752A, 0x4C757D); // Skip cell under bridge check
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
