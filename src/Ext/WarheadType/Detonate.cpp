@@ -272,9 +272,9 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 {
 	if (pTarget->IsDisguised())
 	{
-		if (auto pSpy = specific_cast<InfantryClass*>(pTarget))
+		if (auto pSpy = specific_cast<InfantryClass*, true>(pTarget))
 			pSpy->Disguised = false;
-		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
+		else if (auto pMirage = specific_cast<UnitClass*, true>(pTarget))
 			pMirage->ClearDisguise();
 	}
 }
@@ -396,9 +396,9 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeCl
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
-	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
+	if (!pTargetFoot)
 		return;
 
 	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
@@ -406,7 +406,8 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+
 	if (!pTargetFoot)
 		return;
 
@@ -427,7 +428,7 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
 	if (!pTargetFoot)
 		return;

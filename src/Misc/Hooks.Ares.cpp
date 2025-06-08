@@ -5,6 +5,9 @@
 #include <Utilities/AresHelper.h>
 #include <Utilities/Helpers.Alex.h>
 
+#include <Ext/Sidebar/Body.h>
+#include <Ext/Techno/Body.h>
+
 // Remember that we still don't fix Ares "issues" a priori. Extensions as well.
 // Patches presented here are exceptions rather that the rule. They must be short, concise and correct.
 // DO NOT POLLUTE ISSUEs and PRs.
@@ -23,6 +26,14 @@ void __fastcall LetGo(TemporalClass* pTemporal)
 	pTemporal->LetGo();
 }
 
+bool __stdcall ConvertToType(TechnoClass* pThis, TechnoTypeClass* pToType)
+{
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
+		return TechnoExt::ConvertToType(pFoot, pToType);
+
+	return false;
+}
+
 void Apply_Ares3_0_Patches()
 {
 	// Abductor fix:
@@ -38,6 +49,15 @@ void Apply_Ares3_0_Patches()
 	
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
+
+	// SuperClass_Launch_SkipRelatedTags
+  Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3207C, AresHelper::AresBaseAddress + 0x320DF);
+
+	// Convert ManagerFix
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x039DAE, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x046C6D, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x04B397, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x04C099, &ConvertToType);
 }
 
 void Apply_Ares3_0p1_Patches()
@@ -57,4 +77,13 @@ void Apply_Ares3_0p1_Patches()
 	
 	// Replace the TemporalClass::Detach call by LetGo in convert function:
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x441BA, &LetGo);
+
+	// SuperClass_Launch_SkipRelatedTags
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x32A5C, AresHelper::AresBaseAddress + 0x32ABF);
+
+	// Convert ManagerFix
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x3A82E, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4780D, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4BFF7, &ConvertToType);
+	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x4CCF9, &ConvertToType);
 }

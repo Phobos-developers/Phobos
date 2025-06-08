@@ -1346,6 +1346,19 @@ WarpInWeapon.UseDistanceAsDamage=false  ; boolean
 WarpOutWeapon=                          ; WeaponType
 ```
 
+### Reset MindControl after transformation
+
+- After the unit conversion is completed, its mind control can be reset.
+  - If all warheads don't have `MindControl=yes`, then `Convert.ResetMindControl=yes` will release all controlled units.
+  - If any warhead has `MindControl=yes`, then `Convert.ResetMindControl=yes` resets its maximum number of controls.
+  - If all weapons don't have `InfiniteMindControl=yes`, then `Convert.ResetMindControl=yes` release controlled units that exceed the limit.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                            ; TechnoType
+Convert.ResetMindControl=               ; boolean, default to false
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -1520,7 +1533,7 @@ While this feature can provide better performance than a large `CellSpread` valu
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                        ; WarheadTypeType
+[SOMEWARHEAD]                        ; WarheadType
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean

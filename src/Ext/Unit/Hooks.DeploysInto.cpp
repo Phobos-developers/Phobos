@@ -18,7 +18,7 @@ static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* p
 
 			if (CaptureManagerExt::CaptureUnit(Manager, pTechnoTo, false, pAnimType, true))
 			{
-				if (auto pBld = abstract_cast<BuildingClass*>(pTechnoTo))
+				if (auto pBld = abstract_cast<BuildingClass*, true>(pTechnoTo))
 				{
 					// Capturing the building after unlimbo before buildup has finished or even started appears to throw certain things off,
 					// Hopefully this is enough to fix most of it like anims playing prematurely etc.
@@ -49,7 +49,7 @@ static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* p
 	{
 		pTechnoTo->MindControlledByAUnit = true;
 
-		auto const pBuilding = abstract_cast<BuildingClass*>(pTechnoTo);
+		auto const pBuilding = abstract_cast<BuildingClass*, true>(pTechnoTo);
 		CoordStruct location = pTechnoTo->GetCoords();
 
 		location.Z += pBuilding

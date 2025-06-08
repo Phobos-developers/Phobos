@@ -83,13 +83,13 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
+	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords()))
+		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords())
-		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
-	{
+	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
-	}
 
 	return 0;
 }
@@ -138,12 +138,13 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 
 void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
-	auto const pType = pThis->GetTechnoType();
 
-	if (LimboTrackingTemp::Enabled && pThis->InLimbo && !pType->Insignificant && !pType->DontScore)
+	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		pOwnerExt->RemoveFromLimboTracking(pType);
+		auto const pType = pThis->GetTechnoType();
+
+		if (!pType->Insignificant && !pType->DontScore)
+			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
 	LimboTrackingTemp::IsBeingDeleted = true;
@@ -216,7 +217,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (auto pMe = generic_cast<FootClass*>(pThis))
+	if (auto pMe = generic_cast<FootClass*, true>(pThis))
 	{
 		bool I_am_human = pThis->Owner->IsControlledByHuman();
 		bool You_are_human = pNewOwner->IsControlledByHuman();

@@ -24,6 +24,7 @@ class AresFunctions
 public:
 	static void InitAres3_0();
 	static void InitAres3_0p1();
+	static void InitNoAres();
 	// TechnoExt
 	static bool(__stdcall* ConvertTypeTo)(TechnoClass* pFoot, TechnoTypeClass* pConvertTo);
 
