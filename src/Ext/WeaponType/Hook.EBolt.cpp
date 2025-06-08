@@ -93,6 +93,11 @@ DWORD _cdecl WeaponTypeExt::_EBolt_Draw_Colors(REGISTERS* R)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x4C1F33, EBolt_Draw_Colors, 0x7)
+{
+	return WeaponTypeExt::_EBolt_Draw_Colors(R);
+}
+
 DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
