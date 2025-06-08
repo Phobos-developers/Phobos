@@ -18,6 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\EBolt\Body.cpp" />
     <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />

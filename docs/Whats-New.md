@@ -388,6 +388,7 @@ New:
 - [Power plant damage factor](Fixed-or-Improved-Logics#power-plant-damage-factor) (by Otamaa and Ollerus)
 - Customize whether `Crater=yes` animation would destroy tiberium (by TaranDahl)
 - Weapon target filtering by health percentage (by NetsuNegi)
+- Turretless vehicles with `Voxel=no` support use `FireUp` like infantry (by FlyStar)
 - Electric trail for laser tails (by NetsuNegi)
 
 Vanilla fixes:
@@ -411,6 +412,7 @@ Vanilla fixes:
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
