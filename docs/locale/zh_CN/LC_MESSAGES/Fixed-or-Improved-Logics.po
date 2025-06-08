@@ -1328,12 +1328,14 @@ msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it."
 msgstr ""
+"修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:218
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes`."
 msgstr ""
+"有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑。"
 
 #: ../../Fixed-or-Improved-Logics.md:220
 msgid "Fixes / interactions with other extensions"
@@ -1430,14 +1432,15 @@ msgid ""
 "Fixed an issue where a portion of Ares's trigger event 75/77 was "
 "determined unsuccessfully."
 msgstr ""
+"修复了 Ares 触发条件 75/77 有时判定不成功的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:236
 msgid "Fixed some units of Ares crashing after deployment conversion."
-msgstr ""
+msgstr "修复了某些单位部署变形后崩溃的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:237
 msgid "Fixed the bug that AlphaImage remained after unit entered tunnel."
-msgstr ""
+msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:239
 msgid "Aircraft"

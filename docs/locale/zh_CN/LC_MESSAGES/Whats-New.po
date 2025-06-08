@@ -127,6 +127,8 @@ msgid ""
 "former to vice-versa) due to technical limitations and compatibility "
 "issues with spawner DLL."
 msgstr ""
+"由于技术限制及与 spawner DLL 的兼容性问题，`ShowBriefing` 与 `BriefingTheme` "
+"这两个标签的解析中地图文件与 `missionmd.ini` 的优先级已被对调（从后者优先改为前者优先）。"
 
 #: ../../Whats-New.md:25
 msgid ""
@@ -2089,13 +2091,13 @@ msgstr "修复了船只可以在高架桥上行驶的 Bug（by tyuah8 与 NetsuN
 msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it (by NetsuNegi)"
-msgstr ""
+msgstr "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:599
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes` (by FlyStar)"
-msgstr ""
+msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑（by FlyStar）"
 
 #: ../../Whats-New.md:601 ../../Whats-New.md:681 ../../Whats-New.md:843
 #: ../../Whats-New.md:884 ../../Whats-New.md:896 ../../Whats-New.md:919
@@ -2531,20 +2533,19 @@ msgstr "接管 Ares 的 AlphaImage 重绘逻辑以减少其造成的卡顿（by 
 msgid ""
 "Fixed an issue where a portion of Ares's trigger event 75/77 was "
 "determined unsuccessfully (by FlyStar)"
-msgstr ""
+msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题（by FlyStar）"
 
 #: ../../Whats-New.md:670
 msgid ""
 "Fixed the issue where some units crashed after the deployment "
 "transformation (by ststl, FlyStar)"
-msgstr ""
+msgstr "修复了某些单位部署变形后崩溃的问题（by ststl, FlyStar）"
 
 #: ../../Whats-New.md:671
-#, fuzzy
 msgid ""
 "Fixed the bug that AlphaImage remained after unit entered tunnel (by "
 "NetsuNegi)"
-msgstr "修复了船只可以在高架桥上行驶的 Bug（by tyuah8 与 NetsuNegi）"
+msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:674
 msgid "0.3.0.1"
