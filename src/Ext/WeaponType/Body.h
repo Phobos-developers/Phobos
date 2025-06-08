@@ -3,6 +3,7 @@
 #include <WeaponTypeClass.h>
 #include <DiskLaserClass.h>
 #include <EBolt.h>
+#include <ParticleSystemTypeClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>

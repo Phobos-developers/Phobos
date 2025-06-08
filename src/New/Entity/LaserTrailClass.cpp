@@ -37,6 +37,17 @@ bool LaserTrailClass::Update(CoordStruct location)
 				pBolt->AlternateColor = this->Type->IsAlternateColor;
 				pBolt->Fire(this->LastLocation, location, 0);
 			}
+			else if (this->Type->DrawType == LaserTrailDrawType::RadBeam)
+			{
+				const ColorStruct beamColor = RulesClass::Instance->RadColor;
+
+				const auto pRadBeam = RadBeam::Allocate(RadBeamType::Temporal);
+				pRadBeam->SetCoordsSource(this->LastLocation);
+				pRadBeam->SetCoordsTarget(location);
+				pRadBeam->Period = 15;
+				pRadBeam->Amplitude = 40.0;
+				pRadBeam->SetColor(beamColor);
+			}
 
 			result = true;
 		}
