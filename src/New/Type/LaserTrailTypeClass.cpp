@@ -17,9 +17,12 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->IsHouseColor.Read(exINI, section, "IsHouseColor");
 	this->Color.Read(exINI, section, "Color");
+	this->Thickness.Read(exINI, section, "Thickness");
+
+	this->IsElectricBolt.Read(exINI, section, "IsElectricBolt");
+	this->IsAlternateColor.Read(exINI, section, "IsAlternateColor");
 
 	this->FadeDuration.Read(exINI, section, "FadeDuration");
-	this->Thickness.Read(exINI, section, "Thickness");
 	this->SegmentLength.Read(exINI, section, "SegmentLength");
 	this->IgnoreVertical.Read(exINI, section, "IgnoreVertical");
 	this->IsIntense.Read(exINI, section, "IsIntense");
@@ -34,8 +37,10 @@ void LaserTrailTypeClass::Serialize(T& Stm)
 	Stm
 		.Process(this->IsHouseColor)
 		.Process(this->Color)
-		.Process(this->FadeDuration)
 		.Process(this->Thickness)
+		.Process(this->IsElectricBolt)
+		.Process(this->IsAlternateColor)
+		.Process(this->FadeDuration)
 		.Process(this->SegmentLength)
 		.Process(this->IgnoreVertical)
 		.Process(this->IsIntense)

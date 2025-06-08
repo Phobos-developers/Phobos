@@ -228,6 +228,7 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+- It also can drawn as electric bolt if `IsElectricBolt=true`.
 
 In `artmd.ini`:
 ```ini
@@ -237,8 +238,10 @@ In `artmd.ini`:
 [SOMETRAIL]                      ; LaserTrailType name
 IsHouseColor=false               ; boolean
 Color=255,0,0                    ; integer - R,G,B
-FadeDuration=64                  ; integer
 Thickness=4                      ; integer
+IsElectricBolt=false             ; boolean
+IsAlternateColor=false          ; boolean
+FadeDuration=                  ; integer, default 17 for electric, 64 for laser
 SegmentLength=128                ; integer, minimal length of each trail segment
 IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
 IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
