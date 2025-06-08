@@ -172,11 +172,11 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	return SkipGameCode;
 }
 
-CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, void* _, CoordStruct* pCrd, int weaponIndex)
+CoordStruct* __fastcall BuildingClass_GetFireCoords_Wrapper(BuildingClass* pThis, CoordStruct* buffer, CoordStruct* pCrd, int weaponIndex)
 {
 	auto coords = MapClass::Instance.GetCellAt(pThis->Owner->EMPTarget)->GetCellCoords();
-	pCrd = pThis->GetFLH(&coords, EMPulseCannonTemp::weaponIndex, *pCrd);
-	return pCrd;
+	*buffer = pThis->GetFLH(EMPulseCannonTemp::weaponIndex, coords);
+	return buffer;
 }
 
 DEFINE_FUNCTION_JUMP(CALL6, 0x44D1F9, BuildingClass_GetFireCoords_Wrapper);

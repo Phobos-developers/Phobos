@@ -43,12 +43,11 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 	// Focus is set when the harvester is fully loaded and go home.
 	if (pFocus && !pType->Weeder && TechnoTypeExt::ExtMap.Find(pType)->HarvesterScanAfterUnload.Get(RulesExt::Global()->HarvesterScanAfterUnload))
 	{
-		auto cellBuffer = CellStruct::Empty;
-		const auto pCellStru = pThis->ScanForTiberium(&cellBuffer, RulesClass::Instance->TiberiumLongScan / Unsorted::LeptonsPerCell, 0);
+		const auto pCellStru = pThis->ScanForTiberium(RulesClass::Instance->TiberiumLongScan / Unsorted::LeptonsPerCell, 0);
 
-		if (*pCellStru != CellStruct::Empty)
+		if (pCellStru != CellStruct::Empty)
 		{
-			const auto pCell = MapClass::Instance.TryGetCellAt(*pCellStru);
+			const auto pCell = MapClass::Instance.TryGetCellAt(pCellStru);
 			const auto distFromTiberium = pCell ? pThis->DistanceFrom(pCell) : -1;
 			const auto distFromFocus = pThis->DistanceFrom(pFocus);
 

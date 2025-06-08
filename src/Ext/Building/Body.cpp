@@ -364,8 +364,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 		}
 	}
 
-	auto buffer = CoordStruct::Empty;
-	auto pCell = MapClass::Instance.GetCellAt(*pThis->GetExitCoords(&buffer, 0));
+	auto pCell = MapClass::Instance.GetCellAt(pThis->GetExitCoords(0));
 	int i = 0;
 
 	while (true)
