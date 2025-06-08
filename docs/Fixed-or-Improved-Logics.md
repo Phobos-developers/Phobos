@@ -247,7 +247,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
-- Fixed some units of Ares crashing after deployment conversion.
+- Fixed the issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
 
 ## Aircraft
@@ -383,7 +383,7 @@ AnimCraterDestroyTiberium=true  ; boolean
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                      ; AnimationType
-Crater.DestroyTiberium=         ; boolean, default to [General]->AnimCraterDestroyTiberium
+Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
 ```
 
 ### Fire animations spawned by Scorch & Flamer
@@ -575,7 +575,7 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
-### Disable DamageSound
+### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.
 

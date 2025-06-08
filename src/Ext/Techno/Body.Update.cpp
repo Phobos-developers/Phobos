@@ -579,7 +579,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	// Powered by ststl-s、Fly-Star
+	// Powered by ststl-s, Fly-Star
 	if (pCurrentType->Enslaves && pCurrentType->SlavesNumber > 0)
 	{
 		// SlaveManager does not exist or they have different slaves.
