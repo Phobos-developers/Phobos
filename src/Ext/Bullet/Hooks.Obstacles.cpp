@@ -167,12 +167,7 @@ DEFINE_HOOK(0x6F7647, TechnoClass_InRange_Obstacles, 0x5)
 	auto pTechno = InRangeTemp::Techno;
 
 	if (!pObstacleCell)
-	{
-		GET_BASE(WeaponTypeClass*, pWeapon, 0x10);
-		REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x3C, -0x1C));
-		GET_BASE(AbstractClass* const, pTarget, 0xC);
 		pObstacleCell = BulletObstacleHelper::FindFirstImpenetrableObstacle(*pSourceCoords, targetCoords, pTechno, pTarget, pTechno->Owner, pWeapon, true);
-	}
 
 	// Enable aircraft carriers to search for suitable attack positions on their own
 	if (!pObstacleCell && pTechno->SpawnManager && (pTechno->AbstractFlags & AbstractFlags::Foot) && !pTechno->IsInAir())
