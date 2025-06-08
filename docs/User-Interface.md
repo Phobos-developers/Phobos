@@ -620,8 +620,9 @@ Default position for weeds counter overlaps with [harvester counter](#harvester-
 ![image](_static/images/sw_sidebar.png)
 *SuperWeapon Sidebar used with vanilla-like assets for from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries)*
 
-- It is possible to put superweapon cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true. Cameos are arranged in a pyramid shape.
+- It is possible to put superweapon cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true.
   - Superweapon Sidebar is compatible with Ares superweapons.
+  - `SuperWeaponSidebar.Pyramid` controls whether cameos are arranged in a pyramid or rectangle.
   - `SuperWeaponSidebar.Interval` controls the distance between two column cameos (excluding the background). When you need to make a background, the width of the background should be (`SuperWeaponSidebar.Interval` + cameo fixed width 60).
   - `SuperWeaponSidebar.LeftOffset` controls the distance between the left side of cameo and the left side of its column (background). This should not be greater than `SuperWeaponSidebar.Interval`.
   - `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo. That is, the space between the upper and lower cameos is (`SuperWeaponSidebar.CameoHeight` - cameo fixed height 48). This should not be less than 48. When you need to make a background, this is the height of the background.
@@ -648,6 +649,7 @@ In `uimd.ini`:
 ```ini
 [Sidebar]
 SuperWeaponSidebar=false              ; boolean
+SuperWeaponSidebar.Pyramid=true      ; boolean
 SuperWeaponSidebar.Interval=0         ; integer, pixels
 SuperWeaponSidebar.LeftOffset=0       ; integer, pixels
 SuperWeaponSidebar.CameoHeight=48     ; integer, pixels

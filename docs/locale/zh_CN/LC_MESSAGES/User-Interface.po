@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-07 21:59+0800\n"
+"POT-Creation-Date: 2025-06-08 13:07+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,8 +116,8 @@ msgstr "现在你可以指定在胜利或失败时播放哪些音轨的主题曲
 #: ../../User-Interface.md:464 ../../User-Interface.md:492
 #: ../../User-Interface.md:537 ../../User-Interface.md:572
 #: ../../User-Interface.md:582 ../../User-Interface.md:601
-#: ../../User-Interface.md:658 ../../User-Interface.md:716
-#: ../../User-Interface.md:736
+#: ../../User-Interface.md:660 ../../User-Interface.md:718
+#: ../../User-Interface.md:738
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -150,7 +150,7 @@ msgstr ""
 #: ../../User-Interface.md:34 ../../User-Interface.md:121
 #: ../../User-Interface.md:472 ../../User-Interface.md:517
 #: ../../User-Interface.md:560 ../../User-Interface.md:620
-#: ../../User-Interface.md:692
+#: ../../User-Interface.md:694
 msgid "image"
 msgstr "图像"
 
@@ -352,7 +352,8 @@ msgstr ""
 #: ../../User-Interface.md:268 ../../User-Interface.md:290
 #: ../../User-Interface.md:413 ../../User-Interface.md:503
 #: ../../User-Interface.md:548 ../../User-Interface.md:608
-#: ../../User-Interface.md:724 ../../User-Interface.md:748
+#: ../../User-Interface.md:682 ../../User-Interface.md:726
+#: ../../User-Interface.md:750
 msgid "In `RA2MD.INI`:"
 msgstr "在 `RA2MD.INI`："
 
@@ -1226,7 +1227,7 @@ msgstr "现在你可以禁用 YR 引擎在空置出生点显示的黑点，这�
 #: ../../User-Interface.md:401 ../../User-Interface.md:454
 #: ../../User-Interface.md:483 ../../User-Interface.md:529
 #: ../../User-Interface.md:566 ../../User-Interface.md:595
-#: ../../User-Interface.md:647 ../../User-Interface.md:704
+#: ../../User-Interface.md:648 ../../User-Interface.md:706
 msgid "In `uimd.ini`:"
 msgstr "在 `uimd.ini`："
 
@@ -1725,10 +1726,10 @@ msgstr ""
 " 资产的超武侧边栏*"
 
 #: ../../User-Interface.md:623
+#, fuzzy
 msgid ""
 "It is possible to put superweapon cameos on the left of screen like C&C3 "
-"when `SuperWeaponSidebar` is true. Cameos are arranged in a pyramid "
-"shape."
+"when `SuperWeaponSidebar` is true."
 msgstr "当 `SuperWeaponSidebar` 为 true 时可以把超级武器的图标像 C&C3 那样放置在屏幕左侧。图标将会呈金字塔状排列。"
 
 #: ../../User-Interface.md:624
@@ -1736,6 +1737,12 @@ msgid "Superweapon Sidebar is compatible with Ares superweapons."
 msgstr "超武侧边栏兼容 Ares 新增的超武类别。"
 
 #: ../../User-Interface.md:625
+msgid ""
+"`SuperWeaponSidebar.Pyramid` controls whether cameos are arranged in a "
+"pyramid or rectangle."
+msgstr ""
+
+#: ../../User-Interface.md:626
 msgid ""
 "`SuperWeaponSidebar.Interval` controls the distance between two column "
 "cameos (excluding the background). When you need to make a background, "
@@ -1745,7 +1752,7 @@ msgstr ""
 "`SuperWeaponSidebar.Interval` 控制两列图标之间的间距（不包括背景）。如果你需要制作背景那么背景图像的宽度应当为 "
 "`SuperWeaponSidebar.Interval` + 60（图标固定宽度）。"
 
-#: ../../User-Interface.md:626
+#: ../../User-Interface.md:627
 msgid ""
 "`SuperWeaponSidebar.LeftOffset` controls the distance between the left "
 "side of cameo and the left side of its column (background). This should "
@@ -1754,7 +1761,7 @@ msgstr ""
 "`SuperWeaponSidebar.LeftOffset` 控制图标左侧与其所在列（背景）左侧的距离，该值不应大于 "
 "`SuperWeaponSidebar.Interval`。"
 
-#: ../../User-Interface.md:627
+#: ../../User-Interface.md:628
 msgid ""
 "`SuperWeaponSidebar.CameoHeight` controls the distance from the top of "
 "the previous cameo to the top of the next cameo. That is, the space "
@@ -1766,17 +1773,17 @@ msgstr ""
 "`SuperWeaponSidebar.CameoHeight` - 48（图标固定高度）。该值不应小于 "
 "48。如果你需要制作背景那么此值即为背景图像的高度。"
 
-#: ../../User-Interface.md:628
+#: ../../User-Interface.md:629
 msgid ""
 "`SuperWeaponSidebar.Max` controls the maximum number of cameos on the "
 "leftmost column, which also depends on the current game resolution."
 msgstr "`SuperWeaponSidebar.Max` 控制左侧每列最多显示的图标数量，这也取决于游戏分辨率。"
 
-#: ../../User-Interface.md:629
+#: ../../User-Interface.md:630
 msgid "`SuperWeaponSidebar.MaxColumns` controls that maximum count of columns."
 msgstr "`SuperWeaponSidebar.MaxColumns` 控制最多有多少列。"
 
-#: ../../User-Interface.md:630
+#: ../../User-Interface.md:631
 msgid ""
 "`SuperWeaponSidebar.Significance` is needed for user to control which "
 "superweapons appear on the sidebar. Only superweapons with "
@@ -1788,7 +1795,7 @@ msgstr ""
 "`SuperWeaponSidebar.Significance` 不低于用户定义的 "
 "`SuperWeaponSidebar.RequiredSignificance` 时才会出现。"
 
-#: ../../User-Interface.md:633
+#: ../../User-Interface.md:634
 msgid ""
 "While a mod maker can \"ban\" certain superweapons from appearing on a "
 "sidebar completely using `SuperWeaponSidebar.Allow=false` and "
@@ -1810,37 +1817,37 @@ msgstr ""
 "来控制哪些超武出现在侧边栏上。这样一来具有不同偏好和不同显示分辨率的用户就可以通过客户端设置来控制他们希望在侧边栏上看到多少超武而无需编辑 Mod"
 " 文件，并且你可以通过默认的 Significance 值来精确指定你的预期效果。"
 
-#: ../../User-Interface.md:636
+#: ../../User-Interface.md:637
 msgid ""
 "There is a hotkey to toggle the sidebar on/off, which can be bound to a "
 "key in the hotkey settings."
 msgstr "快捷键设置中新增了一个快捷键条目以用于开关超武侧边栏。"
 
-#: ../../User-Interface.md:637
+#: ../../User-Interface.md:638
 msgid ""
 "`TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for "
 "localization of the hotkey."
 msgstr "`TXT_TOGGLE_SW_SIDEBAR` 与 `TXT_TOGGLE_SW_SIDEBAR_DESC` 用于该快捷键的本地化。"
 
-#: ../../User-Interface.md:638
+#: ../../User-Interface.md:639
 msgid ""
 "`SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for "
 "superweapons displayed on the sidebar."
 msgstr "`SuperWeaponSidebarKeysEnabled` 允许用户使用快捷键拉起侧边栏上显示的超武。"
 
-#: ../../User-Interface.md:639
+#: ../../User-Interface.md:640
 msgid ""
 "The hotkeys are positional and are only provided for the first 10 "
 "superweapons."
 msgstr "这些快捷键的位置是定死仅对应前 10 个超武的。"
 
-#: ../../User-Interface.md:640
+#: ../../User-Interface.md:641
 msgid ""
 "If assigned, a hotkey will be displayed on a superweapon instead of the "
 "`Ready` (or its alternative) text."
 msgstr "如果已分配快捷键，则对应的按键会替代 `就绪` 等文本显示在超武图标上。"
 
-#: ../../User-Interface.md:641
+#: ../../User-Interface.md:642
 msgid ""
 "For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and "
 "`TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file."
@@ -1848,7 +1855,7 @@ msgstr ""
 "为了本地化，请将 `TXT_FIRE_TACTICAL_SW_XX` 和 `TXT_FIRE_TACTICAL_SW_XX_DESC` 添加到你的"
 " `.csf` 文件中。"
 
-#: ../../User-Interface.md:644
+#: ../../User-Interface.md:645
 msgid ""
 "Positional superweapon hotkeys are an experimental feature and currently "
 "the user experience may be not polished enough, due to superweapon "
@@ -1856,10 +1863,11 @@ msgid ""
 " default."
 msgstr "超武快捷键属于实验性功能并且由于超武在侧边栏上的位置并不固定所以当前用户体验可能不够完善，因此该功默认处于禁用状态。"
 
-#: ../../User-Interface.md:648
+#: ../../User-Interface.md:649
 msgid ""
 "[Sidebar]\n"
 "SuperWeaponSidebar=false              ; boolean\n"
+"SuperWeaponSidebar.Pyramid=true      ; boolean\n"
 "SuperWeaponSidebar.Interval=0         ; integer, pixels\n"
 "SuperWeaponSidebar.LeftOffset=0       ; integer, pixels\n"
 "SuperWeaponSidebar.CameoHeight=48     ; integer, pixels\n"
@@ -1868,13 +1876,14 @@ msgid ""
 msgstr ""
 "[Sidebar]\n"
 "SuperWeaponSidebar=false              ; boolean\n"
+"SuperWeaponSidebar.Pyramid=true      ; boolean\n"
 "SuperWeaponSidebar.Interval=0         ; integer, pixels\n"
 "SuperWeaponSidebar.LeftOffset=0       ; integer, pixels\n"
 "SuperWeaponSidebar.CameoHeight=48     ; integer, pixels\n"
 "SuperWeaponSidebar.Max=0              ; integer\n"
 "SuperWeaponSidebar.MaxColumns=        ; integer\n"
 
-#: ../../User-Interface.md:659
+#: ../../User-Interface.md:661
 msgid ""
 "[GlobalControls]\n"
 "SuperWeaponSidebarKeysEnabled=false    ; boolean\n"
@@ -1924,7 +1933,7 @@ msgstr ""
 "SuperWeaponSidebar.RequiredHouses=    ; List of house types\n"
 "SuperWeaponSidebar.Significance=0     ; integer\n"
 
-#: ../../User-Interface.md:681
+#: ../../User-Interface.md:683
 msgid ""
 "[Phobos]\n"
 "SuperWeaponSidebar.RequiredSignificance=0   ; integer\n"
@@ -1932,7 +1941,7 @@ msgstr ""
 "[Phobos]\n"
 "SuperWeaponSidebar.RequiredSignificance=0   ; integer\n"
 
-#: ../../User-Interface.md:687
+#: ../../User-Interface.md:689
 msgid ""
 "While the feature is usable without any extra graphics, you can find "
 "example assets to use with vanilla graphics on [Phobos supplementaries "
@@ -1941,11 +1950,11 @@ msgstr ""
 "虽然该功能可以在没有任何额外图像的情况下使用，但你可以在 [Phobos 补充仓库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 找到数与原版界面 UI 图像搭配使用的示例资产。"
 
-#: ../../User-Interface.md:690
+#: ../../User-Interface.md:692
 msgid "Tooltips"
 msgstr "拓展工具条"
 
-#: ../../User-Interface.md:692
+#: ../../User-Interface.md:694
 msgid ""
 "![image](_static/images/tooltips-01.png) *Extended tooltips used in [CnC:"
 " Final War](https://www.moddb.com/mods/cncfinalwar)*"
@@ -1953,7 +1962,7 @@ msgstr ""
 "![image](_static/images/tooltips-01.png) *[CnC: Final "
 "War](https://www.moddb.com/mods/cncfinalwar) 中的拓展拓展工具条*"
 
-#: ../../User-Interface.md:695
+#: ../../User-Interface.md:697
 msgid ""
 "Sidebar tooltips can now display extended information about the "
 "TechnoType/SWType when hovered over it's cameo. In addition the low "
@@ -1963,19 +1972,19 @@ msgstr ""
 "现在当鼠标悬停在图标上时侧边栏拓展工具条提示可以显示关于科技类型／超级武器类型的拓展信息。此外当通过相应标签启用此功能时低字符限制将被取消从而允许长达"
 " 1024 字符长度的工具提示信息。"
 
-#: ../../User-Interface.md:696
+#: ../../User-Interface.md:698
 msgid ""
 "TechnoType's tooltip would display it's name, cost, power, build time and"
 " description (when applicable)."
 msgstr "科技类型的拓展工具条将显示其名称、成本、电力、建造时间和描述（如果适用）。"
 
-#: ../../User-Interface.md:697
+#: ../../User-Interface.md:699
 msgid ""
 "SWType's tooltip would display it's name, cost,  and recharge time (when "
 "applicable)."
 msgstr "超级武器类型的拓展工具条将显示其名称、成本和充能时间（如果适用）。"
 
-#: ../../User-Interface.md:698
+#: ../../User-Interface.md:700
 #, python-format
 msgid ""
 "If `SW.Shots` from Ares is used, a C-style format string default to "
@@ -1986,7 +1995,7 @@ msgstr ""
 "如果使用了 Ares 的 `SW.Shots`，那么将会附加一个 C 语言风格的格式化字符，默认为 `Shots: %d`。格式可以在 csf "
 "中自定义。如果使用双参数格式（例如 `还剩 %d/%d 发`），第二个整数是 `SW.Shots`。"
 
-#: ../../User-Interface.md:699
+#: ../../User-Interface.md:701
 msgid ""
 "Extended tooltips don't use `TXT_MONEY_FORMAT_1` and "
 "`TXT_MONEY_FORMAT_2`. Instead you can specify cost, power and time labels"
@@ -1997,20 +2006,20 @@ msgstr ""
 "`TXT_MONEY_FORMAT_2`。但你可以使用对应的标签指定成本、电力和时间标签（在对应值前显示）。默认为 `$ U+0024`，`⚡ "
 "U+26A1` 和 `⌚ U+231A`。"
 
-#: ../../User-Interface.md:700
+#: ../../User-Interface.md:702
 msgid ""
 "Fixed a bug when switching build queue tabs via QWER didn't make tooltips"
 " disappear as they should, resulting in stuck tooltips."
 msgstr "修复了一个通过 QWER 切换建造队列标签时拓展工具条没有消失的问题，这导致拓展工具条卡住。"
 
-#: ../../User-Interface.md:701
+#: ../../User-Interface.md:703
 msgid ""
 "The tooltips can now go over the sidebar bounds to accommodate for longer"
 " contents. You can control maximum text width with a new tag (paddings "
 "are excluded from the number you specify)."
 msgstr "现在拓展工具条可以超出侧边栏边界以容纳更长的内容。你可以使用新增的标签控制最大文本宽度（不包括边框）。"
 
-#: ../../User-Interface.md:702
+#: ../../User-Interface.md:704
 msgid ""
 "`AnchoredToolTips` positions the tooltip always to the left of sidebar, "
 "only applies to if `ExtendedToolTips` is set to true and they are enabled"
@@ -2019,7 +2028,7 @@ msgstr ""
 "`AnchoredToolTips` 将拓展工具条始终定到侧边栏左侧，仅在 `ExtendedToolTips` 设置为 true "
 "且用户启用时生效。"
 
-#: ../../User-Interface.md:705
+#: ../../User-Interface.md:707
 msgid ""
 "[ToolTips]\n"
 "ExtendedToolTips=false     ; boolean\n"
@@ -2041,7 +2050,7 @@ msgstr ""
 "SWShotsFormat=<none>       ; CSF entry key\n"
 "MaxWidth=0                 ; integer, pixels\n"
 
-#: ../../User-Interface.md:717
+#: ../../User-Interface.md:719
 msgid ""
 "[SOMENAME]            ; TechnoType or SWType\n"
 "UIDescription=<none>  ; CSF entry key\n"
@@ -2049,13 +2058,13 @@ msgstr ""
 "[SOMENAME]            ; TechnoType or SWType\n"
 "UIDescription=<none>  ; CSF entry key\n"
 
-#: ../../User-Interface.md:722
+#: ../../User-Interface.md:724
 msgid ""
 "The descriptions are designed to be toggleable by users. For now you can "
 "only do that externally via client or manually."
 msgstr "描述设计可由用户自行切换。目前你只能通过客户端或进行手动设置。"
 
-#: ../../User-Interface.md:725
+#: ../../User-Interface.md:727
 msgid ""
 "[Phobos]\n"
 "ToolTipDescriptions=true  ; boolean\n"
@@ -2063,7 +2072,7 @@ msgstr ""
 "[Phobos]\n"
 "ToolTipDescriptions=true  ; boolean\n"
 
-#: ../../User-Interface.md:731
+#: ../../User-Interface.md:733
 msgid ""
 "Same as with harvester counter, you can download the improved font (v4 "
 "and higher; can be found on [Phobos supplementaries "
@@ -2073,13 +2082,13 @@ msgstr ""
 "与矿车计数器相同，你可以下载改进的字体（v4 或更高版本；可以在 [Phobos 补充仓库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 中找到）否则你需要自己编辑字库文件。"
 
-#: ../../User-Interface.md:734
+#: ../../User-Interface.md:736
 msgid ""
 "The background color and opacity of tooltips can now be customized "
 "globally or per side."
 msgstr "现在可以全局或按阵营自定义拓展工具条的背景色和不透明度。"
 
-#: ../../User-Interface.md:737
+#: ../../User-Interface.md:739
 msgid ""
 "[SOMESIDE]                          ; Side\n"
 "ToolTip.Background.Color=0,0,0      ; integer - R,G,B, defaults to "
@@ -2099,13 +2108,13 @@ msgstr ""
 "ToolTip.Background.BlurSize=0.0     ; float, defaults to [AudioVisual] ->"
 " ToolTip.Background.BlurSize, which defaults to 0.0\n"
 
-#: ../../User-Interface.md:745
+#: ../../User-Interface.md:747
 msgid ""
 "The blur effect is resource intensive. Please make sure you really want "
 "to enable this effect, otherwise leave it to 0.0 so it stays disabled."
 msgstr "模糊效果非常占用资源，请确保你的确想要启用此效果，否则请保持 0.0 以禁用。"
 
-#: ../../User-Interface.md:749
+#: ../../User-Interface.md:751
 msgid ""
 "[Phobos]\n"
 "ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be"

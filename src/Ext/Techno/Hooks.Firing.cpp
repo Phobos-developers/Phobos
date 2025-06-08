@@ -51,8 +51,12 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		auto const pWeaponSecondary = pThis->GetWeapon(1)->WeaponType;
 		auto const pPrimaryExt = WeaponTypeExt::ExtMap.Find(pWeaponPrimary);
 
-		if (pWeaponSecondary && !pPrimaryExt->SkipWeaponPicking && (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
-			|| !pPrimaryExt->IsHealthRatioEligible(pThis) || (pPrimaryExt->AttachEffect_CheckOnFirer && !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
+		if (pWeaponSecondary
+			&& !pPrimaryExt->SkipWeaponPicking
+			&& (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
+				|| !pPrimaryExt->IsHealthRatioEligible(pThis)
+				|| (pPrimaryExt->AttachEffect_CheckOnFirer
+					&& !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
 		{
 			R->EAX(1);
 			return ReturnWeaponIndex;
@@ -257,12 +261,10 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	}
 
 	// AAOnly doesn't need to be checked if LandTargeting=1.
-	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA && pTarget && !pTarget->IsInAir())
+	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA
+		&& pTarget && !pTarget->IsInAir() && BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->AAOnly)
 	{
-		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pWeapon->Projectile);
-
-		if (pBulletTypeExt->AAOnly)
-			return CannotFire;
+		return CannotFire;
 	}
 
 	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
@@ -270,39 +272,37 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (pTarget)
 	{
-		if (const auto pCell = abstract_cast<CellClass*>(pTarget))
-		{
-			pTargetCell = pCell;
-		}
-		else if (const auto pObject = abstract_cast<ObjectClass*>(pTarget))
+		if (const auto pObject = abstract_cast<ObjectClass*, true>(pTarget))
 		{
 			// Ignore target cell for technos that are in air.
 			if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
 				pTargetCell = pObject->GetCell();
 		}
+		else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
+		{
+			pTargetCell = pCell;
+		}
 	}
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (!pWeaponExt->SkipWeaponPicking && pTargetCell)
+	if (!pWeaponExt->SkipWeaponPicking && pTargetCell
+		&& !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
 	{
-		if (!EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
-			return CannotFire;
+		return CannotFire;
 	}
 
 	if (pTechno)
 	{
 		if (!pWeaponExt->SkipWeaponPicking)
 		{
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner) ||
-				!pWeaponExt->IsHealthRatioEligible(pTechno))
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner)
+				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
 			{
 				return CannotFire;
 			}
-
-			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
-				return CannotFire;
 		}
 
 		if (pWH->Airstrike)
@@ -369,8 +369,8 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 	{
 		const auto landType = pCell->LandType;
 
-		if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
-			(landType == LandType::Water || landType == LandType::Beach))
+		if (pType->NavalTargeting == NavalTargetingType::Naval_None
+			&& (landType == LandType::Water || landType == LandType::Beach))
 		{
 			return DisallowFiring;
 		}
@@ -379,13 +379,13 @@ DEFINE_HOOK(0x6FC689, TechnoClass_CanFire_LandNavalTarget, 0x6)
 	{
 		const auto landType = pTerrain->GetCell()->LandType;
 
-		if (pType->LandTargeting == LandTargetingType::Land_Not_OK &&
-			landType != LandType::Water && landType != LandType::Beach)
+		if (pType->LandTargeting == LandTargetingType::Land_Not_OK
+			&& landType != LandType::Water && landType != LandType::Beach)
 		{
 			return DisallowFiring;
 		}
-		else if (pType->NavalTargeting == NavalTargetingType::Naval_None &&
-			(landType == LandType::Water || landType == LandType::Beach))
+		else if (pType->NavalTargeting == NavalTargetingType::Naval_None
+			&& (landType == LandType::Water || landType == LandType::Beach))
 		{
 			return DisallowFiring;
 		}
