@@ -596,6 +596,7 @@ Vanilla fixes:
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

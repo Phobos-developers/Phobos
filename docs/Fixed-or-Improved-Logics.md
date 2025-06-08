@@ -215,6 +215,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 
 ## Fixes / interactions with other extensions
 
