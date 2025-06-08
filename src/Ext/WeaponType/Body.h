@@ -38,6 +38,8 @@ public:
 		Nullable<int> Strafing_EndDelay;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
+		Valueable<double> CanTarget_MaxHealth;
+		Valueable<double> CanTarget_MinHealth;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
@@ -76,6 +78,8 @@ public:
 		Valueable<int> LaserThickness;
 		Nullable<int> Ammo;
 
+		bool SkipWeaponPicking;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -93,6 +97,8 @@ public:
 			, Strafing_EndDelay {}
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
+			, CanTarget_MaxHealth { 1.0 }
+			, CanTarget_MinHealth { 0.0 }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
 			, AreaFire_Target { AreaFireTarget::Base }
@@ -128,12 +134,15 @@ public:
 			, Beam_Amplitude { 40.0 }
 			, Beam_IsHouseColor { false }
 			, LaserThickness { 3 }
+			, SkipWeaponPicking { true }
 			, Ammo { }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
 
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
+
+		bool IsHealthRatioEligible(TechnoClass* const pTarget) const;
 
 		virtual ~ExtData() = default;
 
