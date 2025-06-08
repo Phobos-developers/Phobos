@@ -6614,10 +6614,10 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1763
 msgid ""
-"[SOMETECHNO]                            ; TechnoType\n"
+"[SOMETECHNO]                            ; TechnoType, before conversion\n"
 "Convert.ResetMindControl=false          ; boolean\n"
 msgstr ""
-"[SOMETECHNO]                            ; TechnoType\n"
+"[SOMETECHNO]                            ; TechnoType, before conversion\n"
 "Convert.ResetMindControl=false          ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:1768

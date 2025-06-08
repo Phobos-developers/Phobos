@@ -1761,7 +1761,7 @@ WarpOutWeapon=                          ; WeaponType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
+[SOMETECHNO]                            ; TechnoType, before conversion
 Convert.ResetMindControl=false          ; boolean
 ```
 
