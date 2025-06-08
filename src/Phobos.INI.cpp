@@ -34,6 +34,7 @@ double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
 double Phobos::UI::PowerDelta_ConditionRed = 1.0;
 bool Phobos::UI::CenterPauseMenuBackground = false;
 bool Phobos::UI::SuperWeaponSidebar = false;
+bool Phobos::UI::SuperWeaponSidebar_Pyramid = true;
 int Phobos::UI::SuperWeaponSidebar_Interval = 0;
 int Phobos::UI::SuperWeaponSidebar_LeftOffset = 0;
 int Phobos::UI::SuperWeaponSidebar_CameoHeight = 48;
@@ -180,6 +181,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::SuperWeaponSidebar =
 			ini_uimd.ReadBool(SIDEBAR_SECTION, "SuperWeaponSidebar", Phobos::UI::SuperWeaponSidebar);
+
+		Phobos::UI::SuperWeaponSidebar_Pyramid =
+			ini_uimd.ReadBool(SIDEBAR_SECTION, "SuperWeaponSidebar.Pyramid", Phobos::UI::SuperWeaponSidebar_Pyramid);
 
 		Phobos::UI::SuperWeaponSidebar_Interval =
 			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.Interval", Phobos::UI::SuperWeaponSidebar_Interval);
