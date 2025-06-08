@@ -1,7 +1,3 @@
-#include <Helpers/Macro.h>
-#include <Utilities/Macro.h>
-
-#include <UnitClass.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
 
@@ -10,7 +6,7 @@ DEFINE_JUMP(LJMP, 0x741406, 0x741427)
 DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(int, nWeaponIndex, EDI);
+	GET(int, weaponIndex, EDI);
 	enum { SkipFiring = 0x736F73 };
 
 	const auto pType = pThis->Type;
@@ -22,7 +18,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
 	const auto pTypeExt = pExt->TypeExtData;
-	int fireUp = pTypeExt->FireUp.Get();
+	const int fireUp = pTypeExt->FireUp;
 	CDTimerClass& Timer = pExt->FiringAnimationTimer;
 
 	if (fireUp >= 0 && !pType->OpportunityFire &&
@@ -34,7 +30,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		return SkipFiring;
 	}
 
-	int frames = pType->FiringFrames;
+	const int frames = pType->FiringFrames;
 	if (!Timer.InProgress() && frames >= 1)
 	{
 		pThis->CurrentFiringFrame = 2 * frames - 1;
@@ -45,8 +41,8 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	{
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(nWeaponIndex)->WeaponType);
-		bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence.Get();
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
+		const bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
 
 		// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
 		if (allowBurst)
@@ -72,12 +68,12 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			}
 		}
 
-		int frame = (Timer.TimeLeft - Timer.GetTimeLeft());
+		const int frame = (Timer.TimeLeft - Timer.GetTimeLeft());
+
 		if (frame % 2 != 0)
 			return SkipFiring;
 
-		int value = frame / 2;
-		if (value != fireUp + cumulativeDelay)
+		if (frame / 2 != fireUp + cumulativeDelay)
 		{
 			return SkipFiring;
 		}
@@ -85,9 +81,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		{
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (fireUp + projectedDelay > frames)
-			{
 				pExt->ForceFullRearmDelay = true;
-			}
 		}
 	}
 

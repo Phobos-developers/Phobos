@@ -1857,8 +1857,8 @@ JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]
-FireUp=                     ; integer
-FireUp.ResetInRetarget=     ; boolean
+FireUp=                         ; integer
+FireUp.ResetInRetarget=true     ; boolean
 ```
 
 ## Warheads
