@@ -77,29 +77,20 @@ bool EnumFunctions::AreCellAndObjectsEligible(CellClass* const pCell, AffectedTa
 	if (!pCell)
 		return false;
 
-	auto object = pCell->FirstObject;
-	bool eligible = EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells, allowBridges);
+	if (!EnumFunctions::IsCellEligible(pCell, allowed, explicitEmptyCells, allowBridges))
+		return false;
 
-	while (true)
+	for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 	{
-		if (!object || !eligible)
-			break;
-
-		if (auto pTechno = abstract_cast<TechnoClass*>(object))
+		if (const auto pTechno = abstract_cast<TechnoClass*, true>(pObject))
 		{
-			if (owner)
-			{
-				eligible = EnumFunctions::CanTargetHouse(allowedHouses, owner, pTechno->Owner);
+			if (owner && !EnumFunctions::CanTargetHouse(allowedHouses, owner, pTechno->Owner))
+				return false;
 
-				if (!eligible)
-					break;
-			}
-
-			eligible = EnumFunctions::IsTechnoEligible(pTechno, allowed, considerAircraftSeparately);
+			if (!EnumFunctions::IsTechnoEligible(pTechno, allowed, considerAircraftSeparately))
+				return false;
 		}
-
-		object = object->NextObject;
 	}
 
-	return eligible;
+	return true;
 }

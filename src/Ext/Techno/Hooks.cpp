@@ -4,6 +4,8 @@
 #include <EventClass.h>
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
+#include <AlphaShapeClass.h>
+#include <TacticalClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -13,6 +15,7 @@
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresHelper.h>
+#include <Utilities/AresFunctions.h>
 
 #pragma region Update
 
@@ -50,7 +53,6 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
-	pExt->UpdateGattlingRateDownReset();
 
 	return 0;
 }
@@ -79,6 +81,25 @@ DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateOnTunnelEnter();
+
+	const auto pType = pThis->GetTechnoType();
+	const auto pImage = pType->AlphaImage;
+
+	if (pImage && AresHelper::CanUseAres)
+	{
+		auto& alphaExt = *AresFunctions::AlphaExtMap;
+
+		if (const auto pAlpha = alphaExt.get_or_default(pThis))
+		{
+			GameDelete(pAlpha);
+
+			const auto tacticalPos = TacticalClass::Instance->TacticalPos;
+			Point2D off = { tacticalPos.X - (pImage->Width / 2), tacticalPos.Y - (pImage->Height / 2) };
+			const auto point = TacticalClass::Instance->CoordsToClient(pThis->GetCoords()).first + off;
+			RectangleStruct dirty = { point.X - tacticalPos.X, point.Y - tacticalPos.Y, pImage->Width, pImage->Height };
+			TacticalClass::Instance->RegisterDirtyArea(dirty, true);
+		}
+	}
 
 	return 0;
 }
@@ -110,9 +131,11 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 {
 	GET(TechnoClass*, pThis, ECX);
 
-	auto aresProcess = [pThis]() { return (pThis->GetTechnoType()->Turret) ? 0x6F9FB7 : 0x6FA054; };
+	auto const pType = pThis->GetTechnoType();
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto aresProcess = [pType]() { return (pType->Turret) ? 0x6F9FB7 : 0x6FA054; };
+
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const pVeteranAnim = pTypeExt->Promote_VeteranAnimation.Get(RulesExt::Global()->Promote_VeteranAnimation);
 	auto const pEliteAnim = pTypeExt->Promote_EliteAnimation.Get(RulesExt::Global()->Promote_EliteAnimation);
 
@@ -189,6 +212,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeAttachEffects();
+	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
 	if (pExt->TypeExtData->Harvester_Counted)
@@ -525,14 +549,14 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 {
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
+	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
-	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
@@ -615,14 +639,10 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	TechnoExt::ExtData* pData = TechnoExt::ExtMap.Find(pThis);
-
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
-		{
+		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
 			R->EBX<ObjectTypeClass*>(pCustomType);
-		}
 	}
 
 	return 0;
@@ -634,11 +654,9 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	TechnoExt::ExtData* pData = TechnoExt::ExtMap.Find(pThis);
-
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = pData->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
 		{
 			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -786,6 +804,51 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma endregion
 
+#pragma region DrawAirstrikeFlare
+
+namespace DrawAirstrikeFlareTemp
+{
+	TechnoClass* pTechno = nullptr;
+}
+
+DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	// This is not used in vanilla function so ECX gets overwritten later.
+	DrawAirstrikeFlareTemp::pTechno = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
+{
+	enum { SkipGameCode = 0x705976 };
+
+	GET(int, zSrc, EBP);
+	GET(int, zDest, EBX);
+	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
+
+	// Fix depth buffer value.
+	int zValue = Math::min(zSrc, zDest);
+	R->EBP(zValue);
+	R->EBX(zValue);
+
+	// Allow custom colors.
+	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
+	auto const baseColor = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
+	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
+	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
+	R->ESI(Drawing::RGB_To_Int(baseColor));
+
+	return SkipGameCode;
+}
+
+// Skip setting color for the dot, it is already done in previous hook.
+DEFINE_JUMP(LJMP, 0x705986, 0x7059C7);
+
+#pragma endregion
+
 #pragma region Customized FallingDown Damage
 
 DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
@@ -863,6 +926,66 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 	}
 
 	return 0;
+}
+
+#pragma endregion
+
+#pragma region SetTarget
+
+DEFINE_HOOK_AGAIN(0x4DF3D3, FootClass_UpdateAttackMove_SetTarget, 0xA)
+DEFINE_HOOK_AGAIN(0x4DF46A, FootClass_UpdateAttackMove_SetTarget, 0xA)
+DEFINE_HOOK(0x4DF4A5, FootClass_UpdateAttackMove_SetTarget, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (R->Origin() != 0x4DF4A5)
+	{
+		pThis->Target = nullptr;
+		pExt->UpdateGattlingRateDownReset();
+
+		return R->Origin() + 0xA;
+	}
+	else
+	{
+		GET(AbstractClass*, pTarget, EAX);
+
+		pThis->Target = pTarget;
+		pExt->UpdateGattlingRateDownReset();
+
+		return 0x4DF4AB;
+	}
+}
+
+DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EDI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	{
+		const auto pUnitType = pUnit->Type;
+
+		if (!pUnitType->Turret && !pUnitType->Voxel)
+		{
+			const auto pTypeExt = pExt->TypeExtData;
+
+			if (!pTarget || pTypeExt->FireUp < 0 || pTypeExt->FireUp_ResetInRetarget
+				|| !pThis->IsCloseEnough(pTarget, pThis->SelectWeapon(pTarget)))
+			{
+				pUnit->CurrentFiringFrame = -1;
+				pExt->FiringAnimationTimer.Stop();
+			}
+		}
+	}
+
+	pThis->Target = pTarget;
+	pExt->UpdateGattlingRateDownReset();
+
+	return 0x6FCF44;
 }
 
 #pragma endregion
