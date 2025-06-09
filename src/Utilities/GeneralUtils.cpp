@@ -278,9 +278,9 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	if (RulesExt::Global()->ColorAddUse8BitRGB)
 		return Drawing::RGB_To_Int(color);
 
-	int red = color.R;
-	int green = color.G;
-	int blue = color.B;
+	const int red = color.R;
+	const int green = color.G;
+	const int blue = color.B;
 
 	if (Drawing::ColorMode == RGBMode::RGB565)
 		colorValue |= blue | (32 * (green | (red << 6)));

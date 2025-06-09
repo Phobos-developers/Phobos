@@ -561,7 +561,7 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 		return MakeInvulnerable;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
+	const IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
 		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
 
 	switch (icEffect)
@@ -751,7 +751,7 @@ DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
 
 	const auto pType = pThis->Type;
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const auto multiplier = pTypeExt->ProneSpeed.Get(pType->Crawls ? RulesExt::Global()->ProneSpeed_Crawls : RulesExt::Global()->ProneSpeed_NoCrawls);
+	const double multiplier = pTypeExt->ProneSpeed.Get(pType->Crawls ? RulesExt::Global()->ProneSpeed_Crawls : RulesExt::Global()->ProneSpeed_NoCrawls);
 	currentSpeed = static_cast<int>(static_cast<double>(currentSpeed) * multiplier);
 	R->ECX(currentSpeed);
 	return 0x521DC5;
@@ -792,11 +792,11 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
 		return Invisible;
 
-	const auto pType = pTechno->GetTechnoType();
+	auto const pType = pTechno->GetTechnoType();
 
 	if (pType->RadarInvisible)
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
 			return Invisible;
@@ -833,7 +833,7 @@ DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
 	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
 
 	// Fix depth buffer value.
-	int zValue = Math::min(zSrc, zDest);
+	const int zValue = Math::min(zSrc, zDest);
 	R->EBP(zValue);
 	R->EBX(zValue);
 

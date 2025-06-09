@@ -53,13 +53,13 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 	auto& duration = this->Duration;
 
-	duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+	duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
 
-	if (this->Type->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)
+	if (pType->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)
 		duration = Math::max(static_cast<int>(duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
 
-	if (this->Type->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
-		duration = Math::max(static_cast<int>(duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / this->Type->ArmorMultiplier), 0);
+	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // count its own ArmorMultiplier as well
+		duration = Math::max(static_cast<int>(duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
 
 	if (pInvoker)
 		TechnoExt::ExtMap.Find(pInvoker)->AttachedEffectInvokerCount++;
@@ -130,9 +130,10 @@ void AttachEffectClass::AI()
 	{
 		this->HasInitialized = true;
 
-		const double ROFModifier = this->Type->ROFMultiplier;
+		const auto pType = this->Type;
+		const double ROFModifier = pType->ROFMultiplier;
 
-		if (ROFModifier != 1.0 && ROFModifier > 0.0 && this->Type->ROFMultiplier_ApplyOnCurrentTimer)
+		if (ROFModifier != 1.0 && ROFModifier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
 			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
@@ -141,7 +142,7 @@ void AttachEffectClass::AI()
 				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
-		if (this->Type->HasTint())
+		if (pType->HasTint())
 			pTechno->MarkForRedraw();
 	}
 
@@ -324,23 +325,25 @@ void AttachEffectClass::CloakCheck()
 
 void AttachEffectClass::CreateAnim()
 {
-	if (!this->Type)
+	auto const pType = this->Type;
+
+	if (!pType)
 		return;
 
 	AnimTypeClass* pAnimType = nullptr;
 	auto const pTechno = this->Techno;
 
-	if (this->Type->Cumulative && this->Type->CumulativeAnimations.size() > 0)
+	if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
 	{
 		if (!this->HasCumulativeAnim)
 			return;
 
-		const int count = TechnoExt::ExtMap.Find(pTechno)->GetAttachedEffectCumulativeCount(this->Type);
-		pAnimType = this->Type->GetCumulativeAnimation(count);
+		const int count = TechnoExt::ExtMap.Find(pTechno)->GetAttachedEffectCumulativeCount(pType);
+		pAnimType = pType->GetCumulativeAnimation(count);
 	}
 	else
 	{
-		pAnimType = this->Type->Animation;
+		pAnimType = pType->Animation;
 	}
 
 	if (this->IsCloaked && (!pAnimType || AnimTypeExt::ExtMap.Find(pAnimType)->DetachOnCloak))
@@ -351,15 +354,19 @@ void AttachEffectClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
 
 		pAnim->SetOwnerObject(pTechno);
-		auto const pOwner = this->Type->Animation_UseInvokerAsOwner ? this->InvokerHouse : pTechno->Owner;
+		auto const pOwner = pType->Animation_UseInvokerAsOwner ? this->InvokerHouse : pTechno->Owner;
 		pAnim->Owner = pOwner;
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->IsAttachedEffectAnim = true;
+
+		if (pType->Animation_UseInvokerAsOwner)
+			pAnimExt->SetInvoker(this->Invoker, this->InvokerHouse);
+		else
+			pAnimExt->SetInvoker(pTechno);
+
 		pAnim->RemainingIterations = 0xFFu;
 		this->Animation = pAnim;
-
-		if (this->Type->Animation_UseInvokerAsOwner)
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Invoker, this->InvokerHouse);
-		else
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
 	}
 }
 
