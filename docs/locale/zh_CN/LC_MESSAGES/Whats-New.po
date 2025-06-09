@@ -1747,10 +1747,11 @@ msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Ov
 
 #: ../../Whats-New.md:417
 msgid ""
-"Fixed the issue that the widespread damage caused by detonation on the "
+"Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case (by CrimRecya)"
 msgstr ""
+"修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:419 ../../Whats-New.md:712 ../../Whats-New.md:789
 #: ../../Whats-New.md:953 ../../Whats-New.md:994 ../../Whats-New.md:1006

@@ -1978,6 +1978,7 @@ msgid ""
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case"
 msgstr ""
+"修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题"
 
 #: ../../../CREDITS.md:490
 msgid "**Ollerus**:"
