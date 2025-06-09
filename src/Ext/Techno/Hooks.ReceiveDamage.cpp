@@ -172,10 +172,13 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 
 DEFINE_HOOK(0x701DFF, TechnoClass_ReceiveDamage_FlyingStrings, 0x7)
 {
+	if (!Phobos::DisplayDamageNumbers)
+		return 0;
+
 	GET(TechnoClass* const, pThis, ESI);
 	GET(int* const, pDamage, EBX);
 
-	if (Phobos::DisplayDamageNumbers && *pDamage)
+	if (*pDamage)
 		GeneralUtils::DisplayDamageNumberString(*pDamage, DamageDisplayType::Regular, pThis->GetRenderCoords(), TechnoExt::ExtMap.Find(pThis)->DamageNumberOffset);
 
 	return 0;
@@ -290,12 +293,15 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	GET_STACK(HouseClass*, pSourceHouse, STACK_OFFSET(0xC4, 0x1C));
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	if (*pDamage <= 0)
+		return 0;
+
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (pWHExt->Reflected)
 		return 0;
 
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool suppressByType = pWHExt->SuppressReflectDamage_Types.size() > 0;
 	const bool suppressByGroup = pWHExt->SuppressReflectDamage_Groups.size() > 0;
 
