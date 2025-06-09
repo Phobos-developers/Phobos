@@ -904,7 +904,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
 		return;
 
-	Point2D position = { 0, 0 };
+	const Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, BuildingSelectBracketPosition::Top);
 	const int totalLength = DrawShieldBar_PipAmount(length);
 	int frame = this->DrawShieldBar_Pip(true);
 
@@ -914,7 +914,7 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			position = TechnoExt::GetBuildingSelectBracketPosition(Techno, BuildingSelectBracketPosition::Top);
+			Point2D position = selectBracketPosition;
 			position.X -= deltaX + 6;
 			position.Y -= deltaY + 3;
 
@@ -925,15 +925,15 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 	if (totalLength < length)
 	{
+		const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
+
 		for (int frameIdx = length - totalLength, deltaX = 4 * totalLength, deltaY = -2 * totalLength;
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			position = TechnoExt::GetBuildingSelectBracketPosition(Techno, BuildingSelectBracketPosition::Top);
+			Point2D position = selectBracketPosition;
 			position.X -= deltaX + 6;
 			position.Y -= deltaY + 3;
-
-			const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				emptyFrame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -946,7 +946,7 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
 		return;
 
-	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
+	auto position = TechnoExt::GetFootSelectBracketPosition(this->Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
 	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
 	int frame;
 
@@ -982,14 +982,9 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 {
 	const int strength = this->Type->Strength.Get();
 	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
-	const auto pipsGlobal = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
 
-	CoordStruct shieldPip;
-
-	if (pipsShield.X != -1)
-		shieldPip = pipsShield;
-	else
-		shieldPip = pipsGlobal;
+	const auto shieldPip = pipsShield.X != -1 ? pipsShield :
+		(isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get());
 
 	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;

@@ -91,7 +91,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 	auto const pScen = ScenarioClass::Instance;
 
-	for (auto pair : ScenarioExt::Global()->Waypoints)
+	for (auto const pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
 			waypoints.push_back(pair.first);
 
@@ -302,7 +302,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		{
 		case -1:
 			// Random non-neutral
-			for (auto pHouse : HouseClass::Array)
+			for (auto const pHouse : HouseClass::Array)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
@@ -321,7 +321,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -2:
 			// Find first Neutral
-			for (auto pHouseNeutral : HouseClass::Array)
+			for (auto const pHouseNeutral : HouseClass::Array)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
@@ -334,7 +334,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -3:
 			// Random Human Player
-			for (auto pHouse : HouseClass::Array)
+			for (auto const pHouse : HouseClass::Array)
 			{
 				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated

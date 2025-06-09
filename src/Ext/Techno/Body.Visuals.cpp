@@ -52,7 +52,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 							|| (fromAllies && (!isCampaign || (!pHouse->IsHumanPlayer && !pHouse->IsInPlayerControl)) && pHouse->IsAlliedWith(pOwner));
 					};
 
-				for (auto pHouse : HouseClass::Array)
+				for (auto const pHouse : HouseClass::Array)
 				{
 					if (checkHouse(pHouse) && haveHeal(pHouse))
 						return true;

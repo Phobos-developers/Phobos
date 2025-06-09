@@ -6,6 +6,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Utilities/Helpers.Alex.h>
 
 #include <AircraftClass.h>
 #include <TacticalClass.h>
@@ -101,7 +102,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		{
 			auto const aircraft = copy_dvc(AircraftClass::Array);
 
-			for (auto pAircraft : aircraft)
+			for (auto const pAircraft : aircraft)
 				tryDetonate(pAircraft);
 		}
 
@@ -109,7 +110,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		{
 			auto const buildings = copy_dvc(BuildingClass::Array);
 
-			for (auto pBuilding : buildings)
+			for (auto const pBuilding : buildings)
 				tryDetonate(pBuilding);
 		}
 
@@ -117,7 +118,7 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		{
 			auto const infantry = copy_dvc(InfantryClass::Array);
 
-			for (auto pInf : infantry)
+			for (auto const pInf : infantry)
 				tryDetonate(pInf);
 		}
 
@@ -509,15 +510,15 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		}
 		else
 		{
-			for (auto const pTechno : TechnoClass::Array)
-			{
-				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
-				{
-					auto const coords = pTechno->GetCoords();
+			const float cellSpread = static_cast<float>(pTypeExt->Splits_TargetingDistance.Get()) / Unsorted::LeptonsPerCell;
 
-					if (coordsTarget.DistanceFrom(coords) < pTypeExt->Splits_TargetingDistance.Get()
-						&& (pType->AA || !pTechno->IsInAir())
-						&& IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
+			for (auto const pTechno : Helpers::Alex::getCellSpreadItems(coordsTarget, cellSpread, true))
+			{
+				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
+					&& (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
+				{
+					if ((pType->AA || !pTechno->IsInAir()) &&
+						IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
 					{
 						targets.AddItem(pTechno);
 					}

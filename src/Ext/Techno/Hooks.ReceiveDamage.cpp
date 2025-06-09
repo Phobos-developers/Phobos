@@ -306,7 +306,7 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 
 	if (pExt->AE.ReflectDamage && *pDamage > 0 && (!pWHExt->SuppressReflectDamage || suppressByType || suppressByGroup))
 	{
-		for (auto& attachEffect : pExt->AttachedEffects)
+		for (auto const& attachEffect : pExt->AttachedEffects)
 		{
 			if (!attachEffect->IsActive())
 				continue;

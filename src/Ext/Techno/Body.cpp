@@ -126,7 +126,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 {
-	for (auto pBld : pThis->GetTechnoType()->Dock)
+	for (auto const pBld : pThis->GetTechnoType()->Dock)
 	{
 		if (pThis->Owner->CountOwnedAndPresent(pBld))
 			return true;

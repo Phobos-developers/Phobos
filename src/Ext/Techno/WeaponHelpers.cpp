@@ -205,7 +205,7 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
+	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
 	// KillWeapon can be triggered without the source
 	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
@@ -229,7 +229,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+	const bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
 	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 	{
@@ -237,7 +237,7 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 	}
 
-	for (auto& attachEffect : pExt->AttachedEffects)
+	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
 		if (!attachEffect->IsActive())
 			continue;

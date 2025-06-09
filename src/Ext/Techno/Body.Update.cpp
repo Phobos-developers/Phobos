@@ -497,7 +497,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			int weaponRange = pThis->Veterancy.IsElite() ? pTypeExt->EliteSpawnerRange : pTypeExt->SpawnerRange;
+			const int weaponRange = pThis->Veterancy.IsElite() ? pTypeExt->EliteSpawnerRange : pTypeExt->SpawnerRange;
 
 			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
 				pManager->ResetTarget();
@@ -590,7 +590,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				for (int index = 0; index < count; index++)
 				{
-					if (auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
+					if (const auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
 					{
 						pSlaveNode->Slave = nullptr;
 						pSlaveNode->State = SlaveControlStatus::Dead;
@@ -604,7 +604,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Remove excess slaves
 				for (int i = pSlaveManager->SlaveCount - 1; i >= pCurrentType->SlavesNumber; --i)
 				{
-					if (auto pSlaveNode = pSlaveManager->SlaveNodes.GetItem(i))
+					if (const auto pSlaveNode = pSlaveManager->SlaveNodes.GetItem(i))
 					{
 						if (const auto pSlave = pSlaveNode->Slave)
 						{
@@ -666,7 +666,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Add the missing Spawns, but don't intend for them to be born right away.
 				for (int index = 0; index < count; index++)
 				{
-					if (auto pSpawnNode = GameCreate<SpawnControl>())
+					if (const auto pSpawnNode = GameCreate<SpawnControl>())
 					{
 						pSpawnNode->Unit = nullptr;
 						pSpawnNode->Status = SpawnNodeStatus::Dead;
@@ -681,7 +681,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Remove excess spawns
 				for (int i = pSpawnManager->SpawnCount - 1; i >= pCurrentType->SpawnsNumber; --i)
 				{
-					if (auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(i))
+					if (const auto pSpawnNode = pSpawnManager->SpawnedNodes.GetItem(i))
 					{
 						auto& pStatus = pSpawnNode->Status;
 
@@ -728,7 +728,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pSpawnManager->ResetTarget();
 
 		// pSpawnManager->KillNodes() kills all Spawns, but it is not necessary to kill the parts that are not performing tasks.
-		for (auto pSpawnNode : pSpawnManager->SpawnedNodes)
+		for (const auto pSpawnNode : pSpawnManager->SpawnedNodes)
 		{
 			const auto pAircraft = pSpawnNode->Unit;
 			auto& pStatus = pSpawnNode->Status;
@@ -815,7 +815,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			// Remove excess nodes.
 			for (int index = pCaptureManager->ControlNodes.Count - 1; index >= maxCapture; --index)
 			{
-				auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
+				const auto pControlNode = pCaptureManager->ControlNodes.GetItem(index);
 				pCaptureManager->FreeUnit(pControlNode->Unit);
 			}
 		};
@@ -956,7 +956,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 			if (auto const count = pCurrentType->MoveSound.Count)
 			{
 				// Play a new sound.
-				int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
+				const int soundIndex = pCurrentType->MoveSound[Randomizer::Global.Random() % count];
 				VocClass::PlayAt(soundIndex, pThis->Location, &pThis->MoveSoundAudioController);
 				pThis->IsMoveSoundPlaying = true;
 			}

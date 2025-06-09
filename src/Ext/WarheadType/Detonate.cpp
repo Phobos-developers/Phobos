@@ -109,7 +109,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (this->SpawnsCrate_Types.size() > 0)
 		{
-			int index = GeneralUtils::ChooseOneWeighted(ScenarioClass::Instance->Random.RandomDouble(), &this->SpawnsCrate_Weights);
+			const int index = GeneralUtils::ChooseOneWeighted(ScenarioClass::Instance->Random.RandomDouble(), &this->SpawnsCrate_Weights);
 
 			if (index < static_cast<int>(this->SpawnsCrate_Types.size()))
 				MapClass::Instance.PlacePowerupCrate(CellClass::Coord2Cell(coords), this->SpawnsCrate_Types.at(index));
@@ -130,8 +130,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 						if (this->LaunchSW_DisplayMoney && pSWExt->Money_Amount != 0)
 							FlyingStrings::AddMoneyString(pSWExt->Money_Amount, pHouse, this->LaunchSW_DisplayMoney_Houses, coords, this->LaunchSW_DisplayMoney_Offset);
 
-						int oldstart = pSuper->RechargeTimer.StartTime;
-						int oldleft = pSuper->RechargeTimer.TimeLeft;
+						const int oldstart = pSuper->RechargeTimer.StartTime;
+						const int oldleft = pSuper->RechargeTimer.TimeLeft;
 						// If you don't set it ready, NewSWType::Active will give false in Ares if RealLaunch=false
 						// and therefore it will reuse the vanilla routine, which will crash inside of it
 						pSuper->SetReadiness(true);
@@ -166,17 +166,17 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 
-		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
+		const bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
 		const float cellSpread = this->OwnerObject()->CellSpread;
 
 		if (cellSpread)
 		{
-			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
+			for (auto const pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
 				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
-			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+			if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 			{
 				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
@@ -628,7 +628,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	auto const pExt = TechnoExt::ExtMap.Find(pFirer);
 	double extraChance = 0.0;
 
-	for (auto& attachEffect : pExt->AttachedEffects)
+	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
 		if (!attachEffect->IsActive())
 			continue;
