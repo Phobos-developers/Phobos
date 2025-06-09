@@ -140,7 +140,7 @@ DEFINE_HOOK(0x41D604, AirstrikeClass_PointerGotInvalid_ResetForTarget, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x65E97F, HouseClass_CreateAirstrike_SetTaretForUnit, 0x6)
+DEFINE_HOOK(0x65E97F, HouseClass_CreateAirstrike_SetTargetForUnit, 0x6)
 {
 	enum { SkipGameCode = 0x65E992 };
 
@@ -198,6 +198,9 @@ DEFINE_HOOK(0x70E92F, TechnoClass_UpdateAirstrikeTint, 0x5)
 	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueIn : Skip;
 }
 
+// 9.6.2025 - Starkku: Moved to BuildingClass_AI hook in Buildings/Hooks.cpp for optimization's sake.
+// Said hook is later but shouldn't matter in this case, the purpose is to force redraw on every frame.
+/*
 DEFINE_HOOK(0x43FDD6, BuildingClass_AI_Airstrike, 0x6)
 {
 	enum { SkipGameCode = 0x43FDF1 };
@@ -208,7 +211,7 @@ DEFINE_HOOK(0x43FDD6, BuildingClass_AI_Airstrike, 0x6)
 		pThis->Mark(MarkType::Change);
 
 	return SkipGameCode;
-}
+}*/
 
 DEFINE_HOOK(0x43F9E0, BuildingClass_Mark_Airstrike, 0x6)
 {
@@ -255,13 +258,22 @@ DEFINE_HOOK(0x456E5A, BuildingClass_Flash_Airstrike, 0x6)
 	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
-DEFINE_HOOK(0x456FD3, BuildingClass_GetEffectTintIntensity_Airstrike, 0x6)
+class BuildingClassFake final : public BuildingClass
 {
-	enum { ContinueTintIntensity = 0x457002, NonAirstrike = 0x45700F };
+	int _GetAirstrikeInvulnerabilityIntensity(int intensity) const;
+};
 
-	GET(BuildingClass*, pThis, ESI);
+int BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity(int currentIntensity) const
+{
+	auto const pBuilding = (BuildingClass*)this;
+	int newIntensity = pBuilding->GetFlashingIntensity(currentIntensity);
 
-	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	if (pBuilding->IsIronCurtained() || TechnoExt::ExtMap.Find(pBuilding)->AirstrikeTargetingMe)
+		newIntensity = pBuilding->GetEffectTintIntensity(newIntensity);
+
+	return newIntensity;
 }
+
+DEFINE_FUNCTION_JUMP(CALL, 0x450A5D, BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity); // BuildingClass_Animation_AI
 
 #pragma endregion
