@@ -23,7 +23,7 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 
 DEFINE_HOOK(0x44043D, BuildingClass_AI_Temporaled_Chronosparkle_MuzzleFix, 0x8)
 {
-	GET(int, nFiringIndex, EBX);
+	GET(const int, nFiringIndex, EBX);
 	GET(BuildingClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
@@ -54,7 +54,7 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 
 DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 {
-	GET(int, nFiringIndex, EDI);
+	GET(const int, nFiringIndex, EDI);
 	GET(BuildingClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;

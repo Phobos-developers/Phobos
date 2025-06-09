@@ -201,7 +201,7 @@ DEFINE_HOOK(0x68843B, ScenStruct_ScenStruct_2, 0x6)
 {
 	REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFSET(0x40, -0x18));
 	REF_STACK(CellStruct, buffer, STACK_OFFSET(0x40, -0x20));
-	GET(int, i, ESI);
+	GET(const int, i, ESI);
 
 	if (ScenarioClass::Instance->IsDefinedWaypoint(i))
 	{
@@ -224,7 +224,7 @@ DEFINE_HOOK(0x68843B, ScenStruct_ScenStruct_2, 0x6)
 
 DEFINE_HOOK(0x684CB7, Scen_Waypoint_Call_1, 0x7)
 {
-	GET(int, nWaypoint, EAX);
+	GET(const int, nWaypoint, EAX);
 
 	CellStruct cell = ScenarioExt::Global()->Waypoints[nWaypoint];
 
@@ -241,7 +241,7 @@ DEFINE_HOOK(0x6855E4, Scen_Waypoint_Call_2, 0x5)
 
 DEFINE_HOOK(0x68AFE7, Scen_Waypoint_Call_3, 0x5)
 {
-	GET(int, nWaypoint, EDI);
+	GET(const int, nWaypoint, EDI);
 
 	CellStruct cell = ScenarioExt::Global()->Waypoints[nWaypoint];
 

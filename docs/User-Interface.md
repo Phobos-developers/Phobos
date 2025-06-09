@@ -252,7 +252,7 @@ DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 [SOMESELECTBOXTYPE]                     ; Select box Type name
 Shape=select.shp                        ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
-Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Grounded=false                          ; boolean
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
@@ -620,8 +620,9 @@ Default position for weeds counter overlaps with [harvester counter](#harvester-
 ![image](_static/images/sw_sidebar.png)
 *SuperWeapon Sidebar used with vanilla-like assets for from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries)*
 
-- It is possible to put superweapon cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true. Cameos are arranged in a pyramid shape.
+- It is possible to put superweapon cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true.
   - Superweapon Sidebar is compatible with Ares superweapons.
+  - `SuperWeaponSidebar.Pyramid` controls whether cameos are arranged in a pyramid or rectangle.
   - `SuperWeaponSidebar.Interval` controls the distance between two column cameos (excluding the background). When you need to make a background, the width of the background should be (`SuperWeaponSidebar.Interval` + cameo fixed width 60).
   - `SuperWeaponSidebar.LeftOffset` controls the distance between the left side of cameo and the left side of its column (background). This should not be greater than `SuperWeaponSidebar.Interval`.
   - `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo. That is, the space between the upper and lower cameos is (`SuperWeaponSidebar.CameoHeight` - cameo fixed height 48). This should not be less than 48. When you need to make a background, this is the height of the background.
@@ -648,6 +649,7 @@ In `uimd.ini`:
 ```ini
 [Sidebar]
 SuperWeaponSidebar=false              ; boolean
+SuperWeaponSidebar.Pyramid=true      ; boolean
 SuperWeaponSidebar.Interval=0         ; integer, pixels
 SuperWeaponSidebar.LeftOffset=0       ; integer, pixels
 SuperWeaponSidebar.CameoHeight=48     ; integer, pixels
@@ -655,7 +657,7 @@ SuperWeaponSidebar.Max=0              ; integer
 SuperWeaponSidebar.MaxColumns=        ; integer
 ```
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [GlobalControls]
 SuperWeaponSidebarKeysEnabled=false    ; boolean
@@ -672,19 +674,19 @@ SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 
 [SOMESW]
 SuperWeaponSidebar.Allow=             ; boolean
-SuperWeaponSidebar.PriorityHouses=    ; list of house types
-SuperWeaponSidebar.RequiredHouses=    ; list of house types
+SuperWeaponSidebar.PriorityHouses=    ; List of house types
+SuperWeaponSidebar.RequiredHouses=    ; List of house types
 SuperWeaponSidebar.Significance=0     ; integer
 ```
 
-In `ra2md.ini`
+In `RA2MD.INI`:
 ```ini
 [Phobos]
 SuperWeaponSidebar.RequiredSignificance=0   ; integer
 ```
 
 ```{hint}
-While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries)).
+While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
 ## Tooltips

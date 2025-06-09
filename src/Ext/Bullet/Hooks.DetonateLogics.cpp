@@ -298,53 +298,59 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
-	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+	auto const pOwner = pThis->Owner;
+	auto const pHouse = pOwner ? pOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
+		auto const pTarget = pThis->Target;
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
+		auto const& damageOverrides = pWeaponExt->ExtraWarheads_DamageOverrides;
+		auto const& detonationChances = pWeaponExt->ExtraWarheads_DetonationChances;
+		auto const& fullDetonation = pWeaponExt->ExtraWarheads_FullDetonation;
 		const int defaultDamage = pThis->WeaponType->Damage;
+		auto& random = ScenarioClass::Instance->Random;
 
 		for (size_t i = 0; i < pWeaponExt->ExtraWarheads.size(); i++)
 		{
 			auto const pWH = pWeaponExt->ExtraWarheads[i];
 			int damage = defaultDamage;
-			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
+			size_t size = damageOverrides.size();
 
 			if (size > i)
-				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
+				damage = damageOverrides[i];
 			else if (size > 0)
-				damage = pWeaponExt->ExtraWarheads_DamageOverrides[size - 1];
+				damage = damageOverrides[size - 1];
 
+			size = detonationChances.size();
 			bool detonate = true;
-			size = pWeaponExt->ExtraWarheads_DetonationChances.size();
 
 			if (size > i)
-				detonate = pWeaponExt->ExtraWarheads_DetonationChances[i] >= ScenarioClass::Instance->Random.RandomDouble();
+				detonate = detonationChances[i] >= random.RandomDouble();
 			else if (size > 0)
-				detonate = pWeaponExt->ExtraWarheads_DetonationChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
+				detonate = detonationChances[size - 1] >= random.RandomDouble();
 
+			size = fullDetonation.size();
 			bool isFull = true;
-			size = pWeaponExt->ExtraWarheads_FullDetonation.size();
 
 			if (size > i)
-				isFull = pWeaponExt->ExtraWarheads_FullDetonation[i];
+				isFull = fullDetonation[i];
 			else if (size > 0)
-				isFull = pWeaponExt->ExtraWarheads_FullDetonation[size - 1];
+				isFull = fullDetonation[size - 1];
 
 			if (!detonate)
 				continue;
 
 			if (isFull)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
+				WarheadTypeExt::DetonateAt(pWH, *coords, pOwner, damage, pHouse, pTarget);
 			else
-				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
+				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pOwner, pWH, true, pHouse, abstract_cast<TechnoClass*>(pTarget));
 		}
 	}
 
 	// Return to sender
-	if (pThis->Type && pThis->Owner)
+	if (pThis->Type && pOwner)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
@@ -353,13 +359,13 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			auto damage = pWeapon->Damage;
 
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
-				damage = static_cast<int>(damage * pThis->Owner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis->Owner)->AE.FirepowerMultiplier);
+				damage = static_cast<int>(damage * pOwner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pOwner)->AE.FirepowerMultiplier);
 
-			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
+			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pOwner, pOwner,
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
-				BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner->Owner, pWeapon, pThis->Location, true);
-				BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner->Owner, nullptr, false, true);
+				BulletExt::SimulatedFiringUnlimbo(pBullet, pHouse, pWeapon, pThis->Location, true);
+				BulletExt::SimulatedFiringEffects(pBullet, pHouse, nullptr, false, true);
 			}
 		}
 	}
@@ -384,9 +390,13 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
+		if (pWeaponExt->SkipWeaponPicking)
+			return true;
+
 		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
-			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget))
+			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
+			|| !pWeaponExt->IsHealthRatioEligible(pTarget))
 		{
 			return false;
 		}
@@ -511,11 +521,12 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		else
 		{
 			const float cellSpread = static_cast<float>(pTypeExt->Splits_TargetingDistance.Get()) / Unsorted::LeptonsPerCell;
+			const bool retargetSelf = pTypeExt->RetargetSelf;
 
 			for (auto const pTechno : Helpers::Alex::getCellSpreadItems(coordsTarget, cellSpread, true))
 			{
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
-					&& (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
+					&& (retargetSelf || pTechno != pSource))
 				{
 					if ((pType->AA || !pTechno->IsInAir()) &&
 						IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))

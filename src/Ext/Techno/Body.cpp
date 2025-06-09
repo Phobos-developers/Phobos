@@ -473,6 +473,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& type : attachEffectTypes)
 	{
@@ -480,7 +481,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 		{
 			if (attachEffect->GetType() == type && attachEffect->IsActive())
 			{
-				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
 				unsigned int minSize = minCounts ? minCounts->size() : 0;
@@ -538,12 +539,13 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
 
 			foundCount++;
@@ -641,6 +643,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->FiringAnimationTimer)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)

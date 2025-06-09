@@ -109,7 +109,7 @@ DEFINE_HOOK(0x6FD5D6, TechnoClass_InitEBolt, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(EBolt*, pBolt, EAX);
-	GET(int, weaponIndex, EBX);
+	GET(const int, weaponIndex, EBX);
 
 	if (pBolt)
 		((EBoltFake*)pBolt)->_SetOwner(pThis, weaponIndex);

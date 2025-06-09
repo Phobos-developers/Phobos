@@ -123,8 +123,8 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 
 void AnimExt::VeinAttackAI(AnimClass* pAnim)
 {
-	CellStruct pCoordinates = pAnim->GetMapCoords();
-	CellClass* pCell = MapClass::Instance.GetCellAt(pCoordinates);
+	const CellStruct pCoordinates = pAnim->GetMapCoords();
+	const CellClass* pCell = MapClass::Instance.GetCellAt(pCoordinates);
 	ObjectClass* pOccupier = pCell->FirstObject;
 	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
 	constexpr unsigned int weedOverlayIndex = 126;
@@ -139,9 +139,9 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 	{
 		while (pOccupier != nullptr)
 		{
-			ObjectClass* pNext = pOccupier->NextObject;
 			int damage = RulesClass::Instance->VeinDamage;
-			TechnoClass* pTechno = abstract_cast<TechnoClass*, true>(pOccupier);
+			const ObjectClass* pNext = pOccupier->NextObject;
+			const TechnoClass* pTechno = abstract_cast<TechnoClass*, true>(pOccupier);
 
 			if (pTechno && !pTechno->GetTechnoType()->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
 				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)

@@ -29,14 +29,12 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 			while (pPassenger)
 			{
 				const int openTWeaponIndex = pPassenger->GetTechnoType()->OpenTransportWeapon;
-				int tWeaponIndex = 0;
+				int tWeaponIndex = openTWeaponIndex;
 
-				if (openTWeaponIndex != -1)
-					tWeaponIndex = openTWeaponIndex;
-				else
+				if (openTWeaponIndex == -1)
 					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
 
-				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
+				const WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
 
 				if (pTWeapon && pTWeapon->FireInTransport)
 				{
@@ -82,7 +80,7 @@ DEFINE_HOOK(0x6F7294, TechnoClass_InRange_OccupyRange, 0x5)
 	enum { SkipGameCode = 0x6F729F };
 
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, range, EDI);
+	GET(const int, range, EDI);
 
 	const int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis) / Unsorted::LeptonsPerCell;
 
@@ -122,7 +120,7 @@ DEFINE_HOOK(0x41810F, AircraftClass_MissionAttack_WeaponRangeCheck1, 0x6)
 
 	GET(AircraftClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
-	GET(int, distance, EAX);
+	GET(const int, distance, EAX);
 
 	const int range = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
 

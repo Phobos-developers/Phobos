@@ -66,7 +66,7 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 		{
 			if (pAnimExt->IsShieldIdleAnim)
 			{
-				for (auto pShield : ShieldClass::Array)
+				for (auto const pShield : ShieldClass::Array)
 				{
 					if (pAnim == pShield->IdleAnim)
 						pShield->IdleAnim = nullptr;

@@ -237,22 +237,32 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pShrapnelWeapon);
 		auto const pType = pObject->GetType();
+
+		if (!pType->LegalTarget)
+			return SkipObject;
+
+		if (!pWeaponExt->SkipWeaponPicking && !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+			return SkipObject;
+
 		auto const pWH = pShrapnelWeapon->Warhead;
 		auto armorType = pType->Armor;
 
-		if (!pType->LegalTarget || !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
-			return SkipObject;
-
 		if (auto const pTechno = abstract_cast<TechnoClass*, true>(pObject))
 		{
-			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
-				return SkipObject;
+			if (!pWeaponExt->SkipWeaponPicking)
+			{
+				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+					return SkipObject;
 
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
-				return SkipObject;
+				if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
+					return SkipObject;
 
-			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
-				return SkipObject;
+				if (!pWeaponExt->IsHealthRatioEligible(pTechno))
+					return SkipObject;
+
+				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+					return SkipObject;
+			}
 
 			auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
 
@@ -281,16 +291,18 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 	const int min = pTypeExt->ClusterScatter_Min.Get();
 	const int max = pTypeExt->ClusterScatter_Max.Get();
+	const bool alive = pThis->IsAlive;
 	auto coords = origCoords;
+	auto& random = ScenarioClass::Instance->Random;
 
 	for (int i = 0; i < pThis->Type->Cluster; i++)
 	{
 		pThis->Detonate(coords);
 
-		if (!pThis->IsAlive)
+		if (!alive)
 			break;
 
-		const int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+		const int distance = random.RandomRanged(min, max);
 		coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
 	}
 

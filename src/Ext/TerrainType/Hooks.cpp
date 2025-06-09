@@ -181,7 +181,7 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 	if (TerrainTypeTemp::pCurrentExt)
 	{
 		GET(CellClass*, pThis, EDI);
-		GET(int, tibIndex, EAX);
+		GET(const int, tibIndex, EAX);
 
 		TiberiumClass* pTib = TiberiumClass::Array.GetItem(tibIndex);
 

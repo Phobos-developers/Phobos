@@ -429,7 +429,7 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 // Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
 DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
 {
-	GET(int, shadeCount, EDX);
+	GET(const int, shadeCount, EDX);
 
 	if (shadeCount == 1)
 		R->EDX(53);

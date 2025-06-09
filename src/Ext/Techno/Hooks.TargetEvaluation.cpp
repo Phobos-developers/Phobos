@@ -60,7 +60,7 @@ DEFINE_HOOK(0x6F7E47, TechnoClass_EvaluateObject_MapZone, 0x7)
 
 	GET(TechnoClass*, pThis, EDI);
 	GET(ObjectClass*, pObject, ESI);
-	GET(int, zone, EBP);
+	GET(const int, zone, EBP);
 
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
@@ -123,7 +123,7 @@ namespace CellEvalTemp
 
 DEFINE_HOOK(0x6F8C9D, TechnoClass_EvaluateCell_SetContext, 0x7)
 {
-	GET(int, weaponIndex, EAX);
+	GET(const int, weaponIndex, EAX);
 
 	CellEvalTemp::weaponIndex = weaponIndex;
 

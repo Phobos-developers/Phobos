@@ -59,7 +59,7 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 	enum { FireCheck = 0x5213F4, SetMissionRate = 0x521484 };
 
 	GET(InfantryClass*, pInfantry, ESI);
-	GET(int, weaponRadLevel, EBX);
+	GET(const int, weaponRadLevel, EBX);
 	const auto pCell = pInfantry->GetCell();
 	const auto pCellExt = CellExt::ExtMap.Find(pCell);
 	int radLevel = 0;
@@ -70,11 +70,11 @@ DEFINE_HOOK(0x5213B4, InfantryClass_AIDeployment_CheckRad, 0x7)
 		{
 			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 			const auto pRadType = pWeaponExt->RadType;
-			const auto warhead = pWeapon->Warhead;
+			const float cellSpread = pWeapon->Warhead->CellSpread;
 
 			for (const auto radSite : pCellExt->RadSites)
 			{
-				if (radSite->Spread == static_cast<int>(warhead->CellSpread) && RadSiteExt::ExtMap.Find(radSite)->Type == pRadType)
+				if (radSite->Spread == static_cast<int>(cellSpread) && RadSiteExt::ExtMap.Find(radSite)->Type == pRadType)
 				{
 					radLevel = radSite->GetRadLevel();
 					break;
@@ -320,7 +320,7 @@ DEFINE_HOOK(0x65B8B9, RadSiteClass_AI_LightDelay, 0x6)
 DEFINE_HOOK(0x65BB67, RadSite_Deactivate, 0x6)
 {
 	GET_RADSITE(ECX, GetLevelDelay());
-	GET(int, val, EAX);
+	GET(const int, val, EAX);
 
 	R->EAX(val / output);
 	R->EDX(val % output);
@@ -335,7 +335,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 	enum { SkipGameCode = 0x65BB11, SkipGameCode2 = 0x65BCBD, SkipGameCode3 = 0x65BE4C };
 
 	GET(RadSiteClass*, pThis, EDX);
-	GET(int, distance, EAX);
+	GET(const int, distance, EAX);
 	const int max = pThis->SpreadInLeptons;
 
 	if (distance <= max)

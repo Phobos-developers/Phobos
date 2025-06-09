@@ -90,7 +90,7 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 		{
 			if (pAnimExt->IsAttachedEffectAnim)
 			{
-				for (auto pEffect : AttachEffectClass::Array)
+				for (auto const pEffect : AttachEffectClass::Array)
 				{
 					if (ptr == pEffect->Animation)
 						pEffect->Animation = nullptr;
@@ -104,7 +104,7 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 		if (TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
 		{
-			for (auto pEffect : AttachEffectClass::Array)
+			for (auto const pEffect : AttachEffectClass::Array)
 				AnnounceInvalidPointer(pEffect->Invoker, ptr);
 		}
 	}

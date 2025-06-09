@@ -84,7 +84,7 @@ DEFINE_HOOK(0x5F53AA, ObjectClass_ReceiveDamage_DyingFix, 0x6)
 {
 	enum { PostMortem = 0x5F583E, ContinueCheck = 0x5F53B0 };
 
-	GET(int, health, EAX);
+	GET(const int, health, EAX);
 	GET(ObjectClass*, pThis, ESI);
 
 	if (health <= 0 || !pThis->IsAlive)
@@ -126,33 +126,37 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 	GET(TechnoClass* const, pThis, ESI);
 
 	auto pType = pThis->GetTechnoType();
+	const auto& debrisMaximums = pType->DebrisMaximums;
+	const auto& debrisTypes = pType->DebrisTypes;
 
 	// If DebrisMaximums has one value, then legacy behavior is used
-	if (pType->DebrisMaximums.Count == 1 &&
-		pType->DebrisMaximums.GetItem(0) > 0 &&
+	if (debrisMaximums.Count == 1 &&
+		debrisMaximums.GetItem(0) > 0 &&
 		pType->DebrisTypes.Count > 0)
 	{
 		return 0;
 	}
 
-	auto totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(
-		pType->MinDebris, pType->MaxDebris);
+	const int maxDebris = pType->MaxDebris;
+	auto& random = ScenarioClass::Instance->Random;
+	auto totalSpawnAmount = random.RandomRanged(
+		pType->MinDebris, maxDebris);
 
-	if (pType->DebrisTypes.Count > 0 && pType->DebrisMaximums.Count > 0)
+	if (debrisTypes.Count > 0 && debrisMaximums.Count > 0)
 	{
 		auto cord = pThis->GetCoords();
-		for (int currentIndex = 0; currentIndex < pType->DebrisTypes.Count; ++currentIndex)
+		for (int currentIndex = 0; currentIndex < debrisTypes.Count; ++currentIndex)
 		{
-			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
+			if (debrisMaximums.GetItem(currentIndex) > 0)
 			{
-				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
-				int amountToSpawn = abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); //0x702337
+				const int adjustedMaximum = Math::min(debrisMaximums.GetItem(currentIndex), maxDebris);
+				const int amountToSpawn = abs(random.Random()) % (adjustedMaximum + 1); //0x702337
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
 				for (; amountToSpawn > 0; --amountToSpawn)
 				{
-					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
+					GameCreate<VoxelAnimClass>(debrisTypes.GetItem(currentIndex),
 						&cord, pThis->Owner);
 				}
 
@@ -305,7 +309,7 @@ DEFINE_HOOK_AGAIN(0x41EEE3, AITriggerTypeClass_Condition_SupportPowersup, 0x7)	/
 DEFINE_HOOK(0x41EB43, AITriggerTypeClass_Condition_SupportPowersup, 0x7)		//AITriggerTypeClass_EnemyHouseOwns_SupportPowersup
 {
 	GET(HouseClass*, pHouse, EDX);
-	GET(int, idxBld, EBP);
+	GET(const int, idxBld, EBP);
 	auto const pType = BuildingTypeClass::Array[idxBld];
 	int count = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);
 
@@ -336,7 +340,7 @@ DEFINE_HOOK(0x4410E1, BuildingClass_Unlimbo_NSGate, 0x6)
 DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 {
 	GET(CellClass*, pThis, EBP);
-	GET(int, idxOverlay, EBX);
+	GET(const int, idxOverlay, EBX);
 	GET_STACK(int, state, STACK_OFFSET(0x10, 0x8));
 	bool isWall = idxOverlay != -1 && OverlayTypeClass::Array.GetItem(idxOverlay)->Wall;
 	enum { Attachable = 0x480549 };
@@ -694,9 +698,9 @@ DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
 
 	GET_STACK(bool, tint, STACK_OFFSET(0x20, 0x8));
 	GET(HashIterator*, it, ECX);
-	GET(int, red, EBP);
-	GET(int, green, EDI);
-	GET(int, blue, EBX);
+	GET(const int, red, EBP);
+	GET(const int, green, EDI);
+	GET(const int, blue, EBX);
 
 	int paletteCount = 0;
 
@@ -704,7 +708,7 @@ DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
 	{
 		for (int i = 1; i < pSchemes->Count; i += 2)
 		{
-			auto pScheme = pSchemes->GetItem(i);
+			const auto pScheme = pSchemes->GetItem(i);
 			pScheme->LightConvert->UpdateColors(red, green, blue, tint);
 		}
 
@@ -713,7 +717,7 @@ DEFINE_HOOK(0x53AD85, IonStormClass_AdjustLighting_ColorSchemes, 0x5)
 
 	if (paletteCount > 0)
 	{
-		int schemeCount = ColorScheme::GetNumberOfSchemes();
+		const int schemeCount = ColorScheme::GetNumberOfSchemes();
 		Debug::Log("Recalculated %d extra palettes across %d color schemes (total: %d).\n", paletteCount, schemeCount, schemeCount * paletteCount);
 	}
 
@@ -727,7 +731,7 @@ DEFINE_HOOK(0x4834E5, CellClass_IsClearToMove_BridgeEdges, 0x5)
 	enum { IsNotClear = 0x48351E };
 
 	GET(CellClass*, pThis, ESI);
-	GET(int, level, EAX);
+	GET(const int, level, EAX);
 	GET(bool, isBridge, EBX);
 
 	if (isBridge && pThis->ContainsBridge() && (level == -1 || level == pThis->Level + CellClass::BridgeLevels)
@@ -1091,7 +1095,7 @@ DEFINE_HOOK(0x743664, UnitClass_ReadFromINI_Follower3, 0x6)
 		if (!pUnit)
 			continue;
 
-		int followerIndex = followers[i];
+		int const followerIndex = followers[i];
 
 		if (followerIndex < 0 || followerIndex >= static_cast<int>(units.size()))
 		{
@@ -1153,7 +1157,7 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 #pragma region StopEventFix
 
-DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
+DEFINE_JUMP(LJMP, 0x4C752A, 0x4C757D); // Skip cell under bridge check
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
@@ -1282,7 +1286,10 @@ DEFINE_HOOK(0x6F4BB3, TechnoClass_ReceiveCommand_RequestUntether, 0x7)
 		if (const auto pLink = pThis->RadioLinks.Items[i])
 		{
 			if (pLink->IsTether) // If there's another tether link, reset flag to true
+			{
 				pThis->IsTether = true; // Ensures that other links can be properly untether afterwards
+				break;
+			}
 		}
 	}
 
@@ -1712,7 +1719,7 @@ DEFINE_HOOK(0x6B7CE4, SpawnManagerClass_UnlinkPointer_RemoveSpawnee, 0x6)
 // so the cutoff is at 12 here instead of 13.
 DEFINE_HOOK(0x75EE49, WaveClass_DrawSonic_CrashFix, 0x7)
 {
-	GET(int, colorIndex, EAX);
+	GET(const int, colorIndex, EAX);
 
 	if (colorIndex > 12)
 		R->EAX(12);
@@ -2003,3 +2010,167 @@ DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 
 	return NextTechno;
 }
+
+#pragma region ElectricAssultFix
+
+namespace ElectricAssultTemp
+{
+	WeaponTypeClass* WeaponType;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5102, FootClass_ElectricAssultFix_SetWeaponType, 0x6)	// Mission_Guard
+DEFINE_HOOK(0x4D6F66, FootClass_ElectricAssultFix_SetWeaponType, 0x6)		// Mission_AreaGuard
+{
+	GET(WeaponTypeClass*, Secondary, ECX);
+
+	ElectricAssultTemp::WeaponType = Secondary;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5184, FootClass_ElectricAssultFix2, 0x7)	// Mission_Guard
+DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
+		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
+
+	const auto pWeapon = ElectricAssultTemp::WeaponType;
+	bool InGuard = (R->Origin() == 0x4D5184);
+
+	if (pBuilding->Owner == pThis->Owner &&
+		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->GetTechnoType()) != 0.0)
+	{
+		return InGuard ? SkipGuard : SkipAreaGuard;
+	}
+
+	return InGuard ? ContinueGuard : ContinueAreaGuard;
+}
+
+#pragma endregion
+
+#pragma region DamageAreaItemsFix
+// Obviously, it is unreasonable for a large-scale damage like a nuke to only cause damage to units
+// located on or under the bridge that are in the same position as the damage center point
+namespace DamageAreaTemp
+{
+	const CellClass* CheckingCell = nullptr;
+	bool CheckingCellAlt = false;
+}
+// Skip useless alt check, so it will only start checking from the cell's FirstObject
+// Note: Ares hook at 0x489562(0x6) and return 0
+DEFINE_JUMP(LJMP, 0x489568, 0x489592);
+
+DEFINE_HOOK(0x4896BF, DamageArea_DamageItemsFix1, 0x6)
+{
+	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
+	// Record the current cell for linked list getting
+	GET(const CellClass* const, pCell, EBX);
+	DamageAreaTemp::CheckingCell = pCell;
+	// First, check the FirstObject linked list
+	auto pObject = pCell->FirstObject;
+	// Check if there are objects in the linked list
+	if (pObject)
+	{
+		// When it exists, start the vanilla processing
+		R->ESI(pObject);
+		return CheckThisObject;
+	}
+	// When it does not exist, check AltObject linked list
+	pObject = pCell->AltObject;
+	// If there is also no object in the linked list, return directly to check the next cell
+	if (!pObject)
+		return CheckNextCell;
+	// If there is an object, record the flag
+	DamageAreaTemp::CheckingCellAlt = true;
+	// Then return and continue with the original execution
+	R->ESI(pObject);
+	return CheckThisObject;
+}
+
+DEFINE_HOOK(0x4899B3, DamageArea_DamageItemsFix2, 0x5)
+{
+	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
+	// When there are no units in the FirstObject linked list, it will not enter this hook
+	GET(const ObjectClass*, pObject, ESI);
+	// As vanilla, first look at the next object in the linked list
+	pObject = pObject->NextObject;
+	// Check if there are still objects in the linked list
+	if (pObject)
+	{
+		// When it exists, return to continue the vanilla processing
+		R->ESI(pObject);
+		return CheckThisObject;
+	}
+	// When it does not exist, check which linked list it is currently in
+	if (DamageAreaTemp::CheckingCellAlt)
+	{
+		// If it is already in the AltObject linked list, reset the flag and return to check the next cell
+		DamageAreaTemp::CheckingCellAlt = false;
+		return CheckNextCell;
+	}
+	// If it is still in the FirstObject linked list, take the first object in the AltObject linked list and continue checking
+	pObject = DamageAreaTemp::CheckingCell->AltObject;
+	// If there is no object in the AltObject linked list, return directly to check the next cell
+	if (!pObject)
+		return CheckNextCell;
+	// If there is an object, record the flag
+	DamageAreaTemp::CheckingCellAlt = true;
+	// Then return and continue with the original execution
+	R->ESI(pObject);
+	return CheckThisObject;
+}
+
+DEFINE_HOOK(0x489BDB, DamageArea_RockerItemsFix1, 0x6)
+{
+	enum { SkipGameCode = 0x489C29 };
+	// Get cell coordinates
+	GET(const short, cellX, ESI);
+	GET(const short, cellY, EBX);
+	// Record the current cell for linked list getting
+	const auto pCell = MapClass::Instance.GetCellAt(CellStruct { cellX, cellY });
+	DamageAreaTemp::CheckingCell = pCell;
+	// First, check the FirstObject linked list
+	auto pObject = pCell->FirstObject;
+	// Check if there are objects in the linked list
+	if (pObject)
+	{
+		// When it exists, start the vanilla processing
+		R->EAX(pObject);
+		return SkipGameCode;
+	}
+	// When it does not exist, check AltObject linked list
+	pObject = pCell->AltObject;
+	// If there is an object, record the flag
+	if (pObject)
+		DamageAreaTemp::CheckingCellAlt = true;
+	// Return the original check
+	R->EAX(pObject);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
+{
+	// Prior to this, there was already pObject = pCell->FirstObject;
+	GET(const ObjectClass*, pObject, EDI);
+	// As vanilla, first look at the next object in the linked list
+	if (pObject)
+		return 0;
+	// When it does not exist, check which linked list it is currently in
+	if (DamageAreaTemp::CheckingCellAlt)
+	{
+		// If it is already in the AltObject linked list, reset the flag and return the original check
+		DamageAreaTemp::CheckingCellAlt = false;
+		return 0;
+	}
+	// If it is still in the FirstObject linked list, take the first object in the AltObject linked list and continue checking
+	pObject = DamageAreaTemp::CheckingCell->AltObject;
+	// If there is an object, record the flag
+	if (pObject)
+		DamageAreaTemp::CheckingCellAlt = true;
+	// Return the original check
+	R->EDI(pObject);
+	return 0;
+}
+
+#pragma region

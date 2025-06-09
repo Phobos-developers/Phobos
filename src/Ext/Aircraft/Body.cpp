@@ -15,24 +15,29 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
 
-	const bool isStrafe = pThis->Is_Strafe();
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const int burstCount = pWeapon->Burst;
+	const bool isStrafe = pThis->Is_Strafe();
 
-	if (pWeapon->Burst > 0)
+	if (burstCount > 0)
 	{
-		for (int i = 0; i < pWeapon->Burst; i++)
+		int& bombDropCount = pExt->Strafe_BombsDroppedThisRound;
+		int& currentBurstIndex = pThis->CurrentBurstIndex;
+		const bool simulateBurst = pWeaponExt->Strafing_SimulateBurst;
+
+		for (int i = 0; i < burstCount; i++)
 		{
-			if (isStrafe && pWeapon->Burst < 2 && pWeaponExt->Strafing_SimulateBurst)
-				pThis->CurrentBurstIndex = pExt->Strafe_BombsDroppedThisRound % 2 == 0;
+			if (isStrafe && burstCount < 2 && simulateBurst)
+				currentBurstIndex = bombDropCount % 2 == 0;
 
 			pThis->Fire(pTarget, weaponIndex);
 		}
 
 		if (isStrafe)
 		{
-			pExt->Strafe_BombsDroppedThisRound++;
+			bombDropCount++;
 
 			if (pWeaponExt->Strafing_UseAmmoPerShot)
 			{

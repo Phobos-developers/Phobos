@@ -38,7 +38,7 @@ DEFINE_HOOK(0x73BF95, UnitClass_DrawAsVoxel_Tint, 0x7)
 	enum { SkipGameCode = 0x73C141 };
 
 	GET(UnitClass*, pThis, EBP);
-	GET(int, flashIntensity, ESI);
+	GET(const int, flashIntensity, ESI);
 	REF_STACK(int, intensity, STACK_OFFSET(0x1D0, 0x10));
 
 	intensity = flashIntensity;
@@ -279,11 +279,10 @@ DEFINE_HOOK(0x51933B, InfantryClass_DrawIt_LevelIntensity, 0x6)
 	enum { SkipGameCode = 0x51944D };
 
 	GET(InfantryClass*, pThis, EBP);
+	GET(const int, level, EBX);
 
 	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 	{
-		GET(int, level, EBX);
-
 		int levelIntensity = 0;
 		int cellIntensity = 1000;
 		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));

@@ -287,14 +287,15 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
 		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
+		auto& random = ScenarioClass::Instance->Random;
 
 		do
 		{
 			if (X < 0)
-				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
+				targetLocation.X = (short)random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
 
 			if (Y < 0)
-				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
+				targetLocation.Y = (short)random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
 		}
 		while (!MapClass::Instance.IsWithinUsableArea(targetLocation, false));
 
@@ -313,7 +314,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 
 			if (housesList.size() > 0)
-				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
+				pExecuteHouse = housesList[random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -345,7 +346,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 
 			if (housesList.size() > 0)
-				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
+				pExecuteHouse = housesList[random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 

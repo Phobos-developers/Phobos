@@ -73,7 +73,7 @@ DEFINE_HOOK(0x6F7792, TechnoClass_InWeaponRange_DecloakToFire, 0xA)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EBX);
-	GET(int, weaponIndex, EAX);
+	GET(const int, weaponIndex, EAX);
 
 	if (CloakTemp::IsInReadyToCloak)
 	{

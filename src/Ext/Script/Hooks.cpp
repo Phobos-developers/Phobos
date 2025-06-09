@@ -62,7 +62,7 @@ DEFINE_HOOK(0x6E95B3, TeamClass_AI_MoveToCell, 0x6)
 	if (!R->BL())
 		return 0x6E95A4;
 
-	GET(int, nCoord, ECX);
+	GET(const int, nCoord, ECX);
 	REF_STACK(CellStruct, cell, STACK_OFFSET(0x38, -0x28));
 
 	// if ( NewINIFormat < 4 ) then divide 128

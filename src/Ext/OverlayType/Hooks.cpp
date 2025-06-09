@@ -4,7 +4,7 @@
 
 DEFINE_HOOK(0x47F71D, CellClass_DrawOverlay_ZAdjust, 0x5)
 {
-	GET(int, zAdjust, EDI);
+	GET(const int, zAdjust, EDI);
 	GET_STACK(OverlayTypeClass*, pOverlayType, STACK_OFFSET(0x24, -0x14));
 
 	auto const pTypeExt = OverlayTypeExt::ExtMap.Find(pOverlayType);
@@ -23,7 +23,7 @@ DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)
 	GET(CellClass*, pThis, ESI);
 	GET(SHPStruct*, pShape, EAX);
 	GET(RectangleStruct*, pBounds, EBP);
-	GET(int, zAdjust, EDI);
+	GET(const int, zAdjust, EDI);
 	GET_STACK(OverlayTypeClass*, pOverlayType, STACK_OFFSET(0x24, -0x14));
 	REF_STACK(Point2D, pLocation, STACK_OFFSET(0x24, -0x10));
 

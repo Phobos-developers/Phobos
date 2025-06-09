@@ -49,7 +49,7 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
+	GET(const int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
@@ -74,7 +74,7 @@ DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
+	GET(const int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
@@ -189,7 +189,7 @@ DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
 	enum { ApplyModifiers = 0x4891C6 };
 
 	GET(WarheadTypeClass* const, pWarhead, EDI);
-	GET(int, damage, ESI);
+	GET(const int, damage, ESI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
@@ -206,7 +206,7 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 {
 	enum { SkipGameCode = 0x489235 };
 
-	GET(int, damage, ESI);
+	GET(const int, damage, ESI);
 
 	if (NegativeDamageTemp::ApplyNegativeDamageModifiers)
 	{
@@ -362,7 +362,7 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 	enum { Continue = 0x4D73E3, Skip = 0x4D7413 };
 
 	GET(WarheadTypeClass*, pWarhead, EBP);
-	GET(int*, damage, EDI);
+	GET(const int*, damage, EDI);
 
 	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 

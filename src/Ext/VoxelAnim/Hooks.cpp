@@ -38,7 +38,7 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 	enum { SkipGameCode = 0x74A22A };
 
 	GET(VoxelAnimClass* const, pThis, EBX);
-	GET(int, flag, EAX);
+	GET(const int, flag, EAX);
 
 	bool heightFlag = flag & 0xFF;
 

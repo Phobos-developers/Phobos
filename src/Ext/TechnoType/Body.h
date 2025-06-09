@@ -363,10 +363,18 @@ public:
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
+		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
+		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
 		Valueable<bool> FiringForceScatter;
+
+		Valueable<int> FireUp;
+		Valueable<bool> FireUp_ResetInRetarget;
+		//Nullable<int> SecondaryFire;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -681,10 +689,18 @@ public:
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions_SmoothMoving {}
+			, ExtendedAircraftMissions_EarlyDescend {}
+			, ExtendedAircraftMissions_RearApproach {}
+
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
 			, FiringForceScatter { true }
+
+			, FireUp { -1 }
+			, FireUp_ResetInRetarget { true }
+			//, SecondaryFire {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -696,8 +712,11 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();
+		bool IsSecondary(int nWeaponIndex);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 

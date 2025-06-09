@@ -21,7 +21,6 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
-	pExt->TechnoExtData->UpdateGattlingRateDownReset();
 
 	return 0;
 }
@@ -44,13 +43,14 @@ DEFINE_HOOK(0x4403D4, BuildingClass_AI_ChronoSparkle, 0x6)
 
 		if (showOccupy)
 		{
+			auto const renderCoords = pThis->GetRenderCoords();
+
 			for (int i = 0; i < occupantCount; i++)
 			{
 				if (!((Unsorted::CurrentFrame + i) % RulesExt::Global()->ChronoSparkleDisplayDelay))
 				{
-					auto muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
+					auto const muzzleOffset = pType->MaxNumberOccupants <= 10 ? pType->MuzzleFlash[i] : BuildingTypeExt::ExtMap.Find(pType)->OccupierMuzzleFlashes.at(i);
 					auto coords = CoordStruct::Empty;
-					auto const renderCoords = pThis->GetRenderCoords();
 					auto offset = TacticalClass::Instance->ApplyMatrix_Pixel(muzzleOffset);
 					coords.X += offset.X;
 					coords.Y += offset.Y;
@@ -156,9 +156,11 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW->Type->ArrayIndex))
 		{
+			auto& super = pThis->Owner->Supers;
+
 			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex])
 			{
-				pThis->Owner->Supers[swidx]->IsSuspended = false;
+				super[swidx]->IsSuspended = false;
 			}
 
 			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex].clear();
@@ -716,8 +718,8 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 	enum { SkipGameCode = 0x444C7C };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET(int, xCoord, EBP);
-	GET(int, yCoord, EDX);
+	GET(const int, xCoord, EBP);
+	GET(const int, yCoord, EDX);
 	REF_STACK(CoordStruct, resultCoords, STACK_OFFSET(0x140, -0x108));
 
 	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);

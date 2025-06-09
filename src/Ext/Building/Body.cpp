@@ -118,14 +118,14 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 		}
 	}
 
-	if (this->CurrentAirFactory)
+	if (auto const pCurrent = this->CurrentAirFactory)
 	{
 		for (auto const pBuilding : airFactoryBuilding)
 		{
-			if (pBuilding == this->CurrentAirFactory)
+			if (pBuilding == pCurrent)
 			{
-				this->CurrentAirFactory->Factory = currFactory;
-				this->CurrentAirFactory->IsPrimaryFactory = true;
+				pCurrent->Factory = currFactory;
+				pCurrent->IsPrimaryFactory = true;
 			}
 			else
 			{
@@ -148,12 +148,9 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 
 	for (auto const pBuilding : airFactoryBuilding)
 	{
-		const int nDocks = pBuilding->Type->NumberOfDocks;
-		const int nOccupiedDocks = BuildingExt::CountOccupiedDocks(pBuilding);
-
-		if (nOccupiedDocks < nDocks)
+		if (!newBuilding)
 		{
-			if (!newBuilding)
+			if (BuildingExt::CountOccupiedDocks(pBuilding) < pBuilding->Type->NumberOfDocks)
 			{
 				newBuilding = pBuilding;
 				newBuilding->Factory = currFactory;
@@ -423,7 +420,7 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 
 		for (auto i = occupyHeight; i > 0; --i)
 		{
-			foundationCells.push_back(actualCell);
+			foundationCells.emplace_back(actualCell);
 			--actualCell.X;
 			--actualCell.Y;
 		}

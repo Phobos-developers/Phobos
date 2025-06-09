@@ -24,26 +24,26 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 {
 	if (pTarget)
 	{
+		auto& mindControlRingAnim = pTarget->MindControlRingAnim;
+		int nSound = pTarget->GetTechnoType()->MindClearedSound;
+		auto const coord = pTarget->GetCoords();
+
+		if (nSound == -1)
+			nSound = RulesClass::Instance->MindClearedSound;
+
 		for (int i = pManager->ControlNodes.Count - 1; i >= 0; --i)
 		{
 			const auto pNode = pManager->ControlNodes[i];
 			if (pTarget == pNode->Unit)
 			{
-				if (pTarget->MindControlRingAnim)
+				if (mindControlRingAnim)
 				{
-					pTarget->MindControlRingAnim->UnInit();
-					pTarget->MindControlRingAnim = nullptr;
+					mindControlRingAnim->UnInit();
+					mindControlRingAnim = nullptr;
 				}
 
-				if (!silent)
-				{
-					int nSound = pTarget->GetTechnoType()->MindClearedSound;
-
-					if (nSound == -1)
-						nSound = RulesClass::Instance->MindClearedSound;
-					if (nSound != -1)
-						VocClass::PlayIndexAtPos(nSound, pTarget->GetCoords());
-				}
+				if (!silent && nSound != -1)
+					VocClass::PlayIndexAtPos(nSound, coord);
 
 				// Fix : Player defeated should not get this unit.
 				const auto pOriginOwner = pNode->OriginalOwner->Defeated ?

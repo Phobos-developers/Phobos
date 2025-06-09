@@ -142,10 +142,12 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 
 				if (auto const pParticle = pOwnerTypeExt->Overload_ParticleSys.Get(pRules->DefaultSparkSystem))
 				{
+					auto& random = ScenarioClass::Instance->Random;
+
 					for (int i = pOwnerTypeExt->Overload_ParticleSysCount; i > 0; --i)
 					{
-						auto const nRandomY = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
-						auto const nRamdomX = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
+						auto const nRandomY = random.RandomRanged(-200, 200);
+						auto const nRamdomX = random.RandomRanged(-200, 200);
 						const CoordStruct nParticleCoord{ pOwner->Location.X + nRamdomX, nRandomY + pOwner->Location.Y, pOwner->Location.Z + 100 };
 						GameCreate<ParticleSystemClass>(pParticle, nParticleCoord, nullptr, nullptr, CoordStruct::Empty, nullptr);
 					}

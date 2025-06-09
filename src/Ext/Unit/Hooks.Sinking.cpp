@@ -9,7 +9,7 @@
 DEFINE_HOOK(0x7364DC, UnitClass_Update_SinkSpeed, 0x7)
 {
 	GET(UnitClass* const, pThis, ESI);
-	GET(int, CoordZ, EDX);
+	GET(const int, CoordZ, EDX);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	R->EDX(CoordZ - (pTypeExt->SinkSpeed - 5));

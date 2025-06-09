@@ -20,6 +20,7 @@ bool SWColumnClass::Draw(bool forced)
 	const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]);
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int cameoBackgroundWidth = Phobos::UI::SuperWeaponSidebar_Interval + cameoWidth;
+	const int coordX = this->X;
 
 	if (const auto pCenterPCX = pSideExt->SuperWeaponSidebar_CenterPCX.GetSurface())
 	{
@@ -27,7 +28,7 @@ bool SWColumnClass::Draw(bool forced)
 
 		for (const auto button : this->Buttons)
 		{
-			RectangleStruct drawRect { this->X, button->Y - cameoHarfInterval, cameoBackgroundWidth, Phobos::UI::SuperWeaponSidebar_CameoHeight };
+			RectangleStruct drawRect { coordX, button->Y - cameoHarfInterval, cameoBackgroundWidth, Phobos::UI::SuperWeaponSidebar_CameoHeight };
 			PCX::Instance.BlitToSurface(&drawRect, DSurface::Composite, pCenterPCX);
 		}
 	}
@@ -35,14 +36,14 @@ bool SWColumnClass::Draw(bool forced)
 	if (const auto pTopPCX = pSideExt->SuperWeaponSidebar_TopPCX.GetSurface())
 	{
 		const int height = pTopPCX->GetHeight();
-		RectangleStruct drawRect { this->X, this->Y, cameoBackgroundWidth, height };
+		RectangleStruct drawRect { coordX, this->Y, cameoBackgroundWidth, height };
 		PCX::Instance.BlitToSurface(&drawRect, DSurface::Composite, pTopPCX);
 	}
 
 	if (const auto pBottomPCX = pSideExt->SuperWeaponSidebar_BottomPCX.GetSurface())
 	{
 		const int height = pBottomPCX->GetHeight();
-		RectangleStruct drawRect { this->X, this->Y + this->Height - height, cameoBackgroundWidth, height };
+		RectangleStruct drawRect { coordX, this->Y + this->Height - height, cameoBackgroundWidth, height };
 		PCX::Instance.BlitToSurface(&drawRect, DSurface::Composite, pBottomPCX);
 	}
 

@@ -264,7 +264,7 @@ void SyncLogger::WriteAnimCreations(FILE* const pLogFile, int frameDigits)
 
 DEFINE_HOOK(0x64736D, Queue_AI_WriteDesyncLog, 0x5)
 {
-	GET(int, frame, ECX);
+	GET(const int, frame, ECX);
 
 	char logFilename[0x40];
 

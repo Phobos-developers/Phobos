@@ -72,6 +72,8 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		CDTimerClass FiringAnimationTimer;
+
 		// cache tint values
 		int TintColorOwner;
 		int TintColorAllies;
@@ -124,6 +126,7 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, FiringAnimationTimer {}
 			, AttachedEffectInvokerCount { 0 }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
