@@ -134,7 +134,7 @@ DEFINE_HOOK(0x41D604, AirstrikeClass_PointerGotInvalid_ResetForTarget, 0x6)
 
 	GET(ObjectClass*, pTarget, EAX);
 
-	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
+	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*, true>(pTarget)))
 		pTargetTechnoExt->AirstrikeTargetingMe = nullptr;
 
 	return SkipGameCode;
@@ -185,17 +185,6 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 	}
 
 	return Cannot;
-}
-
-DEFINE_HOOK(0x70782D, TechnoClass_PointerGotInvalid_Airstrike, 0x6)
-{
-	GET(AbstractClass*, pAbstract, EBP);
-	GET(TechnoClass*, pThis, ESI);
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(pThis)) // It's necessary
-		AnnounceInvalidPointer(pExt->AirstrikeTargetingMe, pAbstract);
-
-	return 0;
 }
 
 #pragma region GetEffectTintIntensity
