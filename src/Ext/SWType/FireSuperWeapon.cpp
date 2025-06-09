@@ -378,6 +378,9 @@ void SWTypeExt::ExtData::GrantOneTimeFromList(SuperClass* pSW)
 	HouseClass* pHouse = pSW->Owner;
 	bool notObserver = !pHouse->IsObserver() || !pHouse->IsCurrentPlayerObserver();
 
+	if (pHouse->Defeated || !notObserver)
+		return;
+
 	auto grantTheSW = [=](const int swIdxToAdd) -> bool
 	{
 		if (const auto pSuper = pHouse->Supers.GetItem(swIdxToAdd))
