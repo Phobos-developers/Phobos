@@ -24,7 +24,7 @@ public:
 	{
 	public:
 
-		std::vector<LaserTrailClass> LaserTrails;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 
 		ExtData(VoxelAnimClass* OwnerObject) : Extension<VoxelAnimClass>(OwnerObject)
 			, LaserTrails()

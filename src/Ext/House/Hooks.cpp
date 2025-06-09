@@ -271,10 +271,10 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
 			TechnoExt::ConvertToType(pMe, pConvertTo);
 
-		for (auto& trail : pExt->LaserTrails)
+		for (const auto& trail : pExt->LaserTrails)
 		{
-			if (trail.Type->IsHouseColor)
-				trail.CurrentColor = pNewOwner->LaserColor;
+			if (trail->Type->IsHouseColor)
+				trail->CurrentColor = pNewOwner->LaserColor;
 		}
 
 		if (!I_am_human && You_are_human)
