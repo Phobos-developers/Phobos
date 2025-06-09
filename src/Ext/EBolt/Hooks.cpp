@@ -110,7 +110,7 @@ DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 	if (BoltTemp::ExtData->Disable[1])
 		return 0x4C262A;
 
-	R->EAX(BoltTemp::Color[1]);
+	R->Stack(STACK_OFFSET(0x424, -0x40C), BoltTemp::Color[1]);
 	return 0x4C25FD;
 }
 
