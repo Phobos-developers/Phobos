@@ -495,7 +495,6 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex)
 {
 	const auto pType = pThis->GetTechnoType();
-  const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	switch (infoType)
 	{
@@ -507,7 +506,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::Shield:
 	{
-		const auto pShield = pExt->Shield.get();
+		const auto pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 
 		if (!pShield || pShield->IsBrokenAndNonRespawning())
 			return;
@@ -676,6 +675,8 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::PassengerKill:
 	{
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
 		if (!pExt->TypeExtData->PassengerDeletionType)
 			return;
 
@@ -686,6 +687,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 	}
 	case DisplayInfoType::AutoDeath:
 	{
+		const auto pExt = TechnoExt::ExtMap.Find(pThis);
 		const auto pTypeExt = pExt->TypeExtData;
 
 		if (!pTypeExt->AutoDeath_Behavior.isset())

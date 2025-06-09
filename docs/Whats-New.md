@@ -426,7 +426,6 @@ Fixes / interactions with other extensions:
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
 - Fixed the issue where some units crashed after the deployment transformation (by ststl, FlyStar)
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
-
 ```
 
 ### 0.4
