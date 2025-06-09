@@ -65,7 +65,7 @@ DEFINE_HOOK_AGAIN(0x520968, InfantryClass_UpdateFiring_IsSecondary, 0x6)
 DEFINE_HOOK(0x520888, InfantryClass_UpdateFiring_IsSecondary, 0x8)
 {
 	GET(InfantryClass*, pThis, EBP);
-	bool isSecondary = FiringAITemp::isSecondary;
+	const bool isSecondary = FiringAITemp::isSecondary;
 
 	if (R->Origin() == 0x520888)
 	{
@@ -90,16 +90,16 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 
 	int cumulativeDelay = 0;
 	int projectedDelay = 0;
-	int weaponIndex = FiringAITemp::weaponIndex;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(FiringAITemp::WeaponType);
-	bool allowBurst = pWeaponExt->Burst_FireWithinSequence.Get();
+	const int weaponIndex = FiringAITemp::weaponIndex;
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(FiringAITemp::WeaponType);
+	const bool allowBurst = pWeaponExt->Burst_FireWithinSequence;
 
 	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
 	if (allowBurst)
 	{
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
-			int burstDelay = pWeaponExt->GetBurstDelay(i);
+			const int burstDelay = pWeaponExt->GetBurstDelay(i);
 			int delay = 0;
 
 			if (burstDelay > -1)
@@ -122,7 +122,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 	{
 		if (allowBurst)
 		{
-			int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
+			const int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
 
 			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
 			if (firingFrame + projectedDelay > frameCount)
@@ -147,7 +147,7 @@ DEFINE_HOOK(0x520AD9, InfantryClass_FiringAI_IsGattling, 0x5)
 	{
 		if (pThis->Type->IsGattling)
 		{
-			FireError fireError = FiringAITemp::fireError;
+			const FireError fireError = FiringAITemp::fireError;
 
 			switch (fireError)
 			{
