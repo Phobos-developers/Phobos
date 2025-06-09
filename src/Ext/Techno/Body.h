@@ -77,6 +77,8 @@ public:
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
+		CDTimerClass FiringAnimationTimer;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -125,6 +127,7 @@ public:
 			, ResetRandomTarget { false }
 			, CurrentRandomTarget { nullptr }
 			, OriginalTargetWeaponIndex { -1 }
+			, FiringAnimationTimer {}
 		{ }
 
 		void OnEarlyUpdate();

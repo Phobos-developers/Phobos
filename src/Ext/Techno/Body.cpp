@@ -647,6 +647,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->OriginalTarget)
 		.Process(this->ResetRandomTarget)
 		.Process(this->CurrentRandomTarget)
+		.Process(this->FiringAnimationTimer)
 		;
 }
 
