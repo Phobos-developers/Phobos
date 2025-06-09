@@ -28,8 +28,9 @@ public:
 	bool ResetIfRecreatable();
 	bool IsSelfOwned() const { return this->Source == this->Techno; }
 	bool HasExpired() const;
-	bool ShouldBeDiscardedNow() const;
+	bool ShouldBeDiscardedNow();
 	bool IsActive() const;
+	bool IsActiveIgnorePowered() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
 
 	static void PointerGotInvalid(void* ptr, bool removed);
@@ -74,10 +75,14 @@ private:
 	bool IsCloaked;
 	bool HasInitialized;
 	bool NeedsDurationRefresh;
+	int LastDiscardCheckFrame;
+	bool LastDiscardCheckValue;
+	bool LastActiveStat;
 
 public:
 	bool HasCumulativeAnim;
 	bool ShouldBeDiscarded;
+	bool NeedsRecalculateStat;
 };
 
 // Container for TechnoClass-specific AttachEffect fields.

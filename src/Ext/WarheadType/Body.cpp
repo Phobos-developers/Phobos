@@ -30,7 +30,7 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr) const
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 {
 	if (!pTarget)
 		return false;
@@ -38,24 +38,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::E
 	if (!this->EffectsRequireVerses)
 		return true;
 
-	auto armorType = pTarget->GetTechnoType()->Armor;
-
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-
-	if (pTargetExt)
-	{
-		if (const auto pShieldData = pTargetExt->Shield.get())
-		{
-			if (pShieldData->IsActive())
-			{
-				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
-					armorType = pShieldData->GetArmorType();
-			}
-		}
-	}
-
-	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -100,22 +83,18 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
 		return false;
 
+	auto const pType = pTechno->GetTechnoType();
+
 	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 &&
-		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pTechno->GetTechnoType())) ||
-		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pTechno->GetTechnoType()))
+		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pType)) ||
+		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
 
 	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-		auto armorType = pTechno->GetTechnoType()->Armor;
-
-		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
-			armorType = pExt->Shield->GetArmorType();
-
-		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno) == 0.0)
 			return false;
 	}
 
@@ -291,7 +270,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
 	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
 
-  	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
+	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
+
+	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -542,7 +523,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KillWeapon_Affects)
 		.Process(this->KillWeapon_OnFirer_Affects)
 
-    	.Process(this->ElectricAssaultLevel)
+		.Process(this->ElectricAssaultLevel)
+
+		.Process(this->AirstrikeTargets)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

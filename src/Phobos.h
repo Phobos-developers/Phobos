@@ -54,6 +54,13 @@ public:
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool SuperWeaponSidebar;
+		static bool SuperWeaponSidebar_Pyramid;
+		static int SuperWeaponSidebar_Interval;
+		static int SuperWeaponSidebar_LeftOffset;
+		static int SuperWeaponSidebar_CameoHeight;
+		static int SuperWeaponSidebar_Max;
+		static int SuperWeaponSidebar_MaxColumns;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
@@ -74,9 +81,11 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
@@ -93,6 +102,7 @@ public:
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
+		static int SuperWeaponSidebar_RequiredSignificance;
 	};
 
 	class Misc
