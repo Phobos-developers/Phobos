@@ -13,8 +13,8 @@ DEFINE_HOOK(0x6B0C2C, SlaveManagerClass_FreeSlaves_SlavesFreeSound, 0x5)
 {
 	GET(TechnoClass*, pSlave, EDI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
-	int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pSlave->GetTechnoType());
+	const int sound = pTypeExt->SlavesFreeSound.Get(RulesClass::Instance->SlavesFreeSound);
 	if (sound != -1)
 		VocClass::PlayAt(sound, pSlave->Location);
 
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x6B0B9C, SlaveManagerClass_Killed_DecideOwner, 0x6)
 		return ChangeSlaveOwner;
 
 	case SlaveChangeOwnerType::Neutral:
-		if (auto pNeutral = HouseClass::FindNeutral())
+		if (const auto pNeutral = HouseClass::FindNeutral())
 		{
 			R->EAX(pNeutral);
 			return ChangeSlaveOwner;
@@ -156,7 +156,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 
 	std::vector<AircraftTypeClass*> vec = pTypeExt->Spawns_Queue;
 
-	for (auto pNode : pThis->SpawnedNodes)
+	for (auto const pNode : pThis->SpawnedNodes)
 	{
 		if (pNode->Unit)
 		{
@@ -177,13 +177,13 @@ DEFINE_HOOK(0x6B7282, SpawnManagerClass_AI_PromoteSpawns, 0x5)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 	if (pTypeExt->Promote_IncludeSpawns)
 	{
-		for (auto i : pThis->SpawnedNodes)
+		for (auto const pNode : pThis->SpawnedNodes)
 		{
-			if (i->Unit && i->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
-				i->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - i->Unit->Veterancy.Veterancy);
+			if (pNode->Unit && pNode->Unit->Veterancy.Veterancy < pThis->Owner->Veterancy.Veterancy)
+				pNode->Unit->Veterancy.Add(pThis->Owner->Veterancy.Veterancy - pNode->Unit->Veterancy.Veterancy);
 		}
 	}
 
@@ -227,8 +227,8 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 	{
 		if (pCarrierTypeExt->Spawner_RecycleAnim)
 		{
-			auto pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
-			auto pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
+			auto const pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
+			auto const pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
 			pAnimExt->SetInvoker(pSpawner);
 			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawner->Owner, pSpawner->Owner, false, true);
 		}
@@ -245,11 +245,11 @@ DEFINE_HOOK(0x4D962B, FootClass_SetDestination_RecycleFLH, 0x5)
 {
 	GET(FootClass* const, pThis, EBP);
 
-	auto pCarrier = pThis->SpawnOwner;
+	auto const pCarrier = pThis->SpawnOwner;
 
 	if (pCarrier && pCarrier == pThis->Destination) // This is a spawner returning to its carrier.
 	{
-		auto pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
+		auto const pCarrierTypeExt = TechnoTypeExt::ExtMap.Find(pCarrier->GetTechnoType());
 		auto const& FLH = pCarrierTypeExt->Spawner_RecycleCoord;
 
 		if (FLH != CoordStruct::Empty)
@@ -416,7 +416,7 @@ DEFINE_HOOK(0x728FF2, TunnelLocomotionClass_Process_SubterraneanHeight3, 0x6)
 	REF_STACK(int, height, 0x14);
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
-	int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
+	const int subtHeight = pTypeExt->SubterraneanHeight.Get(RulesExt::Global()->SubterraneanHeight);
 	height -= heightOffset;
 
 	if (height < subtHeight)
@@ -525,7 +525,7 @@ DEFINE_HOOK(0x6F88BF, TechnoClass_CanAutoTargetObject_AttackMindControlledDelay,
 
 #pragma region ExtendedGattlingRateDown
 
-DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
+DEFINE_HOOK(0x70DE40, TechnoClass_GattlingValueRateDown_GattlingRateDownDelay, 0xA)
 {
 	enum { Return = 0x70DE62 };
 
@@ -560,13 +560,12 @@ DEFINE_HOOK(0x70DE40, BuildingClass_sub_70DE40_GattlingRateDownDelay, 0xA)
 		return Return;
 	}
 
-	auto newValue = pThis->GattlingValue;
-	newValue -= (rateDown * remain);
+	const int newValue = pThis->GattlingValue - (rateDown * remain);
 	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
 	return Return;
 }
 
-DEFINE_HOOK(0x70DE70, TechnoClass_sub_70DE70_GattlingRateDownReset, 0x5)
+DEFINE_HOOK(0x70DE70, TechnoClass_GattlingRateUp_GattlingRateDownReset, 0x5)
 {
 	GET(TechnoClass* const, pThis, ECX);
 
@@ -577,7 +576,7 @@ DEFINE_HOOK(0x70DE70, TechnoClass_sub_70DE70_GattlingRateDownReset, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
+DEFINE_HOOK(0x70E01E, TechnoClass_GattlingRateDown_GattlingRateDownDelay, 0x6)
 {
 	enum { SkipGameCode = 0x70E04D };
 
@@ -590,6 +589,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 		return SkipGameCode;
 
 	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
+
 	pExt->AccumulatedGattlingValue += rateMult;
 	auto remain = pExt->AccumulatedGattlingValue;
 
@@ -617,8 +617,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_sub_70E000_GattlingRateDownDelay, 0x6)
 		return SkipGameCode;
 	}
 
-	auto newValue = pThis->GattlingValue;
-	newValue -= (rateDown * remain);
+	const int newValue = pThis->GattlingValue - (rateDown * remain);
 	pThis->GattlingValue = (newValue <= 0) ? 0 : newValue;
 	return SkipGameCode;
 }

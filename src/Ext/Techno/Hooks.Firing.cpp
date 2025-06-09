@@ -229,12 +229,13 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 
 DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 {
+	GET(InfantryClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, ECX);
 
 	if (pType->DeployFireWeapon == -1)
 		return 0x52194E;
 
-	return 0;
+	return pType->IsGattling && !pThis->IsDeployed() ? 0x52194E : 0;
 }
 
 #pragma endregion
@@ -834,78 +835,6 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 	TechnoExt::UpdateSharedAmmo(pThis);
 
 	return 0;
-}
-
-namespace FiringAITemp
-{
-	int weaponIndex;
-}
-
-DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
-{
-	GET(int, weaponIndex, EDI);
-
-	FiringAITemp::weaponIndex = weaponIndex;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
-{
-	enum { Continue = 0x5209CD, ReturnFromFunction = 0x520AD9 };
-
-	GET(InfantryClass*, pThis, EBP);
-	GET(int, firingFrame, EDX);
-
-	int cumulativeDelay = 0;
-	int projectedDelay = 0;
-	const int weaponIndex = FiringAITemp::weaponIndex;
-	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-	// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
-	if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
-	{
-		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
-		{
-			const int burstDelay = pWeaponExt->GetBurstDelay(i);
-			int delay = 0;
-
-			if (burstDelay > -1)
-				delay = burstDelay;
-			else
-				delay = ScenarioClass::Instance->Random.RandomRanged(3, 5);
-
-			// Other than initial delay, treat 0 frame delays as 1 frame delay due to per-frame processing.
-			if (i != 0)
-				delay = Math::max(delay, 1);
-
-			cumulativeDelay += delay;
-
-			if (i == pThis->CurrentBurstIndex)
-				projectedDelay = cumulativeDelay + delay;
-		}
-	}
-
-	if (pThis->Animation.Value == firingFrame + cumulativeDelay)
-	{
-		if (pWeaponExt && pWeaponExt->Burst_FireWithinSequence)
-		{
-			const int frameCount = pThis->Type->Sequence->GetSequence(pThis->SequenceAnim).CountFrames;
-
-			// If projected frame for firing next shot goes beyond the sequence frame count, cease firing after this shot and start rearm timer.
-			if (firingFrame + projectedDelay > frameCount)
-			{
-				auto const pExt = TechnoExt::ExtMap.Find(pThis);
-				pExt->ForceFullRearmDelay = true;
-			}
-		}
-
-		R->EAX(weaponIndex); // Reuse the weapon index to save some time.
-		return Continue;
-	}
-
-	return ReturnFromFunction;
 }
 
 // Author: Otamaa
