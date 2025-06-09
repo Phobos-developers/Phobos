@@ -304,8 +304,8 @@ ConditionYellow=                            ; floating point value, percents or 
 ConditionRed=                               ; floating point value, percents or absolute
 Armor=none                                  ; ArmorType
 InheritArmorFromTechno=false                ; boolean
-InheritArmor.Allowed=                       ; list of TechnoTypes
-InheritArmor.Disallowed=                    ; list of TechnoTypes
+InheritArmor.Allowed=                       ; List of TechnoTypes
+InheritArmor.Disallowed=                    ; List of TechnoTypes
 Powered=false                               ; boolean
 AbsorbOverDamage=false                      ; boolean
 SelfHealing=0.0                             ; floating point value, percents or absolute
@@ -1772,8 +1772,8 @@ WarpOutWeapon=                          ; WeaponType
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]                            ; TechnoType
-Convert.ResetMindControl=               ; boolean, default to false
+[SOMETECHNO]                            ; TechnoType, before conversion
+Convert.ResetMindControl=false          ; boolean
 ```
 
 ## Terrain
@@ -1863,11 +1863,11 @@ JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ### Turretless Shape Vehicle FireUp
 
 - `Voxel=no` turretless vehicles now support the use of `FireUp`.
- - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Defaults to `yes`. forced to be `yes` when there is no target.
+ - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Forced to be `yes` when there is no target.
 
 In `artmd.ini`:
 ```ini
-[SOMEVEHICLE]
+[SOMEVEHICLE]                   ; VehicleType
 FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
 ```

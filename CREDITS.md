@@ -122,7 +122,7 @@ This page lists all the individual contributions to the project by their author.
   - Extension class optimization
   - Overload characteristic dehardcoded
   - Customizable garrison and bunker properties
-  - Disable DamageSound for buildings
+  - Disable `DamageSound` for buildings
   - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
@@ -313,7 +313,7 @@ This page lists all the individual contributions to the project by their author.
     - Redeployable MCV in campaigns
     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
     - Trigger actions that allow/forbid MCV to redeploy in game
-  - `AlternateFLH` of vehicles in `OpenTopped` transport.
+  - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
   - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
@@ -365,10 +365,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
-  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Fix an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
   - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
-  - Fixed some units of Ares crashing after deployment conversion
-  - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry.
+  - Fix the issue where some units crashed after the deployment transformation
+  - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -418,7 +418,7 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
   - New SuperWeapon Type template
-  - Fixed some units of Ares crashing after deployment conversion
+  - Fix the issue where some units crashed after the deployment transformation
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control
