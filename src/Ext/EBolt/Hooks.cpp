@@ -46,6 +46,8 @@ DWORD _cdecl EBoltExt::_TechnoClass_FireEBolt(REGISTERS* R)
 	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
 	pBoltExt->BurstIndex = pThis->CurrentBurstIndex;
 	pBolt->Lifetime = 1 << (std::clamp(pWeaponExt->Bolt_Duration.Get(), 1, 31) - 1);
+	R->EAX(pBolt);
+	R->ESI(0);
 	return SkipGameCode;
 }
 
