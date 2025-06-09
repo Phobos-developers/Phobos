@@ -359,6 +359,10 @@ public:
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
+		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
+		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
 
@@ -678,6 +682,10 @@ public:
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions_SmoothMoving {}
+			, ExtendedAircraftMissions_EarlyDescend {}
+			, ExtendedAircraftMissions_RearApproach {}
+
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
@@ -697,8 +705,10 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+
+		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		bool IsSecondary(int nWeaponIndex);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 
