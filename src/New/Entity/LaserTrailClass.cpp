@@ -33,11 +33,11 @@ bool LaserTrailClass::Update(CoordStruct location)
 			else if (this->Type->DrawType == LaserTrailDrawType::EBolt)
 			{
 				const auto pBolt = GameCreate<EBolt>();
-				const auto pBoltExt = EBoltExt::ExtMap.Allocate(pBolt);
+				const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 
 				const int alternateIdx = this->Type->IsAlternateColor ? 5 : 10;
-				const COLORREF defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
-				const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
+				const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
+				const int defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 
 				for (int idx = 0; idx < 3; ++idx)
 				{
@@ -59,7 +59,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 			{
 				const ColorStruct beamColor = this->Type->Beam_Color.Get(RulesClass::Instance->RadColor);
 
-				const auto pRadBeam = RadBeam::Allocate(RadBeamType::Temporal);
+				const auto pRadBeam = RadBeam::Allocate(RadBeamType::RadBeam);
 				pRadBeam->SetCoordsSource(this->LastLocation);
 				pRadBeam->SetCoordsTarget(location);
 				pRadBeam->Period = this->Type->FadeDuration.Get(15);

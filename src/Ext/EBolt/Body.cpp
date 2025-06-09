@@ -55,6 +55,15 @@ bool EBoltExt::ExtContainer::InvalidateExtDataIgnorable(void* const ptr) const
 // =============================
 // container hooks
 
+DEFINE_HOOK(0x4C1E42, EBolt_CTOR, 0x5)
+{
+	GET(EBolt*, pItem, EAX);
+
+	EBoltExt::ExtMap.Allocate(pItem);
+
+	return 0;
+}
+
 DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
 {
 	GET(EBolt*, pItem, ESI);

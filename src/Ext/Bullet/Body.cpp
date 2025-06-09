@@ -260,11 +260,11 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 		return;
 
 	const auto pBolt = GameCreate<EBolt>();
-	const auto pBoltExt = EBoltExt::ExtMap.Allocate(pBolt);
+	const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 
 	const int alternateIdx = pWeapon->IsAlternateColor ? 5 : 10;
-	const COLORREF defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
-	const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
+	const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
+	const int defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
 	for (int idx = 0; idx < 3; ++idx)
