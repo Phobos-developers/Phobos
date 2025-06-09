@@ -7,10 +7,6 @@
 #include <Utilities/AresHelper.h>
 #include <Helpers/Macro.h>
 
-int* EBoltExt::AresBoltColor1 = nullptr;
-int* EBoltExt::AresBoltColor2 = nullptr;
-int* EBoltExt::AresBoltColor3 = nullptr;
-
 namespace BoltTemp
 {
 	EBoltExt::ExtData* ExtData = nullptr;
@@ -76,26 +72,14 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 	enum { SkipGameCode = 0x4C1F66 };
 
 	GET(EBolt*, pThis, ECX);
-	int& boltColor1 = AresHelper::CanUseAres ? *EBoltExt::AresBoltColor1 : BoltTemp::Color1;
-	int& boltColor2 = AresHelper::CanUseAres ? *EBoltExt::AresBoltColor2 : BoltTemp::Color2;
-	int& boltColor3 = AresHelper::CanUseAres ? *EBoltExt::AresBoltColor3 : BoltTemp::Color3;
+	int& boltColor1 = BoltTemp::Color1;
+	int& boltColor2 = BoltTemp::Color2;
+	int& boltColor3 = BoltTemp::Color3;
 
-	BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
-
-	if (const auto pExt = BoltTemp::ExtData)
-	{
-		boltColor1 = Drawing::RGB_To_Int(pExt->Color[0]);
-		boltColor2 = Drawing::RGB_To_Int(pExt->Color[1]);
-		boltColor3 = Drawing::RGB_To_Int(pExt->Color[2]);
-	}
-	else
-	{
-		GET_BASE(int, colorIdx, 0x20);
-		const COLORREF defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, colorIdx);
-		const COLORREF defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
-		boltColor1 = boltColor2 = defaultAlternate;
-		boltColor3 = defaultWhite;
-	}
+	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
+	boltColor1 = Drawing::RGB_To_Int(pExt->Color[0]);
+	boltColor2 = Drawing::RGB_To_Int(pExt->Color[1]);
+	boltColor3 = Drawing::RGB_To_Int(pExt->Color[2]);
 
 	return SkipGameCode;
 }
@@ -116,7 +100,8 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 	return plotIndex < arcCount ? DoLoop : Break;
 }
 
-DEFINE_HOOK(0x4C24BE, EBolt_DrawFirst_Color, 0x5)
+DEFINE_JUMP(LJMP, 0x4C24BE, 0x4C24C3)// Disable Ares's hook EBolt_Draw_Color1
+DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 {
 	R->EAX(BoltTemp::Color1);
 	return 0x4C24E4;
@@ -127,7 +112,8 @@ DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
 	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[0] ? 0x4C2515 : 0;
 }
 
-DEFINE_HOOK(0x4C24BE, EBolt_DrawSecond_Color, 0x5)
+DEFINE_JUMP(LJMP, 0x4C25CB, 0x4C25D0)// Disable Ares's hook EBolt_Draw_Color1
+DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 {
 	R->EAX(BoltTemp::Color2);
 	return 0x4C25FD;
@@ -138,7 +124,8 @@ DEFINE_HOOK(0x4C25FD, Ebolt_DrawSecond_Disable, 0xA)
 	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[1] ? 0x4C262A : 0;
 }
 
-DEFINE_HOOK(0x4C26CF, EBolt_DrawThird_Color, 0x5)
+DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D3)// Disable Ares's hook EBolt_Draw_Color1
+DEFINE_HOOK(0x4C26D3, EBolt_DrawThird_Color, 0x8)
 {
 	R->EAX(BoltTemp::Color3);
 	return 0x4C26EE;

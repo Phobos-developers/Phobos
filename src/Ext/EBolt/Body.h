@@ -51,10 +51,6 @@ public:
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
-	static int* AresBoltColor1;
-	static int* AresBoltColor2;
-	static int* AresBoltColor3;
-
 	static int __forceinline GetDefaultColor_Int(ConvertClass* pConvert, int idx)
 	{
 		if (pConvert->BytesPerPixel == 1)
