@@ -90,8 +90,7 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
 	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
-	const auto pExt = BoltTemp::ExtData;
-	const int arcCount = pExt ? pExt->Arcs : 8;
+	const int arcCount = BoltTemp::ExtData->Arcs;
 
 	return plotIndex < arcCount ? DoLoop : Break;
 }

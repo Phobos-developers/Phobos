@@ -89,6 +89,7 @@ bool LaserTrailClass::Serialize(T& stm)
 		.Process(this->IsOnTurret)
 		.Process(this->CurrentColor)
 		.Process(this->LastLocation)
+		.Process(this->Intrinsic)
 		.Success();
 };
 
