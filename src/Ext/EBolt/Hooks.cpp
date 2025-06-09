@@ -10,9 +10,7 @@
 namespace BoltTemp
 {
 	EBoltExt::ExtData* ExtData = nullptr;
-	int Color1;
-	int Color2;
-	int Color3;
+	int Color[3];
 }
 
 // Skip create particlesystem in EBolt::Fire
@@ -72,14 +70,10 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 	enum { SkipGameCode = 0x4C1F66 };
 
 	GET(EBolt*, pThis, ECX);
-	int& boltColor1 = BoltTemp::Color1;
-	int& boltColor2 = BoltTemp::Color2;
-	int& boltColor3 = BoltTemp::Color3;
-
 	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
-	boltColor1 = Drawing::RGB_To_Int(pExt->Color[0]);
-	boltColor2 = Drawing::RGB_To_Int(pExt->Color[1]);
-	boltColor3 = Drawing::RGB_To_Int(pExt->Color[2]);
+
+	for (int idx = 0; idx < 3; ++idx)
+		BoltTemp::Color[idx] = Drawing::RGB_To_Int(pExt->Color[idx]);
 
 	return SkipGameCode;
 }
@@ -103,37 +97,31 @@ DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 DEFINE_JUMP(LJMP, 0x4C24BE, 0x4C24C3)// Disable Ares's hook EBolt_Draw_Color1
 DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 {
-	R->EAX(BoltTemp::Color1);
+	if (BoltTemp::ExtData->Disable[0])
+		return 0x4C2515;
+
+	R->EAX(BoltTemp::Color[0]);
 	return 0x4C24E4;
 }
 
-DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
-{
-	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[0] ? 0x4C2515 : 0;
-}
-
-DEFINE_JUMP(LJMP, 0x4C25CB, 0x4C25D0)// Disable Ares's hook EBolt_Draw_Color1
+DEFINE_JUMP(LJMP, 0x4C25CB, 0x4C25D0)// Disable Ares's hook EBolt_Draw_Color2
 DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 {
-	R->EAX(BoltTemp::Color2);
+	if (BoltTemp::ExtData->Disable[1])
+		return 0x4C262A;
+
+	R->EAX(BoltTemp::Color[1]);
 	return 0x4C25FD;
 }
 
-DEFINE_HOOK(0x4C25FD, Ebolt_DrawSecond_Disable, 0xA)
-{
-	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[1] ? 0x4C262A : 0;
-}
-
-DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D3)// Disable Ares's hook EBolt_Draw_Color1
+DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D3)// Disable Ares's hook EBolt_Draw_Color3
 DEFINE_HOOK(0x4C26D3, EBolt_DrawThird_Color, 0x8)
 {
-	R->EAX(BoltTemp::Color3);
-	return 0x4C26EE;
-}
+	if (BoltTemp::ExtData->Disable[2])
+		return 0x4C2710;
 
-DEFINE_HOOK(0x4C26EE, Ebolt_DrawThird_Disable, 0x8)
-{
-	return BoltTemp::ExtData && BoltTemp::ExtData->Disable[2] ? 0x4C2710 : 0;
+	R->EAX(BoltTemp::Color[2]);
+	return 0x4C26EE;
 }
 
 #pragma region EBoltTrackingFixes
