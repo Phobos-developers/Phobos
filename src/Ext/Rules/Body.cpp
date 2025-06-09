@@ -687,3 +687,18 @@ DEFINE_HOOK(0x6744E4, RulesClass_ReadJumpjetControls_Extra, 0x7)
 
 // skip vanilla JumpjetControls and make it earlier load
 // DEFINE_JUMP(LJMP, 0x668EB5, 0x668EBD); // RulesClass_Process_SkipJumpjetControls // Really necessary? won't hurt to read again
+
+// After rulesmd.ini has been parsed, before anything else like maps and only once on game init.
+DEFINE_HOOK(0x6876B1, ReadScenarioINI_Optimizations, 0x5)
+{
+	auto const pRulesExt = RulesExt::Global();
+
+	if (!pRulesExt->BalloonHoverPathingFix)
+	{
+		Patch::Apply_RAW(0x51BFA2, { 0x85, 0x99, 0x40, 0x01, 0x00, 0x00 });
+		Patch::Apply_RAW(0x73F0A7, { 0x8B, 0xD9, 0x8B, 0x8C, 0x24, 0x88, 0x00, 0x00, 0x00 });
+		Patch::Apply_RAW(0x4D5690, { 0x55, 0x8B, 0xEC, 0x83, 0xE4, 0xF8 });
+	}
+
+	return 0;
+}
