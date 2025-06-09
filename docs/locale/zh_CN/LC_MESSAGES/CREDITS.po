@@ -1467,7 +1467,7 @@ msgstr "无炮塔 Shape 载具开火前摇"
 
 #: ../../../CREDITS.md:373
 msgid "Infantry support `IsGattling=yes`"
-msgstr ""
+msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑"
 
 #: ../../../CREDITS.md:374
 msgid "**NetsuNegi**:"

@@ -1420,14 +1420,15 @@ msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Ov
 
 #: ../../Fixed-or-Improved-Logics.md:232
 msgid "Infantry support `IsGattling=yes`."
-msgstr ""
+msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑"
 
 #: ../../Fixed-or-Improved-Logics.md:233
 msgid ""
-"Fixed the issue that the widespread damage caused by detonation on the "
+"Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case."
 msgstr ""
+"修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:235
 msgid "Fixes / interactions with other extensions"

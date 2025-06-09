@@ -1603,7 +1603,7 @@ msgstr ""
 
 #: ../../Whats-New.md:393
 msgid "Infantry support `IsGattling=yes` (by FlyStar)"
-msgstr ""
+msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑（by FlyStar）"
 
 #: ../../Whats-New.md:395 ../../Whats-New.md:600 ../../Whats-New.md:917
 #: ../../Whats-New.md:1026 ../../Whats-New.md:1051 ../../Whats-New.md:1090
