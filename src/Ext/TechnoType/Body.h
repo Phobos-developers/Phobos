@@ -372,7 +372,7 @@ public:
 		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
 
-    Valueable<bool> MultiWeapon;
+		Valueable<bool> MultiWeapon;
 		ValueableVector<int> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
@@ -721,7 +721,6 @@ public:
 		bool IsSecondary(int nWeaponIndex);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
-		bool IsSecondary(int nWeaponIndex);
 		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
 		// Ares 0.A
