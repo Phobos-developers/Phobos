@@ -114,8 +114,8 @@ DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 	return 0x4C25FD;
 }
 
-DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D3)// Disable Ares's hook EBolt_Draw_Color3
-DEFINE_HOOK(0x4C26D3, EBolt_DrawThird_Color, 0x8)
+DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D5)// Disable Ares's hook EBolt_Draw_Color3
+DEFINE_HOOK(0x4C26D5, EBolt_DrawThird_Color, 0x6)
 {
 	if (BoltTemp::ExtData->Disable[2])
 		return 0x4C2710;
