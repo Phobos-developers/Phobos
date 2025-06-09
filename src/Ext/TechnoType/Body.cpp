@@ -90,9 +90,7 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 		return nWeaponIndex != 0 && nWeaponIndex % 2 != 0;
 
 	if (this->MultiWeapon.Get() && !this->MultiWeapon_IsSecondary.empty())
-	{
 		return this->MultiWeapon_IsSecondary.Contains(nWeaponIndex);
-	}
 
 	return nWeaponIndex != 0;
 }
@@ -775,11 +773,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Overload_ParticleSys.Read(exINI, pSection, "Overload.ParticleSys");
 	this->Overload_ParticleSysCount.Read(exINI, pSection, "Overload.ParticleSysCount");
 
-	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
-	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
-
 	this->Harvester_CanGuardArea.Read(exINI, pSection, "Harvester.CanGuardArea");
 	this->HarvesterScanAfterUnload.Read(exINI, pSection, "HarvesterScanAfterUnload");
+
+	this->ExtendedAircraftMissions_SmoothMoving.Read(exINI, pSection, "ExtendedAircraftMissions.SmoothMoving");
+	this->ExtendedAircraftMissions_EarlyDescend.Read(exINI, pSection, "ExtendedAircraftMissions.EarlyDescend");
+	this->ExtendedAircraftMissions_RearApproach.Read(exINI, pSection, "ExtendedAircraftMissions.RearApproach");
+
+	this->FallingDownDamage.Read(exINI, pSection, "FallingDownDamage");
+	this->FallingDownDamage_Water.Read(exINI, pSection, "FallingDownDamage.Water");
 
 	this->FiringForceScatter.Read(exINI, pSection, "FiringForceScatter");
 
@@ -1011,6 +1013,26 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
+
+	this->LoadFromINIByWhatAmI(exArtINI, pArtSection);
+}
+
+void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection)
+{
+	AbstractType abs = this->OwnerObject()->WhatAmI();
+
+	switch (abs)
+	{
+	case AbstractType::UnitType:
+	{
+		this->FireUp.Read(exArtINI, pArtSection, "FireUp");
+		this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
+		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 template <typename T>
@@ -1332,10 +1354,18 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Harvester_CanGuardArea)
 		.Process(this->HarvesterScanAfterUnload)
 
+		.Process(this->ExtendedAircraftMissions_SmoothMoving)
+		.Process(this->ExtendedAircraftMissions_EarlyDescend)
+		.Process(this->ExtendedAircraftMissions_RearApproach)
+
 		.Process(this->FallingDownDamage)
 		.Process(this->FallingDownDamage_Water)
 
 		.Process(this->FiringForceScatter)
+    
+		.Process(this->FireUp)
+		.Process(this->FireUp_ResetInRetarget)
+		//.Process(this->SecondaryFire)
     
 		.Process(this->MultiWeapon)
 		.Process(this->MultiWeapon_IsSecondary)

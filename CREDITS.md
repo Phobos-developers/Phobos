@@ -122,7 +122,7 @@ This page lists all the individual contributions to the project by their author.
   - Extension class optimization
   - Overload characteristic dehardcoded
   - Customizable garrison and bunker properties
-  - Disable DamageSound for buildings
+  - Disable `DamageSound` for buildings
   - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
@@ -313,7 +313,7 @@ This page lists all the individual contributions to the project by their author.
     - Redeployable MCV in campaigns
     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
     - Trigger actions that allow/forbid MCV to redeploy in game
-  - `AlternateFLH` of vehicles in `OpenTopped` transport.
+  - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
   - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
@@ -365,8 +365,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
   - Customize the damage taken when falling from a bridge
   - `600 The shield of the attached object is broken` bug fix for the triggered event
-  - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Fix an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
   - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
+  - Fix the issue where some units crashed after the deployment transformation
+  - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
+  - Infantry support `IsGattling=yes`
   - Fixed some units of Ares crashing after deployment conversion
   - Support for more optional weapons
 - **NetsuNegi**:
@@ -406,7 +409,7 @@ This page lists all the individual contributions to the project by their author.
   - Original `Arcing` elevation inaccuracy fix
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Exclusive SuperWeapon Sidebar
-  - Fix the bug that AlphaImage remained after unit entered tunnel.
+  - Fix the bug that AlphaImage remained after unit entered tunnel
   - Weapon target filtering by health percentage
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -417,7 +420,7 @@ This page lists all the individual contributions to the project by their author.
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
   - New SuperWeapon Type template
-  - Fixed some units of Ares crashing after deployment conversion
+  - Fix the issue where some units crashed after the deployment transformation
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control
@@ -484,6 +487,7 @@ This page lists all the individual contributions to the project by their author.
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
   - Exclusive SuperWeapon Sidebar
+  - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
