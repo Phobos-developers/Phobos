@@ -605,31 +605,6 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
-## Locomotor
-
-### AdvancedDrive Locomotor
-
-- `AdvancedDrive` locomotor (`{4A582751-9839-11d1-B709-00A024DDAFD1}`) is an improved `Drive` locomotor (`{4A582741-9839-11d1-B709-00A024DDAFD1}`) that can serve as a complete upper level replacement for it.
-- It fixes the issue where `Drive` cannot correctly crush objects during rapid turns.
-- It has smoother uphill and downhill dynamic visual effects.
-- It has the function of driving the unit backwards.
-  - `AdvancedDrive.ReverseSpeed` controls the speed ratio when reversing.
-  - `AdvancedDrive.FaceTargetRange` controls how close the unit is to its target, allowing reversing.
-  - `AdvancedDrive.MinimumDistance` controls how close the unit is to its destination, allowing reversing.
-  - `AdvancedDrive.ConfrontEnemies` controls whether to maitain the frontal movement towards the enemy within the aforementioned distance and no longer automatically selects by the current orientation.
-  - `AdvancedDrive.RetreatDuration` controls how long since the unit was last injured, allowing reversing.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                  ; VehicleType
-Locomotor=AdvancedDrive              ; Locomotor
-AdvancedDrive.ReverseSpeed=0.85      ; floating point value
-AdvancedDrive.FaceTargetRange=16.0   ; floating point value
-AdvancedDrive.MinimumDistance=2.5    ; floating point value
-AdvancedDrive.ConfrontEnemies=true   ; boolean
-AdvancedDrive.RetreatDuration=150    ; integer, game frames
-```
-
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -702,6 +677,31 @@ In `artmd.ini`:
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
 OnlyUseLandSequences=false  ; boolean
+```
+
+## Locomotor
+
+### AdvancedDrive Locomotor
+
+- `AdvancedDrive` locomotor (`{4A582751-9839-11d1-B709-00A024DDAFD1}`) is an improved `Drive` locomotor (`{4A582741-9839-11d1-B709-00A024DDAFD1}`) that can serve as a complete upper level replacement for it.
+- It fixes the issue where `Drive` cannot correctly crush objects during rapid turns.
+- It has smoother uphill and downhill dynamic visual effects.
+- It has the function of driving the unit backwards.
+  - `AdvancedDrive.ReverseSpeed` controls the speed ratio when reversing.
+  - `AdvancedDrive.FaceTargetRange` controls how close the unit is to its target, allowing reversing.
+  - `AdvancedDrive.MinimumDistance` controls how close the unit is to its destination, allowing reversing.
+  - `AdvancedDrive.ConfrontEnemies` controls whether to maitain the frontal movement towards the enemy within `AdvancedDrive.FaceTargetRange` and no longer automatically selects by the current orientation.
+  - `AdvancedDrive.RetreatDuration` controls how long since the unit was last injured, allowing reversing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                  ; VehicleType
+Locomotor=AdvancedDrive              ; Locomotor
+AdvancedDrive.ReverseSpeed=0.85      ; floating point value
+AdvancedDrive.FaceTargetRange=16.0   ; floating point value
+AdvancedDrive.MinimumDistance=2.5    ; floating point value
+AdvancedDrive.ConfrontEnemies=true   ; boolean
+AdvancedDrive.RetreatDuration=150    ; integer, game frames
 ```
 
 ## Projectiles

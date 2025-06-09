@@ -28,37 +28,7 @@ bool AdvancedDriveLocomotionClass::Process()
 	}
 
 	// Record target cell for reversing
-	if (const auto pTarget = pLinked->Target)
-	{
-		this->ForwardTo = pTarget->GetCoords();
-		this->TargetFrame = Unsorted::CurrentFrame;
-		this->TargetDistance = 0;
-	}
-	else if (pLinked->MegaMissionIsAttackMove())
-	{
-		if (const auto pMegaTarget = pLinked->MegaTarget)
-			this->ForwardTo = pMegaTarget->GetCoords();
-		else if (const auto pMegaDestination = pLinked->MegaDestination)
-			this->ForwardTo = pMegaDestination->GetCoords();
-
-		this->TargetFrame = Unsorted::CurrentFrame;
-		this->TargetDistance = 0;
-	}
-	else if (this->ForwardTo != CoordStruct::Empty)
-	{
-		const auto currentDistance = static_cast<int>(pLinked->Location.DistanceFrom(this->ForwardTo));
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType());
-
-		if (currentDistance > pTypeExt->AdvancedDrive_FaceTargetRange.Get()
-			|| (Unsorted::CurrentFrame - this->TargetFrame) > pTypeExt->AdvancedDrive_RetreatDuration
-			|| currentDistance < this->TargetDistance)
-		{
-			this->ForwardTo = CoordStruct::Empty;
-			this->TargetFrame = 0;
-		}
-
-		this->TargetDistance = currentDistance;
-	}
+	this->UpdateSituation();
 
 	if (!this->InMotion())
 		return false;
@@ -1289,6 +1259,43 @@ CoordStruct AdvancedDriveLocomotionClass::CoordLerp(const CoordStruct& crd1, con
 }
 
 // Auxiliary
+
+inline void AdvancedDriveLocomotionClass::UpdateSituation()
+{
+	const auto pLinked = this->LinkedTo;
+	std::optional<TechnoTypeExt::ExtData*> pTypeExt;
+
+	if (const auto pTarget = pLinked->MegaMissionIsAttackMove() ? nullptr : pLinked->Target)
+	{
+		pTypeExt = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType());
+
+		if (pLinked->DistanceFrom(pTarget) <= pTypeExt.value()->AdvancedDrive_FaceTargetRange.Get())
+		{
+			this->ForwardTo = pTarget->GetCoords();
+			this->TargetFrame = Unsorted::CurrentFrame;
+			this->TargetDistance = 0;
+			return;
+		}
+	}
+
+	if (this->ForwardTo != CoordStruct::Empty)
+	{
+		if (!pTypeExt.has_value())
+			pTypeExt = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType());
+
+		const auto currentDistance = static_cast<int>(pLinked->Location.DistanceFrom(this->ForwardTo));
+
+		if (currentDistance > pTypeExt.value()->AdvancedDrive_FaceTargetRange.Get()
+			|| (Unsorted::CurrentFrame - this->TargetFrame) > pTypeExt.value()->AdvancedDrive_RetreatDuration
+			|| currentDistance < this->TargetDistance)
+		{
+			this->ForwardTo = CoordStruct::Empty;
+			this->TargetFrame = 0;
+		}
+
+		this->TargetDistance = currentDistance;
+	}
+}
 
 inline bool AdvancedDriveLocomotionClass::InMotion()
 {

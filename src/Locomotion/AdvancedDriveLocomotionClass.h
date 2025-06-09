@@ -319,6 +319,7 @@ private:
 	static CoordStruct CoordLerp(const CoordStruct& crd1, const CoordStruct& crd2, float alpha); // 0x75F540
 
 	// Added inline auxiliary function
+	inline void UpdateSituation();
 	template <bool check = false>
 	inline void StopDriving()
 	{
