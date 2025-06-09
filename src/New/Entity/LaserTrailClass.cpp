@@ -57,13 +57,13 @@ bool LaserTrailClass::Update(CoordStruct location)
 			}
 			else if (this->Type->DrawType == LaserTrailDrawType::RadBeam)
 			{
-				const ColorStruct beamColor = this->Type->Beam_Color.Get(RulesClass::Instance->RadColor);
-
 				const auto pRadBeam = RadBeam::Allocate(RadBeamType::RadBeam);
 				pRadBeam->SetCoordsSource(this->LastLocation);
 				pRadBeam->SetCoordsTarget(location);
 				pRadBeam->Period = this->Type->FadeDuration.Get(15);
 				pRadBeam->Amplitude = this->Type->Beam_Amplitude;
+
+				const ColorStruct beamColor = this->Type->Beam_Color.Get(RulesClass::Instance->RadColor);
 				pRadBeam->SetColor(beamColor);
 			}
 
