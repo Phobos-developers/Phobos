@@ -485,6 +485,7 @@ This page lists all the individual contributions to the project by their author.
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
   - Exclusive SuperWeapon Sidebar
+  - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
