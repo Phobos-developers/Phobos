@@ -919,7 +919,7 @@ msgid ""
 "wait until it's accepted, then checkout YRpp at the newest commit, then "
 "commit and push - this will save you having to commit and push multiple "
 "times, but you won't be able to get a nightly build for people to test;"
-msgstr "等待合并通过后，将 YRpp 子模块切换至最新提交，然后提交推送——这可以减少提交次数，但无法获取供测试的每夜构建；"
+msgstr "等待合并通过后，将 YRpp 子模块切换至最新提交，然后提交推送——这可以减少提交次数，但无法获取供测试的自动构建；"
 
 #: ../../Contributing.md:250
 msgid ""
@@ -1057,7 +1057,7 @@ msgid ""
 "containing built DLL and PDB (for your testers, f. ex.), or download a "
 "build from an automatically posted comment."
 msgstr ""
-"每次推送至拉取请求会触发每夜构建，你可以在拉取请求页面底部查看构建状态。点击 `Show all checks` 进入构建详情页，可下载包含 "
+"每次推送至拉取请求会触发自动构建，你可以在拉取请求页面底部查看构建状态。点击 `Show all checks` 进入构建详情页，可下载包含 "
 "DLL 和 PDB 的压缩包（供你的测试人员使用），或从自动发布的评论中获取构建文件（需要拥有 GitHub 账号）。"
 
 #: ../../Contributing.md:290
@@ -1202,7 +1202,7 @@ msgid ""
 "build run."
 msgstr ""
 "你无需安装 Python 和 Sphinx 模块即可查看更改——你创建的每个拉取请求均会触发 Read The Docs "
-"自动构建，类似每夜构建，滚动至页面底部点击 `Show all checks` 即可在构建详情中查看渲染后的文档。"
+"的自动生成，类似 Phobos 自动构建版本，滚动至页面底部点击 `Show all checks` 即可在构建详情中查看渲染后的文档。"
 
 #: ../../Contributing.md:324
 msgid "There are two ways to edit the docs."

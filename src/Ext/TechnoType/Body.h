@@ -60,6 +60,8 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+		Nullable<int> LaserTargetColor;
+		Nullable<ColorStruct> AirstrikeLineColor;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
@@ -163,10 +165,13 @@ public:
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
 		Valueable<CSFText> EnemyUIName;
+
+		bool ForceWeapon_Check;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
 		Valueable<int> ForceWeapon_UnderEMP;
+		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
 		ValueableVector<int> ForceWeapon_InRange;
 		ValueableVector<double> ForceWeapon_InRange_Overrides;
 		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
@@ -239,6 +244,7 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+		Valueable<bool> Convert_ResetMindControl;
 
 		Valueable<double> CrateGoodie_RerollChance;
 
@@ -359,8 +365,18 @@ public:
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
 
+		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
+		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
+		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+
 		Valueable<double> FallingDownDamage;
 		Nullable<double> FallingDownDamage_Water;
+
+		Valueable<bool> FiringForceScatter;
+
+		Valueable<int> FireUp;
+		Valueable<bool> FireUp_ResetInRetarget;
+		//Nullable<int> SecondaryFire;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -394,6 +410,8 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, LaserTargetColor {}
+			, AirstrikeLineColor {}
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
@@ -486,10 +504,12 @@ public:
 			, VoiceCreated {}
 			, VoicePickup {}
 
+			, ForceWeapon_Check { false }
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
 			, ForceWeapon_UnderEMP { -1 }
+			, ForceWeapon_InRange_TechnoOnly { true }
 			, ForceWeapon_InRange {}
 			, ForceWeapon_InRange_Overrides {}
 			, ForceWeapon_InRange_ApplyRangeModifiers { false }
@@ -572,6 +592,7 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Convert_ResetMindControl { false }
 
 			, CrateGoodie_RerollChance { 0.0 }
 
@@ -673,8 +694,18 @@ public:
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
 
+			, ExtendedAircraftMissions_SmoothMoving {}
+			, ExtendedAircraftMissions_EarlyDescend {}
+			, ExtendedAircraftMissions_RearApproach {}
+
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
+
+			, FiringForceScatter { true }
+
+			, FireUp { -1 }
+			, FireUp_ResetInRetarget { true }
+			//, SecondaryFire {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -686,7 +717,12 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		bool IsSecondary(int nWeaponIndex);
+
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
@@ -707,6 +743,7 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+	static bool SelectWeaponMutex;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
