@@ -18,31 +18,6 @@ namespace BoltTemp
 DEFINE_JUMP(LJMP, 0x4C2AFF, 0x4C2B0E)
 DEFINE_JUMP(LJMP, 0x4C2B0F, 0x4C2B35)
 
-EBolt* EBoltExt::CreateEBolt(WeaponTypeClass* pWeapon)
-{
-	const auto pBolt = GameCreate<EBolt>();
-	const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
-
-	const int alternateIdx = pWeapon->IsAlternateColor ? 5 : 10;
-	const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
-	const int defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-	for (int idx = 0; idx < 3; ++idx)
-	{
-		if (pWeaponExt->Bolt_Disable[idx])
-			pBoltExt->Disable[idx] = true;
-		else if (pWeaponExt->Bolt_Color[idx].isset())
-			pBoltExt->Color[idx] = pWeaponExt->Bolt_Color[idx].Get();
-		else
-			pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
-	}
-
-	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
-	pBolt->Lifetime = 1 << (std::clamp(pWeaponExt->Bolt_Duration.Get(), 1, 31) - 1);
-	return pBolt;
-}
-
 DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 {
 	GET(TechnoClass*, pThis, EDI);
