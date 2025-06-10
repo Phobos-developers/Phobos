@@ -29,7 +29,7 @@ DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
 
 DEFINE_HOOK(0x640B8D, LoadingScreen_DisableEmptySpawnPositions, 0x6)
 {
-	GET(bool, esi, ESI);
+	GET(const bool, esi, ESI);
 	if (Phobos::UI::DisableEmptySpawnPositions || !esi)
 	{
 		return 0x640CE2;
@@ -191,8 +191,8 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 {
 	GET_STACK(TechnoTypeClass*, pLeft, STACK_OFFSET(0x1C, -0x8));
 	GET_STACK(TechnoTypeClass*, pRight, STACK_OFFSET(0x1C, -0x4));
-	GET_STACK(int, idxLeft, STACK_OFFSET(0x1C, 0x8));
-	GET_STACK(int, idxRight, STACK_OFFSET(0x1C, 0x10));
+	GET_STACK(const int, idxLeft, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(const int, idxRight, STACK_OFFSET(0x1C, 0x10));
 	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
 	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
 	auto pLeftTechnoExt = pLeft ? TechnoTypeExt::ExtMap.Find(pLeft) : nullptr;
@@ -271,7 +271,7 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 {
 	enum { SkipGameCode = 0x683E6B };
 
-	GET_STACK(bool, showBriefing, STACK_OFFSET(0xFC, -0xE9));
+	GET_STACK(const bool, showBriefing, STACK_OFFSET(0xFC, -0xE9));
 
 	// Don't show briefing dialog for non-campaign games etc.
 	if (!Phobos::Config::ShowBriefing || !ScenarioExt::Global()->ShowBriefing || !showBriefing || !SessionClass::IsCampaign())

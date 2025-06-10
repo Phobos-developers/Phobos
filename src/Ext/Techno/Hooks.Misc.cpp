@@ -124,7 +124,7 @@ DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
 {
 	enum { Jump = 0x6B6DF0, Change = 0x6B6D53, Continue = 0 };
 	GET(SpawnManagerClass*, pThis, ESI);
-	GET_STACK(size_t, i, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(const size_t, i, STACK_OFFSET(0x1C, 0x4));
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 
@@ -594,7 +594,7 @@ DEFINE_HOOK(0x70E01E, TechnoClass_GattlingRateDown_GattlingRateDownDelay, 0x6)
 	if (pTypeExt->RateDown_Delay < 0)
 		return SkipGameCode;
 
-	GET_STACK(int, rateMult, STACK_OFFSET(0x10, 0x4));
+	GET_STACK(const int, rateMult, STACK_OFFSET(0x10, 0x4));
 
 	pExt->AccumulatedGattlingValue += rateMult;
 	int remain = pExt->AccumulatedGattlingValue;

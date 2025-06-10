@@ -318,8 +318,8 @@ DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x6)
 {
 	GET(Randomizer*, pThis, EDX);
 	GET_STACK(unsigned int, callerAddress, 0x0);
-	GET_STACK(int, min, 0x4);
-	GET_STACK(int, max, 0x8);
+	GET_STACK(const int, min, 0x4);
+	GET_STACK(const int, max, 0x8);
 
 	SyncLogger::AddRNGCallSyncLogEvent(pThis, 2, callerAddress, min, max);
 
@@ -427,7 +427,7 @@ DEFINE_HOOK(0x741970, UnitClass_AssignDestination_SyncLog, 0x6)
 DEFINE_HOOK(0x41BB30, AircraftClass_OverrideMission_SyncLog, 0x6)
 {
 	GET(AircraftClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
+	GET_STACK(const int, mission, 0x4);
 	GET_STACK(unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
@@ -438,7 +438,7 @@ DEFINE_HOOK(0x41BB30, AircraftClass_OverrideMission_SyncLog, 0x6)
 DEFINE_HOOK(0x4D8F40, FootClass_OverrideMission_SyncLog, 0x5)
 {
 	GET(FootClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
+	GET_STACK(const int, mission, 0x4);
 	GET_STACK(unsigned int, callerAddress, 0x0);
 
 	SyncLogger::AddMissionOverrideSyncLogEvent(pThis, mission, callerAddress);
@@ -449,7 +449,7 @@ DEFINE_HOOK(0x4D8F40, FootClass_OverrideMission_SyncLog, 0x5)
 DEFINE_HOOK(0x7013A0, TechnoClass_OverrideMission_SyncLog, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, mission, 0x4);
+	GET_STACK(const int, mission, 0x4);
 	GET_STACK(unsigned int, callerAddress, 0x0);
 
 	if (pThis->WhatAmI() == AbstractType::Building)

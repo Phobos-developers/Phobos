@@ -29,7 +29,7 @@
 DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 {
 	GET(BulletClass* const, pThis, ESI);
-	GET_BASE(CoordStruct const*, pCoords, 0x8);
+	GET_BASE(CoordStruct const* const, pCoords, 0x8);
 
 	const auto pWeapon = pThis->GetWeaponType();
 
@@ -368,7 +368,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 			{
 				if (it != radLevels.end())
 				{
-					GET_STACK(int, stepCount, STACK_OFFSET(0x70, -0x30));
+					GET_STACK(const int, stepCount, STACK_OFFSET(0x70, -0x30));
 					const int level = static_cast<int>(static_cast<double>(max - distance) / max * pThis->RadLevel / pThis->LevelSteps * stepCount);
 					it->Level = std::max(it->Level - std::max(level, 0), 0);
 				}

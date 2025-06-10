@@ -251,7 +251,7 @@ DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
 DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 {
 	GET_BASE(WarheadTypeClass*, pWH, 0xC);
-	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+	GET_STACK(const int, damage, STACK_OFFSET(0xE0, -0xBC));
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	double rocker = pWHExt->Rocker_AmplitudeOverride.Get(damage);

@@ -16,7 +16,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
 	enum { SkipShaking = 0x469130 };
 
 	GET(WarheadTypeClass*, pWarhead, EAX);
-	GET_BASE(CoordStruct*, pCoords, 0x8);
+	GET_BASE(CoordStruct const* const, pCoords, 0x8);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
@@ -296,7 +296,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 {
 	GET(BulletClass*, pThis, ESI);
-	GET_BASE(CoordStruct*, coords, 0x8);
+	GET_BASE(CoordStruct const* const, coords, 0x8);
 
 	auto const pOwner = pThis->Owner;
 	auto const pHouse = pOwner ? pOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;

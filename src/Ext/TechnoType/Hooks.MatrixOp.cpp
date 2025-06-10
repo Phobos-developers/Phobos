@@ -697,7 +697,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	GET(FootClass*, pThis, EBX);//Maybe Techno later, for GTGCAN
 	GET(VoxelStruct*, pVXL, EBP);
 	GET_STACK(Matrix3D*, pMat, STACK_OFFSET(0xE8, 0xC));
-	GET_STACK(int, shadow_index_now, STACK_OFFSET(0xE8, 0x18));// it's used later, otherwise I could have chosen the frame index earlier
+	GET_STACK(const int, shadow_index_now, STACK_OFFSET(0xE8, 0x18));// it's used later, otherwise I could have chosen the frame index earlier
 
 	REF_STACK(Matrix3D, matRet, STACK_OFFSET(0xE8, -0x60));
 	auto pType = pThis->GetTechnoType();

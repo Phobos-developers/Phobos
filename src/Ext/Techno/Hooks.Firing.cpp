@@ -475,7 +475,7 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 	//replacing whole check due to `fild`
 	if (pThis->InOpenToppedTransport)
 	{
-		GET_STACK(int, nDamage, STACK_OFFSET(0xB0, -0x84));
+		GET_STACK(const int, nDamage, STACK_OFFSET(0xB0, -0x84));
 		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
 
 		if (auto pTransport = pThis->Transporter)
@@ -614,7 +614,7 @@ DEFINE_HOOK(0x6FF4CC, TechnoClass_FireAt_ToggleLaserWeaponIndex, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
-	GET_BASE(int, weaponIndex, 0xC);
+	GET_BASE(const int, weaponIndex, 0xC);
 
 	if (pWeapon->IsLaser)
 	{

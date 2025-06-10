@@ -324,7 +324,7 @@ DEFINE_HOOK(0x6A6316, SidebarClass_AddCameo_SuperWeapon_SWSidebar, 0x6)
 	if (whatAmI != AbstractType::Special && whatAmI != AbstractType::SuperWeaponType && whatAmI != AbstractType::Super)
 		return 0;
 
-	GET_STACK(int, index, STACK_OFFSET(0x14, 0x8));
+	GET_STACK(const int, index, STACK_OFFSET(0x14, 0x8));
 
 	if (SWSidebarClass::Instance.AddButton(index))
 	{

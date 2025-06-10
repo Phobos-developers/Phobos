@@ -278,7 +278,7 @@ DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
 DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 {
 	GET(CCToolTip*, pThis, ECX);
-	GET_STACK(bool, bFullRedraw, 0x4);
+	GET_STACK(const bool, bFullRedraw, 0x4);
 
 	// !onSidebar or (onSidebar && ExtToolTip::IsCameo)
 	if (!bFullRedraw || PhobosToolTip::Instance.IsCameo)
@@ -392,7 +392,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 
 			const int x = pColumn->X + pColumn->Width + 2;
 			*/
-			GET_STACK(int, textHeight, STACK_OFFSET(0x44, -0x28));
+			GET_STACK(const int, textHeight, STACK_OFFSET(0x44, -0x28));
 
 			const auto pColumn = SWSidebarClass::Instance.Columns[pButton->ColumnIndex];
 			const int x = pColumn->X + pColumn->Width + 2;
@@ -416,7 +416,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	else if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
 	{
 		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
-		GET_STACK(int, textHeight, STACK_OFFSET(0x44, -0x28));
+		GET_STACK(const int, textHeight, STACK_OFFSET(0x44, -0x28));
 
 		const int x = pButton->X + pButton->Width;
 		const int y = std::clamp(pButton->Y + 43, 0, DSurface::ViewBounds.Height - textHeight);

@@ -491,7 +491,7 @@ namespace CTORTemp
 
 DEFINE_HOOK(0x421EA0, AnimClass_CTOR_SetContext, 0x6)
 {
-	GET_STACK(CoordStruct*, coords, 0x8);
+	GET_STACK(CoordStruct const* const, coords, 0x8);
 	GET_STACK(unsigned int, callerAddress, 0x0);
 
 	CTORTemp::coords = *coords;

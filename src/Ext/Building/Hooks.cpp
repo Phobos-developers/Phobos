@@ -646,7 +646,7 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 	enum { ContinueCheck = 0x6A9799, SkipGameCode = 0x6A97FB };
 
 	GET(TechnoTypeClass* const, pType, EBX);
-	GET_STACK(bool, clicked, STACK_OFFSET(0x48C, -0x475));
+	GET_STACK(const bool, clicked, STACK_OFFSET(0x48C, -0x475));
 
 	if (!RulesExt::Global()->BuildingProductionQueue)
 	{

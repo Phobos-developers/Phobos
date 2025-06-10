@@ -349,7 +349,7 @@ DEFINE_HOOK(0x50B669, HouseClass_ShouldDisableCameo_GreyCameo, 0x5)
 {
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(TechnoTypeClass*, pType, 0x4);
-	GET(bool, aresDisable, EAX);
+	GET(const bool, aresDisable, EAX);
 
 	if (aresDisable || !pType)
 		return 0;
@@ -403,7 +403,7 @@ DEFINE_HOOK(0x4FF9C9, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
 	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->ExcludeFromMultipleFactoryBonus)
 	{
 		GET(HouseClass*, pThis, EDI);
-		GET(bool, isNaval, ECX);
+		GET(const bool, isNaval, ECX);
 
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
 		pExt->UpdateNonMFBFactoryCounts(pBuilding->Type->Factory, R->Origin() == 0x4FF9C9, isNaval);
@@ -418,7 +418,7 @@ DEFINE_HOOK(0x500910, HouseClass_GetFactoryCount, 0x5)
 
 	GET(HouseClass*, pThis, ECX);
 	GET_STACK(AbstractType, rtti, 0x4);
-	GET_STACK(bool, isNaval, 0x8);
+	GET_STACK(const bool, isNaval, 0x8);
 
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
 	R->EAX(pExt->GetFactoryCountWithoutNonMFB(rtti, isNaval));

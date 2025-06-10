@@ -63,7 +63,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 {
 	GET(CaptureManagerClass*, pThis, EDI);
 	GET(TechnoClass*, pVictim, ECX);
-	GET_STACK(int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
+	GET_STACK(const int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
 
 	auto const pAttacker = pThis->Owner;
 	const auto pExt = TechnoTypeExt::ExtMap.Find(pAttacker->GetTechnoType());

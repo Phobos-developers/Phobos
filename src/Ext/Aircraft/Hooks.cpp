@@ -373,7 +373,7 @@ DEFINE_HOOK(0x415EEE, AircraftClass_Fire_KickOutPassengers, 0x6)
 	enum { SkipKickOutPassengers = 0x415F08 };
 
 	GET(AircraftClass*, pThis, EDI);
-	GET_BASE(int, weaponIdx, 0xC);
+	GET_BASE(const int, weaponIdx, 0xC);
 
 	auto const pWeapon = pThis->GetWeapon(weaponIdx)->WeaponType;
 
@@ -405,7 +405,7 @@ DEFINE_HOOK(0x416A0A, AircraftClass_Mission_Move_SmoothMoving, 0x5)
 	enum { EnterIdleAndReturn = 0x416AC0, ContinueMoving1 = 0x416908, ContinueMoving2 = 0x416A47 };
 
 	GET(AircraftClass* const, pThis, ESI);
-	GET(CoordStruct* const, pCoords, EAX);
+	GET(CoordStruct const* const, pCoords, EAX);
 
 	if (pThis->Team || pThis->Airstrike || pThis->Spawned)
 		return 0;

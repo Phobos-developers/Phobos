@@ -5,10 +5,10 @@
 DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
-	GET(int, nFacing, EDI);
+	GET(const int, nFacing, EDI);
 	GET_STACK(RectangleStruct*, pBounds, STACK_OFFSET(0x50, 0x8));
 	LEA_STACK(Point2D*, pLocation, STACK_OFFSET(0x50, -0x18));
-	GET_STACK(int, nBrightness, STACK_OFFSET(0x50, 0x4));
+	GET_STACK(const int, nBrightness, STACK_OFFSET(0x50, 0x4));
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pThis->Type);
 

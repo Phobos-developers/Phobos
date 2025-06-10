@@ -10,7 +10,7 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 	enum { ReturnResult = 0x70138F };
 
 	GET(TechnoClass*, pThis, ECX);
-	GET_STACK(int, weaponIndex, STACK_OFFSET(0x8, 0x4));
+	GET_STACK(const int, weaponIndex, STACK_OFFSET(0x8, 0x4));
 
 	int result = 0;
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
