@@ -180,8 +180,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
 	this->DropPodTrailer.Read(exINI, GameStrings::General, "DropPodTrailer");
-	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 	this->DropPodDefaultTrailer = AnimTypeClass::Find("SMOKEY");
+	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
 	this->Infantry_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultDigitalDisplayTypes");
