@@ -59,6 +59,6 @@ public:
 			return reinterpret_cast<uint16_t*>(pConvert->PaletteData)[idx];
 	}
 
-	static DWORD _cdecl _TechnoClass_FireEBolt(REGISTERS* R);
+	static EBolt* CreateEBolt(WeaponTypeClass* pWeapon);
 	static DWORD _cdecl _EBolt_Draw_Colors(REGISTERS* R);
 };

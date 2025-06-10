@@ -18,13 +18,8 @@ namespace BoltTemp
 DEFINE_JUMP(LJMP, 0x4C2AFF, 0x4C2B0E)
 DEFINE_JUMP(LJMP, 0x4C2B0F, 0x4C2B35)
 
-DWORD _cdecl EBoltExt::_TechnoClass_FireEBolt(REGISTERS* R)
+EBolt* EBoltExt::CreateEBolt(WeaponTypeClass* pWeapon)
 {
-	enum { SkipGameCode = 0x6FD480 };
-
-	GET(TechnoClass*, pThis, EDI);
-	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
-
 	const auto pBolt = GameCreate<EBolt>();
 	const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 
@@ -44,16 +39,18 @@ DWORD _cdecl EBoltExt::_TechnoClass_FireEBolt(REGISTERS* R)
 	}
 
 	pBoltExt->Arcs = pWeaponExt->Bolt_Arcs;
-	pBoltExt->BurstIndex = pThis->CurrentBurstIndex;
 	pBolt->Lifetime = 1 << (std::clamp(pWeaponExt->Bolt_Duration.Get(), 1, 31) - 1);
-	R->EAX(pBolt);
-	R->ESI(0);
-	return SkipGameCode;
+	return pBolt;
 }
 
-DEFINE_HOOK(0x6FD469, TechnoClass_FireEBolt, 0x9)
+DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 {
-	return EBoltExt::_TechnoClass_FireEBolt(R);
+	GET(TechnoClass*, pThis, EDI);
+	GET(EBolt*, pBolt, EAX);
+	const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
+	pBoltExt->BurstIndex = pThis->CurrentBurstIndex;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x6FD55F, TechnoClass_FireEBolt_ParticleSystem, 0x5)
