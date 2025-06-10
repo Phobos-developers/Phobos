@@ -294,13 +294,13 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	// Check if the target needs to be changed
 	if (std::abs(this->GetType()->RetargetRadius) > 1e-10 && this->BulletRetargetTechno())
 		return true;
-	// Check if the tolerance time has ended
+	// After the new target is confirmed, check if the tolerance time has ended
 	if (this->CheckTolerantTime())
 		return true;
-	// Check whether need to slow down then detonate
+	// Based on the new target location, check how to change bullet velocity
 	if (this->OnVelocityCheck())
 		return true;
-	// Rotate bullet
+	// Rotate orientation
 	this->OnFacingUpdate();
 	// Fire weapons or warheads
 	if (this->FireAdditionals())

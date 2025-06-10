@@ -42,7 +42,7 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 	cor3Cell = corner[cornerIndex];
 	++cornerIndex %= 4;
 	cor4Cell = corner[cornerIndex];
-
+	// Obtain cells through vertices
 	std::vector<CellStruct> recCells = PhobosTrajectory::GetCellsInRectangle(cor1Cell, cor4Cell, cor2Cell, cor3Cell);
 	std::vector<CellClass*> recCellClass;
 	recCellClass.reserve(recCells.size());

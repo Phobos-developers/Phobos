@@ -472,10 +472,10 @@ This page lists all the individual contributions to the project by their author.
   - Aggressive attack move mission
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
-  - New trajectory system
   - New Missile trajectory
   - New Engrave trajectory
   - New Tracing trajectory
+  - New trajectory system with general functions
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
