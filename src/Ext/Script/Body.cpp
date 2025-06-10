@@ -278,7 +278,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	for (auto pTransport : transports)
 	{
 		const auto pTransportType = pTransport->GetTechnoType();
-		const int sizeLimit = pTransportType->SizeLimit;
+		const double sizeLimit = pTransportType->SizeLimit;
 		const int transportSize = pTransportType->Passengers - pTransport->Passengers.GetTotalSize();
 
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
@@ -291,17 +291,18 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
 				&& unitHealth > 0)
 			{
-				if (pUnitType->Size > 0
-					&& pUnitType->Size <= sizeLimit
-					&& pUnitType->Size <= transportSize)
+				const double size = pUnitType->Size;
+
+				if (size > 0
+					&& size <= sizeLimit
+					&& size <= transportSize)
 				{
 					// If is still flying wait a bit more
 					if (pTransport->IsInAir())
 						return;
 
 					// All fine
-					const auto currentMission = pUnit->GetCurrentMission();
-					if (currentMission != Mission::Enter)
+					if (pUnit->GetCurrentMission() != Mission::Enter)
 					{
 						pUnit->QueueMission(Mission::Enter, false);
 						pUnit->SetTarget(nullptr);

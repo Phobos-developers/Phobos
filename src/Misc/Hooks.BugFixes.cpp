@@ -150,7 +150,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 			if (debrisMaximums.GetItem(currentIndex) > 0)
 			{
 				const int adjustedMaximum = Math::min(debrisMaximums.GetItem(currentIndex), maxDebris);
-				const int amountToSpawn = abs(random.Random()) % (adjustedMaximum + 1); //0x702337
+				int amountToSpawn = abs(random.Random()) % (adjustedMaximum + 1); //0x702337
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 

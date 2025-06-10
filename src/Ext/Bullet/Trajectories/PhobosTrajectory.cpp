@@ -510,7 +510,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (autoconst pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 	{
 		switch (pTraj->OnAITargetCoordCheck(pThis))
 		{

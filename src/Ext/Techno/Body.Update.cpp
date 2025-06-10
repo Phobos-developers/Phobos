@@ -228,7 +228,7 @@ void TechnoExt::ExtData::EatPassengers()
 			FootClass* pPreviousPassenger = nullptr;  // Passenger immediately prior to the deleted one in the stack
 			ObjectClass* pLastPassenger = nullptr;    // Passenger that is last in the stack
 			auto pCurrentPassenger = pThis->Passengers.GetFirstPassenger();
-			const auto allowHouses = pDelType->AllowedHouses;
+			const auto allowedHouses = pDelType->AllowedHouses;
 			const auto pOwner = pThis->Owner;
 
 			// Find the first entered passenger that is eligible for deletion.

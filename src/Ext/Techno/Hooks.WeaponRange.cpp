@@ -34,7 +34,7 @@ DEFINE_HOOK(0x7012C2, TechnoClass_WeaponRange, 0x8)
 				if (openTWeaponIndex == -1)
 					tWeaponIndex = pPassenger->SelectWeapon(pThis->Target);
 
-				const WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
+				WeaponTypeClass* pTWeapon = pPassenger->GetWeapon(tWeaponIndex)->WeaponType;
 
 				if (pTWeapon && pTWeapon->FireInTransport)
 				{

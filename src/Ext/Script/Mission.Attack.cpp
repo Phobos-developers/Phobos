@@ -78,7 +78,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 				for (auto pFootTeam = pFirstUnit; pFootTeam; pFootTeam = pFootTeam->NextTeamMember)
 				{
 					// Let's reset all Team Members objective
-					const auto KillerTeamUnitData = TechnoExt::ExtMap.Find(pFootTeam);
+					const auto pKillerTeamUnitData = TechnoExt::ExtMap.Find(pFootTeam);
 					pKillerTeamUnitData->LastKillWasTeamTarget = false;
 
 					if (pFootTeam->WhatAmI() == AbstractType::Aircraft)
@@ -359,12 +359,12 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 						continue;
 					}
 
-					const auto currentMission = pFoot->GetCurrentMission();
+					const auto mission = pFoot->GetCurrentMission();
 
 					// Aircraft case 2
 					if (whatAmI == AbstractType::Aircraft
-						&& currentMission != Mission::Attack
-						&& currentMission != Mission::Enter)
+						&& mission != Mission::Attack
+						&& mission != Mission::Enter)
 					{
 						if (pFoot->Ammo > 0)
 						{
@@ -382,7 +382,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 					}
 
 					// Tanya / Commando C4 case
-					if (currentMission != Mission::Sabotage
+					if (mission != Mission::Sabotage
 						&& (pFoot->HasAbility(Ability::C4)
 							|| (whatAmI == AbstractType::Infantry
 								&& static_cast<InfantryTypeClass*>(pTechnoType)->C4)))
@@ -398,9 +398,9 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 						if (pFoot->Target != pFocus)
 							pFoot->SetTarget(pFocus);
 
-						if (currentMission != Mission::Attack
-							&& currentMission != Mission::Unload
-							&& currentMission != Mission::Selling)
+						if (mission != Mission::Attack
+							&& mission != Mission::Unload
+							&& mission != Mission::Selling)
 						{
 							pFoot->QueueMission(Mission::Attack, false);
 						}

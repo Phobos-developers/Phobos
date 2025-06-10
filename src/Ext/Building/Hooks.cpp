@@ -22,6 +22,10 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 	pExt->DisplayIncomeString();
 	pExt->ApplyPoweredKillSpawns();
 
+	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.
+	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+		pThis->Mark(MarkType::Change);
+
 	return 0;
 }
 
