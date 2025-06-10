@@ -53,7 +53,6 @@ DEFINE_HOOK(0x736480, UnitClass_AI, 0x6)
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	pExt->UpdateKeepTargetOnMove();
 	pExt->DepletedAmmoActions();
-	pExt->UpdateGattlingRateDownReset();
 
 	return 0;
 }
@@ -213,6 +212,7 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 
 	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
 	pExt->InitializeAttachEffects();
+	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
 
 	if (pExt->TypeExtData->Harvester_Counted)
@@ -930,9 +930,40 @@ DEFINE_HOOK(0x5F4032, ObjectClass_FallingDown_ToDead, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
+#pragma region SetTarget
+
+DEFINE_HOOK_AGAIN(0x4DF3D3, FootClass_UpdateAttackMove_SetTarget, 0xA)
+DEFINE_HOOK_AGAIN(0x4DF46A, FootClass_UpdateAttackMove_SetTarget, 0xA)
+DEFINE_HOOK(0x4DF4A5, FootClass_UpdateAttackMove_SetTarget, 0x6)
+{
+	GET(FootClass*, pThis, ESI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (R->Origin() != 0x4DF4A5)
+	{
+		pThis->Target = nullptr;
+		pExt->UpdateGattlingRateDownReset();
+
+		return R->Origin() + 0xA;
+	}
+	else
+	{
+		GET(AbstractClass*, pTarget, EAX);
+
+		pThis->Target = pTarget;
+		pExt->UpdateGattlingRateDownReset();
+
+		return 0x4DF4AB;
+	}
+}
+
+DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EDI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
@@ -940,8 +971,6 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 
 		if (!pUnitType->Turret && !pUnitType->Voxel)
 		{
-			const auto pTarget = pThis->Target;
-			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			const auto pTypeExt = pExt->TypeExtData;
 
 			if (!pTarget || pTypeExt->FireUp < 0 || pTypeExt->FireUp_ResetInRetarget
@@ -953,5 +982,10 @@ DEFINE_HOOK(0x6FCF8C, TechnoClass_SetTarget_After, 0x6)
 		}
 	}
 
-	return 0;
+	pThis->Target = pTarget;
+	pExt->UpdateGattlingRateDownReset();
+
+	return 0x6FCF44;
 }
+
+#pragma endregion

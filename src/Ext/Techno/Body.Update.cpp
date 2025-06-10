@@ -579,7 +579,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	// Powered by ststl-s、Fly-Star
+	// Powered by ststl-s, Fly-Star
 	if (pCurrentType->Enslaves && pCurrentType->SlavesNumber > 0)
 	{
 		// SlaveManager does not exist or they have different slaves.
@@ -1234,11 +1234,17 @@ void TechnoExt::ExtData::UpdateGattlingRateDownReset()
 
 		if (pTypeExt->RateDown_Reset && (!pThis->Target || this->LastTargetID != pThis->Target->UniqueID))
 		{
+			int oldStage = pThis->CurrentGattlingStage;
 			this->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
 			pThis->GattlingValue = 0;
 			pThis->CurrentGattlingStage = 0;
 			this->AccumulatedGattlingValue = 0;
 			this->ShouldUpdateGattlingValue = false;
+
+			if (oldStage != 0)
+			{
+				pThis->GattlingRateDown(0);
+			}
 		}
 	}
 }
