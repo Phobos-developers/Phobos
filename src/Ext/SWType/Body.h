@@ -52,7 +52,7 @@ public:
 
 		Valueable<CSFText> Message_CannotFire;
 		Valueable<CSFText> Message_InsufficientFunds;
-		Valueable<int> Message_ColorScheme;
+		ValueableIdx<ColorScheme> Message_ColorScheme;
 		Valueable<bool> Message_FirerColor;
 
 		Valueable<CSFText> UIDescription;
