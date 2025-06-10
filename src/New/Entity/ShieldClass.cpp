@@ -842,9 +842,11 @@ bool ShieldClass::IsRedSP()
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
 {
-	Point2D position = { 0, 0 };
+	Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, BuildingSelectBracketPosition::Top);
+	selectBracketPosition.X -= 6;
+	selectBracketPosition.Y -= 3;
 	const int totalLength = DrawShieldBar_PipAmount(length);
-	int frame = this->DrawShieldBar_Pip(true);
+	const int frame = this->DrawShieldBar_Pip(true);
 
 	if (totalLength > 0)
 	{
@@ -852,9 +854,9 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			position = TechnoExt::GetBuildingSelectBracketPosition(Techno, BuildingSelectBracketPosition::Top);
-			position.X -= deltaX + 6;
-			position.Y -= deltaY + 3;
+			Point2D position = selectBracketPosition;
+			position.X -= deltaX;
+			position.Y -= deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -863,15 +865,15 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 	if (totalLength < length)
 	{
+		const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
+
 		for (int frameIdx = length - totalLength, deltaX = 4 * totalLength, deltaY = -2 * totalLength;
 			frameIdx;
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
-			position = TechnoExt::GetBuildingSelectBracketPosition(Techno, BuildingSelectBracketPosition::Top);
-			position.X -= deltaX + 6;
-			position.Y -= deltaY + 3;
-
-			const int emptyFrame = this->Type->Pips_Building_Empty.Get(RulesExt::Global()->Pips_Shield_Building_Empty.Get(0));
+			Point2D position = selectBracketPosition;
+			position.X -= deltaX;
+			position.Y -= deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				emptyFrame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -881,24 +883,27 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 
 void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 {
-	auto position = TechnoExt::GetFootSelectBracketPosition(Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
+	auto position = TechnoExt::GetFootSelectBracketPosition(this->Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
 	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
-	int frame;
+	int frame = pipBoard->Frames > 2 ? 2 : 0;
 
 	position.X -= 1;
 	position.Y += this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta - 3;
 
-	if (length == 8)
-		frame = pipBoard->Frames > 2 ? 3 : 1;
-	else
-		frame = pipBoard->Frames > 2 ? 2 : 0;
-
 	if (this->Techno->IsSelected)
 	{
-		position.X += length + 1 + (length == 8 ? length + 1 : 0);
+		int offset = length + 1;
+
+		if (length == 8)
+		{
+			frame += 1;
+			offset += length + 1;
+		}
+
+		position.X += offset;
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
 			frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		position.X -= length + 1 + (length == 8 ? length + 1 : 0);
+		position.X -= offset;
 	}
 
 	frame = this->DrawShieldBar_Pip(false);
@@ -917,14 +922,9 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 {
 	const int strength = this->Type->Strength.Get();
 	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
-	const auto pipsGlobal = isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get();
 
-	CoordStruct shieldPip;
-
-	if (pipsShield.X != -1)
-		shieldPip = pipsShield;
-	else
-		shieldPip = pipsGlobal;
+	const auto shieldPip = pipsShield.X != -1 ? pipsShield :
+		(isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get());
 
 	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;
