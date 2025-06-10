@@ -28,7 +28,7 @@ DEFINE_HOOK(0x489671, Damage_at_Cell_Update_Veinhole, 0x6)
 	GET(OverlayTypeClass*, pOverlay, EAX);
 	GET(WarheadTypeClass*, pWH, ESI);
 	GET_STACK(CellStruct, pCell, STACK_OFFSET(0xE0, -0x4C));
-	GET_STACK(const int, damage, STACK_OFFSET(0xE0, -0xBC));
+	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
 	GET_STACK(ObjectClass*, pAttacker, STACK_OFFSET(0xE0, 0x8));
 	GET_STACK(HouseClass*, pAttackingHouse, STACK_OFFSET(0xE0, 0x14));
 

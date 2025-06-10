@@ -4,7 +4,7 @@
 
 DEFINE_HOOK(0x69A317, GetLinkedColor_SkirmishUnlimitedColors, 0x0)
 {
-	GET_STACK(const int, index, 0x4);
+	GET_STACK(int, index, 0x4);
 
 	if (index == -2)
 		index = ColorScheme::FindIndex("LightGrey", 53);
