@@ -298,6 +298,13 @@ public:
 		Valueable<bool> KeepTargetOnMove_NoMorePursuit;
 		Valueable<Leptons> KeepTargetOnMove_ExtraDistance;
 
+		Nullable<bool> DirectionalArmor;
+		Nullable<double> DirectionalArmor_FrontMultiplier;
+		Nullable<double> DirectionalArmor_SideMultiplier;
+		Nullable<double> DirectionalArmor_BackMultiplier;
+		Nullable<double> DirectionalArmor_FrontField;
+		Nullable<double> DirectionalArmor_BackField;
+
 		Valueable<int> Power;
 
 		Nullable<bool> AllowAirstrike;
@@ -639,6 +646,13 @@ public:
 			, KeepTargetOnMove { false }
 			, KeepTargetOnMove_NoMorePursuit { true }
 			, KeepTargetOnMove_ExtraDistance { Leptons(0) }
+
+			, DirectionalArmor {}
+			, DirectionalArmor_FrontMultiplier {}
+			, DirectionalArmor_SideMultiplier {}
+			, DirectionalArmor_BackMultiplier {}
+			, DirectionalArmor_FrontField {}
+			, DirectionalArmor_BackField {}
 
 			, Power { }
 

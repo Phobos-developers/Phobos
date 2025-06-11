@@ -113,6 +113,9 @@ public:
 		NullableVector<ShieldTypeClass*> Shield_Respawn_Types;
 		NullableVector<ShieldTypeClass*> Shield_SelfHealing_Types;
 
+		Valueable<bool> Directional;
+		Valueable<double> Directional_Multiplier;
+
 		Valueable<int> NotHuman_DeathSequence;
 		ValueableIdxVector<SuperWeaponTypeClass> LaunchSW;
 		Valueable<bool> LaunchSW_RealLaunch;
@@ -292,6 +295,9 @@ public:
 			, Shield_Respawn_Types {}
 			, Shield_SelfHealing_Types {}
 
+			, Directional { false}
+			, Directional_Multiplier { 1.0 }
+
 			, SpawnsCrate_Types {}
 			, SpawnsCrate_Weights {}
 
@@ -421,6 +427,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+	static int HitDirection;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 

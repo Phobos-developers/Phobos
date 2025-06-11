@@ -29,6 +29,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && *args->Damage)
 	{
+		const auto pTypeExt = pExt->TypeExtData;
 		double multiplier = 1.0;
 
 		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
@@ -37,6 +38,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier);
 		else
 			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
+
+		if (pTypeExt->DirectionalArmor.Get(RulesExt::Global()->DirectionalArmor) && pThis->WhatAmI() == AbstractType::Unit && WarheadTypeExt::HitDirection >= 0 && args->DistanceToEpicenter <= 64)
+		{
+			const int tarFacing = pThis->PrimaryFacing.Current().GetValue<16>();
+			const int angle = abs(WarheadTypeExt::HitDirection - tarFacing);
+			const int frontField = static_cast<int>(16384 * pTypeExt->DirectionalArmor_FrontField.Get(RulesExt::Global()->DirectionalArmor_FrontField));
+			const int backField = static_cast<int>(16384 * pTypeExt->DirectionalArmor_BackField.Get(RulesExt::Global()->DirectionalArmor_BackField));
+
+			if (angle >= 32768 - frontField && angle <= 32768 + frontField)
+				multiplier *= pTypeExt->DirectionalArmor_FrontMultiplier.Get(RulesExt::Global()->DirectionalArmor_FrontMultiplier) * pWHExt->Directional_Multiplier;
+			else if ((angle < backField && angle >= 0) || (angle > 49152 + backField && angle <= 65536))
+				multiplier *= pTypeExt->DirectionalArmor_BackMultiplier.Get(RulesExt::Global()->DirectionalArmor_BackMultiplier) * pWHExt->Directional_Multiplier;
+			else
+				multiplier *= pTypeExt->DirectionalArmor_SideMultiplier.Get(RulesExt::Global()->DirectionalArmor_SideMultiplier) * pWHExt->Directional_Multiplier;
+		}
 
 		if (multiplier != 1.0)
 		{

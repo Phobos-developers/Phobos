@@ -10,6 +10,7 @@
 #include <Utilities/EnumFunctions.h>
 
 #pragma region Detonation
+int WarheadTypeExt::HitDirection = -1;
 
 DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 {
@@ -21,10 +22,56 @@ DEFINE_HOOK(0x46920B, BulletClass_Detonate, 0x6)
 	auto const pOwner = pBullet->Owner;
 	auto const pHouse = pOwner ? pOwner->Owner : nullptr;
 	auto const pDecidedHouse = pHouse ? pHouse : pBulletExt->FirerHouse;
+
 	pWHExt->Detonate(pOwner, pDecidedHouse, pBulletExt, *pCoords);
 	pWHExt->InDamageArea = false;
 
 	return 0;
+}
+
+DEFINE_HOOK(0x469A69, BulletClass_Detonate_DamageArea, 0x6)
+{
+	enum { SkipGameCode = 0x469A88 };
+
+	GET(BulletClass*, pBullet, ESI);
+	GET(TechnoClass*, pSourceTechno, EAX);
+	GET(int, damage, EDX);
+	GET_BASE(CoordStruct*, coords, 0x8);
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pSourceHouse = pSourceTechno ? pSourceTechno->Owner : pBulletExt->FirerHouse;
+	const auto pWH = pBullet->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	do
+	{
+		if (pWHExt->Directional)
+		{
+			if (pBullet->Type->Inviso)
+			{
+				if (pBullet->SourceCoords.X != pBullet->TargetCoords.X || pBullet->SourceCoords.Y != pBullet->TargetCoords.Y)
+				{
+					WarheadTypeExt::HitDirection = DirStruct(Math::atan2(static_cast<double>(pBullet->SourceCoords.Y - pBullet->TargetCoords.Y), static_cast<double>(pBullet->TargetCoords.X - pBullet->SourceCoords.X))).GetValue<16>();
+					break;
+				}
+			}
+			else
+			{
+				if (pBullet->Velocity.X != 0.0 || pBullet->Velocity.Y != 0.0)
+				{
+					WarheadTypeExt::HitDirection = DirStruct((-1) * Math::atan2(pBullet->Velocity.Y, pBullet->Velocity.X)).GetValue<16>();
+					break;
+				}
+			}
+		}
+
+		WarheadTypeExt::HitDirection = -1;
+	}
+	while (false);
+
+	R->EAX(MapClass::Instance.DamageArea(*coords, damage, pSourceTechno, pWH, true, pSourceHouse));
+	WarheadTypeExt::HitDirection = -1;
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
