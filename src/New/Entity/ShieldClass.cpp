@@ -602,7 +602,7 @@ bool ShieldClass::ConvertCheck()
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(newID);
 	const auto pOldType = this->Type;
-	const bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
+	const bool allowTransfer = pOldType->AllowTransfer.Get(Attached);
 
 	// Update shield type.
 	if (!allowTransfer && !pTechnoTypeExt->ShieldType->Strength)
@@ -818,7 +818,7 @@ void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool res
 	}
 	else if (timer->InProgress() && !modifierTimerInProgress && this->SelfHealing_Rate_Warhead != pType->SelfHealing_Rate)
 	{
-		double mult = pType->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / pType->SelfHealing_Rate : 1.0;
+		const double mult = pType->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / pType->SelfHealing_Rate : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
@@ -904,9 +904,11 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 	if (this->HP <= 0 && this->Type->Pips_HideIfNoStrength)
 		return;
 
-	const Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, BuildingSelectBracketPosition::Top);
+	Point2D selectBracketPosition = TechnoExt::GetBuildingSelectBracketPosition(this->Techno, BuildingSelectBracketPosition::Top);
+	selectBracketPosition.X -= 6;
+	selectBracketPosition.Y -= 3;
 	const int totalLength = DrawShieldBar_PipAmount(length);
-	int frame = this->DrawShieldBar_Pip(true);
+	const int frame = this->DrawShieldBar_Pip(true);
 
 	if (totalLength > 0)
 	{
@@ -915,8 +917,8 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
 			Point2D position = selectBracketPosition;
-			position.X -= deltaX + 6;
-			position.Y -= deltaY + 3;
+			position.X -= deltaX;
+			position.Y -= deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				frame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -932,8 +934,8 @@ void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBou
 			frameIdx--, deltaX += 4, deltaY -= 2)
 		{
 			Point2D position = selectBracketPosition;
-			position.X -= deltaX + 6;
-			position.Y -= deltaY + 3;
+			position.X -= deltaX;
+			position.Y -= deltaY;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS_SHP,
 				emptyFrame, &position, pBound, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -948,22 +950,25 @@ void ShieldClass::DrawShieldBar_Other(const int length, RectangleStruct* pBound)
 
 	auto position = TechnoExt::GetFootSelectBracketPosition(this->Techno, Anchor(HorizontalPosition::Left, VerticalPosition::Top));
 	const auto pipBoard = this->Type->Pips_Background.Get(RulesExt::Global()->Pips_Shield_Background.Get(FileSystem::PIPBRD_SHP));
-	int frame;
+	int frame = pipBoard->Frames > 2 ? 2 : 0;
 
 	position.X -= 1;
 	position.Y += this->Techno->GetTechnoType()->PixelSelectionBracketDelta + this->Type->BracketDelta - 3;
 
-	if (length == 8)
-		frame = pipBoard->Frames > 2 ? 3 : 1;
-	else
-		frame = pipBoard->Frames > 2 ? 2 : 0;
-
 	if (this->Techno->IsSelected)
 	{
-		position.X += length + 1 + (length == 8 ? length + 1 : 0);
+		int offset = length + 1;
+
+		if (length == 8)
+		{
+			frame += 1;
+			offset += length + 1;
+		}
+
+		position.X += offset;
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, pipBoard,
 			frame, &position, pBound, BlitterFlags(0xE00), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
-		position.X -= length + 1 + (length == 8 ? length + 1 : 0);
+		position.X -= offset;
 	}
 
 	frame = this->DrawShieldBar_Pip(false);
