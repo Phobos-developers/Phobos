@@ -989,3 +989,40 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_RepairAmount, 0xA)
+{
+	enum { SkipGameCode = 0x51A010 };
+
+	//GET(InfantryClass*, pThis, ESI);
+	GET(BuildingClass*, pTarget, EDI);
+	const bool damaged = pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+
+	pTarget->MarkForRedraw();
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->Type);
+	const int repair = pTypeExt->RepairAmount;
+
+	if (repair > 0)
+	{
+		pTarget->Health = std::clamp(pTarget->Health + repair, 0, pTarget->Type->Strength);
+	}
+	else if (repair < 0)
+	{
+		double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
+		pTarget->Health = static_cast<int>(std::round(pTarget->Type->Strength * percentage));
+	}
+	else
+	{
+		pTarget->Health = pTarget->Type->Strength;
+	}
+
+	pTarget->EstimatedHealth = pTarget->Health;
+	pTarget->SetRepairState(0);
+
+	if ((pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow) != damaged)
+		pTarget->ToggleDamagedAnims(!damaged);
+
+	VocClass::PlayAt(RulesClass::Instance->BuildingRepairedSound, pTarget->GetCoords());
+	return SkipGameCode;
+}

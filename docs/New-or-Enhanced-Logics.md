@@ -679,6 +679,16 @@ In `artmd.ini`:
 OnlyUseLandSequences=false  ; boolean
 ```
 
+### Repair amount limit
+
+- You can now set a maximum amount when engineer repair a building.
+
+In `rulesmd.ini`
+```ini
+[SOMEINFANTRY]                       ; InfantryType
+RepairAmount=0                        ; integer
+```
+
 ## Projectiles
 
 ### Projectile interception logic
