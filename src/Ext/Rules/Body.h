@@ -37,6 +37,8 @@ public:
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> GainSelfHealAllowMultiplayPassive;
+		Valueable<bool> GainSelfHealFromPlayerControl;
+		Valueable<bool> GainSelfHealFromAllies;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
@@ -66,6 +68,8 @@ public:
 		Nullable<TranslucencyLevel> PlacementGrid_TranslucencyWithPreview;
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
+
+		Valueable<bool> SuperWeaponSidebar_AllowByDefault;
 
 		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
@@ -127,6 +131,7 @@ public:
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
+		Valueable<ColorStruct> AirstrikeLineColor;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -155,13 +160,15 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
-		AnimTypeClass* DropPodTrailer;
+		Nullable<AnimTypeClass*> DropPodTrailer;
+		AnimTypeClass* DropPodDefaultTrailer;
 		SHPStruct* PodImage;
 		Valueable<bool> DrawInsignia_OnlyOnSelected;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
@@ -215,7 +222,11 @@ public:
 		Valueable<double> ProneSpeed_Crawls;
 		Valueable<double> ProneSpeed_NoCrawls;
 
-    	Valueable<double> DamagedSpeed;
+		Valueable<double> DamagedSpeed;
+
+		Valueable<bool> HarvesterScanAfterUnload;
+
+		Valueable<bool> AnimCraterDestroyTiberium;
 
 		Valueable<int> CrusherLevel;
 		Valueable<int> CrushableLevel;
@@ -229,6 +240,8 @@ public:
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, GainSelfHealAllowMultiplayPassive { true }
+			, GainSelfHealFromPlayerControl { false }
+			, GainSelfHealFromAllies { false }
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
@@ -256,6 +269,8 @@ public:
 			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
+			, SuperWeaponSidebar_AllowByDefault { false }
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }
@@ -309,7 +324,8 @@ public:
 			, ForceShield_ExtraTintIntensity { 0.0 }
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
-			, ROF_RandomDelay { { 0 ,2  } }
+			, AirstrikeLineColor { { 255, 0, 0 } }
+			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
@@ -324,10 +340,11 @@ public:
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
 			, DrawInsignia_OnlyOnSelected { false }
-			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
-			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2 } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6 } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
-			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Units { { 10, 6 } }
+			, DrawInsignia_UsePixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
@@ -342,6 +359,7 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
+			, DropPodDefaultTrailer { }
 			, PodImage { }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
@@ -384,9 +402,13 @@ public:
 			, ProneSpeed_Crawls { 0.67 }
 			, ProneSpeed_NoCrawls { 1.5 }
 
-      		, DamagedSpeed { 0.75 }
+			, DamagedSpeed { 0.75 }
 
-			, CrusherLevel { 5 }
+			, HarvesterScanAfterUnload { false }
+
+			, AnimCraterDestroyTiberium { true }
+    
+      , CrusherLevel { 5 }
 			, CrushableLevel { 5 }
 			, OmniCrusherLevel { 10 }
 			, OmniCrushResistantLevel { 10 }
