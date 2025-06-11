@@ -280,6 +280,7 @@ GroundLine=false                                ; boolean
 GroundLineColor=0,255,0                     ; R, G, B
 GroundLineColor.ConditionYellow=           ; R, G, B
 GroundLineColor.ConditionRed=               ; R, G, B
+GroundLine.Dashed=false                 ; boolean
 
 [SOMETECHNO]                            ; TechnoType
 SelectBox=                              ; Select box
