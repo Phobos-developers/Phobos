@@ -253,7 +253,7 @@ RealTimeTimers.Adaptive=false   ; boolean
   - Select box's translucency setting can be adjusted via `Translucency`.
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
-  - You can now use `GroundShape` to specific a image which always draw on ground, it will draw when techno is in air.
+  - You can now use `GroundShape` to specific a image which always draw on ground, it will only draw when techno is in air if set `GroundShape.AlwaysDraw=false`.
   - If `GroundLine=true` , the game will draw a line from techno's position to its vertical projection, `GroundLine.Dashed=true` means the projection line is a dashed line.
 
 In `rulesmd.ini`:
@@ -276,6 +276,7 @@ Translucency=0                          ; translucency level (0/25/50/75)
 VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
 DrawAboveTechno=true                    ; boolean
+GroundShape.AlwaysDraw=true         ; boolean
 GroundLine=false                                ; boolean
 GroundLineColor=0,255,0                     ; R, G, B
 GroundLineColor.ConditionYellow=           ; R, G, B

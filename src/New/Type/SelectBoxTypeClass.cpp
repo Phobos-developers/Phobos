@@ -24,6 +24,7 @@ void SelectBoxTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->VisibleToHouses.Read(exINI, pSection, "VisibleToHouses");
 	this->VisibleToHouses_Observer.Read(exINI, pSection, "VisibleToHouses.Observer");
 	this->DrawAboveTechno.Read(exINI, pSection, "DrawAboveTechno");
+	this->GroundShape_AlwaysDraw.Read(exINI, pSection, "GroundShape.AlwaysDraw");
 	this->GroundLine.Read(exINI, pSection, "GroundLine");
 	this->GroundLineColor.Read(exINI, pSection, "GroundLineColor.%s");
 	this->GroundLine_Dashed.Read(exINI, pSection, "GroundLine.Dashed");
@@ -43,6 +44,7 @@ void SelectBoxTypeClass::Serialize(T& Stm)
 		.Process(this->VisibleToHouses)
 		.Process(this->VisibleToHouses_Observer)
 		.Process(this->DrawAboveTechno)
+		.Process(this->GroundShape_AlwaysDraw)
 		.Process(this->GroundLine)
 		.Process(this->GroundLineColor)
 		.Process(this->GroundLine_Dashed)

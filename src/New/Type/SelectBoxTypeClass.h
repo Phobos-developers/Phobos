@@ -17,6 +17,7 @@ public:
 	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<bool> DrawAboveTechno;
+	Valueable<bool> GroundShape_AlwaysDraw;
 	Valueable<bool> GroundLine;
 	Damageable<ColorStruct> GroundLineColor;
 	Valueable<bool> GroundLine_Dashed;
@@ -31,6 +32,7 @@ public:
 		, VisibleToHouses { AffectedHouse::All }
 		, VisibleToHouses_Observer { true }
 		, DrawAboveTechno { true }
+		, GroundShape_AlwaysDraw { true }
 		, GroundLine { false }
 		, GroundLineColor { { 0,255,0 } }
 		, GroundLine_Dashed { false}
