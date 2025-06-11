@@ -8,25 +8,30 @@ class SelectBoxTypeClass final : public Enumerable<SelectBoxTypeClass>
 {
 public:
 	Valueable<SHPStruct*> Shape;
+	Valueable<SHPStruct*> GroundShape { nullptr };
 	CustomPalette Palette;
 	Nullable<Vector3D<int>> Frames;
-	Valueable<bool> Grounded;
 	Valueable<Point2D> Offset;
+	Valueable<Point2D> GroundOffset;
 	TranslucencyLevel Translucency;
 	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<bool> DrawAboveTechno;
+	Valueable<bool> GroundLine;
+	Damageable<ColorStruct> GroundLineColor;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
 		, Shape { FileSystem::LoadSHPFile("select.shp") }
 		, Palette {}
 		, Frames {}
-		, Grounded { false }
 		, Offset { Point2D::Empty }
+		, GroundOffset { Point2D::Empty }
 		, Translucency { 0 }
 		, VisibleToHouses { AffectedHouse::All }
 		, VisibleToHouses_Observer { true }
 		, DrawAboveTechno { true }
+		, GroundLine { false }
+		, GroundLineColor { { 0,255,0 } }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

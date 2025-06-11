@@ -263,14 +263,19 @@ DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 
 [SOMESELECTBOXTYPE]                     ; Select box Type name
 Shape=select.shp                        ; filename with .shp extension
+GroundShape=                              ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
-Grounded=false                          ; boolean
 Offset=0,0                              ; integers - horizontal, vertical
+GroundOffset=0,0                    ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
 VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
 DrawAboveTechno=true                    ; boolean
+GroundLine=false                                ; boolean
+GroundLineColor=0,255,0                     ; R, G, B
+GroundLineColor.ConditionYellow=           ; R, G, B
+GroundLineColor.ConditionRed=               ; R, G, B
 
 [SOMETECHNO]                            ; TechnoType
 SelectBox=                              ; Select box

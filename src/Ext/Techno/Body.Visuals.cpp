@@ -350,11 +350,6 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	if (!pSelectBox || pSelectBox->DrawAboveTechno == drawBefore)
 		return;
 
-	const auto pShape = pSelectBox->Shape.Get();
-
-	if (!pShape)
-		return;
-
 	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->VisibleToHouses_Observer : EnumFunctions::CanTargetHouse(pSelectBox->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer);
 
 	if (!canSee)
@@ -366,34 +361,38 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
 	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
-	Point2D drawPoint = *pLocation;
+	const Point2D offset = whatAmI == InfantryClass::AbsID ? Point2D { 8, -3 } : Point2D { 1, -4 };
+	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
+	const auto pGroundShape = pSelectBox->GroundShape.Get();
 
-	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
+	if ((pGroundShape || pSelectBox->GroundLine) && whatAmI != BuildingClass::AbsID)
 	{
 		CoordStruct coords = pThis->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+		const auto& [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
 
-		const auto& [outClient, visible] = TacticalClass::Instance->CoordsToClient(coords);
+		if (visible && pGroundShape)
+		{
+			const Point2D drawPoint = point + offset + pSelectBox->GroundOffset;
+			DSurface::Temp->DrawSHP(pPalette, pGroundShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		}
 
-		if (!visible)
-			return;
-
-		drawPoint = outClient;
+		if (pSelectBox->GroundLine)
+		{
+			const ColorStruct color = pSelectBox->GroundLineColor.Get(healthPercentage);
+			DSurface::Temp->DrawLine(const_cast<Point2D*>(pLocation), const_cast<Point2D*>(&point), Drawing::RGB_To_Int(color));
+		}
 	}
 
-	drawPoint += pSelectBox->Offset;
+	if (const auto pShape = pSelectBox->Shape.Get())
+	{
+		Point2D drawPoint = *pLocation + offset + pSelectBox->Offset;
 
-	if (pSelectBox->DrawAboveTechno)
-		drawPoint.Y += pType->PixelSelectionBracketDelta;
+		if (pSelectBox->DrawAboveTechno)
+			drawPoint.Y += pType->PixelSelectionBracketDelta;
 
-	if (whatAmI == AbstractType::Infantry)
-		drawPoint += { 8, -3 };
-	else
-		drawPoint += { 1, -4 };
-
-	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
-
-	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		DSurface::Temp->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
 }
 
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
