@@ -29,6 +29,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && *args->Damage)
 	{
+		const auto pTypeExt = pExt->TypeExtData;
 		double multiplier = 1.0;
 
 		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
