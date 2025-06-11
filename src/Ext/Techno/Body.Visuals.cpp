@@ -361,6 +361,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
 	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
+	const auto pSurface = DSurface::Temp;
 	const Point2D offset = whatAmI == InfantryClass::AbsID ? Point2D { 8, -3 } : Point2D { 1, -4 };
 	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
 	const auto pGroundShape = pSelectBox->GroundShape.Get();
@@ -371,17 +372,26 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto& [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
 
-		if (visible && pGroundShape)
+		if (visible && pGroundShape && pThis->GetHeight() > 0)
 		{
 			const Point2D drawPoint = point + offset + pSelectBox->GroundOffset;
-			DSurface::Temp->DrawSHP(pPalette, pGroundShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+			pSurface->DrawSHP(pPalette, pGroundShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		}
 
 		if (pSelectBox->GroundLine)
 		{
 			Point2D projection { point.X, std::min(point.Y, pBounds->Height - 1) };
-			const ColorStruct color = pSelectBox->GroundLineColor.Get(healthPercentage);
-			DSurface::Temp->DrawLine(const_cast<Point2D*>(pLocation), &projection, Drawing::RGB_To_Int(color));
+			const int color = Drawing::RGB_To_Int(pSelectBox->GroundLineColor.Get(healthPercentage));
+
+			if (pSelectBox->GroundLine_Dashed)
+			{
+				auto pattern = Make_Global<bool*>(0x84310C);
+				pSurface->DrawDashedLine(const_cast<Point2D*>(pLocation), &projection, color, pattern, 0);
+			}
+			else
+			{
+				pSurface->DrawLine(const_cast<Point2D*>(pLocation), &projection, color);
+			}
 		}
 	}
 
@@ -392,7 +402,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		if (pSelectBox->DrawAboveTechno)
 			drawPoint.Y += pType->PixelSelectionBracketDelta;
 
-		DSurface::Temp->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		pSurface->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 }
 

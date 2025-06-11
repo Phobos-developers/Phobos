@@ -245,6 +245,8 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 ### Select Box
 
+![placepreview](_static/images/selectbox.png)
+
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
   - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.

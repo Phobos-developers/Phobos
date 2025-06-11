@@ -19,6 +19,7 @@ public:
 	Valueable<bool> DrawAboveTechno;
 	Valueable<bool> GroundLine;
 	Damageable<ColorStruct> GroundLineColor;
+	Valueable<bool> GroundLine_Dashed;
 
 	SelectBoxTypeClass(const char* pTitle = NONE_STR) : Enumerable<SelectBoxTypeClass>(pTitle)
 		, Shape { FileSystem::LoadSHPFile("select.shp") }
@@ -32,6 +33,7 @@ public:
 		, DrawAboveTechno { true }
 		, GroundLine { false }
 		, GroundLineColor { { 0,255,0 } }
+		, GroundLine_Dashed { false}
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);

@@ -26,6 +26,7 @@ void SelectBoxTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DrawAboveTechno.Read(exINI, pSection, "DrawAboveTechno");
 	this->GroundLine.Read(exINI, pSection, "GroundLine");
 	this->GroundLineColor.Read(exINI, pSection, "GroundLineColor.%s");
+	this->GroundLine_Dashed.Read(exINI, pSection, "GroundLine.Dashed");
 }
 
 template <typename T>
@@ -44,6 +45,7 @@ void SelectBoxTypeClass::Serialize(T& Stm)
 		.Process(this->DrawAboveTechno)
 		.Process(this->GroundLine)
 		.Process(this->GroundLineColor)
+		.Process(this->GroundLine_Dashed)
 		;
 }
 
