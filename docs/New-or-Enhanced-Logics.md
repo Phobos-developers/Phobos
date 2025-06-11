@@ -1114,7 +1114,8 @@ Trajectory.Engrave.UpdateDirection=false   ; boolean
   - `Trajectory.Parabola.LaunchAngle` controls the fire angle of the projectile and is only used for modes `Angle`, `HeightAndAngle`, or `SpeedAndAngle`. Only supports -90.0 ~ 90.0 (Cannot use boundary values) in Mode `Angle` or `SpeedAndAngle`, and 0.0 ~ 90.0 (Cannot use boundary values) in Mode `HeightAndAngle`.
   - `Trajectory.Parabola.DetonationAngle` controls when the angle between the projectile in the current velocity direction and the horizontal plane is less than this value, it will detonate prematurely. Taking effect when the value is at -90.0 ~ 90.0 (Cannot use boundary values).
   - `Trajectory.Parabola.BounceTimes` controls how many times can it bounce back when the projectile hits the ground or cliff. Be aware that excessive projectile speed may cause abnormal operation.
-    - `Trajectory.Parabola.BounceOnWater` controls whether it can bounce on the water surface.
+    - `Trajectory.Parabola.BounceOnTarget` controls the projectile can bounce on which cells or technos.
+    - `Trajectory.Parabola.BounceOnHouses` controls the projectile can bounce on whose technos.
     - `Trajectory.Parabola.BounceDetonate` controls whether it detonates the warhead once extra during each bounce.
     - `Trajectory.Parabola.BounceAttenuation` controls the attenuation coefficient of projectile bounce damage, that is, how many times the next damage after each bounce is the damage just caused. This will also affect the damage of the final detonation.
     - `Trajectory.Parabola.BounceCoefficient` controls the attenuation coefficient of projectile bounce elasticity, that is, how many times the speed after each bounce is the speed before bouncing.
@@ -1126,7 +1127,8 @@ Trajectory.Parabola.ThrowHeight=600        ; integer
 Trajectory.Parabola.LaunchAngle=30         ; floating point value
 Trajectory.Parabola.DetonationAngle=-90.0  ; floating point value
 Trajectory.Parabola.BounceTimes=0          ; integer
-Trajectory.Parabola.BounceOnWater=false    ; boolean
+Trajectory.Parabola.BounceOnTarget=land    ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+Trajectory.Parabola.BounceOnHouses=all     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 Trajectory.Parabola.BounceDetonate=false   ; boolean
 Trajectory.Parabola.BounceAttenuation=0.8  ; floating point value
 Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value

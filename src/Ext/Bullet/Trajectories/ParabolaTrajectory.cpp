@@ -50,7 +50,8 @@ void ParabolaTrajectoryType::Serialize(T& Stm)
 		.Process(this->LaunchAngle)
 		.Process(this->DetonationAngle)
 		.Process(this->BounceTimes)
-		.Process(this->BounceOnWater)
+		.Process(this->BounceOnTarget)
+		.Process(this->BounceOnHouses)
 		.Process(this->BounceDetonate)
 		.Process(this->BounceAttenuation)
 		.Process(this->BounceCoefficient)
@@ -91,7 +92,8 @@ void ParabolaTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->LaunchAngle.Read(exINI, pSection, "Trajectory.Parabola.LaunchAngle");
 	this->DetonationAngle.Read(exINI, pSection, "Trajectory.Parabola.DetonationAngle");
 	this->BounceTimes.Read(exINI, pSection, "Trajectory.Parabola.BounceTimes");
-	this->BounceOnWater.Read(exINI, pSection, "Trajectory.Parabola.BounceOnWater");
+	this->BounceOnTarget.Read(exINI, pSection, "Trajectory.Parabola.BounceOnTarget");
+	this->BounceOnHouses.Read(exINI, pSection, "Trajectory.Parabola.BounceOnHouses");
 	this->BounceDetonate.Read(exINI, pSection, "Trajectory.Parabola.BounceDetonate");
 	this->BounceAttenuation.Read(exINI, pSection, "Trajectory.Parabola.BounceAttenuation");
 	this->BounceCoefficient.Read(exINI, pSection, "Trajectory.Parabola.BounceCoefficient");
@@ -844,12 +846,31 @@ double ParabolaTrajectory::CheckFixedAngleEquation(const CoordStruct& source, co
 	return upTime + downTime - meetTime;
 }
 
-bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(const CellClass* const pCell, const CoordStruct& position)
+bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCell, const CoordStruct& position)
 {
 	const auto pType = this->Type;
-	// Can bounce on water surface?
-	if (pCell->LandType == LandType::Water && !pType->BounceOnWater)
+	const bool alt = pCell->ContainsBridge() && (((pCell->Level + 4) * Unsorted::LevelHeight) <= position.Z);
+	// Check can truely bounce on cell
+	if (!EnumFunctions::IsCellEligible(pCell, pType->BounceOnTarget, false, alt))
 		return true;
+	// Check can truely bounce on techno
+	const auto pBullet = this->Bullet;
+	const auto pFirer = pBullet->Owner;
+	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	// Require all technos on the cell to meet the conditions
+	if ((pType->BounceOnTarget & AffectedTarget::AllContents) || pType->BounceOnHouses != AffectedHouse::All)
+	{
+		for (auto pObject = (alt ? pCell->AltObject : pCell->FirstObject); pObject; pObject = pObject->NextObject)
+		{
+			if (const auto pTechno = abstract_cast<TechnoClass*, true>(pObject))
+			{
+				if (!EnumFunctions::CanTargetHouse(pType->BounceOnHouses, pOwner, pTechno->Owner))
+					return true;
+				else if (!EnumFunctions::IsTechnoEligible(pTechno, pType->BounceOnTarget))
+					return true;
+			}
+		}
+	}
 	// Obtain information on which surface to bounce on
 	const auto groundNormalVector = this->GetGroundNormalVector(pCell, position);
 	// Bounce only occurs when the velocity is in different directions or the surface is not cliff
@@ -866,20 +887,15 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(const CellClass* con
 	// Calculate the velocity vector after bouncing
 	this->MovingVelocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
-	const auto pBullet = this->Bullet;
 	// Detonate an additional warhead when bouncing?
 	if (pType->BounceDetonate)
-	{
-		const auto pFirer = pBullet->Owner;
-		const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 		WarheadTypeExt::DetonateAt(pBullet->WH, position, pFirer, pBullet->Health, pOwner);
-	}
 	// Calculate the attenuation damage after bouncing
 	PhobosTrajectory::SetNewDamage(pBullet->Health, pType->BounceAttenuation);
 	return false;
 }
 
-BulletVelocity ParabolaTrajectory::GetGroundNormalVector(const CellClass* const pCell, const CoordStruct& position)
+BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell, const CoordStruct& position)
 {
 	if (const auto index = pCell->SlopeIndex)
 	{

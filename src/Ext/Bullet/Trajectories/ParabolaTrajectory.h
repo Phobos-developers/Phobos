@@ -21,7 +21,8 @@ public:
 		, LaunchAngle { 30.0 }
 		, DetonationAngle { -90.0 }
 		, BounceTimes { 0 }
-		, BounceOnWater { false }
+		, BounceOnTarget { AffectedTarget::Land }
+		, BounceOnHouses { AffectedHouse::All }
 		, BounceDetonate { false }
 		, BounceAttenuation { 0.8 }
 		, BounceCoefficient { 0.8 }
@@ -32,7 +33,8 @@ public:
 	Valueable<double> LaunchAngle;
 	Valueable<double> DetonationAngle;
 	Valueable<int> BounceTimes;
-	Valueable<bool> BounceOnWater;
+	Valueable<AffectedTarget> BounceOnTarget;
+	Valueable<AffectedHouse> BounceOnHouses;
 	Valueable<bool> BounceDetonate;
 	Valueable<double> BounceAttenuation;
 	Valueable<double> BounceCoefficient;
@@ -90,8 +92,8 @@ private:
 	double CheckFixedHeightEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double gravity);
 	double SearchFixedAngleMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double radian, const double gravity);
 	double CheckFixedAngleEquation(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double meetTime, const double radian, const double gravity);
-	bool CalculateBulletVelocityAfterBounce(const CellClass* const pCell, const CoordStruct& position);
-	BulletVelocity GetGroundNormalVector(const CellClass* const pCell, const CoordStruct& position);
+	bool CalculateBulletVelocityAfterBounce(CellClass* const pCell, const CoordStruct& position);
+	BulletVelocity GetGroundNormalVector(CellClass* const pCell, const CoordStruct& position);
 
 	static inline bool CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight)
 	{
