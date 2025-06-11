@@ -408,7 +408,7 @@ public:
 
 			, AnimCraterDestroyTiberium { true }
     
-      , CrusherLevel { 5 }
+      		, CrusherLevel { 5 }
 			, CrushableLevel { 5 }
 			, OmniCrusherLevel { 10 }
 			, OmniCrushResistantLevel { 10 }
