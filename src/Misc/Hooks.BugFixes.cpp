@@ -2042,6 +2042,27 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 
 #pragma endregion
 
+DEFINE_HOOK(0x89416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
+{
+	enum { NextTechno = 0x489547 };
+
+	GET(TechnoClass*, pAirTechno, EBX);
+	GET_BASE(TechnoClass*, pSourceTechno, 0x8);
+
+	if (pAirTechno != pSourceTechno)
+		return 0;
+
+	if (pSourceTechno->GetTechnoType()->DamageSelf)
+		return 0;
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->AllowDamageOnSelf)
+		return 0;
+
+	return NextTechno;
+}
+
 #pragma region DamageAreaItemsFix
 // Obviously, it is unreasonable for a large-scale damage like a nuke to only cause damage to units
 // located on or under the bridge that are in the same position as the damage center point
