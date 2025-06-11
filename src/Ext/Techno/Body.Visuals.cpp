@@ -372,7 +372,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto& [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
 
-		if (visible && pGroundShape && pThis->GetHeight() > 0)
+		if (visible && pGroundShape && pThis->IsInAir())
 		{
 			const Point2D drawPoint = point + offset + pSelectBox->GroundOffset;
 			pSurface->DrawSHP(pPalette, pGroundShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
