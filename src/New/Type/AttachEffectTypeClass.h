@@ -41,6 +41,8 @@ class AttachEffectTypeClass final : public Enumerable<AttachEffectTypeClass>
 
 public:
 	Valueable<int> Duration;
+	Valueable<bool> Duration_ApplyFirepowerMult;
+	Valueable<bool> Duration_ApplyArmorMultOnTarget;
 	Valueable<bool> Cumulative;
 	Valueable<int> Cumulative_MaxCount;
 	Valueable<bool> Powered;
@@ -89,11 +91,14 @@ public:
 	Valueable<double> ReflectDamage_Chance;
 	Nullable<int> ReflectDamage_Override;
 	Valueable<bool> DisableWeapons;
+	Valueable<bool> Unkillable;
 
 	std::vector<std::string> Groups;
 
 	AttachEffectTypeClass(const char* const pTitle) : Enumerable<AttachEffectTypeClass>(pTitle)
 		, Duration { 0 }
+		, Duration_ApplyFirepowerMult { false }
+		, Duration_ApplyArmorMultOnTarget { false }
 		, Cumulative { false }
 		, Cumulative_MaxCount { -1 }
 		, Powered { false }
@@ -142,6 +147,7 @@ public:
 		, ReflectDamage_Chance { 1.0 }
 		, ReflectDamage_Override {}
 		, DisableWeapons { false }
+		, Unkillable { false }
 		, Groups {}
 	{};
 
