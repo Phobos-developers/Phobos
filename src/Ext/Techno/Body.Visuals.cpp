@@ -379,7 +379,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 		if (pSelectBox->GroundLine)
 		{
-			Point2D projection { point.X, std::min(point.Y, pBounds->Height - 1) };
+			Point2D projection { point.X, std::min(point.Y, pBounds->Height - 33) };
 			const ColorStruct color = pSelectBox->GroundLineColor.Get(healthPercentage);
 			DSurface::Temp->DrawLine(const_cast<Point2D*>(pLocation), &projection, Drawing::RGB_To_Int(color));
 		}
