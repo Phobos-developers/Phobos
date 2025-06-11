@@ -109,7 +109,7 @@ void SWSidebarClass::InitIO()
 
 		if (width > 0 && height > 0)
 		{
-			if (const auto toggleButton = GameCreate<ToggleSWButtonClass>(2100, 0, 0, width, height))
+			if (const auto toggleButton = GameCreate<ToggleSWButtonClass>(SWColumnClass::StartID - 1, 0, 0, width, height))
 			{
 				toggleButton->Zap();
 				GScreenClass::Instance.AddButton(toggleButton);
