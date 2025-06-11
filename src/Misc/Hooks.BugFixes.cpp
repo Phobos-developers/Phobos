@@ -2042,7 +2042,7 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 
 #pragma endregion
 
-DEFINE_HOOK(0x89416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
+DEFINE_HOOK(0x489416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
 {
 	enum { NextTechno = 0x489547 };
 
