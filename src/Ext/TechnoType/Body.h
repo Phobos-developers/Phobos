@@ -44,6 +44,8 @@ public:
 		std::map<int, int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
+		int SpawnerRange;
+		int EliteSpawnerRange;
 		Nullable<int> Spawner_DelayFrames;
 		Valueable<bool> Spawner_AttackImmediately;
 		Nullable<bool> Harvester_Counted;
@@ -270,6 +272,8 @@ public:
 			, ShadowIndex_Frame { 0 }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
+			, SpawnerRange { 0 }
+			, EliteSpawnerRange { 0 }
 			, Spawner_DelayFrames {}
 			, Spawner_AttackImmediately { false }
 			, Harvester_Counted {}
@@ -466,6 +470,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		void CalculateSpawnerRange();
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
