@@ -333,6 +333,8 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
+		.Process(this->BunkerWallsUpSound)
+		.Process(this->BunkerWallsDownSound)
 		;
 }
 
