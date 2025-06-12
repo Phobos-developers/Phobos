@@ -408,6 +408,7 @@ This page lists all the individual contributions to the project by their author.
   - Exclusive SuperWeapon Sidebar
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Weapon target filtering by health percentage
+  - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

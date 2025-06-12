@@ -231,6 +231,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 - Infantry support `IsGattling=yes`.
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
+- Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 
 ## Fixes / interactions with other extensions
 
