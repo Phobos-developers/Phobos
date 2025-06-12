@@ -2204,35 +2204,35 @@ DEFINE_HOOK(0x64D592, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal1, 0x
 {
 	enum { SkipTargetCrdRecal = 0x64D598 };
 	GET(TechnoClass*, pTechno, EBP);
-	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
 }
 
 DEFINE_HOOK(0x64D575, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal2, 0x6)
 {
 	enum { SkipTargetCrdRecal = 0x64D598 };
 	GET(TechnoClass*, pTechno, EBP);
-	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
 }
 
 DEFINE_HOOK(0x64D5C5, Game_PreProcessMegaMissionList_CheckForTargetCrdRecal3, 0x6)
 {
 	enum { SkipTargetCrdRecal = 0x64D659 };
 	GET(TechnoClass*, pTechno, EBP);
-	return pTechno->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix ? SkipTargetCrdRecal : 0;
+	return pTechno->GetTechnoType()->BalloonHover ? SkipTargetCrdRecal : 0;
 }
 
 DEFINE_HOOK(0x51BFA2, InfantryClass_IsCellOccupied_Start, 0x6)
 {
 	enum { MoveOK = 0x51C02D };
 	GET(InfantryClass*, pThis, EBP);
-	return pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir() ? MoveOK : 0;
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
 }
 
 DEFINE_HOOK(0x73F0A7, UnitClass_IsCellOccupied_Start, 0x9)
 {
 	enum { MoveOK = 0x73F23F };
 	GET(UnitClass*, pThis, ECX);
-	return pThis->Type->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix && pThis->IsInAir() ? MoveOK : 0;
+	return pThis->Type->BalloonHover && pThis->IsInAir() ? MoveOK : 0;
 }
 
 namespace ApproachTargetContext
@@ -2243,7 +2243,7 @@ namespace ApproachTargetContext
 DEFINE_HOOK(0x4D5690, FootClass_ApproachTarget_SetContext, 0x6)
 {
 	GET(FootClass*, pThis, ECX);
-	ApproachTargetContext::IsBalloonHover = pThis->GetTechnoType()->BalloonHover && RulesExt::Global()->BalloonHoverPathingFix;
+	ApproachTargetContext::IsBalloonHover = pThis->GetTechnoType()->BalloonHover;
 	return 0;
 }
 
