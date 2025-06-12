@@ -104,5 +104,5 @@ DEFINE_HOOK_AGAIN(0x6A0809, SomeLocomotionClass_WhileMoving_SkipCrushSlowDown, 0
 DEFINE_HOOK(0x4B1146, SomeLocomotionClass_WhileMoving_SkipCrushSlowDown, 0x6) // Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	return TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->SkipCrushSlowdown ? R->Origin() + 0x3C : 0;
+	return TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType())->SkipCrushSlowdown ? R->Origin() + 0x3C : 0;
 }
