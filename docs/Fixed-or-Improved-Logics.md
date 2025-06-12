@@ -232,6 +232,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Infantry support `IsGattling=yes`.
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 
 ## Fixes / interactions with other extensions
 
@@ -1791,6 +1792,16 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 ### Customizable debris & meteor impact and warhead detonation behaviour
 
 - The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
+
+### Customizable debris trailer anim spawn delay
+
+- You can now customize the generation interval of VoxelAnim's trailer animation
+
+In `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]       ; VoxelAnimType
+Trailer.SpawnDelay=2  ; integer, game frames
+```
 
 ## Warheads
 
