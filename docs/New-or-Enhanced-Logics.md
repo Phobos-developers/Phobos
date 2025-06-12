@@ -608,6 +608,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ### Repair amount limit
 
 - You can now set a maximum amount when engineer repair a building.
+- Negative value means percentage. For example, `RepairAmount=-50` means you can only repair 50% amount of `Strength` per time.
 
 In `rulesmd.ini`
 ```ini
