@@ -201,6 +201,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
 
+	this->RepairAmount.Read(exINI, pSection, "RepairAmount");
+
 	if (pThis->NumberOfDocks > 0)
 	{
 		this->AircraftDockingDirs.clear();
@@ -333,6 +335,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
+		.Process(this->RepairAmount)
 		;
 }
 

@@ -660,8 +660,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FiringForceScatter.Read(exINI, pSection, "FiringForceScatter");
 
-	this->RepairAmount.Read(exINI, pSection, "RepairAmount");
-
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1243,8 +1241,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
-
-		.Process(this->RepairAmount)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

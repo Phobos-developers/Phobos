@@ -1000,7 +1000,7 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_RepairAmount, 0xA)
 
 	pTarget->MarkForRedraw();
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->Type);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pTarget->Type);
 	const int repair = pTypeExt->RepairAmount;
 
 	if (repair > 0)
