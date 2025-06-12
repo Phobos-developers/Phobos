@@ -15,11 +15,11 @@ int BuildingTypeExt::ExtData::GetSuperWeaponCount() const
 
 int BuildingTypeExt::ExtData::GetSuperWeaponIndex(const int index, HouseClass* pHouse) const
 {
-	auto idxSW = this->GetSuperWeaponIndex(index);
+	const int idxSW = this->GetSuperWeaponIndex(index);
 
-	if (auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
+	if (const auto pSuper = pHouse->Supers.GetItemOrDefault(idxSW))
 	{
-		auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+		const auto pExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 
 		if (!pExt->IsAvailable(pHouse))
 			return -1;
@@ -50,7 +50,8 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 
 	for (const auto& [bTypeIdx, nCount] : pHouseExt->PowerPlantEnhancers)
 	{
-		auto bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+		auto const bTypeExt = BuildingTypeExt::ExtMap.Find(BuildingTypeClass::Array[bTypeIdx]);
+
 		if (bTypeExt->PowerPlantEnhancer_Buildings.Contains(pBuilding->Type))
 		{
 			fFactor *= std::powf(bTypeExt->PowerPlantEnhancer_Factor, static_cast<float>(nCount));
@@ -59,6 +60,17 @@ int BuildingTypeExt::GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHou
 	}
 
 	return static_cast<int>(std::round(pBuilding->GetPowerOutput() * fFactor)) + nAmount;
+}
+
+void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
+{
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	auto const nSound = buildUp
+		? pTypeExt->BunkerWallsUpSound.Get(RulesClass::Instance->BunkerWallsUpSound)
+		: pTypeExt->BunkerWallsDownSound.Get(RulesClass::Instance->BunkerWallsDownSound);
+
+	if (nSound != -1)
+		VocClass::PlayAt(nSound, pThis->Location);
 }
 
 int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
@@ -78,7 +90,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 {
 	int result = 0;
 	bool isUpgrade = false;
-	auto pPowersUp = pBuilding->PowersUpBuilding;
+	auto const pPowersUp = pBuilding->PowersUpBuilding;
 
 	auto checkUpgrade = [pHouse, pBuilding, &result, &isUpgrade](BuildingTypeClass* pTPowersUp)
 	{
@@ -102,7 +114,7 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 			checkUpgrade(pTPowersUp);
 	}
 
-	if (auto pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
+	if (auto const pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
 	{
 		for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
 			checkUpgrade(pTPowersUp);
@@ -132,6 +144,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->PowersUp_Owner.Read(exINI, pSection, "PowersUp.Owner");
 	this->PowersUp_Buildings.Read(exINI, pSection, "PowersUp.Buildings");
+	this->PowerPlant_DamageFactor.Read(exINI, pSection, "PowerPlant.DamageFactor");
 	this->PowerPlantEnhancer_Buildings.Read(exINI, pSection, "PowerPlantEnhancer.PowerPlants");
 	this->PowerPlantEnhancer_Amount.Read(exINI, pSection, "PowerPlantEnhancer.Amount");
 	this->PowerPlantEnhancer_Factor.Read(exINI, pSection, "PowerPlantEnhancer.Factor");
@@ -178,6 +191,15 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Overpower_KeepOnline.Read(exINI, pSection, "Overpower.KeepOnline");
 	this->Overpower_ChargeWeapon.Read(exINI, pSection, "Overpower.ChargeWeapon");
+
+	this->DisableDamageSound.Read(exINI, pSection, "DisableDamageSound");
+
+	this->BuildingOccupyDamageMult.Read(exINI, pSection, "OccupyDamageMultiplier");
+	this->BuildingOccupyROFMult.Read(exINI, pSection, "OccupyROFMultiplier");
+	this->BuildingBunkerDamageMult.Read(exINI, pSection, "BunkerDamageMultiplier");
+	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
+	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
+	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -256,6 +278,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->PowersUp_Owner)
 		.Process(this->PowersUp_Buildings)
+		.Process(this->PowerPlant_DamageFactor)
 		.Process(this->PowerPlantEnhancer_Buildings)
 		.Process(this->PowerPlantEnhancer_Amount)
 		.Process(this->PowerPlantEnhancer_Factor)
@@ -305,6 +328,13 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BarracksExitCell)
 		.Process(this->Overpower_KeepOnline)
 		.Process(this->Overpower_ChargeWeapon)
+		.Process(this->DisableDamageSound)
+		.Process(this->BuildingOccupyDamageMult)
+		.Process(this->BuildingOccupyROFMult)
+		.Process(this->BuildingBunkerDamageMult)
+		.Process(this->BuildingBunkerROFMult)
+		.Process(this->BunkerWallsUpSound)
+		.Process(this->BunkerWallsDownSound)
 		;
 }
 

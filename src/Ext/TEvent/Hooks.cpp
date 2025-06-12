@@ -36,7 +36,9 @@ DEFINE_HOOK(0x7271F9, TEventClass_GetFlags, 0x5)
 
 	int nEvent = static_cast<int>(pThis->EventKind);
 	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent < PhobosTriggerEvent::_DummyMaximum)
-		eAttach |= 0x10; // LOGIC
+	{
+		eAttach |= TEventExt::GetFlags(nEvent);
+	}
 
 	R->EAX(eAttach);
 

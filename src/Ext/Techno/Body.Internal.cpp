@@ -28,7 +28,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
-		if (auto const pFootKiller = generic_cast<FootClass*>(pObjectKiller))
+		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
 			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
@@ -80,7 +80,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 
 	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
@@ -143,6 +143,19 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	}
 
 	return FLH;
+}
+
+void TechnoExt::ExtData::InitializeDisplayInfo()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
+
+	if (pPrimary && pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK)
+		pThis->RearmTimer.TimeLeft = pPrimary->ROF;
+	else if (const auto pSecondary = pThis->GetWeapon(1)->WeaponType)
+		pThis->RearmTimer.TimeLeft = pSecondary->ROF;
+
+	pThis->RearmTimer.StartTime = Math::min(-2, -pThis->RearmTimer.TimeLeft);
 }
 
 void TechnoExt::ExtData::InitializeAttachEffects()
@@ -281,7 +294,7 @@ void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
 void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 {
 	// Skip if has no attached animations.
-	if (!pThis || !pThis->HasParachute)
+	if (!pThis->HasParachute)
 		return;
 
 	// Could possibly be faster to track the attached anims in TechnoExt but the profiler doesn't show this as a performance hog so whatever.

@@ -219,7 +219,7 @@ msgid ""
 "developers/Phobos/blob/develop/.github/workflows/nightly.yml) (added "
 "unreleased features that will be in next devbuild)"
 msgstr ""
-"[最新的每夜构建版本](https://nightly.link/Phobos-"
+"[最新的自动构建版本](https://nightly.link/Phobos-"
 "developers/Phobos/blob/develop/.github/workflows/nightly.yml) "
 "（添加了尚未发布的功能，这些功能将在下一个开发版本中推出）"
 
@@ -228,12 +228,12 @@ msgid ""
 "Individual new feature nightly builds for testing can be found in [pull "
 "requests](https://github.com/Phobos-developers/Phobos/pulls)"
 msgstr ""
-"用于测试单个新功能的每夜构建可在 [拉取请求](https://github.com/Phobos-"
+"用于测试单个新功能的自动构建版本可在 [拉取请求](https://github.com/Phobos-"
 "developers/Phobos/pulls) 中找到"
 
 #: ../../../README.md:38
 msgid "Note on nightly builds"
-msgstr "关于每夜构建版本的说明"
+msgstr "关于自动构建版本的说明"
 
 #: ../../../README.md:40
 msgid ""
@@ -282,7 +282,7 @@ msgid ""
 "`Phobos.dll` and `Phobos.pdb`."
 msgstr ""
 "获取 Phobos 「软件包」（可在 [发布页面](https://github.com/Phobos-"
-"developers/Phobos/releases) 找到官方构建版；阅读下文了解如何获取每夜构建版本）。最终会生成两个文件：`Phobos.dll`"
+"developers/Phobos/releases) 找到官方构建版；阅读下文了解如何获取自动构建版本）。最终会生成两个文件：`Phobos.dll`"
 " 和 `Phobos.pdb`。"
 
 #: ../../../README.md:47
@@ -363,7 +363,7 @@ msgid ""
 "You can switch between versions (displays latest develop nightly version "
 "by default) in the bottom right corner, as well as download a PDF "
 "version."
-msgstr "你可以在右下角切换版本（默认显示最新开发的每夜构建版本），也可以在官方英文文档下载 PDF 版本。"
+msgstr "你可以在右下角切换版本（默认显示开发分支最新一次提交对应的版本），也可以在官方英文文档下载 PDF 版本。"
 
 #: ../../../README.md:65
 msgid ""

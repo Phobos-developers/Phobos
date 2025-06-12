@@ -347,7 +347,7 @@ DEFINE_HOOK(0x480552, CellClass_AttachesToNeighbourOverlay_Gate, 0x7)
 		{
 			if (pObject->Health > 0)
 			{
-				if (auto pBuilding = abstract_cast<BuildingClass*>(pObject))
+				if (auto pBuilding = abstract_cast<BuildingClass*, true>(pObject))
 				{
 					auto pBType = pBuilding->Type;
 					if ((RulesClass::Instance->EWGates.FindItemIndex(pBType) != -1) && (state == 2 || state == 6))
@@ -1011,6 +1011,19 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 	return 0;
 }
 
+// Fix a potential edge case where aircraft gets stuck in 'sleep' (reload/repair) on dock if it gets assigned target from team mission etc.
+DEFINE_HOOK(0x41915D, AircraftClass_ReceiveCommand_QueryPreparedness, 0x8)
+{
+	enum { CheckAmmo = 0x419169 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (pThis->Team && pThis->Team->Focus == pThis->Target && pThis->CurrentMission == Mission::Sleep)
+		return CheckAmmo;
+
+	return 0;
+}
+
 // Fix tileset parsing to not reset certain tileset indices for Lunar theater if the fix is enabled.
 DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 {
@@ -1153,7 +1166,7 @@ DEFINE_HOOK(0x73ED66, UnitClass_Mission_Harvest_PathfindingFix, 0x5)
 
 #pragma region StopEventFix
 
-DEFINE_JUMP(LJMP, 0x4C756B, 0x4C757D); // Skip cell under bridge check
+DEFINE_JUMP(LJMP, 0x4C752A, 0x4C757D); // Skip cell under bridge check
 
 DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 {
@@ -1209,7 +1222,7 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	}
 	else
 	{
-		const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
 		// Clear archive target for infantries and vehicles like receive a mega mission
 		if (pFoot && !pAircraft)
@@ -1843,13 +1856,32 @@ DEFINE_HOOK(0x5198C3, FootClass_UpdatePosition_EnterGrinderSound, 0x6)// Infantr
 	return 0;
 }
 
+DEFINE_HOOK(0x73A2D2, UnitClass_UpdatePosition_EnterBioReactor, 0x5)
+{
+	GET(BuildingClass*, pBuilding, EBX);
+	GET(UnitClass*, pThis, EBP);
+
+	const auto pBuildingType = pBuilding->Type;
+
+	if (pBuildingType->UnitAbsorb)
+	{
+		pThis->Transporter = pBuilding;
+		const int enterSound = pBuildingType->EnterBioReactorSound;
+		VocClass::PlayAt((enterSound >= 0 ? enterSound : RulesClass::Instance->EnterBioReactorSound), pThis->GetCoords(), 0);
+		pThis->Absorbed = true;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x51A30A };
 
 	GET(BuildingClass*, pReactor, EDI);
-	GET(FootClass*, pFoot, ESI);
-	pFoot->Transporter = pReactor;
+	GET(InfantryClass*, pThis, ESI);
+
+	pThis->Transporter = pReactor;
 	const int enterSound = pReactor->Type->EnterBioReactorSound;
 
 	if (enterSound >= 0)
@@ -1861,12 +1893,27 @@ DEFINE_HOOK(0x51A304, InfantryClass_UpdatePosition_EnterBioReactor, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x442F9B, BuildingClass_DestroyedByC4_LeaveBioReactor, 0x6)
+{
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
+	return 0;
+}
+
+DEFINE_HOOK(0x44A541, BuildingClass_Mission_Selling_LeaveBioReactor, 0x7)
+{
+	GET(FootClass*, pFoot, ESI);
+	pFoot->Transporter = nullptr;
+	return 0;
+}
+
 DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 {
 	enum { SkipGameCode = 0x44DBD5 };
 
 	GET(BuildingClass*, pReactor, EBP);
 	GET(FootClass*, pFoot, ESI);
+
 	pFoot->Transporter = nullptr;
 	const int leaveSound = pReactor->Type->LeaveBioReactorSound;
 
@@ -1879,14 +1926,15 @@ DEFINE_HOOK(0x44DBCF, BuildingClass_Mission_Unload_LeaveBioReactor, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x51A2AD, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x9)
+DEFINE_HOOK(0x51A298, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x6)
 {
 	enum { CannotEnter = 0x51A4BF };
 
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pDestination, EDI);
-
-	return pDestination->Passengers.NumPassengers + 1 <= pDestination->Type->Passengers && static_cast<int>(pThis->GetTechnoType()->Size) <= pDestination->Type->SizeLimit ? 0 : CannotEnter;
+	// Compared to `Vehicle entering building` / `Infantry entering vehicle` / `Vehicle entering vehicle`,
+	// `Infantry entering building` lacks the judgment of this
+	return (pThis->SendCommand(RadioCommand::QueryCanEnter, pDestination) == RadioCommand::AnswerPositive) ? 0 : CannotEnter;
 }
 
 DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
@@ -1944,3 +1992,207 @@ DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 	R->EAX(pContent->WhatAmI());
 	return ContinueCheck;
 }
+
+DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
+{
+	enum { NextTechno = 0x4817D9 };
+
+	GET(TechnoClass*, pTechno, ESI);
+
+	if (!pTechno)
+		return NextTechno;
+
+	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x2C, 0x4));
+	GET_STACK(const bool, ignoreMission, STACK_OFFSET(0x2C, 0x8));
+	GET_STACK(const bool, ignoreDestination, STACK_OFFSET(0x2C, 0xC));
+
+	if (ignoreDestination || pTechno->HasAbility(Ability::Scatter)
+		|| (pTechno->Owner->IsControlledByHuman()
+		? RulesClass::Instance->PlayerScatter
+		: pTechno->Owner->IQLevel2 >= RulesClass::Instance->Scatter))
+	{
+		pTechno->Scatter(coords, ignoreMission, ignoreDestination);
+	}
+
+	return NextTechno;
+}
+
+#pragma region ElectricAssultFix
+
+namespace ElectricAssultTemp
+{
+	WeaponTypeClass* WeaponType;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5102, FootClass_ElectricAssultFix_SetWeaponType, 0x6)	// Mission_Guard
+DEFINE_HOOK(0x4D6F66, FootClass_ElectricAssultFix_SetWeaponType, 0x6)		// Mission_AreaGuard
+{
+	GET(WeaponTypeClass*, Secondary, ECX);
+
+	ElectricAssultTemp::WeaponType = Secondary;
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x4D5184, FootClass_ElectricAssultFix2, 0x7)	// Mission_Guard
+DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
+{
+	GET(FootClass*, pThis, ESI);
+	GET(BuildingClass*, pBuilding, EDI);
+	enum { SkipGuard = 0x4D51AE, ContinueGuard = 0x4D5198,
+		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
+
+	const auto pWeapon = ElectricAssultTemp::WeaponType;
+	bool InGuard = (R->Origin() == 0x4D5184);
+
+	if (pBuilding->Owner == pThis->Owner &&
+		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->GetTechnoType()) != 0.0)
+	{
+		return InGuard ? SkipGuard : SkipAreaGuard;
+	}
+
+	return InGuard ? ContinueGuard : ContinueAreaGuard;
+}
+
+#pragma endregion
+
+DEFINE_HOOK(0x489416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
+{
+	enum { NextTechno = 0x489547 };
+
+	GET(TechnoClass*, pAirTechno, EBX);
+	GET_BASE(TechnoClass*, pSourceTechno, 0x8);
+
+	if (pAirTechno != pSourceTechno)
+		return 0;
+
+	if (pSourceTechno->GetTechnoType()->DamageSelf)
+		return 0;
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->AllowDamageOnSelf)
+		return 0;
+
+	return NextTechno;
+}
+
+#pragma region DamageAreaItemsFix
+
+// Obviously, it is unreasonable for a large-scale damage like a nuke to only cause damage to units
+// located on or under the bridge that are in the same position as the damage center point
+namespace DamageAreaTemp
+{
+	const CellClass* CheckingCell = nullptr;
+	bool CheckingCellAlt = false;
+}
+
+// Skip useless alt check, so it will only start checking from the cell's FirstObject
+// Note: Ares hook at 0x489562(0x6) and return 0
+DEFINE_JUMP(LJMP, 0x489568, 0x489592);
+
+DEFINE_HOOK(0x4896BF, DamageArea_DamageItemsFix1, 0x6)
+{
+	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
+
+	GET(const CellClass* const, pCell, EBX);
+
+	DamageAreaTemp::CheckingCell = pCell;
+	auto pObject = pCell->FirstObject;
+
+	if (pObject)
+	{
+		R->ESI(pObject);
+		return CheckThisObject;
+	}
+
+	pObject = pCell->AltObject;
+
+	if (!pObject)
+		return CheckNextCell;
+
+	DamageAreaTemp::CheckingCellAlt = true;
+
+	R->ESI(pObject);
+	return CheckThisObject;
+}
+
+DEFINE_HOOK(0x4899B3, DamageArea_DamageItemsFix2, 0x5)
+{
+	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
+
+	GET(const ObjectClass*, pObject, ESI);
+
+	pObject = pObject->NextObject;
+
+	if (pObject)
+	{
+		R->ESI(pObject);
+		return CheckThisObject;
+	}
+
+	if (DamageAreaTemp::CheckingCellAlt)
+	{
+		DamageAreaTemp::CheckingCellAlt = false;
+		return CheckNextCell;
+	}
+
+	pObject = DamageAreaTemp::CheckingCell->AltObject;
+
+	if (!pObject)
+		return CheckNextCell;
+
+	DamageAreaTemp::CheckingCellAlt = true;
+
+	R->ESI(pObject);
+	return CheckThisObject;
+}
+
+DEFINE_HOOK(0x489BDB, DamageArea_RockerItemsFix1, 0x6)
+{
+	enum { SkipGameCode = 0x489C29 };
+
+	GET(const short, cellX, ESI);
+	GET(const short, cellY, EBX);
+
+	const auto pCell = MapClass::Instance.GetCellAt(CellStruct { cellX, cellY });
+	DamageAreaTemp::CheckingCell = pCell;
+	auto pObject = pCell->FirstObject;
+
+	if (pObject)
+	{
+		R->EAX(pObject);
+		return SkipGameCode;
+	}
+
+	pObject = pCell->AltObject;
+
+	if (pObject)
+		DamageAreaTemp::CheckingCellAlt = true;
+
+	R->EAX(pObject);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
+{
+	GET(const ObjectClass*, pObject, EDI);
+
+	if (pObject)
+		return 0;
+
+	if (DamageAreaTemp::CheckingCellAlt)
+	{
+		DamageAreaTemp::CheckingCellAlt = false;
+		return 0;
+	}
+
+	pObject = DamageAreaTemp::CheckingCell->AltObject;
+
+	if (pObject)
+		DamageAreaTemp::CheckingCellAlt = true;
+
+	R->EDI(pObject);
+	return 0;
+}
+
+#pragma region

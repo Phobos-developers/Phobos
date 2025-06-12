@@ -18,11 +18,18 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
+    <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
+    <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.cpp" />
+    <ClCompile Include="src\Ext\Sidebar\SWSidebar\ToggleSWButtonClass.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MatrixOp.cpp" />
     <ClCompile Include="src\Ext\Techno\Hooks.Airstrike.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Harvester.cpp" />
@@ -177,6 +184,7 @@
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
     <ClCompile Include="src\Misc\Hooks.SkirmishColors.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
@@ -199,6 +207,12 @@
     <ClInclude Include="src\New\Type\Affiliated\CreateUnitTypeClass.h" />
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
+    <ClInclude Include="src\Commands\FireTacticalSW.h" />
+    <ClInclude Include="src\Commands\ToggleSWSidebar.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.h" />
+    <ClInclude Include="src\Ext\Sidebar\SWSidebar\ToggleSWButtonClass.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />
@@ -310,21 +324,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevBuild|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>

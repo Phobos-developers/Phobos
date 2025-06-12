@@ -237,22 +237,32 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pShrapnelWeapon);
 		auto const pType = pObject->GetType();
+
+		if (!pType->LegalTarget)
+			return SkipObject;
+
+		if (!pWeaponExt->SkipWeaponPicking && !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+			return SkipObject;
+
 		auto const pWH = pShrapnelWeapon->Warhead;
 		auto armorType = pType->Armor;
 
-		if (!pType->LegalTarget || !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
-			return SkipObject;
-
 		if (auto const pTechno = abstract_cast<TechnoClass*, true>(pObject))
 		{
-			if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
-				return SkipObject;
+			if (!pWeaponExt->SkipWeaponPicking)
+			{
+				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+					return SkipObject;
 
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
-				return SkipObject;
+				if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
+					return SkipObject;
 
-			if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
-				return SkipObject;
+				if (!pWeaponExt->IsHealthRatioEligible(pTechno))
+					return SkipObject;
+
+				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+					return SkipObject;
+			}
 
 			auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
 
@@ -345,13 +355,13 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	{
 		return 0;
 	}
-	else if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
-		{
-			R->EAX(pThis->Type);
-			return SkipChecks;
-		}
+		R->EAX(pThis->Type);
+		return SkipChecks;
 	}
 
 	return 0;
@@ -376,11 +386,10 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	// Do not force Trajectory=Straight projectiles to detonate at target coordinates under certain circumstances.
 	// Fixes issues with walls etc.
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
-			return SkipSetCoordinate;
-	}
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
+		return SkipSetCoordinate;
 
 	return 0;
 }
@@ -391,11 +400,10 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
-	{
-		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
-			return SkipCheck;
-	}
+	auto const pExt = BulletExt::ExtMap.Find(pThis);
+
+	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
+		return SkipCheck;
 
 	return 0;
 }
@@ -403,10 +411,10 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);
+	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 
 	if (pThis->WeaponType)
 	{
-		GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 		int defaultValue = RulesClass::Instance->BallisticScatter;
 		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
