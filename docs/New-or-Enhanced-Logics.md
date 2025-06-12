@@ -605,6 +605,16 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
+### Repair amount limit
+
+- You can now set a maximum amount when engineer repair a building.
+
+In `rulesmd.ini`
+```ini
+[SOMEBUILDING]                     ; BuildingType
+RepairAmount=0                        ; integer
+```
+
 ## Infantry
 
 ### Customizable FLH When Infantry Is Prone Or Deployed
@@ -677,16 +687,6 @@ In `artmd.ini`:
 ```ini
 [SOMEINFANTRY]              ; InfantryType image
 OnlyUseLandSequences=false  ; boolean
-```
-
-### Repair amount limit
-
-- You can now set a maximum amount when engineer repair a building.
-
-In `rulesmd.ini`
-```ini
-[SOMEINFANTRY]                       ; InfantryType
-RepairAmount=0                        ; integer
 ```
 
 ## Projectiles
