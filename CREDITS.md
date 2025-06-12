@@ -534,6 +534,7 @@ This page lists all the individual contributions to the project by their author.
   - Make harvesters do addtional scan after unload
   - Customize the scatter caused by aircraft attack mission
   - Customize whether `Crater=yes` animation would destroy tiberium
+  - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

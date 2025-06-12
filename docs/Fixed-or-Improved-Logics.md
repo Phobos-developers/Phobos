@@ -1525,7 +1525,7 @@ TiltsWhenCrushes.Overlays=         ; boolean
 CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
 CrushSlowdownMultiplier=0.2        ; floating point value
-SkipCrushSlowdown=false            ; floating point value
+SkipCrushSlowdown=false            ; boolean
 ```
 
 ### Destroy animations
