@@ -308,7 +308,7 @@ DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 
 	if ((pUnit->Type->Harvester || pUnit->Type->Weeder) && pUnit->GetStoragePercentage() == 1.0)
 	{
-		return StopHarvesting;	
+		return StopHarvesting;
 	}
 
 	return Skip;

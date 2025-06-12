@@ -10,19 +10,19 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 {
 	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
 
-	int XP = 2 * MapClass::Instance->VisibleRect.X - MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Width);
+	int XP = 2 * MapClass::Instance.VisibleRect.X - MapClass::Instance.MapRect.Width
+		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Width);
 
-	int YP = 2 * MapClass::Instance->VisibleRect.Y + MapClass::Instance->MapRect.Width
-		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance->VisibleRect.Height + 2);
+	int YP = 2 * MapClass::Instance.VisibleRect.Y + MapClass::Instance.MapRect.Width
+		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Height + 2);
 
 	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-	auto pCell = MapClass::Instance->TryGetCellAt(candidate);
+	auto pCell = MapClass::Instance.TryGetCellAt(candidate);
 
 	if (!pCell)
 		return SkipSpawn;
 
-	if (!MapClass::Instance->IsWithinUsableArea(pCell, true))
+	if (!MapClass::Instance.IsWithinUsableArea(pCell, true))
 		return SkipSpawn;
 
 	bool isWater = pCell->LandType == LandType::Water;
@@ -32,9 +32,12 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 
 	REF_STACK(CellStruct, cell, STACK_OFFSET(0x28, -0x18));
 
-	cell = MapClass::Instance->NearByLocation(pCell->MapCoords,
+	cell = MapClass::Instance.NearByLocation(pCell->MapCoords,
 		isWater ? SpeedType::Float : SpeedType::Track,
 		-1, MovementZone::Normal, false, 1, 1, false, false, false, true, CellStruct::Empty, false, false);
+
+	if (cell == CellStruct::Empty)
+		return SkipSpawn;
 
 	R->EAX(&cell);
 
@@ -52,7 +55,7 @@ DEFINE_HOOK(0x481BB8, CellClass_GoodieCheck_FreeMCV, 0x6)
 	GET_STACK(UnitTypeClass*, pBaseUnit, STACK_OFFSET(0x188, -0x138));
 
 	if (RulesClass::Instance->FreeMCV && pHouse->Available_Money() > RulesExt::Global()->FreeMCV_CreditsThreshold &&
-		SessionClass::Instance->Config.Bases && !pHouse->OwnedBuildings && !pHouse->CountOwnedNow(pBaseUnit))
+		SessionClass::Instance.Config.Bases && !pHouse->OwnedBuildings && !pHouse->CountOwnedNow(pBaseUnit))
 	{
 		return EnableForcedMCV;
 	}

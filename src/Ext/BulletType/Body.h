@@ -28,8 +28,7 @@ public:
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
 
-		PhobosTrajectoryType* TrajectoryType;// TODO: why not unique_ptr
-		Valueable<double> Trajectory_Speed;
+		TrajectoryTypePointer TrajectoryType;
 
 		Valueable<bool> Shrapnel_AffectsGround;
 		Valueable<bool> Shrapnel_AffectsBuildings;
@@ -45,6 +44,28 @@ public:
 		Valueable<bool> AAOnly;
 		Valueable<bool> Arcing_AllowElevationInaccuracy;
 		Valueable<WeaponTypeClass*> ReturnWeapon;
+		Valueable<bool> ReturnWeapon_ApplyFirepowerMult;
+
+		Valueable<bool> SubjectToGround;
+
+		Valueable<bool> Splits;
+		Valueable<double> AirburstSpread;
+		Valueable<double> RetargetAccuracy;
+		Valueable<bool> RetargetSelf;
+		Valueable<double> RetargetSelf_Probability;
+		Nullable<bool> AroundTarget;
+		Valueable<bool> Airburst_UseCluster;
+		Valueable<bool> Airburst_RandomClusters;
+		Valueable<bool> Airburst_TargetAsSource;
+		Valueable<bool> Airburst_TargetAsSource_SkipHeight;
+		Valueable<Leptons> Splits_TargetingDistance;
+		Valueable<int> Splits_TargetCellRange;
+		Valueable<bool> Splits_UseWeaponTargeting;
+		Valueable<bool> AirburstWeapon_ApplyFirepowerMult;
+		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
+		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
+
+		Valueable<AnimTypeClass*> BombParachute;
 
 		// Ares 0.7
 		Nullable<Leptons> BallisticScatter_Min;
@@ -57,8 +78,7 @@ public:
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
-			, TrajectoryType { nullptr }
-			, Trajectory_Speed { 100.0 }
+			, TrajectoryType { }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
 			, Shrapnel_UseWeaponTargeting { false }
@@ -73,6 +93,25 @@ public:
 			, AAOnly { false }
 			, Arcing_AllowElevationInaccuracy { true }
 			, ReturnWeapon {}
+			, ReturnWeapon_ApplyFirepowerMult { false }
+			, SubjectToGround { false }
+			, Splits { false }
+			, AirburstSpread { 1.5 }
+			, RetargetAccuracy { 0.0 }
+			, RetargetSelf { true }
+			, RetargetSelf_Probability { 0.5 }
+			, AroundTarget {}
+			, Airburst_UseCluster { false }
+			, Airburst_RandomClusters { false }
+			, Airburst_TargetAsSource { false }
+			, Airburst_TargetAsSource_SkipHeight { false }
+			, Splits_TargetingDistance{ Leptons(1280) }
+			, Splits_TargetCellRange { 3 }
+			, Splits_UseWeaponTargeting { false }
+			, AirburstWeapon_ApplyFirepowerMult { false }
+			, AirburstWeapon_SourceScatterMin { Leptons(0) }
+			, AirburstWeapon_SourceScatterMax { Leptons(0) }
+			, BombParachute { }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -92,7 +131,8 @@ public:
 		void TrajectoryValidation() const;
 	};
 
-	class ExtContainer final : public Container<BulletTypeExt> {
+	class ExtContainer final : public Container<BulletTypeExt>
+	{
 	public:
 		ExtContainer();
 		~ExtContainer();

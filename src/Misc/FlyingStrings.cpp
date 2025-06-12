@@ -1,5 +1,5 @@
 #include "FlyingStrings.h"
-
+#include <Phobos.h>
 #include <MapClass.h>
 #include <Phobos.CRT.h>
 #include <TacticalClass.h>
@@ -13,7 +13,7 @@ std::vector<FlyingStrings::Item> FlyingStrings::Data;
 
 bool FlyingStrings::DrawAllowed(CoordStruct& nCoords)
 {
-	if (auto const pCell = MapClass::Instance->TryGetCellAt(nCoords))
+	if (auto const pCell = MapClass::Instance.TryGetCellAt(nCoords))
 		return !(pCell->IsFogged() || pCell->IsShrouded());
 
 	return false;
@@ -57,7 +57,7 @@ void FlyingStrings::UpdateAll()
 	{
 		auto& dataItem = Data[i];
 
-		auto [point,visible] = TacticalClass::Instance->CoordsToClient(dataItem.Location);
+		auto [point, visible] = TacticalClass::Instance->CoordsToClient(dataItem.Location);
 
 		point += dataItem.PixelOffset;
 

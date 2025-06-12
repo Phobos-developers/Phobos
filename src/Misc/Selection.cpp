@@ -48,7 +48,8 @@ public:
 			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
 			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
-				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top)) {
+				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
+			{
 				return true;
 			}
 		}
@@ -65,8 +66,8 @@ public:
 		return false;
 	}
 
-	static // Reversed from Tactical::Select
-	void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
+	// Reversed from Tactical::Select
+	static void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
@@ -74,22 +75,27 @@ public:
 			return;
 
 		for (const auto& selected : Array)
+		{
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
 				const auto pTechno = selected.Techno;
 				auto pTechnoType = pTechno->GetTechnoType();
-				auto TypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
-				if (bPriorityFiltering && TypeExt && TypeExt->LowSelectionPriority)
+				if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
 					continue;
 
-				if (TypeExt && Game::IsTypeSelecting())
-					Game::UICommands_TypeSelect_7327D0(TypeExt->GetSelectionGroupID());
+				if (pTypeExt && Game::IsTypeSelecting())
+				{
+					Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+				}
 				else if (check_callback)
+				{
 					(*check_callback)(pTechno);
+				}
 				else
 				{
-					const auto pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
+					const auto pBldType = abstract_cast<BuildingTypeClass*, true>(pTechnoType);
 					const auto pOwner = pTechno->GetOwningHouse();
 
 					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
@@ -99,14 +105,16 @@ public:
 					}
 				}
 			}
+		}
 
 		Unsorted::MoveFeedback = true;
 	}
 
-	static // Reversed from Tactical::MakeSelection
-	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type check_callback)
+	// Reversed from Tactical::MakeSelection
+	static void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void* _, callback_type check_callback)
 	{
-		if (pThis->Band.Left || pThis->Band.Top) {
+		if (pThis->Band.Left || pThis->Band.Top)
+		{
 			int nLeft = pThis->Band.Left;
 			int nRight = pThis->Band.Right;
 			int nTop = pThis->Band.Top;

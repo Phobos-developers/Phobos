@@ -3,7 +3,7 @@
 
 VoxelAnimTypeExt::ExtContainer VoxelAnimTypeExt::ExtMap;
 
-void VoxelAnimTypeExt::ExtData::Initialize() {}
+void VoxelAnimTypeExt::ExtData::Initialize() { }
 
 void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 {
@@ -60,7 +60,7 @@ bool VoxelAnimTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 // =============================
 // container
 
-VoxelAnimTypeExt::ExtContainer::ExtContainer() : Container("VoxelVoxelAnimTypeClass") {}
+VoxelAnimTypeExt::ExtContainer::ExtContainer() : Container("VoxelVoxelAnimTypeClass") { }
 VoxelAnimTypeExt::ExtContainer::~ExtContainer() = default;
 
 // =============================

@@ -22,20 +22,38 @@ public:
 	{
 	public:
 
+		PhobosFixedString<0x20> TypeID;
+
 		//Ares 0.A
 		Valueable<int> Money_Amount;
+		ValueableIdx<VoxClass> EVA_Impatient;
+		ValueableIdx<VoxClass> EVA_InsufficientFunds;
+		ValueableIdx<VoxClass> EVA_SelectTarget;
+		Valueable<bool> SW_UseAITargeting;
+		Valueable<bool> SW_AutoFire;
+		Valueable<bool> SW_ManualFire;
+		Valueable<bool> SW_ShowCameo;
+		Valueable<bool> SW_Unstoppable;
 		ValueableVector<TechnoTypeClass*> SW_Inhibitors;
 		Valueable<bool> SW_AnyInhibitor;
 		ValueableVector<TechnoTypeClass*> SW_Designators;
 		Valueable<bool> SW_AnyDesignator;
 		Valueable<double> SW_RangeMinimum;
 		Valueable<double> SW_RangeMaximum;
+		Valueable<int> SW_Shots;
+
 		DWORD SW_RequiredHouses;
 		DWORD SW_ForbiddenHouses;
 		ValueableVector<BuildingTypeClass*> SW_AuxBuildings;
 		ValueableVector<BuildingTypeClass*> SW_NegBuildings;
 		Valueable<bool> SW_InitialReady;
 		ValueableIdx<SuperWeaponTypeClass> SW_PostDependent;
+		Valueable<int> SW_MaxCount;
+
+		Valueable<CSFText> Message_CannotFire;
+		Valueable<CSFText> Message_InsufficientFunds;
+		ValueableIdx<ColorScheme> Message_ColorScheme;
+		Valueable<bool> Message_FirerColor;
 
 		Valueable<CSFText> UIDescription;
 		Valueable<int> CameoPriority;
@@ -56,8 +74,19 @@ public:
 		Valueable<WarheadTypeClass*> Detonate_Warhead;
 		Valueable<WeaponTypeClass*> Detonate_Weapon;
 		Nullable<int> Detonate_Damage;
+		Valueable<bool> Detonate_Warhead_Full;
 		Valueable<bool> Detonate_AtFirer;
 		Valueable<bool> ShowDesignatorRange;
+
+		Valueable<int> TabIndex;
+
+		Nullable<bool> SuperWeaponSidebar_Allow;
+		DWORD SuperWeaponSidebar_PriorityHouses;
+		DWORD SuperWeaponSidebar_RequiredHouses;
+		Valueable<int> SuperWeaponSidebar_Significance;
+
+		CustomPalette SidebarPal;
+		PhobosPCXFile SidebarPCX;
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
@@ -69,8 +98,22 @@ public:
 		Valueable<bool> UseWeeds_StorageTimer;
 		Valueable<double> UseWeeds_ReadinessAnimationPercentage;
 
+		Valueable<int> EMPulse_WeaponIndex;
+		Valueable<bool> EMPulse_SuspendOthers;
+		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
+		Valueable<bool> EMPulse_TargetSelf;
+
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
+			, TypeID { "" }
 			, Money_Amount { 0 }
+			, EVA_Impatient { -1 }
+			, EVA_InsufficientFunds { -1 }
+			, EVA_SelectTarget { -1 }
+			, SW_UseAITargeting { false }
+			, SW_AutoFire { false }
+			, SW_ManualFire { true }
+			, SW_ShowCameo { true }
+			, SW_Unstoppable { false }
 			, SW_Inhibitors {}
 			, SW_AnyInhibitor { false }
 			, SW_Designators { }
@@ -83,6 +126,12 @@ public:
 			, SW_NegBuildings {}
 			, SW_InitialReady { false }
 			, SW_PostDependent {}
+			, SW_MaxCount { -1 }
+			, SW_Shots { -1 }
+			, Message_CannotFire {}
+			, Message_InsufficientFunds {}
+			, Message_ColorScheme { -1 }
+			, Message_FirerColor { false }
 			, UIDescription {}
 			, CameoPriority { 0 }
 			, LimboDelivery_Types {}
@@ -95,6 +144,7 @@ public:
 			, Detonate_Warhead {}
 			, Detonate_Weapon {}
 			, Detonate_Damage {}
+			, Detonate_Warhead_Full { true }
 			, Detonate_AtFirer { false }
 			, SW_Next {}
 			, SW_Next_RealLaunch { true }
@@ -105,10 +155,21 @@ public:
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
 			, ShowDesignatorRange { true }
+			, TabIndex { 1 }
+			, SuperWeaponSidebar_Allow {}
+			, SuperWeaponSidebar_PriorityHouses { 0u }
+			, SuperWeaponSidebar_RequiredHouses { 0xFFFFFFFFu }
+			, SuperWeaponSidebar_Significance { 0 }
+			, SidebarPal {}
+			, SidebarPCX {}
 			, UseWeeds { false }
 			, UseWeeds_Amount { RulesClass::Instance->WeedCapacity }
 			, UseWeeds_StorageTimer { false }
 			, UseWeeds_ReadinessAnimationPercentage { 0.9 }
+			, EMPulse_WeaponIndex { 0 }
+			, EMPulse_SuspendOthers { false }
+			, EMPulse_Cannons {}
+			, EMPulse_TargetSelf { false }
 		{ }
 
 		// Ares 0.A functions
@@ -122,14 +183,20 @@ public:
 		bool IsLaunchSite(BuildingClass* pBuilding) const;
 		std::pair<double, double> GetLaunchSiteRange(BuildingClass* pBuilding = nullptr) const;
 		bool IsAvailable(HouseClass* pHouse) const;
+		void PrintMessage(const CSFText& message, HouseClass* pFirer) const;
 
 		void ApplyLimboDelivery(HouseClass* pHouse);
 		void ApplyLimboKill(HouseClass* pHouse);
 		void ApplyDetonation(HouseClass* pHouse, const CellStruct& cell);
 		void ApplySWNext(SuperClass* pSW, const CellStruct& cell);
 		void ApplyTypeConversion(SuperClass* pSW);
+		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
+		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
+		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
+		virtual void Initialize() override;
+
 		virtual ~ExtData() = default;
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
@@ -156,5 +223,7 @@ public:
 	static ExtContainer ExtMap;
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static bool Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer);
 
 };

@@ -15,6 +15,8 @@ public:
 	Nullable<double> ConditionRed;
 	Valueable<ArmorType> Armor;
 	Valueable<bool> InheritArmorFromTechno;
+	ValueableVector<TechnoTypeClass*> InheritArmor_Allowed;
+	ValueableVector<TechnoTypeClass*> InheritArmor_Disallowed;
 	Valueable<bool> Powered;
 	Valueable<double> Respawn;
 	Valueable<int> Respawn_Rate;
@@ -22,6 +24,7 @@ public:
 	Valueable<int> SelfHealing_Rate;
 	Valueable<bool> SelfHealing_RestartInCombat;
 	Valueable<int> SelfHealing_RestartInCombatDelay;
+	ValueableVector<BuildingTypeClass*> SelfHealing_EnabledBy;
 
 	Valueable<bool> AbsorbOverDamage;
 	Valueable<int> BracketDelta;
@@ -49,6 +52,7 @@ public:
 	Nullable<SHPStruct*> Pips_Background;
 	Valueable<Vector3D<int>> Pips_Building;
 	Nullable<int> Pips_Building_Empty;
+	Valueable<bool> Pips_HideIfNoStrength;
 	Valueable<bool> ImmuneToCrit;
 	Valueable<bool> ImmuneToBerserk;
 
@@ -64,6 +68,8 @@ public:
 		, ConditionRed { }
 		, Armor { Armor::None }
 		, InheritArmorFromTechno { false }
+		, InheritArmor_Allowed { }
+		, InheritArmor_Disallowed { }
 		, Powered { false }
 		, Respawn { 0.0 }
 		, Respawn_Rate { 0 }
@@ -71,6 +77,7 @@ public:
 		, SelfHealing_Rate { 0 }
 		, SelfHealing_RestartInCombat { true }
 		, SelfHealing_RestartInCombatDelay { 0 }
+		, SelfHealing_EnabledBy { }
 		, AbsorbOverDamage { false }
 		, BracketDelta { 0 }
 		, IdleAnim_OfflineAction { AttachedAnimFlag::Hides }
@@ -95,6 +102,7 @@ public:
 		, Pips_Background { }
 		, Pips_Building { { -1,-1,-1 } }
 		, Pips_Building_Empty { }
+		, Pips_HideIfNoStrength { false }
 		, ImmuneToBerserk { false }
 		, ImmuneToCrit { false }
 		, Tint_Color {}
@@ -102,11 +110,9 @@ public:
 		, Tint_VisibleToHouses { AffectedHouse::All }
 	{ };
 
-	virtual ~ShieldTypeClass() override = default;
-
-	virtual void LoadFromINI(CCINIClass* pINI) override;
-	virtual void LoadFromStream(PhobosStreamReader& Stm) override;
-	virtual void SaveToStream(PhobosStreamWriter& Stm) override;
+	void LoadFromINI(CCINIClass* pINI);
+	void LoadFromStream(PhobosStreamReader& Stm);
+	void SaveToStream(PhobosStreamWriter& Stm);
 
 	bool HasTint() const
 	{

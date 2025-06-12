@@ -29,7 +29,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 {
 	auto PrintMessage = [](const wchar_t* pMessage)
 	{
-		MessageListClass::Instance->PrintMessage(
+		MessageListClass::Instance.PrintMessage(
 			pMessage,
 			RulesClass::Instance->MessageDelay,
 			HouseClass::CurrentPlayer->ColorSchemeIndex,
@@ -47,7 +47,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		else
 			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
 		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");		
+		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");
 	}
 	else
 	{

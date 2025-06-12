@@ -18,17 +18,15 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Phobos'
-copyright = '2024, The Phobos Contributors'
+copyright = '2025, The Phobos Contributors'
 author = 'The Phobos Contributors'
-
-
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx_rtd_theme', 'myst_parser', 'sphinx.ext.mathjax']
+extensions = ['sphinx_rtd_theme', 'myst_parser', 'sphinx.ext.mathjax', 'sphinx_design']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -40,6 +38,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 locale_dirs = ['locale/']
 gettext_compact = False
+gettext_additional_targets = ["literal-block"]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -58,6 +57,7 @@ myst_heading_anchors = 3
 myst_enable_extensions = [
     "amsmath",
     "dollarmath",
+    "colon_fence",
 ]
 
 html_theme_options = {

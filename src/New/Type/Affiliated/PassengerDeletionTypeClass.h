@@ -29,12 +29,13 @@ public:
 	Valueable<Point2D> DisplaySoylentOffset;
 	ValueableIdx<VocClass> ReportSound;
 	Valueable<AnimTypeClass*> Anim;
+	Valueable<bool> UnderEMP;
 
 	void LoadFromINI(CCINIClass* pINI, const char* pSection);
 	bool Load(PhobosStreamReader& stm, bool registerForChange);
 	bool Save(PhobosStreamWriter& stm) const;
 
-	static std::pair<bool,bool> CanParse(INI_EX exINI, const char* pSection);
+	static std::pair<bool, bool> CanParse(INI_EX exINI, const char* pSection);
 
 private:
 
