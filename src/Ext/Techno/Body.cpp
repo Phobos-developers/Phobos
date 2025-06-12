@@ -624,6 +624,11 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		;
 }
 
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+}
+
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
 {
 	Extension<TechnoClass>::LoadFromStream(Stm);

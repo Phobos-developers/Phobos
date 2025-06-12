@@ -266,8 +266,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
-  - Airstrike flare visual customizations
-  - Fix an issue where airstrike flare line drawn to target at lower elevation would clip
+  - Airstrike flare visual customizations & fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -369,6 +368,7 @@ This page lists all the individual contributions to the project by their author.
   - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
   - Fix the issue where some units crashed after the deployment transformation
   - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
+  - Infantry support `IsGattling=yes`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -408,6 +408,7 @@ This page lists all the individual contributions to the project by their author.
   - Exclusive SuperWeapon Sidebar
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Weapon target filtering by health percentage
+  - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -484,6 +485,8 @@ This page lists all the individual contributions to the project by their author.
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
   - Exclusive SuperWeapon Sidebar
+  - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
+  - Several new Infotypes, no display in specific status and a new single frame display method
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

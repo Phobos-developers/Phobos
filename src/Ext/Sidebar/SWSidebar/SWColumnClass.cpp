@@ -108,8 +108,13 @@ bool SWColumnClass::AddButton(int superIdx)
 		sidebar.DisableEntry = false;
 	}
 
+	int currentID = SWButtonClass::StartID;
+
+	for (const auto column : sidebar.Columns)
+		currentID += static_cast<int>(column->Buttons.size());
+
 	const int cameoWidth = 60, cameoHeight = 48;
-	const auto button = GameCreate<SWButtonClass>(SWButtonClass::StartID + superIdx, superIdx, 0, 0, cameoWidth, cameoHeight);
+	const auto button = GameCreate<SWButtonClass>(currentID, superIdx, 0, 0, cameoWidth, cameoHeight);
 
 	if (!button)
 		return false;
