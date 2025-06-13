@@ -35,19 +35,27 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 *Default configuration of digital display using example shapes from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries).*
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display).
+  - `InfoIndex` defines the specific `InfoType`.
+    - In `InfoType=Spawns`, 0 - alive spawns, 1 - docked spawns, 2 - launching spawns.
+    - In `InfoType=Tiberium`, 0 - all, 1 - the first tiberium, 2 - the second tiberium, ...
+    - In `InfoType=SpawnTimer`, 0 - the fastest spawnee, 1 - the first spawnee, 2 - the second spawnee, ...
+    - In `InfoType=SuperWeapon`, 0 - the first SW of all, 1 - SW, 2 - SW2, 3 - the first SWs' SW, ...
+    - In `InfoType=FactoryProcess`, 0 - the first factory in production, 1 - primary factory, 2 - secondary factory.
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
     - `HideMaxValue=yes` will make the counter show only the current value (i.e. `20`), default to whether the techno is infantry or not.
     - `Percentage=yes` changes the format to `percent%` (i.e. `50%`).
+    - `ValueAsTimer` controls whether the value will be displayed in the form of a timer (i.e. `0:30`, `5:00` or `1:00:00`).
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
+    - `VisibleInSpecialState` controls whether this display type will show when the owner is in ironcurtain or is attacked by a temporal weapon.
   - The digits can be either a custom shape (.shp) or text drawn using the game font. This depends on whether `Shape` is set.
     - `Text.Color`, `Text.Color.ConditionYellow` and `Text.Color.ConditionRed` allow customization of the font color. `Text.Background=yes` will additionally draw a black rectangle background.
-    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters.
-    - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` characters, frame numbers are 30-31, 32-33, 34-35, respectively.
+    - When using shapes, a custom palette can be specified with `Palette`. `Shape.Spacing` controls pixel buffer between characters. If `Shape.PercentageFrame` set to true, it will only draw one frame that corresponds to total frames by percentage.
+    - Frames 0-9 will be used as digits when the owner's health bar is green, 10-19 when yellow, 20-29 when red. For `/` and `%` (or `:` if set `ValueAsTimer` to true) characters, frame numbers are 30-31, 32-33, 34-35, respectively.
   - Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for others.
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
-  - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1.
+  - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1. Default to 1 (or 15 when set `ValueAsTimer` to true).
 
 In `rulesmd.ini`:
 ```ini
@@ -62,7 +70,8 @@ Aircraft.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
 ; Generic
-InfoType=Health                         ; Displayed value enumeration (health|shield|ammo|mindcontrol|spawns|passengers|tiberium|experience|occupants|gattlingstage)
+InfoType=Health                         ; Displayed value enumeration (Health|Shield|Ammo|Mindcontrol|Spawns|Passengers|Tiberium|Experience|Occupants|GattlingStage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife|FactoryProcess)
+InfoIndex=                              ; integer
 Offset=0,0                              ; integers - horizontal, vertical
 Offset.ShieldDelta=                     ; integers - horizontal, vertical
 Align=right                             ; Text alignment enumeration (left|right|center/centre)
@@ -73,7 +82,9 @@ Percentage=false                        ; boolean
 HideMaxValue=false                      ; boolean
 VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
-ValueScaleDivisor=1                     ; integer
+VisibleInSpecialState=true              ; boolean
+ValueScaleDivisor=                      ; integer
+ValueAsTimer=false                      ; boolean
 ; Text
 Text.Color=0,255,0                      ; integers - Red, Green, Blue
 Text.Color.ConditionYellow=255,255,0    ; integers - Red, Green, Blue
@@ -83,6 +94,7 @@ Text.Background=false                   ; boolean
 Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
 Palette=palette.pal                     ; filename with .pal extension
 Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
+Shape.PercentageFrame=false             ; boolean
 
 [SOMETECHNO]                            ; TechnoType
 DigitalDisplay.Disable=false            ; boolean
@@ -252,7 +264,7 @@ DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 [SOMESELECTBOXTYPE]                     ; Select box Type name
 Shape=select.shp                        ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
-Frames=                                 ; list of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
 Grounded=false                          ; boolean
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
@@ -613,6 +625,80 @@ ShowWeedsCounter=true  ; boolean
 
 ```{note}
 Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
+```
+
+### SuperWeapon Sidebar
+
+![image](_static/images/sw_sidebar.png)
+*SuperWeapon Sidebar used with vanilla-like assets for from [Phobos supplementaries](https://github.com/Phobos-developers/PhobosSupplementaries)*
+
+- It is possible to put superweapon cameos on the left of screen like C&C3 when `SuperWeaponSidebar` is true.
+  - Superweapon Sidebar is compatible with Ares superweapons.
+  - `SuperWeaponSidebar.Pyramid` controls whether cameos are arranged in a pyramid or rectangle.
+  - `SuperWeaponSidebar.Interval` controls the distance between two column cameos (excluding the background). When you need to make a background, the width of the background should be (`SuperWeaponSidebar.Interval` + cameo fixed width 60).
+  - `SuperWeaponSidebar.LeftOffset` controls the distance between the left side of cameo and the left side of its column (background). This should not be greater than `SuperWeaponSidebar.Interval`.
+  - `SuperWeaponSidebar.CameoHeight` controls the distance from the top of the previous cameo to the top of the next cameo. That is, the space between the upper and lower cameos is (`SuperWeaponSidebar.CameoHeight` - cameo fixed height 48). This should not be less than 48. When you need to make a background, this is the height of the background.
+  - `SuperWeaponSidebar.Max` controls the maximum number of cameos on the leftmost column, which also depends on the current game resolution.
+  - `SuperWeaponSidebar.MaxColumns` controls that maximum count of columns.
+  - `SuperWeaponSidebar.Significance` is needed for user to control which superweapons appear on the sidebar. Only superweapons with `SuperWeaponSidebar.Significance` not lower than user-defined `SuperWeaponSidebar.RequiredSignificance` are shown on the superweapon sidebar.
+
+```{warning}
+While a mod maker can "ban" certain superweapons from appearing on a sidebar completely using `SuperWeaponSidebar.Allow=false` and `SuperWeaponSidebar.AllowByDefault=false`, it is not recommended to use those keys outside of removing "technical" superweapons (like subfaction choosers). Instead, opt for `SuperWeaponSidebar.Significance` and `SuperWeaponSidebar.RequiredSignificance` to control which superweapons appear on the sidebar. This way users with different preferences and different display resolutions could control how many superweapons they would like to see on the sidebar (via client settings) without having to edit the mod files, and you would be able to specify your exact vision through the default significance value.
+```
+
+  - There is a hotkey to toggle the sidebar on/off, which can be bound to a key in the hotkey settings.
+    - `TXT_TOGGLE_SW_SIDEBAR` and `TXT_TOGGLE_SW_SIDEBAR_DESC` are used for localization of the hotkey.
+  - `SuperWeaponSidebarKeysEnabled` enables users to use hotkeys for superweapons displayed on the sidebar.
+    - The hotkeys are positional and are only provided for the first 10 superweapons.
+    - If assigned, a hotkey will be displayed on a superweapon instead of the `Ready` (or its alternative) text.
+    - For localization of those hotkeys, add `TXT_FIRE_TACTICAL_SW_XX` and `TXT_FIRE_TACTICAL_SW_XX_DESC` into your `.csf` file.
+
+```{warning}
+Positional superweapon hotkeys are an experimental feature and currently the user experience may be not polished enough, due to superweapon positions not being fixed on the sidebar, thus the feature is disabled by default.
+```
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+SuperWeaponSidebar=false              ; boolean
+SuperWeaponSidebar.Pyramid=true      ; boolean
+SuperWeaponSidebar.Interval=0         ; integer, pixels
+SuperWeaponSidebar.LeftOffset=0       ; integer, pixels
+SuperWeaponSidebar.CameoHeight=48     ; integer, pixels
+SuperWeaponSidebar.Max=0              ; integer
+SuperWeaponSidebar.MaxColumns=        ; integer
+```
+
+In `rulesmd.ini`:
+```ini
+[GlobalControls]
+SuperWeaponSidebarKeysEnabled=false    ; boolean
+
+[AudioVisual]
+SuperWeaponSidebar.AllowByDefault=false   ; boolean
+
+[SOMESIDE]
+SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
+SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
+SuperWeaponSidebar.TopPCX=            ; filename - including the .pcx extension
+SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
+SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
+
+[SOMESW]
+SuperWeaponSidebar.Allow=             ; boolean
+SuperWeaponSidebar.PriorityHouses=    ; List of house types
+SuperWeaponSidebar.RequiredHouses=    ; List of house types
+SuperWeaponSidebar.Significance=0     ; integer
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+SuperWeaponSidebar.RequiredSignificance=0   ; integer
+```
+
+```{hint}
+While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
 
 ## Tooltips
