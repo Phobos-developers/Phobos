@@ -591,7 +591,7 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
-### Spy Effects
+### Spy effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
   - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
@@ -605,20 +605,22 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
-### Repair amount limit
+### Engineer repair customization
 
-- You can now set a maximum amount when engineer repair a building.
-- Negative value means percentage. For example, `RepairAmount=-50` means you can only repair 50% amount of `Strength` per time.
+- You can now set a maximum amount when engineer repair a building. 0 means the building will be repaired to full health.
+  - Negative value means percentage. For example, `EngineerRepairAmount=-50` means you can only repair 50% of the building's health per Engineer.
+- `BuildingRepairedSound` can now be set individually for each building type.
 
 In `rulesmd.ini`
 ```ini
 [SOMEBUILDING]                     ; BuildingType
-RepairAmount=0                        ; integer
+EngineerRepairAmount=0             ; integer
+BuildingRepairedSound=             ; Sound entry, default to [AudioVisual] -> BuildingRepairedSound
 ```
 
 ## Infantry
 
-### Customizable FLH When Infantry Is Prone Or Deployed
+### Customizable FLH when infantry is prone or deployed
 
 - Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
 
@@ -633,14 +635,14 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 
 ### Customizable `SlavesFreeSound`
 
-- `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
+- `SlavesFreeSound` can now be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
 
 ```ini
 [SOMEINFANTRY]        ; InfantryType
 Slaved=yes
-SlavesFreeSound=      ; Sound entry
+SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
 ### Default disguise for individual InfantryTypes
@@ -654,7 +656,7 @@ In `rulesmd.ini`:
 DefaultDisguise=    ; InfantryType
 ```
 
-### Random death animaton for NotHuman Infantry
+### Random death animaton for NotHuman infantry
 
 - Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
   - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
