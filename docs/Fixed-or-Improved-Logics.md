@@ -444,6 +444,16 @@ In `rulesmd.ini`:
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
 ```
 
+### Allows refineries to use multiple ActiveAnim simultaneously
+
+- In vanilla, the refinery uses different ActiveAnims depending on the storage. You can now make it use multiple ActiveAnims simultaneously like any other building.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+Refinery.UseNormalActiveAnim=false     ; boolean
+```
+
 ### Allowed / disallowed types for FactoryPlant
 
 - It is now possible to customize which TechnoTypes benefit from bonuses of a `FactoryPlant=true` building by listing them on `FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`.
