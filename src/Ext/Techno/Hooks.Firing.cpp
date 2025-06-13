@@ -250,12 +250,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
 	GET(TechnoClass*, pTargetTechno, EBP);
 
-	if (pThis->Berzerk
-		&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
-	{
-		return CannotFire;
-	}
-
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
@@ -301,6 +295,12 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (pTargetTechno)
 	{
+		if (pThis->Berzerk
+			&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
+		{
+			return CannotFire;
+		}
+
 		if (!pWeaponExt->SkipWeaponPicking)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWeaponExt->CanTarget)
