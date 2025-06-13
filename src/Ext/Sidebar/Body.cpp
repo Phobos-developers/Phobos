@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "SWSidebar/SWSidebarClass.h"
 
 #include <EventClass.h>
 #include <HouseClass.h>
@@ -37,7 +38,12 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 		const auto& supers = pCurrent->Supers;
 
 		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
-			return false;
+		{
+			if (SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
+				ScenarioExt::Global()->SWSidebar_Indices.emplace_back(pItem->ItemIndex);
+			else
+				return false;
+		}
 	}
 
 	// The following sections have been modified
@@ -45,6 +51,7 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 
 	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
 	{
+		__assume(pTechnoType != nullptr);
 		buildCat = static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat;
 		auto& pDisplay = DisplayClass::Instance;
 		pDisplay.SetActiveFoundation(nullptr);
