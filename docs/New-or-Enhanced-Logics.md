@@ -1720,6 +1720,16 @@ IsVoiceCreatedGlobal=false   ; boolean
 VoiceCreated=                ; Sound entry
 ```
 
+### Targeting limitation for berzerk technos
+
+- Now you can specify which houses berzerk's technos can target and fire.
+
+In `rulesmd.ini`:
+```ini
+[General]
+BerzerkTargeting=all  ; AffectedHouse enumeration
+```
+
 ### Tiberium eater
 
 - TechnoTypes can convert the ores underneath them into credits in real time, like GDI's MARV in Command & Conquer 3 Kane's Wrath.

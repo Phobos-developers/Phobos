@@ -391,6 +391,8 @@ New:
 - [Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) (by FlyStar)
 - Infantry support `IsGattling=yes` (by FlyStar)
 - [Several new Infotypes, no display in specific status and a new single frame display method](User-Interface.md#digital-display) (by CrimRecya)
+- Targeting limitation for berzerk technos (by TaranDahl)
+- Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 
 Vanilla fixes:
