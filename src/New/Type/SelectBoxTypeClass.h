@@ -8,16 +8,18 @@ class SelectBoxTypeClass final : public Enumerable<SelectBoxTypeClass>
 {
 public:
 	Valueable<SHPStruct*> Shape;
-	Valueable<SHPStruct*> GroundShape { nullptr };
 	CustomPalette Palette;
 	Nullable<Vector3D<int>> Frames;
 	Valueable<Point2D> Offset;
-	Valueable<Point2D> GroundOffset;
 	TranslucencyLevel Translucency;
 	Valueable<AffectedHouse> VisibleToHouses;
 	Valueable<bool> VisibleToHouses_Observer;
 	Valueable<bool> DrawAboveTechno;
-	Valueable<bool> GroundShape_AlwaysDraw;
+	Valueable<SHPStruct*> GroundShape;
+	CustomPalette GroundPalette;
+	Nullable<Vector3D<int>> GroundFrames;
+	Valueable<Point2D> GroundOffset;
+	Valueable<bool> Ground_AlwaysDraw;
 	Valueable<bool> GroundLine;
 	Damageable<ColorStruct> GroundLineColor;
 	Valueable<bool> GroundLine_Dashed;
@@ -27,12 +29,15 @@ public:
 		, Palette {}
 		, Frames {}
 		, Offset { Point2D::Empty }
-		, GroundOffset { Point2D::Empty }
 		, Translucency { 0 }
 		, VisibleToHouses { AffectedHouse::All }
 		, VisibleToHouses_Observer { true }
 		, DrawAboveTechno { true }
-		, GroundShape_AlwaysDraw { true }
+		, GroundShape { nullptr }
+		, GroundPalette {}
+		, GroundFrames {}
+		, GroundOffset { Point2D::Empty }
+		, Ground_AlwaysDraw { true }
 		, GroundLine { false }
 		, GroundLineColor { { 0,255,0 } }
 		, GroundLine_Dashed { false}

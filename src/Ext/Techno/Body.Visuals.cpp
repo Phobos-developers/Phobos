@@ -355,24 +355,26 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	if (!canSee)
 		return;
 
-	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-
 	const double healthPercentage = pThis->GetHealthPercentage();
-	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
-	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+	const auto defaultFrame = whatAmI == InfantryClass::AbsID ? Vector3D<int> { 1, 1, 1 } : Vector3D<int> { 0,0,0 };
 
 	const auto pSurface = DSurface::Temp;
 	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
 	const auto pGroundShape = pSelectBox->GroundShape.Get();
 
-	if ((pGroundShape || pSelectBox->GroundLine) && whatAmI != BuildingClass::AbsID)
+	if ((pGroundShape || pSelectBox->GroundLine) && whatAmI != BuildingClass::AbsID && (pSelectBox->Ground_AlwaysDraw || pThis->IsInAir()))
 	{
 		CoordStruct coords = pThis->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 		const auto& [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
 
-		if (visible && pGroundShape && (pSelectBox->GroundShape_AlwaysDraw || pThis->IsInAir()))
+		if (visible && pGroundShape)
 		{
+			const auto pPalette = pSelectBox->GroundPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+			const Vector3D<int> frames = pSelectBox->Frames.Get(defaultFrame);
+			const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+
 			const Point2D drawPoint = point + pSelectBox->GroundOffset;
 			pSurface->DrawSHP(pPalette, pGroundShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 		}
@@ -391,6 +393,11 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 	if (const auto pShape = pSelectBox->Shape.Get())
 	{
+		const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+		const Vector3D<int> frames = pSelectBox->Frames.Get(defaultFrame);
+		const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+
 		const Point2D offset = whatAmI == InfantryClass::AbsID ? Point2D { 8, -3 } : Point2D { 1, -4 };
 		Point2D drawPoint = *pLocation + offset + pSelectBox->Offset;
 
