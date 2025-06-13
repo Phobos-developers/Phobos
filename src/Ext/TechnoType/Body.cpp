@@ -633,6 +633,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
+	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, pSection, "DigitalDisplay.Health.FakeAtDisguise");
+
 	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
 
@@ -1216,6 +1218,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
+		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
+
 		.Process(this->AttackMove_Aggressive)
 		.Process(this->AttackMove_UpdateTarget)
 
@@ -1274,7 +1278,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownDamage_Water)
 
 		.Process(this->FiringForceScatter)
-    
+
 		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
