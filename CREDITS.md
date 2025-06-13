@@ -491,7 +491,7 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -501,8 +501,9 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
-  - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
+  - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
   - Power plant damage factor
+  - Allow faking digital display for `InfoType=Health` at disguise
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -535,6 +536,7 @@ This page lists all the individual contributions to the project by their author.
   - Make harvesters do addtional scan after unload
   - Customize the scatter caused by aircraft attack mission
   - Customize whether `Crater=yes` animation would destroy tiberium
+  - Targeting limitation for berzerk technos
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
