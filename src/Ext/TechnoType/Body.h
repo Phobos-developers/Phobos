@@ -351,9 +351,7 @@ public:
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
-		Valueable<int> DigitalDisplay_Health_FakeStrength;
 		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
-		Valueable<bool> DigitalDisplay_Health_FakeVisibleToAll;
 
 		NullableVector<int> Overload_Count;
 		NullableVector<int> Overload_Damage;
@@ -640,9 +638,7 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
-			, DigitalDisplay_Health_FakeStrength { -1 }
 			, DigitalDisplay_Health_FakeAtDisguise { true }
-			, DigitalDisplay_Health_FakeVisibleToAll { false }
 
 			, AttackMove_Aggressive {}
 			, AttackMove_UpdateTarget {}

@@ -57,10 +57,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1. Default to 1 (or 15 when set `ValueAsTimer` to true).
 
-  - If a TechnoType has a DigitalDisplayType with `InfoType=Health`, it's allowed to display fake values to enemy players.
-    - `DigitalDisplay.Health.FakeStrength`, if set, will be used as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value.
-    - `DigitalDisplay.Health.FakeAtDisguise`, if set to true on an InfantryType with Disguise, will use the disguised TechnoType's `Strength` value as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value. This will be applied before `DigitalDisplay.Health.FakeStrength`.
-    - `DigitalDisplay.Health.FakeVisibleToAll`, if set, will display fake values to all players, including the owner of the TechnoType.
+  - `DigitalDisplay.Health.FakeAtDisguise`, if set to true on an InfantryType with Disguise, will use the disguised TechnoType's `Strength` value as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value.
 
 In `rulesmd.ini`:
 ```ini
@@ -104,9 +101,7 @@ Shape.PercentageFrame=false                    ; boolean
 [SOMETECHNOTYPE]
 DigitalDisplay.Disable=false                   ; boolean
 DigitalDisplayTypes=                           ; list of DigitalDisplayTypes
-DigitalDisplay.Health.FakeStrength=-1          ; integer
 DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
-DigitalDisplay.Health.FakeVisibleToAll=false   ; boolean
 ```
 
 In `RA2MD.INI`:

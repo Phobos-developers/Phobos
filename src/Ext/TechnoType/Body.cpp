@@ -633,9 +633,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
-	this->DigitalDisplay_Health_FakeStrength.Read(exINI, pSection, "DigitalDisplay.Health.FakeStrength");
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, pSection, "DigitalDisplay.Health.FakeAtDisguise");
-	this->DigitalDisplay_Health_FakeVisibleToAll.Read(exINI, pSection, "DigitalDisplay.Health.FakeVisibleToAll");
 
 	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
@@ -1220,9 +1218,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
-		.Process(this->DigitalDisplay_Health_FakeStrength)
 		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
-		.Process(this->DigitalDisplay_Health_FakeVisibleToAll)
 
 		.Process(this->AttackMove_Aggressive)
 		.Process(this->AttackMove_UpdateTarget)
