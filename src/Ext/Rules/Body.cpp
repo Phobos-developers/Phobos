@@ -198,9 +198,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
-	Nullable<AnimTypeClass*> droppod_trailer {};
-	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
-	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
+	this->DropPodTrailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	this->DropPodDefaultTrailer = AnimTypeClass::Find("SMOKEY");
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->BuildingWaypoints.Read(exINI, GameStrings::General, "BuildingWaypoints");
@@ -458,6 +457,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
+		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)

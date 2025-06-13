@@ -620,7 +620,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastSensorsMapCoords)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->FiringAnimationTimer)
 		;
+}
+
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

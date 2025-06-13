@@ -55,6 +55,7 @@ public:
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
 		static bool SuperWeaponSidebar;
+		static bool SuperWeaponSidebar_Pyramid;
 		static int SuperWeaponSidebar_Interval;
 		static int SuperWeaponSidebar_LeftOffset;
 		static int SuperWeaponSidebar_CameoHeight;
