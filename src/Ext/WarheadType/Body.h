@@ -140,6 +140,8 @@ public:
 		Valueable<bool> InflictLocomotor;
 		Valueable<bool> RemoveInflictedLocomotor;
 
+		Valueable<AffectedTarget> Parasite_CullingTarget;
+
 		Valueable<bool> Nonprovocative;
 
 		Nullable<int> CombatLightDetailLevel;
@@ -171,7 +173,9 @@ public:
 		Valueable<AffectedTarget> KillWeapon_Affects;
 		Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
 
-    	Valueable<int> ElectricAssaultLevel;
+		Valueable<int> ElectricAssaultLevel;
+
+		Valueable<AffectedTarget> AirstrikeTargets;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -190,6 +194,8 @@ public:
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
 		TechnoClass* DamageAreaTarget;
+
+		Valueable<bool> CanKill;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -316,6 +322,8 @@ public:
 			, InflictLocomotor { false }
 			, RemoveInflictedLocomotor { false }
 
+			, Parasite_CullingTarget { AffectedTarget::Infantry }
+
 			, Nonprovocative { false }
 
 			, CombatLightDetailLevel {}
@@ -342,6 +350,8 @@ public:
 
 			, ElectricAssaultLevel { 1 }
 
+			, AirstrikeTargets { AffectedTarget::Building }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
@@ -358,6 +368,8 @@ public:
 			, PossibleCellSpreadDetonate { false }
 			, DamageAreaTarget {}
 
+			, CanKill { true }
+
 			, KillWeapon {}
 			, KillWeapon_OnFirer {}
 			, KillWeapon_AffectsHouses { AffectedHouse::All }
@@ -371,7 +383,7 @@ public:
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 	public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
-		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
 
@@ -394,8 +406,8 @@ public:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
-		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;

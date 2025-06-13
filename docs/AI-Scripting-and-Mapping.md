@@ -78,8 +78,8 @@ Ranking.OverParMessage=   ; CSF entry key
 
 ### Show briefing dialog on startup
 
-- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `RA2MD.INI`.
-  - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (former takes precedence if available). This can be disabled by user by setting `ShowBriefing` to false in `RA2MD.INI`.
+  - `BriefingTheme` (In order of precedence from highest to lowest: map file, `missionmd.ini`, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
   - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
 
 In `missionmd.ini`:
@@ -169,7 +169,7 @@ x=i,n             ; For i values check the next table
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
 | 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
-| 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
+| 12      | Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
 | 15      | Naval                    | Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
@@ -611,6 +611,61 @@ ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
 ...
 ```
 
+### `606` Edit Hate-Value
+
+- Edit the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]
+...
+```
+
+| *Operation* | *Description*                                 |
+|------------:|:----------------------------------------------|
+| 0           | CurrentValue = Number                         |
+| 1           | CurrentValue = CurrentValue + Number          |
+| 2           | CurrentValue = CurrentValue - Number          |
+| 3           | CurrentValue = CurrentValue * Number          |
+| 4           | CurrentValue = CurrentValue / Number          |
+| 5           | CurrentValue = CurrentValue % Number          |
+| 6           | CurrentValue = CurrentValue leftshift Number  |
+| 7           | CurrentValue = CurrentValue rightshift Number |
+| 8           | CurrentValue = ~CurrentValue                  |
+| 9           | CurrentValue = CurrentValue xor Number        |
+| 10          | CurrentValue = CurrentValue or Number         |
+| 11          | CurrentValue = CurrentValue and Number        |
+
+### `607` Clear Hate-Value
+
+- Clear the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]
+...
+```
+
+### `608` Set Force Enemy
+
+- Force an enemy, it will not change with the change of hate-value.
+- -1 will remove the forced enemy.
+- -2 will never have any enemies.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation
@@ -729,13 +784,13 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 - `HouseIndex` can be customized to focus in a specified house.
 
 In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
-ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
-...
-```
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Events]</span>
+<span class="na">...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,604,2,[HouseIndex],[TechnoType],...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...</span>
+<span class="na">...</span>
+</pre></div>
+</div>
 
 | *House Index* | *Description*                              |
 |:-------------:|:------------------------------------------:|

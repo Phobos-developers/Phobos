@@ -6,7 +6,7 @@
 #include <Utilities/Macro.h>
 #include <Utilities/TemplateDef.h>
 
-DEFINE_HOOK(0x073B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
+DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 {
 	enum { SkipGameCode = 0x73B074 };
 
@@ -22,7 +22,7 @@ DEFINE_HOOK(0x073B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x0741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
+DEFINE_HOOK(0x741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
 {
 	enum { SkipGameCode = 0x74195E };
 
@@ -91,7 +91,7 @@ DEFINE_HOOK(0x6A108D, ShipLocomotionClass_WhileMoving_CrushTilt, 0xD)
 {
 	enum { SkipGameCode = 0x6A109A };
 
-	GET(DriveLocomotionClass*, pThis, EBP);
+	GET(ShipLocomotionClass*, pThis, EBP);
 
 	auto const pLinkedTo = pThis->LinkedTo;
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
