@@ -98,27 +98,31 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
 {
 	const auto pType = this->OwnerObject();
-	int WeaponCount = pType->WeaponCount;
 
-	if (!pThis || !pTarget || !this->MultiWeapon.Get() || WeaponCount <= 2
-		|| (pType->HasMultipleTurrets() && (pType->IsGattling || pType->Gunner)))
+	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner)
+		 || !this->MultiWeapon.Get() || !pThis || !pTarget)
 		return -1;
 
-	// It's best not to set the number too large given the performance loss.
-	int selectweaponCount = this->MultiWeapon_SelectCount.Get();
-	int weaponCount = WeaponCount;
+	int WeaponCount = pType->WeaponCount;
 
-	if (weaponCount > selectweaponCount)
-		weaponCount =  selectweaponCount;
-
-	if (weaponCount < 2)
+	if (WeaponCount < 2)
 		return 0;
-	else if (weaponCount == 2)
+	else if (WeaponCount == 2)
+		return -1;
+
+	int selectweaponCount = this->MultiWeapon_SelectCount.Get();
+
+	if (WeaponCount >= selectweaponCount)
+		WeaponCount = selectweaponCount;
+
+	if (WeaponCount < 2)
+		return 0;
+	else if (WeaponCount == 2)
 		return -1;
 
 	bool isElite = pThis->Veterancy.IsElite();
 	std::vector<bool> secondaryCanTargets {};
-	secondaryCanTargets.resize(weaponCount, false);
+	secondaryCanTargets.resize(WeaponCount, false);
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
@@ -197,7 +201,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		}
 	}
 
-	for (int i = 0; i < weaponCount; i++)
+	for (int i = 0; i < WeaponCount; i++)
 	{
 		if (secondaryCanTargets[i])
 			continue;
