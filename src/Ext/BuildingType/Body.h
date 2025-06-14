@@ -92,8 +92,6 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
-
-		Valueable<int> EngineerRepairAmount;
 		NullableIdx<VocClass> BuildingRepairedSound;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
@@ -155,7 +153,6 @@ public:
 			, BuildingBunkerROFMult {}
 			, BunkerWallsUpSound {}
 			, BunkerWallsDownSound {}
-			, EngineerRepairAmount { 0 }
 			, BuildingRepairedSound {}
 		{ }
 

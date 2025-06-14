@@ -994,35 +994,44 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 {
 	enum { SkipGameCode = 0x51A010 };
 
-	//GET(InfantryClass*, pThis, ESI);
+	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pTarget, EDI);
 	const bool damaged = pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
 	pTarget->MarkForRedraw();
 
-	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pTarget->Type);
-	const int repair = pTypeExt->EngineerRepairAmount;
+	const int repairBuilding = TechnoTypeExt::ExtMap.Find(pTarget->Type)->EngineerRepairAmount;
+	const int repairEngineer = TechnoTypeExt::ExtMap.Find(pThis->Type)->EngineerRepairAmount;
+	const int strength = pTarget->Type->Strength;
+	const int health = pTarget->Health;
+	const double healthPercentage = pTarget->GetHealthPercentage();
 
-	if (repair > 0)
-	{
-		pTarget->Health = std::clamp(pTarget->Health + repair, 0, pTarget->Type->Strength);
-	}
-	else if (repair < 0)
-	{
-		const double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
-		pTarget->Health = static_cast<int>(std::round(pTarget->Type->Strength * percentage));
-	}
-	else
-	{
-		pTarget->Health = pTarget->Type->Strength;
-	}
+	auto repair = [strength, health, healthPercentage](int repair)
+		{
+			int repairAmount = strength;
 
+			if (repair > 0)
+			{
+				repairAmount = std::clamp(health + repair, 0, strength);
+			}
+			else if (repair < 0)
+			{
+				const double percentage = std::clamp(healthPercentage - (static_cast<double>(repair) / 100), 0.0, 1.0);
+				repairAmount = static_cast<int>(std::round(strength * percentage));
+			}
+
+			return repairAmount;
+		};
+
+	pTarget->Health = Math::min(repair(repairBuilding), repair(repairEngineer));
 	pTarget->EstimatedHealth = pTarget->Health;
 	pTarget->SetRepairState(0);
 
-	if ((pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow) != damaged)
+	if ((healthPercentage <= RulesClass::Instance->ConditionYellow) != damaged)
 		pTarget->ToggleDamagedAnims(!damaged);
 
-	VocClass::PlayAt(pTypeExt->BuildingRepairedSound.Get(RulesClass::Instance->BuildingRepairedSound), pTarget->GetCoords());
+	VocClass::PlayAt(BuildingTypeExt::ExtMap.Find(pTarget->Type)->
+		BuildingRepairedSound.Get(RulesClass::Instance->BuildingRepairedSound), pTarget->GetCoords());
+
 	return SkipGameCode;
 }

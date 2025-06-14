@@ -607,8 +607,9 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ### Engineer repair customization
 
-- You can now set a maximum amount when engineer repair a building. 0 means the building will be repaired to full health.
+- You can now set a maximum amount when engineer repair a building for either of them. 0 means the building will be repaired to full health.
   - Negative value means percentage. For example, `EngineerRepairAmount=-50` means you can only repair 50% of the building's health per Engineer.
+  - If both the building and the engineer has `EngineerRepairAmount` set, the actual repair amount will be the minimum of them.
 - `BuildingRepairedSound` can now be set individually for each building type.
 
 In `rulesmd.ini`
@@ -616,6 +617,9 @@ In `rulesmd.ini`
 [SOMEBUILDING]                     ; BuildingType
 EngineerRepairAmount=0             ; integer
 BuildingRepairedSound=             ; Sound entry, default to [AudioVisual] -> BuildingRepairedSound
+
+[SOMEINFANTRY]                     ; InfantryType
+EngineerRepairAmount=0             ; integer
 ```
 
 ## Infantry
