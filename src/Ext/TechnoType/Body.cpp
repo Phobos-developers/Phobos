@@ -270,6 +270,37 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
+void TechnoTypeExt::ExtData::CalculateSpawnerRange()
+{
+	const auto pTechnoType = this->OwnerObject();
+	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
+
+	auto setWeaponRange = [](int& weaponRange, WeaponTypeClass* pWeaponType)
+		{
+			if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
+				weaponRange = pWeaponType->Range;
+		};
+
+	if (pTechnoType->IsGattling)
+	{
+		for (int i = 0; i < pTechnoType->WeaponCount; i++)
+		{
+			setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[i].WeaponType);
+			setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[i].WeaponType);
+		}
+	}
+	else
+	{
+		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[0].WeaponType);
+		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[1].WeaponType);
+		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[0].WeaponType);
+		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[1].WeaponType);
+	}
+
+	this->SpawnerRange += weaponRangeExtra;
+	this->EliteSpawnerRange += weaponRangeExtra;
+}
+
 //TODO: YRpp this with proper casting
 TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 {
@@ -727,6 +758,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
 	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
+	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, pSection, "DigitalDisplay.Health.FakeAtDisguise");
+
 	this->AttackMove_Aggressive.Read(exINI, pSection, "AttackMove.Aggressive");
 	this->AttackMove_UpdateTarget.Read(exINI, pSection, "AttackMove.UpdateTarget");
 
@@ -881,6 +914,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 		}
 	}
+
+	// Spawner range
+	if (this->Spawner_LimitRange)
+		this->CalculateSpawnerRange();
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -1057,7 +1094,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ShadowIndices)
 		.Process(this->ShadowIndex_Frame)
 		.Process(this->Spawner_LimitRange)
-		.Process(this->Spawner_ExtraLimitRange)
+		//.Process(this->Spawner_ExtraLimitRange)
+		.Process(this->SpawnerRange)
+		.Process(this->EliteSpawnerRange)
 		.Process(this->Spawner_DelayFrames)
 		.Process(this->Spawner_AttackImmediately)
 		.Process(this->Spawner_UseTurretFacing)
@@ -1304,6 +1343,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
 
+		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
+
 		.Process(this->AttackMove_Aggressive)
 		.Process(this->AttackMove_UpdateTarget)
 
@@ -1362,7 +1403,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FallingDownDamage_Water)
 
 		.Process(this->FiringForceScatter)
-    
+
 		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)

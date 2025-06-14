@@ -1011,6 +1011,19 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 	return 0;
 }
 
+// Fix a potential edge case where aircraft gets stuck in 'sleep' (reload/repair) on dock if it gets assigned target from team mission etc.
+DEFINE_HOOK(0x41915D, AircraftClass_ReceiveCommand_QueryPreparedness, 0x8)
+{
+	enum { CheckAmmo = 0x419169 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (pThis->Team && pThis->Team->Focus == pThis->Target && pThis->CurrentMission == Mission::Sleep)
+		return CheckAmmo;
+
+	return 0;
+}
+
 // Fix tileset parsing to not reset certain tileset indices for Lunar theater if the fix is enabled.
 DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 {
@@ -2042,7 +2055,29 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 
 #pragma endregion
 
+DEFINE_HOOK(0x489416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
+{
+	enum { NextTechno = 0x489547 };
+
+	GET(TechnoClass*, pAirTechno, EBX);
+	GET_BASE(TechnoClass*, pSourceTechno, 0x8);
+
+	if (pAirTechno != pSourceTechno)
+		return 0;
+
+	if (pSourceTechno->GetTechnoType()->DamageSelf)
+		return 0;
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->AllowDamageOnSelf)
+		return 0;
+
+	return NextTechno;
+}
+
 #pragma region DamageAreaItemsFix
+
 // Obviously, it is unreasonable for a large-scale damage like a nuke to only cause damage to units
 // located on or under the bridge that are in the same position as the damage center point
 namespace DamageAreaTemp
@@ -2050,6 +2085,7 @@ namespace DamageAreaTemp
 	const CellClass* CheckingCell = nullptr;
 	bool CheckingCellAlt = false;
 }
+
 // Skip useless alt check, so it will only start checking from the cell's FirstObject
 // Note: Ares hook at 0x489562(0x6) and return 0
 DEFINE_JUMP(LJMP, 0x489568, 0x489592);
@@ -2057,26 +2093,25 @@ DEFINE_JUMP(LJMP, 0x489568, 0x489592);
 DEFINE_HOOK(0x4896BF, DamageArea_DamageItemsFix1, 0x6)
 {
 	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
-	// Record the current cell for linked list getting
+
 	GET(const CellClass* const, pCell, EBX);
+
 	DamageAreaTemp::CheckingCell = pCell;
-	// First, check the FirstObject linked list
 	auto pObject = pCell->FirstObject;
-	// Check if there are objects in the linked list
+
 	if (pObject)
 	{
-		// When it exists, start the vanilla processing
 		R->ESI(pObject);
 		return CheckThisObject;
 	}
-	// When it does not exist, check AltObject linked list
+
 	pObject = pCell->AltObject;
-	// If there is also no object in the linked list, return directly to check the next cell
+
 	if (!pObject)
 		return CheckNextCell;
-	// If there is an object, record the flag
+
 	DamageAreaTemp::CheckingCellAlt = true;
-	// Then return and continue with the original execution
+
 	R->ESI(pObject);
 	return CheckThisObject;
 }
@@ -2084,32 +2119,30 @@ DEFINE_HOOK(0x4896BF, DamageArea_DamageItemsFix1, 0x6)
 DEFINE_HOOK(0x4899B3, DamageArea_DamageItemsFix2, 0x5)
 {
 	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
-	// When there are no units in the FirstObject linked list, it will not enter this hook
+
 	GET(const ObjectClass*, pObject, ESI);
-	// As vanilla, first look at the next object in the linked list
+
 	pObject = pObject->NextObject;
-	// Check if there are still objects in the linked list
+
 	if (pObject)
 	{
-		// When it exists, return to continue the vanilla processing
 		R->ESI(pObject);
 		return CheckThisObject;
 	}
-	// When it does not exist, check which linked list it is currently in
+
 	if (DamageAreaTemp::CheckingCellAlt)
 	{
-		// If it is already in the AltObject linked list, reset the flag and return to check the next cell
 		DamageAreaTemp::CheckingCellAlt = false;
 		return CheckNextCell;
 	}
-	// If it is still in the FirstObject linked list, take the first object in the AltObject linked list and continue checking
+
 	pObject = DamageAreaTemp::CheckingCell->AltObject;
-	// If there is no object in the AltObject linked list, return directly to check the next cell
+
 	if (!pObject)
 		return CheckNextCell;
-	// If there is an object, record the flag
+
 	DamageAreaTemp::CheckingCellAlt = true;
-	// Then return and continue with the original execution
+
 	R->ESI(pObject);
 	return CheckThisObject;
 }
@@ -2117,51 +2150,47 @@ DEFINE_HOOK(0x4899B3, DamageArea_DamageItemsFix2, 0x5)
 DEFINE_HOOK(0x489BDB, DamageArea_RockerItemsFix1, 0x6)
 {
 	enum { SkipGameCode = 0x489C29 };
-	// Get cell coordinates
+
 	GET(const short, cellX, ESI);
 	GET(const short, cellY, EBX);
-	// Record the current cell for linked list getting
+
 	const auto pCell = MapClass::Instance.GetCellAt(CellStruct { cellX, cellY });
 	DamageAreaTemp::CheckingCell = pCell;
-	// First, check the FirstObject linked list
 	auto pObject = pCell->FirstObject;
-	// Check if there are objects in the linked list
+
 	if (pObject)
 	{
-		// When it exists, start the vanilla processing
 		R->EAX(pObject);
 		return SkipGameCode;
 	}
-	// When it does not exist, check AltObject linked list
+
 	pObject = pCell->AltObject;
-	// If there is an object, record the flag
+
 	if (pObject)
 		DamageAreaTemp::CheckingCellAlt = true;
-	// Return the original check
+
 	R->EAX(pObject);
 	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 {
-	// Prior to this, there was already pObject = pCell->FirstObject;
 	GET(const ObjectClass*, pObject, EDI);
-	// As vanilla, first look at the next object in the linked list
+
 	if (pObject)
 		return 0;
-	// When it does not exist, check which linked list it is currently in
+
 	if (DamageAreaTemp::CheckingCellAlt)
 	{
-		// If it is already in the AltObject linked list, reset the flag and return the original check
 		DamageAreaTemp::CheckingCellAlt = false;
 		return 0;
 	}
-	// If it is still in the FirstObject linked list, take the first object in the AltObject linked list and continue checking
+
 	pObject = DamageAreaTemp::CheckingCell->AltObject;
-	// If there is an object, record the flag
+
 	if (pObject)
 		DamageAreaTemp::CheckingCellAlt = true;
-	// Return the original check
+
 	R->EDI(pObject);
 	return 0;
 }
