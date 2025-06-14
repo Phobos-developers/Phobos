@@ -1003,20 +1003,18 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 	const int repairBuilding = TechnoTypeExt::ExtMap.Find(pTarget->Type)->EngineerRepairAmount;
 	const int repairEngineer = TechnoTypeExt::ExtMap.Find(pThis->Type)->EngineerRepairAmount;
 	const int strength = pTarget->Type->Strength;
-	const int health = pTarget->Health;
-	const double healthPercentage = pTarget->GetHealthPercentage();
 
-	auto repair = [strength, health, healthPercentage](int repair)
+	auto repair = [strength, pTarget](int repair)
 		{
 			int repairAmount = strength;
 
 			if (repair > 0)
 			{
-				repairAmount = std::clamp(health + repair, 0, strength);
+				repairAmount = std::clamp(pTarget->Health + repair, 0, strength);
 			}
 			else if (repair < 0)
 			{
-				const double percentage = std::clamp(healthPercentage - (static_cast<double>(repair) / 100), 0.0, 1.0);
+				const double percentage = std::clamp(pTarget->GetHealthPercentage() - (static_cast<double>(repair) / 100), 0.0, 1.0);
 				repairAmount = static_cast<int>(std::round(strength * percentage));
 			}
 
@@ -1027,7 +1025,7 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 	pTarget->EstimatedHealth = pTarget->Health;
 	pTarget->SetRepairState(0);
 
-	if ((healthPercentage <= RulesClass::Instance->ConditionYellow) != damaged)
+	if ((pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow) != damaged)
 		pTarget->ToggleDamagedAnims(!damaged);
 
 	VocClass::PlayAt(BuildingTypeExt::ExtMap.Find(pTarget->Type)->
