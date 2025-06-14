@@ -998,7 +998,7 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 	GET(BuildingClass*, pTarget, EDI);
 	const bool damaged = pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
-	pTarget->MarkForRedraw();
+	pTarget->Mark(MarkType::Change);
 
 	const int repairBuilding = TechnoTypeExt::ExtMap.Find(pTarget->Type)->EngineerRepairAmount;
 	const int repairEngineer = TechnoTypeExt::ExtMap.Find(pThis->Type)->EngineerRepairAmount;
