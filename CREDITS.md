@@ -370,7 +370,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where some units crashed after the deployment transformation
   - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
   - Infantry support `IsGattling=yes`
-  - Fixed some units of Ares crashing after deployment conversion
   - Support for more optional weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
