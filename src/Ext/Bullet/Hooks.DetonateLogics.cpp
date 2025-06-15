@@ -560,7 +560,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
 
 		// Cache all pointer variables before the loop
-		TechnoClass* const thisTarget = pThis->Target;
+		auto const pThisTarget = pThis->Target;
 		bool const splits = pTypeExt->Splits;
 		double const retargetAccuracy = pTypeExt->RetargetAccuracy;
 		double const retargetSelfProb = pTypeExt->RetargetSelf_Probability;
@@ -568,15 +568,15 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		int const speed = pWeapon->Speed;
 		bool const bright = pWeapon->Bright;
 		auto const location = pThis->Location;
-		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin;
-		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax;
+		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
+		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
 		bool const airburst = pType->Airburst;
 		bool const targetAsSource = pTypeExt->Airburst_TargetAsSource;
 		bool const skipHeight = pTypeExt->Airburst_TargetAsSource_SkipHeight;
 
 		for (int i = 0; i < clusterCount; ++i)
 		{
-			TechnoClass* target = thisTarget;
+			auto target = pThisTarget;
 
 			if (!splits)
 			{
@@ -604,8 +604,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				if (BulletClass* const bullet = pTypeSplits->CreateBullet(target, pSource, damage, warhead, speed, bright))
 				{
 					CoordStruct coords = location;
-					int const minScatter = scatterMin;
-					int const maxScatter = scatterMax;
+					const int minScatter = scatterMin;
+					const int maxScatter = scatterMax;
 
 					if (airburst && targetAsSource)
 					{
@@ -617,7 +617,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 					if (minScatter > 0 || maxScatter > 0)
 					{
-						int const distance = random.RandomRanged(minScatter, maxScatter);
+						const int distance = random.RandomRanged(scatterMin, scatterMax);
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 
