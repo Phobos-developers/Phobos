@@ -612,7 +612,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
   - If both the building and the engineer has `EngineerRepairAmount` set, the actual repair amount will be the minimum of them.
 - `BuildingRepairedSound` can now be set individually for each building type.
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                     ; BuildingType
 EngineerRepairAmount=0             ; integer

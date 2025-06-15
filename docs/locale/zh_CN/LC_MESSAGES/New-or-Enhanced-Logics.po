@@ -2581,7 +2581,6 @@ msgstr ""
 "PowerPlantEnhancer.Factor=1.0      ; floating point value\n"
 
 #: ../../New-or-Enhanced-Logics.md:594
-#, fuzzy
 msgid "Spy effects"
 msgstr "间谍效果"
 
@@ -2614,15 +2613,15 @@ msgstr ""
 "SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType\n"
 
 #: ../../New-or-Enhanced-Logics.md:608
-#, fuzzy
 msgid "Engineer repair customization"
-msgstr "自定义建造区域"
+msgstr "自定义工程师维修"
 
 #: ../../New-or-Enhanced-Logics.md:610
 msgid ""
 "You can now set a maximum amount when engineer repair a building for "
 "either of them. 0 means the building will be repaired to full health."
 msgstr ""
+"现在你可以在工程师维修一个建筑时为它们设定最大修复值。0 代表满血。"
 
 #: ../../New-or-Enhanced-Logics.md:611
 #, python-format
@@ -2630,22 +2629,21 @@ msgid ""
 "Negative value means percentage. For example, `EngineerRepairAmount=-50` "
 "means you can only repair 50% of the building's health per Engineer."
 msgstr ""
+"负值按百分比计算。例如 `EngineerRepairAmount=-50` 表示每名工程师每次最多修 50%。"
 
 #: ../../New-or-Enhanced-Logics.md:612
 msgid ""
 "If both the building and the engineer has `EngineerRepairAmount` set, the"
 " actual repair amount will be the minimum of them."
 msgstr ""
+"如果建筑和工程师都设置了 `EngineerRepairAmount` 则区其中更小的那个使用。"
 
 #: ../../New-or-Enhanced-Logics.md:613
 msgid ""
 "`BuildingRepairedSound` can now be set individually for each building "
 "type."
 msgstr ""
-
-#: ../../New-or-Enhanced-Logics.md:615
-msgid "In `rulesmd.ini`"
-msgstr "在 `rulesmd.ini`："
+"`BuildingRepairedSound` 现在可以为在每种建筑上单独定义。"
 
 #: ../../New-or-Enhanced-Logics.md:616
 msgid ""
@@ -2670,7 +2668,6 @@ msgid "Infantry"
 msgstr "步兵"
 
 #: ../../New-or-Enhanced-Logics.md:627
-#, fuzzy
 msgid "Customizable FLH when infantry is prone or deployed"
 msgstr "自定义步兵匍匐或部署状态的 FLH"
 
@@ -2702,11 +2699,10 @@ msgid "Customizable `SlavesFreeSound`"
 msgstr "自定义 `SlavesFreeSound`"
 
 #: ../../New-or-Enhanced-Logics.md:642
-#, fuzzy
 msgid ""
 "`SlavesFreeSound` can now be set individually for each enslavable "
 "infantry type."
-msgstr "现在 `SlavesFreeSound` 已从 `[AudioVisual]` 中解码并可以单独为每个奴隶类步兵类型微观设置。"
+msgstr "现在 `SlavesFreeSound` 可以单独为每个奴隶类步兵类型微观设置。"
 
 #: ../../New-or-Enhanced-Logics.md:646
 msgid ""
@@ -2741,7 +2737,6 @@ msgstr ""
 "DefaultDisguise=    ; InfantryType\n"
 
 #: ../../New-or-Enhanced-Logics.md:663
-#, fuzzy
 msgid "Random death animaton for NotHuman infantry"
 msgstr "非人步兵随机死亡动画"
 

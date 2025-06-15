@@ -1666,13 +1666,14 @@ msgstr ""
 
 #: ../../../CREDITS.md:415
 msgid "Customize limit when engineer repair a building"
-msgstr ""
+msgstr "自定义工程师维修建筑时的修复值"
 
 #: ../../../CREDITS.md:416
 msgid ""
 "Fix the bug that damaged particle dont disappear after building has "
 "repaired by engineer"
 msgstr ""
+"修复了建筑在被工程师修复后受损粒子不会移除的 Bug"
 
 #: ../../../CREDITS.md:417
 msgid "**Apollo** - Translucent SHP drawing patches"

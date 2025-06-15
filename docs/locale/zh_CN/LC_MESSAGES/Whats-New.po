@@ -1622,13 +1622,12 @@ msgid ""
 msgstr ""
 
 #: ../../Whats-New.md:396
-#, fuzzy
 msgid ""
 "[Customize limit and sound when engineer repair a building](New-or-"
 "Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)"
 msgstr ""
-"[自定义单位 `Locomotor=(Drive/Ship)` 且处于伤残状态时的速度比率](Fixed-or-Improved-"
-"Logics.md#damaged-speed-customization)（by NetsuNegi）"
+"[自定义工程师维修建筑时的修复值与修复音效](New-or-"
+"Enhanced-Logics.md#engineer-repair-customization)（by NetsuNegi）"
 
 #: ../../Whats-New.md:397
 #, fuzzy
@@ -1789,11 +1788,10 @@ msgid ""
 msgstr ""
 
 #: ../../Whats-New.md:423
-#, fuzzy
 msgid ""
 "Fixed the bug that damaged particle dont disappear after building has "
 "repaired by engineer (by NetsuNegi)"
-msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug（by NetsuNegi）"
+msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:424
 msgid ""

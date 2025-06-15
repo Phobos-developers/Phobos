@@ -1436,11 +1436,10 @@ msgid ""
 msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:235
-#, fuzzy
 msgid ""
 "Fixed the bug that damaged particle dont disappear after building has "
 "repaired by engineer."
-msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug。"
+msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:236
 msgid "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
