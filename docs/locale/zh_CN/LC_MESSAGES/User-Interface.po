@@ -307,6 +307,7 @@ msgid ""
 "the maximum value of health display. The current value will be displayed "
 "as the percentage of its current health multiplies the new maximum value."
 msgstr ""
+"若 `DigitalDisplay.Health.FakeAtDisguise` 在一个使用伪装的步兵上设为 true，那么它将用被伪装单位的 `Strength` 来显示最大值。当前值将由该单位当前生命值所占的百分比乘新的最大值计算得出。"
 
 #: ../../User-Interface.md:63
 msgid ""

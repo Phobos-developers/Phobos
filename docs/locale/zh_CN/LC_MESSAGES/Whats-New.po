@@ -1620,6 +1620,7 @@ msgid ""
 "Allowed faking digital display for `InfoType=Health` at disguise (by "
 "Ollerus)"
 msgstr ""
+"允许 `InfoType=Health` 伪造出伪装目标的数值（by Ollerus）"
 
 #: ../../Whats-New.md:396
 msgid ""

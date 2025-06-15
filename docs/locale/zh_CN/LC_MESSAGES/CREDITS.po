@@ -2021,7 +2021,6 @@ msgid "Build limit group enhancement"
 msgstr "建造限制组增强"
 
 #: ../../../CREDITS.md:499
-#, fuzzy
 msgid ""
 "Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building "
 "upgrades"
@@ -2056,7 +2055,6 @@ msgid "Use `InsigniaType` to set the properties of insignia in a batch"
 msgstr "使用 `InsigniaType` 批量设置军衔属性"
 
 #: ../../../CREDITS.md:509
-#, fuzzy
 msgid ""
 "Allow player's self-healing effects to be benefited by allied or "
 "`PlayerControl=true` houses"
@@ -2064,7 +2062,7 @@ msgstr "允许玩家的自愈效果可以从友军或 `PlayerControl=true` 的�
 
 #: ../../../CREDITS.md:511
 msgid "Allow faking digital display for `InfoType=Health` at disguise"
-msgstr ""
+msgstr "允许 `InfoType=Health` 伪造出伪装目标的数值"
 
 #: ../../../CREDITS.md:512
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
