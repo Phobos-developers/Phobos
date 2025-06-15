@@ -1610,6 +1610,7 @@ msgid ""
 "[Several new Infotypes, no display in specific status and a new single "
 "frame display method](User-Interface.md#digital-display) (by CrimRecya)"
 msgstr ""
+"[多种新的数显信息类型、特定情况下不显示以及一种新的单帧显示方式](User-Interface.md#digital-display)（by CrimRecya）"
 
 #: ../../Whats-New.md:394
 msgid "[Targeting limitation for berzerk technos](New-or-Enhanced-Logics.md#targeting-limitation-for-berzerk-technos) (by TaranDahl)"

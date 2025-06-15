@@ -2004,6 +2004,7 @@ msgid ""
 "Several new Infotypes, no display in specific status and a new single "
 "frame display method"
 msgstr ""
+"多种新的数显信息类型、特定情况下不显示以及一种新的单帧显示方式"
 
 #: ../../../CREDITS.md:495
 msgid ""

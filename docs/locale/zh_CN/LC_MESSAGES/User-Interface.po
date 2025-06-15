@@ -166,37 +166,41 @@ msgstr ""
 
 #: ../../User-Interface.md:38
 msgid "`InfoIndex` defines the specific `InfoType`."
-msgstr ""
+msgstr "`InfoIndex` 定义了具体的 `InfoType`。"
 
 #: ../../User-Interface.md:39
 msgid ""
 "In `InfoType=Spawns`, 0 - alive spawns, 1 - docked spawns, 2 - launching "
 "spawns."
 msgstr ""
+"在 `InfoType=Spawns` 中，0 - 存活的子机，1 - 返航的子机，2 - 发射中的子机。"
 
 #: ../../User-Interface.md:40
 msgid ""
 "In `InfoType=Tiberium`, 0 - all, 1 - the first tiberium, 2 - the second "
 "tiberium, ..."
 msgstr ""
+"在 `InfoType=Tiberium` 中，0 - 所有类型，1 - 第一类矿石，2 - 第二类矿石，..."
 
 #: ../../User-Interface.md:41
 msgid ""
 "In `InfoType=SpawnTimer`, 0 - the fastest spawnee, 1 - the first spawnee,"
 " 2 - the second spawnee, ..."
 msgstr ""
+"在 `InfoType=SpawnTimer` 中，0 - 最快的子机，1 - 第一个子机，2 - 第二个子机，..."
 
 #: ../../User-Interface.md:42
 msgid ""
-"In `InfoType=SuperWeapon`, 0 - the first SW of all, 1 - SW, 2 - SW2, 3 - "
-"the first SWs' SW, ..."
+"In `InfoType=SuperWeapon`, 0 - the first SW of all, 1 - SW, 2 - SW2, 3 - the first SWs' SW, ..."
 msgstr ""
+"在 `InfoType=SuperWeapon` 中，0 - 所有超武中的第一个，1 - SuperWeapon，2 - SuperWeapon2，3 - SuperWeapons 的超武中的第一个，..."
 
 #: ../../User-Interface.md:43
 msgid ""
 "In `InfoType=FactoryProcess`, 0 - the first factory in production, 1 - "
 "primary factory, 2 - secondary factory."
 msgstr ""
+"在 `InfoType=FactoryProcess` 中，0 - 正在生产的首个产线，1 - 主／科技建筑生产线，2 - 副／防御建筑生产线。"
 
 #: ../../User-Interface.md:44
 msgid ""
@@ -234,6 +238,7 @@ msgid ""
 "`ValueAsTimer` controls whether the value will be displayed in the form "
 "of a timer (i.e. `0:30`, `5:00` or `1:00:00`)."
 msgstr ""
+"`ValueAsTimer` 控制数值是否以计时器格式显示（例如 `0:30`，`5:00` 或 `1:00:00`）。"
 
 #: ../../User-Interface.md:50 ../../User-Interface.md:255
 msgid ""
@@ -246,6 +251,7 @@ msgid ""
 "`VisibleInSpecialState` controls whether this display type will show when"
 " the owner is in ironcurtain or is attacked by a temporal weapon."
 msgstr ""
+"`VisibleInSpecialState` 控制当拥有者处于铁幕或被超时空武器冻结时是否仍显示此类信息。"
 
 #: ../../User-Interface.md:52
 msgid ""
@@ -263,16 +269,15 @@ msgstr ""
 "允许自定义颜色。`Text.Background=yes` 将绘制黑色矩形背景。"
 
 #: ../../User-Interface.md:54
-#, fuzzy
 msgid ""
 "When using shapes, a custom palette can be specified with `Palette`. "
 "`Shape.Spacing` controls pixel buffer between characters. If "
 "`Shape.PercentageFrame` set to true, it will only draw one frame that "
 "corresponds to total frames by percentage."
 msgstr "当使用 Shape时，可以通过 `Palette` 指定自定义色盘。`Shape.Spacing` 控制字符之间以像素为单位的间隔。"
+"若 `Shape.PercentageFrame` 设为 true，则仅绘制与总进度百分比相对应的单个帧。"
 
 #: ../../User-Interface.md:55
-#, fuzzy
 msgid ""
 "Frames 0-9 will be used as digits when the owner's health bar is green, "
 "10-19 when yellow, 20-29 when red. For `/` and `%` (or `:` if set "
@@ -280,7 +285,7 @@ msgid ""
 "34-35, respectively."
 msgstr ""
 "当所有者的血量为健康状态时使用 0-9 帧的数字，黄血时使用 10-19 帧，红血时使用 20-29 帧。对于 `/` 和 `%` "
-"符号，帧序号索引分别为 30-31、32-33、34-35。"
+"（或当 `ValueAsTimer=true` 时的 `:`）符号，帧序号索引分别为 30-31、32-33、34-35。"
 
 #: ../../User-Interface.md:56
 msgid ""
@@ -293,12 +298,12 @@ msgid "Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others."
 msgstr "建筑的 `Shape.Spacing` 默认为 `4,-2`，其他为 `4,0`。"
 
 #: ../../User-Interface.md:58
-#, fuzzy
 msgid ""
 "`ValueScaleDivisor` can be used to adjust scale of displayed values. Both"
 " the current & maximum value will be divided by the integer number given,"
 " if higher than 1. Default to 1 (or 15 when set `ValueAsTimer` to true)."
 msgstr "`ValueScaleDivisor` 可用于调整显示值的缩放比例。如果给定的整数大于 1 那么当前值和最大值都将除以该整数。"
+"默认为 1（或当 `ValueAsTimer=true` 时为 15）。"
 
 #: ../../User-Interface.md:60
 msgid ""
