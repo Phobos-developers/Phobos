@@ -2010,6 +2010,7 @@ msgid ""
 "Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its "
 "incorrect position"
 msgstr ""
+"自定义 Voxel 碎片 `TrailerAnim` 生成间隔并修复其生成位置错误的问题"
 
 #: ../../../CREDITS.md:496
 msgid "**Ollerus**:"

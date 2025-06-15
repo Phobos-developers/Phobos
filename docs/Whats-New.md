@@ -394,7 +394,7 @@ New:
 - Targeting limitation for berzerk technos (by TaranDahl)
 - Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
-- Customizable debris trailer anim spawn delay (by CrimRecya)
+- [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

@@ -1796,7 +1796,7 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 ### Customizable debris trailer anim spawn delay
 
-- You can now customize the generation interval of VoxelAnim's trailer animation
+- You can now customize the generation interval of VoxelAnim's trailer animation.
 
 In `rulesmd.ini`:
 ```ini

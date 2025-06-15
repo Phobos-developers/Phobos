@@ -1443,7 +1443,7 @@ msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug�
 
 #: ../../Fixed-or-Improved-Logics.md:236
 msgid "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
-msgstr ""
+msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:238
 msgid "Fixes / interactions with other extensions"
@@ -6089,15 +6089,15 @@ msgstr ""
 "`artmd.ini` 中。"
 
 #: ../../Fixed-or-Improved-Logics.md:1797
-#, fuzzy
 msgid "Customizable debris trailer anim spawn delay"
-msgstr "自定义 ROF 随机延迟"
+msgstr "自定义 Voxel 碎片尾烟动画生成间隔"
 
 #: ../../Fixed-or-Improved-Logics.md:1799
 msgid ""
 "You can now customize the generation interval of VoxelAnim's trailer "
-"animation"
+"animation."
 msgstr ""
+"现在你可以自定义 Voxel 碎片的尾烟动画生成间隔。"
 
 #: ../../Fixed-or-Improved-Logics.md:1802
 msgid ""

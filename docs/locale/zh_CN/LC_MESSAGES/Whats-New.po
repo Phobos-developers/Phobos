@@ -1630,9 +1630,8 @@ msgstr ""
 "Enhanced-Logics.md#engineer-repair-customization)（by NetsuNegi）"
 
 #: ../../Whats-New.md:397
-#, fuzzy
-msgid "Customizable debris trailer anim spawn delay (by CrimRecya)"
-msgstr "自定义子机发射器生成间隔（by Starkku）"
+msgid "[Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)"
+msgstr "[自定义 Voxel 碎片尾烟动画生成间隔](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay)（by CrimRecya）"
 
 #: ../../Whats-New.md:399 ../../Whats-New.md:608 ../../Whats-New.md:925
 #: ../../Whats-New.md:1034 ../../Whats-New.md:1059 ../../Whats-New.md:1098
@@ -1798,6 +1797,7 @@ msgid ""
 "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by"
 " CrimRecya)"
 msgstr ""
+"修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:426 ../../Whats-New.md:720 ../../Whats-New.md:797
 #: ../../Whats-New.md:961 ../../Whats-New.md:1002 ../../Whats-New.md:1014
