@@ -2214,7 +2214,7 @@ msgstr "**tyuah8**："
 msgid ""
 "Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-"
 "piggybacked bugfix"
-msgstr "Drive/Jumpjet/Ship/Teleport 运动模式退出 piggybacked 接口时无法激活的问题修复"
+msgstr "修复了 Drive/Jumpjet/Ship/Teleport 运动方式在退出 piggybacked 接口时无法激活的问题"
 
 #: ../../../CREDITS.md:547
 msgid "Destroyed unit leaves sensors bugfix"

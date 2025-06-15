@@ -36,11 +36,30 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display).
   - `InfoIndex` defines the specific `InfoType`.
-    - In `InfoType=Spawns`, 0 - alive spawns, 1 - docked spawns, 2 - launching spawns.
-    - In `InfoType=Tiberium`, 0 - all, 1 - the first tiberium, 2 - the second tiberium, ...
-    - In `InfoType=SpawnTimer`, 0 - the fastest spawnee, 1 - the first spawnee, 2 - the second spawnee, ...
-    - In `InfoType=SuperWeapon`, 0 - the first SW of all, 1 - SW, 2 - SW2, 3 - the first SWs' SW, ...
-    - In `InfoType=FactoryProcess`, 0 - the first factory in production, 1 - primary factory, 2 - secondary factory.
+    - In `InfoType=Spawns`,
+      - 0 - alive spawns,
+      - 1 - docked spawns,
+      - 2 - launching spawns.
+    - In `InfoType=Tiberium`,
+      - 0 - all,
+      - 1 - the first tiberium,
+      - 2 - the second tiberium,
+      - ...
+    - In `InfoType=SpawnTimer`,
+      - 0 - the fastest spawnee,
+      - 1 - the first spawnee,
+      - 2 - the second spawnee,
+      - ...
+    - In `InfoType=SuperWeapon`,
+      - 0 - the first SW of all,
+      - 1 - `[BuildingType] -> SuperWeapon`,
+      - 2 - `[BuildingType] -> SuperWeapon2`,
+      - 3 - the first SW in `[BuildingType] -> SuperWeapons`,
+      - ...
+    - In `InfoType=FactoryProcess`,
+      - 0 - the first factory in production,
+      - 1 - primary factory,
+      - 2 - secondary factory.
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. `20/40`).

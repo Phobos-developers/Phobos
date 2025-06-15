@@ -6936,11 +6936,16 @@ msgstr "不能与 Ares 的 `MindControl.Permanent=yes` 共同使用。"
 #: ../../New-or-Enhanced-Logics.md:1897
 msgid ""
 "Respect `Verses` where applicable unless `EffectsRequireVerses` is set to"
-" `false`. If target has an active shield, its armor type is used instead "
-"unless warhead can penetrate the shield."
+" `false`."
 msgstr ""
 "在适用的情况下除非 `EffectsRequireVerses` 设为 `false` 否则尊重 "
-"`Verses`。如果目标拥有一个激活的护盾，那么它的护甲类型将被使用，除非弹头可以穿透护盾。"
+"`Verses`。"
+
+msgid ""
+"If target has an active [shield](#shields), its armor type is used instead "
+"unless warhead can penetrate the shield."
+msgstr ""
+"如果目标拥有一个激活的 [护盾](#shields)，那么它的护甲类型将被使用，除非弹头可以穿透护盾。"
 
 #: ../../New-or-Enhanced-Logics.md:1900
 msgid "Break Mind Control on impact"

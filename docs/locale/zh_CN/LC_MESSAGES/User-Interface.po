@@ -170,37 +170,118 @@ msgstr "`InfoIndex` 定义了具体的 `InfoType`。"
 
 #: ../../User-Interface.md:39
 msgid ""
-"In `InfoType=Spawns`, 0 - alive spawns, 1 - docked spawns, 2 - launching "
-"spawns."
+"In `InfoType=Spawns`,"
 msgstr ""
-"在 `InfoType=Spawns` 中，0 - 存活的子机，1 - 返航的子机，2 - 发射中的子机。"
+"在 `InfoType=Spawns` 中，"
+
+msgid ""
+"0 - alive spawns,"
+msgstr ""
+"0 - 存活的子机，"
+
+msgid ""
+"1 - docked spawns,"
+msgstr ""
+"1 - 返航的子机，"
+
+msgid ""
+"2 - launching spawns."
+msgstr ""
+"2 - 发射中的子机。"
 
 #: ../../User-Interface.md:40
 msgid ""
-"In `InfoType=Tiberium`, 0 - all, 1 - the first tiberium, 2 - the second "
-"tiberium, ..."
+"In `InfoType=Tiberium`,"
 msgstr ""
-"在 `InfoType=Tiberium` 中，0 - 所有类型，1 - 第一类矿石，2 - 第二类矿石，..."
+"在 `InfoType=Tiberium` 中，"
+
+msgid ""
+"0 - all,"
+msgstr ""
+"0 - 所有类型，"
+
+msgid ""
+"1 - the first tiberium,"
+msgstr ""
+"1 - 第一类矿石，"
+
+msgid ""
+"2 - the second tiberium,"
+msgstr ""
+"2 - 第二类矿石，"
+
+msgid ""
+"..."
+msgstr ""
+"..."
 
 #: ../../User-Interface.md:41
 msgid ""
-"In `InfoType=SpawnTimer`, 0 - the fastest spawnee, 1 - the first spawnee,"
-" 2 - the second spawnee, ..."
+"In `InfoType=SpawnTimer`,"
 msgstr ""
-"在 `InfoType=SpawnTimer` 中，0 - 最快的子机，1 - 第一个子机，2 - 第二个子机，..."
+"在 `InfoType=SpawnTimer` 中，"
+
+msgid ""
+"0 - the fastest spawnee,"
+msgstr ""
+"0 - 最快的子机，"
+
+msgid ""
+"1 - the first spawnee,"
+msgstr ""
+"1 - 第一个子机，"
+
+msgid ""
+"2 - the second spawnee,"
+msgstr ""
+"2 - 第二个子机，"
 
 #: ../../User-Interface.md:42
 msgid ""
-"In `InfoType=SuperWeapon`, 0 - the first SW of all, 1 - SW, 2 - SW2, 3 - the first SWs' SW, ..."
+"In `InfoType=SuperWeapon`,"
 msgstr ""
-"在 `InfoType=SuperWeapon` 中，0 - 所有超武中的第一个，1 - SuperWeapon，2 - SuperWeapon2，3 - SuperWeapons 的超武中的第一个，..."
+"在 `InfoType=SuperWeapon` 中，"
+
+msgid ""
+"0 - the first SW of all,"
+msgstr ""
+"0 - 所有超武中的第一个，"
+
+msgid ""
+"1 - `[BuildingType] -> SuperWeapon`,"
+msgstr ""
+"1 - `[BuildingType] -> SuperWeapon`，"
+
+msgid ""
+"2 - `[BuildingType] -> SuperWeapon2`,"
+msgstr ""
+"2 - `[BuildingType] -> SuperWeapon2`，"
+
+msgid ""
+"3 - the first SW in `[BuildingType] -> SuperWeapons`,"
+msgstr ""
+"3 - `[BuildingType] -> SuperWeapons` 中的第一个，"
 
 #: ../../User-Interface.md:43
 msgid ""
-"In `InfoType=FactoryProcess`, 0 - the first factory in production, 1 - "
-"primary factory, 2 - secondary factory."
+"In `InfoType=FactoryProcess`,"
 msgstr ""
-"在 `InfoType=FactoryProcess` 中，0 - 正在生产的首个产线，1 - 主／科技建筑生产线，2 - 副／防御建筑生产线。"
+"在 `InfoType=FactoryProcess` 中，"
+
+msgid ""
+"0 - the first factory in production,"
+msgstr ""
+"0 - 正在生产的首个产线，"
+
+msgid ""
+"1 - primary factory,"
+msgstr ""
+"1 - 主／科技建筑生产线，"
+
+msgid ""
+"2 - secondary factory."
+msgstr ""
+"2 - 副／防御建筑生产线。"
 
 #: ../../User-Interface.md:44
 msgid ""
