@@ -92,8 +92,11 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 			{
 				for (auto const pEffect : AttachEffectClass::Array)
 				{
-					if (ptr == pEffect->Animation)
+					if (pAnim == pEffect->Animation)
+					{
 						pEffect->Animation = nullptr;
+						break; // one anim must only be used by less than one AE
+					}
 				}
 			}
 		}
@@ -102,10 +105,19 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 	{
 		auto const pTechno = abstract_cast<TechnoClass*, true>(abs);
 
-		if (TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
+		if (int count = TechnoExt::ExtMap.Find(pTechno)->AttachedEffectInvokerCount)
 		{
 			for (auto const pEffect : AttachEffectClass::Array)
-				AnnounceInvalidPointer(pEffect->Invoker, ptr);
+			{
+				if (pTechno == pEffect->Invoker)
+				{
+					AnnounceInvalidPointer(pEffect->Invoker, ptr);
+					count--;
+
+					if (count <= 0)
+						break;
+				}
+			}
 		}
 	}
 }

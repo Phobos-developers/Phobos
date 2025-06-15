@@ -69,7 +69,10 @@ void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 				for (auto const pShield : ShieldClass::Array)
 				{
 					if (pAnim == pShield->IdleAnim)
+					{
 						pShield->IdleAnim = nullptr;
+						break; // one anim must be used by less than one shield
+					}
 				}
 			}
 		}
