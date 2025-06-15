@@ -558,6 +558,23 @@ In `rulesmd.ini`:
 IsDestroyableObstacle=false  ; boolean
 ```
 
+### Engineer repair customization
+
+- You can now set a maximum amount when engineer repair a building for either of them. 0 means the building will be repaired to full health.
+  - Negative value means percentage. For example, `EngineerRepairAmount=-50` means you can only repair 50% of the building's health per Engineer.
+  - If both the building and the engineer has `EngineerRepairAmount` set, the actual repair amount will be the minimum of them.
+- `BuildingRepairedSound` can now be set individually for each building type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+EngineerRepairAmount=0             ; integer
+BuildingRepairedSound=             ; Sound entry, default to [AudioVisual] -> BuildingRepairedSound
+
+[SOMEINFANTRY]                     ; InfantryType
+EngineerRepairAmount=0             ; integer
+```
+
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)
@@ -603,23 +620,6 @@ In `rulesmd.ini`:
 SpyEffect.Custom=false             ; boolean
 SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
-```
-
-### Engineer repair customization
-
-- You can now set a maximum amount when engineer repair a building for either of them. 0 means the building will be repaired to full health.
-  - Negative value means percentage. For example, `EngineerRepairAmount=-50` means you can only repair 50% of the building's health per Engineer.
-  - If both the building and the engineer has `EngineerRepairAmount` set, the actual repair amount will be the minimum of them.
-- `BuildingRepairedSound` can now be set individually for each building type.
-
-In `rulesmd.ini`
-```ini
-[SOMEBUILDING]                     ; BuildingType
-EngineerRepairAmount=0             ; integer
-BuildingRepairedSound=             ; Sound entry, default to [AudioVisual] -> BuildingRepairedSound
-
-[SOMEINFANTRY]                     ; InfantryType
-EngineerRepairAmount=0             ; integer
 ```
 
 ## Infantry
@@ -1731,7 +1731,7 @@ VoiceCreated=                ; Sound entry
 In `rulesmd.ini`:
 ```ini
 [General]
-BerzerkTargeting=all  ; AffectedHouse enumeration
+BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Tiberium eater
@@ -1755,7 +1755,7 @@ TiberiumEater.CellN=              ; X,Y - cell offset
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
-TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
+TiberiumEater.Display.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
@@ -1894,7 +1894,8 @@ FireUp.ResetInRetarget=true     ; boolean
 All new Warhead effects
 - Can be used with `CellSpread` and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
-- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`.
+- If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact
@@ -2105,7 +2106,7 @@ In `rulesmd.ini`:
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean
-TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Houses=all     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 
