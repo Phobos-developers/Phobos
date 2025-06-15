@@ -86,10 +86,10 @@ In `rulesmd.ini`:
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=          ; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=          ; List of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
@@ -103,7 +103,7 @@ Anchor.Vertical=top                            ; Vertical position enumeration (
 Anchor.Building=top                            ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 Percentage=false                               ; boolean
 HideMaxValue=false                             ; boolean
-VisibleToHouses=owner                          ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses=owner                          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true                  ; boolean
 VisibleInSpecialState=true                     ; boolean
 ValueScaleDivisor=                             ; integer
@@ -119,9 +119,9 @@ Palette=palette.pal                            ; filename with .pal extension
 Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
 Shape.PercentageFrame=false                    ; boolean
 
-[SOMETECHNOTYPE]
+[SOMETECHNOTYPE]                               ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
-DigitalDisplayTypes=                           ; list of DigitalDisplayTypes
+DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
 DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 ```
 
