@@ -57,54 +57,57 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others.
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1. Default to 1 (or 15 when set `ValueAsTimer` to true).
 
+  - `DigitalDisplay.Health.FakeAtDisguise`, if set to true on an InfantryType with Disguise, will use the disguised TechnoType's `Strength` value as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value.
+
 In `rulesmd.ini`:
 ```ini
 [DigitalDisplayTypes]
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=   ; List of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=    ; List of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=          ; list of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
 
-[SOMEDIGITALDISPLAYTYPE]                ; DigitalDisplayType
+[SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
-InfoType=Health                         ; Displayed value enumeration (Health|Shield|Ammo|Mindcontrol|Spawns|Passengers|Tiberium|Experience|Occupants|GattlingStage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife|FactoryProcess)
-InfoIndex=                              ; integer
-Offset=0,0                              ; integers - horizontal, vertical
-Offset.ShieldDelta=                     ; integers - horizontal, vertical
-Align=right                             ; Text alignment enumeration (left|right|center/centre)
-Anchor.Horizontal=right                 ; Horizontal position enumeration (left|center/centre|right)
-Anchor.Vertical=top                     ; Vertical position enumeration (top|center/centre|bottom)
-Anchor.Building=top                     ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
-Percentage=false                        ; boolean
-HideMaxValue=false                      ; boolean
-VisibleToHouses=owner                   ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-VisibleToHouses.Observer=true           ; boolean
-VisibleInSpecialState=true              ; boolean
-ValueScaleDivisor=                      ; integer
-ValueAsTimer=false                      ; boolean
+InfoType=Health                                ; Displayed value enumeration (Health|Shield|Ammo|Mindcontrol|Spawns|Passengers|Tiberium|Experience|Occupants|GattlingStage|ROF|Reload|SpawnTimer|GattlingTimer|ProduceCash|PassengerKill|AutoDeath|SuperWeapon|IronCurtain|TemporalLife|FactoryProcess)
+InfoIndex=                                     ; integer
+Offset=0,0                                     ; integers - horizontal, vertical
+Offset.ShieldDelta=                            ; integers - horizontal, vertical
+Align=right                                    ; Text alignment enumeration (left|right|center/centre)
+Anchor.Horizontal=right                        ; Horizontal position enumeration (left|center/centre|right)
+Anchor.Vertical=top                            ; Vertical position enumeration (top|center/centre|bottom)
+Anchor.Building=top                            ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
+Percentage=false                               ; boolean
+HideMaxValue=false                             ; boolean
+VisibleToHouses=owner                          ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses.Observer=true                  ; boolean
+VisibleInSpecialState=true                     ; boolean
+ValueScaleDivisor=                             ; integer
+ValueAsTimer=false                             ; boolean
 ; Text
-Text.Color=0,255,0                      ; integers - Red, Green, Blue
-Text.Color.ConditionYellow=255,255,0    ; integers - Red, Green, Blue
-Text.Color.ConditionRed=255,0,0         ; integers - Red, Green, Blue
-Text.Background=false                   ; boolean
+Text.Color=0,255,0                             ; integers - Red, Green, Blue
+Text.Color.ConditionYellow=255,255,0           ; integers - Red, Green, Blue
+Text.Color.ConditionRed=255,0,0                ; integers - Red, Green, Blue
+Text.Background=false                          ; boolean
 ; Shape
-Shape=                                  ; filename with .shp extension, if not present, game-drawn text will be used instead
-Palette=palette.pal                     ; filename with .pal extension
-Shape.Spacing=                          ; integers - horizontal, vertical spacing between digits
-Shape.PercentageFrame=false             ; boolean
+Shape=                                         ; filename with .shp extension, if not present, game-drawn text will be used instead
+Palette=palette.pal                            ; filename with .pal extension
+Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
+Shape.PercentageFrame=false                    ; boolean
 
-[SOMETECHNO]                            ; TechnoType
-DigitalDisplay.Disable=false            ; boolean
-DigitalDisplayTypes=                    ; List of DigitalDisplayTypes
+[SOMETECHNOTYPE]
+DigitalDisplay.Disable=false                   ; boolean
+DigitalDisplayTypes=                           ; list of DigitalDisplayTypes
+DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 ```
 
 In `RA2MD.INI`:
 ```ini
 [Phobos]
-DigitalDisplay.Enable=false             ; boolean
+DigitalDisplay.Enable=false                    ; boolean
 ```
 
 ```{note}

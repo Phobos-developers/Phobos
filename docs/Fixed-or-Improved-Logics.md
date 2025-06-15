@@ -232,6 +232,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Infantry support `IsGattling=yes`.
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 
 ## Fixes / interactions with other extensions
@@ -1855,6 +1856,20 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]                   ; WarheadType
 Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier
 Rocker.AmplitudeOverride=       ; integer
+```
+
+### Customizable Warhead trigger conditions
+
+- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
+  - Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsBelowPercent=1.0     ; floating point value, percents or absolute
+EffectsRequireVerses=false  ; boolean
 ```
 
 ### Customizable Warhead animation behaviour
