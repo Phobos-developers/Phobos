@@ -1549,7 +1549,8 @@ DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
 	const auto movementZone = pFreeUnit->Type->MovementZone;
 	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	*outBuffer = MapClass::Instance.NearByLocation(mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false);
+	R->EAX(outBuffer);
 	return SkipGameCode;
 }
 
@@ -1564,7 +1565,8 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 	const auto movementZone = pFreeUnit->Type->MovementZone;
 	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	*outBuffer = MapClass::Instance.NearByLocation(mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false);
+	R->EAX(outBuffer);
 	return SkipGameCode;
 }
 
