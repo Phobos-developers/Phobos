@@ -592,6 +592,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->LastWarpInDelay)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->LastSensorsMapCoords)
+		.Process(this->AttachedEffectInvokerCount)
 		;
 }
 

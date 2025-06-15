@@ -53,6 +53,7 @@ public:
 		int WHAnimRemainingCreationInterval;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
+		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -98,6 +99,7 @@ public:
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, AttachedEffectInvokerCount { 0 }
 		{ }
 
 		void OnEarlyUpdate();

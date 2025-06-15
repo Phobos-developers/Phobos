@@ -1433,6 +1433,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 	std::vector<WeaponTypeClass*> expireWeapons;
 	bool markForRedraw = false;
+	bool altered = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1452,6 +1453,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 
 			markForRedraw |= pType->HasTint();
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -1470,7 +1472,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (!count)
+	if (altered && !count)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
