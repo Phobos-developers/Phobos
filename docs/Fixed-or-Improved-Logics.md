@@ -1858,20 +1858,6 @@ Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier
 Rocker.AmplitudeOverride=       ; integer
 ```
 
-### Customizable Warhead trigger conditions
-
-- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
-  - Both conditions need to evaluate to true in order for the warhead to trigger.
-- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]               ; WarheadType
-AffectsAbovePercent=0.0     ; floating point value, percents or absolute
-AffectsBelowPercent=1.0     ; floating point value, percents or absolute
-EffectsRequireVerses=false  ; boolean
-```
-
 ### Customizable Warhead animation behaviour
 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
@@ -1899,6 +1885,20 @@ SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
+```
+
+### Customizable Warhead trigger conditions
+
+- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
+  - Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsBelowPercent=1.0     ; floating point value, percents or absolute
+EffectsRequireVerses=false  ; boolean
 ```
 
 ### Customizing decloak on damaging targets
