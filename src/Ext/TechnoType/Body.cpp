@@ -796,6 +796,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->Spawner_LimitRange)
 		this->CalculateSpawnerRange();
 
+	// Airstrike tint color
+	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
+
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
@@ -986,6 +989,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
 		.Process(this->ForbidParallelAIQueues)
+		.Process(this->TintColorAirstrike)
 		.Process(this->LaserTargetColor)
 		.Process(this->AirstrikeLineColor)
 		.Process(this->ShieldType)
