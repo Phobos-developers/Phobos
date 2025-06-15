@@ -1612,8 +1612,8 @@ msgid ""
 msgstr ""
 
 #: ../../Whats-New.md:394
-msgid "Targeting limitation for berzerk technos (by TaranDahl)"
-msgstr ""
+msgid "[Targeting limitation for berzerk technos](New-or-Enhanced-Logics.md#targeting-limitation-for-berzerk-technos) (by TaranDahl)"
+msgstr "[狂暴单位索敌限制](New-or-Enhanced-Logics.md#targeting-limitation-for-berzerk-technos)（by TaranDahl）"
 
 #: ../../Whats-New.md:395
 msgid ""

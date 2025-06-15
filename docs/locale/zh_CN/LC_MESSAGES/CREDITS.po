@@ -2203,7 +2203,7 @@ msgstr "自定义 `Crater=yes` 的动画能否摧毁矿石"
 
 #: ../../../CREDITS.md:544
 msgid "Targeting limitation for berzerk technos"
-msgstr ""
+msgstr "狂暴单位索敌限制"
 
 #: ../../../CREDITS.md:545
 msgid "**tyuah8**:"
