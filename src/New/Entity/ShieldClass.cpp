@@ -58,12 +58,23 @@ void ShieldClass::UpdateType()
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	auto const abs = static_cast<AbstractClass*>(ptr);
+
+	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		for (auto pShield : ShieldClass::Array)
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
-			if (pAnim == pShield->IdleAnim)
-				pShield->IdleAnim = nullptr;
+			if (pAnimExt->IsShieldIdleAnim)
+			{
+				for (auto const pShield : ShieldClass::Array)
+				{
+					if (pAnim == pShield->IdleAnim)
+					{
+						pShield->IdleAnim = nullptr;
+						break; // one anim must be used by less than one shield
+					}
+				}
+			}
 		}
 	}
 }
@@ -815,11 +826,16 @@ void ShieldClass::CreateAnim()
 
 	if (!this->IdleAnim && idleAnimType)
 	{
-		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
+		auto const pTechno = this->Techno;
+		auto const pAnim = GameCreate<AnimClass>(idleAnimType, pTechno->Location);
 
-		pAnim->SetOwnerObject(this->Techno);
-		pAnim->Owner = this->Techno->Owner;
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+		pAnim->SetOwnerObject(pTechno);
+		pAnim->Owner = pTechno->Owner;
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->SetInvoker(pTechno);
+		pAnimExt->IsShieldIdleAnim = true;
+
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
 	}
