@@ -393,6 +393,7 @@ New:
 - [Several new Infotypes, no display in specific status and a new single frame display method](User-Interface.md#digital-display) (by CrimRecya)
 - Targeting limitation for berzerk technos (by TaranDahl)
 - Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
+- [Warhead activation target health thresholds](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by FS-21 & Kerbiter)
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 
@@ -603,7 +604,6 @@ New:
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
-- Warhead activation target health thresholds (by FS-21, Kerbiter)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)

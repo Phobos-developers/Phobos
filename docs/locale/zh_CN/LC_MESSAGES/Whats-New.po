@@ -2654,8 +2654,8 @@ msgid ""
 msgstr "现在 `Strafing` 在抛射体使用了 `Trajectory` 时默认禁用（by CrimRecya）"
 
 #: ../../Whats-New.md:606
-msgid "Warhead activation target health thresholds (by FS-21, Kerbiter)"
-msgstr ""
+msgid "[Warhead activation target health thresholds](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by FS-21 & Kerbiter)"
+msgstr "[目标血量作为弹头生效条件](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions)（by FS-21 & Kerbiter）"
 
 #: ../../Whats-New.md:609
 msgid ""

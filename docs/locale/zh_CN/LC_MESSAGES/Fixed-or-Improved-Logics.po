@@ -6244,21 +6244,22 @@ msgstr ""
 "Rocker.AmplitudeOverride=       ; integer\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1861
-#, fuzzy
 msgid "Customizable Warhead trigger conditions"
-msgstr "自定义弹头动画行为"
+msgstr "自定义弹头效果触发条件"
 
 #: ../../Fixed-or-Improved-Logics.md:1863
 msgid ""
 "It is now possible to make warheads only trigger when target's HP is "
 "above and/or below certain percentage."
 msgstr ""
+"现在可以设置一个弹头仅在目标单位生命值高／低于特定百分比时才能触发。"
 
 #: ../../Fixed-or-Improved-Logics.md:1864
 msgid ""
 "Both conditions need to evaluate to true in order for the warhead to "
 "trigger."
 msgstr ""
+"两个条件同时满足时才能触发。"
 
 #: ../../Fixed-or-Improved-Logics.md:1865
 #, python-format
@@ -6267,6 +6268,7 @@ msgid ""
 "warhead effects trigger even if it can't damage the target because of "
 "it's current ArmorType (e.g. 0% in `Verses`)."
 msgstr ""
+"若设置 `EffectsRequireVerses=false` 那么即便由于目标当前装甲类型导致弹头无法对其造成杀伤（例如 `Verses=0%`）Phobos 所引入的弹头效果也仍会触发。"
 
 #: ../../Fixed-or-Improved-Logics.md:1868
 msgid ""

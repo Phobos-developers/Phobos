@@ -199,7 +199,7 @@ msgstr "`UseFixedVoxelLighting`"
 
 #: ../../../CREDITS.md:52
 msgid "Warhead activation target health thresholds"
-msgstr ""
+msgstr "目标血量作为弹头生效条件"
 
 #: ../../../CREDITS.md:53
 msgid "**Uranusian (Thrifinesma)**:"
@@ -572,7 +572,7 @@ msgstr "护盾新增功能 `Pips.HideIfNoStrength` 与 `SelfHealing.EnabledBy`"
 
 #: ../../../CREDITS.md:149
 msgid "Warhead activation target health thresholds enhancements"
-msgstr ""
+msgstr "目标血量作为弹头生效条件的进一步改进"
 
 #: ../../../CREDITS.md:150
 msgid "**Starkku**:"
