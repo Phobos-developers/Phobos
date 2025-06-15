@@ -63,6 +63,14 @@ public:
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		CellStruct LastSensorsMapCoords;
 
+		// cache tint values
+		int TintColorOwner;
+		int TintColorAllies;
+		int TintColorEnemies;
+		int TintIntensityOwner;
+		int TintIntensityAllies;
+		int TintIntensityEnemies;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -100,6 +108,12 @@ public:
 			, IsBeingChronoSphered { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, AttachedEffectInvokerCount { 0 }
+			, TintColorOwner { 0 }
+			, TintColorAllies { 0 }
+			, TintColorEnemies { 0 }
+			, TintIntensityOwner { 0 }
+			, TintIntensityAllies { 0 }
+			, TintIntensityEnemies { 0 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -127,6 +141,7 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
+		void UpdateTintValues();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
