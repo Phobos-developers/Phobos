@@ -160,7 +160,8 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
-		AnimTypeClass* DropPodTrailer;
+		Nullable<AnimTypeClass*> DropPodTrailer;
+		AnimTypeClass* DropPodDefaultTrailer;
 		SHPStruct* PodImage;
 		Valueable<bool> DrawInsignia_OnlyOnSelected;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
@@ -227,6 +228,8 @@ public:
 
 		Valueable<bool> AnimCraterDestroyTiberium;
 
+		Valueable<AffectedHouse> BerzerkTargeting;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -352,6 +355,7 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
+			, DropPodDefaultTrailer { }
 			, PodImage { }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
@@ -399,6 +403,8 @@ public:
 			, HarvesterScanAfterUnload { false }
 
 			, AnimCraterDestroyTiberium { true }
+			
+			, BerzerkTargeting { AffectedHouse::All }
 		{ }
 
 		virtual ~ExtData() = default;

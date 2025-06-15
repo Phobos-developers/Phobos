@@ -308,11 +308,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			if (pType->Strength == pToType->Strength)
-			{
-				// Fixed an issue where morphing could result in -1 health.
-				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
-			}
+			// Fixed an issue where morphing could result in -1 health.
+			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
 
 			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
 			pTypeExt->UpdateTypeData(pToType);

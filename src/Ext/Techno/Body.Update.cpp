@@ -497,22 +497,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			auto const pTechnoType = pThis->GetTechnoType();
-			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
-
-			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-				{
-					if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-						weaponRange = pWeaponType->Range;
-				};
-
-			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-			weaponRange += weaponRangeExtra;
+			const int weaponRange = pThis->Veterancy.IsElite() ? pTypeExt->EliteSpawnerRange : pTypeExt->SpawnerRange;
 
 			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
 				pManager->ResetTarget();

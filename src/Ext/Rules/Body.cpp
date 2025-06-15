@@ -198,9 +198,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
-	Nullable<AnimTypeClass*> droppod_trailer {};
-	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
-	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
+	this->DropPodTrailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	this->DropPodDefaultTrailer = AnimTypeClass::Find("SMOKEY");
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->BuildingWaypoints.Read(exINI, GameStrings::General, "BuildingWaypoints");
@@ -274,6 +273,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AnimCraterDestroyTiberium.Read(exINI, GameStrings::General, "AnimCraterDestroyTiberium");
 
+	this->BerzerkTargeting.Read(exINI, GameStrings::CombatDamage, "BerzerkTargeting");
+	
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -458,6 +459,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
+		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
@@ -501,6 +503,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamagedSpeed)
 		.Process(this->HarvesterScanAfterUnload)
 		.Process(this->AnimCraterDestroyTiberium)
+		.Process(this->BerzerkTargeting)
 		;
 }
 

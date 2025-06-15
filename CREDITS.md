@@ -48,6 +48,7 @@ This page lists all the individual contributions to the project by their author.
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
+  - Warhead activation target health thresholds
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -144,6 +145,7 @@ This page lists all the individual contributions to the project by their author.
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
+  - Warhead activation target health thresholds enhancements
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -266,8 +268,7 @@ This page lists all the individual contributions to the project by their author.
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
-  - Airstrike flare visual customizations
-  - Fix an issue where airstrike flare line drawn to target at lower elevation would clip
+  - Airstrike flare visual customizations & fixes
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -409,6 +410,9 @@ This page lists all the individual contributions to the project by their author.
   - Exclusive SuperWeapon Sidebar
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Weapon target filtering by health percentage
+  - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
+  - Customize limit when engineer repair a building
+  - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Electric/RadBeam trail for laser tails
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -491,7 +495,7 @@ This page lists all the individual contributions to the project by their author.
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -501,8 +505,9 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
-  - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
+  - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
   - Power plant damage factor
+  - Allow faking digital display for `InfoType=Health` at disguise
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -535,6 +540,7 @@ This page lists all the individual contributions to the project by their author.
   - Make harvesters do addtional scan after unload
   - Customize the scatter caused by aircraft attack mission
   - Customize whether `Crater=yes` animation would destroy tiberium
+  - Targeting limitation for berzerk technos
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
