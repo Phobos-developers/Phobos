@@ -1434,6 +1434,7 @@ msgid ""
 "Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective "
 "on airforce."
 msgstr ""
+"修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:235
 msgid ""

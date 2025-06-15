@@ -1786,6 +1786,7 @@ msgid ""
 "Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective "
 "on airforce (by NetsuNegi)"
 msgstr ""
+"修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:423
 msgid ""
