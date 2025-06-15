@@ -28,6 +28,7 @@ public:
 		Valueable<AnimTypeClass*> WakeAnim;
 		NullableVector<AnimTypeClass*> SplashAnims;
 		Valueable<bool> SplashAnims_PickRandom;
+		Valueable<int> Trailer_SpawnDelay;
 
 		ExtData(VoxelAnimTypeClass* OwnerObject) : Extension<VoxelAnimTypeClass>(OwnerObject)
 			, LaserTrail_Types()
@@ -36,6 +37,7 @@ public:
 			, WakeAnim {}
 			, SplashAnims {}
 			, SplashAnims_PickRandom { false }
+			, Trailer_SpawnDelay { 2 }
 		{ }
 
 		virtual ~ExtData() = default;

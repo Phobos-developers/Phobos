@@ -394,6 +394,7 @@ New:
 - Targeting limitation for berzerk technos (by TaranDahl)
 - Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
+- Customizable debris trailer anim spawn delay (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -420,6 +421,7 @@ Vanilla fixes:
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
