@@ -390,6 +390,11 @@ New:
 - Weapon target filtering by health percentage (by NetsuNegi)
 - [Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) (by FlyStar)
 - Infantry support `IsGattling=yes` (by FlyStar)
+- [Several new Infotypes, no display in specific status and a new single frame display method](User-Interface.md#digital-display) (by CrimRecya)
+- Targeting limitation for berzerk technos (by TaranDahl)
+- Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
+- [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
+- Customizable debris trailer anim spawn delay (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -414,6 +419,9 @@ Vanilla fixes:
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
+- Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
@@ -425,7 +433,6 @@ Fixes / interactions with other extensions:
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
 - Fixed the issue where some units crashed after the deployment transformation (by ststl, FlyStar)
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
-
 ```
 
 ### 0.4
@@ -596,6 +603,7 @@ New:
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
+- Warhead activation target health thresholds (by FS-21, Kerbiter)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
