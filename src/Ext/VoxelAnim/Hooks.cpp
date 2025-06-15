@@ -41,10 +41,6 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 	GET(int, flag, EAX);
 
 	bool heightFlag = flag & 0xFF;
-
-	if (!pThis || !pThis->Type)
-		return SkipGameCode;
-
 	auto const pType = pThis->Type;
 	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
