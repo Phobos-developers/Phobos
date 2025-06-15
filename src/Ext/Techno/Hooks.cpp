@@ -996,7 +996,7 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 
 	GET(InfantryClass*, pThis, ESI);
 	GET(BuildingClass*, pTarget, EDI);
-	const bool damaged = pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+	const bool wasDamaged = pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
 
 	pTarget->Mark(MarkType::Change);
 
@@ -1025,11 +1025,14 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 	pTarget->EstimatedHealth = pTarget->Health;
 	pTarget->SetRepairState(0);
 
-	if ((pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow) != damaged)
-		pTarget->ToggleDamagedAnims(!damaged);
+	if ((pTarget->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow) != wasDamaged)
+	{
+		pTarget->ToggleDamagedAnims(!wasDamaged);
 
-	VocClass::PlayAt(BuildingTypeExt::ExtMap.Find(pTarget->Type)->
-		BuildingRepairedSound.Get(RulesClass::Instance->BuildingRepairedSound), pTarget->GetCoords());
+		if (wasDamaged && pTarget->DamageParticleSystem)
+			pTarget->DamageParticleSystem->UnInit();
+	}
 
+	VocClass::PlayAt(BuildingTypeExt::ExtMap.Find(pTarget->Type)->BuildingRepairedSound.Get(RulesClass::Instance->BuildingRepairedSound), pTarget->GetCoords());
 	return SkipGameCode;
 }

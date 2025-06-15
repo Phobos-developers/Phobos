@@ -232,6 +232,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Infantry support `IsGattling=yes`.
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
 
 ## Fixes / interactions with other extensions
 
