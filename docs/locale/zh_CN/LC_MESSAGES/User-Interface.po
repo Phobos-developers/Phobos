@@ -185,9 +185,9 @@ msgstr ""
 "1 - 返航的子机，"
 
 msgid ""
-"2 - launching spawns."
+"2 - launching spawns. <br><br>"
 msgstr ""
-"2 - 发射中的子机。"
+"2 - 发射中的子机。<br><br>"
 
 #: ../../User-Interface.md:40
 msgid ""
@@ -206,14 +206,9 @@ msgstr ""
 "1 - 第一类矿石，"
 
 msgid ""
-"2 - the second tiberium,"
+"2 - the second tiberium, <br>..."
 msgstr ""
-"2 - 第二类矿石，"
-
-msgid ""
-"..."
-msgstr ""
-"..."
+"2 - 第二类矿石，<br>..."
 
 #: ../../User-Interface.md:41
 msgid ""
@@ -232,9 +227,9 @@ msgstr ""
 "1 - 第一个子机，"
 
 msgid ""
-"2 - the second spawnee,"
+"2 - the second spawnee, <br>..."
 msgstr ""
-"2 - 第二个子机，"
+"2 - 第二个子机，<br>..."
 
 #: ../../User-Interface.md:42
 msgid ""
@@ -258,9 +253,9 @@ msgstr ""
 "2 - `[BuildingType] -> SuperWeapon2`，"
 
 msgid ""
-"3 - the first SW in `[BuildingType] -> SuperWeapons`,"
+"3 - the first SW in `[BuildingType] -> SuperWeapons`, <br>..."
 msgstr ""
-"3 - `[BuildingType] -> SuperWeapons` 中的第一个，"
+"3 - `[BuildingType] -> SuperWeapons` 中的第一个，<br>..."
 
 #: ../../User-Interface.md:43
 msgid ""
@@ -279,9 +274,9 @@ msgstr ""
 "1 - 主／科技建筑生产线，"
 
 msgid ""
-"2 - secondary factory."
+"2 - secondary factory. <br><br>"
 msgstr ""
-"2 - 副／防御建筑生产线。"
+"2 - 副／防御建筑生产线。<br><br>"
 
 #: ../../User-Interface.md:44
 msgid ""
@@ -549,6 +544,21 @@ msgid ""
 msgstr ""
 "可以在 [Phobos 补充仓库](https://github.com/Phobos-"
 "developers/PhobosSupplementaries) 找到数字化显示的示例 Shape 文件。"
+
+msgid "`Shape.PercentageFrame` effectively provides the ultimate solution for all static data display effects: it allows mapping the current value to a specific static frame index in a shape file sequence by calculating its proportional ratio to the total value, where the concrete image on this frame is entirely user-defined."
+msgstr "`Shape.PercentageFrame` 实际上提供了一切静态化数据显示效果的终极解决方案：它允许将当前值通过计算其相对总值的比例来到一个 Shape 文件序列中的特定静态帧的序号，而这一帧上的具体图像是完全由用户自由定义的。"
+
+msgid "You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage."
+msgstr "例如：你可以为单位制作一个圆环形状的血条，这个圆环 Shape 文件的不同帧对应环状血条不同程度的受损状态。"
+
+msgid "![image](_static/images/ring-health-bar.gif) *Example of a ring-shaped health bar*"
+msgstr "![image](_static/images/ring-health-bar.gif) *圆环形状的血条样例*"
+
+msgid "The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options."
+msgstr "静态图像在平面上的排布方式完全由您自由绘制，而不必受制于既定的框架下（例如对于血条来说原先的规则就是固定坐标处开始按固定间隔从固定文件的固定帧获取一个 pip 格点然后横向排布），在本就有限的选项中进行选择。"
+
+msgid "Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you."
+msgstr "当然，这只是实现方式，对于在可行的同时兼顾效率，即如何高效绘制您所需要的图样，您仍需自主探索属于您的工作流。"
 
 #: ../../User-Interface.md:117
 msgid "Flashing Technos on selecting"

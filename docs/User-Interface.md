@@ -40,26 +40,28 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
       - 0 - alive spawns,
       - 1 - docked spawns,
       - 2 - launching spawns.
+      <br><br>
     - In `InfoType=Tiberium`,
       - 0 - all,
       - 1 - the first tiberium,
       - 2 - the second tiberium,
-      - ...
+      <br>...
     - In `InfoType=SpawnTimer`,
       - 0 - the fastest spawnee,
       - 1 - the first spawnee,
       - 2 - the second spawnee,
-      - ...
+      <br>...
     - In `InfoType=SuperWeapon`,
       - 0 - the first SW of all,
       - 1 - `[BuildingType] -> SuperWeapon`,
       - 2 - `[BuildingType] -> SuperWeapon2`,
       - 3 - the first SW in `[BuildingType] -> SuperWeapons`,
-      - ...
+      <br>...
     - In `InfoType=FactoryProcess`,
       - 0 - the first factory in production,
       - 1 - primary factory,
       - 2 - secondary factory.
+      <br><br>
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
@@ -132,6 +134,21 @@ DigitalDisplay.Enable=false                    ; boolean
 ```{note}
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
+
+````{note}
+`Shape.PercentageFrame` effectively provides the ultimate solution for all static data display effects: it allows mapping the current value to a specific static frame index in a shape file sequence by calculating its proportional ratio to the total value, where the concrete image on this frame is entirely user-defined.
+
+```{hint}
+You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage.
+
+![image](_static/images/ring-health-bar.gif)
+*Example of a ring-shaped health bar*
+
+The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
+```
+
+Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
+````
 
 ### Flashing Technos on selecting
 
