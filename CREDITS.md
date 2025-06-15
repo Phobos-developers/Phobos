@@ -48,6 +48,7 @@ This page lists all the individual contributions to the project by their author.
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
+  - Warhead activation target health thresholds
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -144,6 +145,7 @@ This page lists all the individual contributions to the project by their author.
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
+  - Warhead activation target health thresholds enhancements
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -409,6 +411,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Weapon target filtering by health percentage
   - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
+  - Customize limit when engineer repair a building
+  - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Ground line for select box
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:

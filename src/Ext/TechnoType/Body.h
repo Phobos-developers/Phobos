@@ -376,6 +376,8 @@ public:
 		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
 
+		Valueable<int> EngineerRepairAmount;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -702,6 +704,8 @@ public:
 			, FireUp { -1 }
 			, FireUp_ResetInRetarget { true }
 			//, SecondaryFire {}
+
+			, EngineerRepairAmount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
