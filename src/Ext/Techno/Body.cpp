@@ -3,10 +3,8 @@
 #include <AircraftClass.h>
 #include <HouseClass.h>
 #include <ScenarioClass.h>
-#include <OverlayTypeClass.h>
 
 #include <Ext/Anim/Body.h>
-#include <Ext/BulletType/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>

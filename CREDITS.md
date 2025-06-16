@@ -70,6 +70,7 @@ This page lists all the individual contributions to the project by their author.
   - Ability for deployed infantry to use both weapons
   - Observer PCX loading screen
   - Original `Arcing` elevation inaccuracy fix
+  - Display banner improvement
   - Official CN docs for Build#29 and previous versions
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -288,6 +289,7 @@ This page lists all the individual contributions to the project by their author.
   - `601 House owns TechnoType` and `602 House doesn't own TechnoType` trigger events
   - Voxel light source position customization
   - Extending `Power` to all TechnoTypes
+  - Display banner by triggers
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
   - General assistance
@@ -414,6 +416,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
   - Customize limit when engineer repair a building
   - Fix the bug that damaged particle dont disappear after building has repaired by engineer
+  - Display banner improvement
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -422,6 +425,7 @@ This page lists all the individual contributions to the project by their author.
   - Unlimited `AlternateFLH` entries
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
+  - Display banner by triggers
   - New SuperWeapon Type template
   - Fix the issue where some units crashed after the deployment transformation
 - **TwinkleStar**:
@@ -509,6 +513,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
   - Power plant damage factor
   - Allow faking digital display for `InfoType=Health` at disguise
+  - Display banner improvement and doc
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
