@@ -658,6 +658,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
+	cumulativeMatches.reserve(targetAEs.size());
 
 	for (auto const& aePtr : targetAEs)
 	{
@@ -757,6 +758,7 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	std::vector<AttachEffectTypeClass*> types;
+	types.reserve(pTargetExt->AttachedEffects.size());
 
 	for (auto const& attachEffect : pTargetExt->AttachedEffects)
 	{

@@ -35,7 +35,9 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
 
 	auto const count = static_cast<unsigned int>(UnitTypeClass::Array.Count);
+	creationFrames.reserve(count);
 	creationFrames.assign(count, 0x7FFFFFFF);
+	values.reserve(count);
 	values.assign(count, 0);
 
 	for (auto currentTeam : TeamClass::Array)
