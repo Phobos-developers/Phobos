@@ -330,10 +330,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 // this runs between the before and after type data loading methods for rules ini
 void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 {
-	// tint color
-	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->IronCurtainColor);
-	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->ForceShieldColor);
-	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+
 }
 
 // this should load everything that TypeData is not dependant on
@@ -341,12 +338,12 @@ void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 // but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData
 void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	RulesExt::ExtData* pData = RulesExt::Global();
-
-	if (!pData)
-		return;
-
 	INI_EX exINI(pINI);
+
+	// tint color
+	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->IronCurtainColor);
+	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->ForceShieldColor);
+	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
 }
 
 // =============================
