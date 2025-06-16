@@ -36,11 +36,32 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 - You can now configure various types of numerical counters to be displayed over Techno to represent its attributes, such as health points or shield points and can be turned on or off via a [new hotkey](#toggle-digital-display).
   - `InfoIndex` defines the specific `InfoType`.
-    - In `InfoType=Spawns`, 0 - alive spawns, 1 - docked spawns, 2 - launching spawns.
-    - In `InfoType=Tiberium`, 0 - all, 1 - the first tiberium, 2 - the second tiberium, ...
-    - In `InfoType=SpawnTimer`, 0 - the fastest spawnee, 1 - the first spawnee, 2 - the second spawnee, ...
-    - In `InfoType=SuperWeapon`, 0 - the first SW of all, 1 - SW, 2 - SW2, 3 - the first SWs' SW, ...
-    - In `InfoType=FactoryProcess`, 0 - the first factory in production, 1 - primary factory, 2 - secondary factory.
+    - In `InfoType=Spawns`,
+      - 0 - alive spawns,
+      - 1 - docked spawns,
+      - 2 - launching spawns.
+      <br><br>
+    - In `InfoType=Tiberium`,
+      - 0 - all,
+      - 1 - the first tiberium,
+      - 2 - the second tiberium,
+      <br>...
+    - In `InfoType=SpawnTimer`,
+      - 0 - the fastest spawnee,
+      - 1 - the first spawnee,
+      - 2 - the second spawnee,
+      <br>...
+    - In `InfoType=SuperWeapon`,
+      - 0 - the first SW of all,
+      - 1 - `[BuildingType] -> SuperWeapon`,
+      - 2 - `[BuildingType] -> SuperWeapon2`,
+      - 3 - the first SW in `[BuildingType] -> SuperWeapons`,
+      <br>...
+    - In `InfoType=FactoryProcess`,
+      - 0 - the first factory in production,
+      - 1 - primary factory,
+      - 2 - secondary factory.
+      <br><br>
   - `Anchor.Horizontal` and `Anchor.Vertical` set the anchor point from which the display is drawn (depending on `Align`) relative to unit's center/selection box. For buildings, `Anchor.Building` is used instead.
     - `Offset` and `Offset.ShieldDelta` (the latter applied when a shield is active) can be used to further modify the position.
   - By default, values are displayed in `current/maximum` format (i.e. `20/40`).
@@ -65,10 +86,10 @@ In `rulesmd.ini`:
 0=SOMEDIGITALDISPLAYTYPE
 
 [AudioVisual]
-Buildings.DefaultDigitalDisplayTypes=          ; list of DigitalDisplayTypes
-Infantry.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
-Vehicles.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
-Aircraft.DefaultDigitalDisplayTypes=           ; list of DigitalDisplayTypes
+Buildings.DefaultDigitalDisplayTypes=          ; List of DigitalDisplayTypes
+Infantry.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+Vehicles.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
+Aircraft.DefaultDigitalDisplayTypes=           ; List of DigitalDisplayTypes
 
 [SOMEDIGITALDISPLAYTYPE]                       ; DigitalDisplayType
 ; Generic
@@ -82,7 +103,7 @@ Anchor.Vertical=top                            ; Vertical position enumeration (
 Anchor.Building=top                            ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 Percentage=false                               ; boolean
 HideMaxValue=false                             ; boolean
-VisibleToHouses=owner                          ; Affected house enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+VisibleToHouses=owner                          ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true                  ; boolean
 VisibleInSpecialState=true                     ; boolean
 ValueScaleDivisor=                             ; integer
@@ -98,9 +119,9 @@ Palette=palette.pal                            ; filename with .pal extension
 Shape.Spacing=                                 ; integers - horizontal, vertical spacing between digits
 Shape.PercentageFrame=false                    ; boolean
 
-[SOMETECHNOTYPE]
+[SOMETECHNOTYPE]                               ; TechnoType
 DigitalDisplay.Disable=false                   ; boolean
-DigitalDisplayTypes=                           ; list of DigitalDisplayTypes
+DigitalDisplayTypes=                           ; List of DigitalDisplayTypes
 DigitalDisplay.Health.FakeAtDisguise=true      ; boolean
 ```
 
@@ -113,6 +134,21 @@ DigitalDisplay.Enable=false                    ; boolean
 ```{note}
 An example shape file for digits can be found on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
 ```
+
+````{note}
+`Shape.PercentageFrame` effectively provides the ultimate solution for all static data display effects: it allows mapping the current value to a specific static frame index in a shape file sequence by calculating its proportional ratio to the total value, where the concrete image on this frame is entirely user-defined.
+
+```{hint}
+You can create a circular health bar for technos, where the different frames of this ring Shape file correspond to the state of the circular health bar at varying degrees of damage.
+
+![image](_static/images/ring-health-bar.gif)
+*Example of a ring-shaped health bar*
+
+The arrangement of static images on the plane is entirely up to you to draw freely, without being constrained by pre-established frameworks (e.g., the original rule for health bars was to start at a fixed coordinate, fetch a pip from a fixed frame of a fixed file at fixed intervals, and then arrange them horizontally), choosing from inherently limited options.
+```
+
+Of course, this is just the implementation method. To balance freedom with efficiency—that is, how to efficiently draw the patterns you need—you still need to independently explore a workflow that suits you.
+````
 
 ### Flashing Technos on selecting
 

@@ -538,12 +538,13 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
 
 			foundCount++;
@@ -557,122 +558,43 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 {
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		if (pUnit->IsRedHP())
 		{
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
-				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
-			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
-				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageRed = pData->WaterImage_ConditionRed)
+					return imageRed;
+				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageRed = pData->Image_ConditionRed)
+			{
+				return imageRed;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
 		}
 	}
 
 	return nullptr;
-}
-
-bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
-{
-	if (!pThis || !pTarget || !pWeaponType || pWeaponType->NeverUse
-		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
-		return false;
-
-	const auto rtti = pTarget->WhatAmI();
-	bool isBuilding = rtti == AbstractType::Building;
-	const auto pWH = pWeaponType->Warhead;
-	const auto pBulletType = pWeaponType->Projectile;
-
-	TechnoClass* pTechno = abstract_cast<TechnoClass*, true>(pTarget);
-	const auto pOwner = pThis->Owner;
-	bool isAllies = pTechno ? pOwner->IsAlliedWith(pTechno->Owner) : false;
-
-	if (pTarget->IsInAir())
-	{
-		if (!pBulletType->AA || pWH->Airstrike)
-			return false;
-	}
-	else
-	{
-		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-
-		if (pBulletTypeExt->AAOnly.Get())
-		{
-			return false;
-		}
-		else if (pWH->ElectricAssault)
-		{
-			if (!isBuilding)
-				return false;
-
-			const auto pBuilding = static_cast<BuildingClass*>(pTarget);
-
-			if (!isAllies || !pBuilding->Type || !pBuilding->Type->Overpowerable)
-				return false;
-		}
-		else if (pWH->IsLocomotor)
-		{
-			if (isBuilding)
-				return false;
-		}
-	}
-
-	if (pTechno)
-	{
-		if (pTechno->Health <= 0 || !pTechno->IsAlive)
-			return false;
-
-		if (pTechno->AttachedBomb)
-		{
-			if (pWH->IvanBomb)
-				return false;
-		}
-		else if (pWH->BombDisarm)
-		{
-			return false;
-		}
-
-		const auto pTechnoType = pTechno->GetTechnoType();
-
-		if (pWH->MindControl && (pTechnoType->ImmuneToPsionics
-			|| pTechno->IsMindControlled() || pOwner == pTechno->Owner))
-			return false;
-
-		if (pWH->Parasite && (isBuilding
-			|| static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
-			return false;
-
-		if (!pWH->Temporal && pTechno->BeingWarpedOut)
-			return false;
-
-		if (pWeaponType->DrainWeapon && (!pTechnoType->Drainable
-			|| (pTechno->DrainingMe || isAllies)))
-			return false;
-
-		if (!WeaponTypeExt::ExtMap.Find(pWeaponType)->HasRequiredAttachedEffects(pTechno, pThis))
-			return false;
-
-		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
-			return false;
-	}
-	else if (rtti == AbstractType::Terrain)
-	{
-		if (!pWH->Wood)
-			return false;
-	}
-	else if (rtti == AbstractType::Cell)
-	{
-		const auto pCell = static_cast<CellClass*>(pTarget);
-
-		if (pCell && pCell->OverlayTypeIndex >= 0)
-		{
-			auto overlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
-
-			if (overlayType->Wall && !pWH->Wall)
-				return false;
-		}
-	}
-
-	return true;
 }
 
 // =============================
@@ -725,6 +647,13 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->FiringAnimationTimer)
+		.Process(this->AttachedEffectInvokerCount)
+		.Process(this->TintColorOwner)
+		.Process(this->TintColorAllies)
+		.Process(this->TintColorEnemies)
+		.Process(this->TintIntensityOwner)
+		.Process(this->TintIntensityAllies)
+		.Process(this->TintIntensityEnemies)
 		;
 }
 

@@ -822,6 +822,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->FiringForceScatter.Read(exINI, pSection, "FiringForceScatter");
 
+	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -922,6 +924,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Spawner range
 	if (this->Spawner_LimitRange)
 		this->CalculateSpawnerRange();
+
+	// Airstrike tint color
+	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
 
 	// Art tags
 	INI_EX exArtINI(CCINIClass::INI_Art);
@@ -1113,6 +1118,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->InitialStrength)
 		.Process(this->ReloadInTransport)
 		.Process(this->ForbidParallelAIQueues)
+		.Process(this->TintColorAirstrike)
 		.Process(this->LaserTargetColor)
 		.Process(this->AirstrikeLineColor)
 		.Process(this->ShieldType)
@@ -1411,7 +1417,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireUp)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
-    
+
+		.Process(this->EngineerRepairAmount)
+
 		.Process(this->MultiWeapon)
 		.Process(this->MultiWeapon_IsSecondary)
 		.Process(this->MultiWeapon_SelectCount)

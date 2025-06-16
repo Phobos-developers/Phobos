@@ -341,3 +341,147 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 
 	return forceWeaponIndex;
 }
+
+bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
+{
+	if (!pThis || !pTarget || !pWeaponType || pWeaponType->NeverUse
+		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
+		return false;
+
+	const auto rtti = pTarget->WhatAmI();
+	const bool isBuilding = rtti == AbstractType::Building;
+	const auto pWH = pWeaponType->Warhead;
+	const auto pBulletType = pWeaponType->Projectile;
+
+	const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
+	const auto pOwner = pThis->Owner;
+	const bool isAllies = pTechno ? pOwner->IsAlliedWith(pTechno->Owner) : false;
+
+	if (pTarget->IsInAir())
+	{
+		if (!pBulletType->AA || pWH->Airstrike)
+			return false;
+	}
+	else
+	{
+		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
+
+		if (pBulletTypeExt->AAOnly.Get())
+		{
+			return false;
+		}
+		else if (pWH->ElectricAssault)
+		{
+			if (!isBuilding)
+				return false;
+
+			const auto pBuilding = static_cast<BuildingClass*>(pTarget);
+
+			if (!isAllies || !pBuilding->Type || !pBuilding->Type->Overpowerable)
+				return false;
+		}
+		else if (pWH->IsLocomotor)
+		{
+			if (isBuilding)
+				return false;
+		}
+	}
+
+	if (pTechno)
+	{
+		if (pTechno->Health <= 0 || !pTechno->IsAlive)
+			return false;
+
+		if (pTechno->AttachedBomb)
+		{
+			if (pWH->IvanBomb)
+				return false;
+		}
+		else if (pWH->BombDisarm)
+		{
+			return false;
+		}
+
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		if (pWH->MindControl && (pTechnoType->ImmuneToPsionics
+			|| pTechno->IsMindControlled() || pOwner == pTechno->Owner))
+			return false;
+
+		if (pWH->Parasite && (isBuilding
+			|| static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
+			return false;
+
+		if (!pWH->Temporal && pTechno->BeingWarpedOut)
+			return false;
+
+		if (pWeaponType->DrainWeapon && (!pTechnoType->Drainable
+			|| (pTechno->DrainingMe || isAllies)))
+			return false;
+
+		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+		if (!pWeaponExt->SkipWeaponPicking)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner)
+				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+			{
+				return false;
+			}
+		}
+
+		if (pWH->Airstrike)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTechno, WarheadTypeExt::ExtMap.Find(pWH)->AirstrikeTargets))
+				return false;
+
+			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+			if (pTechno->AbstractFlags & AbstractFlags::Foot)
+			{
+				if (!pTechnoTypeExt->AllowAirstrike.Get(true))
+					return false;
+			}
+			else if (pTechnoTypeExt->AllowAirstrike.Get(static_cast<BuildingTypeClass*>(pTechnoType)->CanC4)
+				&& (!pTechnoType->ResourceDestination || !pTechnoType->ResourceGatherer))
+			{
+				return false;
+			}
+		}
+
+		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
+			return false;
+	}
+	else if (rtti == AbstractType::Terrain)
+	{
+		if (!pWH->Wood)
+			return false;
+	}
+	else if (rtti == AbstractType::Cell)
+	{
+		const auto pCell = static_cast<CellClass*>(pTarget);
+
+		if (pCell)
+		{
+			if (pCell->OverlayTypeIndex >= 0)
+			{
+				const auto overlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
+
+				if (overlayType->Wall && !pWH->Wall)
+					return false;
+			}
+
+			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+			if (!pWeaponExt->SkipWeaponPicking
+				&& !EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
