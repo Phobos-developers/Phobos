@@ -1620,7 +1620,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	bool markForRedraw = false;
 	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -1655,7 +1655,12 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-					expireWeapons.push_back(pType->ExpireWeapon);
+				{
+					if (pType->ExpireWeapon_UseInvokerAsOwner && attachEffect->GetInvoker())
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, attachEffect->GetInvoker()));
+					else
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+				}
 			}
 
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
@@ -1680,11 +1685,11 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		pThis->MarkForRedraw();
 
 	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
 
-	for (auto const& pWeapon : expireWeapons)
+	for (auto const& pair : expireWeapons)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const pInvoker = pair.second;
+		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
 	}
 }
 
@@ -1694,7 +1699,7 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 	bool markForRedraw = false;
 	bool altered = false;
 
@@ -1711,7 +1716,12 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-					expireWeapons.push_back(pType->ExpireWeapon);
+				{
+					if (pType->ExpireWeapon_UseInvokerAsOwner && attachEffect->GetInvoker())
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, attachEffect->GetInvoker()));
+					else
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+				}
 			}
 
 			markForRedraw |= pType->HasTint();
@@ -1725,11 +1735,11 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	}
 
 	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
 
-	for (auto const& pWeapon : expireWeapons)
+	for (auto const& pair : expireWeapons)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const pInvoker = pair.second;
+		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
 	}
 
 	// Add new ones.

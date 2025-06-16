@@ -566,6 +566,11 @@ bool AttachEffectClass::IsFromSource(TechnoClass* pInvoker, AbstractClass* pSour
 	return pInvoker == this->Invoker && pSource == this->Source;
 }
 
+TechnoClass* AttachEffectClass::GetInvoker() const
+{
+	return this->Invoker;
+}
+
 #pragma region StaticFunctions_AttachDetachTransfer
 
 /// <summary>
@@ -835,7 +840,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 	auto const targetAEs = &pTargetExt->AttachedEffects;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
 	for (it = targetAEs->begin(); it != targetAEs->end(); )
 	{
@@ -852,7 +857,12 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			{
 				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
-					expireWeapons.push_back(pType->ExpireWeapon);
+				{
+					if (pType->ExpireWeapon_UseInvokerAsOwner && attachEffect->Invoker)
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, attachEffect->Invoker));
+					else
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pTarget));
+				}
 			}
 
 			if (pType->Cumulative && pType->CumulativeAnimations.size() > 0)
@@ -877,13 +887,12 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 		}
 	}
 
-
 	auto const coords = pTarget->GetCoords();
-	auto const pOwner = pTarget->Owner;
 
-	for (auto const& pWeapon : expireWeapons)
+	for (auto const& pair : expireWeapons)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pTarget, pOwner, pTarget);
+		auto const pInvoker = pair.second;
+		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pTarget);
 	}
 
 	return detachedCount;
