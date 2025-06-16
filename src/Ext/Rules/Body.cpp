@@ -4,6 +4,7 @@
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
 
+#include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -47,6 +48,16 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
+	for (const auto& pTechnoType : TechnoTypeClass::Array)
+	{
+		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		{
+			// Spawner range
+			if (pTechnoTypeExt->Spawner_LimitRange)
+				pTechnoTypeExt->CalculateSpawnerRange();
+		}
+	}
+
 	if (pINI == CCINIClass::INI_Rules)
 		Data->InitializeAfterTypeData(pThis);
 
