@@ -200,6 +200,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
+	this->BuildingRepairedSound.Read(exINI, pSection, "BuildingRepairedSound");
 
 	if (pThis->NumberOfDocks > 0)
 	{
@@ -333,6 +334,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
+		.Process(this->BunkerWallsUpSound)
+		.Process(this->BunkerWallsDownSound)
+		.Process(this->BuildingRepairedSound)
 		;
 }
 

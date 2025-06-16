@@ -1750,15 +1750,11 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 	AttachEffectClass* pAELargestDuration = nullptr;
 	AttachEffectClass* pAEWithAnim = nullptr;
 	int duration = 0;
-	int count = 0;
-	const int cap = pAttachEffectType->Cumulative_MaxCount > -1 ? pAttachEffectType->Cumulative_MaxCount : INT_MAX;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() != pAttachEffectType)
 			continue;
-
-		count++;
 
 		if (attachEffect->HasCumulativeAnim)
 		{
@@ -1774,14 +1770,11 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 				duration = currentDuration;
 			}
 		}
-
-		if (count >= cap)
-			break;
 	}
 
 	if (pAEWithAnim)
 	{
-		pAEWithAnim->UpdateCumulativeAnim(count);
+		pAEWithAnim->UpdateCumulativeAnim();
 
 		if (pRemoved == pAEWithAnim)
 		{
@@ -1871,55 +1864,28 @@ void TechnoExt::ExtData::UpdateTintValues()
 	const bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
 	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->HasTint();
 
-	// Bail out early if no custom tint is applied.
+	// bail out early if no custom tint is applied.
 	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
 		return;
 
 	auto calculateTint = [this](const int color, const int intensity, const AffectedHouse affectedHouse)
 		{
-			// despite being replicated, this is more time saving than using if statement
-			switch (affectedHouse)
+			if ((affectedHouse & AffectedHouse::Owner) != AffectedHouse::None)
 			{
-				case AffectedHouse::All:
-					this->TintColorOwner |= color;
-					this->TintColorAllies |= color;
-					this->TintColorEnemies |= color;
-					this->TintIntensityOwner += intensity;
-					this->TintIntensityAllies += intensity;
-					this->TintIntensityEnemies += intensity;
-					break;
-				case AffectedHouse::Owner:
-					this->TintColorOwner |= color;
-					this->TintIntensityOwner += intensity;
-					break;
-				case AffectedHouse::Allies:
-					this->TintColorAllies |= color;
-					this->TintIntensityAllies += intensity;
-					break;
-				case AffectedHouse::Enemies:
-					this->TintColorEnemies |= color;
-					this->TintIntensityEnemies += intensity;
-					break;
-				case AffectedHouse::Team:
-					this->TintColorOwner |= color;
-					this->TintColorAllies |= color;
-					this->TintIntensityOwner += intensity;
-					this->TintIntensityAllies += intensity;
-					break;
-				case AffectedHouse::NotAllies:
-					this->TintColorOwner |= color;
-					this->TintColorEnemies |= color;
-					this->TintIntensityOwner += intensity;
-					this->TintIntensityEnemies += intensity;
-					break;
-				case AffectedHouse::NotOwner:
-					this->TintColorAllies |= color;
-					this->TintColorEnemies |= color;
-					this->TintIntensityAllies += intensity;
-					this->TintIntensityEnemies += intensity;
-					break;
-				default:
-					break;
+				this->TintColorOwner |= color;
+				this->TintIntensityOwner += intensity;
+			}
+
+			if ((affectedHouse & AffectedHouse::Allies) != AffectedHouse::None)
+			{
+				this->TintColorAllies |= color;
+				this->TintIntensityAllies += intensity;
+			}
+
+			if ((affectedHouse & AffectedHouse::Enemies) != AffectedHouse::None)
+			{
+				this->TintColorEnemies |= color;
+				this->TintIntensityEnemies += intensity;
 			}
 		};
 

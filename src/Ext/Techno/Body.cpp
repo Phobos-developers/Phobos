@@ -308,11 +308,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			if (pType->Strength == pToType->Strength)
-			{
-				// Fixed an issue where morphing could result in -1 health.
-				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
-			}
+			// Fixed an issue where morphing could result in -1 health.
+			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
 
 			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
 			pTypeExt->UpdateTypeData(pToType);
@@ -563,7 +561,7 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 		{
 			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water)
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 			{
 				if (auto const imageRed = pData->WaterImage_ConditionRed)
 					return imageRed;
@@ -571,15 +569,19 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 					return imageYellow;
 			}
 			else if (auto const imageRed = pData->Image_ConditionRed)
+			{
 				return imageRed;
+			}
 			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
 				return imageYellow;
+			}
 		}
 		else if (pUnit->IsYellowHP())
 		{
 			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && pData->WaterImage_ConditionYellow)
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 			{
 				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
 					return imageYellow;

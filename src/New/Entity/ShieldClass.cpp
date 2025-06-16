@@ -58,7 +58,7 @@ void ShieldClass::UpdateType()
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	auto abs = static_cast<AbstractClass*>(ptr);
+	auto const abs = static_cast<AbstractClass*>(ptr);
 
 	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
@@ -521,7 +521,7 @@ void ShieldClass::OnlineCheck()
 
 	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
 
-	auto const pTechno = this->Techno;
+	const auto pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
 	if (isActive && pTechno->WhatAmI() == AbstractType::Building)
@@ -533,9 +533,11 @@ void ShieldClass::OnlineCheck()
 	if (!isActive)
 	{
 		if (this->Online)
+		{
+			this->Online = false;
 			this->UpdateTint();
+		}
 
-		this->Online = false;
 		timer->Pause();
 
 		if (this->IdleAnim)
@@ -564,9 +566,11 @@ void ShieldClass::OnlineCheck()
 	else
 	{
 		if (!this->Online)
+		{
+			this->Online = true;
 			this->UpdateTint();
+		}
 
-		this->Online = true;
 		timer->Resume();
 
 		if (this->IdleAnim)
@@ -842,7 +846,7 @@ void ShieldClass::CreateAnim()
 		pAnim->Owner = pTechno->Owner;
 
 		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-		pAnimExt->SetInvoker(this->Techno);
+		pAnimExt->SetInvoker(pTechno);
 		pAnimExt->IsShieldIdleAnim = true;
 
 		pAnim->RemainingIterations = 0xFFu;

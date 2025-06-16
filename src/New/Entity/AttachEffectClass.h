@@ -18,7 +18,7 @@ public:
 	void AI_Temporal();
 	void KillAnim();
 	void CreateAnim();
-	void UpdateCumulativeAnim(int count);
+	void UpdateCumulativeAnim();
 	void TransferCumulativeAnim(AttachEffectClass* pSource);
 	bool CanShowAnim() const;
 	void SetAnimationTunnelState(bool visible);

@@ -228,6 +228,8 @@ public:
 
 		Valueable<bool> AnimCraterDestroyTiberium;
 
+		Valueable<AffectedHouse> BerzerkTargeting;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
@@ -406,6 +408,8 @@ public:
 			, HarvesterScanAfterUnload { false }
 
 			, AnimCraterDestroyTiberium { true }
+
+			, BerzerkTargeting { AffectedHouse::All }
 
 			, TintColorIronCurtain { 0 }
 			, TintColorForceShield { 0 }

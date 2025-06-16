@@ -188,14 +188,16 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 		{
 			tintColor |= pThis->ForceShielded ? RulesExt::Global()->TintColorForceShield : RulesExt::Global()->TintColorIronCurtain;
 		}
+
 		if (airstrike)
 		{
 			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
 			{
 				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
 				tintColor |= pTypeExt->TintColorAirstrike;
- 			}
+			}
 		}
+
 		if (berserk && pThis->Berzerk)
 		{
 			tintColor |= RulesExt::Global()->TintColorBerserk;

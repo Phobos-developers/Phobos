@@ -48,6 +48,8 @@ public:
 		std::map<int, int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
+		int SpawnerRange;
+		int EliteSpawnerRange;
 		Nullable<int> Spawner_DelayFrames;
 		Valueable<bool> Spawner_AttackImmediately;
 		Valueable<bool> Spawner_UseTurretFacing;
@@ -337,8 +339,6 @@ public:
 			LaserTrailTypeClass* GetType() const { return LaserTrailTypeClass::Array[idxType].get(); }
 		};
 
-		int SpawnerRange;
-		int EliteSpawnerRange;
 		std::vector<LaserTrailDataEntry> LaserTrailData;
 		Valueable<bool> OnlyUseLandSequences;
 		Nullable<CoordStruct> PronePrimaryFireFLH;
@@ -352,6 +352,8 @@ public:
 
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
+
+		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
 
 		NullableVector<int> Overload_Count;
 		NullableVector<int> Overload_Damage;
@@ -375,6 +377,8 @@ public:
 		Valueable<int> FireUp;
 		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
+
+		Valueable<int> EngineerRepairAmount;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -639,6 +643,8 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, DigitalDisplay_Health_FakeAtDisguise { true }
+
 			, AttackMove_Aggressive {}
 			, AttackMove_UpdateTarget {}
 
@@ -701,6 +707,8 @@ public:
 			, FireUp { -1 }
 			, FireUp_ResetInRetarget { true }
 			//, SecondaryFire {}
+
+			, EngineerRepairAmount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

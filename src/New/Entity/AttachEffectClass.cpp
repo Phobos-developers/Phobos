@@ -95,7 +95,7 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 					if (pAnim == pEffect->Animation)
 					{
 						pEffect->Animation = nullptr;
-						break; // one anim must only be used by less than one AE
+						break; // one anim must be used by less than one AE
 					}
 				}
 			}
@@ -366,8 +366,7 @@ void AttachEffectClass::CreateAnim()
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
 
 		pAnim->SetOwnerObject(pTechno);
-		auto const pOwner = pType->Animation_UseInvokerAsOwner ? this->InvokerHouse : pTechno->Owner;
-		pAnim->Owner = pOwner;
+		pAnim->Owner = this->Type->Animation_UseInvokerAsOwner ? this->InvokerHouse : pTechno->Owner;
 
 		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
 		pAnimExt->IsAttachedEffectAnim = true;
@@ -391,10 +390,12 @@ void AttachEffectClass::KillAnim()
 	}
 }
 
-void AttachEffectClass::UpdateCumulativeAnim(int count)
+void AttachEffectClass::UpdateCumulativeAnim()
 {
 	if (!this->HasCumulativeAnim || !this->Animation)
 		return;
+
+	const int count = TechnoExt::ExtMap.Find(this->Techno)->GetAttachedEffectCumulativeCount(this->Type);
 
 	if (count < 1)
 	{
@@ -666,7 +667,6 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	}
 
 	int currentTypeCount = 0;
-	const size_t cap = pType->Cumulative_MaxCount > -1 ? pType->Cumulative_MaxCount : INT_MAX;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
 
@@ -680,16 +680,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			match = attachEffect;
 
 			if (!pType->Cumulative)
-			{
 				break;
-			}
 			else if (!attachParams.CumulativeRefreshSameSourceOnly || (attachEffect->Source == pSource && attachEffect->Invoker == pInvoker))
-			{
 				cumulativeMatches.push_back(attachEffect);
-
-				if (cumulativeMatches.size() >= cap)
-					break;
-			}
 		}
 	}
 
@@ -868,7 +861,8 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Remove) != ExpireWeaponCondition::None)
 			{
-				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount < 2)
+				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
+				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
 					expireWeapons.push_back(pType->ExpireWeapon);
 			}
 
@@ -882,10 +876,11 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 			}
 
 			it = targetAEs->erase(it);
-			stackCount--;
 
-			if (stackCount <= 0)
+			if (!pType->Cumulative)
 				break;
+
+			stackCount--;
 		}
 		else
 		{

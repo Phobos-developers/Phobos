@@ -1,4 +1,4 @@
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
@@ -248,6 +248,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
+	GET(TechnoClass*, pTargetTechno, EBP);
 
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
@@ -268,7 +269,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		return CannotFire;
 	}
 
-	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 	CellClass* pTargetCell = nullptr;
 
 	if (pTarget)
@@ -276,7 +276,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (const auto pObject = abstract_cast<ObjectClass*, true>(pTarget))
 		{
 			// Ignore target cell for technos that are in air.
-			if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
+			if ((pTargetTechno && !pTargetTechno->IsInAir()) || pObject != pTargetTechno)
 				pTargetCell = pObject->GetCell();
 		}
 		else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
@@ -293,14 +293,20 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		return CannotFire;
 	}
 
-	if (pTechno)
+	if (pTargetTechno)
 	{
+		if (pThis->Berzerk
+			&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
+		{
+			return CannotFire;
+		}
+
 		if (!pWeaponExt->SkipWeaponPicking)
 		{
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
-				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner)
-				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
-				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pWeaponExt->IsHealthRatioEligible(pTargetTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return CannotFire;
 			}
@@ -308,10 +314,10 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pWH->Airstrike)
 		{
-			if (!pWHExt || !EnumFunctions::IsTechnoEligible(pTechno, pWHExt->AirstrikeTargets))
+			if (!pWHExt || !EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
 				return CannotFire;
 
-			if (!TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->AllowAirstrike.Get(pTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTechno)->Type->CanC4))
+			if (!TechnoTypeExt::ExtMap.Find(pTargetTechno->GetTechnoType())->AllowAirstrike.Get(pTargetTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))
 				return CannotFire;
 		}
 	}
