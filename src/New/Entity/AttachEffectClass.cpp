@@ -858,10 +858,15 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 				// can't be GetAttachedEffectCumulativeCount(pType) < 2, or inactive AE might make it stack more than once
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || stackCount == 1)
 				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner && attachEffect->Invoker)
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, attachEffect->Invoker));
+					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					{
+						if (auto const pInvoker = attachEffect->Invoker)
+							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+					}			
 					else
+					{
 						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pTarget));
+					}
 				}
 			}
 

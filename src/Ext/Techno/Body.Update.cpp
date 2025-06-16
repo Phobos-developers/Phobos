@@ -1656,10 +1656,15 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner && attachEffect->GetInvoker())
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, attachEffect->GetInvoker()));
+					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					{
+						if (auto const pInvoker = attachEffect->GetInvoker())
+							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+					}
 					else
+					{
 						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+					}
 				}
 			}
 
@@ -1717,10 +1722,15 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
 				{
-					if (pType->ExpireWeapon_UseInvokerAsOwner && attachEffect->GetInvoker())
-						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, attachEffect->GetInvoker()));
+					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					{
+						if (auto const pInvoker = attachEffect->GetInvoker())
+							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+					}
 					else
+					{
 						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+					}
 				}
 			}
 
