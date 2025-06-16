@@ -377,6 +377,7 @@ This page lists all the individual contributions to the project by their author.
   - Original `Arcing` elevation inaccuracy fix
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Fix the bug that AlphaImage remained after unit entered tunnel
+  - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -423,6 +424,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead
   - Fix an issue that game crashes when spawnee has been removed and is not real dead
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
+  - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
+  - Fix incorrect position of of `VoxelAnim`'s `TrailerAnim`
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

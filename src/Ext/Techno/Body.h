@@ -53,6 +53,7 @@ public:
 		int WHAnimRemainingCreationInterval;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
+		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -61,6 +62,14 @@ public:
 		int LastWarpInDelay;                   // Last-warp in delay for this unit, used by HasCarryoverWarpInDelay.
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		CellStruct LastSensorsMapCoords;
+
+		// cache tint values
+		int TintColorOwner;
+		int TintColorAllies;
+		int TintColorEnemies;
+		int TintIntensityOwner;
+		int TintIntensityAllies;
+		int TintIntensityEnemies;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -98,6 +107,13 @@ public:
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, AttachedEffectInvokerCount { 0 }
+			, TintColorOwner { 0 }
+			, TintColorAllies { 0 }
+			, TintColorEnemies { 0 }
+			, TintIntensityOwner { 0 }
+			, TintIntensityAllies { 0 }
+			, TintIntensityEnemies { 0 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -125,6 +141,7 @@ public:
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
 		void ApplyMindControlRangeLimit();
+		void UpdateTintValues();
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }

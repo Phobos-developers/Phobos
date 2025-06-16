@@ -139,7 +139,8 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
-		AnimTypeClass* DropPodTrailer;
+		Nullable<AnimTypeClass*> DropPodTrailer;
+		AnimTypeClass* DropPodDefaultTrailer;
 		SHPStruct* PodImage;
 		Valueable<bool> DrawInsignia_OnlyOnSelected;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
@@ -166,6 +167,12 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		// cache tint color
+		int TintColorIronCurtain;
+		int TintColorForceShield;
+		int TintColorBerserk;
+		int TintColorAirstrike;
+		
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, InfantryGainSelfHealCap {}
@@ -272,6 +279,7 @@ public:
 			, Aircraft_DefaultDigitalDisplayTypes {}
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
+			, DropPodDefaultTrailer { }
 			, PodImage { }
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
@@ -286,6 +294,11 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+
+			, TintColorIronCurtain { 0 }
+			, TintColorForceShield { 0 }
+			, TintColorBerserk { 0 }
+			, TintColorAirstrike { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

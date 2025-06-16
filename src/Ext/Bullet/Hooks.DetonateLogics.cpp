@@ -6,6 +6,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Utilities/Helpers.Alex.h>
 
 #include <AircraftClass.h>
 #include <TacticalClass.h>
@@ -296,7 +297,8 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	GET(BulletClass*, pThis, ESI);
 	GET_BASE(CoordStruct*, coords, 0x8);
 
-	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+	auto const pTechno = pThis->Owner;
+	auto const pOwner = pTechno ? pTechno->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 
 	// Extra warheads
 	if (pThis->WeaponType)
@@ -331,33 +333,28 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (size > 0)
 				isFull = pWeaponExt->ExtraWarheads_FullDetonation[size - 1];
 
-			if (detonate)
-			{
-				if (isFull)
-				{
-					WarheadTypeExt::DetonateAt(pWH, *coords, pThis->Owner, damage, pOwner, pThis->Target);
-				}
-				else
-				{
-					auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-					pWHExt->DamageAreaWithTarget(*coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
-				}
-			}
+			if (!detonate)
+				continue;
+
+			if (isFull)
+				WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
+			else
+				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
 		}
 	}
 
 	// Return to sender
-	if (pThis->Type && pThis->Owner)
+	if (pThis->Type && pTechno)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
 		if (auto const pWeapon = pTypeExt->ReturnWeapon)
 		{
-			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pThis->Owner, pThis->Owner,
+			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
 				pWeapon->Damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 			{
-				BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner->Owner, pWeapon, pThis->Location, true);
-				BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner->Owner, nullptr, false, true);
+				BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, pThis->Location, false);
+				BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 			}
 		}
 	}
@@ -474,11 +471,11 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				{
 					// Do random cells for amount matching Cluster.
 					int count = 0;
-					int targetCount = targets.Count;
+					const int targetCount = targets.Count;
 
 					while (count < clusterCount)
 					{
-						int index = ScenarioClass::Instance->Random.RandomRanged(0, targetCount);
+						const int index = random.RandomRanged(0, targetCount);
 						auto const pTarget = targets.GetItem(index);
 
 						if (count > targetCount || newTargets.FindItemIndex(pTarget) < 0)
@@ -491,7 +488,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				else
 				{
 					// Do evenly selected cells for amount matching Cluster.
-					double stepSize = (targets.Count - 1.0) / (clusterCount - 1.0);
+					const double stepSize = (targets.Count - 1.0) / (clusterCount - 1.0);
 
 					for (int i = 0; i < clusterCount; i++)
 					{
@@ -508,27 +505,30 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		}
 		else
 		{
-			for (auto const pTechno : TechnoClass::Array)
-			{
-				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->Health > 0 && (pTypeExt->RetargetSelf || pTechno != pThis->Owner))
-				{
-					auto const coords = pTechno->GetCoords();
+			const float cellSpread = static_cast<float>(pTypeExt->Splits_TargetingDistance.Get()) / Unsorted::LeptonsPerCell;
+			const bool isAA = pType->AA;
+			const bool retargetSelf = pTypeExt->RetargetSelf;
+			const bool useWeaponTargeting = pTypeExt->Splits_UseWeaponTargeting;
 
-					if (coordsTarget.DistanceFrom(coords) < pTypeExt->Splits_TargetingDistance.Get()
-						&& (pType->AA || !pTechno->IsInAir())
-						&& IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, pTypeExt->Splits_UseWeaponTargeting))
+			for (auto const pTechno : Helpers::Alex::getCellSpreadItems(coordsTarget, cellSpread, true))
+			{
+				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
+					&& (retargetSelf || pTechno != pSource))
+				{
+					if ((isAA || !pTechno->IsInAir()) &&
+						IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
 					{
 						targets.AddItem(pTechno);
 					}
 				}
 			}
 
-			int range = pTypeExt->Splits_TargetCellRange;
+			const int range = pTypeExt->Splits_TargetCellRange;
 
 			while (targets.Count < clusterCount)
 			{
-				int x = random.RandomRanged(-range, range);
-				int y = random.RandomRanged(-range, range);
+				const int x = random.RandomRanged(-range, range);
+				const int y = random.RandomRanged(-range, range);
 
 				CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
 				auto const pCell = MapClass::Instance.GetCellAt(cell);

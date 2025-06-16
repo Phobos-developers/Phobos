@@ -179,9 +179,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
-	Nullable<AnimTypeClass*> droppod_trailer {};
-	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
-	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
+	this->DropPodTrailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	this->DropPodDefaultTrailer = AnimTypeClass::Find("SMOKEY");
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->Buildings_DefaultDigitalDisplayTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultDigitalDisplayTypes");
@@ -251,7 +250,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 // this runs between the before and after type data loading methods for rules ini
 void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 {
-
+	// tint color
+	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->IronCurtainColor);
+	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->ForceShieldColor);
+	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
 }
 
 // this should load everything that TypeData is not dependant on
@@ -377,6 +380,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
+		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
 		.Process(this->AircraftLevelLightMultiplier)
 		.Process(this->JumpjetLevelLightMultiplier)
@@ -391,6 +395,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->WarheadParticleAlphaImageIsLightFlash)
 		.Process(this->CombatLightDetailLevel)
 		.Process(this->LightFlashAlphaImageDetailLevel)
+		.Process(this->TintColorIronCurtain)
+		.Process(this->TintColorForceShield)
+		.Process(this->TintColorBerserk)
+		.Process(this->TintColorAirstrike)
 		;
 }
 
