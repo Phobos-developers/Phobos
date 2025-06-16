@@ -11,17 +11,27 @@
 #include <AircraftClass.h>
 #include <TacticalClass.h>
 
-DEFINE_HOOK(0x4690D4, BulletClass_Logics_ScreenShake, 0x6)
+DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
-	enum { SkipShaking = 0x469130 };
+	enum { SkipShaking = 0x469130, GoToExtras = 0x469AA4 };
 
+	GET(BulletClass*, pBullet, ESI);
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct*, pCoords, 0x8);
 
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+	auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+	{
+		// Check if the WH should affect the techno target or skip it
+		if (!pExt->IsHealthInThreshold(pTarget) && pBullet->Owner != pBullet->Target)
+			return GoToExtras;
+	}
+
+	// Check for ScreenShake
 	auto&& [_, visible] = TacticalClass::Instance->CoordsToClient(*pCoords);
 
-	if (pWHExt->ShakeIsLocal && !visible)
+	if (pExt->ShakeIsLocal && !visible)
 		return SkipShaking;
 
 	return 0;
@@ -312,6 +322,13 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			auto const pWH = pWeaponExt->ExtraWarheads[i];
 			int damage = defaultDamage;
 			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
+			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+			if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+			{
+				if (!pWHExt->IsHealthInThreshold(pTarget))
+					continue;
+			}
 
 			if (size > i)
 				damage = pWeaponExt->ExtraWarheads_DamageOverrides[i];
