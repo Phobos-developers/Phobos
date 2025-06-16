@@ -179,9 +179,9 @@ HideLightFlashEffects=false      ; boolean
   606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
-  8000=Display banner and local variable (Phobos),4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8000
-  8001=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,8001
-  8002=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,8002
+  800=Display banner and local variable (Phobos),4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
+  001=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
+  802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -398,7 +398,11 @@ New:
 - [Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) (by FlyStar)
 - Infantry support `IsGattling=yes` (by FlyStar)
 - [Several new Infotypes, no display in specific status and a new single frame display method](User-Interface.md#digital-display) (by CrimRecya)
-- Targeting limitation for berzerk technos (by TaranDahl)
+- [Targeting limitation for berzerk technos](New-or-Enhanced-Logics.md#targeting-limitation-for-berzerk-technos) (by TaranDahl)
+- Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
+- [Warhead activation target health thresholds](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by FS-21 & Kerbiter)
+- [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
+- [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
 
 Vanilla fixes:
@@ -423,8 +427,10 @@ Vanilla fixes:
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
-- Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

@@ -48,6 +48,7 @@ This page lists all the individual contributions to the project by their author.
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
+  - Warhead activation target health thresholds
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -145,6 +146,7 @@ This page lists all the individual contributions to the project by their author.
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
+  - Warhead activation target health thresholds enhancements
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -411,6 +413,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Weapon target filtering by health percentage
   - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
+  - Customize limit when engineer repair a building
+  - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Display banner improvement
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
@@ -491,10 +495,11 @@ This page lists all the individual contributions to the project by their author.
   - Exclusive SuperWeapon Sidebar
   - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
   - Several new Infotypes, no display in specific status and a new single frame display method
+  - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
@@ -504,8 +509,9 @@ This page lists all the individual contributions to the project by their author.
   - Forcing specific weapon by range
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
-  - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
+  - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
   - Power plant damage factor
+  - Allow faking digital display for `InfoType=Health` at disguise
   - Display banner improvement and doc
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`

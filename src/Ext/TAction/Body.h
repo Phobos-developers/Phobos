@@ -24,9 +24,9 @@ enum class PhobosTriggerAction : unsigned int
 	ClearAngerNode = 607,
 	SetForceEnemy = 608,
 
-	CreateBannerGlobal = 8000, // any banner w/ global variable
-	CreateBannerLocal = 8001, // any banner w/ local variable
-	DeleteBanner = 8002,
+	CreateBannerGlobal = 800, // any banner w/ global variable
+	CreateBannerLocal = 801, // any banner w/ local variable
+	DeleteBanner = 802,
 };
 
 class TActionExt

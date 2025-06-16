@@ -326,38 +326,6 @@ namespace detail
 		return false;
 	}
 
-	template<>
-	inline bool read<BSurface*>(BSurface*& value, INI_EX& parser, const char* pSection, const char* pKey)
-	{
-		if (parser.ReadString(pSection, pKey))
-		{
-			std::string filename = parser.value();
-
-			auto lambaTolower = [](char c)
-				{
-					return static_cast<char>(tolower(c));
-				};
-
-			std::transform(filename.begin(), filename.end(), filename.begin(), lambaTolower);
-
-			if (!filename.ends_with(".pcx"))
-				filename += ".pcx";
-
-			if (BSurface* pcx = PCX::Instance.GetSurface(filename.c_str()))
-			{
-				value = pcx;
-
-				return true;
-			}
-			else
-			{
-				Debug::INIParseFailed(pSection, pKey, parser.value(), "Can't find pcx file\n");
-			}
-		}
-
-		return false;
-	}
-
 	template <>
 	inline bool read<SHPStruct*>(SHPStruct*& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{

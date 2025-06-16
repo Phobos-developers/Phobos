@@ -666,12 +666,12 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
-###`8000-8002` Display Banner
+###`800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
-  - Action `8000` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
-  - Action `8001` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
-  - Action `8002` will delete the banner corresponding to the set Banner ID.
+  - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
+  - Action `801` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
+  - Action `802` will delete the banner corresponding to the set Banner ID.
 - To make use of this, you need to set the properties of a `BannerType` in your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) file or a `CSF` text. If multiple are set the first one in the above listed order takes effect.
   - `SHP.Palette` controls the palette that'll be used when drawing a banner for Shape file.
   - `CSF.Color` controls the color of the text that'll be used when drawing a text banner.
@@ -701,9 +701,9 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],8000,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
-ID=ActionCount,[Action1],8001,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
-ID=ActionCount,[Action1],8002,0,[Unique ID],0,0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
 ...
 ```
 

@@ -62,6 +62,8 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+
+		int TintColorAirstrike;
 		Nullable<int> LaserTargetColor;
 		Nullable<ColorStruct> AirstrikeLineColor;
 
@@ -351,6 +353,8 @@ public:
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
+		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
+
 		NullableVector<int> Overload_Count;
 		NullableVector<int> Overload_Damage;
 		NullableVector<int> Overload_Frames;
@@ -373,6 +377,8 @@ public:
 		Valueable<int> FireUp;
 		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
+
+		Valueable<int> EngineerRepairAmount;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -408,6 +414,7 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
 			, ShieldType {}
@@ -636,6 +643,8 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, DigitalDisplay_Health_FakeAtDisguise { true }
+
 			, AttackMove_Aggressive {}
 			, AttackMove_UpdateTarget {}
 
@@ -698,6 +707,8 @@ public:
 			, FireUp { -1 }
 			, FireUp_ResetInRetarget { true }
 			//, SecondaryFire {}
+
+			, EngineerRepairAmount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
