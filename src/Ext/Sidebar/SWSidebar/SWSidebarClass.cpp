@@ -264,6 +264,7 @@ void SWSidebarClass::RecheckCameo()
 	for (const auto& column : sidebar.Columns)
 	{
 		std::vector<int> removeButtons;
+		removeButtons.reserve(column->Buttons.size());
 
 		for (const auto& button : column->Buttons)
 		{

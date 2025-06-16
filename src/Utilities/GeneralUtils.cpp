@@ -51,6 +51,7 @@ const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wcha
 std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
+	result.reserve((2 * range + 1) * (2 * range + 1));
 
 	for (CellSpreadEnumerator it(range); it; ++it)
 		result.push_back(*it);
@@ -167,6 +168,7 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 std::string GeneralUtils::IntToDigits(int num)
 {
 	std::string digits;
+	digits.reserve(10); // 32-bit int max: 2,147,483,647 (10 digits)
 
 	if (num == 0)
 	{

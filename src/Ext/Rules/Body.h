@@ -234,7 +234,7 @@ public:
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
-		
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -408,7 +408,7 @@ public:
 			, HarvesterScanAfterUnload { false }
 
 			, AnimCraterDestroyTiberium { true }
-			
+
 			, BerzerkTargeting { AffectedHouse::All }
 
 			, TintColorIronCurtain { 0 }
