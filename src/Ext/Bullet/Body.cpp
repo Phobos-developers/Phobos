@@ -7,6 +7,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
 
 BulletExt::ExtContainer BulletExt::ExtMap;
@@ -93,9 +94,9 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	}
 }
 
-void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel)
+void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int radLevel)
 {
-	const auto pCell = MapClass::Instance.TryGetCellAt(Cell);
+	const auto pCell = MapClass::Instance.TryGetCellAt(cell);
 
 	if (!pCell)
 		return;
@@ -123,17 +124,14 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct Cell, int Spread, int R
 
 	if (it != pCellExt->RadSites.cend())
 	{
-		if ((*it)->GetRadLevel() + RadLevel >= pRadType->GetLevelMax())
-			RadLevel = pRadType->GetLevelMax() - (*it)->GetRadLevel();
-
-		const auto pRadExt = RadSiteExt::ExtMap.Find((*it));
+		const auto pRadExt = RadSiteExt::ExtMap.Find(*it);
 		// Handle It
-		pRadExt->Add(RadLevel);
+		pRadExt->Add(std::min(radLevel, pRadType->GetLevelMax() - (*it)->GetRadLevel()));
 		return;
 	}
 
 	const auto pThisHouse = pThis->Owner ? pThis->Owner->Owner : this->FirerHouse;
-	RadSiteExt::CreateInstance(Cell, Spread, RadLevel, pWeaponExt, pThisHouse, pThis->Owner);
+	RadSiteExt::CreateInstance(cell, spread, radLevel, pWeaponExt, pThisHouse, pThis->Owner);
 }
 
 void BulletExt::ExtData::InitializeLaserTrails()
@@ -143,25 +141,33 @@ void BulletExt::ExtData::InitializeLaserTrails()
 
 	auto pThis = this->OwnerObject();
 
-	if (auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type))
-	{
-		auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
-		for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-		{
-			this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
-		}
+	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
+	{
+		this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
 	}
 }
 
-void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHDamageOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const CoordStruct& coords, HouseClass* pOwner)
+void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHDamageOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
 {
 	auto const pThis = this->OwnerObject();
-	int damage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
+	const int defaultDamage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
 
 	for (size_t i = 0; i < exWH.size(); i++)
 	{
 		auto const pWH = exWH[i];
+		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+		if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+		{
+			if (!pWHExt->IsHealthInThreshold(pTarget))
+				continue;
+		}
+
+		int damage = defaultDamage;
 		size_t size = exWHDamageOverrides.size();
 
 		if (size > i)
@@ -177,6 +183,34 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		else if (size > 0)
 			detonate = exWHChances[size - 1] >= ScenarioClass::Instance->Random.RandomDouble();
 
+		if (!detonate)
+			continue;
+
+		auto pFirer = pThis->Owner;
+		auto pHouse = pOwner;
+
+		if (pInvoker)
+		{
+			size = exWHOwner.size();
+
+			if (size > i)
+			{
+				if (exWHOwner[i])
+				{
+					pFirer = pInvoker;
+					pHouse = pInvoker->Owner;
+				}
+			}
+			else if (size > 0)
+			{
+				if (exWHOwner[size - 1])
+				{
+					pFirer = pInvoker;
+					pHouse = pInvoker->Owner;
+				}
+			}
+		}
+
 		bool isFull = true;
 		size = exWHFull.size();
 
@@ -185,13 +219,10 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		else if (size > 0)
 			isFull = exWHFull[size - 1];
 
-		if (!detonate)
-			continue;
-
 		if (isFull)
-			WarheadTypeExt::DetonateAt(pWH, coords, pThis->Owner, damage, pOwner, pThis->Target);
+			WarheadTypeExt::DetonateAt(pWH, coords, pFirer, damage, pHouse, pThis->Target);
 		else
-			WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(coords, damage, pThis->Owner, pWH, true, pOwner, abstract_cast<TechnoClass*>(pThis->Target));
+			WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(coords, damage, pFirer, pWH, true, pHouse, abstract_cast<TechnoClass*>(pThis->Target));
 	}
 }
 
@@ -237,8 +268,8 @@ inline void BulletExt::SimulatedFiringAnim(BulletClass* pBullet, HouseClass* pHo
 
 	if (pAttach)
 	{
-		if (pAttach->WhatAmI() == AbstractType::Building)
-			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(static_cast<BuildingClass*>(pAttach), pBullet->SourceCoords.Y);
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pAttach))
+			pAnim->ZAdjust = SetBuildingFireAnimZAdjust(pBuilding, pBullet->SourceCoords.Y);
 		else
 			pAnim->SetOwnerObject(pAttach);
 	}
@@ -302,9 +333,8 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	const auto pEBolt = GameCreate<EBolt>();
+	const auto pEBolt = (AresFunctions::CreateAresEBolt ? AresFunctions::CreateAresEBolt(pWeapon) : GameCreate<EBolt>());
 	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-	//TODO Weapon's Bolt.Color1, Bolt.Color2, Bolt.Color3(Ares)
 	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
 	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
 	weaponStruct.BurstIndex = 0;
@@ -375,16 +405,16 @@ void BulletExt::SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse,
 		const auto targetCoords = pBullet->Target->GetCenterCoords();
 		const auto gravity = BulletTypeExt::GetAdjustedGravity(pType);
 		const auto distanceCoords = targetCoords - sourceCoords;
-		const auto horizontalDistance = Point2D{distanceCoords.X, distanceCoords.Y}.Magnitude();
+		const auto horizontalDistance = Point2D { distanceCoords.X, distanceCoords.Y }.Magnitude();
 		const bool lobber = pWeapon->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
 		// The lower the horizontal velocity, the higher the trajectory
 		// WW calculates the launch angle (and limits it) before calculating the velocity
 		// Here, some magic numbers are used to directly simulate its calculation
 		const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
-		const auto speed = static_cast<int>(speedMult * sqrt(horizontalDistance * gravity * 1.2)); // 0x48AB90
+		const auto speed = speedMult * sqrt(horizontalDistance * gravity * 1.2); // 0x48AB90
 
 		// Simulate firing Arcing bullet
-		if (horizontalDistance < 1e-10 || !speed)
+		if (horizontalDistance < 1e-10 || speed < 1e-10)
 		{
 			// No solution
 			velocity.Z = speed;
@@ -428,6 +458,32 @@ void BulletExt::SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse,
 		BulletExt::SimulatedFiringElectricBolt(pBullet);
 		BulletExt::SimulatedFiringRadBeam(pBullet, pHouse);
 		BulletExt::SimulatedFiringParticleSystem(pBullet, pHouse);
+	}
+}
+
+void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity)
+{
+	const auto distanceCoords = targetCoords - sourceCoords;
+	const auto horizontalDistance = Point2D { distanceCoords.X, distanceCoords.Y }.Magnitude();
+	const bool lobber = pThis->WeaponType->Lobber || static_cast<int>(horizontalDistance) < distanceCoords.Z; // 0x70D590
+	// The lower the horizontal velocity, the higher the trajectory
+	// WW calculates the launch angle (and limits it) before calculating the velocity
+	// Here, some magic numbers are used to directly simulate its calculation
+	const auto speedMult = (lobber ? 0.45 : (distanceCoords.Z > 0 ? 0.68 : 1.0)); // Simulated 0x48A9D0
+	const auto gravity = BulletTypeExt::GetAdjustedGravity(pThis->Type);
+	const auto speed = speedMult * sqrt(horizontalDistance * gravity * 1.2); // 0x48AB90
+
+	if (horizontalDistance < 1e-10 || speed < 1e-10)
+	{
+		// No solution
+		velocity.Z = speed;
+	}
+	else
+	{
+		const auto mult = speed / horizontalDistance;
+		velocity.X = static_cast<double>(distanceCoords.X) * mult;
+		velocity.Y = static_cast<double>(distanceCoords.Y) * mult;
+		velocity.Z = (static_cast<double>(distanceCoords.Z) + velocity.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
 	}
 }
 

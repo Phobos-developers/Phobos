@@ -58,6 +58,7 @@ public:
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
 		bool ShouldUpdateGattlingValue;
+		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -70,6 +71,16 @@ public:
 		CDTimerClass TiberiumEater_Timer;
 
 		AirstrikeClass* AirstrikeTargetingMe;
+
+		CDTimerClass FiringAnimationTimer;
+
+		// cache tint values
+		int TintColorOwner;
+		int TintColorAllies;
+		int TintColorEnemies;
+		int TintIntensityOwner;
+		int TintIntensityAllies;
+		int TintIntensityEnemies;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -115,6 +126,14 @@ public:
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
+			, FiringAnimationTimer {}
+			, AttachedEffectInvokerCount { 0 }
+			, TintColorOwner { 0 }
+			, TintColorAllies { 0 }
+			, TintColorEnemies { 0 }
+			, TintIntensityOwner { 0 }
+			, TintIntensityAllies { 0 }
+			, TintIntensityEnemies { 0 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -147,14 +166,16 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void InitializeDisplayInfo();
 		void ApplyMindControlRangeLimit();
-		int ApplyForceWeaponInRange(TechnoClass* pTarget);
-		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult);
+		int ApplyForceWeaponInRange(AbstractClass* pTarget);
+		void UpdateTintValues();
+		void ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult, TechnoClass* pInvoker = nullptr);
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
 		virtual ~ExtData() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -168,6 +189,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::Airstrike:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;
@@ -213,7 +247,8 @@ public:
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
 	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
-	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
+	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);
@@ -227,4 +262,5 @@ public:
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, WeaponTypeClass* pWeapon, TechnoClass* pTarget, bool useWeaponTargeting = true, bool allowZeroDamage = false);
+	static void RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult = true);
 };

@@ -41,16 +41,35 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 	GET(int, flag, EAX);
 
 	bool heightFlag = flag & 0xFF;
-
-	if (!pThis || !pThis->Type)
-		return SkipGameCode;
-
 	auto const pType = pThis->Type;
 	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
 
 	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim, splashAnims, pThis->OwnerHouse, pType->Warhead, pType->Damage,
 		pThis->GetCell(), pThis->Location, heightFlag, pType->IsMeteor, pTypeExt->Warhead_Detonate, pTypeExt->ExplodeOnWater, pTypeExt->SplashAnims_PickRandom);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Trailer, 0x6)
+{
+	enum { SkipGameCode = 0x74A7AB };
+
+	GET(VoxelAnimClass* const, pThis, EBX);
+
+	const auto pType = pThis->Type;
+
+	if (const auto pAnimType = pType->TrailerAnim)
+	{
+		auto pExt = VoxelAnimExt::ExtMap.Find(pThis);
+
+		if (pExt->TrailerSpawnTimer.Expired())
+		{
+			pExt->TrailerSpawnTimer.Start(VoxelAnimTypeExt::ExtMap.Find(pType)->Trailer_SpawnDelay.Get());
+			auto const pTrailerAnim = GameCreate<AnimClass>(pAnimType, pThis->Location, 1, 1);
+			AnimExt::SetAnimOwnerHouseKind(pTrailerAnim, pThis->OwnerHouse, nullptr, false, true);
+		}
+	}
 
 	return SkipGameCode;
 }

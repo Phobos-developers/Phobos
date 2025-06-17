@@ -103,7 +103,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed MCV to redeploy in campaigns using a new toggle different from `[MultiplayerDialogSettings] -> MCVRedeploys`.
 - Fixed buildings with `UndeploysInto` but `Unsellable=no` & `ConstructionYard=no` unable to be sold normally. Restored `EVA_StructureSold` for buildings with `UndeploysInto` when being selled.
 - Fixed `WaterBound=true` buildings with `UndeploysInto` not correctly setting the location for the vehicle to move into when undeployed.
-- Buildings with `CanC4=false` used to take 1 point of damage if hit by damage below 1 (calculated after `Verses` are applied but before veterancy, crate and AttachEffect modifiers). This no longer applies to negative damage under any conditions and can be disabled for zero damage by setting `CanC4.AllowZeroDamage` to true.
+- `CanC4=false` on building makes building take atleast 1 point of damage **if** the raw damage is non-zero but is lowered to below 1 by `Verses` etc. `CanC4.AllowZeroDamage=true` disables this. Negative damage (that is, after `Verses` etc have been applied) also now bypasses this check entirely without having to enable anything.
 - Buildings with primary weapon that has `AG=false` projectile now have attack cursor when selected.
 - Weapons with `AA=true` projectiles can now be set to fire exclusively at air targets by setting `AAOnly=true`, regardless of other conditions. This is useful because `AG=false` only prevents targeting ground cells (and cannot be changed without breaking existing behaviour) and for cases where `LandTargeting` cannot be used.
 - Transports with `OpenTopped=true` and weapon that has `Burst` above 1 and passengers firing out no longer have the passenger firing offset shift lateral position based on burst index.
@@ -180,7 +180,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - Technos are still not allowed to stop moving under the elevated bridge, but can stop other missions.
 - Now in air team members will use the 2D distance instead of the 3D distance to judge whether have reached the mission destination, so as to prevent the problem that the mission is stuck and cannot continue in some cases (such as when the jumpjet stops on the building).
 - Unit `Speed` setting now accepts floating-point values. Internally parsed values are clamped down to maximum of 100, multiplied by 256 and divided by 100, the result (which at this point is converted to an integer) then clamped down to maximum of 255 giving effective internal speed value range of 0 to 255, e.g leptons traveled per game frame.
-- `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt` (without Ares `Bolt.Color1`, `Bolt.Color2`, `Bolt.Color3`), `IsRadBeam`, and `AttachedParticleSystem`.
+- `AirburstWeapon` now supports `IsLaser`, `IsElectricBolt`, `IsRadBeam`, and `AttachedParticleSystem`.
 - Subterranean movement now benefits from speed multipliers from all sources such as veterancy, AttachEffect etc.
 - Aircraft will now behave as expected according to it's `MovementZone` and `SpeedType` when moving onto different surfaces. In particular, this fixes erratic behavior when vanilla aircraft is ordered to move onto water surface and instead the movement order changes to a shore nearby.
 - Allowed `AuxBuilding` to count building upgrades.
@@ -223,6 +223,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
+- Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
+- Fixed the bug that ships can travel on elevated bridges.
+- Dehardcoded 255 limit of `OverlayType`.
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
+- Infantry support `IsGattling=yes`.
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
+- Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 
 ## Fixes / interactions with other extensions
 
@@ -240,6 +251,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions.
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
+- Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
+- Fixed the issue where some units crashed after the deployment transformation.
+- Fixed the bug that AlphaImage remained after unit entered tunnel.
 
 ## Aircraft
 
@@ -253,19 +267,37 @@ In `rulesmd.ini`:
 VoicePickup=    ; Sound entry
 ```
 
+### Customize the scatter caused by aircraft attack mission
+
+- In vanilla, when an aircraft attacks, it forces the target's cell to trigger a scatter. Now you can disable this behavior by setting the following flag to `false`.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]            ; AircraftType
+FiringForceScatter=true   ; boolean
+```
+
 ### Extended Aircraft Missions
 
 - Aircraft will now be able to use waypoints.
-- Aircraft can fly at a certain speed as much as possible, when the distance to the destination is less than half of `SlowdownDistance` or 8 cell distances divided by `ROT`, it will return to the airport. And now aircraft not have to fly directly above the airport before starting to descend.
 - When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
   - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
 - When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
   - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
+- In addition, the actions of aircraft are also changed.
+  - `ExtendedAircraftMissions.SmoothMoving` controls whether the aircraft will return to the airport when the distance to the destination is less than half of `SlowdownDistance` or its turning radius.
+  - `ExtendedAircraftMissions.EarlyDescend` controls whether the aircraft not have to fly directly above the airport before starting to descend when the distance between the aircraft and the landing point is less than `SlowdownDistance` (also work for aircraft spawned by aircraft carriers).
+  - `ExtendedAircraftMissions.RearApproach` controls whether the aircraft should start landing at the airport from the opposite direction of `LandingDir`.
 
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false  ; boolean
+ExtendedAircraftMissions=false         ; boolean
+
+[SOMEAIRCRAFT]                          ; AircraftType
+ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
@@ -341,6 +373,22 @@ WakeAnim=                     ; AnimationType
 SplashAnims=                  ; List of AnimationTypes
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
+```
+
+### Customize whether `Crater=yes` animation would destroy tiberium
+
+- In vanilla, the anim with `Crater=yes` is hardcoded to destroy the tiberium in its cell. Now you can disable this behavior by setting the following tags to `false`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AnimCraterDestroyTiberium=true  ; boolean
+```
+
+In `artmd.ini`:
+```ini
+[SOMEANIM]                      ; AnimationType
+Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
 ```
 
 ### Fire animations spawned by Scorch & Flamer
@@ -459,6 +507,22 @@ In `rulesmd.ini`:
 BarracksExitCell=  ; X,Y - cell offset
 ```
 
+### Customizable garrison and bunker properties
+
+- You can now customize damage or ROF multipliers of a garrison or tank bunker building.
+- You can now customize enter or exit sound of a tank bunker building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]              ; BuildingType
+OccupyDamageMultiplier=     ; floating point value, default to [CombatDamage] -> OccupyDamageMultiplier
+OccupyROFMultiplier=        ; floating point value, default to [CombatDamage] -> OccupyROFMultiplier
+BunkerDamageMultiplier=     ; floating point value, default to [CombatDamage] -> BunkerDamageMultiplier
+BunkerROFMultMultiplier=    ; floating point value, default to [CombatDamage] -> BunkerROFMultMultiplier
+BunkerWallsUpSound=         ; Sound entry, default to [AudioVisual] -> BunkerWallsUpSound
+BunkerWallsDownSound=       ; Sound entry, default to [AudioVisual] -> BunkerWallsDownSound
+```
+
 ### Customizable selling buildup sequence length for buildings that can undeploy
 
 - By default buildings with `UndeploysInto` will only play 23 frames of their buildup sequence (in reverse starting from last frame) when being sold as opposed to being undeployed. This can now be customized via `SellBuildupLength`.
@@ -516,6 +580,16 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
+### Disable `DamageSound`
+
+- Now you can disable `DamageSound` of a building.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]            ; BuildingType
+DisableDamageSound=false  ; boolean
+```
+
 ### Exclude Factory from providing multiple factory bonus
 
 - It is now possible to exclude a building with `Factory` from counting towards `MultipleFactory` bonus.
@@ -524,6 +598,17 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                         ; BuildingType
 ExcludeFromMultipleFactoryBonus=false  ; boolean
+```
+
+### Power plant damage factor
+
+- It is possible to customize the power decrement of a power plant when it's damaged. The actual power output for this plant will be: `Power` minuses the product of original power decrement and `Powerplant.DamageFactor`. Can't reduce power output lower than 0.
+  - Specifically, if the factor is set to 0.0, power output won't be decreased by losing health for this power plant.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+PowerPlant.DamageFactor=1.0        ; floating point value
 ```
 
 ### Skip anim delay for burst fire
@@ -700,7 +785,40 @@ BallisticScatter.Min= ; floating point value, distance in cells
 BallisticScatter.Max= ; floating point value, distance in cells
 ```
 
+### Shrapnel enhancements
+
+![image](_static/images/shrapnel.gif)
+*Shrapnel appearing against ground & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
+
+- `ShrapnelWeapon` can now be triggered against ground & buildings via `Shrapnel.AffectsGround` and `Shrapnel.AffectsBuildings`.
+- Setting `Shrapnel.UseWeaponTargeting` now allows weapon target filtering to be enabled for `ShrapnelWeapon`. Target's `LegalTarget` setting, Warhead `Verses` against `Armor` as well as `ShrapnelWeapon` [weapon targeting filters](#weapon-targeting-filter) & [AttachEffect filters](#attached-effects) will be checked.
+  - Do note that this overrides the normal check of only allowing shrapnels to hit non-allied objects. Use `CanTargetHouses=enemies` to manually enable this behaviour again.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]                   ; Projectile
+Shrapnel.AffectsGround=false       ; boolean
+Shrapnel.AffectsBuildings=false    ; boolean
+Shrapnel.UseWeaponTargeting=false  ; boolean
+```
+
 ## Technos
+
+### Airstrike flare visual customizations
+
+- It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual] -> AirstrikeLineColor`.
+
+In `rulesmd.ini`:
+```ini
+[AudioVisual]
+AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue
+
+[SOMETECHNO]                ; TechnoType
+LaserTargetColor=           ; integer - [ColorAdd] index
+AirstrikeLineColor=         ; integer - Red,Green,Blue
+```
 
 ### Airstrike target eligibility
 
@@ -732,6 +850,8 @@ AlternateFLH.OnTurret=true  ; boolean
 
 - It is now possible to set a global cap for the effects of `InfantryGainSelfHeal` and `UnitsGainSelfHeal` by setting `InfantryGainSelfHealCap` & `UnitsGainSelfHealCap` under `[General]`, respectively.
 - Whether or not `MultiplayPassive=true` houses benefit from these effects can be controlled via `GainSelfHealAllowMultiplayPassive`.
+- In campaign, whether or not these effects for player can be benefited by houses with `PlayerControl=true` can be controlled via `GainSelfHealFromPlayerControl`.
+- Whether or not these effects can be benefited by allied houses can be controlled via `GainSelfHealFromAllies`.
 - It is also possible to change the pip frames displayed from `pips.shp` individually for infantry, units and buildings by setting the frames for infantry & unit self-healing on `Pips.SelfHeal.(Infantry/Units/Buildings)` under `[AudioVisual]`, respectively.
   - `Pips.SelfHeal.(Infantry/Units/Buildings).Offset` can be used to customize the pixel offsets for the displayed pips, individually for infantry, units and buildings.
 - Whether or not a TechnoType benefits from effects of `InfantryGainSelfHeal` or `UnitsGainSelfHeal` buildings or neither can now be controlled by setting `SelfHealGainType`.
@@ -743,6 +863,8 @@ In `rulesmd.ini`:
 InfantryGainSelfHealCap=                ; integer, maximum amount of InfantryGainSelfHeal that can be in effect at once, must be 1 or higher
 UnitsGainSelfHealCap=                   ; integer, maximum amount of UnitsGainSelfHeal that can be in effect at once, must be 1 or higher
 GainSelfHealAllowMultiplayPassive=true  ; boolean
+GainSelfHealFromPlayerControl=false     ; boolean
+GainSelfHealFromAllies=false            ; boolean
 
 [AudioVisual]
 Pips.SelfHeal.Infantry=13,20            ; integer, frames of pips.shp for infantry & unit-self healing pips, respectively
@@ -933,6 +1055,20 @@ Wake.Grapple=        ; Anim (played when Techno being parasited on the water), d
 Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoType] -> Wake
 ```
 
+### Customize bridge falling down damage
+
+- Now you can customize the damage a unit receives when it falls from a bridge.
+ - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
+ - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
+ - If it is a negative percentage, corresponding damage will be dealt based on the current health of the unit.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+FallingDownDamage=              ; integer / percentage
+FallingDownDamage.Water=        ; integer / percentage
+```
+
 ### Customize resource storage
 
 - Now Ares `Storage` feature can set which Tiberium type from `[Tiberiums]` list should be used for storing resources in structures with `Refinery.UseStorage=yes` and `Storage` > 0.
@@ -1070,7 +1206,7 @@ Powered.KillSpawns=false ; boolean
   - `Pips.Generic.(Buildings.)Size` is for non-ammo pips on non-building TechnoTypes / buildings, accordingly, and `Pips.Ammo.(Buildings.)Size` is in turn for ammo pips, split similarly between non-building technos and buildings.
   - Ammo pip size can also be overridden on per TechnoType-basis using `AmmoPipSize`.
 - Ammo pip frames can now also be customized.
-  - `AmmoPipFrame` and `AmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
+  - `AmmoPipFrame` and `EmptyAmmoPipFrame` are frames (zero-based) of `pips2.shp` used for ammo pip and empty ammo pip (this is not set by default) for when `PipWrap=0` (this is the default).
   - `AmmoPipWrapStartFrame` is used as start frame (zero-based, from `pips2.shp`) for when `PipWrap` is above 0. The start frame is the empty frame and up to `Ammo` divided by `PipWrap` frames after it are used for the different reload stages.
   - `AmmoPipOffset` can be used to shift the starting position of ammo pips.
 - Pips for TechnoTypes with `Spawns` can now also be customized.
@@ -1131,7 +1267,7 @@ Power=0               ; integer, positive means output, negative means drain
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                         ; TechnoType
-RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if `RadarInvisible=true`, none otherwise
+RadarInvisibleToHouse=               ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all), default to enemy if RadarInvisible=true, none otherwise
 ```
 
 ### Re-enable obsolete [JumpjetControls]
@@ -1414,7 +1550,7 @@ Ammo.AddOnDeploy=0      ; integer
 ```
 
 ```{warning}
-Due to technical constraints, units that use `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
+Due to technical constraints, units that use `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
 ```
 
 ### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
@@ -1435,7 +1571,7 @@ Ammo.DeployUnlockMaximumAmount=-1    ; integer
 ```
 
 ```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares’ Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
 ### IsSimpleDeployer vehicle deploy animation / direction customization
@@ -1524,7 +1660,7 @@ Sinkable.SquidGrab=true    ; boolean
 
 ### Unit Without Turret Always Turn To Target
 
-- Now vehicles (exclude jumpjets) without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
+- Now vehicles without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
 
 In `rulesmd.ini`:
 ```ini
@@ -1533,6 +1669,10 @@ NoTurret.TrackTarget=false   ; boolean
 
 [SOMEVEHICLE]                ; VehicleType
 NoTurret.TrackTarget=        ; boolean, defaults to [General] -> NoTurret.TrackTarget
+```
+
+```{note}
+Jumpjet can also be affected by this if firing an `OmniFire` weapon with `OmniFire.TurnToTarget` set to true.
 ```
 
 ### Voxel turret shadow
@@ -1654,6 +1794,16 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 - The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
+### Customizable debris trailer anim spawn delay
+
+- You can now customize the generation interval of VoxelAnim's trailer animation.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]       ; VoxelAnimType
+Trailer.SpawnDelay=2  ; integer, game frames
+```
+
 ## Warheads
 
 ### Allowing damage dealt to firer
@@ -1735,6 +1885,20 @@ SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
+```
+
+### Customizable Warhead trigger conditions
+
+- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
+  - Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsBelowPercent=1.0     ; floating point value, percents or absolute
+EffectsRequireVerses=false  ; boolean
 ```
 
 ### Customizing decloak on damaging targets
@@ -1831,8 +1995,8 @@ ChargeTurret.Delays=  ; List of integers - game frames
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]          ; WeaponType
-DiskLaser.Radius=240  ; floating point value
-                      ; 240 is the default saucer disk radius
+DiskLaser.Radius=240  ; integer
+; 240 is the default saucer disk radius
 ```
 
 ### Customizable ROF random delay

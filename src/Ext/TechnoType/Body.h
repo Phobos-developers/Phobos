@@ -14,6 +14,7 @@
 #include <New/Type/SelectBoxTypeClass.h>
 #include <New/Type/Affiliated/DroppodTypeClass.h>
 #include <New/Type/Affiliated/TiberiumEaterTypeClass.h>
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 
 class Matrix3D;
 class ParticleSystemTypeClass;
@@ -47,6 +48,8 @@ public:
 		std::map<int, int> ShadowIndices;
 		Valueable<bool> Spawner_LimitRange;
 		Valueable<int> Spawner_ExtraLimitRange;
+		int SpawnerRange;
+		int EliteSpawnerRange;
 		Nullable<int> Spawner_DelayFrames;
 		Valueable<bool> Spawner_AttackImmediately;
 		Valueable<bool> Spawner_UseTurretFacing;
@@ -59,6 +62,10 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+
+		int TintColorAirstrike;
+		Nullable<int> LaserTargetColor;
+		Nullable<ColorStruct> AirstrikeLineColor;
 
 		Valueable<ShieldTypeClass*> ShieldType;
 		std::unique_ptr<PassengerDeletionTypeClass> PassengerDeletionType;
@@ -162,10 +169,13 @@ public:
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
 
 		Valueable<CSFText> EnemyUIName;
+
+		bool ForceWeapon_Check;
 		Valueable<int> ForceWeapon_Naval_Decloaked;
 		Valueable<int> ForceWeapon_Cloaked;
 		Valueable<int> ForceWeapon_Disguised;
 		Valueable<int> ForceWeapon_UnderEMP;
+		Valueable<bool> ForceWeapon_InRange_TechnoOnly;
 		ValueableVector<int> ForceWeapon_InRange;
 		ValueableVector<double> ForceWeapon_InRange_Overrides;
 		Valueable<bool> ForceWeapon_InRange_ApplyRangeModifiers;
@@ -238,6 +248,7 @@ public:
 
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
+		Valueable<bool> Convert_ResetMindControl;
 
 		Valueable<double> CrateGoodie_RerollChance;
 
@@ -343,15 +354,32 @@ public:
 		Valueable<bool> SuppressKillWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressKillWeapons_Types;
 
+		Valueable<bool> DigitalDisplay_Health_FakeAtDisguise;
+
 		NullableVector<int> Overload_Count;
 		NullableVector<int> Overload_Damage;
 		NullableVector<int> Overload_Frames;
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
-		
+
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
+
+		Nullable<bool> ExtendedAircraftMissions_SmoothMoving;
+		Nullable<bool> ExtendedAircraftMissions_EarlyDescend;
+		Nullable<bool> ExtendedAircraftMissions_RearApproach;
+
+		Valueable<double> FallingDownDamage;
+		Nullable<double> FallingDownDamage_Water;
+
+		Valueable<bool> FiringForceScatter;
+
+		Valueable<int> FireUp;
+		Valueable<bool> FireUp_ResetInRetarget;
+		//Nullable<int> SecondaryFire;
+
+		Valueable<int> EngineerRepairAmount;
 
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
@@ -373,6 +401,8 @@ public:
 			, ShadowIndex_Frame { 0 }
 			, Spawner_LimitRange { false }
 			, Spawner_ExtraLimitRange { 0 }
+			, SpawnerRange { 0 }
+			, EliteSpawnerRange { 0 }
 			, Spawner_DelayFrames {}
 			, Spawner_AttackImmediately { false }
 			, Spawner_UseTurretFacing { false }
@@ -385,6 +415,9 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, TintColorAirstrike { 0 }
+			, LaserTargetColor {}
+			, AirstrikeLineColor {}
 			, ShieldType {}
 			, PassengerDeletionType { nullptr }
 
@@ -477,10 +510,12 @@ public:
 			, VoiceCreated {}
 			, VoicePickup {}
 
+			, ForceWeapon_Check { false }
 			, ForceWeapon_Naval_Decloaked { -1 }
 			, ForceWeapon_Cloaked { -1 }
 			, ForceWeapon_Disguised { -1 }
 			, ForceWeapon_UnderEMP { -1 }
+			, ForceWeapon_InRange_TechnoOnly { true }
 			, ForceWeapon_InRange {}
 			, ForceWeapon_InRange_Overrides {}
 			, ForceWeapon_InRange_ApplyRangeModifiers { false }
@@ -563,6 +598,7 @@ public:
 
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
+			, Convert_ResetMindControl { false }
 
 			, CrateGoodie_RerollChance { 0.0 }
 
@@ -608,6 +644,8 @@ public:
 			, Wake { }
 			, Wake_Grapple { }
 			, Wake_Sinking { }
+
+			, DigitalDisplay_Health_FakeAtDisguise { true }
 
 			, AttackMove_Aggressive {}
 			, AttackMove_UpdateTarget {}
@@ -658,6 +696,21 @@ public:
 
 			, Harvester_CanGuardArea { false }
 			, HarvesterScanAfterUnload {}
+
+			, ExtendedAircraftMissions_SmoothMoving {}
+			, ExtendedAircraftMissions_EarlyDescend {}
+			, ExtendedAircraftMissions_RearApproach {}
+
+			, FallingDownDamage { 1.0 }
+			, FallingDownDamage_Water {}
+
+			, FiringForceScatter { true }
+
+			, FireUp { -1 }
+			, FireUp_ResetInRetarget { true }
+			//, SecondaryFire {}
+
+			, EngineerRepairAmount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -669,7 +722,13 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
+		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
+		void CalculateSpawnerRange();
+		bool IsSecondary(int nWeaponIndex);
+
+		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
@@ -690,13 +749,13 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+	static bool SelectWeaponMutex;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);
 
-	static TechnoClass* CreateUnit(TechnoTypeClass* pType, CoordStruct location, DirType facing, DirType* secondaryFacing, HouseClass* pOwner,
-		TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, AnimTypeClass* pSpawnAnimType = nullptr, int spawnHeight = -1,
-		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);
+	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
+	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);

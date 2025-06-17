@@ -13,17 +13,6 @@
 // Compares two weapons and returns index of which one is eligible to fire against current target (0 = first, 1 = second), or -1 if neither works.
 int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback, bool allowAAFallback)
 {
-	CellClass* pTargetCell = nullptr;
-
-	// Ignore target cell for airborne target technos.
-	if (!pTargetTechno || !pTargetTechno->IsInAir())
-	{
-		if (auto const pCell = abstract_cast<CellClass*>(pTarget))
-			pTargetCell = pCell;
-		else if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
-			pTargetCell = pObject->GetCell();
-	}
-
 	auto const pWeaponStructOne = pThis->GetWeapon(weaponIndexOne);
 	auto const pWeaponStructTwo = pThis->GetWeapon(weaponIndexTwo);
 
@@ -34,43 +23,82 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	else if (!pWeaponStructOne)
 		return weaponIndexTwo;
 
-	auto const pWeaponOne = pWeaponStructOne->WeaponType;
 	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
+	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
+	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
 
-	if (auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo))
+	CellClass* pTargetCell = nullptr;
+
+	// Ignore target cell for airborne target technos.
+	if (pTarget && (!pTargetTechno || !pTargetTechno->IsInAir()))
 	{
-		if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true)) ||
-			(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget) ||
-				!EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) ||
-				!pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))))
-		{
+		if (auto const pObject = abstract_cast<ObjectClass*, true>(pTarget))
+			pTargetCell = pObject->GetCell();
+		else if (auto const pCell = abstract_cast<CellClass*, true>(pTarget))
+			pTargetCell = pCell;
+	}
+
+	if (!pSecondExt->SkipWeaponPicking)
+	{
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true))
 			return weaponIndexOne;
-		}
-		else if (auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponOne))
+
+		if (pTargetTechno)
 		{
-			bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
-			bool firstAllowedAE = pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
-
-			if (!allowFallback && (!allowAAFallback || !secondIsAA) && !TechnoExt::CanFireNoAmmoWeapon(pThis, 1) && firstAllowedAE)
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pSecondExt->IsHealthRatioEligible(pTargetTechno)
+				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
+			{
 				return weaponIndexOne;
+			}
+		}
+	}
 
-			if ((pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true)) ||
-				(pTargetTechno && (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget) ||
-					!EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner) || !firstAllowedAE)))
+	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
+	const bool firstAllowedAE = !skipPrimaryPicking && pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
+
+	if (!allowFallback
+		&& (!allowAAFallback || !secondIsAA)
+		&& !TechnoExt::CanFireNoAmmoWeapon(pThis, 1)
+		&& firstAllowedAE)
+	{
+		return weaponIndexOne;
+	}
+
+	if (!skipPrimaryPicking)
+	{
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true))
+			return weaponIndexTwo;
+
+		if (pTargetTechno)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pFirstExt->IsHealthRatioEligible(pTargetTechno)
+				|| !firstAllowedAE)
 			{
 				return weaponIndexTwo;
 			}
 		}
 	}
 
-	auto const pType = pThis->GetTechnoType();
-
 	// Handle special case with NavalTargeting / LandTargeting.
-	if (!pTargetTechno && (pType->NavalTargeting == NavalTargetingType::Naval_Primary ||
-		pType->LandTargeting == LandTargetingType::Land_Secondary) &&
-		pTargetCell->LandType != LandType::Water && pTargetCell->LandType != LandType::Beach)
+	if (!pTargetTechno && pTargetCell)
 	{
-		return weaponIndexTwo;
+		auto const pType = pThis->GetTechnoType();
+
+		if (pType->NavalTargeting == NavalTargetingType::Naval_Primary
+			|| pType->LandTargeting == LandTargetingType::Land_Secondary)
+		{
+			auto const landType = pTargetCell->LandType;
+
+			if (landType != LandType::Water && landType != LandType::Beach)
+			{
+				return weaponIndexTwo;
+			}
+		}
 	}
 
 	return -1;
@@ -83,13 +111,14 @@ void TechnoExt::FireWeaponAtSelf(TechnoClass* pThis, WeaponTypeClass* pWeaponTyp
 
 bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 {
-	if (pThis->GetTechnoType()->Ammo > 0)
+	auto const pType = pThis->GetTechnoType();
+
+	if (pType->Ammo > 0)
 	{
-		if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
-				return true;
-		}
+		auto const pExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pThis->Ammo <= pExt->NoAmmoAmount && (pExt->NoAmmoWeapon == weaponIndex || pExt->NoAmmoWeapon == -1))
+			return true;
 	}
 
 	return false;
@@ -97,21 +126,21 @@ bool TechnoExt::CanFireNoAmmoWeapon(TechnoClass* pThis, int weaponIndex)
 
 WeaponTypeClass* TechnoExt::GetDeployFireWeapon(TechnoClass* pThis, int& weaponIndex)
 {
-	weaponIndex = pThis->GetTechnoType()->DeployFireWeapon;
+	auto const pType = pThis->GetTechnoType();
+	weaponIndex = pType->DeployFireWeapon;
 
 	if (pThis->WhatAmI() == AbstractType::Unit)
 	{
-		if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		{
-			// Only apply DeployFireWeapon on vehicles if explicitly set.
-			if (!pTypeExt->DeployFireWeapon.isset())
-			{
-				weaponIndex = 0;
-				auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-				if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
-					weaponIndex = 1;
-			}
+		// Only apply DeployFireWeapon on vehicles if explicitly set.
+		if (!pTypeExt->DeployFireWeapon.isset())
+		{
+			weaponIndex = 0;
+			auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
+
+			if (pThis->GetFireError(pCell, 0, true) != FireError::OK)
+				weaponIndex = 1;
 		}
 	}
 
@@ -183,14 +212,14 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 		return 0;
 
 	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-	bool aeForbidsPrimary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
+	const bool aeForbidsPrimary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1) || aeForbidsPrimary)
 	{
 		int weaponIndexSec = -1;
 		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
 		pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		bool aeForbidsSecondary = pWeaponExt && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
+		const bool aeForbidsSecondary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood))
 			&& (!TechnoTypeExt::ExtMap.Find(pTechnoType)->NoSecondaryWeaponFallback || aeForbidsPrimary) && !aeForbidsSecondary)
@@ -208,7 +237,7 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 {
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
+	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
 	// KillWeapon can be triggered without the source
 	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
@@ -225,21 +254,9 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
 		{
 			if (pWHExt->KillWeapon_OnFirer_RealLaunch)
-			{
-				auto const pWeapon = pWHExt->KillWeapon_OnFirer;
-				auto const damage = static_cast<int>(pWeapon->Damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
-
-				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pSource,
-					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
-				{
-					BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pThis->Location, true);
-					BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
-				}
-			}
+				RealLaunch(pWHExt->KillWeapon_OnFirer, pSource, pSource);
 			else
-			{
 				WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
-			}
 		}
 	}
 }
@@ -249,28 +266,16 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+	const bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
 
 	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 	{
 		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
 		{
 			if (pTypeExt->RevengeWeapon_RealLaunch)
-			{
-				auto const pWeapon = pTypeExt->RevengeWeapon;
-				auto const damage = static_cast<int>(pWeapon->Damage * pThis->FirepowerMultiplier * pExt->AE.FirepowerMultiplier);
-
-				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
-					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
-				{
-					BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pWeapon, pThis->Location, true);
-					BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
-				}
-			}
+				RealLaunch(pTypeExt->RevengeWeapon, pThis, pSource);
 			else
-			{
 				WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
-			}
 		}
 	}
 
@@ -287,29 +292,29 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 		if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
 			continue;
 
-		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		if (pType->RevengeWeapon_UseInvokerAsOwner)
+		{
+			auto const pInvoker = attachEffect->GetInvoker();
+
+			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSource->Owner))
+			{
+				if (pType->RevengeWeapon_RealLaunch)
+					RealLaunch(pType->RevengeWeapon, pInvoker, pSource);
+				else
+					WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pInvoker);
+			}
+		}
+		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
 		{
 			if (pType->RevengeWeapon_RealLaunch)
-			{
-				auto const pWeapon = pType->RevengeWeapon;
-				auto const damage = static_cast<int>(pWeapon->Damage * pThis->FirepowerMultiplier * pExt->AE.FirepowerMultiplier);
-
-				if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pSource, pThis,
-					damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
-				{
-					BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pWeapon, pThis->Location, true);
-					BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
-				}
-			}
+				RealLaunch(pType->RevengeWeapon, pThis, pSource);
 			else
-			{
 				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
-			}
 		}
 	}
 }
 
-int TechnoExt::ExtData::ApplyForceWeaponInRange(TechnoClass* pTarget)
+int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 {
 	int forceWeaponIndex = -1;
 	auto const pThis = this->OwnerObject();
@@ -400,7 +405,7 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 	return true;
 }
 
-void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult)
+void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult, TechnoClass* pInvoker)
 {
 	auto const pThis = this->OwnerObject();
 	if (pThis->InOpenToppedTransport && !pAuxWeapon->FireInTransport)
@@ -467,15 +472,31 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 		damage = static_cast<int>(damage * pThis->FirepowerMultiplier * this->AE.FirepowerMultiplier);
 
 	BulletClass* pBullet = nullptr;
+	auto const pFirer = pInvoker ? pInvoker : pThis;
 
 	if (pTargetTechno)
-		pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetTechno, pThis, damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright);
+		pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetTechno, pFirer, damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright);
 	else
-		pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetCell, pThis, damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright);
+		pBullet = pAuxWeapon->Projectile->CreateBullet(pTargetCell, pFirer, damage, pAuxWeapon->Warhead, pAuxWeapon->Speed, pAuxWeapon->Bright);
 
 	if (pBullet)
 	{
 		BulletExt::SimulatedFiringUnlimbo(pBullet, pThis->Owner, pAuxWeapon, location, true);
 		BulletExt::SimulatedFiringEffects(pBullet, pThis->Owner, nullptr, false, true);
+	}
+}
+
+void TechnoExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult)
+{
+	int damage = pWeapon->Damage;
+
+	if (applyFirepowerMult)
+		damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
+
+	if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pSource,
+		damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
+	{
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pSource->Location, true);
+		BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
 	}
 }

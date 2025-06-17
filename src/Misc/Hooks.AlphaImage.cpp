@@ -25,7 +25,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	// the owner object as source, so the display is refreshed
 	// whenever the owner object moves.
 	auto pOwner = pSource;
-	const auto pAnim = abstract_cast<AnimClass*>(pSource);
+	const auto pAnim = abstract_cast<AnimClass*, true>(pSource);
 
 	if (pAnim && pAnim->OwnerObject)
 		pOwner = pAnim->OwnerObject;
@@ -33,7 +33,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 	const Point2D* tacticalPos = &TacticalClass::Instance->TacticalPos;
 	const Point2D off = { tacticalPos->X - ((pImage->Width + 1) / 2), tacticalPos->Y - ((pImage->Height + 1) / 2) };
 
-	if (const auto pFoot = abstract_cast<FootClass*>(pOwner))
+	if (const auto pFoot = abstract_cast<FootClass*, true>(pOwner))
 	{
 		if (pFoot->LastMapCoords != pFoot->CurrentMapCoords)
 		{
@@ -62,7 +62,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	bool inactive = pSource->InLimbo;
 
-	if (const auto pTechno = abstract_cast<TechnoClass*>(pSource))
+	if (const auto pTechno = abstract_cast<TechnoClass*, true>(pSource))
 	{
 		inactive |= pTechno->Deactivated || pTechno->CloakState == CloakState::Cloaked || pTechno->GetHeight() < -10;
 
@@ -73,7 +73,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 		}
 	}
 
-	const auto pBuilding = abstract_cast<BuildingClass*>(pSource);
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pSource);
 
 	if (pBuilding)
 	{

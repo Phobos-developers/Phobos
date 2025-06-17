@@ -49,7 +49,7 @@ std::vector<AttachEffectTypeClass*> AttachEffectTypeClass::GetTypesFromGroups(co
 		}
 	}
 
-	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());;
+	return std::vector<AttachEffectTypeClass*>(types.begin(), types.end());
 }
 
 AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount) const
@@ -123,13 +123,16 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ExpireWeapon.Read<true>(exINI, pSection, "ExpireWeapon");
 	this->ExpireWeapon_TriggerOn.Read(exINI, pSection, "ExpireWeapon.TriggerOn");
 	this->ExpireWeapon_CumulativeOnlyOnce.Read(exINI, pSection, "ExpireWeapon.CumulativeOnlyOnce");
+	this->ExpireWeapon_UseInvokerAsOwner.Read(exINI, pSection, "ExpireWeapon.UseInvokerAsOwner");
 
 	this->ExtraWarheads.Read(exINI, pSection, "ExtraWarheads");
 	this->ExtraWarheads_DamageOverrides.Read(exINI, pSection, "ExtraWarheads.DamageOverrides");
 	this->ExtraWarheads_DetonationChances.Read(exINI, pSection, "ExtraWarheads.DetonationChances");
 	this->ExtraWarheads_FullDetonation.Read(exINI, pSection, "ExtraWarheads.FullDetonation");
+	this->ExtraWarheads_UseInvokerAsOwner.Read(exINI, pSection, "ExtraWarheads.UseInvokerAsOwner");
 
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
+	this->FeedbackWeapon_UseInvokerAsOwner.Read(exINI, pSection, "FeedbackWeapon.UseInvokerAsOwner");
 
 	this->AuxWeapon.Read<true>(exINI, pSection, "AuxWeapon");
 	this->AuxWeapon_Offset.Read(exINI, pSection, "AuxWeapon.Offset");
@@ -140,6 +143,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->AuxWeapon_Retarget_AroundFirer.Read(exINI, pSection, "AuxWeapon.Retarget.AroundFirer");
 	this->AuxWeapon_Retarget_Range.Read(exINI, pSection, "AuxWeapon.Retarget.Range");
 	this->AuxWeapon_Retarget_Accuracy.Read(exINI, pSection, "AuxWeapon.Retarget.Accuracy");
+	this->AuxWeapon_UseInvokerAsOwner.Read(exINI, pSection, "AuxWeapon.UseInvokerAsOwner");
 
 	this->Tint_Color.Read(exINI, pSection, "Tint.Color");
 	this->Tint_Intensity.Read(exINI, pSection, "Tint.Intensity");
@@ -169,6 +173,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
+	this->RevengeWeapon_UseInvokerAsOwner.Read(exINI, pSection, "RevengeWeapon.UseInvokerAsOwner");
 
 	this->ReflectDamage.Read(exINI, pSection, "ReflectDamage");
 	this->ReflectDamage_Warhead.Read(exINI, pSection, "ReflectDamage.Warhead");
@@ -177,6 +182,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ReflectDamage_AffectsHouses.Read(exINI, pSection, "ReflectDamage.AffectsHouses");
 	this->ReflectDamage_Chance.Read(exINI, pSection, "ReflectDamage.Chance");
 	this->ReflectDamage_Override.Read(exINI, pSection, "ReflectDamage.Override");
+	this->ReflectDamage_UseInvokerAsOwner.Read(exINI, pSection, "ReflectDamage.UseInvokerAsOwner");
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
@@ -216,11 +222,14 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ExpireWeapon)
 		.Process(this->ExpireWeapon_TriggerOn)
 		.Process(this->ExpireWeapon_CumulativeOnlyOnce)
+		.Process(this->ExpireWeapon_UseInvokerAsOwner)
 		.Process(this->ExtraWarheads)
 		.Process(this->ExtraWarheads_DamageOverrides)
 		.Process(this->ExtraWarheads_DetonationChances)
 		.Process(this->ExtraWarheads_FullDetonation)
+		.Process(this->ExtraWarheads_UseInvokerAsOwner)
 		.Process(this->FeedbackWeapon)
+		.Process(this->FeedbackWeapon_UseInvokerAsOwner)
 		.Process(this->AuxWeapon)
 		.Process(this->AuxWeapon_Offset)
 		.Process(this->AuxWeapon_FireOnTurret)
@@ -230,6 +239,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->AuxWeapon_Retarget_AroundFirer)
 		.Process(this->AuxWeapon_Retarget_Range)
 		.Process(this->AuxWeapon_Retarget_Accuracy)
+		.Process(this->AuxWeapon_UseInvokerAsOwner)
 		.Process(this->Tint_Color)
 		.Process(this->Tint_Intensity)
 		.Process(this->Tint_VisibleToHouses)
@@ -253,6 +263,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
 		.Process(this->RevengeWeapon_RealLaunch)
+		.Process(this->RevengeWeapon_UseInvokerAsOwner)
 		.Process(this->ReflectDamage)
 		.Process(this->ReflectDamage_Warhead)
 		.Process(this->ReflectDamage_Warhead_Detonate)
@@ -260,6 +271,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_AffectsHouses)
 		.Process(this->ReflectDamage_Chance)
 		.Process(this->ReflectDamage_Override)
+		.Process(this->ReflectDamage_UseInvokerAsOwner)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->Groups)

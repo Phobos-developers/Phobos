@@ -52,9 +52,9 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon);
-		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
+		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 		void InitializeLaserTrails();
-		void ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHDamageOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const CoordStruct& coords, HouseClass* pOwner);
+		void ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHDamageOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker = nullptr);
 
 	private:
 		template <typename T>
@@ -69,6 +69,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
 
 	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
 	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);

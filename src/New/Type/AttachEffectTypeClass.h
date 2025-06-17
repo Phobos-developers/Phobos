@@ -66,11 +66,14 @@ public:
 	Valueable<WeaponTypeClass*> ExpireWeapon;
 	Valueable<ExpireWeaponCondition> ExpireWeapon_TriggerOn;
 	Valueable<bool> ExpireWeapon_CumulativeOnlyOnce;
+	Valueable<bool> ExpireWeapon_UseInvokerAsOwner;
 	ValueableVector<WarheadTypeClass*> ExtraWarheads;
 	ValueableVector<int> ExtraWarheads_DamageOverrides;
 	ValueableVector<double> ExtraWarheads_DetonationChances;
 	ValueableVector<bool> ExtraWarheads_FullDetonation;
+	ValueableVector<bool> ExtraWarheads_UseInvokerAsOwner;
 	Valueable<WeaponTypeClass*> FeedbackWeapon;
+	Valueable<bool> FeedbackWeapon_UseInvokerAsOwner;
 	Valueable<WeaponTypeClass*> AuxWeapon;
 	Valueable<CoordStruct> AuxWeapon_Offset;
 	Valueable<bool> AuxWeapon_FireOnTurret;
@@ -80,6 +83,7 @@ public:
 	Valueable<bool> AuxWeapon_Retarget_AroundFirer;
 	Valueable<int> AuxWeapon_Retarget_Range;
 	Valueable<double> AuxWeapon_Retarget_Accuracy;
+	Valueable<bool> AuxWeapon_UseInvokerAsOwner;
 	Nullable<ColorStruct> Tint_Color;
 	Valueable<double> Tint_Intensity;
 	Valueable<AffectedHouse> Tint_VisibleToHouses;
@@ -103,6 +107,7 @@ public:
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> RevengeWeapon_RealLaunch;
+	Valueable<bool> RevengeWeapon_UseInvokerAsOwner;
 	Valueable<bool> ReflectDamage;
 	Nullable<WarheadTypeClass*> ReflectDamage_Warhead;
 	Valueable<bool> ReflectDamage_Warhead_Detonate;
@@ -110,6 +115,7 @@ public:
 	Valueable<AffectedHouse> ReflectDamage_AffectsHouses;
 	Valueable<double> ReflectDamage_Chance;
 	Nullable<int> ReflectDamage_Override;
+	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
 
@@ -142,11 +148,14 @@ public:
 		, ExpireWeapon {}
 		, ExpireWeapon_TriggerOn { ExpireWeaponCondition::Expire }
 		, ExpireWeapon_CumulativeOnlyOnce { false }
+		, ExpireWeapon_UseInvokerAsOwner { false }
 		, ExtraWarheads {}
 		, ExtraWarheads_DamageOverrides {}
 		, ExtraWarheads_DetonationChances {}
 		, ExtraWarheads_FullDetonation {}
+		, ExtraWarheads_UseInvokerAsOwner {}
 		, FeedbackWeapon {}
+		, FeedbackWeapon_UseInvokerAsOwner { false }
 		, AuxWeapon {}
 		, AuxWeapon_Offset { {0, 0, 0} }
 		, AuxWeapon_FireOnTurret { false }
@@ -156,6 +165,7 @@ public:
 		, AuxWeapon_Retarget_AroundFirer { false }
 		, AuxWeapon_Retarget_Range { 0 }
 		, AuxWeapon_Retarget_Accuracy { 1.0 }
+		, AuxWeapon_UseInvokerAsOwner { false }
 		, Tint_Color {}
 		, Tint_Intensity { 0.0 }
 		, Tint_VisibleToHouses { AffectedHouse::All }
@@ -180,12 +190,14 @@ public:
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, RevengeWeapon_RealLaunch { false }
 		, ReflectDamage { false }
+		, RevengeWeapon_UseInvokerAsOwner { false }
 		, ReflectDamage_Warhead {}
 		, ReflectDamage_Warhead_Detonate { false }
 		, ReflectDamage_Multiplier { 1.0 }
 		, ReflectDamage_AffectsHouses { AffectedHouse::All }
 		, ReflectDamage_Chance { 1.0 }
 		, ReflectDamage_Override {}
+		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
 		, Unkillable { false }
 		, Groups {}
