@@ -35,7 +35,9 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
 
 	auto const count = static_cast<unsigned int>(UnitTypeClass::Array.Count);
+	creationFrames.reserve(count);
 	creationFrames.assign(count, 0x7FFFFFFF);
+	values.reserve(count);
 	values.assign(count, 0);
 
 	for (auto currentTeam : TeamClass::Array)
@@ -602,6 +604,23 @@ void HouseExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 }
 
+int HouseExt::ExtData::GetForceEnemyIndex()
+{
+	auto const pHouse = this->OwnerObject();
+	if (!pHouse)
+		return -1;
+
+	return this->ForceEnemyIndex;
+}
+
+void HouseExt::ExtData::SetForceEnemyIndex(int EnemyIndex)
+{
+	if (EnemyIndex < 0 && EnemyIndex != -2)
+		this->ForceEnemyIndex = -1;
+	else
+		this->ForceEnemyIndex = EnemyIndex;
+}
+
 // =============================
 // load / save
 
@@ -635,6 +654,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->AIFireSaleDelayTimer)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
+		.Process(this->ForceEnemyIndex)
 		;
 }
 
@@ -886,7 +906,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	const BuildCat buildCat = (absType == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
 	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	int queued = 0;
 
@@ -907,7 +927,7 @@ int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	const BuildCat buildCat = (absType == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
 	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	if (pFactory)
 	{

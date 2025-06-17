@@ -58,6 +58,7 @@ public:
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
 		bool ShouldUpdateGattlingValue;
+		int AttachedEffectInvokerCount;
 
 		// Used for Passengers.SyncOwner.RevertOnExit instead of TechnoClass::InitialOwner / OriginallyOwnedByHouse,
 		// as neither is guaranteed to point to the house the TechnoClass had prior to entering transport and cannot be safely overridden.
@@ -67,6 +68,19 @@ public:
 		bool IsBeingChronoSphered;             // Set to true on units currently being ChronoSphered, does not apply to Ares-ChronoSphere'd buildings or Chrono reinforcements.
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
+		CDTimerClass TiberiumEater_Timer;
+
+		AirstrikeClass* AirstrikeTargetingMe;
+
+		CDTimerClass FiringAnimationTimer;
+
+		// cache tint values
+		int TintColorOwner;
+		int TintColorAllies;
+		int TintColorEnemies;
+		int TintIntensityOwner;
+		int TintIntensityAllies;
+		int TintIntensityEnemies;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -110,6 +124,16 @@ public:
 			, IsBeingChronoSphered { false }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
+			, TiberiumEater_Timer {}
+			, AirstrikeTargetingMe { nullptr }
+			, FiringAnimationTimer {}
+			, AttachedEffectInvokerCount { 0 }
+			, TintColorOwner { 0 }
+			, TintColorAllies { 0 }
+			, TintColorEnemies { 0 }
+			, TintIntensityOwner { 0 }
+			, TintIntensityAllies { 0 }
+			, TintIntensityEnemies { 0 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -118,6 +142,7 @@ public:
 		bool CheckDeathConditions(bool isInLimbo = false);
 		void DepletedAmmoActions();
 		void EatPassengers();
+		void UpdateTiberiumEater();
 		void UpdateShield();
 		void UpdateOnTunnelEnter();
 		void UpdateOnTunnelExit();
@@ -141,13 +166,15 @@ public:
 		void UpdateSelfOwnedAttachEffects();
 		bool HasAttachedEffects(std::vector<AttachEffectTypeClass*> attachEffectTypes, bool requireAll, bool ignoreSameSource, TechnoClass* pInvoker, AbstractClass* pSource, std::vector<int> const* minCounts, std::vector<int> const* maxCounts) const;
 		int GetAttachedEffectCumulativeCount(AttachEffectTypeClass* pAttachEffectType, bool ignoreSameSource = false, TechnoClass* pInvoker = nullptr, AbstractClass* pSource = nullptr) const;
+		void InitializeDisplayInfo();
 		void ApplyMindControlRangeLimit();
-		int ApplyForceWeaponInRange(TechnoClass* pTarget);
+		int ApplyForceWeaponInRange(AbstractClass* pTarget);
+		void UpdateTintValues();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
 
 		virtual ~ExtData() override;
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
+		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -161,6 +188,19 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override
+		{
+			auto const abs = static_cast<AbstractClass*>(ptr)->WhatAmI();
+
+			switch (abs)
+			{
+			case AbstractType::Airstrike:
+				return false;
+			default:
+				return true;
+			}
+		}
 	};
 
 	static ExtContainer ExtMap;
@@ -204,8 +244,10 @@ public:
 	static Point2D GetScreenLocation(TechnoClass* pThis);
 	static Point2D GetFootSelectBracketPosition(TechnoClass* pThis, Anchor anchor);
 	static Point2D GetBuildingSelectBracketPosition(TechnoClass* pThis, BuildingSelectBracketPosition bracketPosition);
+	static void DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, const RectangleStruct* pBounds, bool drawBefore = false);
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
-	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue);
+	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
+	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

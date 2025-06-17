@@ -276,7 +276,26 @@ enum class DisplayInfoType : BYTE
 	Tiberium = 6,
 	Experience = 7,
 	Occupants = 8,
-	GattlingStage = 9
+	GattlingStage = 9,
+	ROF = 10,
+	Reload = 11,
+	SpawnTimer = 12,
+	GattlingTimer = 13,
+	ProduceCash = 14,
+	PassengerKill = 15,
+	AutoDeath = 16,
+	SuperWeapon = 17,
+	IronCurtain = 18,
+	TemporalLife = 19,
+	FactoryProcess = 20
+};
+
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3
 };
 
 class MouseCursorHotSpotX
