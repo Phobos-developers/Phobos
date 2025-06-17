@@ -330,15 +330,17 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
 - `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
 - `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects. Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+  - `Damage.ApplyFirepowerMult` determines whether or not firepower modifiers from the animation's invoker are applied on the damage dealt from this animation, if exists.
 - `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                     ; AnimationType
-Weapon=                        ; WeaponType
-Damage.Delay=0                 ; integer, animation frames
-Damage.DealtByInvoker=false    ; boolean
-Damage.ApplyOncePerLoop=false  ; boolean
+[SOMEANIM]                      ; AnimationType
+Weapon=                         ; WeaponType
+Damage.Delay=0                  ; integer, animation frames
+Damage.DealtByInvoker=false     ; boolean
+Damage.ApplyOncePerLoop=false   ; boolean
+Damage.ApplyFirepowerMult=false ; boolean
 ```
 
 ```{note}
