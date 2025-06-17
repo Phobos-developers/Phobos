@@ -100,7 +100,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 
 			pManager->DecideUnitFate(pTarget);
 
-			auto const pBld = abstract_cast<BuildingClass*>(pTarget);
+			auto const pBld = abstract_cast<BuildingClass*, true>(pTarget);
 			auto const pType = pTarget->GetTechnoType();
 			CoordStruct location = pTarget->GetCoords();
 

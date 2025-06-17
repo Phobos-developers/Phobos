@@ -21,6 +21,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 #### From post-0.3 devbuilds
 
+- Parsing priority of `ShowBriefing` and `BriefingTheme` between map file and `missionmd.ini` has been switched (from latter taking priority over former to vice-versa) due to technical limitations and compatibility issues with spawner DLL.
+- Game will now produce fatal error with an error message if any of the files listed in `[$Include]` in any INI file do not exist.
 - Aircraft with weapons that have `Strafing.Shots` < 5 will now keep flying after last shot like those with `Strafing.Shots` >= 5 do. This delay can now be customized explicitly by setting `Strafing.EndDelay` on the weapon.
 - Selecting weapons other than primary against walls based on `Wall=true` on Warhead etc. now requires `[CombatDamage] -> AllowWeaponSelectAgainstWalls` to be set to true first.
 - Lunar theater tileset parsing unhardcoding is now only applied if `lunarmd.ini` has `[General] -> ApplyLunarFixes` set to true.
@@ -115,6 +117,10 @@ HideLightFlashEffects=false      ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
+  101=BannerType,0
+  102=Horizontal position,0
+  103=Vertical position,0
+  104=Banner ID,0
 
   [EventsRA2]
   500=Local variable is greater than,48,6,0,0,[LONG DESC],0,1,500,1
@@ -173,6 +179,9 @@ HideLightFlashEffects=false      ; boolean
   606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
+  800=Display banner and local variable (Phobos),4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
+  801=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
+  802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
   [ScriptTypeLists]
@@ -375,6 +384,26 @@ New:
 - [Passenger-based insignias](Fixed-or-Improved-Logics.md#customizable-veterancy-insignias) (by Ollerus)
 - [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
 - [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
+- [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
+- Dehardcoded 255 limit of `OverlayType` (by secsome)
+- [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
+- Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
+- [Exclusive SuperWeapon Sidebar](User-Interface.md#superweapon-sidebar) (by NetsuNegi & CrimRecya)
+- [Customize the scatter caused by aircraft attack mission](Fixed-or-Improved-Logics.md#customize-the-scatter-caused-by-aircraft-attack-mission) (by TaranDahl)
+- [Customizable garrison and bunker properties](Fixed-or-Improved-Logics.md#customizable-garrison-and-bunker-properties) (by Otamaa)
+- [Disable `DamageSound` for buildings](Fixed-or-Improved-Logics.md#disable-damagesound) (by Otamaa)
+- [Power plant damage factor](Fixed-or-Improved-Logics.md#power-plant-damage-factor) (by Otamaa and Ollerus)
+- [Customize whether `Crater=yes` animation would destroy tiberium](Fixed-or-Improved-Logics.md#customize-whether-crater-yes-animation-would-destroy-tiberium) (by TaranDahl)
+- Weapon target filtering by health percentage (by NetsuNegi)
+- [Turretless vehicles with `Voxel=no` support use `FireUp` like infantry](New-or-Enhanced-Logics.md#turretless-shape-vehicle-fireup) (by FlyStar)
+- Infantry support `IsGattling=yes` (by FlyStar)
+- [Several new Infotypes, no display in specific status and a new single frame display method](User-Interface.md#digital-display) (by CrimRecya)
+- [Targeting limitation for berzerk technos](New-or-Enhanced-Logics.md#targeting-limitation-for-berzerk-technos) (by TaranDahl)
+- Allowed faking digital display for `InfoType=Health` at disguise (by Ollerus)
+- [Warhead activation target health thresholds](Fixed-or-Improved-Logics.md#customizable-warhead-trigger-conditions) (by FS-21 & Kerbiter)
+- [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
+- [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
+- [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
 - Randomized anims for several behaviors (by Ollerus)
 
 Vanilla fixes:
@@ -395,14 +424,25 @@ Vanilla fixes:
 - Fixed the bug that buildings will always be tinted as airstrike owner (by NetsuNegi)
 - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them (by FlyStar)
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings (by NetsuNegi)
+- Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
+- Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
+- Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
+- Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
+- Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
+- `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
-
+- Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
+- Fixed the issue where some units crashed after the deployment transformation (by ststl, FlyStar)
+- Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 ```
 
 ### 0.4
@@ -572,6 +612,7 @@ New:
 - Allow customizing charge turret delays per burst on a weapon (by Starkku)
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
+- `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -683,6 +724,7 @@ Vanilla fixes:
 - Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface (by NetsuNegi)
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead (by CrimRecya)
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead (by CrimRecya)
+- Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar (by Fryone)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

@@ -177,6 +177,9 @@ public:
 
 		Valueable<AffectedTarget> AirstrikeTargets;
 
+		Valueable<double> AffectsAbovePercent;
+		Valueable<double> AffectsBelowPercent;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -352,6 +355,9 @@ public:
 
 			, AirstrikeTargets { AffectedTarget::Building }
 
+			, AffectsAbovePercent { 0.0 }
+			, AffectsBelowPercent { 1.0 }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
@@ -383,9 +389,10 @@ public:
 		void ApplyLocomotorInflictionReset(TechnoClass* pTarget);
 	public:
 		bool CanTargetHouse(HouseClass* pHouse, TechnoClass* pTechno) const;
-		bool CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt) const;
+		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
+		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -406,8 +413,8 @@ public:
 		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
-		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner, TechnoExt::ExtData* pTargetExt);
-		void ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt);
+		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
+		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
