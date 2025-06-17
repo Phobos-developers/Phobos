@@ -316,9 +316,14 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	if (pThis->WeaponType)
 	{
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
-		std::vector<bool> vec;
-		pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides,
-			pWeaponExt->ExtraWarheads_DetonationChances, pWeaponExt->ExtraWarheads_FullDetonation, vec, *coords, pOwner);
+
+		if (pWeaponExt->ExtraWarheads.size() > 0)
+		{
+			std::vector<bool> vec;
+
+			pBulletExt->ApplyExtraWarheads(pWeaponExt->ExtraWarheads, pWeaponExt->ExtraWarheads_DamageOverrides,
+				pWeaponExt->ExtraWarheads_DetonationChances, pWeaponExt->ExtraWarheads_FullDetonation, vec, *coords, pOwner);
+		}
 	}
 
 	if (pThis->Owner)

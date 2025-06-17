@@ -454,18 +454,18 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 	else
 		duration = this->DurationOverride ? this->DurationOverride : this->Type->Duration;
 
-	if (this->Type->Duration_ApplyVersus_Warhead)
+	if (this->Type->Duration_ApplyVersus_Warhead && duration > 0)
 	{
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
-		auto pArmor = this->Techno->GetTechnoType()->Armor;
+		auto armor = this->Techno->GetTechnoType()->Armor;
 
 		if (auto const pShieldData = pTechnoExt->Shield.get())
 		{
 			if (pShieldData->IsActive())
-				pArmor = pShieldData->GetArmorType();
+				armor = pShieldData->GetArmorType();
 		}
 
-		duration = Math::max(MapClass::GetTotalDamage(duration, this->Type->Duration_ApplyVersus_Warhead, pArmor, 0), 0);
+		duration = Math::max(MapClass::GetTotalDamage(duration, this->Type->Duration_ApplyVersus_Warhead, armor, 0), 0);
 	}
 
 	if (this->Type->Duration_ApplyFirepowerMult && duration > 0 && this->Invoker)
@@ -524,13 +524,16 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 	auto const pTechno = this->Techno;
 
 	if (this->Type->DiscardOn_AbovePercent > 0.0 && pTechno->GetHealthPercentage() >= this->Type->DiscardOn_AbovePercent)
-		return false;
+	{
+		this->LastDiscardCheckValue = false;
+		return true;
+	}
 
 	if (this->Type->DiscardOn_BelowPercent > 0.0 && pTechno->GetHealthPercentage() <= this->Type->DiscardOn_BelowPercent)
-		return false;
-
-	if (discardOn == DiscardCondition::None)
-		return false;
+	{
+		this->LastDiscardCheckValue = false;
+		return true;
+	}
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
 	{
@@ -557,8 +560,8 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 
 	if (pTechno->Target)
 	{
-		bool inRange = (discardOn & DiscardCondition::InRange) != DiscardCondition::None;
-		bool outOfRange = (discardOn & DiscardCondition::OutOfRange) != DiscardCondition::None;
+		const bool inRange = (discardOn & DiscardCondition::InRange) != DiscardCondition::None;
+		const bool outOfRange = (discardOn & DiscardCondition::OutOfRange) != DiscardCondition::None;
 
 		if (inRange || outOfRange)
 		{
@@ -570,14 +573,14 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 			}
 			else
 			{
-				int weaponIndex = pTechno->SelectWeapon(pTechno->Target);
+				const int weaponIndex = pTechno->SelectWeapon(pTechno->Target);
 				auto const pWeapon = pTechno->GetWeapon(weaponIndex)->WeaponType;
 
 				if (pWeapon)
 					distance = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pTechno);
 			}
 
-			int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
+			const int distanceFromTgt = pTechno->DistanceFrom(pTechno->Target);
 
 			if ((inRange && distanceFromTgt <= distance) || (outOfRange && distanceFromTgt >= distance))
 			{

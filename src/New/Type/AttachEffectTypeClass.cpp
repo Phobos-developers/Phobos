@@ -186,6 +186,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
+	this->PreventNegativeDamage.Read(exINI, pSection, "PreventNegativeDamage");
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -274,6 +275,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
+		.Process(this->PreventNegativeDamage)
 		.Process(this->Groups)
 		;
 }

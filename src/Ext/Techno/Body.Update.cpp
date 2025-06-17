@@ -1819,6 +1819,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	bool forceDecloak = false;
 	bool disableWeapons = false;
 	bool unkillable = false;
+	bool preventNegativeDamage = false;
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
@@ -1842,6 +1843,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
 		unkillable |= type->Unkillable;
+		preventNegativeDamage |= type->PreventNegativeDamage;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
@@ -1860,6 +1862,7 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.ForceDecloak = forceDecloak;
 	pAE.DisableWeapons = disableWeapons;
 	pAE.Unkillable = unkillable;
+	pAE.PreventNegativeDamage = preventNegativeDamage;
 	pAE.HasRangeModifier = hasRangeModifier;
 	pAE.HasTint = hasTint;
 	pAE.ReflectDamage = reflectsDamage;

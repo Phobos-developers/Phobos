@@ -25,9 +25,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
+	int& damage = *args->Damage;
 
 	// Calculate Damage Multiplier
-	if (!args->IgnoreDefenses && *args->Damage)
+	if (!args->IgnoreDefenses && damage)
 	{
 		double multiplier = 1.0;
 
@@ -40,14 +41,14 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 		if (multiplier != 1.0)
 		{
-			const auto sgnDamage = *args->Damage > 0 ? 1 : -1;
-			const auto calculateDamage = static_cast<int>(*args->Damage * multiplier);
-			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+			const auto sgnDamage = damage > 0 ? 1 : -1;
+			const auto calculateDamage = static_cast<int>(damage * multiplier);
+			damage = calculateDamage ? calculateDamage : sgnDamage;
 		}
 	}
 
 	// Raise Combat Alert
-	if (pRules->CombatAlert && *args->Damage > 1)
+	if (pRules->CombatAlert && damage > 1)
 	{
 		auto raiseCombatAlert = [&]()
 		{
@@ -104,7 +105,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
-		int nDamageLeft = *args->Damage;
+		int nDamageLeft = damage;
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -114,9 +115,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 				if (nDamageLeft >= 0)
 				{
-					*args->Damage = nDamageLeft;
+					damage = nDamageLeft;
 
-					if (auto pTag = pThis->AttachedTag)
+					if (const auto pTag = pThis->AttachedTag)
 						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 				}
 
@@ -131,10 +132,16 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
 			// Update remaining damage and check if the target will die and should be avoided
-			*args->Damage = 0;
+			damage = 0;
 			pThis->Health = 1;
 			pThis->EstimatedHealth = 1;
 			ReceiveDamageTemp::SkipLowDamageCheck = true;
+		}
+
+		if (pExt->AE.PreventNegativeDamage && nDamageLeft != 0 && pWHExt->CanTargetHouse(pSourceHouse, pThis)
+			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) < 0)
+		{
+			damage = 0;
 		}
 	}
 

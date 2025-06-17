@@ -408,16 +408,18 @@ bool TechnoExt::IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, 
 void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractClass* pTarget, const CoordStruct& offset, int range, const double& accuracy, bool onTurret, bool retarget, bool aroundFirer, bool zeroDamage, bool firepowerMult, TechnoClass* pInvoker)
 {
 	auto const pThis = this->OwnerObject();
+
 	if (pThis->InOpenToppedTransport && !pAuxWeapon->FireInTransport)
 		return;
 
 	TechnoClass* pTargetTechno = nullptr;
 	CellClass* pTargetCell = nullptr;
+	auto& random = ScenarioClass::Instance->Random;
 
-	if (retarget && accuracy < ScenarioClass::Instance->Random.RandomDouble())
+	if (retarget && accuracy < random.RandomDouble())
 	{
 		auto const coord = aroundFirer ? pThis->Location : pTarget->GetCoords();
-		auto cellSpread = range > 0 ? range : (aroundFirer ? pAuxWeapon->Range : 0);
+		auto const cellSpread = range > 0 ? range : (aroundFirer ? pAuxWeapon->Range : 0);
 
 		std::vector<TechnoClass*> targets;
 
@@ -432,14 +434,14 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 
 		if (!targets.empty())
 		{
-			pTargetTechno = targets[ScenarioClass::Instance->Random.RandomRanged(0, targets.size() - 1)];
+			pTargetTechno = targets[random.RandomRanged(0, targets.size() - 1)];
 		}
 		else
 		{
 			auto const cellTarget = CellClass::Coord2Cell(coord);
-			int x = ScenarioClass::Instance->Random.RandomRanged(-cellSpread, cellSpread);
-			int y = ScenarioClass::Instance->Random.RandomRanged(-cellSpread, cellSpread);
-			CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
+			const int x = random.RandomRanged(-cellSpread, cellSpread);
+			const int y = random.RandomRanged(-cellSpread, cellSpread);
+			const CellStruct cell = { static_cast<short>(cellTarget.X + x), static_cast<short>(cellTarget.Y + y) };
 			pTargetCell = MapClass::Instance.GetCellAt(cell);
 		}
 	}
@@ -465,7 +467,7 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 	if (!pTargetTechno && !pTargetCell)
 		return;
 
-	auto location = TechnoExt::GetFLHAbsoluteCoords(pThis, offset, onTurret);
+	auto const location = TechnoExt::GetFLHAbsoluteCoords(pThis, offset, onTurret);
 	auto damage = pAuxWeapon->Damage;
 
 	if (firepowerMult)

@@ -118,6 +118,7 @@ public:
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
+	Valueable<bool> PreventNegativeDamage;
 
 	std::vector<std::string> Groups;
 
@@ -200,6 +201,7 @@ public:
 		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
 		, Unkillable { false }
+		, PreventNegativeDamage { false }
 		, Groups {}
 	{};
 
