@@ -527,13 +527,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	// Recreate Laser Trails
 	if (const size_t trailCount = this->LaserTrails.size())
 	{
-		std::vector<LaserTrailClass*> addition;
+		std::vector<std::unique_ptr<LaserTrailClass>> addition;
 		addition.reserve(trailCount);
 
-		for (const auto& trail : this->LaserTrails)
+		for (auto& trail : this->LaserTrails)
 		{
 			if (!trail->Intrinsic)
-				addition.emplace_back(trail.get());
+				addition.emplace_back(std::move(trail));
 		}
 
 		this->LaserTrails.clear();
@@ -542,8 +542,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		for (const auto& entry : this->TypeExtData->LaserTrailData)
 			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
 
-		for (const auto trail : addition)
-			this->LaserTrails.emplace_back(trail);
+		for (auto& trail : addition)
+			this->LaserTrails.emplace_back(std::move(trail));
 	}
 
 	// Reset AutoDeath Timer
