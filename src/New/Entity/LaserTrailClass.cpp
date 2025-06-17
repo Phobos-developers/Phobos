@@ -16,11 +16,11 @@ bool LaserTrailClass::Update(CoordStruct location)
 	}
 	else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
 	{
+		// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
 		if (this->Visible && !this->Cloaked && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
 		{
 			if (this->Type->DrawType == LaserTrailDrawType::Laser)
 			{
-				// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
 				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
 					this->LastLocation.Get(), location,
 					this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
