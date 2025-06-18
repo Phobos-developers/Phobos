@@ -404,6 +404,25 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 			pTargetCell = pCell;
 	}
 
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	if (!pWeaponExt->SkipWeaponPicking)
+	{
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
+			return false;
+
+		if (pTechno)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner)
+				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+			{
+				return false;
+			}
+		}
+	}
+
 	if (pTechno)
 	{
 		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
@@ -468,24 +487,6 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 	{
 		if (!pWH->Wood)
 			return false;
-	}
-
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-	if (!pWeaponExt->SkipWeaponPicking)
-	{
-		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
-			return false;
-
-		if (pTechno)
-		{
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
-				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner)
-				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
-				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
-			{
-				return false;
-			}
-		}
 	}
 
 	return true;
