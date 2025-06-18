@@ -91,7 +91,9 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 
 	if (this->MultiWeapon.Get() && nWeaponIndex >= 0
 		&& !this->MultiWeapon_IsSecondary.empty())
+	{
 		return this->MultiWeapon_IsSecondary[nWeaponIndex];
+	}
 
 	return nWeaponIndex != 0;
 }
@@ -178,19 +180,16 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 			return false;
 		};
 
-		if (const auto pCell = pTargetTechno->GetCell())
+		const LandType landType = pTargetTechno->GetCell()->LandType;
+		bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
+
+		if (!pTargetTechno->OnBridge && targetOnWater)
 		{
-			const LandType landType = pCell->LandType;
-			bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
+			int result = pThis->SelectNavalTargeting(pTargetTechno);
 
-			if (!pTargetTechno->OnBridge && targetOnWater)
+			if (result != -1)
 			{
-				int result = pThis->SelectNavalTargeting(pTargetTechno);
-
-				if (result != -1)
-				{
-					getNavalTargeting = (result == 1);
-				}
+				getNavalTargeting = (result == 1);
 			}
 		}
 

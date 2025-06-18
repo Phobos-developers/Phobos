@@ -386,7 +386,9 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		{
 			if (!isBuilding || !isAllies
 				|| !static_cast<BuildingClass*>(pTarget)->Type->Overpowerable)
+			{
 				return false;
+			}
 		}
 		else if (pWH->IsLocomotor)
 		{
