@@ -397,22 +397,28 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
 			return false;
 
-		const auto pTechnoType = pTechno->GetTechnoType();
-
-		if (pWH->MindControl &&
-			(pTechnoType->ImmuneToPsionics || pTechno->IsMindControlled() || pOwner == pTechno->Owner))
+		if (!pWH->Temporal && pTechno->BeingWarpedOut)
 			return false;
 
 		if (pWH->Parasite
 			&& (isBuilding || static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
+		{
 			return false;
+		}
 
-		if (!pWH->Temporal && pTechno->BeingWarpedOut)
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		if (pWH->MindControl
+			&& (pTechnoType->ImmuneToPsionics || pTechno->IsMindControlled() || pOwner == pTechno->Owner))
+		{
 			return false;
+		}
 
 		if (pWeaponType->DrainWeapon
 			&& (!pTechnoType->Drainable || pTechno->DrainingMe || isAllies))
+		{
 			return false;
+		}
 
 		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
 
