@@ -1,4 +1,4 @@
-#include <AircraftClass.h>
+﻿#include <AircraftClass.h>
 #include "Body.h"
 
 #include <ScenarioClass.h>
@@ -552,23 +552,20 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 	GET(FootClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (pTypeExt)
+	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
 	{
-		bool DefaultValue = RulesExt::Global()->AttackMove_StopWhenTargetAcquired_UseOpportunityFireAsDefault ? !pType->OpportunityFire : false;
-
-		if (pThis->IsCloseEnoughToAttack(pThis->Target) && pTypeExt->AttackMove_StopWhenTargetAcquired.Get(DefaultValue))
+		if (pThis->IsCloseEnoughToAttack(pThis->Target)
+			&& pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire)))
 		{
-			auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor);
-
-			if (pJumpjetLoco)
+			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 			{
 				auto crd = pThis->GetCoords();
 				pJumpjetLoco->DestinationCoords.X = crd.X;
 				pJumpjetLoco->DestinationCoords.Y = crd.Y;
 				pJumpjetLoco->CurrentSpeed = 0;
 				pJumpjetLoco->MaxSpeed = 0;
+				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
 				pThis->AbortMotion();
 			}
 			else
@@ -577,27 +574,9 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 				pThis->AbortMotion();
 			}
 		}
+
 		if (pTypeExt->AttackMove_PursuitTarget)
-		{
 			pThis->SetDestination(pThis->Target, true);
-		}
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_PursuitTarget, 0x6)
-{
-	GET(FootClass*, pThis, ESI);
-
-	auto const pType = pThis->GetTechnoType();
-
-	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
-	{
-		if (pTypeExt->AttackMove_PursuitTarget && pThis->vt_entry_3B4((DWORD)pThis->Target))// InAttackMoveKeepRange
-		{
-			pThis->SetDestination(pThis->Target, true);
-		}
 	}
 
 	return 0;
@@ -606,7 +585,6 @@ DEFINE_HOOK(0x4DF3BA, FootClass_UpdateAttackMove_PursuitTarget, 0x6)
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
-
 	return RulesExt::Global()->AttackMove_IgnoreWeaponCheck ? SkipGameCode : 0;
 }
 
@@ -620,32 +598,33 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	if (pTypeExt && pTypeExt->AttackMove_Follow)
 	{
-		auto pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), (double)pThis->GetGuardRange(2) / 256, pTypeExt->AttackMove_Follow_IncludeAir);
+		auto pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pThis->GetGuardRange(2) / 256.0, pTypeExt->AttackMove_Follow_IncludeAir);
 		TechnoClass* pClosestTarget = nullptr;
-		int closestRange = 256 * 256;
+		int closestRange = 65536;
 
 		for (auto pTechno : pTechnoVectors)
 		{
-			if ((pTechno->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None &&
-				pTechno != pThis &&
-				pTechno->Owner == pThis->Owner &&
-				pTechno->vt_entry_4C4()) // MegaMissionIsAttackMove)
+			if ((pTechno->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+				&& pTechno != pThis && pTechno->Owner == pThis->Owner
+				&& pTechno->MegaMissionIsAttackMove())
 			{
 				auto const pTargetExt = TechnoExt::ExtMap.Find(pTechno);
 
 				// Check this to prevent the followed techno from being surrounded
 				if (!pTargetExt || pTargetExt->AttackMoveFollowerTempCount >= 6)
-				{
 					continue;
-				}
 
-				auto dist = pTechno->DistanceFrom(pThis);
 				auto const pTargetTypeExt = pTargetExt->TypeExtData;
 
-				if (dist < closestRange && pTargetTypeExt && !pTargetTypeExt->AttackMove_Follow)
+				if (pTargetTypeExt && !pTargetTypeExt->AttackMove_Follow)
 				{
-					pClosestTarget = pTechno;
-					closestRange = dist;
+					auto const dist = pTechno->DistanceFrom(pThis);
+
+					if (dist < closestRange)
+					{
+						pClosestTarget = pTechno;
+						closestRange = dist;
+					}
 				}
 			}
 		}
@@ -660,21 +639,15 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 		}
 		else
 		{
-			if (pThis->unknown_5CC)
-			{
-				pThis->SetDestination((AbstractClass*)pThis->unknown_5CC, false);
-			}
-			else if (pThis->unknown_5C8)
-			{
-				pThis->SetDestination((AbstractClass*)pThis->unknown_5C8, false);
-			}
+			if (pThis->MegaTarget)
+				pThis->SetDestination(pThis->MegaTarget, false);
+			else if (pThis->MegaDestination)
+				pThis->SetDestination(pThis->MegaDestination, false);
 			else
-			{
 				pThis->SetDestination(nullptr, false);
-			}
 		}
 
-		pThis->vt_entry_4A8(); // ClearMegaMission
+		pThis->ClearMegaMissionData();
 
 		R->EAX(pClosestTarget);
 		return FuncRet;
