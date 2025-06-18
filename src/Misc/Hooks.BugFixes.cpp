@@ -2204,12 +2204,3 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 }
 
 #pragma region
-
-DEFINE_HOOK(0x418CF3, AircraftClass_Mission_Attack_PlanningFix, 0x5)
-{
-	enum { SkipIdle = 0x418D00 };
-
-	GET(AircraftClass*, pThis, ESI);
-
-	return pThis->Ammo <= 0 || !pThis->TryNextPlanningTokenNode() ? 0 : SkipIdle;
-}
