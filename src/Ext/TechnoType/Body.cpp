@@ -127,7 +127,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		bool getNavalTargeting = false;
 		auto checkSecondary = [&](int weaponIndex) -> bool
 		{
-			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, 1, isElite)->WeaponType;
+			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, weaponIndex, isElite)->WeaponType;
 
 			if (!pWeapon || pWeapon->NeverUse)
 			{
@@ -180,7 +180,8 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 
 		if (const auto pCell = pTargetTechno->GetCell())
 		{
-			bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
+			const LandType landType = pCell->LandType;
+			bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
 
 			if (!pTargetTechno->OnBridge && targetOnWater)
 			{
