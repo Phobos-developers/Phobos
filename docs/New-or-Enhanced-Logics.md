@@ -33,6 +33,7 @@ This page describes all the engine features that are either new and introduced b
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
     - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
     - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
+    - `ExpireWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -47,8 +48,10 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+    - `RevengeWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
+    - `ReflectDamage.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the reflected damage's owner & invoker instead of the object the effect is attached to.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
@@ -105,6 +108,7 @@ CumulativeAnimations.RestartOnChange=true          ; boolean
 ExpireWeapon=                                      ; WeaponType
 ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
+ExpireWeapon.UseInvokerAsOwner=false               ; boolean
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -127,6 +131,7 @@ Crit.AllowWarheads=                                ; List of WarheadTypes
 Crit.DisallowWarheads=                             ; List of WarheadTypes
 RevengeWeapon=                                     ; WeaponType
 RevengeWeapon.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.UseInvokerAsOwner=false              ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
@@ -134,6 +139,7 @@ ReflectDamage.Multiplier=1.0                       ; floating point value, perce
 ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
+ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 Groups=                                            ; comma-separated list of strings (group IDs)
@@ -558,6 +564,23 @@ In `rulesmd.ini`:
 IsDestroyableObstacle=false  ; boolean
 ```
 
+### Engineer repair customization
+
+- You can now set a maximum amount when engineer repair a building for either of them. 0 means the building will be repaired to full health.
+  - Negative value means percentage. For example, `EngineerRepairAmount=-50` means you can only repair 50% of the building's health per Engineer.
+  - If both the building and the engineer has `EngineerRepairAmount` set, the actual repair amount will be the minimum of them.
+- `BuildingRepairedSound` can now be set individually for each building type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+EngineerRepairAmount=0             ; integer
+BuildingRepairedSound=             ; Sound entry, default to [AudioVisual] -> BuildingRepairedSound
+
+[SOMEINFANTRY]                     ; InfantryType
+EngineerRepairAmount=0             ; integer
+```
+
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)
@@ -591,7 +614,7 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
-### Spy Effects
+### Spy effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
   - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
@@ -607,7 +630,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ## Infantry
 
-### Customizable FLH When Infantry Is Prone Or Deployed
+### Customizable FLH when infantry is prone or deployed
 
 - Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
 
@@ -622,14 +645,14 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 
 ### Customizable `SlavesFreeSound`
 
-- `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
+- `SlavesFreeSound` can now be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
 
 ```ini
 [SOMEINFANTRY]        ; InfantryType
 Slaved=yes
-SlavesFreeSound=      ; Sound entry
+SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
 ### Default disguise for individual InfantryTypes
@@ -643,7 +666,7 @@ In `rulesmd.ini`:
 DefaultDisguise=    ; InfantryType
 ```
 
-### Random death animaton for NotHuman Infantry
+### Random death animaton for NotHuman infantry
 
 - Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
   - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
@@ -1714,7 +1737,7 @@ VoiceCreated=                ; Sound entry
 In `rulesmd.ini`:
 ```ini
 [General]
-BerzerkTargeting=all  ; AffectedHouse enumeration
+BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Tiberium eater
@@ -1738,7 +1761,7 @@ TiberiumEater.CellN=              ; X,Y - cell offset
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
-TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
+TiberiumEater.Display.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
@@ -1877,7 +1900,8 @@ FireUp.ResetInRetarget=true     ; boolean
 All new Warhead effects
 - Can be used with `CellSpread` and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
-- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`.
+- If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact
@@ -2088,7 +2112,7 @@ In `rulesmd.ini`:
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean
-TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Houses=all     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 

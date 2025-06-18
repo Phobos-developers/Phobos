@@ -62,6 +62,8 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+
+		int TintColorAirstrike;
 		Nullable<int> LaserTargetColor;
 		Nullable<ColorStruct> AirstrikeLineColor;
 
@@ -376,6 +378,8 @@ public:
 		Valueable<bool> FireUp_ResetInRetarget;
 		//Nullable<int> SecondaryFire;
 
+		Valueable<int> EngineerRepairAmount;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -410,6 +414,7 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
 			, ShieldType {}
@@ -702,6 +707,8 @@ public:
 			, FireUp { -1 }
 			, FireUp_ResetInRetarget { true }
 			//, SecondaryFire {}
+
+			, EngineerRepairAmount { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

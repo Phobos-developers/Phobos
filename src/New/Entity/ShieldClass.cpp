@@ -58,12 +58,23 @@ void ShieldClass::UpdateType()
 
 void ShieldClass::PointerGotInvalid(void* ptr, bool removed)
 {
-	if (auto const pAnim = abstract_cast<AnimClass*>(static_cast<AbstractClass*>(ptr)))
+	auto const abs = static_cast<AbstractClass*>(ptr);
+
+	if (auto const pAnim = abstract_cast<AnimClass*, true>(abs))
 	{
-		for (auto pShield : ShieldClass::Array)
+		if (auto const pAnimExt = AnimExt::ExtMap.Find(pAnim))
 		{
-			if (pAnim == pShield->IdleAnim)
-				pShield->IdleAnim = nullptr;
+			if (pAnimExt->IsShieldIdleAnim)
+			{
+				for (auto const pShield : ShieldClass::Array)
+				{
+					if (pAnim == pShield->IdleAnim)
+					{
+						pShield->IdleAnim = nullptr;
+						break; // one anim must be used by less than one shield
+					}
+				}
+			}
 		}
 	}
 }
@@ -506,21 +517,23 @@ void ShieldClass::OnlineCheck()
 
 	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
 
-	auto pTechno = this->Techno;
+	const auto pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
 	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
 	{
-		auto const pBuilding = static_cast<BuildingClass const*>(this->Techno);
+		auto const pBuilding = static_cast<BuildingClass const*>(pTechno);
 		isActive = pBuilding->IsPowerOnline();
 	}
 
 	if (!isActive)
 	{
 		if (this->Online)
+		{
+			this->Online = false;
 			this->UpdateTint();
+		}
 
-		this->Online = false;
 		timer->Pause();
 
 		if (this->IdleAnim)
@@ -549,9 +562,11 @@ void ShieldClass::OnlineCheck()
 	else
 	{
 		if (!this->Online)
+		{
+			this->Online = true;
 			this->UpdateTint();
+		}
 
-		this->Online = true;
 		timer->Resume();
 
 		if (this->IdleAnim)
@@ -815,11 +830,16 @@ void ShieldClass::CreateAnim()
 
 	if (!this->IdleAnim && idleAnimType)
 	{
-		auto const pAnim = GameCreate<AnimClass>(idleAnimType, this->Techno->Location);
+		auto const pTechno = this->Techno;
+		auto const pAnim = GameCreate<AnimClass>(idleAnimType, pTechno->Location);
 
-		pAnim->SetOwnerObject(this->Techno);
-		pAnim->Owner = this->Techno->Owner;
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+		pAnim->SetOwnerObject(pTechno);
+		pAnim->Owner = pTechno->Owner;
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnimExt->SetInvoker(pTechno);
+		pAnimExt->IsShieldIdleAnim = true;
+
 		pAnim->RemainingIterations = 0xFFu;
 		this->IdleAnim = pAnim;
 	}
@@ -846,7 +866,10 @@ void ShieldClass::UpdateIdleAnim()
 void ShieldClass::UpdateTint()
 {
 	if (this->Type->HasTint())
+	{
+		TechnoExt::ExtMap.Find(this->Techno)->UpdateTintValues();
 		this->Techno->MarkForRedraw();
+	}
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()
