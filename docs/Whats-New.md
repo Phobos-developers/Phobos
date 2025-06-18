@@ -404,6 +404,7 @@ New:
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
+- Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)
 - Randomized anims for several behaviors (by Ollerus)
 
 Vanilla fixes:
