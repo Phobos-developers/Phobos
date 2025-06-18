@@ -103,7 +103,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 
 	const auto pType = this->OwnerObject();
 
-	if (!pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
+	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
 		return -1;
 
 	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount.Get());
@@ -157,14 +157,16 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 			{
 				const auto pWH = pWeapon->Warhead;
 				bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+				bool isInAir = pTargetTechno->IsInAir();
 
-				if (pTargetTechno->IsInAir())
+				if (pWH->Airstrike)
+				{
+					// Can it attack the air force now?
+					secondaryPriority = isInAir ? !this->NoSecondaryWeaponFallback_AllowAA.Get() : !noSecondary;
+				}
+				else if (isInAir)
 				{
 					secondaryPriority = !this->NoSecondaryWeaponFallback_AllowAA.Get();
-				}
-				else if (pWH->Airstrike)
-				{
-					secondaryPriority = !noSecondary;
 				}
 				else if (pWeapon->DrainWeapon
 					&& pTargetTechno->GetTechnoType()->Drainable
@@ -207,15 +209,13 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		return 0;
 	}
 
-	for (int i = 0; i < weaponCount; i++)
+	for (int index = 0; index < weaponCount; index++)
 	{
-		if (secondaryCanTargets[i])
+		if (secondaryCanTargets[index])
 			continue;
 
-		const auto pWeaponType = pType->GetWeapon(i, isElite).WeaponType;
-
-		if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, pWeaponType))
-			return i;
+		if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, TechnoTypeExt::GetWeaponStruct(pType, index, isElite)->WeaponType))
+			return index;
 	}
 
 	return 0;
