@@ -684,7 +684,7 @@ void ShieldClass::SelfHealing()
 
 	if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		double mult = this->SelfHealing_Rate_Warhead > 0 ? pType->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
+		const double mult = this->SelfHealing_Rate_Warhead > 0 ? pType->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 
@@ -848,7 +848,7 @@ void ShieldClass::SetRespawnRestartInCombat()
 
 			if (delay > 0)
 			{
-				this->Timers.Respawn_CombatRestart.Start(pType->Respawn_RestartInCombatDelay);
+				this->Timers.Respawn_CombatRestart.Start(delay);
 				this->Timers.Respawn.Stop();
 			}
 			else
@@ -880,7 +880,7 @@ void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool res
 	}
 	else if (timer->InProgress() && !modifierTimerInProgress && this->SelfHealing_Rate_Warhead != pType->SelfHealing_Rate)
 	{
-		const double mult = Type->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / pType->SelfHealing_Rate : 1.0;
+		const double mult = pType->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / pType->SelfHealing_Rate : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
