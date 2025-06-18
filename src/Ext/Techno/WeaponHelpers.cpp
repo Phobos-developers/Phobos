@@ -365,11 +365,13 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 	const auto pBulletType = pWeaponType->Projectile;
 
 	const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
+	bool isInAir = pTechno ? pTechno->IsInAir() : false;
+
 	const auto pOwner = pThis->Owner;
 	const auto pTechnoOwner = pTechno ? pTechno->Owner : nullptr;
 	const bool isAllies = pTechnoOwner ? pOwner->IsAlliedWith(pTechnoOwner) : false;
 
-	if (pTarget->IsInAir())
+	if (isInAir)
 	{
 		if (!pBulletType->AA)
 			return false;
@@ -396,7 +398,7 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 	CellClass* pTargetCell = nullptr;
 
 	// Ignore target cell for airborne target technos.
-	if (pTarget && (!pTechno || !pTechno->IsInAir()))
+	if (!pTechno || !isInAir)
 	{
 		if (auto const pObject = abstract_cast<ObjectClass*, true>(pTarget))
 			pTargetCell = pObject->GetCell();
