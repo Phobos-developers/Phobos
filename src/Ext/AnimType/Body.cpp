@@ -93,6 +93,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
 	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
+	this->Damage_ApplyFirepowerMult.Read(exINI, pID, "Damage.ApplyFirepowerMult");
 	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
@@ -151,6 +152,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByInvoker)
 		.Process(this->Damage_ApplyOncePerLoop)
+		.Process(this->Damage_ApplyFirepowerMult)
 		.Process(this->ExplodeOnWater)
 		.Process(this->Warhead_Detonate)
 		.Process(this->WakeAnim)

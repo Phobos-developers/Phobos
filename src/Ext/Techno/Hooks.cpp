@@ -251,7 +251,7 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (R->Origin() != 0x517D69)
 	{
@@ -262,7 +262,7 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 	}
 	else
 	{
-		auto strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
+		auto const strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
 		pThis->Health = strength;
 		pThis->EstimatedHealth = strength;
 	}
@@ -595,7 +595,7 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	return TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->NoManualMove ? 0x700C62 : 0;
+	return TechnoExt::ExtMap.Find(pThis)->TypeExtData->NoManualMove ? 0x700C62 : 0;
 }
 
 DEFINE_HOOK(0x4437B3, BuildingClass_CellClickedAction_NoManualMove, 0x6)
@@ -761,7 +761,7 @@ DEFINE_HOOK_AGAIN(0x6A343F, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)
 DEFINE_HOOK(0x4B3DF0, LocomotionClass_Process_DamagedSpeedMultiplier, 0x6)// Drive
 {
 	GET(FootClass*, pLinkedTo, ECX);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pLinkedTo->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pLinkedTo)->TypeExtData;
 
 	const double multiplier = pTypeExt->DamagedSpeed.Get(RulesExt::Global()->DamagedSpeed);
 	__asm fmul multiplier;
@@ -839,7 +839,7 @@ DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
 
 	// Allow custom colors.
 	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
-	auto const baseColor = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
+	auto const baseColor = TechnoExt::ExtMap.Find(pThis)->TypeExtData->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
 	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
 	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
 	R->ESI(Drawing::RGB_To_Int(baseColor));
