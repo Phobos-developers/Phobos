@@ -120,11 +120,11 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 				}
 
-				pShieldData->SetRespawnRestartInCombat();
-
 				if (nDamageLeft == 0)
 					ReceiveDamageTemp::SkipLowDamageCheck = true;
 			}
+
+			pShieldData->SetRespawnRestartInCombat();
 		}
 
 		if ((!pWHExt->CanKill || pExt->AE.Unkillable)
