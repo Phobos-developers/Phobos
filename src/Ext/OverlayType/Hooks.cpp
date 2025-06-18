@@ -31,7 +31,7 @@ DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)
 	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
 
 	if (wallOwnerIndex >= 0)
-		colorSchemeIndex = HouseClass::Array->Items[wallOwnerIndex]->ColorSchemeIndex;
+		colorSchemeIndex = HouseClass::Array[wallOwnerIndex]->ColorSchemeIndex;
 
 	LightConvertClass* pConvert = nullptr;
 	auto const pTypeExt = OverlayTypeExt::ExtMap.Find(pOverlayType);
@@ -39,7 +39,7 @@ DEFINE_HOOK(0x47F974, CellClass_DrawOverlay_Walls, 0x5)
 	if (pTypeExt->Palette)
 		pConvert = pTypeExt->Palette->Items[colorSchemeIndex]->LightConvert;
 	else
-		pConvert = ColorScheme::Array->Items[colorSchemeIndex]->LightConvert;
+		pConvert = ColorScheme::Array[colorSchemeIndex]->LightConvert;
 
 	DSurface::Temp->DrawSHP(pConvert, pShape, pThis->OverlayData, &pLocation, pBounds,
 		BlitterFlags(0x4E00), 0, -2 - zAdjust, ZGradient::Deg90, pThis->Intensity_Normal, 0, 0, 0, 0, 0);

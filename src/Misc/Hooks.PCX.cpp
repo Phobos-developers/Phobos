@@ -22,22 +22,22 @@ DEFINE_HOOK(0x5535D0, LoadProgressMgr_Draw_PCXLoadingScreen, 0x6)
 	int ScreenWidth = *(int*)0x8A00A4;
 	BSurface* pcx = nullptr;
 
-	sprintf_s(Phobos::readBuffer, GameStrings::LSSOBS_SHP() /* "ls%sobs.shp" */,
-		ScreenWidth != 640 ? GameStrings::_800() /* "800" */ : GameStrings::_640() /* "640" */);
+	sprintf_s(Phobos::readBuffer, GameStrings::LSSOBS_SHP /* "ls%sobs.shp" */,
+		ScreenWidth != 640 ? GameStrings::_800 /* "800" */ : GameStrings::_640 /* "640" */);
 	if (!_stricmp(pFilename, Phobos::readBuffer))
 	{
 		sprintf_s(Phobos::readBuffer, "ls%sobs.pcx",
-			ScreenWidth != 640 ? GameStrings::_800() : GameStrings::_640());
-		PCX::Instance->LoadFile(Phobos::readBuffer);
-		pcx = PCX::Instance->GetSurface(Phobos::readBuffer);
+			ScreenWidth != 640 ? GameStrings::_800 : GameStrings::_640);
+		PCX::Instance.LoadFile(Phobos::readBuffer);
+		pcx = PCX::Instance.GetSurface(Phobos::readBuffer);
 	}
 
 	if (strstr(pFilename, ".pcx") || pcx)
 	{
 		if (!pcx)
 		{
-			PCX::Instance->LoadFile(pFilename);
-			pcx = PCX::Instance->GetSurface(pFilename);
+			PCX::Instance.LoadFile(pFilename);
+			pcx = PCX::Instance.GetSurface(pFilename);
 		}
 
 		if (pcx)
@@ -64,9 +64,9 @@ DEFINE_HOOK(0x552FCB, LoadProgressMgr_Draw_PCXLoadingScreen_Campaign, 0x6)
 
 	if (strstr(filename, ".pcx"))
 	{
-		PCX::Instance->LoadFile(filename);
+		PCX::Instance.LoadFile(filename);
 
-		if (auto const pPCX = PCX::Instance->GetSurface(filename))
+		if (auto const pPCX = PCX::Instance.GetSurface(filename))
 		{
 			GET_BASE(DSurface*, pSurface, 0x60);
 
@@ -97,14 +97,14 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 		if (!_stricmp(pCameoRef->Filename, GameStrings::XXICON_SHP)
 			&& strstr(pFilename, ".pcx"))
 		{
-			PCX::Instance->LoadFile(pFilename);
-			if (auto CameoPCX = PCX::Instance->GetSurface(pFilename))
+			PCX::Instance.LoadFile(pFilename);
+			if (auto CameoPCX = PCX::Instance.GetSurface(pFilename))
 			{
 				GET(int, destX, ESI);
 				GET(int, destY, EBP);
 
 				RectangleStruct bounds = { destX, destY, 60, 48 };
-				PCX::Instance->BlitToSurface(&bounds, DSurface::Sidebar, CameoPCX);
+				PCX::Instance.BlitToSurface(&bounds, DSurface::Sidebar, CameoPCX);
 
 				return 0x6A9A43; //skip drawing shp cameo
 			}

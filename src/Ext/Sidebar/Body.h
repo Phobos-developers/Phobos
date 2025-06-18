@@ -51,11 +51,13 @@ public:
 
 	static void Clear()
 	{
-		Allocate(SidebarClass::Instance);
+		Allocate(&SidebarClass::Instance);
 	}
 
 	static void PointerGotInvalid(void* ptr, bool removed)
 	{
 		Global()->InvalidatePointer(ptr, removed);
 	}
+
+	static bool __stdcall AresTabCameo_RemoveCameo(BuildType* pItem);
 };

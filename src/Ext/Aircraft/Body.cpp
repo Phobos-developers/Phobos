@@ -8,16 +8,15 @@
 
 // TODO: Implement proper extended AircraftClass.
 
-void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget, int shotNumber = 0)
+void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 {
-	if (!pTarget)
-		return;
-
 	auto weaponIndex = TechnoExt::ExtMap.Find(pThis)->CurrentAircraftWeaponIndex;
 
 	if (weaponIndex < 0)
 		weaponIndex = pThis->SelectWeapon(pTarget);
 
+	bool isStrafe = pThis->Is_Strafe();
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
@@ -25,21 +24,35 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget, int s
 	{
 		for (int i = 0; i < pWeapon->Burst; i++)
 		{
-			if (pWeapon->Burst < 2 && pWeaponExt->Strafing_SimulateBurst)
-				pThis->CurrentBurstIndex = shotNumber;
+			if (isStrafe && pWeapon->Burst < 2 && pWeaponExt->Strafing_SimulateBurst)
+				pThis->CurrentBurstIndex = pExt->Strafe_BombsDroppedThisRound % 2 == 0;
 
 			pThis->Fire(pTarget, weaponIndex);
 		}
-	}
 
-	if (pThis->Is_Strafe())
-		TechnoExt::ExtMap.Find(pThis)->Strafe_BombsDroppedThisRound++;
+		if (isStrafe)
+		{
+			pExt->Strafe_BombsDroppedThisRound++;
+
+			if (pWeaponExt->Strafing_UseAmmoPerShot)
+			{
+				pThis->Ammo--;
+				pThis->ShouldLoseAmmo = false;
+
+				if (!pThis->Ammo)
+				{
+					pThis->SetTarget(nullptr);
+					pThis->SetDestination(nullptr, true);
+				}
+			}
+		}
+	}
 }
 
 // Spy plane, airstrike etc.
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct edgeCell)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto coords = CellClass::Cell2Coord(edgeCell);
 	coords.Z = 0;
 	AbstractClass* pTarget = nullptr;
@@ -52,9 +65,9 @@ bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct ed
 			coords = GeneralUtils::CalculateCoordsFromDistance(CellClass::Cell2Coord(edgeCell), pTarget->GetCoords(), pTypeExt->SpawnDistanceFromTarget.Get());
 	}
 
-	++Unsorted::IKnowWhatImDoing;
+	++Unsorted::ScenarioInit;
 	bool result = pThis->Unlimbo(coords, DirType::North);
-	--Unsorted::IKnowWhatImDoing;
+	--Unsorted::ScenarioInit;
 
 	pThis->SetHeight(pTypeExt->SpawnHeight.Get(pThis->Type->GetFlightLevel()));
 
