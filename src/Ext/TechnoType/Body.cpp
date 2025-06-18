@@ -119,7 +119,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	bool isElite = pThis->Veterancy.IsElite();
 	bool noSecondary = this->NoSecondaryWeaponFallback.Get();
 
-	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
+	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
 	{
 		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
 			return 0;
