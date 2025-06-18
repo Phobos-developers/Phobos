@@ -30,10 +30,36 @@ DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 		pTypeExt->ReadMultiWeapon = multiWeapon;
 	}
 
+	auto& SecondaryList = pTypeExt->MultiWeapon_IsSecondary;
+
 	if (pTypeExt->MultiWeapon.Get())
 	{
-		pTypeExt->MultiWeapon_IsSecondary.Read(exINI, pSection, "MultiWeapon.IsSecondary");
 		pTypeExt->MultiWeapon_SelectCount.Read(exINI, pSection, "MultiWeapon.SelectCount");
+
+		int weaponCount = pThis->WeaponCount;
+
+		if (weaponCount > 0)
+		{
+			ValueableVector<int> isSecondary;
+			isSecondary.Read(exINI, pSection, "MultiWeapon.IsSecondary");
+
+			if (!isSecondary.empty())
+			{
+				SecondaryList.resize(weaponCount, false);
+
+				for (int weaponIndex : isSecondary)
+				{
+					if (weaponIndex >= weaponCount)
+						continue;
+
+					SecondaryList[weaponIndex] = true;
+				}
+			}
+		}
+	}
+	else
+	{
+		SecondaryList.clear();
 	}
 
 	return multiWeapon ? ReadWeaponX : 0;

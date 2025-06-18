@@ -381,7 +381,7 @@ public:
 		Valueable<int> EngineerRepairAmount;
 
 		Valueable<bool> MultiWeapon;
-		ValueableVector<int> MultiWeapon_IsSecondary;
+		std::vector<bool> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
 

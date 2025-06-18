@@ -353,9 +353,11 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 
 bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
 {
-	if (!pThis || !pTarget || !pWeaponType || pWeaponType->NeverUse
+	if (!pWeaponType || pWeaponType->NeverUse
 		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
+	{
 		return false;
+	}
 
 	const auto rtti = pTarget->WhatAmI();
 	const bool isBuilding = rtti == AbstractType::Building;
@@ -368,25 +370,19 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 
 	if (pTarget->IsInAir())
 	{
-		if (!pBulletType->AA || pWH->Airstrike)
+		if (!pBulletType->AA)
 			return false;
 	}
 	else
 	{
-		const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
-
-		if (pBulletTypeExt->AAOnly.Get())
+		if (BulletTypeExt::ExtMap.Find(pBulletType)->AAOnly.Get())
 		{
 			return false;
 		}
 		else if (pWH->ElectricAssault)
 		{
-			if (!isBuilding)
-				return false;
-
-			const auto pBuilding = static_cast<BuildingClass*>(pTarget);
-
-			if (!isAllies || !pBuilding->Type || !pBuilding->Type->Overpowerable)
+			if (!isBuilding || !isAllies
+				|| !static_cast<BuildingClass*>(pTarget)->Type->Overpowerable)
 				return false;
 		}
 		else if (pWH->IsLocomotor)
@@ -398,34 +394,24 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 
 	if (pTechno)
 	{
-		if (pTechno->Health <= 0 || !pTechno->IsAlive)
+		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
 			return false;
-
-		if (pTechno->AttachedBomb)
-		{
-			if (pWH->IvanBomb)
-				return false;
-		}
-		else if (pWH->BombDisarm)
-		{
-			return false;
-		}
 
 		const auto pTechnoType = pTechno->GetTechnoType();
 
-		if (pWH->MindControl && (pTechnoType->ImmuneToPsionics
-			|| pTechno->IsMindControlled() || pOwner == pTechno->Owner))
+		if (pWH->MindControl &&
+			(pTechnoType->ImmuneToPsionics || pTechno->IsMindControlled() || pOwner == pTechno->Owner))
 			return false;
 
-		if (pWH->Parasite && (isBuilding
-			|| static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
+		if (pWH->Parasite
+			&& (isBuilding || static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
 			return false;
 
 		if (!pWH->Temporal && pTechno->BeingWarpedOut)
 			return false;
 
-		if (pWeaponType->DrainWeapon && (!pTechnoType->Drainable
-			|| (pTechno->DrainingMe || isAllies)))
+		if (pWeaponType->DrainWeapon
+			&& (!pTechnoType->Drainable || pTechno->DrainingMe || isAllies))
 			return false;
 
 		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
@@ -476,9 +462,9 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		{
 			if (pCell->OverlayTypeIndex >= 0)
 			{
-				const auto overlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
+				const auto pOverlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
 
-				if (overlayType->Wall && !pWH->Wall)
+				if (pOverlayType->Wall && !pWH->Wall && (!pWH->Wood || pOverlayType->Armor != Armor::Wood))
 					return false;
 			}
 

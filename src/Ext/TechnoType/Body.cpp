@@ -89,75 +89,53 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 	if (pThis->IsGattling)
 		return nWeaponIndex != 0 && nWeaponIndex % 2 != 0;
 
-	if (this->MultiWeapon.Get() && !this->MultiWeapon_IsSecondary.empty())
-		return this->MultiWeapon_IsSecondary.Contains(nWeaponIndex);
+	if (this->MultiWeapon.Get() && nWeaponIndex >= 0
+		&& !this->MultiWeapon_IsSecondary.empty())
+		return this->MultiWeapon_IsSecondary[nWeaponIndex];
 
 	return nWeaponIndex != 0;
 }
 
 int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
 {
+	if (!pTarget || !this->MultiWeapon.Get())
+		return -1;
+
 	const auto pType = this->OwnerObject();
 
-	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner)
-		 || !this->MultiWeapon.Get() || !pThis || !pTarget)
+	if (!pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
 		return -1;
 
-	int WeaponCount = pType->WeaponCount;
+	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount.Get());
 
-	if (WeaponCount < 2)
+	if (weaponCount < 2)
 		return 0;
-	else if (WeaponCount == 2)
+	else if (weaponCount == 2)
 		return -1;
 
-	int selectweaponCount = this->MultiWeapon_SelectCount.Get();
-
-	if (WeaponCount >= selectweaponCount)
-		WeaponCount = selectweaponCount;
-
-	if (WeaponCount < 2)
-		return 0;
-	else if (WeaponCount == 2)
-		return -1;
+	std::vector<bool> secondaryCanTargets {};
+	secondaryCanTargets.resize(weaponCount, false);
 
 	bool isElite = pThis->Veterancy.IsElite();
-	std::vector<bool> secondaryCanTargets {};
-	secondaryCanTargets.resize(WeaponCount, false);
+	bool noSecondary = this->NoSecondaryWeaponFallback.Get();
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
-		auto checkSecondary = [pThis, pTargetTechno, &secondaryCanTargets](WeaponTypeClass* pWeapon, int weaponIndex) -> bool
+		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
+			return 0;
+
+		auto checkSecondary = [&](int weaponIndex) -> bool
 		{
+			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, 1, isElite)->WeaponType;
+
 			if (!pWeapon || pWeapon->NeverUse)
 			{
 				secondaryCanTargets[weaponIndex] = true;
 				return false;
 			}
 
-			const auto pWH = pWeapon->Warhead;
-			bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+			bool getNavalTargeting = false;
 			bool secondaryPriority = false;
-
-			if (pTargetTechno->IsInAir())
-			{
-				secondaryPriority = false;
-			}
-			else if (pWH->Airstrike)
-			{
-				secondaryPriority = false;
-			}
-			else if (pWeapon->DrainWeapon
-				&& pTargetTechno->GetTechnoType()->Drainable
-				&& !pThis->DrainTarget && !isAllies)
-			{
-				secondaryPriority = false;
-			}
-			else if (pWH->ElectricAssault && isAllies
-				&& pTargetTechno->WhatAmI() == AbstractType::Building
-				&& static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
-			{
-				secondaryPriority = false;
-			}
 
 			if (const auto pCell = pTargetTechno->GetCell())
 			{
@@ -167,8 +145,38 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 				{
 					int result = pThis->SelectNavalTargeting(pTargetTechno);
 
-					if (result == -1)
-						secondaryPriority = false;
+					if (result != -1)
+					{
+						getNavalTargeting = true;
+						secondaryPriority = (result == 1);
+					}
+				}
+			}
+
+			if (!getNavalTargeting)
+			{
+				const auto pWH = pWeapon->Warhead;
+				bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+
+				if (pTargetTechno->IsInAir())
+				{
+					secondaryPriority = !this->NoSecondaryWeaponFallback_AllowAA.Get();
+				}
+				else if (pWH->Airstrike)
+				{
+					secondaryPriority = !noSecondary;
+				}
+				else if (pWeapon->DrainWeapon
+					&& pTargetTechno->GetTechnoType()->Drainable
+					&& !pThis->DrainTarget && !isAllies)
+				{
+					secondaryPriority = !noSecondary;
+				}
+				else if (pWH->ElectricAssault && isAllies
+					&& pTargetTechno->WhatAmI() == AbstractType::Building
+					&& static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
+				{
+					secondaryPriority = !noSecondary;
 				}
 			}
 
@@ -184,24 +192,22 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 			return false;
 		};
 
-		if (!this->MultiWeapon_IsSecondary.empty())
+		bool getSecondaryList = !this->MultiWeapon_IsSecondary.empty();
+		for (int index = getSecondaryList ? 0 : 1; index < weaponCount; index++)
 		{
-			for (size_t index = 0; index < this->MultiWeapon_IsSecondary.size(); index++)
-			{
-				int weaponIndex = this->MultiWeapon_IsSecondary[index];
+			if (getSecondaryList && !this->MultiWeapon_IsSecondary[index])
+				continue;
 
-				if (checkSecondary(TechnoTypeExt::GetWeaponStruct(pType, weaponIndex, isElite)->WeaponType, weaponIndex))
-					return weaponIndex;
-			}
-		}
-		else
-		{
-			if (checkSecondary(TechnoTypeExt::GetWeaponStruct(pType, 1, isElite)->WeaponType, 1))
-				return 1;
+			if (checkSecondary(index))
+				return index;
 		}
 	}
+	else if (noSecondary)
+	{
+		return 0;
+	}
 
-	for (int i = 0; i < WeaponCount; i++)
+	for (int i = 0; i < weaponCount; i++)
 	{
 		if (secondaryCanTargets[i])
 			continue;

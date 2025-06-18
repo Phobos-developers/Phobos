@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
@@ -43,11 +43,11 @@ DEFINE_HOOK(0x6F3360, TechnoClass_WhatWeaponShouldIUse_MultiWeapon, 0x6)
 	GET(TechnoTypeClass*, pType, EAX);
 	enum { SkipGameCode = 0x6F3379 };
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-
-	if (pTypeExt->MultiWeapon.Get()
+	if (TechnoTypeExt::ExtMap.Find(pType)->MultiWeapon.Get()
 		&& (pType->WhatAmI() != AbstractType::UnitType || !pType->Gunner))
+	{
 		return SkipGameCode;
+	}
 
 	return 0;
 }
