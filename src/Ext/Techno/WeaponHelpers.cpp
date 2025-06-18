@@ -366,7 +366,8 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 
 	const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
 	const auto pOwner = pThis->Owner;
-	const bool isAllies = pTechno ? pOwner->IsAlliedWith(pTechno->Owner) : false;
+	const auto pTechnoOwner = pTechno ? pTechno->Owner : nullptr;
+	const bool isAllies = pTechnoOwner ? pOwner->IsAlliedWith(pTechnoOwner) : false;
 
 	if (pTarget->IsInAir())
 	{
@@ -392,6 +393,17 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		}
 	}
 
+	CellClass* pTargetCell = nullptr;
+
+	// Ignore target cell for airborne target technos.
+	if (pTarget && (!pTechno || !pTechno->IsInAir()))
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*, true>(pTarget))
+			pTargetCell = pObject->GetCell();
+		else if (auto const pCell = abstract_cast<CellClass*, true>(pTarget))
+			pTargetCell = pCell;
+	}
+
 	if (pTechno)
 	{
 		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
@@ -409,7 +421,7 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		const auto pTechnoType = pTechno->GetTechnoType();
 
 		if (pWH->MindControl
-			&& (pTechnoType->ImmuneToPsionics || pTechno->IsMindControlled() || pOwner == pTechno->Owner))
+			&& (pTechnoType->ImmuneToPsionics || pTechno->IsMindControlled() || pOwner == pTechnoOwner))
 		{
 			return false;
 		}
@@ -418,19 +430,6 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 			&& (!pTechnoType->Drainable || pTechno->DrainingMe || isAllies))
 		{
 			return false;
-		}
-
-		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-
-		if (!pWeaponExt->SkipWeaponPicking)
-		{
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
-				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner)
-				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
-				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
-			{
-				return false;
-			}
 		}
 
 		if (pWH->Airstrike)
@@ -455,29 +454,34 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
 			return false;
 	}
+	else if (rtti == AbstractType::Cell)
+	{
+		if (pTargetCell->OverlayTypeIndex >= 0)
+		{
+			const auto pOverlayType = OverlayTypeClass::Array.GetItem(pTargetCell->OverlayTypeIndex);
+
+			if (pOverlayType->Wall && !pWH->Wall && (!pWH->Wood || pOverlayType->Armor != Armor::Wood))
+				return false;
+		}
+	}
 	else if (rtti == AbstractType::Terrain)
 	{
 		if (!pWH->Wood)
 			return false;
 	}
-	else if (rtti == AbstractType::Cell)
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+	if (!pWeaponExt->SkipWeaponPicking)
 	{
-		const auto pCell = static_cast<CellClass*>(pTarget);
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
+			return false;
 
-		if (pCell)
+		if (pTechno)
 		{
-			if (pCell->OverlayTypeIndex >= 0)
-			{
-				const auto pOverlayType = OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex);
-
-				if (pOverlayType->Wall && !pWH->Wall && (!pWH->Wood || pOverlayType->Armor != Armor::Wood))
-					return false;
-			}
-
-			const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
-
-			if (!pWeaponExt->SkipWeaponPicking
-				&& !EnumFunctions::IsCellEligible(pCell, pWeaponExt->CanTarget, true, true))
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner)
+				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
 			{
 				return false;
 			}
