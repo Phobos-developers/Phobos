@@ -1,5 +1,6 @@
 #include "Phobos.h"
 #include "Utilities/Macro.h"
+#include "Ext/Techno/Body.h"
 #include "Ext/TechnoType/Body.h"
 
 #include <TacticalClass.h>
@@ -60,7 +61,7 @@ public:
 	{
 		for (const auto& selected : Array)
 			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Techno))
-				if (!TechnoTypeExt::ExtMap.Find(selected.Techno->GetTechnoType())->LowSelectionPriority)
+				if (!TechnoExt::ExtMap.Find(selected.Techno)->TypeExtData->LowSelectionPriority)
 					return true;
 
 		return false;

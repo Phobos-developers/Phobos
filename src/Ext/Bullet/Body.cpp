@@ -21,7 +21,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	auto pTypeExt = this->TypeExtData;
 	bool canAffect = false;
 	bool isIntercepted = false;
-	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 	const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
 
 	if (pTypeExt->Armor.isset())

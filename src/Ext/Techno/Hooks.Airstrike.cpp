@@ -170,7 +170,7 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
 		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 		{
