@@ -1379,6 +1379,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode,
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			const auto pFirstUnit = pTeam->FirstUnit;
+			validIndexes.reserve(TechnoClass::Array.Count * objectsList.size());
 
 			// Finding the objects from the list that actually exists in the map
 			for (int i = 0; i < TechnoClass::Array.Count; i++)
