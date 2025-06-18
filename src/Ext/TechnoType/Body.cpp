@@ -367,10 +367,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
@@ -1354,7 +1350,7 @@ DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, EBP);
