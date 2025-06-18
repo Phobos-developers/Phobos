@@ -404,7 +404,6 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 			pTargetCell = pCell;
 	}
 
-
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
 	if (!pWeaponExt->SkipWeaponPicking)
 	{
