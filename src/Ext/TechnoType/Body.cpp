@@ -123,7 +123,8 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	{
 		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
 			return 0;
-
+		
+		bool getNavalTargeting = false;
 		auto checkSecondary = [&](int weaponIndex) -> bool
 		{
 			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, 1, isElite)->WeaponType;
@@ -134,24 +135,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 				return false;
 			}
 
-			bool getNavalTargeting = false;
-			bool secondaryPriority = false;
-
-			if (const auto pCell = pTargetTechno->GetCell())
-			{
-				bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
-
-				if (!pTargetTechno->OnBridge && targetOnWater)
-				{
-					int result = pThis->SelectNavalTargeting(pTargetTechno);
-
-					if (result != -1)
-					{
-						getNavalTargeting = true;
-						secondaryPriority = (result == 1);
-					}
-				}
-			}
+			bool secondaryPriority = getNavalTargeting;
 
 			if (!getNavalTargeting)
 			{
@@ -193,6 +177,21 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 
 			return false;
 		};
+
+		if (const auto pCell = pTargetTechno->GetCell())
+		{
+			bool targetOnWater = pCell->LandType == LandType::Water || pCell->LandType == LandType::Beach;
+
+			if (!pTargetTechno->OnBridge && targetOnWater)
+			{
+				int result = pThis->SelectNavalTargeting(pTargetTechno);
+
+				if (result != -1)
+				{
+					getNavalTargeting = (result == 1);
+				}
+			}
+		}
 
 		bool getSecondaryList = !this->MultiWeapon_IsSecondary.empty();
 		for (int index = getSecondaryList ? 0 : 1; index < weaponCount; index++)
