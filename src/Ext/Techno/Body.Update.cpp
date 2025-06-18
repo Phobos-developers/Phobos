@@ -1176,7 +1176,7 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 
 	if (auto const pCapturer = pThis->MindControlledBy)
 	{
-		auto const pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
+		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
 
 		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
 			pThis->DistanceFrom(pCapturer) > pCapturerExt->MindControlRangeLimit.Get())

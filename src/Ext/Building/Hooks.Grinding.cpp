@@ -147,7 +147,7 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 		{
 			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 			{
-				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
+				bool isFlying = pThis->Type->MovementZone == MovementZone::Fly;
 				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
 				R->EBX(action);

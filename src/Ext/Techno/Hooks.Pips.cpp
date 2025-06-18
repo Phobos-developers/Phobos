@@ -6,7 +6,7 @@
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	auto pTypeData = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pTypeData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	if (pTypeData->HealthBar_Hide)
 		return 0x6F6AB6;
 
@@ -109,7 +109,7 @@ DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
 	enum { SkipGameDrawing = 0x709C27 };
 
 	GET(TechnoClass*, pThis, ECX);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (!pTypeExt->ShowSpawnsPips)
 		return SkipGameDrawing;
@@ -156,7 +156,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	GET_STACK(int, maxPips, STACK_OFFSET(0x74, -0x60));
 	GET(int, yOffset, ESI);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	auto const pipOffset = pTypeExt->AmmoPipOffset.Get();
 	Point2D position = { offset->X + pipOffset.X, offset->Y + pipOffset.Y };
 

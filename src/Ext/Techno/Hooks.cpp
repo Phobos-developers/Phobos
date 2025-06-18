@@ -216,7 +216,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	// mirage is not here yet
 	if (pThis->WhatAmI() == AbstractType::Infantry && pExt->DefaultDisguise)
@@ -239,7 +239,7 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (R->Origin() != 0x517D69)
 	{
@@ -585,10 +585,7 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		return pExt->NoManualMove ? 0x700C62 : 0;
-
-	return 0;
+	return TechnoExt::ExtMap.Find(pThis)->TypeExtData->NoManualMove ? 0x700C62 : 0;
 }
 
 DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)

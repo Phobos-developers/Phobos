@@ -23,7 +23,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 	if (pOwner && pBulletExt)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 		if (pTypeExt->InterceptorType && pBulletExt->IsInterceptor)
 			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
