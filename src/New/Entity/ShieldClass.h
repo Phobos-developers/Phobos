@@ -62,7 +62,7 @@ public:
 	{
 		return this->Type;
 	}
-	ArmorType GetArmorType() const;
+	ArmorType GetArmorType(TechnoTypeClass* pTechnoType = nullptr) const;
 	int GetFramesSinceLastBroken() const;
 	void SetAnimationVisibility(bool visible);
 
@@ -142,6 +142,7 @@ private:
 			SelfHealing_CombatRestart { }
 			, SelfHealing { }
 			, SelfHealing_WHModifier { }
+			, Respawn_CombatRestart { }
 			, Respawn { }
 			, Respawn_WHModifier { }
 		{ }
