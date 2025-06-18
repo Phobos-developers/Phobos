@@ -51,9 +51,6 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	const int damageMultiplier = isTerrain ? 5 : 1;
 	const double baseDamage = pThis->Type->Damage;
 
-	if (baseDamage < 1.0 && delay <= 0)
-		return SkipDamage;
-
 	int appliedDamage = 0;
 
 	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
@@ -111,7 +108,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 			if (pThis->OwnerObject)
 				pInvoker = abstract_cast<TechnoClass*, true>(pThis->OwnerObject);
 			else if (pThis->IsBuildingAnim)
-				pInvoker = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
+				pInvoker = pExt->ParentBuilding;
 		}
 
 		if (pInvoker)
