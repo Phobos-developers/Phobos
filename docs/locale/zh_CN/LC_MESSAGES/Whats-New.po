@@ -1682,8 +1682,8 @@ msgid ""
 msgstr "[横幅](AI-Scripting-and-Mapping.md#display-banner)（by Morton & ststl）"
 
 #: ../../Whats-New.md:407
-msgid "Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)"
-msgstr ""
+msgid "[Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)"
+msgstr "[允许矿场同时播放多个 `ActiveAnim` 动画](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously)（by TaranDahl）"
 
 #: ../../Whats-New.md:408
 msgid "Electric/RadBeam trail for laser tails (by NetsuNegi)"

@@ -2290,7 +2290,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:463
 msgid "Allows refineries to use multiple ActiveAnim simultaneously"
-msgstr ""
+msgstr "允许矿场同时播放多个 `ActiveAnim` 动画"
 
 #: ../../Fixed-or-Improved-Logics.md:465
 msgid ""
@@ -2298,6 +2298,7 @@ msgid ""
 "storage. You can now make it use multiple ActiveAnims simultaneously like"
 " any other building."
 msgstr ""
+"在原版中矿场会根据其矿石存储量的不同播放不同的 `ActiveAnim`。现在你可以让它像其他建筑一样同时播放多个 `ActiveAnim`。"
 
 #: ../../Fixed-or-Improved-Logics.md:468
 msgid ""

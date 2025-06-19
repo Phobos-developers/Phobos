@@ -2220,7 +2220,7 @@ msgstr "狂暴单位索敌限制"
 
 #: ../../../CREDITS.md:551
 msgid "Allows refineries to use multiple ActiveAnim simultaneously"
-msgstr ""
+msgstr "允许矿场同时播放多个 `ActiveAnim` 动画"
 
 #: ../../../CREDITS.md:552
 msgid "**tyuah8**:"
