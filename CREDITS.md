@@ -416,6 +416,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize limit when engineer repair a building
   - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Display banner improvement
+  - Electric/RadBeam trail for laser tails
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons

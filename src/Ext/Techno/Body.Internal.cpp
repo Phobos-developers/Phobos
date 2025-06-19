@@ -15,9 +15,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
 
 	for (auto const& entry : pTypeExt->LaserTrailData)
-	{
-		this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
-	}
+		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
 }
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)

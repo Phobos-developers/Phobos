@@ -130,10 +130,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	// Miscs
@@ -648,7 +644,7 @@ DEFINE_HOOK(0x75E39C, WarheadTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x75DEAF, WarheadTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x75DEAF, WarheadTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x75DEA0, WarheadTypeClass_LoadFromINI, 0x5)
 {
 	GET(WarheadTypeClass*, pItem, ESI);

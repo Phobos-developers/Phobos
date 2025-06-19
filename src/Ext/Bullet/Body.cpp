@@ -6,6 +6,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/EBolt/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
@@ -146,9 +147,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-	{
-		this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
-	}
+		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
 }
 
 static inline int SetBuildingFireAnimZAdjust(BuildingClass* pBuilding, int animY)
@@ -258,12 +257,14 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	const auto pEBolt = (AresFunctions::CreateAresEBolt ? AresFunctions::CreateAresEBolt(pWeapon) : GameCreate<EBolt>());
-	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
-	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
-	weaponStruct.BurstIndex = 0;
-	pEBolt->Fire(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), 0);
+	const auto pBolt = EBoltExt::CreateEBolt(pWeapon);
+	pBolt->AlternateColor = pWeapon->IsAlternateColor;
+
+	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
+	pBolt->Fire(pBullet->SourceCoords, targetCoords, 0);
+
+	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+		GameCreate<ParticleSystemClass>(particle, targetCoords, nullptr, nullptr, CoordStruct::Empty, nullptr);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call

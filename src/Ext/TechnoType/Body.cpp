@@ -155,6 +155,8 @@ void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 {
 	const auto pTechnoType = this->OwnerObject();
 	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
+	this->SpawnerRange = 0;
+	this->EliteSpawnerRange = 0;
 
 	auto setWeaponRange = [](int& weaponRange, WeaponTypeClass* pWeaponType)
 		{
@@ -365,10 +367,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
@@ -791,10 +789,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 		}
 	}
-
-	// Spawner range
-	if (this->Spawner_LimitRange)
-		this->CalculateSpawnerRange();
 
 	// Airstrike tint color
 	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
@@ -1356,7 +1350,7 @@ DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, EBP);
