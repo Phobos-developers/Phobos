@@ -82,14 +82,14 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto& trail : pBulletExt->LaserTrails)
+		for (const auto& pTrail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = location;
+			if (!pTrail->LastLocation.isset())
+				pTrail->LastLocation = location;
 
-			trail.Update(drawnCoords);
+			pTrail->Update(drawnCoords);
 		}
 
 	}

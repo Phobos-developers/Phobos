@@ -2,6 +2,8 @@
 
 #include <New/Type/AttachEffectTypeClass.h>
 
+class LaserTrailClass;
+
 class AttachEffectClass
 {
 public:
@@ -79,6 +81,7 @@ private:
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
+	LaserTrailClass* LaserTrail;
 
 public:
 	bool HasCumulativeAnim;

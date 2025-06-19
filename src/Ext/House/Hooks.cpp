@@ -261,20 +261,20 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (auto pMe = generic_cast<FootClass*, true>(pThis))
+	if (auto const pMe = generic_cast<FootClass*, true>(pThis))
 	{
 		const bool I_am_human = pThis->Owner->IsControlledByHuman();
 		const bool You_are_human = pNewOwner->IsControlledByHuman();
-		const auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+		auto const pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
 			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
 
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
 			TechnoExt::ConvertToType(pMe, pConvertTo);
 
-		for (auto& trail : pExt->LaserTrails)
+		for (const auto& pTrail : pExt->LaserTrails)
 		{
-			if (trail.Type->IsHouseColor)
-				trail.CurrentColor = pNewOwner->LaserColor;
+			if (pTrail->Type->IsHouseColor)
+				pTrail->CurrentColor = pNewOwner->LaserColor;
 		}
 
 		if (!I_am_human && You_are_human)

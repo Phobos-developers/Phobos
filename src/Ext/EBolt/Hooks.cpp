@@ -1,78 +1,109 @@
 #include "Body.h"
-#include <EBolt.h>
+#include <ParticleSystemClass.h>
+
 #include <Ext/Techno/Body.h>
+#include <Ext/WeaponType/Body.h>
 #include <Utilities/Macro.h>
+#include <Utilities/AresHelper.h>
 #include <Helpers/Macro.h>
 
-PhobosMap<EBolt*, WeaponTypeExt::EBoltWeaponStruct> WeaponTypeExt::BoltWeaponMap;
-const WeaponTypeExt::ExtData* WeaponTypeExt::BoltWeaponType = nullptr;
+namespace BoltTemp
+{
+	EBoltExt::ExtData* ExtData = nullptr;
+	int Color[3];
+}
+
+// Skip create particlesystem in EBolt::Fire
+// We will create after this function
+DEFINE_JUMP(LJMP, 0x4C2AFF, 0x4C2B0E)
+DEFINE_JUMP(LJMP, 0x4C2B0F, 0x4C2B35)
 
 DEFINE_HOOK(0x6FD494, TechnoClass_FireEBolt_SetExtMap_AfterAres, 0x7)
 {
 	GET(TechnoClass*, pThis, EDI);
 	GET(EBolt*, pBolt, EAX);
-	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
-
-	if (pWeapon)
-	{
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pBolt];
-		weaponStruct.Weapon = pWeaponExt;
-		weaponStruct.BurstIndex = pThis->CurrentBurstIndex;
-		pBolt->Lifetime = 1 << (Math::clamp(pWeaponExt->Bolt_Duration, 1, 31) - 1);
-	}
+	const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
+	pBoltExt->BurstIndex = pThis->CurrentBurstIndex;
 
 	return 0;
 }
 
-DEFINE_HOOK(0x4C2951, EBolt_DTOR, 0x5)
+DEFINE_HOOK(0x6FD55F, TechnoClass_FireEBolt_ParticleSystem, 0x5)
 {
-	GET(EBolt*, pBolt, ECX);
+	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x30, 0x8));
+	GET_STACK(EBolt*, pBolt, STACK_OFFSET(0x30, -0x20));
 
-	WeaponTypeExt::BoltWeaponMap.erase(pBolt);
+	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+		GameCreate<ParticleSystemClass>(particle, pBolt->Point2, nullptr, nullptr, CoordStruct::Empty, nullptr);
 
 	return 0;
+}
+
+DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
+{
+	enum { SkipGameCode = 0x4C1F66 };
+
+	GET(EBolt*, pThis, ECX);
+	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
+
+	for (int idx = 0; idx < 3; ++idx)
+		BoltTemp::Color[idx] = Drawing::RGB_To_Int(pExt->Color[idx]);
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x4C1F33, EBolt_Draw_Colors, 0x7)
+{
+	return EBoltExt::_EBolt_Draw_Colors(R);
 }
 
 DEFINE_HOOK(0x4C20BC, EBolt_DrawArcs, 0xB)
 {
 	enum { DoLoop = 0x4C20C7, Break = 0x4C2400 };
 
-	GET_STACK(EBolt*, pBolt, 0x40);
-	WeaponTypeExt::BoltWeaponType = WeaponTypeExt::BoltWeaponMap.get_or_default(pBolt).Weapon;
-
-	GET_STACK(const int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
-
-	const int arcCount = WeaponTypeExt::BoltWeaponType ? WeaponTypeExt::BoltWeaponType->Bolt_Arcs : 8;
+	GET_STACK(int, plotIndex, STACK_OFFSET(0x408, -0x3E0));
+	const int arcCount = BoltTemp::ExtData->Arcs;
 
 	return plotIndex < arcCount ? DoLoop : Break;
 }
 
-DEFINE_HOOK(0x4C24E4, Ebolt_DrawFist_Disable, 0x8)
+DEFINE_JUMP(LJMP, 0x4C24BE, 0x4C24C3)// Disable Ares's hook EBolt_Draw_Color1
+DEFINE_HOOK(0x4C24C3, EBolt_DrawFirst_Color, 0x9)
 {
-	GET_STACK(EBolt*, pBolt, 0x40);
-	WeaponTypeExt::BoltWeaponType = WeaponTypeExt::BoltWeaponMap.get_or_default(pBolt).Weapon;
+	if (BoltTemp::ExtData->Disable[0])
+		return 0x4C2515;
 
-	return (WeaponTypeExt::BoltWeaponType && WeaponTypeExt::BoltWeaponType->Bolt_Disable1) ? 0x4C2515 : 0;
+	R->EAX(BoltTemp::Color[0]);
+	return 0x4C24E4;
 }
 
-DEFINE_HOOK(0x4C25FD, Ebolt_DrawSecond_Disable, 0xA)
+DEFINE_JUMP(LJMP, 0x4C25CB, 0x4C25D0)// Disable Ares's hook EBolt_Draw_Color2
+DEFINE_HOOK(0x4C25D0, EBolt_DrawSecond_Color, 0x6)
 {
-	return (WeaponTypeExt::BoltWeaponType && WeaponTypeExt::BoltWeaponType->Bolt_Disable2) ? 0x4C262A : 0;
+	if (BoltTemp::ExtData->Disable[1])
+		return 0x4C262A;
+
+	R->Stack(STACK_OFFSET(0x424, -0x40C), BoltTemp::Color[1]);
+	return 0x4C25FD;
 }
 
-DEFINE_HOOK(0x4C26EE, Ebolt_DrawThird_Disable, 0x8)
+DEFINE_JUMP(LJMP, 0x4C26CF, 0x4C26D5)// Disable Ares's hook EBolt_Draw_Color3
+DEFINE_HOOK(0x4C26D5, EBolt_DrawThird_Color, 0x6)
 {
-	return (WeaponTypeExt::BoltWeaponType && WeaponTypeExt::BoltWeaponType->Bolt_Disable3) ? 0x4C2710 : 0;
+	if (BoltTemp::ExtData->Disable[2])
+		return 0x4C2710;
+
+	R->EAX(BoltTemp::Color[2]);
+	return 0x4C26EE;
 }
 
 #pragma region EBoltTrackingFixes
 
 class EBoltFake final : public EBolt
 {
-	public:
-		void _SetOwner(TechnoClass* pTechno, int weaponIndex);
-		void _RemoveFromOwner();
+public:
+	void _SetOwner(TechnoClass* pTechno, int weaponIndex);
+	void _RemoveFromOwner();
 };
 
 void EBoltFake::_SetOwner(TechnoClass* pTechno, int weaponIndex)
@@ -125,7 +156,7 @@ DEFINE_HOOK(0x4C285D, EBolt_DrawAll_BurstIndex, 0x5)
 	GET_STACK(EBolt*, pThis, STACK_OFFSET(0x34, -0x24));
 
 	int burstIndex = pTechno->CurrentBurstIndex;
-	pTechno->CurrentBurstIndex = WeaponTypeExt::BoltWeaponMap[pThis].BurstIndex;
+	pTechno->CurrentBurstIndex = EBoltExt::ExtMap.Find(pThis)->BurstIndex;
 	auto const fireCoords = pTechno->GetFLH(pThis->WeaponSlot, CoordStruct::Empty);
 	pTechno->CurrentBurstIndex = burstIndex;
 	R->EAX(&fireCoords);

@@ -490,12 +490,12 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 			static_cast<int>(pSpeed->Z + pPosition->Z)
 		};
 
-		for (auto& trail : pExt->LaserTrails)
+		for (const auto& pTrail : pExt->LaserTrails)
 		{
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = pThis->Location;
+			if (!pTrail->LastLocation.isset())
+				pTrail->LastLocation = pThis->Location;
 
-			trail.Update(futureCoords);
+			pTrail->Update(futureCoords);
 		}
 	}
 
