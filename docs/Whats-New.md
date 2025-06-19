@@ -405,6 +405,7 @@ New:
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
 - Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)
+- Several attackmove related enhancement (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

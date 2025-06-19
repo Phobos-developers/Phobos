@@ -1,4 +1,4 @@
-﻿#include <AircraftClass.h>
+#include <AircraftClass.h>
 #include "Body.h"
 
 #include <AircraftClass.h>
@@ -1053,32 +1053,30 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 	GET(FootClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType))
+	if (pThis->IsCloseEnoughToAttack(pThis->Target)
+		&& pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire)))
 	{
-		if (pThis->IsCloseEnoughToAttack(pThis->Target)
-			&& pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire)))
+		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
-			if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
-			{
-				auto crd = pThis->GetCoords();
-				pJumpjetLoco->DestinationCoords.X = crd.X;
-				pJumpjetLoco->DestinationCoords.Y = crd.Y;
-				pJumpjetLoco->CurrentSpeed = 0;
-				pJumpjetLoco->MaxSpeed = 0;
-				pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
-				pThis->AbortMotion();
-			}
-			else
-			{
-				pThis->StopMoving();
-				pThis->AbortMotion();
-			}
+			auto crd = pThis->GetCoords();
+			pJumpjetLoco->DestinationCoords.X = crd.X;
+			pJumpjetLoco->DestinationCoords.Y = crd.Y;
+			pJumpjetLoco->CurrentSpeed = 0;
+			pJumpjetLoco->MaxSpeed = 0;
+			pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
+			pThis->AbortMotion();
 		}
-
-		if (pTypeExt->AttackMove_PursuitTarget)
-			pThis->SetDestination(pThis->Target, true);
+		else
+		{
+			pThis->StopMoving();
+			pThis->AbortMotion();
+		}
 	}
+
+	if (pTypeExt->AttackMove_PursuitTarget)
+		pThis->SetDestination(pThis->Target, true);
 
 	return 0;
 }
@@ -1097,7 +1095,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
-	if (pTypeExt && pTypeExt->AttackMove_Follow)
+	if (pTypeExt->AttackMove_Follow)
 	{
 		auto pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pThis->GetGuardRange(2) / 256.0, pTypeExt->AttackMove_Follow_IncludeAir);
 		TechnoClass* pClosestTarget = nullptr;
