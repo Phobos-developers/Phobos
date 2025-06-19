@@ -1886,14 +1886,12 @@ msgstr ""
 "引入的弹头效果。不影响由 `Warhead` 造成 `Damage` 的所属方。"
 
 #: ../../Fixed-or-Improved-Logics.md:333
-#, fuzzy
 msgid ""
 "`Damage.ApplyFirepowerMult` determines whether or not firepower modifiers"
 " from the animation's invoker are applied on the damage dealt from this "
 "animation, if exists."
 msgstr ""
-"`AirburstWeapon.ApplyFirepowerMult` 决定是否将原抛射体发射者的火力加成应用于由 "
-"`AirburstWeapon` 创建的抛射体。"
+"`Damage.ApplyFirepowerMult` 决定动画存在调用者时是否可以获取其火力加成效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:334
 msgid ""
