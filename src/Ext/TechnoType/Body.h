@@ -62,6 +62,8 @@ public:
 		Nullable<int> InitialStrength;
 		Valueable<bool> ReloadInTransport;
 		Valueable<bool> ForbidParallelAIQueues;
+
+		int TintColorAirstrike;
 		Nullable<int> LaserTargetColor;
 		Nullable<ColorStruct> AirstrikeLineColor;
 
@@ -412,6 +414,7 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
+			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
 			, ShieldType {}

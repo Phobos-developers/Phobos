@@ -51,6 +51,7 @@ const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wcha
 std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
+	result.reserve((2 * range + 1) * (2 * range + 1));
 
 	for (CellSpreadEnumerator it(range); it; ++it)
 		result.push_back(*it);
@@ -100,7 +101,7 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoCl
 	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 
 	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
-		armorType = pShield->GetArmorType();
+		armorType = pShield->GetArmorType(pType);
 
 	return GeneralUtils::GetWarheadVersusArmor(pWH, armorType);
 }
@@ -167,6 +168,7 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 std::string GeneralUtils::IntToDigits(int num)
 {
 	std::string digits;
+	digits.reserve(10); // 32-bit int max: 2,147,483,647 (10 digits)
 
 	if (num == 0)
 	{

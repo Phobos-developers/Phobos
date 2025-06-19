@@ -27,7 +27,7 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 	item.CreationFrame = Unsorted::CurrentFrame;
 	item.Color = Drawing::RGB_To_Int(color);
 	PhobosCRT::wstrCopy(item.Text, text, 0x20);
-	Data.push_back(item);
+	Data.emplace_back(item);
 }
 
 void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)

@@ -229,7 +229,12 @@ public:
 		Valueable<bool> AnimCraterDestroyTiberium;
 
 		Valueable<AffectedHouse> BerzerkTargeting;
-		
+
+		// cache tint color
+		int TintColorIronCurtain;
+		int TintColorForceShield;
+		int TintColorBerserk;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -403,8 +408,12 @@ public:
 			, HarvesterScanAfterUnload { false }
 
 			, AnimCraterDestroyTiberium { true }
-			
+
 			, BerzerkTargeting { AffectedHouse::All }
+
+			, TintColorIronCurtain { 0 }
+			, TintColorForceShield { 0 }
+			, TintColorBerserk { 0 }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -414,6 +423,7 @@ public:
 		virtual void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 		virtual void InitializeConstants() override;
 		void InitializeAfterTypeData(RulesClass* pThis);
+		void InitializeAfterAllLoaded();
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
