@@ -65,13 +65,8 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-	{
-		return;
-	}
-
 	INI_EX exINI(pINI);
+
 
 	// from ares
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
@@ -258,7 +253,7 @@ DEFINE_HOOK(0x6CE8EA, SuperWeaponTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 {
 	GET(SuperWeaponTypeClass*, pItem, EBP);

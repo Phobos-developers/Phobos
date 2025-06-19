@@ -4,6 +4,7 @@
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
 
+#include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -41,6 +42,16 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
+	for (const auto& pTechnoType : TechnoTypeClass::Array)
+	{
+		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		{
+			// Spawner range
+			if (pTechnoTypeExt->Spawner_LimitRange)
+				pTechnoTypeExt->CalculateSpawnerRange();
+		}
+	}
+
 	if (pINI == CCINIClass::INI_Rules)
 		Data->InitializeAfterTypeData(pThis);
 
@@ -60,11 +71,6 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	RulesExt::ExtData* pData = RulesExt::Global();
-
-	if (!pData)
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->Storage_TiberiumIndex.Read(exINI, GameStrings::General, "Storage.TiberiumIndex");
@@ -250,11 +256,7 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 // this runs between the before and after type data loading methods for rules ini
 void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 {
-	// tint color
-	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->IronCurtainColor);
-	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->ForceShieldColor);
-	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
-	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+
 }
 
 // this should load everything that TypeData is not dependant on
@@ -262,12 +264,25 @@ void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 // but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData
 void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	RulesExt::ExtData* pData = RulesExt::Global();
-
-	if (!pData)
-		return;
-
 	INI_EX exINI(pINI);
+
+}
+
+// this runs between the before and after type data loading methods for rules ini
+void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
+{
+
+}
+
+void RulesExt::ExtData::InitializeAfterAllLoaded()
+{
+	const auto pRules = RulesClass::Instance;
+
+	// tint color
+	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
+	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
+	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
+	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
 }
 
 // =============================
@@ -541,6 +556,12 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
 
+	return 0;
+}
+
+DEFINE_HOOK(0x668F6A, RulesData_InitializeAfterAllLoaded, 0x5)
+{
+	RulesExt::Global()->InitializeAfterAllLoaded();
 	return 0;
 }
 
