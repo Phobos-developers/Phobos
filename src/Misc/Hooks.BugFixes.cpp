@@ -110,7 +110,7 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 	GET(DamageState, result, EAX);
 
 	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
-	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->GetTechnoType()->Crashable)
+	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->Type->Crashable)
 		pThis->IsAttackedByLocomotor = false;
 
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
@@ -125,45 +125,53 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto pType = pThis->GetTechnoType();
+	const auto pType = pThis->GetTechnoType();
 
-	// If DebrisMaximums has one value, then legacy behavior is used
+// Jun12,2025 - CrimRecya : I think there is no need to return to the unreasonable vanilla logic
+// Otherwise, they should be in a parallel relationship rather than a sequential relationship
+/*	// If DebrisMaximums has one value, then legacy behavior is used
 	if (pType->DebrisMaximums.Count == 1 &&
 		pType->DebrisMaximums.GetItem(0) > 0 &&
 		pType->DebrisTypes.Count > 0)
 	{
 		return 0;
-	}
+	}*/
 
-	auto totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(
-		pType->MinDebris, pType->MaxDebris);
+	// Removed -1 from the MaxDebris
+	int totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(pType->MinDebris, pType->MaxDebris);
 
-	if (pType->DebrisTypes.Count > 0 && pType->DebrisMaximums.Count > 0)
+	const auto& debrisTypes = pType->DebrisTypes;
+	const auto& debrisMaximums = pType->DebrisMaximums;
+
+	// Make DebrisTypes generate completely in accordance with DebrisMaximums,
+	// without continuously looping until it exceeds totalSpawnAmount
+	if (debrisTypes.Count > 0 && debrisMaximums.Count > 0)
 	{
-		auto cord = pThis->GetCoords();
-		for (int currentIndex = 0; currentIndex < pType->DebrisTypes.Count; ++currentIndex)
+		auto coord = pThis->GetCoords();
+
+		for (int currentIndex = 0; currentIndex < debrisMaximums.Count; ++currentIndex)
 		{
-			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
+			const int currentMaxDebris = debrisMaximums.GetItem(currentIndex);
+
+			if (currentMaxDebris > 0)
 			{
-				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
-				int amountToSpawn = abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); //0x702337
+				const int adjustedMaximum = Math::min(currentMaxDebris, pType->MaxDebris);
+				int amountToSpawn = std::abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); // 0x702337
 				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
 				totalSpawnAmount -= amountToSpawn;
 
-				for (; amountToSpawn > 0; --amountToSpawn)
+				for ( ; amountToSpawn > 0; --amountToSpawn)
 				{
-					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
-						&cord, pThis->Owner);
+					GameCreate<VoxelAnimClass>(debrisTypes.GetItem(currentIndex), &coord, pThis->Owner);
 				}
 
-				if (totalSpawnAmount < 1)
+				if (totalSpawnAmount <= 0)
 					break;
 			}
 		}
 	}
 
 	R->EBX(totalSpawnAmount);
-
 	return 0x7023E5;
 }
 
@@ -217,7 +225,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET_STACK(CellStruct*, pCell, STACK_OFFSET(0x84, 0x8));
 
-	if (pThis->GetTechnoType()->UndeploysInto)
+	if (pThis->Type->UndeploysInto)
 		pThis->SetRallypoint(pCell, false);
 	else if (pThis->IsUnitFactory())
 		pThis->SetRallypoint(pCell, true);
@@ -368,7 +376,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 
 	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
-		double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+		double currentSpeed = pThis->Type->Speed * pLocomotor->CurrentSpeed *
 			TechnoExt::GetCurrentSpeedMultiplier(pThis);
 		R->EAX(static_cast<int>(currentSpeed));
 	}
@@ -2045,7 +2053,7 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 	bool InGuard = (R->Origin() == 0x4D5184);
 
 	if (pBuilding->Owner == pThis->Owner &&
-		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->GetTechnoType()) != 0.0)
+		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)
 	{
 		return InGuard ? SkipGuard : SkipAreaGuard;
 	}

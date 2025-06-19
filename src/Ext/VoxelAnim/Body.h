@@ -25,9 +25,11 @@ public:
 	public:
 
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
+		CDTimerClass TrailerSpawnTimer;
 
 		ExtData(VoxelAnimClass* OwnerObject) : Extension<VoxelAnimClass>(OwnerObject)
 			, LaserTrails()
+			, TrailerSpawnTimer()
 		{ }
 
 		virtual ~ExtData() = default;

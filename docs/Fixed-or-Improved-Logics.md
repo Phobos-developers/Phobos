@@ -230,9 +230,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
 - Infantry support `IsGattling=yes`.
-- Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 
 ## Fixes / interactions with other extensions
 
@@ -293,7 +294,7 @@ In `rulesmd.ini`:
 [General]
 ExtendedAircraftMissions=false         ; boolean
 
-[SOMEAIRCRAFT]                         ; AircraftType
+[SOMEAIRCRAFT]                          ; AircraftType
 ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
@@ -329,15 +330,17 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
 - `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
 - `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects. Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+  - `Damage.ApplyFirepowerMult` determines whether or not firepower modifiers from the animation's invoker are applied on the damage dealt from this animation, if exists.
 - `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                     ; AnimationType
-Weapon=                        ; WeaponType
-Damage.Delay=0                 ; integer, animation frames
-Damage.DealtByInvoker=false    ; boolean
-Damage.ApplyOncePerLoop=false  ; boolean
+[SOMEANIM]                      ; AnimationType
+Weapon=                         ; WeaponType
+Damage.Delay=0                  ; integer, animation frames
+Damage.DealtByInvoker=false     ; boolean
+Damage.ApplyOncePerLoop=false   ; boolean
+Damage.ApplyFirepowerMult=false ; boolean
 ```
 
 ```{note}
@@ -455,6 +458,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]          ; BuildingType
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+```
+
+### Allows refineries to use multiple ActiveAnim simultaneously
+
+- In vanilla, the refinery uses different ActiveAnims depending on the storage. You can now make it use multiple ActiveAnims simultaneously like any other building.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+Refinery.UseNormalActiveAnim=false     ; boolean
 ```
 
 ### Allowed / disallowed types for FactoryPlant
@@ -1793,6 +1806,16 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 - The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
+### Customizable debris trailer anim spawn delay
+
+- You can now customize the generation interval of VoxelAnim's trailer animation.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]       ; VoxelAnimType
+Trailer.SpawnDelay=2  ; integer, game frames
+```
+
 ## Warheads
 
 ### Allowing damage dealt to firer
@@ -1847,20 +1870,6 @@ Rocker.AmplitudeMultiplier=1.0  ; floating point value, multiplier
 Rocker.AmplitudeOverride=       ; integer
 ```
 
-### Customizable Warhead trigger conditions
-
-- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
-  - Both conditions need to evaluate to true in order for the warhead to trigger.
-- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]               ; WarheadType
-AffectsAbovePercent=0.0     ; floating point value, percents or absolute
-AffectsBelowPercent=1.0     ; floating point value, percents or absolute
-EffectsRequireVerses=false  ; boolean
-```
-
 ### Customizable Warhead animation behaviour
 
 - It is possible to make game play random animation from `AnimList` by setting `AnimList.PickRandom` to true. The result is similar to what `EMEffect=true` produces, however it comes with no side-effects (`EMEffect=true` prevents `Inviso=true` projectiles from snapping on targets, making them miss moving targets).
@@ -1888,6 +1897,20 @@ SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
+```
+
+### Customizable Warhead trigger conditions
+
+- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
+  - Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsBelowPercent=1.0     ; floating point value, percents or absolute
+EffectsRequireVerses=false  ; boolean
 ```
 
 ### Customizing decloak on damaging targets

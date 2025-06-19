@@ -27,7 +27,8 @@ template <typename T>
 void VoxelAnimExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(LaserTrails)
+		.Process(this->LaserTrails)
+		.Process(this->TrailerSpawnTimer)
 		;
 }
 

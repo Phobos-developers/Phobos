@@ -34,6 +34,7 @@ public:
 	bool IsActive() const;
 	bool IsActiveIgnorePowered() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
+	TechnoClass* GetInvoker() const;
 
 	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);

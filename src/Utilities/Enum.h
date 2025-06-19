@@ -297,6 +297,14 @@ enum class DisplayInfoType : BYTE
 	FactoryProcess = 20
 };
 
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3
+};
+
 class MouseCursorHotSpotX
 {
 public:
