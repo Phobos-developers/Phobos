@@ -1156,20 +1156,6 @@ AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Agg
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```
 
-### Attack move - follow
-
-- Now you can have some units follow surrounding units when executing an attack move. The following behavior is equivalent to the behavior when using `ctrl + alt`.
-  - Use `AttackMove.Follow.IncludeAir` to determine whether the follower will choose an air unit as a follow target.
-- This function should be useful for auxiliary units such as medics and repair drones.
-- We have made additional optimizations to the followed target selection algorithm to make this function more practical.
-
-In `rulesmd.ini`:
-```ini
-[SOMETECHNO]                               ; TechnoType
-AttackMove.Follow=false                    ; boolean
-AttackMove.Follow.IncludeAir=false         ; boolean
-```
-
 ### Attack move - behavior when target acquired
 
 - Now you can make attacking moving units stop moving when they spot an enemy using `AttackMove.StopWhenTargetAcquired`. This is more like the attack move behavior in starcraft and warcraft.
@@ -1189,9 +1175,23 @@ AttackMove.PursuitTarget=                  ; boolean
 ```
 
 ```{note}
-1. Many units would have stopped when they found an enemy. This behavior is independent of AttackMove.StopWhenTargetAcquired.
+1. Many units would have stopped when they found an enemy. This behavior is independent of `AttackMove.StopWhenTargetAcquired`.
 2. Some units (f.ex. jumpjets) will not fire correctly under the vanilla attack move. The exact reason is not clear, but this feature can fix this problem.
-3. Jumpjets will stop immediatly and not scatter to a cell. This is designed for practical reason.
+3. Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop immediatly and not scatter to a cell. This is designed for practical reason.
+```
+
+### Attack move - follow
+
+- Now you can have some units follow surrounding units when executing an attack move. The following behavior is equivalent to the behavior when using `ctrl + alt`.
+  - Use `AttackMove.Follow.IncludeAir` to determine whether the follower will choose an air unit as a follow target.
+- This function should be useful for auxiliary units such as medics and repair drones.
+- We have made additional optimizations to the followed target selection algorithm to make this function more practical.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                               ; TechnoType
+AttackMove.Follow=false                    ; boolean
+AttackMove.Follow.IncludeAir=false         ; boolean
 ```
 
 ### Attack move - without weapon
