@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-16 15:59+0800\n"
+"POT-Creation-Date: 2025-06-19 21:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2029,7 +2029,7 @@ msgstr ""
 "...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:669
-msgid "###`800-802` Display Banner"
+msgid "`800-802` Display Banner"
 msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:671
@@ -2041,16 +2041,14 @@ msgid ""
 "Action `800` will create a new banner or replace the banner with the same"
 " Banner ID if it exists. Using a local variable's value when displaying a"
 " text banner."
-msgstr ""
-"结果 `800` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **局部** 变量的值。"
+msgstr "结果 `800` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **局部** 变量的值。"
 
 #: ../../AI-Scripting-and-Mapping.md:673
 msgid ""
 "Action `801` will create a new banner or replace the banner with the same"
 " Banner ID if it exists. Using a global variable's value when displaying "
 "a text banner."
-msgstr ""
-"结果 `801` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **全局** 变量的值。"
+msgstr "结果 `801` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **全局** 变量的值。"
 
 #: ../../AI-Scripting-and-Mapping.md:674
 msgid "Action `802` will delete the banner corresponding to the set Banner ID."
@@ -2063,35 +2061,32 @@ msgid ""
 "file or a `CSF` text. If multiple are set the first one in the above "
 "listed order takes effect."
 msgstr ""
-"使用该功能前需在 ini 文件中配置 `BannerType` 属性。横幅支持使用一个 PCX 文件，一个 SHP 文件，或一个 CSF 条目。若多项同时设置则同样按此处所列的优先级顺序生效。"
+"使用该功能前需在 ini 文件中配置 `BannerType` 属性。横幅支持使用一个 PCX 文件，一个 SHP 文件，或一个 CSF "
+"条目。若多项同时设置则同样按此处所列的优先级顺序生效。"
 
 #: ../../AI-Scripting-and-Mapping.md:676
 msgid ""
 "`SHP.Palette` controls the palette that'll be used when drawing a banner "
 "for Shape file."
-msgstr ""
-"`SHP.Palette` 控制绘制 SHP 横幅时所使用的色盘。"
+msgstr "`SHP.Palette` 控制绘制 SHP 横幅时所使用的色盘。"
 
 #: ../../AI-Scripting-and-Mapping.md:677
 msgid ""
 "`CSF.Color` controls the color of the text that'll be used when drawing a"
 " text banner."
-msgstr ""
-"`CSF.Color` 控制使用 CSF 条目横幅时的文本颜色"
+msgstr "`CSF.Color` 控制使用 CSF 条目横幅时的文本颜色"
 
 #: ../../AI-Scripting-and-Mapping.md:678
 msgid ""
 "`CSF.Background` controls whether a black background will be displayed "
 "below the text banner."
-msgstr ""
-"`CSF.Background` 控制使用 CSF 条目横幅时是否具有黑色底色。"
+msgstr "`CSF.Background` 控制使用 CSF 条目横幅时是否具有黑色底色。"
 
 #: ../../AI-Scripting-and-Mapping.md:679
 msgid ""
 "`CSF.VariableFormat` controls the way to print a variable together with "
 "the text banner."
-msgstr ""
-"`CSF.VariableFormat` 控制使用 CSF 条目横幅时的变量显示方式。"
+msgstr "`CSF.VariableFormat` 控制使用 CSF 条目横幅时的变量显示方式。"
 
 #: ../../AI-Scripting-and-Mapping.md:680
 msgid "`none` will make the text banner not display the variable."
@@ -2101,22 +2096,19 @@ msgstr "`none` - 不显示变量。"
 msgid ""
 "`variable` will make the text banner display the variable alone and will "
 "ignore the text in `CSF`."
-msgstr ""
-"`variable` - 仅显示变量，并忽略 CSF 条目文本。"
+msgstr "`variable` - 仅显示变量，并忽略 CSF 条目文本。"
 
 #: ../../AI-Scripting-and-Mapping.md:682
 msgid ""
 "`prefix`/`prefixed` will make the text banner display the variable before"
 " any other text."
-msgstr ""
-"`prefix`/`prefixed` - 变量在其他文本 **前** 显示。"
+msgstr "`prefix`/`prefixed` - 变量在其他文本 **前** 显示。"
 
 #: ../../AI-Scripting-and-Mapping.md:683
 msgid ""
 "`surfix`/`surfixed` will make the text banner display the variable after "
 "any other text."
-msgstr ""
-"`surfix`/`surfixed` - 变量在其他文本 **后** 显示。"
+msgstr "`surfix`/`surfixed` - 变量在其他文本 **后** 显示。"
 
 #: ../../AI-Scripting-and-Mapping.md:686
 msgid ""
@@ -2555,4 +2547,7 @@ msgstr "选择地图触发的所有者"
 #~ "ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...\n"
 #~ "ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...\n"
 #~ "...\n"
+
+#~ msgid "###`800-802` Display Banner"
+#~ msgstr ""
 

@@ -37,7 +37,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 {
 	GET(BulletClass*, pThis, EBP);
 
-	auto pBulletExt = BulletExt::ExtMap.Find(pThis);
+	const auto pBulletExt = BulletExt::ExtMap.Find(pThis);
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
@@ -70,7 +70,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	//Let trajectories draw their own laser trails after the Trajectory's OnAI() to avoid predicting incorrect positions or pass through targets.
 	if (!pBulletExt->Trajectory && pBulletExt->LaserTrails.size())
 	{
-		CoordStruct location = pThis->GetCoords();
+		const CoordStruct location = pThis->GetCoords();
 		const BulletVelocity& velocity = pThis->Velocity;
 
 		// We adjust LaserTrails to account for vanilla bug of drawing stuff one frame ahead.
@@ -82,14 +82,14 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 			(int)(location.Z + velocity.Z)
 		};
 
-		for (auto& trail : pBulletExt->LaserTrails)
+		for (const auto& pTrail : pBulletExt->LaserTrails)
 		{
 			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
 			// TODO move hack to BulletClass creation
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = location;
+			if (!pTrail->LastLocation.isset())
+				pTrail->LastLocation = location;
 
-			trail.Update(drawnCoords);
+			pTrail->Update(drawnCoords);
 		}
 
 	}
