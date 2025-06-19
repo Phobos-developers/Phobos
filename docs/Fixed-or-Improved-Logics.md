@@ -580,10 +580,10 @@ Grinding.Weapon.RequiredCredits=0  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]
+[SOMEWARHEAD]             ; WarheadType
 ElectricAssaultLevel=1    ; integer
 
-[SOMEBUILDING]
+[SOMEBUILDING]            ; BuildingType
 Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
 Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
 ```
@@ -1612,7 +1612,7 @@ In `rulesmd.ini`:
 [General]
 HarvesterScanAfterUnload=false     ; boolean
 
-[SOMEVEHICLE]
+[SOMEVEHICLE]                      ; VehicleType
 HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
@@ -1713,7 +1713,7 @@ In `rulesmd.ini`:
 [General]
 HarvesterDumpAmount=0.0               ; float point value
 
-[SOMEVEHICLE]
+[SOMEVEHICLE]                         ; VehicleType
 HarvesterDumpAmount=                  ; float point value
 ```
 

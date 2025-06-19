@@ -716,14 +716,14 @@ SuperWeaponSidebarKeysEnabled=false    ; boolean
 [AudioVisual]
 SuperWeaponSidebar.AllowByDefault=false   ; boolean
 
-[SOMESIDE]
+[SOMESIDE]                                  ; Side
 SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
 SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
 SuperWeaponSidebar.TopPCX=            ; filename - including the .pcx extension
 SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
 SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
 
-[SOMESW]
+[SOMESW]                                    ; SuperWeaponType
 SuperWeaponSidebar.Allow=             ; boolean
 SuperWeaponSidebar.PriorityHouses=    ; List of house types
 SuperWeaponSidebar.RequiredHouses=    ; List of house types
