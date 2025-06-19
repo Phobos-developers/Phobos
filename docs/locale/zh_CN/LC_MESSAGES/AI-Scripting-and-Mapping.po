@@ -2030,7 +2030,7 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:669
 msgid "`800-802` Display Banner"
-msgstr ""
+msgstr "`800-802` 显示横幅"
 
 #: ../../AI-Scripting-and-Mapping.md:671
 msgid "Display a 'banner' at a fixed location that is relative to the screen."
@@ -2534,20 +2534,4 @@ msgstr "该值将被忽略（任何所属方均有效）"
 #: ../../AI-Scripting-and-Mapping.md:809
 msgid "Pick the owner of the map trigger"
 msgstr "选择地图触发的所有者"
-
-#~ msgid ""
-#~ "[Events]\n"
-#~ "...\n"
-#~ "ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...\n"
-#~ "ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...\n"
-#~ "...\n"
-#~ msgstr ""
-#~ "[Events]\n"
-#~ "...\n"
-#~ "ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...\n"
-#~ "ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...\n"
-#~ "...\n"
-
-#~ msgid "###`800-802` Display Banner"
-#~ msgstr ""
 
