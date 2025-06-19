@@ -373,7 +373,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 		{
 			const auto pPalette = pSelectBox->GroundPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-			const Vector3D<int> frames = pSelectBox->Frames.Get(defaultFrame);
+			const Vector3D<int> frames = pSelectBox->GroundFrames.Get(defaultFrame);
 			const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
 			const Point2D drawPoint = point + pSelectBox->GroundOffset;
