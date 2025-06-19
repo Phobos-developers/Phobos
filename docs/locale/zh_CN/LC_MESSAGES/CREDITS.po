@@ -1524,6 +1524,7 @@ msgid ""
 "Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on "
 "airforce"
 msgstr ""
+"修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug"
 
 #: ../../../CREDITS.md:382
 msgid "**Apollo** - Translucent SHP drawing patches"
@@ -1726,10 +1727,11 @@ msgid ""
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case"
 msgstr ""
+"修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题"
 
 #: ../../../CREDITS.md:429
 msgid "Fix incorrect position of of `VoxelAnim`'s `TrailerAnim`"
-msgstr ""
+msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题"
 
 #: ../../../CREDITS.md:430
 msgid "**Ollerus**:"
