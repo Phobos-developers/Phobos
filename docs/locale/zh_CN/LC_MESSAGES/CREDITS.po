@@ -1683,7 +1683,7 @@ msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug"
 
 #: ../../../CREDITS.md:420
 msgid "Electric/RadBeam trail for laser tails"
-msgstr ""
+msgstr "激光尾焰逻辑支持 EBolt／辐射波"
 
 #: ../../../CREDITS.md:421
 msgid "**Apollo** - Translucent SHP drawing patches"

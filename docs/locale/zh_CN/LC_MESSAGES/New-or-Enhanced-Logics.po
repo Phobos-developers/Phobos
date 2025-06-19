@@ -783,7 +783,7 @@ msgid ""
 "ReflectDamage.UseInvokerAsOwner=false              ; boolean\n"
 "DisableWeapons=false                               ; boolean\n"
 "Unkillable=false                                   ; boolean\n"
-"LaserTrail.Type=                                ; lasertrail type\n"
+"LaserTrail.Type=                                   ; lasertrail type\n"
 "Groups=                                            ; comma-separated list"
 " of strings (group IDs)\n"
 "\n"
@@ -938,7 +938,7 @@ msgstr ""
 "ReflectDamage.UseInvokerAsOwner=false              ; boolean\n"
 "DisableWeapons=false                               ; boolean\n"
 "Unkillable=false                                   ; boolean\n"
-"LaserTrail.Type=                                ; lasertrail type\n"
+"LaserTrail.Type=                                   ; lasertrail type\n"
 "Groups=                                            ; comma-separated list"
 " of strings (group IDs)\n"
 "\n"
@@ -1199,7 +1199,7 @@ msgstr "科技类型、抛射体和 Voxel 碎片可以拥有多个尾焰。对�
 
 #: ../../New-or-Enhanced-Logics.md:238
 msgid "LaserTrail can also be drawn as EBolt or RadBeam."
-msgstr ""
+msgstr "激光尾焰现在同样可以使用 EBolt 或 辐射波 特效。"
 
 #: ../../New-or-Enhanced-Logics.md:240 ../../New-or-Enhanced-Logics.md:492
 #: ../../New-or-Enhanced-Logics.md:521 ../../New-or-Enhanced-Logics.md:535

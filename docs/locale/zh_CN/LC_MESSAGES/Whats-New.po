@@ -1687,7 +1687,7 @@ msgstr ""
 
 #: ../../Whats-New.md:408
 msgid "Electric/RadBeam trail for laser tails (by NetsuNegi)"
-msgstr ""
+msgstr "激光尾焰逻辑支持 EBolt／辐射波（by NetsuNegi）"
 
 #: ../../Whats-New.md:410 ../../Whats-New.md:618 ../../Whats-New.md:935
 #: ../../Whats-New.md:1044 ../../Whats-New.md:1069 ../../Whats-New.md:1108
@@ -2462,7 +2462,7 @@ msgstr "允许扫射武器按每次开火而非每次扫射扣除弹药（by Sta
 msgid ""
 "Allow `CloakVisible=true` laser trails optinally be seen only if unit is "
 "detected (by Starkku)"
-msgstr "允许 `CloakVisible=true` 的激光尾迹仅在单位被检测到时可见（by Starkku）"
+msgstr "允许 `CloakVisible=true` 的激光尾焰仅在单位被检测到时可见（by Starkku）"
 
 #: ../../Whats-New.md:566
 msgid ""
@@ -3458,7 +3458,7 @@ msgstr "现在 `CreateUnit` 会在目标所属方失败时转为中立所属方�
 msgid ""
 "`IsHouseColor` laser trails on techno now correctly change color when it "
 "changes owner (by Trsdy)"
-msgstr "现在 `IsHouseColor` 的激光尾迹可以在所属方变更时正确改变颜色（by Trsdy）"
+msgstr "现在 `IsHouseColor` 的激光尾焰可以在所属方变更时正确改变颜色（by Trsdy）"
 
 #: ../../Whats-New.md:739
 msgid ""
@@ -3627,7 +3627,7 @@ msgstr "修复了辐射伤害未考虑辐射等级衰减的问题（by Starkku�
 msgid ""
 "Correctly update laser trail position while techno is cloaked even if "
 "trail is not drawn (by Starkku)"
-msgstr "现在在单位隐形时即便没有绘制尾迹也会正确更新激光尾迹的位置（by Starkku）"
+msgstr "现在在单位隐形时即便没有绘制尾迹也会正确更新激光尾焰的位置（by Starkku）"
 
 #: ../../Whats-New.md:766
 msgid ""
@@ -3952,7 +3952,7 @@ msgstr "0.3"
 
 #: ../../Whats-New.md:836
 msgid "LaserTrails initial implementation (by Kerbiter & ChrisLv_CN)"
-msgstr "激光尾迹初始实现（by Kerbiter 与 ChrisLv_CN）"
+msgstr "激光尾焰初始实现（by Kerbiter 与 ChrisLv_CN）"
 
 #: ../../Whats-New.md:837
 msgid "Anim-to-Unit logic and ability to randomize `DestroyAnim` (by Otamaa)"
