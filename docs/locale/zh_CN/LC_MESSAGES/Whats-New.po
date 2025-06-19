@@ -1680,6 +1680,8 @@ msgid ""
 "[Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton &"
 " ststl)"
 msgstr ""
+"[横幅](AI-Scripting-and-Mapping.md#display-banner)（by Morton &"
+" ststl）"
 
 #: ../../Whats-New.md:408 ../../Whats-New.md:616 ../../Whats-New.md:933
 #: ../../Whats-New.md:1042 ../../Whats-New.md:1067 ../../Whats-New.md:1106

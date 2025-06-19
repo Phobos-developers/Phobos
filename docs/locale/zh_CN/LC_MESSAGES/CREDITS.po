@@ -283,9 +283,8 @@ msgid "Original `Arcing` elevation inaccuracy fix"
 msgstr "原版 `Arcing` 高差打偏问题修复"
 
 #: ../../../CREDITS.md:74 ../../../CREDITS.md:419
-#, fuzzy
 msgid "Display banner improvement"
-msgstr "`IsSimpleDeployer` 改进"
+msgstr "横幅改进"
 
 #: ../../../CREDITS.md:75
 msgid "Official CN docs for Build#29 and previous versions"
@@ -1133,7 +1132,7 @@ msgstr "将 `Power` 扩展到所有科技类型"
 
 #: ../../../CREDITS.md:293 ../../../CREDITS.md:428
 msgid "Display banner by triggers"
-msgstr ""
+msgstr "横幅相关触发"
 
 #: ../../../CREDITS.md:295
 msgid ""
@@ -2071,9 +2070,8 @@ msgid "Allow faking digital display for `InfoType=Health` at disguise"
 msgstr "允许 `InfoType=Health` 伪造出伪装目标的数值"
 
 #: ../../../CREDITS.md:516
-#, fuzzy
 msgid "Display banner improvement and doc"
-msgstr "回收站改进／补充"
+msgstr "横幅的改进与文档"
 
 #: ../../../CREDITS.md:517
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
