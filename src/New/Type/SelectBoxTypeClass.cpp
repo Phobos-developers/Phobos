@@ -9,7 +9,8 @@ const char* Enumerable<SelectBoxTypeClass>::GetMainSection()
 void SelectBoxTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
-	if (!_stricmp(pSection, NONE_STR))
+
+	if (!_stricmp(pSection, NONE_STR) || !pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);

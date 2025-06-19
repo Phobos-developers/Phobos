@@ -90,7 +90,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
 
-	if (INIClass::IsBlank(pSection))
+	if (INIClass::IsBlank(pSection) || !pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);

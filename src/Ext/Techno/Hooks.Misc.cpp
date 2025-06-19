@@ -126,7 +126,7 @@ DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
 	GET(SpawnManagerClass*, pThis, ESI);
 	GET_STACK(size_t, i, STACK_OFFSET(0x1C, 0x4));
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Owner->GetTechnoType());
 
 	if ((int) i >= pTypeExt->InitialSpawnsNumber.Get(pThis->SpawnCount))
 	{
