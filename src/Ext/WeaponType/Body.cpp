@@ -85,7 +85,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
-	
+
 	for (int idx = 0; idx < 3; ++idx)
 	{
 		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Color%d", idx + 1);

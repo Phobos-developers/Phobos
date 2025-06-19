@@ -16,54 +16,56 @@ bool LaserTrailClass::Update(CoordStruct location)
 	}
 	else if (location.DistanceFrom(this->LastLocation.Get()) > this->Type->SegmentLength) // TODO reimplement IgnoreVertical properly?
 	{
+		auto const pType = this->Type;
+
 		// We spawn new laser segment if the distance is long enough, the game will do the rest - Kerbiter
-		if (this->Visible && !this->Cloaked && (this->Type->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
+		if (this->Visible && !this->Cloaked && (pType->IgnoreVertical ? (abs(location.X - this->LastLocation.Get().X) > 16 || abs(location.Y - this->LastLocation.Get().Y) > 16) : true))
 		{
-			if (this->Type->DrawType == LaserTrailDrawType::Laser)
+			if (pType->DrawType == LaserTrailDrawType::Laser)
 			{
 				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
 					this->LastLocation.Get(), location,
 					this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
-					this->Type->FadeDuration.Get(64));
+					pType->FadeDuration.Get(64));
 
-				pLaser->Thickness = this->Type->Thickness;
+				pLaser->Thickness = pType->Thickness;
 				pLaser->IsHouseColor = true;
-				pLaser->IsSupported = this->Type->IsIntense;
+				pLaser->IsSupported = pType->IsIntense;
 			}
-			else if (this->Type->DrawType == LaserTrailDrawType::EBolt)
+			else if (pType->DrawType == LaserTrailDrawType::EBolt)
 			{
 				const auto pBolt = GameCreate<EBolt>();
 				const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
 
-				const int alternateIdx = this->Type->IsAlternateColor ? 5 : 10;
+				const int alternateIdx = pType->IsAlternateColor ? 5 : 10;
 				const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
 				const int defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 
 				for (int idx = 0; idx < 3; ++idx)
 				{
-					if (this->Type->Bolt_Disable[idx])
+					if (pType->Bolt_Disable[idx])
 						pBoltExt->Disable[idx] = true;
-					else if (this->Type->Bolt_Color[idx].isset())
-						pBoltExt->Color[idx] = this->Type->Bolt_Color[idx].Get();
+					else if (pType->Bolt_Color[idx].isset())
+						pBoltExt->Color[idx] = pType->Bolt_Color[idx].Get();
 					else
 						pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
 				}
 
-				pBoltExt->Arcs = this->Type->Bolt_Arcs;
-				pBolt->Lifetime = 1 << (std::clamp(this->Type->FadeDuration.Get(17), 1, 31) - 1);
-				pBolt->AlternateColor = this->Type->IsAlternateColor;
+				pBoltExt->Arcs = pType->Bolt_Arcs;
+				pBolt->Lifetime = 1 << (std::clamp(pType->FadeDuration.Get(17), 1, 31) - 1);
+				pBolt->AlternateColor = pType->IsAlternateColor;
 
 				pBolt->Fire(this->LastLocation, location, 0);
 			}
-			else if (this->Type->DrawType == LaserTrailDrawType::RadBeam)
+			else if (pType->DrawType == LaserTrailDrawType::RadBeam)
 			{
 				const auto pRadBeam = RadBeam::Allocate(RadBeamType::RadBeam);
 				pRadBeam->SetCoordsSource(this->LastLocation);
 				pRadBeam->SetCoordsTarget(location);
-				pRadBeam->Period = this->Type->FadeDuration.Get(15);
-				pRadBeam->Amplitude = this->Type->Beam_Amplitude;
+				pRadBeam->Period = pType->FadeDuration.Get(15);
+				pRadBeam->Amplitude = pType->Beam_Amplitude;
 
-				const ColorStruct beamColor = this->Type->Beam_Color.Get(RulesClass::Instance->RadColor);
+				const ColorStruct beamColor = pType->Beam_Color.Get(RulesClass::Instance->RadColor);
 				pRadBeam->SetColor(beamColor);
 			}
 

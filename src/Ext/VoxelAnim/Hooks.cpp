@@ -12,20 +12,19 @@ DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Additional, 0xC)
 	GET(VoxelAnimClass* const, pThis, EBX);
 
 	//auto pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pThis->Type);
-	auto pThisExt = VoxelAnimExt::ExtMap.Find(pThis);
+	const auto pThisExt = VoxelAnimExt::ExtMap.Find(pThis);
 
 	if (!pThisExt->LaserTrails.empty())
 	{
-		CoordStruct location = pThis->GetCoords();
-		CoordStruct drawnCoords = location;
+		const CoordStruct location = pThis->GetCoords();
 
-		for (const auto& trail : pThisExt->LaserTrails)
+		for (const auto& pTrail : pThisExt->LaserTrails)
 		{
-			if (!trail->LastLocation.isset())
-				trail->LastLocation = location;
+			if (!pTrail->LastLocation.isset())
+				pTrail->LastLocation = location;
 
-			trail->Visible = pThis->IsVisible;
-			trail->Update(drawnCoords);
+			pTrail->Visible = pThis->IsVisible;
+			pTrail->Update(location);
 		}
 	}
 

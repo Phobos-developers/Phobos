@@ -152,7 +152,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 
 			auto& vec = linkedExt->LaserTrails;
 			if (!vec.empty())
-				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto& trail) { return trail->Type->DroppodOnly; }));
+				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto const& pTrail) { return pTrail->Type->DroppodOnly; }));
 
 			pLinked->Mark(MarkType::Down);
 			pLinked->SetHeight(0);

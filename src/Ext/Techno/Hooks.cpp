@@ -520,10 +520,10 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport_LaserTrails, 0x7)
 
 	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	for (const auto& trail : pTechnoExt->LaserTrails)
+	for (const auto& pTrail : pTechnoExt->LaserTrails)
 	{
-		trail->Visible = false;
-		trail->LastLocation = { };
+		pTrail->Visible = false;
+		pTrail->LastLocation = { };
 	}
 
 	return 0;
@@ -534,12 +534,12 @@ DEFINE_HOOK(0x4D7221, FootClass_Unlimbo_LaserTrails, 0x6)
 {
 	GET(FootClass*, pTechno, ESI);
 
-	auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+	auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	for (auto& trail : pTechnoExt->LaserTrails)
+	for (const auto& pTrail : pTechnoExt->LaserTrails)
 	{
-		trail->LastLocation = { };
-		trail->Visible = true;
+		pTrail->LastLocation = { };
+		pTrail->Visible = true;
 	}
 
 	return 0;

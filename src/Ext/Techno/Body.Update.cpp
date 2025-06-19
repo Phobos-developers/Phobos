@@ -469,10 +469,10 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 		if (const auto pShieldData = this->Shield.get())
 			pShieldData->SetAnimationVisibility(false);
 
-		for (const auto& trail : this->LaserTrails)
+		for (const auto& pTrail : this->LaserTrails)
 		{
-			trail->Visible = false;
-			trail->LastLocation = { };
+			pTrail->Visible = false;
+			pTrail->LastLocation = { };
 		}
 
 		this->IsInTunnel = true;
@@ -530,10 +530,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		std::vector<std::unique_ptr<LaserTrailClass>> addition;
 		addition.reserve(trailCount);
 
-		for (auto& trail : this->LaserTrails)
+		for (auto const& pTrail : this->LaserTrails)
 		{
-			if (!trail->Intrinsic)
-				addition.emplace_back(std::move(trail));
+			if (!pTrail->Intrinsic)
+				addition.emplace_back(std::move(pTrail));
 		}
 
 		this->LaserTrails.clear();
@@ -542,8 +542,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		for (const auto& entry : this->TypeExtData->LaserTrailData)
 			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
 
-		for (auto& trail : addition)
-			this->LaserTrails.emplace_back(std::move(trail));
+		for (auto const& pTrail : addition)
+			this->LaserTrails.emplace_back(std::move(pTrail));
 	}
 
 	// Reset AutoDeath Timer
@@ -1128,9 +1128,11 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 	auto const pThis = this->OwnerObject();
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
-	for (const auto& trail : this->LaserTrails)
+	for (const auto& pTrail : this->LaserTrails)
 	{
-		if (trail->Type->DroppodOnly && (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+		auto const pType = pTrail->Type;
+
+		if (pType->DroppodOnly && (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
 		{
 			auto const pFoot = static_cast<FootClass*>(pThis);
 
@@ -1140,25 +1142,25 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 				continue;
 		}
 
-		trail->Cloaked = false;
+		pTrail->Cloaked = false;
 
 		if (pThis->CloakState == CloakState::Cloaked)
 		{
-			if (trail->Type->CloakVisible && trail->Type->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
-				trail->Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
-			else if (!trail->Type->CloakVisible)
-				trail->Cloaked = true;
+			if (pType->CloakVisible && pType->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+				pTrail->Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
+			else if (!pType->CloakVisible)
+				pTrail->Cloaked = true;
 		}
 
 		if (!this->IsInTunnel)
-			trail->Visible = true;
+			pTrail->Visible = true;
 
-		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail->FLH, trail->IsOnTurret);
+		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, pTrail->FLH, pTrail->IsOnTurret);
 
-		if (pThis->CloakState == CloakState::Uncloaking && !trail->Type->CloakVisible)
-			trail->LastLocation = trailLoc;
+		if (pThis->CloakState == CloakState::Uncloaking && !pType->CloakVisible)
+			pTrail->LastLocation = trailLoc;
 		else
-			trail->Update(trailLoc);
+			pTrail->Update(trailLoc);
 	}
 }
 

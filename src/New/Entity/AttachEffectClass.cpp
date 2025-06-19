@@ -52,17 +52,17 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 		this->HasInitialized = true;
 
-	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : this->Type->Duration;
+	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
 
-	if (this->Type->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
+	if (pType->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
 		this->Duration = Math::max(static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
-	if (this->Type->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // count its own ArmorMultiplier as well
-		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / pTechnoExt->AE.ArmorMultiplier / this->Type->ArmorMultiplier), 0);
+	if (pType->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // count its own ArmorMultiplier as well
+		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / pTechnoExt->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
 
-	const int laserTrailIdx = this->Type->LaserTrail_Type;
+	const int laserTrailIdx = pType->LaserTrail_Type;
 
 	if (laserTrailIdx != -1)
 	{
@@ -75,10 +75,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 AttachEffectClass::~AttachEffectClass()
 {
-	if (const auto trail = this->LaserTrail)
+	if (const auto& pTrail = this->LaserTrail)
 	{
 		const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
-		const auto it = std::find_if(pTechnoExt->LaserTrails.cbegin(), pTechnoExt->LaserTrails.cend(), [trail](std::unique_ptr<LaserTrailClass> const& item) { return item.get() == trail; });
+		const auto it = std::find_if(pTechnoExt->LaserTrails.cbegin(), pTechnoExt->LaserTrails.cend(), [pTrail](std::unique_ptr<LaserTrailClass> const& item) { return item.get() == pTrail; });
 
 		if (it != pTechnoExt->LaserTrails.cend())
 			pTechnoExt->LaserTrails.erase(it);
