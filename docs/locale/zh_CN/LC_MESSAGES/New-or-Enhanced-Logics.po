@@ -196,7 +196,7 @@ msgid ""
 " animation's owner & invoker instead of the object the effect is attached"
 " to."
 msgstr ""
-"`Animation.UseInvokerAsOwner` 可以设置赋予 AE 的所属方和科技类型（例如武器的发射者）为 AE "
+"`Animation.UseInvokerAsOwner` 可以设置创建该效果的所属方和科技类型（例如武器的发射者）为 AE 动画"
 "的所有者和调用者而不是 AE 所附加的对象。"
 
 #: ../../New-or-Enhanced-Logics.md:30
@@ -264,14 +264,13 @@ msgstr ""
 "自然结束或被移除后触发。"
 
 #: ../../New-or-Enhanced-Logics.md:36
-#, fuzzy
 msgid ""
 "`ExpireWeapon.UseInvokerAsOwner` can be used to set the house and "
 "TechnoType that created the effect (e.g firer of the weapon that applied "
 "it) as the weapon's owner & invoker instead of the object the effect is "
 "attached to."
 msgstr ""
-"`Animation.UseInvokerAsOwner` 可以设置赋予 AE 的所属方和科技类型（例如武器的发射者）为 AE "
+"`ExpireWeapon.UseInvokerAsOwner` 可以设置创建该效果的所属方和科技类型（例如武器的发射者）为 `ExpireWeapon` "
 "的所有者和调用者而不是 AE 所附加的对象。"
 
 #: ../../New-or-Enhanced-Logics.md:37
@@ -386,14 +385,13 @@ msgid ""
 msgstr "`RevengeWeapon.AffectsHouses` 定义哪些所属方可以触发这个复仇武器。"
 
 #: ../../New-or-Enhanced-Logics.md:51
-#, fuzzy
 msgid ""
 "`RevengeWeapon.UseInvokerAsOwner` can be used to set the house and "
 "TechnoType that created the effect (e.g firer of the weapon that applied "
 "it) as the weapon's owner & invoker instead of the object the effect is "
 "attached to."
 msgstr ""
-"`Animation.UseInvokerAsOwner` 可以设置赋予 AE 的所属方和科技类型（例如武器的发射者）为 AE "
+"`RevengeWeapon.UseInvokerAsOwner` 可以设置创建该效果的所属方和科技类型（例如武器的发射者）为 `RevengeWeapon` "
 "的所有者和调用者而不是 AE 所附加的对象。"
 
 #: ../../New-or-Enhanced-Logics.md:52
@@ -431,14 +429,13 @@ msgstr ""
 "的作用与此相同，但用于所列分组名下的所有 AE 类型。"
 
 #: ../../New-or-Enhanced-Logics.md:54
-#, fuzzy
 msgid ""
 "`ReflectDamage.UseInvokerAsOwner` can be used to set the house and "
 "TechnoType that created the effect (e.g firer of the weapon that applied "
 "it) as the reflected damage's owner & invoker instead of the object the "
 "effect is attached to."
 msgstr ""
-"`Animation.UseInvokerAsOwner` 可以设置赋予 AE 的所属方和科技类型（例如武器的发射者）为 AE "
+"`ReflectDamage.UseInvokerAsOwner` 可以设置创建该效果的所属方和科技类型（例如武器的发射者）为 `ReflectDamage` "
 "的所有者和调用者而不是 AE 所附加的对象。"
 
 #: ../../New-or-Enhanced-Logics.md:55
