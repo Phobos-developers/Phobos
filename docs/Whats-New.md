@@ -180,7 +180,7 @@ HideLightFlashEffects=false      ; boolean
   607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
   800=Display banner and local variable (Phobos),4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
-  001=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
+  801=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
   802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
@@ -404,6 +404,7 @@ New:
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
+- Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

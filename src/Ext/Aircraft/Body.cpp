@@ -57,7 +57,7 @@ void AircraftExt::FireWeapon(AircraftClass* pThis, AbstractClass* pTarget)
 // Spy plane, airstrike etc.
 bool AircraftExt::PlaceReinforcementAircraft(AircraftClass* pThis, CellStruct edgeCell)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	auto coords = CellClass::Cell2Coord(edgeCell);
 	coords.Z = 0;
 	AbstractClass* pTarget = nullptr;

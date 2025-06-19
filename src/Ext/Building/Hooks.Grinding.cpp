@@ -19,7 +19,7 @@ DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 	const bool isAmphibious = movementZone == MovementZone::Amphibious || movementZone == MovementZone::AmphibiousCrusher
 		|| movementZone == MovementZone::AmphibiousDestroyer;
 
-	if (!isAmphibious && (pThis->GetTechnoType()->Naval != pFromType->Naval))
+	if (!isAmphibious && (pThis->Type->Naval != pFromType->Naval))
 		return ReturnNegative;
 
 	if (pThis->Type->Grinding)
@@ -146,7 +146,7 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 		{
 			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
 			{
-				const bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
+				const bool isFlying = pThis->Type->MovementZone == MovementZone::Fly;
 				const bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
 				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
 				R->EBX(action);

@@ -101,7 +101,7 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoCl
 	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 
 	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
-		armorType = pShield->GetArmorType();
+		armorType = pShield->GetArmorType(pType);
 
 	return GeneralUtils::GetWarheadVersusArmor(pWH, armorType);
 }
@@ -168,6 +168,7 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 std::string GeneralUtils::IntToDigits(int num)
 {
 	std::string digits;
+	digits.reserve(10); // 32-bit int max: 2,147,483,647 (10 digits)
 
 	if (num == 0)
 	{

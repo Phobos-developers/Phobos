@@ -31,9 +31,9 @@ DEFINE_HOOK(0x6F8FD7, TechnoClass_ThreatEvals_OpenToppedOwner, 0x5)       // Tec
 		return 0;
 	}
 
-	if (auto pTransport = pThis->Transporter)
+	if (auto const pTransport = pThis->Transporter)
 	{
-		if (TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType())->Passengers_SyncOwner)
+		if (TechnoExt::ExtMap.Find(pTransport)->TypeExtData->Passengers_SyncOwner)
 			return returnAddress;
 	}
 
@@ -46,7 +46,7 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 
 	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->Passengers_SyncOwner)
+		if (TechnoExt::ExtMap.Find(pThis)->TypeExtData->Passengers_SyncOwner)
 		{
 			do
 			{
@@ -70,7 +70,7 @@ DEFINE_HOOK(0x71067B, TechnoClass_EnterTransport, 0x7)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
-		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pTransTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit)
 			pExt->OriginalPassengerOwner = pPassenger->Owner;
@@ -95,7 +95,7 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 		auto const pType = pPassenger->GetTechnoType();
 		auto const pExt = TechnoExt::ExtMap.Find(pPassenger);
 		auto const whatAmI = pPassenger->WhatAmI();
-		auto const pTransTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pTransTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 		// Remove from transport reloader list before switching house
 		if (whatAmI != AbstractType::Aircraft && whatAmI != AbstractType::Building
@@ -122,7 +122,7 @@ DEFINE_HOOK(0x737F80, UnitClass_ReceiveDamage_Cargo_SyncOwner, 0x6)
 
 	if (auto pPassenger = pThis->Passengers.GetFirstPassenger())
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 		if (pTypeExt->Passengers_SyncOwner && pTypeExt->Passengers_SyncOwner_RevertOnExit)
 		{
@@ -148,7 +148,7 @@ DEFINE_HOOK(0x51DF82, InfantryClass_FireAt_ReloadInTransport, 0x6)
 
 	if (pThis->Transporter)
 	{
-		auto const pType = pThis->GetTechnoType();
+		auto const pType = pThis->Type;
 		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (pTypeExt->ReloadInTransport && pType->Ammo > 0 && pThis->Ammo < pType->Ammo)
@@ -166,7 +166,7 @@ DEFINE_HOOK(0x6F72D2, TechnoClass_IsCloseEnoughToTarget_OpenTopped_RangeBonus, 0
 
 	if (auto const pTransport = pThis->Transporter)
 	{
-		auto const pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 		R->EAX(pExt->OpenTopped_RangeBonus.Get(RulesClass::Instance->OpenToppedRangeBonus));
 		return 0x6F72DE;
 	}
@@ -180,7 +180,7 @@ DEFINE_HOOK(0x71A82C, TemporalClass_AI_Opentopped_WarpDistance, 0xC)
 
 	if (auto const pTransport = pThis->Owner->Transporter)
 	{
-		auto const pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+		auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 		R->EDX(pExt->OpenTopped_WarpDistance.Get(RulesClass::Instance->OpenToppedWarpDistance));
 		return 0x71A838;
 	}
@@ -197,7 +197,7 @@ DEFINE_HOOK(0x710552, TechnoClass_SetOpenTransportCargoTarget_ShareTarget, 0x6)
 
 	if (pTarget)
 	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 		if (!pTypeExt->OpenTopped_ShareTransportTarget)
 			return ReturnFromFunction;

@@ -78,7 +78,7 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	auto const pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
@@ -191,11 +191,10 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 
 		if (airstrike)
 		{
-			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
-			{
-				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
-				tintColor |= pTypeExt->TintColorAirstrike;
-			}
+			auto const pExt =  TechnoExt::ExtMap.Find(pThis);
+
+			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
+				tintColor |= pExt->TypeExtData->TintColorAirstrike;
 		}
 
 		if (berserk && pThis->Berzerk)

@@ -546,6 +546,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize the scatter caused by aircraft attack mission
   - Customize whether `Crater=yes` animation would destroy tiberium
   - Targeting limitation for berzerk technos
+  - Allows refineries to use multiple ActiveAnim simultaneously
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

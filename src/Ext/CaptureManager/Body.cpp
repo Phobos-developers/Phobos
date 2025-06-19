@@ -7,7 +7,7 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	if (pManager->MaxControlNodes == 1)
 		return pManager->CanCapture(pTarget);
 
-	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pManager->Owner)->TypeExtData;
 	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
 		// I hate Ares' completely rewritten things - secsome
@@ -132,7 +132,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
 		bool bRemoveFirst = false;
-		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
+		if (const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pManager->Owner)->TypeExtData)
 			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
 
 		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, false, threatDelay);

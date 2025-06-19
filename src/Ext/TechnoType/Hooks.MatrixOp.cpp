@@ -9,6 +9,7 @@
 #include <UnitClass.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/Macro.h>
+#include <Ext/Techno/Body.h>
 
 #include "Body.h"
 
@@ -180,7 +181,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	}
 	else
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
 
 		if (pTypeExt->JumpjetTilt && !onGround && pThis->CurrentSpeed > 0.0
 			&& linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)

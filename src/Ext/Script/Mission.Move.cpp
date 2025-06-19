@@ -453,6 +453,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			const auto pFirstUnitOwner = pTeam->FirstUnit->Owner;
+			validIndexes.reserve(TechnoClass::Array.Count * objectsList.size());
 
 			// Finding the objects from the list that actually exists in the map
 			for (int i = 0; i < TechnoClass::Array.Count; i++)
