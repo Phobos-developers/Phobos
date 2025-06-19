@@ -12,6 +12,10 @@ const char* Enumerable<LaserTrailTypeClass>::GetMainSection()
 void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
+
+	if (!pINI->GetSection(section))
+		return;
+
 	INI_EX exINI(pINI);
 	char tempBuffer[0x40];
 

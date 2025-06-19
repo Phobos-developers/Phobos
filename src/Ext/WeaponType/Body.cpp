@@ -76,10 +76,6 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 	char tempBuffer[0x40];
 
@@ -462,8 +458,8 @@ DEFINE_HOOK(0x772F8C, WeaponTypeClass_Save, 0x5)
 	return 0;
 }
 
+//DEFINE_HOOK_AGAIN(0x7729D6, WeaponTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK_AGAIN(0x7729C7, WeaponTypeClass_LoadFromINI, 0x5)
-DEFINE_HOOK_AGAIN(0x7729D6, WeaponTypeClass_LoadFromINI, 0x5)
 DEFINE_HOOK(0x7729B0, WeaponTypeClass_LoadFromINI, 0x5)
 {
 	GET(WeaponTypeClass*, pItem, ESI);
