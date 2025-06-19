@@ -367,7 +367,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	{
 		CoordStruct coords = pThis->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
-		const auto& [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
+		auto [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
 
 		if (visible && pGroundShape)
 		{
@@ -382,13 +382,13 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 		if (pSelectBox->GroundLine)
 		{
-			Point2D projection { point.X, std::min(point.Y, pBounds->Height - 1) };
+			Point2D start = *pLocation; // Copy to prevent be modified
 			const int color = Drawing::RGB_To_Int(pSelectBox->GroundLineColor.Get(healthPercentage));
 
 			if (pSelectBox->GroundLine_Dashed)
-				pSurface->DrawDashedLine(const_cast<Point2D*>(pLocation), &projection, color, Surface::Pattern, 0);
+				pSurface->DrawDashed(&start, &point, color, 0);
 			else
-				pSurface->DrawLine(const_cast<Point2D*>(pLocation), &projection, color);
+				pSurface->DrawLine(&start, &point, color);
 		}
 	}
 
