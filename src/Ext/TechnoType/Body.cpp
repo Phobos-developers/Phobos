@@ -195,10 +195,10 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 		UnitType = 0x7F6218,
 	};
 	auto const vtThis = static_cast<IUnknownVtbl>(VTable::Get(pType));
-	if (vtThis == IUnknownVtbl::AircraftType ||
-		vtThis == IUnknownVtbl::BuildingType ||
-		vtThis == IUnknownVtbl::InfantryType ||
-		vtThis == IUnknownVtbl::UnitType)
+	if (vtThis == IUnknownVtbl::InfantryType
+		|| vtThis == IUnknownVtbl::UnitType
+		|| vtThis == IUnknownVtbl::AircraftType
+		|| vtThis == IUnknownVtbl::BuildingType)
 	{
 		return static_cast<TechnoTypeClass*>(pType);
 	}

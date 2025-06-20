@@ -536,7 +536,7 @@ void ShieldClass::OnlineCheck()
 	const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
 
 	const auto pTechno = this->Techno;
-	const bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
+	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
 	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
 	{
