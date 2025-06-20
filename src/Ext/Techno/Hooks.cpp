@@ -666,7 +666,7 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 		}
 	}
 
-	R->ECX(pThis->GetType());
+	R->ECX(pThis->Type);
 	return Continue;
 }
 
