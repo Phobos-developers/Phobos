@@ -406,6 +406,7 @@ New:
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
 - Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
+- Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

@@ -121,58 +121,104 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 
 // Restore DebrisMaximums logic (issue #109)
 // Author: Otamaa
-DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
+// Jun20,2025 Modified by: CrimRecya
+DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 {
+	enum { SkipGameCode = 0x702572 };
+
 	GET(TechnoClass* const, pThis, ESI);
 
 	const auto pType = pThis->GetTechnoType();
 
-// Jun12,2025 - CrimRecya : I think there is no need to return to the unreasonable vanilla logic
-// Otherwise, they should be in a parallel relationship rather than a sequential relationship
-/*	// If DebrisMaximums has one value, then legacy behavior is used
-	if (pType->DebrisMaximums.Count == 1 &&
-		pType->DebrisMaximums.GetItem(0) > 0 &&
-		pType->DebrisTypes.Count > 0)
-	{
-		return 0;
-	}*/
-
-	// Removed -1 from the MaxDebris
+	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
 	int totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(pType->MinDebris, pType->MaxDebris);
 
-	const auto& debrisTypes = pType->DebrisTypes;
-	const auto& debrisMaximums = pType->DebrisMaximums;
-
-	// Make DebrisTypes generate completely in accordance with DebrisMaximums,
-	// without continuously looping until it exceeds totalSpawnAmount
-	if (debrisTypes.Count > 0 && debrisMaximums.Count > 0)
+	if (totalSpawnAmount > 0)
 	{
+		const auto& debrisTypes = pType->DebrisTypes;
+		const auto& debrisMaximums = pType->DebrisMaximums;
+
+		const auto pOwner = pThis->Owner;
 		auto coord = pThis->GetCoords();
 
-		for (int currentIndex = 0; currentIndex < debrisMaximums.Count; ++currentIndex)
-		{
-			const int currentMaxDebris = debrisMaximums.GetItem(currentIndex);
+		int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
 
-			if (currentMaxDebris > 0)
+		// Restore DebrisMaximums logic
+		// Make DebrisTypes generate completely in accordance with DebrisMaximums,
+		// without continuously looping until it exceeds totalSpawnAmount
+		if (count > 0)
+		{
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			const auto& debrisMinimums = pTypeExt->DebrisMinimums;
+			const bool limit = pTypeExt->DebrisTypes_Limit.Get(count > 1);
+			const int minIndex = static_cast<int>(debrisMinimums.size()) - 1;
+			int currentIndex = 0;
+
+			while (totalSpawnAmount > 0)
 			{
-				const int adjustedMaximum = Math::min(currentMaxDebris, pType->MaxDebris);
-				int amountToSpawn = std::abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); // 0x702337
-				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
+				const int currentMaxDebris = Math::min(1, debrisMaximums[currentIndex]);
+				const int currentMinDebris = (minIndex >= 0) ? Math::max(0, debrisMinimums[Math::min(currentIndex, minIndex)]) : 0;
+				int amountToSpawn = Math::min(totalSpawnAmount, ScenarioClass::Instance->Random.RandomRanged(currentMinDebris, currentMaxDebris));
 				totalSpawnAmount -= amountToSpawn;
 
 				for ( ; amountToSpawn > 0; --amountToSpawn)
-				{
-					GameCreate<VoxelAnimClass>(debrisTypes.GetItem(currentIndex), &coord, pThis->Owner);
-				}
+					GameCreate<VoxelAnimClass>(debrisTypes[currentIndex], &coord, pOwner);
 
 				if (totalSpawnAmount <= 0)
+					return SkipGameCode;
+
+				if (++currentIndex < count)
+					continue;
+
+				if (limit)
 					break;
+
+				currentIndex = 0;
+			}
+		}
+
+		// Record the ownership of the animation
+		// The vanilla game will consume all totalSpawnAmount when DebrisTypes exists, so there
+		// will be no situation where DebrisTypes and DebrisAnims are generated simultaneously.
+		// However, after fixing DebrisMinimums, according to the original judgment conditions,
+		// it is possible to generate both DebrisTypes and DebrisAnims simultaneously. They all
+		// need to be set up to take effect, and it doesn't seem to bring any further problems,
+		// so I think this can be retained. ( 0x7023E5 / 0x702402 / 0x7024BB )
+		{
+			const auto& debrisAnims = pType->DebrisAnims;
+			const int maxIndex = debrisAnims.Count - 1;
+
+			if (maxIndex >= 0)
+			{
+				do
+				{
+					int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
+					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+				}
+				while (--totalSpawnAmount > 0);
+			}
+		}
+
+		if (count <= 0)
+		{
+			const auto& metallicDebrisAnims = RulesClass::Instance->MetallicDebris;
+			const int maxMetallicIndex = metallicDebrisAnims.Count - 1;
+
+			if (maxMetallicIndex >= 0)
+			{
+				do
+				{
+					int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxMetallicIndex);
+					const auto pAnim = GameCreate<AnimClass>(metallicDebrisAnims[debrisIndex], coord);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+				}
+				while (--totalSpawnAmount > 0);
 			}
 		}
 	}
 
-	R->EBX(totalSpawnAmount);
-	return 0x7023E5;
+	return SkipGameCode;
 }
 
 // issue #250: Building placement hotkey not responding
