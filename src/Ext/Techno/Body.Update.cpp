@@ -50,7 +50,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 
-	if (pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
+	if (pTypeExt->InterceptorType && !pThis->Target && pThis->RearmTimer.Expired() && !this->IsBurrowed)
 	{
 		BulletClass* pTargetBullet = nullptr;
 		const auto pInterceptorType = pTypeExt->InterceptorType.get();
@@ -58,6 +58,8 @@ void TechnoExt::ExtData::ApplyInterceptor()
 		const double guardRangeSq = guardRange * guardRange;
 		const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
 		const double minguardRangeSq = minguardRange * minguardRange;
+		// Interceptor weapon is always fixed
+		const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
 
 		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 		// so it can differ across players throwing target management out of sync.
@@ -76,8 +78,6 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 			if (pBulletTypeExt->Armor.isset())
 			{
-				const int weaponIndex = pThis->SelectWeapon(pBullet);
-				const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 				const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
 				if (versus == 0.0)
