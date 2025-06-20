@@ -564,7 +564,7 @@ TechnoClass* ScriptExt::GreatestThreat(TechnoClass* pTechno, int method, int cal
 
 			// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
 			objectThreatValue += pTarget->Health * (1 - pTarget->GetHealthPercentage());
-			value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(pTarget) / 256.0) + 1.0);
+			value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(pTarget) / Unsorted::LeptonsPerCell) + 1.0);
 
 			if (pTechnoType->VHPScan == 1)
 			{
