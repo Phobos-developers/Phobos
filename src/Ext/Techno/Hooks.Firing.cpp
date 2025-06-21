@@ -12,6 +12,32 @@
 
 #pragma region TechnoClass_SelectWeapon
 
+DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
+{
+	enum { SkipGameCode = 0x6F3341, ReturnValue = 0x6F3406 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
+
+	auto const pType = pThis->GetTechnoType();
+
+	if (pTarget && pTarget->WhatAmI() == AbstractType::Bullet)
+	{
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->InterceptorType)
+		{
+			R->EAX(pTypeExt->InterceptorType->Weapon);
+			return ReturnValue;
+		}
+	}
+
+	// Restore overridden instructions.
+	R->EAX(pType);
+
+	return SkipGameCode;
+}
+
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
 	enum { ReturnWeaponIndex = 0x6F37AF };
