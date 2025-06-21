@@ -39,6 +39,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	, IsOnline { true }
 	, IsCloaked { false }
 	, LastActiveStat { true }
+	, LaserTrail { nullptr }
 	, NeedsDurationRefresh { false }
 	, HasCumulativeAnim { false }
 	, ShouldBeDiscarded { false }
@@ -56,8 +57,18 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (pType->Duration_ApplyFirepowerMult && this->Duration > 0 && pInvoker)
 		this->Duration = Math::max(static_cast<int>(this->Duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
 
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
 	if (pType->Duration_ApplyArmorMultOnTarget && this->Duration > 0) // count its own ArmorMultiplier as well
-		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / TechnoExt::ExtMap.Find(pTechno)->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
+		this->Duration = Math::max(static_cast<int>(this->Duration / pTechno->ArmorMultiplier / pTechnoExt->AE.ArmorMultiplier / pType->ArmorMultiplier), 0);
+
+	const int laserTrailIdx = pType->LaserTrail_Type;
+
+	if (laserTrailIdx != -1)
+	{
+		this->LaserTrail = pTechnoExt->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[laserTrailIdx].get(), pTechno->Owner)).get();
+		this->LaserTrail->Intrinsic = false;
+	}
 
 	if (pInvoker)
 		TechnoExt::ExtMap.Find(pInvoker)->AttachedEffectInvokerCount++;
@@ -67,6 +78,17 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 
 AttachEffectClass::~AttachEffectClass()
 {
+	if (const auto& pTrail = this->LaserTrail)
+	{
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
+		const auto it = std::find_if(pTechnoExt->LaserTrails.cbegin(), pTechnoExt->LaserTrails.cend(), [pTrail](std::unique_ptr<LaserTrailClass> const& item) { return item.get() == pTrail; });
+
+		if (it != pTechnoExt->LaserTrails.cend())
+			pTechnoExt->LaserTrails.erase(it);
+
+		this->LaserTrail = nullptr;
+	}
+
 	auto it = std::find(AttachEffectClass::Array.begin(), AttachEffectClass::Array.end(), this);
 
 	if (it != AttachEffectClass::Array.end())
@@ -862,7 +884,7 @@ int AttachEffectClass::RemoveAllOfType(AttachEffectTypeClass* pType, TechnoClass
 					{
 						if (auto const pInvoker = attachEffect->Invoker)
 							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
-					}			
+					}
 					else
 					{
 						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pTarget));
@@ -995,6 +1017,7 @@ bool AttachEffectClass::Serialize(T& Stm)
 		.Process(this->HasCumulativeAnim)
 		.Process(this->ShouldBeDiscarded)
 		.Process(this->LastActiveStat)
+		.Process(this->LaserTrail)
 		.Process(this->NeedsRecalculateStat)
 		.Success();
 }
