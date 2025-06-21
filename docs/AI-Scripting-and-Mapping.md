@@ -666,7 +666,7 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
-###`800-802` Display Banner
+### `800-802` Display Banner
 
 - Display a 'banner' at a fixed location that is relative to the screen.
   - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
