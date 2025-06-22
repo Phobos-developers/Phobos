@@ -1699,6 +1699,7 @@ msgid ""
 "Add `DebrisMinimums` to keep the count of debris within a certain range "
 "(by CrimRecya)"
 msgstr ""
+"添加了 `DebrisMinimums` 语句以将碎片数量控制在一定范围内（by CrimRecya）"
 
 #: ../../Whats-New.md:411 ../../Whats-New.md:619 ../../Whats-New.md:936
 #: ../../Whats-New.md:1045 ../../Whats-New.md:1070 ../../Whats-New.md:1109

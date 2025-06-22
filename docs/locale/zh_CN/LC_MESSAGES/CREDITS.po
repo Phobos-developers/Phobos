@@ -2023,7 +2023,7 @@ msgstr "自定义 Voxel 碎片 `TrailerAnim` 生成间隔并修复其生成位�
 
 #: ../../../CREDITS.md:501
 msgid "Add `DebrisMinimums` to keep the count of debris within a certain range"
-msgstr ""
+msgstr "添加了 `DebrisMinimums` 语句以将碎片数量控制在一定范围内"
 
 #: ../../../CREDITS.md:502
 msgid "**Ollerus**:"

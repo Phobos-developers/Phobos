@@ -4224,7 +4224,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1120
 msgid "Debris voxel animations limitation"
-msgstr ""
+msgstr "Voxel 碎片数量限制"
 
 #: ../../Fixed-or-Improved-Logics.md:1122
 #: ../../Fixed-or-Improved-Logics.md:1883
@@ -4233,6 +4233,7 @@ msgid ""
 "`DebrisMinimums` to limit the quantity of `DebrisTypes` when "
 "`DebrisTypes.Limit` is enabled."
 msgstr ""
+"当启用 `DebrisTypes.Limit` 时可通过原有的 `DebrisMaximums` 结合新增的 `DebrisMinimums` 共同限制 `DebrisTypes` 的数量。"
 
 #: ../../Fixed-or-Improved-Logics.md:1123
 #: ../../Fixed-or-Improved-Logics.md:1884
@@ -4241,6 +4242,7 @@ msgid ""
 "`DebrisMaximums` is greater than (not equal to) 1 (for compatibility "
 "reasons)."
 msgstr ""
+"出于兼容目的，若 `DebrisMaximums` 大于（不包括等于）1 则默认启用 `DebrisTypes.Limit`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1126
 msgid ""
@@ -4256,25 +4258,28 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1134
 msgid "How to generate `DebrisTypes` in the game:"
-msgstr ""
+msgstr "游戏如何生成 `DebrisTypes`："
 
 #: ../../Fixed-or-Improved-Logics.md:1135
 msgid ""
 "Generate the total number of debris through `MaxDebris` and `MinDebris` "
 "first."
 msgstr ""
+"首先通过 `MaxDebris` 与 `MinDebris` 确定所要生成碎片的总量。"
 
 #: ../../Fixed-or-Improved-Logics.md:1136
 msgid ""
 "Traverse `DebrisTypes` and limit the quantity range through "
 "`DebrisMaximums` and `DebrisMinimums`."
 msgstr ""
+"遍历 `DebrisTypes` 列表并通过 `DebrisMaximums` 和 `DebrisMinimums` 限制数量范围。"
 
 #: ../../Fixed-or-Improved-Logics.md:1137
 msgid ""
 "When the number of generated debris will exceeds the total number, limit "
 "the quantity and end the traversal."
 msgstr ""
+"当已生成碎片数量将要超过总量时限制数量并停止遍历。"
 
 #: ../../Fixed-or-Improved-Logics.md:1138
 msgid ""
@@ -4282,6 +4287,7 @@ msgid ""
 "enough to exceed the total number, it will end if `DebrisTypes.Limit` is "
 "enabled, otherwise the traversal will restart like vanilla game do."
 msgstr ""
+"当遍历完成但碎片的数量并未达到总量时，若启用 `DebrisTypes.Limit` 则直接结束，否则按原版游戏机制重新进行遍历。"
 
 #: ../../Fixed-or-Improved-Logics.md:1141
 msgid "Exploding object customizations"
@@ -6302,7 +6308,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1881
 msgid "Custom debris voxel animations limitation"
-msgstr ""
+msgstr "自定义 Voxel 碎片数量限制"
 
 #: ../../Fixed-or-Improved-Logics.md:1887
 msgid ""
