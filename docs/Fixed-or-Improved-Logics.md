@@ -579,10 +579,10 @@ Grinding.Weapon.RequiredCredits=0  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]
+[SOMEWARHEAD]             ; WarheadType
 ElectricAssaultLevel=1    ; integer
 
-[SOMEBUILDING]
+[SOMEBUILDING]            ; BuildingType
 Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
 Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
 ```
@@ -1132,10 +1132,10 @@ DebrisMinimums=     ; List of integers
 
 ```{hint}
 How to generate `DebrisTypes` in the game:
-- Generate the total number of debris through `MaxDebris` and `MinDebris` first.
-- Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
-- When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
-- When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
+1. Generate the total number of debris through `MaxDebris` and `MinDebris` first.
+2. Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
+3. When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
+4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
 ```
 
 ### Exploding object customizations
@@ -1632,7 +1632,7 @@ In `rulesmd.ini`:
 [General]
 HarvesterScanAfterUnload=false     ; boolean
 
-[SOMEVEHICLE]
+[SOMEVEHICLE]                      ; VehicleType
 HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
@@ -1733,7 +1733,7 @@ In `rulesmd.ini`:
 [General]
 HarvesterDumpAmount=0.0               ; float point value
 
-[SOMEVEHICLE]
+[SOMEVEHICLE]                         ; VehicleType
 HarvesterDumpAmount=                  ; float point value
 ```
 
