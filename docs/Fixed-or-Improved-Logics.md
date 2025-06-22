@@ -1189,7 +1189,7 @@ IronCurtain.KillOrganicsWarhead=   ; WarheadType
 ForceShield.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
 ForceShield.KillOrganicsWarhead=   ; WarheadType
 
-[SOMETECHNO]                       ; InfantryType or Organic=true TechnoType
+[SOMETECHNO]                       ; TechnoType with Organic=true
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
 IronCurtain.KillWarhead=           ; WarheadType
 ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
