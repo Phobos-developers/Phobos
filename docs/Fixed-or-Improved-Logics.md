@@ -14,7 +14,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
-- Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
 - Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
@@ -1118,6 +1117,27 @@ DamagedSpeed=0.75        ; floating point value, multiplier
 DamagedSpeed=            ; floating point value, multiplier
 ```
 
+### Debris voxel animations limitation
+
+- Now, the original `DebrisMaximums` can be used in conjunction with new `DebrisMinimums` to limit the quantity of `DebrisTypes` when `DebrisTypes.Limit` is enabled.
+  - The default value of `DebrisTypes.Limit` is whether the number of `DebrisMaximums` is greater than (not equal to) 1 (for compatibility reasons).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+DebrisTypes.Limit=  ; boolean
+DebrisMaximums=     ; List of integers
+DebrisMinimums=     ; List of integers
+```
+
+```{hint}
+How to generate `DebrisTypes` in the game:
+- Generate the total number of debris through `MaxDebris` and `MinDebris` first.
+- Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
+- When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
+- When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -1856,6 +1876,19 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]              ; WarheadType
 DebrisAnims=               ; List of AnimationTypes
 Debris.Conventional=false  ; boolean
+```
+
+### Custom debris voxel animations limitation
+
+- Now, the original `DebrisMaximums` can be used in conjunction with new `DebrisMinimums` to limit the quantity of `DebrisTypes` when `DebrisTypes.Limit` is enabled.
+  - The default value of `DebrisTypes.Limit` is whether the number of `DebrisMaximums` is greater than (not equal to) 1 (for compatibility reasons).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+DebrisTypes.Limit=  ; boolean
+DebrisMaximums=     ; List of integers
+DebrisMinimums=     ; List of integers
 ```
 
 ### Customizable rocker amplitude
