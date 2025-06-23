@@ -43,7 +43,10 @@ DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_SkipMouseActionUpdate, 0x6)
 DEFINE_HOOK(0x4F4583, GScreenClass_DrawCurrentSelectInfo, 0x6)
 {
 	MessageTemp::NewMsgList = true;
-	ScenarioExt::Global()->NewMessageList->Draw();
+
+	if (const auto pList = ScenarioExt::Global()->NewMessageList.get())
+		pList->Draw();
+
 	MessageTemp::NewMsgList = false;
 
 	return 0;
