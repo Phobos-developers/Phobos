@@ -355,7 +355,19 @@ ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
+### Task subtitles display in the middle of the screen
+
+- Now you can let task subtitles to display directly in the middle area of the screen instead of the upper left corner, with a semi transparent background.
+  - When the mouse hovers over the subtitle area (simply judged as a rectangle), its opacity will increase and it will not disappear during this period.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+MessageDisplayInCenter=false  ; boolean
+```
+
 ### Type select for buildings
+
 - In vanilla game, type select can almost only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
 
 In `rulesmd.ini`:

@@ -87,6 +87,7 @@ public:
 		static bool EnableBuildingPlacementPreview;
 		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
+		static bool MessageDisplayInCenter;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
