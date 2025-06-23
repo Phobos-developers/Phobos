@@ -1055,9 +1055,6 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 
 #pragma region AttackMove
 
-
-#pragma region AttackMove
-
 DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
@@ -1120,12 +1117,12 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 				auto const pTargetExt = TechnoExt::ExtMap.Find(pTechno);
 
 				// Check this to prevent the followed techno from being surrounded
-				if (!pTargetExt || pTargetExt->AttackMoveFollowerTempCount >= 6)
+				if (pTargetExt->AttackMoveFollowerTempCount >= 6)
 					continue;
 
 				auto const pTargetTypeExt = pTargetExt->TypeExtData;
 
-				if (pTargetTypeExt && !pTargetTypeExt->AttackMove_Follow)
+				if (!pTargetTypeExt->AttackMove_Follow)
 				{
 					auto const dist = pTechno->DistanceFrom(pThis);
 

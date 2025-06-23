@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <TechnoTypeClass.h>
 
 #include <Helpers/Macro.h>
@@ -720,7 +720,7 @@ public:
 			, DebrisMinimums {}
 
 			, EngineerRepairAmount { 0 }
-			
+
 			, AttackMove_Follow { false }
 			, AttackMove_Follow_IncludeAir { false }
 			, AttackMove_StopWhenTargetAcquired { }

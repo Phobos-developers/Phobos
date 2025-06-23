@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <OverlayTypeClass.h>
 #include <ScenarioClass.h>
