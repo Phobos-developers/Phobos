@@ -404,8 +404,9 @@ New:
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
-- Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)
+- [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
+- Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
 - Support for more optional weapons (by FlyStar)
 
 Vanilla fixes:
