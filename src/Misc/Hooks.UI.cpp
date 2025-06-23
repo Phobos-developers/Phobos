@@ -11,7 +11,12 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
+
 #include <Misc/FlyingStrings.h>
+
+#include <New/Entity/BannerClass.h>
+#include <New/Type/BannerTypeClass.h>
+
 #include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
@@ -238,6 +243,14 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 		return ContinueDraw;
 
 	return DoNotDraw;
+}
+
+DEFINE_HOOK(0x6D4B25, TacticalClass_Render_Banner, 0x5)
+{
+	for (const auto& pBanner : BannerClass::Array)
+		pBanner->Render();
+
+	return 0;
 }
 
 #pragma region ShowBriefing
