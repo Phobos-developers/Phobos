@@ -224,6 +224,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->DefaultInfantrySelectBox.Read(exINI, GameStrings::AudioVisual, "DefaultInfantrySelectBox");
 	this->DefaultUnitSelectBox.Read(exINI, GameStrings::AudioVisual, "DefaultUnitSelectBox");
+	this->Buildings_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Buildings.DefaultBarTypes");
+	this->Infantry_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Infantry.DefaultBarTypes");
+	this->Vehicles_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Vehicles.DefaultBarTypes");
+	this->Aircraft_DefaultBarTypes.Read(exINI, GameStrings::AudioVisual, "Aircraft.DefaultBarTypes");
 
 	this->DamageOwnerMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier");
@@ -473,6 +477,10 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->Aircraft_DefaultDigitalDisplayTypes)
 		.Process(this->DefaultInfantrySelectBox)
 		.Process(this->DefaultUnitSelectBox)
+		.Process(this->Buildings_DefaultBarTypes)
+		.Process(this->Infantry_DefaultBarTypes)
+		.Process(this->Vehicles_DefaultBarTypes)
+		.Process(this->Aircraft_DefaultBarTypes)
 		.Process(this->VisualScatter_Min)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)

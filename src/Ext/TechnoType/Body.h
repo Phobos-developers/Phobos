@@ -329,8 +329,8 @@ public:
 
 		Nullable<AnimTypeClass*> Promote_VeteranAnimation;
 		Nullable<AnimTypeClass*> Promote_EliteAnimation;
-		Nullable<BarTypeClass*> HealthBar_BarType;
-		Nullable<BarTypeClass*> ShieldBar_BarType;
+		//Nullable<BarTypeClass*> BarTypes;
+		ValueableVector<BarTypeClass*> BarTypes;
 
 		Nullable<AffectedHouse> RadarInvisibleToHouse;
 
@@ -729,8 +729,7 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 			, AttackMove_PursuitTarget { false }
 
-			, HealthBar_BarType { }
-			, ShieldBar_BarType { }
+			, BarTypes { }
 		{ }
 
 		virtual ~ExtData() = default;

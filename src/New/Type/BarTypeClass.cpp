@@ -17,20 +17,21 @@ void BarTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	INI_EX exINI(pINI);
 
-	this->Board_Background_File.Read(exINI, section, "Board.Background.File");
-	this->Board_Background_ShowWhenNotSelected.Read(exINI, section, "Board.Background.ShowWhenNotSelected");
-	this->Board_Background_Translucency.Read(exINI, section, "Board.Background.Translucency");
-	this->Board_Foreground_File.Read(exINI, section, "Board.Foreground.File");
-	this->Board_Foreground_ShowWhenNotSelected.Read(exINI, section, "Board.Foreground.ShowWhenNotSelected");
-	this->Board_Foreground_Translucency.Read(exINI, section, "Board.Foreground.Translucency");
-	this->Board_Offset.Read(exINI, section, "Board.Offset");
+	this->InfoType.Read(exINI, section, "InfoType");
+	this->PipBrd_Background_File.Read(exINI, section, "PipBrd.Background.File");
+	this->PipBrd_Background_ShowWhenNotSelected.Read(exINI, section, "PipBrd.Background.ShowWhenNotSelected");
+	this->PipBrd_Background_Translucency.Read(exINI, section, "PipBrd.Background.Translucency");
+	this->PipBrd_Foreground_File.Read(exINI, section, "PipBrd.Foreground.File");
+	this->PipBrd_Foreground_ShowWhenNotSelected.Read(exINI, section, "PipBrd.Foreground.ShowWhenNotSelected");
+	this->PipBrd_Foreground_Translucency.Read(exINI, section, "PipBrd.Foreground.Translucency");
+	this->PipBrd_Offset.Read(exINI, section, "PipBrd.Offset");
 	this->Bar_Offset.Read(exINI, section, "Bar.Offset");
-	this->Sections_DrawBackwards.Read(exINI, section, "Sections.DrawBackwards");
-	this->Sections_Pips_File.Read(exINI, section, "Sections.Pips.File");
-	this->Sections_Pips.Read(exINI, section, "Sections.Pips");
-	this->Sections_EmptyPip.Read(exINI, section, "Sections.EmptyPip");
-	this->Sections_Amount.Read(exINI, section, "Sections.Amount");
-	this->Sections_PositionDelta.Read(exINI, section, "Sections.PositionDelta");
+	this->Pips_File.Read(exINI, section, "Pips.File");
+	this->Pips_Frames.Read(exINI, section, "Pips.Frames");
+	this->Pips_EmptyFrame.Read(exINI, section, "Pips.EmptyFrame");
+	this->Pips_Amount.Read(exINI, section, "Pips.Amount");
+	this->Pips_PositionDelta.Read(exINI, section, "Pips.PositionDelta");
+	this->Pips_DrawBackwards.Read(exINI, section, "Pips.DrawBackwards");
 
 }
 
@@ -38,20 +39,21 @@ template <typename T>
 void BarTypeClass::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->Board_Background_File)
-		.Process(this->Board_Background_ShowWhenNotSelected)
-		.Process(this->Board_Background_Translucency)
-		.Process(this->Board_Foreground_File)
-		.Process(this->Board_Foreground_ShowWhenNotSelected)
-		.Process(this->Board_Foreground_Translucency)
-		.Process(this->Board_Offset)
+		.Process(this->InfoType)
+		.Process(this->PipBrd_Background_File)
+		.Process(this->PipBrd_Background_ShowWhenNotSelected)
+		.Process(this->PipBrd_Background_Translucency)
+		.Process(this->PipBrd_Foreground_File)
+		.Process(this->PipBrd_Foreground_ShowWhenNotSelected)
+		.Process(this->PipBrd_Foreground_Translucency)
+		.Process(this->PipBrd_Offset)
 		.Process(this->Bar_Offset)
-		.Process(this->Sections_DrawBackwards)
-		.Process(this->Sections_Pips_File)
-		.Process(this->Sections_Pips)
-		.Process(this->Sections_EmptyPip)
-		.Process(this->Sections_Amount)
-		.Process(this->Sections_PositionDelta)
+		.Process(this->Pips_File)
+		.Process(this->Pips_Frames)
+		.Process(this->Pips_EmptyFrame)
+		.Process(this->Pips_Amount)
+		.Process(this->Pips_PositionDelta)
+		.Process(this->Pips_DrawBackwards)
 		;
 }
 

@@ -701,8 +701,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
-	this->HealthBar_BarType.Read(exINI, pSection, "HealthBar.BarType");
-	this->ShieldBar_BarType.Read(exINI, pSection, "ShieldBar.BarType");
+	this->BarTypes.Read(exINI, pSection, "BarTypes");
 
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
@@ -1304,8 +1303,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->AttackMove_PursuitTarget)
 
-		.Process(this->HealthBar_BarType)
-		.Process(this->ShieldBar_BarType)
+		.Process(this->BarTypes)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

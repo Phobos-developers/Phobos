@@ -52,18 +52,7 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
-			const auto thisSBType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldBar_BarType.Get();
-
-			if (thisSBType)
-			{
-				Point2D position = *pLocation;
-				position.Y -= (pThis->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
-				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
-			}
-			else
-			{
-				pShieldData->DrawShieldBar_Building(length, pBound);
-			}
+			pShieldData->DrawShieldBar_Building(length, pBound);
 		}
 	}
 
@@ -90,20 +79,8 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	{
 		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
 		{
-			const auto thisSBType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->ShieldBar_BarType.Get();
-
-			if (thisSBType)
-			{
-				Point2D position = *pLocation;
-				position.Y -= pThis->WhatAmI() == AbstractType::Infantry ? 25 : 26;
-				position.Y += pThis->GetTechnoType()->PixelSelectionBracketDelta + pShieldData->GetType()->BracketDelta;
-				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
-			}
-			else
-			{
-				const int length = pThis->WhatAmI() == AbstractType::Infantry ? 8 : 17;
-				pShieldData->DrawShieldBar_Other(length, pBound);
-			}
+			const int length = pThis->WhatAmI() == AbstractType::Infantry ? Unsorted::HealthBarSectionsInfantry : Unsorted::HealthBarSectionsOther;
+			pShieldData->DrawShieldBar_Other(length, pBound);
 		}
 	}
 
@@ -417,52 +394,191 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_HealthAndShieldBar, 0x5)
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
+	const auto pType = pThis->GetTechnoType();
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (pTypeExt && pTypeExt->HealthBar_Hide)
 		return Skip;
 
-	if (!pTypeExt->HealthBar_BarType)
-		return 0;
+	//if (!pTypeExt->HealthBar_BarType)
+	//	return 0;
 
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const bool pThisIsInf = pThis->WhatAmI() == AbstractType::Infantry;
 	const bool pThisIsBld = pThis->WhatAmI() == AbstractType::Building;
-	const auto thisHBType = pTypeExt->HealthBar_BarType.Get();
-	const auto thisSBType = pTypeExt->ShieldBar_BarType.Get();
+	ValueableVector<BarTypeClass*>* pBarTypes = nullptr;
+
 	Point2D position = *pLocation;
 
-	if (pThisIsBld)
-		position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
-	else
-		position.Y -= (pThisIsInf ? 25 : 26) - pThis->GetTechnoType()->PixelSelectionBracketDelta;
+	//if (pThisIsBld)
+	//	position.Y -= (static_cast<BuildingClass*>(pThis)->Type->Height + 1) * Unsorted::CellHeightInPixels / 2;
+	//else
+	//	position.Y -= (pThisIsInf ? Unsorted::HealthBarYOffsetInfantry : Unsorted::HealthBarYOffsetOther) - pThis->GetTechnoType()->PixelSelectionBracketDelta;
 
-	TechnoExt::DrawBar(pThis, thisHBType, position, pBound, pThis->GetHealthPercentage(), RulesClass::Instance->ConditionYellow, RulesClass::Instance->ConditionRed);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	if (const auto pShieldData = pExt->Shield.get())
+	if (!pTypeExt->BarTypes.empty())
 	{
-		if (pShieldData->IsAvailable() && !pShieldData->IsBrokenAndNonRespawning())
+		pBarTypes = &pTypeExt->BarTypes;
+	}
+	else
+	{
+		switch (pThis->WhatAmI())
 		{
-			if (thisSBType)
+		case AbstractType::Building:
+		{
+			pBarTypes = &RulesExt::Global()->Buildings_DefaultBarTypes;
+			const auto pBuildingType = static_cast<BuildingTypeClass*>(pType);
+			position.Y -= (pBuildingType->Height + 1) * Unsorted::CellHeightInPixels / 2;
+			break;
+		}
+		case AbstractType::Infantry:
+		{
+			pBarTypes = &RulesExt::Global()->Infantry_DefaultBarTypes;
+			position.Y -= Unsorted::HealthBarYOffsetInfantry - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		case AbstractType::Unit:
+		{
+			pBarTypes = &RulesExt::Global()->Vehicles_DefaultBarTypes;
+			position.Y -= Unsorted::HealthBarYOffsetOther - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		case AbstractType::Aircraft:
+		{
+			pBarTypes = &RulesExt::Global()->Aircraft_DefaultBarTypes;
+			position.Y -= Unsorted::HealthBarYOffsetOther - pType->PixelSelectionBracketDelta;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+
+	if (pBarTypes->empty())
+	{
+		TechnoExt::ProcessDigitalDisplays(pThis);
+		return 0;
+	}
+
+	for (BarTypeClass*& pBarType : *pBarTypes)
+	{
+		//if (HouseClass::IsCurrentPlayerObserver() && !pBarType->VisibleToHouses_Observer)
+		//	continue;
+
+		//if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pBarType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+		//	continue;
+
+		//int value = -1;
+		//int maxValue = -1;
+
+		//GetValuesForDisplay(pThis, pBarType->InfoType, value, maxValue);
+
+		//if (value == -1 || maxValue == -1)
+		//	continue;
+
+		//if (pBarType->ValueScaleDivisor > 1)
+		//{
+		//	value = Math::max(value / pBarType->ValueScaleDivisor, value != 0 ? 1 : 0);
+		//	maxValue = Math::max(maxValue / pBarType->ValueScaleDivisor, maxValue != 0 ? 1 : 0);
+		//}
+
+		//const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+		//const bool isInfantry = pThis->WhatAmI() == AbstractType::Infantry;
+		//const bool hasShield = pExt->Shield != nullptr && !pExt->Shield->IsBrokenAndNonRespawning();
+		//Point2D position = pThis->WhatAmI() == AbstractType::Building ?
+		//	GetBuildingSelectBracketPosition(pThis, pDisplayType->AnchorType_Building)
+		//	: GetFootSelectBracketPosition(pThis, pDisplayType->AnchorType);
+		//position.Y += pType->PixelSelectionBracketDelta;
+		double pValuePercentage = 1.0;
+		double pConditionYellow = 0.66;
+		double pConditionRed = 0.33;
+
+		switch (pBarType->InfoType)
+		{
+			case DisplayInfoType::Health:
 			{
-				position.Y += pShieldData->GetType()->BracketDelta;
-				TechnoExt::DrawBar(pThis, thisSBType, position, pBound, pShieldData->GetHealthRatio(), pShieldData->GetType()->GetConditionYellow(), pShieldData->GetType()->GetConditionRed());
+				pValuePercentage = pThis->GetHealthPercentage();
+				pConditionYellow = RulesClass::Instance->ConditionYellow;
+				pConditionRed = RulesClass::Instance->ConditionRed;
+				break;
 			}
-			else
+			case DisplayInfoType::Shield:
 			{
-				if (pThisIsBld)
-				{
-					const short pThisBldTypeWidth = static_cast<BuildingClass*>(pThis)->Type->GetFoundationWidth();
-					const int length = pThisBldTypeWidth * 7 + (pThisBldTypeWidth / 2);
-					pShieldData->DrawShieldBar_Building(length, pBound);
-				}
-				else
-				{
-					const int length = pThisIsInf ? 8 : 17;
-					pShieldData->DrawShieldBar_Other(length, pBound);
-				}
+				position.Y += pExt->Shield->GetType()->BracketDelta;
+				pValuePercentage = double(pExt->Shield->GetHP()) / pExt->Shield->GetType()->Strength.Get();
+				pConditionYellow = pExt->Shield->GetType()->ConditionYellow;
+				pConditionRed = pExt->Shield->GetType()->ConditionRed;
+				break;
+			}
+			case DisplayInfoType::Ammo:
+			{
+				if (pType->Ammo > 0)
+					pValuePercentage = double(pThis->Ammo) / pType->Ammo;
+
+				break;
+			}
+			case DisplayInfoType::MindControl:
+			{
+				if (pThis->CaptureManager != nullptr)
+					pValuePercentage = double(pThis->CaptureManager->ControlNodes.Count) / pThis->CaptureManager->MaxControlNodes;
+
+				break;
+			}
+			case DisplayInfoType::Spawns:
+			{
+				if (pThis->SpawnManager == nullptr || pType->Spawns == nullptr || pType->SpawnsNumber <= 0)
+					break;
+
+				pValuePercentage = double(pThis->SpawnManager->CountAliveSpawns()) / pType->SpawnsNumber;
+				break;
+			}
+			case DisplayInfoType::Passengers:
+			{
+				if (pType->Passengers > 0)
+					pValuePercentage = double(pThis->Passengers.NumPassengers) / pType->Passengers;
+
+				break;
+			}
+			case DisplayInfoType::Tiberium:
+			{
+				if (pType->Storage > 0)
+					pValuePercentage = double(pThis->Tiberium.GetTotalAmount()) / pType->Storage;
+
+				break;
+			}
+			case DisplayInfoType::Experience:
+			{
+				pValuePercentage = double(pThis->Veterancy.Veterancy * RulesClass::Instance->VeteranRatio * pType->GetCost()) / (2.0 * RulesClass::Instance->VeteranRatio * pType->GetCost());
+				break;
+			}
+			case DisplayInfoType::Occupants:
+			{
+				if (pThis->WhatAmI() != AbstractType::Building)
+					break;
+
+				const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+				const auto pBuilding = abstract_cast<BuildingClass*>(pThis);
+
+				if (!pBuildingType->CanBeOccupied)
+					break;
+
+				pValuePercentage = double(pBuilding->Occupants.Count) / pBuildingType->MaxNumberOccupants;
+				break;
+			}
+			case DisplayInfoType::GattlingStage:
+			{
+				if (!pType->IsGattling)
+					break;
+
+				pValuePercentage = double(pThis->CurrentGattlingStage) / pType->WeaponStages;
+				break;
+			}
+			default:
+			{
+				break;
 			}
 		}
+
+		TechnoExt::DrawBar(pThis, pBarType, position, pBound, pValuePercentage, pConditionYellow, pConditionRed);
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
