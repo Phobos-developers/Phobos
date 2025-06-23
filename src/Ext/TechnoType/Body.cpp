@@ -693,6 +693,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
 
+	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
+	this->DebrisMinimums.Read(exINI, pSection, "DebrisMinimums");
+
 	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
 	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
@@ -1288,8 +1291,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
 
+		.Process(this->DebrisTypes_Limit)
+		.Process(this->DebrisMinimums)
+
 		.Process(this->EngineerRepairAmount)
-		
+
 		.Process(this->AttackMove_Follow)
 		.Process(this->AttackMove_Follow_IncludeAir)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
