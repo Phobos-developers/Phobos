@@ -3,6 +3,7 @@
 #include <WeaponTypeClass.h>
 #include <DiskLaserClass.h>
 #include <EBolt.h>
+#include <ParticleSystemTypeClass.h>
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
 #include <Utilities/TemplateDef.h>
@@ -25,9 +26,9 @@ public:
 		Valueable<double> DiskLaser_Radius;
 		Valueable<Leptons> ProjectileRange;
 		Valueable<RadTypeClass*> RadType;
-		Valueable<bool> Bolt_Disable1;
-		Valueable<bool> Bolt_Disable2;
-		Valueable<bool> Bolt_Disable3;
+		Nullable<ColorStruct> Bolt_Color[3];
+		Valueable<bool> Bolt_Disable[3];
+		Nullable<ParticleSystemTypeClass*> Bolt_ParticleSystem;
 		Valueable<int> Bolt_Arcs;
 		Valueable<int> Bolt_Duration;
 		Nullable<bool> Bolt_FollowFLH;
@@ -92,9 +93,9 @@ public:
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
 			, RadType {}
-			, Bolt_Disable1 { false }
-			, Bolt_Disable2 { false }
-			, Bolt_Disable3 { false }
+			, Bolt_Color {}
+			, Bolt_Disable { Valueable<bool>(false) }
+			, Bolt_ParticleSystem {}
 			, Bolt_Arcs { 8 }
 			, Bolt_Duration { 17 }
 			, Bolt_FollowFLH {}
@@ -183,20 +184,12 @@ public:
 		~ExtContainer();
 	};
 
-	struct EBoltWeaponStruct
-	{
-		WeaponTypeExt::ExtData* Weapon;
-		int BurstIndex;
-	};
-
 	static ExtContainer ExtMap;
 
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static double OldRadius;
-	static PhobosMap<EBolt*, EBoltWeaponStruct> BoltWeaponMap;
-	static const WeaponTypeExt::ExtData* BoltWeaponType;
 
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse = nullptr);
 	static void DetonateAt(WeaponTypeClass* pThis, AbstractClass* pTarget, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse = nullptr);
@@ -205,5 +198,4 @@ public:
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer);
 	static int GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer, int range);
 	static int GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFirer, bool isMinimum);
-
 };

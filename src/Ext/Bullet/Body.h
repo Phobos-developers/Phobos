@@ -25,7 +25,7 @@ public:
 		bool IsInterceptor;
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
-		std::vector<LaserTrailClass> LaserTrails;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 

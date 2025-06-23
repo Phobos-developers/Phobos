@@ -10,6 +10,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/EBolt/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
@@ -210,6 +211,7 @@ using PhobosTypeRegistry = TypeRegistry <
 	BulletExt,
 	BulletTypeExt,
 	CellExt,
+	EBoltExt,
 	HouseExt,
 	OverlayTypeExt,
 	ParticleSystemTypeExt,

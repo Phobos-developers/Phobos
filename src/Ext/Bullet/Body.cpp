@@ -6,6 +6,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
+#include <Ext/EBolt/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 #include <Misc/FlyingStrings.h>
@@ -21,7 +22,7 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	auto pTypeExt = this->TypeExtData;
 	bool canAffect = false;
 	bool isIntercepted = false;
-	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 	const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
 
 	if (pTypeExt->Armor.isset())
@@ -146,9 +147,7 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-	{
-		this->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pOwner);
-	}
+		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pOwner));
 }
 
 void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
@@ -331,12 +330,14 @@ inline void BulletExt::SimulatedFiringElectricBolt(BulletClass* pBullet)
 	if (!pWeapon->IsElectricBolt)
 		return;
 
-	const auto pEBolt = (AresFunctions::CreateAresEBolt ? AresFunctions::CreateAresEBolt(pWeapon) : GameCreate<EBolt>());
-	pEBolt->AlternateColor = pWeapon->IsAlternateColor;
-	auto& weaponStruct = WeaponTypeExt::BoltWeaponMap[pEBolt];
-	weaponStruct.Weapon = WeaponTypeExt::ExtMap.Find(pWeapon);
-	weaponStruct.BurstIndex = 0;
-	pEBolt->Fire(pBullet->SourceCoords, (pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords), 0);
+	const auto pBolt = EBoltExt::CreateEBolt(pWeapon);
+	pBolt->AlternateColor = pWeapon->IsAlternateColor;
+
+	const auto targetCoords = pBullet->Type->Inviso ? pBullet->Location : pBullet->TargetCoords;
+	pBolt->Fire(pBullet->SourceCoords, targetCoords, 0);
+
+	if (const auto particle = WeaponTypeExt::ExtMap.Find(pWeapon)->Bolt_ParticleSystem.Get(RulesClass::Instance->DefaultSparkSystem))
+		GameCreate<ParticleSystemClass>(particle, targetCoords, nullptr, nullptr, CoordStruct::Empty, nullptr);
 }
 
 // Make sure pBullet and pBullet->WeaponType is not empty before call

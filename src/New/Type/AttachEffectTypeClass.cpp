@@ -90,7 +90,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
 
-	if (INIClass::IsBlank(pSection))
+	if (INIClass::IsBlank(pSection) || !pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);
@@ -188,6 +188,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
 	this->PreventNegativeDamage.Read(exINI, pSection, "PreventNegativeDamage");
+	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -278,6 +279,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
 		.Process(this->PreventNegativeDamage)
+		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
 		;
 }

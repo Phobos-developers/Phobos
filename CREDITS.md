@@ -416,6 +416,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize limit when engineer repair a building
   - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Display banner improvement
+  - Electric/RadBeam trail for laser tails
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -496,6 +497,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
   - Several new Infotypes, no display in specific status and a new single frame display method
   - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
+  - Add `DebrisMinimums` to keep the count of debris within a certain range
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -549,6 +551,8 @@ This page lists all the individual contributions to the project by their author.
   - Customize the scatter caused by aircraft attack mission
   - Customize whether `Crater=yes` animation would destroy tiberium
   - Targeting limitation for berzerk technos
+  - Allows refineries to use multiple ActiveAnim simultaneously
+  - Several attackmove related enhancement
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

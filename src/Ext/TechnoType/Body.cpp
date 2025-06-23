@@ -155,6 +155,8 @@ void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 {
 	const auto pTechnoType = this->OwnerObject();
 	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
+	this->SpawnerRange = 0;
+	this->EliteSpawnerRange = 0;
 
 	auto setWeaponRange = [](int& weaponRange, WeaponTypeClass* pWeaponType)
 		{
@@ -193,10 +195,10 @@ TechnoTypeClass* TechnoTypeExt::GetTechnoType(ObjectTypeClass* pType)
 		UnitType = 0x7F6218,
 	};
 	auto const vtThis = static_cast<IUnknownVtbl>(VTable::Get(pType));
-	if (vtThis == IUnknownVtbl::AircraftType ||
-		vtThis == IUnknownVtbl::BuildingType ||
-		vtThis == IUnknownVtbl::InfantryType ||
-		vtThis == IUnknownVtbl::UnitType)
+	if (vtThis == IUnknownVtbl::InfantryType
+		|| vtThis == IUnknownVtbl::UnitType
+		|| vtThis == IUnknownVtbl::AircraftType
+		|| vtThis == IUnknownVtbl::BuildingType)
 	{
 		return static_cast<TechnoTypeClass*>(pType);
 	}
@@ -365,10 +367,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
@@ -696,6 +694,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->EngineerRepairAmount.Read(exINI, pSection, "EngineerRepairAmount");
 
+	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
+	this->DebrisMinimums.Read(exINI, pSection, "DebrisMinimums");
+
+	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
+	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
+	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
+	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -792,10 +798,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			}
 		}
 	}
-
-	// Spawner range
-	if (this->Spawner_LimitRange)
-		this->CalculateSpawnerRange();
 
 	// Airstrike tint color
 	this->TintColorAirstrike = GeneralUtils::GetColorFromColorAdd(this->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor));
@@ -1291,7 +1293,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FireUp_ResetInRetarget)
 		//.Process(this->SecondaryFire)
 
+		.Process(this->DebrisTypes_Limit)
+		.Process(this->DebrisMinimums)
+
 		.Process(this->EngineerRepairAmount)
+
+		.Process(this->AttackMove_Follow)
+		.Process(this->AttackMove_Follow_IncludeAir)
+		.Process(this->AttackMove_StopWhenTargetAcquired)
+		.Process(this->AttackMove_PursuitTarget)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -1358,7 +1368,7 @@ DEFINE_HOOK(0x717094, TechnoTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x716132, TechnoTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x716123, TechnoTypeClass_LoadFromINI, 0x5)
 {
 	GET(TechnoTypeClass*, pItem, EBP);

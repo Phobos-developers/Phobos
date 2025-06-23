@@ -190,6 +190,7 @@ ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
 PreventNegativeDamage=false                        ; boolean
+LaserTrail.Type=                                   ; lasertrail type
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -282,6 +283,7 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+- LaserTrail can also be drawn as EBolt or RadBeam.
 
 In `artmd.ini`:
 ```ini
@@ -289,15 +291,28 @@ In `artmd.ini`:
 0=SOMETRAIL
 
 [SOMETRAIL]                      ; LaserTrailType name
-IsHouseColor=false               ; boolean
-Color=255,0,0                    ; integer - R,G,B
-FadeDuration=64                  ; integer
-Thickness=4                      ; integer
+DrawType=laser                   ; laser trail type (laser | ebolt | radbeam)
+FadeDuration=                    ; integer, default to 64 for laser, 17 for ebolt, 15 for radbeam
 SegmentLength=128                ; integer, minimal length of each trail segment
 IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
 CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
 CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
+; laser
+Color=255,0,0                    ; integer - R,G,B
+IsHouseColor=false               ; boolean
+Thickness=4                      ; integer
+IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
+; ebolt
+IsAlternateColor=false           ; boolean
+Bolt.Color1=                     ; integer - R,G,B
+Bolt.Disable1=false              ; boolean
+Bolt.Color2=                     ; integer - R,G,B
+Bolt.Disable2=false              ; boolean
+Bolt.Color3=                     ; integer - R,G,B
+Bolt.Disable3=false              ; boolean
+; radbeam
+Beam.Color=                      ; integer - R,G,B
+Beam.Amplitude=40.0              ; floating point value
 
 [SOMEPROJECTILE]                 ; Projectile Image
 LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
@@ -311,8 +326,8 @@ LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVOXELANIM]             ; VoxelAnim
-LaserTrail.Types=SOMETRAIL  ; List of LaserTrailTypes
+[SOMEVOXELANIM]                  ; VoxelAnim
+LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
 ```
 
 ```{warning}
@@ -1202,6 +1217,54 @@ AttackMove.UpdateTarget=false  ; boolean
 [SOMETECHNO]                   ; TechnoType
 AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Aggressive
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
+```
+
+### Attack move - behavior when target acquired
+
+- Now you can make attack-moving units stop moving when they spot an enemy using `AttackMove.StopWhenTargetAcquired`. This is more like the attack move behavior in Starcraft and Warcraft.
+  - This feature is used to prevent units from charging forward and taking more damage during an attack move command.
+- You can also make them keep chasing on the spotted target using `AttackMove.PursuitTarget`.
+  - This feature should be useful for close range units like ZEP.
+
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.StopWhenTargetAcquired=         ; boolean
+
+[SOMETECHNO]                               ; TechnoType
+AttackMove.StopWhenTargetAcquired=         ; boolean, default to [General] -> AttackMove.StopWhenTargetAcquired if set, inverse of OpportunityFire otherwise.
+AttackMove.PursuitTarget=                  ; boolean
+```
+
+```{note}
+1. Many units would have stopped when they found an enemy during an attack move command already. This behavior is independent from `AttackMove.StopWhenTargetAcquired`.
+2. Some units (f.ex. jumpjets) will not fire correctly under the vanilla attack move command. The exact reason is not clear, but this feature can fix this problem.
+3. Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop immediatly and not scatter to a cell. This is designed for practical reason.
+```
+
+### Attack move - follow
+
+- Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`ctrl + alt`).
+  - Use `AttackMove.Follow.IncludeAir` to determine whether the follower will follow an air unit.
+- This feature should be useful for supportive units such as medics and repairers.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                               ; TechnoType
+AttackMove.Follow=false                    ; boolean
+AttackMove.Follow.IncludeAir=false         ; boolean
+```
+
+### Attack move - without weapon
+
+- In vanilla, attack move command is not allowed to be given to units without weapons. Now you can disable this hardcoded behavior using `AttackMove.IgnoreWeaponCheck=true`.
+  - Unarmed units cannot actually execute attack move commands. This feature is to prevent the attack move pointer from being disabled when you select unarmed units and other units at the same time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.IgnoreWeaponCheck=false    ; boolean
 ```
 
 ### Aircraft spawner customizations
