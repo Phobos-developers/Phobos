@@ -1067,7 +1067,7 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 	{
 		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
-			auto crd = pThis->GetCoords();
+			auto const crd = pThis->GetCoords();
 			pJumpjetLoco->DestinationCoords.X = crd.X;
 			pJumpjetLoco->DestinationCoords.Y = crd.Y;
 			pJumpjetLoco->CurrentSpeed = 0;
@@ -1100,15 +1100,17 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	GET(FootClass* const, pThis, ESI);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (pTypeExt->AttackMove_Follow)
 	{
-		auto pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(), pThis->GetGuardRange(2) / 256.0, pTypeExt->AttackMove_Follow_IncludeAir);
+		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
+			pThis->GetGuardRange(2) / Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
+
 		TechnoClass* pClosestTarget = nullptr;
 		int closestRange = 65536;
 
-		for (auto pTechno : pTechnoVectors)
+		for (auto const pTechno : pTechnoVectors)
 		{
 			if ((pTechno->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
 				&& pTechno != pThis && pTechno->Owner == pThis->Owner
@@ -1147,10 +1149,8 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 		{
 			if (pThis->MegaTarget)
 				pThis->SetDestination(pThis->MegaTarget, false);
-			else if (pThis->MegaDestination)
+			else // MegaDestination can be nullptr
 				pThis->SetDestination(pThis->MegaDestination, false);
-			else
-				pThis->SetDestination(nullptr, false);
 		}
 
 		pThis->ClearMegaMissionData();
