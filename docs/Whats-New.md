@@ -407,6 +407,7 @@ New:
 - [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
 - Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
+- Several attackmove related enhancement (by TaranDahl)
 - Task subtitles display in the middle of the screen (by CrimRecya)
 
 Vanilla fixes:
