@@ -51,6 +51,7 @@ public:
 	Nullable<Leptons> DiscardOn_RangeOverride;
 	Valueable<double> DiscardOn_AbovePercent;
 	Valueable<double> DiscardOn_BelowPercent;
+	Valueable<int> DiscardOn_CumulativeCount;
 	Valueable<double> AffectAbovePercent;
 	Valueable<double> AffectBelowPercent;
 	Valueable<bool> PenetratesIronCurtain;
@@ -134,6 +135,7 @@ public:
 		, DiscardOn_RangeOverride {}
 		, DiscardOn_AbovePercent { 0.0 }
 		, DiscardOn_BelowPercent { 0.0 }
+		, DiscardOn_CumulativeCount { -1 }
 		, AffectAbovePercent { 0.0 }
 		, AffectBelowPercent { 0.0 }
 		, PenetratesIronCurtain { false }

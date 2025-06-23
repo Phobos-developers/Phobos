@@ -254,7 +254,7 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
 		{
 			if (pWHExt->KillWeapon_OnFirer_RealLaunch)
-				RealLaunch(pWHExt->KillWeapon_OnFirer, pSource, pSource);
+				RealLaunch(pWHExt->KillWeapon_OnFirer, pSource, pSource, true, pThis);
 			else
 				WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
 		}
@@ -488,7 +488,7 @@ void TechnoExt::ExtData::ApplyAuxWeapon(WeaponTypeClass* pAuxWeapon, AbstractCla
 	}
 }
 
-void TechnoExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult)
+void TechnoExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, TechnoClass* pTarget, bool applyFirepowerMult, TechnoClass* pFirer)
 {
 	int damage = pWeapon->Damage;
 
@@ -498,7 +498,10 @@ void TechnoExt::RealLaunch(WeaponTypeClass* pWeapon, TechnoClass* pSource, Techn
 	if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTarget, pSource,
 		damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
 	{
-		BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pSource->Location, true);
+		if (!pFirer)
+			pFirer = pSource;
+
+		BulletExt::SimulatedFiringUnlimbo(pBullet, pSource->Owner, pWeapon, pFirer->Location, true);
 		BulletExt::SimulatedFiringEffects(pBullet, pSource->Owner, nullptr, false, true);
 	}
 }

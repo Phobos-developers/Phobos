@@ -21,6 +21,7 @@ This page describes all the engine features that are either new and introduced b
     - `inrange`: Discard if within weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `outofrange`: Discard if outside weapon range from current target. Distance can be overridden via `DiscardOn.RangeOverride`.
     - `firing`: Discard when firing a weapon. This counts special weapons that are not actually fired such as ones with `Spawner=true` or `DrainWeapon=true`.
+  - If `DiscardOn.CumulativeCount` is greater than 0, the effect is discarded when it has `Cumulative=yes` and been attached to the object more than this amount of times.
   - If `DiscardOn.AbovePercent` or `DiscardOn.BelowPercent` is set, the effect is discarded when the object's health percentage is above/below that value.
   - If `AffectAbovePercent` or `AffectBelowPercent` is set, the effect can be applied only when the object's health percentage is above/below that value.
   - If `PenetratesIronCurtain` is not set to true, the effect is not applied on currently invulnerable objects.
@@ -117,11 +118,12 @@ Cumulative=false                                   ; boolean
 Cumulative.MaxCount=-1                             ; integer
 Powered=false                                      ; boolean
 DiscardOn=none                                     ; List of discard condition enumeration (none|entry|move|stationary|drain|inrange|outofrange)
+DiscardOn.RangeOverride=                           ; floating point value, distance in cells
+DiscardOn.CumulativeCount=-1                       ; integer
 DiscardOn.AbovePercent=                            ; floating point value, percents or absolute (0.0-1.0)
 DiscardOn.BelowPercent=                            ; floating point value, percents or absolute (0.0-1.0)
 AffectAbovePercent=                                ; floating point value, percents or absolute (0.0-1.0)
 AffectBelowPercent=                                ; floating point value, percents or absolute (0.0-1.0)
-DiscardOn.RangeOverride=                           ; floating point value, distance in cells
 PenetratesIronCurtain=false                        ; boolean
 PenetratesForceShield=                             ; boolean
 Animation=                                         ; AnimationType

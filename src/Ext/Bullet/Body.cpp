@@ -151,9 +151,10 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	}
 }
 
-void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHDamageOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
+void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>& exWH, const std::vector<int>& exWHOverrides, const std::vector<double>& exWHChances, const std::vector<bool>& exWHFull, const std::vector<bool>& exWHOwner, const CoordStruct& coords, HouseClass* pOwner, TechnoClass* pInvoker)
 {
 	auto const pThis = this->OwnerObject();
+	auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 	const int defaultDamage = pThis->WeaponType ? pThis->WeaponType->Damage : 0;
 
 	for (size_t i = 0; i < exWH.size(); i++)
@@ -161,19 +162,16 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		auto const pWH = exWH[i];
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-		if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
-		{
-			if (!pWHExt->IsHealthInThreshold(pTarget))
-				continue;
-		}
+		if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
+			continue;
 
 		int damage = defaultDamage;
-		size_t size = exWHDamageOverrides.size();
+		size_t size = exWHOverrides.size();
 
 		if (size > i)
-			damage = exWHDamageOverrides[i];
+			damage = exWHOverrides[i];
 		else if (size > 0)
-			damage = exWHDamageOverrides[size - 1];
+			damage = exWHOverrides[size - 1];
 
 		bool detonate = true;
 		size = exWHChances.size();
@@ -222,7 +220,7 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		if (isFull)
 			WarheadTypeExt::DetonateAt(pWH, coords, pFirer, damage, pHouse, pThis->Target);
 		else
-			WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(coords, damage, pFirer, pWH, true, pHouse, abstract_cast<TechnoClass*>(pThis->Target));
+			pWHExt->DamageAreaWithTarget(coords, damage, pFirer, pWH, true, pHouse, pTarget);
 	}
 }
 

@@ -96,7 +96,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Duration.Read(exINI, pSection, "Duration");
-	this->Duration_ApplyVersus_Warhead.Read(exINI, pSection, "Duration.ApplyVersusWarhead");
+	this->Duration_ApplyVersus_Warhead.Read(exINI, pSection, "Duration.ApplyVersus.Warhead");
 	this->Duration_ApplyFirepowerMult.Read(exINI, pSection, "Duration.ApplyFirepowerMult");
 	this->Duration_ApplyArmorMultOnTarget.Read(exINI, pSection, "Duration.ApplyArmorMultOnTarget");
 	this->Cumulative.Read(exINI, pSection, "Cumulative");
@@ -106,6 +106,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->DiscardOn_RangeOverride.Read(exINI, pSection, "DiscardOn.RangeOverride");
 	this->DiscardOn_AbovePercent.Read(exINI, pSection, "DiscardOn.AbovePercent");
 	this->DiscardOn_BelowPercent.Read(exINI, pSection, "DiscardOn.BelowPercent");
+	this->DiscardOn_CumulativeCount.Read(exINI, pSection, "DiscardOn.CumulativeCount");
 	this->AffectAbovePercent.Read(exINI, pSection, "AffectAbovePercent");
 	this->AffectBelowPercent.Read(exINI, pSection, "AffectBelowPercent");
 	this->PenetratesIronCurtain.Read(exINI, pSection, "PenetratesIronCurtain");
@@ -208,6 +209,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->DiscardOn_RangeOverride)
 		.Process(this->DiscardOn_AbovePercent)
 		.Process(this->DiscardOn_BelowPercent)
+		.Process(this->DiscardOn_CumulativeCount)
 		.Process(this->AffectAbovePercent)
 		.Process(this->AffectBelowPercent)
 		.Process(this->PenetratesIronCurtain)

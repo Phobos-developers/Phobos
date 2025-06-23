@@ -513,26 +513,33 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		return true;
 	}
 
-	auto const discardOn = this->Type->DiscardOn;
+	auto const pType = this->Type;
+	auto const pTechno = this->Techno;
+
+	if (pType->DiscardOn_AbovePercent > 0.0 && pTechno->GetHealthPercentage() >= pType->DiscardOn_AbovePercent)
+	{
+		this->LastDiscardCheckValue = true;
+		return true;
+	}
+
+	if (pType->DiscardOn_BelowPercent > 0.0 && pTechno->GetHealthPercentage() <= pType->DiscardOn_BelowPercent)
+	{
+		this->LastDiscardCheckValue = true;
+		return true;
+	}
+
+	if (pType->DiscardOn_CumulativeCount > 0 && pType->DiscardOn_CumulativeCount <= pTechno->GetAttachedEffectCumulativeCount(pType))
+	{
+		this->LastDiscardCheckValue = true;
+		return true;
+	}
+
+	auto const discardOn = pType->DiscardOn;
 
 	if (discardOn == DiscardCondition::None)
 	{
 		this->LastDiscardCheckValue = false;
 		return false;
-	}
-
-	auto const pTechno = this->Techno;
-
-	if (this->Type->DiscardOn_AbovePercent > 0.0 && pTechno->GetHealthPercentage() >= this->Type->DiscardOn_AbovePercent)
-	{
-		this->LastDiscardCheckValue = false;
-		return true;
-	}
-
-	if (this->Type->DiscardOn_BelowPercent > 0.0 && pTechno->GetHealthPercentage() <= this->Type->DiscardOn_BelowPercent)
-	{
-		this->LastDiscardCheckValue = false;
-		return true;
 	}
 
 	if (auto const pFoot = abstract_cast<FootClass*, true>(pTechno))
@@ -567,9 +574,9 @@ bool AttachEffectClass::ShouldBeDiscardedNow()
 		{
 			int distance = -1;
 
-			if (this->Type->DiscardOn_RangeOverride.isset())
+			if (pType->DiscardOn_RangeOverride.isset())
 			{
-				distance = this->Type->DiscardOn_RangeOverride.Get();
+				distance = pType->DiscardOn_RangeOverride.Get();
 			}
 			else
 			{
