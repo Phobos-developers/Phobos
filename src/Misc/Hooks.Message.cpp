@@ -5,73 +5,107 @@
 
 namespace MessageTemp
 {
-	bool OnMessages = false;
-	bool NewMsgList = false;
+	bool OnOldMessages = false;
+	bool OnNewMessages = false;
+	bool NewMessageList = false;
 }
 
-bool MouseIsOverMessageLists()
+static inline bool MouseIsOverOldMessageLists()
 {
 	const auto pMousePosition = &WWMouseClass::Instance->XY1;
-	const auto pMessages = ScenarioExt::Global()->NewMessageList.get();
+	const auto pMessages = &MessageListClass::Instance;
 
 	if (TextLabelClass* pText = pMessages->MessageList)
 	{
-		if (pMousePosition->Y >= pMessages->MessagePos.Y && pMousePosition->X >= pMessages->MessagePos.X && pMousePosition->X <= pMessages->MessagePos.X + pMessages->Width)
+		const int textHeight = pMessages->Height;
+		int height = pMessages->MessagePos.Y;
+
+		for ( ; pText; pText = static_cast<TextLabelClass*>(pText->GetNext()))
+			height += textHeight;
+
+		if (pMousePosition->Y < (height + 2))
+			return true;
+	}
+
+	return false;
+}
+
+static inline bool MouseIsOverNewMessageLists()
+{
+	const auto pMousePosition = &WWMouseClass::Instance->XY1;
+
+	if (const auto pMessages = ScenarioExt::Global()->NewMessageList.get())
+	{
+		if (TextLabelClass* pText = pMessages->MessageList)
 		{
-			const int textHeight = pMessages->Height;
-			int height = pMessages->MessagePos.Y;
+			if (pMousePosition->Y >= pMessages->MessagePos.Y
+				&& pMousePosition->X >= pMessages->MessagePos.X
+				&& pMousePosition->X <= pMessages->MessagePos.X + pMessages->Width)
+			{
+				const int textHeight = pMessages->Height;
+				int height = pMessages->MessagePos.Y;
 
-			for ( ; pText; pText = static_cast<TextLabelClass*>(pText->GetNext()))
-				height += textHeight;
+				for ( ; pText; pText = static_cast<TextLabelClass*>(pText->GetNext()))
+					height += textHeight;
 
-			if (pMousePosition->Y < (height + 2))
-				return true;
+				if (pMousePosition->Y < (height + 2))
+					return true;
+			}
 		}
 	}
 
 	return false;
 }
 
-DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_SkipMouseActionUpdate, 0x6)
+DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_NewMessageListManage, 0x6)
 {
+	if (Phobos::Config::MessageApplyHoverState)
+		MessageTemp::OnOldMessages = MouseIsOverOldMessageLists();
+
 	if (Phobos::Config::MessageDisplayInCenter)
-		MessageTemp::OnMessages = MouseIsOverMessageLists();
+		MessageTemp::OnNewMessages = MouseIsOverNewMessageLists();
 
 	return 0;
 }
 
-DEFINE_HOOK(0x4F4583, GScreenClass_DrawCurrentSelectInfo, 0x6)
+DEFINE_HOOK(0x4F4583, GScreenClass_NewMessageListManage, 0x6)
 {
-	MessageTemp::NewMsgList = true;
+	MessageTemp::NewMessageList = true;
 
 	if (const auto pList = ScenarioExt::Global()->NewMessageList.get())
 		pList->Draw();
 
-	MessageTemp::NewMsgList = false;
+	MessageTemp::NewMessageList = false;
 
 	return 0;
 }
 
 DEFINE_HOOK(0x55DDA0, MainLoop_FrameStep_NewMessageListManage, 0x5)
 {
-	if (!MessageTemp::OnMessages)
+	enum { SkipGameCode = 0x55DDAA };
+
+	if (!Phobos::Config::MessageApplyHoverState || !MessageTemp::OnOldMessages)
+		MessageListClass::Instance.Manage();
+
+	if (!MessageTemp::OnNewMessages)
 	{
 		if (const auto pList = ScenarioExt::Global()->NewMessageList.get())
 			pList->Manage();
 	}
 
-	return 0;
+	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x5D3BA0, MessageListClass_AddMessage_InCenter, 0x6)
+DEFINE_HOOK(0x6DE11D, MessageListClass_AddMessage_InCenter, 0x5)
 {
-	if (*R->ESP<int*>() == 0x6DE127) // TActionClass::Execute
-	{
-		if (const auto pList = ScenarioExt::Global()->NewMessageList.get())
-			R->ECX(pList);
-	}
+	enum { SkipGameCode = 0x6DE122 };
 
-	return 0;
+	if (const auto pList = ScenarioExt::Global()->NewMessageList.get())
+		R->ECX(pList);
+	else // !Phobos::Config::MessageDisplayInCenter
+		R->ECX(&MessageListClass::Instance);
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x4A8BCE, DisplayClass_Set_View_Dimensions, 0x5)
@@ -119,7 +153,7 @@ DEFINE_HOOK(0x684AD3, UnknownClass_sub_684620_InitMessageList, 0x5)
 
 DEFINE_HOOK(0x623A9F, DSurface_sub_623880_DrawBitFontStrings, 0x5)
 {
-	if (!MessageTemp::NewMsgList)
+	if (!MessageTemp::NewMessageList)
 		return 0;
 
 	enum { SkipGameCode = 0x623AAB };
@@ -130,7 +164,7 @@ DEFINE_HOOK(0x623A9F, DSurface_sub_623880_DrawBitFontStrings, 0x5)
 
 	pRect->Height = height;
 	auto black = ColorStruct { 0, 0, 0 };
-	auto trans = (MessageTemp::OnMessages || ScenarioClass::Instance->UserInputLocked) ? 80 : 40;
+	auto trans = (MessageTemp::OnNewMessages || ScenarioClass::Instance->UserInputLocked) ? 80 : 40;
 	pSurface->FillRectTrans(pRect, &black, trans);
 
 	return SkipGameCode;
