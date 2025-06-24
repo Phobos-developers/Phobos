@@ -1179,7 +1179,7 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
 
 		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
-			pThis->DistanceFrom(pCapturer) > pCapturerExt->MindControlRangeLimit.Get())
+			pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
 		{
 			pCapturer->CaptureManager->FreeUnit(pThis);
 		}
