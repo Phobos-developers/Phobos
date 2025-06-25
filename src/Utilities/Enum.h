@@ -240,6 +240,13 @@ enum class ChronoSparkleDisplayPosition : unsigned char
 
 MAKE_ENUM_FLAGS(ChronoSparkleDisplayPosition);
 
+enum class LaserTrailDrawType : BYTE
+{
+	Laser = 0,
+	EBolt = 1,
+	RadBeam = 2
+};
+
 enum class HorizontalPosition : BYTE
 {
 	Left = 0,
@@ -288,6 +295,14 @@ enum class DisplayInfoType : BYTE
 	IronCurtain = 18,
 	TemporalLife = 19,
 	FactoryProcess = 20
+};
+
+enum class BannerNumberType : int
+{
+	None = 0,
+	Variable = 1,
+	Prefixed = 2,
+	Suffixed = 3
 };
 
 class MouseCursorHotSpotX
