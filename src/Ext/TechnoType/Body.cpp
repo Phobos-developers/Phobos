@@ -89,7 +89,135 @@ bool TechnoTypeExt::ExtData::IsSecondary(int nWeaponIndex)
 	if (pThis->IsGattling)
 		return nWeaponIndex != 0 && nWeaponIndex % 2 != 0;
 
+	if (this->MultiWeapon.Get() && nWeaponIndex >= 0
+		&& !this->MultiWeapon_IsSecondary.empty())
+	{
+		return this->MultiWeapon_IsSecondary[nWeaponIndex];
+	}
+
 	return nWeaponIndex != 0;
+}
+
+int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget)
+{
+	if (!pTarget || !this->MultiWeapon.Get())
+		return -1;
+
+	const auto pType = this->OwnerObject();
+
+	if (pType->IsGattling || (pType->HasMultipleTurrets() && pType->Gunner))
+		return -1;
+
+	const int weaponCount = Math::min(pType->WeaponCount, this->MultiWeapon_SelectCount.Get());
+
+	if (weaponCount < 2)
+		return 0;
+	else if (weaponCount == 2)
+		return -1;
+
+	std::vector<bool> secondaryCanTargets {};
+	secondaryCanTargets.resize(weaponCount, false);
+
+	const bool isElite = pThis->Veterancy.IsElite();
+	const bool noSecondary = this->NoSecondaryWeaponFallback.Get();
+
+	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
+	{
+		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
+			return 0;
+
+		bool getNavalTargeting = false;
+
+		auto checkSecondary = [&](int weaponIndex) -> bool
+		{
+			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, weaponIndex, isElite)->WeaponType;
+
+			if (!pWeapon || pWeapon->NeverUse)
+			{
+				secondaryCanTargets[weaponIndex] = true;
+				return false;
+			}
+
+			bool secondaryPriority = getNavalTargeting;
+
+			if (!getNavalTargeting)
+			{
+				const auto pWH = pWeapon->Warhead;
+				const bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+				const bool isInAir = pTargetTechno->IsInAir();
+
+				if (pWH->Airstrike)
+				{
+					// Can it attack the air force now?
+					secondaryPriority = isInAir ? !this->NoSecondaryWeaponFallback_AllowAA.Get() : !noSecondary;
+				}
+				else if (isInAir)
+				{
+					secondaryPriority = !this->NoSecondaryWeaponFallback_AllowAA.Get();
+				}
+				else if (pWeapon->DrainWeapon
+					&& pTargetTechno->GetTechnoType()->Drainable
+					&& !pThis->DrainTarget && !isAllies)
+				{
+					secondaryPriority = !noSecondary;
+				}
+				else if (pWH->ElectricAssault && isAllies
+					&& pTargetTechno->WhatAmI() == AbstractType::Building
+					&& static_cast<BuildingClass*>(pTargetTechno)->Type->Overpowerable)
+				{
+					secondaryPriority = !noSecondary;
+				}
+			}
+
+			if (secondaryPriority)
+			{
+				if (TechnoExt::MultiWeaponCanFire(pThis, pTargetTechno, pWeapon))
+					return true;
+
+				secondaryCanTargets[weaponIndex] = true;
+				return false;
+			}
+
+			return false;
+		};
+
+		const LandType landType = pTargetTechno->GetCell()->LandType;
+		const bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
+
+		if (!pTargetTechno->OnBridge && targetOnWater)
+		{
+			const int result = pThis->SelectNavalTargeting(pTargetTechno);
+
+			if (result != -1)
+				getNavalTargeting = (result == 1);
+		}
+
+		const bool getSecondaryList = !this->MultiWeapon_IsSecondary.empty();
+
+		for (int index = getSecondaryList ? 0 : 1; index < weaponCount; index++)
+		{
+			if (getSecondaryList && !this->MultiWeapon_IsSecondary[index])
+				continue;
+
+			if (checkSecondary(index))
+				return index;
+		}
+	}
+	else if (noSecondary)
+	{
+		return 0;
+	}
+
+	for (int index = 0; index < weaponCount; index++)
+	{
+		if (secondaryCanTargets[index])
+			continue;
+
+		if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, TechnoTypeExt::GetWeaponStruct(pType, index, isElite)->WeaponType))
+			return index;
+	}
+
+	return 0;
 }
 
 // Ares 0.A source
@@ -119,7 +247,7 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	char tempBuffer[32];
 	char tempBufferFLH[48];
 	auto pThis = this->OwnerObject();
-	bool parseMultiWeapons = pThis->TurretCount > 0 && pThis->WeaponCount > 0;
+	bool parseMultiWeapons = this->MultiWeapon.Get() || (pThis->TurretCount > 0 && pThis->WeaponCount > 0);
 	auto weaponCount = parseMultiWeapons ? pThis->WeaponCount : 2;
 	nFLH.resize(weaponCount);
 	nEFlh.resize(weaponCount);
@@ -358,6 +486,12 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 	}
 
 	return nullptr;
+}
+
+// used for more WeaponX added by Ares.
+WeaponStruct* TechnoTypeExt::GetWeaponStruct(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite)
+{
+	return isElite ? pThis->GetEliteWeapon(nWeaponIndex) : pThis->GetWeapon(nWeaponIndex);
 }
 
 // =============================
@@ -1300,6 +1434,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_Follow_IncludeAir)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->AttackMove_PursuitTarget)
+
+		.Process(this->MultiWeapon)
+		.Process(this->MultiWeapon_IsSecondary)
+		.Process(this->MultiWeapon_SelectCount)
+		.Process(this->ReadMultiWeapon)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

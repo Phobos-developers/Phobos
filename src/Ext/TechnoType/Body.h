@@ -388,6 +388,11 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 		Valueable<bool> AttackMove_PursuitTarget;
 
+		Valueable<bool> MultiWeapon;
+		ValueableVector<bool> MultiWeapon_IsSecondary;
+		Valueable<int> MultiWeapon_SelectCount;
+		bool ReadMultiWeapon;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -725,6 +730,11 @@ public:
 			, AttackMove_Follow_IncludeAir { false }
 			, AttackMove_StopWhenTargetAcquired { }
 			, AttackMove_PursuitTarget { false }
+
+			, MultiWeapon { false }
+			, MultiWeapon_IsSecondary {}
+			, MultiWeapon_SelectCount { 2 }
+			, ReadMultiWeapon { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -743,6 +753,7 @@ public:
 		bool IsSecondary(int nWeaponIndex);
 
 		int SelectForceWeapon(TechnoClass* pThis, AbstractClass* pTarget);
+		int SelectMultiWeapon(TechnoClass* const pThis, AbstractClass* const pTarget);
 
 		// Ares 0.A
 		const char* GetSelectionGroupID() const;
@@ -770,6 +781,8 @@ public:
 
 	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
 	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse);
+
+	static WeaponStruct* GetWeaponStruct(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
