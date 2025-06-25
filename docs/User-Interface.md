@@ -712,35 +712,35 @@ Positional superweapon hotkeys are an experimental feature and currently the use
 In `uimd.ini`:
 ```ini
 [Sidebar]
-SuperWeaponSidebar=false              ; boolean
-SuperWeaponSidebar.Pyramid=true      ; boolean
-SuperWeaponSidebar.Interval=0         ; integer, pixels
-SuperWeaponSidebar.LeftOffset=0       ; integer, pixels
-SuperWeaponSidebar.CameoHeight=48     ; integer, pixels
-SuperWeaponSidebar.Max=0              ; integer
-SuperWeaponSidebar.MaxColumns=        ; integer
+SuperWeaponSidebar=false                    ; boolean
+SuperWeaponSidebar.Pyramid=true             ; boolean
+SuperWeaponSidebar.Interval=0               ; integer, pixels
+SuperWeaponSidebar.LeftOffset=0             ; integer, pixels
+SuperWeaponSidebar.CameoHeight=48           ; integer, pixels
+SuperWeaponSidebar.Max=0                    ; integer
+SuperWeaponSidebar.MaxColumns=              ; integer
 ```
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-SuperWeaponSidebarKeysEnabled=false    ; boolean
+SuperWeaponSidebarKeysEnabled=false         ; boolean
 
 [AudioVisual]
-SuperWeaponSidebar.AllowByDefault=false   ; boolean
+SuperWeaponSidebar.AllowByDefault=false     ; boolean
 
-[SOMESIDE]
-SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
-SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
-SuperWeaponSidebar.TopPCX=            ; filename - including the .pcx extension
-SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
-SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
+[SOMESIDE]                                  ; Side
+SuperWeaponSidebar.OnPCX=                   ; filename - including the .pcx extension
+SuperWeaponSidebar.OffPCX=                  ; filename - including the .pcx extension
+SuperWeaponSidebar.TopPCX=                  ; filename - including the .pcx extension
+SuperWeaponSidebar.CenterPCX=               ; filename - including the .pcx extension
+SuperWeaponSidebar.BottomPCX=               ; filename - including the .pcx extension
 
-[SOMESW]
-SuperWeaponSidebar.Allow=             ; boolean
-SuperWeaponSidebar.PriorityHouses=    ; List of house types
-SuperWeaponSidebar.RequiredHouses=    ; List of house types
-SuperWeaponSidebar.Significance=0     ; integer
+[SOMESW]                                    ; SuperWeaponType
+SuperWeaponSidebar.Allow=                   ; boolean
+SuperWeaponSidebar.PriorityHouses=          ; List of house types
+SuperWeaponSidebar.RequiredHouses=          ; List of house types
+SuperWeaponSidebar.Significance=0           ; integer
 ```
 
 In `RA2MD.INI`:

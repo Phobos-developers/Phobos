@@ -82,6 +82,8 @@ public:
 		int TintIntensityAllies;
 		int TintIntensityEnemies;
 
+		int AttackMoveFollowerTempCount;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -134,6 +136,7 @@ public:
 			, TintIntensityOwner { 0 }
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
+			, AttackMoveFollowerTempCount { 0 }
 		{ }
 
 		void OnEarlyUpdate();
