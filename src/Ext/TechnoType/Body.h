@@ -383,6 +383,11 @@ public:
 
 		Valueable<int> EngineerRepairAmount;
 
+		Valueable<bool> AttackMove_Follow;
+		Valueable<bool> AttackMove_Follow_IncludeAir;
+		Nullable<bool> AttackMove_StopWhenTargetAcquired;
+		Valueable<bool> AttackMove_PursuitTarget;
+
 		Valueable<bool> MultiWeapon;
 		ValueableVector<bool> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
@@ -720,6 +725,11 @@ public:
 			, DebrisMinimums {}
 
 			, EngineerRepairAmount { 0 }
+
+			, AttackMove_Follow { false }
+			, AttackMove_Follow_IncludeAir { false }
+			, AttackMove_StopWhenTargetAcquired { }
+			, AttackMove_PursuitTarget { false }
 
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}

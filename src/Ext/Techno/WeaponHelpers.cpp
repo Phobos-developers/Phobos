@@ -365,7 +365,7 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 	const auto pBulletType = pWeaponType->Projectile;
 
 	const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
-	bool isInAir = pTechno ? pTechno->IsInAir() : false;
+	const bool isInAir = pTechno ? pTechno->IsInAir() : false;
 
 	const auto pOwner = pThis->Owner;
 	const auto pTechnoOwner = pTechno ? pTechno->Owner : nullptr;
@@ -409,6 +409,7 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 	}
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
 	if (!pWeaponExt->SkipWeaponPicking)
 	{
 		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))

@@ -118,15 +118,16 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 	std::vector<bool> secondaryCanTargets {};
 	secondaryCanTargets.resize(weaponCount, false);
 
-	bool isElite = pThis->Veterancy.IsElite();
-	bool noSecondary = this->NoSecondaryWeaponFallback.Get();
+	const bool isElite = pThis->Veterancy.IsElite();
+	const bool noSecondary = this->NoSecondaryWeaponFallback.Get();
 
 	if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
 	{
 		if (pTargetTechno->Health <= 0 || !pTargetTechno->IsAlive)
 			return 0;
-		
+
 		bool getNavalTargeting = false;
+
 		auto checkSecondary = [&](int weaponIndex) -> bool
 		{
 			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, weaponIndex, isElite)->WeaponType;
@@ -142,8 +143,8 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 			if (!getNavalTargeting)
 			{
 				const auto pWH = pWeapon->Warhead;
-				bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
-				bool isInAir = pTargetTechno->IsInAir();
+				const bool isAllies = pThis->Owner->IsAlliedWith(pTargetTechno->Owner);
+				const bool isInAir = pTargetTechno->IsInAir();
 
 				if (pWH->Airstrike)
 				{
@@ -181,19 +182,18 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		};
 
 		const LandType landType = pTargetTechno->GetCell()->LandType;
-		bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
+		const bool targetOnWater = landType == LandType::Water || landType == LandType::Beach;
 
 		if (!pTargetTechno->OnBridge && targetOnWater)
 		{
-			int result = pThis->SelectNavalTargeting(pTargetTechno);
+			const int result = pThis->SelectNavalTargeting(pTargetTechno);
 
 			if (result != -1)
-			{
 				getNavalTargeting = (result == 1);
-			}
 		}
 
-		bool getSecondaryList = !this->MultiWeapon_IsSecondary.empty();
+		const bool getSecondaryList = !this->MultiWeapon_IsSecondary.empty();
+
 		for (int index = getSecondaryList ? 0 : 1; index < weaponCount; index++)
 		{
 			if (getSecondaryList && !this->MultiWeapon_IsSecondary[index])
@@ -830,6 +830,11 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
 	this->DebrisMinimums.Read(exINI, pSection, "DebrisMinimums");
 
+	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
+	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
+	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
+	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1424,6 +1429,11 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DebrisMinimums)
 
 		.Process(this->EngineerRepairAmount)
+
+		.Process(this->AttackMove_Follow)
+		.Process(this->AttackMove_Follow_IncludeAir)
+		.Process(this->AttackMove_StopWhenTargetAcquired)
+		.Process(this->AttackMove_PursuitTarget)
 
 		.Process(this->MultiWeapon)
 		.Process(this->MultiWeapon_IsSecondary)

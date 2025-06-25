@@ -418,6 +418,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Display banner improvement
   - Electric/RadBeam trail for laser tails
+  - Ground line for select box
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -550,6 +551,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether `Crater=yes` animation would destroy tiberium
   - Targeting limitation for berzerk technos
   - Allows refineries to use multiple ActiveAnim simultaneously
+  - Several attackmove related enhancement
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

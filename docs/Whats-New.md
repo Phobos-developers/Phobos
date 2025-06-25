@@ -407,6 +407,8 @@ New:
 - [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
 - Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
+- Several attackmove related enhancement (by TaranDahl)
+- Ground line for select box (by NetsuNegi)
 - Support for more optional weapons (by FlyStar)
 
 Vanilla fixes:
