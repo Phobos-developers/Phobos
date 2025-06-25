@@ -895,6 +895,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
 	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
+	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
@@ -1504,6 +1505,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AttackMove_Follow)
 		.Process(this->AttackMove_Follow_IncludeAir)
+		.Process(this->AttackMove_Follow_IfMindControlIsFull)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->AttackMove_PursuitTarget)
 

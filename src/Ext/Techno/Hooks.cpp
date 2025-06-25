@@ -1,5 +1,4 @@
-#include <AircraftClass.h>
-#include "Body.h"
+﻿#include "Body.h"
 
 #include <AircraftClass.h>
 #include <EventClass.h>
@@ -1102,7 +1101,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pTypeExt->AttackMove_Follow)
+	if (pTypeExt->AttackMove_Follow || pTypeExt->AttackMove_Follow_IfMindControlIsFull && pThis->CaptureManager && pThis->CaptureManager->CannotControlAnyMore())
 	{
 		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
 			pThis->GetGuardRange(2) / Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
