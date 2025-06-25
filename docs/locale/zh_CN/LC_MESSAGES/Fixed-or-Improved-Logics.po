@@ -3582,7 +3582,7 @@ msgstr "`DeployingAnim.KeepUnitVisible` 决定单位是否在动画播放期间*
 msgid ""
 "`DeployingAnim.ReverseForUndeploy` controls whether or not the animation "
 "is played in reverse for undeploying."
-msgstr "`DeployingAnim.KeepUnitVisible` 控制反部署时是否使动画反向播放。"
+msgstr "`DeployingAnim.ReverseForUndeploy` 控制反部署时是否使动画反向播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:1259
 msgid ""
