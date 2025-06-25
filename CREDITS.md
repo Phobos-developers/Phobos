@@ -510,7 +510,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `DefaultDisguise` showing wrong house colors for different players
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
-  - Forcing specific weapon by range
+  - Forcing specific weapon by range and target type
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
   - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
