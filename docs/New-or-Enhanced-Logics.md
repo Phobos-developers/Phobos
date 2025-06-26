@@ -33,6 +33,7 @@ This page describes all the engine features that are either new and introduced b
   - Attached effect can fire off a weapon when expired / removed / object dies by setting `ExpireWeapon`.
     - `ExpireWeapon.TriggerOn` determines the exact conditions upon which the weapon is fired, defaults to `expire` which means only if the effect naturally expires.
     - `ExpireWeapon.CumulativeOnlyOnce`, if set to true, makes it so that `Cumulative=true` attached effects only detonate the weapon once period, instead of once per active instance. On `remove` and `expire` condition this means it will only detonate after last instance has expired or been removed.
+    - `ExpireWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `Tint.Color` & `Tint.Intensity` can be used to set a color tint effect and additive lighting increase/decrease on the object the effect is attached to, respectively.
     - `Tint.VisibleToHouses` can be used to control which houses can see the tint effect.
   - `FirepowerMultiplier`, `ArmorMultiplier`, `SpeedMultiplier` and `ROFMultiplier` can be used to modify the object's firepower, armor strength, movement speed and weapon reload rate, respectively.
@@ -47,8 +48,10 @@ This page describes all the engine features that are either new and introduced b
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
+    - `RevengeWeapon.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the weapon's owner & invoker instead of the object the effect is attached to.
   - `ReflectDamage` can be set to true to have any positive damage dealt to the object the effect is attached to be reflected back to the attacker. `ReflectDamage.Warhead` determines which Warhead is used to deal the damage, defaults to `[CombatDamage] -> C4Warhead`. If `ReflectDamage.Warhead.Detonate` is set to true, the Warhead is fully detonated instead of used to simply deal damage. `ReflectDamage.Chance` determines the chance of reflection. `ReflectDamage.Multiplier` is a multiplier to the damage received and then reflected back, while `ReflectDamage.Override` directly overrides the damage. Already reflected damage cannot be further reflected back.
     - Warheads can prevent reflect damage from occuring by setting `SuppressReflectDamage` to true. `SuppressReflectDamage.Types` can control which AttachEffectTypes' reflect damage is suppressed, if none are listed then all of them are suppressed. `SuppressReflectDamage.Groups` does the same thing but for all AttachEffectTypes in the listed groups.
+    - `ReflectDamage.UseInvokerAsOwner` can be used to set the house and TechnoType that created the effect (e.g firer of the weapon that applied it) as the reflected damage's owner & invoker instead of the object the effect is attached to.
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
@@ -105,6 +108,7 @@ CumulativeAnimations.RestartOnChange=true          ; boolean
 ExpireWeapon=                                      ; WeaponType
 ExpireWeapon.TriggerOn=expire                      ; List of expire weapon trigger condition enumeration (none|expire|remove|death|discard|all)
 ExpireWeapon.CumulativeOnlyOnce=false              ; boolean
+ExpireWeapon.UseInvokerAsOwner=false               ; boolean
 Tint.Color=                                        ; integer - R,G,B
 Tint.Intensity=                                    ; floating point value
 Tint.VisibleToHouses=all                           ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -127,6 +131,7 @@ Crit.AllowWarheads=                                ; List of WarheadTypes
 Crit.DisallowWarheads=                             ; List of WarheadTypes
 RevengeWeapon=                                     ; WeaponType
 RevengeWeapon.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+RevengeWeapon.UseInvokerAsOwner=false              ; boolean
 ReflectDamage=false                                ; boolean
 ReflectDamage.Warhead=                             ; WarheadType
 ReflectDamage.Warhead.Detonate=false               ; WarheadType
@@ -134,8 +139,10 @@ ReflectDamage.Multiplier=1.0                       ; floating point value, perce
 ReflectDamage.AffectsHouses=all                    ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ReflectDamage.Chance=1.0                           ; floating point value
 ReflectDamage.Override=                            ; integer
+ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
+LaserTrail.Type=                                   ; lasertrail type
 Groups=                                            ; comma-separated list of strings (group IDs)
 
 [SOMETECHNO]                                       ; TechnoType
@@ -228,6 +235,7 @@ Due to performance concerns, unless any radiation type has `RadApplicationDelay.
 
 - Technos, Projectiles, and VoxelAnims can now have colorful trails of different transparency, thickness and color, which are drawn via laser drawing code.
 - Technos, Projectiles, and VoxelAnims can have multiple laser trails. For technos each trail can have custom laser trail type and FLH offset relative to turret and body.
+- LaserTrail can also be drawn as EBolt or RadBeam.
 
 In `artmd.ini`:
 ```ini
@@ -235,15 +243,28 @@ In `artmd.ini`:
 0=SOMETRAIL
 
 [SOMETRAIL]                      ; LaserTrailType name
-IsHouseColor=false               ; boolean
-Color=255,0,0                    ; integer - R,G,B
-FadeDuration=64                  ; integer
-Thickness=4                      ; integer
+DrawType=laser                   ; laser trail type (laser | ebolt | radbeam)
+FadeDuration=                    ; integer, default to 64 for laser, 17 for ebolt, 15 for radbeam
 SegmentLength=128                ; integer, minimal length of each trail segment
 IgnoreVertical=false             ; boolean, whether the trail won't be drawn on vertical movement
-IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
 CloakVisible=false               ; boolean, whether the laser is visible when the attached unit is cloaked
 CloakVisible.DetectedOnly=false  ; boolean, whether CloakVisible=true laser is visible only to those who can detect the attached unit
+; laser
+Color=255,0,0                    ; integer - R,G,B
+IsHouseColor=false               ; boolean
+Thickness=4                      ; integer
+IsIntense=false                  ; boolean, whether the laser is "supported" (AKA prism forwarding)
+; ebolt
+IsAlternateColor=false           ; boolean
+Bolt.Color1=                     ; integer - R,G,B
+Bolt.Disable1=false              ; boolean
+Bolt.Color2=                     ; integer - R,G,B
+Bolt.Disable2=false              ; boolean
+Bolt.Color3=                     ; integer - R,G,B
+Bolt.Disable3=false              ; boolean
+; radbeam
+Beam.Color=                      ; integer - R,G,B
+Beam.Amplitude=40.0              ; floating point value
 
 [SOMEPROJECTILE]                 ; Projectile Image
 LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
@@ -257,8 +278,8 @@ LaserTrailN.IsOnTurret=false     ; boolean, whether the trail origin is turret
 
 In `rulesmd.ini`:
 ```ini
-[SOMEVOXELANIM]             ; VoxelAnim
-LaserTrail.Types=SOMETRAIL  ; List of LaserTrailTypes
+[SOMEVOXELANIM]                  ; VoxelAnim
+LaserTrail.Types=SOMETRAIL       ; List of LaserTrailTypes
 ```
 
 ```{warning}
@@ -558,6 +579,23 @@ In `rulesmd.ini`:
 IsDestroyableObstacle=false  ; boolean
 ```
 
+### Engineer repair customization
+
+- You can now set a maximum amount when engineer repair a building for either of them. 0 means the building will be repaired to full health.
+  - Negative value means percentage. For example, `EngineerRepairAmount=-50` means you can only repair 50% of the building's health per Engineer.
+  - If both the building and the engineer has `EngineerRepairAmount` set, the actual repair amount will be the minimum of them.
+- `BuildingRepairedSound` can now be set individually for each building type.
+
+In `rulesmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+EngineerRepairAmount=0             ; integer
+BuildingRepairedSound=             ; Sound entry, default to [AudioVisual] -> BuildingRepairedSound
+
+[SOMEINFANTRY]                     ; InfantryType
+EngineerRepairAmount=0             ; integer
+```
+
 ### Extended building upgrades
 
 ![image](_static/images/powersup.owner-01.png)
@@ -591,7 +629,7 @@ PowerPlantEnhancer.Amount=0        ; integer
 PowerPlantEnhancer.Factor=1.0      ; floating point value
 ```
 
-### Spy Effects
+### Spy effects
 
 - Additional espionage bonuses can be toggled with `SpyEffect.Custom`.
   - `SpyEffect.VictimSuperWeapon` instantly launches a Super Weapon for the owner of the infiltrated building at building's coordinates.
@@ -607,7 +645,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 
 ## Infantry
 
-### Customizable FLH When Infantry Is Prone Or Deployed
+### Customizable FLH when infantry is prone or deployed
 
 - Now infantry can override `PrimaryFireFLH` and `SecondaryFireFLH` if is prone (crawling) or deployed. Also works in conjunction with [burst-index specific firing offsets](#firing-offsets-for-specific-burst-shots).
 
@@ -622,14 +660,14 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 
 ### Customizable `SlavesFreeSound`
 
-- `SlavesFreeSound` is now dehardcoded from `[AudioVisual]` and can be set individually for each enslavable infantry type.
+- `SlavesFreeSound` can now be set individually for each enslavable infantry type.
 
 In `rulesmd.ini`:
 
 ```ini
 [SOMEINFANTRY]        ; InfantryType
 Slaved=yes
-SlavesFreeSound=      ; Sound entry
+SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
 ### Default disguise for individual InfantryTypes
@@ -643,7 +681,7 @@ In `rulesmd.ini`:
 DefaultDisguise=    ; InfantryType
 ```
 
-### Random death animaton for NotHuman Infantry
+### Random death animaton for NotHuman infantry
 
 - Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
   - Do not forget to tweak infantry anim sequences before enabling this feature, otherwise it will play invisible anim sequence.
@@ -1380,6 +1418,56 @@ AttackMove.Aggressive=         ; boolean, default to [General] -> AttackMove.Agg
 AttackMove.UpdateTarget=       ; boolean, default to [General] -> AttackMove.UpdateTarget
 ```
 
+### Attack move - behavior when target acquired
+
+- Now you can make attack-moving units stop moving when they spot an enemy using `AttackMove.StopWhenTargetAcquired`. This is more like the attack move behavior in Starcraft and Warcraft.
+  - This feature is used to prevent units from charging forward and taking more damage during an attack move command.
+- You can also make them keep chasing on the spotted target using `AttackMove.PursuitTarget`.
+  - This feature should be useful for close range units like ZEP.
+
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.StopWhenTargetAcquired=         ; boolean
+
+[SOMETECHNO]                               ; TechnoType
+AttackMove.StopWhenTargetAcquired=         ; boolean, default to [General] -> AttackMove.StopWhenTargetAcquired if set, inverse of OpportunityFire otherwise.
+AttackMove.PursuitTarget=                  ; boolean
+```
+
+```{note}
+1. Many units would have stopped when they found an enemy during an attack move command already. This behavior is independent from `AttackMove.StopWhenTargetAcquired`.
+2. Some units (f.ex. jumpjets) will not fire correctly under the vanilla attack move command. The exact reason is not clear, but this feature can fix this problem.
+3. Jumpjets with `AttackMove.StopWhenTargetAcquired=true` will stop immediatly and not scatter to a cell. This is designed for practical reason.
+```
+
+### Attack move - follow
+
+- Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`ctrl + alt`).
+  - Use `AttackMove.Follow.IncludeAir` to determine whether the follower will follow an air unit.
+  - Mind control units with `AttackMove.Follow.IfMindControlIsFull=true` set will follow if they reach the capacity.
+- This feature should be useful for supportive units such as medics and repairers.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                                     ; TechnoType
+AttackMove.Follow=false                          ; boolean
+AttackMove.Follow.IncludeAir=false               ; boolean
+AttackMove.Follow.IfMindControlIsFull=false      ;boolean
+```
+
+### Attack move - without weapon
+
+- In vanilla, attack move command is not allowed to be given to units without weapons. Now you can disable this hardcoded behavior using `AttackMove.IgnoreWeaponCheck=true`.
+  - Unarmed units cannot actually execute attack move commands. This feature is to prevent the attack move pointer from being disabled when you select unarmed units and other units at the same time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AttackMove.IgnoreWeaponCheck=false    ; boolean
+```
+
 ### Aircraft spawner customizations
 
 ![image](_static/images/spawnrange-01.gif)
@@ -1647,7 +1735,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
 *Enemy behavior against EMP targets with `ForceWeapon.UnderEMP` in [C&C: Reloaded](https://www.moddb.com/mods/cncreloaded)*
 
 - Can be used to override normal weapon selection logic to force specific weapons to use against certain targets. If multiple are set and target satisfies the conditions, the first one in listed order satisfied takes effect.
-  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked naval targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
+  - `ForceWeapon.Naval.Decloaked` forces specified weapon to be used against uncloaked `Naval=yes` targets. Useful if your naval unit has one weapon only for underwater and another weapon for surface targets.
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
@@ -1655,21 +1743,35 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
     - If `Force(AA)Weapon.InRange.ApplyRangeModifiers` is set to true, any applicable weapon range modifiers from the firer are applied to the decision range.
+  - A series of tags can force specified weapons based on the target's type.
+    - `ForceWeapon.Naval.Units` forces specified weapon to be used against `Naval=yes` units. Taking priority to `ForceWeapon.Units`.
+    - If `ForceWeapon.Defenses` is enabled, it'll be used if the target is a building with `BuildCat=Combat`. Otherwise it'll follow `ForceWeapon.Buildings`, if enabled.
+    - `ForceWeapon.Infantry/Units/Aircraft` can be applied to both ground and air target if `ForceAAWeapon.Infantry/Units/Aircraft` is not set.
+    - `ForceAAWeapon.Infantry/Units/Aircraft` do the same things but only for air target. Taking priority to `ForceWeapon.Infantry/Units/Naval.Units/Aircraft`, which means that they can only be applied to ground target when they're both set.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                    ; TechnoType
-ForceWeapon.Naval.Decloaked=-1                  ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Cloaked=-1                          ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.Disguised=-1                        ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.UnderEMP=-1                         ; integer. 0 for primary weapon, 1 for secondary weapon, -1 to disable
-ForceWeapon.InRange=                            ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
+ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
+ForceWeapon.Disguised=-1                        ; integer, -1 to disable
+ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
+ForceWeapon.InRange=                            ; List of integers
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
 ForceWeapon.InRange.TechnoOnly=true             ; boolean
-ForceAAWeapon.InRange=                          ; List of integers. 0 for primary weapon, 1 for secondary weapon, -1 to disable
+ForceAAWeapon.InRange=                          ; List of integers
 ForceAAWeapon.InRange.Overrides=                ; List of floating-point values
 ForceAAWeapon.InRange.ApplyRangeModifiers=false ; boolean
+ForceWeapon.Buildings=-1                        ; integer, -1 to disable
+ForceWeapon.Defenses=-1                         ; integer, -1 to disable
+ForceWeapon.Infantry=-1                         ; integer, -1 to disable
+ForceWeapon.Naval.Units=-1                      ; integer, -1 to disable
+ForceWeapon.Units=-1                            ; integer, -1 to disable
+ForceWeapon.Aircraft=-1                         ; integer, -1 to disable
+ForceAAWeapon.Infantry=-1                       ; integer, -1 to disable
+ForceAAWeapon.Units=-1                          ; integer, -1 to disable
+ForceAAWeapon.Aircraft=-1                       ; integer, -1 to disable
 ```
 
 ```{note}
@@ -1763,6 +1865,26 @@ In `rulesmd.ini`:
 MindControlRangeLimit=-1.0            ; floating point value
 MindControlLink.VisibleToHouse=all    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 MultiMindControl.ReleaseVictim=false  ; boolean
+```
+
+### Multi Weapon
+
+![image](_static/images/multiweapons.gif)
+*Multi Weapon used to release different weapons against different targets in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+
+- You can now use `WeaponX` to enable more than 2 weapons for a TechnoType without hardcoded `Gunner=yes`, `IsGattling=yes` or `IsChargeTurret=yes` restriction.
+ - Set `MultiWeapon=yes` to enable this feature, be careful not to forget `WeaponCount`.
+ - `MultiWeapon.IsSecondary` specifies which weapons will be considered as `Secondary` when selecting weapons or triggering infantry's `SecondaryFire` settings. If not set, `Weapon1` will be considered as `Secondary`.
+ - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
+  - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
+  - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+MultiWeapon=false               ; boolean
+MultiWeapon.IsSecondary=        ; List of integers
+MultiWeapon.SelectCount=2       ; integer
 ```
 
 ### No Manual Move
@@ -1961,7 +2083,7 @@ VoiceCreated=                ; Sound entry
 In `rulesmd.ini`:
 ```ini
 [General]
-BerzerkTargeting=all  ; AffectedHouse enumeration
+BerzerkTargeting=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 ```
 
 ### Tiberium eater
@@ -1985,7 +2107,7 @@ TiberiumEater.CellN=              ; X,Y - cell offset
 TiberiumEater.CashMultiplier=1.0  ; floating point value
 TiberiumEater.AmountPerCell=0     ; integer
 TiberiumEater.Display=true        ; boolean
-TiberiumEater.Display.Houses=all  ; AffectedHouse enumeration
+TiberiumEater.Display.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TiberiumEater.Anims=              ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium0=    ; List of AnimationTypes
 TiberiumEater.Anims.Tiberium1=    ; List of AnimationTypes
@@ -2124,7 +2246,8 @@ FireUp.ResetInRetarget=true     ; boolean
 All new Warhead effects
 - Can be used with `CellSpread` and Ares' GenericWarhead superweapon where applicable.
 - Cannot be used with `MindControl.Permanent=yes` of Ares.
-- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to false. If target has an active shield, its armor type is used instead unless warhead can penetrate the shield.
+- Respect `Verses` where applicable unless `EffectsRequireVerses` is set to `false`.
+- If target has an active [shield](#shields), its armor type is used instead unless warhead can penetrate the shield.
 ```
 
 ### Break Mind Control on impact
@@ -2335,7 +2458,7 @@ In `rulesmd.ini`:
 TransactMoney=0                      ; integer - credits added or subtracted
 TransactMoney.Display=false          ; boolean
 TransactMoney.Display.AtFirer=false  ; boolean
-TransactMoney.Display.Houses=All     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+TransactMoney.Display.Houses=all     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 TransactMoney.Display.Offset=0,0     ; X,Y, pixels relative to default
 ```
 

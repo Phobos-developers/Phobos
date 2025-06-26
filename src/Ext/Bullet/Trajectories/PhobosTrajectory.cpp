@@ -1078,12 +1078,12 @@ DEFINE_HOOK(0x46745C, BulletClass_Update_TrajectoriesVelocityUpdate, 0x7)
 		{
 			const auto futureCoords = PhobosTrajectory::Vector2Coord(*pSpeed + *pPosition);
 
-			for (auto& trail : pExt->LaserTrails)
+			for (auto& pTrail : pExt->LaserTrails)
 			{
-				if (!trail.LastLocation.isset())
-					trail.LastLocation = pThis->Location;
+				if (!pTrail->LastLocation.isset())
+					pTrail->LastLocation = pThis->Location;
 
-				trail.Update(futureCoords);
+				pTrail->Update(futureCoords);
 			}
 		}
 	}

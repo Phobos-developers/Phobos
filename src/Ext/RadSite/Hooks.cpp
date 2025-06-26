@@ -121,12 +121,12 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 	if (pBuilding->Type->ImmuneToRadiation || pBuilding->InLimbo || pBuilding->BeingWarpedOut || pBuilding->TemporalTargetingMe)
 		return 0;
 
-	int radDelay = RulesExt::Global()->RadApplicationDelay_Building;
-
-	if (RulesExt::Global()->UseGlobalRadApplicationDelay &&
-		(radDelay == 0 || Unsorted::CurrentFrame % radDelay != 0))
+	if (RulesExt::Global()->UseGlobalRadApplicationDelay)
 	{
-		return 0;
+		const int delay = RulesExt::Global()->RadApplicationDelay_Building;
+
+		if (delay == 0 || Unsorted::CurrentFrame % delay)
+			return 0;
 	}
 
 	const auto buildingCoords = pBuilding->GetMapCoords();
@@ -141,6 +141,8 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			continue;
 
 		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+		std::vector<std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>>> typeMap;
+		typeMap.reserve(RadTypeClass::Array.size());
 
 		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
@@ -148,32 +150,56 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 				continue;
 
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-			RadTypeClass* pType = pRadExt->Type;
-			int maxDamageCount = pType->GetBuildingDamageMaxCount();
+			const auto pRadType = pRadExt->Type;
+			int maxDamageCount = pRadType->GetBuildingDamageMaxCount();
 
 			if (maxDamageCount > 0 && damageCounts[pRadSite] >= maxDamageCount)
 				continue;
 
-			if (!pType->GetWarhead())
+			if (!pRadType->GetWarhead())
 				continue;
 
 			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
 			{
-				int delay = pType->GetBuildingApplicationDelay();
+				const int delay = pRadType->GetBuildingApplicationDelay();
 
-				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+				if (delay == 0 || Unsorted::CurrentFrame % delay)
 					continue;
 			}
 
-			if (pBuilding->IsAlive) // simple fix for previous issues
+			const auto it = std::ranges::find_if(typeMap, [pRadType](std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>> const& item) { return item.first == pRadType; });
+
+			if (it != typeMap.cend())
 			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+				it->second.emplace_back(pRadSite, radLevel);
+			}
+			else
+			{
+				std::vector<std::pair<RadSiteClass*, int>> sites { std::make_pair(pRadSite, radLevel) };
+				typeMap.emplace_back(pRadType, std::move(sites));
+			}
+		}
 
-				if (maxDamageCount > 0)
-					damageCounts[pRadSite]++;
+		for (auto& [_, sites] : typeMap)
+			std::ranges::stable_sort(sites, [](std::pair<RadSiteClass*, int> const& left, std::pair<RadSiteClass*, int> const& right) { return left.second > right.second; });
 
-				if (!pRadExt->ApplyRadiationDamage(pBuilding, damage))
+		for (const auto& [pRadType, sites] : typeMap)
+		{
+			const int radLevelMax = pRadType->GetLevelMax();
+			int radLevelSum = 0;
+
+			for (const auto& [pRadSite, radLevel] : sites)
+			{
+				const int remain = radLevelMax - radLevelSum;
+				int damage = static_cast<int>(std::min(radLevel, remain) * pRadType->GetLevelFactor());
+
+				if (pBuilding->IsAlive && !RadSiteExt::ExtMap.Find(pRadSite)->ApplyRadiationDamage(pBuilding, damage))
+					return 0;
+
+				if (radLevel >= remain)
 					break;
+
+				radLevelSum += radLevel;
 			}
 		}
 	}
@@ -196,6 +222,8 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 	{
 		const auto pCell = pFoot->GetCell();
 		const auto pCellExt = CellExt::ExtMap.Find(pCell);
+		std::vector<std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>>> typeMap;
+		typeMap.reserve(RadTypeClass::Array.size());
 
 		for (const auto& [pRadSite, radLevel] : pCellExt->RadLevels)
 		{
@@ -203,25 +231,52 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 				continue;
 
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
-			RadTypeClass* pType = pRadExt->Type;
+			const auto pRadType = pRadExt->Type;
 
-			if (!pType->GetWarhead())
+			if (!pRadType->GetWarhead())
 				continue;
 
 			if (!RulesExt::Global()->UseGlobalRadApplicationDelay)
 			{
-				int delay = pType->GetApplicationDelay();
+				const int delay = pRadType->GetApplicationDelay();
 
-				if ((delay == 0) || (Unsorted::CurrentFrame % delay != 0))
+				if (delay == 0 || Unsorted::CurrentFrame % delay)
 					continue;
 			}
 
-			if (pFoot->IsAlive || !pFoot->IsSinking)
-			{
-				int damage = Game::F2I(radLevel * pType->GetLevelFactor());
+			const auto it = std::ranges::find_if(typeMap, [pRadType](std::pair<RadTypeClass*, std::vector<std::pair<RadSiteClass*, int>>> const& item) { return item.first == pRadType; });
 
-				if (!pRadExt->ApplyRadiationDamage(pFoot, damage))
+			if (it != typeMap.cend())
+			{
+				it->second.emplace_back(pRadSite, radLevel);
+			}
+			else
+			{
+				std::vector<std::pair<RadSiteClass*, int>> sites { std::make_pair(pRadSite, radLevel) };
+				typeMap.emplace_back(pRadType, std::move(sites));
+			}
+		}
+
+		for (auto& [_, sites] : typeMap)
+			std::ranges::stable_sort(sites, [](std::pair<RadSiteClass*, int> const& left, std::pair<RadSiteClass*, int> const& right) { return left.second > right.second; });
+
+		for (const auto& [pRadType, sites] : typeMap)
+		{
+			const int radLevelMax = pRadType->GetLevelMax();
+			int radLevelSum = 0;
+
+			for (const auto& [pRadSite, radLevel] : sites)
+			{
+				const int remain = radLevelMax - radLevelSum;
+				int damage = static_cast<int>(std::min(radLevel, remain) * pRadType->GetLevelFactor());
+
+				if ((pFoot->IsAlive || !pFoot->IsSinking) && !RadSiteExt::ExtMap.Find(pRadSite)->ApplyRadiationDamage(pFoot, damage))
+					return ReturnFromFunction;
+
+				if (radLevel >= remain)
 					break;
+
+				radLevelSum += radLevel;
 			}
 		}
 	}

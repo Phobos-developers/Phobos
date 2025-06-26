@@ -152,7 +152,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 
 			auto& vec = linkedExt->LaserTrails;
 			if (!vec.empty())
-				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto& trail) { return trail.Type->DroppodOnly; }));
+				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto const& pTrail) { return pTrail->Type->DroppodOnly; }));
 
 			pLinked->Mark(MarkType::Down);
 			pLinked->SetHeight(0);
@@ -185,7 +185,7 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
+	const auto podType = TechnoExt::ExtMap.Find(pLinked)->TypeExtData->DroppodType.get();
 
 	if (!podType)
 		return 0;

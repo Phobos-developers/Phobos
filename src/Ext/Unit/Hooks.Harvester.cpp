@@ -1,6 +1,7 @@
 #include <UnitClass.h>
 #include <HouseClass.h>
 
+#include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
 
 DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
@@ -27,7 +28,7 @@ DEFINE_HOOK(0x4D6D34, FootClass_MissionAreaGuard_Miner, 0x5)
 
 	GET(FootClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	return pTypeExt->Harvester_CanGuardArea && pThis->Owner->IsControlledByHuman() ? GoGuardArea : 0;
 }
