@@ -57,7 +57,7 @@ static inline bool MouseIsOverNewMessageLists()
 	return false;
 }
 
-DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_NewMessageListManage, 0x6)
+DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_NewMessageListCheck, 0x6)
 {
 	if (Phobos::Config::MessageApplyHoverState)
 		MessageTemp::OnOldMessages = MouseIsOverOldMessageLists();
@@ -68,7 +68,7 @@ DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_NewMessageListManage, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x4F4583, GScreenClass_NewMessageListManage, 0x6)
+DEFINE_HOOK(0x4F4583, GScreenClass_NewMessageListDraw, 0x6)
 {
 	MessageTemp::NewMessageList = true;
 
@@ -96,7 +96,7 @@ DEFINE_HOOK(0x55DDA0, MainLoop_FrameStep_NewMessageListManage, 0x5)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x6DE11D, MessageListClass_AddMessage_InCenter, 0x5)
+DEFINE_HOOK(0x6DE11D, TActionClass_Execute_AddMessageInCenter, 0x5)
 {
 	enum { SkipGameCode = 0x6DE122 };
 
