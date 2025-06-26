@@ -239,25 +239,60 @@ void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, Warhea
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
-	// KillWeapon can be triggered without the source
-	if (pWHExt->KillWeapon && (!pSource || (EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_AffectsHouses, pSource->Owner, pThis->Owner)
-		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_Affects))))
-	{
-		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon)))
-			WeaponTypeExt::DetonateAt(pWHExt->KillWeapon, pThis, pSource);
-	}
-
-	// KillWeapon.OnFirer must have a source
-	if (pWHExt->KillWeapon_OnFirer && pSource && EnumFunctions::CanTargetHouse(pWHExt->KillWeapon_OnFirer_AffectsHouses, pSource->Owner, pThis->Owner)
-		&& EnumFunctions::IsTechnoEligible(pThis, pWHExt->KillWeapon_OnFirer_Affects))
-	{
-		if (!pTypeExt->SuppressKillWeapons || (hasFilters && !pTypeExt->SuppressKillWeapons_Types.Contains(pWHExt->KillWeapon_OnFirer)))
+	auto tryKillWeapon = [&](auto pWeapon, AffectedHouse affectsHouses, AffectedTarget affects, bool realLaunch, bool onFirer)
 		{
-			if (pWHExt->KillWeapon_OnFirer_RealLaunch)
-				RealLaunch(pWHExt->KillWeapon_OnFirer, pSource, pSource, true, pThis);
+			if (!pWeapon)
+				return;
+
+			if (onFirer)
+			{
+				if (!pSource)
+					return;
+
+				if (!(EnumFunctions::CanTargetHouse(affectsHouses, pSource->Owner, pThis->Owner)
+					&& EnumFunctions::IsTechnoEligible(pThis, affects)))
+				{
+					return;
+				}
+			}
 			else
-				WeaponTypeExt::DetonateAt(pWHExt->KillWeapon_OnFirer, pSource, pSource);
-		}
+			{
+				if (pSource && !(EnumFunctions::CanTargetHouse(affectsHouses, pSource->Owner, pThis->Owner)
+					&& EnumFunctions::IsTechnoEligible(pThis, affects)))
+				{
+					return;
+				}
+			}
+
+			if (pTypeExt->SuppressKillWeapons && (!hasFilters || pTypeExt->SuppressKillWeapons_Types.Contains(pWeapon)))
+				return;
+
+			if (onFirer)
+			{
+				if (realLaunch)
+					RealLaunch(pWeapon, pSource, pSource, true, pThis);
+				else
+					WeaponTypeExt::DetonateAt(pWeapon, pSource, pSource);
+			}
+			else
+			{
+				WeaponTypeExt::DetonateAt(pWeapon, pThis, pSource);
+			}
+		};
+
+	tryKillWeapon(pWHExt->KillWeapon, pWHExt->KillWeapon_AffectsHouses, pWHExt->KillWeapon_Affects, false, false);
+	tryKillWeapon(pWHExt->KillWeapon_OnFirer, pWHExt->KillWeapon_OnFirer_AffectsHouses, pWHExt->KillWeapon_OnFirer_Affects, pWHExt->KillWeapon_OnFirer_RealLaunch, true);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pSource);
+
+	for (auto const& attachEffect : pExt->AttachedEffects)
+	{
+		if (!attachEffect->IsActive())
+			continue;
+
+		auto const pType = attachEffect->GetType();
+		tryKillWeapon(pType->KillWeapon, pType->KillWeapon_AffectsHouses, pType->KillWeapon_Affects, false, false);
+		tryKillWeapon(pType->KillWeapon_OnFirer, pType->KillWeapon_OnFirer_AffectsHouses, pType->KillWeapon_OnFirer_Affects, pType->KillWeapon_OnFirer_RealLaunch, true);
 	}
 }
 

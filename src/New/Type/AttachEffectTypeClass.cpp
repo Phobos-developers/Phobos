@@ -171,6 +171,14 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->Crit_AllowWarheads.Read(exINI, pSection, "Crit.AllowWarheads");
 	this->Crit_DisallowWarheads.Read(exINI, pSection, "Crit.DisallowWarheads");
 
+	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
+	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
+	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouses");
+	this->KillWeapon_OnFirer_AffectsHouses.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses");
+	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
+	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
+	this->KillWeapon_OnFirer_RealLaunch.Read(exINI, pSection, "KillWeapon.OnFirer.RealLaunch");
+
 	this->RevengeWeapon.Read<true>(exINI, pSection, "RevengeWeapon");
 	this->RevengeWeapon_AffectsHouses.Read(exINI, pSection, "RevengeWeapon.AffectsHouses");
 	this->RevengeWeapon_RealLaunch.Read(exINI, pSection, "RevengeWeapon.RealLaunch");
@@ -264,6 +272,13 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->Crit_ExtraChance)
 		.Process(this->Crit_AllowWarheads)
 		.Process(this->Crit_DisallowWarheads)
+		.Process(this->KillWeapon)
+		.Process(this->KillWeapon_OnFirer)
+		.Process(this->KillWeapon_AffectsHouses)
+		.Process(this->KillWeapon_OnFirer_AffectsHouses)
+		.Process(this->KillWeapon_Affects)
+		.Process(this->KillWeapon_OnFirer_Affects)
+		.Process(this->KillWeapon_OnFirer_RealLaunch)
 		.Process(this->RevengeWeapon)
 		.Process(this->RevengeWeapon_AffectsHouses)
 		.Process(this->RevengeWeapon_RealLaunch)

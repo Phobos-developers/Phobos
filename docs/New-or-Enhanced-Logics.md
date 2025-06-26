@@ -67,6 +67,10 @@ This page describes all the engine features that are either new and introduced b
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.UseTransportRangeModifiers` can be set to true to make passengers firing out use the transport's active range bonuses instead.
   - `Crit.Multiplier` and `Crit.ExtraChance` can be used to multiply the [critical hit](#chance-based-extra-damage-or-warhead-detonation--critical-hits) chance or grant a fixed bonus to it for the object the effect is attached to, respectively.
     - `Crit.AllowWarheads` can be used to list only Warheads that can benefit from this critical hit chance multiplier and `Crit.DisallowWarheads` weapons that are not allowed to, respectively.
+  - `KillWeapon` will be fired at the target TechnoType's location once it's killed by the attached object.
+    - `KillWeapon.OnFirer` will be fired at the attacker's location once the target TechnoType is killed the attached object. If `KillWeapon.OnFirer.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the attached object.
+    - `KillWeapon.AffectsHouses` / `KillWeapon.OnFirer.AffectsHouses` and `KillWeapon.Affects` / `KillWeapon.OnFirer.Affects` can be used to filter which houses targets can belong to and which types of targets are be considered valid for `KillWeapon` and `KillWeapon.OnFirer` respectively.
+    - If a TechnoType has `SuppressKillWeapons` set to true, it will not trigger `KillWeapon` or `KillWeapon.OnFirer` upon being killed. `SuppressKillWeapons.Types` can be used to list WeaponTypes affected by this, if none are listed all WeaponTypes are affected.
   - `RevengeWeapon` can be used to temporarily grant the specified weapon as a [revenge weapon](#revenge-weapon) for the attached object.
     - `RevengeWeapon.AffectsHouses` customizes which houses can trigger the revenge weapon.
     - If `RevengeWeapon.RealLaunch` set to true, the weapon will be fired through a real projectile from the TechnoType to the killer.

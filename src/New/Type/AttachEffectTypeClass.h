@@ -106,6 +106,13 @@ public:
 	Valueable<double> Crit_ExtraChance;
 	ValueableVector<WarheadTypeClass*> Crit_AllowWarheads;
 	ValueableVector<WarheadTypeClass*> Crit_DisallowWarheads;
+	Valueable<WeaponTypeClass*> KillWeapon;
+	Valueable<WeaponTypeClass*> KillWeapon_OnFirer;
+	Valueable<AffectedHouse> KillWeapon_AffectsHouses;
+	Valueable<AffectedHouse> KillWeapon_OnFirer_AffectsHouses;
+	Valueable<AffectedTarget> KillWeapon_Affects;
+	Valueable<AffectedTarget> KillWeapon_OnFirer_Affects;
+	Valueable<bool> KillWeapon_OnFirer_RealLaunch;
 	Valueable<WeaponTypeClass*> RevengeWeapon;
 	Valueable<AffectedHouse> RevengeWeapon_AffectsHouses;
 	Valueable<bool> RevengeWeapon_RealLaunch;
@@ -191,6 +198,13 @@ public:
 		, Crit_ExtraChance { 0.0 }
 		, Crit_AllowWarheads {}
 		, Crit_DisallowWarheads {}
+		, KillWeapon {}
+		, KillWeapon_OnFirer {}
+		, KillWeapon_AffectsHouses { AffectedHouse::All }
+		, KillWeapon_OnFirer_AffectsHouses { AffectedHouse::All }
+		, KillWeapon_Affects { AffectedTarget::All }
+		, KillWeapon_OnFirer_Affects { AffectedTarget::All }
+		, KillWeapon_OnFirer_RealLaunch { false }
 		, RevengeWeapon {}
 		, RevengeWeapon_AffectsHouses { AffectedHouse::All }
 		, RevengeWeapon_RealLaunch { false }
