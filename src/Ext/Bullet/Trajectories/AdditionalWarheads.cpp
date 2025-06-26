@@ -531,6 +531,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 		this->TheCasualty.erase(ID);
 
 	std::vector<TechnoClass*> validTargets;
+	validTargets.reserve(validTechnos.size());
 	// checking for duplicate
 	for (const auto& pTechno : validTechnos)
 	{
