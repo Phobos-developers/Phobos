@@ -314,6 +314,7 @@ bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectCl
 		return false;
 
 	auto const pDesiredType = AttachEffectTypeClass::Find(pThis->String);
+
 	if (!pDesiredType)
 	{
 		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid AttachEffect ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
@@ -321,6 +322,7 @@ bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectCl
 	}
 
 	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
 	if (!pTechno)
 		return false;
 

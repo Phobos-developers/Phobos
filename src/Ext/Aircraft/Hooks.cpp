@@ -692,6 +692,8 @@ DEFINE_HOOK(0x418CD1, AircraftClass_Mission_Attack_ContinueFlyToDestination, 0x6
 	return Return;
 }
 
+// 10.6.2025 - Starkku: This is a bandaid fix to AI scripting problem that causes more issues than it solves so I have disabled it.
+/*
 // Idle: clear the target if no ammo
 DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 {
@@ -711,7 +713,7 @@ DEFINE_HOOK(0x414D4D, AircraftClass_Update_ClearTargetIfNoAmmo, 0x6)
 	}
 
 	return 0;
-}
+}*/
 
 // Stop: clear the mega mission and return to airbase immediately
 // (StopEventFix's DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6) in Hooks.BugFixes.cpp)
@@ -767,6 +769,15 @@ DEFINE_HOOK(0x4C72F2, EventClass_Execute_AircraftAreaGuard_Untether, 0x6)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x418CF3, AircraftClass_Mission_Attack_PlanningFix, 0x5)
+{
+	enum { SkipIdle = 0x418D00 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	return pThis->Ammo <= 0 || !pThis->TryNextPlanningTokenNode() ? 0 : SkipIdle;
 }
 
 #pragma endregion
