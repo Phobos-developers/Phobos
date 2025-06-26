@@ -57,7 +57,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 			{
 				for (auto pObject = pCell->GetContent(); pObject; pObject = pObject->NextObject)
 				{
-					const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+					const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
 					if (!pTechno || PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
 						continue;
@@ -367,7 +367,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 					for (auto pObject = pCell->GetContent(); pObject; pObject = pObject->NextObject)
 					{
-						const auto pTechno = abstract_cast<TechnoClass*>(pObject);
+						const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
 						if (!pTechno)
 						{

@@ -1071,14 +1071,13 @@ DEFINE_HOOK(0x46745C, BulletClass_Update_TrajectoriesVelocityUpdate, 0x7)
 	if (const auto pTraj = pExt->Trajectory.get())
 	{
 		pTraj->OnVelocityUpdate(pSpeed, pPosition);
-
 		// Trajectory can use Velocity only for turning Image's direction
 		// The true position in the next frame will be calculate after here
 		if (pExt->LaserTrails.size())
 		{
 			const auto futureCoords = PhobosTrajectory::Vector2Coord(*pSpeed + *pPosition);
 
-			for (auto& pTrail : pExt->LaserTrails)
+			for (const auto& pTrail : pExt->LaserTrails)
 			{
 				if (!pTrail->LastLocation.isset())
 					pTrail->LastLocation = pThis->Location;
