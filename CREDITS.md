@@ -147,7 +147,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
   - Warhead activation target health thresholds enhancements
-  - Event 606: Checking if an AttachEffect was attached to a Techno
+  - Event 606: AttachEffect is attaching to a Techno
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -326,7 +326,7 @@ This page lists all the individual contributions to the project by their author.
   - Income money string indication upon ore dump
   - Warhead superweapon launch logic
   - TechnoType conversion placeholder
-  - `606 The shield of the attached object is broken` trigger event
+  - `600 The shield of the attached object is broken` trigger event
   - `RadialIndicator` observer visibility
   - Cloaked objects from allies displaying to player in singleplayer campaigns
   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures

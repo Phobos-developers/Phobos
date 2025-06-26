@@ -839,9 +839,9 @@ In `mycampaign.map`:
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
 
-### `606` Checking if an AttachEffect was attached to a Techno
+### `606` AttachEffect is attaching to a Techno
 
-- Checks if an `AttachEffectType` was attached into an object.
+- Checks if an `AttachEffectType` is attaching to a techno. Doesn't work for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that were attached prior to the trigger's enabling.
 
 In `mycampaign.map`:
 ```ini

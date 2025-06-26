@@ -230,9 +230,6 @@ void AttachEffectClass::AI()
 		this->CreateAnim();
 
 	this->AnimCheck();
-
-	if (const auto pTag = this->Techno->AttachedTag)
-		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, this->Techno, CellStruct::Empty);
 }
 
 void AttachEffectClass::AI_Temporal()

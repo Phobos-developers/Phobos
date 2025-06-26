@@ -410,7 +410,7 @@ New:
 - Several attackmove related enhancement (by TaranDahl)
 - Ground line for select box (by NetsuNegi)
 - Support for more optional weapons (by FlyStar)
-- Event 606: Checking if an AttachEffect was attached to a Techno
+- Event 606: AttachEffect is attaching to a Techno
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
