@@ -38,6 +38,20 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6F3360, TechnoClass_WhatWeaponShouldIUse_MultiWeapon, 0x6)
+{
+	GET(TechnoTypeClass*, pType, EAX);
+	enum { SkipGameCode = 0x6F3379 };
+
+	if (TechnoTypeExt::ExtMap.Find(pType)->MultiWeapon.Get()
+		&& (pType->WhatAmI() != AbstractType::UnitType || !pType->Gunner))
+	{
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
 	enum { ReturnWeaponIndex = 0x6F37AF };
@@ -91,6 +105,15 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	if (forceWeaponIndex >= 0)
 	{
 		R->EAX(forceWeaponIndex);
+		return UseWeaponIndex;
+	}
+
+	// Multi weapon
+	const int multiWeaponIndex = pTypeExt->SelectMultiWeapon(pThis, pTarget);
+
+	if (multiWeaponIndex >= 0)
+	{
+		R->EAX(multiWeaponIndex);
 		return UseWeaponIndex;
 	}
 
@@ -253,14 +276,10 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const int nMoney = pWHExt->TransactMoney;
 
-	if (pWHExt)
-	{
-		const int nMoney = pWHExt->TransactMoney;
-
-		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return CannotFire;
-	}
+	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
+		return CannotFire;
 
 	// AAOnly doesn't need to be checked if LandTargeting=1.
 	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA
@@ -314,7 +333,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pWH->Airstrike)
 		{
-			if (!pWHExt || !EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
 				return CannotFire;
 
 			if (!TechnoExt::ExtMap.Find(pTargetTechno)->TypeExtData->AllowAirstrike.Get(pTargetTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))

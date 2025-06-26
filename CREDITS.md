@@ -373,6 +373,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where some units crashed after the deployment transformation
   - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
   - Infantry support `IsGattling=yes`
+  - Support for more optional weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -417,6 +418,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Display banner improvement
   - Electric/RadBeam trail for laser tails
+  - Ground line for select box
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -508,7 +510,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `DefaultDisguise` showing wrong house colors for different players
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
-  - Forcing specific weapon by range
+  - Forcing specific weapon by range and target type
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
   - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
@@ -516,7 +518,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow faking digital display for `InfoType=Health` at disguise
   - Display banner improvement and doc
   - Attached effect attach/discard by health
-  - Attached effect with `ExtraWarheads` and `FeedbackWeapon`
+  - Attached effect with `ExtraWarheads`, `KillWeapon` and `FeedbackWeapon`
   - `AuxWeapon`
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
