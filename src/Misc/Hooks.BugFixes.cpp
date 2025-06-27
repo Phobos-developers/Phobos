@@ -2174,3 +2174,15 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 }
 
 #pragma region
+
+DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
+{
+	enum { SkipGameCode = 0x71A82C };
+
+	GET(TemporalClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, ECX);
+
+	// Vanilla check is incorrect for buildingtargets
+	R->EAX(pThis->Owner->DistanceFrom(pTarget));
+	return SkipGameCode;
+}

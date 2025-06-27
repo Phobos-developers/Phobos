@@ -219,6 +219,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 
 ## Fixes / interactions with other extensions
 

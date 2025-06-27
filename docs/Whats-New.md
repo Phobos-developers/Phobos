@@ -600,6 +600,7 @@ Vanilla fixes:
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
+- Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
