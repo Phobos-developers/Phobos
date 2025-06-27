@@ -284,12 +284,16 @@ RealTimeTimers.Adaptive=false   ; boolean
 
 ### Select Box
 
+![selectbox](_static/images/selectbox.png)
+
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
   - If `Grounded` set to true, the select box will be drawn on the ground below the TechnoType.
   - Select box's translucency setting can be adjusted via `Translucency`.
   - `VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to specific players.
   - `DrawAboveTechno` specific whether the select box will be drawn before drawing the TechnoType. If set to false, the select box can be obscured by the TechnoType, and the draw location will ignore `PixelSelectionBracketDelta`.
+  - You can now use `GroundShape` to specific a image which always draw on ground, it will only draw when techno is in air if set `Ground.AlwaysDraw=false`, this also affect on `GroundLine`.
+  - If `GroundLine=true` , the game will draw a line from techno's position to its vertical projection, `GroundLine.Dashed=true` means the projection line is a dashed line.
 
 In `rulesmd.ini`:
 ```ini
@@ -304,12 +308,21 @@ DefaultUnitSelectBox=                   ; Select box for vehicle and aircraft
 Shape=select.shp                        ; filename with .shp extension
 Palette=palette.pal                     ; filename with .pal extension
 Frames=                                 ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
-Grounded=false                          ; boolean
 Offset=0,0                              ; integers - horizontal, vertical
 Translucency=0                          ; translucency level (0/25/50/75)
 VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
 DrawAboveTechno=true                    ; boolean
+GroundShape=                              ; filename with .shp extension
+GroundPalette=palette.pal               ; filename with .pal extension
+GroundFrames=                           ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
+GroundOffset=0,0                    ; integers - horizontal, vertical
+Ground.AlwaysDraw=true              ; boolean
+GroundLine=false                                ; boolean
+GroundLineColor=0,255,0                     ; R, G, B
+GroundLineColor.ConditionYellow=           ; R, G, B
+GroundLineColor.ConditionRed=               ; R, G, B
+GroundLine.Dashed=false                 ; boolean
 
 [SOMETECHNO]                            ; TechnoType
 SelectBox=                              ; Select box
@@ -699,35 +712,35 @@ Positional superweapon hotkeys are an experimental feature and currently the use
 In `uimd.ini`:
 ```ini
 [Sidebar]
-SuperWeaponSidebar=false              ; boolean
-SuperWeaponSidebar.Pyramid=true      ; boolean
-SuperWeaponSidebar.Interval=0         ; integer, pixels
-SuperWeaponSidebar.LeftOffset=0       ; integer, pixels
-SuperWeaponSidebar.CameoHeight=48     ; integer, pixels
-SuperWeaponSidebar.Max=0              ; integer
-SuperWeaponSidebar.MaxColumns=        ; integer
+SuperWeaponSidebar=false                    ; boolean
+SuperWeaponSidebar.Pyramid=true             ; boolean
+SuperWeaponSidebar.Interval=0               ; integer, pixels
+SuperWeaponSidebar.LeftOffset=0             ; integer, pixels
+SuperWeaponSidebar.CameoHeight=48           ; integer, pixels
+SuperWeaponSidebar.Max=0                    ; integer
+SuperWeaponSidebar.MaxColumns=              ; integer
 ```
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
-SuperWeaponSidebarKeysEnabled=false    ; boolean
+SuperWeaponSidebarKeysEnabled=false         ; boolean
 
 [AudioVisual]
-SuperWeaponSidebar.AllowByDefault=false   ; boolean
+SuperWeaponSidebar.AllowByDefault=false     ; boolean
 
-[SOMESIDE]
-SuperWeaponSidebar.OnPCX=             ; filename - including the .pcx extension
-SuperWeaponSidebar.OffPCX=            ; filename - including the .pcx extension
-SuperWeaponSidebar.TopPCX=            ; filename - including the .pcx extension
-SuperWeaponSidebar.CenterPCX=         ; filename - including the .pcx extension
-SuperWeaponSidebar.BottomPCX=         ; filename - including the .pcx extension
+[SOMESIDE]                                  ; Side
+SuperWeaponSidebar.OnPCX=                   ; filename - including the .pcx extension
+SuperWeaponSidebar.OffPCX=                  ; filename - including the .pcx extension
+SuperWeaponSidebar.TopPCX=                  ; filename - including the .pcx extension
+SuperWeaponSidebar.CenterPCX=               ; filename - including the .pcx extension
+SuperWeaponSidebar.BottomPCX=               ; filename - including the .pcx extension
 
-[SOMESW]
-SuperWeaponSidebar.Allow=             ; boolean
-SuperWeaponSidebar.PriorityHouses=    ; List of house types
-SuperWeaponSidebar.RequiredHouses=    ; List of house types
-SuperWeaponSidebar.Significance=0     ; integer
+[SOMESW]                                    ; SuperWeaponType
+SuperWeaponSidebar.Allow=                   ; boolean
+SuperWeaponSidebar.PriorityHouses=          ; List of house types
+SuperWeaponSidebar.RequiredHouses=          ; List of house types
+SuperWeaponSidebar.Significance=0           ; integer
 ```
 
 In `RA2MD.INI`:

@@ -365,7 +365,7 @@ New:
 - [Customize overpower logic](Fixed-or-Improved-Logics.md#customize-overpower-logic) (by NetsuNegi)
 - [Promotion animation deglobalization](New-or-Enhanced-Logics.md#promotion-animation) (by Ollerus)
 - Enhanced [reveal](New-or-Enhanced-Logics.md#reveal-map-for-owner-on-impact) & [gap](New-or-Enhanced-Logics.md#shroud-map-for-enemies-on-impact) warhead (by NetsuNegi)
-- [Forcing specific weapon by range](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)
+- [Forcing specific weapon by range and target type](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)
 - [Jumpjet Tilts While Moving](New-or-Enhanced-Logics.md#jumpjet-tilts-while-moving) (by CrimRecya)
 - [Spawned aircraft facing to match turret toggle](New-or-Enhanced-Logics.md#aircraft-spawner-customizations) (by Starkku)
 - [Removed dependency on `blowfish.dll`](Miscellanous.md#blowfish-dependency) (by ZivDero)
@@ -404,8 +404,12 @@ New:
 - [Customize limit and sound when engineer repair a building](New-or-Enhanced-Logics.md#engineer-repair-customization) (by NetsuNegi)
 - [Customizable debris trailer anim spawn delay](Fixed-or-Improved-Logics.md#customizable-debris-trailer-anim-spawn-delay) (by CrimRecya)
 - [Display banner](AI-Scripting-and-Mapping.md#display-banner) (by Morton & ststl)
-- Allows refineries to use multiple ActiveAnim simultaneously (by TaranDahl)
+- [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
+- Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
+- Several attackmove related enhancement (by TaranDahl)
+- Ground line for select box (by NetsuNegi)
+- Support for more optional weapons (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

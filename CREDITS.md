@@ -373,6 +373,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the issue where some units crashed after the deployment transformation
   - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
   - Infantry support `IsGattling=yes`
+  - Support for more optional weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -417,6 +418,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that damaged particle dont disappear after building has repaired by engineer
   - Display banner improvement
   - Electric/RadBeam trail for laser tails
+  - Ground line for select box
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -497,6 +499,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
   - Several new Infotypes, no display in specific status and a new single frame display method
   - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
+  - Add `DebrisMinimums` to keep the count of debris within a certain range
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -507,7 +510,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix `DefaultDisguise` showing wrong house colors for different players
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
-  - Forcing specific weapon by range
+  - Forcing specific weapon by range and target type
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
   - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
@@ -548,6 +551,7 @@ This page lists all the individual contributions to the project by their author.
   - Customize whether `Crater=yes` animation would destroy tiberium
   - Targeting limitation for berzerk technos
   - Allows refineries to use multiple ActiveAnim simultaneously
+  - Several attackmove related enhancement
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

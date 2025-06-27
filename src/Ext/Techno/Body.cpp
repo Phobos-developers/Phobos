@@ -653,6 +653,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintIntensityOwner)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
+		.Process(this->AttackMoveFollowerTempCount)
 		;
 }
 
