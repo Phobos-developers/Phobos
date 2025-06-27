@@ -54,7 +54,7 @@ int TEventExt::GetFlags(int iEvent)
 }
 
 std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
-	ObjectClass* pObject, CDTimerClass* pTimer, const bool* isPersitant, TechnoClass* pSource)
+	ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource)
 {
 	const auto eventKind = static_cast<PhobosTriggerEvent>(pThis->EventKind);
 

@@ -17,7 +17,7 @@ DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 	GET_STACK(HouseClass*, pHouse, 0x8);
 	GET_STACK(ObjectClass*, pObject, 0xC);
 	GET_STACK(CDTimerClass*, pTimer, 0x10);
-	GET_STACK(const bool*, isPersitant, 0x14);
+	GET_STACK(bool*, isPersitant, 0x14);
 	GET_STACK(TechnoClass*, pSource, 0x18);
 
 	const auto result = TEventExt::Execute(pThis, iEvent, pHouse, pObject, pTimer, isPersitant, pSource);

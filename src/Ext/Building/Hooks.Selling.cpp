@@ -27,10 +27,12 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 // true: undeploy into vehicle; false: sell
 bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 {
-	if (!pThis->Type->UndeploysInto)
+	const auto pType = pThis->Type;
+
+	if (!pType->UndeploysInto)
 		return false;
 
-	if (pThis->Type->ConstructionYard)
+	if (pType->ConstructionYard)
 	{
 		// Conyards can't undeploy if MCVRedeploy=no
 		if (!GameModeOptionsClass::Instance.MCVRedeploy)

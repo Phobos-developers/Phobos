@@ -351,7 +351,6 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	// Extra warheads
 	if (pThis->WeaponType)
 	{
-		auto const pTarget = pThis->Target;
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
 		auto const& extraWarheads = pWeaponExt->ExtraWarheads;
 		auto const& damageOverrides = pWeaponExt->ExtraWarheads_DamageOverrides;
@@ -364,12 +363,10 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		{
 			auto const pWH = extraWarheads[i];
 			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+			auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 
-			if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
-			{
-				if (!pWHExt->IsHealthInThreshold(pTarget))
-					continue;
-			}
+			if (!pWHExt->IsHealthInThreshold(pTarget))
+				continue;
 
 			int damage = defaultDamage;
 			size_t size = damageOverrides.size();
@@ -399,9 +396,9 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 				continue;
 
 			if (isFull)
-				WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pTarget);
+				WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
 			else
-				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, abstract_cast<TechnoClass*>(pTarget));
+				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
 		}
 	}
 
@@ -615,11 +612,10 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
 
 		// Cache all pointer variables before the loop
-		auto const pThisTarget = pThis->Target;
 		bool const splits = pTypeExt->Splits;
 		double const retargetAccuracy = pTypeExt->RetargetAccuracy;
 		double const retargetSelfProb = pTypeExt->RetargetSelf_Probability;
-		auto const warhead = pWeapon->Warhead;
+		auto const pWH = pWeapon->Warhead;
 		int const speed = pWeapon->Speed;
 		bool const bright = pWeapon->Bright;
 		auto const location = pThis->Location;
@@ -631,32 +627,32 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 		for (int i = 0; i < clusterCount; ++i)
 		{
-			auto target = pThisTarget;
+			auto pTarget = pThis->Target;
 
 			if (!splits)
 			{
-				target = targets.GetItem(i);
+				pTarget = targets.GetItem(i);
 			}
-			else if (!target || retargetAccuracy < random.RandomDouble())
+			else if (!pTarget || retargetAccuracy < random.RandomDouble())
 			{
 				int index = random.RandomRanged(0, targets.Count - 1);
-				target = targets.GetItem(index);
+				pTarget = targets.GetItem(index);
 
-				if (target == pSource)
+				if (pTarget == pSource)
 				{
 					if (random.RandomDouble() > retargetSelfProb)
 					{
 						index = random.RandomRanged(0, targets.Count - 1);
-						target = targets.GetItem(index);
+						pTarget = targets.GetItem(index);
 					}
 				}
 
 				targets.RemoveItem(index);
 			}
 
-			if (target)
+			if (pTarget)
 			{
-				if (BulletClass* const bullet = pTypeSplits->CreateBullet(target, pSource, damage, warhead, speed, bright))
+				if (BulletClass* const bullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWH, speed, bright))
 				{
 					CoordStruct coords = location;
 					const int minScatter = scatterMin;
@@ -664,7 +660,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 					if (airburst && targetAsSource)
 					{
-						coords = target->GetCoords();
+						coords = pTarget->GetCoords();
 
 						if (skipHeight)
 							coords.Z = location.Z;

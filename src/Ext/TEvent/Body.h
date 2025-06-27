@@ -86,7 +86,7 @@ public:
 	static int GetFlags(int iEvent);
 
 	static std::optional<bool> Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
-		ObjectClass* pObject, CDTimerClass* pTimer, const bool* isPersitant, TechnoClass* pSource);
+		ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource);
 
 	template<bool IsGlobal, typename _Pr>
 	static bool VariableCheck(TEventClass* pThis);

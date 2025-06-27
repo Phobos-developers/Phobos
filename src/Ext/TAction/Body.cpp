@@ -430,16 +430,18 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 		}
 	};
 
-	if (pThis->Value >= 0)
+	const int value = pThis->Value;
+
+	if (value >= 0)
 	{
-		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
-			HouseClass::FindByIndex(pThis->Value) :
-			HouseClass::FindByCountryIndex(pThis->Value);
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(value) ?
+			HouseClass::FindByIndex(value) :
+			HouseClass::FindByCountryIndex(value);
 
 		setValue(pTargetHouse);
 		pHouse->UpdateAngerNodes(0, pHouse);
 	}
-	else if (pThis->Value == -1)
+	else if (value == -1)
 	{
 		for (auto const pTargetHouse : HouseClass::Array)
 		{
@@ -457,11 +459,13 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 	if (pHouse->AngerNodes.Count <= 0)
 		return true;
 
-	if (pThis->Value >= 0)
+	const int value = pThis->Value;
+
+	if (value >= 0)
 	{
-		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
-			HouseClass::FindByIndex(pThis->Value) :
-			HouseClass::FindByCountryIndex(pThis->Value);
+		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value) ?
+			HouseClass::FindByIndex(value) :
+			HouseClass::FindByCountryIndex(value);
 
 		if (pTargetHouse)
 		{
@@ -476,7 +480,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 			}
 		}
 	}
-	else if (pThis->Value == -1)
+	else if (value == -1)
 	{
 		for (auto& pAngerNode : pHouse->AngerNodes)
 		{
@@ -492,14 +496,15 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const int value = pThis->Param3;
 
-	if (pThis->Param3 >= 0 || pThis->Param3 == -2)
+	if (value >= 0 || value == -2)
 	{
-		if (pThis->Param3 != -2)
+		if (value != -2)
 		{
-			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Param3) ?
-				HouseClass::FindByIndex(pThis->Param3) :
-				HouseClass::FindByCountryIndex(pThis->Param3);
+			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value) ?
+				HouseClass::FindByIndex(value) :
+				HouseClass::FindByCountryIndex(value);
 
 			if (pTargetHouse && pHouse != pTargetHouse &&
 				!pHouse->IsAlliedWith(pTargetHouse))
@@ -514,7 +519,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 			pHouse->UpdateAngerNodes(0, pHouse);
 		}
 	}
-	else if (pThis->Param3 == -1)
+	else if (value == -1)
 	{
 		pHouseExt->SetForceEnemyIndex(-1);
 		pHouse->UpdateAngerNodes(0, pHouse);
