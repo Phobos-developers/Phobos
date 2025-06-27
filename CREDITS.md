@@ -552,6 +552,7 @@ This page lists all the individual contributions to the project by their author.
   - Targeting limitation for berzerk technos
   - Allows refineries to use multiple ActiveAnim simultaneously
   - Several attackmove related enhancement
+  - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix
