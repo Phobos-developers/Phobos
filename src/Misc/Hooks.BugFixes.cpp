@@ -2032,15 +2032,25 @@ DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
+DEFINE_HOOK(0x47EB15, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 {
-	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
+	enum { ContinueCheck = 0x47EB1C, DontUnmark = 0x47EB8F };
 
 	GET(CellClass*, pCell, EDI);
 	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
 
-	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
-		return DontUnmark;
+	if (RemoveCellContentTemp::CheckBeforeUnmark)
+	{
+		NextObject object(onBridge ? pCell->AltObject : pCell->FirstObject);
+
+		while (object)
+		{
+			if (object->WhatAmI() == AbstractType::Unit)
+				return DontUnmark;
+
+			++object;
+		}
+	}
 
 	GET(ObjectClass*, pContent, ESI);
 	R->EAX(pContent->WhatAmI());
