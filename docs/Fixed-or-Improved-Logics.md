@@ -234,6 +234,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
+- Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings.
+- Fixed an issue that jumpjet harvester will overlap when entering refinery buildings and cause game crashes.
 
 ## Fixes / interactions with other extensions
 

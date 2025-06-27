@@ -500,6 +500,8 @@ This page lists all the individual contributions to the project by their author.
   - Several new Infotypes, no display in specific status and a new single frame display method
   - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
   - Add `DebrisMinimums` to keep the count of debris within a certain range
+  - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings
+  - Fix an issue that jumpjet harvester will overlap when entering refinery buildings and cause game crashes
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

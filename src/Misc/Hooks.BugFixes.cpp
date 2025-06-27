@@ -2262,3 +2262,41 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 	R->EAX(pThis->Owner->DistanceFrom(pTarget));
 	return SkipGameCode;
 }
+
+#pragma region EnterRefineryFix
+
+DEFINE_HOOK(0x74312A, UnitClass_SetDestination_ReplaceHarvestMission, 0x5)
+{
+	enum { SkipGameCode = 0x742F48 };
+
+	GET(UnitClass*, pThis, EBP);
+
+	// Jumpjet will overlap when entering buildings,
+	// which can cause errors in the connection between Jumpjet harvester and Refinery building,
+	// leading to game crashes in drawing
+	// Here change the Mission::Enter to Mission::Harvest
+	pThis->QueueMission(Mission::Harvest, false);
+	pThis->NextMission();
+	pThis->MissionStatus = 2; // Status: returning to refinery
+
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x73E739, UnitClass_Mission_Harvest_SkipUselessArchiveTarget, 0x5)
+{
+	enum { SkipGameCode = 0x73E755 };
+
+	GET(UnitClass*, pThis, EBP);
+	GET(AbstractClass*, pFocus, EAX); // pThis->ArchiveTarget
+
+	// Removing unnecessary set destination
+	// This can effectively reduce the ineffective actions when Harvester automatically returning
+	// to work after be manually operated to return to Refinery.
+	if (pFocus->WhatAmI() != AbstractType::Building || pThis->GetCell()->GetBuilding() != pFocus)
+		return 0;
+
+	pThis->ArchiveTarget = nullptr;
+	return SkipGameCode;
+}
+
+#pragma endregion
