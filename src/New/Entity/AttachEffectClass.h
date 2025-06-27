@@ -96,11 +96,11 @@ struct AttachEffectTechnoProperties
 	double ArmorMultiplier;
 	double SpeedMultiplier;
 	double ROFMultiplier;
+	double NegativeDamageMultiplier;
 	bool Cloakable;
 	bool ForceDecloak;
 	bool DisableWeapons;
 	bool Unkillable;
-	bool PreventNegativeDamage;
 	bool HasRangeModifier;
 	bool HasTint;
 	bool ReflectDamage;
@@ -115,11 +115,11 @@ struct AttachEffectTechnoProperties
 		, ArmorMultiplier { 1.0 }
 		, SpeedMultiplier { 1.0 }
 		, ROFMultiplier { 1.0 }
+		, NegativeDamageMultiplier { 1.0 }
 		, Cloakable { false }
 		, ForceDecloak { false }
 		, DisableWeapons { false }
 		, Unkillable { false }
-		, PreventNegativeDamage { false }
 		, HasRangeModifier { false }
 		, HasTint { false }
 		, ReflectDamage { false }

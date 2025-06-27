@@ -81,7 +81,7 @@ This page describes all the engine features that are either new and introduced b
   - `DisableWeapons` can be used to disable ability to fire any and all weapons.
     - On TechnoTypes with `OpenTopped=true`, `OpenTopped.CheckTransportDisableWeapons` can be set to true to make passengers not be able to fire out if transport's weapons are disabled by `DisableWeapons`.
   - `Unkillable` can be used to prevent the techno from being killed by taken damage (minimum health will be 1).
-  - `PreventNegativeDamage` can be used to prevent the techno from taking negative damage. This includes both negative `Damage` and negative `Verses`.
+  - `NegativeDamage.Multiplier` will be multiplied on the negative damage taken by the attached object. This includes both negative `Damage` and negative `Verses`.
   - It is possible to set groups for attach effect types by defining strings in `Groups`.
     - Groups can be used instead of types for removing effects and weapon filters.
 
@@ -200,7 +200,7 @@ ReflectDamage.Override=                            ; integer
 ReflectDamage.UseInvokerAsOwner=false              ; boolean
 DisableWeapons=false                               ; boolean
 Unkillable=false                                   ; boolean
-PreventNegativeDamage=false                        ; boolean
+NegativeDamage.Multiplier=1.0                      ; floating point value
 LaserTrail.Type=                                   ; lasertrail type
 Groups=                                            ; comma-separated list of strings (group IDs)
 

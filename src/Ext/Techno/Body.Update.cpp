@@ -43,7 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
-	
+
 	if (this->AttackMoveFollowerTempCount)
 	{
 		this->AttackMoveFollowerTempCount--;
@@ -1833,11 +1833,11 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	double armor = 1.0;
 	double speed = 1.0;
 	double ROF = 1.0;
+	double negativeDamage = 1.0;
 	bool cloak = false;
 	bool forceDecloak = false;
 	bool disableWeapons = false;
 	bool unkillable = false;
-	bool preventNegativeDamage = false;
 	bool hasRangeModifier = false;
 	bool hasTint = false;
 	bool reflectsDamage = false;
@@ -1857,11 +1857,11 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		speed *= type->SpeedMultiplier;
 		armor *= type->ArmorMultiplier;
 		ROF *= type->ROFMultiplier;
+		negativeDamage *= type->NegativeDamage_Multiplier;
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
 		disableWeapons |= type->DisableWeapons;
 		unkillable |= type->Unkillable;
-		preventNegativeDamage |= type->PreventNegativeDamage;
 		hasRangeModifier |= (type->WeaponRange_ExtraRange != 0.0 || type->WeaponRange_Multiplier != 0.0);
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
@@ -1876,11 +1876,11 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 	pAE.ArmorMultiplier = armor;
 	pAE.SpeedMultiplier = speed;
 	pAE.ROFMultiplier = ROF;
+	pAE.NegativeDamageMultiplier = negativeDamage;
 	pAE.Cloakable = cloak;
 	pAE.ForceDecloak = forceDecloak;
 	pAE.DisableWeapons = disableWeapons;
 	pAE.Unkillable = unkillable;
-	pAE.PreventNegativeDamage = preventNegativeDamage;
 	pAE.HasRangeModifier = hasRangeModifier;
 	pAE.HasTint = hasTint;
 	pAE.ReflectDamage = reflectsDamage;
