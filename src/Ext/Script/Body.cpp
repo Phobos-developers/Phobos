@@ -323,7 +323,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	}
 
 	auto const pExt = TeamExt::ExtMap.Find(pTeam);
-	FootClass* pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
+	auto const pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
 	pExt->TeamLeader = pLeaderUnit;
 
 	// This action finished
@@ -458,21 +458,18 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 		{
 			if (!ScriptExt::IsUnitAvailable(pUnit, true))
 			{
-				const auto pTypeUnit = pUnit->GetTechnoType();
-				const auto unitAmmo = pUnit->Ammo;
-				const auto unitDestination = pUnit->Destination;
-				const auto unitDistance = pUnit->DistanceFrom(pLeaderUnit) / 256.0;
-
 				if (pUnit == pLeaderUnit)
 				{
 					nUnits++;
 					continue;
 				}
 
+				const auto pType = pUnit->GetTechnoType();
+
 				// Aircraft case
-				if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && unitAmmo <= 0 && pTypeUnit->Ammo > 0)
+				if (pType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pType->Ammo > 0)
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pTypeUnit);
+					const auto pAircraft = static_cast<AircraftTypeClass*>(pType);
 
 					if (pAircraft->AirportBound)
 					{
@@ -485,10 +482,10 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 
 				nUnits++;
 
-				if (unitDistance > closeEnough)
+				if (pUnit->DistanceFrom(pLeaderUnit->GetCell()) / 256.0 > closeEnough)
 				{
 					// Leader's location is too far from me. Regroup
-					if (unitDestination != pLeaderUnit)
+					if (pUnit->Destination != pLeaderUnit)
 					{
 						pUnit->SetDestination(pLeaderUnit, false);
 						pUnit->QueueMission(Mission::Move, false);

@@ -612,18 +612,17 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
 
 		// Cache all pointer variables before the loop
-		bool const splits = pTypeExt->Splits;
-		double const retargetAccuracy = pTypeExt->RetargetAccuracy;
-		double const retargetSelfProb = pTypeExt->RetargetSelf_Probability;
 		auto const pWH = pWeapon->Warhead;
-		int const speed = pWeapon->Speed;
-		bool const bright = pWeapon->Bright;
 		auto const location = pThis->Location;
-		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
-		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
+		bool const bright = pWeapon->Bright;
 		bool const airburst = pType->Airburst;
+		bool const splits = pTypeExt->Splits;
 		bool const targetAsSource = pTypeExt->Airburst_TargetAsSource;
 		bool const skipHeight = pTypeExt->Airburst_TargetAsSource_SkipHeight;
+		double const retargetAccuracy = pTypeExt->RetargetAccuracy;
+		int const speed = pWeapon->Speed;
+		int const scatterMin = pTypeExt->AirburstWeapon_SourceScatterMin.Get();
+		int const scatterMax = pTypeExt->AirburstWeapon_SourceScatterMax.Get();
 
 		for (int i = 0; i < clusterCount; ++i)
 		{
@@ -640,7 +639,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 				if (pTarget == pSource)
 				{
-					if (random.RandomDouble() > retargetSelfProb)
+					if (random.RandomDouble() > pTypeExt->RetargetSelf_Probability)
 					{
 						index = random.RandomRanged(0, targets.Count - 1);
 						pTarget = targets.GetItem(index);
@@ -652,7 +651,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 
 			if (pTarget)
 			{
-				if (BulletClass* const bullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWH, speed, bright))
+				if (auto const pBullet = pTypeSplits->CreateBullet(pTarget, pSource, damage, pWH, speed, bright))
 				{
 					CoordStruct coords = location;
 					const int minScatter = scatterMin;
@@ -672,8 +671,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 						coords = MapClass::GetRandomCoordsNear(coords, distance, false);
 					}
 
-					BulletExt::SimulatedFiringUnlimbo(bullet, pOwner, pWeapon, coords, true);
-					BulletExt::SimulatedFiringEffects(bullet, pOwner, nullptr, false, true);
+					BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, coords, true);
+					BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, false, true);
 				}
 			}
 		}

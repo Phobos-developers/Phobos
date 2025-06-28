@@ -15,7 +15,7 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 
 	// This pre-iterating ensure our process to be done in O(NM) instead of O(N^2),
 	// as M should be much less than N, this will be a great improvement. - secsome
-	for (auto const& pBld : pThis->Buildings)
+	for (auto const pBld : pThis->Buildings)
 	{
 		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
 		{

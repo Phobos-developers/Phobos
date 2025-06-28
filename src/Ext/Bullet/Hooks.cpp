@@ -291,7 +291,6 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 	const int min = pTypeExt->ClusterScatter_Min.Get();
 	const int max = pTypeExt->ClusterScatter_Max.Get();
-	const bool alive = pThis->IsAlive;
 	auto coords = origCoords;
 	auto& random = ScenarioClass::Instance->Random;
 
@@ -299,7 +298,7 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	{
 		pThis->Detonate(coords);
 
-		if (!alive)
+		if (!pThis->IsAlive)
 			break;
 
 		const int distance = random.RandomRanged(min, max);

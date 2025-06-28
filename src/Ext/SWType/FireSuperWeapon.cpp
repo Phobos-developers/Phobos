@@ -177,6 +177,7 @@ void SWTypeExt::ExtData::ApplyLimboDelivery(HouseClass* pHouse)
 	{
 		int id = -1;
 		const size_t idsSize = this->LimboDelivery_IDs.size();
+
 		for (size_t i = 0; i < this->LimboDelivery_Types.size(); i++)
 		{
 			if (i < idsSize)
