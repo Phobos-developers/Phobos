@@ -82,6 +82,8 @@ public:
 		int TintIntensityAllies;
 		int TintIntensityEnemies;
 
+		int AttackMoveFollowerTempCount;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -134,6 +136,7 @@ public:
 			, TintIntensityOwner { 0 }
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
+			, AttackMoveFollowerTempCount { 0 }
 		{ }
 
 		void OnEarlyUpdate();
@@ -260,4 +263,5 @@ public:
 	static int GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* pWallOverlayType);
 	static void ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
 	static void ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH);
+	static bool MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType);
 };

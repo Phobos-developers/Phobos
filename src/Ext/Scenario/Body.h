@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ScenarioClass.h>
+#include <MessageListClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -39,6 +40,8 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
+		std::unique_ptr<MessageListClass> NewMessageList;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -48,6 +51,7 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
+			, NewMessageList {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

@@ -43,6 +43,11 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
+	
+	if (this->AttackMoveFollowerTempCount)
+	{
+		this->AttackMoveFollowerTempCount--;
+	}
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -1367,7 +1372,7 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
 
 		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
-			pThis->DistanceFrom(pCapturer) > pCapturerExt->MindControlRangeLimit.Get())
+			pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
 		{
 			pCapturer->CaptureManager->FreeUnit(pThis);
 		}
