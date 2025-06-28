@@ -500,6 +500,7 @@ This page lists all the individual contributions to the project by their author.
   - Several new Infotypes, no display in specific status and a new single frame display method
   - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
   - Add `DebrisMinimums` to keep the count of debris within a certain range
+  - Task subtitles display in the middle of the screen
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
