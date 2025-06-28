@@ -1886,6 +1886,7 @@ msgid ""
 "Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
 " building target (by TaranDahl)"
 msgstr ""
+"修复建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:443 ../../Whats-New.md:736 ../../Whats-New.md:813
 #: ../../Whats-New.md:977 ../../Whats-New.md:1018 ../../Whats-New.md:1030

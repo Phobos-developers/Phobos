@@ -2247,6 +2247,7 @@ msgid ""
 "Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for "
 "building target"
 msgstr ""
+"修复建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 
 #: ../../../CREDITS.md:558
 msgid "**tyuah8**:"
