@@ -5804,13 +5804,13 @@ msgstr ""
 msgid ""
 "`ForceWeapon.Cloaked` forces specified weapon to be used against any "
 "cloaked targets."
-msgstr "`ForceWeapon.Cloaked` 强制对隐形（下潜）状态目标使用的武器。"
+msgstr "`ForceWeapon.Cloaked` 强制指定对隐形（下潜）状态目标使用的武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1493
 msgid ""
 "`ForceWeapon.Disguised` forces specified weapon to be used against any "
 "disguised targets."
-msgstr "`ForceWeapon.Disguised` 强制针对伪装目标所使用的武器。"
+msgstr "`ForceWeapon.Disguised` 强制指定针对伪装目标所使用的武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1494
 msgid ""
@@ -5840,7 +5840,7 @@ msgid ""
 " applied to ground target when they're both set."
 msgstr ""
 "`ForceAAWeapon.InRange` 是 `ForceWeapon.InRange` 的对空版本。当两个参数同时存在时 "
-"`ForceWeapon.InRange` 仅用于对地面目标。"
+"`ForceWeapon.InRange` 仅用于对地。"
 
 #: ../../New-or-Enhanced-Logics.md:1497
 msgid ""
@@ -5864,14 +5864,14 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1499
 msgid "A series of tags can force specified weapons based on the target's type."
-msgstr ""
+msgstr "一系列根据目标类型强制使用特定武器的标签："
 
 #: ../../New-or-Enhanced-Logics.md:1500
-#, fuzzy
 msgid ""
 "`ForceWeapon.Naval.Units` forces specified weapon to be used against "
 "`Naval=yes` units. Taking priority to `ForceWeapon.Units`."
-msgstr "`ForceWeapon.Disguised` 强制针对伪装目标所使用的武器。"
+msgstr ""
+"`ForceWeapon.Naval.Units` 强制指定对 `Naval=yes` 的单位所使用的武器。优先级高于 `ForceWeapon.Units`。"
 
 #: ../../New-or-Enhanced-Logics.md:1501
 msgid ""
@@ -5879,26 +5879,25 @@ msgid ""
 "building with `BuildCat=Combat`. Otherwise it'll follow "
 "`ForceWeapon.Buildings`, if enabled."
 msgstr ""
+"`ForceWeapon.Defenses` 是 `ForceWeapon.Buildings` 针对 `BuildCat=Combat` 类建筑目标的分离设置，不启用即沿用后者。"
 
 #: ../../New-or-Enhanced-Logics.md:1502
 msgid ""
 "`ForceWeapon.Infantry/Units/Aircraft` can be applied to both ground and "
 "air target if `ForceAAWeapon.Infantry/Units/Aircraft` is not set."
 msgstr ""
+"`ForceWeapon.Infantry/Units/Aircraft` 在未设置 `ForceAAWeapon.Infantry/Units/Aircraft` 时同时控制对空对地。"
 
 #: ../../New-or-Enhanced-Logics.md:1503
-#, fuzzy
 msgid ""
 "`ForceAAWeapon.Infantry/Units/Aircraft` do the same things but only for "
 "air target. Taking priority to "
 "`ForceWeapon.Infantry/Units/Naval.Units/Aircraft`, which means that they "
 "can only be applied to ground target when they're both set."
 msgstr ""
-"`ForceAAWeapon.InRange` 是 `ForceWeapon.InRange` 的对空版本。当两个参数同时存在时 "
-"`ForceWeapon.InRange` 仅用于对地面目标。"
+"`ForceAAWeapon.Infantry/Units/Aircraft` 是 `ForceWeapon.Infantry/Units/Aircraft` 的对空版本。当两个参数同时存在时后者仅用于对地。"
 
 #: ../../New-or-Enhanced-Logics.md:1506
-#, fuzzy
 msgid ""
 "[SOMETECHNO]                                    ; TechnoType\n"
 "ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable\n"

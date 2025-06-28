@@ -2068,9 +2068,8 @@ msgid "Promotion animation deglobalization"
 msgstr "自定义升级动画"
 
 #: ../../../CREDITS.md:515
-#, fuzzy
 msgid "Forcing specific weapon by range and target type"
-msgstr "根据射程选取武器"
+msgstr "根据射程和目标类型选取武器"
 
 #: ../../../CREDITS.md:516
 msgid "Passenger-based insignias"

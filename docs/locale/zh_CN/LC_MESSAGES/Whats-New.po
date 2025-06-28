@@ -1402,12 +1402,11 @@ msgstr ""
 "on-impact)（by NetsuNegi）"
 
 #: ../../Whats-New.md:368
-#, fuzzy
 msgid ""
 "[Forcing specific weapon by range and target type](New-or-Enhanced-"
 "Logics.md#forcing-specific-weapon-against-certain-targets) (by Ollerus)"
 msgstr ""
-"[根据射程选取武器](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-"
+"[根据射程和目标类型选取武器](New-or-Enhanced-Logics.md#forcing-specific-weapon-against-"
 "certain-targets)（by Ollerus）"
 
 #: ../../Whats-New.md:369
