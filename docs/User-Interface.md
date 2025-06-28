@@ -313,15 +313,15 @@ Translucency=0                          ; translucency level (0/25/50/75)
 VisibleToHouses=all                     ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 VisibleToHouses.Observer=true           ; boolean
 DrawAboveTechno=true                    ; boolean
-GroundShape=                              ; filename with .shp extension
+GroundShape=                            ; filename with .shp extension
 GroundPalette=palette.pal               ; filename with .pal extension
 GroundFrames=                           ; List of integer, default 1,1,1 for infantry, 0,0,0 for vehicle and aircraft
-GroundOffset=0,0                    ; integers - horizontal, vertical
-Ground.AlwaysDraw=true              ; boolean
-GroundLine=false                                ; boolean
-GroundLineColor=0,255,0                     ; R, G, B
-GroundLineColor.ConditionYellow=           ; R, G, B
-GroundLineColor.ConditionRed=               ; R, G, B
+GroundOffset=0,0                        ; integers - horizontal, vertical
+Ground.AlwaysDraw=true                  ; boolean
+GroundLine=false                        ; boolean
+GroundLineColor=0,255,0                 ; R, G, B
+GroundLineColor.ConditionYellow=        ; R, G, B
+GroundLineColor.ConditionRed=           ; R, G, B
 GroundLine.Dashed=false                 ; boolean
 
 [SOMETECHNO]                            ; TechnoType

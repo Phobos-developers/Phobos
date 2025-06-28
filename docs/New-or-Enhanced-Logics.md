@@ -1207,7 +1207,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                                     ; TechnoType
 AttackMove.Follow=false                          ; boolean
 AttackMove.Follow.IncludeAir=false               ; boolean
-AttackMove.Follow.IfMindControlIsFull=false      ;boolean
+AttackMove.Follow.IfMindControlIsFull=false      ; boolean
 ```
 
 ### Attack move - without weapon
