@@ -2045,7 +2045,7 @@ DEFINE_HOOK(0x47EB15, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
 
 		while (object)
 		{
-			if (object->WhatAmI() == AbstractType::Unit)
+			if (object->WhatAmI() == AbstractType::Unit && object->IsAlive && object->Health > 0)
 				return DontUnmark;
 
 			++object;
