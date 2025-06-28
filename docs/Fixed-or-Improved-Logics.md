@@ -235,6 +235,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
+- Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 
 ## Fixes / interactions with other extensions

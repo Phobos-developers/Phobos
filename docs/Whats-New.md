@@ -439,6 +439,7 @@ Vanilla fixes:
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
+- Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes (by CrimRecya)
 
 Phobos fixes:
