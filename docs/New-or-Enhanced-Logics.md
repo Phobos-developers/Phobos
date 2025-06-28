@@ -1624,11 +1624,11 @@ MultiMindControl.ReleaseVictim=false  ; boolean
 *Multi Weapon used to release different weapons against different targets in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
 
 - You can now use `WeaponX` to enable more than 2 weapons for a TechnoType without hardcoded `Gunner=yes`, `IsGattling=yes` or `IsChargeTurret=yes` restriction.
- - Set `MultiWeapon=yes` to enable this feature, be careful not to forget `WeaponCount`.
- - `MultiWeapon.IsSecondary` specifies which weapons will be considered as `Secondary` when selecting weapons or triggering infantry's `SecondaryFire` settings. If not set, `Weapon1` will be considered as `Secondary`.
- - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
-  - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
-  - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
+  - Set `MultiWeapon=yes` to enable this feature, be careful not to forget `WeaponCount`.
+  - `MultiWeapon.IsSecondary` specifies which weapons will be considered as `Secondary` when selecting weapons or triggering infantry's `SecondaryFire` settings. If not set, `Weapon1` will be considered as `Secondary`.
+  - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
+    - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
+    - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
 
 In `rulesmd.ini`:
 ```ini

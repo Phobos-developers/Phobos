@@ -1710,9 +1710,8 @@ msgid "Ground line for select box (by NetsuNegi)"
 msgstr "为选择框添加了投影线（by NetsuNegi）"
 
 #: ../../Whats-New.md:412
-#, fuzzy
-msgid "Support for more optional weapons (by FlyStar)"
-msgstr "武器自定义 `BurstDelays`（by Starkku）"
+msgid "[Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)"
+msgstr "[多武器逻辑](New-or-Enhanced-Logics.md#multi-weapon)（by FlyStar）"
 
 #: ../../Whats-New.md:413
 msgid "Task subtitles display in the middle of the screen (by CrimRecya)"

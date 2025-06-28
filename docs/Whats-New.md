@@ -409,7 +409,7 @@ New:
 - Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
 - [Several attackmove related enhancement](New-or-Enhanced-Logics.md#attack-move-behavior-when-target-acquired) (by TaranDahl)
 - Ground line for select box (by NetsuNegi)
-- Support for more optional weapons (by FlyStar)
+- [Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)
 - Task subtitles display in the middle of the screen (by CrimRecya)
 
 Vanilla fixes:

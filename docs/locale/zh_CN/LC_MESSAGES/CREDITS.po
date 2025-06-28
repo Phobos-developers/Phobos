@@ -1481,7 +1481,7 @@ msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑"
 
 #: ../../../CREDITS.md:377
 msgid "Support for more optional weapons"
-msgstr ""
+msgstr "多武器逻辑"
 
 #: ../../../CREDITS.md:378
 msgid "**NetsuNegi**:"

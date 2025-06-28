@@ -6201,9 +6201,8 @@ msgstr ""
 "MultiMindControl.ReleaseVictim=false  ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:1623
-#, fuzzy
 msgid "Multi Weapon"
-msgstr "超级武器"
+msgstr "多武器"
 
 #: ../../New-or-Enhanced-Logics.md:1625
 msgid ""
@@ -6211,6 +6210,7 @@ msgid ""
 "different weapons against different targets in **Zero Boundary** by "
 "@[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*"
 msgstr ""
+"![image](_static/images/multiweapons.gif) *在 @[暴风硫](https://space.bilibili.com/11638715/lists/5358986) 的 **零点界限** 中使用多武器逻辑来实现对不同目标使用不同武器*"
 
 #: ../../New-or-Enhanced-Logics.md:1628
 msgid ""
@@ -6218,12 +6218,14 @@ msgid ""
 "without hardcoded `Gunner=yes`, `IsGattling=yes` or `IsChargeTurret=yes` "
 "restriction."
 msgstr ""
+"现在你可以使用 `WeaponX` 来为一个单位启用 2 种以上的武器而无需原先硬编码的 `Gunner=yes`、`IsGattling=yes` 或 `IsChargeTurret=yes` 这些启用语句。"
 
 #: ../../New-or-Enhanced-Logics.md:1629
 msgid ""
 "Set `MultiWeapon=yes` to enable this feature, be careful not to forget "
 "`WeaponCount`."
 msgstr ""
+"设置 `MultiWeapon=yes` 来启用此功能，注意别忘了设置 `WeaponCount`。"
 
 #: ../../New-or-Enhanced-Logics.md:1630
 msgid ""
@@ -6232,6 +6234,7 @@ msgid ""
 "`SecondaryFire` settings. If not set, `Weapon1` will be considered as "
 "`Secondary`."
 msgstr ""
+"`MultiWeapon.IsSecondary` 指定在选择武器或触发步兵 `SecondaryFire` 时哪些武器被视为 `Secondary`，若不设置则使用 `Weapon1`。"
 
 #: ../../New-or-Enhanced-Logics.md:1631
 msgid ""
@@ -6239,18 +6242,21 @@ msgid ""
 "selected by default weapon selection logic. Notice that higher number is "
 "bad for performance."
 msgstr ""
+"`MultiWeapon.SelectCount` 决定默认武器选用逻辑下可以被考虑使用的武器数量。设置过高会导致性能问题。"
 
 #: ../../New-or-Enhanced-Logics.md:1632
 msgid ""
 "If the number is smaller than the total amount of weapons, the ones with "
 "smaller indices will be picked."
 msgstr ""
+"如果该值小于武器数量那么将会优先选择索引序号更小的武器。"
 
 #: ../../New-or-Enhanced-Logics.md:1633
 msgid ""
 "Other weapons can still be used for logic that specify a weapon index, "
 "such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets)."
 msgstr ""
+"其他武器仍可通过 [对特定目标使用特定武器](#forcing-specific-weapon-against-certain-targets) 等指定武器索引序号的逻辑来使用。"
 
 #: ../../New-or-Enhanced-Logics.md:1636
 msgid ""
