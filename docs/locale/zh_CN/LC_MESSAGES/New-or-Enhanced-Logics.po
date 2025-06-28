@@ -4738,7 +4738,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1174
 msgid "Attack move - behavior when target acquired"
-msgstr ""
+msgstr "移动攻击 - 获取目标时的行为"
 
 #: ../../New-or-Enhanced-Logics.md:1176
 msgid ""
@@ -4746,22 +4746,25 @@ msgid ""
 "using `AttackMove.StopWhenTargetAcquired`. This is more like the attack "
 "move behavior in Starcraft and Warcraft."
 msgstr ""
+"现在你可以用 `AttackMove.StopWhenTargetAcquired` 来让移动攻击的单位在发现敌人后停止移动，就像《星际》和《魔兽》中那样。"
 
 #: ../../New-or-Enhanced-Logics.md:1177
 msgid ""
 "This feature is used to prevent units from charging forward and taking "
 "more damage during an attack move command."
 msgstr ""
+"此功能用于避免单位在执行移动攻击命令时冲锋过猛而暴毙。"
 
 #: ../../New-or-Enhanced-Logics.md:1178
 msgid ""
 "You can also make them keep chasing on the spotted target using "
 "`AttackMove.PursuitTarget`."
 msgstr ""
+"你也可以使用 `AttackMove.PursuitTarget` 来让它们继续追击已锁定的单个目标。"
 
 #: ../../New-or-Enhanced-Logics.md:1179
 msgid "This feature should be useful for close range units like ZEP."
-msgstr ""
+msgstr "此功能对于基洛夫空艇这样的近战单位很有用。"
 
 #: ../../New-or-Enhanced-Logics.md:1183
 msgid ""
@@ -4789,6 +4792,7 @@ msgid ""
 "move command already. This behavior is independent from "
 "`AttackMove.StopWhenTargetAcquired`."
 msgstr ""
+"许多单位在执行移动攻击命令时本就有一个发现敌人后停止移动的行为，这与 `AttackMove.StopWhenTargetAcquired` 无关。"
 
 #: ../../New-or-Enhanced-Logics.md:1194
 msgid ""
@@ -4796,6 +4800,7 @@ msgid ""
 "attack move command. The exact reason is not clear, but this feature can "
 "fix this problem."
 msgstr ""
+"一些单位（例如 Jumpjet 类）在原版移动攻击命令下无法正常开火。具体原因不明，但该功能可以解决此问题。"
 
 #: ../../New-or-Enhanced-Logics.md:1195
 msgid ""
@@ -4803,35 +4808,40 @@ msgid ""
 "immediatly and not scatter to a cell. This is designed for practical "
 "reason."
 msgstr ""
+"设置了 `AttackMove.StopWhenTargetAcquired=true` 的 Jumpjet 单位会立即停止并且不会分散到某个单元格上。这是有意如此设计的。"
 
 #: ../../New-or-Enhanced-Logics.md:1198
 msgid "Attack move - follow"
-msgstr ""
+msgstr "移动攻击 - 跟随"
 
 #: ../../New-or-Enhanced-Logics.md:1200
 msgid ""
 "Now you can have some units following surrounding units when executing an"
 " attack move command. The follow behavior is equivalent to the behavior "
-"of follow command (`ctrl + alt`)."
+"of follow command (`[Ctrl]+[Alt]`)."
 msgstr ""
+"现在你可以让某些单位在执行移动攻击命令时跟随周围的单位。此跟随行为相当于跟随命令（`[Ctrl]+[Alt]`）的效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1201
 msgid ""
 "Use `AttackMove.Follow.IncludeAir` to determine whether the follower will"
 " follow an air unit."
 msgstr ""
+"使用 `AttackMove.Follow.IncludeAir` 来决定是否跟随空中单位。"
 
 #: ../../New-or-Enhanced-Logics.md:1202
 msgid ""
 "Mind control units with `AttackMove.Follow.IfMindControlIsFull=true` set "
 "will follow if they reach the capacity."
 msgstr ""
+"设置了 `AttackMove.Follow.IfMindControlIsFull=true` 的心灵控制单位在达到心控数量上限时会进行跟随。"
 
 #: ../../New-or-Enhanced-Logics.md:1203
 msgid ""
 "This feature should be useful for supportive units such as medics and "
 "repairers."
 msgstr ""
+"此功能对用于医疗和维修的支援类单位应该很有用。"
 
 #: ../../New-or-Enhanced-Logics.md:1206
 msgid ""
@@ -4847,7 +4857,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1213
 msgid "Attack move - without weapon"
-msgstr ""
+msgstr "移动攻击 - 无武器单位"
 
 #: ../../New-or-Enhanced-Logics.md:1215
 msgid ""
@@ -4855,6 +4865,7 @@ msgid ""
 "without weapons. Now you can disable this hardcoded behavior using "
 "`AttackMove.IgnoreWeaponCheck=true`."
 msgstr ""
+"在原版，没有武器的单位无法执行移动攻击命令。现在你可以通过 `AttackMove.IgnoreWeaponCheck=true` 来禁用这一硬编码行为。"
 
 #: ../../New-or-Enhanced-Logics.md:1216
 msgid ""
@@ -4862,6 +4873,7 @@ msgid ""
 "is to prevent the attack move pointer from being disabled when you select"
 " unarmed units and other units at the same time."
 msgstr ""
+"无武器单位无法真正执行移动攻击行为。此功能是避免你同时选中无武器单位和其他单位的情况下移动攻击指针被禁用的。"
 
 #: ../../New-or-Enhanced-Logics.md:1219
 msgid ""

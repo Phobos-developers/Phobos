@@ -1702,8 +1702,8 @@ msgid ""
 msgstr "添加了 `DebrisMinimums` 语句以将碎片数量控制在一定范围内（by CrimRecya）"
 
 #: ../../Whats-New.md:410
-msgid "Several attackmove related enhancement (by TaranDahl)"
-msgstr ""
+msgid "[Several attackmove related enhancement](New-or-Enhanced-Logics.md#attack-move-behavior-when-target-acquired) (by TaranDahl)"
+msgstr "[几个移动攻击相关的增强](New-or-Enhanced-Logics.md#attack-move-behavior-when-target-acquired)（by TaranDahl）"
 
 #: ../../Whats-New.md:411
 msgid "Ground line for select box (by NetsuNegi)"

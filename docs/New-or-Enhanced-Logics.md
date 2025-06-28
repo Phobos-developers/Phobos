@@ -1195,7 +1195,7 @@ AttackMove.PursuitTarget=                  ; boolean
 
 ### Attack move - follow
 
-- Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`ctrl + alt`).
+- Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`[Ctrl]+[Alt]`).
   - Use `AttackMove.Follow.IncludeAir` to determine whether the follower will follow an air unit.
   - Mind control units with `AttackMove.Follow.IfMindControlIsFull=true` set will follow if they reach the capacity.
 - This feature should be useful for supportive units such as medics and repairers.

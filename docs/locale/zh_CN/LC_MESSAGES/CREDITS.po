@@ -2241,7 +2241,7 @@ msgstr "允许矿场同时播放多个 `ActiveAnim` 动画"
 
 #: ../../../CREDITS.md:556
 msgid "Several attackmove related enhancement"
-msgstr ""
+msgstr "几个移动攻击相关的增强"
 
 #: ../../../CREDITS.md:557
 msgid ""
