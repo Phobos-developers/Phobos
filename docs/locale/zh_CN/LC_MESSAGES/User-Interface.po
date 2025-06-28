@@ -1129,12 +1129,10 @@ msgstr "现在你可以根据给定的优先级数值将超级武器的计时器
 
 #: ../../User-Interface.md:365
 msgid ""
-"[SOMESW]              ; SuperWeaponType\n"
-"ShowTimer=yes\n"
+"[SOMESW]              ; SuperWeaponType, with ShowTimer=yes\n"
 "ShowTimer.Priority=0  ; integer\n"
 msgstr ""
-"[SOMESW]              ; SuperWeaponType\n"
-"ShowTimer=yes\n"
+"[SOMESW]              ; SuperWeaponType, with ShowTimer=yes\n"
 "ShowTimer.Priority=0  ; integer\n"
 
 #: ../../User-Interface.md:371

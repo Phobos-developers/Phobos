@@ -2777,13 +2777,11 @@ msgstr "现在 `SlavesFreeSound` 可以单独为每个奴隶类步兵类型微�
 
 #: ../../New-or-Enhanced-Logics.md:667
 msgid ""
-"[SOMEINFANTRY]        ; InfantryType\n"
-"Slaved=yes\n"
+"[SOMEINFANTRY]        ; InfantryType, with Slaved=yes\n"
 "SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> "
 "SlavesFreeSound\n"
 msgstr ""
-"[SOMEINFANTRY]        ; InfantryType\n"
-"Slaved=yes\n"
+"[SOMEINFANTRY]        ; InfantryType, with Slaved=yes\n"
 "SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> "
 "SlavesFreeSound\n"
 
@@ -2861,13 +2859,11 @@ msgstr "`killer ` ：揭竿而起，解放后转为奴隶矿场击杀者的所�
 
 #: ../../New-or-Enhanced-Logics.md:704
 msgid ""
-"[SOMEINFANTRY]                       ; InfantryType\n"
-"Slaved=yes\n"
+"[SOMEINFANTRY]                       ; InfantryType, with Slaved=yes\n"
 "Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | "
 "killer | neutral)\n"
 msgstr ""
-"[SOMEINFANTRY]                       ; InfantryType\n"
-"Slaved=yes\n"
+"[SOMEINFANTRY]                       ; InfantryType, with Slaved=yes\n"
 "Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | "
 "killer | neutral)\n"
 
@@ -8528,12 +8524,10 @@ msgstr "建议 Jumpjet 的 `ROT` 和 `JumpjetTurnRate` 相同。"
 
 #: ../../New-or-Enhanced-Logics.md:2426
 msgid ""
-"[SOMEWEAPON]              ; WeaponType\n"
-"OmniFire=yes\n"
+"[SOMEWEAPON]              ; WeaponType, with OmniFire=yes\n"
 "OmniFire.TurnToTarget=no  ; boolean\n"
 msgstr ""
-"[SOMEWEAPON]              ; WeaponType\n"
-"OmniFire=yes\n"
+"[SOMEWEAPON]              ; WeaponType, with OmniFire=yes\n"
 "OmniFire.TurnToTarget=no  ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:2432

@@ -665,8 +665,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 In `rulesmd.ini`:
 
 ```ini
-[SOMEINFANTRY]        ; InfantryType
-Slaved=yes
+[SOMEINFANTRY]        ; InfantryType, with Slaved=yes
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
@@ -702,8 +701,7 @@ NotHuman.RandomDeathSequence=yes  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                       ; InfantryType
-Slaved=yes
+[SOMEINFANTRY]                       ; InfantryType, with Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
 ```
 
@@ -2424,8 +2422,7 @@ KeepRange.AllowPlayer=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType
-OmniFire=yes
+[SOMEWEAPON]              ; WeaponType, with OmniFire=yes
 OmniFire.TurnToTarget=no  ; boolean
 ```
 
