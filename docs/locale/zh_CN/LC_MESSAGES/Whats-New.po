@@ -1707,7 +1707,7 @@ msgstr "[几个移动攻击相关的增强](New-or-Enhanced-Logics.md#attack-mov
 
 #: ../../Whats-New.md:411
 msgid "Ground line for select box (by NetsuNegi)"
-msgstr ""
+msgstr "为选择框添加了投影线（by NetsuNegi）"
 
 #: ../../Whats-New.md:412
 #, fuzzy

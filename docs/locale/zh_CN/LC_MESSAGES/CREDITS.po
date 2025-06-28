@@ -1691,7 +1691,7 @@ msgstr "激光尾焰逻辑支持 EBolt／辐射波"
 
 #: ../../../CREDITS.md:422
 msgid "Ground line for select box"
-msgstr ""
+msgstr "为选择框添加了投影线"
 
 #: ../../../CREDITS.md:423
 msgid "**Apollo** - Translucent SHP drawing patches"

@@ -962,13 +962,15 @@ msgid ""
 "ground, it will only draw when techno is in air if set "
 "`Ground.AlwaysDraw=false`, this also affect on `GroundLine`."
 msgstr ""
+"现在你可以使用 `GroundShape` 来指定一个始终绘制在地面上的图像，若设置了 `Ground.AlwaysDraw=false` 则仅当单位处于空中时才会绘制，这同样作用于 `GroundLine`。"
 
 #: ../../User-Interface.md:296
 msgid ""
-"If `GroundLine=true` , the game will draw a line from techno's position "
+"If `GroundLine=true`, the game will draw a line from techno's position "
 "to its vertical projection, `GroundLine.Dashed=true` means the projection"
 " line is a dashed line."
 msgstr ""
+"如果 `GroundLine=true`，那么游戏会绘制一条从单位位置到其正下方地面的投影线，`GroundLine.Dashed=true` 可以将投影线设为虚线样式。"
 
 #: ../../User-Interface.md:299
 msgid ""
