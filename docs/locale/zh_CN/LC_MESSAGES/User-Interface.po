@@ -1139,21 +1139,22 @@ msgstr ""
 
 #: ../../User-Interface.md:371
 msgid "Task subtitles display in the middle of the screen"
-msgstr ""
+msgstr "字幕居中"
 
 #: ../../User-Interface.md:373
 msgid "![Message Display In Center](_static/images/messagedisplayincenter.png)"
-msgstr ""
+msgstr "![显示在中间的任务信息](_static/images/messagedisplayincenter.png)"
 
 #: ../../User-Interface.md:373
 msgid "Message Display In Center"
-msgstr ""
+msgstr "显示在中间的任务信心"
 
 #: ../../User-Interface.md:375
 msgid ""
 "Now you can set `MessageApplyHoverState` to true，to make the upper left "
 "messages not disappear while mouse hovering over the top of display area."
 msgstr ""
+"现在你可以通过将 `MessageApplyHoverState` 设为 true 来让任务信息在光标悬浮于显示区域上时不会消失。"
 
 #: ../../User-Interface.md:376
 msgid ""
@@ -1162,6 +1163,7 @@ msgid ""
 "corner, with a semi transparent background, by setting "
 "`MessageDisplayInCenter` to true."
 msgstr ""
+"你还可以设置 `MessageDisplayInCenter` 为 true 以使得（由 `11 文本触发事件...` 创建的）任务消息直接显示在屏幕中间而不是左上角，并自带半透明背景。"
 
 #: ../../User-Interface.md:377
 msgid ""
@@ -1169,6 +1171,7 @@ msgid ""
 "rectangle), its opacity will increase and it will not disappear during "
 "this period."
 msgstr ""
+"当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
 
 #: ../../User-Interface.md:380
 msgid ""

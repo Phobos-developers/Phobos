@@ -2035,7 +2035,7 @@ msgstr "添加了 `DebrisMinimums` 语句以将碎片数量控制在一定范围
 
 #: ../../../CREDITS.md:504
 msgid "Task subtitles display in the middle of the screen"
-msgstr ""
+msgstr "字幕居中"
 
 #: ../../../CREDITS.md:505
 msgid "**Ollerus**:"

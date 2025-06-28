@@ -1713,8 +1713,8 @@ msgid "[Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapo
 msgstr "[多武器逻辑](New-or-Enhanced-Logics.md#multi-weapon)（by FlyStar）"
 
 #: ../../Whats-New.md:413
-msgid "Task subtitles display in the middle of the screen (by CrimRecya)"
-msgstr ""
+msgid "[Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)"
+msgstr "[字幕居中](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen)（by CrimRecya）"
 
 #: ../../Whats-New.md:415 ../../Whats-New.md:624 ../../Whats-New.md:941
 #: ../../Whats-New.md:1050 ../../Whats-New.md:1075 ../../Whats-New.md:1114
