@@ -929,6 +929,8 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->UndergroundTracked)
+		.Process(this->SpecialTracked)
 		;
 }
 
@@ -984,6 +986,12 @@ DEFINE_HOOK(0x6F3260, TechnoClass_CTOR, 0x5)
 DEFINE_HOOK(0x6F4500, TechnoClass_DTOR, 0x5)
 {
 	GET(TechnoClass*, pItem, ECX);
+
+	if (TechnoExt::ExtMap.Find(pItem)->UndergroundTracked)
+		ScenarioExt::Global()->UndergroundTracker.Remove(pItem);
+
+	if (TechnoExt::ExtMap.Find(pItem)->SpecialTracked)
+		ScenarioExt::Global()->SpecialTracker.Remove(pItem);
 
 	TechnoExt::ExtMap.Remove(pItem);
 
