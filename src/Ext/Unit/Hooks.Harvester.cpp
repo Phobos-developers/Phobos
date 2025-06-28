@@ -1,5 +1,6 @@
 #include <UnitClass.h>
 #include <HouseClass.h>
+#include <JumpjetLocomotionClass.h>
 
 #include <Ext/Techno/Body.h>
 #include <Ext/TechnoType/Body.h>
@@ -16,9 +17,12 @@ DEFINE_HOOK(0x74312A, UnitClass_SetDestination_ReplaceWithHarvestMission, 0x5)
 	// which can cause errors in the connection between Jumpjet harvester and Refinery building,
 	// leading to game crashes in drawing
 	// Here change the Mission::Enter to Mission::Harvest
-	pThis->QueueMission(Mission::Harvest, false);
-	pThis->NextMission();
-	pThis->MissionStatus = 2; // Status: returning to refinery
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+	{
+		pThis->QueueMission(Mission::Harvest, false);
+		pThis->NextMission();
+		pThis->MissionStatus = 2; // Status: returning to refinery
+	}
 
 	return SkipGameCode;
 }
