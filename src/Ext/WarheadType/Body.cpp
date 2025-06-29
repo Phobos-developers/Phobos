@@ -44,14 +44,9 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
 }
 
-bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+bool WarheadTypeExt::ExtData::IsHealthInThreshold(ObjectClass* pTarget) const
 {
-	// Check if the WH should affect the techno target or skip it
-	double hp = pTarget->GetHealthPercentage();
-	bool hpBelowPercent = hp <= this->AffectsBelowPercent;
-	bool hpAbovePercent = hp > this->AffectsAbovePercent;
-
-	return hpBelowPercent && hpAbovePercent;
+	return GeneralUtils::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent, this->AffectsAbovePercent_IncludeZero);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -179,6 +174,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_AffectAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
@@ -287,8 +283,9 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
 
-	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
+	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsAbovePercent_IncludeZero.Read(exINI, pSection, "AffectsAbovePercent.IncludeZero");
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -438,6 +435,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_AffectAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
@@ -514,8 +512,9 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressReflectDamage_Types)
 		.Process(this->SuppressReflectDamage_Groups)
 
-		.Process(this->AffectsAbovePercent)
 		.Process(this->AffectsBelowPercent)
+		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsAbovePercent_IncludeZero)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

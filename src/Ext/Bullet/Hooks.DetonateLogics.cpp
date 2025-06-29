@@ -22,10 +22,10 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 
 	auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+	if (auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
-		if (!pExt->IsHealthInThreshold(pTarget) && pBullet->Owner != pBullet->Target)
+		if (!pExt->IsHealthInThreshold(pTarget))
 			return GoToExtras;
 	}
 
@@ -361,7 +361,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			size_t size = pWeaponExt->ExtraWarheads_DamageOverrides.size();
 			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-			if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+			if (auto const pTarget = abstract_cast<ObjectClass*>(pThis->Target))
 			{
 				if (!pWHExt->IsHealthInThreshold(pTarget))
 					continue;
@@ -445,7 +445,7 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
 			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
-			|| !pWeaponExt->IsHealthRatioEligible(pTarget))
+			|| !pWeaponExt->IsHealthInThreshold(pTarget))
 		{
 			return false;
 		}

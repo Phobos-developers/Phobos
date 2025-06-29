@@ -39,11 +39,13 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pSecondExt->CanTarget, true, true))
 			return weaponIndexOne;
 
+		if (!pSecondExt->IsHealthInThreshold(pTarget))
+			return weaponIndexOne;
+
 		if (pTargetTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
-				|| !pSecondExt->IsHealthRatioEligible(pTargetTechno)
 				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return weaponIndexOne;
@@ -68,11 +70,13 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pFirstExt->CanTarget, true, true))
 			return weaponIndexTwo;
 
+		if (!pFirstExt->IsHealthInThreshold(pTarget))
+			return weaponIndexTwo;
+
 		if (pTargetTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
-				|| !pFirstExt->IsHealthRatioEligible(pTargetTechno)
 				|| !firstAllowedAE)
 			{
 				return weaponIndexTwo;
@@ -415,11 +419,13 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
 			return false;
 
+		if (!pWeaponExt->IsHealthInThreshold(pTarget))
+			return false;
+
 		if (pTechno)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner)
-				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
 				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
 			{
 				return false;

@@ -241,8 +241,11 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 		if (!pType->LegalTarget)
 			return SkipObject;
 
-		if (!pWeaponExt->SkipWeaponPicking && !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
-			return SkipObject;
+		if (!pWeaponExt->SkipWeaponPicking)
+		{
+			if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true) || !pWeaponExt->IsHealthInThreshold(pObject))
+				return SkipObject;
+		}
 
 		auto const pWH = pShrapnelWeapon->Warhead;
 		auto armorType = pType->Armor;
@@ -255,9 +258,6 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 					return SkipObject;
 
 				if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
-					return SkipObject;
-
-				if (!pWeaponExt->IsHealthRatioEligible(pTechno))
 					return SkipObject;
 
 				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))

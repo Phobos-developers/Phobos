@@ -41,13 +41,17 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	return true;
 }
 
-bool WeaponTypeExt::ExtData::IsHealthRatioEligible(TechnoClass* const pTarget) const
+bool WeaponTypeExt::ExtData::IsHealthInThreshold(AbstractClass* pTarget) const
 {
-	if (!pTarget)
+	if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
+		return GeneralUtils::IsHealthInThreshold(pObject, this->CanTarget_MinHealth, this->CanTarget_MaxHealth, this->CanTarget_MinHealth_IncludeZero);
+	else
 		return true;
+}
 
-	const auto ratio = pTarget->GetHealthPercentage();
-	return ratio <= this->CanTarget_MaxHealth && ratio >= this->CanTarget_MinHealth;
+bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+{
+	return GeneralUtils::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth, this->CanTarget_MinHealth_IncludeZero);
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -107,6 +111,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTargetHouses.Read(exINI, pSection, "CanTargetHouses");
 	this->CanTarget_MaxHealth.Read(exINI, pSection, "CanTarget.MaxHealth");
 	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
+	this->CanTarget_MinHealth_IncludeZero.Read(exINI, pSection, "CanTarget.MinHealth.IncludeZero");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
@@ -175,6 +180,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CanTargetHouses)
 		.Process(this->CanTarget_MaxHealth)
 		.Process(this->CanTarget_MinHealth)
+		.Process(this->CanTarget_MinHealth_IncludeZero)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)
