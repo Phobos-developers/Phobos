@@ -911,8 +911,12 @@ msgid "Select Box"
 msgstr "自定义选择框"
 
 #: ../../User-Interface.md:287
-msgid "![selectbox](_static/images/selectbox.png)"
+msgid ""
+"![selectbox](_static/images/selectbox.png) *SelectBox and GroundLine in "
+"**Solar Flare** by "
+"[Netsu_Negi](https://space.bilibili.com/26486915/lists/3151060)*"
 msgstr ""
+"![选择框](_static/images/selectbox.png) *[Negi烈葱](https://space.bilibili.com/26486915/lists/3151060) 在 **耀斑** 中的选择框与投影线使用效果*"
 
 #: ../../User-Interface.md:287
 msgid "selectbox"

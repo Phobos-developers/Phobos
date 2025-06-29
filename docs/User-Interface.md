@@ -285,6 +285,7 @@ RealTimeTimers.Adaptive=false   ; boolean
 ### Select Box
 
 ![selectbox](_static/images/selectbox.png)
+*SelectBox and GroundLine in **Solar Flare** by [Netsu_Negi](https://space.bilibili.com/26486915/lists/3151060)*
 
 - Now you can use and customize select box for infantry, vehicle and aircraft. No select box for buildings in default case, but you still can specific for some building if you want.
   - `Frames` can be used to list frames of `Shape` file that'll be drawn as a select box when the TechnoType's health is at or below full health/the percentage defined in `[AudioVisual] -> ConditionYellow/ConditionRed`, respectively.
