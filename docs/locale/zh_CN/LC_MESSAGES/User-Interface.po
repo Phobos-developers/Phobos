@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-28 18:40+0800\n"
+"POT-Creation-Date: 2025-06-30 00:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,8 +109,8 @@ msgstr "现在你可以指定在胜利或失败时播放哪些音轨的主题曲
 #: ../../User-Interface.md:23 ../../User-Interface.md:83
 #: ../../User-Interface.md:158 ../../User-Interface.md:177
 #: ../../User-Interface.md:190 ../../User-Interface.md:213
-#: ../../User-Interface.md:238 ../../User-Interface.md:298
-#: ../../User-Interface.md:345 ../../User-Interface.md:364
+#: ../../User-Interface.md:238 ../../User-Interface.md:299
+#: ../../User-Interface.md:346 ../../User-Interface.md:365
 #: ../../User-Interface.md:390 ../../User-Interface.md:413
 #: ../../User-Interface.md:509 ../../User-Interface.md:524
 #: ../../User-Interface.md:544 ../../User-Interface.md:572
@@ -289,7 +289,7 @@ msgid ""
 "of a timer (i.e. `0:30`, `5:00` or `1:00:00`)."
 msgstr "`ValueAsTimer` 控制数值是否以计时器格式显示（例如 `0:30`，`5:00` 或 `1:00:00`）。"
 
-#: ../../User-Interface.md:71 ../../User-Interface.md:293
+#: ../../User-Interface.md:71 ../../User-Interface.md:294
 msgid ""
 "`VisibleToHouses` and `VisibleToHouses.Observer` can limit visibility to "
 "specific players."
@@ -496,7 +496,7 @@ msgstr ""
 #: ../../User-Interface.md:128 ../../User-Interface.md:164
 #: ../../User-Interface.md:200 ../../User-Interface.md:221
 #: ../../User-Interface.md:263 ../../User-Interface.md:278
-#: ../../User-Interface.md:332 ../../User-Interface.md:354
+#: ../../User-Interface.md:333 ../../User-Interface.md:355
 #: ../../User-Interface.md:379 ../../User-Interface.md:493
 #: ../../User-Interface.md:583 ../../User-Interface.md:628
 #: ../../User-Interface.md:688 ../../User-Interface.md:762
@@ -915,18 +915,17 @@ msgid "![selectbox](_static/images/selectbox.png)"
 msgstr ""
 
 #: ../../User-Interface.md:287
-#, fuzzy
 msgid "selectbox"
-msgstr "自定义选择框"
+msgstr "选择框"
 
-#: ../../User-Interface.md:289
+#: ../../User-Interface.md:290
 msgid ""
 "Now you can use and customize select box for infantry, vehicle and "
 "aircraft. No select box for buildings in default case, but you still can "
 "specific for some building if you want."
 msgstr "现在你可以为每个单位自定义选择框。默认建筑没有选择框但你可以为其开启。"
 
-#: ../../User-Interface.md:290
+#: ../../User-Interface.md:291
 msgid ""
 "`Frames` can be used to list frames of `Shape` file that'll be drawn as a"
 " select box when the TechnoType's health is at or below full health/the "
@@ -936,17 +935,17 @@ msgstr ""
 "`Frames` 可用于列举 `Shape` 文件中用于绘制选择框的帧，对应单位生命值处于满血／低于 `[AudioVisual] -> "
 "ConditionYellow/ConditionRed` 的百分比时的不同状态。"
 
-#: ../../User-Interface.md:291
+#: ../../User-Interface.md:292
 msgid ""
 "If `Grounded` set to true, the select box will be drawn on the ground "
 "below the TechnoType."
 msgstr "如果 `Grounded` 设为 true 那么选择框将绘制在单位正下方的地面上。"
 
-#: ../../User-Interface.md:292
+#: ../../User-Interface.md:293
 msgid "Select box's translucency setting can be adjusted via `Translucency`."
 msgstr "选择框的半透明效果可以通过 `Translucency` 来进行调整。"
 
-#: ../../User-Interface.md:294
+#: ../../User-Interface.md:295
 msgid ""
 "`DrawAboveTechno` specific whether the select box will be drawn before "
 "drawing the TechnoType. If set to false, the select box can be obscured "
@@ -956,23 +955,25 @@ msgstr ""
 "`DrawAboveTechno` 决定选择框是否在相对于单位本体更高的图层绘制。若为 false 则选择框可以被单位本体遮挡，且绘制位置将忽略 "
 "`PixelSelectionBracketDelta`。"
 
-#: ../../User-Interface.md:295
+#: ../../User-Interface.md:296
 msgid ""
 "You can now use `GroundShape` to specific a image which always draw on "
 "ground, it will only draw when techno is in air if set "
 "`Ground.AlwaysDraw=false`, this also affect on `GroundLine`."
 msgstr ""
-"现在你可以使用 `GroundShape` 来指定一个始终绘制在地面上的图像，若设置了 `Ground.AlwaysDraw=false` 则仅当单位处于空中时才会绘制，这同样作用于 `GroundLine`。"
+"现在你可以使用 `GroundShape` 来指定一个始终绘制在地面上的图像，若设置了 `Ground.AlwaysDraw=false` "
+"则仅当单位处于空中时才会绘制，这同样作用于 `GroundLine`。"
 
-#: ../../User-Interface.md:296
+#: ../../User-Interface.md:297
 msgid ""
-"If `GroundLine=true`, the game will draw a line from techno's position "
-"to its vertical projection, `GroundLine.Dashed=true` means the projection"
-" line is a dashed line."
+"If `GroundLine=true`, the game will draw a line from techno's position to"
+" its vertical projection, `GroundLine.Dashed=true` means the projection "
+"line is a dashed line."
 msgstr ""
-"如果 `GroundLine=true`，那么游戏会绘制一条从单位位置到其正下方地面的投影线，`GroundLine.Dashed=true` 可以将投影线设为虚线样式。"
+"如果 `GroundLine=true`，那么游戏会绘制一条从单位位置到其正下方地面的投影线，`GroundLine.Dashed=true` "
+"可以将投影线设为虚线样式。"
 
-#: ../../User-Interface.md:299
+#: ../../User-Interface.md:300
 msgid ""
 "[SelectBoxTypes]\n"
 "0=SOMESELECTBOXTYPE\n"
@@ -999,7 +1000,8 @@ msgid ""
 "GroundPalette=palette.pal               ; filename with .pal extension\n"
 "GroundFrames=                           ; List of integer, default 1,1,1 "
 "for infantry, 0,0,0 for vehicle and aircraft\n"
-"GroundOffset=0,0                        ; integers - horizontal, vertical\n"
+"GroundOffset=0,0                        ; integers - horizontal, vertical"
+"\n"
 "Ground.AlwaysDraw=true                  ; boolean\n"
 "GroundLine=false                        ; boolean\n"
 "GroundLineColor=0,255,0                 ; R, G, B\n"
@@ -1036,7 +1038,8 @@ msgstr ""
 "GroundPalette=palette.pal               ; filename with .pal extension\n"
 "GroundFrames=                           ; List of integer, default 1,1,1 "
 "for infantry, 0,0,0 for vehicle and aircraft\n"
-"GroundOffset=0,0                        ; integers - horizontal, vertical\n"
+"GroundOffset=0,0                        ; integers - horizontal, vertical"
+"\n"
 "Ground.AlwaysDraw=true                  ; boolean\n"
 "GroundLine=false                        ; boolean\n"
 "GroundLineColor=0,255,0                 ; R, G, B\n"
@@ -1048,7 +1051,7 @@ msgstr ""
 "SelectBox=                              ; Select box\n"
 "HideSelectBox=false                     ; boolean\n"
 
-#: ../../User-Interface.md:333
+#: ../../User-Interface.md:334
 msgid ""
 "[Phobos]\n"
 "EnableSelectBox=false                   ; boolean\n"
@@ -1056,11 +1059,11 @@ msgstr ""
 "[Phobos]\n"
 "EnableSelectBox=false                   ; boolean\n"
 
-#: ../../User-Interface.md:338
+#: ../../User-Interface.md:339
 msgid "Show designator & inhibitor range"
 msgstr "显示指示者和抑制者范围"
 
-#: ../../User-Interface.md:340
+#: ../../User-Interface.md:341
 msgid ""
 "It is now possible to display range of designator and inhibitor units "
 "when in super weapon targeting mode. Each instance of player owned techno"
@@ -1070,7 +1073,7 @@ msgstr ""
 "现在可以在超级武器瞄准模式下显示指示者和抑制者单位的范围。每个玩家拥有的、列在 `[SuperWeapon] -> SW.Designators`"
 " 中的科技类型将显示一个半径由 `[TechnoType] -> DesignatorRange` 或 `Sight` 设置的圆。"
 
-#: ../../User-Interface.md:341
+#: ../../User-Interface.md:342
 msgid ""
 "In a similar manner, each instance of enemy owned techno types listed in "
 "`[SuperWeapon] -> SW.Inhibitors` will display a circle with radius set in"
@@ -1079,7 +1082,7 @@ msgstr ""
 "类似的，每个敌方拥有的、列在 `[SuperWeapon] -> SW.Inhibitors` 中的科技类型将显示一个半径由 "
 "`[TechnoType] -> InhibitorRange` 或 `Sight` 设置的圆。"
 
-#: ../../User-Interface.md:342
+#: ../../User-Interface.md:343
 msgid ""
 "This feature can be disabled globally with `[AudioVisual] -> "
 "ShowDesignatorRange=false` or per SuperWeaponType with `[SuperWeapon] -> "
@@ -1088,7 +1091,7 @@ msgstr ""
 "可以通过全局的 `[AudioVisual] -> ShowDesignatorRange=false` 或超级武器类型上的 "
 "`[SuperWeapon] -> ShowDesignatorRange=false` 来禁用此功能。"
 
-#: ../../User-Interface.md:343
+#: ../../User-Interface.md:344
 msgid ""
 "This feature can be toggled *by the player* (if enabled in the mod) with "
 "`ShowDesignatorRange` in `RA2MD.INI` or with [\"Toggle Designator Range\""
@@ -1097,7 +1100,7 @@ msgstr ""
 "此功能可以 **由玩家** 通过在 `RA2MD.INI` 中设置 `ShowDesignatorRange` 或 “界面” 类别中的 "
 "[“开启指示者范围显示” 快捷键](#toggle-designator-range)来切换（如果在 mod 中启用）。"
 
-#: ../../User-Interface.md:346
+#: ../../User-Interface.md:347
 msgid ""
 "[AudioVisual]\n"
 "ShowDesignatorRange=true    ; boolean\n"
@@ -1111,7 +1114,7 @@ msgstr ""
 "[SOMESW]                    ; SuperWeaponType\n"
 "ShowDesignatorRange=true    ; boolean\n"
 
-#: ../../User-Interface.md:355
+#: ../../User-Interface.md:356
 msgid ""
 "[Phobos]\n"
 "ShowDesignatorRange=false             ; boolean\n"
@@ -1119,17 +1122,17 @@ msgstr ""
 "[Phobos]\n"
 "ShowDesignatorRange=false             ; boolean\n"
 
-#: ../../User-Interface.md:360
+#: ../../User-Interface.md:361
 msgid "SuperWeapon ShowTimer sorting"
 msgstr "超级武器计时器优先级"
 
-#: ../../User-Interface.md:362
+#: ../../User-Interface.md:363
 msgid ""
 "You can now sort the timers of superweapons in ascending order from top "
 "to bottom according to a given priority value."
 msgstr "现在你可以根据给定的优先级数值将超级武器的计时器从上到下按升序排列。"
 
-#: ../../User-Interface.md:365
+#: ../../User-Interface.md:366
 msgid ""
 "[SOMESW]              ; SuperWeaponType, with ShowTimer=yes\n"
 "ShowTimer.Priority=0  ; integer\n"
@@ -1153,8 +1156,7 @@ msgstr "显示在中间的任务信心"
 msgid ""
 "Now you can set `MessageApplyHoverState` to true，to make the upper left "
 "messages not disappear while mouse hovering over the top of display area."
-msgstr ""
-"现在你可以通过将 `MessageApplyHoverState` 设为 true 来让任务信息在光标悬浮于显示区域上时不会消失。"
+msgstr "现在你可以通过将 `MessageApplyHoverState` 设为 true 来让任务信息在光标悬浮于显示区域上时不会消失。"
 
 #: ../../User-Interface.md:376
 msgid ""
@@ -1163,15 +1165,15 @@ msgid ""
 "corner, with a semi transparent background, by setting "
 "`MessageDisplayInCenter` to true."
 msgstr ""
-"你还可以设置 `MessageDisplayInCenter` 为 true 以使得（由 `11 文本触发事件...` 创建的）任务消息直接显示在屏幕中间而不是左上角，并自带半透明背景。"
+"你还可以设置 `MessageDisplayInCenter` 为 true 以使得（由 `11 文本触发事件...` "
+"创建的）任务消息直接显示在屏幕中间而不是左上角，并自带半透明背景。"
 
 #: ../../User-Interface.md:377
 msgid ""
 "When the mouse hovers over the subtitle area (simply judged as a "
 "rectangle), its opacity will increase and it will not disappear during "
 "this period."
-msgstr ""
-"当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
+msgstr "当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
 
 #: ../../User-Interface.md:380
 msgid ""
@@ -2142,7 +2144,6 @@ msgid ""
 msgstr "超武快捷键属于实验性功能并且由于超武在侧边栏上的位置并不固定所以当前用户体验可能不够完善，因此该功默认处于禁用状态。"
 
 #: ../../User-Interface.md:729
-#, fuzzy
 msgid ""
 "[Sidebar]\n"
 "SuperWeaponSidebar=false                    ; boolean\n"
@@ -2154,13 +2155,13 @@ msgid ""
 "SuperWeaponSidebar.MaxColumns=              ; integer\n"
 msgstr ""
 "[Sidebar]\n"
-"SuperWeaponSidebar=false              ; boolean\n"
-"SuperWeaponSidebar.Pyramid=true      ; boolean\n"
-"SuperWeaponSidebar.Interval=0         ; integer, pixels\n"
-"SuperWeaponSidebar.LeftOffset=0       ; integer, pixels\n"
-"SuperWeaponSidebar.CameoHeight=48     ; integer, pixels\n"
-"SuperWeaponSidebar.Max=0              ; integer\n"
-"SuperWeaponSidebar.MaxColumns=        ; integer\n"
+"SuperWeaponSidebar=false                    ; boolean\n"
+"SuperWeaponSidebar.Pyramid=true             ; boolean\n"
+"SuperWeaponSidebar.Interval=0               ; integer, pixels\n"
+"SuperWeaponSidebar.LeftOffset=0             ; integer, pixels\n"
+"SuperWeaponSidebar.CameoHeight=48           ; integer, pixels\n"
+"SuperWeaponSidebar.Max=0                    ; integer\n"
+"SuperWeaponSidebar.MaxColumns=              ; integer\n"
 
 #: ../../User-Interface.md:741
 msgid ""
@@ -2402,4 +2403,7 @@ msgstr ""
 "[Phobos]\n"
 "ToolTipBlur=false  ; boolean, whether the blur effect of tooltips will be"
 " enabled.\n"
+
+#~ msgid "![selectbox](_static/images/selectbox.png)"
+#~ msgstr ""
 
