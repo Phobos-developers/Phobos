@@ -365,7 +365,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 			auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target);
 
-			if (!pWHExt->IsHealthInThreshold(pTarget))
+			if (pTarget && !pWHExt->IsHealthInThreshold(pTarget))
 				continue;
 
 			int damage = defaultDamage;
