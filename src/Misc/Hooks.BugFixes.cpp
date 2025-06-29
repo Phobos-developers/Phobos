@@ -2014,38 +2014,39 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
-namespace RemoveCellContentTemp
-{
-	bool CheckBeforeUnmark = false;
-}
-
-DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
-{
-	enum { SkipGameCode = 0x737F80 };
-
-	GET(UnitClass*, pThis, ESI);
-
-	RemoveCellContentTemp::CheckBeforeUnmark = true;
-	pThis->Mark(MarkType::Up);
-	RemoveCellContentTemp::CheckBeforeUnmark = false;
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
-{
-	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
-
-	GET(CellClass*, pCell, EDI);
-	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
-
-	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
-		return DontUnmark;
-
-	GET(ObjectClass*, pContent, ESI);
-	R->EAX(pContent->WhatAmI());
-	return ContinueCheck;
-}
+// These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
+//namespace RemoveCellContentTemp
+//{
+//	bool CheckBeforeUnmark = false;
+//}
+//
+//DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
+//{
+//	enum { SkipGameCode = 0x737F80 };
+//
+//	GET(UnitClass*, pThis, ESI);
+//
+//	RemoveCellContentTemp::CheckBeforeUnmark = true;
+//	pThis->Mark(MarkType::Up);
+//	RemoveCellContentTemp::CheckBeforeUnmark = false;
+//
+//	return SkipGameCode;
+//}
+//
+//DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
+//{
+//	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
+//
+//	GET(CellClass*, pCell, EDI);
+//	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
+//
+//	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
+//		return DontUnmark;
+//
+//	GET(ObjectClass*, pContent, ESI);
+//	R->EAX(pContent->WhatAmI());
+//	return ContinueCheck;
+//}
 
 DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 {
