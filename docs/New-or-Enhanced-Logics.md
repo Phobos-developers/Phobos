@@ -665,8 +665,7 @@ DeployedSecondaryFireFLH=  ; integer - Forward,Lateral,Height
 In `rulesmd.ini`:
 
 ```ini
-[SOMEINFANTRY]        ; InfantryType
-Slaved=yes
+[SOMEINFANTRY]        ; InfantryType, with Slaved=yes
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
@@ -702,8 +701,7 @@ NotHuman.RandomDeathSequence=yes  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                       ; InfantryType
-Slaved=yes
+[SOMEINFANTRY]                       ; InfantryType, with Slaved=yes
 Slaved.OwnerWhenMasterKilled=killer  ; enumeration (suicide | master | killer | neutral)
 ```
 
@@ -1197,7 +1195,7 @@ AttackMove.PursuitTarget=                  ; boolean
 
 ### Attack move - follow
 
-- Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`ctrl + alt`).
+- Now you can have some units following surrounding units when executing an attack move command. The follow behavior is equivalent to the behavior of follow command (`[Ctrl]+[Alt]`).
   - Use `AttackMove.Follow.IncludeAir` to determine whether the follower will follow an air unit.
   - Mind control units with `AttackMove.Follow.IfMindControlIsFull=true` set will follow if they reach the capacity.
 - This feature should be useful for supportive units such as medics and repairers.
@@ -1207,7 +1205,7 @@ In `rulesmd.ini`:
 [SOMETECHNO]                                     ; TechnoType
 AttackMove.Follow=false                          ; boolean
 AttackMove.Follow.IncludeAir=false               ; boolean
-AttackMove.Follow.IfMindControlIsFull=false      ;boolean
+AttackMove.Follow.IfMindControlIsFull=false      ; boolean
 ```
 
 ### Attack move - without weapon
@@ -1626,11 +1624,11 @@ MultiMindControl.ReleaseVictim=false  ; boolean
 *Multi Weapon used to release different weapons against different targets in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
 
 - You can now use `WeaponX` to enable more than 2 weapons for a TechnoType without hardcoded `Gunner=yes`, `IsGattling=yes` or `IsChargeTurret=yes` restriction.
- - Set `MultiWeapon=yes` to enable this feature, be careful not to forget `WeaponCount`.
- - `MultiWeapon.IsSecondary` specifies which weapons will be considered as `Secondary` when selecting weapons or triggering infantry's `SecondaryFire` settings. If not set, `Weapon1` will be considered as `Secondary`.
- - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
-  - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
-  - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
+  - Set `MultiWeapon=yes` to enable this feature, be careful not to forget `WeaponCount`.
+  - `MultiWeapon.IsSecondary` specifies which weapons will be considered as `Secondary` when selecting weapons or triggering infantry's `SecondaryFire` settings. If not set, `Weapon1` will be considered as `Secondary`.
+  - `MultiWeapon.SelectCount` determines the number of weapons that can be selected by default weapon selection logic. Notice that higher number is bad for performance.
+    - If the number is smaller than the total amount of weapons, the ones with smaller indices will be picked.
+    - Other weapons can still be used for logic that specify a weapon index, such as [ForceWeapon](#forcing-specific-weapon-against-certain-targets).
 
 In `rulesmd.ini`:
 ```ini
@@ -2424,8 +2422,7 @@ KeepRange.AllowPlayer=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType
-OmniFire=yes
+[SOMEWEAPON]              ; WeaponType, with OmniFire=yes
 OmniFire.TurnToTarget=no  ; boolean
 ```
 

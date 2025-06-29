@@ -407,10 +407,10 @@ New:
 - [Allows refineries to use multiple ActiveAnim simultaneously](Fixed-or-Improved-Logics.md#allows-refineries-to-use-multiple-activeanim-simultaneously) (by TaranDahl)
 - Electric/RadBeam trail for laser tails (by NetsuNegi)
 - Add `DebrisMinimums` to keep the count of debris within a certain range (by CrimRecya)
-- Several attackmove related enhancement (by TaranDahl)
+- [Several attackmove related enhancement](New-or-Enhanced-Logics.md#attack-move-behavior-when-target-acquired) (by TaranDahl)
 - Ground line for select box (by NetsuNegi)
-- Support for more optional weapons (by FlyStar)
-- Task subtitles display in the middle of the screen (by CrimRecya)
+- [Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)
+- [Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-23 01:10+0800\n"
+"POT-Creation-Date: 2025-06-30 00:59+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1333,108 +1333,106 @@ msgstr "修复了使用悬浮运动模式的载具被 `IsLocomotor=yes` 弹头�
 
 #: ../../Fixed-or-Improved-Logics.md:217
 msgid ""
-"Fixed the bug that a unit can overlap with `Teleport` units after it's "
-"been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads."
-msgstr ""
-"修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 `Teleport` "
-"运动模式的单位作为超时空移动的目的地的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:218
-msgid ""
 "Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead."
 msgstr "修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）。"
 
-#: ../../Fixed-or-Improved-Logics.md:219
+#: ../../Fixed-or-Improved-Logics.md:218
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead."
 msgstr "修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:220
+#: ../../Fixed-or-Improved-Logics.md:219
 msgid ""
 "Separated the AirstrikeClass pointer between the attacker/aircraft and "
 "the target to avoid erroneous overwriting issues."
 msgstr "分离了 AirstrikeClass 中攻击者／战机与目标的指针以避免错误覆盖问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:221
+#: ../../Fixed-or-Improved-Logics.md:220
 msgid "Fixed the bug that buildings will always be tinted as airstrike owner."
 msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:222
+#: ../../Fixed-or-Improved-Logics.md:221
 msgid ""
 "Fixed the bug that `AllowAirstrike=no` cannot completely prevent air "
 "strikes from being launched against it."
 msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空袭的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:223
+#: ../../Fixed-or-Improved-Logics.md:222
 msgid ""
 "Fixed the issue where computer players did not search for new enemies "
 "after defeating them or forming alliances with them."
 msgstr "修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:224
+#: ../../Fixed-or-Improved-Logics.md:223
 msgid ""
 "Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when "
 "entering buildings."
 msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:225
+#: ../../Fixed-or-Improved-Logics.md:224
 msgid "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar."
 msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:226
+#: ../../Fixed-or-Improved-Logics.md:225
 msgid "Fixed the bug that ships can travel on elevated bridges."
 msgstr "修复了船只可以在高架桥上行驶的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:227
+#: ../../Fixed-or-Improved-Logics.md:226
 msgid "Dehardcoded 255 limit of `OverlayType`."
 msgstr "解除了覆盖物最多 255 个的数量限制。"
 
-#: ../../Fixed-or-Improved-Logics.md:228
+#: ../../Fixed-or-Improved-Logics.md:227
 msgid ""
 "Fixed an issue where airstrike flare line drawn to target at lower "
 "elevation would clip."
 msgstr "修复了空袭引导激光高打低时会截断的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:229
+#: ../../Fixed-or-Improved-Logics.md:228
 msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it."
 msgstr "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:230
+#: ../../Fixed-or-Improved-Logics.md:229
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes`."
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑。"
 
-#: ../../Fixed-or-Improved-Logics.md:231
+#: ../../Fixed-or-Improved-Logics.md:230
 msgid "Infantry support `IsGattling=yes`."
 msgstr "步兵类现已支持使用 `IsGattling=yes` 开启盖特逻辑"
 
-#: ../../Fixed-or-Improved-Logics.md:232
+#: ../../Fixed-or-Improved-Logics.md:231
 msgid ""
 "Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case."
 msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:233
+#: ../../Fixed-or-Improved-Logics.md:232
 msgid ""
 "Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective "
 "on airforce."
 msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:234
+#: ../../Fixed-or-Improved-Logics.md:233
 msgid ""
 "Fixed the bug that damaged particle dont disappear after building has "
 "repaired by engineer."
 msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:235
+#: ../../Fixed-or-Improved-Logics.md:234
 msgid "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:235
+msgid ""
+"Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
+" building target."
+msgstr "修复建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:237
 msgid "Fixes / interactions with other extensions"
@@ -4233,7 +4231,8 @@ msgid ""
 "`DebrisMinimums` to limit the quantity of `DebrisTypes` when "
 "`DebrisTypes.Limit` is enabled."
 msgstr ""
-"当启用 `DebrisTypes.Limit` 时可通过原有的 `DebrisMaximums` 结合新增的 `DebrisMinimums` 共同限制 `DebrisTypes` 的数量。"
+"当启用 `DebrisTypes.Limit` 时可通过原有的 `DebrisMaximums` 结合新增的 `DebrisMinimums` "
+"共同限制 `DebrisTypes` 的数量。"
 
 #: ../../Fixed-or-Improved-Logics.md:1123
 #: ../../Fixed-or-Improved-Logics.md:1884
@@ -4241,8 +4240,7 @@ msgid ""
 "The default value of `DebrisTypes.Limit` is whether the number of "
 "`DebrisMaximums` is greater than (not equal to) 1 (for compatibility "
 "reasons)."
-msgstr ""
-"出于兼容目的，若 `DebrisMaximums` 大于（不包括等于）1 则默认启用 `DebrisTypes.Limit`。"
+msgstr "出于兼容目的，若 `DebrisMaximums` 大于（不包括等于）1 则默认启用 `DebrisTypes.Limit`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1126
 msgid ""
@@ -4264,30 +4262,26 @@ msgstr "游戏如何生成 `DebrisTypes`："
 msgid ""
 "Generate the total number of debris through `MaxDebris` and `MinDebris` "
 "first."
-msgstr ""
-"首先通过 `MaxDebris` 与 `MinDebris` 确定所要生成碎片的总量。"
+msgstr "首先通过 `MaxDebris` 与 `MinDebris` 确定所要生成碎片的总量。"
 
 #: ../../Fixed-or-Improved-Logics.md:1136
 msgid ""
 "Traverse `DebrisTypes` and limit the quantity range through "
 "`DebrisMaximums` and `DebrisMinimums`."
-msgstr ""
-"遍历 `DebrisTypes` 列表并通过 `DebrisMaximums` 和 `DebrisMinimums` 限制数量范围。"
+msgstr "遍历 `DebrisTypes` 列表并通过 `DebrisMaximums` 和 `DebrisMinimums` 限制数量范围。"
 
 #: ../../Fixed-or-Improved-Logics.md:1137
 msgid ""
 "When the number of generated debris will exceeds the total number, limit "
 "the quantity and end the traversal."
-msgstr ""
-"当已生成碎片数量将要超过总量时限制数量并停止遍历。"
+msgstr "当已生成碎片数量将要超过总量时限制数量并停止遍历。"
 
 #: ../../Fixed-or-Improved-Logics.md:1138
 msgid ""
 "When the number of debris generated after a single traversal is not "
 "enough to exceed the total number, it will end if `DebrisTypes.Limit` is "
 "enabled, otherwise the traversal will restart like vanilla game do."
-msgstr ""
-"当遍历完成但碎片的数量并未达到总量时，若启用 `DebrisTypes.Limit` 则直接结束，否则按原版游戏机制重新进行遍历。"
+msgstr "当遍历完成但碎片的数量并未达到总量时，若启用 `DebrisTypes.Limit` 则直接结束，否则按原版游戏机制重新进行遍历。"
 
 #: ../../Fixed-or-Improved-Logics.md:1141
 msgid "Exploding object customizations"
@@ -4434,8 +4428,7 @@ msgid ""
 "(kill | invulnerable | ignore)\n"
 "ForceShield.KillOrganicsWarhead=   ; WarheadType\n"
 "\n"
-"[SOMETECHNO]                       ; InfantryType or Organic=true "
-"TechnoType\n"
+"[SOMETECHNO]                       ; TechnoType with Organic=true\n"
 "IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill"
 " | invulnerable | ignore)\n"
 "IronCurtain.KillWarhead=           ; WarheadType\n"
@@ -4451,8 +4444,7 @@ msgstr ""
 "(kill | invulnerable | ignore)\n"
 "ForceShield.KillOrganicsWarhead=   ; WarheadType\n"
 "\n"
-"[SOMETECHNO]                       ; InfantryType or Organic=true "
-"TechnoType\n"
+"[SOMETECHNO]                       ; TechnoType with Organic=true\n"
 "IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill"
 " | invulnerable | ignore)\n"
 "IronCurtain.KillWarhead=           ; WarheadType\n"
@@ -5638,7 +5630,7 @@ msgstr "`DeployingAnim.KeepUnitVisible` 决定单位是否在动画播放期间*
 msgid ""
 "`DeployingAnim.ReverseForUndeploy` controls whether or not the animation "
 "is played in reverse for undeploying."
-msgstr "`DeployingAnim.KeepUnitVisible` 控制反部署时是否使动画反向播放。"
+msgstr "`DeployingAnim.ReverseForUndeploy` 控制反部署时是否使动画反向播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:1614
 msgid ""
@@ -7105,4 +7097,13 @@ msgid ""
 msgstr ""
 "`[General] -> DropPodTrailer` 是一个 [Ares 功能](https://ares-"
 "developers.github.io/Ares-docs/new/droppod.html)。"
+
+#~ msgid ""
+#~ "Fixed the bug that a unit can "
+#~ "overlap with `Teleport` units after it's"
+#~ " been damaged by a fallen unit "
+#~ "lifted by `IsLocomotor=yes` warheads."
+#~ msgstr ""
+#~ "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 "
+#~ "`Teleport` 运动模式的单位作为超时空移动的目的地的问题。"
 
