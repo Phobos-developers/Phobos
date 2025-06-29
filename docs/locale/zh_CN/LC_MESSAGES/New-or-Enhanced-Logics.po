@@ -3147,7 +3147,7 @@ msgid ""
 "trajectory used to make blasters in a private mod by @brsajo#9745*"
 msgstr ""
 "![Straigh trajectory blasters](_static/images/straight.gif) *@brsajo#9745"
-" 在私人 mod 中使用直线轨迹制作的爆能枪*"
+" 在其个人 mod 中使用直线轨迹制作的爆能枪*"
 
 #: ../../New-or-Enhanced-Logics.md:788
 msgid "Straigh trajectory blasters"
@@ -6209,7 +6209,7 @@ msgid ""
 "different weapons against different targets in **Zero Boundary** by "
 "@[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*"
 msgstr ""
-"![image](_static/images/multiweapons.gif) *在 @[暴风硫](https://space.bilibili.com/11638715/lists/5358986) 的 **零点界限** 中使用多武器逻辑来实现对不同目标使用不同武器*"
+"![image](_static/images/multiweapons.gif) *@[暴风硫](https://space.bilibili.com/11638715/lists/5358986) 在 **零点界限** 中使用多武器逻辑来实现对不同目标使用不同武器*"
 
 #: ../../New-or-Enhanced-Logics.md:1628
 msgid ""
