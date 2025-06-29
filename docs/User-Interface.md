@@ -251,8 +251,7 @@ ShowDesignatorRange=false             ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMESW]              ; SuperWeaponType
-ShowTimer=yes
+[SOMESW]              ; SuperWeaponType, with ShowTimer=yes
 ShowTimer.Priority=0  ; integer
 ```
 
