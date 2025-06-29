@@ -587,9 +587,9 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 
-// BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
+// Oct 20, 2022 - Starkku: BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
-// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done - Starkku
+// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done
 DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 {
 	enum { DontDrawBib = 0x43D8EE };
@@ -860,10 +860,10 @@ DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
 
 #pragma endregion save_load
 
-// An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
+// Jul 14, 2024 - Starkku: An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
 // Real talk: I have absolutely no clue how the original function works besides doing vector looping and manipulation, as far as I can tell it never even explicitly
 // clears CurrentVector but somehow it only contains applicable items afterwards anyway. It is possible this one does not achieve everything the original does functionality and/or
-// performance-wise but it does work and produces results with greater accuracy than the original for large ranges. - Starkku
+// performance-wise but it does work and produces results with greater accuracy than the original for large ranges.
 DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 {
 	enum { SkipGameCode = 0x413482 };
@@ -957,8 +957,8 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 	auto& currLoc = pLoco->LinkedTo->Location;
 	int distance = (int) CoordStruct{currLoc.X - pLoco->Coords.X, currLoc.Y - pLoco->Coords.Y,0}.Magnitude() ;
 
-	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
-	// It can now be customized globally or per TechnoType however - Starkku
+	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
+	// It can now be customized globally or per TechnoType however
 	auto const pType = pLoco->LinkedTo->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
@@ -1046,7 +1046,7 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 	return 0;
 }
 
-// Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
+// Oct 26, 2024 - Starkku: Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes 
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 {
 	enum { SkipResetTarget = 0x6FA472 };
@@ -1061,7 +1061,7 @@ DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 	return 0;
 }
 
-// Starkku: These fix issues with follower train cars etc) indices being thrown off by preplaced vehicles not being created, having other vehicles as InitialPayload etc.
+// Nov 6, 2024: Starkku: These fix issues with follower train cars etc) indices being thrown off by preplaced vehicles not being created, having other vehicles as InitialPayload etc.
 // This fix basically works by not using the global UnitClass array at all for setting the followers, only a list of preplaced units, successfully created or not.
 #pragma region Follower
 
