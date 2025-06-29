@@ -190,21 +190,10 @@ void BulletExt::ExtData::ApplyExtraWarheads(const std::vector<WarheadTypeClass*>
 		{
 			size = exWHOwner.size();
 
-			if (size > i)
+			if ((size > i && exWHOwner[i]) || (size > 0 && exWHOwner[size - 1]))
 			{
-				if (exWHOwner[i])
-				{
-					pFirer = pInvoker;
-					pHouse = pInvoker->Owner;
-				}
-			}
-			else if (size > 0)
-			{
-				if (exWHOwner[size - 1])
-				{
-					pFirer = pInvoker;
-					pHouse = pInvoker->Owner;
-				}
+				pFirer = pInvoker;
+				pHouse = pInvoker->Owner;
 			}
 		}
 
