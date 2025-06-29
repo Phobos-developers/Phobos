@@ -2426,18 +2426,3 @@ msgstr "**Dmitry Volkov** - 广泛且深入的测试"
 msgid "**Rise of the East community** - extensive playtesting of in-dev features"
 msgstr "**东方崛起社区** - 对开发功能的广泛测试"
 
-#~ msgid ""
-#~ "Fix an issue where airstrike flare "
-#~ "line drawn to target at lower "
-#~ "elevation would clip"
-#~ msgstr "修复了空袭引导激光高打低时会截断的问题"
-
-#~ msgid ""
-#~ "Fix the bug that a unit can "
-#~ "overlap with `Teleport` units after it's"
-#~ " been damaged by a fallen unit "
-#~ "lifted by `IsLocomotor=yes` warheads"
-#~ msgstr ""
-#~ "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 "
-#~ "`Teleport` 运动模式的单位作为超时空移动的目的地的问题"
-

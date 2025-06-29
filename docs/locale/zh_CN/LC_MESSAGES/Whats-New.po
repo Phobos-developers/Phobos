@@ -5235,13 +5235,3 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
 
-#~ msgid ""
-#~ "Fixed the bug that a unit can "
-#~ "overlap with `Teleport` units after it's"
-#~ " been damaged by a fallen unit "
-#~ "lifted by `IsLocomotor=yes` warheads (by "
-#~ "NetsuNegi)"
-#~ msgstr ""
-#~ "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 "
-#~ "`Teleport` 运动模式的单位作为超时空移动的目的地的问题（by NetsuNegi）"
-
