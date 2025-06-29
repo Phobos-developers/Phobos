@@ -253,12 +253,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 }
 
-// this runs between the before and after type data loading methods for rules ini
-void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
-{
-
-}
-
 // this should load everything that TypeData is not dependant on
 // i.e. InfantryElectrocuted= can go here since nothing refers to it
 // but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData

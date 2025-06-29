@@ -1,5 +1,7 @@
 #include "Body.h"
 
+#include <Ext/Techno/Body.h>
+
 bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* pTarget)
 {
 	if (pManager->MaxControlNodes == 1)
