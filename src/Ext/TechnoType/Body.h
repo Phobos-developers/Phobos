@@ -182,6 +182,15 @@ public:
 		ValueableVector<int> ForceAAWeapon_InRange;
 		ValueableVector<double> ForceAAWeapon_InRange_Overrides;
 		Valueable<bool> ForceAAWeapon_InRange_ApplyRangeModifiers;
+		Valueable<int> ForceWeapon_Buildings;
+		Valueable<int> ForceWeapon_Defenses;
+		Valueable<int> ForceWeapon_Infantry;
+		Valueable<int> ForceWeapon_Naval_Units;
+		Valueable<int> ForceWeapon_Units;
+		Valueable<int> ForceWeapon_Aircraft;
+		Valueable<int> ForceAAWeapon_Infantry;
+		Valueable<int> ForceAAWeapon_Units;
+		Valueable<int> ForceAAWeapon_Aircraft;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -385,6 +394,7 @@ public:
 
 		Valueable<bool> AttackMove_Follow;
 		Valueable<bool> AttackMove_Follow_IncludeAir;
+		Valueable<bool> AttackMove_Follow_IfMindControlIsFull;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 		Valueable<bool> AttackMove_PursuitTarget;
 
@@ -534,6 +544,15 @@ public:
 			, ForceAAWeapon_InRange {}
 			, ForceAAWeapon_InRange_Overrides {}
 			, ForceAAWeapon_InRange_ApplyRangeModifiers { false }
+			, ForceWeapon_Buildings { -1 }
+			, ForceWeapon_Defenses { -1 }
+			, ForceWeapon_Infantry { -1 }
+			, ForceWeapon_Naval_Units { -1 }
+			, ForceWeapon_Units { -1 }
+			, ForceWeapon_Aircraft { -1 }
+			, ForceAAWeapon_Infantry { -1 }
+			, ForceAAWeapon_Units { -1 }
+			, ForceAAWeapon_Aircraft { -1 }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }
@@ -728,6 +747,7 @@ public:
 
 			, AttackMove_Follow { false }
 			, AttackMove_Follow_IncludeAir { false }
+			, AttackMove_Follow_IfMindControlIsFull { false }
 			, AttackMove_StopWhenTargetAcquired { }
 			, AttackMove_PursuitTarget { false }
 

@@ -41,10 +41,11 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 
 	int forceWeaponIndex = -1;
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
+	TechnoTypeClass* pTargetType = nullptr;
 
 	if (pTargetTechno)
 	{
-		const auto pTargetType = pTargetTechno->GetTechnoType();
+		pTargetType = pTargetTechno->GetTechnoType();
 
 		if (this->ForceWeapon_Naval_Decloaked >= 0
 			&& pTargetType->Cloakable
@@ -77,6 +78,49 @@ int TechnoTypeExt::ExtData::SelectForceWeapon(TechnoClass* pThis, AbstractClass*
 		TechnoTypeExt::SelectWeaponMutex = true;
 		forceWeaponIndex = TechnoExt::ExtMap.Find(pThis)->ApplyForceWeaponInRange(pTarget);
 		TechnoTypeExt::SelectWeaponMutex = false;
+	}
+
+	if (forceWeaponIndex == -1 && pTargetType)
+	{
+		switch (pTarget->WhatAmI())
+		{
+			case AbstractType::Building:
+			{
+				forceWeaponIndex = this->ForceWeapon_Buildings;
+
+				if (this->ForceWeapon_Defenses >= 0)
+				{
+					auto const pBuildingType = static_cast<BuildingTypeClass*>(pTargetType);
+
+					if (pBuildingType->BuildCat == BuildCat::Combat)
+						forceWeaponIndex = this->ForceWeapon_Defenses;
+				}
+
+				break;
+			}
+			case AbstractType::Infantry:
+			{
+				forceWeaponIndex = (this->ForceAAWeapon_Infantry >= 0 && pTarget->IsInAir())
+					? this->ForceAAWeapon_Infantry : this->ForceWeapon_Infantry;
+
+				break;
+			}
+			case AbstractType::Unit:
+			{
+				forceWeaponIndex = (this->ForceAAWeapon_Units >= 0 && pTarget->IsInAir())
+					? this->ForceAAWeapon_Units : ((this->ForceWeapon_Naval_Units >= 0 && pTargetType->Naval)
+					? this->ForceWeapon_Naval_Units : this->ForceWeapon_Units);
+
+				break;
+			}
+			case AbstractType::Aircraft:
+			{
+				forceWeaponIndex = (this->ForceAAWeapon_Aircraft >= 0 && pTarget->IsInAir())
+					? this->ForceAAWeapon_Aircraft : this->ForceWeapon_Aircraft;
+
+				break;
+			}
+		}
 	}
 
 	return forceWeaponIndex;
@@ -639,6 +683,16 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->ForceAAWeapon_InRange.Read(exINI, pSection, "ForceAAWeapon.InRange");
 	this->ForceAAWeapon_InRange_Overrides.Read(exINI, pSection, "ForceAAWeapon.InRange.Overrides");
 	this->ForceAAWeapon_InRange_ApplyRangeModifiers.Read(exINI, pSection, "ForceAAWeapon.InRange.ApplyRangeModifiers");
+	this->ForceWeapon_Buildings.Read(exINI, pSection, "ForceWeapon.Buildings");
+	this->ForceWeapon_Defenses.Read(exINI, pSection, "ForceWeapon.Defenses");
+	this->ForceWeapon_Infantry.Read(exINI, pSection, "ForceWeapon.Infantry");
+	this->ForceWeapon_Naval_Units.Read(exINI, pSection, "ForceWeapon.Naval.Units");
+	this->ForceWeapon_Units.Read(exINI, pSection, "ForceWeapon.Units");
+	this->ForceWeapon_Aircraft.Read(exINI, pSection, "ForceWeapon.Aircraft");
+	this->ForceAAWeapon_Infantry.Read(exINI, pSection, "ForceAAWeapon.Infantry");
+	this->ForceAAWeapon_Units.Read(exINI, pSection, "ForceAAWeapon.Units");
+	this->ForceAAWeapon_Aircraft.Read(exINI, pSection, "ForceAAWeapon.Aircraft");
+
 	this->ForceWeapon_Check = (
 		this->ForceWeapon_Naval_Decloaked >= 0
 		|| this->ForceWeapon_Cloaked >= 0
@@ -646,6 +700,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->ForceWeapon_UnderEMP >= 0
 		|| !this->ForceWeapon_InRange.empty()
 		|| !this->ForceAAWeapon_InRange.empty()
+		|| this->ForceWeapon_Buildings >= 0
+		|| this->ForceWeapon_Defenses >= 0
+		|| this->ForceWeapon_Infantry >= 0
+		|| this->ForceWeapon_Naval_Units >= 0
+		|| this->ForceWeapon_Units >= 0
+		|| this->ForceWeapon_Aircraft >= 0
+		|| this->ForceAAWeapon_Infantry >= 0
+		|| this->ForceAAWeapon_Units >= 0
+		|| this->ForceAAWeapon_Aircraft >= 0
 	);
 
 	this->Ammo_Shared.Read(exINI, pSection, "Ammo.Shared");
@@ -832,6 +895,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AttackMove_Follow.Read(exINI, pSection, "AttackMove.Follow");
 	this->AttackMove_Follow_IncludeAir.Read(exINI, pSection, "AttackMove.Follow.IncludeAir");
+	this->AttackMove_Follow_IfMindControlIsFull.Read(exINI, pSection, "AttackMove.Follow.IfMindControlIsFull");
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
@@ -1234,6 +1298,15 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->ForceAAWeapon_InRange)
 		.Process(this->ForceAAWeapon_InRange_Overrides)
 		.Process(this->ForceAAWeapon_InRange_ApplyRangeModifiers)
+		.Process(this->ForceWeapon_Buildings)
+		.Process(this->ForceWeapon_Defenses)
+		.Process(this->ForceWeapon_Infantry)
+		.Process(this->ForceWeapon_Naval_Units)
+		.Process(this->ForceWeapon_Units)
+		.Process(this->ForceWeapon_Aircraft)
+		.Process(this->ForceAAWeapon_Infantry)
+		.Process(this->ForceAAWeapon_Units)
+		.Process(this->ForceAAWeapon_Aircraft)
 
 		.Process(this->Ammo_Shared)
 		.Process(this->Ammo_Shared_Group)
@@ -1432,6 +1505,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AttackMove_Follow)
 		.Process(this->AttackMove_Follow_IncludeAir)
+		.Process(this->AttackMove_Follow_IfMindControlIsFull)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->AttackMove_PursuitTarget)
 

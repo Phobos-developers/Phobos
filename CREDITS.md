@@ -398,7 +398,6 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced reveal & gap warhead
   - Fix an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
   - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
-  - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Customize parasite culling targets
   - Customize harvester dump amount
   - Select box logic
@@ -501,6 +500,7 @@ This page lists all the individual contributions to the project by their author.
   - Several new Infotypes, no display in specific status and a new single frame display method
   - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
   - Add `DebrisMinimums` to keep the count of debris within a certain range
+  - Task subtitles display in the middle of the screen
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -511,13 +511,14 @@ This page lists all the individual contributions to the project by their author.
   - Fix `DefaultDisguise` showing wrong house colors for different players
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
-  - Forcing specific weapon by range
+  - Forcing specific weapon by range and target type
   - Passenger-based insignias
   - Use `InsigniaType` to set the properties of insignia in a batch
   - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
   - Power plant damage factor
   - Allow faking digital display for `InfoType=Health` at disguise
   - Display banner improvement and doc
+  - Damage multiplier for health percentage
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -553,6 +554,7 @@ This page lists all the individual contributions to the project by their author.
   - Targeting limitation for berzerk technos
   - Allows refineries to use multiple ActiveAnim simultaneously
   - Several attackmove related enhancement
+  - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

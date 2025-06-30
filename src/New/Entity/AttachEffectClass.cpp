@@ -182,6 +182,8 @@ void AttachEffectClass::AI()
 		if (pType->HasTint())
 			pTechno->MarkForRedraw();
 
+		this->NeedsRecalculateStat = true;
+
 		if (const auto pTag = pTechno->AttachedTag)
 			pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTechno, CellStruct::Empty);
 	}
@@ -204,6 +206,7 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
+			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
 
 			if (const auto pTag = pTechno->AttachedTag)
@@ -226,11 +229,18 @@ void AttachEffectClass::AI()
 		this->CurrentDelay = delay;
 
 		if (delay > 0)
+		{
 			this->KillAnim();
+			this->NeedsRecalculateStat = true;
+		}
 		else if (!this->ShouldBeDiscardedNow())
+		{
 			this->RefreshDuration();
+		}
 		else
+		{
 			this->NeedsDurationRefresh = true;
+		}
 
 		return;
 	}
@@ -497,6 +507,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
+	this->NeedsRecalculateStat = true;
 
 	return true;
 }
