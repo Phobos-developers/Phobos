@@ -1174,10 +1174,11 @@ msgstr ""
 
 #: ../../User-Interface.md:377
 msgid ""
-"When the mouse hovers over the subtitle area (simply judged as a "
+"If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a "
 "rectangle), its opacity will increase and it will not disappear during "
 "this period."
-msgstr "当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
+msgstr ""
+"若你同时设置了 `MessageApplyHoverState` 为 true 那么当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
 
 #: ../../User-Interface.md:380
 msgid ""
