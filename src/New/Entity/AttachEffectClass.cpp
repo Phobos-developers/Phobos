@@ -53,9 +53,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	if (this->InitialDelay <= 0)
 	{
 		this->HasInitialized = true;
-
-		if (const auto pTag = pTechno->AttachedTag)
-			pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTechno, CellStruct::Empty);
+		pType->HandleEvent(pTechno);
 	}
 
 	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
@@ -164,10 +162,11 @@ void AttachEffectClass::AI()
 		return;
 	}
 
+	auto const pType = this->Type;
+
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
 		this->HasInitialized = true;
-		auto const pType = this->Type;
 
 		if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
@@ -183,9 +182,7 @@ void AttachEffectClass::AI()
 			pTechno->MarkForRedraw();
 
 		this->NeedsRecalculateStat = true;
-
-		if (const auto pTag = pTechno->AttachedTag)
-			pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTechno, CellStruct::Empty);
+		pType->HandleEvent(pTechno);
 	}
 
 	if (this->CurrentDelay > 0)
@@ -208,9 +205,7 @@ void AttachEffectClass::AI()
 			this->RefreshDuration();
 			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
-
-			if (const auto pTag = pTechno->AttachedTag)
-				pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTechno, CellStruct::Empty);
+			pType->HandleEvent(pTechno);
 		}
 
 		return;
@@ -507,7 +502,6 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
-	this->NeedsRecalculateStat = true;
 
 	return true;
 }
@@ -741,8 +735,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 					ae->RefreshDuration(attachParams.DurationOverride);
 				}
 
-				if (const auto pTag = pTarget->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
+				pType->HandleEvent(pTarget);
 			}
 			else
 			{
@@ -755,9 +748,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				}
 
 				best->RefreshDuration(attachParams.DurationOverride);
-
-				if (const auto pTag = pTarget->AttachedTag)
-					pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
+				pType->HandleEvent(pTarget);
 			}
 
 			return nullptr;
@@ -769,17 +760,14 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				ae->RefreshDuration(attachParams.DurationOverride);
 			}
 
-			if (const auto pTag = pTarget->AttachedTag)
-				pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
+			pType->HandleEvent(pTarget);
 		}
 	}
 
 	if (!pType->Cumulative && currentTypeCount > 0 && match)
 	{
 		match->RefreshDuration(attachParams.DurationOverride);
-
-		if (const auto pTag = pTarget->AttachedTag)
-			pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
+		pType->HandleEvent(pTarget);
 	}
 	else
 	{
