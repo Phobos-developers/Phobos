@@ -364,7 +364,7 @@ UseCenterCoordsIfAttached=false  ; boolean
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
 - `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
 - `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation.
-- `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage] -> SplashList`.
+- `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
 - `ExtraShadow` can be set to false to disable the display of shadows on the ground.
 
@@ -374,7 +374,7 @@ In `artmd.ini`:
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
 WakeAnim=                     ; AnimationType
-SplashAnims=                  ; List of AnimationTypes
+SplashAnims=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -557,8 +557,8 @@ SellBuildupLength=23  ; integer, number of buildup frames to play
   - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
   - `Grinding.AllowTypes` can be used to define InfantryTypes and VehicleTypes that can be grinded by the building. Listing any will disable grinding for all types except those listed.
   - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
-  - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`.
-  - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual] -> EnterGrinderSound`.
+  - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder.
+  - `Grinding.Sound` is a sound played by when object is grinded by the building.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
     - `Grinding.Weapon.RequiredCredits` can be set to have the weapon require accumulated credits from grinding to fire. Accumulated credits for this purpose are reset every time when the weapon fires.
 - For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries).
@@ -571,7 +571,7 @@ Grinding.AllowOwner=true           ; boolean
 Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
 Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
 Grinding.PlayDieSound=true         ; boolean
-Grinding.Sound=                    ; Sound entry
+Grinding.Sound=                    ; Sound entry, default to [AudioVisual] -> EnterGrinderSound
 Grinding.Weapon=                   ; WeaponType
 Grinding.Weapon.RequiredCredits=0  ; integer
 ```
@@ -645,16 +645,16 @@ The prism towers' fire is hardcoded to be delayed. Their fire will ignore this f
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
   - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`.
     - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
-  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General] -> RepairStep`.
-  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General] -> RepairPercent`. Note that the final cost is set to 1 if it is less than that.
+  - `Units.RepairStep` how much `Strength` is restored per repair tick.
+  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Note that the final cost is set to 1 if it is less than that.
     - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 Units.RepairRate=     ; floating point value, ingame minutes
-Units.RepairStep=     ; integer
-Units.RepairPercent=  ; floating point value, percents or absolute
+Units.RepairStep=     ; integer, default to [General] -> RepairStep
+Units.RepairPercent=  ; floating point value, percents or absolute, default to [General] -> RepairPercent
 Units.UseRepairCost=  ; boolean
 ```
 
@@ -821,8 +821,8 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 ### Airstrike flare visual customizations
 
 - It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
-  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`.
-  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual] -> AirstrikeLineColor`.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target.
 
 In `rulesmd.ini`:
 ```ini
@@ -830,8 +830,8 @@ In `rulesmd.ini`:
 AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue
 
 [SOMETECHNO]                ; TechnoType
-LaserTargetColor=           ; integer - [ColorAdd] index
-AirstrikeLineColor=         ; integer - Red,Green,Blue
+LaserTargetColor=           ; integer - [ColorAdd] index, default to [AudioVisual] -> LaserTargetColor
+AirstrikeLineColor=         ; integer - Red,Green,Blue, default to [AudioVisual] -> AirstrikeLineColor
 ```
 
 ### Airstrike target eligibility
@@ -962,9 +962,9 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
+WarpOut=                ; Anim (played when Techno warping out)
+WarpIn=                 ; Anim (played when Techno warping in)
+WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
@@ -1002,7 +1002,7 @@ Image=              ; name of the file that will be used as image, without exten
     - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.WeaponN` is set.
   - Normal insignia can be overridden when its current passenger size reaches a certain amount by setting `Insignia(.Frame/.Frames).PassengersN` where `N` stands for the current passenger size amount (from 0 to `Passengers` of the transport). If not set, defaults to non-passenger specific insignia settings. Will be overridden by weapon mode insignia settings, if set.
     - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.PassengersN` is set.
-  - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General] -> EnemyInsignia`, which in turn defaults to true.
+  - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
@@ -1049,7 +1049,7 @@ InsigniaFrame.PassengersN.Rookie=-1      ; int, frame of insignia shp (zero-base
 InsigniaFrame.PassengersN.Veteran=-1     ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrame.PassengersN.Elite=-1       ; int, frame of insignia shp (zero-based) or -1 for default
 InsigniaFrames.PassengersN=-1,-1,-1      ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=                      ; boolean
+Insignia.ShowEnemy=                      ; boolean, defaults to [General] -> EnemyInsignia
 ```
 
 ```{note}
@@ -1181,22 +1181,21 @@ ForbidParallelAIQueues=false        ; boolean
   - `kill` : Iron Curtain kills the organic object with a specifc warhead. This is the default value for `Organic=true` units and infantry if not otherwise specified.
   - `invulnerable` : Iron Curtain makes the organic object invulnerable like buildings and vehicles.
   - `ignore` : Iron Curtain doesn't give any effect on the organic object.
-- `IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage] -> C4Warhead`.
 - Identical controls are available for Force Shield as well.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
-IronCurtain.KillOrganicsWarhead=   ; WarheadType
+IronCurtain.KillOrganicsWarhead=   ; WarheadType, default to [CombatDamage] -> C4Warhead
 ForceShield.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
-ForceShield.KillOrganicsWarhead=   ; WarheadType
+ForceShield.KillOrganicsWarhead=   ; WarheadType, default to [CombatDamage] -> C4Warhead
 
 [SOMETECHNO]                       ; TechnoType with Organic=true
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
-IronCurtain.KillWarhead=           ; WarheadType
+IronCurtain.KillWarhead=           ; WarheadType, default to [CombatDamage] -> IronCurtain.KillOrganicsWarhead
 ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
-ForceShield.KillWarhead=           ; WarheadType
+ForceShield.KillWarhead=           ; WarheadType, default to [CombatDamage] -> ForceShield.KillOrganicsWarhead
 ```
 
 ### Iron Curtain & Force Shield extra tint intensity
@@ -1463,7 +1462,7 @@ SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ### Damaged frames and crumbling animation
 
 - By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.
-  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual] -> ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
+  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual] -> ConditionYellow.Terrain` percentage of their maximum health.
 - In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
   - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
     - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
@@ -1473,11 +1472,11 @@ SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ConditionYellow.Terrain=  ; floating-point value
+ConditionYellow.Terrain=  ; floating-point value, default to [AudioVisual] -> ConditionYellow
 
 [SOMETERRAINTYPE]         ; TerrainType
 HasDamagedFrames=false    ; boolean
-HasCrumblingFrames=false
+HasCrumblingFrames=false  ; boolean
 CrumblingSound=           ; Sound entry
 ```
 
@@ -1853,7 +1852,7 @@ AllowDamageOnSelf=false  ; boolean
 
 ### Combat light customizations
 
-- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
+- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.
 - You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
 - Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
@@ -1863,7 +1862,7 @@ In `rulesmd.ini`:
 CombatLightDetailLevel=0  ; integer
 
 [SOMEWARHEAD]             ; WarheadType
-CombatLightDetailLevel=   ; integer
+CombatLightDetailLevel=   ; integer, default to [AudioVisual] -> CombatLightDetailLevel
 CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
 CLIsBlack=false           ; boolean
 ```
@@ -1911,7 +1910,7 @@ Rocker.AmplitudeOverride=       ; integer
 - If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if `AnimList.PickRandom` is set to true.
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
 - `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
-- `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage] -> SplashList` are used.
+- `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water.
   - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to these animations in same manner as the `AnimList` equivalents.
 - - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land. This determines whether to use `AnimList` or `SplashList` when hitting surface ships.
@@ -1924,7 +1923,7 @@ AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
 AnimList.ScatterMin=0.0         ; floating point value, distance in cells
 AnimList.ScatterMax=0.0         ; floating point value, distance in cells
-SplashList=                     ; List of AnimationTypes
+SplashList=                     ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
@@ -1970,7 +1969,7 @@ Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|ai
 
 ### Delay automatic attack on the controlled unit
 
-- Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead, default to `[General] -> MindControl.ThreatDelay`.
+- Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead.
   - This will not affect the manual selection of attacks and is useless with permanent mind control.
 
 In `rulesmd.ini`:
@@ -1979,7 +1978,7 @@ In `rulesmd.ini`:
 MindControl.ThreatDelay=0     ; integer, game frames
 
 [SOMEWARHEAD]                 ; WarheadType
-MindControl.ThreatDelay=      ; integer, game frames
+MindControl.ThreatDelay=      ; integer, game frames, default to [General] -> MindControl.ThreatDelay
 ```
 
 ### Nonprovocative Warheads
@@ -2056,7 +2055,7 @@ In `rulesmd.ini`:
 ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 
 [SOMEWEAPON]         ; WeaponType
-ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
+ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), default to [CombatDamage] -> ROF.RandomDelay
 ```
 
 ### Customizing whether passengers are kicked out when an aircraft fires
