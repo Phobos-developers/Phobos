@@ -7601,25 +7601,15 @@ msgstr ""
 "SplashList.PickRandom=false  ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:2129
-#, fuzzy
 msgid "Damage multipliers"
-msgstr "对不同所属方的伤害修正比"
+msgstr "伤害修正比"
 
 #: ../../New-or-Enhanced-Logics.md:2131
-#, fuzzy
 msgid ""
 "Warheads are now able to define the extra damage multiplier for owner "
-"house, ally houses and enemy houses. If the warhead's own "
-"`Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default "
-"to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` "
-"which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect"
-" your own units like `AffectsAllies` did."
+"house, ally houses and enemy houses."
 msgstr ""
-"现在弹头可以额外定义对己方所属、友方所属、敌方所属的伤害修正比。如果弹头自身的 "
-"`Damage(Owner|Allies|Enemies)Multiplier` 未设置则默认使用 `[CombatDamage] -> "
-"Damage(Owner|Allies|Enemies)Multiplier`，这些的默认值则均为 "
-"1.0。注意：`DamageAlliesMultiplier` 不会像 `AffectsAllies` "
-"那样影响己方单位。此外这个功能不会影响无视防御的伤害，例如 `Suicide` 等。"
+"现在弹头可以定义对己方所属、友方所属、敌方所属的额外伤害倍率。"
 
 #: ../../New-or-Enhanced-Logics.md:2132
 msgid ""
@@ -7629,12 +7619,15 @@ msgid ""
 " multiplies `DamageSourceHealthMultiplier`, then increased by the "
 "target's health percentage multiplies `DamageTargetHealthMultiplier`."
 msgstr ""
+"一个基于开火者或目标剩余血量的额外伤害倍率将被纳入总倍率计算。具体而言：伤害倍率将先增加 "
+"`(开火者剩余血量比 * DamageSourceHealthMultiplier)`，再增加 `(目标剩余血量比 * DamageTargetHealthMultiplier)`。"
 
 #: ../../New-or-Enhanced-Logics.md:2133
 msgid ""
 "These multipliers will not affect damage with ignore defenses like "
 "`Suicide`.etc ."
 msgstr ""
+"这些修正不会影响无视防御的伤害，例如 `Suicide` 等。"
 
 #: ../../New-or-Enhanced-Logics.md:2136
 msgid ""
@@ -7644,9 +7637,9 @@ msgid ""
 "DamageEnemiesMultiplier=1.0         ; floating point value\n"
 "\n"
 "[SOMEWARHEAD]                       ; WarheadType\n"
-"DamageOwnerMultiplier=              ; floating point value\n"
-"DamageAlliesMultiplier=             ; floating point value\n"
-"DamageEnemiesMultiplier=            ; floating point value\n"
+"DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier\n"
+"DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier\n"
+"DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier\n"
 "DamageSourceHealthMultiplier=0.0    ; floating point value\n"
 "DamageTargetHealthMultiplier=0.0    ; floating point value\n"
 msgstr ""
@@ -7656,11 +7649,17 @@ msgstr ""
 "DamageEnemiesMultiplier=1.0         ; floating point value\n"
 "\n"
 "[SOMEWARHEAD]                       ; WarheadType\n"
-"DamageOwnerMultiplier=              ; floating point value\n"
-"DamageAlliesMultiplier=             ; floating point value\n"
-"DamageEnemiesMultiplier=            ; floating point value\n"
+"DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier\n"
+"DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier\n"
+"DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier\n"
 "DamageSourceHealthMultiplier=0.0    ; floating point value\n"
 "DamageTargetHealthMultiplier=0.0    ; floating point value\n"
+
+msgid ""
+"`DamageAlliesMultiplier` won't affect"
+" your own units like `AffectsAllies` did."
+msgstr ""
+"`DamageAlliesMultiplier` 不会像旧有的 `AffectsAllies` 那样作用于友方单位的同时还带上己方单位。"
 
 #: ../../New-or-Enhanced-Logics.md:2150
 msgid "Detonate Warhead on all objects on map"

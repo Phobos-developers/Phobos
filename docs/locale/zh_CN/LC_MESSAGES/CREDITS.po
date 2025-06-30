@@ -2104,9 +2104,8 @@ msgid "Display banner improvement and doc"
 msgstr "横幅的改进与文档"
 
 #: ../../../CREDITS.md:524
-#, fuzzy
 msgid "Damage multiplier for health percentage"
-msgstr "对不同所属方的伤害修正比"
+msgstr "对不同剩余血量的伤害修正比"
 
 #: ../../../CREDITS.md:525
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"

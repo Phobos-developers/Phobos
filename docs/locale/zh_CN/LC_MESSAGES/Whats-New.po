@@ -1199,13 +1199,11 @@ msgstr ""
 "to-target)（by CrimRecya 与 TaranDahl）"
 
 #: ../../Whats-New.md:340
-#, fuzzy
 msgid ""
 "[Damage multipliers](New-or-Enhanced-Logics.md#damage-multipliers) (by "
 "CrimRecya & Ollerus)"
 msgstr ""
-"[对不同所属方的伤害修正比](New-or-Enhanced-Logics.md#damage-multiplier-for-different-"
-"houses)（by CrimRecya）"
+"[伤害修正比](New-or-Enhanced-Logics.md#damage-multipliers)（by CrimRecya & Ollerus）"
 
 #: ../../Whats-New.md:341
 msgid "Customizable duration for electric bolts (by Starkku)"
