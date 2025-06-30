@@ -2493,7 +2493,7 @@ msgid ""
 msgstr ""
 "与 [Ares 的 `81` & `82` 号条件](https://ares-developers.github.io/Ares-"
 "docs/new/triggerevents.html#house-owns-techno-"
-"type-81-82)不同，这些使用条件中的所属方参数而不是触发的所有者。"
+"type-81-82)不同，这里的所属方使用触发条件中的所属方参数而不是触发自身的所有者。"
 
 #: ../../AI-Scripting-and-Mapping.md:814
 msgid ""
