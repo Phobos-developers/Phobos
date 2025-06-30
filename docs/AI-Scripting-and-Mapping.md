@@ -842,6 +842,9 @@ In `mycampaign.map`:
 ### `606` AttachEffect is attaching to a Techno
 
 - Checks if an `AttachEffectType` is attaching to a techno. Doesn't work for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that were attached prior to the trigger's enabling.
+- To be elaborate, the event will be triggered during these occasions:
+  - Self-owned effects: initial granted (triggered after `AttachEffect.InitialDelays` amount of frames), recreation (triggered after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of frames).
+  - Effects from other sources: granted, refreshing when trying to apply the same type of attached effect to the techno.
 
 In `mycampaign.map`:
 ```ini
