@@ -370,7 +370,6 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that units on the slope tilted at an excessive angle
   - Fix an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
   - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
-  - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Taking over Ares' AlphaImage respawn logic to reduce lags from it
   - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
   - Fix the bug that ships can travel on elevated bridges
@@ -443,6 +442,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that in air aircraft carriers being unable to attack when it is near by elevated bridges
   - Fix the bug that healing weapons could not automatically acquire aerial targets
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
+  - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

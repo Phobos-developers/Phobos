@@ -16,6 +16,8 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		rollOnce = true;
 	}
 
+	indices.reserve(rollsSize);
+
 	for (size_t i = 0; i < rollsSize; i++)
 	{
 		this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -31,6 +33,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		if (size_t(index) < size)
 			indices.push_back(index);
 	}
+
 	return indices;
 }
 

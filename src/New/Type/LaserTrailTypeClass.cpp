@@ -13,6 +13,9 @@ void LaserTrailTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
 
+	if (!pINI->GetSection(section))
+		return;
+
 	INI_EX exINI(pINI);
 
 	this->IsHouseColor.Read(exINI, section, "IsHouseColor");

@@ -242,7 +242,7 @@ DEFINE_HOOK(0x42898A, AnimTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 {
 	GET(AnimTypeClass*, pItem, ESI);

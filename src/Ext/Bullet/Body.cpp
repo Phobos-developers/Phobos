@@ -21,6 +21,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* 
 	auto pTypeExt = this->TypeExtData;
 	bool canAffect = false;
 	bool isIntercepted = false;
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+	const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
 
 	if (pTypeExt->Armor.isset())
 	{
@@ -109,7 +111,7 @@ void BulletExt::ExtData::ApplyRadiationToCell(CellStruct cell, int spread, int r
 		{
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pSite);
 
-			if (pRadExt->Type != pRadType || pWeapon != pRadExt->Weapon)
+			if (pRadExt->Type != pRadType || spread != pSite->Spread)
 				return false;
 
 			if (pRadExt->RadInvoker && pThis->Owner)

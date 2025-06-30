@@ -78,13 +78,10 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	if (!pThis)
-		return 0;
-
 	if (auto const pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
 	{
 		int forceWeaponIndex = -1;
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 		auto const pTargetType = pTargetTechno->GetTechnoType();
 
 		if (pTypeExt->ForceWeapon_Naval_Decloaked >= 0 &&
@@ -122,10 +119,10 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
-	bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
-	int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
+	const bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
+	const int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
 
 	if (weaponIndex != -1)
 		return weaponIndex == 1 ? Secondary : Primary;
@@ -350,7 +347,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	// GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
 	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
@@ -449,9 +446,9 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 		GET_STACK(int, nDamage, STACK_OFFSET(0xB0, -0x84));
 		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
 
-		if (auto pTransport = pThis->Transporter)
+		if (auto const pTransport = pThis->Transporter)
 		{
-			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+			if (auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData)
 			{
 				//it is float isnt it YRPP ? , check tomson26 YR-IDB !
 				nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
@@ -556,7 +553,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
-	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	auto const pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 
 	if (pSourceTypeExt->InterceptorType)
 	{

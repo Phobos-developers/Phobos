@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-16 15:57+0800\n"
+"POT-Creation-Date: 2025-06-30 17:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2044,82 +2044,76 @@ msgstr "修复了使用悬浮运动模式的载具被 `IsLocomotor=yes` 弹头�
 
 #: ../../Whats-New.md:591
 msgid ""
-"Fixed the bug that a unit can overlap with `Teleport` units after it's "
-"been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads (by "
-"NetsuNegi)"
-msgstr ""
-"修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 `Teleport` "
-"运动模式的单位作为超时空移动的目的地的问题（by NetsuNegi）"
-
-#: ../../Whats-New.md:592
-msgid ""
 "Fixed an issue that harvesters with amphibious movement zone can not "
 "automatically return to refineries with `WaterBound` on water surface (by"
 " NetsuNegi)"
 msgstr "修复了两栖矿车无法自动返回拥有 `WaterBound` 的矿场的问题（by NetsuNegi）"
 
-#: ../../Whats-New.md:593
+#: ../../Whats-New.md:592
 msgid ""
 "Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead "
 "(by CrimRecya)"
 msgstr "修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）（by CrimRecya）"
 
-#: ../../Whats-New.md:594
+#: ../../Whats-New.md:593
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead (by CrimRecya)"
 msgstr "修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题（by CrimRecya）"
 
-#: ../../Whats-New.md:595
+#: ../../Whats-New.md:594
 msgid ""
 "Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when "
 "entering buildings (by NetsuNegi)"
 msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bug（by NetsuNegi）"
 
-#: ../../Whats-New.md:596
+#: ../../Whats-New.md:595
 msgid ""
 "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar"
 " (by Fryone)"
 msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题（by Fryone）"
 
-#: ../../Whats-New.md:597
+#: ../../Whats-New.md:596
 msgid "Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)"
 msgstr "修复了船只可以在高架桥上行驶的 Bug（by tyuah8 与 NetsuNegi）"
 
-#: ../../Whats-New.md:598
+#: ../../Whats-New.md:597
 msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it (by NetsuNegi)"
 msgstr "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug（by NetsuNegi）"
 
-#: ../../Whats-New.md:599
+#: ../../Whats-New.md:598
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes` (by FlyStar)"
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑（by FlyStar）"
 
-#: ../../Whats-New.md:600
+#: ../../Whats-New.md:599
 msgid ""
 "Fixed the issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case (by CrimRecya)"
-msgstr ""
-"修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题（by CrimRecya）"
+msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题（by CrimRecya）"
 
-#: ../../Whats-New.md:601
+#: ../../Whats-New.md:600
 msgid ""
 "Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective "
 "on airforce (by NetsuNegi)"
-msgstr ""
-"修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug（by NetsuNegi）"
+msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug（by NetsuNegi）"
 
-#: ../../Whats-New.md:602
+#: ../../Whats-New.md:601
 msgid ""
 "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by"
 " CrimRecya)"
+msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by CrimRecya）"
+
+#: ../../Whats-New.md:602
+msgid ""
+"Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
+" building target (by TaranDahl)"
 msgstr ""
-"修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:604 ../../Whats-New.md:684 ../../Whats-New.md:846
 #: ../../Whats-New.md:887 ../../Whats-New.md:899 ../../Whats-New.md:922
@@ -3946,4 +3940,14 @@ msgstr "现在侧边栏拓展工具条可以超出侧边栏边界（by Belonit�
 #: ../../Whats-New.md:1033
 msgid "Lifted stupidly small limit for tooltip character amount (by Belonit)"
 msgstr "解除了拓展工具条字符数量小得愚蠢的上限（by Belonit）"
+
+#~ msgid ""
+#~ "Fixed the bug that a unit can "
+#~ "overlap with `Teleport` units after it's"
+#~ " been damaged by a fallen unit "
+#~ "lifted by `IsLocomotor=yes` warheads (by "
+#~ "NetsuNegi)"
+#~ msgstr ""
+#~ "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 "
+#~ "`Teleport` 运动模式的单位作为超时空移动的目的地的问题（by NetsuNegi）"
 

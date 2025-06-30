@@ -15,6 +15,16 @@
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
 
+#pragma region GetTechnoType
+
+// Avoid secondary jump
+DEFINE_JUMP(VTABLE, 0x7E2328, 0x41C200) // AircraftClass_GetTechnoType -> AircraftClass_GetType
+DEFINE_JUMP(VTABLE, 0x7E3F40, 0x459EE0) // BuildingClass_GetTechnoType -> BuildingClass_GetType
+DEFINE_JUMP(VTABLE, 0x7EB0DC, 0x51FAF0) // InfantryClass_GetTechnoType -> InfantryClass_GetType
+DEFINE_JUMP(VTABLE, 0x7F5CF4, 0x741490) // UnitClass_GetTechnoType -> UnitClass_GetType
+
+#pragma endregion
+
 #pragma region Update
 
 // Early, before ObjectClass_AI
@@ -239,7 +249,7 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 
 	if (R->Origin() != 0x517D69)
 	{
@@ -250,7 +260,7 @@ DEFINE_HOOK(0x414057, TechnoClass_Init_InitialStrength, 0x6)       // AircraftCl
 	}
 	else
 	{
-		auto strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
+		auto const strength = pTypeExt->InitialStrength.Get(R->EDX<int>());
 		pThis->Health = strength;
 		pThis->EstimatedHealth = strength;
 	}
@@ -585,10 +595,7 @@ DEFINE_HOOK(0x700C58, TechnoClass_CanPlayerMove_NoManualMove, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-		return pExt->NoManualMove ? 0x700C62 : 0;
-
-	return 0;
+	return TechnoExt::ExtMap.Find(pThis)->TypeExtData->NoManualMove ? 0x700C62 : 0;
 }
 
 DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)

@@ -145,6 +145,8 @@ void AttachEffectClass::AI()
 
 		if (this->Type->HasTint())
 			this->Techno->MarkForRedraw();
+
+		this->NeedsRecalculateStat = true;
 	}
 
 	if (this->CurrentDelay > 0)
@@ -165,6 +167,7 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
+			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
 		}
 
@@ -182,11 +185,18 @@ void AttachEffectClass::AI()
 		this->CurrentDelay = this->Delay;
 
 		if (this->Delay > 0)
+		{
 			this->KillAnim();
+			this->NeedsRecalculateStat = true;
+		}
 		else if (!this->ShouldBeDiscardedNow())
+		{
 			this->RefreshDuration();
+		}
 		else
+		{
 			this->NeedsDurationRefresh = true;
+		}
 
 		return;
 	}
@@ -447,6 +457,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
+	this->NeedsRecalculateStat = true;
 
 	return true;
 }
@@ -646,6 +657,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	int currentTypeCount = 0;
 	AttachEffectClass* match = nullptr;
 	std::vector<AttachEffectClass*> cumulativeMatches;
+	cumulativeMatches.reserve(targetAEs.size());
 
 	for (auto const& aePtr : targetAEs)
 	{
@@ -745,6 +757,7 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 
 	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	std::vector<AttachEffectTypeClass*> types;
+	types.reserve(pTargetExt->AttachedEffects.size());
 
 	for (auto const& attachEffect : pTargetExt->AttachedEffects)
 	{

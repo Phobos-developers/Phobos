@@ -110,10 +110,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
 	auto pArtINI = &CCINIClass::INI_Art;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
 
@@ -368,7 +364,7 @@ DEFINE_HOOK(0x46536A, BuildingTypeClass_Save_Suffix, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
 {
 	GET(BuildingTypeClass*, pItem, EBP);

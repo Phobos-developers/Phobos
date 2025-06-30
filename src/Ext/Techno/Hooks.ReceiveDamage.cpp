@@ -95,7 +95,7 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
@@ -160,7 +160,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	constexpr auto Die = [](int x) { return x + 10; };
 
 	int resultSequence = Die(1);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));

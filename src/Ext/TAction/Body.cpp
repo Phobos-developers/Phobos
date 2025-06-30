@@ -294,6 +294,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		switch (pThis->Param4)
 		{
 		case -1:
+			housesList.reserve(HouseClass::Array.Count);
+
 			// Random non-neutral
 			for (auto pHouse : HouseClass::Array)
 			{
@@ -326,6 +328,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			break;
 
 		case -3:
+			housesList.reserve(HouseClass::Array.Count);
+
 			// Random Human Player
 			for (auto pHouse : HouseClass::Array)
 			{

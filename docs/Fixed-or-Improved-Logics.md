@@ -208,7 +208,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash.
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error.
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead.
-- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
@@ -219,6 +218,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 
 ## Fixes / interactions with other extensions
 
