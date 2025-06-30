@@ -2034,18 +2034,21 @@ msgid ""
 "Fix an issue that `MovementZone=Fly` harvesters can not be able to enter "
 "refinery buildings manually"
 msgstr ""
+"修复了 `MovementZone=Fly` 的矿车无法手动进入矿场的问题"
 
 #: ../../../CREDITS.md:505
 msgid ""
 "Fix an issue that jumpjet harvester cannot automatically go mining when "
 "leaving the weapons factory"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车出厂后不会自动去采矿的问题"
 
 #: ../../../CREDITS.md:506
 msgid ""
 "Fix an issue that jumpjet harvester will overlap when manually entering "
 "refinery buildings and cause game crashes"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交叠并导致游戏崩溃的问题"
 
 #: ../../../CREDITS.md:507
 msgid "**Ollerus**:"

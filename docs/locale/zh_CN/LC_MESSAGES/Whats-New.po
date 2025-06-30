@@ -1897,26 +1897,25 @@ msgid ""
 msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:442
-#, fuzzy
 msgid ""
 "Fixed an issue that `MovementZone=Fly` harvesters can not be able to "
 "enter refinery buildings manually (by CrimRecya)"
 msgstr ""
-"修复了 `MovementZone=AmphibiousDestroyer` 与 `MovementZone=AmphibiousCrusher`"
-" 的单位无法进入水上建筑的问题（by CrimRecya）"
+"修复了 `MovementZone=Fly` 的矿车无法手动进入矿场的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:443
-#, fuzzy
 msgid ""
 "Fixed an issue that jumpjet harvester cannot automatically go mining when"
 " leaving the weapons factory (by CrimRecya)"
-msgstr "修复了航空母舰在桥上无法回收子机的问题（by CrimRecya）"
+msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车出厂后不会自动去采矿的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:444
 msgid ""
 "Fixed an issue that jumpjet harvester will overlap when manually entering"
 " refinery buildings and cause game crashes (by CrimRecya)"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交叠并导致游戏崩溃的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:446 ../../Whats-New.md:738 ../../Whats-New.md:815
 #: ../../Whats-New.md:979 ../../Whats-New.md:1020 ../../Whats-New.md:1032
