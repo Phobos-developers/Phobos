@@ -722,9 +722,9 @@ void __fastcall DisplayClass_Submit_Wrapper(DisplayClass* pThis, void* _, Object
 DEFINE_FUNCTION_JUMP(CALL, 0x54B18E, DisplayClass_Submit_Wrapper);  // JumpjetLocomotionClass_Process
 DEFINE_FUNCTION_JUMP(CALL, 0x4CD4E7, DisplayClass_Submit_Wrapper);  // FlyLocomotionClass_Update
 
-// Fixes SecondaryFire / SecondaryProne sequences not remapping to WetAttack in water.
+// Oct 26, 2024 - Starkku: Fixes SecondaryFire / SecondaryProne sequences not remapping to WetAttack in water.
 // Ideally there would be WetAttackSecondary but adding new sequences would be a big undertaking.
-// Also adds a toggle for not using water sequences at all - Starkku
+// Also adds a toggle for not using water sequences at all
 DEFINE_HOOK(0x51D7E0, InfantryClass_DoAction_Water, 0x5)
 {
 	enum { Continue= 0x51D7EC, SkipWaterSequences = 0x51D842, UseSwim = 0x51D83D, UseWetAttack = 0x51D82F };

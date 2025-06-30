@@ -173,6 +173,8 @@ void AttachEffectClass::AI()
 
 		if (this->Type->HasTint())
 			this->Techno->MarkForRedraw();
+
+		this->NeedsRecalculateStat = true;
 	}
 
 	if (this->CurrentDelay > 0)
@@ -193,6 +195,7 @@ void AttachEffectClass::AI()
 		if (!this->ShouldBeDiscardedNow())
 		{
 			this->RefreshDuration();
+			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
 		}
 
@@ -210,11 +213,18 @@ void AttachEffectClass::AI()
 		this->CurrentDelay = this->Delay;
 
 		if (this->Delay > 0)
+		{
 			this->KillAnim();
+			this->NeedsRecalculateStat = true;
+		}
 		else if (!this->ShouldBeDiscardedNow())
+		{
 			this->RefreshDuration();
+		}
 		else
+		{
 			this->NeedsDurationRefresh = true;
+		}
 
 		return;
 	}
@@ -481,6 +491,7 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
+	this->NeedsRecalculateStat = true;
 
 	return true;
 }

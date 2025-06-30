@@ -100,9 +100,6 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 		const auto pExt = AnimExt::ExtMap.Find(pThis);
 		pInvoker = pExt->Invoker;
 
-		if (pExt->InvokerHouse)
-			pOwner = pExt->InvokerHouse;
-
 		if (!pInvoker)
 		{
 			if (pThis->OwnerObject)
@@ -111,14 +108,27 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 				pInvoker = pExt->ParentBuilding;
 		}
 
+		if (pExt->InvokerHouse)
+			pOwner = pExt->InvokerHouse;
+
 		if (pInvoker)
 		{
-			if (!pOwner)
+			if (!pExt->InvokerHouse)
 				pOwner = pInvoker->Owner;
 
 			if (pTypeExt->Damage_ApplyFirepowerMult)
 				appliedDamage = static_cast<int>(appliedDamage * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier);
 		}
+	}
+
+	// Jun 29, 2025 - Starkku: Owner != Invoker. Previously OwnerObject / ParentBuilding fallback only existed for Warheads
+	// but if we are unifying the approaches it needs to be available even without and separately from invoker.
+	if (!pOwner)
+	{
+		if (pThis->OwnerObject)
+			pOwner = pThis->OwnerObject->GetOwningHouse();
+		else if (pThis->IsBuildingAnim)
+			pOwner = AnimExt::ExtMap.Find(pThis)->ParentBuilding->Owner;
 	}
 
 	if (pTypeExt->Weapon)
