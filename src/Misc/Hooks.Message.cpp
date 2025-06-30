@@ -59,11 +59,9 @@ static inline bool MouseIsOverNewMessageLists()
 
 DEFINE_HOOK(0x69300B, ScrollClass_MouseUpdate_NewMessageListCheck, 0x6)
 {
-	if (Phobos::Config::MessageApplyHoverState)
-		MessageTemp::OnOldMessages = MouseIsOverOldMessageLists();
-
-	if (Phobos::Config::MessageDisplayInCenter)
-		MessageTemp::OnNewMessages = MouseIsOverNewMessageLists();
+	const bool check = Phobos::Config::MessageApplyHoverState;
+	MessageTemp::OnOldMessages = check && MouseIsOverOldMessageLists();
+	MessageTemp::OnNewMessages = check && Phobos::Config::MessageDisplayInCenter && MouseIsOverNewMessageLists();
 
 	return 0;
 }
@@ -84,7 +82,7 @@ DEFINE_HOOK(0x55DDA0, MainLoop_FrameStep_NewMessageListManage, 0x5)
 {
 	enum { SkipGameCode = 0x55DDAA };
 
-	if (!Phobos::Config::MessageApplyHoverState || !MessageTemp::OnOldMessages)
+	if (!MessageTemp::OnOldMessages)
 		MessageListClass::Instance.Manage();
 
 	if (!MessageTemp::OnNewMessages)
@@ -164,7 +162,7 @@ DEFINE_HOOK(0x623A9F, DSurface_sub_623880_DrawBitFontStrings, 0x5)
 
 	pRect->Height = height;
 	auto black = ColorStruct { 0, 0, 0 };
-	auto trans = (MessageTemp::OnNewMessages || ScenarioClass::Instance->UserInputLocked) ? 80 : 40;
+	auto trans = (MessageTemp::OnNewMessages || ScenarioClass::Instance->UserInputLocked) ? 70 : 40;
 	pSurface->FillRectTrans(pRect, &black, trans);
 
 	return SkipGameCode;
