@@ -2238,7 +2238,7 @@ msgstr "几个移动攻击相关的增强"
 msgid ""
 "Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for "
 "building target"
-msgstr "修复建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
+msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 
 #: ../../../CREDITS.md:557
 msgid "**tyuah8**:"

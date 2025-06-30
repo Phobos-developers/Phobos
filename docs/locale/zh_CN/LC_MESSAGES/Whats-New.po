@@ -1895,7 +1895,7 @@ msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by
 msgid ""
 "Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
 " building target (by TaranDahl)"
-msgstr "修复建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug（by TaranDahl）"
+msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:443 ../../Whats-New.md:735 ../../Whats-New.md:812
 #: ../../Whats-New.md:976 ../../Whats-New.md:1017 ../../Whats-New.md:1029

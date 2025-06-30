@@ -1432,7 +1432,7 @@ msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
 msgid ""
 "Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
 " building target."
-msgstr "修复建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug。"
+msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:237
 msgid "Fixes / interactions with other extensions"
