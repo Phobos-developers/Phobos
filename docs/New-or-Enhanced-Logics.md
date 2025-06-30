@@ -2122,25 +2122,29 @@ MindControl.Anim=                     ; Animation, defaults to [CombatDamage] ->
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                ; WarheadType
-SplashList=<none>            ; List of AnimationTypes
+SplashList=                  ; List of AnimationTypes
 SplashList.PickRandom=false  ; boolean
 ```
 
-### Damage multiplier for different houses
+### Damage multipliers
 
-- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did, and this function will not affect damage with ignore defenses like `Suicide`.etc .
+- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
+- An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
+- These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0     ; floating point value
-DamageAlliesMultiplier=1.0    ; floating point value
-DamageEnemiesMultiplier=1.0   ; floating point value
+DamageOwnerMultiplier=1.0           ; floating point value
+DamageAlliesMultiplier=1.0          ; floating point value
+DamageEnemiesMultiplier=1.0         ; floating point value
 
-[SOMEWARHEAD]                 ; WarheadType
-DamageOwnerMultiplier=        ; floating point value
-DamageAlliesMultiplier=       ; floating point value
-DamageEnemiesMultiplier=      ; floating point value
+[SOMEWARHEAD]                       ; WarheadType
+DamageOwnerMultiplier=              ; floating point value
+DamageAlliesMultiplier=             ; floating point value
+DamageEnemiesMultiplier=            ; floating point value
+DamageSourceHealthMultiplier=0.0    ; floating point value
+DamageTargetHealthMultiplier=0.0    ; floating point value
 ```
 
 ### Detonate Warhead on all objects on map

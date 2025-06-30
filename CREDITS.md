@@ -500,6 +500,9 @@ This page lists all the individual contributions to the project by their author.
   - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
   - Add `DebrisMinimums` to keep the count of debris within a certain range
   - Task subtitles display in the middle of the screen
+  - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually
+  - Fix an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory
+  - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -517,6 +520,7 @@ This page lists all the individual contributions to the project by their author.
   - Power plant damage factor
   - Allow faking digital display for `InfoType=Health` at disguise
   - Display banner improvement and doc
+  - Damage multiplier for health percentage
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
