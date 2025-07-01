@@ -1069,6 +1069,35 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<LaserTrailDrawType>(LaserTrailDrawType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "laser") == 0)
+			{
+				value = LaserTrailDrawType::Laser;
+			}
+			else if (_strcmpi(parser.value(), "ebolt") == 0)
+			{
+				value = LaserTrailDrawType::EBolt;
+			}
+			else if (_strcmpi(parser.value(), "radbeam") == 0)
+			{
+				value = LaserTrailDrawType::RadBeam;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a LaserTrail draw type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))
@@ -1266,11 +1295,87 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 			{
 				value = DisplayInfoType::GattlingStage;
 			}
+			else if (_strcmpi(str, "rof") == 0)
+			{
+				value = DisplayInfoType::ROF;
+			}
+			else if (_strcmpi(str, "reload") == 0)
+			{
+				value = DisplayInfoType::Reload;
+			}
+			else if (_strcmpi(str, "spawntimer") == 0)
+			{
+				value = DisplayInfoType::SpawnTimer;
+			}
+			else if (_strcmpi(str, "gattlingtimer") == 0)
+			{
+				value = DisplayInfoType::GattlingTimer;
+			}
+			else if (_strcmpi(str, "producecash") == 0)
+			{
+				value = DisplayInfoType::ProduceCash;
+			}
+			else if (_strcmpi(str, "passengerkill") == 0)
+			{
+				value = DisplayInfoType::PassengerKill;
+			}
+			else if (_strcmpi(str, "autodeath") == 0)
+			{
+				value = DisplayInfoType::AutoDeath;
+			}
+			else if (_strcmpi(str, "superweapon") == 0)
+			{
+				value = DisplayInfoType::SuperWeapon;
+			}
+			else if (_strcmpi(str, "ironcurtain") == 0)
+			{
+				value = DisplayInfoType::IronCurtain;
+			}
+			else if (_strcmpi(str, "temporallife") == 0)
+			{
+				value = DisplayInfoType::TemporalLife;
+			}
+			else if (_strcmpi(str, "factoryprocess") == 0)
+			{
+				value = DisplayInfoType::FactoryProcess;
+			}
 			else
 			{
 				Debug::INIParseFailed(pSection, pKey, str, "Display info type is invalid");
 				return false;
 			}
+			return true;
+		}
+		return false;
+	}
+
+	template <>
+	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = BannerNumberType::None;
+			auto str = parser.value();
+			if (_strcmpi(str, "variable") == 0)
+			{
+				parsed = BannerNumberType::Variable;
+			}
+			else if (_strcmpi(str, "prefix") == 0 || _strcmpi(str, "prefixed") == 0)
+			{
+				parsed = BannerNumberType::Prefixed;
+			}
+			else if (_strcmpi(str, "suffix") == 0 || _strcmpi(str, "suffixed") == 0)
+			{
+				parsed = BannerNumberType::Suffixed;
+			}
+			else if (_strcmpi(str, "none") != 0)
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(),
+					"CSF.VariableFormat can be either none, variable, prefixed or suffixed");
+				return false;
+			}
+			if (parsed != BannerNumberType::None)
+				value = parsed;
 			return true;
 		}
 		return false;

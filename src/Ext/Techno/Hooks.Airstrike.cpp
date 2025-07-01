@@ -12,11 +12,11 @@ DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3807 };
 
 	GET(TechnoClass*, pTargetTechno, EBP);
+	GET(WarheadTypeClass*, pSecondaryWH, ECX);
 
 	if (!pTargetTechno)
 		return Primary;
 
-	GET(WarheadTypeClass*, pSecondaryWH, ECX);
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pSecondaryWH);
 
 	if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
@@ -27,10 +27,12 @@ DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 	if (pTargetTechno->AbstractFlags & AbstractFlags::Foot)
 	{
 		const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+
 		return pTargetTypeExt->AllowAirstrike.Get(true) ? Secondary : Primary;
 	}
 
 	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
+
 	return pTargetTypeExt->AllowAirstrike.Get(static_cast<BuildingTypeClass*>(pTargetType)->CanC4) && (!pTargetType->ResourceDestination || !pTargetType->ResourceGatherer) ? Secondary : Primary;
 }
 
@@ -40,8 +42,8 @@ DEFINE_HOOK(0x41D97B, AirstrikeClass_Fire_SetAirstrike, 0x7)
 
 	GET(AirstrikeClass*, pThis, EDI);
 	GET(TechnoClass*, pTarget, ESI);
-	const auto pTargetExt = TechnoExt::ExtMap.Find(pTarget);
-	pTargetExt->AirstrikeTargetingMe = pThis;
+
+	TechnoExt::ExtMap.Find(pTarget)->AirstrikeTargetingMe = pThis;
 	pTarget->StartAirstrikeTimer(100000);
 
 	return pTarget->WhatAmI() == AbstractType::Building ? ContinueIn : Skip;
@@ -70,8 +72,8 @@ DEFINE_HOOK(0x41DAA4, AirstrikeClass_ResetTarget_ResetForOldTarget, 0xA)
 	enum { SkipGameCode = 0x41DAAE };
 
 	GET(TechnoClass*, pTargetTechno, EDI);
-	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
-	pTargetExt->AirstrikeTargetingMe = nullptr;
+
+	TechnoExt::ExtMap.Find(pTargetTechno)->AirstrikeTargetingMe = nullptr;
 
 	return SkipGameCode;
 }
@@ -82,8 +84,8 @@ DEFINE_HOOK(0x41DAD4, AirstrikeClass_ResetTarget_ResetForNewTarget, 0x6)
 
 	GET(AirstrikeClass*, pThis, EBP);
 	GET(TechnoClass*, pTargetTechno, ESI);
-	const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
-	pTargetExt->AirstrikeTargetingMe = pThis;
+
+	TechnoExt::ExtMap.Find(pTargetTechno)->AirstrikeTargetingMe = pThis;
 
 	return SkipGameCode;
 }
@@ -111,11 +113,16 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 			}
 		}
 
-		const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
-		pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
+		// Sometimes the target will DTOR first before it announce invalid pointer, so sanity check is necessary!
+		// At this point, the target's vtable has already been reset to AbstractClass_vtbl.
+		// If a virtual function that AbstractClass does not have is called without checking this, it will cause the vtable to exceed its bounds.
+		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		{
+			pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
 
-		if (!pLastTargetingMe && Game::IsActive)
-			pTarget->Mark(MarkType::Change);
+			if (!pLastTargetingMe && Game::IsActive)
+				pTarget->Mark(MarkType::Change);
+		}
 	}
 
 	return SkipGameCode;
@@ -127,26 +134,28 @@ DEFINE_HOOK(0x41D604, AirstrikeClass_PointerGotInvalid_ResetForTarget, 0x6)
 
 	GET(ObjectClass*, pTarget, EAX);
 
-	if (const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget))
-		TechnoExt::ExtMap.Find(pTargetTechno)->AirstrikeTargetingMe = nullptr;
+	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*, true>(pTarget)))
+		pTargetTechnoExt->AirstrikeTargetingMe = nullptr;
 
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x65E97F, HouseClass_CreateAirstrike_SetTaretForUnit, 0x6)
+DEFINE_HOOK(0x65E97F, HouseClass_CreateAirstrike_SetTargetForUnit, 0x6)
 {
 	enum { SkipGameCode = 0x65E992 };
 
+	GET(AircraftClass*, pFirer, ESI);
 	GET_STACK(AirstrikeClass*, pThis, STACK_OFFSET(0x38, 0x1C));
+
 	const auto pOwner = pThis->Owner;
 
-	if (!pOwner || !pOwner->Target)
+	if (!pOwner)
 		return 0;
 
 	if (const auto pTarget = abstract_cast<TechnoClass*>(pOwner->Target))
 	{
-		GET(AircraftClass*, pFirer, ESI);
 		pFirer->SetTarget(pTarget);
+
 		return SkipGameCode;
 	}
 
@@ -161,11 +170,12 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
-		if (const auto pBuilding = abstract_cast<BuildingClass*>(pTechno))
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 		{
 			const auto pBuildingType = pBuilding->Type;
+
 			return pTypeExt->AllowAirstrike.Get(pBuildingType->CanC4) && !pBuildingType->InvisibleInGame ? CanAirstrike : Cannot;
 		}
 		else
@@ -177,17 +187,6 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 	return Cannot;
 }
 
-DEFINE_HOOK(0x70782D, TechnoClass_PointerGotInvalid_Airstrike, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-	GET(AbstractClass*, pAbstract, EBP);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-
-	AnnounceInvalidPointer(pExt->AirstrikeTargetingMe, pAbstract);
-
-	return 0;
-}
-
 #pragma region GetEffectTintIntensity
 
 DEFINE_HOOK(0x70E92F, TechnoClass_UpdateAirstrikeTint, 0x5)
@@ -195,32 +194,32 @@ DEFINE_HOOK(0x70E92F, TechnoClass_UpdateAirstrikeTint, 0x5)
 	enum { ContinueIn = 0x70E96E, Skip = 0x70EC9F };
 
 	GET(TechnoClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->AirstrikeTargetingMe ? ContinueIn : Skip;
+	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueIn : Skip;
 }
 
+// Jun 9, 2025 - Starkku: Moved to BuildingClass_AI hook in Buildings/Hooks.cpp for optimization's sake.
+// Said hook is later but shouldn't matter in this case, the purpose is to force redraw on every frame.
+/*
 DEFINE_HOOK(0x43FDD6, BuildingClass_AI_Airstrike, 0x6)
 {
 	enum { SkipGameCode = 0x43FDF1 };
 
 	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->AirstrikeTargetingMe)
+	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
 		pThis->Mark(MarkType::Change);
 
 	return SkipGameCode;
-}
+}*/
 
 DEFINE_HOOK(0x43F9E0, BuildingClass_Mark_Airstrike, 0x6)
 {
 	enum { ContinueTintIntensity = 0x43FA0F, NonAirstrike = 0x43FA19 };
 
 	GET(BuildingClass*, pThis, EDI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
 DEFINE_HOOK(0x448DF1, BuildingClass_SetOwningHouse_Airstrike, 0x6)
@@ -228,9 +227,8 @@ DEFINE_HOOK(0x448DF1, BuildingClass_SetOwningHouse_Airstrike, 0x6)
 	enum { ContinueTintIntensity = 0x448E0D, NonAirstrike = 0x448E17 };
 
 	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
 DEFINE_HOOK(0x451ABC, BuildingClass_PlayAnim_Airstrike, 0x6)
@@ -238,9 +236,8 @@ DEFINE_HOOK(0x451ABC, BuildingClass_PlayAnim_Airstrike, 0x6)
 	enum { ContinueTintIntensity = 0x451AEB, NonAirstrike = 0x451AF5 };
 
 	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
 DEFINE_HOOK(0x452041, BuildingClass_452000_Airstrike, 0x6)
@@ -248,9 +245,8 @@ DEFINE_HOOK(0x452041, BuildingClass_452000_Airstrike, 0x6)
 	enum { ContinueTintIntensity = 0x452070, NonAirstrike = 0x45207A };
 
 	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
 DEFINE_HOOK(0x456E5A, BuildingClass_Flash_Airstrike, 0x6)
@@ -258,19 +254,26 @@ DEFINE_HOOK(0x456E5A, BuildingClass_Flash_Airstrike, 0x6)
 	enum { ContinueTintIntensity = 0x456E89, NonAirstrike = 0x456E93 };
 
 	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
-	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
 }
 
-DEFINE_HOOK(0x456FD3, BuildingClass_GetEffectTintIntensity_Airstrike, 0x6)
+class BuildingClassFake final : public BuildingClass
 {
-	enum { ContinueTintIntensity = 0x457002, NonAirstrike = 0x45700F };
+	int _GetAirstrikeInvulnerabilityIntensity(int intensity) const;
+};
 
-	GET(BuildingClass*, pThis, ESI);
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+int BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity(int currentIntensity) const
+{
+	auto const pBuilding = (BuildingClass*)this;
+	int newIntensity = pBuilding->GetFlashingIntensity(currentIntensity);
 
-	return pExt->AirstrikeTargetingMe ? ContinueTintIntensity : NonAirstrike;
+	if (pBuilding->IsIronCurtained() || TechnoExt::ExtMap.Find(pBuilding)->AirstrikeTargetingMe)
+		newIntensity = pBuilding->GetEffectTintIntensity(newIntensity);
+
+	return newIntensity;
 }
+
+DEFINE_FUNCTION_JUMP(CALL, 0x450A5D, BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity); // BuildingClass_Animation_AI
 
 #pragma endregion

@@ -205,7 +205,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 	std::vector<CellStruct> recCells;
 	const auto cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
 	recCells.reserve(cellNums);
-	recCells.push_back(bottomStaCell);
+	recCells.emplace_back(bottomStaCell);
 
 	if (bottomStaCell == leftMidCell || bottomStaCell == rightMidCell) // A straight line
 	{
@@ -222,24 +222,24 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 			{
 				mTheCurN -= middleThePace.X;
 				middleCurCell.Y += middleTheUnit.Y;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 			}
 			else if (mTheCurN < 0)
 			{
 				mTheCurN += middleThePace.Y;
 				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 			}
 			else
 			{
 				mTheCurN += middleThePace.Y - middleThePace.X;
 				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 				middleCurCell.X -= middleTheUnit.X;
 				middleCurCell.Y += middleTheUnit.Y;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 				middleCurCell.X += middleTheUnit.X;
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 			}
 		}
 	}
@@ -293,7 +293,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 						}
 						else
 						{
-							recCells.push_back(leftCurCell);
+							recCells.emplace_back(leftCurCell);
 							break;
 						}
 					}
@@ -333,7 +333,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				}
 
 				if (leftCurCell != rightCurCell) // Avoid double counting cells.
-					recCells.push_back(leftCurCell);
+					recCells.emplace_back(leftCurCell);
 			}
 
 			while (rightCurCell != topEndCell) // Right
@@ -351,7 +351,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 						}
 						else
 						{
-							recCells.push_back(rightCurCell);
+							recCells.emplace_back(rightCurCell);
 							break;
 						}
 					}
@@ -391,7 +391,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				}
 
 				if (rightCurCell != leftCurCell) // Avoid double counting cells.
-					recCells.push_back(rightCurCell);
+					recCells.emplace_back(rightCurCell);
 			}
 
 			middleCurCell = leftCurCell;
@@ -399,7 +399,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 
 			while (middleCurCell.X < rightCurCell.X) // Center
 			{
-				recCells.push_back(middleCurCell);
+				recCells.emplace_back(middleCurCell);
 				middleCurCell.X += 1;
 			}
 
@@ -408,7 +408,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				leftContinue = false;
 				left2ndCurN -= left2ndPace.X;
 				leftCurCell.Y += left2ndUnit.Y;
-				recCells.push_back(leftCurCell);
+				recCells.emplace_back(leftCurCell);
 			}
 
 			if (rightContinue) // Continue Top Right Side
@@ -416,7 +416,7 @@ std::vector<CellStruct> PhobosTrajectoryType::GetCellsInRectangle(CellStruct bot
 				rightContinue = false;
 				right2ndCurN -= right2ndPace.X;
 				rightCurCell.Y += right2ndUnit.Y;
-				recCells.push_back(rightCurCell);
+				recCells.emplace_back(rightCurCell);
 			}
 		}
 	}
@@ -462,7 +462,7 @@ DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIPreDetonate(pThis);
 
 	return 0;
@@ -476,7 +476,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIVelocity(pThis, pSpeed, pPosition);
 
 	// Trajectory can use Velocity only for turning Image's direction
@@ -490,12 +490,12 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 			static_cast<int>(pSpeed->Z + pPosition->Z)
 		};
 
-		for (auto& trail : pExt->LaserTrails)
+		for (const auto& pTrail : pExt->LaserTrails)
 		{
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = pThis->Location;
+			if (!pTrail->LastLocation.isset())
+				pTrail->LastLocation = pThis->Location;
 
-			trail.Update(futureCoords);
+			pTrail->Update(futureCoords);
 		}
 	}
 
@@ -510,7 +510,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 	{
 		switch (pTraj->OnAITargetCoordCheck(pThis))
 		{
@@ -540,7 +540,7 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 	{
 		switch (pTraj->OnAITechnoCheck(pThis, pTechno))
 		{

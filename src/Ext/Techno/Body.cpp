@@ -18,7 +18,9 @@ TechnoExt::ExtData::~ExtData()
 {
 	auto const pTypeExt = this->TypeExtData;
 	auto const pType = pTypeExt->OwnerObject();
-	auto pThis = this->OwnerObject();
+	auto const pThis = this->OwnerObject();
+	// Besides BuildingClass, calling pThis->WhatAmI() here will only result in AbstractType::None
+	auto const whatAmI = pType->WhatAmI();
 
 	if (pTypeExt->AutoDeath_Behavior.isset())
 	{
@@ -26,7 +28,7 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	if (pThis->WhatAmI() != AbstractType::Aircraft && pThis->WhatAmI() != AbstractType::Building
+	if (whatAmI != AbstractType::AircraftType && whatAmI != AbstractType::BuildingType
 		&& pType->Ammo > 0 && pTypeExt->ReloadInTransport)
 	{
 		auto& vec = ScenarioExt::Global()->TransportReloaders;
@@ -87,7 +89,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 		switch (pThis->GetCurrentMission())
 		{
 		case Mission::Harvest:
-			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto const pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->HasAnyLink() && !TechnoExt::HasRadioLinkWithDock(pUnit)) // Probably still in factory.
 					return false;
@@ -108,7 +110,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 			}
 			return true;
 		case Mission::Guard:
-			if (auto pUnit = abstract_cast<UnitClass*>(pThis))
+			if (auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 			{
 				if (pUnit->ArchiveTarget && pUnit->GetStoragePercentage() > 0.0 && pUnit->Locomotor->Is_Moving()) // Edge-case, waiting to be able to unload.
 					return true;
@@ -151,9 +153,9 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	if (pFrom->IsIronCurtained())
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
-		bool isForceShielded = pFrom->ForceShielded;
-		bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pFrom)->TypeExtData;
+		const bool isForceShielded = pFrom->ForceShielded;
+		const bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
 			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
 
 		if (allowSyncing)
@@ -168,10 +170,11 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 {
 	double houseMultiplier = 1.0;
+	auto const whatAmI = pThis->WhatAmI();
 
-	if (pThis->WhatAmI() == AbstractType::Aircraft)
+	if (whatAmI == AbstractType::Aircraft)
 		houseMultiplier = pThis->Owner->Type->SpeedAircraftMult;
-	else if (pThis->WhatAmI() == AbstractType::Infantry)
+	else if (whatAmI == AbstractType::Infantry)
 		houseMultiplier = pThis->Owner->Type->SpeedInfantryMult;
 	else
 		houseMultiplier = pThis->Owner->Type->SpeedUnitsMult;
@@ -232,7 +235,8 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 	if (pThis->WhatAmI() == AbstractType::Aircraft)
 		return true;
 
-	MovementZone mZone = pThis->GetTechnoType()->MovementZone;
+	auto const pType = pThis->GetTechnoType();
+	auto const mZone = pType->MovementZone;
 	int currentZone = useZone ? zone : MapClass::Instance.GetMovementZoneType(pThis->GetMapCoords(), mZone, pThis->OnBridge);
 
 	if (currentZone != -1)
@@ -252,8 +256,8 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 			if (currentZone == targetZone)
 				return true;
 
-			auto const speedType = pThis->GetTechnoType()->SpeedType;
-			auto cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
+			auto const speedType = pType->SpeedType;
+			auto const cellStruct = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(pTarget->Location),
 				speedType, -1, mZone, false, 1, 1, true,
 				false, false, speedType != SpeedType::Float, CellStruct::Empty, false, false);
 
@@ -265,8 +269,6 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 			if (!pCell)
 				return false;
 
-			double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
-
 			if (!pWeapon)
 			{
 				int weaponIndex = pThis->SelectWeapon(pTarget);
@@ -276,6 +278,8 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 
 				pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
 			}
+
+			const double distance = pCell->GetCoordsWithBridge().DistanceFrom(pTarget->GetCenterCoords());
 
 			if (distance > pWeapon->Range)
 				return false;
@@ -289,8 +293,34 @@ bool TechnoExt::AllowedTargetByZone(TechnoClass* pThis, TechnoClass* pTarget, Ta
 // BTW, who said it was merely a Type pointer replacement and he could make a better one than Ares?
 bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 {
+	const auto pType = pThis->GetTechnoType();
+
+	// It really should be at the beginning.
+	if (pType == pToType || pType->WhatAmI() != pToType->WhatAmI())
+	{
+		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
+		return false;
+	}
+
 	if (AresFunctions::ConvertTypeTo)
-		return AresFunctions::ConvertTypeTo(pThis, pToType);
+	{
+		const int oldHealth = pThis->Health;
+
+		if (AresFunctions::ConvertTypeTo(pThis, pToType))
+		{
+			// Fixed an issue where morphing could result in -1 health.
+			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
+
+			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+			pTypeExt->UpdateTypeData(pToType);
+			pTypeExt->UpdateTypeData_Foot();
+			return true;
+		}
+
+		return false;
+	}
+
 	// In case not using Ares 3.0. Only update necessary vanilla properties
 	AbstractType rtti;
 	TechnoTypeClass** nowTypePtr;
@@ -315,28 +345,22 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		return false;
 	}
 
-	if (pToType->WhatAmI() != rtti)
-	{
-		Debug::Log("Incompatible types between %s and %s\n", pThis->get_ID(), pToType->get_ID());
-		return false;
-	}
-
 	// Detach CLEG targeting
-	auto tempUsing = pThis->TemporalImUsing;
+	auto const tempUsing = pThis->TemporalImUsing;
 	if (tempUsing && tempUsing->Target)
 		tempUsing->LetGo();
 
-	HouseClass* const pOwner = pThis->Owner;
+	auto const pOwner = pThis->Owner;
 
 	// Remove tracking of old techno
 	if (!pThis->InLimbo)
 		pOwner->RegisterLoss(pThis, false);
 	pOwner->RemoveTracking(pThis);
 
-	int oldHealth = pThis->Health;
+	const int oldHealth = pThis->Health;
 
 	// Generic type-conversion
-	TechnoTypeClass* prevType = *nowTypePtr;
+	auto const prevType = *nowTypePtr;
 	*nowTypePtr = pToType;
 
 	// Readjust health according to percentage
@@ -375,18 +399,20 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		while (LocomotionClass::End_Piggyback(pThis->Locomotor));
 		// throw away the current locomotor and instantiate
 		// a new one of the default type for this unit.
-		if (auto newLoco = LocomotionClass::CreateInstance(toLoco))
+		if (auto const newLoco = LocomotionClass::CreateInstance(toLoco))
 		{
 			newLoco->Link_To_Object(pThis);
 			pThis->Locomotor = std::move(newLoco);
 		}
 	}
 
-	// TODO : Jumpjet locomotor special treatement, some brainfart, must be uncorrect, HELP ME!
 	const auto& jjLoco = LocomotionClass::CLSIDs::Jumpjet;
 	if (pToType->BalloonHover && pToType->DeployToLand && prevType->Locomotor != jjLoco && toLoco == jjLoco)
 		pThis->Locomotor->Move_To(pThis->Location);
 
+	auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
+	pTypeExt->UpdateTypeData(pToType);
+	pTypeExt->UpdateTypeData_Foot();
 	return true;
 }
 
@@ -510,12 +536,13 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
 
 			foundCount++;
@@ -525,20 +552,46 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const {
-
-	if (auto pUnit = abstract_cast<UnitClass*>(this->OwnerObject()))
+UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+{
+	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		auto pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		if (pUnit->IsRedHP())
 		{
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
-				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
-			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
-				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageRed = pData->WaterImage_ConditionRed)
+					return imageRed;
+				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageRed = pData->Image_ConditionRed)
+			{
+				return imageRed;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
 		}
 	}
+
 	return nullptr;
 }
 
@@ -592,8 +645,23 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->IsBeingChronoSphered)
 		.Process(this->KeepTargetOnMove)
 		.Process(this->LastSensorsMapCoords)
+		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
+		.Process(this->FiringAnimationTimer)
+		.Process(this->AttachedEffectInvokerCount)
+		.Process(this->TintColorOwner)
+		.Process(this->TintColorAllies)
+		.Process(this->TintColorEnemies)
+		.Process(this->TintIntensityOwner)
+		.Process(this->TintIntensityAllies)
+		.Process(this->TintIntensityEnemies)
+		.Process(this->AttackMoveFollowerTempCount)
 		;
+}
+
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
