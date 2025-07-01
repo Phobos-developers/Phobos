@@ -244,12 +244,12 @@ std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClas
 	{
 		double maxRange = this->SW_RangeMaximum;
 		if (maxRange < 0.0)
-			maxRange = pWeapon->Range / Unsorted::LeptonsPerCell;
+			maxRange = pWeapon->Range / (double)Unsorted::LeptonsPerCell;
 
 		double minRange = this->SW_RangeMinimum;
 		if (minRange < 0.0)
 		{
-			minRange = pWeapon->MinimumRange / Unsorted::LeptonsPerCell;
+			minRange = pWeapon->MinimumRange / (double)Unsorted::LeptonsPerCell;
 		}
 
 		return std::make_pair(minRange, maxRange);

@@ -505,7 +505,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		}
 		else
 		{
-			const float cellSpread = static_cast<float>(pTypeExt->Splits_TargetingDistance.Get()) / Unsorted::LeptonsPerCell;
+			const float cellSpread = static_cast<float>(pTypeExt->Splits_TargetingDistance.Get()) / (double)Unsorted::LeptonsPerCell;
 			const bool isAA = pType->AA;
 			const bool retargetSelf = pTypeExt->RetargetSelf;
 			const bool useWeaponTargeting = pTypeExt->Splits_UseWeaponTargeting;
