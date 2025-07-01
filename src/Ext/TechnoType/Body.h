@@ -672,7 +672,7 @@ public:
 			, Turret_IdleRotate {}
 			, Turret_PointToMouse {}
 			, TurretROT {}
-			, Turret_Restriction { DirStruct(65535) }
+			, Turret_Restriction { DirStruct(32768) }
 			, Turret_ExtraAngle { DirStruct(0) }
 			, Turret_BodyFoundation {}
 			, Turret_BodyOrientation { false }
