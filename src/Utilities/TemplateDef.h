@@ -514,6 +514,21 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<DirStruct>(DirStruct& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		double buffer;
+
+		if (parser.ReadDouble(pSection, pKey, &buffer))
+		{
+			const int raw = static_cast<int>(buffer * (65536.0 / 360.0) + 0.5);
+			value = DirStruct(std::clamp(raw, -65535, 65535));
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<DirType>(DirType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		int buffer;

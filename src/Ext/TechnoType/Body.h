@@ -263,12 +263,17 @@ public:
 		Nullable<bool> Turret_IdleRotate;
 		Nullable<bool> Turret_PointToMouse;
 		Nullable<int> TurretROT;
-		Valueable<double> Turret_Restriction;
-		Valueable<double> Turret_ExtraAngle;
+		Valueable<DirStruct> Turret_Restriction;
+		Valueable<DirStruct> Turret_ExtraAngle;
 		Nullable<bool> Turret_BodyFoundation;
 		Valueable<bool> Turret_BodyOrientation;
-		Valueable<double> Turret_BodyOrientationAngle;
+		Valueable<DirStruct> Turret_BodyOrientationAngle;
 		Valueable<bool> Turret_BodyOrientationSymmetric;
+
+		Valueable<bool> TargetExtraThreat;
+		ValueableVector<DirStruct> TargetExtraThreat_Angles;
+		ValueableVector<double> TargetExtraThreat_Multipliers;
+		Valueable<bool> TargetExtraThreat_Turret;
 
 		Nullable<bool> AmphibiousEnter;
 		Nullable<bool> AmphibiousUnload;
@@ -356,7 +361,7 @@ public:
 		NullableIdx<VocClass> Overload_DeathSound;
 		Nullable<ParticleSystemTypeClass*> Overload_ParticleSys;
 		Valueable<int> Overload_ParticleSysCount;
-		
+
 		Valueable<bool> Harvester_CanGuardArea;
 		Nullable<bool> HarvesterScanAfterUnload;
 
@@ -596,12 +601,17 @@ public:
 			, Turret_IdleRotate {}
 			, Turret_PointToMouse {}
 			, TurretROT {}
-			, Turret_Restriction { 180.0 }
-			, Turret_ExtraAngle { 0.0 }
+			, Turret_Restriction { DirStruct(65535) }
+			, Turret_ExtraAngle { DirStruct(0) }
 			, Turret_BodyFoundation {}
 			, Turret_BodyOrientation { false }
-			, Turret_BodyOrientationAngle { 0.0 }
+			, Turret_BodyOrientationAngle { DirStruct(0) }
 			, Turret_BodyOrientationSymmetric { true }
+
+			, TargetExtraThreat { false }
+			, TargetExtraThreat_Angles {}
+			, TargetExtraThreat_Multipliers {}
+			, TargetExtraThreat_Turret { true }
 
 			, AmphibiousEnter {}
 			, AmphibiousUnload {}
@@ -709,8 +719,7 @@ public:
 	};
 
 	static ExtContainer ExtMap;
-
-	static constexpr double AngleToRaw = (65536.0 / 360);
+	static bool SelectWeaponMutex;
 
 	static void ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor = 1.0);
 	static TechnoTypeClass* GetTechnoType(ObjectTypeClass* pType);

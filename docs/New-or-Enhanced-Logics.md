@@ -1398,6 +1398,22 @@ RateDown.Cover.Value=0        ; integer
 RateDown.Cover.AmmoBelow=-2   ; integer
 ```
 
+### Extra threat value coefficient related to orientation
+
+- Now, you can enable extra threat value coefficients related to the target direction through `TargetExtraThreat`.
+  - `TargetExtraThreat.Angles` needs to be filled in from small to large. When the angle between the orientation and the target direction starts to be smaller than one of the values, the threat coefficient will be multiplied by the corresponding value in `TargetExtraThreat.Multipliers`. When the ultimate threat to the target is 0, the techno will not actively attack the target.
+  - `TargetExtraThreat.Multipliers` must be used in conjunction with `TargetExtraThreat.Angles` and can have an additional factor representing the threat value coefficient when the maximum angle is exceeded.
+  - `TargetExtraThreat.Turret` controls whether the orientation of the turret will be prioritized when calculating the orientation of the techno. If you want to use it in conjunction with `Turret.Restriction`, setting it to false would have the best effect.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                    ; TechnoType
+TargetExtraThreat=false         ; boolean
+TargetExtraThreat.Angles=       ; List of floating point value
+TargetExtraThreat.Multipliers=  ; List of floating point value
+TargetExtraThreat.Turret=true   ; boolean
+```
+
 ### Firing offsets for specific Burst shots
 
 - You can now specify separate firing offsets for each of the shots fired by weapon with `Burst` via using `(Elite)(Prone/Deployed)PrimaryFire|SecondaryFire|WeaponX|FLH.BurstN` keys, depending on which weapons your TechnoType makes use of. *N* in `BurstN` is zero-based burst shot index, and the values are parsed sequentially until no value for either regular or elite weapon is present, with elite weapon defaulting to regular weapon FLH if only it is missing. If no burst-index specific value is available, value from the base key (f.ex `PrimaryFireFLH`) is used.

@@ -461,6 +461,7 @@ This page lists all the individual contributions to the project by their author.
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
   - Customized Vehicle Turret Rotation
+  - Extra threat value coefficient related to orientation
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
