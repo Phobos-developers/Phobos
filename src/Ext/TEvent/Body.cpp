@@ -310,7 +310,9 @@ bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject
 
 bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject)
 {
-	if (!pObject)
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
 		return false;
 
 	auto const pDesiredType = AttachEffectTypeClass::Find(pThis->String);
@@ -321,14 +323,7 @@ bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectCl
 		return false;
 	}
 
-	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
-
-	if (!pTechno)
-		return false;
-
-	auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-
-	if (pExt->HasAttachedEffects({ pDesiredType }, false, false, nullptr, nullptr, nullptr, nullptr))
+	if (TechnoExt::ExtMap.Find(pTechno)->HasAttachedEffects({ pDesiredType }, false, false, nullptr, nullptr, nullptr, nullptr))
 		return true;
 
 	return false;

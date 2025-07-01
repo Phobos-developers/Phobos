@@ -734,8 +734,6 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				{
 					ae->RefreshDuration(attachParams.DurationOverride);
 				}
-
-				pType->HandleEvent(pTarget);
 			}
 			else
 			{
@@ -748,9 +746,9 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				}
 
 				best->RefreshDuration(attachParams.DurationOverride);
-				pType->HandleEvent(pTarget);
 			}
 
+			pType->HandleEvent(pTarget);
 			return nullptr;
 		}
 		else if (attachParams.CumulativeRefreshAll && attachParams.CumulativeRefreshAll_OnAttach)
@@ -759,8 +757,6 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 			{
 				ae->RefreshDuration(attachParams.DurationOverride);
 			}
-
-			pType->HandleEvent(pTarget);
 		}
 	}
 
