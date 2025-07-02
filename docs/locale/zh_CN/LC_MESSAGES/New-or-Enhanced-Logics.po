@@ -3707,7 +3707,7 @@ msgid ""
 " side will not change as a result."
 msgstr ""
 "`Trajectory.Bombard.MirrorCoord` 控制 `Trajectory.Bombard.OffsetCoord` "
-"是否需要镜像水平方向值以适应当前的连发索引。同时，`Trajectory.Straight.RotateCoord` "
+"是否需要镜像水平方向值以适应当前的连发索引。同时，`Trajectory.Bombard.RotateCoord` "
 "计算出的旋转方向也将被反转，每侧相邻抛射体之间的旋转角度不会受此改变。"
 
 #: ../../New-or-Enhanced-Logics.md:878
@@ -4019,7 +4019,7 @@ msgid ""
 " side will not change as a result."
 msgstr ""
 "`Trajectory.Parabola.MirrorCoord` 控制 `Trajectory.Parabola.OffsetCoord` "
-"是否需要镜像水平方向值以适应当前的连发索引。同时，`Trajectory.Straight.RotateCoord` "
+"是否需要镜像水平方向值以适应当前的连发索引。同时，`Trajectory.Parabola.RotateCoord` "
 "计算出的旋转方向也将被反转，每侧相邻抛射体之间的旋转角度不会受此改变。"
 
 #: ../../New-or-Enhanced-Logics.md:934
@@ -8617,7 +8617,7 @@ msgid ""
 "a single strafe run, defaults to 5 if not set. `Ammo` is only deducted at"
 " the end of the strafe run, regardless of the number of shots fired."
 msgstr ""
-"`Strafing.Shots` 控制在单词扫射过程中武器发射的次数，如果未设置则默认为 5。`Ammo` "
+"`Strafing.Shots` 控制在单次扫射过程中武器发射的次数，如果未设置则默认为 5。`Ammo` "
 "只会在扫射结束后扣除一次，无论实际多少次。"
 
 #: ../../New-or-Enhanced-Logics.md:2448

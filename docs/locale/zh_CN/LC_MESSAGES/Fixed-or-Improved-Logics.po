@@ -2948,7 +2948,7 @@ msgstr "`RetargetAccuracy` 决定了分裂抛射体与原抛射体瞄准同一�
 msgid ""
 "`RetargetSelf` determines if it is possible for the splitted projectiles "
 "to aim at the firer of the original projectile."
-msgstr "`RetargetSelf` 决定了分裂抛射体是否可以将原抛射体的发射至视为目标。"
+msgstr "`RetargetSelf` 决定了分裂抛射体是否可以将原抛射体的发射者视为目标。"
 
 #: ../../Fixed-or-Improved-Logics.md:719
 msgid ""
