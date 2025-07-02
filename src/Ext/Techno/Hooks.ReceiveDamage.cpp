@@ -37,6 +37,12 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		else
 			multiplier = pWHExt->DamageOwnerMultiplier.Get(RulesExt::Global()->DamageOwnerMultiplier);
 
+		if (pWHExt->DamageSourceHealthMultiplier && args->Attacker)
+			multiplier += pWHExt->DamageSourceHealthMultiplier * args->Attacker->GetHealthPercentage();
+
+		if (pWHExt->DamageTargetHealthMultiplier)
+			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
+
 		if (multiplier != 1.0)
 		{
 			const auto sgnDamage = damage > 0 ? 1 : -1;
@@ -130,7 +136,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
 			// Update remaining damage and check if the target will die and should be avoided
-			*args->Damage = 0;
+			damage = 0;
 			pThis->Health = 1;
 			pThis->EstimatedHealth = 1;
 			ReceiveDamageTemp::SkipLowDamageCheck = true;

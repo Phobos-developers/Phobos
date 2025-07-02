@@ -141,19 +141,41 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-			pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
+		if (pThis->Owner->IsControlledByCurrentPlayer()
+			&& !pBuilding->IsBeingWarpedOut()
+			&& pThis->Owner->IsAlliedWith(pTarget))
 		{
-			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
+			const bool isGrinding = pBuilding->Type->Grinding;
+
+			if (isGrinding || action == Action::Select)
 			{
-				const bool isFlying = pThis->Type->MovementZone == MovementZone::Fly;
-				const bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
-				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
+				if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) != RadioCommand::AnswerPositive)
+				{
+					if (isGrinding)
+						action = Action::NoEnter;
+					else
+						return Continue;
+				}
+				else if (isGrinding)
+				{
+					if (BuildingExt::CanGrindTechno(pBuilding, pThis) && pThis->Type->MovementZone != MovementZone::Fly)
+						action = Action::Repair;
+					else
+						action = Action::NoEnter;
+				}
+				else
+				{
+					const auto pType = pThis->Type;
+
+					if (pType->MovementZone != MovementZone::Fly)
+						action = Action::Enter;
+					else if ((pType->Harvester || pType->Weeder) && !pType->BalloonHover && pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+						action = Action::Enter;
+					else
+						action = Action::NoEnter;
+				}
+
 				R->EBX(action);
-			}
-			else if (pBuilding->Type->Grinding)
-			{
-				R->EBX(Action::NoEnter);
 			}
 		}
 	}
