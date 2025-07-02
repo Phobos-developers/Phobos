@@ -241,11 +241,8 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 		if (!pType->LegalTarget)
 			return SkipObject;
 
-		if (!pWeaponExt->SkipWeaponPicking)
-		{
-			if (!EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true) || !pWeaponExt->IsHealthInThreshold(pObject))
-				return SkipObject;
-		}
+		if (!pWeaponExt->SkipWeaponPicking && !EnumFunctions::IsCellEligible(pObject->GetCell(), pWeaponExt->CanTarget, true, true))
+			return SkipObject;
 
 		auto const pWH = pShrapnelWeapon->Warhead;
 		auto armorType = pType->Armor;
@@ -254,14 +251,11 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 		{
 			if (!pWeaponExt->SkipWeaponPicking)
 			{
-				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner) || !EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+					|| !pWeaponExt->IsHealthInThreshold(pTechno) || !pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+				{
 					return SkipObject;
-
-				if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
-					return SkipObject;
-
-				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
-					return SkipObject;
+				}
 			}
 
 			auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();

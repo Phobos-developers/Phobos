@@ -39,7 +39,6 @@ public:
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 	static int GetColorFromColorAdd(int colorIndex);
 	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
-	static bool IsHealthInThreshold(ObjectClass* pObject, double min, double max, bool minIncludesZero);
 
 	template<typename T>
 	static constexpr T FastPow(T x, size_t n)

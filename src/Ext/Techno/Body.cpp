@@ -595,6 +595,15 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 	return nullptr;
 }
 
+bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max, bool minIncludesZero)
+{
+	double hp = pObject->GetHealthPercentage();
+	bool hpBelowPercent = hp <= max;
+	bool hpAbovePercent = hp > min || (minIncludesZero && hp <= 0.0);
+
+	return hpBelowPercent && hpAbovePercent;
+}
+
 // =============================
 // load / save
 

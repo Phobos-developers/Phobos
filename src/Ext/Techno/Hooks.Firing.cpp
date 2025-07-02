@@ -305,14 +305,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (!pWeaponExt->SkipWeaponPicking)
-	{
-		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
-			return CannotFire;
-
-		if (!pWeaponExt->IsHealthInThreshold(pTarget))
-			return CannotFire;
-	}
+	if (!pWeaponExt->SkipWeaponPicking && pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
+		return CannotFire;
 
 	if (pTargetTechno)
 	{
@@ -326,6 +320,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWeaponExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pWeaponExt->IsHealthInThreshold(pTargetTechno)
 				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return CannotFire;

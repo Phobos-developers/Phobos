@@ -2483,7 +2483,7 @@ This function is only used as an additional scattering visual display, which is 
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
-  - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets, maximum (inclusive) and minimum (exclusive) respectively. By default targets with 0 health are included as an exception even if `CanTarget.MinHealth` is 0 or less, this can be changed by setting `CanTarget.MinHealth.IncludeZero` to false.
+  - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only), maximum (inclusive) and minimum (exclusive) respectively. By default targets with 0 health are included as an exception even if `CanTarget.MinHealth` is 0 or less, this can be changed by setting `CanTarget.MinHealth.IncludeZero` to false.
 
 In `rulesmd.ini`:
 ```ini

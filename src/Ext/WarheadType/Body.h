@@ -404,7 +404,7 @@ public:
 		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
-		bool IsHealthInThreshold(ObjectClass* pTarget) const;
+		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;

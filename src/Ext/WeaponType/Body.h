@@ -141,7 +141,6 @@ public:
 
 		int GetBurstDelay(int burstIndex) const;
 		bool HasRequiredAttachedEffects(TechnoClass* pTechno, TechnoClass* pFirer) const;
-		bool IsHealthInThreshold(AbstractClass* pTarget) const;
 		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;

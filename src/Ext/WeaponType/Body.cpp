@@ -41,17 +41,9 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	return true;
 }
 
-bool WeaponTypeExt::ExtData::IsHealthInThreshold(AbstractClass* pTarget) const
-{
-	if (auto const pObject = abstract_cast<ObjectClass*>(pTarget))
-		return GeneralUtils::IsHealthInThreshold(pObject, this->CanTarget_MinHealth, this->CanTarget_MaxHealth, this->CanTarget_MinHealth_IncludeZero);
-	else
-		return true;
-}
-
 bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	return GeneralUtils::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth, this->CanTarget_MinHealth_IncludeZero);
+	return TechnoExt::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth, this->CanTarget_MinHealth_IncludeZero);
 }
 
 void WeaponTypeExt::ExtData::Initialize()

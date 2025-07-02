@@ -44,9 +44,9 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
 }
 
-bool WarheadTypeExt::ExtData::IsHealthInThreshold(ObjectClass* pTarget) const
+bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	return GeneralUtils::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent, this->AffectsAbovePercent_IncludeZero);
+	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent, this->AffectsAbovePercent_IncludeZero);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
