@@ -41,7 +41,6 @@ public:
 		Valueable<AffectedHouse> CanTargetHouses;
 		Valueable<double> CanTarget_MaxHealth;
 		Valueable<double> CanTarget_MinHealth;
-		Valueable<bool> CanTarget_MinHealth_IncludeZero;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
 		Valueable<AreaFireTarget> AreaFire_Target;
@@ -100,7 +99,6 @@ public:
 			, CanTargetHouses { AffectedHouse::All }
 			, CanTarget_MaxHealth { 1.0 }
 			, CanTarget_MinHealth { 0.0 }
-			, CanTarget_MinHealth_IncludeZero { true }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
 			, AreaFire_Target { AreaFireTarget::Base }

@@ -46,7 +46,7 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 
 bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent, this->AffectsAbovePercent_IncludeZero);
+	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -285,7 +285,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
 	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
-	this->AffectsAbovePercent_IncludeZero.Read(exINI, pSection, "AffectsAbovePercent.IncludeZero");
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -514,7 +513,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AffectsBelowPercent)
 		.Process(this->AffectsAbovePercent)
-		.Process(this->AffectsAbovePercent_IncludeZero)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

@@ -184,7 +184,6 @@ public:
 
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
-		Valueable<bool> AffectsAbovePercent_IncludeZero;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -368,7 +367,6 @@ public:
 
 			, AffectsBelowPercent { 1.0 }
 			, AffectsAbovePercent { 0.0 }
-			, AffectsAbovePercent_IncludeZero { true }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
