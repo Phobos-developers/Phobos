@@ -236,6 +236,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
+- Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
 
 ## Fixes / interactions with other extensions
 
