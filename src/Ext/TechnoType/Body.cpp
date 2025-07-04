@@ -174,7 +174,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 
 		auto checkSecondary = [&](int weaponIndex) -> bool
 		{
-			const auto pWeapon = TechnoTypeExt::GetWeaponStruct(pType, weaponIndex, isElite)->WeaponType;
+			const auto pWeapon = TechnoTypeExt::GetWeaponType(pType, weaponIndex, isElite);
 
 			if (!pWeapon || pWeapon->NeverUse)
 			{
@@ -257,7 +257,7 @@ int TechnoTypeExt::ExtData::SelectMultiWeapon(TechnoClass* const pThis, Abstract
 		if (secondaryCanTargets[index])
 			continue;
 
-		if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, TechnoTypeExt::GetWeaponStruct(pType, index, isElite)->WeaponType))
+		if (TechnoExt::MultiWeaponCanFire(pThis, pTarget, TechnoTypeExt::GetWeaponType(pType, index, isElite)))
 			return index;
 	}
 
@@ -325,31 +325,24 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 
 void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 {
-	const auto pTechnoType = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 	const int weaponRangeExtra = this->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
 	this->SpawnerRange = 0;
 	this->EliteSpawnerRange = 0;
 
-	auto setWeaponRange = [](int& weaponRange, WeaponTypeClass* pWeaponType)
+	auto setWeaponRange = [](int& range, WeaponTypeClass* pWeapon)
 		{
-			if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-				weaponRange = pWeaponType->Range;
+			if (pWeapon && pWeapon->Spawner && pWeapon->Range > range)
+				range = pWeapon->Range;
 		};
 
-	if (pTechnoType->IsGattling)
+	const bool multiweapon = this->MultiWeapon.Get() || (pThis->TurretCount > 0 && pThis->WeaponCount > 0);
+	const int weaponCount = multiweapon ? pThis->WeaponCount : 2;
+
+	for (int i = 0; i < weaponCount; ++i)
 	{
-		for (int i = 0; i < pTechnoType->WeaponCount; i++)
-		{
-			setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[i].WeaponType);
-			setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[i].WeaponType);
-		}
-	}
-	else
-	{
-		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[0].WeaponType);
-		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[1].WeaponType);
-		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[0].WeaponType);
-		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[1].WeaponType);
+		setWeaponRange(this->SpawnerRange, TechnoTypeExt::GetWeaponType(pThis, i, false));
+		setWeaponRange(this->EliteSpawnerRange, TechnoTypeExt::GetWeaponType(pThis, i, true));
 	}
 
 	this->SpawnerRange += weaponRangeExtra;
@@ -533,9 +526,20 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 }
 
 // used for more WeaponX added by Ares.
-WeaponStruct* TechnoTypeExt::GetWeaponStruct(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite)
+WeaponTypeClass* TechnoTypeExt::GetWeaponType(TechnoTypeClass* pThis, int weaponIndex, bool isElite)
 {
-	return isElite ? pThis->GetEliteWeapon(nWeaponIndex) : pThis->GetWeapon(nWeaponIndex);
+	if (isElite)
+	{
+		if (const auto pEliteStruct = pThis->GetEliteWeapon(weaponIndex))
+		{
+			if (const auto pEliteWeapon = pEliteStruct->WeaponType)
+				return pEliteWeapon;
+		}
+	}
+
+	const auto pWeaponStruct = pThis->GetWeapon(weaponIndex);
+
+	return pWeaponStruct ? pWeaponStruct->WeaponType : nullptr;
 }
 
 // =============================
