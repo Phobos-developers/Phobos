@@ -117,6 +117,7 @@ HideLightFlashEffects=false      ; boolean
   68=House,1,2
   69=Non-inert,10
   70=AITargetTypes index,0
+  71=AttachEffectType,0
   101=BannerType,0
   102=Horizontal position,0
   103=Vertical position,0
@@ -164,6 +165,7 @@ HideLightFlashEffects=false      ; boolean
   602=House doesn't own Techno Type,68,46,0,0,[LONG DESC],0,1,602,1
   604=Techno Type Entered Cell,68,46,0,0,[LONG DESC],0,1,604,1
   605=AI Target Type Entered Cell,68,70,0,0,[LONG DESC],0,1,605,1
+  606=AttachEffect is attaching to a Techno,-2,71,0,0,[LONG DESC],0,1,606,1
 
   [ActionsRA2]
   41=Play animation at a waypoint...,0,25,69,0,0,0,1,0,0,[LONG DESC].,0,1,41
@@ -179,8 +181,8 @@ HideLightFlashEffects=false      ; boolean
   606=Edit hate-value (Phobos),0,2,55,6,0,0,0,0,0, Edit the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,606
   607=Clear hate-value (Phobos),0,2,0,0,0,0,0,0,0, Clear the hate-value that trigger houses to other houses. -1 works for all houses.,0,1,607
   608=Set force enemy (Phobos),0,0,2,0,0,0,0,0,0, Force an enemy, it will not change with the change of hate-value. -1 will remove the forced enemy, -2 will never have any enemies.,0,1,608
-  800=Display banner and local variable (Phobos),4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
-  801=Display banner and global variable (Phobos),4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
+  800=Display banner and local variable (Phobos),-4,101,104,102,103,3,0,0,0,Draw banner on screen and replace banner with same ID,0,1,800
+  801=Display banner and global variable (Phobos),-4,101,104,102,103,35,0,0,0,Draw banner on screen and replace banner with same ID,0,1,801
   802=Delete banner (Phobos),0,104,0,0,0,0,0,0,0,Delete banner with ID,0,1,802
 
   ; FOLLOWING ENTRIES REQUIRE FA2SP.DLL (by secsome)
