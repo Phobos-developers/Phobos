@@ -1665,12 +1665,13 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 
 ## DropPod
 
-DropPod properties can now be customized on a per-InfantryType basis.
-- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
-- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
-  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
-- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
-- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+- DropPod properties can now be customized on a per-TechnoType (non-building) basis.
+  - Note that due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+  - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+  - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+    - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+  - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+  - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
 
 ```{note}
 Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
@@ -1678,7 +1679,7 @@ Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes 
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                ; InfantryType
+[SOMETECHNO]                  ; TechnoType
 DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
 DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
 DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
@@ -1694,5 +1695,5 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
 ```{note}
-`[General] -> DropPodTrailer` is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+`[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
