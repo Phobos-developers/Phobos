@@ -330,26 +330,28 @@ void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 	this->SpawnerRange = 0;
 	this->EliteSpawnerRange = 0;
 
-	auto setWeaponRange = [](int& weaponRange, WeaponTypeClass* pWeaponType)
+	auto setWeaponRange = [](int& weaponRange, WeaponTypeClass* pWeaponType, WeaponTypeClass* pOtherWeaponType)
 		{
 			if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
 				weaponRange = pWeaponType->Range;
+			else if (pOtherWeaponType && pOtherWeaponType->Spawner && pOtherWeaponType->Range > weaponRange)
+				weaponRange = pOtherWeaponType->Range;
 		};
 
 	if (pTechnoType->IsGattling)
 	{
 		for (int i = 0; i < pTechnoType->WeaponCount; i++)
 		{
-			setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[i].WeaponType);
-			setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[i].WeaponType);
+			setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[i].WeaponType, nullptr);
+			setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[i].WeaponType, pTechnoType->Weapon[i].WeaponType);
 		}
 	}
 	else
 	{
-		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[0].WeaponType);
-		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[1].WeaponType);
-		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[0].WeaponType);
-		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[1].WeaponType);
+		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[0].WeaponType, nullptr);
+		setWeaponRange(this->SpawnerRange, pTechnoType->Weapon[1].WeaponType, nullptr);
+		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[0].WeaponType, pTechnoType->Weapon[0].WeaponType);
+		setWeaponRange(this->EliteSpawnerRange, pTechnoType->EliteWeapon[1].WeaponType, pTechnoType->Weapon[1].WeaponType);
 	}
 
 	this->SpawnerRange += weaponRangeExtra;
