@@ -481,14 +481,44 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x5F5A8C, ObjectClass_SpawnParachuted_BombParachute, 0x5)
+#pragma region Parabombs
+
+// Patch out Ares parabomb implementation.
+DEFINE_PATCH(0x46867F, 0x6A, 0x00, 0x8B, 0xD9, 0x50);
+
+// Add in our own.
+bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
 {
-	GET(BulletClass*, pThis, ESI);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
-	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	if (pTypeExt->Parachuted)
+		return pThis->SpawnParachuted(coords);
 
-	if (pTypeExt->BombParachute)
-		R->EDX(pTypeExt->BombParachute.Get());
-
-	return 0;
+	return pThis->Unlimbo(coords, facing);
 }
+
+DEFINE_FUNCTION_JUMP(CALL, 0x468684, ObjectClass_Unlimbo_Parachuted_Wrapper);
+
+// Set parachute animation on projectile.
+DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
+{
+	enum { SkipGameCode = 0x5F5A99 };
+
+	GET(BulletClass*, pThis, ESI);
+	GET(CoordStruct*, coords, EDI);
+
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pAnimType = pTypeExt->BombParachute.Get(RulesClass::Instance->BombParachute);
+	AnimClass* pAnim = nullptr;
+
+	if (pAnimType)
+	{
+		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
+		pThis->Parachute = pAnim;
+	}
+
+	R->EAX(pAnim);
+	return SkipGameCode;
+}
+
+#pragma endregion

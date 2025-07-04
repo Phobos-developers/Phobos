@@ -237,6 +237,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
+- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically.
 
 ## Fixes / interactions with other extensions
 
@@ -755,16 +756,6 @@ AirburstWeapon.SourceScatterMax=0.0       ; floating point value, distance in ce
 
 ```{note}
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
-```
-
-### Bomb parachute anim deglobalization
-
-- Now you can define `BombParachute` per projectile.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]        ; Projectile
-BombParachute=          ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Cluster scatter distance customization

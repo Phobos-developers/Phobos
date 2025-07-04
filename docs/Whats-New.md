@@ -355,7 +355,7 @@ New:
 - [Technos can maintain a suitable distance after firing](New-or-Enhanced-Logics.md#keep-range-after-firing) (by CrimRecya)
 - [Projectile subject to ground check before firing](New-or-Enhanced-Logics.md#projectiles-blocked-by-land-or-water) (by CrimRecya)
 - [Delay automatic attack on the controlled unit](Fixed-or-Improved-Logics.md#delay-automatic-attack-on-the-controlled-unit) (by CrimRecya)
-- [`BombParachute` deglobalization](Fixed-or-Improved-Logics.md#bomb-parachute-anim-deglobalization) (by TaranDahl)
+- [Parabombs](New-or-Enhanced-Logics.md#parabombs) (by Starkku & TaranDahl)
 - [Sinkablity and sinking speed customization](Fixed-or-Improved-Logics.md#sinking-behavior-dehardcode) (by TaranDahl)
 - [Fast access vehicle](New-or-Enhanced-Logics.md#fast-access-vehicle) (by CrimRecya)
 - Laser, electric bolt and rad beam scatter (by CrimRecya)
@@ -446,6 +446,7 @@ Vanilla fixes:
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes (by CrimRecya)
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP (by CrimRecya)
+- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
