@@ -499,6 +499,8 @@ public:
 		TechnoClass* pInvoker = nullptr, HouseClass* pInvokerHouse = nullptr, AnimTypeClass* pSpawnAnimType = nullptr, int spawnHeight = -1,
 		bool alwaysOnGround = false, bool checkPathfinding = false, bool parachuteIfInAir = false, Mission mission = Mission::Guard, Mission* missionAI = nullptr);
 
+	static WeaponTypeClass* GetWeaponType(TechnoTypeClass* pThis, int weaponIndex, bool isElite);
+
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
 	static bool HasSelectionGroupID(ObjectTypeClass* pType, const char* pID);

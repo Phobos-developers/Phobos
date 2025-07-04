@@ -428,6 +428,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually
   - Fix an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory
   - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
+  - Fix an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

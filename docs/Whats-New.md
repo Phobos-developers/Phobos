@@ -603,6 +603,7 @@ Vanilla fixes:
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes (by CrimRecya)
+- Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP (by CrimRecya)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
