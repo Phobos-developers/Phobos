@@ -459,7 +459,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 		return;
 
-	if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectAbovePercent, this->Crit_AffectBelowPercent))
 		return;
 
 	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
