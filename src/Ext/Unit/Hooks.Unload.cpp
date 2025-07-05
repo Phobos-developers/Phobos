@@ -20,7 +20,7 @@ namespace UnitDeployConvertHelpers
 void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 {
 	GET(TechnoClass*, pThis, ESI);
-	auto const pThisType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pThisType = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	const bool canDeploy = pThis->CanDeploySlashUnload();
 	R->AL(canDeploy);
@@ -141,7 +141,7 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 	if (pThis->Deploying || pThis->Undeploying)
 	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible)
 			return KeepUnitVisible;
@@ -178,7 +178,7 @@ DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 	{
 		if (pThis->Type->DeployingAnim)
 		{
-			if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployingAnim_AllowAnyDirection)
+			if (TechnoTypeExt::ExtMap.Find(pThis->Type)->DeployingAnim_AllowAnyDirection)
 				return PlayAnim;
 
 			return 0;
@@ -199,21 +199,18 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 	bool isDeploying = R->Origin() == 0x739BA8;
 
-	if (auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType()))
-	{
-		auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
-			pThis->Location, 0, 1, 0x600, 0,
-			!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false);
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+		pThis->Location, 0, 1, 0x600, 0,
+		!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false);
 
-		pThis->DeployAnim = pAnim;
-		pAnim->SetOwnerObject(pThis);
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
+	pThis->DeployAnim = pAnim;
+	pAnim->SetOwnerObject(pThis);
+	AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
+	AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThis);
 
-		if (pExt->DeployingAnim_UseUnitDrawer)
-			return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
-
-	}
+	if (pExt->DeployingAnim_UseUnitDrawer)
+		return isDeploying ? DeployUseUnitDrawer : UndeployUseUnitDrawer;
 
 	return isDeploying ? Deploy : Undeploy;
 }

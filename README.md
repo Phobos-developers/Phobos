@@ -4,7 +4,7 @@
 [![Docs status](https://readthedocs.org/projects/phobos/badge/?version=latest)](https://phobos.readthedocs.io/en/latest/?badge=latest)
 [![Workflow](https://img.shields.io/github/actions/workflow/status/Phobos-developers/Phobos/nightly.yml?branch=develop)](https://github.com/Phobos-developers/Phobos/actions)
 [![EditorConfig](https://github.com/Phobos-developers/Phobos/workflows/EditorConfig/badge.svg)](https://github.com/Phobos-developers/Phobos/actions?query=workflow%3AEditorConfig)
-[![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+[![license](https://img.shields.io/github/license/Phobos-developers/Phobos.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
 
 > **Warning**
 > The project is currently not maintained actively enough and thus we are looking for active maintainers at the moment. Please message us [in Discord channel](https://discord.gg/sZeMzz6qVg) (or PM Kerbiter directly).
@@ -82,7 +82,7 @@ UIDescription=<none> ; CSF entry key
 Building manually
 -----------------
 
-0. Install **Visual Studio** (2022 is recommended, 2019 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the dependencies from `.vsconfig` instead. Not using a code editor or IDE and building via **command line scripts** included with the project is also an option.
+0. Install **Visual Studio** (2022 is minimum) with the dependencies listed in `.vsconfig` (it will prompt you to install missing dependences when you open the project, or you can run VS installer and import the config). If you prefer to use **Visual Studio Code** you may install **VS Build Tools** with the dependencies from `.vsconfig` instead. Not using a code editor or IDE and building via **command line scripts** included with the project is also an option.
 1. Clone this repo recursively via your favorite git client (that will also clone YRpp).
 2. To build the extension:
    - in Visual Studio: open the solution file in VS and build it (`Debug` build config is recommended);
@@ -111,7 +111,7 @@ Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show
 Legal and License
 -----
 
-[![LGPL v3](https://www.gnu.org/graphics/lgplv3-147x51.png)](https://opensource.org/licenses/LGPL-3.0)
+[![GPL v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)
 
 The Phobos project is an unofficial open-source community collaboration project to extend the Red Alert 2 Yuri's Revenge engine for modding and compatibility purposes.
 

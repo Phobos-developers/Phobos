@@ -1,8 +1,18 @@
 #include "Body.h"
 
+#include "NewSWType/NewSWType.h"
+
 #include <StringTable.h>
 
 SWTypeExt::ExtContainer SWTypeExt::ExtMap;
+
+void SWTypeExt::ExtData::Initialize()
+{
+	this->EVA_InsufficientFunds = VoxClass::FindIndex(GameStrings::EVA_InsufficientFunds);
+	this->EVA_SelectTarget = VoxClass::FindIndex("EVA_SelectTarget");
+
+	this->Message_CannotFire = CSFText("MSG:CannotFire");
+}
 
 // =============================
 // load / save
@@ -11,7 +21,16 @@ template <typename T>
 void SWTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->TypeID)
 		.Process(this->Money_Amount)
+		.Process(this->EVA_Impatient)
+		.Process(this->EVA_InsufficientFunds)
+		.Process(this->EVA_SelectTarget)
+		.Process(this->SW_UseAITargeting)
+		.Process(this->SW_AutoFire)
+		.Process(this->SW_ManualFire)
+		.Process(this->SW_ShowCameo)
+		.Process(this->SW_Unstoppable)
 		.Process(this->SW_Inhibitors)
 		.Process(this->SW_AnyInhibitor)
 		.Process(this->SW_Designators)
@@ -26,6 +45,10 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SW_PostDependent)
 		.Process(this->SW_MaxCount)
 		.Process(this->SW_Shots)
+		.Process(this->Message_CannotFire)
+		.Process(this->Message_InsufficientFunds)
+		.Process(this->Message_ColorScheme)
+		.Process(this->Message_FirerColor)
 		.Process(this->UIDescription)
 		.Process(this->CameoPriority)
 		.Process(this->LimboDelivery_Types)
@@ -50,6 +73,12 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Convert_Pairs)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->TabIndex)
+		.Process(this->SuperWeaponSidebar_Allow)
+		.Process(this->SuperWeaponSidebar_PriorityHouses)
+		.Process(this->SuperWeaponSidebar_RequiredHouses)
+		.Process(this->SuperWeaponSidebar_Significance)
+		.Process(this->SidebarPal)
+		.Process(this->SidebarPCX)
 		.Process(this->UseWeeds)
 		.Process(this->UseWeeds_Amount)
 		.Process(this->UseWeeds_StorageTimer)
@@ -65,16 +94,20 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-	{
-		return;
-	}
-
 	INI_EX exINI(pINI);
+
+	this->TypeID.Read(pINI, pSection, "Type");
 
 	// from ares
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
+	this->EVA_Impatient.Read(exINI, pSection, "EVA.Impatient");
+	this->EVA_InsufficientFunds.Read(exINI, pSection, "EVA.InsufficientFunds");
+	this->EVA_SelectTarget.Read(exINI, pSection, "EVA.SelectTarget");
+	this->SW_UseAITargeting.Read(exINI, pSection, "SW.UseAITargeting");
+	this->SW_AutoFire.Read(exINI, pSection, "SW.AutoFire");
+	this->SW_ManualFire.Read(exINI, pSection, "SW.ManualFire");
+	this->SW_ShowCameo.Read(exINI, pSection, "SW.ShowCameo");
+	this->SW_Unstoppable.Read(exINI, pSection, "SW.Unstoppable");
 	this->SW_Inhibitors.Read(exINI, pSection, "SW.Inhibitors");
 	this->SW_AnyInhibitor.Read(exINI, pSection, "SW.AnyInhibitor");
 	this->SW_Designators.Read(exINI, pSection, "SW.Designators");
@@ -89,6 +122,13 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SW_PostDependent.Read(exINI, pSection, "SW.PostDependent");
 	this->SW_MaxCount.Read(exINI, pSection, "SW.MaxCount");
 	this->SW_Shots.Read(exINI, pSection, "SW.Shots");
+
+	this->Message_CannotFire.Read(exINI, pSection, "Message.CannotFire");
+	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");
+
+	// messages and their properties
+	this->Message_FirerColor.Read(exINI, pSection, "Message.FirerColor");
+	this->Message_ColorScheme.Read(exINI, pSection, "Message.Color");
 
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->CameoPriority.Read(exINI, pSection, "CameoPriority");
@@ -124,7 +164,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size() > i)
 			this->LimboDelivery_RandomWeightsData[i] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	ValueableVector<int> weights;
@@ -134,7 +174,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size())
 			this->LimboDelivery_RandomWeightsData[0] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	// SW.Next.RandomWeights
@@ -150,7 +190,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size() > i)
 			this->SW_Next_RandomWeightsData[i] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	ValueableVector<int> weights2;
@@ -160,7 +200,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size())
 			this->SW_Next_RandomWeightsData[0] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
@@ -177,10 +217,27 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->TabIndex.Read(exINI, pSection, "TabIndex");
 	GeneralUtils::IntValidCheck(&this->TabIndex, pSection, "TabIndex", 1, 0, 3);
 
+	this->SuperWeaponSidebar_Allow.Read(exINI, pSection, "SuperWeaponSidebar.Allow");
+	this->SuperWeaponSidebar_PriorityHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.PriorityHouses", this->SuperWeaponSidebar_PriorityHouses);
+	this->SuperWeaponSidebar_RequiredHouses = pINI->ReadHouseTypesList(pSection, "SuperWeaponSidebar.RequiredHouses", this->SuperWeaponSidebar_RequiredHouses);
+	this->SuperWeaponSidebar_Significance.Read(exINI, pSection, "SuperWeaponSidebar.Significance");
+
+	this->SidebarPal.LoadFromINI(pINI, pSection, "SidebarPalette");
+	this->SidebarPCX.Read(pINI, pSection, "SidebarPCX");
+
 	this->UseWeeds.Read(exINI, pSection, "UseWeeds");
 	this->UseWeeds_Amount.Read(exINI, pSection, "UseWeeds.Amount");
 	this->UseWeeds_StorageTimer.Read(exINI, pSection, "UseWeeds.StorageTimer");
 	this->UseWeeds_ReadinessAnimationPercentage.Read(exINI, pSection, "UseWeeds.ReadinessAnimationPercentage");
+
+	int newidx = NewSWType::GetNewSWTypeIdx(TypeID.data());
+
+	if (newidx != -1)
+	{
+		NewSWType* pNewSWType = NewSWType::GetNthItem(newidx);
+		pNewSWType->Initialize(const_cast<SWTypeExt::ExtData*>(this), OwnerObject());
+		pNewSWType->LoadFromINI(const_cast<SWTypeExt::ExtData*>(this), OwnerObject(), pINI);
+	}
 }
 
 void SWTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -205,6 +262,19 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 {
 	return Stm
 		.Success();
+}
+
+bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
+{
+	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
+
+	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());
+
+	if (newIdx != -1)
+		return NewSWType::GetNthItem(newIdx)->Activate(pSuper, cell, isPlayer);
+
+	return false;
 }
 
 // =============================
@@ -258,7 +328,7 @@ DEFINE_HOOK(0x6CE8EA, SuperWeaponTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 {
 	GET(SuperWeaponTypeClass*, pItem, EBP);

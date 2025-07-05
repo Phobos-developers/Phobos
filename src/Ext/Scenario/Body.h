@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ScenarioClass.h>
+#include <MessageListClass.h>
 
 #include <Helpers/Macro.h>
 #include <Utilities/Container.h>
@@ -36,6 +37,11 @@ public:
 		std::vector<TechnoExt::ExtData*> AutoDeathObjects;
 		std::vector<TechnoExt::ExtData*> TransportReloaders; // Objects that can reload ammo in limbo
 
+		bool SWSidebar_Enable;
+		std::vector<int> SWSidebar_Indices;
+
+		std::unique_ptr<MessageListClass> NewMessageList;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -43,6 +49,9 @@ public:
 			, Variables { }
 			, AutoDeathObjects {}
 			, TransportReloaders {}
+			, SWSidebar_Enable { true }
+			, SWSidebar_Indices {}
+			, NewMessageList {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

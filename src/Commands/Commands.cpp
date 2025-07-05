@@ -10,10 +10,11 @@
 #include "ToggleDesignatorRange.h"
 #include "SaveVariablesToFile.h"
 #include "DistributionMode.h"
-
+#include "ToggleSWSidebar.h"
+#include "FireTacticalSW.h"
 #include <CCINIClass.h>
-
 #include <Utilities/Macro.h>
+#include <Ext/Sidebar/SWSidebar/SWSidebarClass.h>
 
 DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 {
@@ -23,11 +24,30 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 	MakeCommand<QuickSaveCommandClass>();
 	MakeCommand<ToggleDigitalDisplayCommandClass>();
 	MakeCommand<ToggleDesignatorRangeCommandClass>();
+	MakeCommand<ToggleSWSidebar>();
+
+	if (Phobos::Config::SuperWeaponSidebarCommands)
+	{
+		SWSidebarClass::Commands[0] = MakeCommand<FireTacticalSWCommandClass<0>>();
+		SWSidebarClass::Commands[1] = MakeCommand<FireTacticalSWCommandClass<1>>();
+		SWSidebarClass::Commands[2] = MakeCommand<FireTacticalSWCommandClass<2>>();
+		SWSidebarClass::Commands[3] = MakeCommand<FireTacticalSWCommandClass<3>>();
+		SWSidebarClass::Commands[4] = MakeCommand<FireTacticalSWCommandClass<4>>();
+		SWSidebarClass::Commands[5] = MakeCommand<FireTacticalSWCommandClass<5>>();
+		SWSidebarClass::Commands[6] = MakeCommand<FireTacticalSWCommandClass<6>>();
+		SWSidebarClass::Commands[7] = MakeCommand<FireTacticalSWCommandClass<7>>();
+		SWSidebarClass::Commands[8] = MakeCommand<FireTacticalSWCommandClass<8>>();
+		SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
+	}
 
 	if (Phobos::Config::AllowDistributionCommand)
 	{
-		MakeCommand<DistributionModeSpreadCommandClass>();
-		MakeCommand<DistributionModeFilterCommandClass>();
+		if (Phobos::Config::AllowDistributionCommand_SpreadMode)
+			MakeCommand<DistributionModeSpreadCommandClass>();
+
+		if (Phobos::Config::AllowDistributionCommand_FilterMode)
+			MakeCommand<DistributionModeFilterCommandClass>();
+
 		MakeCommand<DistributionModeHoldDownCommandClass>();
 	}
 
@@ -52,7 +72,7 @@ static void MouseWheelDownCommand()
 {
 //	Debug::LogAndMessage("[Frame: %d] Mouse Wheel Down", Unsorted::CurrentFrame());
 
-	if (DistributionModeHoldDownCommandClass::Enabled)
+	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
 		DistributionModeHoldDownCommandClass::DistributionSpreadModeReduce();
 }
 
@@ -60,7 +80,7 @@ static void MouseWheelUpCommand()
 {
 //	Debug::LogAndMessage("[Frame: %d] Mouse Wheel Up", Unsorted::CurrentFrame());
 
-	if (DistributionModeHoldDownCommandClass::Enabled)
+	if (DistributionModeHoldDownCommandClass::Enabled && Phobos::Config::AllowDistributionCommand_SpreadModeScroll)
 		DistributionModeHoldDownCommandClass::DistributionSpreadModeExpand();
 }
 

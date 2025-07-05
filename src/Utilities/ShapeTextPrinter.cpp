@@ -15,6 +15,7 @@ void ShapeTextPrinter::PrintShape
 {
 	const int length = strlen(text);
 	std::vector<int> frames;
+	frames.reserve(length);
 
 	for (int i = 0; i < length; i++)
 	{

@@ -142,16 +142,45 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 		const auto mode1 = Phobos::Config::DistributionSpreadMode;
 		const auto mode2 = Phobos::Config::DistributionFilterMode;
 
+		auto vanillaMethod = [mode2, mouseAction](ObjectClass* pTarget)
+			{
+				for (const auto& pSelect : ObjectClass::CurrentObjects)
+				{
+					const auto currentAction = pSelect->MouseOverObject(pTarget);
+
+					if (mode2 && mouseAction != Action::NoMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+						static_cast<TechnoClass*>(pSelect)->ClickedMission(Mission::Area_Guard, reinterpret_cast<ObjectClass*>(pSelect->GetCellAgain()), nullptr, nullptr);
+					else
+						pSelect->ObjectClickedAction(currentAction, pTarget, false);
+
+					Unsorted::MoveFeedback = false;
+				}
+			};
+
 		// Distribution mode main
 		if (DistributionModeHoldDownCommandClass::Enabled && mode1 && count > 1 && mouseAction != Action::NoMove && !PlanningNodeClass::PlanningModeActive
 			&& (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None && !pTarget->IsInAir())
 		{
+			const auto pTargetHouse = static_cast<TechnoClass*>(pTarget)->Owner;
+
+			if (HouseClass::CurrentPlayer->IsAlliedWith(pTargetHouse))
+			{
+				if (!Phobos::Config::AllowDistributionCommand_AffectsAllies)
+				{
+					vanillaMethod;
+					return SkipGameCode;
+				}
+			}
+			else if (!Phobos::Config::AllowDistributionCommand_AffectsEnemies)
+			{
+				vanillaMethod;
+				return SkipGameCode;
+			}
+
 			VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 			const auto pSpecial = HouseClass::FindSpecial();
 			const auto pCivilian = HouseClass::FindCivilianSide();
 			const auto pNeutral = HouseClass::FindNeutral();
-
-			const auto pTargetHouse = static_cast<TechnoClass*>(pTarget)->Owner;
 			const bool targetIsNeutral = pTargetHouse == pSpecial || pTargetHouse == pCivilian || pTargetHouse == pNeutral;
 
 			const auto range = (2 << mode1);
@@ -244,19 +273,9 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 				Unsorted::MoveFeedback = false;
 			}
 		}
-		else // Vanilla
+		else
 		{
-			for (const auto& pSelect : ObjectClass::CurrentObjects)
-			{
-				const auto currentAction = pSelect->MouseOverObject(pTarget);
-
-				if (mode2 && mouseAction != Action::NoMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
-					static_cast<TechnoClass*>(pSelect)->ClickedMission(Mission::Area_Guard, reinterpret_cast<ObjectClass*>(pSelect->GetCellAgain()), nullptr, nullptr);
-				else
-					pSelect->ObjectClickedAction(currentAction, pTarget, false);
-
-				Unsorted::MoveFeedback = false;
-			}
+			vanillaMethod;
 		}
 	}
 

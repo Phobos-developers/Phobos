@@ -11,23 +11,22 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	if (auto pTypeExt = this->TypeExtData)
-	{
-		for (auto const& entry : pTypeExt->LaserTrailData)
-		{
-			this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
-		}
-	}
+	auto pTypeExt = this->TypeExtData;
+	this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
+
+	for (auto const& entry : pTypeExt->LaserTrailData)
+		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
 }
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 {
-	TechnoClass* pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+	auto const pKillerType = pKiller->GetTechnoType();
+	TechnoClass* pObjectKiller = ((pKillerType->Spawned || pKillerType->MissileSpawn) && pKiller->SpawnOwner) ?
 		pKiller->SpawnOwner : pKiller;
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
-		if (auto const pFootKiller = generic_cast<FootClass*>(pObjectKiller))
+		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
 			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
@@ -39,7 +38,7 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
 	auto const pType = pThis->GetTechnoType();
-	auto const pFoot = abstract_cast<FootClass*>(pThis);
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	Matrix3D mtx;
 
 	// Step 1: get body transform matrix
@@ -49,7 +48,7 @@ CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoo
 		mtx.MakeIdentity();
 
 	// Steps 2-3: turret offset and rotation
-	if (isOnTurret && pThis->HasTurret())
+	if (isOnTurret && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
 	{
 		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
@@ -77,25 +76,25 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	auto pInf = abstract_cast<InfantryClass*>(pThis);
+	auto const pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf && pInf->IsDeployed() && pExt->EliteDeployedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->EliteDeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf && pInf->Crawling && pExt->EliteCrouchedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->EliteCrouchedWeaponBurstFLHs;
 		else
 			pickedFLHs = pExt->EliteWeaponBurstFLHs;
 	}
 	else
 	{
-		if (pInf && pInf->IsDeployed())
+		if (pInf && pInf->IsDeployed() && pExt->DeployedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->DeployedWeaponBurstFLHs;
-		else if (pInf && pInf->Crawling)
+		else if (pInf && pInf->Crawling && pExt->CrouchedWeaponBurstFLHs.size() > 0)
 			pickedFLHs = pExt->CrouchedWeaponBurstFLHs;
 	}
 	if ((int)pickedFLHs[weaponIndex].size() > pThis->CurrentBurstIndex)
@@ -144,6 +143,19 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
+void TechnoExt::ExtData::InitializeDisplayInfo()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
+
+	if (pPrimary && pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK)
+		pThis->RearmTimer.TimeLeft = pPrimary->ROF;
+	else if (const auto pSecondary = pThis->GetWeapon(1)->WeaponType)
+		pThis->RearmTimer.TimeLeft = pSecondary->ROF;
+
+	pThis->RearmTimer.StartTime = Math::min(-2, -pThis->RearmTimer.TimeLeft);
+}
+
 void TechnoExt::ExtData::InitializeAttachEffects()
 {
 	if (auto pTypeExt = this->TypeExtData)
@@ -164,11 +176,22 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	if (pThis)
 	{
 		if (invulnerability && pThis->IsIronCurtained())
-			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
-		if (airstrike && pThis->Airstrike && pThis->Airstrike->Target == pThis)
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->LaserTargetColor);
+		{
+			tintColor |= pThis->ForceShielded ? RulesExt::Global()->TintColorForceShield : RulesExt::Global()->TintColorIronCurtain;
+		}
+
+		if (airstrike)
+		{
+			auto const pExt =  TechnoExt::ExtMap.Find(pThis);
+
+			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
+				tintColor |= pExt->TypeExtData->TintColorAirstrike;
+		}
+
 		if (berserk && pThis->Berzerk)
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+		{
+			tintColor |= RulesExt::Global()->TintColorBerserk;
+		}
 	}
 
 	return tintColor;
@@ -195,43 +218,23 @@ int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
 // Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
 void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
-	bool hasShieldTint = pExt->Shield && pExt->Shield->IsActive() && pExt->Shield->GetType()->HasTint();
+	auto const pOwner = pThis->Owner;
 
-	// Bail out early if no custom tint is applied.
-	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
-		return;
-
-	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	if (pOwner == HouseClass::CurrentPlayer)
 	{
-		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
-		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
+		color |= pExt->TintColorOwner;
+		intensity += pExt->TintIntensityOwner;
 	}
-
-	if (pExt->AE.HasTint)
+	else if (pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 	{
-		for (auto const& attachEffect : pExt->AttachedEffects)
-		{
-			auto const type = attachEffect->GetType();
-
-			if (!attachEffect->IsActive() || !type->HasTint())
-				continue;
-
-			if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-				continue;
-
-			color |= Drawing::RGB_To_Int(type->Tint_Color);
-			intensity += static_cast<int>(type->Tint_Intensity * 1000);
-		}
+		color |= pExt->TintColorAllies;
+		intensity += pExt->TintIntensityAllies;
 	}
-
-	if (hasShieldTint)
+	else
 	{
-		auto const pShieldType = pExt->Shield->GetType();
-		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
-		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
+		color |= pExt->TintColorEnemies;
+		intensity += pExt->TintIntensityEnemies;
 	}
 }
 
@@ -264,7 +267,7 @@ void TechnoExt::ChangeOwnerMissionFix(FootClass* pThis)
 void TechnoExt::UpdateAttachedAnimLayers(TechnoClass* pThis)
 {
 	// Skip if has no attached animations.
-	if (!pThis || !pThis->HasParachute)
+	if (!pThis->HasParachute)
 		return;
 
 	// Could possibly be faster to track the attached anims in TechnoExt but the profiler doesn't show this as a performance hog so whatever.

@@ -54,6 +54,13 @@ public:
 		static double PowerDelta_ConditionYellow;
 		static double PowerDelta_ConditionRed;
 		static bool CenterPauseMenuBackground;
+		static bool SuperWeaponSidebar;
+		static bool SuperWeaponSidebar_Pyramid;
+		static int SuperWeaponSidebar_Interval;
+		static int SuperWeaponSidebar_LeftOffset;
+		static int SuperWeaponSidebar_CameoHeight;
+		static int SuperWeaponSidebar_Max;
+		static int SuperWeaponSidebar_MaxColumns;
 		static bool WeedsCounter_Show;
 		static bool AnchoredToolTips;
 
@@ -74,10 +81,14 @@ public:
 		static bool ToolTipBlur;
 		static bool PrioritySelectionFiltering;
 		static bool DevelopmentCommands;
+		static bool SuperWeaponSidebarCommands;
 		static bool ArtImageSwap;
 		static bool ShowPlacementPreview;
 		static bool EnableBuildingPlacementPreview;
+		static bool EnableSelectBox;
 		static bool DigitalDisplay_Enable;
+		static bool MessageApplyHoverState;
+		static bool MessageDisplayInCenter;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
@@ -94,8 +105,14 @@ public:
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
 		static bool AllowDistributionCommand;
+		static bool AllowDistributionCommand_SpreadMode;
+		static bool AllowDistributionCommand_SpreadModeScroll;
+		static bool AllowDistributionCommand_FilterMode;
+		static bool AllowDistributionCommand_AffectsAllies;
+		static bool AllowDistributionCommand_AffectsEnemies;
 		static int DistributionSpreadMode;
 		static int DistributionFilterMode;
+		static int SuperWeaponSidebar_RequiredSignificance;
 	};
 
 	class Misc

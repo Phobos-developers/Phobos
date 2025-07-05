@@ -25,7 +25,7 @@ public:
 		bool IsInterceptor;
 		InterceptedStatus InterceptedStatus;
 		bool DetonateOnInterception;
-		std::vector<LaserTrailClass> LaserTrails;
+		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
 
@@ -52,7 +52,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon);
-		void ApplyRadiationToCell(CellStruct Cell, int Spread, int RadLevel);
+		void ApplyRadiationToCell(CellStruct cell, int spread, int radLevel);
 		void InitializeLaserTrails();
 
 	private:
@@ -68,6 +68,8 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
+	static void ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoords, const CoordStruct& targetCoords, BulletVelocity& velocity);
 
 	static void SimulatedFiringUnlimbo(BulletClass* pBullet, HouseClass* pHouse, WeaponTypeClass* pWeapon, const CoordStruct& sourceCoords, bool randomVelocity);
 	static void SimulatedFiringEffects(BulletClass* pBullet, HouseClass* pHouse, ObjectClass* pAttach, bool firingEffect, bool visualEffect);

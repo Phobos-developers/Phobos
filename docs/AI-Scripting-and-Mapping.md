@@ -78,8 +78,8 @@ Ranking.OverParMessage=   ; CSF entry key
 
 ### Show briefing dialog on startup
 
-- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (latter takes precedence over former if available). This can be disabled by user by setting `ShowBriefing` to false in `RA2MD.INI`.
-  - `BriefingTheme` (In order of precedence from highest to lowest: `missionmd.ini`, map file, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
+- You can now have the briefing dialog screen show up on singleplayer campaign mission startup by setting `ShowBriefing` to true in map file's `[Basic]` section, or in the map file's section in `missionmd.ini` (former takes precedence if available). This can be disabled by user by setting `ShowBriefing` to false in `RA2MD.INI`.
+  - `BriefingTheme` (In order of precedence from highest to lowest: map file, `missionmd.ini`, side entry in `rulesmd.ini`) can be used to define a custom theme to play on this briefing screen. If not set, the loading screen theme will keep playing until the scenario starts properly.
   - String labels for the startup briefing dialog screen's resume button as well as the button's status bar text can be customized by setting `ShowBriefingResumeButtonLabel` and `ShowBriefingResumeButtonStatusLabel` respectively. They default to the same labels used by the briefing screen dialog when opened otherwise.
 
 In `missionmd.ini`:
@@ -169,7 +169,7 @@ x=i,n             ; For i values check the next table
 | 9       | Power Plants             | Any enemy `BuildingTypes` with positive `Power=` values |
 | 10      | Occupied                 | Any `BuildingTypes` with garrisoned infantry |
 | 11      | Tech Buildings           | Any `BuildingTypes` with `Unsellable=yes`, `Capturable=yes`, negative `TechLevel=` values or appears in `[AI] -> NeutralTechBuildings=` list |
-| 12      |	Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
+| 12      | Refinery                 | Any enemy `BuildingTypes` with `Refinery=yes` or `ResourceGatherer=yes`, `VehicleTypes` with `ResourceGatherer=yes` & `Harvester=no` (i.e. Slave Miner) |
 | 13      | Mind Controller          | Anything `VehicleTypes`, `AircraftTypes`, `InfantryTypes` and `BuildingTypes` with `MindControl=yes` in the weapons Warheads |
 | 14      | Air Units (incl. landed) | Any enemy, `AircraftTypes` and `Jumpjet=yes` `VehicleTypes` or `InfantryTypes`, including landed ones as well as any other currently airborne units |
 | 15      | Naval                    | Any enemy `BuildingTypes` and `VehicleTypes` with a `Naval=yes`, any enemy `VehicleTypes`, `AircraftTypes`, `InfantryTypes` in a water cell |
@@ -543,7 +543,7 @@ In `mycampaign.map`:
 ```ini
 [Actions]
 ...
-ID=ActionCount,[Action1],503,[VariableIndex],0,[IsGlobalVariable],0,0,0,A,[ActionX]
+ID=ActionCount,[Action1],503,0,[VariableIndex],[IsGlobalVariable],0,0,0,A,[ActionX]
 ...
 ```
 
@@ -608,6 +608,102 @@ In `mycampaign.map`:
 [Actions]
 ...
 ID=ActionCount,[Action1],510,0,0,[MCVRedeploy],0,0,0,A,[ActionX]
+...
+```
+
+### `606` Edit Hate-Value
+
+- Edit the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],606,0,[HouseIndex],[Operation],[Number],0,0,A,[ActionX]
+...
+```
+
+| *Operation* | *Description*                                 |
+|------------:|:----------------------------------------------|
+| 0           | CurrentValue = Number                         |
+| 1           | CurrentValue = CurrentValue + Number          |
+| 2           | CurrentValue = CurrentValue - Number          |
+| 3           | CurrentValue = CurrentValue * Number          |
+| 4           | CurrentValue = CurrentValue / Number          |
+| 5           | CurrentValue = CurrentValue % Number          |
+| 6           | CurrentValue = CurrentValue leftshift Number  |
+| 7           | CurrentValue = CurrentValue rightshift Number |
+| 8           | CurrentValue = ~CurrentValue                  |
+| 9           | CurrentValue = CurrentValue xor Number        |
+| 10          | CurrentValue = CurrentValue or Number         |
+| 11          | CurrentValue = CurrentValue and Number        |
+
+### `607` Clear Hate-Value
+
+- Clear the hate-value that trigger houses to other houses.
+- -1 works for all houses.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],607,0,[HouseIndex],0,0,0,0,A,[ActionX]
+...
+```
+
+### `608` Set Force Enemy
+
+- Force an enemy, it will not change with the change of hate-value.
+- -1 will remove the forced enemy.
+- -2 will never have any enemies.
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
+...
+```
+
+### `800-802` Display Banner
+
+- Display a 'banner' at a fixed location that is relative to the screen.
+  - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
+  - Action `801` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
+  - Action `802` will delete the banner corresponding to the set Banner ID.
+- To make use of this, you need to set the properties of a `BannerType` in your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) file or a `CSF` text. If multiple are set the first one in the above listed order takes effect.
+  - `SHP.Palette` controls the palette that'll be used when drawing a banner for Shape file.
+  - `CSF.Color` controls the color of the text that'll be used when drawing a text banner.
+  - `CSF.Background` controls whether a black background will be displayed below the text banner.
+  - `CSF.VariableFormat` controls the way to print a variable together with the text banner.
+    - `none` will make the text banner not display the variable.
+    - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
+    - `prefix`/`prefixed` will make the text banner display the variable before any other text.
+    - `surfix`/`surfixed` will make the text banner display the variable after any other text.
+
+In `rulesmd.ini`:
+```ini
+[BannerTypes]
+0=SOMEBANNER
+
+[SOMEBANNER]                ; BannerType
+PCX=                        ; filename - excluding the .pcx extension
+SHP=                        ; filename - excluding the .shp extension
+SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+CSF=                        ; CSF entry key
+CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
+CSF.Background=false        ; boolean
+CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+```
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
 ...
 ```
 
@@ -729,16 +825,31 @@ ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 - `HouseIndex` can be customized to focus in a specified house.
 
 In `mycampaign.map`:
-```ini
-[Events]
-...
-ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...
-ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...
-...
-```
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Events]</span>
+<span class="na">...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,604,2,[HouseIndex],[TechnoType],...</span>
+<span class="na">ID</span><span class="o">=</span><span class="s">EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...</span>
+<span class="na">...</span>
+</pre></div>
+</div>
 
 | *House Index* | *Description*                              |
 |:-------------:|:------------------------------------------:|
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
+
+### `606` AttachEffect is attaching to a Techno
+
+- Checks if an `AttachEffectType` is attaching to a techno. Doesn't work for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that were attached prior to the trigger's enabling.
+- To be elaborate, the event will be triggered during these occasions:
+  - Self-owned effects: initial granted (triggered after `AttachEffect.InitialDelays` amount of frames), recreation (triggered after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of frames).
+  - Effects from other sources: granted, refreshing when trying to apply the same type of attached effect to the techno.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,606,2,0,[AttachEffectType],...
+...
+```
