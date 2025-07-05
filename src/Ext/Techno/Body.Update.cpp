@@ -52,59 +52,75 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
-	if (pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
+	if (!pInterceptorType)
+		return;
+
+	const auto pTarget = pThis->Target;
+
+	if (pTarget)
 	{
-		BulletClass* pTargetBullet = nullptr;
-		const auto pInterceptorType = pTypeExt->InterceptorType.get();
-		const double guardRange = pInterceptorType->GuardRange.Get(pThis);
-		const double guardRangeSq = guardRange * guardRange;
-		const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-		const double minguardRangeSq = minguardRange * minguardRange;
-		// Interceptor weapon is always fixed
-		const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+		if (pTarget->WhatAmI() != AbstractType::Bullet)
+			return;
 
-		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
-		// so it can differ across players throwing target management out of sync.
-		for (auto const& pBullet : BulletClass::Array)
+		const auto pTargetExt = BulletExt::ExtMap.Find(static_cast<BulletClass*>(pTarget));
+
+		if ((pTargetExt->InterceptedStatus & InterceptedStatus::Locked) == InterceptedStatus::None)
+			return;
+	}
+
+	if (this->IsBurrowed || !BulletClass::Array.Count)
+		return;
+
+	BulletClass* pTargetBullet = nullptr;
+	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
+	const double guardRangeSq = guardRange * guardRange;
+	const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+	const double minguardRangeSq = minguardRange * minguardRange;
+	// Interceptor weapon is always fixed
+	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+
+	// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
+	// so it can differ across players throwing target management out of sync.
+	for (auto const& pBullet : BulletClass::Array)
+	{
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		auto const pBulletTypeExt = pBulletExt->TypeExtData;
+
+		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+			continue;
+
+		auto const distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+			continue;
+
+		if (pBulletTypeExt->Armor.isset())
 		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pBulletTypeExt = pBulletExt->TypeExtData;
+			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
-			if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+			if (versus == 0.0)
 				continue;
-
-			auto const distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
-
-			if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
-				continue;
-
-			if (pBulletTypeExt->Armor.isset())
-			{
-				const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
-
-				if (versus == 0.0)
-					continue;
-			}
-
-			auto const bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-			if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
-			{
-				pTargetBullet = pBullet;
-
-				if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
-					continue;
-
-				break;
-			}
 		}
 
-		if (pTargetBullet)
-			pThis->SetTarget(pTargetBullet);
+		auto const bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+		{
+			pTargetBullet = pBullet;
+
+			if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+				continue;
+
+			break;
+		}
 	}
+
+	if (pTargetBullet)
+		pThis->SetTarget(pTargetBullet);
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()

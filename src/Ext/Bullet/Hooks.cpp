@@ -41,8 +41,22 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
+	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
+	{
+		if (const auto pTarget = abstract_cast<BulletClass*>(pThis->Target))
+		{
+			const auto pTargetExt = BulletExt::ExtMap.Find(pTarget);
+
+			if (!pTargetExt->TypeExtData->Armor.isset())
+				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
+		}
+	}
+
 	if (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted)
 	{
+		if (const auto pTarget = abstract_cast<BulletClass*>(pThis->Target))
+			BulletExt::ExtMap.Find(pTarget)->InterceptedStatus &= ~InterceptedStatus::Locked;
+
 		if (pBulletExt->DetonateOnInterception)
 			pThis->Detonate(pThis->GetCoords());
 

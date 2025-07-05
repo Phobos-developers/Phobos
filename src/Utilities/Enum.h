@@ -187,7 +187,8 @@ enum class InterceptedStatus : unsigned char
 {
 	None = 0x0,
 	Targeted = 0x1,
-	Intercepted = 0x2
+	Intercepted = 0x2,
+	Locked = 0x4
 };
 
 MAKE_ENUM_FLAGS(InterceptedStatus);
