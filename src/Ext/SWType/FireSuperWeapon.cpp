@@ -37,8 +37,8 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	if (pTypeExt->Convert_Pairs.size() > 0)
 		pTypeExt->ApplyTypeConversion(pSW);
 
-	if (pTypeExt->SW_GrantOneTime.size() > 0)
-		pTypeExt->GrantOneTimeFromList(pSW);
+	if (pTypeExt->SW_Link.size() > 0)
+		pTypeExt->ApplyLinkedSW(pSW);
 
 	if (static_cast<int>(pType->Type) == 28 && !pTypeExt->EMPulse_TargetSelf) // Ares' Type=EMPulse SW
 		pTypeExt->HandleEMPulseLaunch(pSW, cell);
@@ -372,72 +372,77 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 	}
 }
 
-void SWTypeExt::ExtData::GrantOneTimeFromList(SuperClass* pSW)
+void SWTypeExt::ExtData::ApplyLinkedSW(SuperClass* pSW)
 {
-	// SW.GrantOneTime proper SW granting mechanic
-	HouseClass* pHouse = pSW->Owner;
-	bool notObserver = !pHouse->IsObserver() || !pHouse->IsCurrentPlayerObserver();
+	const auto pHouse = pSW->Owner;
+	const bool notObserver = !pHouse->IsObserver() || !pHouse->IsCurrentPlayerObserver();
 
 	if (pHouse->Defeated || !notObserver)
 		return;
 
-	auto grantTheSW = [=](const int swIdxToAdd) -> bool
+	auto linkedSW = [=](const int swIdxToAdd)
 	{
 		if (const auto pSuper = pHouse->Supers.GetItem(swIdxToAdd))
 		{
-			bool forceReadyness = pSuper->IsPresent && this->SW_GrantOneTime_ReadyIfExists.isset() && this->SW_GrantOneTime_ReadyIfExists.Get();
-			bool forceReset = pSuper->IsPresent && this->SW_GrantOneTime_ResetIfExists.Get();
-			bool granted = pSuper->Grant(true, false, false);
+			const bool granted = this->SW_Link_Grant && !pSuper->IsPresent && pSuper->Grant(true, false, false);
+			bool isActive = granted;
 
-			if (granted || forceReadyness || forceReset)
+			if (pSuper->IsPresent)
 			{
-				auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-				bool isReady = this->SW_GrantOneTime_InitialReady.isset() && this->SW_GrantOneTime_InitialReady.Get() ? true : false;
-				isReady = !this->SW_GrantOneTime_InitialReady.isset() && pTypeExt->SW_InitialReady ? true : isReady;
-				isReady = forceReadyness ? true : isReady;
-
-				if (isReady && !forceReset)
+				if (granted || this->SW_Link_Reset)
+				{
+					pSuper->Reset();
+					isActive = true;
+				}
+				else if (this->SW_Link_Ready || (granted && SWTypeExt::ExtMap.Find(pSuper->Type)->SW_InitialReady))
 				{
 					pSuper->RechargeTimer.TimeLeft = 0;
 					pSuper->SetReadiness(true);
-				}
-				else
-				{
-					pSuper->Reset();
-				}
-
-				if (notObserver && pHouse->IsCurrentPlayer())
-				{
-					if (MouseClass::Instance.AddCameo(AbstractType::Special, swIdxToAdd))
-						MouseClass::Instance.RepaintSidebar(1);
+					isActive = true;
 				}
 			}
 
-			return granted;
+			if (granted && notObserver && pHouse->IsCurrentPlayer())
+			{
+				if (MouseClass::Instance.AddCameo(AbstractType::Special, swIdxToAdd))
+					MouseClass::Instance.RepaintSidebar(1);
+			}
+
+			return isActive;
 		}
 
 		return false;
 	};
 
+	bool isActive = false;
+
 	// random mode
-	if (this->SW_GrantOneTime_RandomWeightsData.size())
+	if (this->SW_Link_RandomWeightsData.size())
 	{
-		auto results = this->WeightedRollsHandler(&this->SW_GrantOneTime_RollChances, &this->SW_GrantOneTime_RandomWeightsData, this->SW_GrantOneTime.size());
-		for (int result : results)
-			grantTheSW(this->SW_GrantOneTime[result]);
+		const auto results = this->WeightedRollsHandler(&this->SW_Link_RollChances, &this->SW_Link_RandomWeightsData, this->SW_Link.size());
+
+		for (const int result : results)
+		{
+			if (linkedSW(this->SW_Link[result]))
+				isActive = true;
+		}
 	}
+
 	// no randomness mode
 	else
 	{
-		for (const auto swType : this->SW_GrantOneTime)
-			grantTheSW(swType);
+		for (const auto swType : this->SW_Link)
+		{
+			if (linkedSW(swType))
+				isActive = true;
+		}
 	}
 
-	if (notObserver && pHouse->IsCurrentPlayer())
+	if (isActive && notObserver && pHouse->IsCurrentPlayer())
 	{
-		if (this->EVA_GrantOneTimeLaunched.isset())
-			VoxClass::PlayIndex(this->EVA_GrantOneTimeLaunched.Get(), -1, -1);
+		if (this->EVA_LinkedSWAcquired.isset())
+			VoxClass::PlayIndex(this->EVA_LinkedSWAcquired.Get(), -1, -1);
 
-		MessageListClass::Instance.PrintMessage(this->Message_GrantOneTimeLaunched.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance.PrintMessage(this->Message_LinkedSWAcquired.Get(), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 }

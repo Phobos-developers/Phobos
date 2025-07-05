@@ -90,7 +90,7 @@ public:
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
-		std::vector<ValueableVector<int>> SW_GrantOneTime_RandomWeightsData;
+		std::vector<ValueableVector<int>> SW_Link_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
@@ -104,13 +104,13 @@ public:
 		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
 		Valueable<bool> EMPulse_TargetSelf;
 
-		ValueableIdxVector<SuperWeaponTypeClass> SW_GrantOneTime;
-		Nullable<bool> SW_GrantOneTime_InitialReady;
-		Nullable<bool> SW_GrantOneTime_ReadyIfExists;
-		Valueable<bool> SW_GrantOneTime_ResetIfExists;
-		ValueableVector<float> SW_GrantOneTime_RollChances;
-		Valueable<CSFText> Message_GrantOneTimeLaunched;
-		NullableIdx<VoxClass> EVA_GrantOneTimeLaunched;
+		ValueableIdxVector<SuperWeaponTypeClass> SW_Link;
+		Valueable<bool> SW_Link_Grant;
+		Valueable<bool> SW_Link_Ready;
+		Valueable<bool> SW_Link_Reset;
+		ValueableVector<float> SW_Link_RollChances;
+		Valueable<CSFText> Message_LinkedSWAcquired;
+		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
 
 		ExtData(SuperWeaponTypeClass* OwnerObject) : Extension<SuperWeaponTypeClass>(OwnerObject)
 			, TypeID { "" }
@@ -179,14 +179,14 @@ public:
 			, EMPulse_SuspendOthers { false }
 			, EMPulse_Cannons {}
 			, EMPulse_TargetSelf { false }
-			, SW_GrantOneTime {}
-			, SW_GrantOneTime_InitialReady {}
-			, SW_GrantOneTime_ReadyIfExists {}
-			, SW_GrantOneTime_ResetIfExists { false }
-			, SW_GrantOneTime_RollChances {}
-			, SW_GrantOneTime_RandomWeightsData {}
-			, Message_GrantOneTimeLaunched {}
-			, EVA_GrantOneTimeLaunched {}
+			, SW_Link {}
+			, SW_Link_Grant { false }
+			, SW_Link_Ready { false }
+			, SW_Link_Reset { false }
+			, SW_Link_RollChances {}
+			, SW_Link_RandomWeightsData {}
+			, Message_LinkedSWAcquired {}
+			, EVA_LinkedSWAcquired {}
 		{ }
 
 		// Ares 0.A functions
@@ -211,7 +211,7 @@ public:
 		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
 
-		void GrantOneTimeFromList(SuperClass* pSW);
+		void ApplyLinkedSW(SuperClass* pSW);
 
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
 		virtual void Initialize() override;

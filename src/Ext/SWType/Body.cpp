@@ -87,14 +87,14 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EMPulse_SuspendOthers)
 		.Process(this->EMPulse_Cannons)
 		.Process(this->EMPulse_TargetSelf)
-		.Process(this->SW_GrantOneTime)
-		.Process(this->SW_GrantOneTime_InitialReady)
-		.Process(this->SW_GrantOneTime_ReadyIfExists)
-		.Process(this->SW_GrantOneTime_ResetIfExists)
-		.Process(this->SW_GrantOneTime_RandomWeightsData)
-		.Process(this->SW_GrantOneTime_RollChances)
-		.Process(this->Message_GrantOneTimeLaunched)
-		.Process(this->EVA_GrantOneTimeLaunched)
+		.Process(this->SW_Link)
+		.Process(this->SW_Link_Grant)
+		.Process(this->SW_Link_Ready)
+		.Process(this->SW_Link_Reset)
+		.Process(this->SW_Link_RandomWeightsData)
+		.Process(this->SW_Link_RollChances)
+		.Process(this->Message_LinkedSWAcquired)
+		.Process(this->EVA_LinkedSWAcquired)
 		;
 }
 
@@ -217,34 +217,34 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
 	}
 
-	this->SW_GrantOneTime.Read(exINI, pSection, "SW.GrantOneTime");
-	this->SW_GrantOneTime_InitialReady.Read(exINI, pSection, "SW.GrantOneTime.InitialReady");
-	this->SW_GrantOneTime_ReadyIfExists.Read(exINI, pSection, "SW.GrantOneTime.ReadyIfExists");
-	this->SW_GrantOneTime_ResetIfExists.Read(exINI, pSection, "SW.GrantOneTime.ResetIfExists");
-	this->Message_GrantOneTimeLaunched.Read(exINI, pSection, "Message.GrantOneTimeLaunched");
-	this->EVA_GrantOneTimeLaunched.Read(exINI, pSection, "EVA.GrantOneTimeLaunched");
-	this->SW_GrantOneTime_RollChances.Read(exINI, pSection, "SW.GrantOneTime.RollChances");
+	this->SW_Link.Read(exINI, pSection, "SW.Link");
+	this->SW_Link_Grant.Read(exINI, pSection, "SW.Link.Grant");
+	this->SW_Link_Ready.Read(exINI, pSection, "SW.Link.Ready");
+	this->SW_Link_Reset.Read(exINI, pSection, "SW.Link.Reset");
+	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
+	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
+	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
 
 	// SW.GrantOneTime.RandomWeights
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<int> weights3;
-		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SW.GrantOneTime.RandomWeights%d", i);
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SW.Link.RandomWeights%d", i);
 		weights3.Read(exINI, pSection, tempBuffer);
 
 		if (!weights3.size())
 			break;
 
-		this->SW_GrantOneTime_RandomWeightsData.push_back(std::move(weights3));
+		this->SW_Link_RandomWeightsData.push_back(std::move(weights3));
 	}
 	ValueableVector<int> weights3;
-	weights3.Read(exINI, pSection, "SW.GrantOneTime.RandomWeights");
+	weights3.Read(exINI, pSection, "SW.Link.RandomWeights");
 	if (weights3.size())
 	{
-		if (this->SW_GrantOneTime_RandomWeightsData.size())
-			this->SW_GrantOneTime_RandomWeightsData[0] = std::move(weights3);
+		if (this->SW_Link_RandomWeightsData.size())
+			this->SW_Link_RandomWeightsData[0] = std::move(weights3);
 		else
-			this->SW_GrantOneTime_RandomWeightsData.push_back(std::move(weights3));
+			this->SW_Link_RandomWeightsData.push_back(std::move(weights3));
 	}
 
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
