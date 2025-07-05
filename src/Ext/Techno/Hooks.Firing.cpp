@@ -621,7 +621,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	{
 		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		pBulletExt->InterceptorTechnoType = pSourceTypeExt;
-		pBulletExt->InterceptedStatus &= InterceptedStatus::Targeted;
+		pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
 
 		if (!pInterceptorType->ApplyFirepowerMult)
 			pBullet->Health = pWeapon->Damage;
