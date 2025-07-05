@@ -110,7 +110,7 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 	GET(DamageState, result, EAX);
 
 	// Immediately release locomotor warhead's hold on a crashable unit if it dies while attacked by one.
-	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->GetTechnoType()->Crashable)
+	if (result == DamageState::NowDead && pThis->IsAttackedByLocomotor && pThis->Type->Crashable)
 		pThis->IsAttackedByLocomotor = false;
 
 	if (result != DamageState::PostMortem && pThis->DeathFrameCounter > 0)
@@ -121,50 +121,104 @@ DEFINE_HOOK(0x737D57, UnitClass_ReceiveDamage_DyingFix, 0x7)
 
 // Restore DebrisMaximums logic (issue #109)
 // Author: Otamaa
-DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_DebrisMaximumsFix, 0xA)
+// Jun20,2025 Modified by: CrimRecya
+DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 {
+	enum { SkipGameCode = 0x702572 };
+
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto pType = pThis->GetTechnoType();
+	const auto pType = pThis->GetTechnoType();
 
-	// If DebrisMaximums has one value, then legacy behavior is used
-	if (pType->DebrisMaximums.Count == 1 &&
-		pType->DebrisMaximums.GetItem(0) > 0 &&
-		pType->DebrisTypes.Count > 0)
+	// Fix the debris count to be in range of Min, Max instead of Min, Max-1.
+	int totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(pType->MinDebris, pType->MaxDebris);
+
+	if (totalSpawnAmount > 0)
 	{
-		return 0;
-	}
+		const auto& debrisTypes = pType->DebrisTypes;
+		const auto& debrisMaximums = pType->DebrisMaximums;
 
-	auto totalSpawnAmount = ScenarioClass::Instance->Random.RandomRanged(
-		pType->MinDebris, pType->MaxDebris);
+		const auto pOwner = pThis->Owner;
+		auto coord = pThis->GetCoords();
 
-	if (pType->DebrisTypes.Count > 0 && pType->DebrisMaximums.Count > 0)
-	{
-		auto cord = pThis->GetCoords();
-		for (int currentIndex = 0; currentIndex < pType->DebrisTypes.Count; ++currentIndex)
+		int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
+
+		// Restore DebrisMaximums logic
+		// Make DebrisTypes generate completely in accordance with DebrisMaximums,
+		// without continuously looping until it exceeds totalSpawnAmount
+		if (count > 0)
 		{
-			if (pType->DebrisMaximums.GetItem(currentIndex) > 0)
+			const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+			const auto& debrisMinimums = pTypeExt->DebrisMinimums;
+			const bool limit = pTypeExt->DebrisTypes_Limit.Get(count > 1);
+			const int minIndex = static_cast<int>(debrisMinimums.size()) - 1;
+			int currentIndex = 0;
+
+			while (totalSpawnAmount > 0)
 			{
-				int adjustedMaximum = Math::min(pType->DebrisMaximums.GetItem(currentIndex), pType->MaxDebris);
-				int amountToSpawn = abs(ScenarioClass::Instance->Random.Random()) % (adjustedMaximum + 1); //0x702337
-				amountToSpawn = Math::min(amountToSpawn, totalSpawnAmount);
+				const int currentMaxDebris = Math::min(1, debrisMaximums[currentIndex]);
+				const int currentMinDebris = (minIndex >= 0) ? Math::max(0, debrisMinimums[Math::min(currentIndex, minIndex)]) : 0;
+				int amountToSpawn = Math::min(totalSpawnAmount, ScenarioClass::Instance->Random.RandomRanged(currentMinDebris, currentMaxDebris));
 				totalSpawnAmount -= amountToSpawn;
 
-				for (; amountToSpawn > 0; --amountToSpawn)
-				{
-					GameCreate<VoxelAnimClass>(pType->DebrisTypes.GetItem(currentIndex),
-						&cord, pThis->Owner);
-				}
+				for ( ; amountToSpawn > 0; --amountToSpawn)
+					GameCreate<VoxelAnimClass>(debrisTypes[currentIndex], &coord, pOwner);
 
-				if (totalSpawnAmount < 1)
+				if (totalSpawnAmount <= 0)
+					return SkipGameCode;
+
+				if (++currentIndex < count)
+					continue;
+
+				if (limit)
 					break;
+
+				currentIndex = 0;
+			}
+		}
+
+		// Record the ownership of the animation
+		// The vanilla game will consume all totalSpawnAmount when DebrisTypes exists, so there
+		// will be no situation where DebrisTypes and DebrisAnims are generated simultaneously.
+		// However, after fixing DebrisMinimums, according to the original judgment conditions,
+		// it is possible to generate both DebrisTypes and DebrisAnims simultaneously. They all
+		// need to be set up to take effect, and it doesn't seem to bring any further problems,
+		// so I think this can be retained. ( 0x7023E5 / 0x702402 / 0x7024BB )
+		{
+			const auto& debrisAnims = pType->DebrisAnims;
+			const int maxIndex = debrisAnims.Count - 1;
+
+			if (maxIndex >= 0)
+			{
+				do
+				{
+					int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
+					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+				}
+				while (--totalSpawnAmount > 0);
+			}
+		}
+
+		if (count <= 0)
+		{
+			const auto& metallicDebrisAnims = RulesClass::Instance->MetallicDebris;
+			const int maxMetallicIndex = metallicDebrisAnims.Count - 1;
+
+			if (maxMetallicIndex >= 0)
+			{
+				do
+				{
+					int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxMetallicIndex);
+					const auto pAnim = GameCreate<AnimClass>(metallicDebrisAnims[debrisIndex], coord);
+					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
+				}
+				while (--totalSpawnAmount > 0);
 			}
 		}
 	}
 
-	R->EBX(totalSpawnAmount);
-
-	return 0x7023E5;
+	return SkipGameCode;
 }
 
 // issue #250: Building placement hotkey not responding
@@ -217,7 +271,7 @@ DEFINE_HOOK(0x44377E, BuildingClass_ActiveClickWith, 0x6)
 	GET(BuildingClass*, pThis, ESI);
 	GET_STACK(CellStruct*, pCell, STACK_OFFSET(0x84, 0x8));
 
-	if (pThis->GetTechnoType()->UndeploysInto)
+	if (pThis->Type->UndeploysInto)
 		pThis->SetRallypoint(pCell, false);
 	else if (pThis->IsUnitFactory())
 		pThis->SetRallypoint(pCell, true);
@@ -368,7 +422,7 @@ DEFINE_HOOK(0x415F5C, AircraftClass_FireAt_SpeedModifiers, 0xA)
 
 	if (const auto pLocomotor = locomotion_cast<FlyLocomotionClass*>(pThis->Locomotor))
 	{
-		double currentSpeed = pThis->GetTechnoType()->Speed * pLocomotor->CurrentSpeed *
+		double currentSpeed = pThis->Type->Speed * pLocomotor->CurrentSpeed *
 			TechnoExt::GetCurrentSpeedMultiplier(pThis);
 		R->EAX(static_cast<int>(currentSpeed));
 	}
@@ -578,9 +632,9 @@ DEFINE_HOOK(0x4387A8, BombClass_Detonate_ExplosionAnimHandled, 0x5)
 // redirect MapClass::DamageArea call to our dll for additional functionality and checks
 DEFINE_FUNCTION_JUMP(CALL, 0x4387A3, _BombClass_Detonate_DamageArea);
 
-// BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
+// Oct 20, 2022 - Starkku: BibShape checks for BuildingClass::BState which needs to not be 0 (constructing) for bib to draw.
 // It is possible for BState to be 1 early during construction for frame or two which can result in BibShape being drawn during buildup, which somehow depends on length of buildup.
-// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done - Starkku
+// Trying to fix this issue at its root is problematic and most of the time causes buildup to play twice, it is simpler to simply fix the BibShape to not draw until the buildup is done
 DEFINE_HOOK(0x43D874, BuildingClass_Draw_BuildupBibShape, 0x6)
 {
 	enum { DontDrawBib = 0x43D8EE };
@@ -851,10 +905,10 @@ DEFINE_JUMP(LJMP, 0x67F72E, 0x67F744); // Load
 
 #pragma endregion save_load
 
-// An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
+// Jul 14, 2024 - Starkku: An attempt to fix an issue where the ATC->CurrentVector does not contain every air Techno in given range that increases in frequency as the range goes up.
 // Real talk: I have absolutely no clue how the original function works besides doing vector looping and manipulation, as far as I can tell it never even explicitly
 // clears CurrentVector but somehow it only contains applicable items afterwards anyway. It is possible this one does not achieve everything the original does functionality and/or
-// performance-wise but it does work and produces results with greater accuracy than the original for large ranges. - Starkku
+// performance-wise but it does work and produces results with greater accuracy than the original for large ranges.
 DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 {
 	enum { SkipGameCode = 0x413482 };
@@ -948,8 +1002,8 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 	auto& currLoc = pLoco->LinkedTo->Location;
 	int distance = (int) CoordStruct{currLoc.X - pLoco->Coords.X, currLoc.Y - pLoco->Coords.Y,0}.Magnitude() ;
 
-	// The movement speed was actually also hardcoded here to 19, so the distance check made sense
-	// It can now be customized globally or per TechnoType however - Starkku
+	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
+	// It can now be customized globally or per TechnoType however
 	auto const pType = pLoco->LinkedTo->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
@@ -1011,6 +1065,19 @@ DEFINE_HOOK(0x44985B, BuildingClass_Mission_Guard_UnitReload, 0x6)
 	return 0;
 }
 
+// Fix a potential edge case where aircraft gets stuck in 'sleep' (reload/repair) on dock if it gets assigned target from team mission etc.
+DEFINE_HOOK(0x41915D, AircraftClass_ReceiveCommand_QueryPreparedness, 0x8)
+{
+	enum { CheckAmmo = 0x419169 };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	if (pThis->Team && pThis->Team->Focus == pThis->Target && pThis->CurrentMission == Mission::Sleep)
+		return CheckAmmo;
+
+	return 0;
+}
+
 // Fix tileset parsing to not reset certain tileset indices for Lunar theater if the fix is enabled.
 DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 {
@@ -1024,7 +1091,7 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 	return 0;
 }
 
-// Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes - Starkku
+// Oct 26, 2024 - Starkku: Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes 
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 {
 	enum { SkipResetTarget = 0x6FA472 };
@@ -1039,7 +1106,7 @@ DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 	return 0;
 }
 
-// Starkku: These fix issues with follower train cars etc) indices being thrown off by preplaced vehicles not being created, having other vehicles as InitialPayload etc.
+// Nov 6, 2024: Starkku: These fix issues with follower train cars etc) indices being thrown off by preplaced vehicles not being created, having other vehicles as InitialPayload etc.
 // This fix basically works by not using the global UnitClass array at all for setting the followers, only a list of preplaced units, successfully created or not.
 #pragma region Follower
 
@@ -1947,38 +2014,39 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
-namespace RemoveCellContentTemp
-{
-	bool CheckBeforeUnmark = false;
-}
-
-DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
-{
-	enum { SkipGameCode = 0x737F80 };
-
-	GET(UnitClass*, pThis, ESI);
-
-	RemoveCellContentTemp::CheckBeforeUnmark = true;
-	pThis->Mark(MarkType::Up);
-	RemoveCellContentTemp::CheckBeforeUnmark = false;
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
-{
-	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
-
-	GET(CellClass*, pCell, EDI);
-	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
-
-	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
-		return DontUnmark;
-
-	GET(ObjectClass*, pContent, ESI);
-	R->EAX(pContent->WhatAmI());
-	return ContinueCheck;
-}
+// These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
+//namespace RemoveCellContentTemp
+//{
+//	bool CheckBeforeUnmark = false;
+//}
+//
+//DEFINE_HOOK(0x737F74, UnitClass_ReceiveDamage_NowDead_MarkUp, 0x6)
+//{
+//	enum { SkipGameCode = 0x737F80 };
+//
+//	GET(UnitClass*, pThis, ESI);
+//
+//	RemoveCellContentTemp::CheckBeforeUnmark = true;
+//	pThis->Mark(MarkType::Up);
+//	RemoveCellContentTemp::CheckBeforeUnmark = false;
+//
+//	return SkipGameCode;
+//}
+//
+//DEFINE_HOOK(0x47EAF7, CellClass_RemoveContent_BeforeUnmarkOccupationBits, 0x7)
+//{
+//	enum { ContinueCheck = 0x47EAFE, DontUnmark = 0x47EB8F };
+//
+//	GET(CellClass*, pCell, EDI);
+//	GET_STACK(bool, onBridge, STACK_OFFSET(0x14, 0x8));
+//
+//	if (RemoveCellContentTemp::CheckBeforeUnmark && (onBridge ? pCell->AltObject : pCell->FirstObject))
+//		return DontUnmark;
+//
+//	GET(ObjectClass*, pContent, ESI);
+//	R->EAX(pContent->WhatAmI());
+//	return ContinueCheck;
+//}
 
 DEFINE_HOOK(0x481778, CellClass_ScatterContent_Scatter, 0x6)
 {
@@ -2032,7 +2100,7 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 	bool InGuard = (R->Origin() == 0x4D5184);
 
 	if (pBuilding->Owner == pThis->Owner &&
-		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->GetTechnoType()) != 0.0)
+		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)
 	{
 		return InGuard ? SkipGuard : SkipAreaGuard;
 	}
@@ -2042,7 +2110,29 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 
 #pragma endregion
 
+DEFINE_HOOK(0x489416, MapClass_DamageArea_AirDamageSelfFix, 0x6)
+{
+	enum { NextTechno = 0x489547 };
+
+	GET(TechnoClass*, pAirTechno, EBX);
+	GET_BASE(TechnoClass*, pSourceTechno, 0x8);
+
+	if (pAirTechno != pSourceTechno)
+		return 0;
+
+	if (pSourceTechno->GetTechnoType()->DamageSelf)
+		return 0;
+
+	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
+
+	if (WarheadTypeExt::ExtMap.Find(pWarhead)->AllowDamageOnSelf)
+		return 0;
+
+	return NextTechno;
+}
+
 #pragma region DamageAreaItemsFix
+
 // Obviously, it is unreasonable for a large-scale damage like a nuke to only cause damage to units
 // located on or under the bridge that are in the same position as the damage center point
 namespace DamageAreaTemp
@@ -2050,6 +2140,7 @@ namespace DamageAreaTemp
 	const CellClass* CheckingCell = nullptr;
 	bool CheckingCellAlt = false;
 }
+
 // Skip useless alt check, so it will only start checking from the cell's FirstObject
 // Note: Ares hook at 0x489562(0x6) and return 0
 DEFINE_JUMP(LJMP, 0x489568, 0x489592);
@@ -2057,26 +2148,25 @@ DEFINE_JUMP(LJMP, 0x489568, 0x489592);
 DEFINE_HOOK(0x4896BF, DamageArea_DamageItemsFix1, 0x6)
 {
 	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
-	// Record the current cell for linked list getting
+
 	GET(const CellClass* const, pCell, EBX);
+
 	DamageAreaTemp::CheckingCell = pCell;
-	// First, check the FirstObject linked list
 	auto pObject = pCell->FirstObject;
-	// Check if there are objects in the linked list
+
 	if (pObject)
 	{
-		// When it exists, start the vanilla processing
 		R->ESI(pObject);
 		return CheckThisObject;
 	}
-	// When it does not exist, check AltObject linked list
+
 	pObject = pCell->AltObject;
-	// If there is also no object in the linked list, return directly to check the next cell
+
 	if (!pObject)
 		return CheckNextCell;
-	// If there is an object, record the flag
+
 	DamageAreaTemp::CheckingCellAlt = true;
-	// Then return and continue with the original execution
+
 	R->ESI(pObject);
 	return CheckThisObject;
 }
@@ -2084,32 +2174,30 @@ DEFINE_HOOK(0x4896BF, DamageArea_DamageItemsFix1, 0x6)
 DEFINE_HOOK(0x4899B3, DamageArea_DamageItemsFix2, 0x5)
 {
 	enum { CheckNextCell = 0x4899BE, CheckThisObject = 0x4896DD };
-	// When there are no units in the FirstObject linked list, it will not enter this hook
+
 	GET(const ObjectClass*, pObject, ESI);
-	// As vanilla, first look at the next object in the linked list
+
 	pObject = pObject->NextObject;
-	// Check if there are still objects in the linked list
+
 	if (pObject)
 	{
-		// When it exists, return to continue the vanilla processing
 		R->ESI(pObject);
 		return CheckThisObject;
 	}
-	// When it does not exist, check which linked list it is currently in
+
 	if (DamageAreaTemp::CheckingCellAlt)
 	{
-		// If it is already in the AltObject linked list, reset the flag and return to check the next cell
 		DamageAreaTemp::CheckingCellAlt = false;
 		return CheckNextCell;
 	}
-	// If it is still in the FirstObject linked list, take the first object in the AltObject linked list and continue checking
+
 	pObject = DamageAreaTemp::CheckingCell->AltObject;
-	// If there is no object in the AltObject linked list, return directly to check the next cell
+
 	if (!pObject)
 		return CheckNextCell;
-	// If there is an object, record the flag
+
 	DamageAreaTemp::CheckingCellAlt = true;
-	// Then return and continue with the original execution
+
 	R->ESI(pObject);
 	return CheckThisObject;
 }
@@ -2117,53 +2205,77 @@ DEFINE_HOOK(0x4899B3, DamageArea_DamageItemsFix2, 0x5)
 DEFINE_HOOK(0x489BDB, DamageArea_RockerItemsFix1, 0x6)
 {
 	enum { SkipGameCode = 0x489C29 };
-	// Get cell coordinates
+
 	GET(const short, cellX, ESI);
 	GET(const short, cellY, EBX);
-	// Record the current cell for linked list getting
+
 	const auto pCell = MapClass::Instance.GetCellAt(CellStruct { cellX, cellY });
 	DamageAreaTemp::CheckingCell = pCell;
-	// First, check the FirstObject linked list
 	auto pObject = pCell->FirstObject;
-	// Check if there are objects in the linked list
+
 	if (pObject)
 	{
-		// When it exists, start the vanilla processing
 		R->EAX(pObject);
 		return SkipGameCode;
 	}
-	// When it does not exist, check AltObject linked list
+
 	pObject = pCell->AltObject;
-	// If there is an object, record the flag
+
 	if (pObject)
 		DamageAreaTemp::CheckingCellAlt = true;
-	// Return the original check
+
 	R->EAX(pObject);
 	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 {
-	// Prior to this, there was already pObject = pCell->FirstObject;
 	GET(const ObjectClass*, pObject, EDI);
-	// As vanilla, first look at the next object in the linked list
+
 	if (pObject)
 		return 0;
-	// When it does not exist, check which linked list it is currently in
+
 	if (DamageAreaTemp::CheckingCellAlt)
 	{
-		// If it is already in the AltObject linked list, reset the flag and return the original check
 		DamageAreaTemp::CheckingCellAlt = false;
 		return 0;
 	}
-	// If it is still in the FirstObject linked list, take the first object in the AltObject linked list and continue checking
+
 	pObject = DamageAreaTemp::CheckingCell->AltObject;
-	// If there is an object, record the flag
+
 	if (pObject)
 		DamageAreaTemp::CheckingCellAlt = true;
-	// Return the original check
+
 	R->EDI(pObject);
 	return 0;
 }
 
 #pragma region
+
+DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
+{
+	enum { SkipGameCode = 0x71A82C };
+
+	GET(TemporalClass*, pThis, ESI);
+	GET(TechnoClass*, pTarget, ECX);
+
+	// Vanilla check is incorrect for buildingtargets
+	R->EAX(pThis->Owner->DistanceFrom(pTarget));
+	return SkipGameCode;
+}
+
+// Jul 5, 2025 - Starkku: Fixes Vertical=true projectiles for AircraftTypes (also makes sure parabombs work correctly)
+DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
+{
+	enum { SkipGameCode = 0x41631F };
+
+	GET(BulletClass*, pBullet, ESI);
+
+	if (pBullet->Type->Vertical || pBullet->HasParachute)
+	{
+		pBullet->Velocity = BulletVelocity{ 0, 0, pBullet->Velocity.Z };
+		return SkipGameCode;
+	}
+
+	return 0;
+}

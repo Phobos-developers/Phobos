@@ -170,7 +170,7 @@ DEFINE_HOOK(0x51EAE0, TechnoClass_WhatAction_AllowAirstrike, 0x7)
 
 	if (const auto pTechno = abstract_cast<TechnoClass*>(pObject))
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
 
 		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
 		{
@@ -198,7 +198,7 @@ DEFINE_HOOK(0x70E92F, TechnoClass_UpdateAirstrikeTint, 0x5)
 	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueIn : Skip;
 }
 
-// 9.6.2025 - Starkku: Moved to BuildingClass_AI hook in Buildings/Hooks.cpp for optimization's sake.
+// Jun 9, 2025 - Starkku: Moved to BuildingClass_AI hook in Buildings/Hooks.cpp for optimization's sake.
 // Said hook is later but shouldn't matter in this case, the purpose is to force redraw on every frame.
 /*
 DEFINE_HOOK(0x43FDD6, BuildingClass_AI_Airstrike, 0x6)

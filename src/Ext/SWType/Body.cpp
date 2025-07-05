@@ -102,15 +102,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-	{
-		return;
-	}
+	INI_EX exINI(pINI);
 
 	this->TypeID.Read(pINI, pSection, "Type");
-
-	INI_EX exINI(pINI);
 
 	// from ares
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
@@ -178,7 +172,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size() > i)
 			this->LimboDelivery_RandomWeightsData[i] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	ValueableVector<int> weights;
@@ -188,7 +182,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size())
 			this->LimboDelivery_RandomWeightsData[0] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	// SW.Next.RandomWeights
@@ -204,7 +198,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size() > i)
 			this->SW_Next_RandomWeightsData[i] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	ValueableVector<int> weights2;
@@ -214,7 +208,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size())
 			this->SW_Next_RandomWeightsData[0] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	this->SW_Link.Read(exINI, pSection, "SW.Link");
@@ -372,7 +366,7 @@ DEFINE_HOOK(0x6CE8EA, SuperWeaponTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 {
 	GET(SuperWeaponTypeClass*, pItem, EBP);

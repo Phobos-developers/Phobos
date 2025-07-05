@@ -97,10 +97,10 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 		pBuilding->IsAlive = true;
 		pBuilding->IsOnMap = true;
 
-		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
+		// Jun 3, 2023 - Starkku: For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
-		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
+		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist
 		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 

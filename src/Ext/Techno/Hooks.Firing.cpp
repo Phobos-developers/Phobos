@@ -38,6 +38,20 @@ DEFINE_HOOK(0x6F3339, TechnoClass_WhatWeaponShouldIUse_Interceptor, 0x8)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x6F3360, TechnoClass_WhatWeaponShouldIUse_MultiWeapon, 0x6)
+{
+	GET(TechnoTypeClass*, pType, EAX);
+	enum { SkipGameCode = 0x6F3379 };
+
+	if (TechnoTypeExt::ExtMap.Find(pType)->MultiWeapon.Get()
+		&& (pType->WhatAmI() != AbstractType::UnitType || !pType->Gunner))
+	{
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 {
 	enum { ReturnWeaponIndex = 0x6F37AF };
@@ -54,7 +68,6 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		if (pWeaponSecondary
 			&& !pPrimaryExt->SkipWeaponPicking
 			&& (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
-				|| !pPrimaryExt->IsHealthRatioEligible(pThis)
 				|| (pPrimaryExt->AttachEffect_CheckOnFirer
 					&& !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
 		{
@@ -83,7 +96,7 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x18, 0x4));
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	// Force weapon
 	const int forceWeaponIndex = pTypeExt->SelectForceWeapon(pThis, pTarget);
@@ -91,6 +104,15 @@ DEFINE_HOOK(0x6F3428, TechnoClass_WhatWeaponShouldIUse_ForceWeapon, 0x6)
 	if (forceWeaponIndex >= 0)
 	{
 		R->EAX(forceWeaponIndex);
+		return UseWeaponIndex;
+	}
+
+	// Multi weapon
+	const int multiWeaponIndex = pTypeExt->SelectMultiWeapon(pThis, pTarget);
+
+	if (multiWeaponIndex >= 0)
+	{
+		R->EAX(multiWeaponIndex);
 		return UseWeaponIndex;
 	}
 
@@ -105,7 +127,7 @@ DEFINE_HOOK(0x6F36DB, TechnoClass_WhatWeaponShouldIUse, 0x8)
 	enum { Primary = 0x6F37AD, Secondary = 0x6F3745, OriginalCheck = 0x6F36E3 };
 
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	const bool allowFallback = !pTypeExt->NoSecondaryWeaponFallback;
 	const bool allowAAFallback = allowFallback ? true : pTypeExt->NoSecondaryWeaponFallback_AllowAA;
 	const int weaponIndex = TechnoExt::PickWeaponIndex(pThis, pTargetTechno, pTarget, 0, 1, allowFallback, allowAAFallback);
@@ -248,18 +270,15 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x20, 0x4));
+	GET(TechnoClass*, pTargetTechno, EBP);
 
 	// Checking for nullptr is not required here, since the game has already executed them before calling the hook  -- Belonit
 	const auto pWH = pWeapon->Warhead;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	const int nMoney = pWHExt->TransactMoney;
 
-	if (pWHExt)
-	{
-		const int nMoney = pWHExt->TransactMoney;
-
-		if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
-			return CannotFire;
-	}
+	if (nMoney < 0 && pThis->Owner->Available_Money() < -nMoney)
+		return CannotFire;
 
 	// AAOnly doesn't need to be checked if LandTargeting=1.
 	if (pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK && pWeapon->Projectile->AA
@@ -268,7 +287,6 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		return CannotFire;
 	}
 
-	const auto pTechno = abstract_cast<TechnoClass*>(pTarget);
 	CellClass* pTargetCell = nullptr;
 
 	if (pTarget)
@@ -276,7 +294,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		if (const auto pObject = abstract_cast<ObjectClass*, true>(pTarget))
 		{
 			// Ignore target cell for technos that are in air.
-			if ((pTechno && !pTechno->IsInAir()) || pObject != pTechno)
+			if ((pTargetTechno && !pTargetTechno->IsInAir()) || pObject != pTargetTechno)
 				pTargetCell = pObject->GetCell();
 		}
 		else if (const auto pCell = abstract_cast<CellClass*, true>(pTarget))
@@ -287,20 +305,23 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (!pWeaponExt->SkipWeaponPicking && pTargetCell
-		&& !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
-	{
+	if (!pWeaponExt->SkipWeaponPicking && pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
 		return CannotFire;
-	}
 
-	if (pTechno)
+	if (pTargetTechno)
 	{
+		if (pThis->Berzerk
+			&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
+		{
+			return CannotFire;
+		}
+
 		if (!pWeaponExt->SkipWeaponPicking)
 		{
-			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
-				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTechno->Owner)
-				|| !pWeaponExt->IsHealthRatioEligible(pTechno)
-				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
+				|| !pWeaponExt->IsHealthInThreshold(pTargetTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return CannotFire;
 			}
@@ -308,10 +329,10 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 		if (pWH->Airstrike)
 		{
-			if (!pWHExt || !EnumFunctions::IsTechnoEligible(pTechno, pWHExt->AirstrikeTargets))
+			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
 				return CannotFire;
 
-			if (!TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType())->AllowAirstrike.Get(pTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTechno)->Type->CanC4))
+			if (!TechnoExt::ExtMap.Find(pTargetTechno)->TypeExtData->AllowAirstrike.Get(pTargetTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))
 				return CannotFire;
 		}
 	}
@@ -343,7 +364,7 @@ DEFINE_HOOK(0x6FC5C7, TechnoClass_CanFire_OpenTopped, 0x6)
 	// GET(TechnoClass*, pThis, ESI);
 	GET(TechnoClass*, pTransport, EAX);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
 
 	if (pTransport->Deactivated && !pTypeExt->OpenTopped_AllowFiringIfDeactivated)
 		return Illegal;
@@ -478,9 +499,9 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 		GET_STACK(int, nDamage, STACK_OFFSET(0xB0, -0x84));
 		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
 
-		if (auto pTransport = pThis->Transporter)
+		if (auto const pTransport = pThis->Transporter)
 		{
-			if (auto pExt = TechnoTypeExt::ExtMap.Find(pTransport->GetTechnoType()))
+			if (auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData)
 			{
 				//it is float isnt it YRPP ? , check tomson26 YR-IDB !
 				nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
@@ -592,7 +613,7 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
-	auto const pSourceTypeExt = TechnoTypeExt::ExtMap.Find(pSource->GetTechnoType());
+	auto const pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 
 	if (pSourceTypeExt->InterceptorType)
 	{
@@ -684,7 +705,7 @@ DEFINE_HOOK(0x6FF29E, TechnoClass_FireAt_ChargeTurret2, 0x6)
 // and neither Ares nor Phobos has touched it, even that crawling flh one was in TechnoClass
 DEFINE_JUMP(VTABLE, 0x7F5D20, 0x523250);// Redirect UnitClass::GetFLH to InfantryClass::GetFLH (used to be TechnoClass::GetFLH)
 
-// 4.4.2025 - Starkku: Consolidated all the FLH hooks into single one & using TechnoExt::GetFLHAbsoluteCoord() to get the actual coordinate.
+// Apr 4, 2025 - Starkku: Consolidated all the FLH hooks into single one & using TechnoExt::GetFLHAbsoluteCoord() to get the actual coordinate.
 DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 {
 	enum { SkipGameCode = 0x6F3D50 };
