@@ -45,10 +45,13 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	// The central location and radius for searching for enemies
 	const auto retargetCoords = this->GetRetargetCenter();
 	const auto retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
+	const auto pWeapon = pBullet->WeaponType;
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	TechnoClass* pNewTechno = nullptr;
 	// Find the first target
 	if (!this->TargetInTheAir) // Only get same type (on ground / in air)
 	{
+		const auto range = pWeapon ? pWeapon->Range : 0;
 		const auto retargetCell = CellClass::Coord2Cell(retargetCoords);
 
 		for (CellSpreadEnumerator thisCell(static_cast<size_t>(pType->RetargetRadius + 0.99)); thisCell; ++thisCell)
@@ -66,25 +69,19 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 					if (!pTechnoType->LegalTarget)
 						continue;
+					else if (pTechno->IsBeingWarpedOut())
+						continue;
 					else if (pTechno->WhatAmI() == AbstractType::Building && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+						continue;
+					else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pType->RetargetHouses))
+						continue;
+					else if (PhobosTrajectory::GetDistanceFrom(retargetCoords, pTechno) > retargetRange)
 						continue;
 					else if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
 						continue;
-					else if (pTechno->GetCoords().DistanceFrom(retargetCoords) > retargetRange)
+					else if (pWeapon && PhobosTrajectory::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) > range)
 						continue;
-
-					if (const auto pWeapon = pBullet->WeaponType)
-					{
-						if (pTechno->GetCoords().DistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords) > pWeapon->Range)
-							continue;
-
-						const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-						if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
-							continue;
-					}
-
-					if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pType->RetargetHouses))
+					else if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
 						continue;
 
 					pNewTechno = pTechno;
@@ -98,6 +95,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	}
 	else
 	{
+		const auto range = (pWeapon ? pWeapon->Range : 0) + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
 		const auto airTracker = &AircraftTrackerClass::Instance;
 		airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(retargetCoords), Game::F2I(pType->RetargetRadius));
 
@@ -110,23 +108,17 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 			if (!pTechnoType->LegalTarget)
 				continue;
+			else if (pTechno->IsBeingWarpedOut())
+				continue;
+			else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pType->RetargetHouses))
+				continue;
+			else if (PhobosTrajectory::GetDistanceFrom(retargetCoords, pTechno) > retargetRange)
+				continue;
 			else if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
 				continue;
-			else if (pTechno->GetCoords().DistanceFrom(retargetCoords) > retargetRange)
+			else if (pWeapon && PhobosTrajectory::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) > range)
 				continue;
-
-			if (const auto pWeapon = pBullet->WeaponType)
-			{
-				if (pTechno->GetCoords().DistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords) > pWeapon->Range)
-					continue;
-
-				const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-
-				if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
-					continue;
-			}
-
-			if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pType->RetargetHouses))
+			else if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
 				continue;
 
 			pNewTechno = pTechno;
@@ -391,18 +383,20 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 							continue;
 						else if (pType->DisperseTendency && !pType->DisperseDoRepeat && pTechno == pTarget)
 							continue;
+						else if (pTechno->IsBeingWarpedOut())
+							continue;
+						else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pWeaponExt->CanTargetHouses))
+							continue;
 
 						const auto isBuilding = pTechno->WhatAmI() == AbstractType::Building;
 
 						if (isBuilding && (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame || inserted.contains(pTechno)))
 							continue;
-						else if (centerCoords.DistanceFrom(pTechno->GetCoords()) > pWeapon->Range)
+						else if (PhobosTrajectory::GetDistanceFrom(centerCoords, pTechno) > pWeapon->Range)
 							continue;
 						else if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) == 0)
 							continue;
 						else if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
-							continue;
-						else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pWeaponExt->CanTargetHouses))
 							continue;
 
 						validTechnos.push_back(pTechno);
@@ -416,10 +410,12 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 		if (pType->DisperseHolistic || this->TargetInTheAir) // In air targets
 		{
+			const auto range = pWeapon->Range + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
+
 			if (checkTechnos)
 			{
 				const auto airTracker = &AircraftTrackerClass::Instance;
-				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(centerCoords), Game::F2I(static_cast<double>(pWeapon->Range) / Unsorted::LeptonsPerCell));
+				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(centerCoords), Game::F2I(static_cast<double>(range) / Unsorted::LeptonsPerCell));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
@@ -430,22 +426,24 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 					if (!pTechnoType->LegalTarget)
 						continue;
+					else if (pTechno->IsBeingWarpedOut())
+						continue;
 					else if (pType->DisperseTendency && !pType->DisperseDoRepeat && pTechno == pTarget)
 						continue;
-					else if (centerCoords.DistanceFrom(pTechno->GetCoords()) > pWeapon->Range)
+					else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pWeaponExt->CanTargetHouses))
+						continue;
+					else if (PhobosTrajectory::GetDistanceFrom(centerCoords, pTechno) > range)
 						continue;
 					else if (MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) == 0)
 						continue;
 					else if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
-						continue;
-					else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pWeaponExt->CanTargetHouses))
 						continue;
 
 					validTechnos.push_back(pTechno);
 				}
 			}
 
-			if (checkObjects)
+			if (checkObjects && pFirer && TechnoExt::ExtMap.Find(pFirer)->TypeExtData->InterceptorType)
 			{
 				for (auto const& pObject : BulletClass::Array)
 				{
@@ -454,7 +452,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 					if (!pBulletTypeExt || !pBulletTypeExt->Interceptable)
 						continue;
-					else if (centerCoords.DistanceFrom(centerCoords) > pWeapon->Range)
+					else if (centerCoords.DistanceFrom(pObject->Location) > range)
 						continue;
 					else if (pBulletTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get()) == 0.0)
 						continue;
@@ -580,5 +578,11 @@ void PhobosTrajectory::CreateDisperseBullets(TechnoClass* pTechno, const CoordSt
 		}
 		// Simulate the actual weapon launch effect
 		BulletExt::SimulatedFiringEffects(pBullet, pOwner, nullptr, true, true);
+
+		if (pTarget->WhatAmI() == AbstractType::Bullet)
+		{
+			pExt->IsInterceptor = true;
+			pExt->InterceptedStatus = InterceptedStatus::Targeted;
+		}
 	}
 }

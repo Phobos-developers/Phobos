@@ -393,6 +393,12 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	const auto radius = pType->ProximityRadius.Get();
+	auto pWH = pType->ProximityWarhead.Get();
+
+	if (!pWH)
+		pWH = pBullet->WH;
+
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	// Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius();
 	const size_t cellSize = recCellClass.size() * 2;
@@ -406,7 +412,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	std::vector<TechnoClass*> validTechnos;
 	validTechnos.reserve(vectSize);
 
-	auto checkCellContent = [pType, pBullet, pTarget, pOwner, radius, cellSize, velocity,
+	auto checkCellContent = [pType, pBullet, pTarget, pOwner, radius, cellSize, velocity, pWHExt,
 		&velocityCrd, &thisSize, &vectSize, &validTechnos](ObjectClass* pFirstObject)
 		{
 			for (auto pObject = pFirstObject; pObject; pObject = pObject->NextObject)
@@ -415,13 +421,16 @@ void PhobosTrajectory::PrepareForDetonateAt()
 
 				if (!pTechno || PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
 					continue;
+				// Not directly harming friendly forces
+				if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
+					continue;
+
+				if (pTechno->IsBeingWarpedOut() || !pWHExt->IsHealthInThreshold(pTechno))
+					continue;
 
 				const auto isBuilding = pTechno->WhatAmI() == AbstractType::Building;
 
 				if (isBuilding && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
-					continue;
-				// Not directly harming friendly forces
-				if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
 					continue;
 				// Check distance within the range of half capsule shape
 				const auto targetCrd = pTechno->GetCoords();
@@ -480,6 +489,9 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				continue;
 			// Not directly harming friendly forces
 			if (!pType->ProximityAllies && pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget)
+				continue;
+
+			if (pTechno->IsBeingWarpedOut() || !pWHExt->IsHealthInThreshold(pTechno))
 				continue;
 			// Check distance within the range of half capsule shape
 			const auto targetCrd = pTechno->GetCoords();

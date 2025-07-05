@@ -211,10 +211,9 @@ bool ParabolaTrajectory::OnVelocityCheck()
 		// No need to use these variables anymore
 		{
 			const auto pSourceCell = MapClass::Instance.GetCellAt(theSourceCoords);
-			const auto sourceCell = pSourceCell->MapCoords;
 			const auto pTargetCell = MapClass::Instance.GetCellAt(theTargetCoords);
+			const auto sourceCell = pSourceCell->MapCoords;
 			const auto targetCell = pTargetCell->MapCoords;
-			auto pLastCell = MapClass::Instance.GetCellAt(pBullet->LastMapCoords);
 			const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
 			const bool subjectToWCS = pBulletType->SubjectToWalls || pBulletType->SubjectToCliffs || pBulletTypeExt->SubjectToSolid;
 			const bool checkLevel = !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset();
@@ -224,7 +223,8 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			auto largePace = static_cast<size_t>(Math::max(cellPace.X, cellPace.Y));
 			const auto stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
 			auto curCoord = theSourceCoords;
-			auto pCurCell = MapClass::Instance.GetCellAt(sourceCell);
+			auto pCurCell = pSourceCell;
+			auto pLastCell = MapClass::Instance.GetCellAt(pBullet->LastMapCoords);
 			// Check one by one towards the direction of the next frame's position
 			for (size_t i = 0; i < largePace; ++i)
 			{

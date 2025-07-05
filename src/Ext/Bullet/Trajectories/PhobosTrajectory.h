@@ -310,13 +310,25 @@ public:
 	{
 		return Point2D { static_cast<int>(point.X * Math::cos(radian) + point.Y * Math::sin(radian)), static_cast<int>(point.X * Math::sin(radian) - point.Y * Math::cos(radian)) };
 	}
+	static inline double GetDistanceFrom(const CoordStruct& source, const TechnoClass* const pTarget)
+	{
+		auto distance = source.DistanceFrom(pTarget->GetCoords());
+
+		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
+		{
+			const auto pType = pBuilding->Type;
+			distance = Math::max(0, distance - 64 * (pType->GetFoundationHeight(false) + pType->GetFoundationWidth()));
+		}
+
+		return distance;
+	}
 	static inline bool CheckTechnoIsInvalid(const TechnoClass* const pTechno)
 	{
 		return (!pTechno->IsAlive || !pTechno->IsOnMap || pTechno->InLimbo || pTechno->IsSinking || pTechno->Health <= 0);
 	}
 	static inline bool CheckWeaponCanTarget(const WeaponTypeExt::ExtData* const pWeaponExt, TechnoClass* const pFirer, TechnoClass* const pTarget)
 	{
-		return !pWeaponExt || (EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget) && pWeaponExt->HasRequiredAttachedEffects(pTarget, pFirer));
+		return !pWeaponExt || (EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget) && pWeaponExt->IsHealthInThreshold(pTarget) && pWeaponExt->HasRequiredAttachedEffects(pTarget, pFirer));
 	}
 	static inline bool CheckWeaponValidness(HouseClass* const pHouse, const TechnoClass* const pTechno, const CellClass* const pCell, const AffectedHouse flags)
 	{

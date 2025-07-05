@@ -372,10 +372,9 @@ bool PhobosTrajectory::OnVelocityCheck()
 			if (checkCoords)
 			{
 				const auto pSourceCell = MapClass::Instance.GetCellAt(theSourceCoords);
-				const auto sourceCell = pSourceCell->MapCoords;
 				const auto pTargetCell = MapClass::Instance.GetCellAt(theTargetCoords);
+				const auto sourceCell = pSourceCell->MapCoords;
 				const auto targetCell = pTargetCell->MapCoords;
-				auto pLastCell = MapClass::Instance.GetCellAt(pBullet->LastMapCoords);
 				const bool checkLevel = !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset();
 				const auto cellDist = sourceCell - targetCell;
 				const auto cellPace = CellStruct { static_cast<short>(std::abs(cellDist.X)), static_cast<short>(std::abs(cellDist.Y)) };
@@ -383,7 +382,8 @@ bool PhobosTrajectory::OnVelocityCheck()
 				const auto largePace = static_cast<size_t>(Math::max(cellPace.X, cellPace.Y));
 				const auto stepCoord = !largePace ? CoordStruct::Empty : (theTargetCoords - theSourceCoords) * (1.0 / largePace);
 				auto curCoord = theSourceCoords;
-				auto pCurCell = MapClass::Instance.GetCellAt(sourceCell);
+				auto pCurCell = pSourceCell;
+				auto pLastCell = MapClass::Instance.GetCellAt(pBullet->LastMapCoords);
 				// Check one by one towards the direction of the next frame's position
 				for (size_t i = 0; i < largePace; ++i)
 				{
@@ -505,6 +505,22 @@ void PhobosTrajectory::OpenFire()
 	// Restricted to rotation only on a horizontal plane
 	if (pType->BulletFacing == TrajectoryFacing::Spin || pType->BulletROT < 0)
 		pBullet->Velocity.Z = 0;
+	// When the speed is delicate, there is a problem with the vanilla processing at the starting position
+	if (PhobosTrajectory::Get2DVelocity(this->MovingVelocity) < Unsorted::LeptonsPerCell)
+	{
+		const auto pBulletType = pBullet->Type;
+
+		if (pBulletType->SubjectToWalls || pBulletType->SubjectToCliffs || BulletTypeExt::ExtMap.Find(pBulletType)->SubjectToSolid)
+		{
+			const auto pSourceCell = MapClass::Instance.GetCellAt(source);
+			const auto pTargetCell = MapClass::Instance.GetCellAt(target);
+			const auto pFirer = pBullet->Owner;
+			const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+
+			if (TrajectoryHelper::GetObstacle(pSourceCell, pTargetCell, pSourceCell, pBullet->Location, pBulletType, pOwner))
+				this->ShouldDetonate = true;
+		}
+	}
 }
 
 // Something that needs to be done when changing the target of the projectile
