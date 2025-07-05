@@ -219,7 +219,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
 	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
 
-	// SW.GrantOneTime.RandomWeights
+	// SW.Link.RandomWeights
 	for (size_t i = 0; ; ++i)
 	{
 		ValueableVector<int> weights3;
@@ -229,7 +229,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (!weights3.size())
 			break;
 
-		this->SW_Link_RandomWeightsData.push_back(std::move(weights3));
+		this->SW_Link_RandomWeightsData.emplace_back(std::move(weights3));
 	}
 	ValueableVector<int> weights3;
 	weights3.Read(exINI, pSection, "SW.Link.RandomWeights");
@@ -238,7 +238,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Link_RandomWeightsData.size())
 			this->SW_Link_RandomWeightsData[0] = std::move(weights3);
 		else
-			this->SW_Link_RandomWeightsData.push_back(std::move(weights3));
+			this->SW_Link_RandomWeightsData.emplace_back(std::move(weights3));
 	}
 
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
