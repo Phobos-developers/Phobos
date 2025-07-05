@@ -680,7 +680,7 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
     - `none` will make the text banner not display the variable.
     - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
     - `prefix`/`prefixed` will make the text banner display the variable before any other text.
-    - `surfix`/`surfixed` will make the text banner display the variable after any other text.
+    - `suffix`/`suffixed` will make the text banner display the variable after any other text.
 
 In `rulesmd.ini`:
 ```ini

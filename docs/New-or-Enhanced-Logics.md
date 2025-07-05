@@ -717,6 +717,19 @@ OnlyUseLandSequences=false  ; boolean
 
 ## Projectiles
 
+### Parabombs
+
+- Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
+  - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects. Currently the falling down speed is not customizable and is capped to `[General]` -> `ParachuteMaxFallRate`.
+  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]  ; Projectile
+Parachuted=false  ; boolean
+BombParachute=    ; AnimationType
+```
+
 ### Projectile interception logic
 
 ![image](_static/images/projectile-interception-01.gif)
@@ -2034,7 +2047,7 @@ CanKill=true   ; boolean
   - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set minimum percentage of their maximum/minimum health percentage respectively that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
@@ -2043,25 +2056,26 @@ CanKill=true   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                               ; WarheadType
-Crit.Chance=0.0                             ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false             ; boolean
-Crit.ExtraDamage=0                          ; integer
-Crit.ExtraDamage.ApplyFirepowerMult=false   ; boolean
-Crit.Warhead=                               ; WarheadType
-Crit.Warhead.FullDetonation=true            ; boolean
-Crit.Affects=all                            ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0                 ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                              ; List of AnimationTypes
-Crit.AnimList.PickRandom=                   ; boolean
-Crit.AnimList.CreateAll=                    ; boolean
-Crit.ActiveChanceAnims=                     ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false            ; boolean
-Crit.SuppressWhenIntercepted=false          ; boolean
-
-[SOMETECHNO]                                ; TechnoType
-ImmuneToCrit=false                          ; boolean
+[SOMEWARHEAD]                              ; WarheadType
+Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ExtraDamage=0                         ; integer
+Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.Warhead=                              ; WarheadType
+Crit.Warhead.FullDetonation=true           ; boolean
+Crit.Affects=all                           ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectBelowPercent=1.0                ; floating point value, percents or absolute (0.0-1.0)
+Crit.AffectsAbovePercent=0.0               ; floating point value, percents or absolute (0.0-1.0)
+Crit.AnimList=                             ; List of AnimationTypes
+Crit.AnimList.PickRandom=                  ; boolean
+Crit.AnimList.CreateAll=                   ; boolean
+Crit.ActiveChanceAnims=                    ; List of AnimationTypes
+Crit.AnimOnAffectedTargets=false           ; boolean
+Crit.SuppressWhenIntercepted=false         ; boolean
+                                           
+[SOMETECHNO]                               ; TechnoType
+ImmuneToCrit=false                         ; boolean
 ```
 
 ```{warning}
@@ -2482,12 +2496,13 @@ This function is only used as an additional scattering visual display, which is 
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+  - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only), maximum/minimum respectively.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType
-CanTarget=all             ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all       ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-CanTarget.MaxHealth=1.0   ; floating point value, percents or absolute
-CanTarget.MinHealth=0.0   ; floating point value, percents or absolute
+[SOMEWEAPON]             ; WeaponType
+CanTarget=all            ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
+CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
 ```
