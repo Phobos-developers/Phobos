@@ -142,46 +142,20 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 		const auto mode1 = Phobos::Config::DistributionSpreadMode;
 		const auto mode2 = Phobos::Config::DistributionFilterMode;
 
-		auto vanillaMethod = [mode2, mouseAction](ObjectClass* pTarget)
-			{
-				for (const auto& pSelect : ObjectClass::CurrentObjects)
-				{
-					const auto currentAction = pSelect->MouseOverObject(pTarget);
-
-					if (mode2 && mouseAction != Action::NoMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
-						static_cast<TechnoClass*>(pSelect)->ClickedMission(Mission::Area_Guard, reinterpret_cast<ObjectClass*>(pSelect->GetCellAgain()), nullptr, nullptr);
-					else
-						pSelect->ObjectClickedAction(currentAction, pTarget, false);
-
-					Unsorted::MoveFeedback = false;
-				}
-			};
-
 		// Distribution mode main
-		if (DistributionModeHoldDownCommandClass::Enabled && mode1 && count > 1 && mouseAction != Action::NoMove && !PlanningNodeClass::PlanningModeActive
-			&& (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None && !pTarget->IsInAir())
+		if (DistributionModeHoldDownCommandClass::Enabled
+			&& mode1
+			&& count > 1
+			&& mouseAction != Action::NoMove
+			&& !PlanningNodeClass::PlanningModeActive
+			&& (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None
+			&& !pTarget->IsInAir()
+			&& (HouseClass::CurrentPlayer->IsAlliedWith(static_cast<TechnoClass*>(pTarget)->Owner)
+				? Phobos::Config::AllowDistributionCommand_AffectsAllies
+				: Phobos::Config::AllowDistributionCommand_AffectsEnemies))
 		{
-			const auto pTargetHouse = static_cast<TechnoClass*>(pTarget)->Owner;
-
-			if (HouseClass::CurrentPlayer->IsAlliedWith(pTargetHouse))
-			{
-				if (!Phobos::Config::AllowDistributionCommand_AffectsAllies)
-				{
-					vanillaMethod;
-					return SkipGameCode;
-				}
-			}
-			else if (!Phobos::Config::AllowDistributionCommand_AffectsEnemies)
-			{
-				vanillaMethod;
-				return SkipGameCode;
-			}
-
 			VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
-			const auto pSpecial = HouseClass::FindSpecial();
-			const auto pCivilian = HouseClass::FindCivilianSide();
-			const auto pNeutral = HouseClass::FindNeutral();
-			const bool targetIsNeutral = pTargetHouse == pSpecial || pTargetHouse == pCivilian || pTargetHouse == pNeutral;
+			const bool targetIsNeutral = static_cast<TechnoClass*>(pTarget)->Owner->IsNeutral();
 
 			const auto range = (2 << mode1);
 			const auto center = pTarget->GetCoords();
@@ -233,7 +207,7 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
        				const auto& [pItem, num] = record[i];
 
 					if (pSelect->MouseOverObject(pItem) == mouseAction
-						&& (targetIsNeutral || (pItem->Owner != pSpecial && pItem->Owner != pCivilian && pItem->Owner != pNeutral))
+						&& (targetIsNeutral || !pItem->Owner->IsNeutral())
 						&& (mode2 < 2 || (pItem->WhatAmI() == pTarget->WhatAmI()
 							&& (mode2 < 3 || TechnoTypeExt::GetSelectionGroupID(pItem->GetTechnoType()) == TechnoTypeExt::GetSelectionGroupID(pTarget->GetTechnoType())))))
 					{
@@ -275,7 +249,17 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 		}
 		else
 		{
-			vanillaMethod;
+			for (const auto& pSelect : ObjectClass::CurrentObjects)
+			{
+				const auto currentAction = pSelect->MouseOverObject(pTarget);
+
+				if (mode2 && mouseAction != Action::NoMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+					static_cast<TechnoClass*>(pSelect)->ClickedMission(Mission::Area_Guard, reinterpret_cast<ObjectClass*>(pSelect->GetCellAgain()), nullptr, nullptr);
+				else
+					pSelect->ObjectClickedAction(currentAction, pTarget, false);
+
+				Unsorted::MoveFeedback = false;
+			}
 		}
 	}
 
@@ -293,9 +277,9 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 	if (mode1 || mode2)
 	{
 		const auto pCell = MapClass::Instance.GetCellAt(DisplayClass::Instance.CurrentFoundation_CenterCell);
-		const auto color = ((mode2 > 1)
+		const auto color = (mode2 > 1)
 			? ((mode2 == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
-			: (mode2 == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
+			: ((mode2 == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
 		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, static_cast<float>(mode1 ? (2 << mode1) : 0.5), false, true);
 	}
 
