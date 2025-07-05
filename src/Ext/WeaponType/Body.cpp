@@ -41,13 +41,9 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	return true;
 }
 
-bool WeaponTypeExt::ExtData::IsHealthRatioEligible(TechnoClass* const pTarget) const
+bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	if (!pTarget)
-		return true;
-
-	const auto ratio = pTarget->GetHealthPercentage();
-	return ratio <= this->CanTarget_MaxHealth && ratio >= this->CanTarget_MinHealth;
+	return TechnoExt::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth);
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -92,18 +88,22 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
+	char tempBuffer[0x40];
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
 
-	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
-	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
-	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
+	for (int idx = 0; idx < 3; ++idx)
+	{
+		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Color%d", idx + 1);
+		this->Bolt_Color[idx].Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Disable%d", idx + 1);
+		this->Bolt_Disable[idx].Read(exINI, pSection, tempBuffer);
+	}
+
+	this->Bolt_ParticleSystem.Read(exINI, pSection, "Bolt.ParticleSystem");
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
@@ -175,9 +175,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->ProjectileRange)
-		.Process(this->Bolt_Disable1)
-		.Process(this->Bolt_Disable2)
-		.Process(this->Bolt_Disable3)
+		.Process(this->Bolt_Color)
+		.Process(this->Bolt_Disable)
+		.Process(this->Bolt_ParticleSystem)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
 		.Process(this->Bolt_FollowFLH)
@@ -476,8 +476,8 @@ DEFINE_HOOK(0x772F8C, WeaponTypeClass_Save, 0x5)
 	return 0;
 }
 
+//DEFINE_HOOK_AGAIN(0x7729D6, WeaponTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK_AGAIN(0x7729C7, WeaponTypeClass_LoadFromINI, 0x5)
-DEFINE_HOOK_AGAIN(0x7729D6, WeaponTypeClass_LoadFromINI, 0x5)
 DEFINE_HOOK(0x7729B0, WeaponTypeClass_LoadFromINI, 0x5)
 {
 	GET(WeaponTypeClass*, pItem, ESI);

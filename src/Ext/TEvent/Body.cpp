@@ -151,6 +151,8 @@ std::optional<bool> TEventExt::Execute(TEventClass* pThis, int iEvent, HouseClas
 		return TEventExt::CellHasTechnoTypeTEvent(pThis, pObject, pHouse);
 	case PhobosTriggerEvent::CellHasAnyTechnoTypeFromList:
 		return TEventExt::CellHasAnyTechnoTypeFromListTEvent(pThis, pObject, pHouse);
+	case PhobosTriggerEvent::AttachedIsUnderAttachedEffect:
+		return TEventExt::AttachedIsUnderAttachedEffectTEvent(pThis, pObject);
 
 
 	// If it requires an additional object as like mapping events 7 or 48, please fill it in here.
@@ -302,6 +304,27 @@ bool TEventExt::CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject
 
 		return true;
 	}
+
+	return false;
+}
+
+bool TEventExt::AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject)
+{
+	auto const pTechno = abstract_cast<TechnoClass*>(pObject);
+
+	if (!pTechno)
+		return false;
+
+	auto const pDesiredType = AttachEffectTypeClass::Find(pThis->String);
+
+	if (!pDesiredType)
+	{
+		Debug::Log("Error in event %d. The parameter 2 '%s' isn't a valid AttachEffect ID\n", static_cast<PhobosTriggerEvent>(pThis->EventKind), pThis->String);
+		return false;
+	}
+
+	if (TechnoExt::ExtMap.Find(pTechno)->HasAttachedEffects({ pDesiredType }, false, false, nullptr, nullptr, nullptr, nullptr))
+		return true;
 
 	return false;
 }
