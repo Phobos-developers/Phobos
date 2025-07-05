@@ -314,7 +314,7 @@ public:
 	{
 		auto distance = source.DistanceFrom(pTarget->GetCoords());
 
-		if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget))
+		if (const auto pBuilding = abstract_cast<const BuildingClass*, true>(pTarget))
 		{
 			const auto pType = pBuilding->Type;
 			distance = Math::max(0, distance - 64 * (pType->GetFoundationHeight(false) + pType->GetFoundationWidth()));
