@@ -25,9 +25,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
+	int& damage = *args->Damage;
 
 	// Calculate Damage Multiplier
-	if (!args->IgnoreDefenses && *args->Damage)
+	if (!args->IgnoreDefenses && damage)
 	{
 		double multiplier = 1.0;
 
@@ -38,16 +39,22 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		else
 			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
 
+		if (pWHExt->DamageSourceHealthMultiplier && args->Attacker)
+			multiplier += pWHExt->DamageSourceHealthMultiplier * args->Attacker->GetHealthPercentage();
+
+		if (pWHExt->DamageTargetHealthMultiplier)
+			multiplier += pWHExt->DamageTargetHealthMultiplier * pThis->GetHealthPercentage();
+
 		if (multiplier != 1.0)
 		{
-			const auto sgnDamage = *args->Damage > 0 ? 1 : -1;
-			const auto calculateDamage = static_cast<int>(*args->Damage * multiplier);
-			*args->Damage = calculateDamage ? calculateDamage : sgnDamage;
+			const auto sgnDamage = damage > 0 ? 1 : -1;
+			const auto calculateDamage = static_cast<int>(damage * multiplier);
+			damage = calculateDamage ? calculateDamage : sgnDamage;
 		}
 	}
 
 	// Raise Combat Alert
-	if (pRules->CombatAlert && *args->Damage > 1)
+	if (pRules->CombatAlert && damage > 1)
 	{
 		auto raiseCombatAlert = [&]()
 		{
@@ -104,7 +111,7 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	// Shield Receive Damage
 	if (!args->IgnoreDefenses)
 	{
-		int nDamageLeft = *args->Damage;
+		int nDamageLeft = damage;
 
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -114,9 +121,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 
 				if (nDamageLeft >= 0)
 				{
-					*args->Damage = nDamageLeft;
+					damage = nDamageLeft;
 
-					if (auto pTag = pThis->AttachedTag)
+					if (const auto pTag = pThis->AttachedTag)
 						pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::ShieldBroken, pThis, CellStruct::Empty);
 				}
 
@@ -125,11 +132,13 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 			}
 		}
 
-		if (pThis->Health > 0 && (!pWHExt->CanKill || pExt->AE.Unkillable) // Check if the warhead can not kill targets
-			// Update remaining damage and check if the target will die and should be avoided
+		if ((!pWHExt->CanKill || pExt->AE.Unkillable)
+			&& pThis->Health > 0 && nDamageLeft != 0
+			&& pWHExt->CanTargetHouse(pSourceHouse, pThis)
 			&& MapClass::GetTotalDamage(nDamageLeft, args->WH, pThis->GetTechnoType()->Armor, args->DistanceToEpicenter) >= pThis->Health)
 		{
-			*args->Damage = 0;
+			// Update remaining damage and check if the target will die and should be avoided
+			damage = 0;
 			pThis->Health = 1;
 			pThis->EstimatedHealth = 1;
 			ReceiveDamageTemp::SkipLowDamageCheck = true;
@@ -190,7 +199,7 @@ DEFINE_HOOK(0x702603, TechnoClass_ReceiveDamage_Explodes, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (pThis->WhatAmI() == AbstractType::Building)
 	{
@@ -229,7 +238,7 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 	constexpr auto Die = [](int x) { return x + 10; };
 
 	int resultSequence = Die(1);
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (pTypeExt->NotHuman_RandomDeathSequence.Get())
 		resultSequence = ScenarioClass::Instance->Random.RandomRanged(Die(1), Die(5));
@@ -256,7 +265,7 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	std::set<AttachEffectTypeClass*> cumulativeTypes;
-	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
 	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
@@ -269,17 +278,25 @@ DEFINE_HOOK(0x702050, TechnoClass_ReceiveDamage_AttachEffectExpireWeapon, 0x6)
 				if (pType->Cumulative && pType->ExpireWeapon_CumulativeOnlyOnce)
 					cumulativeTypes.insert(pType);
 
-				expireWeapons.push_back(pType->ExpireWeapon);
+				if (pType->ExpireWeapon_UseInvokerAsOwner)
+				{
+					if (auto const pInvoker = attachEffect->GetInvoker())
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+				}
+				else
+				{
+					expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+				}
 			}
 		}
 	}
 
 	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
 
-	for (auto const& pWeapon : expireWeapons)
+	for (auto const& pair : expireWeapons)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const pInvoker = pair.second;
+		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
 	}
 
 	return 0;
@@ -332,7 +349,24 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 			auto const pWH = pType->ReflectDamage_Warhead.Get(RulesClass::Instance->C4Warhead);
 			int damage = pType->ReflectDamage_Override.Get(static_cast<int>(*pDamage * pType->ReflectDamage_Multiplier));
 
-			if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
+			if (pType->ReflectDamage_UseInvokerAsOwner)
+			{
+				auto const pInvoker = attachEffect->GetInvoker();
+
+				if (pInvoker && EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pInvoker->Owner, pSourceHouse))
+				{
+					auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
+					pWHExtRef->Reflected = true;
+
+					if (pType->ReflectDamage_Warhead_Detonate)
+						WarheadTypeExt::DetonateAt(pWH, pSource, pInvoker, damage, pInvoker->Owner);
+					else
+						pSource->ReceiveDamage(&damage, 0, pWH, pInvoker, false, false, pInvoker->Owner);
+
+					pWHExtRef->Reflected = false;
+				}
+			}
+			else if (EnumFunctions::CanTargetHouse(pType->ReflectDamage_AffectsHouses, pThis->Owner, pSourceHouse))
 			{
 				auto const pWHExtRef = WarheadTypeExt::ExtMap.Find(pWH);
 				pWHExtRef->Reflected = true;
