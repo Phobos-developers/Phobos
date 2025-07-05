@@ -389,16 +389,23 @@ void SWTypeExt::ExtData::ApplyLinkedSW(SuperClass* pSW)
 
 			if (pSuper->IsPresent)
 			{
-				if (granted || this->SW_Link_Reset)
+				// check SW.Link.Reset first
+				if (this->SW_Link_Reset)
 				{
 					pSuper->Reset();
 					isActive = true;
 				}
+				// check SW.Link.Ready, which will default to SW.InitialReady for granted superweapon
 				else if (this->SW_Link_Ready || (granted && SWTypeExt::ExtMap.Find(pSuper->Type)->SW_InitialReady))
 				{
 					pSuper->RechargeTimer.TimeLeft = 0;
 					pSuper->SetReadiness(true);
 					isActive = true;
+				}
+				// reset granted superweapon if it doesn't meet above conditions
+				else if (granted)
+				{
+					pSuper->Reset();
 				}
 			}
 

@@ -1170,6 +1170,7 @@ Detonate.AtFirer=false      ; boolean
 - `SW.Link.Grant` allow the linked superweapons to be added 1-time to the firer like the nuke crate if it's not presented.
 - `SW.Link.Ready` specifies if superweapons timers should be set to readiness.
 - `SW.Link.Reset` specifies if superweapons timers should be reset. Takes precedence over `SW.Link.Ready`.
+  - For a granted superweapon, the other will be: check `SW.Link.Reset` to see if it needs to be reset. If false, check `SW.Link.Ready` to see if it needs to be set to readiness. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
 - `Message.LinkedSWAcquired` will be displayed to the firer when at least 1 linked superweapon is acquired or has timer set.
 - `EVA.LinkedSWAcquired` will be played to the firer when at least 1 linked superweapon is acquired or has timer set.
 - These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
