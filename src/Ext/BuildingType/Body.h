@@ -92,7 +92,11 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
+		
+		NullableIdx<VocClass> BuildingRepairedSound;
 
+		Valueable<bool> Refinery_UseNormalActiveAnim;
+		
 		Nullable<bool> BattlePointsCollector;
 
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
@@ -154,6 +158,8 @@ public:
 			, BuildingBunkerROFMult {}
 			, BunkerWallsUpSound {}
 			, BunkerWallsDownSound {}
+			, BuildingRepairedSound {}
+			, Refinery_UseNormalActiveAnim { false }
 			, BattlePointsCollector {}
 		{ }
 

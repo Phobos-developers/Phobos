@@ -90,6 +90,7 @@ public:
 
 		std::vector<ValueableVector<int>> LimboDelivery_RandomWeightsData;
 		std::vector<ValueableVector<int>> SW_Next_RandomWeightsData;
+		std::vector<ValueableVector<int>> SW_Link_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
 
@@ -102,6 +103,14 @@ public:
 		Valueable<bool> EMPulse_SuspendOthers;
 		ValueableVector<BuildingTypeClass*> EMPulse_Cannons;
 		Valueable<bool> EMPulse_TargetSelf;
+
+		ValueableIdxVector<SuperWeaponTypeClass> SW_Link;
+		Valueable<bool> SW_Link_Grant;
+		Valueable<bool> SW_Link_Ready;
+		Valueable<bool> SW_Link_Reset;
+		ValueableVector<float> SW_Link_RollChances;
+		Valueable<CSFText> Message_LinkedSWAcquired;
+		NullableIdx<VoxClass> EVA_LinkedSWAcquired;
 
 		Valueable<int> BattlePoints_Amount;
 
@@ -172,6 +181,14 @@ public:
 			, EMPulse_SuspendOthers { false }
 			, EMPulse_Cannons {}
 			, EMPulse_TargetSelf { false }
+			, SW_Link {}
+			, SW_Link_Grant { false }
+			, SW_Link_Ready { false }
+			, SW_Link_Reset { false }
+			, SW_Link_RollChances {}
+			, SW_Link_RandomWeightsData {}
+			, Message_LinkedSWAcquired {}
+			, EVA_LinkedSWAcquired {}
 			, BattlePoints_Amount { 0 }
 		{ }
 
@@ -196,6 +213,8 @@ public:
 		void HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& cell) const;
 		std::vector<BuildingClass*> GetEMPulseCannons(HouseClass* pOwner, const CellStruct& cell) const;
 		std::pair<double, double> GetEMPulseCannonRange(BuildingClass* pBuilding) const;
+
+		void ApplyLinkedSW(SuperClass* pSW);
 
 		void ApplyBattlePoints(SuperClass* pSW);
 
