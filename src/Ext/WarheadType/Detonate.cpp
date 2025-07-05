@@ -35,13 +35,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
-	if (pOwner && pBulletExt)
-	{
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
-
-		if (pTypeExt->InterceptorType && pBulletExt->IsInterceptor)
-			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
-	}
+	if (pBulletExt && pBulletExt->InterceptorTechnoType)
+		this->InterceptBullets(pOwner, pBullet, coords);
 
 	if (pHouse)
 	{
@@ -166,7 +161,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 
-		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
+		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
 		const float cellSpread = this->OwnerObject()->CellSpread;
 
 		if (cellSpread)
@@ -511,40 +506,37 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
 
-void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
+void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)
 {
-	if (!pOwner || !pWeapon)
-		return;
-
 	float cellSpread = this->OwnerObject()->CellSpread;
 
 	if (cellSpread == 0.0)
 	{
-		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
+		if (auto const pBullet = specific_cast<BulletClass*>(pInterceptor->Target))
 		{
 			auto const pExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pTypeExt = pExt->TypeExtData;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
-			bool distanceCheck = pWeapon->Projectile->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0;
+			bool distanceCheck = pBullet->Type->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0;
 
 			if (pTypeExt && pTypeExt->Interceptable && distanceCheck)
-				pExt->InterceptBullet(pOwner, pWeapon);
+				pExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 	else
 	{
-		for (auto const pBullet : BulletClass::Array)
+		for (auto const& pBullet : BulletClass::Array)
 		{
-			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
-				continue;
-
 			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
 			auto const pBulletTypeExt = pBulletExt->TypeExtData;
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pBulletTypeExt && pBulletTypeExt->Interceptable)
-				pBulletExt->InterceptBullet(pOwner, pWeapon);
+			if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+				continue;
+
+			if (pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 }

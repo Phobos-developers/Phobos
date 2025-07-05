@@ -612,19 +612,19 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
+	GET(WeaponTypeClass* const, pWeapon, EBX);
 
-	auto const pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+	const auto pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+	const auto pInterceptorType = pSourceTypeExt->InterceptorType.get();
 
-	if (pSourceTypeExt->InterceptorType)
+	if (pInterceptorType && pTarget->WhatAmI() == AbstractType::Bullet)
 	{
-		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
-		{
-			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-			{
-				pBulletExt->IsInterceptor = true;
-				pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
-			}
-		}
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		pBulletExt->InterceptorTechnoType = pSourceTypeExt;
+		pBulletExt->InterceptedStatus &= InterceptedStatus::Targeted;
+
+		if (!pInterceptorType->ApplyFirepowerMult)
+			pBullet->Health = pWeapon->Damage;
 	}
 
 	return 0;
