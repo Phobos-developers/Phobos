@@ -65,7 +65,8 @@ public:
 		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
 		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
 
-		Valueable<AnimTypeClass*> BombParachute;
+		Valueable<bool> Parachuted;
+		Nullable<AnimTypeClass*> BombParachute;
 
 		// Ares 0.1
 		Valueable<bool> SubjectToSolid;
@@ -115,7 +116,8 @@ public:
 			, AirburstWeapon_ApplyFirepowerMult { false }
 			, AirburstWeapon_SourceScatterMin { Leptons(0) }
 			, AirburstWeapon_SourceScatterMax { Leptons(0) }
-			, BombParachute { }
+			, Parachuted { false }
+			, BombParachute {}
 		{ }
 
 		virtual ~ExtData() = default;
