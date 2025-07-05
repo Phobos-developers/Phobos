@@ -684,6 +684,47 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
 ...
 ```
 
+### `800-802` Display Banner
+
+- Display a 'banner' at a fixed location that is relative to the screen.
+  - Action `800` will create a new banner or replace the banner with the same Banner ID if it exists. Using a local variable's value when displaying a text banner.
+  - Action `801` will create a new banner or replace the banner with the same Banner ID if it exists. Using a global variable's value when displaying a text banner.
+  - Action `802` will delete the banner corresponding to the set Banner ID.
+- To make use of this, you need to set the properties of a `BannerType` in your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) file or a `CSF` text. If multiple are set the first one in the above listed order takes effect.
+  - `SHP.Palette` controls the palette that'll be used when drawing a banner for Shape file.
+  - `CSF.Color` controls the color of the text that'll be used when drawing a text banner.
+  - `CSF.Background` controls whether a black background will be displayed below the text banner.
+  - `CSF.VariableFormat` controls the way to print a variable together with the text banner.
+    - `none` will make the text banner not display the variable.
+    - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
+    - `prefix`/`prefixed` will make the text banner display the variable before any other text.
+    - `suffix`/`suffixed` will make the text banner display the variable after any other text.
+
+In `rulesmd.ini`:
+```ini
+[BannerTypes]
+0=SOMEBANNER
+
+[SOMEBANNER]                ; BannerType
+PCX=                        ; filename - excluding the .pcx extension
+SHP=                        ; filename - excluding the .shp extension
+SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+CSF=                        ; CSF entry key
+CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
+CSF.Background=false        ; boolean
+CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+```
+
+In `mycampaign.map`:
+```ini
+[Actions]
+...
+ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal position],[Vertical position],[VariableIndex],A,[ActionX]
+ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]
+...
+```
+
 ## Trigger events
 
 ### `500-511` Variable comparation
@@ -815,3 +856,18 @@ In `mycampaign.map`:
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
+
+### `606` AttachEffect is attaching to a Techno
+
+- Checks if an `AttachEffectType` is attaching to a techno. Doesn't work for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that were attached prior to the trigger's enabling.
+- To be elaborate, the event will be triggered during these occasions:
+  - Self-owned effects: initial granted (triggered after `AttachEffect.InitialDelays` amount of frames), recreation (triggered after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of frames).
+  - Effects from other sources: granted, refreshing when trying to apply the same type of attached effect to the techno.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,606,2,0,[AttachEffectType],...
+...
+```

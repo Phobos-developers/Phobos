@@ -153,7 +153,7 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	if (pFrom->IsIronCurtained())
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pFrom)->TypeExtData;
 		const bool isForceShielded = pFrom->ForceShielded;
 		const bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
 			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
@@ -308,11 +308,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			if (pType->Strength == pToType->Strength)
-			{
-				// Fixed an issue where morphing could result in -1 health.
-				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
-			}
+			// Fixed an issue where morphing could result in -1 health.
+			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
 
 			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
 			pTypeExt->UpdateTypeData(pToType);
@@ -538,12 +536,13 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
 
 			foundCount++;
@@ -634,18 +633,49 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 {
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		if (pUnit->IsRedHP())
 		{
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
-				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
-			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
-				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageRed = pData->WaterImage_ConditionRed)
+					return imageRed;
+				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageRed = pData->Image_ConditionRed)
+			{
+				return imageRed;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
 		}
 	}
 
 	return nullptr;
+}
+
+bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
+{
+	double hp = pObject->GetHealthPercentage();
+	return hp <= max && hp >= min;
 }
 
 // =============================
@@ -700,7 +730,20 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->FiringAnimationTimer)
 		.Process(this->DropCrate)
 		.Process(this->DropCrateType)
+		.Process(this->AttachedEffectInvokerCount)
+		.Process(this->TintColorOwner)
+		.Process(this->TintColorAllies)
+		.Process(this->TintColorEnemies)
+		.Process(this->TintIntensityOwner)
+		.Process(this->TintIntensityAllies)
+		.Process(this->TintIntensityEnemies)
+		.Process(this->AttackMoveFollowerTempCount)
 		;
+}
+
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
