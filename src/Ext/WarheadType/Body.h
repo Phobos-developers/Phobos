@@ -197,7 +197,7 @@ public:
 
 		Valueable<bool> CanKill;
 
-		Valueable<int> AmmoModifier;
+		Valueable<int> Ammo;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -379,7 +379,7 @@ public:
 			, KillWeapon_Affects { AffectedTarget::All }
 			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
 
-			, AmmoModifier { 0 }
+			, Ammo { 0 }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -407,7 +407,7 @@ public:
 		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, BulletExt::ExtData* pBulletExt = nullptr);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
@@ -415,7 +415,7 @@ public:
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
-		void ApplyAmmoModifier(TechnoClass* pTarget, HouseClass* pInvokerHouse, BulletExt::ExtData* pBulletExt = nullptr);
+		void ApplyAmmoModifier(TechnoClass* pTarget);
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>
