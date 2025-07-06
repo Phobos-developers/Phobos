@@ -1464,6 +1464,7 @@ msgid ""
 "Projectiles with `Vertical=true` now drop straight down if fired off by "
 "AircraftTypes instead of behaving erratically."
 msgstr ""
+"现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠。"
 
 #: ../../Fixed-or-Improved-Logics.md:242
 msgid "Fixes / interactions with other extensions"

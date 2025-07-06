@@ -1320,9 +1320,8 @@ msgstr ""
 "controlled-unit)（by CrimRecya）"
 
 #: ../../Whats-New.md:358
-#, fuzzy
 msgid "[Parabombs](New-or-Enhanced-Logics.md#parabombs) (by Starkku & TaranDahl)"
-msgstr "[新的抛物线轨迹](New-or-Enhanced-Logics.md#parabola-trajectory)（by CrimRecya）"
+msgstr "[伞降炸弹](New-or-Enhanced-Logics.md#parabombs)（by Starkku & TaranDahl）"
 
 #: ../../Whats-New.md:359
 msgid ""
@@ -1941,6 +1940,7 @@ msgid ""
 "Projectiles with `Vertical=true` now drop straight down if fired off by "
 "AircraftTypes instead of behaving erratically (by Starkku)"
 msgstr ""
+"现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠（by Starkku）"
 
 #: ../../Whats-New.md:452 ../../Whats-New.md:744 ../../Whats-New.md:821
 #: ../../Whats-New.md:985 ../../Whats-New.md:1026 ../../Whats-New.md:1038

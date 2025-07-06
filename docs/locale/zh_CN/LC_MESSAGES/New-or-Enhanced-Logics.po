@@ -2892,7 +2892,7 @@ msgstr "抛射体"
 
 #: ../../New-or-Enhanced-Logics.md:720
 msgid "Parabombs"
-msgstr ""
+msgstr "伞降炸弹"
 
 #: ../../New-or-Enhanced-Logics.md:722
 msgid ""
@@ -2901,6 +2901,7 @@ msgid ""
 "allows projectiles to be parachuted down to ground if fired by an aerial "
 "unit."
 msgstr ""
+"这是一个还原自 RA1（也在 Ares 中部分实现但未记载，若共用则 Phobos 版本优先）的功能，允许抛射体在被空中单位发射时伞降到地面。"
 
 #: ../../New-or-Enhanced-Logics.md:723
 msgid ""
@@ -2908,6 +2909,7 @@ msgid ""
 "other projectile logics like `ROT` > 0 or `Vertical=true` together with "
 "this feature is unnecessary and can cause unwanted effects."
 msgstr ""
+"设置 `Parachuted` 为 true 以启用此行为。注意：若与 `ROT` > 0 或 `Vertical=true` 等任何其他抛射体逻辑共用将会导致不理想的效果。"
 
 #: ../../New-or-Enhanced-Logics.md:724
 msgid ""
@@ -2915,13 +2917,16 @@ msgid ""
 "capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> "
 "`ParachuteMaxFallRate`."
 msgstr ""
+"可通过 `Parachuted.FallRate` 来自定义降落速度，其上限由 `Parachuted.MaxFallRate` 决定，默认为 `[General]` -> "
+"`ParachuteMaxFallRate`。"
 
 #: ../../New-or-Enhanced-Logics.md:725
 msgid ""
 "`BombParachute` can be used to customize the parachute animation used, "
-"defaults to `[General]` -> `BombParachute`. The animation is drawn in "
+"defaults to `[General] -> BombParachute`. The animation is drawn in "
 "unit palette using team color of the firing house if available."
 msgstr ""
+"可通过 `BombParachute` 来自定义降落伞动画，默认 `[General] -> BombParachute`。该动画将使用 unit 色盘绘制映射为发射者所属的阵营色。"
 
 #: ../../New-or-Enhanced-Logics.md:728
 msgid ""

@@ -722,7 +722,7 @@ OnlyUseLandSequences=false  ; boolean
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
   - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects.
   - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> `ParachuteMaxFallRate`.
-  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`. The animation is drawn in unit palette using team color of the firing house if available.
+  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General] -> BombParachute`. The animation is drawn in unit palette using team color of the firing house if available.
 
 In `rulesmd.ini`:
 ```ini

@@ -1070,7 +1070,7 @@ msgstr "空袭引导效果的自定义和修复"
 
 #: ../../../CREDITS.md:276
 msgid "Restored parabombs"
-msgstr ""
+msgstr "复原伞降炸弹"
 
 #: ../../../CREDITS.md:277
 msgid "**Morton (MortonPL)**:"
