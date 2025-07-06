@@ -13,80 +13,77 @@
 
 BulletExt::ExtContainer BulletExt::ExtMap;
 
-void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, WeaponTypeClass* pWeapon)
+void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInterceptor)
 {
-	if (!pSource || !pWeapon)
-		return;
-
-	auto const pThis = this->OwnerObject();
+	const auto pThis = this->OwnerObject();
 	auto pTypeExt = this->TypeExtData;
-	bool canAffect = false;
-	bool isIntercepted = false;
-	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
-	const auto pInterceptorType = pTechnoTypeExt->InterceptorType.get();
+	const auto pInterceptorType = BulletExt::ExtMap.Find(pInterceptor)->InterceptorTechnoType->InterceptorType.get();
 
-	if (pTypeExt->Armor.isset())
+	if (!pTypeExt->Armor.isset())
 	{
-		const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get());
-
-		if (versus != 0.0)
-		{
-			canAffect = true;
-			int damage = static_cast<int>(pWeapon->Damage * versus);
-
-			if (pInterceptorType->ApplyFirepowerMult)
-				damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
-
-			this->CurrentStrength -= damage;
-
-			if (Phobos::DisplayDamageNumbers && damage != 0)
-				GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, this->OwnerObject()->GetRenderCoords(), this->DamageNumberOffset);
-
-			if (this->CurrentStrength <= 0)
-				isIntercepted = true;
-		}
+		if (!pInterceptorType->KeepIntact)
+			this->InterceptedStatus |= InterceptedStatus::Intercepted;
 	}
 	else
 	{
-		canAffect = true;
-		isIntercepted = true;
+		const double versus = GeneralUtils::GetWarheadVersusArmor(pInterceptor->WH, pTypeExt->Armor.Get());
+
+		if (versus == 0.0)
+			return;
+
+		int damage = pInterceptor->Health;
+
+		if (!pInterceptorType->ApplyFirepowerMult.Get())
+			damage = pInterceptor->WeaponType->Damage;
+
+		damage = static_cast<int>(damage * versus);
+		this->CurrentStrength -= damage;
+
+		if (Phobos::DisplayDamageNumbers && damage != 0)
+			GeneralUtils::DisplayDamageNumberString(damage, DamageDisplayType::Intercept, pThis->GetRenderCoords(), this->DamageNumberOffset);
+
+		if (this->CurrentStrength <= 0)
+		{
+			this->CurrentStrength = 0;
+
+			if (!pInterceptorType->KeepIntact)
+				this->InterceptedStatus |= InterceptedStatus::Intercepted;
+		}
 	}
 
-	if (canAffect)
+	this->DetonateOnInterception = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
+
+	if (const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride))
 	{
-		const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride);
-		this->DetonateOnInterception = !pInterceptorType->DeleteOnIntercept.Get(pTypeExt->Interceptable_DeleteOnIntercept);
+		int damage = pWeaponOverride->Damage;
 
-		if (pWeaponOverride)
+		if (pSource && pInterceptorType->ApplyFirepowerMult.Get())
+			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
+
+		pThis->WeaponType = pWeaponOverride;
+		pThis->Health = pInterceptorType->WeaponCumulativeDamage.Get() ? pThis->Health + damage : damage;
+		pThis->WH = pWeaponOverride->Warhead;
+		pThis->Bright = pWeaponOverride->Bright;
+
+		if (pInterceptorType->WeaponReplaceProjectile
+			&& pWeaponOverride->Projectile
+			&& pWeaponOverride->Projectile != pThis->Type)
 		{
-			pThis->WeaponType = pWeaponOverride;
-			pThis->Health = pInterceptorType->WeaponCumulativeDamage ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
-			pThis->WH = pWeaponOverride->Warhead;
-			pThis->Bright = pWeaponOverride->Bright;
+			pThis->Speed = pWeaponOverride->Speed;
+			pThis->Type = pWeaponOverride->Projectile;
+			pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+			this->TypeExtData = pTypeExt;
 
-			if (pInterceptorType->WeaponReplaceProjectile && pWeaponOverride->Projectile != pThis->Type && pWeaponOverride->Projectile)
-			{
-				pThis->Speed = pWeaponOverride->Speed;
-				pThis->Type = pWeaponOverride->Projectile;
-				pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-				this->TypeExtData = pTypeExt;
+			if (this->LaserTrails.size())
+				this->LaserTrails.clear();
 
-				if (this->LaserTrails.size())
-				{
-					this->LaserTrails.clear();
+			if (!pThis->Type->Inviso)
+				this->InitializeLaserTrails();
 
-					if (!pThis->Type->Inviso)
-						this->InitializeLaserTrails();
-				}
-
-				// Lose target if the current bullet is no longer interceptable.
-				if (!pTypeExt->Interceptable || (pTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pTypeExt->Armor.Get()) == 0.0))
-					pSource->SetTarget(nullptr);
-			}
+			// Lose target if the current bullet is no longer interceptable.
+			if (pSource && (!pTypeExt->Interceptable || (pTypeExt->Armor.isset() && GeneralUtils::GetWarheadVersusArmor(pInterceptor->WH, pTypeExt->Armor.Get()) == 0.0)))
+				pSource->SetTarget(nullptr);
 		}
-
-		if (isIntercepted && !pInterceptorType->KeepIntact)
-			this->InterceptedStatus = InterceptedStatus::Intercepted;
 	}
 }
 
@@ -417,12 +414,13 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->TypeExtData)
 		.Process(this->FirerHouse)
 		.Process(this->CurrentStrength)
-		.Process(this->IsInterceptor)
+		.Process(this->InterceptorTechnoType)
 		.Process(this->InterceptedStatus)
 		.Process(this->DetonateOnInterception)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
+		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

@@ -19,11 +19,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
-	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	int& damage = *args->Damage;
+
+	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
+	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
+	if (!pWHExt->IsHealthInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	{
+		damage = 0;
+		return 0;
+	}
+
+	const auto pRules = RulesExt::Global();
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
-	int& damage = *args->Damage;
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)

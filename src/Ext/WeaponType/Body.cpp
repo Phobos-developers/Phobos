@@ -41,13 +41,9 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 	return true;
 }
 
-bool WeaponTypeExt::ExtData::IsHealthRatioEligible(TechnoClass* const pTarget) const
+bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	if (!pTarget)
-		return true;
-
-	const auto ratio = pTarget->GetHealthPercentage();
-	return ratio <= this->CanTarget_MaxHealth && ratio >= this->CanTarget_MinHealth;
+	return TechnoExt::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth);
 }
 
 void WeaponTypeExt::ExtData::Initialize()

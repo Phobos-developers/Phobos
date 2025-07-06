@@ -87,6 +87,14 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EMPulse_SuspendOthers)
 		.Process(this->EMPulse_Cannons)
 		.Process(this->EMPulse_TargetSelf)
+		.Process(this->SW_Link)
+		.Process(this->SW_Link_Grant)
+		.Process(this->SW_Link_Ready)
+		.Process(this->SW_Link_Reset)
+		.Process(this->SW_Link_RandomWeightsData)
+		.Process(this->SW_Link_RollChances)
+		.Process(this->Message_LinkedSWAcquired)
+		.Process(this->EVA_LinkedSWAcquired)
 		;
 }
 
@@ -201,6 +209,36 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			this->SW_Next_RandomWeightsData[0] = std::move(weights2);
 		else
 			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
+	}
+
+	this->SW_Link.Read(exINI, pSection, "SW.Link");
+	this->SW_Link_Grant.Read(exINI, pSection, "SW.Link.Grant");
+	this->SW_Link_Ready.Read(exINI, pSection, "SW.Link.Ready");
+	this->SW_Link_Reset.Read(exINI, pSection, "SW.Link.Reset");
+	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
+	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
+	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
+
+	// SW.Link.RandomWeights
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<int> weights3;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SW.Link.RandomWeights%d", i);
+		weights3.Read(exINI, pSection, tempBuffer);
+
+		if (!weights3.size())
+			break;
+
+		this->SW_Link_RandomWeightsData.emplace_back(std::move(weights3));
+	}
+	ValueableVector<int> weights3;
+	weights3.Read(exINI, pSection, "SW.Link.RandomWeights");
+	if (weights3.size())
+	{
+		if (this->SW_Link_RandomWeightsData.size())
+			this->SW_Link_RandomWeightsData[0] = std::move(weights3);
+		else
+			this->SW_Link_RandomWeightsData.emplace_back(std::move(weights3));
 	}
 
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");

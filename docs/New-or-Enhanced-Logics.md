@@ -717,6 +717,22 @@ OnlyUseLandSequences=false  ; boolean
 
 ## Projectiles
 
+### Parabombs
+
+- Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
+  - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects.
+  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> `ParachuteMaxFallRate`.
+  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]         ; Projectile
+Parachuted=false         ; boolean
+Parachuted.FallRate=1    ; integer
+Parachuted.MaxFallRate=  ; integer
+BombParachute=           ; AnimationType
+```
+
 ### Projectile interception logic
 
 ![image](_static/images/projectile-interception-01.gif)
@@ -728,7 +744,7 @@ OnlyUseLandSequences=false  ; boolean
   - `Interceptor.CanTargetHouses` controls which houses the projectiles (or rather their firers) can belong to be eligible for interception.
   - `Interceptor.GuardRange` (and `Interceptor.(Rookie|Veteran|EliteGuardRange)`) is maximum range of the unit to intercept projectile. The unit weapon range will limit the unit interception range though.
   - `Interceptor.MinimumGuardRange` (and `Interceptor.(Rookie|Veteran|EliteMinimumGuardRange)`) is the minimum range of the unit to intercept projectile. Any projectile under this range will not be intercepted.
-  - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers.
+  - `Interceptor.ApplyFirepowerMult` determines whether or not the intercepting weapon's damage should multiply the TechnoType's firepower multipliers. Also applies to the damage of `Interceptor.WeaponOverride`.
   - `Interceptable.DeleteOnIntercept` determines whether or not the projectile will simply be deleted on detonation upon interception, or if it will properly detonate. Will be overridden by `Interceptor.DeleteOnIntercept` setting on the interceptor.
   - `Interceptable.WeaponOverride` can be set to a WeaponType that will be used to override characteristics such as `Damage` and `Warhead` of the current projectile for detonation after interception. Will be overridden by `Interceptor.WeaponOverride` setting on the interceptor.
     - On interceptors, `Interceptor.WeaponReplaceProjectile` can be set to true to make `Interceptor.WeaponOverride` also replace the intercepted projectile's type (including `Image` and other projectile characteristics) and `Speed` with its own. Does not replace particle systems (`AttachedSystem`, *Ares feature*).
@@ -1111,6 +1127,32 @@ LimboKill.IDs=                  ; List of numeric IDs.
 Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=no` set or be killable with LimboKill** - otherwise the game might never end.
 ```
 
+### Linked superweapons
+
+- Superweapons can now set a list of linked superweapons with `SW.Link`, which will be granted or set timers when the original superweapon is launched.
+- `SW.Link.Grant` allow the linked superweapons to be added 1-time to the firer like the nuke crate if it's not presented.
+- `SW.Link.Ready` specifies if superweapons timers should be set to readiness.
+- `SW.Link.Reset` specifies if superweapons timers should be reset. Takes precedence over `SW.Link.Ready`.
+  - For a granted superweapon, the other will be: check `SW.Link.Reset` to see if it needs to be reset. If false, check `SW.Link.Ready` to see if it needs to be set to readiness. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
+- `Message.LinkedSWAcquired` will be displayed to the firer when at least 1 linked superweapon is acquired or has timer set.
+- `EVA.LinkedSWAcquired` will be played to the firer when at least 1 linked superweapon is acquired or has timer set.
+- These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
+  - `SW.Link.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `SW.Link.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                     ; SuperWeaponType
+SW.Link=                     ; List of SuperWeaponTypes
+SW.Link.Grant=false          ; boolean
+SW.Link.Ready=               ; boolean, default to `SW.InitialReady` for granted superweapons, false otherwise
+SW.Link.Reset=false          ; boolean
+SW.Link.RollChances=         ; List of percentages.
+SW.Link.RandomWeightsN=      ; List of integers.
+Message.LinkedSWAcquired=    ; CSF entry key
+EVA.LinkedSWAcquired=        ; EVA entry
+```
+
 ### Next
 
 ![image](_static/images/swnext.gif)
@@ -1120,6 +1162,9 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `SW.Next.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` respectively.
+- These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
+  - `SW.Next.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `SW.Next.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
 ```ini
@@ -2034,7 +2079,7 @@ CanKill=true   ; boolean
   - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` can be used to set minimum percentage of their maximum `Strength` that targets must have left to be affected by a critical hit.
+  - `Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set minimum percentage of their maximum/minimum health percentage respectively that targets must have left to be affected by a critical hit.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
@@ -2043,25 +2088,26 @@ CanKill=true   ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]                               ; WarheadType
-Crit.Chance=0.0                             ; floating point value, percents or absolute (0.0-1.0)
-Crit.ApplyChancePerTarget=false             ; boolean
-Crit.ExtraDamage=0                          ; integer
-Crit.ExtraDamage.ApplyFirepowerMult=false   ; boolean
-Crit.Warhead=                               ; WarheadType
-Crit.Warhead.FullDetonation=true            ; boolean
-Crit.Affects=all                            ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
-Crit.AffectsHouses=all                      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-Crit.AffectBelowPercent=1.0                 ; floating point value, percents or absolute (0.0-1.0)
-Crit.AnimList=                              ; List of AnimationTypes
-Crit.AnimList.PickRandom=                   ; boolean
-Crit.AnimList.CreateAll=                    ; boolean
-Crit.ActiveChanceAnims=                     ; List of AnimationTypes
-Crit.AnimOnAffectedTargets=false            ; boolean
-Crit.SuppressWhenIntercepted=false          ; boolean
-
-[SOMETECHNO]                                ; TechnoType
-ImmuneToCrit=false                          ; boolean
+[SOMEWARHEAD]                              ; WarheadType
+Crit.Chance=0.0                            ; floating point value, percents or absolute (0.0-1.0)
+Crit.ApplyChancePerTarget=false            ; boolean
+Crit.ExtraDamage=0                         ; integer
+Crit.ExtraDamage.ApplyFirepowerMult=false  ; boolean
+Crit.Warhead=                              ; WarheadType
+Crit.Warhead.FullDetonation=true           ; boolean
+Crit.Affects=all                           ; List of Affected Target Enumeration (none|land|water|infantry|units|buildings|all)
+Crit.AffectsHouses=all                     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+Crit.AffectBelowPercent=1.0                ; floating point value, percents or absolute (0.0-1.0)
+Crit.AffectsAbovePercent=0.0               ; floating point value, percents or absolute (0.0-1.0)
+Crit.AnimList=                             ; List of AnimationTypes
+Crit.AnimList.PickRandom=                  ; boolean
+Crit.AnimList.CreateAll=                   ; boolean
+Crit.ActiveChanceAnims=                    ; List of AnimationTypes
+Crit.AnimOnAffectedTargets=false           ; boolean
+Crit.SuppressWhenIntercepted=false         ; boolean
+                                           
+[SOMETECHNO]                               ; TechnoType
+ImmuneToCrit=false                         ; boolean
 ```
 
 ```{warning}
@@ -2482,12 +2528,13 @@ This function is only used as an additional scattering visual display, which is 
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
   - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+  - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only), maximum/minimum respectively.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]              ; WeaponType
-CanTarget=all             ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
-CanTargetHouses=all       ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
-CanTarget.MaxHealth=1.0   ; floating point value, percents or absolute
-CanTarget.MinHealth=0.0   ; floating point value, percents or absolute
+[SOMEWEAPON]             ; WeaponType
+CanTarget=all            ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
+CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
+CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
 ```

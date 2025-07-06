@@ -41,8 +41,22 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
-	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
+	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
 	{
+		if (const auto pTarget = abstract_cast<BulletClass*>(pThis->Target))
+		{
+			const auto pTargetExt = BulletExt::ExtMap.Find(pTarget);
+
+			if (!pTargetExt->TypeExtData->Armor.isset())
+				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
+		}
+	}
+
+	if (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted)
+	{
+		if (const auto pTarget = abstract_cast<BulletClass*>(pThis->Target))
+			BulletExt::ExtMap.Find(pTarget)->InterceptedStatus &= ~InterceptedStatus::Locked;
+
 		if (pBulletExt->DetonateOnInterception)
 			pThis->Detonate(pThis->GetCoords());
 
@@ -94,6 +108,18 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	}
 
+	if (pThis->HasParachute)
+	{
+		int fallRate = pBulletExt->ParabombFallRate - pBulletExt->TypeExtData->Parachuted_FallRate;
+		const int maxFallRate = pBulletExt->TypeExtData->Parachuted_MaxFallRate.Get(RulesClass::Instance->ParachuteMaxFallRate);
+
+		if (fallRate < maxFallRate)
+			fallRate = maxFallRate;
+
+		pBulletExt->ParabombFallRate = fallRate;
+		pThis->FallRate = fallRate;
+	}
+
 	return 0;
 }
 
@@ -125,7 +151,7 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 
 	if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (pThis->Type->Inviso && pExt->IsInterceptor)
+		if (pThis->Type->Inviso && pExt->InterceptorTechnoType)
 			return DetonateBullet;
 	}
 
@@ -251,17 +277,11 @@ DEFINE_HOOK(0x46A4FB, BulletClass_Shrapnel_Targeting, 0x6)
 		{
 			if (!pWeaponExt->SkipWeaponPicking)
 			{
-				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner))
+				if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechno->Owner) || !EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+					|| !pWeaponExt->IsHealthInThreshold(pTechno) || !pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
+				{
 					return SkipObject;
-
-				if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget))
-					return SkipObject;
-
-				if (!pWeaponExt->IsHealthRatioEligible(pTechno))
-					return SkipObject;
-
-				if (!pWeaponExt->HasRequiredAttachedEffects(pTechno, pSource))
-					return SkipObject;
+				}
 			}
 
 			auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
@@ -482,14 +502,56 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x5F5A8C, ObjectClass_SpawnParachuted_BombParachute, 0x5)
+#pragma region Parabombs
+
+// Patch out Ares parabomb implementation.
+DEFINE_PATCH(0x46867F, 0x6A, 0x00, 0x8B, 0xD9, 0x50);
+
+// Add in our own.
+bool __fastcall ObjectClass_Unlimbo_Parachuted_Wrapper(BulletClass* pThis, void*, const CoordStruct& coords, DirType facing)
 {
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->Parachuted)
+		return pThis->SpawnParachuted(coords);
+
+	return pThis->Unlimbo(coords, facing);
+}
+
+DEFINE_FUNCTION_JUMP(CALL, 0x468684, ObjectClass_Unlimbo_Parachuted_Wrapper);
+
+// Set parachute animation on projectile.
+DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
+{
+	enum { SkipGameCode = 0x5F5A99 };
+
 	GET(BulletClass*, pThis, ESI);
+	GET(CoordStruct*, coords, EDI);
 
-	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pAnimType = pTypeExt->BombParachute.Get(RulesClass::Instance->BombParachute);
+	AnimClass* pAnim = nullptr;
 
-	if (pTypeExt->BombParachute)
-		R->EDX(pTypeExt->BombParachute.Get());
+	if (pAnimType)
+	{
+		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
+		pThis->Parachute = pAnim;
+	}
+
+	R->EAX(pAnim);
+	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x467AB2, BulletClass_AI_Parabomb, 0x7)
+{
+	enum { SkipGameCode = 0x467B1A };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (pThis->HasParachute)
+		return SkipGameCode;
 
 	return 0;
 }
+
+#pragma endregion

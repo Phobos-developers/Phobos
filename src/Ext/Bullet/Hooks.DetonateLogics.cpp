@@ -25,7 +25,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
-		if (!pExt->IsHealthInThreshold(pTarget) && pBullet->Owner != pBullet->Target)
+		if (!pExt->IsHealthInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))
 			return GoToExtras;
 	}
 
@@ -449,7 +449,7 @@ static bool IsAllowedSplitsTarget(TechnoClass* pSource, HouseClass* pOwner, Weap
 		if (!EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTarget->Owner)
 			|| !EnumFunctions::IsCellEligible(pTarget->GetCell(), pWeaponExt->CanTarget, true, true)
 			|| !EnumFunctions::IsTechnoEligible(pTarget, pWeaponExt->CanTarget)
-			|| !pWeaponExt->IsHealthRatioEligible(pTarget))
+			|| !pWeaponExt->IsHealthInThreshold(pTarget))
 		{
 			return false;
 		}

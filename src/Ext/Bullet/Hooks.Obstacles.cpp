@@ -134,6 +134,13 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 	GET(CoordStruct const* const, sourceCoords, EDI);
 	REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x54, -0x10));
 
+	// Jul 5, 2025 - Starkku: Borrowing this hook for a parabomb check instead of adding a new one.
+	if (pThis->HasParachute)
+	{
+		pThis->Velocity = BulletVelocity::Empty;
+		return SkipGameCode;
+	}
+
 	if (pThis->Type->Inviso)
 	{
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;

@@ -281,6 +281,23 @@ DEFINE_HOOK(0x6B74F0, SpawnManagerClass_AI_UseTurretFacing, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x418CF3, AircraftClass_Mission_Attack_ReturnToSpawnOwner, 0x5)
+{
+	enum { SkipGameCode = 0x418D00 };
+
+	GET(AircraftClass* const, pThis, ESI);
+
+	const auto pSpawnOwner = pThis->SpawnOwner;
+
+	if (!pSpawnOwner)
+		return 0;
+
+	pThis->SetDestination(pSpawnOwner, true);
+	pThis->QueueMission(Mission::Move, false);
+
+	return SkipGameCode;
+}
+
 #pragma endregion
 
 #pragma region WakeAnims
