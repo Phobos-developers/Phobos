@@ -43,7 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
-	
+
 	if (this->AttackMoveFollowerTempCount)
 	{
 		this->AttackMoveFollowerTempCount--;
@@ -91,7 +91,7 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 		if (pTargetBullet)
 		{
-			if ((pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked)) == InterceptedStatus::None)
+			if ((pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked)) != InterceptedStatus::None)
 				continue;
 		}
 
