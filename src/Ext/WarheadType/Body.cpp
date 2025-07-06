@@ -182,7 +182,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_AffectAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
-	if (this->Crit_AffectBelowPercent > this->Crit_AffectAbovePercent)
+	if (this->Crit_AffectAbovePercent > this->Crit_AffectBelowPercent)
 		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
