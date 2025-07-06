@@ -85,15 +85,22 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 	// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
 	// so it can differ across players throwing target management out of sync.
-	for (auto const& pBullet : BulletClass::Array)
+	for (const auto& pBullet : BulletClass::Array)
 	{
-		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-		auto const pBulletTypeExt = pBulletExt->TypeExtData;
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+		if (pTargetBullet)
+		{
+			if ((pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked)) == InterceptedStatus::None)
+				continue;
+		}
+
+		const auto pBulletTypeExt = pBulletExt->TypeExtData;
 
 		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
 			continue;
 
-		auto const distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
 
 		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
 			continue;
@@ -106,16 +113,14 @@ void TechnoExt::ExtData::ApplyInterceptor()
 				continue;
 		}
 
-		auto const bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
 
 		if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
 		{
 			pTargetBullet = pBullet;
 
-			if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
-				continue;
-
-			break;
+			if ((pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked)) == InterceptedStatus::None)
+				break;
 		}
 	}
 

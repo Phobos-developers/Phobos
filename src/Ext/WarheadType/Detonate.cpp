@@ -512,9 +512,9 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 
 	if (cellSpread == 0.0)
 	{
-		if (auto const pBullet = abstract_cast<BulletClass*>(pInterceptor->Target))
+		if (const auto pBullet = abstract_cast<BulletClass*>(pInterceptor->Target))
 		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 			if (!pBulletExt->TypeExtData->Interceptable)
 				return;
@@ -526,9 +526,9 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 	}
 	else
 	{
-		for (auto const& pBullet : BulletClass::Array)
+		for (const auto& pBullet : BulletClass::Array)
 		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
 			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
