@@ -2132,7 +2132,7 @@ LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]   ; Warhead
-AmmoModifier=0  ; integer
+Ammo=0  ; integer
 ```
 
 ### Parasite removal
