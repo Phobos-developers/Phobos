@@ -45,63 +45,135 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
 	this->AmmoAutoConvertActions();
+
+	if (this->AttackMoveFollowerTempCount)
+	{
+		this->AttackMoveFollowerTempCount--;
+	}
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
-	if (pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
+	if (!pInterceptorType)
+		return;
+
+	const auto pTarget = pThis->Target;
+
+	if (pTarget)
 	{
-		BulletClass* pTargetBullet = nullptr;
-		const auto pInterceptorType = pTypeExt->InterceptorType.get();
-		const double guardRange = pInterceptorType->GuardRange.Get(pThis);
-		const double guardRangeSq = guardRange * guardRange;
-		const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-		const double minguardRangeSq = minguardRange * minguardRange;
+		if (pTarget->WhatAmI() != AbstractType::Bullet)
+			return;
 
-		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
-		// so it can differ across players throwing target management out of sync.
-		for (auto const& pBullet : BulletClass::Array)
+		const auto pTargetExt = BulletExt::ExtMap.Find(static_cast<BulletClass*>(pTarget));
+
+		if ((pTargetExt->InterceptedStatus & InterceptedStatus::Locked) == InterceptedStatus::None)
+			return;
+	}
+
+	const int count = BulletClass::Array.Count;
+
+	if (this->IsBurrowed || !count)
+		return;
+
+	BulletClass* pTargetBullet = nullptr;
+	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
+	const double guardRangeSq = guardRange * guardRange;
+	const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+	const double minguardRangeSq = minguardRange * minguardRange;
+	// Interceptor weapon is always fixed
+	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+
+	// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
+	// so it can differ across players throwing target management out of sync.
+	int i = 0;
+
+	for ( ; i < count; ++i)
+	{
+		const auto& pBullet = BulletClass::Array.GetItem(i);
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pBulletTypeExt = pBulletExt->TypeExtData;
+
+		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+			continue;
+
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+			continue;
+
+		if (pBulletTypeExt->Armor.isset())
 		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pBulletTypeExt = pBulletExt->TypeExtData;
+			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
-			if (!pBulletTypeExt->Interceptable)
+			if (versus == 0.0)
 				continue;
-
-			auto const distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
-
-			if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
-				continue;
-
-			if (pBulletTypeExt->Armor.isset())
-			{
-				const int weaponIndex = pThis->SelectWeapon(pBullet);
-				const auto pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
-				const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
-
-				if (versus == 0.0)
-					continue;
-			}
-
-			auto const bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-			if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
-			{
-				pTargetBullet = pBullet;
-
-				if (pBulletExt->InterceptedStatus == InterceptedStatus::Targeted)
-					continue;
-
-				break;
-			}
 		}
 
-		if (pTargetBullet)
-			pThis->SetTarget(pTargetBullet);
+		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+			continue;
+
+		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+		{
+			// Set as optional target
+			pTargetBullet = pBullet;
+			break;
+		}
+
+		// Establish target
+		pThis->SetTarget(pBullet);
+		return;
 	}
+
+	// Loop ends and there is no target
+	if (!pTargetBullet)
+		return;
+
+	// There is an optional target, but it is still possible to continue checking for more suitable target
+	for ( ; i < count; ++i)
+	{
+		const auto& pBullet = BulletClass::Array.GetItem(i);
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+			continue;
+
+		const auto pBulletTypeExt = pBulletExt->TypeExtData;
+
+		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+			continue;
+
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+			continue;
+
+		if (pBulletTypeExt->Armor.isset())
+		{
+			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
+
+			if (versus == 0.0)
+				continue;
+		}
+
+		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+			continue;
+
+		// Establish target
+		pThis->SetTarget(pBullet);
+		return;
+	}
+
+	// There is no more suitable target, establish optional target
+	if (pTargetBullet)
+		pThis->SetTarget(pTargetBullet);
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
@@ -498,10 +570,10 @@ void TechnoExt::ExtData::UpdateOnTunnelEnter()
 		if (const auto pShieldData = this->Shield.get())
 			pShieldData->SetAnimationVisibility(false);
 
-		for (auto& trail : this->LaserTrails)
+		for (const auto& pTrail : this->LaserTrails)
 		{
-			trail.Visible = false;
-			trail.LastLocation = { };
+			pTrail->Visible = false;
+			pTrail->LastLocation = { };
 		}
 
 		this->IsInTunnel = true;
@@ -526,22 +598,7 @@ void TechnoExt::ExtData::ApplySpawnLimitRange()
 
 		if (auto const pManager = pThis->SpawnManager)
 		{
-			auto const pTechnoType = pThis->GetTechnoType();
-			int weaponRange = 0;
-			int weaponRangeExtra = pTypeExt->Spawner_ExtraLimitRange * Unsorted::LeptonsPerCell;
-
-			auto setWeaponRange = [&weaponRange](WeaponTypeClass* pWeaponType)
-				{
-					if (pWeaponType && pWeaponType->Spawner && pWeaponType->Range > weaponRange)
-						weaponRange = pWeaponType->Range;
-				};
-
-			setWeaponRange(pTechnoType->Weapon[0].WeaponType);
-			setWeaponRange(pTechnoType->Weapon[1].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[0].WeaponType);
-			setWeaponRange(pTechnoType->EliteWeapon[1].WeaponType);
-
-			weaponRange += weaponRangeExtra;
+			const int weaponRange = pThis->Veterancy.IsElite() ? pTypeExt->EliteSpawnerRange : pTypeExt->SpawnerRange;
 
 			if (pManager->Target && (pThis->DistanceFrom(pManager->Target) > weaponRange))
 				pManager->ResetTarget();
@@ -569,14 +626,25 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 	this->UpdateSelfOwnedAttachEffects();
 
 	// Recreate Laser Trails
-	if (this->LaserTrails.size())
-		this->LaserTrails.clear();
-
-	this->LaserTrails.reserve(this->TypeExtData->LaserTrailData.size());
-
-	for (auto const& entry : this->TypeExtData->LaserTrailData)
+	if (const size_t trailCount = this->LaserTrails.size())
 	{
-		this->LaserTrails.emplace_back(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret);
+		std::vector<std::unique_ptr<LaserTrailClass>> addition;
+		addition.reserve(trailCount);
+
+		for (auto& pTrail : this->LaserTrails)
+		{
+			if (!pTrail->Intrinsic)
+				addition.emplace_back(std::move(pTrail));
+		}
+
+		this->LaserTrails.clear();
+		this->LaserTrails.reserve(this->TypeExtData->LaserTrailData.size() + addition.size());
+
+		for (const auto& entry : this->TypeExtData->LaserTrailData)
+			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
+
+		for (auto& pTrail : addition)
+			this->LaserTrails.emplace_back(std::move(pTrail));
 	}
 
 	// Reset AutoDeath Timer
@@ -608,7 +676,7 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
-	// Powered by ststl-s、Fly-Star
+	// Powered by ststl-s, Fly-Star
 	if (pCurrentType->Enslaves && pCurrentType->SlavesNumber > 0)
 	{
 		// SlaveManager does not exist or they have different slaves.
@@ -1161,9 +1229,11 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 	auto const pThis = this->OwnerObject();
 
 	// LaserTrails update routine is in TechnoClass::AI hook because LaserDrawClass-es are updated in LogicClass::AI
-	for (auto& trail : this->LaserTrails)
+	for (const auto& pTrail : this->LaserTrails)
 	{
-		if (trail.Type->DroppodOnly && (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
+		auto const pType = pTrail->Type;
+
+		if (pType->DroppodOnly && (pThis->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None)
 		{
 			auto const pFoot = static_cast<FootClass*>(pThis);
 
@@ -1173,25 +1243,25 @@ void TechnoExt::ExtData::UpdateLaserTrails()
 				continue;
 		}
 
-		trail.Cloaked = false;
+		pTrail->Cloaked = false;
 
 		if (pThis->CloakState == CloakState::Cloaked)
 		{
-			if (trail.Type->CloakVisible && trail.Type->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
-				trail.Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
-			else if (!trail.Type->CloakVisible)
-				trail.Cloaked = true;
+			if (pType->CloakVisible && pType->CloakVisible_DetectedOnly && !HouseClass::IsCurrentPlayerObserver() && !pThis->Owner->IsAlliedWith(HouseClass::CurrentPlayer))
+				pTrail->Cloaked = !pThis->GetCell()->Sensors_InclHouse(HouseClass::CurrentPlayer->ArrayIndex);
+			else if (!pType->CloakVisible)
+				pTrail->Cloaked = true;
 		}
 
 		if (!this->IsInTunnel)
-			trail.Visible = true;
+			pTrail->Visible = true;
 
-		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, trail.FLH, trail.IsOnTurret);
+		auto const trailLoc = TechnoExt::GetFLHAbsoluteCoords(pThis, pTrail->FLH, pTrail->IsOnTurret);
 
-		if (pThis->CloakState == CloakState::Uncloaking && !trail.Type->CloakVisible)
-			trail.LastLocation = trailLoc;
+		if (pThis->CloakState == CloakState::Uncloaking && !pType->CloakVisible)
+			pTrail->LastLocation = trailLoc;
 		else
-			trail.Update(trailLoc);
+			pTrail->Update(trailLoc);
 	}
 }
 
@@ -1263,11 +1333,17 @@ void TechnoExt::ExtData::UpdateGattlingRateDownReset()
 
 		if (pTypeExt->RateDown_Reset && (!pThis->Target || this->LastTargetID != pThis->Target->UniqueID))
 		{
+			int oldStage = pThis->CurrentGattlingStage;
 			this->LastTargetID = pThis->Target ? pThis->Target->UniqueID : 0xFFFFFFFF;
 			pThis->GattlingValue = 0;
 			pThis->CurrentGattlingStage = 0;
 			this->AccumulatedGattlingValue = 0;
 			this->ShouldUpdateGattlingValue = false;
+
+			if (oldStage != 0)
+			{
+				pThis->GattlingRateDown(0);
+			}
 		}
 	}
 }
@@ -1389,10 +1465,10 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 
 	if (auto const pCapturer = pThis->MindControlledBy)
 	{
-		auto const pCapturerExt = TechnoTypeExt::ExtMap.Find(pCapturer->GetTechnoType());
+		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
 
 		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
-			pThis->DistanceFrom(pCapturer) > pCapturerExt->MindControlRangeLimit.Get())
+			pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
 		{
 			pCapturer->CaptureManager->FreeUnit(pThis);
 		}
@@ -1658,7 +1734,7 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 	bool markForRedraw = false;
 	bool altered = false;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
 	{
@@ -1693,7 +1769,17 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 				|| (shouldDiscard && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Discard) != ExpireWeaponCondition::None)))
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-					expireWeapons.push_back(pType->ExpireWeapon);
+				{
+					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					{
+						if (auto const pInvoker = attachEffect->GetInvoker())
+							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+					}
+					else
+					{
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+					}
+				}
 			}
 
 			if (shouldDiscard && attachEffect->ResetIfRecreatable())
@@ -1718,11 +1804,11 @@ void TechnoExt::ExtData::UpdateAttachEffects()
 		pThis->MarkForRedraw();
 
 	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
 
-	for (auto const& pWeapon : expireWeapons)
+	for (auto const& pair : expireWeapons)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const pInvoker = pair.second;
+		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
 	}
 }
 
@@ -1732,8 +1818,9 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
 	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-	std::vector<WeaponTypeClass*> expireWeapons;
+	std::vector<std::pair<WeaponTypeClass*, TechnoClass*>> expireWeapons;
 	bool markForRedraw = false;
+	bool altered = false;
 
 	// Delete ones on old type and not on current.
 	for (it = this->AttachedEffects.begin(); it != this->AttachedEffects.end(); )
@@ -1748,11 +1835,22 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 			if (pType->ExpireWeapon && (pType->ExpireWeapon_TriggerOn & ExpireWeaponCondition::Expire) != ExpireWeaponCondition::None)
 			{
 				if (!pType->Cumulative || !pType->ExpireWeapon_CumulativeOnlyOnce || this->GetAttachedEffectCumulativeCount(pType) < 1)
-					expireWeapons.push_back(pType->ExpireWeapon);
+				{
+					if (pType->ExpireWeapon_UseInvokerAsOwner)
+					{
+						if (auto const pInvoker = attachEffect->GetInvoker())
+							expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pInvoker));
+					}
+					else
+					{
+						expireWeapons.push_back(std::make_pair(pType->ExpireWeapon, pThis));
+					}
+				}
 			}
 
 			markForRedraw |= pType->HasTint();
 			it = this->AttachedEffects.erase(it);
+			altered = true;
 		}
 		else
 		{
@@ -1761,17 +1859,17 @@ void TechnoExt::ExtData::UpdateSelfOwnedAttachEffects()
 	}
 
 	auto const coords = pThis->GetCoords();
-	auto const pOwner = pThis->Owner;
 
-	for (auto const& pWeapon : expireWeapons)
+	for (auto const& pair : expireWeapons)
 	{
-		WeaponTypeExt::DetonateAt(pWeapon, coords, pThis, pOwner, pThis);
+		auto const pInvoker = pair.second;
+		WeaponTypeExt::DetonateAt(pair.first, coords, pInvoker, pInvoker->Owner, pThis);
 	}
 
 	// Add new ones.
 	const int count = AttachEffectClass::Attach(pThis, pThis->Owner, pThis, pThis, pTypeExt->AttachEffects);
 
-	if (!count)
+	if (altered && !count)
 		this->RecalculateStatMultipliers();
 
 	if (markForRedraw)
@@ -1824,6 +1922,8 @@ void TechnoExt::ExtData::UpdateCumulativeAttachEffects(AttachEffectTypeClass* pA
 void TechnoExt::ExtData::RecalculateStatMultipliers()
 {
 	auto const pThis = this->OwnerObject();
+	auto& pAE = this->AE;
+	const bool wasTint = pAE.HasTint;
 
 	double firepower = 1.0;
 	double armor = 1.0;
@@ -1860,20 +1960,86 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 	}
 
-	this->AE.FirepowerMultiplier = firepower;
-	this->AE.ArmorMultiplier = armor;
-	this->AE.SpeedMultiplier = speed;
-	this->AE.ROFMultiplier = ROF;
-	this->AE.Cloakable = cloak;
-	this->AE.ForceDecloak = forceDecloak;
-	this->AE.DisableWeapons = disableWeapons;
-	this->AE.Unkillable = unkillable;
-	this->AE.HasRangeModifier = hasRangeModifier;
-	this->AE.HasTint = hasTint;
-	this->AE.ReflectDamage = reflectsDamage;
-	this->AE.HasOnFireDiscardables = hasOnFireDiscardables;
-	this->AE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
+	pAE.FirepowerMultiplier = firepower;
+	pAE.ArmorMultiplier = armor;
+	pAE.SpeedMultiplier = speed;
+	pAE.ROFMultiplier = ROF;
+	pAE.Cloakable = cloak;
+	pAE.ForceDecloak = forceDecloak;
+	pAE.DisableWeapons = disableWeapons;
+	pAE.Unkillable = unkillable;
+	pAE.HasRangeModifier = hasRangeModifier;
+	pAE.HasTint = hasTint;
+	pAE.ReflectDamage = reflectsDamage;
+	pAE.HasOnFireDiscardables = hasOnFireDiscardables;
+	pAE.HasRestrictedArmorMultipliers = hasRestrictedArmorMultipliers;
 
 	if (forceDecloak && pThis->CloakState == CloakState::Cloaked)
 		pThis->Uncloak(true);
+
+	if (wasTint || hasTint)
+		this->UpdateTintValues();
+}
+
+// Recalculates tint values.
+void TechnoExt::ExtData::UpdateTintValues()
+{
+	// reset values
+	this->TintColorOwner = 0;
+	this->TintColorAllies = 0;
+	this->TintColorEnemies = 0;
+	this->TintIntensityOwner = 0;
+	this->TintIntensityAllies = 0;
+	this->TintIntensityEnemies = 0;
+
+	auto const pTypeExt = this->TypeExtData;
+	const bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
+	const bool hasShieldTint = this->Shield && this->Shield->IsActive() && this->Shield->GetType()->HasTint();
+
+	// bail out early if no custom tint is applied.
+	if (!hasTechnoTint && !this->AE.HasTint && !hasShieldTint)
+		return;
+
+	auto calculateTint = [this](const int color, const int intensity, const AffectedHouse affectedHouse)
+		{
+			if ((affectedHouse & AffectedHouse::Owner) != AffectedHouse::None)
+			{
+				this->TintColorOwner |= color;
+				this->TintIntensityOwner += intensity;
+			}
+
+			if ((affectedHouse & AffectedHouse::Allies) != AffectedHouse::None)
+			{
+				this->TintColorAllies |= color;
+				this->TintIntensityAllies += intensity;
+			}
+
+			if ((affectedHouse & AffectedHouse::Enemies) != AffectedHouse::None)
+			{
+				this->TintColorEnemies |= color;
+				this->TintIntensityEnemies += intensity;
+			}
+		};
+
+	if (hasTechnoTint)
+		calculateTint(Drawing::RGB_To_Int(pTypeExt->Tint_Color), static_cast<int>(pTypeExt->Tint_Intensity * 1000), pTypeExt->Tint_VisibleToHouses);
+
+	if (this->AE.HasTint)
+	{
+		for (auto const& attachEffect : this->AttachedEffects)
+		{
+			auto const type = attachEffect->GetType();
+
+			if (!attachEffect->IsActive() || !type->HasTint())
+				continue;
+
+			calculateTint(Drawing::RGB_To_Int(type->Tint_Color), static_cast<int>(type->Tint_Intensity * 1000), type->Tint_VisibleToHouses);
+		}
+	}
+
+	if (hasShieldTint)
+	{
+		auto const pShieldType = this->Shield->GetType();
+		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
+	}
 }
