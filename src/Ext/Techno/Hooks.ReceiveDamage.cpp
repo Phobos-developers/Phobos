@@ -30,7 +30,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		return 0;
 	}
 
-	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
