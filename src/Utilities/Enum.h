@@ -183,12 +183,15 @@ enum class SelfHealGainType
 	Units = 2
 };
 
-enum class InterceptedStatus
+enum class InterceptedStatus : unsigned char
 {
-	None = 0,
-	Targeted = 1,
-	Intercepted = 2
+	None = 0x0,
+	Targeted = 0x1,
+	Intercepted = 0x2,
+	Locked = 0x4
 };
+
+MAKE_ENUM_FLAGS(InterceptedStatus);
 
 enum class PhobosAction
 {
