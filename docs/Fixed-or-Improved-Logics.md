@@ -1930,6 +1930,7 @@ Conventional.IgnoreUnits=false  ; boolean
 ### Customizable Warhead trigger conditions
 
 - It is now possible to make warheads only trigger when target's (TechnoTypes only) HP is above/below or equal to certain percentage. Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
 In `rulesmd.ini`:
@@ -1937,6 +1938,7 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]               ; WarheadType
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
 AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsNeutral=true         ; boolean
 EffectsRequireVerses=false  ; boolean
 ```
 

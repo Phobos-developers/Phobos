@@ -18,9 +18,6 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 	const auto pWarhead = this->Type->GetWarhead();
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (!pWHExt->IsHealthInThreshold(pTarget))
-		return false;
-
 	if (!this->Type->GetWarheadDetonate())
 	{
 		if (pTarget->ReceiveDamage(&damage, 0, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
