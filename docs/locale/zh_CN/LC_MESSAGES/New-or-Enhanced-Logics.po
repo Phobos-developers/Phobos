@@ -7569,13 +7569,8 @@ msgid ""
 msgstr "`Crit.AffectsHouses` 可用于自定义此弹头可暴击的目标所属。"
 
 #: ../../New-or-Enhanced-Logics.md:2080
-#, fuzzy
-msgid ""
-"`Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set"
-" minimum percentage of their maximum/minimum health percentage "
-"respectively that targets must have left to be affected by a critical "
-"hit."
-msgstr "`Crit.AffectBelowPercent` 可用于设置暴击允许的目标其剩余血量相对最大 `Strength` 的百分比下限。"
+msgid "`Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be below or above respectively to be affected by critical hits."
+msgstr "`Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` 用于设置可被暴击影响的单位其当前血量所占百分比必须低于或高于的限制。"
 
 #: ../../New-or-Enhanced-Logics.md:2081
 msgid ""
@@ -8941,6 +8936,7 @@ msgid ""
 "thresholds for allowed targets (TechnoTypes only), maximum/minimum "
 "respectively."
 msgstr ""
+"`CanTarget.MaxHealth` 和 `CanTarget.MinHealth` 用于设置可被攻击的（仅单位）目标所需的血量阈值，分别对应上／下限。"
 
 #: ../../New-or-Enhanced-Logics.md:2537
 msgid ""
