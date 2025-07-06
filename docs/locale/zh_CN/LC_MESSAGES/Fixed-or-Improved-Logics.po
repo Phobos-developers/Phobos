@@ -6487,6 +6487,7 @@ msgid ""
 "If set to `false`, `AffectsNeutral` makes the warhead can't damage or "
 "affect target that belongs to neutral house."
 msgstr ""
+"若设置 `AffectsNeutral=false` 那么弹头将无法杀伤或作用于所属于中立所属方的目标。"
 
 #: ../../Fixed-or-Improved-Logics.md:1932
 #, python-format
