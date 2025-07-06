@@ -148,6 +148,7 @@ This page lists all the individual contributions to the project by their author.
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
+  - Linked superweapons
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
