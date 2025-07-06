@@ -5,11 +5,13 @@
 #include <GameOptionsClass.h>
 #include <HouseTypeClass.h>
 
+#include <Ext/TechnoType/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
 #include <New/Type/AttachEffectTypeClass.h>
+#include <New/Type/BannerTypeClass.h>
 #include <New/Type/InsigniaTypeClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 #include <Utilities/Patch.h>
@@ -39,6 +41,7 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	ShieldTypeClass::LoadFromINIList(pINI);
 	LaserTrailTypeClass::LoadFromINIList(&CCINIClass::INI_Art);
 	AttachEffectTypeClass::LoadFromINIList(pINI);
+	BannerTypeClass::LoadFromINIList(pINI);
 	InsigniaTypeClass::LoadFromINIList(pINI);
 
 	Data->LoadBeforeTypeData(pThis, pINI);
@@ -46,6 +49,16 @@ void RulesExt::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
+	for (const auto& pTechnoType : TechnoTypeClass::Array)
+	{
+		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		{
+			// Spawner range
+			if (pTechnoTypeExt->Spawner_LimitRange)
+				pTechnoTypeExt->CalculateSpawnerRange();
+		}
+	}
+
 	if (pINI == CCINIClass::INI_Rules)
 		Data->InitializeAfterTypeData(pThis);
 
@@ -65,11 +78,6 @@ void RulesExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 
 void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
-	RulesExt::ExtData* pData = RulesExt::Global();
-
-	if (!pData)
-		return;
-
 	const char* sectionAITargetTypes = "AITargetTypes";
 	const char* sectionAIScriptsList = "AIScriptsList";
 	const char* sectionAIHousesList = "AIHousesList";
@@ -203,9 +211,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->Promote_VeteranAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.VeteranAnimation");
 	this->Promote_EliteAnimation.Read(exINI, GameStrings::AudioVisual, "Promote.EliteAnimation");
 
-	Nullable<AnimTypeClass*> droppod_trailer {};
-	droppod_trailer.Read(exINI, GameStrings::General, "DropPodTrailer");
-	this->DropPodTrailer = droppod_trailer.Get(AnimTypeClass::Find("SMOKEY"));// Ares convention
+	this->DropPodTrailer.Read(exINI, GameStrings::General, "DropPodTrailer");
+	this->DropPodDefaultTrailer = AnimTypeClass::Find("SMOKEY");
 	this->PodImage = FileSystem::LoadSHPFile("POD.SHP");
 
 	this->BuildingWaypoints.Read(exINI, GameStrings::General, "BuildingWaypoints");
@@ -267,7 +274,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->WarheadParticleAlphaImageIsLightFlash.Read(exINI, GameStrings::AudioVisual, "WarheadParticleAlphaImageIsLightFlash");
 	this->CombatLightDetailLevel.Read(exINI, GameStrings::AudioVisual, "CombatLightDetailLevel");
 	this->LightFlashAlphaImageDetailLevel.Read(exINI, GameStrings::AudioVisual, "LightFlashAlphaImageDetailLevel");
-
 	this->BuildingTypeSelectable.Read(exINI, GameStrings::General, "BuildingTypeSelectable");
 
 	this->ProneSpeed_Crawls.Read(exINI, GameStrings::General, "ProneSpeed.Crawls");
@@ -278,6 +284,11 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->HarvesterScanAfterUnload.Read(exINI, GameStrings::General, "HarvesterScanAfterUnload");
 
 	this->AnimCraterDestroyTiberium.Read(exINI, GameStrings::General, "AnimCraterDestroyTiberium");
+
+	this->BerzerkTargeting.Read(exINI, GameStrings::CombatDamage, "BerzerkTargeting");
+
+	this->AttackMove_IgnoreWeaponCheck.Read(exINI, GameStrings::General, "AttackMove.IgnoreWeaponCheck");
+	this->AttackMove_StopWhenTargetAcquired.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
 
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
@@ -336,23 +347,29 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 }
 
+// this should load everything that TypeData is not dependant on
+// i.e. InfantryElectrocuted= can go here since nothing refers to it
+// but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData
+void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
+{
+	INI_EX exINI(pINI);
+
+}
+
 // this runs between the before and after type data loading methods for rules ini
 void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 {
 
 }
 
-// this should load everything that TypeData is not dependant on
-// i.e. InfantryElectrocuted= can go here since nothing refers to it
-// but [GenericPrerequisites] have to go earlier because they're used in parsing TypeData
-void RulesExt::ExtData::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
+void RulesExt::ExtData::InitializeAfterAllLoaded()
 {
-	RulesExt::ExtData* pData = RulesExt::Global();
+	const auto pRules = RulesClass::Instance;
 
-	if (!pData)
-		return;
-
-	INI_EX exINI(pINI);
+	// tint color
+	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
+	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
+	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
 }
 
 // =============================
@@ -482,6 +499,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->VisualScatter_Max)
 		.Process(this->ShowDesignatorRange)
 		.Process(this->DropPodTrailer)
+		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
@@ -525,6 +543,12 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamagedSpeed)
 		.Process(this->HarvesterScanAfterUnload)
 		.Process(this->AnimCraterDestroyTiberium)
+		.Process(this->BerzerkTargeting)
+		.Process(this->TintColorIronCurtain)
+		.Process(this->TintColorForceShield)
+		.Process(this->TintColorBerserk)
+		.Process(this->AttackMove_IgnoreWeaponCheck)
+		.Process(this->AttackMove_StopWhenTargetAcquired)
 		;
 }
 
@@ -667,6 +691,12 @@ DEFINE_HOOK(0x679CAF, RulesData_LoadAfterTypeData, 0x5)
 
 	RulesExt::LoadAfterTypeData(pItem, pINI);
 
+	return 0;
+}
+
+DEFINE_HOOK(0x668F6A, RulesData_InitializeAfterAllLoaded, 0x5)
+{
+	RulesExt::Global()->InitializeAfterAllLoaded();
 	return 0;
 }
 

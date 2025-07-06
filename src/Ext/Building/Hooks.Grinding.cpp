@@ -19,7 +19,7 @@ DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 	const bool isAmphibious = movementZone == MovementZone::Amphibious || movementZone == MovementZone::AmphibiousCrusher
 		|| movementZone == MovementZone::AmphibiousDestroyer;
 
-	if (!isAmphibious && (pThis->GetTechnoType()->Naval != pFromType->Naval))
+	if (!isAmphibious && (pThis->Type->Naval != pFromType->Naval))
 		return ReturnNegative;
 
 	if (pThis->Type->Grinding)
@@ -139,21 +139,43 @@ DEFINE_HOOK(0x740134, UnitClass_WhatAction_Grinding, 0x0)
 	if (InputManagerClass::Instance->IsForceFireKeyPressed() && pThis->IsArmed())
 		return Continue;
 
-	if (auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
+	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-			pThis->Owner->IsAlliedWith(pTarget) && (pBuilding->Type->Grinding || action == Action::Select))
+		if (pThis->Owner->IsControlledByCurrentPlayer()
+			&& !pBuilding->IsBeingWarpedOut()
+			&& pThis->Owner->IsAlliedWith(pTarget))
 		{
-			if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) == RadioCommand::AnswerPositive)
+			const bool isGrinding = pBuilding->Type->Grinding;
+
+			if (isGrinding || action == Action::Select)
 			{
-				bool isFlying = pThis->GetTechnoType()->MovementZone == MovementZone::Fly;
-				bool canBeGrinded = BuildingExt::CanGrindTechno(pBuilding, pThis);
-				action = pBuilding->Type->Grinding ? canBeGrinded && !isFlying ? Action::Repair : Action::NoEnter : !isFlying ? Action::Enter : Action::NoEnter;
+				if (pThis->SendCommand(RadioCommand::QueryCanEnter, pTarget) != RadioCommand::AnswerPositive)
+				{
+					if (isGrinding)
+						action = Action::NoEnter;
+					else
+						return Continue;
+				}
+				else if (isGrinding)
+				{
+					if (BuildingExt::CanGrindTechno(pBuilding, pThis) && pThis->Type->MovementZone != MovementZone::Fly)
+						action = Action::Repair;
+					else
+						action = Action::NoEnter;
+				}
+				else
+				{
+					const auto pType = pThis->Type;
+
+					if (pType->MovementZone != MovementZone::Fly)
+						action = Action::Enter;
+					else if ((pType->Harvester || pType->Weeder) && !pType->BalloonHover && pType->Locomotor == LocomotionClass::CLSIDs::Jumpjet)
+						action = Action::Enter;
+					else
+						action = Action::NoEnter;
+				}
+
 				R->EBX(action);
-			}
-			else if (pBuilding->Type->Grinding)
-			{
-				R->EBX(Action::NoEnter);
 			}
 		}
 	}

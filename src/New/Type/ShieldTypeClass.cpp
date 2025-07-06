@@ -29,7 +29,8 @@ double ShieldTypeClass::GetConditionRed() const
 void ShieldTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
-	if (strcmp(pSection, NONE_STR) == 0)
+
+	if (strcmp(pSection, NONE_STR) == 0 || !pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);
