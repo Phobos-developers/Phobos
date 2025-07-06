@@ -534,7 +534,7 @@ DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 	if (pAnimType)
 	{
 		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
-		pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 		int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
 		pAnim->LightConvert = ColorScheme::Array[schemeIndex]->LightConvert;
 		pThis->Parachute = pAnim;
