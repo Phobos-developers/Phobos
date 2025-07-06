@@ -47,16 +47,15 @@ void NextIdleHarvesterCommandClass::Execute(WWKey eInput) const
 
 	do
 	{
-		if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject))
+		if (auto const pTechno = abstract_cast<TechnoClass*>(pNextObject))
 		{
-			if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+
+			if (pTypeExt->Harvester_Counted && !TechnoExt::IsHarvesting(pTechno))
 			{
-				if (pTypeExt->Harvester_Counted && !TechnoExt::IsHarvesting(pTechno))
-				{
-					pObjectToSelect = pNextObject;
-					idleHarvestersPresent = true;
-					break;
-				}
+				pObjectToSelect = pNextObject;
+				idleHarvestersPresent = true;
+				break;
 			}
 		}
 
