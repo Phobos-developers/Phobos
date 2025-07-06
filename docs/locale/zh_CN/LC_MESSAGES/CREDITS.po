@@ -584,7 +584,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:152
 msgid "Linked superweapons"
-msgstr ""
+msgstr "联动超武"
 
 #: ../../../CREDITS.md:153
 msgid "**Starkku**:"

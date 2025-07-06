@@ -1733,11 +1733,10 @@ msgid "Event 606: AttachEffect is attaching to a Techno"
 msgstr ""
 
 #: ../../Whats-New.md:417
-#, fuzzy
 msgid ""
 "[Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by "
 "FS-21)"
-msgstr "[多武器逻辑](New-or-Enhanced-Logics.md#multi-weapon)（by FlyStar）"
+msgstr "[联动超武](New-or-Enhanced-Logics.md#linked-superweapons)（by FS-21）"
 
 #: ../../Whats-New.md:419 ../../Whats-New.md:633 ../../Whats-New.md:949
 #: ../../Whats-New.md:1058 ../../Whats-New.md:1083 ../../Whats-New.md:1122
