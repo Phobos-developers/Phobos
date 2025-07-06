@@ -1729,8 +1729,8 @@ msgstr ""
 "screen)（by CrimRecya）"
 
 #: ../../Whats-New.md:416
-msgid "Event 606: AttachEffect is attaching to a Techno"
-msgstr ""
+msgid "[Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno) (by FS-21)"
+msgstr "[触发条件 606：AttachEffect 已被附加到单位](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno)（by FS-21）"
 
 #: ../../Whats-New.md:417
 msgid ""

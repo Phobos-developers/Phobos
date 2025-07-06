@@ -580,7 +580,7 @@ msgstr "目标血量作为弹头生效条件的进一步改进"
 
 #: ../../../CREDITS.md:151
 msgid "Event 606: AttachEffect is attaching to a Techno"
-msgstr ""
+msgstr "触发条件 606：AttachEffect 已被附加到单位"
 
 #: ../../../CREDITS.md:152
 msgid "Linked superweapons"

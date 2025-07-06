@@ -2538,7 +2538,7 @@ msgstr "选择地图触发的所有者"
 
 #: ../../AI-Scripting-and-Mapping.md:842
 msgid "`606` AttachEffect is attaching to a Techno"
-msgstr ""
+msgstr "`606` AttachEffect 已被附加到单位"
 
 #: ../../AI-Scripting-and-Mapping.md:844
 msgid ""
@@ -2546,10 +2546,11 @@ msgid ""
 "for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that "
 "were attached prior to the trigger's enabling."
 msgstr ""
+"检查一个 `AttachEffectType` 是否已附加到某个单位上。不适用于触发器启动前就已附加的 [Attach Effect](New-or-Enhanced-Logics.md#attached-effects)。"
 
 #: ../../AI-Scripting-and-Mapping.md:845
 msgid "To be elaborate, the event will be triggered during these occasions:"
-msgstr ""
+msgstr "具体而言，该条件将在下述情况被满足："
 
 #: ../../AI-Scripting-and-Mapping.md:846
 msgid ""
@@ -2558,12 +2559,14 @@ msgid ""
 "after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of "
 "frames)."
 msgstr ""
+"初始 AE：初始赋予时（在 `AttachEffect.InitialDelays` 帧后）、重新创建时（在 `AttachEffect.Delays` 或 `AttachEffect.RecreationDelays` 帧后）。"
 
 #: ../../AI-Scripting-and-Mapping.md:847
 msgid ""
 "Effects from other sources: granted, refreshing when trying to apply the "
 "same type of attached effect to the techno."
 msgstr ""
+"外源 AE：赋予时、对同一单位赋予同一 AE 使其刷新时。"
 
 #: ../../AI-Scripting-and-Mapping.md:850
 msgid ""
