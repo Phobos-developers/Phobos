@@ -569,9 +569,6 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 
 			pBulletExt->InterceptorTechnoType = pSourceTypeExt;
 			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
-
-			if (!pInterceptorType->ApplyFirepowerMult)
-				pBullet->Health = pWeapon->Damage;
 		}
 	}
 

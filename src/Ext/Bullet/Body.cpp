@@ -49,9 +49,8 @@ void BulletExt::ExtData::InterceptBullet(TechnoClass* pSource, BulletClass* pInt
 
 	if (const auto pWeaponOverride = pInterceptorType->WeaponOverride.Get(pTypeExt->Interceptable_WeaponOverride))
 	{
-		const int damage = pWeaponOverride->Damage;
 		pThis->WeaponType = pWeaponOverride;
-		pThis->Health = pInterceptorType->WeaponCumulativeDamage.Get() ? pThis->Health + damage : damage;
+		pThis->Health = pInterceptorType->WeaponCumulativeDamage.Get() ? pThis->Health + pWeaponOverride->Damage : pWeaponOverride->Damage;
 		pThis->WH = pWeaponOverride->Warhead;
 		pThis->Bright = pWeaponOverride->Bright;
 
