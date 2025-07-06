@@ -147,6 +147,8 @@ This page lists all the individual contributions to the project by their author.
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
   - Warhead activation target health thresholds enhancements
+  - Event 606: AttachEffect is attaching to a Techno
+  - Linked superweapons
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -270,6 +272,7 @@ This page lists all the individual contributions to the project by their author.
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
   - Airstrike flare visual customizations & fixes
+  - Restored parabombs
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -325,7 +328,7 @@ This page lists all the individual contributions to the project by their author.
   - Income money string indication upon ore dump
   - Warhead superweapon launch logic
   - TechnoType conversion placeholder
-  - `606 The shield of the attached object is broken` trigger event
+  - `600 The shield of the attached object is broken` trigger event
   - `RadialIndicator` observer visibility
   - Cloaked objects from allies displaying to player in singleplayer campaigns
   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures
@@ -503,6 +506,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually
   - Fix an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory
   - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
+  - Fix an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

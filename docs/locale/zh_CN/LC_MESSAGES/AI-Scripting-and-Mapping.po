@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-19 21:54+0800\n"
+"POT-Creation-Date: 2025-07-07 06:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -429,7 +429,7 @@ msgstr "*重复*"
 msgid "*Target Priority*"
 msgstr "*目标优先级*"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "*Description*"
 msgstr "*描述*"
 
@@ -1660,7 +1660,8 @@ msgstr "例如：`盟军战役25: 僵僵の钱 - 钱全被偷光了!`。"
 #: ../../AI-Scripting-and-Mapping.md:661 ../../AI-Scripting-and-Mapping.md:700
 #: ../../AI-Scripting-and-Mapping.md:716 ../../AI-Scripting-and-Mapping.md:743
 #: ../../AI-Scripting-and-Mapping.md:770 ../../AI-Scripting-and-Mapping.md:795
-#: ../../AI-Scripting-and-Mapping.md:813 ../../AI-Scripting-and-Mapping.md:827
+#: ../../AI-Scripting-and-Mapping.md:809 ../../AI-Scripting-and-Mapping.md:827
+#: ../../AI-Scripting-and-Mapping.md:849
 msgid "In `mycampaign.map`:"
 msgstr "在 `mycampaign.map`："
 
@@ -1846,15 +1847,15 @@ msgstr "在指定位置发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 msgid "`HouseIndex` can take various values:"
 msgstr "`HouseIndex` 可取以下值："
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "*House Index*"
 msgstr "*所属方索引*"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid ">= 0"
 msgstr ">= 0"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "The index of the current House in the map"
 msgstr "地图上当前所属方的索引"
 
@@ -1866,7 +1867,7 @@ msgstr "4475-4482"
 msgid "Like in the index range 0-7"
 msgstr "类似范围 0-7 的索引"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "-1"
 msgstr "-1"
 
@@ -1874,7 +1875,7 @@ msgstr "-1"
 msgid "Pick a random House that isn't Neutral"
 msgstr "选择一个非中立的随机所属方"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "-2"
 msgstr "-2"
 
@@ -2106,9 +2107,9 @@ msgstr "`prefix`/`prefixed` - 变量在其他文本 **前** 显示。"
 
 #: ../../AI-Scripting-and-Mapping.md:683
 msgid ""
-"`surfix`/`surfixed` will make the text banner display the variable after "
+"`suffix`/`suffixed` will make the text banner display the variable after "
 "any other text."
-msgstr "`surfix`/`surfixed` - 变量在其他文本 **后** 显示。"
+msgstr "`suffix`/`suffixed` - 变量在其他文本 **后** 显示。"
 
 #: ../../AI-Scripting-and-Mapping.md:686
 msgid ""
@@ -2486,6 +2487,18 @@ msgstr "多人游戏所属方（索引 4475 至 4482）支持。"
 
 #: ../../AI-Scripting-and-Mapping.md:810
 msgid ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
+"...\n"
+msgstr ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:818
+msgid ""
 "These events, as opposed to [events 81 & 82 from Ares](https://ares-"
 "developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-"
 "type-81-82), take house as a parameter instead of using the trigger "
@@ -2494,18 +2507,6 @@ msgstr ""
 "与 [Ares 的 `81` & `82` 号条件](https://ares-developers.github.io/Ares-"
 "docs/new/triggerevents.html#house-owns-techno-"
 "type-81-82)不同，这里的所属方使用触发条件中的所属方参数而不是触发自身的所有者。"
-
-#: ../../AI-Scripting-and-Mapping.md:814
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
-"...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:821
 msgid "`604-605` Checking if a specific Techno enters in a cell"
@@ -2527,11 +2528,52 @@ msgstr "`605`：检查进入单元格的科技类型是否出现在选定的 `AI
 msgid "`HouseIndex` can be customized to focus in a specified house."
 msgstr "`HouseIndex` 可以自定义为指定所属方。"
 
-#: ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md:817
 msgid "This value is ignored (any house is valid)"
 msgstr "该值将被忽略（任何所属方均有效）"
 
-#: ../../AI-Scripting-and-Mapping.md:809
+#: ../../AI-Scripting-and-Mapping.md:817
 msgid "Pick the owner of the map trigger"
 msgstr "选择地图触发的所有者"
+
+#: ../../AI-Scripting-and-Mapping.md:842
+msgid "`606` AttachEffect is attaching to a Techno"
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:844
+msgid ""
+"Checks if an `AttachEffectType` is attaching to a techno. Doesn't work "
+"for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that "
+"were attached prior to the trigger's enabling."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:845
+msgid "To be elaborate, the event will be triggered during these occasions:"
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:846
+msgid ""
+"Self-owned effects: initial granted (triggered after "
+"`AttachEffect.InitialDelays` amount of frames), recreation (triggered "
+"after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of "
+"frames)."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:847
+msgid ""
+"Effects from other sources: granted, refreshing when trying to apply the "
+"same type of attached effect to the techno."
+msgstr ""
+
+#: ../../AI-Scripting-and-Mapping.md:850
+msgid ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,606,2,0,[AttachEffectType],...\n"
+"...\n"
+msgstr ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,606,2,0,[AttachEffectType],...\n"
+"...\n"
 

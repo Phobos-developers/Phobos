@@ -236,6 +236,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
+- Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
+- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically.
 
 ## Fixes / interactions with other extensions
 
@@ -754,16 +756,6 @@ AirburstWeapon.SourceScatterMax=0.0       ; floating point value, distance in ce
 
 ```{note}
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
-```
-
-### Bomb parachute anim deglobalization
-
-- Now you can define `BombParachute` per projectile.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]        ; Projectile
-BombParachute=          ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Cluster scatter distance customization
@@ -1935,15 +1927,16 @@ Conventional.IgnoreUnits=false  ; boolean
 
 ### Customizable Warhead trigger conditions
 
-- It is now possible to make warheads only trigger when target's HP is above and/or below certain percentage.
-  - Both conditions need to evaluate to true in order for the warhead to trigger.
+- It is now possible to make warheads only trigger when target's (TechnoTypes only) HP is above/below or equal to certain percentage. Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
 - If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]               ; WarheadType
-AffectsAbovePercent=0.0     ; floating point value, percents or absolute
 AffectsBelowPercent=1.0     ; floating point value, percents or absolute
+AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsNeutral=true         ; boolean
 EffectsRequireVerses=false  ; boolean
 ```
 
@@ -2151,17 +2144,17 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 
 ## DropPod
 
-DropPod properties can now be customized on a per-InfantryType basis.
-- Note that the DropPod is actually the infantry itself with a different shp image.
-- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
-- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
-  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
-- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
-- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+- DropPod properties can now be customized on a per-TechnoType (non-building) basis.
+  - Note that due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+  - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+  - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+    - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+  - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+  - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                ; InfantryType
+[SOMETECHNO]                  ; TechnoType
 DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
 DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
 DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
@@ -2177,5 +2170,5 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
 ```{note}
-`[General] -> DropPodTrailer` is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+`[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```

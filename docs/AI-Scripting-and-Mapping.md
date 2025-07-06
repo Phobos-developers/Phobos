@@ -680,7 +680,7 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
     - `none` will make the text banner not display the variable.
     - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
     - `prefix`/`prefixed` will make the text banner display the variable before any other text.
-    - `surfix`/`surfixed` will make the text banner display the variable after any other text.
+    - `suffix`/`suffixed` will make the text banner display the variable after any other text.
 
 In `rulesmd.ini`:
 ```ini
@@ -838,3 +838,18 @@ In `mycampaign.map`:
 | >= 0          | The index of the current House in the map  |
 | -1            | This value is ignored (any house is valid) |
 | -2            | Pick the owner of the map trigger          |
+
+### `606` AttachEffect is attaching to a Techno
+
+- Checks if an `AttachEffectType` is attaching to a techno. Doesn't work for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that were attached prior to the trigger's enabling.
+- To be elaborate, the event will be triggered during these occasions:
+  - Self-owned effects: initial granted (triggered after `AttachEffect.InitialDelays` amount of frames), recreation (triggered after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of frames).
+  - Effects from other sources: granted, refreshing when trying to apply the same type of attached effect to the techno.
+
+In `mycampaign.map`:
+```ini
+[Events]
+...
+ID=EventCount,...,606,2,0,[AttachEffectType],...
+...
+```

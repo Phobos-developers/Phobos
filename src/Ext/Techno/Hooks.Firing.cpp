@@ -68,7 +68,6 @@ DEFINE_HOOK(0x6F33CD, TechnoClass_WhatWeaponShouldIUse_ForceFire, 0x6)
 		if (pWeaponSecondary
 			&& !pPrimaryExt->SkipWeaponPicking
 			&& (!EnumFunctions::IsCellEligible(pCell, pPrimaryExt->CanTarget, true, true)
-				|| !pPrimaryExt->IsHealthRatioEligible(pThis)
 				|| (pPrimaryExt->AttachEffect_CheckOnFirer
 					&& !pPrimaryExt->HasRequiredAttachedEffects(pThis, pThis))))
 		{
@@ -306,11 +305,8 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 
-	if (!pWeaponExt->SkipWeaponPicking && pTargetCell
-		&& !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
-	{
+	if (!pWeaponExt->SkipWeaponPicking && pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
 		return CannotFire;
-	}
 
 	if (pTargetTechno)
 	{
@@ -324,7 +320,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWeaponExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
-				|| !pWeaponExt->IsHealthRatioEligible(pTargetTechno)
+				|| !pWeaponExt->IsHealthInThreshold(pTargetTechno)
 				|| !pWeaponExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return CannotFire;
@@ -616,18 +612,26 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	GET(TechnoClass* const, pSource, ESI);
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
+	GET(WeaponTypeClass* const, pWeapon, EBX);
 
-	auto const pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+	const auto pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 
-	if (pSourceTypeExt->InterceptorType)
+	if (const auto pInterceptorType = pSourceTypeExt->InterceptorType.get())
 	{
-		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
+		if (const auto pTargetBullet = abstract_cast<BulletClass*, true>(pTarget))
 		{
-			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-			{
-				pBulletExt->IsInterceptor = true;
-				pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
-			}
+			const auto pTargetExt = BulletExt::ExtMap.Find(pTargetBullet);
+
+			if (!pTargetExt->TypeExtData->Armor.isset())
+				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
+
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+			pBulletExt->InterceptorTechnoType = pSourceTypeExt;
+			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
+
+			if (!pInterceptorType->ApplyFirepowerMult)
+				pBullet->Health = pWeapon->Damage;
 		}
 	}
 

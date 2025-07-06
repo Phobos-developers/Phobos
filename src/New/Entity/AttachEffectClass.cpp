@@ -4,6 +4,7 @@
 #include <AnimClass.h>
 #include <BuildingClass.h>
 
+#include <Ext/TEvent/Body.h>
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -50,7 +51,10 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	this->HasInitialized = false;
 
 	if (this->InitialDelay <= 0)
+	{
 		this->HasInitialized = true;
+		pType->HandleEvent(pTechno);
+	}
 
 	this->Duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
 
@@ -147,7 +151,9 @@ void AttachEffectClass::PointerGotInvalid(void* ptr, bool removed)
 
 void AttachEffectClass::AI()
 {
-	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
+	auto const pTechno = this->Techno;
+
+	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
 		return;
 
 	if (this->InitialDelay > 0)
@@ -156,25 +162,27 @@ void AttachEffectClass::AI()
 		return;
 	}
 
+	auto const pType = this->Type;
+
 	if (!this->HasInitialized && this->InitialDelay == 0)
 	{
 		this->HasInitialized = true;
 
-		if (this->Type->ROFMultiplier > 0.0 && this->Type->ROFMultiplier_ApplyOnCurrentTimer)
+		if (pType->ROFMultiplier > 0.0 && pType->ROFMultiplier_ApplyOnCurrentTimer)
 		{
-			double ROFModifier = this->Type->ROFMultiplier;
-			auto const pTechno = this->Techno;
-			auto const pExt = TechnoExt::ExtMap.Find(this->Techno);
+			const double ROFModifier = pType->ROFMultiplier;
+			auto const pExt = TechnoExt::ExtMap.Find(pTechno);
 			pTechno->RearmTimer.Start(static_cast<int>(pTechno->RearmTimer.GetTimeLeft() * ROFModifier));
 
 			if (!pExt->ChargeTurretTimer.HasStarted() && pExt->LastRearmWasFullDelay)
 				pTechno->ChargeTurretDelay = static_cast<int>(pTechno->ChargeTurretDelay * ROFModifier);
 		}
 
-		if (this->Type->HasTint())
-			this->Techno->MarkForRedraw();
+		if (pType->HasTint())
+			pTechno->MarkForRedraw();
 
 		this->NeedsRecalculateStat = true;
+		pType->HandleEvent(pTechno);
 	}
 
 	if (this->CurrentDelay > 0)
@@ -197,6 +205,7 @@ void AttachEffectClass::AI()
 			this->RefreshDuration();
 			this->NeedsRecalculateStat = true;
 			this->NeedsDurationRefresh = false;
+			pType->HandleEvent(pTechno);
 		}
 
 		return;
@@ -207,12 +216,14 @@ void AttachEffectClass::AI()
 
 	if (this->Duration == 0)
 	{
-		if (!this->IsSelfOwned() || this->Delay < 0)
+		const int delay = this->Delay;
+
+		if (!this->IsSelfOwned() || delay < 0)
 			return;
 
-		this->CurrentDelay = this->Delay;
+		this->CurrentDelay = delay;
 
-		if (this->Delay > 0)
+		if (delay > 0)
 		{
 			this->KillAnim();
 			this->NeedsRecalculateStat = true;
@@ -491,7 +502,6 @@ bool AttachEffectClass::ResetIfRecreatable()
 	this->KillAnim();
 	this->Duration = 0;
 	this->CurrentDelay = this->RecreationDelay;
-	this->NeedsRecalculateStat = true;
 
 	return true;
 }
@@ -738,6 +748,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 				best->RefreshDuration(attachParams.DurationOverride);
 			}
 
+			pType->HandleEvent(pTarget);
 			return nullptr;
 		}
 		else if (attachParams.CumulativeRefreshAll && attachParams.CumulativeRefreshAll_OnAttach)
@@ -752,6 +763,7 @@ AttachEffectClass* AttachEffectClass::CreateAndAttach(AttachEffectTypeClass* pTy
 	if (!pType->Cumulative && currentTypeCount > 0 && match)
 	{
 		match->RefreshDuration(attachParams.DurationOverride);
+		pType->HandleEvent(pTarget);
 	}
 	else
 	{
