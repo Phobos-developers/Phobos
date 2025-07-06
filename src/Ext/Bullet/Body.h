@@ -28,6 +28,7 @@ public:
 		std::vector<std::unique_ptr<LaserTrailClass>> LaserTrails;
 		bool SnappedToTarget; // Used for custom trajectory projectile target snap checks
 		int DamageNumberOffset;
+		int ParabombFallRate;
 
 		TrajectoryPointer Trajectory;
 
@@ -42,6 +43,7 @@ public:
 			, Trajectory { nullptr }
 			, SnappedToTarget { false }
 			, DamageNumberOffset { INT32_MIN }
+			, ParabombFallRate { 0 }
 		{ }
 
 		virtual ~ExtData() = default;

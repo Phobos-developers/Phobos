@@ -94,6 +94,18 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	}
 
+	if (pThis->HasParachute)
+	{
+		int fallRate = pBulletExt->ParabombFallRate - pBulletExt->TypeExtData->Parachuted_FallRate;
+		int maxFallRate = pBulletExt->TypeExtData->Parachuted_MaxFallRate.Get(RulesClass::Instance->ParachuteMaxFallRate);
+
+		if (fallRate < maxFallRate)
+			fallRate = maxFallRate;
+
+		pBulletExt->ParabombFallRate = fallRate;
+		pThis->FallRate = fallRate;
+	}
+
 	return 0;
 }
 
@@ -513,6 +525,18 @@ DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 
 	R->EAX(pAnim);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x467AB2, BulletClass_AI_Parabomb, 0x7)
+{
+	enum { SkipGameCode = 0x467B1A };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (pThis->HasParachute)
+		return SkipGameCode;
+
+	return 0;
 }
 
 #pragma endregion

@@ -429,6 +429,7 @@ void BulletExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrails)
 		.Process(this->SnappedToTarget)
 		.Process(this->DamageNumberOffset)
+		.Process(this->ParabombFallRate)
 
 		.Process(this->Trajectory) // Keep this shit at last
 		;

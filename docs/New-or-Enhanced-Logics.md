@@ -720,14 +720,17 @@ OnlyUseLandSequences=false  ; boolean
 ### Parabombs
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
-  - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects. Currently the falling down speed is not customizable and is capped to `[General]` -> `ParachuteMaxFallRate`.
+  - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects.
+  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> `ParachuteMaxFallRate`.
   - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]  ; Projectile
-Parachuted=false  ; boolean
-BombParachute=    ; AnimationType
+[SOMEPROJECTILE]         ; Projectile
+Parachuted=false         ; boolean
+Parachuted.FallRate=1    ; integer
+Parachuted.MaxFallRate=  ; integer
+BombParachute=           ; AnimationType
 ```
 
 ### Projectile interception logic
