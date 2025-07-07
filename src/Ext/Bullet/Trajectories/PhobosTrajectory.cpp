@@ -279,15 +279,15 @@ void PhobosTrajectory::OnUnlimbo()
 // Something that needs to be done before updating the velocity of the projectile
 bool PhobosTrajectory::OnEarlyUpdate()
 {
+	// Update group index for members by themselves
+	if (this->TrajectoryGroup)
+		this->UpdateGroupIndex();
 	// The previous check requires detonation at this time
-	if (this->ShouldDetonate)
+	if (this->ShouldDetonate || this->Bullet->SpawnNextAnim)
 		return true;
 	// Check the remaining existence time
 	if (this->DurationTimer.Completed())
 		return true;
-	// Update group index for members by themselves
-	if (this->TrajectoryGroup)
-		this->UpdateGroupIndex();
 	// Check if the firer's target can be synchronized
 	if (this->CheckSynchronize())
 		return true;
