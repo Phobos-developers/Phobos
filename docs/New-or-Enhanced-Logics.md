@@ -1476,7 +1476,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ```
 
 ### Custom Mind Control Animation
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `[CombatDamage] -> ControlledAnimationType`.
+- Allows Warheads to play custom `MindControl.Anim`.
 
 In `rulesmd.ini`:
 ```ini
