@@ -5162,10 +5162,10 @@ msgstr "现在你可以像为科技类型那样为地形对象指定自定义色
 
 #: ../../Fixed-or-Improved-Logics.md:1428
 msgid ""
-"Note that this palette behaves like an object palette and does not use "
+"This palette behaves like an object palette and does not use "
 "tint etc. that have been applied to the tile the TerrainType resides on "
 "like a TerrainType using tile palette would."
-msgstr "注意此色盘的行为就像原有的地形对象色盘那样不受光效影响。也就是地形对象将不会同步使用应用于地形对象所在地块上的色调。"
+msgstr "此色盘的行为就像原有的对象色盘那样不受光效影响。也就是地形对象将不会同步使用应用于地形对象所在地块上的色调。"
 
 #: ../../Fixed-or-Improved-Logics.md:1431
 msgid ""
@@ -5173,6 +5173,9 @@ msgid ""
 "Palette=           ; filename - excluding .pal extension and three-"
 "character theater-specific suffix\n"
 msgstr ""
+"[SOMETERRAINTYPE]  ; TerrainType\n"
+"Palette=           ; filename - excluding .pal extension and three-"
+"character theater-specific suffix\n"
 
 #: ../../Fixed-or-Improved-Logics.md:1436
 msgid "Customizable ore spawners"
@@ -5257,17 +5260,6 @@ msgid ""
 "frames and ends at halfway point of the frames in TerrainType's image."
 msgstr "倒坍所用的帧从紧随于常规帧和破损帧之后的第一帧开始直到地形对象图像帧的一半处中止（另一半是影子）。"
 
-#: ../../Fixed-or-Improved-Logics.md:1460
-msgid ""
-"Note that the number of regular & damage frames considered for this "
-"depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes,"
-" `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes))."
-" Exercise caution and ensure there are correct amount of frames to "
-"display."
-msgstr ""
-"注意此处考虑的常规帧和破损帧数量取决于 `HasDamagedFrames` 的值，对于 `IsAnimated` 的地形对象则取决于 "
-"`AnimationLength` 的值（见[动画化地形对象](#animated-terraintypes)）。请谨慎操作以确保显示的帧数正确。"
-
 #: ../../Fixed-or-Improved-Logics.md:1461
 msgid ""
 "Sound event from `CrumblingSound` (if set) is played when crumbling "
@@ -5278,7 +5270,7 @@ msgstr "当倒坍动画开始播放时将会播放 `CrumblingSound`（如果设�
 msgid ""
 "[Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--"
 "sound) only play after crumbling animation has finished."
-msgstr "[摧毁动画和音效](New-or-Enhanced-Logics.md#destroy-animation--sound)仅在倒坍动画结束后播放。"
+msgstr "[摧毁动画和音效](New-or-Enhanced-Logics.md#destroy-animation--sound) 仅在倒坍动画结束后播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:1465
 msgid ""
@@ -5299,6 +5291,17 @@ msgstr ""
 "HasDamagedFrames=false    ; boolean\n"
 "HasCrumblingFrames=false  ; boolean\n"
 "CrumblingSound=           ; Sound entry\n"
+
+#: ../../Fixed-or-Improved-Logics.md:1460
+msgid ""
+"The number of regular & damage frames considered for this "
+"depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes,"
+" `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes))."
+" Exercise caution and ensure there are correct amount of frames to "
+"display."
+msgstr ""
+"此处考虑的常规帧和破损帧数量取决于 `HasDamagedFrames` 的值，对于 `IsAnimated` 的地形对象则取决于 "
+"`AnimationLength` 的值（见 [动画化地形对象](#animated-terraintypes)）。请谨慎操作以确保显示的帧数正确。"
 
 #: ../../Fixed-or-Improved-Logics.md:1475
 #: ../../Fixed-or-Improved-Logics.md:1500
@@ -7018,11 +7021,11 @@ msgstr "现在可以在每个非建筑类单位上微观定义 DropPod 属性。
 
 #: ../../Fixed-or-Improved-Logics.md:2148
 msgid ""
-"Note that due to technical constraints `DropPod.AirImage` is only drawn "
+"Due to technical constraints `DropPod.AirImage` is only drawn "
 "for InfantryTypes (as the DropPod is the infantry itself with its image "
 "swapped). This may change in future."
 msgstr ""
-"注意：由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。这可能会在将来改变。"
+"由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。未来可能会进行更改。"
 
 #: ../../Fixed-or-Improved-Logics.md:2149
 msgid ""

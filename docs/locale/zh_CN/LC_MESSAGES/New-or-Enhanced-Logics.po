@@ -2901,7 +2901,7 @@ msgid ""
 "allows projectiles to be parachuted down to ground if fired by an aerial "
 "unit."
 msgstr ""
-"这是一个还原自 RA1（也在 Ares 中部分实现但未记载，若共用则 Phobos 版本优先）的功能，允许抛射体在被空中单位发射时伞降到地面。"
+"还原自 RA1（也在 Ares 中部分实现但未记载，若共用则 Phobos 版本优先），允许抛射体在被空中单位发射时伞降到地面。"
 
 #: ../../New-or-Enhanced-Logics.md:723
 msgid ""
@@ -2914,33 +2914,30 @@ msgstr ""
 #: ../../New-or-Enhanced-Logics.md:724
 msgid ""
 "Falling speed can be customized by setting `Parachuted.FallRate` and is "
-"capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> "
-"`ParachuteMaxFallRate`."
+"capped to `Parachuted.MaxFallRate`."
 msgstr ""
-"可通过 `Parachuted.FallRate` 来自定义降落速度，其上限由 `Parachuted.MaxFallRate` 决定，默认为 `[General]` -> "
-"`ParachuteMaxFallRate`。"
+"可通过 `Parachuted.FallRate` 来自定义降落速度，其上限由 `Parachuted.MaxFallRate` 决定。"
 
 #: ../../New-or-Enhanced-Logics.md:725
 msgid ""
-"`BombParachute` can be used to customize the parachute animation used, "
-"defaults to `[General] -> BombParachute`. The animation is drawn in "
+"`BombParachute` can be used to customize the parachute animation used. The animation is drawn in "
 "unit palette using team color of the firing house if available."
 msgstr ""
-"可通过 `BombParachute` 来自定义降落伞动画，默认 `[General] -> BombParachute`。该动画将使用 unit 色盘绘制映射为发射者所属的阵营色。"
+"可通过 `BombParachute` 来自定义降落伞动画。该动画将使用 unit 色盘绘制映射为发射者所属的阵营色。"
 
 #: ../../New-or-Enhanced-Logics.md:728
 msgid ""
 "[SOMEPROJECTILE]         ; Projectile\n"
 "Parachuted=false         ; boolean\n"
 "Parachuted.FallRate=1    ; integer\n"
-"Parachuted.MaxFallRate=  ; integer\n"
-"BombParachute=           ; AnimationType\n"
+"Parachuted.MaxFallRate=  ; integer, default to [General] -> ParachuteMaxFallRate\n"
+"BombParachute=           ; AnimationType, default to [General] -> BombParachute\n"
 msgstr ""
 "[SOMEPROJECTILE]         ; Projectile\n"
 "Parachuted=false         ; boolean\n"
 "Parachuted.FallRate=1    ; integer\n"
-"Parachuted.MaxFallRate=  ; integer\n"
-"BombParachute=           ; AnimationType\n"
+"Parachuted.MaxFallRate=  ; integer, default to [General] -> ParachuteMaxFallRate\n"
+"BombParachute=           ; AnimationType, default to [General] -> BombParachute\n"
 
 #: ../../New-or-Enhanced-Logics.md:736
 msgid "Projectile interception logic"
@@ -4648,13 +4645,26 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1136
 msgid ""
-"For a granted superweapon, the other will be: check `SW.Link.Reset` to "
-"see if it needs to be reset. If false, check `SW.Link.Ready` to see if it"
-" needs to be set to readiness. If false, whether it'll be ready or not is"
+"For a granted superweapon, the other will be:"
+msgstr ""
+"对于一个被授予的超武："
+
+msgid ""
+"Check `SW.Link.Reset` to "
+"see if it needs to be reset."
+msgstr ""
+"检查 `SW.Link.Reset` 以确认是否需要被重置。"
+
+msgid ""
+"If false, check `SW.Link.Ready` to see if it"
+" needs to be set to readiness."
+msgstr ""
+"若为 false，检查 `SW.Link.Ready` 以确认是否需要被设为就绪。"
+
+msgid ""
+"If false, whether it'll be ready or not is"
 " decided by the granted superweapon's `SW.InitialReady`."
 msgstr ""
-"对于一个被授予的超武，另一个将是：检查 `SW.Link.Reset` 以确认是否需要被重置。"
-"若为 false，检查 `SW.Link.Ready` 以确认是否需要被设为就绪。"
 "若为 false，则初始状态由被授予超武自身的 `SW.InitialReady` 决定。"
 
 #: ../../New-or-Enhanced-Logics.md:1137
@@ -4705,7 +4715,7 @@ msgid ""
 "[SOMESW]                     ; SuperWeaponType\n"
 "SW.Link=                     ; List of SuperWeaponTypes\n"
 "SW.Link.Grant=false          ; boolean\n"
-"SW.Link.Ready=               ; boolean, default to `SW.InitialReady` for "
+"SW.Link.Ready=               ; boolean, default to SW.InitialReady for "
 "granted superweapons, false otherwise\n"
 "SW.Link.Reset=false          ; boolean\n"
 "SW.Link.RollChances=         ; List of percentages.\n"
@@ -4716,7 +4726,7 @@ msgstr ""
 "[SOMESW]                     ; SuperWeaponType\n"
 "SW.Link=                     ; List of SuperWeaponTypes\n"
 "SW.Link.Grant=false          ; boolean\n"
-"SW.Link.Ready=               ; boolean, default to `SW.InitialReady` for "
+"SW.Link.Ready=               ; boolean, default to SW.InitialReady for "
 "granted superweapons, false otherwise\n"
 "SW.Link.Reset=false          ; boolean\n"
 "SW.Link.RollChances=         ; List of percentages.\n"
@@ -5702,21 +5712,15 @@ msgstr "当建筑或单位被出售时将向所有者播放出售音效和 EVA �
 
 #: ../../New-or-Enhanced-Logics.md:1454
 msgid ""
-"`EVA.Sold` is used to customize the EVA voice when selling, default to "
-"`EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles."
+"`EVA.Sold` is used to customize the EVA voice when selling."
 msgstr ""
-"`EVA.Sold` 用于自定义出售时的 EVA 语音，建筑默认为 `EVA_StructureSold` 载具默认为 "
-"`EVA_UnitSold`。"
+"`EVA.Sold` 用于自定义出售时的 EVA 语音。"
 
 #: ../../New-or-Enhanced-Logics.md:1455
 msgid ""
-"`SellSound` is used to customize the report sound when selling, default "
-"to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' "
-"`SellSound` globally. This has been changed in consistency with "
-"buildings' `SellSound`."
+"`SellSound` is used to customize the report sound when selling."
 msgstr ""
-"`SellSound` 用于自定义出售时的音效，默认为 `[AudioVisual] -> SellSound`。请注意，原版游戏中出售载具的 "
-"`SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
+"`SellSound` 用于自定义出售时的音效。"
 
 #: ../../New-or-Enhanced-Logics.md:1458
 msgid ""
@@ -5727,6 +5731,14 @@ msgstr ""
 "[SOMETECHNO]    ; BuildingType or VehicleType\n"
 "EVA.Sold=       ; EVA entry\n"
 "SellSound=      ; Sound entry\n"
+
+msgid ""
+"Vanilla game played vehicles' "
+"`SellSound` globally. This has been changed in consistency with "
+"buildings' `SellSound`."
+msgstr ""
+"原版游戏中出售载具的 "
+"`SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
 
 #: ../../New-or-Enhanced-Logics.md:1464
 msgid "Disabling fallback to (Elite)Secondary weapon"
@@ -6841,11 +6853,9 @@ msgid ""
 "You can now make technos recount their current burst index when they have"
 " changed the firing weapon or have maintained for a period of time "
 "without any targets (take the larger value of last firing weapon's `ROF` "
-"and 30 frames). Defaults to `[General] -> RecountBurst`, which defaults "
-"to false."
+"and 30 frames)."
 msgstr ""
-"现在你可以让单位在更换了开火武器或一段时间（取上一次发射武器的 `ROF` 与 30 帧之间的较大值）内没有目标的情况下重置当前的连发索引。默认为"
-" `[General] -> RecountBurst`，其默认为 false。"
+"现在你可以让单位在更换了开火武器或一段时间（取上一次发射武器的 `ROF` 与 30 帧之间的较大值）内没有目标的情况下重置当前的连发索引。"
 
 #: ../../New-or-Enhanced-Logics.md:1815
 msgid ""
@@ -7572,8 +7582,8 @@ msgid ""
 msgstr "`Crit.AffectsHouses` 可用于自定义此弹头可暴击的目标所属。"
 
 #: ../../New-or-Enhanced-Logics.md:2080
-msgid "`Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be below or above respectively to be affected by critical hits."
-msgstr "`Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` 用于设置可被暴击影响的单位其当前血量所占百分比必须低于或高于的限制。"
+msgid "`Crit.AffectBelowPercent` and `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be below or above respectively to be affected by critical hits."
+msgstr "`Crit.AffectBelowPercent` 和 `Crit.AffectsAbovePercent` 用于设置可被暴击影响的单位其当前血量所占百分比必须低于或高于的限制。"
 
 #: ../../New-or-Enhanced-Logics.md:2081
 msgid ""
@@ -7742,11 +7752,9 @@ msgstr "自定义心灵控制动画"
 
 #: ../../New-or-Enhanced-Logics.md:2153
 msgid ""
-"Allows Warheads to play custom `MindControl.Anim` which defaults to "
-"`[CombatDamage] -> ControlledAnimationType`."
+"Allows Warheads to play custom `MindControl.Anim`."
 msgstr ""
-"允许弹头播放自定义的 `MindControl.Anim`，默认值取自 `[CombatDamage] -> "
-"ControlledAnimationType`。"
+"允许弹头播放自定义的 `MindControl.Anim`。"
 
 #: ../../New-or-Enhanced-Logics.md:2156
 msgid ""
@@ -8928,10 +8936,10 @@ msgstr "现在你可以指定武器可以开火的目标或所属方。这还会
 
 #: ../../New-or-Enhanced-Logics.md:2533
 msgid ""
-"Note that `CanTarget` explicitly requires either `all` or `empty` to be "
+"`CanTarget` explicitly requires either `all` or `empty` to be "
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
-msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
+msgstr "`CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
 
 #: ../../New-or-Enhanced-Logics.md:2534
 msgid ""

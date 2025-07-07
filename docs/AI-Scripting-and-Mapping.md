@@ -36,7 +36,6 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 ### Default loading screen and briefing offsets
 
 - It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
-  - Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 
 In `missionmd.ini`:
 ```ini
@@ -48,6 +47,10 @@ DefaultLS800BriefLocY=0  ; integer
 DefaultLS640BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdPal=     ; filename - including the .pal extension
+```
+
+```{note}
+Despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 ```
 
 ### MCV redeploying

@@ -721,16 +721,16 @@ OnlyUseLandSequences=false  ; boolean
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
   - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects.
-  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> `ParachuteMaxFallRate`.
-  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General] -> BombParachute`. The animation is drawn in unit palette using team color of the firing house if available.
+  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate`.
+  - `BombParachute` can be used to customize the parachute animation used. The animation is drawn in unit palette using team color of the firing house if available.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]         ; Projectile
 Parachuted=false         ; boolean
 Parachuted.FallRate=1    ; integer
-Parachuted.MaxFallRate=  ; integer
-BombParachute=           ; AnimationType
+Parachuted.MaxFallRate=  ; integer, default to [General] -> ParachuteMaxFallRate
+BombParachute=           ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Projectile interception logic
@@ -1133,7 +1133,10 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 - `SW.Link.Grant` allow the linked superweapons to be added 1-time to the firer like the nuke crate if it's not presented.
 - `SW.Link.Ready` specifies if superweapons timers should be set to readiness.
 - `SW.Link.Reset` specifies if superweapons timers should be reset. Takes precedence over `SW.Link.Ready`.
-  - For a granted superweapon, the other will be: check `SW.Link.Reset` to see if it needs to be reset. If false, check `SW.Link.Ready` to see if it needs to be set to readiness. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
+  - For a granted superweapon, the other will be:
+    1. Check `SW.Link.Reset` to see if it needs to be reset.
+    2. If false, check `SW.Link.Ready` to see if it needs to be set to readiness.
+    3. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
 - `Message.LinkedSWAcquired` will be displayed to the firer when at least 1 linked superweapon is acquired or has timer set.
 - `EVA.LinkedSWAcquired` will be played to the firer when at least 1 linked superweapon is acquired or has timer set.
 - These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
@@ -1145,7 +1148,7 @@ In `rulesmd.ini`:
 [SOMESW]                     ; SuperWeaponType
 SW.Link=                     ; List of SuperWeaponTypes
 SW.Link.Grant=false          ; boolean
-SW.Link.Ready=               ; boolean, default to `SW.InitialReady` for granted superweapons, false otherwise
+SW.Link.Ready=               ; boolean, default to SW.InitialReady for granted superweapons, false otherwise
 SW.Link.Reset=false          ; boolean
 SW.Link.RollChances=         ; List of percentages.
 SW.Link.RandomWeightsN=      ; List of integers.
@@ -1451,14 +1454,18 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
-  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
+  - `EVA.Sold` is used to customize the EVA voice when selling.
+  - `SellSound` is used to customize the report sound when selling.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]    ; BuildingType or VehicleType
-EVA.Sold=       ; EVA entry
-SellSound=      ; Sound entry
+EVA.Sold=       ; EVA entry, default to EVA_StructureSold for buildings and EVA_UnitSold for vehicles
+SellSound=      ; Sound entry, default to [AudioVisual] -> SellSound
+```
+
+```{note}
+Vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
@@ -1809,7 +1816,7 @@ CombatAlert.Suppress=                  ; boolean
 
 ### Recount burst index
 
-- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames). Defaults to `[General] -> RecountBurst`, which defaults to false.
+- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames).
 
 In `rulesmd.ini`:
 ```ini
@@ -1817,7 +1824,7 @@ In `rulesmd.ini`:
 RecountBurst=false  ; boolean
 
 [SOMETECHNO]        ; TechnoType
-RecountBurst=       ; boolean
+RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ```
 
 ### Revenge weapon
@@ -2077,7 +2084,7 @@ CanKill=true   ; boolean
   - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be below or above respectively to be affected by critical hits.
+  - `Crit.AffectBelowPercent` and `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be below or above respectively to be affected by critical hits.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
@@ -2150,7 +2157,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ```
 
 ### Custom Mind Control Animation
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `[CombatDamage] -> ControlledAnimationType`.
+- Allows Warheads to play custom `MindControl.Anim`.
 
 In `rulesmd.ini`:
 ```ini
@@ -2530,7 +2537,6 @@ This function is only used as an additional scattering visual display, which is 
 *`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only), maximum/minimum respectively.
 
 In `rulesmd.ini`:
@@ -2540,4 +2546,8 @@ CanTarget=all            ; List of Affected Target Enumeration (none|land|water|
 CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
 CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
+```
+
+```{note}
+`CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```
