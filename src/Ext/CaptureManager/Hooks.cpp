@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <ParticleSystemClass.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -66,13 +67,13 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 	GET_STACK(int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
 
 	auto const pAttacker = pThis->Owner;
-	const auto pExt = TechnoTypeExt::ExtMap.Find(pAttacker->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pAttacker)->TypeExtData;
 
 	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
-		auto nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
+		auto const nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
 		DrawALinkTo(nFLH, nVictimCoord, pAttacker->Owner->Color);
 	}
 
@@ -83,7 +84,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
 {
 	auto const pOwner = pThis->Owner;
-	auto const pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+	auto const pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 	if (!pOwnerTypeExt) // we cant find type Ext for this , just return to original function !
 	{
