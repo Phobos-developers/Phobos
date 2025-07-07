@@ -19,12 +19,13 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 	{
 		if (TechnoExt::IsActive(pBld) && pBld->IsOnMap && pBld->HasPower)
 		{
-			const auto pExt = BuildingTypeExt::ExtMap.Find(pBld->Type);
+			const auto pType = pBld->Type;
+			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
 
 			if (pExt->PowerPlantEnhancer_Buildings.size() &&
 				(pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
 			{
-				++pHouseExt->PowerPlantEnhancers[pBld->Type->ArrayIndex];
+				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
 			}
 		}
 	}
@@ -244,6 +245,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto const pTypeExt = pExt->TypeExtData;
 	auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
 	auto const pNewOwnerExt = HouseExt::ExtMap.Find(pNewOwner);
 
@@ -253,7 +255,7 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->AddToLimboTracking(pType);
 	}
 
-	if (pExt->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 	{
 		auto& vec = pOwnerExt->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -265,8 +267,8 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 	{
 		const bool I_am_human = pThis->Owner->IsControlledByHuman();
 		const bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto const pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
-			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
+		auto const pConvertTo = (I_am_human && !You_are_human) ? pTypeExt->Convert_HumanToComputer.Get() :
+			(!I_am_human && You_are_human) ? pTypeExt->Convert_ComputerToHuman.Get() : nullptr;
 
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
 			TechnoExt::ConvertToType(pMe, pConvertTo);
@@ -400,13 +402,15 @@ DEFINE_HOOK(0x4FF9C9, HouseClass_ExcludeFromMultipleFactoryBonus, 0x6)
 {
 	GET(BuildingClass*, pBuilding, ESI);
 
-	if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->ExcludeFromMultipleFactoryBonus)
+	auto const pType = pBuilding->Type;
+
+	if (BuildingTypeExt::ExtMap.Find(pType)->ExcludeFromMultipleFactoryBonus)
 	{
 		GET(HouseClass*, pThis, EDI);
 		GET(const bool, isNaval, ECX);
 
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
-		pExt->UpdateNonMFBFactoryCounts(pBuilding->Type->Factory, R->Origin() == 0x4FF9C9, isNaval);
+		pExt->UpdateNonMFBFactoryCounts(pType->Factory, R->Origin() == 0x4FF9C9, isNaval);
 	}
 
 	return 0;

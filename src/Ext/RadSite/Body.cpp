@@ -15,17 +15,18 @@ void RadSiteExt::ExtData::Initialize()
 
 bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage)
 {
-	const auto pWarhead = this->Type->GetWarhead();
+	const auto pType = this->Type;
+	const auto pWarhead = pType->GetWarhead();
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (!this->Type->GetWarheadDetonate())
+	if (!pType->GetWarheadDetonate())
 	{
 		if (pTarget->ReceiveDamage(&damage, 0, pWarhead, this->RadInvoker, false, true, this->RadHouse) == DamageState::NowDead)
 			return false;
 	}
 	else
 	{
-		if (this->Type->GetWarheadDetonateFull())
+		if (pType->GetWarheadDetonateFull())
 			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
 		else
 			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
@@ -67,14 +68,14 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int radLevel, W
 void RadSiteExt::ExtData::CreateLight()
 {
 	const auto pThis = this->OwnerObject();
-	const int levelDelay = this->Type->GetLevelDelay();
-	const int lightDelay = this->Type->GetLightDelay();
+	const auto pType = this->Type;
+	const int levelDelay = pType->GetLevelDelay();
+	const int lightDelay = pType->GetLightDelay();
 
 	pThis->RadLevelTimer.Start(levelDelay);
 	pThis->RadLightTimer.Start(lightDelay);
 
-	double lightFactor = pThis->RadLevel * this->Type->GetLightFactor();
-	lightFactor = Math::min(lightFactor, 2000.0);
+	const double lightFactor = Math::min(pThis->RadLevel * pType->GetLightFactor(), 2000.0);
 	const int duration = pThis->RadDuration;
 	const int intensitySteps = duration / lightDelay;
 
@@ -83,18 +84,15 @@ void RadSiteExt::ExtData::CreateLight()
 	pThis->IntensitySteps = intensitySteps;
 	pThis->IntensityDecrement = intensitySteps ? Game::F2I(lightFactor) / intensitySteps : 0;
 
-	const auto radcolor = this->Type->GetColor();
-	const double tintFactor = this->Type->GetTintFactor();
+	const auto radcolor = pType->GetColor();
+	const double tintFactor = pType->GetTintFactor();
 
 	//=========Red
-	double red = ((1000 * radcolor.R) / 255) * tintFactor;
-	red = Math::min(red, 2000.0);
+	const double red = Math::min(((1000 * radcolor.R) / 255) * tintFactor, 2000.0);
 	//=========Green
-	double green = ((1000 * radcolor.G) / 255) * tintFactor;
-	green = Math::min(green, 2000.0);
+	const double green = Math::min(((1000 * radcolor.G) / 255) * tintFactor, 2000.0);
 	//=========Blue
-	double blue = ((1000 * radcolor.B) / 255) * tintFactor;
-	blue = Math::min(blue, 2000.0);
+	const double blue = Math::min(((1000 * radcolor.B) / 255) * tintFactor, 2000.0);
 
 	TintStruct nTintBuffer { Game::F2I(red) ,Game::F2I(green) ,Game::F2I(blue) };
 	pThis->Tint = nTintBuffer;
@@ -120,7 +118,7 @@ void RadSiteExt::ExtData::Add(int amount)
 {
 	const auto pThis = this->OwnerObject();
 	const auto RadExt = RadSiteExt::ExtMap.Find(pThis);
-	int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
+	const int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
 	pThis->Deactivate();
 	pThis->RadLevel = value + amount;
 	pThis->RadDuration = pThis->RadLevel * RadExt->Type->GetDurationMultiple();

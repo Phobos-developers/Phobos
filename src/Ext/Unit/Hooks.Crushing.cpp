@@ -13,9 +13,10 @@ DEFINE_HOOK(0x73B05B, UnitClass_PerCellProcess_TiltWhenCrushes, 0x6)
 
 	GET(UnitClass*, pThis, EBP);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (!pTypeExt->TiltsWhenCrushes_Overlays.Get(pThis->Type->TiltsWhenCrushes))
+	if (!pTypeExt->TiltsWhenCrushes_Overlays.Get(pType->TiltsWhenCrushes))
 		return SkipGameCode;
 
 	pThis->RockingForwardsPerFrame += static_cast<float>(pTypeExt->CrushOverlayExtraForwardTilt);
@@ -29,9 +30,10 @@ DEFINE_HOOK(0x741941, UnitClass_OverrunSquare_TiltWhenCrushes, 0x6)
 
 	GET(UnitClass*, pThis, EDI);
 
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	if (!pTypeExt->TiltsWhenCrushes_Vehicles.Get(pThis->Type->TiltsWhenCrushes))
+	if (!pTypeExt->TiltsWhenCrushes_Vehicles.Get(pType->TiltsWhenCrushes))
 		return SkipGameCode;
 
 	pThis->RockingForwardsPerFrame = static_cast<float>(pTypeExt->CrushForwardTiltPerFrame.Get(-0.050000001));

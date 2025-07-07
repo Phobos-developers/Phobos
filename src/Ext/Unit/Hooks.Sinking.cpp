@@ -35,19 +35,20 @@ DEFINE_HOOK(0x629C67, ParasiteClass_UpdateSquid_SinkableBySquid, 0x9)
 	GET(ParasiteClass*, pThis, ESI);
 	GET(FootClass*, pVictim, EDI);
 
-	auto pVictimType = pVictim->GetTechnoType();
-	auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictimType);
+	const auto pVictimType = pVictim->GetTechnoType();
+	const auto pVictimTypeExt = TechnoTypeExt::ExtMap.Find(pVictimType);
+	const auto pOwner = pThis->Owner;
 
 	if (pVictimTypeExt->Sinkable_SquidGrab || pVictim->WhatAmI() != AbstractType::Unit)
 	{
 		pVictim->IsSinking = true;
-		pVictim->Destroyed(pThis->Owner);
+		pVictim->Destroyed(pOwner);
 		pVictim->Stun();
 	}
 	else
 	{
 		auto damage = pVictimType->Strength;
-		pVictim->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, pThis->Owner, true, false, pThis->Owner->Owner);
+		pVictim->ReceiveDamage(&damage, 0, RulesClass::Instance->C4Warhead, pOwner, true, false, pOwner->Owner);
 	}
 
 	return ret;

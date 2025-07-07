@@ -155,7 +155,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (this->Crit_ActiveChanceAnims.size() > 0 && this->Crit_CurrentChance > 0.0)
 		{
-			int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_ActiveChanceAnims.size() - 1);
+			const int idx = ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_ActiveChanceAnims.size() - 1);
 			auto const pAnim = GameCreate<AnimClass>(this->Crit_ActiveChanceAnims[idx], coords);
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
@@ -400,13 +400,13 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 		if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 		{
-			double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
+			const double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
 			pShield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
 		}
 
 		if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 		{
-			double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
+			const double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
 
 			pShield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate,
 				this->Shield_SelfHealing_RestartInCombat.Get(shieldType->SelfHealing_RestartInCombat),
@@ -419,17 +419,17 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 {
 	if (pTarget->IsDisguised())
 	{
-		if (auto pSpy = specific_cast<InfantryClass*, true>(pTarget))
+		if (const auto pSpy = specific_cast<InfantryClass*, true>(pTarget))
 			pSpy->Disguised = false;
-		else if (auto pMirage = specific_cast<UnitClass*, true>(pTarget))
+		else if (const auto pMirage = specific_cast<UnitClass*, true>(pTarget))
 			pMirage->ClearDisguise();
 	}
 }
 
 void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
 {
-	if (auto pController = pTarget->MindControlledBy)
-		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
+	if (const auto pController = pTarget->MindControlledBy)
+		pController->CaptureManager->FreeUnit(pTarget);
 }
 
 void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
@@ -449,7 +449,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (pTargetExt->TypeExtData->ImmuneToCrit)
 		return;
 
-	auto pSld = pTargetExt->Shield.get();
+	auto const pSld = pTargetExt->Shield.get();
 
 	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 		return;
@@ -472,7 +472,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	{
 		if (!this->Crit_AnimList_CreateAll.Get(false))
 		{
-			int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false) ?
+			const int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false) ?
 				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
 			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
@@ -629,10 +629,15 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 		if (pType->Crit_Multiplier == 1.0 && pType->Crit_ExtraChance == 0.0)
 			continue;
 
-		if (pType->Crit_AllowWarheads.size() > 0 && !pType->Crit_AllowWarheads.Contains(this->OwnerObject()))
+		auto const& allowWarheads = pType->Crit_AllowWarheads;
+		auto const pObject = this->OwnerObject();
+
+		if (allowWarheads.size() > 0 && !allowWarheads.ContainspObject))
 			continue;
 
-		if (pType->Crit_DisallowWarheads.size() > 0 && pType->Crit_DisallowWarheads.Contains(this->OwnerObject()))
+		auto const& disallowWarheads = pType->Crit_DisallowWarheads;
+
+		if (disallowWarheads.size() > 0 && disallowWarheads.Contains(pObject))
 			continue;
 
 		critChance = critChance * Math::max(pType->Crit_Multiplier, 0);

@@ -164,11 +164,12 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 
 void PhobosToolTip::HelpText_Super(int swidx)
 {
-	auto pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
-	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	auto const pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
+	auto const pType = pSuper->Type;
+	auto const pData = SWTypeExt::ExtMap.Find(pType);
 
 	std::wostringstream oss;
-	oss << pSuper->Type->UIName;
+	oss << pType->UIName;
 	bool showSth = false;
 
 	if (int nCost = std::abs(pData->Money_Amount))

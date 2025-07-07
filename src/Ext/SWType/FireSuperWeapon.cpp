@@ -142,9 +142,10 @@ inline void LimboCreate(BuildingTypeClass* pType, HouseClass* pOwner, int ID)
 
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+		auto const pBldType = pBuilding->Type;
 
-		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+		if (!pBldType->Insignificant && !pBldType->DontScore)
+			pOwnerExt->AddToLimboTracking(pBldType);
 
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
@@ -211,10 +212,11 @@ void SWTypeExt::ExtData::ApplyLimboKill(HouseClass* pHouse)
 					if (pBuildingExt->LimboID == limboKillID)
 					{
 						it = vec.erase(it);
+						auto const pBldType = pBuilding->Type;
 
 						// Remove limbo buildings' tracking here because their are not truely InLimbo
-						if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-							HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBuilding->Type);
+						if (!pBldType->Insignificant && !pBldType->DontScore)
+							HouseExt::ExtMap.Find(pBuilding->Owner)->RemoveFromLimboTracking(pBldType);
 
 						pBuilding->Stun();
 						pBuilding->Limbo();
@@ -339,9 +341,10 @@ void SWTypeExt::ExtData::HandleEMPulseLaunch(SuperClass* pSW, const CellStruct& 
 
 	if (this->EMPulse_SuspendOthers)
 	{
-		auto const pHouseExt = HouseExt::ExtMap.Find(pSW->Owner);
+		auto const pHouse = pSW->Owner;
+		auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
 
-		for (auto const& pSuper : pSW->Owner->Supers)
+		for (auto const& pSuper : pHouse->Supers)
 		{
 			if (static_cast<int>(pSuper->Type->Type) != 28 || pSuper == pSW)
 				continue;

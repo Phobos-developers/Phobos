@@ -55,7 +55,8 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 {
 	GET(AnimClass* const, pThis, ESI);
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
 
 	if (auto const pCreateUnit = pTypeExt->CreateUnitType.get())
 	{
@@ -73,11 +74,11 @@ DEFINE_HOOK(0x424932, AnimClass_AI_CreateUnit_ActualEffects, 0x6)
 		{
 			auto dir = pExt->DeathUnitTurretFacing.GetDir();
 			secondaryFacing = &dir;
-			Debug::Log("CreateUnit: Using stored turret facing %d from anim [%s]\n", pExt->DeathUnitTurretFacing.GetFacing<256>(), pThis->Type->get_ID());
+			Debug::Log("CreateUnit: Using stored turret facing %d from anim [%s]\n", pExt->DeathUnitTurretFacing.GetFacing<256>(), pType->get_ID());
 		}
 
 		TechnoTypeExt::CreateUnit(pCreateUnit, primaryFacing, secondaryFacing, pThis->Location, pThis->Owner, pExt->Invoker, pExt->InvokerHouse);
 	}
 
-	return (pThis->Type->MakeInfantry != -1) ? 0x42493E : 0x424B31;
+	return (pType->MakeInfantry != -1) ? 0x42493E : 0x424B31;
 }

@@ -100,7 +100,9 @@ DEFINE_HOOK(0x4CA0A1, FactoryClass_Abandon_NavalProductionFix, 0x5)
 
 	GET(FactoryClass* const, pThis, ESI);
 
-	if (pThis->Object->WhatAmI() == AbstractType::Unit && pThis->Object->GetTechnoType()->Naval)
+	auto const pObject = pThis->Object;
+
+	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
 	{
 		if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner))
 		{

@@ -108,7 +108,7 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 	GET(UnitClass* const, pThis, EBP);
 	GET(AbstractClass* const, pFocus, EAX);
 
-	auto pType = pThis->Type;
+	const auto pType = pThis->Type;
 	// Focus is set when the harvester is fully loaded and go home.
 	if (pFocus && !pType->Weeder && TechnoTypeExt::ExtMap.Find(pType)->HarvesterScanAfterUnload.Get(RulesExt::Global()->HarvesterScanAfterUnload))
 	{

@@ -14,15 +14,16 @@ DEFINE_HOOK(0x43C30A, BuildingClass_ReceiveMessage_Grinding, 0x6)
 		return ReturnStatic;
 
 	// Ares perfectly replicated this issue, rewrite it here
+	const auto pType = pThis->Type;
 	const auto pFromType = pFrom->GetTechnoType();
 	const auto movementZone = pFromType->MovementZone;
 	const bool isAmphibious = movementZone == MovementZone::Amphibious || movementZone == MovementZone::AmphibiousCrusher
 		|| movementZone == MovementZone::AmphibiousDestroyer;
 
-	if (!isAmphibious && (pThis->Type->Naval != pFromType->Naval))
+	if (!isAmphibious && (pType->Naval != pFromType->Naval))
 		return ReturnNegative;
 
-	if (pThis->Type->Grinding)
+	if (pType->Grinding)
 	{
 		const auto mission = pThis->GetCurrentMission();
 
@@ -66,19 +67,21 @@ DEFINE_HOOK(0x4D4B43, FootClass_Mission_Capture_ForbidUnintended, 0x6)
 	if (!pBld)
 		return 0;
 
-	if (pThis->Type->Engineer)
+	auto const pType = pThis->Type;
+
+	if (pType->Engineer)
 		return 0;
 
 	// interaction issues with Ares, no more further checking to make life easier. If someone still try to abuse the bug I won't try to stop them
-	if (pThis->Type->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
+	if (pType->Infiltrate && !pThis->Owner->IsAlliedWith(pBld->Owner))
 		return 0;
 	if (pBld->IsStrange())
 		return 0;
 
-	if (pBld->Type->CanBeOccupied && (pThis->Type->Occupier || pThis->Type->Assaulter))
+	if (pBld->Type->CanBeOccupied && (pType->Occupier || pType->Assaulter))
 		return 0;
 
-	if (pThis->Type->C4 || pThis->HasAbility(Ability::C4))
+	if (pType->C4 || pThis->HasAbility(Ability::C4))
 		return 0;
 
 	// If you can't do any of these then why are you here?
@@ -96,15 +99,15 @@ DEFINE_HOOK(0x51F0AF, InfantryClass_WhatAction_Grinding, 0x0)
 
 	if (const auto pBuilding = abstract_cast<BuildingClass*>(pTarget))
 	{
-		if (const auto pExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type))
+		const auto pType = pBuilding->Type;
+		const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
+
+		if (pType->Grinding && pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
+			pThis->Owner->IsAlliedWith(pTarget) && (pExt->Grinding_AllowAllies || action == Action::Select))
 		{
-			if (pBuilding->Type->Grinding && pThis->Owner->IsControlledByCurrentPlayer() && !pBuilding->IsBeingWarpedOut() &&
-				pThis->Owner->IsAlliedWith(pTarget) && (pExt->Grinding_AllowAllies || action == Action::Select))
-			{
-				action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
-				R->EBP(action);
-				return ReturnValue;
-			}
+			action = BuildingExt::CanGrindTechno(pBuilding, pThis) ? Action::Repair : Action::NoEnter;
+			R->EBP(action);
+			return ReturnValue;
 		}
 	}
 

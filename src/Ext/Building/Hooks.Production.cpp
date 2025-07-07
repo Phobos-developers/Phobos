@@ -34,20 +34,22 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
-	HouseClass* pOwner = pThis->Owner;
+	const HouseClass* pOwner = pThis->Owner;
 
 	if (pOwner->Production && RulesExt::Global()->AllowParallelAIQueues)
 	{
 		auto const pOwnerExt = HouseExt::ExtMap.Find(pOwner);
+		auto const pFactory = pThis->Type->Factory;
+		const bool naval = pThis->Type->Naval;
 		BuildingClass** currFactory = nullptr;
 
-		switch (pThis->Type->Factory)
+		switch (pFactory)
 		{
 		case AbstractType::BuildingType:
 			currFactory = &pOwnerExt->Factory_BuildingType;
 			break;
 		case AbstractType::UnitType:
-			currFactory = pThis->Type->Naval ? &pOwnerExt->Factory_NavyType : &pOwnerExt->Factory_VehicleType;
+			currFactory = naval ? &pOwnerExt->Factory_NavyType : &pOwnerExt->Factory_VehicleType;
 			break;
 		case AbstractType::InfantryType:
 			currFactory = &pOwnerExt->Factory_InfantryType;
@@ -72,7 +74,7 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 			TechnoTypeClass* pType = nullptr;
 			int index = -1;
 
-			switch (pThis->Type->Factory)
+			switch (pFactory)
 			{
 			case AbstractType::BuildingType:
 				if (RulesExt::Global()->ForbidParallelAIQueues_Building)
@@ -96,10 +98,10 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 				pType = index >= 0 ? AircraftTypeClass::Array.GetItem(index) : nullptr;
 				break;
 			case AbstractType::UnitType:
-				if (pThis->Type->Naval ? RulesExt::Global()->ForbidParallelAIQueues_Navy : RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
+				if (naval ? RulesExt::Global()->ForbidParallelAIQueues_Navy : RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
 					return Skip;
 
-				if (pThis->Type->Naval)
+				if (naval)
 				{
 					auto const pExt = HouseExt::ExtMap.Find(pOwner);
 					index = pExt->ProducingNavalUnitTypeIndex;

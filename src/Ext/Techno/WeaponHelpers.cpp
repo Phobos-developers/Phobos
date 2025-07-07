@@ -257,11 +257,13 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	auto const pThisOwner = pThis->Owner;
+	auto const pSourceOwner = pSource->Owner;
 	auto const& suppressType = pWHExt->SuppressRevengeWeapons_Types;
 	const bool suppress = pWHExt->SuppressRevengeWeapons;
 	const bool hasFilters = suppressType.size() > 0;
 
-	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
 	{
 		if (!suppress || (hasFilters && !suppressType.Contains(pTypeExt->RevengeWeapon)))
 			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
@@ -284,10 +286,10 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 		{
 			auto const pInvoker = attachEffect->GetInvoker();
 
-			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSource->Owner))
+			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSourceOwner))
 				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pInvoker);
 		}
-		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
 		{
 			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
 		}

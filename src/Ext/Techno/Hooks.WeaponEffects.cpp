@@ -188,11 +188,12 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 
 	GET(ParticleClass*, pThis, ESI);
 
-	if (pThis->ParticleSystem
-		&& (pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun
-			|| pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Fire))
+	if (pThis->ParticleSystem)
 	{
-		return SkipCoordAdjust;
+		const auto behavesLike = pThis->ParticleSystem->Type->BehavesLike;
+
+		if (behavesLike == BehavesLike::Railgun || behavesLike == BehavesLike::Fire)
+			return SkipCoordAdjust;
 	}
 
 	return 0;
@@ -292,12 +293,13 @@ DEFINE_HOOK(0x762AFF, WaveClass_AI_TargetSet, 0x6)
 
 	if (pThis->Target && pThis->Owner)
 	{
+		auto const pOwner = pThis->Owner;
 		auto const pObstacleCell = TechnoExt::ExtMap.Find(pThis->Owner)->FiringObstacleCell;
 
-		if (pObstacleCell == pThis->Target && pThis->Owner->Target)
+		if (pObstacleCell == pThis->Target && pOwner->Target)
 		{
-			FireAtTemp::pWaveOwnerTarget = pThis->Owner->Target;
-			pThis->Owner->Target = pThis->Target;
+			FireAtTemp::pWaveOwnerTarget = pOwner->Target;
+			pOwner->Target = pThis->Target;
 		}
 	}
 

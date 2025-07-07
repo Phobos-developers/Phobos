@@ -86,7 +86,8 @@ DEFINE_HOOK(0x443C81, BuildingClass_ExitObject_InitialClonedHealth, 0x7)
 		if (pBuilding && pBuilding->Type->Cloning)
 		{
 			const double percentage = GeneralUtils::GetRangedRandomOrSingleValue(BuildingTypeExt::ExtMap.Find(pBuilding->Type)->InitialStrength_Cloning);
-			const int strength = Math::clamp(static_cast<int>(pInf->Type->Strength * percentage), 1, pInf->Type->Strength);
+			const int health = pInf->Type->Strength;
+			const int strength = Math::clamp(static_cast<int>(health * percentage), 1, health);
 			pInf->Health = strength;
 			pInf->EstimatedHealth = strength;
 		}
@@ -134,6 +135,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 		return 0;
 
 	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->EMPulseSW->Type);
+	auto const pOwner = pThis->Owner;
 
 	if (pSWExt->EMPulse_WeaponIndex >= 0)
 	{
@@ -141,7 +143,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	}
 	else
 	{
-		auto const pCell = MapClass::Instance.TryGetCellAt(pThis->Owner->EMPTarget);
+		auto const pCell = MapClass::Instance.TryGetCellAt(pOwner->EMPTarget);
 
 		if (pCell)
 		{
@@ -156,19 +158,20 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 
 	if (pSWExt->EMPulse_SuspendOthers)
 	{
-		auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
+		auto const pHouseExt = HouseExt::ExtMap.Find(pOwner);
+		const int index = pExt->EMPulseSW->Type->ArrayIndex;
 
-		if (pHouseExt->SuspendedEMPulseSWs.count(pExt->EMPulseSW->Type->ArrayIndex))
+		if (pHouseExt->SuspendedEMPulseSWs.count(index))
 		{
-			auto& super = pThis->Owner->Supers;
+			auto& super = pOwner->Supers;
 
-			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex])
+			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[index])
 			{
 				super[swidx]->IsSuspended = false;
 			}
 
-			pHouseExt->SuspendedEMPulseSWs[pExt->EMPulseSW->Type->ArrayIndex].clear();
-			pHouseExt->SuspendedEMPulseSWs.erase(pExt->EMPulseSW->Type->ArrayIndex);
+			pHouseExt->SuspendedEMPulseSWs[index].clear();
+			pHouseExt->SuspendedEMPulseSWs.erase(index);
 		}
 	}
 
@@ -653,7 +656,7 @@ DEFINE_HOOK(0x6A9789, StripClass_DrawStrip_NoGreyCameo, 0x6)
 		if (pType->WhatAmI() == AbstractType::BuildingType && clicked)
 			return SkipGameCode;
 	}
-	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType))
+	else if (const auto pBuildingType = abstract_cast<BuildingTypeClass*, true>(pType))
 	{
 		if (const auto pFactory = HouseClass::CurrentPlayer->GetPrimaryFactory(AbstractType::BuildingType, pType->Naval, pBuildingType->BuildCat))
 		{
@@ -726,11 +729,12 @@ DEFINE_HOOK(0x444B83, BuildingClass_ExitObject_BarracksExitCell, 0x7)
 	GET(const int, yCoord, EDX);
 	REF_STACK(CoordStruct, resultCoords, STACK_OFFSET(0x140, -0x108));
 
-	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
 	if (pTypeExt->BarracksExitCell.isset())
 	{
-		auto const exitCoords = pThis->Type->ExitCoord;
+		auto const exitCoords = pType->ExitCoord;
 		resultCoords = CoordStruct{ xCoord + exitCoords.X, yCoord + exitCoords.Y, exitCoords.Z };
 		return SkipGameCode;
 	}

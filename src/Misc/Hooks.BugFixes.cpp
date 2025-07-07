@@ -831,8 +831,9 @@ DEFINE_HOOK(0x6D9781, Tactical_RenderLayers_DrawInfoTipAndSpiedSelection, 0x5)
 
 	if (pBuilding->IsSelected && pBuilding->IsOnMap && pBuilding->WhatAmI() == AbstractType::Building)
 	{
-		const int foundationHeight = pBuilding->Type->GetFoundationHeight(0);
-		const int typeHeight = pBuilding->Type->Height;
+		const auto pType = pBuilding->Type;
+		const int foundationHeight = pType->GetFoundationHeight(0);
+		const int typeHeight = pType->Height;
 		const int yOffest = (Unsorted::CellHeightInPixels * (foundationHeight + typeHeight)) >> 2;
 
 		Point2D centeredPoint = { pLocation->X, pLocation->Y - yOffest };
@@ -850,13 +851,18 @@ bool __fastcall BuildingClass_SetOwningHouse_Wrapper(BuildingClass* pThis, void*
 
 	const bool res = reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pThis, pHouse, announce);
 
-	if (res && (pThis->Type->Powered || pThis->Type->PoweredSpecial))
+	if (res)
 	{
-		const bool on = pThis->IsPowerOnline();
-		if (on != pThis->WasOnline)
+		const auto pType = pThis->Type;
+
+		if (pType->Powered || pType->PoweredSpecial)
 		{
-			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
-			pThis->WasOnline = on;
+			const bool on = pThis->IsPowerOnline();
+			if (on != pThis->WasOnline)
+			{
+				reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x4549B0)(pThis);
+				pThis->WasOnline = on;
+			}
 		}
 	}
 	return res;
@@ -922,12 +928,12 @@ DEFINE_HOOK(0x412B40, AircraftTrackerClass_FillCurrentVector, 0x5)
 
 	auto const bounds = MapClass::Instance.MapCoordBounds;
 	auto const mapCoords = pCell->MapCoords;
-	int sectorWidth = bounds.Right / 20;
-	int sectorHeight = bounds.Bottom / 20;
-	int sectorIndexXStart = Math::clamp((mapCoords.X - range) / sectorWidth, 0, 19);
-	int sectorIndexYStart = Math::clamp((mapCoords.Y - range) / sectorHeight, 0, 19);
-	int sectorIndexXEnd = Math::clamp((mapCoords.X + range) / sectorWidth, 0, 19);
-	int sectorIndexYEnd = Math::clamp((mapCoords.Y + range) / sectorHeight, 0, 19);
+	const int sectorWidth = bounds.Right / 20;
+	const int sectorHeight = bounds.Bottom / 20;
+	const int sectorIndexXStart = Math::clamp((mapCoords.X - range) / sectorWidth, 0, 19);
+	const int sectorIndexYStart = Math::clamp((mapCoords.Y - range) / sectorHeight, 0, 19);
+	const int sectorIndexXEnd = Math::clamp((mapCoords.X + range) / sectorWidth, 0, 19);
+	const int sectorIndexYEnd = Math::clamp((mapCoords.Y + range) / sectorHeight, 0, 19);
 
 	for (int y = sectorIndexYStart; y <= sectorIndexYEnd; y++)
 	{
@@ -997,26 +1003,28 @@ DEFINE_HOOK(0x72958E, TunnelLocomotionClass_ProcessDigging_SlowdownDistance, 0x8
 
 	GET(TunnelLocomotionClass* const, pLoco, ESI);
 
-	auto& currLoc = pLoco->LinkedTo->Location;
-	const int distance = (int) CoordStruct{currLoc.X - pLoco->Coords.X, currLoc.Y - pLoco->Coords.Y,0}.Magnitude() ;
+	auto const pLinkedTo = pLoco->LinkedTo;
+	auto& currLoc = pLinkedTo->Location;
+	const auto coords = pLoco->Coords;
+	const int distance = (int) CoordStruct{currLoc.X - coords.X, currLoc.Y - coords.Y,0}.Magnitude() ;
 
 	// Nov 27, 2024 - Starkku: The movement speed was actually also hardcoded here to 19, so the distance check made sense
 	// It can now be customized globally or per TechnoType however
-	auto const pType = pLoco->LinkedTo->GetTechnoType();
+	auto const pType = pLinkedTo->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	int speed = pTypeExt->SubterraneanSpeed >= 0 ? pTypeExt->SubterraneanSpeed : RulesExt::Global()->SubterraneanSpeed;
 
 	// Calculate speed multipliers.
-	pLoco->LinkedTo->SpeedPercentage = 1.0; // Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
+	pLinkedTo->SpeedPercentage = 1.0; // Subterranean locomotor doesn't normally use this so it would be 0.0 here and cause issues.
 	const int maxSpeed = pType->Speed;
 	pType->Speed = speed;
-	speed = pLoco->LinkedTo->GetCurrentSpeed();
+	speed = pLinkedTo->GetCurrentSpeed();
 	pType->Speed = maxSpeed;
 
 	if (distance > speed)
 	{
 		REF_STACK(CoordStruct, newLoc, STACK_OFFSET(0x40, -0xC));
-		const double angle = -Math::atan2(currLoc.Y - pLoco->Coords.Y, pLoco->Coords.X - currLoc.X);
+		const double angle = -Math::atan2(currLoc.Y - coords.Y, coords.X - currLoc.X);
 		newLoc = currLoc + CoordStruct { int((double)speed * Math::cos(angle)), int((double)speed * Math::sin(angle)), 0 };
 		return 0x7298D3;
 	}
@@ -1089,7 +1097,7 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 	return 0;
 }
 
-// Oct 26, 2024 - Starkku: Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes 
+// Oct 26, 2024 - Starkku: Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 {
 	enum { SkipResetTarget = 0x6FA472 };
@@ -1593,10 +1601,11 @@ DEFINE_HOOK(0x446BF4, BuildingClass_Place_FreeUnit_NearByLocation, 0x6)
 	GET(UnitClass*, pFreeUnit, EDI);
 	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
 	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
-	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto pType = pFreeUnit->Type;
+	const auto movementZone = pType->MovementZone;
 	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
+	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pType->SpeedType, currentZone, movementZone, false, 1, 1, true, true, false, false, CellStruct::Empty, false, false));
 	return SkipGameCode;
 }
 
@@ -1608,10 +1617,11 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 	GET(UnitClass*, pFreeUnit, EDI);
 	LEA_STACK(CellStruct*, outBuffer, STACK_OFFSET(0x68, -0x4C));
 	const auto mapCoords = CellClass::Coord2Cell(pThis->Location);
-	const auto movementZone = pFreeUnit->Type->MovementZone;
+	const auto pType = pFreeUnit->Type;
+	const auto movementZone = pType->MovementZone;
 	const auto currentZone = MapClass::Instance.GetMovementZoneType(mapCoords, movementZone, false);
 
-	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pFreeUnit->Type->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
+	R->EAX(MapClass::Instance.NearByLocation(*outBuffer, mapCoords, pType->SpeedType, currentZone, movementZone, false, 1, 1, false, true, false, false, CellStruct::Empty, false, false));
 	return SkipGameCode;
 }
 
@@ -2098,7 +2108,7 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 		SkipAreaGuard = 0x4D7001, ContinueAreaGuard = 0x4D6FF5 };
 
 	const auto pWeapon = ElectricAssultTemp::WeaponType;
-	bool InGuard = (R->Origin() == 0x4D5184);
+	const bool InGuard = (R->Origin() == 0x4D5184);
 
 	if (pBuilding->Owner == pThis->Owner &&
 		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)

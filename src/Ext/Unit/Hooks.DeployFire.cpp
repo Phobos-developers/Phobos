@@ -28,17 +28,22 @@ DEFINE_HOOK(0x4C77E4, EventClass_Execute_UnitDeployFire, 0x6)
 	auto const pUnit = abstract_cast<UnitClass*>(pThis);
 
 	// Do not execute deploy command if the vehicle has only just fired its once-firing deploy weapon.
-	if (pUnit && pUnit->Type->DeployFire && !pUnit->Type->IsSimpleDeployer)
+	if (pUnit)
 	{
-		int weaponIndex = -1;
-		auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
+		auto const pType = pUnit->Type;
 
-		if (pWeapon && pWeapon->FireOnce)
+		if (pType->DeployFire && !pType->IsSimpleDeployer)
 		{
-			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			int weaponIndex = -1;
+			auto const pWeapon = TechnoExt::GetDeployFireWeapon(pThis, weaponIndex);
 
-			if (pExt->DeployFireTimer.HasTimeLeft())
-				return DoNotExecute;
+			if (pWeapon && pWeapon->FireOnce)
+			{
+				const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+				if (pExt->DeployFireTimer.HasTimeLeft())
+					return DoNotExecute;
+			}
 		}
 	}
 

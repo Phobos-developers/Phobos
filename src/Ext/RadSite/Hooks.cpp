@@ -38,7 +38,7 @@ DEFINE_HOOK(0x469150, BulletClass_Detonate_ApplyRadiation, 0x5)
 		const auto pExt = BulletExt::ExtMap.Find(pThis);
 		const auto pWH = pThis->WH;
 		const auto cell = CellClass::Coord2Cell(*pCoords);
-		const auto spread = Game::F2I(pWH->CellSpread);
+		const auto spread = static_cast<int>(pWH->CellSpread);
 
 		pExt->ApplyRadiationToCell(cell, spread, pWeapon->RadLevel);
 	}
@@ -102,7 +102,7 @@ DEFINE_HOOK(0x521478, InfantryClass_AIDeployment_FireNotOKCloakFix, 0x4)
 		// FYI this are hack to immedietely stop the Cloaking
 		// since this function is always failing to decloak and set target when cell is occupied
 		// something is wrong somewhere  # Otamaa
-		auto nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
+		const int nDeployFrame = pThis->Type->Sequence->GetSequence(Sequence::DeployedFire).CountFrames;
 		pThis->CloakDelayTimer.Start(nDeployFrame);
 
 		pTarget = MapClass::Instance.TryGetCellAt(pThis->GetCoords());
@@ -134,7 +134,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 
 	for (auto pFoundation = pBuilding->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		CellStruct nCurrentCoord = buildingCoords + *pFoundation;
+		const auto nCurrentCoord = buildingCoords + *pFoundation;
 		const auto pCell = MapClass::Instance.TryGetCellAt(nCurrentCoord);
 
 		if (!pCell)
@@ -151,7 +151,7 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 
 			const auto pRadExt = RadSiteExt::ExtMap.Find(pRadSite);
 			const auto pRadType = pRadExt->Type;
-			int maxDamageCount = pRadType->GetBuildingDamageMaxCount();
+			const int maxDamageCount = pRadType->GetBuildingDamageMaxCount();
 
 			if (maxDamageCount > 0 && damageCounts[pRadSite] >= maxDamageCount)
 				continue;
@@ -175,7 +175,9 @@ DEFINE_HOOK(0x43FB23, BuildingClass_AI_Radiation, 0x5)
 			}
 			else
 			{
-				std::vector<std::pair<RadSiteClass*, int>> sites { std::make_pair(pRadSite, radLevel) };
+				std::vector<std::pair<RadSiteClass*, int>> sites;
+				sites.reserve(pCellExt->RadLevels.size());
+				sites.emplace_back(pRadSite, radLevel);
 				typeMap.emplace_back(pRadType, std::move(sites));
 			}
 		}
@@ -252,7 +254,9 @@ DEFINE_HOOK(0x4DA59F, FootClass_AI_Radiation, 0x5)
 			}
 			else
 			{
-				std::vector<std::pair<RadSiteClass*, int>> sites { std::make_pair(pRadSite, radLevel) };
+				std::vector<std::pair<RadSiteClass*, int>> sites;
+				sites.reserve(pCellExt->RadLevels.size());
+				sites.emplace_back(pRadSite, radLevel);
 				typeMap.emplace_back(pRadType, std::move(sites));
 			}
 		}

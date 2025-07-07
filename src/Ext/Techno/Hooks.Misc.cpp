@@ -65,9 +65,11 @@ DEFINE_HOOK(0x6B7265, SpawnManagerClass_AI_UpdateTimer, 0x6)
 {
 	GET(SpawnManagerClass* const, pThis, ESI);
 
-	if (pThis->Owner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
+	auto const pOwner = pThis->Owner;
+
+	if (pOwner && pThis->Status == SpawnManagerStatus::Launching && pThis->CountDockedSpawns() != 0)
 	{
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 		if (pTypeExt->Spawner_DelayFrames.isset())
 			R->EAX(std::min(pTypeExt->Spawner_DelayFrames.Get(), 10));
@@ -82,9 +84,9 @@ DEFINE_HOOK(0x6B73AD, SpawnManagerClass_AI_SpawnTimer, 0x5)
 {
 	GET(SpawnManagerClass* const, pThis, ESI);
 
-	if (pThis->Owner)
+	if (auto const pOwner = pThis->Owner)
 	{
-		auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+		auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 		if (pTypeExt->Spawner_DelayFrames.isset())
 			R->ECX(pTypeExt->Spawner_DelayFrames.Get());
@@ -101,7 +103,8 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	GET(SpawnManagerClass* const, pThis, ESI);
 	GET(AircraftClass* const, pSpawnee, EDI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+	auto const pOwner = pThis->Owner;
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 	if (pTypeExt->Spawner_AttackImmediately)
 	{
@@ -111,7 +114,7 @@ DEFINE_HOOK(0x6B7600, SpawnManagerClass_AI_InitDestination, 0x6)
 	}
 	else
 	{
-		auto const mapCoords = pThis->Owner->GetMapCoords();
+		auto const mapCoords = pOwner->GetMapCoords();
 		auto const pCell = MapClass::Instance.GetCellAt(mapCoords);
 		pSpawnee->SetDestination(pCell->GetNeighbourCell(FacingType::North), true);
 		pSpawnee->QueueMission(Mission::Move, false);
@@ -149,7 +152,8 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 {
 	GET(SpawnManagerClass*, pThis, ESI);
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis->Owner)->TypeExtData;
+	auto const pOwner = pThis->Owner;
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 	if (pTypeExt->Spawns_Queue.empty())
 		return 0;
@@ -169,7 +173,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 	if (vec.empty() || !vec[0])
 		return 0;
 
-	R->EAX(vec[0]->CreateObject(pThis->Owner->GetOwningHouse()));
+	R->EAX(vec[0]->CreateObject(pOwner->GetOwningHouse()));
 	return 0x6B78EA;
 }
 
@@ -236,8 +240,9 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 		{
 			auto const pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
 			auto const pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
+			auto const pSpawnOwner = pSpawner->Owner;
 			pAnimExt->SetInvoker(pSpawner);
-			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawner->Owner, pSpawner->Owner, false, true);
+			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawnOwner, pSpawnOwner, false, true);
 		}
 
 		pSpawner->SetLocation(pCarrier->GetCoords());

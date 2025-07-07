@@ -18,12 +18,14 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 		if (!this->AffectsNeutral && pOwner->IsNeutral())
 			return false;
 
-		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pOwner == pHouse)
+		const auto affectsAllies = this->OwnerObject()->AffectsAllies;
+
+		if (this->AffectsOwner.Get(affectsAllies) && pOwner == pHouse)
 			return true;
 
 		const bool isAllies = pHouse->IsAlliedWith(pTarget);
 
-		if (this->OwnerObject()->AffectsAllies && isAllies)
+		if (affectsAllies && isAllies)
 			return pOwner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)

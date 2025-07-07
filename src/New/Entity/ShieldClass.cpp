@@ -39,7 +39,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	this->TechnoID = this->Techno->GetTechnoType();
+	this->TechnoID = pTechno->GetTechnoType();
 	ShieldClass::Array.emplace_back(this);
 }
 
@@ -863,10 +863,10 @@ void ShieldClass::CreateAnim()
 
 void ShieldClass::KillAnim()
 {
-	if (this->IdleAnim)
+	if (auto& pAnim = this->IdleAnim)
 	{
-		this->IdleAnim->UnInit();
-		this->IdleAnim = nullptr;
+		pAnim->UnInit();
+		pAnim = nullptr;
 	}
 }
 
@@ -883,34 +883,47 @@ void ShieldClass::UpdateTint()
 {
 	if (this->Type->HasTint())
 	{
-		TechnoExt::ExtMap.Find(this->Techno)->UpdateTintValues();
-		this->Techno->MarkForRedraw();
+		auto const pTechno = this->Techno;
+		TechnoExt::ExtMap.Find(pTechno)->UpdateTintValues();
+		pTechno->MarkForRedraw();
 	}
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()
 {
-	if (!this->Type || !this->Techno)
+	auto const pType = this->Type;
+
+	if (!pType)
 		return nullptr;
 
-	bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+	auto const pTechno = this->Techno;
 
-	return this->Type->GetIdleAnimType(isDamaged, this->GetHealthRatio());
+	if (!pTechno)
+		return nullptr;
+
+	const bool isDamaged = pTechno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+
+	return pType->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
 bool ShieldClass::IsGreenSP()
 {
-	return this->Type->GetConditionYellow() * this->Type->Strength.Get() < this->HP;
+	auto const pType = this->Type;
+	return pType->GetConditionYellow() * pType->Strength.Get() < this->HP;
 }
 
 bool ShieldClass::IsYellowSP()
 {
-	return this->Type->GetConditionRed() * this->Type->Strength.Get() < this->HP && this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+	auto const pType = this->Type;
+	const int health = this->HP;
+	const int strength = pType->Strength.Get();
+	return pType->GetConditionRed() * strength < health && health <= pType->GetConditionYellow() * strength;
 }
 
 bool ShieldClass::IsRedSP()
 {
-	return this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+	auto const pType = this->Type;
+	return this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
 }
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
@@ -1025,11 +1038,12 @@ int ShieldClass::DrawShieldBar_PipAmount(int length) const
 ArmorType ShieldClass::GetArmorType(TechnoTypeClass* pTechnoType) const
 {
 	const auto pShieldType = this->Type;
+	const auto pTechno = this->Techno;
 
-	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	if (pTechno && pShieldType->InheritArmorFromTechno)
 	{
 		if (!pTechnoType)
-			pTechnoType = this->Techno->GetTechnoType();
+			pTechnoType = pTechno->GetTechnoType();
 
 		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
 			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))

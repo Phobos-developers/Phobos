@@ -545,7 +545,8 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 
 	for (auto const pBuilding : this->RestrictedFactoryPlants)
 	{
-		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+		auto const pType = pBuilding->Type;
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
 		if (pTypeExt->FactoryPlant_AllowTypes.size() > 0 && !pTypeExt->FactoryPlant_AllowTypes.Contains(pTechnoType))
 			continue;
@@ -559,18 +560,18 @@ float HouseExt::ExtData::GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoT
 		{
 		case AbstractType::BuildingType:
 			if (((BuildingTypeClass*)pTechnoType)->BuildCat == BuildCat::Combat)
-				currentMult = pBuilding->Type->DefensesCostBonus;
+				currentMult = pType->DefensesCostBonus;
 			else
-				currentMult = pBuilding->Type->BuildingsCostBonus;
+				currentMult = pType->BuildingsCostBonus;
 			break;
 		case AbstractType::AircraftType:
-			currentMult = pBuilding->Type->AircraftCostBonus;
+			currentMult = pType->AircraftCostBonus;
 			break;
 		case AbstractType::InfantryType:
-			currentMult = pBuilding->Type->InfantryCostBonus;
+			currentMult = pType->InfantryCostBonus;
 			break;
 		case AbstractType::UnitType:
-			currentMult = pBuilding->Type->UnitsCostBonus;
+			currentMult = pType->UnitsCostBonus;
 			break;
 		default:
 			break;

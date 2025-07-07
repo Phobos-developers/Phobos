@@ -13,14 +13,16 @@ bool BuildingTypeExt::CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pU
 	auto const pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgradeType);
 	if (pUpgradeExt && EnumFunctions::CanTargetHouse(pUpgradeExt->PowersUp_Owner, pUpgradeOwner, pBuilding->Owner))
 	{
+		auto const idx = pBuilding->Type->ID;
+
 		// PowersUpBuilding
-		if (_stricmp(pBuilding->Type->ID, pUpgradeType->PowersUpBuilding) == 0)
+		if (_stricmp(idx, pUpgradeType->PowersUpBuilding) == 0)
 			return true;
 
 		// PowersUp.Buildings
 		for (auto const pPowerUpBuilding : pUpgradeExt->PowersUp_Buildings)
 		{
-			if (_stricmp(pBuilding->Type->ID, pPowerUpBuilding->ID) == 0)
+			if (_stricmp(idx, pPowerUpBuilding->ID) == 0)
 				return true;
 		}
 	}
@@ -52,9 +54,11 @@ DEFINE_HOOK(0x4408EB, BuildingClass_Unlimbo_UpgradeBuildings, 0xA)
 	GET(BuildingClass*, pBuilding, EDI);
 	GET(BuildingClass*, pUpgrade, ESI);
 
-	if (BuildingTypeExt::CanUpgrade(pBuilding, pUpgrade->Type, pUpgrade->Owner))
+	const auto pType = pUpgrade->Type;
+
+	if (BuildingTypeExt::CanUpgrade(pBuilding, pType, pUpgrade->Owner))
 	{
-		R->EBX(pUpgrade->Type);
+		R->EBX(pType);
 		pUpgrade->SetOwningHouse(pBuilding->Owner, false);
 		return Continue;
 	}
@@ -195,12 +199,13 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 	GET(BuildingClass*, pTarget, EDI);
 
 	auto const pTargetExt = BuildingExt::ExtMap.Find(pTarget);
+	auto const pType = pThis->Type;
 	pTargetExt->PoweredUpToLevel = pTarget->UpgradeLevel + 1;
 	int animIndex = pTarget->UpgradeLevel;
 
-	if (pThis->Type->PowersUpToLevel > 0)
+	if (pType->PowersUpToLevel > 0)
 	{
-		pTargetExt->PoweredUpToLevel = Math::max(pThis->Type->PowersUpToLevel, pTargetExt->PoweredUpToLevel);
+		pTargetExt->PoweredUpToLevel = Math::max(pType->PowersUpToLevel, pTargetExt->PoweredUpToLevel);
 		animIndex = pTargetExt->PoweredUpToLevel - 1;
 	}
 
@@ -208,7 +213,7 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 
 	// Only copy image name to BuildingType anim struct if it is not already set.
 	if (!GeneralUtils::IsValidString(animData->Anim))
-		strncpy(animData->Anim, pThis->Type->ImageFile, 16u);
+		strncpy(animData->Anim, pType->ImageFile, 16u);
 
 	return SkipGameCode;
 }

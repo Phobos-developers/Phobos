@@ -497,18 +497,17 @@ DEFINE_HOOK(0x6FE43B, TechnoClass_FireAt_OpenToppedDmgMult, 0x8)
 	if (pThis->InOpenToppedTransport)
 	{
 		GET_STACK(const int, nDamage, STACK_OFFSET(0xB0, -0x84));
-		float nDamageMult = static_cast<float>(RulesClass::Instance->OpenToppedDamageMultiplier);
+		float nDamageMult = RulesClass::Instance->OpenToppedDamageMultiplier;
 
 		if (auto const pTransport = pThis->Transporter)
 		{
-			if (auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData)
-			{
-				//it is float isnt it YRPP ? , check tomson26 YR-IDB !
-				nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
-			}
+			auto const pExt = TechnoExt::ExtMap.Find(pTransport)->TypeExtData;
+
+			//it is float isnt it YRPP ? , check tomson26 YR-IDB !
+			nDamageMult = pExt->OpenTopped_DamageMultiplier.Get(nDamageMult);
 		}
 
-		R->EAX(Game::F2I(nDamage * nDamageMult));
+		R->EAX(static_cast<int>(nDamage * nDamageMult));
 		return ApplyDamageMult;
 	}
 
@@ -870,6 +869,7 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
 }

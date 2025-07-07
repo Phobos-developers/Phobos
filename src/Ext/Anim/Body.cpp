@@ -68,9 +68,10 @@ void AnimExt::ExtData::DeleteAttachedSystem()
 //Modified from Ares
 bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, HouseClass* pVictim, bool defaultToVictimOwner, bool defaultToInvokerOwner)
 {
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
-	bool makeInf = pAnim->Type->MakeInfantry > -1;
-	bool createUnit = pTypeExt->CreateUnitType != nullptr;
+	auto const pType = pAnim->Type;
+	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	const bool makeInf = pType->MakeInfantry > -1;
+	const bool createUnit = pTypeExt->CreateUnitType != nullptr;
 	auto ownerKind = OwnerHouseKind::Default;
 	HouseClass* pDefaultOwner = nullptr;
 
@@ -85,7 +86,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 	if (createUnit)
 		ownerKind = pTypeExt->CreateUnitType->Owner;
 
-	auto newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
+	auto const newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
 
 	if (newOwner)
 	{
@@ -115,8 +116,8 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 	if (auto const pTechno = abstract_cast<TechnoClass*>(pAnim->OwnerObject))
 		pTechnoOwner = pTechno->Owner;
 
-	if (pAnim->Owner)
-		return pAnim->Owner;
+	if (auto const pOwner = pAnim->Owner)
+		return pOwner;
 	else
 		return  pTechnoOwner ? pTechnoOwner : pDefaultOwner;
 }
@@ -157,7 +158,7 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 // Changes type of anim in similar fashion to Next.
 void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool resetLoops, bool restart)
 {
-	double percentThrough = pAnim->Animation.Value / static_cast<double>(pAnim->Type->End);
+	const double percentThrough = pAnim->Animation.Value / static_cast<double>(pAnim->Type->End);
 
 	if (pNewType->End == -1)
 	{
@@ -267,8 +268,9 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
 	auto const coords = pThis->GetCoords();
+	auto& random = ScenarioClass::Instance->Random;
 
-	auto SpawnAnim = [&coords, pThis, pExt](AnimTypeClass* pType, int distance, bool constrainToCellSpots, bool attach)
+	auto SpawnAnim = [&coords, pThis, pExt, random](AnimTypeClass* pType, int distance, bool constrainToCellSpots, bool attach)
 		{
 			if (!pType)
 				return;
@@ -283,7 +285,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 					newCoords = MapClass::PickInfantrySublocation(newCoords, true);
 			}
 
-			auto const loopCount = ScenarioClass::Instance->Random.RandomRanged(1, 2);
+			auto const loopCount = random.RandomRanged(1, 2);
 			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
@@ -293,7 +295,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 				pAnim->SetOwnerObject(pThis->OwnerObject);
 		};
 
-	auto LoopAnims = [&coords, SpawnAnim](std::span<AnimTypeClass*> const& anims, std::span<double> const& chances, std::span<double> const& distances,
+	auto LoopAnims = [&coords, SpawnAnim, random](std::span<AnimTypeClass*> const& anims, std::span<double> const& chances, std::span<double> const& distances,
 		int count, AnimTypeClass* defaultAnimType, double defaultChance0, double defaultChanceRest, int defaultDistance0, int defaultDistanceRest, bool constrainToCellSpots, bool attach)
 		{
 			double chance = 0.0;
@@ -309,11 +311,11 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 				else
 					chance = i == 0 ? defaultChance0 : defaultChanceRest;
 
-				if (chance < ScenarioClass::Instance->Random.RandomDouble())
+				if (chance < random.RandomDouble())
 					continue;
 
 				if (anims.size() > 1)
-					pAnimType = anims[ScenarioClass::Instance->Random.RandomRanged(0, anims.size() - 1)];
+					pAnimType = anims[random.RandomRanged(0, anims.size() - 1)];
 				else if (anims.size() > 0)
 					pAnimType = anims[0];
 				else
@@ -338,9 +340,9 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 	std::span<AnimTypeClass*> anims = pTypeExt->SmallFireAnims;
 	std::span<double> chances = pTypeExt->SmallFireChances;
 	std::span<double> distances = pTypeExt->SmallFireDistances;
-	bool constrainToCellSpots = pTypeExt->ConstrainFireAnimsToCellSpots;
-	bool attach = pTypeExt->AttachFireAnimsToParent.Get(pType->Scorch);
-	int smallCount = pTypeExt->SmallFireCount.Get(1 + pType->Flamer);
+	const bool constrainToCellSpots = pTypeExt->ConstrainFireAnimsToCellSpots;
+	const bool attach = pTypeExt->AttachFireAnimsToParent.Get(pType->Scorch);
+	const int smallCount = pTypeExt->SmallFireCount.Get(1 + pType->Flamer);
 
 	if (pType->Flamer)
 	{

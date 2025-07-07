@@ -219,13 +219,14 @@ std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pO
 	for (auto const& pBuilding : pOwner->Buildings)
 	{
 		bool eligible = false;
+		auto const pType = pBuilding->Type;
 
-		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pBuilding->Type) && pBuilding->IsAlive
+		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pType) && pBuilding->IsAlive
 			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 		{
 			eligible = true;
 		}
-		else if (pBuilding->Type->EMPulseCannon && this->IsLaunchSite(pBuilding))
+		else if (pType->EMPulseCannon && this->IsLaunchSite(pBuilding))
 		{
 			eligible = true;
 		}

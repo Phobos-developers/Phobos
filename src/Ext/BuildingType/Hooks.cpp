@@ -221,12 +221,13 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	if (pTypeExt->NoBuildAreaOnBuildup && pCellBuilding->CurrentMission == Mission::Construction)
 		return SkipBuilding;
 
-	auto const& pBuildingsAllowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Allowed;
+	auto const pTmpTypeExt = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType);
+	auto const& pBuildingsAllowed = pTmpTypeExt->Adjacent_Allowed;
 
 	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
 
-	auto const& pBuildingsDisallowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Disallowed;
+	auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
 
 	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
@@ -245,7 +246,7 @@ DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0xB)
 	if (const auto Building = specific_cast<BuildingClass*>(pThis))
 	{
 		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		R->EAX(static_cast<int>(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 
@@ -261,7 +262,7 @@ DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
 	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
 		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		R->EAX(static_cast<int>(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 

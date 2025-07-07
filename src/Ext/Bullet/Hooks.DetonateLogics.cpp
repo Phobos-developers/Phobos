@@ -260,6 +260,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 	if (pAnimType)
 	{
 		auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
+		auto const pOwner = pThis->Owner;
 		const bool splashed = pWHExt->Splashed;
 		const int creationInterval = splashed ? pWHExt->SplashList_CreationInterval : pWHExt->AnimList_CreationInterval;
 		int* remainingInterval = &pWHExt->RemainingAnimCreationInterval;
@@ -267,18 +268,18 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 		const int scatterMax = splashed ? pWHExt->SplashList_ScatterMax.Get() : pWHExt->AnimList_ScatterMax.Get();
 		const bool allowScatter = scatterMax != 0 || scatterMin != 0;
 
-		if (creationInterval > 0 && pThis->Owner)
-			remainingInterval = &TechnoExt::ExtMap.Find(pThis->Owner)->WHAnimRemainingCreationInterval;
+		if (creationInterval > 0 && pOwner)
+			remainingInterval = &TechnoExt::ExtMap.Find(pOwner)->WHAnimRemainingCreationInterval;
 
 		if (creationInterval < 1 || *remainingInterval <= 0)
 		{
 			*remainingInterval = creationInterval;
 
-			HouseClass* pInvoker = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+			const HouseClass* pInvoker = pOwner ? pOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			HouseClass* pVictim = nullptr;
 
-			if (auto const Target = abstract_cast<TechnoClass*>(pThis->Target))
-				pVictim = Target->Owner;
+			if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
+				pVictim = pTarget->Owner;
 
 			auto types = make_iterator_single(pAnimType);
 
@@ -303,6 +304,8 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 				}
 			}
 
+			auto& random = ScenarioClass::Instance->Random;
+
 			for (auto const& pType : types)
 			{
 				if (!pType)
@@ -312,7 +315,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 
 				if (allowScatter)
 				{
-					const int distance = ScenarioClass::Instance->Random.RandomRanged(scatterMin, scatterMax);
+					const int distance = random.RandomRanged(scatterMin, scatterMax);
 					animCoords = MapClass::GetRandomCoordsNear(animCoords, distance, false);
 				}
 
@@ -323,10 +326,10 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 				if (!pAnim->Owner)
 					pAnim->Owner = pInvoker;
 
-				if (pThis->Owner)
+				if (pOwner)
 				{
 					auto const pExt = AnimExt::ExtMap.Find(pAnim);
-					pExt->SetInvoker(pThis->Owner);
+					pExt->SetInvoker(pOwner);
 				}
 			}
 		}
@@ -349,14 +352,14 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	auto const pOwner = pTechno ? pTechno->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 
 	// Extra warheads
-	if (pThis->WeaponType)
+	if (auto const pWeapon = pThis->WeaponType)
 	{
-		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->WeaponType);
+		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 		auto const& extraWarheads = pWeaponExt->ExtraWarheads;
 		auto const& damageOverrides = pWeaponExt->ExtraWarheads_DamageOverrides;
 		auto const& detonationChances = pWeaponExt->ExtraWarheads_DetonationChances;
 		auto const& fullDetonation = pWeaponExt->ExtraWarheads_FullDetonation;
-		const int defaultDamage = pThis->WeaponType->Damage;
+		const int defaultDamage = pWeapon->Damage;
 		auto& random = ScenarioClass::Instance->Random;
 
 		for (size_t i = 0; i < extraWarheads.size(); i++)
@@ -403,7 +406,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	}
 
 	// Return to sender
-	if (pThis->Type && pTechno)
+	if (pTechno)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
 
@@ -475,10 +478,11 @@ DEFINE_HOOK(0x468EB3, BulletClass_Explodes_AirburstCheck1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
-	R->EAX(pThis->Type);
-	return !(pThis->Type->Airburst || pTypeExt->Splits) ? Continue : Skip;
+	R->EAX(pType);
+	return !(pType->Airburst || pTypeExt->Splits) ? Continue : Skip;
 }
 
 DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
@@ -487,10 +491,11 @@ DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
-	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
-	R->EAX(pThis->Type);
-	return (pThis->Type->Airburst || pTypeExt->Splits) ? Continue : Skip;
+	R->EAX(pType);
+	return (pType->Airburst || pTypeExt->Splits) ? Continue : Skip;
 }
 
 DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
