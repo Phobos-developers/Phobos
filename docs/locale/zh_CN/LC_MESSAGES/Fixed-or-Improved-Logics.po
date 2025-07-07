@@ -7011,11 +7011,10 @@ msgid "DropPod"
 msgstr "空降仓"
 
 #: ../../Fixed-or-Improved-Logics.md:2147
-#, fuzzy
 msgid ""
 "DropPod properties can now be customized on a per-TechnoType (non-"
 "building) basis."
-msgstr "现在可以在步兵类型上微观定义 DropPod 属性。"
+msgstr "现在可以在每个非建筑类单位上微观定义 DropPod 属性。"
 
 #: ../../Fixed-or-Improved-Logics.md:2148
 msgid ""
@@ -7023,6 +7022,7 @@ msgid ""
 "for InfantryTypes (as the DropPod is the infantry itself with its image "
 "swapped). This may change in future."
 msgstr ""
+"注意：由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。这可能会在将来改变。"
 
 #: ../../Fixed-or-Improved-Logics.md:2149
 msgid ""
