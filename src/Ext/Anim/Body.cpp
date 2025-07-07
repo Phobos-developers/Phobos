@@ -405,6 +405,8 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachedSystem)
 		.Process(this->ParentBuilding)
 		.Process(this->IsTechnoTrailerAnim)
+		.Process(this->IsAttachedEffectAnim)
+		.Process(this->IsShieldIdleAnim)
 		;
 }
 
@@ -437,10 +439,7 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
 		if (!pExt)
-		{
-			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
-			Debug::FatalErrorAndExit(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
-		}
+			continue; // Skip animation, chances are it is a null type anim in process of being removed.
 
 		if (pExt->Invoker == pTechno)
 			pExt->Invoker = nullptr;
@@ -457,10 +456,7 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
 		if (!pExt)
-		{
-			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
-			Debug::FatalErrorAndExit(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
-		}
+			continue; // Skip animation, chances are it is a null type anim in process of being removed.
 
 		if (pExt->AttachedSystem == pParticleSystem)
 		{
