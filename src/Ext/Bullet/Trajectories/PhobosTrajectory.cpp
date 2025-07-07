@@ -282,8 +282,11 @@ bool PhobosTrajectory::OnEarlyUpdate()
 	// Update group index for members by themselves
 	if (this->TrajectoryGroup)
 		this->UpdateGroupIndex();
+	// In the phase of playing PreImpactAnim
+	if (this->Bullet->SpawnNextAnim)
+		return false;
 	// The previous check requires detonation at this time
-	if (this->ShouldDetonate || this->Bullet->SpawnNextAnim)
+	if (this->ShouldDetonate)
 		return true;
 	// Check the remaining existence time
 	if (this->DurationTimer.Completed())
@@ -466,7 +469,7 @@ TrajectoryCheckReturnType PhobosTrajectory::OnDetonateUpdate(const CoordStruct& 
 	return TrajectoryCheckReturnType::SkipGameCheck;
 }
 
-// Something that needs to be done before detonation
+// Something that needs to be done before detonation (and PreImpactAnim)
 void PhobosTrajectory::OnPreDetonate()
 {
 	const auto pType = this->GetType();
