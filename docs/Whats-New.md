@@ -413,7 +413,7 @@ New:
 - Ground line for select box (by NetsuNegi)
 - [Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)
 - [Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)
-- Event 606: AttachEffect is attaching to a Techno
+- [Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno) (by FS-21)
 - [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
 
 Vanilla fixes:
