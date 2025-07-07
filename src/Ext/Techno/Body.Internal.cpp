@@ -16,9 +16,7 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 	this->LaserTrails.reserve(pTypeExt->LaserTrailData.size());
 
 	for (auto const& entry : pTypeExt->LaserTrailData)
-	{
-		this->LaserTrails.emplace_back(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret);
-	}
+		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
 }
 
 void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
@@ -135,9 +133,9 @@ CoordStruct TechnoExt::GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FL
 	FLHFound = false;
 	CoordStruct FLH = CoordStruct::Empty;
 
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	auto pInf = abstract_cast<InfantryClass*, true>(pThis);
+	auto const pInf = abstract_cast<InfantryClass*, true>(pThis);
 	std::span<std::vector<CoordStruct>> pickedFLHs = pExt->WeaponBurstFLHs;
 
 	if (pThis->Veterancy.IsElite())
@@ -202,6 +200,19 @@ CoordStruct TechnoExt::GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool&
 	return FLH;
 }
 
+void TechnoExt::ExtData::InitializeDisplayInfo()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pPrimary = pThis->GetWeapon(0)->WeaponType;
+
+	if (pPrimary && pThis->GetTechnoType()->LandTargeting != LandTargetingType::Land_Not_OK)
+		pThis->RearmTimer.TimeLeft = pPrimary->ROF;
+	else if (const auto pSecondary = pThis->GetWeapon(1)->WeaponType)
+		pThis->RearmTimer.TimeLeft = pSecondary->ROF;
+
+	pThis->RearmTimer.StartTime = Math::min(-2, -pThis->RearmTimer.TimeLeft);
+}
+
 void TechnoExt::ExtData::InitializeAttachEffects()
 {
 	if (auto pTypeExt = this->TypeExtData)
@@ -223,20 +234,20 @@ int TechnoExt::GetTintColor(TechnoClass* pThis, bool invulnerability, bool airst
 	{
 		if (invulnerability && pThis->IsIronCurtained())
 		{
-			tintColor |= GeneralUtils::GetColorFromColorAdd(pThis->ForceShielded ? RulesClass::Instance->ForceShieldColor : RulesClass::Instance->IronCurtainColor);
+			tintColor |= pThis->ForceShielded ? RulesExt::Global()->TintColorForceShield : RulesExt::Global()->TintColorIronCurtain;
 		}
+
 		if (airstrike)
 		{
-			if (auto const pAirstrike = TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
-			{
-				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pAirstrike->Owner->GetTechnoType());
-				auto index = pTypeExt->LaserTargetColor.Get(RulesClass::Instance->LaserTargetColor);
-				tintColor |= GeneralUtils::GetColorFromColorAdd(index);
- 			}
+			auto const pExt =  TechnoExt::ExtMap.Find(pThis);
+
+			if (auto const pAirstrike = pExt->AirstrikeTargetingMe)
+				tintColor |= pExt->TypeExtData->TintColorAirstrike;
 		}
+
 		if (berserk && pThis->Berzerk)
 		{
-			tintColor |= GeneralUtils::GetColorFromColorAdd(RulesClass::Instance->BerserkColor);
+			tintColor |= RulesExt::Global()->TintColorBerserk;
 		}
 	}
 
@@ -264,48 +275,23 @@ int TechnoExt::GetCustomTintIntensity(TechnoClass* pThis)
 // Applies custom tint color and intensity from TechnoTypes and any AttachEffects and shields it might have on provided values.
 void TechnoExt::ApplyCustomTintValues(TechnoClass* pThis, int& color, int& intensity)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	auto const pShield = pExt->Shield.get();
-	bool hasTechnoTint = pTypeExt->Tint_Color.isset() || pTypeExt->Tint_Intensity;
-	bool hasShieldTint = pShield && pShield->IsActive() && pShield->GetType()->HasTint();
+	auto const pOwner = pThis->Owner;
 
-	// Bail out early if no custom tint is applied.
-	if (!hasTechnoTint && !pExt->AE.HasTint && !hasShieldTint)
-		return;
-
-	if (hasTechnoTint && EnumFunctions::CanTargetHouse(pTypeExt->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	if (pOwner == HouseClass::CurrentPlayer)
 	{
-		color |= Drawing::RGB_To_Int(pTypeExt->Tint_Color);
-		intensity += static_cast<int>(pTypeExt->Tint_Intensity * 1000);
+		color |= pExt->TintColorOwner;
+		intensity += pExt->TintIntensityOwner;
 	}
-
-	if (pExt->AE.HasTint)
+	else if (pOwner->IsAlliedWith(HouseClass::CurrentPlayer))
 	{
-		for (auto const& attachEffect : pExt->AttachedEffects)
-		{
-			auto const type = attachEffect->GetType();
-
-			if (!attachEffect->IsActive() || !type->HasTint())
-				continue;
-
-			if (!EnumFunctions::CanTargetHouse(type->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-				continue;
-
-			color |= Drawing::RGB_To_Int(type->Tint_Color);
-			intensity += static_cast<int>(type->Tint_Intensity * 1000);
-		}
+		color |= pExt->TintColorAllies;
+		intensity += pExt->TintIntensityAllies;
 	}
-
-	if (hasShieldTint)
+	else
 	{
-		auto const pShieldType = pShield->GetType();
-
-		if (!EnumFunctions::CanTargetHouse(pShieldType->Tint_VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-			return;
-
-		color |= Drawing::RGB_To_Int(pShieldType->Tint_Color);
-		intensity += static_cast<int>(pShieldType->Tint_Intensity * 1000);
+		color |= pExt->TintColorEnemies;
+		intensity += pExt->TintIntensityEnemies;
 	}
 }
 
