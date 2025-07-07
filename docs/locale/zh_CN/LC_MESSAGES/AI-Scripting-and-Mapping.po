@@ -155,10 +155,10 @@ msgstr "现在可以为单人战役地图的载入图像素偏移值和载入图
 
 #: ../../AI-Scripting-and-Mapping.md:39
 msgid ""
-"Note that despite the key name being `DefaultLS800BkgdPal`, this applies "
+"Despite the key name being `DefaultLS800BkgdPal`, this applies "
 "to both shapes just like the original scenario-specific `LS800BkgdPal` "
 "does."
-msgstr "注意尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游戏中的 `LS800BkgdPal` 那样适用于两种情况。"
+msgstr "尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游戏中的 `LS800BkgdPal` 那样适用于两种情况。"
 
 #: ../../AI-Scripting-and-Mapping.md:41 ../../AI-Scripting-and-Mapping.md:67
 #: ../../AI-Scripting-and-Mapping.md:85

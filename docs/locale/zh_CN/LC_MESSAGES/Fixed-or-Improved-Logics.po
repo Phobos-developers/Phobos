@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-16 15:57+0800\n"
+"POT-Creation-Date: 2025-06-30 17:50+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1291,68 +1291,65 @@ msgstr "修复了使用悬浮运动模式的载具被 `IsLocomotor=yes` 弹头�
 
 #: ../../Fixed-or-Improved-Logics.md:211
 msgid ""
-"Fixed the bug that a unit can overlap with `Teleport` units after it's "
-"been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads."
-msgstr ""
-"修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 `Teleport` "
-"运动模式的单位作为超时空移动的目的地的问题。"
-
-#: ../../Fixed-or-Improved-Logics.md:212
-msgid ""
 "Fixed an issue that game crashes (EIP:7FB178) when infantry are about to "
 "enter an occupiable building that has been removed and is not real dead."
 msgstr "修复了当步兵进入一个已被移除但并未真正死亡的可驻军建筑时导致的游戏崩溃问题（EIP:7FB178）。"
 
-#: ../../Fixed-or-Improved-Logics.md:213
+#: ../../Fixed-or-Improved-Logics.md:212
 msgid ""
 "Fixed an issue that game crashes when spawnee has been removed and is not"
 " real dead."
 msgstr "修复了当子机已被移除但并未真正死亡时导致的游戏崩溃问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:214
+#: ../../Fixed-or-Improved-Logics.md:213
 msgid ""
 "Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when "
 "entering buildings."
 msgstr "修复了步兵进入建筑时忽略 `Passengers` 和 `SizeLimit` 的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:215
+#: ../../Fixed-or-Improved-Logics.md:214
 msgid "Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar."
 msgstr "修复了通过快捷键／底边栏按钮部署时不播放 `VoiceDeploy` 的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:216
+#: ../../Fixed-or-Improved-Logics.md:215
 msgid "Fixed the bug that ships can travel on elevated bridges."
 msgstr "修复了船只可以在高架桥上行驶的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:217
+#: ../../Fixed-or-Improved-Logics.md:216
 msgid ""
 "Fixed the bug that uncontrolled scatter when elite techno attacked by "
 "aircraft or some unit try crush it."
 msgstr "修复精英单位在被战机攻击或一个单位尝试碾压它时强制散开的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:218
+#: ../../Fixed-or-Improved-Logics.md:217
 msgid ""
 "Second weapon with `ElectricAssault=yes` will not unconditionally attack "
 "your building with `Overpowerable=yes`."
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑。"
 
-#: ../../Fixed-or-Improved-Logics.md:219
+#: ../../Fixed-or-Improved-Logics.md:218
 msgid ""
 "Fixed the issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case."
-msgstr ""
-"修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题。"
+msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题。"
 
-#: ../../Fixed-or-Improved-Logics.md:220
+#: ../../Fixed-or-Improved-Logics.md:219
 msgid ""
 "Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective "
 "on airforce."
-msgstr ""
-"修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug。"
+msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug。"
 
-#: ../../Fixed-or-Improved-Logics.md:221
+#: ../../Fixed-or-Improved-Logics.md:220
 msgid "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
+
+#: ../../Fixed-or-Improved-Logics.md:221
+msgid ""
+"Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for"
+" building target."
+msgstr ""
+"修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:223
 msgid "Fixes / interactions with other extensions"
@@ -3294,10 +3291,10 @@ msgstr "现在你可以像为科技类型那样为地形对象指定自定义色
 
 #: ../../Fixed-or-Improved-Logics.md:1107
 msgid ""
-"Note that this palette behaves like an object palette and does not use "
+"This palette behaves like an object palette and does not use "
 "tint etc. that have been applied to the tile the TerrainType resides on "
 "like a TerrainType using tile palette would."
-msgstr "注意此色盘的行为就像原有的地形对象色盘那样不受光效影响。也就是地形对象将不会同步使用应用于地形对象所在地块上的色调。"
+msgstr "此色盘的行为就像原有的对象色盘那样不受光效影响。也就是地形对象将不会同步使用应用于地形对象所在地块上的色调。"
 
 #: ../../Fixed-or-Improved-Logics.md:1115
 msgid "Customizable ore spawners"
@@ -3369,17 +3366,6 @@ msgid ""
 "frames and ends at halfway point of the frames in TerrainType's image."
 msgstr "倒坍所用的帧从紧随于常规帧和破损帧之后的第一帧开始直到地形对象图像帧的一半处中止（另一半是影子）。"
 
-#: ../../Fixed-or-Improved-Logics.md:1139
-msgid ""
-"Note that the number of regular & damage frames considered for this "
-"depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes,"
-" `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes))."
-" Exercise caution and ensure there are correct amount of frames to "
-"display."
-msgstr ""
-"注意此处考虑的常规帧和破损帧数量取决于 `HasDamagedFrames` 的值，对于 `IsAnimated` 的地形对象则取决于 "
-"`AnimationLength` 的值（见[动画化地形对象](#animated-terraintypes)）。请谨慎操作以确保显示的帧数正确。"
-
 #: ../../Fixed-or-Improved-Logics.md:1140
 msgid ""
 "Sound event from `CrumblingSound` (if set) is played when crumbling "
@@ -3390,7 +3376,17 @@ msgstr "当倒坍动画开始播放时将会播放 `CrumblingSound`（如果设�
 msgid ""
 "[Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--"
 "sound) only play after crumbling animation has finished."
-msgstr "[摧毁动画和音效](New-or-Enhanced-Logics.md#destroy-animation--sound)仅在倒坍动画结束后播放。"
+msgstr "[摧毁动画和音效](New-or-Enhanced-Logics.md#destroy-animation--sound) 仅在倒坍动画结束后播放。"
+
+msgid ""
+"The number of regular & damage frames considered for this "
+"depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes,"
+" `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes))."
+" Exercise caution and ensure there are correct amount of frames to "
+"display."
+msgstr ""
+"此处考虑的常规帧和破损帧数量取决于 `HasDamagedFrames` 的值，对于 `IsAnimated` 的地形对象则取决于 "
+"`AnimationLength` 的值（见 [动画化地形对象](#animated-terraintypes)）。请谨慎操作以确保显示的帧数正确。"
 
 #: ../../Fixed-or-Improved-Logics.md:1154
 #: ../../Fixed-or-Improved-Logics.md:1179
@@ -4250,9 +4246,11 @@ msgstr "现在可以在步兵类型上微观定义 DropPod 属性。"
 
 #: ../../Fixed-or-Improved-Logics.md:1659
 msgid ""
-"Note that the DropPod is actually the infantry itself with a different "
-"shp image."
-msgstr "注意 DropPod 其实是使用了不同 shp 图像的该步兵自身。"
+"Due to technical constraints `DropPod.AirImage` is only drawn "
+"for InfantryTypes (as the DropPod is the infantry itself with its image "
+"swapped). This may change in future."
+msgstr ""
+"由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。未来可能会进行更改。"
 
 #: ../../Fixed-or-Improved-Logics.md:1660
 msgid ""
@@ -4292,4 +4290,13 @@ msgid ""
 msgstr ""
 "`[General] -> DropPodTrailer` 是一个 [Ares 功能](https://ares-"
 "developers.github.io/Ares-docs/new/droppod.html)。"
+
+#~ msgid ""
+#~ "Fixed the bug that a unit can "
+#~ "overlap with `Teleport` units after it's"
+#~ " been damaged by a fallen unit "
+#~ "lifted by `IsLocomotor=yes` warheads."
+#~ msgstr ""
+#~ "修复了一个单位被另一个由 `IsLocomotor=yes` 弹头吊起的单位砸过后其所在单元格可以被一个 "
+#~ "`Teleport` 运动模式的单位作为超时空移动的目的地的问题。"
 
