@@ -3336,9 +3336,9 @@ msgstr "现在可以对非建筑类目标进行空袭引导。"
 
 #: ../../Fixed-or-Improved-Logics.md:834
 msgid ""
-"The airstrike aircraft will now aim at the target itself rather than the "
-"cell beneath its feet."
-msgstr "空袭的战机会将目标设为单位而不再是单位脚下的单元格。"
+"The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet, therefore it is possible to properly designate air strikes against non-building targets."
+msgstr ""
+"现在空袭的战机会将目标设为单位自身而不再是单位脚下的单元格，因此可以对非建筑类目标正常地进行空袭引导。"
 
 #: ../../Fixed-or-Improved-Logics.md:837
 msgid ""

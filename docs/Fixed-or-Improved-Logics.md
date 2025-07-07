@@ -830,8 +830,7 @@ AirstrikeLineColor=         ; integer - Red,Green,Blue, default to [AudioVisual]
 
 - By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
 - For non building situations, the default value is true.
-- Now it is possible to designate air strikes against non building targets.
-- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet, therefore it is possible to properly designate air strikes against non-building targets.
 
 In `rulesmd.ini`:
 ```ini
@@ -839,7 +838,7 @@ In `rulesmd.ini`:
 AllowAirstrike=            ; boolean
 
 [SOMEWARHEAD]              ; WarheadType
-AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
+AirstrikeTargets=all       ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Alternate FLH customizations
