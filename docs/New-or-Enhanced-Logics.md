@@ -1091,14 +1091,18 @@ OpenTopped.ShareTransportTarget=true      ; boolean
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
-  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
+  - `EVA.Sold` is used to customize the EVA voice when selling.
+  - `SellSound` is used to customize the report sound when selling.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]    ; BuildingType or VehicleType
-EVA.Sold=       ; EVA entry
-SellSound=      ; Sound entry
+EVA.Sold=       ; EVA entry, default to EVA_StructureSold for buildings and EVA_UnitSold for vehicles
+SellSound=      ; Sound entry, default to [AudioVisual] -> SellSound
+```
+
+```{note}
+Vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
@@ -1754,11 +1758,14 @@ Strafing.EndDelay=             ; integer, game frames
 *`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]         ; WeaponType
 CanTarget=all        ; List of Affected Target Enumeration (none|land|water|empty|infantry|units|buildings|all)
 CanTargetHouses=all  ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+```{note}
+`CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```

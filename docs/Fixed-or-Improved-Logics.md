@@ -1104,12 +1104,15 @@ AnimationLength=   ; integer, number of frames
 ### Custom palette
 
 - You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
-  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
 
 In `artmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
+```{note}
+This palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
 ```
 
 ### Customizable ore spawners
@@ -1136,7 +1139,6 @@ SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
   - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual] -> ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
 - In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
   - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
-    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
   - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
   - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--sound) only play after crumbling animation has finished.
 
@@ -1149,6 +1151,10 @@ ConditionYellow.Terrain=  ; floating-point value
 HasDamagedFrames=false    ; boolean
 HasCrumblingFrames=false
 CrumblingSound=           ; Sound entry
+```
+
+```{note}
+The number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
 ```
 
 ### Minimap color customization
@@ -1656,12 +1662,15 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 ## DropPod
 
 DropPod properties can now be customized on a per-InfantryType basis.
-- Note that the DropPod is actually the infantry itself with a different shp image.
 - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
 - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
   - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
 - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
 - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+
+```{note}
+Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+```
 
 In `rulesmd.ini`:
 ```ini

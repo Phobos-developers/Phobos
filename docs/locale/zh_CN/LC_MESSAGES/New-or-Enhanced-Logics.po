@@ -2849,20 +2849,22 @@ msgstr "当建筑或单位被出售时将向所有者播放出售音效和 EVA �
 
 #: ../../New-or-Enhanced-Logics.md:1094
 msgid ""
-"`EVA.Sold` is used to customize the EVA voice when selling, default to "
-"`EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles."
+"`EVA.Sold` is used to customize the EVA voice when selling."
 msgstr ""
-"`EVA.Sold` 用于自定义出售时的 EVA 语音，建筑默认为 `EVA_StructureSold` 载具默认为 "
-"`EVA_UnitSold`。"
+"`EVA.Sold` 用于自定义出售时的 EVA 语音。"
 
 #: ../../New-or-Enhanced-Logics.md:1095
 msgid ""
-"`SellSound` is used to customize the report sound when selling, default "
-"to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' "
+"`SellSound` is used to customize the report sound when selling."
+msgstr ""
+"`SellSound` 用于自定义出售时的音效。"
+
+msgid ""
+"Vanilla game played vehicles' "
 "`SellSound` globally. This has been changed in consistency with "
 "buildings' `SellSound`."
 msgstr ""
-"`SellSound` 用于自定义出售时的音效，默认为 `[AudioVisual] -> SellSound`。请注意，原版游戏中出售载具的 "
+"原版游戏中出售载具的 "
 "`SellSound` 是全局的。这已改为与建筑出售的 `SellSound` 保持一致。"
 
 #: ../../New-or-Enhanced-Logics.md:1104
@@ -4276,8 +4278,8 @@ msgstr "现在你可以指定武器可以开火的目标或所属方。这还会
 
 #: ../../New-or-Enhanced-Logics.md:1757
 msgid ""
-"Note that `CanTarget` explicitly requires either `all` or `empty` to be "
+"`CanTarget` explicitly requires either `all` or `empty` to be "
 "listed for the weapon to be able to fire at cells containing no "
 "TechnoTypes."
-msgstr "注意 `CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
+msgstr "`CanTarget` 要求明确列出 `all` 或 `empty` 才能对不包含任何科技类型的单元格开火。"
 
