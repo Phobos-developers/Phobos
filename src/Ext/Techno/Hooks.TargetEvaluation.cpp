@@ -8,7 +8,7 @@ DEFINE_HOOK(0x7098B9, TechnoClass_TargetSomethingNearby_AutoFire, 0x6)
 {
 	GET(TechnoClass* const, pThis, ESI);
 
-	auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	if (pExt->AutoFire)
 	{
@@ -240,18 +240,17 @@ double __fastcall HealthRatio_Wrapper(TechnoClass* pTechno)
 
 	if (result >= 1.0)
 	{
-		if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
-		{
-			if (const auto pShieldData = pExt->Shield.get())
-			{
-				if (pShieldData->IsActive())
-				{
-					const auto pWH = EvaluateObjectTemp::PickedWeapon ? EvaluateObjectTemp::PickedWeapon->Warhead : nullptr;
-					const auto pFoot = abstract_cast<FootClass*>(pTechno);
+		const auto pExt = TechnoExt::ExtMap.Find(pTechno);
 
-					if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
-						result = pShieldData->GetHealthRatio();
-				}
+		if (const auto pShieldData = pExt->Shield.get())
+		{
+			if (pShieldData->IsActive())
+			{
+				const auto pWH = EvaluateObjectTemp::PickedWeapon ? EvaluateObjectTemp::PickedWeapon->Warhead : nullptr;
+				const auto pFoot = abstract_cast<FootClass*>(pTechno);
+
+				if (!pShieldData->CanBePenetrated(pWH) || ((pFoot && pFoot->ParasiteEatingMe)))
+					result = pShieldData->GetHealthRatio();
 			}
 		}
 	}

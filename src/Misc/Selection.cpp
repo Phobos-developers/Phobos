@@ -45,8 +45,8 @@ public:
 	{
 		if (selectable.Techno && selectable.Techno->IsAlive)
 		{
-			int nLocalX = selectable.X - pThis->TacticalPos.X;
-			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
+			const int nLocalX = selectable.X - pThis->TacticalPos.X;
+			const int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
 			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
 				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
@@ -80,13 +80,13 @@ public:
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
 				const auto pTechno = selected.Techno;
-				auto pTechnoType = pTechno->GetTechnoType();
-				auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				const auto pTechnoType = pTechno->GetTechnoType();
+				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
 
 				if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
 					continue;
 
-				if (pTypeExt && Game::IsTypeSelecting())
+				if (Game::IsTypeSelecting())
 				{
 					Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
 				}
@@ -128,7 +128,7 @@ public:
 
 			LTRBStruct rect { nLeft , nTop, nRight - nLeft + 1, nBottom - nTop + 1 };
 
-			bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
+			const bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
 			Tactical_SelectFiltered(pThis, &rect, check_callback, bPriorityFiltering);
 
 			pThis->Band.Left = 0;

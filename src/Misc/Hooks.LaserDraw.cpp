@@ -31,14 +31,14 @@ DEFINE_HOOK(0x550F47, LaserDrawClass_DrawInHouseColor_BetterDrawing, 0x0)
 
 	if (pThis->Thickness > 1)
 	{
-		double falloffStep = 1.0 / pThis->Thickness;
-		double falloffMult = GeneralUtils::FastPow(1.0 - falloffStep, currentThickness);
+		const double falloffStep = 1.0 / pThis->Thickness;
+		const double falloffMult = GeneralUtils::FastPow(1.0 - falloffStep, currentThickness);
 		mult = (1.0 - falloffStep * currentThickness) * falloffMult;
 	}
 
-	unsigned int r = (unsigned int)(mult * LaserDrawTemp::maxColor.R);
-	unsigned int g = (unsigned int)(mult * LaserDrawTemp::maxColor.G);
-	unsigned int b = (unsigned int)(mult * LaserDrawTemp::maxColor.B);
+	const unsigned int r = (unsigned int)(mult * LaserDrawTemp::maxColor.R);
+	const unsigned int g = (unsigned int)(mult * LaserDrawTemp::maxColor.G);
+	const unsigned int b = (unsigned int)(mult * LaserDrawTemp::maxColor.B);
 
 	R->EAX(r);
 	R->ECX(g);

@@ -76,8 +76,8 @@ DEFINE_HOOK(0x71C812, TerrainClass_AI_Crumbling, 0x6)
 		return SkipCheck;
 	}
 
-	int animationLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
-	int currentStage = pThis->Animation.Value + (pType->IsAnimated ? animationLength * (pTypeExt->HasDamagedFrames + 1) : 0 + pTypeExt->HasDamagedFrames);
+	const int animationLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
+	const int currentStage = pThis->Animation.Value + (pType->IsAnimated ? animationLength * (pTypeExt->HasDamagedFrames + 1) : 0 + pTypeExt->HasDamagedFrames);
 
 	if (currentStage + 1 == pType->GetImage()->Frames / 2)
 	{
@@ -102,7 +102,7 @@ DEFINE_HOOK(0x71C1FE, TerrainClass_Draw_PickFrame, 0x6)
 
 	if (pType->IsAnimated)
 	{
-		int animLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
+		const int animLength = pTypeExt->AnimationLength.Get(pType->GetImage()->Frames / (2 * (pTypeExt->HasDamagedFrames + 1)));
 
 		if (pTypeExt->HasCrumblingFrames && pThis->IsCrumbling)
 			frame = (animLength * (pTypeExt->HasDamagedFrames + 1)) + 1 + pThis->Animation.Value;
@@ -126,7 +126,7 @@ DEFINE_HOOK(0x71C2BC, TerrainClass_Draw_Palette, 0x6)
 	GET(TerrainClass*, pThis, ESI);
 
 	auto const pCell = pThis->GetCell();
-	int wallOwnerIndex = pCell->WallOwnerIndex;
+	const int wallOwnerIndex = pCell->WallOwnerIndex;
 	int colorSchemeIndex = HouseClass::CurrentPlayer->ColorSchemeIndex;
 
 	if (wallOwnerIndex >= 0)
@@ -190,13 +190,13 @@ DEFINE_HOOK(0x48381D, CellClass_SpreadTiberium_CellSpread, 0x6)
 		TiberiumClass* pTib = TiberiumClass::Array.GetItem(tibIndex);
 
 		std::vector<CellStruct> adjacentCells = GeneralUtils::AdjacentCellsInRange(TerrainTypeTemp::pCurrentExt->SpawnsTiberium_Range);
-		size_t size = adjacentCells.size();
-		int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
+		const size_t size = adjacentCells.size();
+		const int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
 
 		for (unsigned int i = 0; i < size; i++)
 		{
-			unsigned int cellIndex = (i + rand) % size;
-			CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
+			const unsigned int cellIndex = (i + rand) % size;
+			const CellStruct tgtPos = pThis->MapCoords + adjacentCells[cellIndex];
 			CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
 
 			if (tgtCell && tgtCell->CanTiberiumGerminate(pTib))
@@ -249,7 +249,7 @@ DEFINE_HOOK(0x71B98B, TerrainClass_TakeDamage_RefreshDamageFrame, 0x7)
 
 	auto const pType = pThis->Type;
 	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pType);
-	double condYellow = RulesExt::Global()->ConditionYellow_Terrain.Get(RulesClass::Instance->ConditionYellow);
+	const double condYellow = RulesExt::Global()->ConditionYellow_Terrain.Get(RulesClass::Instance->ConditionYellow);
 
 	if (!pType->IsAnimated && pTypeExt->HasDamagedFrames && TerrainTypeTemp::PriorHealthRatio > condYellow && pThis->GetHealthPercentage() <= condYellow)
 	{

@@ -225,17 +225,13 @@ DEFINE_HOOK(0x6F3432, TechnoClass_WhatWeaponShouldIUse_Gattling, 0xA)
 				auto const landType = pTargetTechno->GetCell()->LandType;
 				const bool isOnWater = (landType == LandType::Water || landType == LandType::Beach) && !pTargetTechno->IsInAir();
 
-				if (!pTargetTechno->OnBridge && isOnWater)
+				if (!pTargetTechno->OnBridge && isOnWater && pThis->SelectNavalTargeting(pTargetTechno) == 2)
 				{
-					int navalTargetWeapon = pThis->SelectNavalTargeting(pTargetTechno);
-
-					if (navalTargetWeapon == 2)
-						chosenWeaponIndex = evenWeaponIndex;
+					chosenWeaponIndex = evenWeaponIndex;
 				}
-				else if (pTargetTechno->IsInAir())
+				else if (pTargetTechno->IsInAir() && !pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA)
 				{
-					if (!pWeaponOdd->Projectile->AA && pWeaponEven->Projectile->AA)
-						chosenWeaponIndex = evenWeaponIndex;
+					chosenWeaponIndex = evenWeaponIndex;
 				}
 				else if (pThis->GetTechnoType()->LandTargeting == LandTargetingType::Land_Secondary)
 				{
@@ -522,7 +518,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 	GET(CellClass* const, pCell, EAX);
 	GET_STACK(WeaponTypeClass*, pWeaponType, STACK_OFFSET(0xB0, -0x70));
 
-	if (auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
+	if (const auto pExt = WeaponTypeExt::ExtMap.Find(pWeaponType))
 	{
 		const auto canTarget = pExt->CanTarget;
 		const auto canTargetHouses = pExt->CanTargetHouses;
@@ -540,11 +536,11 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 
 			for (unsigned int i = 0; i < size; i++)
 			{
-				int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
-				unsigned int cellIndex = (i + rand) % size;
-				CellStruct tgtPos = mapCoords + adjacentCells[cellIndex];
+				const int rand = ScenarioClass::Instance->Random.RandomRanged(0, size - 1);
+				const unsigned int cellIndex = (i + rand) % size;
+				const CellStruct tgtPos = mapCoords + adjacentCells[cellIndex];
 				CellClass* tgtCell = MapClass::Instance.TryGetCellAt(tgtPos);
-				bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (onBridge || tgtCell->Level + CellClass::BridgeLevels == level);
+				const bool allowBridges = tgtCell && tgtCell->ContainsBridge() && (onBridge || tgtCell->Level + CellClass::BridgeLevels == level);
 
 				if (skipWeaponPicking || EnumFunctions::AreCellAndObjectsEligible(tgtCell, canTarget, canTargetHouses, pOwner, true, false, allowBridges))
 				{
@@ -564,7 +560,7 @@ DEFINE_HOOK(0x6FE19A, TechnoClass_FireAt_AreaFire, 0x6)
 			return SkipSetTarget;
 		}
 
-		bool allowBridges = pCell->ContainsBridge() && (onBridge || pCell->Level + CellClass::BridgeLevels == level);
+		const bool allowBridges = pCell->ContainsBridge() && (onBridge || pCell->Level + CellClass::BridgeLevels == level);
 
 		if (!skipWeaponPicking && !EnumFunctions::AreCellAndObjectsEligible(pCell, canTarget, canTargetHouses, nullptr, false, false, allowBridges))
 			return DoNotFire;

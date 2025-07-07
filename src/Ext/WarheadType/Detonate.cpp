@@ -632,7 +632,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 		auto const& allowWarheads = pType->Crit_AllowWarheads;
 		auto const pObject = this->OwnerObject();
 
-		if (allowWarheads.size() > 0 && !allowWarheads.ContainspObject))
+		if (allowWarheads.size() > 0 && !allowWarheads.Contains(pObject))
 			continue;
 
 		auto const& disallowWarheads = pType->Crit_DisallowWarheads;

@@ -1,4 +1,4 @@
-﻿#include <MessageListClass.h>
+#include <MessageListClass.h>
 #include <WWMouseClass.h>
 
 #include <Ext/Scenario/Body.h>
@@ -162,7 +162,7 @@ DEFINE_HOOK(0x623A9F, DSurface_sub_623880_DrawBitFontStrings, 0x5)
 
 	pRect->Height = height;
 	auto black = ColorStruct { 0, 0, 0 };
-	auto trans = (MessageTemp::OnNewMessages || ScenarioClass::Instance->UserInputLocked) ? 70 : 40;
+	const auto trans = (MessageTemp::OnNewMessages || ScenarioClass::Instance->UserInputLocked) ? 70 : 40;
 	pSurface->FillRectTrans(pRect, &black, trans);
 
 	return SkipGameCode;

@@ -117,7 +117,7 @@ DEFINE_HOOK(0x706389, TechnoClass_DrawObject_TintColor, 0x6)
 	REF_STACK(int, color, STACK_OFFSET(0x54, 0x2C));
 
 	auto const rtti = pThis->WhatAmI();
-	bool isAircraft = rtti == AbstractType::Aircraft;
+	const bool isAircraft = rtti == AbstractType::Aircraft;
 
 	// SHP vehicles and aircraft
 	if (rtti == AbstractType::Unit || isAircraft)

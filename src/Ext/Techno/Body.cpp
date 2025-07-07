@@ -482,12 +482,12 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				unsigned int minSize = minCounts ? minCounts->size() : 0;
-				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+				const unsigned int minSize = minCounts ? minCounts->size() : 0;
+				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
 				if (type->Cumulative && (minSize > 0 || maxSize > 0))
 				{
-					int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
 
 					if (minSize > 0)
 					{

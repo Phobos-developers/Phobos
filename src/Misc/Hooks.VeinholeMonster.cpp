@@ -16,7 +16,7 @@
 // Call removed from YR by WW
 DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 {
-	int theater = static_cast<int>(ScenarioClass::Instance->Theater);
+	const int theater = static_cast<int>(ScenarioClass::Instance->Theater);
 	VeinholeMonsterClass::LoadVeinholeArt(theater);
 
 	return 0;

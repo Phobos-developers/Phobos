@@ -49,7 +49,7 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 	if (distance >= pExt->ChronoRangeMinimum.Get(RulesClass::Instance->ChronoRangeMinimum)
 		&& pExt->ChronoTrigger.Get(RulesClass::Instance->ChronoTrigger))
 	{
-		int factor = std::max(pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor), 1);
+		const int factor = std::max(pExt->ChronoDistanceFactor.Get(RulesClass::Instance->ChronoDistanceFactor), 1);
 		duree = std::max(distance / factor, duree);
 
 	}

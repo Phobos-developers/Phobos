@@ -1452,7 +1452,7 @@ DEFINE_HOOK(0x719F17, EndPiggyback_PowerOn, 0x5) // Teleport
 {
 	auto* iloco = R->Origin() == 0x719F17 ? R->ECX<ILocomotion*>() : R->EAX<ILocomotion*>();
 	__assume(iloco!=nullptr);
-	auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
+	const auto pLinkedTo = static_cast<LocomotionClass*>(iloco)->LinkedTo;
 	if (!pLinkedTo->Deactivated && !pLinkedTo->IsUnderEMP())
 		iloco->Power_On();
 	else
@@ -1820,11 +1820,13 @@ DEFINE_HOOK(0x46B19B, BulletClass_DrawVoxel_GetLightConvert, 0x6)
 {
 	GET(BulletClass*, pThis, EAX);
 
-	if (pThis->Type->AnimPalette)
+	const auto pType = pThis->Type;
+
+	if (pType->AnimPalette)
 	{
 		BulletDrawVoxelTemp::Convert = FileSystem::ANIM_PAL;
 	}
-	else if (pThis->Type->FirersPalette)
+	else if (pType->FirersPalette)
 	{
 		const int inheritColor = pThis->InheritedColor;
 		const int colorIndex = inheritColor == -1 ? HouseClass::CurrentPlayer->ColorSchemeIndex : inheritColor;

@@ -157,16 +157,17 @@ DEFINE_HOOK(0x6CBD2C, SuperClass_AI_UseWeeds, 0x6)
 	if (pExt->UseWeeds)
 	{
 		pSuper->Type->ShowTimer = false;
-		const auto totalAmount = pSuper->Owner->OwnedWeed.GetTotalAmount();
+		const float totalAmount = pSuper->Owner->OwnedWeed.GetTotalAmount();
+		const int weedAmount = pExt->UseWeeds_Amount;
 
-		if (totalAmount >= pExt->UseWeeds_Amount)
+		if (totalAmount >= weedAmount)
 		{
-			pSuper->Owner->OwnedWeed.RemoveAmount(static_cast<float>(pExt->UseWeeds_Amount), 0);
+			pSuper->Owner->OwnedWeed.RemoveAmount(static_cast<float>(weedAmount), 0);
 			pSuper->RechargeTimer.Start(SWReadyTimer); // The Armageddon is here
 			return Charged;
 		}
 
-		if (ptotalAmount >= pExt->UseWeeds_ReadinessAnimationPercentage * pExt->UseWeeds_Amount)
+		if (totalAmount >= pExt->UseWeeds_ReadinessAnimationPercentage * weedAmount)
 		{
 			pSuper->RechargeTimer.Start(SWAlmostReadyTimer); // The end is nigh!
 		}

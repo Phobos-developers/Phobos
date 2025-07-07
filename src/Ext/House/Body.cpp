@@ -1021,7 +1021,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 				inside = true;
 		}
 
-		int num = count - limits.back();
+		const int num = count - limits.back();
 
 		if (num + queued >= 1 - factor)
 		{
@@ -1044,7 +1044,7 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 		{
 			const auto pTmpType = pTypeExt->BuildLimitGroup_Types[i];
 			const auto pTmpTypeExt = TechnoTypeExt::ExtMap.Find(pTmpType);
-			int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor;
+			const int queued = ignoreQueued ? 0 : QueuedNum(pHouse, pTmpType) * pTmpTypeExt->BuildLimitGroup_Factor;
 			int num = 0;
 			const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pTmpType);
 

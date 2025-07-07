@@ -268,9 +268,9 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 	auto const pExt = AnimExt::ExtMap.Find(pThis);
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
 	auto const coords = pThis->GetCoords();
-	auto& random = ScenarioClass::Instance->Random;
+	auto random = ScenarioClass::Instance->Random;
 
-	auto SpawnAnim = [&coords, pThis, pExt, random](AnimTypeClass* pType, int distance, bool constrainToCellSpots, bool attach)
+	auto SpawnAnim = [&coords, pThis, pExt, &random](AnimTypeClass* pType, int distance, bool constrainToCellSpots, bool attach)
 		{
 			if (!pType)
 				return;
@@ -295,7 +295,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 				pAnim->SetOwnerObject(pThis->OwnerObject);
 		};
 
-	auto LoopAnims = [&coords, SpawnAnim, random](std::span<AnimTypeClass*> const& anims, std::span<double> const& chances, std::span<double> const& distances,
+	auto LoopAnims = [&coords, SpawnAnim, &random](std::span<AnimTypeClass*> const& anims, std::span<double> const& chances, std::span<double> const& distances,
 		int count, AnimTypeClass* defaultAnimType, double defaultChance0, double defaultChanceRest, int defaultDistance0, int defaultDistanceRest, bool constrainToCellSpots, bool attach)
 		{
 			double chance = 0.0;
@@ -488,7 +488,7 @@ namespace CTORTemp
 DEFINE_HOOK(0x421EA0, AnimClass_CTOR_SetContext, 0x6)
 {
 	GET_STACK(CoordStruct const* const, coords, 0x8);
-	GET_STACK(unsigned int, callerAddress, 0x0);
+	GET_STACK(const unsigned int, callerAddress, 0x0);
 
 	CTORTemp::coords = *coords;
 	CTORTemp::callerAddress = callerAddress;

@@ -275,7 +275,7 @@ DEFINE_HOOK(0x469C46, BulletClass_Logics_DamageAnimSelected, 0x8)
 		{
 			*remainingInterval = creationInterval;
 
-			const HouseClass* pInvoker = pOwner ? pOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+			HouseClass* pInvoker = pOwner ? pOwner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 			HouseClass* pVictim = nullptr;
 
 			if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
