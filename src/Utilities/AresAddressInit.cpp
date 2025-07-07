@@ -1,6 +1,7 @@
 #include "AresFunctions.h"
 #include "AresHelper.h"
 #include "Patch.h"
+
 #define NOTE_ARES_FUN(name,reladdr) AresFunctions::name = reinterpret_cast<decltype(AresFunctions::name)>(AresHelper::AresBaseAddress + reladdr)
 
 decltype(AresFunctions::ConvertTypeTo) AresFunctions::ConvertTypeTo = nullptr;
