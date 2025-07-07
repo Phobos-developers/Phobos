@@ -7788,11 +7788,11 @@ msgstr ""
 #: ../../New-or-Enhanced-Logics.md:2167
 msgid ""
 "[SOMEWARHEAD]                ; WarheadType\n"
-"SplashList=                  ; List of AnimationTypes\n"
+"SplashList=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList\n"
 "SplashList.PickRandom=false  ; boolean\n"
 msgstr ""
 "[SOMEWARHEAD]                ; WarheadType\n"
-"SplashList=                  ; List of AnimationTypes\n"
+"SplashList=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList\n"
 "SplashList.PickRandom=false  ; boolean\n"
 
 #: ../../New-or-Enhanced-Logics.md:2173
