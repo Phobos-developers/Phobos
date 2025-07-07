@@ -66,6 +66,8 @@ public:
 		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
 
 		Valueable<bool> Parachuted;
+		Valueable<int> Parachuted_FallRate;
+		Nullable<int> Parachuted_MaxFallRate;
 		Nullable<AnimTypeClass*> BombParachute;
 
 		// Ares 0.1
@@ -117,6 +119,8 @@ public:
 			, AirburstWeapon_SourceScatterMin { Leptons(0) }
 			, AirburstWeapon_SourceScatterMax { Leptons(0) }
 			, Parachuted { false }
+			, Parachuted_FallRate { 1 }
+			, Parachuted_MaxFallRate {}
 			, BombParachute {}
 		{ }
 

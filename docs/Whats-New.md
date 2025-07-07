@@ -414,6 +414,7 @@ New:
 - [Support for more optional weapons](New-or-Enhanced-Logics.md#multi-weapon) (by FlyStar)
 - [Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)
 - Event 606: AttachEffect is attaching to a Techno
+- [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
 - New Missile trajectory (by CrimRecya)
 - New Engrave trajectory (by CrimRecya)
 - New Tracing trajectory (by CrimRecya)

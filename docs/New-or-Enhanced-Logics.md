@@ -720,14 +720,17 @@ OnlyUseLandSequences=false  ; boolean
 ### Parabombs
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
-  - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects. Currently the falling down speed is not customizable and is capped to `[General]` -> `ParachuteMaxFallRate`.
-  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`
+  - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects.
+  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> `ParachuteMaxFallRate`.
+  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`. The animation is drawn in unit palette using team color of the firing house if available.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEPROJECTILE]  ; Projectile
-Parachuted=false  ; boolean
-BombParachute=    ; AnimationType
+[SOMEPROJECTILE]         ; Projectile
+Parachuted=false         ; boolean
+Parachuted.FallRate=1    ; integer
+Parachuted.MaxFallRate=  ; integer
+BombParachute=           ; AnimationType
 ```
 
 ### Projectile interception logic
@@ -1371,6 +1374,32 @@ LimboKill.IDs=                  ; List of numeric IDs.
 Remember that Limbo Delivered buildings don't exist physically! This means they should never have enabled machanics that require interaction with the game world (i.e. factories, cloning vats, service depots, helipads). They also **should have either `KeepAlive=no` set or be killable with LimboKill** - otherwise the game might never end.
 ```
 
+### Linked superweapons
+
+- Superweapons can now set a list of linked superweapons with `SW.Link`, which will be granted or set timers when the original superweapon is launched.
+- `SW.Link.Grant` allow the linked superweapons to be added 1-time to the firer like the nuke crate if it's not presented.
+- `SW.Link.Ready` specifies if superweapons timers should be set to readiness.
+- `SW.Link.Reset` specifies if superweapons timers should be reset. Takes precedence over `SW.Link.Ready`.
+  - For a granted superweapon, the other will be: check `SW.Link.Reset` to see if it needs to be reset. If false, check `SW.Link.Ready` to see if it needs to be set to readiness. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
+- `Message.LinkedSWAcquired` will be displayed to the firer when at least 1 linked superweapon is acquired or has timer set.
+- `EVA.LinkedSWAcquired` will be played to the firer when at least 1 linked superweapon is acquired or has timer set.
+- These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
+  - `SW.Link.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `SW.Link.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]                     ; SuperWeaponType
+SW.Link=                     ; List of SuperWeaponTypes
+SW.Link.Grant=false          ; boolean
+SW.Link.Ready=               ; boolean, default to `SW.InitialReady` for granted superweapons, false otherwise
+SW.Link.Reset=false          ; boolean
+SW.Link.RollChances=         ; List of percentages.
+SW.Link.RandomWeightsN=      ; List of integers.
+Message.LinkedSWAcquired=    ; CSF entry key
+EVA.LinkedSWAcquired=        ; EVA entry
+```
+
 ### Next
 
 ![image](_static/images/swnext.gif)
@@ -1380,6 +1409,9 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
   - `SW.Next.RealLaunch` controls whether the owner who fired the initial superweapon must own all listed superweapons and sufficient funds to support `Money.Amout`. Otherwise they will be launched forcibly.
   - `SW.Next.IgnoreInhibitors` ignores `SW.Inhibitors`/`SW.AnyInhibitor` of each superweapon, otherwise only non-inhibited superweapons are launched.
   - `SW.Next.IgnoreDesignators` ignores `SW.Designators` / `SW.AnyDesignator` respectively.
+- These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
+  - `SW.Next.RollChances` lists chances of each "dice roll" happening. Valid values range from 0% (never happens) to 100% (always happens). Defaults to a single sure roll.
+  - `SW.Next.RandomWeightsN` lists the weights for each "dice roll" that increase the probability of picking a specific superweapon. Valid values are 0 (don't pick) and above (the higher value, the bigger the likelyhood). `RandomWeights` are a valid alias for `RandomWeights0`. If a roll attempt doesn't have weights specified, the last weights will be used.
 
 In `rulesmd.ini`:
 ```ini
