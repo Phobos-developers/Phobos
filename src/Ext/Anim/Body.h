@@ -29,6 +29,8 @@ public:
 		BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
 		bool IsTechnoTrailerAnim;
 		bool DelayedFireRemoveOnNoDelay;
+		bool IsAttachedEffectAnim;
+		bool IsShieldIdleAnim;
 
 		ExtData(AnimClass* OwnerObject) : Extension<AnimClass>(OwnerObject)
 			, DeathUnitFacing { 0 }
@@ -41,6 +43,8 @@ public:
 			, ParentBuilding {}
 			, IsTechnoTrailerAnim { false }
 			, DelayedFireRemoveOnNoDelay { false }
+			, IsAttachedEffectAnim { false }
+			, IsShieldIdleAnim { false }
 		{ }
 
 		void SetInvoker(TechnoClass* pInvoker);

@@ -44,8 +44,8 @@ DEFINE_HOOK(0x5206D2, InfantryClass_FiringAI_SetContext, 0x6)
 	}
 
 	const auto pTarget = pThis->Target;
-	FiringAITemp::WeaponIndex = weaponIndex;
-	FiringAITemp::IsSecondary = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->IsSecondary(weaponIndex);
+	FiringAITemp::weaponIndex = WeaponIndex;
+	FiringAITemp::isSecondary = TechnoTypeExt::ExtMap.Find(pThis->Type)->IsSecondary(WeaponIndex);
 	FiringAITemp::WeaponType = pWeapon;
 	FiringAITemp::FireErrorResult = pThis->GetFireError(pTarget, weaponIndex, true);
 	FiringAITemp::CanFire = true;

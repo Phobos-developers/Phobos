@@ -909,6 +909,7 @@ void StraightTrajectory::PrepareForDetonateAt(BulletClass* pBullet, HouseClass* 
 		this->TheCasualty.erase(ID);
 
 	std::vector<TechnoClass*> validTargets;
+	validTargets.reserve(validTechnos.size());
 
 	// checking for duplicate
 	for (const auto& pTechno : validTechnos)
@@ -1017,8 +1018,8 @@ double StraightTrajectory::GetExtraDamageMultiplier(BulletClass* pBullet, Techno
 		return this->Type->EdgeAttenuation;
 
 	// Remove the first cell distance for calculation
-	if (distance > 256.0)
-		damageMult += (this->Type->EdgeAttenuation - 1.0) * ((distance - 256.0) / (static_cast<double>(this->AttenuationRange - 256)));
+	if (distance > Unsorted::LeptonsPerCell)
+		damageMult += (this->Type->EdgeAttenuation - 1.0) * ((distance - Unsorted::LeptonsPerCell) / (static_cast<double>(this->AttenuationRange - Unsorted::LeptonsPerCell)));
 
 	return damageMult;
 }

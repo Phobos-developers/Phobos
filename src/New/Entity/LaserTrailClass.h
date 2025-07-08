@@ -16,6 +16,7 @@ public:
 	bool IsOnTurret;
 	ColorStruct CurrentColor;
 	Nullable<CoordStruct> LastLocation;
+	bool Intrinsic;
 
 	LaserTrailClass(LaserTrailTypeClass* pTrailType, HouseClass* pHouse = nullptr,
 		CoordStruct flh = { 0, 0, 0 }, bool isOnTurret = false) :
@@ -26,6 +27,7 @@ public:
 		, IsOnTurret { isOnTurret }
 		, CurrentColor { pTrailType->Color }
 		, LastLocation {}
+		, Intrinsic { true }
 	{
 		if (this->Type->IsHouseColor && pHouse)
 			this->CurrentColor = pHouse->LaserColor;
@@ -38,7 +40,8 @@ public:
 		FLH {},
 		IsOnTurret {},
 		CurrentColor {},
-		LastLocation {}
+		LastLocation {},
+		Intrinsic {}
 	{ }
 
 	bool Update(CoordStruct location);
