@@ -17,6 +17,8 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		rollOnce = true;
 	}
 
+	indices.reserve(rollsSize);
+
 	for (size_t i = 0; i < rollsSize; i++)
 	{
 		this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -32,6 +34,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		if (size_t(index) < size)
 			indices.push_back(index);
 	}
+
 	return indices;
 }
 
@@ -256,12 +259,12 @@ std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClas
 	{
 		double maxRange = this->SW_RangeMaximum;
 		if (maxRange < 0.0)
-			maxRange = pWeapon->Range / 256.0;
+			maxRange = pWeapon->Range / (double)Unsorted::LeptonsPerCell;
 
 		double minRange = this->SW_RangeMinimum;
 		if (minRange < 0.0)
 		{
-			minRange = pWeapon->MinimumRange / 256.0;
+			minRange = pWeapon->MinimumRange / (double)Unsorted::LeptonsPerCell;
 		}
 
 		return std::make_pair(minRange, maxRange);

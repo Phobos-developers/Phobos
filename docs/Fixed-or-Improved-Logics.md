@@ -14,7 +14,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug when units are already dead but still in map (for sinking, crashing, dying animation, etc.), they could die again.
 - Fixed the bug when cloaked Desolator was unable to fire his deploy weapon.
 - Fixed the bug that temporaryed unit cannot be erased correctly and no longer raise an error.
-- Fixed `DebrisMaximums` (spawned debris type amounts cannot go beyond specified maximums anymore). Only applied when `DebrisMaximums` values amount is more than 1 for compatibility reasons.
 - Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
@@ -215,7 +214,6 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash.
 - Fixed an issue that moving MCV with Teleport locomotion will cause reconnection error.
 - Fixed wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead.
-- Fixed the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads.
 - Fixed an issue that game crashes (EIP:7FB178) when infantry are about to enter an occupiable building that has been removed and is not real dead.
 - Fixed an issue that game crashes when spawnee has been removed and is not real dead.
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
@@ -229,6 +227,17 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip.
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
+- Infantry support `IsGattling=yes`.
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
+- Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
+- Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
+- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
+- Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
+- Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
+- Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
+- Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
+- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically.
 
 ## Fixes / interactions with other extensions
 
@@ -247,7 +256,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
-- Fixed some units of Ares crashing after deployment conversion.
+- Fixed the issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
 
 ## Aircraft
@@ -289,7 +298,7 @@ In `rulesmd.ini`:
 [General]
 ExtendedAircraftMissions=false         ; boolean
 
-[SOMEAIRCRAFT]                         ; AircraftType
+[SOMEAIRCRAFT]                          ; AircraftType
 ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
@@ -324,16 +333,18 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
 - `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
-- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects. Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects etc. If not set, the animation's owner house, or failing that, owning house of object it is attached to or the building it belongs to is used to deal the damage.
+  - `Damage.ApplyFirepowerMult` determines whether or not firepower modifiers from the animation's invoker are applied on the damage dealt from this animation, if exists.
 - `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                     ; AnimationType
-Weapon=                        ; WeaponType
-Damage.Delay=0                 ; integer, animation frames
-Damage.DealtByInvoker=false    ; boolean
-Damage.ApplyOncePerLoop=false  ; boolean
+[SOMEANIM]                      ; AnimationType
+Weapon=                         ; WeaponType
+Damage.Delay=0                  ; integer, animation frames
+Damage.DealtByInvoker=false     ; boolean
+Damage.ApplyOncePerLoop=false   ; boolean
+Damage.ApplyFirepowerMult=false ; boolean
 ```
 
 ```{note}
@@ -355,7 +366,7 @@ UseCenterCoordsIfAttached=false  ; boolean
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
 - `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
 - `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation.
-- `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[CombatDamage] -> SplashList`.
+- `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
 - `ExtraShadow` can be set to false to disable the display of shadows on the ground.
 
@@ -365,7 +376,7 @@ In `artmd.ini`:
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
 WakeAnim=                     ; AnimationType
-SplashAnims=                  ; List of AnimationTypes
+SplashAnims=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -383,7 +394,7 @@ AnimCraterDestroyTiberium=true  ; boolean
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                      ; AnimationType
-Crater.DestroyTiberium=         ; boolean, default to [General]->AnimCraterDestroyTiberium
+Crater.DestroyTiberium=         ; boolean, default to [General] -> AnimCraterDestroyTiberium
 ```
 
 ### Fire animations spawned by Scorch & Flamer
@@ -451,6 +462,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]          ; BuildingType
 AircraftDockingDir(N)=  ; Direction type (integers from 0-255)
+```
+
+### Allows refineries to use multiple ActiveAnim simultaneously
+
+- In vanilla, the refinery uses different ActiveAnims depending on the storage. You can now make it use multiple ActiveAnims simultaneously like any other building.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                         ; BuildingType
+Refinery.UseNormalActiveAnim=false     ; boolean
 ```
 
 ### Allowed / disallowed types for FactoryPlant
@@ -538,8 +559,8 @@ SellBuildupLength=23  ; integer, number of buildup frames to play
   - `Grinding.AllowOwner` changes whether or not to allow units to enter your own buildings.
   - `Grinding.AllowTypes` can be used to define InfantryTypes and VehicleTypes that can be grinded by the building. Listing any will disable grinding for all types except those listed.
   - `Grinding.DisallowTypes` can be used to exclude InfantryTypes or VehicleTypes from being able to enter the grinder building.
-  - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder. Default to `yes`.
-  - `Grinding.Sound` is a sound played by when object is grinded by the building. If not set, defaults to `[AudioVisual] -> EnterGrinderSound`.
+  - `Grinding.PlayDieSound` controls if the units' `DieSound` and `VoiceDie` are played when entering the grinder.
+  - `Grinding.Sound` is a sound played by when object is grinded by the building.
   - `Grinding.Weapon` is a weapon fired at the building & by the building when it grinds an object. Will only be fired if at least weapon's `ROF` amount of frames have passed since it was last fired.
     - `Grinding.Weapon.RequiredCredits` can be set to have the weapon require accumulated credits from grinding to fire. Accumulated credits for this purpose are reset every time when the weapon fires.
 - For money string indication upon grinding, please refer to [`DisplayIncome`](User-Interface.md#visual-indication-of-income-from-grinders-and-refineries).
@@ -552,7 +573,7 @@ Grinding.AllowOwner=true           ; boolean
 Grinding.AllowTypes=               ; List of InfantryTypes / VehicleTypes
 Grinding.DisallowTypes=            ; List of InfantryTypes / VehicleTypes
 Grinding.PlayDieSound=true         ; boolean
-Grinding.Sound=                    ; Sound entry
+Grinding.Sound=                    ; Sound entry, default to [AudioVisual] -> EnterGrinderSound
 Grinding.Weapon=                   ; WeaponType
 Grinding.Weapon.RequiredCredits=0  ; integer
 ```
@@ -563,10 +584,10 @@ Grinding.Weapon.RequiredCredits=0  ; integer
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWARHEAD]
+[SOMEWARHEAD]             ; WarheadType
 ElectricAssaultLevel=1    ; integer
 
-[SOMEBUILDING]
+[SOMEBUILDING]            ; BuildingType
 Overpower.KeepOnline=2    ; integer, negative values mean that cannot keep online
 Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never be switched
 ```
@@ -575,7 +596,7 @@ Overpower.ChargeWeapon=1  ; integer, negative values mean that weapons can never
 Ares' [Battery Super Weapon](https://ares-developers.github.io/Ares-docs/new/superweapons/types/battery.html) won't be affected by this.
 ```
 
-### Disable DamageSound
+### Disable `DamageSound`
 
 - Now you can disable `DamageSound` of a building.
 
@@ -626,16 +647,16 @@ The prism towers' fire is hardcoded to be delayed. Their fire will ignore this f
 - It is now possible to customize the repairing of units by `UnitRepair=true`, `UnitReload=true` and `Hospital=true` buildings.
   - `Units.RepairRate` customizes the rate at which the units are repaired. This defaults to `[General] -> ReloadRate` if `UnitReload=true` and if overridden per AircraftType *(Ares feature)* can tick at different time for each docked aircraft. Setting this overrides that behaviour. For `UnitRepair=true` buildings this defaults to `[General] -> URepairRate`.
     - On `UnitReload=true` building setting this to negative value will fully disable the repair functionality.
-  - `Units.RepairStep` how much `Strength` is restored per repair tick. Defaults to `[General] -> RepairStep`.
-  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Defaults to `[General] -> RepairPercent`. Note that the final cost is set to 1 if it is less than that.
+  - `Units.RepairStep` how much `Strength` is restored per repair tick.
+  - `Units.RepairPercent` is a multiplier to cost of repairing (cost / (maximum health / repair step)). Note that the final cost is set to 1 if it is less than that.
     - `Units.UseRepairCost` can be used to customize if repair cost is applied at all. Defaults to false for infantry, true for everything else.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]        ; BuildingType
 Units.RepairRate=     ; floating point value, ingame minutes
-Units.RepairStep=     ; integer
-Units.RepairPercent=  ; floating point value, percents or absolute
+Units.RepairStep=     ; integer, default to [General] -> RepairStep
+Units.RepairPercent=  ; floating point value, percents or absolute, default to [General] -> RepairPercent
 Units.UseRepairCost=  ; boolean
 ```
 
@@ -737,16 +758,6 @@ AirburstWeapon.SourceScatterMax=0.0       ; floating point value, distance in ce
 `Splits`, `AirburstSpread`, `RetargetAccuracy`, `RetargetSelf` and `AroundTarget`, beyond the other additions, should function similarly to the equivalent features introduced by Ares and take precedence over them if Phobos is used together with Ares.
 ```
 
-### Bomb parachute anim deglobalization
-
-- Now you can define `BombParachute` per projectile.
-
-In `rulesmd.ini`:
-```ini
-[SOMEPROJECTILE]        ; Projectile
-BombParachute=          ; AnimationType, default to [General] -> BombParachute
-```
-
 ### Cluster scatter distance customization
 
 - `ClusterScatter.Min` and `ClusterScatter.Max` can be used to set minimum and maximum distance, respectively, in cells from the original detonation coordinate any additional detonations if `Cluster` is set to value higher than 1 can appear at.
@@ -802,8 +813,8 @@ Shrapnel.UseWeaponTargeting=false  ; boolean
 ### Airstrike flare visual customizations
 
 - It is now possible to customize color of airstrike flare tint on target on the TechnoType calling in the airstrike as well as customize the color of the line drawn to target.
-  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`, defaults to `[AudioVisual] -> LaserTargetColor`.
-  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target, defaults to `[AudioVisual] -> AirstrikeLineColor`.
+  - `LaserTargetColor` can be used to set the index of color from `[ColorAdd]`.
+  - `AirstrikeLineColor` sets the color of the line and dot drawn from firer to target.
 
 In `rulesmd.ini`:
 ```ini
@@ -811,16 +822,15 @@ In `rulesmd.ini`:
 AirstrikeLineColor=255,0,0  ; integer - Red,Green,Blue
 
 [SOMETECHNO]                ; TechnoType
-LaserTargetColor=           ; integer - [ColorAdd] index
-AirstrikeLineColor=         ; integer - Red,Green,Blue
+LaserTargetColor=           ; integer - [ColorAdd] index, default to [AudioVisual] -> LaserTargetColor
+AirstrikeLineColor=         ; integer - Red,Green,Blue, default to [AudioVisual] -> AirstrikeLineColor
 ```
 
 ### Airstrike target eligibility
 
 - By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
 - For non building situations, the default value is true.
-- Now it is possible to designate air strikes against non building targets.
-- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet.
+- The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet, therefore it is possible to properly designate air strikes against non-building targets.
 
 In `rulesmd.ini`:
 ```ini
@@ -828,7 +838,7 @@ In `rulesmd.ini`:
 AllowAirstrike=            ; boolean
 
 [SOMEWARHEAD]              ; WarheadType
-AirstrikeTargets=building  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
+AirstrikeTargets=all       ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Alternate FLH customizations
@@ -943,9 +953,9 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out), default to [General] WarpOut
-WarpIn=                 ; Anim (played when Techno warping in), default to [General] WarpIn
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere), default to [General] WarpOut
+WarpOut=                ; Anim (played when Techno warping out)
+WarpIn=                 ; Anim (played when Techno warping in)
+WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
@@ -983,7 +993,7 @@ Image=              ; name of the file that will be used as image, without exten
     - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.WeaponN` is set.
   - Normal insignia can be overridden when its current passenger size reaches a certain amount by setting `Insignia(.Frame/.Frames).PassengersN` where `N` stands for the current passenger size amount (from 0 to `Passengers` of the transport). If not set, defaults to non-passenger specific insignia settings. Will be overridden by weapon mode insignia settings, if set.
     - These settings will be overriden by the properties set in [InsigniaType](Miscellanous.md#insignia-type), if `InsigniaType.PassengersN` is set.
-  - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players. Defaults to `[General] -> EnemyInsignia`, which in turn defaults to true.
+  - `Insignia.ShowEnemy` controls whether or not the insignia is shown to enemy players.
   - You can make insignias appear only on selected units using `DrawInsignia.OnlyOnSelected`.
   - Position for insignias can be adjusted by setting `DrawInsignia.AdjustPos.Infantry` for infantry, `DrawInsignia.AdjustPos.Buildings` for buildings, and `DrawInsignia.AdjustPos.Units` for others.
   - `DrawInsignia.AdjustPos.BuildingsAnchor` can be set to an anchor point to anchor the insignia position relative to the building's selection bracket. By default the insignia position is not anchored to the selection bracket.
@@ -1002,35 +1012,35 @@ DrawInsignia.AdjustPos.Units=10,6                           ; X,Y, position offs
 DrawInsignia.AdjustPos.Buildings=10,6                       ; X,Y, position offset from default
 DrawInsignia.AdjustPos.BuildingsAnchor=                     ; Hexagon vertex enumeration (top|lefttop|leftbottom|bottom|rightbottom|righttop)
 
-[SOMETECHNO]                             ; TechnoType
-Insignia=                                ; filename - excluding the .shp extension
-Insignia.Rookie=                         ; filename - excluding the .shp extension
-Insignia.Veteran=                        ; filename - excluding the .shp extension
-Insignia.Elite=                          ; filename - excluding the .shp extension
-InsigniaFrame=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Rookie=-1                  ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Veteran=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.Elite=-1                   ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames=-1,-1,-1                  ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.WeaponN=                        ; filename - excluding the .shp extension
-Insignia.WeaponN.Rookie=                 ; filename - excluding the .shp extension
-Insignia.WeaponN.Veteran=                ; filename - excluding the .shp extension
-Insignia.WeaponN.Elite=                  ; filename - excluding the .shp extension
-InsigniaFrame.WeaponN=-1                 ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Rookie=-1          ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Veteran=-1         ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.WeaponN.Elite=-1           ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.WeaponN=-1,-1,-1          ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.PassengersN=                    ; filename - excluding the .shp extension
-Insignia.PassengersN.Rookie=             ; filename - excluding the .shp extension
-Insignia.PassengersN.Veteran=            ; filename - excluding the .shp extension
-Insignia.PassengersN.Elite=              ; filename - excluding the .shp extension
-InsigniaFrame.PassengersN=-1             ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.PassengersN.Rookie=-1      ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.PassengersN.Veteran=-1     ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrame.PassengersN.Elite=-1       ; int, frame of insignia shp (zero-based) or -1 for default
-InsigniaFrames.PassengersN=-1,-1,-1      ; int, frames of insignia shp (zero-based) or -1 for default
-Insignia.ShowEnemy=                      ; boolean
+[SOMETECHNO]                                                ; TechnoType
+Insignia=                                                   ; filename - excluding the .shp extension
+Insignia.Rookie=                                            ; filename - excluding the .shp extension
+Insignia.Veteran=                                           ; filename - excluding the .shp extension
+Insignia.Elite=                                             ; filename - excluding the .shp extension
+InsigniaFrame=-1                                            ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Rookie=-1                                     ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Veteran=-1                                    ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.Elite=-1                                      ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames=-1,-1,-1                                     ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.WeaponN=                                           ; filename - excluding the .shp extension
+Insignia.WeaponN.Rookie=                                    ; filename - excluding the .shp extension
+Insignia.WeaponN.Veteran=                                   ; filename - excluding the .shp extension
+Insignia.WeaponN.Elite=                                     ; filename - excluding the .shp extension
+InsigniaFrame.WeaponN=-1                                    ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Rookie=-1                             ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Veteran=-1                            ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.WeaponN.Elite=-1                              ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.WeaponN=-1,-1,-1                             ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.PassengersN=                                       ; filename - excluding the .shp extension
+Insignia.PassengersN.Rookie=                                ; filename - excluding the .shp extension
+Insignia.PassengersN.Veteran=                               ; filename - excluding the .shp extension
+Insignia.PassengersN.Elite=                                 ; filename - excluding the .shp extension
+InsigniaFrame.PassengersN=-1                                ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.PassengersN.Rookie=-1                         ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.PassengersN.Veteran=-1                        ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrame.PassengersN.Elite=-1                          ; int, frame of insignia shp (zero-based) or -1 for default
+InsigniaFrames.PassengersN=-1,-1,-1                         ; int, frames of insignia shp (zero-based) or -1 for default
+Insignia.ShowEnemy=                                         ; boolean, defaults to [General] -> EnemyInsignia
 ```
 
 ```{note}
@@ -1101,6 +1111,27 @@ DamagedSpeed=0.75        ; floating point value, multiplier
 DamagedSpeed=            ; floating point value, multiplier
 ```
 
+### Debris voxel animations limitation
+
+- Now, the original `DebrisMaximums` can be used in conjunction with new `DebrisMinimums` to limit the quantity of `DebrisTypes` when `DebrisTypes.Limit` is enabled.
+  - The default value of `DebrisTypes.Limit` is whether the number of `DebrisMaximums` is greater than (not equal to) 1 (for compatibility reasons).
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]        ; TechnoType
+DebrisTypes.Limit=  ; boolean
+DebrisMaximums=     ; List of integers
+DebrisMinimums=     ; List of integers
+```
+
+```{hint}
+How to generate `DebrisTypes` in the game:
+1. Generate the total number of debris through `MaxDebris` and `MinDebris` first.
+2. Traverse `DebrisTypes` and limit the quantity range through `DebrisMaximums` and `DebrisMinimums`.
+3. When the number of generated debris will exceeds the total number, limit the quantity and end the traversal.
+4. When the number of debris generated after a single traversal is not enough to exceed the total number, it will end if `DebrisTypes.Limit` is enabled, otherwise the traversal will restart like vanilla game do.
+```
+
 ### Exploding object customizations
 
 - By default `Explodes=true` TechnoTypes have all of their passengers killed when they are destroyed. This behaviour can now be disabled by setting `Explodes.KillPassengers=false`.
@@ -1141,22 +1172,21 @@ ForbidParallelAIQueues=false        ; boolean
   - `kill` : Iron Curtain kills the organic object with a specifc warhead. This is the default value for `Organic=true` units and infantry if not otherwise specified.
   - `invulnerable` : Iron Curtain makes the organic object invulnerable like buildings and vehicles.
   - `ignore` : Iron Curtain doesn't give any effect on the organic object.
-- `IronCurtain.KillOrganicsWarhead` and `IronCurtain.KillWarhead` can be used to customize the Warhead used to kill units, globally or per TechnoType-basis respectively, with latter defaulting to former and former defaulting to `[CombatDamage] -> C4Warhead`.
 - Identical controls are available for Force Shield as well.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
 IronCurtain.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
-IronCurtain.KillOrganicsWarhead=   ; WarheadType
+IronCurtain.KillOrganicsWarhead=   ; WarheadType, default to [CombatDamage] -> C4Warhead
 ForceShield.EffectOnOrganics=kill  ; Iron Curtain effect Enumeration (kill | invulnerable | ignore)
-ForceShield.KillOrganicsWarhead=   ; WarheadType
+ForceShield.KillOrganicsWarhead=   ; WarheadType, default to [CombatDamage] -> C4Warhead
 
-[SOMETECHNO]                       ; InfantryType or Organic=true TechnoType
+[SOMETECHNO]                       ; TechnoType with Organic=true
 IronCurtain.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
-IronCurtain.KillWarhead=           ; WarheadType
+IronCurtain.KillWarhead=           ; WarheadType, default to [CombatDamage] -> IronCurtain.KillOrganicsWarhead
 ForceShield.Effect=                ; IronCurtain effect Enumeration (kill | invulnerable | ignore)
-ForceShield.KillWarhead=           ; WarheadType
+ForceShield.KillWarhead=           ; WarheadType, default to [CombatDamage] -> ForceShield.KillOrganicsWarhead
 ```
 
 ### Iron Curtain & Force Shield extra tint intensity
@@ -1334,18 +1364,17 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ### Voxel light source customization
 
-- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
-
-```{note}
-Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
-```
-
 ![image](_static/images/VoxelLightSourceComparison.png)
 *Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">CCS_qkl</a>*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
+- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
   - Vanilla light (assuming `UseFixedVoxelLighting=false`) is located roughly at `VoxelLightSource=0.201,-0.907,-0.362`.
+
+```{note}
+Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
+```
 
 In `rulesmd.ini`:
 ```ini
@@ -1395,12 +1424,15 @@ AnimationLength=   ; integer, number of frames
 ### Custom palette
 
 - You can now specify custom palette for TerrainTypes in similar manner as TechnoTypes can.
-  - Note that this palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
 
 In `artmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
 Palette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
+```{note}
+This palette behaves like an object palette and does not use tint etc. that have been applied to the tile the TerrainType resides on like a TerrainType using tile palette would.
 ```
 
 ### Customizable ore spawners
@@ -1424,22 +1456,25 @@ SpawnsTiberium.CellsPerAnim=1 ; integer - single or comma-sep. range
 ### Damaged frames and crumbling animation
 
 - By default game shows damage frame only for TerrainTypes alive at only 1 point of health left. Because none of the original game TerrainType assets were made with this in mind, the logic is now locked behind a new key `HasDamagedFrames`.
-  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual] -> ConditionYellow.Terrain` percentage of their maximum health. Defaults to `ConditionYellow` if not set.
+  - Instead of showing at 1 point of HP left, TerrainTypes switch to damaged frames once their health reaches `[AudioVisual] -> ConditionYellow.Terrain` percentage of their maximum health.
 - In addition, TerrainTypes can now show 'crumbling' animation after their health has reached zero and before they are deleted from the map by setting `HasCrumblingFrames` to true.
   - Crumbling frames start from first frame after both regular & damaged frames and ends at halfway point of the frames in TerrainType's image.
-    - Note that the number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
   - Sound event from `CrumblingSound` (if set) is played when crumbling animation starts playing.
   - [Destroy animation & sound](New-or-Enhanced-Logics.md#destroy-animation--sound) only play after crumbling animation has finished.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-ConditionYellow.Terrain=  ; floating-point value
+ConditionYellow.Terrain=  ; floating-point value, default to [AudioVisual] -> ConditionYellow
 
 [SOMETERRAINTYPE]         ; TerrainType
 HasDamagedFrames=false    ; boolean
-HasCrumblingFrames=false
+HasCrumblingFrames=false  ; boolean
 CrumblingSound=           ; Sound entry
+```
+
+```{note}
+The number of regular & damage frames considered for this depends on value of `HasDamagedFrames` and for `IsAnimated` TerrainTypes, `AnimationLength` (see [Animated TerrainTypes](#animated-terraintypes)). Exercise caution and ensure there are correct amount of frames to display.
 ```
 
 ### Minimap color customization
@@ -1595,7 +1630,7 @@ In `rulesmd.ini`:
 [General]
 HarvesterScanAfterUnload=false     ; boolean
 
-[SOMEVEHICLE]
+[SOMEVEHICLE]                      ; VehicleType
 HarvesterScanAfterUnload=          ; boolean, default to [General] -> HarvesterScanAfterUnload
 ```
 
@@ -1696,7 +1731,7 @@ In `rulesmd.ini`:
 [General]
 HarvesterDumpAmount=0.0               ; float point value
 
-[SOMEVEHICLE]
+[SOMEVEHICLE]                         ; VehicleType
 HarvesterDumpAmount=                  ; float point value
 ```
 
@@ -1789,6 +1824,16 @@ UseWeeds.ReadinessAnimationPercentage=0.9       ; double - when this many weeds 
 
 - The INI keys and behaviour is mostly identical to the [equivalent behaviour available to regular animations](#customizable-debris--meteor-impact-and-warhead-detonation-behaviour). Main difference is that the keys must be listed in the VoxelAnim's entry in `rulesmd.ini`, not `artmd.ini`.
 
+### Customizable debris trailer anim spawn delay
+
+- You can now customize the generation interval of VoxelAnim's trailer animation.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVOXELANIM]       ; VoxelAnimType
+Trailer.SpawnDelay=2  ; integer, game frames
+```
+
 ## Warheads
 
 ### Allowing damage dealt to firer
@@ -1804,7 +1849,7 @@ AllowDamageOnSelf=false  ; boolean
 
 ### Combat light customizations
 
-- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead, latter defaults to former.
+- You can now set minimum detail level at which combat light effects are shown by setting `[AudioVisual] -> CombatLightDetailLevel` or `CombatLightDetailLevel` on Warhead.
 - You can now set a percentage chance a combat light effect is shown on Warhead impact by setting `CombatLightChance`.
 - Setting `CLIsBlack` to true on Warhead will now turn the flash black like on hitting an Iron Curtained object, irregardless of other color settings.
 
@@ -1814,7 +1859,7 @@ In `rulesmd.ini`:
 CombatLightDetailLevel=0  ; integer
 
 [SOMEWARHEAD]             ; WarheadType
-CombatLightDetailLevel=   ; integer
+CombatLightDetailLevel=   ; integer, default to [AudioVisual] -> CombatLightDetailLevel
 CombatLightChance=1.0     ; floating point value, percents or absolute (0.0-1.0)
 CLIsBlack=false           ; boolean
 ```
@@ -1829,6 +1874,19 @@ In `rulesmd.ini`:
 [SOMEWARHEAD]              ; WarheadType
 DebrisAnims=               ; List of AnimationTypes
 Debris.Conventional=false  ; boolean
+```
+
+### Custom debris voxel animations limitation
+
+- Now, the original `DebrisMaximums` can be used in conjunction with new `DebrisMinimums` to limit the quantity of `DebrisTypes` when `DebrisTypes.Limit` is enabled.
+  - The default value of `DebrisTypes.Limit` is whether the number of `DebrisMaximums` is greater than (not equal to) 1 (for compatibility reasons).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]       ; WarheadType
+DebrisTypes.Limit=  ; boolean
+DebrisMaximums=     ; List of integers
+DebrisMinimums=     ; List of integers
 ```
 
 ### Customizable rocker amplitude
@@ -1849,7 +1907,7 @@ Rocker.AmplitudeOverride=       ; integer
 - If `AnimList.CreateAll` is set to true, all animations from `AnimList` are created, instead of a single anim based on damage or random if `AnimList.PickRandom` is set to true.
 - If `AnimList.CreationInterval` is set to a value higher than 0, there will be that number of detonations of the Warhead before animations from `AnimList` will be created again. If the Warhead had a TechnoType firing it, this number is remembered by the TechnoType across all Warheads fired by it, otherwise it is shared between all detonations of same WarheadType period. This can be useful for things like `Airburst` with large spread where one might want uniform distribution of animations to appear but not on every detonation.
 - `AnimList.ScatterMin` & `AnimList.ScatterMax` can be used to set a range in cells around which any created animations will randomly scatter around from the impact point.
-- `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water, by default animations from `[CombatDamage] -> SplashList` are used.
+- `SplashList` can be used to override animations displayed if the Warhead has `Conventional=true` and it hits water.
   - `SplashList.PickRandom`, `SplashList.CreateAll`, `SplashList.CreationInterval` and `SplashList.Scatter(Min/Max)` apply to these animations in same manner as the `AnimList` equivalents.
 - - `CreateAnimsOnZeroDamage`, if set to true, makes it so that `AnimList` or `SplashList` animations are created even if the weapon that fired the Warhead deals zero damage.
 - Setting `Conventional.IgnoreUnits` to true on Warhead with `Conventional=true` will make the Warhead detonate on non-underwater VehicleTypes on water tiles as if they are water tiles, instead of treating it as land. This determines whether to use `AnimList` or `SplashList` when hitting surface ships.
@@ -1862,7 +1920,7 @@ AnimList.CreateAll=false        ; boolean
 AnimList.CreationInterval=0     ; integer
 AnimList.ScatterMin=0.0         ; floating point value, distance in cells
 AnimList.ScatterMax=0.0         ; floating point value, distance in cells
-SplashList=                     ; List of AnimationTypes
+SplashList=                     ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false     ; boolean
 SplashList.CreateAll=false      ; boolean
 SplashList.CreationInterval=0   ; integer
@@ -1870,6 +1928,21 @@ SplashList.ScatterMin=0.0       ; floating point value, distance in cells
 SplashList.ScatterMax=0.0       ; floating point value, distance in cells
 CreateAnimsOnZeroDamage=false   ; boolean
 Conventional.IgnoreUnits=false  ; boolean
+```
+
+### Customizable Warhead trigger conditions
+
+- It is now possible to make warheads only trigger when target's (TechnoTypes only) HP is above/below or equal to certain percentage. Both conditions need to evaluate to true in order for the warhead to trigger.
+- If set to `false`, `AffectsNeutral` makes the warhead can't damage or affect target that belongs to neutral house.
+- If set to `false`, `EffectsRequireVerses` makes the Phobos-introduced warhead effects trigger even if it can't damage the target because of it's current ArmorType (e.g. 0% in `Verses`).
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]               ; WarheadType
+AffectsBelowPercent=1.0     ; floating point value, percents or absolute
+AffectsAbovePercent=0.0     ; floating point value, percents or absolute
+AffectsNeutral=true         ; boolean
+EffectsRequireVerses=false  ; boolean
 ```
 
 ### Customizing decloak on damaging targets
@@ -1894,7 +1967,7 @@ Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|ai
 
 ### Delay automatic attack on the controlled unit
 
-- Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead, default to `[General] -> MindControl.ThreatDelay`.
+- Now you can make the techno that has just been mind controlled not be automatically attacked by its original friendly forces for a period of time defined by `MindControl.ThreatDelay` on the mind control warhead.
   - This will not affect the manual selection of attacks and is useless with permanent mind control.
 
 In `rulesmd.ini`:
@@ -1903,7 +1976,7 @@ In `rulesmd.ini`:
 MindControl.ThreatDelay=0     ; integer, game frames
 
 [SOMEWARHEAD]                 ; WarheadType
-MindControl.ThreatDelay=      ; integer, game frames
+MindControl.ThreatDelay=      ; integer, game frames, default to [General] -> MindControl.ThreatDelay
 ```
 
 ### Nonprovocative Warheads
@@ -1980,7 +2053,7 @@ In `rulesmd.ini`:
 ROF.RandomDelay=0,2  ; integer - single or comma-sep. range (game frames)
 
 [SOMEWEAPON]         ; WeaponType
-ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames)
+ROF.RandomDelay=     ; integer - single or comma-sep. range (game frames), default to [CombatDamage] -> ROF.RandomDelay
 ```
 
 ### Customizing whether passengers are kicked out when an aircraft fires
@@ -2076,17 +2149,20 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 
 ## DropPod
 
-DropPod properties can now be customized on a per-InfantryType basis.
-- Note that the DropPod is actually the infantry itself with a different shp image.
-- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
-- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
-  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
-- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
-- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+- DropPod properties can now be customized on a per-TechnoType (non-building) basis.
+  - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+  - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+    - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+  - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+  - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+
+```{note}
+Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+```
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                ; InfantryType
+[SOMETECHNO]                  ; TechnoType
 DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
 DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
 DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
@@ -2102,5 +2178,5 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
 ```{note}
-`[General] -> DropPodTrailer` is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+`[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```

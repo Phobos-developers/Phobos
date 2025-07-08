@@ -118,8 +118,8 @@ DEFINE_HOOK(0x5FEC2A, OverlayTypeClass_Save_Suffix, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x5FEA11, OverlayTypeClass_LoadFromINI, 0xA)
-DEFINE_HOOK(0x5FEA1E, OverlayTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x5FEA1E, OverlayTypeClass_LoadFromINI, 0xA)// Section dont exist!
+DEFINE_HOOK(0x5FEA11, OverlayTypeClass_LoadFromINI, 0xA)
 {
 	GET(OverlayTypeClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x28C, 0x4));

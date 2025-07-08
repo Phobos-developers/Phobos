@@ -66,6 +66,7 @@ public:
 		ValueableVector<AnimTypeClass*> Crit_ActiveChanceAnims;
 		Valueable<bool> Crit_AnimOnAffectedTargets;
 		Valueable<double> Crit_AffectBelowPercent;
+		Valueable<double> Crit_AffectAbovePercent;
 		Valueable<bool> Crit_SuppressWhenIntercepted;
 
 		Nullable<AnimTypeClass*> MindControl_Anim;
@@ -125,6 +126,8 @@ public:
 		Valueable<bool> AllowDamageOnSelf;
 		NullableVector<AnimTypeClass*> DebrisAnims;
 		Valueable<bool> Debris_Conventional;
+		Nullable<bool> DebrisTypes_Limit;
+		ValueableVector<int> DebrisMinimums;
 
 		Valueable<bool> DetonateOnAllMapObjects;
 		Valueable<bool> DetonateOnAllMapObjects_Full;
@@ -152,6 +155,8 @@ public:
 		Nullable<double> DamageOwnerMultiplier;
 		Nullable<double> DamageAlliesMultiplier;
 		Nullable<double> DamageEnemiesMultiplier;
+		Valueable<double> DamageSourceHealthMultiplier;
+		Valueable<double> DamageTargetHealthMultiplier;
 
 		Valueable<bool> SuppressRevengeWeapons;
 		ValueableVector<WeaponTypeClass*> SuppressRevengeWeapons_Types;
@@ -177,6 +182,10 @@ public:
 
 		Valueable<AffectedTarget> AirstrikeTargets;
 
+		Valueable<double> AffectsBelowPercent;
+		Valueable<double> AffectsAbovePercent;
+		Valueable<bool> AffectsNeutral;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -193,6 +202,7 @@ public:
 		bool Reflected;
 		int RemainingAnimCreationInterval;
 		bool PossibleCellSpreadDetonate;
+		bool HealthCheck;
 		TechnoClass* DamageAreaTarget;
 
 		Valueable<bool> CanKill;
@@ -253,6 +263,7 @@ public:
 			, Crit_ActiveChanceAnims {}
 			, Crit_AnimOnAffectedTargets { false }
 			, Crit_AffectBelowPercent { 1.0 }
+			, Crit_AffectAbovePercent { 0.0 }
 			, Crit_SuppressWhenIntercepted { false }
 
 			, MindControl_Anim {}
@@ -312,6 +323,8 @@ public:
 			, AllowDamageOnSelf { false }
 			, DebrisAnims {}
 			, Debris_Conventional { false }
+			, DebrisTypes_Limit {}
+			, DebrisMinimums {}
 
 			, DetonateOnAllMapObjects { false }
 			, DetonateOnAllMapObjects_Full { true }
@@ -339,6 +352,8 @@ public:
 			, DamageOwnerMultiplier {}
 			, DamageAlliesMultiplier {}
 			, DamageEnemiesMultiplier {}
+			, DamageSourceHealthMultiplier { 0.0 }
+			, DamageTargetHealthMultiplier { 0.0 }
 
 			, SuppressRevengeWeapons { false }
 			, SuppressRevengeWeapons_Types {}
@@ -355,7 +370,11 @@ public:
 
 			, ElectricAssaultLevel { 1 }
 
-			, AirstrikeTargets { AffectedTarget::Building }
+			, AirstrikeTargets { AffectedTarget::All }
+
+			, AffectsBelowPercent { 1.0 }
+			, AffectsAbovePercent { 0.0 }
+			, AffectsNeutral { true }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}
@@ -371,6 +390,7 @@ public:
 			, Reflected { false }
 			, RemainingAnimCreationInterval { 0 }
 			, PossibleCellSpreadDetonate { false }
+			, HealthCheck { false }
 			, DamageAreaTarget {}
 
 			, CanKill { true }
@@ -396,6 +416,7 @@ public:
 		bool CanAffectTarget(TechnoClass* pTarget) const;
 		bool CanAffectInvulnerable(TechnoClass* pTarget) const;
 		bool EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const;
+		bool IsHealthInThreshold(TechnoClass* pTarget) const;
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
@@ -410,10 +431,10 @@ public:
 	public:
 		// Detonate.cpp
 		void Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBullet, CoordStruct coords);
-		void InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords);
+		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, BulletExt::ExtData* pBulletExt = nullptr);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false, BulletClass* pBullet);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
@@ -421,7 +442,7 @@ public:
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
-		void ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt);
+		void ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletClass* pBullet);
 	};
 
 	class ExtContainer final : public Container<WarheadTypeExt>

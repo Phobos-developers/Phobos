@@ -153,7 +153,7 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 {
 	if (pFrom->IsIronCurtained())
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pFrom->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pFrom)->TypeExtData;
 		const bool isForceShielded = pFrom->ForceShielded;
 		const bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
 			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
@@ -308,11 +308,9 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 
 		if (AresFunctions::ConvertTypeTo(pThis, pToType))
 		{
-			if (pType->Strength == pToType->Strength)
-			{
-				// Fixed an issue where morphing could result in -1 health.
-				pThis->Health = Math::max(1, oldHealth * pToType->Strength / pType->Strength);
-			}
+			// Fixed an issue where morphing could result in -1 health.
+			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
+			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
 
 			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
 			pTypeExt->UpdateTypeData(pToType);
@@ -538,12 +536,13 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 		return 0;
 
 	unsigned int foundCount = 0;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& attachEffect : this->AttachedEffects)
 	{
 		if (attachEffect->GetType() == pAttachEffectType && attachEffect->IsActive())
 		{
-			if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+			if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 				continue;
 
 			foundCount++;
@@ -557,18 +556,141 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 {
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
-
-		if (pUnit->IsYellowHP() || pUnit->IsRedHP())
+		if (pUnit->IsRedHP())
 		{
-			if (!pUnit->OnBridge && pUnit->GetCell()->LandType == LandType::Water && (pData->WaterImage_ConditionRed || pData->WaterImage_ConditionYellow))
-				return (pUnit->IsRedHP() && pData->WaterImage_ConditionRed) ? pData->WaterImage_ConditionRed : pData->WaterImage_ConditionYellow;
-			else if (pData->Image_ConditionRed || pData->Image_ConditionYellow)
-				return (pUnit->IsRedHP() && pData->Image_ConditionRed) ? pData->Image_ConditionRed : pData->Image_ConditionYellow;
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageRed = pData->WaterImage_ConditionRed)
+					return imageRed;
+				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageRed = pData->Image_ConditionRed)
+			{
+				return imageRed;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
 		}
 	}
 
 	return nullptr;
+}
+
+void TechnoExt::ExtData::ResetDelayedFireTimer()
+{
+	this->DelayedFireTimer.Stop();
+	this->DelayedFireWeaponIndex = -1;
+
+	if (this->CurrentDelayedFireAnim)
+	{
+		if (AnimExt::ExtMap.Find(this->CurrentDelayedFireAnim)->DelayedFireRemoveOnNoDelay)
+			this->CurrentDelayedFireAnim->UnInit();
+	}
+}
+
+void TechnoExt::CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords)
+{
+	if (pAnimType)
+	{
+		auto coords = pThis->GetCenterCoords();
+
+		if (!center)
+			coords = TechnoExt::GetFLHAbsoluteCoords(pThis, firingCoords, onTurret);
+
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
+
+		if (attach)
+			pAnim->SetOwnerObject(pThis);
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnim->Owner = pThis->Owner;
+		pAnimExt->SetInvoker(pThis);
+
+		if (attach)
+		{
+			pAnimExt->DelayedFireRemoveOnNoDelay = removeOnNoDelay;
+			TechnoExt::ExtMap.Find(pThis)->CurrentDelayedFireAnim = pAnim;
+		}
+	}
+}
+
+bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto& timer = pExt->DelayedFireTimer;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pExt->DelayedFireWeaponIndex >= 0 && pExt->DelayedFireWeaponIndex != weaponIndex)
+	{
+		pExt->ResetDelayedFireTimer();
+		pExt->FiringSequencePaused = false;
+	}
+
+	if (pWeaponExt->DelayedFire_PauseFiringSequence && pWeaponExt->DelayedFire_Duration.isset() && (!pThis->Transporter || !pWeaponExt->DelayedFire_SkipInTransport))
+	{
+		if (pWeapon->Burst <= 1 || !pWeaponExt->DelayedFire_OnlyOnInitialBurst || pThis->CurrentBurstIndex == 0)
+		{
+			if (pThis->Animation.Value == firingFrame)
+				pExt->FiringSequencePaused = true;
+
+			if (!timer.HasStarted())
+			{
+				pExt->DelayedFireWeaponIndex = weaponIndex;
+				timer.Start(Math::max(GeneralUtils::GetRangedRandomOrSingleValue(pWeaponExt->DelayedFire_Duration), 0));
+				auto pAnimType = pWeaponExt->DelayedFire_Animation;
+
+				if (pThis->Transporter && pWeaponExt->DelayedFire_OpenToppedAnimation.isset())
+					pAnimType = pWeaponExt->DelayedFire_OpenToppedAnimation;
+
+				auto firingCoords = pThis->GetWeapon(weaponIndex)->FLH;
+
+				if (pWeaponExt->DelayedFire_AnimOffset.isset())
+					firingCoords = pWeaponExt->DelayedFire_AnimOffset;
+
+				TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
+					pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);
+
+				return true;
+			}
+			else if (timer.InProgress())
+			{
+				return true;
+			}
+
+			if (timer.Completed())
+				pExt->ResetDelayedFireTimer();
+		}
+
+		pExt->FiringSequencePaused = false;
+	}
+
+	return false;
+}
+
+bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
+{
+	const double hp = pObject->GetHealthPercentage();
+	return hp <= max && hp >= min;
 }
 
 // =============================
@@ -621,7 +743,24 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->FiringAnimationTimer)
+		.Process(this->FiringSequencePaused)
+		.Process(this->DelayedFireTimer)
+		.Process(this->DelayedFireWeaponIndex)
+		.Process(this->CurrentDelayedFireAnim)
+		.Process(this->AttachedEffectInvokerCount)
+		.Process(this->TintColorOwner)
+		.Process(this->TintColorAllies)
+		.Process(this->TintColorEnemies)
+		.Process(this->TintIntensityOwner)
+		.Process(this->TintIntensityAllies)
+		.Process(this->TintIntensityEnemies)
+		.Process(this->AttackMoveFollowerTempCount)
 		;
+}
+
+void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
+{
+	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
@@ -702,3 +841,15 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x710415, TechnoClass_DetachAnim, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET(AbstractClass*, pTarget, EAX);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentDelayedFireAnim == pTarget)
+		pExt->CurrentDelayedFireAnim = nullptr;
+
+	return 0;
+}

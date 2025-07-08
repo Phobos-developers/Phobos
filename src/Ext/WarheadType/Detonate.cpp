@@ -34,14 +34,9 @@ static void __stdcall Sub_4ADCD0(char a1, DWORD a2)
 void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, BulletExt::ExtData* pBulletExt, CoordStruct coords)
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
-	
-	if (pOwner && pBulletExt)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
 
-		if (pTypeExt->InterceptorType && pBulletExt->IsInterceptor)
-			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
-	}
+	if (pBulletExt && pBulletExt->InterceptorTechnoType)
+		this->InterceptBullets(pOwner, pBullet, coords);
 
 	if (pHouse)
 	{
@@ -166,33 +161,33 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 
-		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
+		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
 		const float cellSpread = this->OwnerObject()->CellSpread;
 
 		if (cellSpread)
 		{
 			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted, pBulletExt);
+				this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted, pBullet);
 		}
 		else if (pBullet)
 		{
 			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 			{
-				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
+				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
-				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4)
-					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted, pBulletExt);
+				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4.0)
+					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}
 		else if (this->DamageAreaTarget)
 		{
-			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4)
+			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4.0)
 				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, pOwner, bulletWasIntercepted);
 		}
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted, BulletExt::ExtData* pBulletExt)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, bool bulletWasIntercepted, BulletClass* pBullet)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
@@ -221,7 +216,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyBuildingUndeploy(pTarget);
 
 	if (this->PenetratesGarrison)
-		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, pBulletExt);
+		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, pBullet);
 	
 
 #ifdef LOCO_TEST_WARHEADS
@@ -463,7 +458,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
 		return;
 
-	if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
+	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectAbovePercent, this->Crit_AffectBelowPercent))
 		return;
 
 	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
@@ -515,40 +510,36 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
 
-void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
+void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)
 {
-	if (!pOwner || !pWeapon)
-		return;
-
-	float cellSpread = this->OwnerObject()->CellSpread;
+	const float cellSpread = this->OwnerObject()->CellSpread;
 
 	if (cellSpread == 0.0)
 	{
-		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
+		if (const auto pBullet = abstract_cast<BulletClass*>(pInterceptor->Target))
 		{
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pTypeExt = pExt->TypeExtData;
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+			if (!pBulletExt->TypeExtData->Interceptable)
+				return;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
-			bool distanceCheck = pWeapon->Projectile->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0;
-
-			if (pTypeExt && pTypeExt->Interceptable && distanceCheck)
-				pExt->InterceptBullet(pOwner, pWeapon);
+			if (pInterceptor->Type->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 	else
 	{
-		for (auto const pBullet : BulletClass::Array)
+		for (const auto& pBullet : BulletClass::Array)
 		{
-			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
-				continue;
-
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pBulletTypeExt = pBulletExt->TypeExtData;
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pBulletTypeExt && pBulletTypeExt->Interceptable)
-				pBulletExt->InterceptBullet(pOwner, pWeapon);
+			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
+				continue;
+
+			if (pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 }
@@ -655,73 +646,74 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	return critChance + extraChance;
 }
 
-void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletExt::ExtData* pBulletExt)
+void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletClass* pBullet)
 {
-	auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
-	if (!pBuilding || !pBuilding->Occupants.Count || !pBulletExt)
+	auto const pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
+
+	if (!pBuilding || !pBuilding->Occupants.Count)
 		return;
 
 	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
-	if (pTargetTypeExt->ImmuneToPenetratesGarrison)
+
+	if (pTargetTypeExt->PenetratesGarrison_Allowed)
 		return;
 
-	auto const pBullet = pBulletExt->OwnerObject();
-	double multiplierPercentage = GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier) * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier;
-	int damage = static_cast<int>(std::round(pBullet->WeaponType->Damage * multiplierPercentage));
+	auto const pWH = this->OwnerObject();
+	auto const location = pTarget->Location;
+	const int damage = pBullet->Health; // already multiply firepower multipliers
+	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
+	const int diatance = pInvoker->DistanceFrom(pTarget);
 
-	WarheadTypeClass* pWH = this->OwnerObject();
-
-	int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
-
-	auto DoDamage = [=](InfantryClass* pPassenger, int damage)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pPassenger->GetTechnoType());
-		if (pTypeExt->ImmuneToPenetratesGarrison)
-			return;
-
-		damage = MapClass::GetTotalDamage(damage, pWH, pPassenger->Type->Armor, 0);
-
-		pPassenger->Health = pPassenger->Health - damage;
-		pPassenger->Health = pPassenger->Health < 0 ? 0 : pPassenger->Health;
-		pPassenger->IsAlive = !pPassenger->Health ? false : pPassenger->IsAlive;
-
-		if (!pPassenger->Health)
+	auto doDamage = [=](InfantryClass* pPassenger, int damage)
 		{
-			if (pPassenger->Type->VoiceDie.Count)
-			{
-				// Play a new death sound.
-				int soundIndex = pPassenger->Type->VoiceDie[Randomizer::Global.Random() % pPassenger->Type->VoiceDie.Count];
-				VocClass::PlayAt(soundIndex, pInvoker->Location);
-			}
-			else if (pPassenger->Type->DieSound.Count)
-			{
-				// Play a new fallback death sound.
-				int soundIndex = pPassenger->Type->DieSound[Randomizer::Global.Random() % pPassenger->Type->DieSound.Count];
-				VocClass::PlayAt(soundIndex, pInvoker->Location);
-			}
+			auto const pType = pPassenger->Type;
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-			pInvoker->KillPassengers(pPassenger);
-			pInvoker->RegisterDestruction(pPassenger);
-			pPassenger->UnInit();
-		}
-	};
+			if (pTypeExt->PenetratesGarrison_Allowed)
+				return;
+
+			damage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, diatance);
+			pPassenger->Health = std::clamp(pPassenger->Health - damage, 0, pType->Strength);
+
+			if (!pPassenger->Health)
+			{
+				pPassenger->IsAlive = false;
+
+				if (pType->VoiceDie.Count)
+				{
+					// Play a new death sound.
+					const int soundIndex = pType->VoiceDie[Randomizer::Global.Random() % pType->VoiceDie.Count];
+					VocClass::PlayAt(soundIndex, location);
+				}
+				else if (pType->DieSound.Count)
+				{
+					// Play a new fallback death sound.
+					const int soundIndex = pType->DieSound[Randomizer::Global.Random() % pType->DieSound.Count];
+					VocClass::PlayAt(soundIndex, location);
+				}
+
+				pInvoker->KillPassengers(pPassenger);
+				pInvoker->RegisterDestruction(pPassenger);
+				pPassenger->UnInit();
+			}
+		};
 
 	// Victim's death sound
 	if (occupantIndex < 0)
 	{
 		for (int i = 0; i < pBuilding->Occupants.Count; i++)
 		{
-			InfantryClass* pPassenger = pBuilding->Occupants.GetItem(i);
-			DoDamage(pPassenger, damage);
+			auto const pPassenger = pBuilding->Occupants.GetItem(i);
+			doDamage(pPassenger, damage);
 		}
 	}
 	else
 	{
-		InfantryClass* pPassenger = pBuilding->Occupants.GetItem(occupantIndex);
-		DoDamage(pPassenger, damage);
+		auto const pPassenger = pBuilding->Occupants.GetItem(occupantIndex);
+		doDamage(pPassenger, damage);
 	}
 
 	// Building fully cleaned!
 	if (!pBuilding->Occupants.Count && PenetratesGarrison_CleanSound.isset())
-		VocClass::PlayAt(PenetratesGarrison_CleanSound.Get(), pInvoker->Location);
+		VocClass::PlayAt(PenetratesGarrison_CleanSound.Get(), location);
 }
