@@ -1260,9 +1260,12 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 // Auto Build Hook -> sub_6A8B30 - Auto Build Buildings
 DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 {
+	enum { SkipGameCode = 0x6A8E1E };
+
 	GET(BuildingClass* const, pBuilding, ESI);
 
-	BuildingTypeExt::BuildLimboBuilding(pBuilding);
+	if (BuildingTypeExt::BuildLimboBuilding(pBuilding))
+		return SkipGameCode;
 
 	return 0;
 }
