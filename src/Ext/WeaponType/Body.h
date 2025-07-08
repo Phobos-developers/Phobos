@@ -43,6 +43,7 @@ public:
 		Valueable<double> CanTarget_MinHealth;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
+		Valueable<bool> Burst_NoDelay;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
@@ -71,13 +72,22 @@ public:
 		Valueable<bool> KeepRange_AllowAI;
 		Valueable<bool> KeepRange_AllowPlayer;
 		Valueable<bool> KickOutPassengers;
-		Valueable<bool> Burst_NoDelay;
-
 		Nullable<ColorStruct> Beam_Color;
 		Valueable<int> Beam_Duration;
 		Valueable<double> Beam_Amplitude;
 		Valueable<bool> Beam_IsHouseColor;
 		Valueable<int> LaserThickness;
+		Nullable<PartialVector2D<int>> DelayedFire_Duration;
+		Valueable<bool> DelayedFire_SkipInTransport;
+		Valueable<AnimTypeClass*> DelayedFire_Animation;
+		Nullable<AnimTypeClass*> DelayedFire_OpenToppedAnimation;
+		Valueable<bool> DelayedFire_AnimIsAttached;
+		Valueable<bool> DelayedFire_CenterAnimOnFirer;
+		Valueable<bool> DelayedFire_RemoveAnimOnNoDelay;
+		Valueable<bool> DelayedFire_PauseFiringSequence;
+		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
+		Nullable<CoordStruct> DelayedFire_AnimOffset;
+		Valueable<bool> DelayedFire_AnimOnTurret;
 
 		bool SkipWeaponPicking;
 
@@ -102,6 +112,7 @@ public:
 			, CanTarget_MinHealth { 0.0 }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
+			, Burst_NoDelay { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
@@ -130,13 +141,23 @@ public:
 			, KeepRange_AllowAI { false }
 			, KeepRange_AllowPlayer { false }
 			, KickOutPassengers { true }
-			, Burst_NoDelay { false }
 			, Beam_Color {}
 			, Beam_Duration { 15 }
 			, Beam_Amplitude { 40.0 }
 			, Beam_IsHouseColor { false }
 			, LaserThickness { 3 }
 			, SkipWeaponPicking { true }
+			, DelayedFire_Duration {}
+			, DelayedFire_SkipInTransport { false }
+			, DelayedFire_Animation {}
+			, DelayedFire_OpenToppedAnimation {}
+			, DelayedFire_AnimIsAttached { true }
+			, DelayedFire_CenterAnimOnFirer { false }
+			, DelayedFire_RemoveAnimOnNoDelay { false }
+			, DelayedFire_PauseFiringSequence { false }
+			, DelayedFire_OnlyOnInitialBurst { false }
+			, DelayedFire_AnimOffset {}
+			, DelayedFire_AnimOnTurret { true }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;
