@@ -1073,9 +1073,8 @@ msgid "Restored parabombs"
 msgstr "复原伞降炸弹"
 
 #: ../../../CREDITS.md:277
-#, fuzzy
 msgid "Delayed fire weapons"
-msgstr "联动超武"
+msgstr "延迟开火"
 
 #: ../../../CREDITS.md:278
 msgid "**Morton (MortonPL)**:"

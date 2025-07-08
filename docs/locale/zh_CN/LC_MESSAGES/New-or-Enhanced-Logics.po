@@ -8574,7 +8574,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2432
 msgid "Delayed firing"
-msgstr ""
+msgstr "延迟开火"
 
 #: ../../New-or-Enhanced-Logics.md:2434
 msgid ""
@@ -8582,12 +8582,14 @@ msgid ""
 "`DelayedFire.Duration` on a WeaponType - it supports a single integer or "
 "two comma-separated ones for a random range to pick value from."
 msgstr ""
+"通过为武器设置 `DelayedFire.Duration` 可使其延迟开火 - 它支持单个整数或用逗号隔开的两个整数作为随机取值区间。"
 
 #: ../../New-or-Enhanced-Logics.md:2435
 msgid ""
 "If `DelayedFire.SkipInTransport` is set to true and firer is in a "
 "transport, no delay is applied to firing."
 msgstr ""
+"若 `DelayedFire.SkipInTransport` 设为 true 且开火者在运输工具中则这种情况下跳过延迟。"
 
 #: ../../New-or-Enhanced-Logics.md:2436
 msgid ""
@@ -8595,6 +8597,7 @@ msgid ""
 "the delay timer starts. `DelayedFire.OpenToppedAnimation` is used instead"
 " if set if the firer is in a transport."
 msgstr ""
+"`DelayedFire.Animation` 可用于定义延时计时器启动时创建的动画。可用 `DelayedFire.OpenToppedAnimation` 单独定义开火者在运输工具中开火时创建的。"
 
 #: ../../New-or-Enhanced-Logics.md:2437
 msgid ""
@@ -8603,12 +8606,14 @@ msgid ""
 "set to true the animation is removed when the duration expires or firing "
 "is interrupted regardless of its remaining lifetime."
 msgstr ""
+"若 `DelayedFire.AnimIsAttached` 设为 true 则该动画将附着于开火的单位上。若 `DelayedFire.RemoveAnimOnNoDelay` 也设为 true，则在持续时间结束或开火被中断时无论是否播放完毕都立即移除动画。"
 
 #: ../../New-or-Enhanced-Logics.md:2438
 msgid ""
 "`DelayedFire.AnimOffset` can be used to override the weapon's firing "
 "coordinates / FLH for the animation's position."
 msgstr ""
+"`DelayedFire.AnimOffset` 可用于覆盖开火坐标来设置动画的位置。"
 
 #: ../../New-or-Enhanced-Logics.md:2439
 msgid ""
@@ -8616,12 +8621,14 @@ msgid ""
 "position is calculated relative to firer's body or turret (only if it has"
 " one)."
 msgstr ""
+"`DelayedFire.AnimOnTurret` 决定在单位有炮塔的情况下该动画的位置是相对于开火单位的本体还是炮塔。"
 
 #: ../../New-or-Enhanced-Logics.md:2440
 msgid ""
 "If `DelayedFire.CenterAnimOnFirer` is set the animation is created at the"
 " firer's center rather than at the firing coordinates."
 msgstr ""
+"若设置了 `DelayedFire.CenterAnimOnFirer` 则动画会创建于开火单位的中心而非开火坐标处。"
 
 #: ../../New-or-Enhanced-Logics.md:2441
 msgid ""
@@ -8631,6 +8638,8 @@ msgid ""
 "`FireUp/Prone` or `SecondaryFire/Prone` in its `artmd.ini` entry until "
 "the delay timer has expired."
 msgstr ""
+"若该武器由一个步兵发射且 `DelayedFire.PauseFiringSequence` 为 true 则当步兵的动画序列达到"
+"其在 `artmd.ini` 中由 `FireUp/Prone` 或 `SecondaryFire/Prone` 定义的开火帧时其开火序列动画将会暂停直至延时计时器结束。"
 
 #: ../../New-or-Enhanced-Logics.md:2442
 msgid ""
@@ -8640,6 +8649,8 @@ msgid ""
 "firer loses target, meaning it will be able to resume firing without "
 "waiting for the delay."
 msgstr ""
+"若武器 `Burst` > 1 且 `DelayedFire.OnlyOnInitialBurst` 为 true 则延迟仅在首次发射前生效。"
+"注意若使用了 Ares 则开火被中断或开火者失去目标时 `Burst` 索引不会重置，这意味着它可以无需等待延迟时间即可开火。"
 
 #: ../../New-or-Enhanced-Logics.md:2445
 msgid ""
@@ -8679,6 +8690,7 @@ msgid ""
 "the delay to expire before attempting to fire and will instead continue "
 "without firing if the delay is too long."
 msgstr ""
+"战机类单位由于其独特的攻击模式并不会等待延迟结束后才尝试开火而是延迟过长时会不开火直接继续飞。"
 
 #: ../../New-or-Enhanced-Logics.md:2464
 msgid "Extra warhead detonations"

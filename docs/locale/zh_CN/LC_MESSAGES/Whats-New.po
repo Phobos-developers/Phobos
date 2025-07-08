@@ -1743,11 +1743,10 @@ msgid ""
 msgstr "[联动超武](New-or-Enhanced-Logics.md#linked-superweapons)（by FS-21）"
 
 #: ../../Whats-New.md:418
-#, fuzzy
 msgid ""
 "[Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by "
 "Starkku)"
-msgstr "[联动超武](New-or-Enhanced-Logics.md#linked-superweapons)（by FS-21）"
+msgstr "[延迟开火](New-or-Enhanced-Logics.md#delayed-firing)（by Starkku）"
 
 #: ../../Whats-New.md:420 ../../Whats-New.md:634 ../../Whats-New.md:950
 #: ../../Whats-New.md:1059 ../../Whats-New.md:1084 ../../Whats-New.md:1123
