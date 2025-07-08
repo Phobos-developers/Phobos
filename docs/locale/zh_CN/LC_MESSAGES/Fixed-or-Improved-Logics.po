@@ -3517,7 +3517,7 @@ msgid ""
 "`[General] -> ChronoSparkle1` animations created on objects being warped "
 "by setting `[General] -> ChronoSparkleDisplayDelay`."
 msgstr ""
-"现在可以通过设置 `[General] -> ChronoSparkleDisplayDelay` 来自定义被结的对象上创建 `[General]"
+"现在可以通过设置 `[General] -> ChronoSparkleDisplayDelay` 来自定义被冻结的对象上创建 `[General]"
 " -> ChronoSparkle1` 动画之间的帧间隔。"
 
 #: ../../Fixed-or-Improved-Logics.md:889
@@ -5389,7 +5389,7 @@ msgstr ""
 msgid ""
 "We made it work only for miners controlled by the player, because this "
 "will prevent AI's miners from going work."
-msgstr "这进队玩家控制的矿车有效，因为这会阻断 AI 矿车正常工作。"
+msgstr "这仅对玩家控制的矿车有效，因为这会阻断 AI 矿车正常工作。"
 
 #: ../../Fixed-or-Improved-Logics.md:1523
 msgid ""
