@@ -344,19 +344,16 @@ public:
 		if constexpr (HasOffset<T>)
 			ResetExtensionPointer(key);
 
-		if (auto const val = new extension_type(key))
-		{
-			val->EnsureConstanted();
+		auto const val = new extension_type(key);
 
-			if constexpr (HasOffset<T>)
-				SetExtensionPointer(key, val);
+		val->EnsureConstanted();
 
-			this->Items.insert(key, val);
+		if constexpr (HasOffset<T>)
+			SetExtensionPointer(key, val);
 
-			return val;
-		}
+		this->Items.insert(key, val);
 
-		return nullptr;
+		return val;
 	}
 
 	extension_type_ptr TryAllocate(base_type_ptr key, bool bCond, const std::string_view& nMessage)
