@@ -474,7 +474,7 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 	enum { SkipFiring = 0x6FDE03 };
 
 	GET(TechnoClass* const, pThis, ESI);
-	GET(AbstractClass* const, pTarget, EDI);
+//	GET(AbstractClass* const, pTarget, EDI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 	GET_BASE(int, weaponIndex, 0xC);
 
