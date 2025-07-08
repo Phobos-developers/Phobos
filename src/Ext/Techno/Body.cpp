@@ -595,6 +595,98 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 	return nullptr;
 }
 
+void TechnoExt::ExtData::ResetDelayedFireTimer()
+{
+	this->DelayedFireTimer.Stop();
+	this->DelayedFireWeaponIndex = -1;
+
+	if (this->CurrentDelayedFireAnim)
+	{
+		if (AnimExt::ExtMap.Find(this->CurrentDelayedFireAnim)->DelayedFireRemoveOnNoDelay)
+			this->CurrentDelayedFireAnim->UnInit();
+	}
+}
+
+void TechnoExt::CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords)
+{
+	if (pAnimType)
+	{
+		auto coords = pThis->GetCenterCoords();
+
+		if (!center)
+			coords = TechnoExt::GetFLHAbsoluteCoords(pThis, firingCoords, onTurret);
+
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
+
+		if (attach)
+			pAnim->SetOwnerObject(pThis);
+
+		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
+		pAnim->Owner = pThis->Owner;
+		pAnimExt->SetInvoker(pThis);
+
+		if (attach)
+		{
+			pAnimExt->DelayedFireRemoveOnNoDelay = removeOnNoDelay;
+			TechnoExt::ExtMap.Find(pThis)->CurrentDelayedFireAnim = pAnim;
+		}
+	}
+}
+
+bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame)
+{
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	auto& timer = pExt->DelayedFireTimer;
+	auto const pWeapon = pThis->GetWeapon(weaponIndex)->WeaponType;
+	auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pExt->DelayedFireWeaponIndex >= 0 && pExt->DelayedFireWeaponIndex != weaponIndex)
+	{
+		pExt->ResetDelayedFireTimer();
+		pExt->FiringSequencePaused = false;
+	}
+
+	if (pWeaponExt->DelayedFire_PauseFiringSequence && pWeaponExt->DelayedFire_Duration.isset() && (!pThis->Transporter || !pWeaponExt->DelayedFire_SkipInTransport))
+	{
+		if (pWeapon->Burst <= 1 || !pWeaponExt->DelayedFire_OnlyOnInitialBurst || pThis->CurrentBurstIndex == 0)
+		{
+			if (pThis->Animation.Value == firingFrame)
+				pExt->FiringSequencePaused = true;
+
+			if (!timer.HasStarted())
+			{
+				pExt->DelayedFireWeaponIndex = weaponIndex;
+				timer.Start(Math::max(GeneralUtils::GetRangedRandomOrSingleValue(pWeaponExt->DelayedFire_Duration), 0));
+				auto pAnimType = pWeaponExt->DelayedFire_Animation;
+
+				if (pThis->Transporter && pWeaponExt->DelayedFire_OpenToppedAnimation.isset())
+					pAnimType = pWeaponExt->DelayedFire_OpenToppedAnimation;
+
+				auto firingCoords = pThis->GetWeapon(weaponIndex)->FLH;
+
+				if (pWeaponExt->DelayedFire_AnimOffset.isset())
+					firingCoords = pWeaponExt->DelayedFire_AnimOffset;
+
+				TechnoExt::CreateDelayedFireAnim(pThis, pAnimType, weaponIndex, pWeaponExt->DelayedFire_AnimIsAttached, pWeaponExt->DelayedFire_CenterAnimOnFirer,
+					pWeaponExt->DelayedFire_RemoveAnimOnNoDelay, pWeaponExt->DelayedFire_AnimOnTurret, firingCoords);
+
+				return true;
+			}
+			else if (timer.InProgress())
+			{
+				return true;
+			}
+
+			if (timer.Completed())
+				pExt->ResetDelayedFireTimer();
+		}
+
+		pExt->FiringSequencePaused = false;
+	}
+
+	return false;
+}
+
 bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
 {
 	const double hp = pObject->GetHealthPercentage();
@@ -651,6 +743,10 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->FiringAnimationTimer)
+		.Process(this->FiringSequencePaused)
+		.Process(this->DelayedFireTimer)
+		.Process(this->DelayedFireWeaponIndex)
+		.Process(this->CurrentDelayedFireAnim)
 		.Process(this->AttachedEffectInvokerCount)
 		.Process(this->TintColorOwner)
 		.Process(this->TintColorAllies)
@@ -745,3 +841,15 @@ DEFINE_HOOK(0x70C264, TechnoClass_Save_Suffix, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x710415, TechnoClass_DetachAnim, 0x6)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET(AbstractClass*, pTarget, EAX);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->CurrentDelayedFireAnim == pTarget)
+		pExt->CurrentDelayedFireAnim = nullptr;
+
+	return 0;
+}

@@ -5,9 +5,10 @@ DEFINE_JUMP(LJMP, 0x741406, 0x741427)
 
 DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 {
+	enum { SkipFiring = 0x736F73 };
+
 	GET(UnitClass*, pThis, ESI);
 	GET(int, weaponIndex, EDI);
-	enum { SkipFiring = 0x736F73 };
 
 	const auto pType = pThis->Type;
 
@@ -18,7 +19,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 
 	// SHP vehicles have no secondary action frames, so it does not need SecondaryFire.
 	const auto pTypeExt = pExt->TypeExtData;
-	const int fireUp = pTypeExt->FireUp;
+	int fireUp = pTypeExt->FireUp;
 	CDTimerClass& Timer = pExt->FiringAnimationTimer;
 
 	if (fireUp >= 0 && !pType->OpportunityFire &&
@@ -30,7 +31,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		return SkipFiring;
 	}
 
-	const int frames = pType->FiringFrames;
+	int frames = pType->FiringFrames;
 	if (!Timer.InProgress() && frames >= 1)
 	{
 		pThis->CurrentFiringFrame = 2 * frames - 1;
@@ -42,14 +43,14 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 		int cumulativeDelay = 0;
 		int projectedDelay = 0;
 		auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(weaponIndex)->WeaponType);
-		const bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
+		bool allowBurst = pWeaponExt && pWeaponExt->Burst_FireWithinSequence;
 
 		// Calculate cumulative burst delay as well cumulative delay after next shot (projected delay).
 		if (allowBurst)
 		{
 			for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 			{
-				const int burstDelay = pWeaponExt->GetBurstDelay(i);
+				int burstDelay = pWeaponExt->GetBurstDelay(i);
 				int delay = 0;
 
 				if (burstDelay > -1)
@@ -68,7 +69,10 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			}
 		}
 
-		const int frame = (Timer.TimeLeft - Timer.GetTimeLeft());
+		if (TechnoExt::HandleDelayedFireWithPauseSequence(pThis, weaponIndex, fireUp + cumulativeDelay))
+			return SkipFiring;
+
+		int frame = (Timer.TimeLeft - Timer.GetTimeLeft());
 
 		if (frame % 2 != 0)
 			return SkipFiring;
