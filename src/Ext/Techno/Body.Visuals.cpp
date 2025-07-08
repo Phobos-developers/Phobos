@@ -350,50 +350,63 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 	if (!pSelectBox || pSelectBox->DrawAboveTechno == drawBefore)
 		return;
 
-	const auto pShape = pSelectBox->Shape.Get();
-
-	if (!pShape)
-		return;
-
 	const bool canSee = HouseClass::IsCurrentPlayerObserver() ? pSelectBox->VisibleToHouses_Observer : EnumFunctions::CanTargetHouse(pSelectBox->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer);
 
 	if (!canSee)
 		return;
 
-	const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
-
 	const double healthPercentage = pThis->GetHealthPercentage();
-	const Vector3D<int> frames = pSelectBox->Frames.Get(whatAmI == AbstractType::Infantry ? CoordStruct { 1,1,1 } : CoordStruct { 0,0,0 });
-	const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
+	const auto defaultFrame = whatAmI == InfantryClass::AbsID ? Vector3D<int> { 1, 1, 1 } : Vector3D<int> { 0, 0, 0 };
 
-	Point2D drawPoint = *pLocation;
+	const auto pSurface = DSurface::Temp;
+	const auto flags = (drawBefore ? BlitterFlags::Flat | BlitterFlags::Alpha : BlitterFlags::Nonzero | BlitterFlags::MultiPass) | BlitterFlags::Centered | pSelectBox->Translucency;
+	const int zAdjust = drawBefore ? pThis->GetZAdjustment() - 2 : 0;
+	const auto pGroundShape = pSelectBox->GroundShape.Get();
 
-	if (pSelectBox->Grounded && whatAmI != BuildingClass::AbsID)
+	if ((pGroundShape || pSelectBox->GroundLine) && whatAmI != BuildingClass::AbsID && (pSelectBox->Ground_AlwaysDraw || pThis->IsInAir()))
 	{
 		CoordStruct coords = pThis->GetCenterCoords();
 		coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+		auto [point, visible] = TacticalClass::Instance->CoordsToClient(coords);
 
-		const auto& [outClient, visible] = TacticalClass::Instance->CoordsToClient(coords);
+		if (visible && pGroundShape)
+		{
+			const auto pPalette = pSelectBox->GroundPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-		if (!visible)
-			return;
+			const Vector3D<int> frames = pSelectBox->GroundFrames.Get(defaultFrame);
+			const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
-		drawPoint = outClient;
+			const Point2D drawPoint = point + pSelectBox->GroundOffset;
+			pSurface->DrawSHP(pPalette, pGroundShape, frame, &drawPoint, pBounds, flags, 0, zAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		}
+
+		if (pSelectBox->GroundLine)
+		{
+			Point2D start = *pLocation; // Copy to prevent be modified
+			const int color = Drawing::RGB_To_Int(pSelectBox->GroundLineColor.Get(healthPercentage));
+
+			if (pSelectBox->GroundLine_Dashed)
+				pSurface->DrawDashed(&start, &point, color, 0);
+			else
+				pSurface->DrawLine(&start, &point, color);
+		}
 	}
 
-	drawPoint += pSelectBox->Offset;
+	if (const auto pShape = pSelectBox->Shape.Get())
+	{
+		const auto pPalette = pSelectBox->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 
-	if (pSelectBox->DrawAboveTechno)
-		drawPoint.Y += pType->PixelSelectionBracketDelta;
+		const Vector3D<int> frames = pSelectBox->Frames.Get(defaultFrame);
+		const int frame = healthPercentage > RulesClass::Instance->ConditionYellow ? frames.X : healthPercentage > RulesClass::Instance->ConditionRed ? frames.Y : frames.Z;
 
-	if (whatAmI == AbstractType::Infantry)
-		drawPoint += { 8, -3 };
-	else
-		drawPoint += { 1, -4 };
+		const Point2D offset = whatAmI == InfantryClass::AbsID ? Point2D { 8, -3 } : Point2D { 1, -4 };
+		Point2D drawPoint = *pLocation + offset + pSelectBox->Offset;
 
-	const auto flags = BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass | pSelectBox->Translucency;
+		if (pSelectBox->DrawAboveTechno)
+			drawPoint.Y += pType->PixelSelectionBracketDelta;
 
-	DSurface::Composite->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+		pSurface->DrawSHP(pPalette, pShape, frame, &drawPoint, pBounds, flags, 0, zAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
+	}
 }
 
 void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
@@ -844,7 +857,7 @@ void TechnoExt::GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType
 
 void TechnoExt::GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue)
 {
-	if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DigitalDisplay_Health_FakeAtDisguise)
+	if (TechnoExt::ExtMap.Find(pThis)->TypeExtData->DigitalDisplay_Health_FakeAtDisguise)
 	{
 		if (const auto pType = TechnoTypeExt::GetTechnoType(pThis->Disguise))
 		{
