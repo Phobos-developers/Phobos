@@ -94,6 +94,9 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void UpdateMainEvaVoice(BuildingClass* pThis);
 };

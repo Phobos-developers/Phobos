@@ -593,7 +593,7 @@ void RulesExt::ExtData::LoadEvaVoices()
 			this->EVAIndexList.emplace_back(GameStrings::Yuri);
 
 			// New EVA voices due to a new Ares section in evamd.ini
-			const auto count = iniEva.GetKeyCount(pEvaSection);
+			const auto count = (std::size_t)iniEva.GetKeyCount(pEvaSection);
 
 			for (std::size_t i = 0; i < count; i++)
 			{
