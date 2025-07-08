@@ -29,17 +29,17 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
 
 ### New EVA voice after deploying a building
 
-- You can now replace the current EVA voice when a specific structure is placed/deployed.
-- `NewEVAVoice.Index` is the index of the new EVA voice. Ares is hightly recomended because these indexes are readed the new section `[EVATypes]` at `evamd.ini` created by Ares. Look at Ares documentation for more information.
-- In case of multiple structures with different EVA voices `NewEVAVoice.Priority` establish a priority queue, being the highest value the selected one.
+- You can now replace the current EVA voice when a specific building is placed/deployed.
+- If any buiding is undeployed/sold/destroyed EVA voice will be evaluated again looking all the `NewEVAVoice.Index`.
+- `NewEVAVoice.Index` is the index of the new EVA voice. Ares is hightly recomended because these indexes are reading the new section `[EVATypes]` at `evamd.ini` introduced by Ares. Look at Ares documentation regarding new EVA voices for more information.
+- In case of multiple buildings with different `NewEVAVoice.Index` EVA voices then `NewEVAVoice.Priority` establish a priority queue, being the highest value the selected one.
 - `NewEVAVoice.RecheckOnDeath` re-checks a new EVA voice after the destruction/undeployment of of of these buildings.
 - `NewEVAVoice.InitialMessage` plays an EVA message to the player when a different EVA has been selected.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEBUILDING]                    ; BuildingType
-NewEVAVoice=                      ; boolean
-NewEVAVoice.Index=0               ; integer
+NewEVAVoice.Index=                ; integer
 NewEVAVoice.Priority=1            ; integer
 NewEVAVoice.RecheckOnDeath=false  ; boolean
 NewEVAVoice.InitialMessage=       ; EVA entry
