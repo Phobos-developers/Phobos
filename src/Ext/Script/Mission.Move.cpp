@@ -332,7 +332,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 
 			// Extra threat based on current health. More damaged == More threat (almost destroyed objects gets more priority)
 			objectThreatValue += pTarget->Health * (1 - pTarget->GetHealthPercentage());
-			value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(pTarget) / 256.0) + 1.0);
+			value = (objectThreatValue * threatMultiplier) / ((pTechno->DistanceFrom(pTarget) / (double)Unsorted::LeptonsPerCell) + 1.0);
 
 			if (calcThreatMode == 0)
 			{
@@ -436,6 +436,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
 			const auto pFirstUnit = pTeam->FirstUnit;
+			validIndexes.reserve(TechnoClass::Array.Count * objectsList.size());
 
 			// Finding the objects from the list that actually exists in the map
 			for (int i = 0; i < TechnoClass::Array.Count; i++)

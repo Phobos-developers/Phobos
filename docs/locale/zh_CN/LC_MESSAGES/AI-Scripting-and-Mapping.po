@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-29 22:49+0800\n"
+"POT-Creation-Date: 2025-07-07 06:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,6 +134,7 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:24 ../../AI-Scripting-and-Mapping.md:99
 #: ../../AI-Scripting-and-Mapping.md:201 ../../AI-Scripting-and-Mapping.md:422
+#: ../../AI-Scripting-and-Mapping.md:685
 msgid "In `rulesmd.ini`:"
 msgstr "在 `rulesmd.ini`："
 
@@ -175,10 +176,10 @@ msgstr "现在可以为单人战役地图的载入图像素偏移值和载入图
 
 #: ../../AI-Scripting-and-Mapping.md:39
 msgid ""
-"Note that despite the key name being `DefaultLS800BkgdPal`, this applies "
+"Despite the key name being `DefaultLS800BkgdPal`, this applies "
 "to both shapes just like the original scenario-specific `LS800BkgdPal` "
 "does."
-msgstr "注意尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游戏中的 `LS800BkgdPal` 那样适用于两种情况。"
+msgstr "尽管标签名为 `DefaultLS800BkgdPal`，但实际上就像原本游戏中的 `LS800BkgdPal` 那样适用于两种情况。"
 
 #: ../../AI-Scripting-and-Mapping.md:41 ../../AI-Scripting-and-Mapping.md:67
 #: ../../AI-Scripting-and-Mapping.md:85
@@ -428,7 +429,7 @@ msgstr "*重复*"
 msgid "*Target Priority*"
 msgstr "*目标优先级*"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "*Description*"
 msgstr "*描述*"
 
@@ -1656,10 +1657,11 @@ msgstr "例如：`盟军战役25: 僵僵の钱 - 钱全被偷光了!`。"
 #: ../../AI-Scripting-and-Mapping.md:555 ../../AI-Scripting-and-Mapping.md:581
 #: ../../AI-Scripting-and-Mapping.md:594 ../../AI-Scripting-and-Mapping.md:606
 #: ../../AI-Scripting-and-Mapping.md:619 ../../AI-Scripting-and-Mapping.md:647
-#: ../../AI-Scripting-and-Mapping.md:661 ../../AI-Scripting-and-Mapping.md:675
-#: ../../AI-Scripting-and-Mapping.md:702 ../../AI-Scripting-and-Mapping.md:729
-#: ../../AI-Scripting-and-Mapping.md:754 ../../AI-Scripting-and-Mapping.md:772
-#: ../../AI-Scripting-and-Mapping.md:786
+#: ../../AI-Scripting-and-Mapping.md:661 ../../AI-Scripting-and-Mapping.md:700
+#: ../../AI-Scripting-and-Mapping.md:716 ../../AI-Scripting-and-Mapping.md:743
+#: ../../AI-Scripting-and-Mapping.md:770 ../../AI-Scripting-and-Mapping.md:795
+#: ../../AI-Scripting-and-Mapping.md:809 ../../AI-Scripting-and-Mapping.md:827
+#: ../../AI-Scripting-and-Mapping.md:849
 msgid "In `mycampaign.map`:"
 msgstr "在 `mycampaign.map`："
 
@@ -1845,15 +1847,15 @@ msgstr "在指定位置发射 `[SuperWeaponTypes]` 列表中的超级武器。"
 msgid "`HouseIndex` can take various values:"
 msgstr "`HouseIndex` 可取以下值："
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "*House Index*"
 msgstr "*所属方索引*"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid ">= 0"
 msgstr ">= 0"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "The index of the current House in the map"
 msgstr "地图上当前所属方的索引"
 
@@ -1865,7 +1867,7 @@ msgstr "4475-4482"
 msgid "Like in the index range 0-7"
 msgstr "类似范围 0-7 的索引"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "-1"
 msgstr "-1"
 
@@ -1873,7 +1875,7 @@ msgstr "-1"
 msgid "Pick a random House that isn't Neutral"
 msgstr "选择一个非中立的随机所属方"
 
-#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md ../../AI-Scripting-and-Mapping.md:817
 msgid "-2"
 msgstr "-2"
 
@@ -2028,18 +2030,150 @@ msgstr ""
 "...\n"
 
 #: ../../AI-Scripting-and-Mapping.md:669
+msgid "`800-802` Display Banner"
+msgstr "`800-802` 显示横幅"
+
+#: ../../AI-Scripting-and-Mapping.md:671
+msgid "Display a 'banner' at a fixed location that is relative to the screen."
+msgstr "在屏幕固定位置显示一个“横幅”。"
+
+#: ../../AI-Scripting-and-Mapping.md:672
+msgid ""
+"Action `800` will create a new banner or replace the banner with the same"
+" Banner ID if it exists. Using a local variable's value when displaying a"
+" text banner."
+msgstr "结果 `800` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **局部** 变量的值。"
+
+#: ../../AI-Scripting-and-Mapping.md:673
+msgid ""
+"Action `801` will create a new banner or replace the banner with the same"
+" Banner ID if it exists. Using a global variable's value when displaying "
+"a text banner."
+msgstr "结果 `801` 将会创建一个新的横幅或替换掉拥有相同 Banner ID 的旧有横幅。显示文本横幅时将使用 **全局** 变量的值。"
+
+#: ../../AI-Scripting-and-Mapping.md:674
+msgid "Action `802` will delete the banner corresponding to the set Banner ID."
+msgstr "结果 `802` 将会删除与设定 Banner ID 相同的横幅。"
+
+#: ../../AI-Scripting-and-Mapping.md:675
+msgid ""
+"To make use of this, you need to set the properties of a `BannerType` in "
+"your ini file. The banner can either be a `PCX` file, a Shape (`SHP`) "
+"file or a `CSF` text. If multiple are set the first one in the above "
+"listed order takes effect."
+msgstr ""
+"使用该功能前需在 ini 文件中配置 `BannerType` 属性。横幅支持使用一个 PCX 文件，一个 SHP 文件，或一个 CSF "
+"条目。若多项同时设置则同样按此处所列的优先级顺序生效。"
+
+#: ../../AI-Scripting-and-Mapping.md:676
+msgid ""
+"`SHP.Palette` controls the palette that'll be used when drawing a banner "
+"for Shape file."
+msgstr "`SHP.Palette` 控制绘制 SHP 横幅时所使用的色盘。"
+
+#: ../../AI-Scripting-and-Mapping.md:677
+msgid ""
+"`CSF.Color` controls the color of the text that'll be used when drawing a"
+" text banner."
+msgstr "`CSF.Color` 控制使用 CSF 条目横幅时的文本颜色"
+
+#: ../../AI-Scripting-and-Mapping.md:678
+msgid ""
+"`CSF.Background` controls whether a black background will be displayed "
+"below the text banner."
+msgstr "`CSF.Background` 控制使用 CSF 条目横幅时是否具有黑色底色。"
+
+#: ../../AI-Scripting-and-Mapping.md:679
+msgid ""
+"`CSF.VariableFormat` controls the way to print a variable together with "
+"the text banner."
+msgstr "`CSF.VariableFormat` 控制使用 CSF 条目横幅时的变量显示方式。"
+
+#: ../../AI-Scripting-and-Mapping.md:680
+msgid "`none` will make the text banner not display the variable."
+msgstr "`none` - 不显示变量。"
+
+#: ../../AI-Scripting-and-Mapping.md:681
+msgid ""
+"`variable` will make the text banner display the variable alone and will "
+"ignore the text in `CSF`."
+msgstr "`variable` - 仅显示变量，并忽略 CSF 条目文本。"
+
+#: ../../AI-Scripting-and-Mapping.md:682
+msgid ""
+"`prefix`/`prefixed` will make the text banner display the variable before"
+" any other text."
+msgstr "`prefix`/`prefixed` - 变量在其他文本 **前** 显示。"
+
+#: ../../AI-Scripting-and-Mapping.md:683
+msgid ""
+"`suffix`/`suffixed` will make the text banner display the variable after "
+"any other text."
+msgstr "`suffix`/`suffixed` - 变量在其他文本 **后** 显示。"
+
+#: ../../AI-Scripting-and-Mapping.md:686
+msgid ""
+"[BannerTypes]\n"
+"0=SOMEBANNER\n"
+"\n"
+"[SOMEBANNER]                ; BannerType\n"
+"PCX=                        ; filename - excluding the .pcx extension\n"
+"SHP=                        ; filename - excluding the .shp extension\n"
+"SHP.Palette=palette.pal     ; filename - excluding the .pal extension\n"
+"CSF=                        ; CSF entry key\n"
+"CSF.Color=                  ; integer - R,G,B, defaults to "
+"MessageTextColor of the owner Side\n"
+"CSF.Background=false        ; boolean\n"
+"CSF.VariableFormat=none     ; List of Variable Format Enumeration "
+"(none|variable|prefix/prefixed|surfix/surfixed)\n"
+msgstr ""
+"[BannerTypes]\n"
+"0=SOMEBANNER\n"
+"\n"
+"[SOMEBANNER]                ; BannerType\n"
+"PCX=                        ; filename - excluding the .pcx extension\n"
+"SHP=                        ; filename - excluding the .shp extension\n"
+"SHP.Palette=palette.pal     ; filename - excluding the .pal extension\n"
+"CSF=                        ; CSF entry key\n"
+"CSF.Color=                  ; integer - R,G,B, defaults to "
+"MessageTextColor of the owner Side\n"
+"CSF.Background=false        ; boolean\n"
+"CSF.VariableFormat=none     ; List of Variable Format Enumeration "
+"(none|variable|prefix/prefixed|surfix/surfixed)\n"
+
+#: ../../AI-Scripting-and-Mapping.md:701
+msgid ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal "
+"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
+"ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal "
+"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
+"ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]\n"
+"...\n"
+msgstr ""
+"[Actions]\n"
+"...\n"
+"ID=ActionCount,[Action1],800,4,[SOMEBANNER],[Unique ID],[Horizontal "
+"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
+"ID=ActionCount,[Action1],801,4,[SOMEBANNER],[Unique ID],[Horizontal "
+"position],[Vertical position],[VariableIndex],A,[ActionX]\n"
+"ID=ActionCount,[Action1],802,0,[Unique ID],0,0,0,0,A,[ActionX]\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:710
 msgid "Trigger events"
 msgstr "触发条件"
 
-#: ../../AI-Scripting-and-Mapping.md:671
+#: ../../AI-Scripting-and-Mapping.md:712
 msgid "`500-511` Variable comparation"
 msgstr "`500-511` 变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:673
+#: ../../AI-Scripting-and-Mapping.md:714
 msgid "Compares the variable's value with given number."
 msgstr "比较变量值与给定值。"
 
-#: ../../AI-Scripting-and-Mapping.md:676
+#: ../../AI-Scripting-and-Mapping.md:717
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2127,15 +2261,15 @@ msgstr "510"
 msgid "511"
 msgstr "511"
 
-#: ../../AI-Scripting-and-Mapping.md:698
+#: ../../AI-Scripting-and-Mapping.md:739
 msgid "`512-523` Variable comparation with local variable"
 msgstr "`512-523` 变量与局部变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:700
+#: ../../AI-Scripting-and-Mapping.md:741
 msgid "Compares the variable's value with given local variable value."
 msgstr "比较变量值与给定局部变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:703
+#: ../../AI-Scripting-and-Mapping.md:744
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2221,15 +2355,15 @@ msgstr "522"
 msgid "523"
 msgstr "523"
 
-#: ../../AI-Scripting-and-Mapping.md:725
+#: ../../AI-Scripting-and-Mapping.md:766
 msgid "`524-535` Variable comparation with global variable"
 msgstr "`524-535` 变量与全局变量比较"
 
-#: ../../AI-Scripting-and-Mapping.md:727
+#: ../../AI-Scripting-and-Mapping.md:768
 msgid "Compares the variable's value with given global variable value."
 msgstr "比较变量值与给定全局变量值。"
 
-#: ../../AI-Scripting-and-Mapping.md:730
+#: ../../AI-Scripting-and-Mapping.md:771
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2315,11 +2449,11 @@ msgstr "534"
 msgid "535"
 msgstr "535"
 
-#: ../../AI-Scripting-and-Mapping.md:752
+#: ../../AI-Scripting-and-Mapping.md:793
 msgid "`600` The shield of the attached object is broken"
 msgstr "`600` 对象护盾被摧毁"
 
-#: ../../AI-Scripting-and-Mapping.md:755
+#: ../../AI-Scripting-and-Mapping.md:796
 msgid ""
 "[Events]\n"
 "...\n"
@@ -2331,27 +2465,39 @@ msgstr ""
 "ID=EventCount,...,600,2,0,0,...\n"
 "...\n"
 
-#: ../../AI-Scripting-and-Mapping.md:762
+#: ../../AI-Scripting-and-Mapping.md:803
 msgid "`601-602` House owns/doesn't own Techno Type"
 msgstr "`601-602` 检查所属方是否有／无科技类型"
 
-#: ../../AI-Scripting-and-Mapping.md:764
+#: ../../AI-Scripting-and-Mapping.md:805
 msgid ""
 "`601`: Springs when specified house owns at least 1 instance of set "
 "TechnoType."
 msgstr "`601`：当指定所属方至少拥有一个设定的科技类型时触发。"
 
-#: ../../AI-Scripting-and-Mapping.md:765
+#: ../../AI-Scripting-and-Mapping.md:806
 msgid ""
 "`602`: Springs when specified house doesn't own a single instance of set "
 "TechnoType."
 msgstr "`602`：当指定所属方没有任何一个设定的科技类型时触发。"
 
-#: ../../AI-Scripting-and-Mapping.md:766
+#: ../../AI-Scripting-and-Mapping.md:807
 msgid "Multiplayer houses (indices 4475 through 4482) are supported."
 msgstr "多人游戏所属方（索引 4475 至 4482）支持。"
 
-#: ../../AI-Scripting-and-Mapping.md:769
+#: ../../AI-Scripting-and-Mapping.md:810
+msgid ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
+"...\n"
+msgstr ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
+"...\n"
+
+#: ../../AI-Scripting-and-Mapping.md:818
 msgid ""
 "These events, as opposed to [events 81 & 82 from Ares](https://ares-"
 "developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-"
@@ -2360,58 +2506,77 @@ msgid ""
 msgstr ""
 "与 [Ares 的 `81` & `82` 号条件](https://ares-developers.github.io/Ares-"
 "docs/new/triggerevents.html#house-owns-techno-"
-"type-81-82)不同，这些使用条件中的所属方参数而不是触发的所有者。"
+"type-81-82)不同，这里的所属方使用触发条件中的所属方参数而不是触发自身的所有者。"
 
-#: ../../AI-Scripting-and-Mapping.md:773
-msgid ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
-"...\n"
-msgstr ""
-"[Events]\n"
-"...\n"
-"ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...\n"
-"...\n"
-
-#: ../../AI-Scripting-and-Mapping.md:780
+#: ../../AI-Scripting-and-Mapping.md:821
 msgid "`604-605` Checking if a specific Techno enters in a cell"
 msgstr "`604-605` 检查特定科技类型进入单元格"
 
-#: ../../AI-Scripting-and-Mapping.md:782
+#: ../../AI-Scripting-and-Mapping.md:823
 msgid ""
 "`604`: Checks if the techno that entered in the cell has the same ID "
 "specified in the event."
 msgstr "`604`：检查进入单元格的科技类型是否与条件中指定的 ID相同。"
 
-#: ../../AI-Scripting-and-Mapping.md:783
+#: ../../AI-Scripting-and-Mapping.md:824
 msgid ""
 "`605`: Checks if the techno that entered in the cell appears in the "
 "selected list in `AITargetTypes`."
 msgstr "`605`：检查进入单元格的科技类型是否出现在选定的 `AITargetTypes` 列表中。"
 
-#: ../../AI-Scripting-and-Mapping.md:784
+#: ../../AI-Scripting-and-Mapping.md:825
 msgid "`HouseIndex` can be customized to focus in a specified house."
 msgstr "`HouseIndex` 可以自定义为指定所属方。"
 
-#: ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md:817
 msgid "This value is ignored (any house is valid)"
 msgstr "该值将被忽略（任何所属方均有效）"
 
-#: ../../AI-Scripting-and-Mapping.md:768
+#: ../../AI-Scripting-and-Mapping.md:817
 msgid "Pick the owner of the map trigger"
 msgstr "选择地图触发的所有者"
 
-#~ msgid ""
-#~ "[Events]\n"
-#~ "...\n"
-#~ "ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...\n"
-#~ "ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...\n"
-#~ "...\n"
-#~ msgstr ""
-#~ "[Events]\n"
-#~ "...\n"
-#~ "ID=EventCount,...,604,2,[HouseIndex],[TechnoType],...\n"
-#~ "ID=EventCount,...,605,2,[HouseIndex],[AITargetTypes index#],...\n"
-#~ "...\n"
+#: ../../AI-Scripting-and-Mapping.md:842
+msgid "`606` AttachEffect is attaching to a Techno"
+msgstr "`606` AttachEffect 已被附加到单位"
+
+#: ../../AI-Scripting-and-Mapping.md:844
+msgid ""
+"Checks if an `AttachEffectType` is attaching to a techno. Doesn't work "
+"for [attached effects](New-or-Enhanced-Logics.md#attached-effects) that "
+"were attached prior to the trigger's enabling."
+msgstr ""
+"检查一个 `AttachEffectType` 是否已附加到某个单位上。不适用于触发器启动前就已附加的 [Attach Effect](New-or-Enhanced-Logics.md#attached-effects)。"
+
+#: ../../AI-Scripting-and-Mapping.md:845
+msgid "To be elaborate, the event will be triggered during these occasions:"
+msgstr "具体而言，该条件将在下述情况被满足："
+
+#: ../../AI-Scripting-and-Mapping.md:846
+msgid ""
+"Self-owned effects: initial granted (triggered after "
+"`AttachEffect.InitialDelays` amount of frames), recreation (triggered "
+"after `AttachEffect.Delays` or `AttachEffect.RecreationDelays` amount of "
+"frames)."
+msgstr ""
+"初始 AE：初始赋予时（在 `AttachEffect.InitialDelays` 帧后）、重新创建时（在 `AttachEffect.Delays` 或 `AttachEffect.RecreationDelays` 帧后）。"
+
+#: ../../AI-Scripting-and-Mapping.md:847
+msgid ""
+"Effects from other sources: granted, refreshing when trying to apply the "
+"same type of attached effect to the techno."
+msgstr ""
+"外源 AE：赋予时、对同一单位赋予同一 AE 使其刷新时。"
+
+#: ../../AI-Scripting-and-Mapping.md:850
+msgid ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,606,2,0,[AttachEffectType],...\n"
+"...\n"
+msgstr ""
+"[Events]\n"
+"...\n"
+"ID=EventCount,...,606,2,0,[AttachEffectType],...\n"
+"...\n"
 

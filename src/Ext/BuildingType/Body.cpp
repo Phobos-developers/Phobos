@@ -135,10 +135,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	const char* pSection = pThis->ID;
 	const char* pArtSection = pThis->ImageFile;
 	auto pArtINI = &CCINIClass::INI_Art;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 	INI_EX exArtINI(pArtINI);
 
@@ -200,6 +196,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BuildingBunkerROFMult.Read(exINI, pSection, "BunkerROFMultMultiplier");
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
+	this->BuildingRepairedSound.Read(exINI, pSection, "BuildingRepairedSound");
 
 	this->NewEvaVoice_Index.Read(exINI, pSection, "NewEVAVoice.Index");
 	this->NewEvaVoice_Priority.Read(exINI, pSection, "NewEVAVoice.Priority");
@@ -228,6 +225,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		}
 	}
 
+	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
+	
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -338,6 +337,10 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
+		.Process(this->BunkerWallsUpSound)
+		.Process(this->BunkerWallsDownSound)
+		.Process(this->BuildingRepairedSound)
+		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->NewEvaVoice_Index)
 		.Process(this->NewEvaVoice_Priority)
 		.Process(this->NewEvaVoice_RecheckOnDeath)
@@ -426,7 +429,7 @@ DEFINE_HOOK(0x46536A, BuildingTypeClass_Save_Suffix, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x464A56, BuildingTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x464A49, BuildingTypeClass_LoadFromINI, 0xA)
 {
 	GET(BuildingTypeClass*, pItem, EBP);
