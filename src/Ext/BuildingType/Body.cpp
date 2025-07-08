@@ -201,7 +201,6 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->BunkerWallsUpSound.Read(exINI, pSection, "BunkerWallsUpSound");
 	this->BunkerWallsDownSound.Read(exINI, pSection, "BunkerWallsDownSound");
 
-	this->NewEvaVoice.Read(exINI, pSection, "NewEVAVoice");
 	this->NewEvaVoice_Index.Read(exINI, pSection, "NewEVAVoice.Index");
 	this->NewEvaVoice_Priority.Read(exINI, pSection, "NewEVAVoice.Priority");
 	this->NewEvaVoice_RecheckOnDeath.Read(exINI, pSection, "NewEVAVoice.RecheckOnDeath");
@@ -339,7 +338,6 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingOccupyROFMult)
 		.Process(this->BuildingBunkerDamageMult)
 		.Process(this->BuildingBunkerROFMult)
-		.Process(this->NewEvaVoice)
 		.Process(this->NewEvaVoice_Index)
 		.Process(this->NewEvaVoice_Priority)
 		.Process(this->NewEvaVoice_RecheckOnDeath)

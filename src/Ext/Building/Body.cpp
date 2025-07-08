@@ -453,7 +453,7 @@ void BuildingExt::ExtData::UpdateMainEvaVoice()
 {
 	const auto pTypeExt = this->TypeExtData;
 
-	if (!pTypeExt->NewEvaVoice.Get(false))
+	if (!pTypeExt->NewEvaVoice_Index.isset())
 		return;
 
 	const auto pThis = this->OwnerObject();
@@ -467,14 +467,14 @@ void BuildingExt::ExtData::UpdateMainEvaVoice()
 
 	for (const auto pBuilding : pHouse->Buildings)
 	{
+		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
 		// Special case that must be avoided here because can be the current EVA changer
-		if (pBuilding->CurrentMission == Mission::Selling)
+		if (!pBuildingTypeExt->NewEvaVoice_Index.isset() || pBuilding->CurrentMission == Mission::Selling)
 			continue;
 
-		auto const pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
-
 		// The first highest priority takes precedence over lower ones
-		if (pBuildingTypeExt->NewEvaVoice.Get(false) && pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
+		if (pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
 		{
 			newPriority = pBuildingTypeExt->NewEvaVoice_Priority;
 			newEvaIndex = pBuildingTypeExt->NewEvaVoice_Index;

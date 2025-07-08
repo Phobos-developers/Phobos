@@ -316,10 +316,6 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	}
 }
 
-namespace EVAIndexListTemp
-{
-	std::vector<std::string> EVAIndexList;
-}
 // this runs between the before and after type data loading methods for rules ini
 void RulesExt::ExtData::InitializeAfterTypeData(RulesClass* const pThis)
 {
