@@ -556,7 +556,25 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 {
 	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
 	{
-		if (pUnit->IsRedHP())
+		if (pUnit->IsGreenHP())
+		{
+			return nullptr;
+		}
+		else if (pUnit->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+			{
+				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+					return imageYellow;
+			}
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
+			{
+				return imageYellow;
+			}
+		}
+		else
 		{
 			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
@@ -576,16 +594,36 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 				return imageYellow;
 			}
 		}
-		else if (pUnit->IsYellowHP())
-		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+	}
 
-			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+	return nullptr;
+}
+
+AircraftTypeClass* TechnoExt::ExtData::GetAircraftTypeExtra() const
+{
+	if (auto const pAircraft = abstract_cast<AircraftClass*, true>(this->OwnerObject()))
+	{
+		if (pAircraft->IsGreenHP())
+		{
+			return pAircraft->Type;
+		}
+		else if (pAircraft->IsYellowHP())
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+			if (auto const imageYellow = pData->AircraftImage_ConditionYellow)
 			{
-				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-					return imageYellow;
+				return imageYellow;
 			}
-			else if (auto const imageYellow = pData->Image_ConditionYellow)
+		}
+		else
+		{
+			auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+			if (auto const imageRed = pData->AircraftImage_ConditionRed)
+			{
+				return imageRed;
+			}
+			else if (auto const imageYellow = pData->AircraftImage_ConditionYellow)
 			{
 				return imageYellow;
 			}

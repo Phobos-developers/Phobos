@@ -682,6 +682,30 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	return Continue;
 }
 
+DEFINE_HOOK(0x414987, AircraftClass_Draw_Extra, 0x6)
+{
+	enum { Continue = 0x41498D };
+
+	GET(AircraftClass*, pThis, EBP);
+
+	if (AircraftTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetAircraftTypeExtra())
+		R->ESI<AircraftTypeClass*>(pCustomType);
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
+{
+	enum { Continue = 0x41466B };
+
+	GET(AircraftClass*, pThis, EBP);
+
+	if (AircraftTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetAircraftTypeExtra())
+		R->EAX<AircraftTypeClass*>(pCustomType);
+
+	return Continue;
+}
+
 // Do not explicitly reset target for KeepTargetOnMove vehicles when issued move command.
 DEFINE_HOOK(0x4C7462, EventClass_Execute_KeepTargetOnMove, 0x5)
 {

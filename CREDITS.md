@@ -451,6 +451,7 @@ This page lists all the individual contributions to the project by their author.
   - Promotion animation
   - Damaged unit image changes
   - `VoiceDeploy` through hot-key/command bar fix
+  - Damaged aircraft image changes
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile

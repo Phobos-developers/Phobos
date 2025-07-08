@@ -184,6 +184,7 @@ public:
 		void UpdateTintValues();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
+		AircraftTypeClass* GetAircraftTypeExtra() const;
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
