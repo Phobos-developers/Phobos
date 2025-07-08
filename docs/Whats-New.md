@@ -415,6 +415,7 @@ New:
 - [Task subtitles display in the middle of the screen](User-Interface.md#task-subtitles-display-in-the-middle-of-the-screen) (by CrimRecya)
 - [Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno) (by FS-21)
 - [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
+- [Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by Starkku)
 - New EVA voice after deploying a building (by FS-21)
 
 Vanilla fixes:

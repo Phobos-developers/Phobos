@@ -274,6 +274,7 @@ This page lists all the individual contributions to the project by their author.
   - Customizable electric bolt duration and electric bolt-related fixes
   - Airstrike flare visual customizations & fixes
   - Restored parabombs
+  - Delayed fire weapons
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
