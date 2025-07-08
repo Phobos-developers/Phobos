@@ -402,7 +402,9 @@ namespace Savegame
 		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, TValue>& Value, bool RegisterForChange) const
 		{
 			Value.clear();
-
+			static_assert(!std::is_pointer_v<TKey> && !std::is_pointer_v<TValue>);
+			static_assert(std::is_trivially_constructible_v<TKey> && std::is_trivially_constructible_v<TValue>);
+			static_assert(std::is_trivially_destructible_v<TKey> && std::is_trivially_destructible_v<TValue>);
 			size_t Count = 0;
 			if (!Stm.Load(Count))
 			{
@@ -435,6 +437,47 @@ namespace Savegame
 			}
 			return true;
 		}
+	};
+
+	template <typename TKey, typename TValue> // Why are you doing this, choom
+	struct Savegame::PhobosStreamObject<std::map<TKey, std::vector<TValue>>>
+	{
+		bool ReadFromStream(PhobosStreamReader& Stm, std::map<TKey, std::vector<TValue>>& Value, bool RegisterForChange) const
+		{
+			Value.clear();
+
+			size_t Count = 0;
+			if (!Stm.Load(Count))
+			{
+				return false;
+			}
+
+			for (auto ix = 0u; ix < Count; ++ix)
+			{
+				TKey key;
+				std::vector<TValue> vals;
+				if (!(Savegame::ReadPhobosStream(Stm, key, RegisterForChange)&& Savegame::ReadPhobosStream(Stm, vals, RegisterForChange)))
+				{
+					return false;
+				}
+				Value[key] = vals;
+			}
+
+			return true;
+		}
+		bool WriteToStream(PhobosStreamWriter& Stm, const std::map<TKey, std::vector<TValue>>& Value) const
+		{
+			Stm.Save(Value.size());
+
+			for (const auto& [key,vals] : Value)
+			{
+				if (!(Savegame::WritePhobosStream(Stm, key) && Savegame::WritePhobosStream(Stm,vals)))
+				{
+					return false;
+				}
+			}
+			return true;
+		};
 	};
 
 	template <>

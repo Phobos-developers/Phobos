@@ -13,13 +13,18 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 {
 	if (pHouse && pTarget)
 	{
-		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse)
+		const auto pOwner = pTarget->Owner;
+
+		if (!this->AffectsNeutral && pOwner->IsNeutral())
+			return false;
+
+		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pOwner == pHouse)
 			return true;
 
-		bool isAllies = pHouse->IsAlliedWith(pTarget);
+		const bool isAllies = pHouse->IsAlliedWith(pTarget);
 
 		if (this->OwnerObject()->AffectsAllies && isAllies)
-			return pTarget->Owner != pHouse;
+			return pOwner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)
 			return true;
@@ -30,32 +35,23 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr) const
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 {
-	if (!pTarget)
+	if (!IsHealthInThreshold(pTarget))
 		return false;
 
 	if (!this->EffectsRequireVerses)
 		return true;
 
-	auto armorType = pTarget->GetTechnoType()->Armor;
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
+}
 
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+{
+	if (!this->HealthCheck)
+		return true;
 
-	if (pTargetExt)
-	{
-		if (const auto pShieldData = pTargetExt->Shield.get())
-		{
-			if (pShieldData->IsActive())
-			{
-				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
-					armorType = pShieldData->GetArmorType();
-			}
-		}
-	}
-
-	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -100,22 +96,18 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
 		return false;
 
+	auto const pType = pTechno->GetTechnoType();
+
 	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 &&
-		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pTechno->GetTechnoType())) ||
-		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pTechno->GetTechnoType()))
+		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pType)) ||
+		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
 
 	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-		auto armorType = pTechno->GetTechnoType()->Armor;
-
-		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
-			armorType = pExt->Shield->GetArmorType();
-
-		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno) == 0.0)
 			return false;
 	}
 
@@ -138,15 +130,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	// Miscs
-	this->SpySat.Read(exINI, pSection, "SpySat");
-	this->BigGap.Read(exINI, pSection, "BigGap");
+	this->Reveal.Read(exINI, pSection, "Reveal");
+	this->CreateGap.Read(exINI, pSection, "CreateGap");
 	this->TransactMoney.Read(exINI, pSection, "TransactMoney");
 	this->TransactMoney_Display.Read(exINI, pSection, "TransactMoney.Display");
 	this->TransactMoney_Display_Houses.Read(exINI, pSection, "TransactMoney.Display.Houses");
@@ -180,6 +168,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_Chance.Read(exINI, pSection, "Crit.Chance");
 	this->Crit_ApplyChancePerTarget.Read(exINI, pSection, "Crit.ApplyChancePerTarget");
 	this->Crit_ExtraDamage.Read(exINI, pSection, "Crit.ExtraDamage");
+	this->Crit_ExtraDamage_ApplyFirepowerMult.Read(exINI, pSection, "Crit.ExtraDamage.ApplyFirepowerMult");
 	this->Crit_Warhead.Read<true>(exINI, pSection, "Crit.Warhead");
 	this->Crit_Warhead_FullDetonation.Read(exINI, pSection, "Crit.Warhead.FullDetonation");
 	this->Crit_Affects.Read(exINI, pSection, "Crit.Affects");
@@ -190,9 +179,14 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_AffectAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
 
+	if (this->Crit_AffectAbovePercent > this->Crit_AffectBelowPercent)
+		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
+
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
+	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
 
 	// Shields
 	this->Shield_Penetrate.Read(exINI, pSection, "Shield.Penetrate");
@@ -218,7 +212,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Shield_SelfHealing_Rate_InMinutes.Read(exINI, pSection, "Shield.SelfHealing.Rate");
 	this->Shield_SelfHealing_Rate = (int)(this->Shield_SelfHealing_Rate_InMinutes * 900);
 	this->Shield_SelfHealing_RestartInCombat.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombat");
-	this->Shield_SelfHealing_RestartInCombat.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombatDelay");
+	this->Shield_SelfHealing_RestartInCombatDelay.Read(exINI, pSection, "Shield.SelfHealing.RestartInCombatDelay");
 	this->Shield_SelfHealing_RestartTimer.Read(exINI, pSection, "Shield.SelfHealing.RestartTimer");
 	this->Shield_AttachTypes.Read(exINI, pSection, "Shield.AttachTypes");
 	this->Shield_RemoveTypes.Read(exINI, pSection, "Shield.RemoveTypes");
@@ -245,6 +239,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
 	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
 	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
+	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
+	this->DebrisMinimums.Read(exINI, pSection, "DebrisMinimums");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
@@ -254,6 +250,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_AffectTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.AffectTypes");
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
+	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
+
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
 	this->CombatLightDetailLevel.Read(exINI, pSection, "CombatLightDetailLevel");
@@ -261,10 +259,45 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CLIsBlack.Read(exINI, pSection, "CLIsBlack");
 	this->Particle_AlphaImageIsLightFlash.Read(exINI, pSection, "Particle.AlphaImageIsLightFlash");
 
+	this->DamageOwnerMultiplier.Read(exINI, pSection, "DamageOwnerMultiplier");
+	this->DamageAlliesMultiplier.Read(exINI, pSection, "DamageAlliesMultiplier");
+	this->DamageEnemiesMultiplier.Read(exINI, pSection, "DamageEnemiesMultiplier");
+	this->DamageSourceHealthMultiplier.Read(exINI, pSection, "DamageSourceHealthMultiplier");
+	this->DamageTargetHealthMultiplier.Read(exINI, pSection, "DamageTargetHealthMultiplier");
+
 	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
 	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
 	this->SuppressReflectDamage.Read(exINI, pSection, "SuppressReflectDamage");
 	this->SuppressReflectDamage_Types.Read(exINI, pSection, "SuppressReflectDamage.Types");
+	exINI.ParseStringList(this->SuppressReflectDamage_Groups, pSection, "SuppressReflectDamage.Groups");
+
+	this->BuildingSell.Read(exINI, pSection, "BuildingSell");
+	this->BuildingSell_IgnoreUnsellable.Read(exINI, pSection, "BuildingSell.IgnoreUnsellable");
+	this->BuildingUndeploy.Read(exINI, pSection, "BuildingUndeploy");
+	this->BuildingUndeploy_Leave.Read(exINI, pSection, "BuildingUndeploy.Leave");
+
+	this->CombatAlert_Suppress.Read(exINI, pSection, "CombatAlert.Suppress");
+
+	this->CanKill.Read(exINI, pSection, "CanKill");
+
+	this->KillWeapon.Read(exINI, pSection, "KillWeapon");
+	this->KillWeapon_OnFirer.Read(exINI, pSection, "KillWeapon.OnFirer");
+	this->KillWeapon_AffectsHouses.Read(exINI, pSection, "KillWeapon.AffectsHouses");
+	this->KillWeapon_OnFirer_AffectsHouses.Read(exINI, pSection, "KillWeapon.OnFirer.AffectsHouses");
+	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
+	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
+
+	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
+
+	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
+
+	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
+	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
+	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
+
+	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
+		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -300,6 +333,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsEnemies.Read(exINI, pSection, "AffectsEnemies");
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
+	this->Malicious.Read(exINI, pSection, "Malicious");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -318,6 +352,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.AttachTypes.size() > 0
 		|| this->AttachEffects.RemoveTypes.size() > 0
 		|| this->AttachEffects.RemoveGroups.size() > 0
+		|| this->BuildingSell
+		|| this->BuildingUndeploy
 	);
 
 	char tempBuffer[32];
@@ -363,8 +399,8 @@ template <typename T>
 void WarheadTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->SpySat)
-		.Process(this->BigGap)
+		.Process(this->Reveal)
+		.Process(this->CreateGap)
 		.Process(this->TransactMoney)
 		.Process(this->TransactMoney_Display)
 		.Process(this->TransactMoney_Display_Houses)
@@ -397,6 +433,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_Chance)
 		.Process(this->Crit_ApplyChancePerTarget)
 		.Process(this->Crit_ExtraDamage)
+		.Process(this->Crit_ExtraDamage_ApplyFirepowerMult)
 		.Process(this->Crit_Warhead)
 		.Process(this->Crit_Warhead_FullDetonation)
 		.Process(this->Crit_Affects)
@@ -407,9 +444,11 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_AffectAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
+		.Process(this->MindControl_ThreatDelay)
 
 		.Process(this->Shield_Penetrate)
 		.Process(this->Shield_Break)
@@ -462,6 +501,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowDamageOnSelf)
 		.Process(this->DebrisAnims)
 		.Process(this->Debris_Conventional)
+		.Process(this->DebrisTypes_Limit)
+		.Process(this->DebrisMinimums)
 
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_Full)
@@ -478,9 +519,23 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressRevengeWeapons_Types)
 		.Process(this->SuppressReflectDamage)
 		.Process(this->SuppressReflectDamage_Types)
+		.Process(this->SuppressReflectDamage_Groups)
+
+		.Process(this->AffectsBelowPercent)
+		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsNeutral)
+		.Process(this->HealthCheck)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
+
+		.Process(this->DamageOwnerMultiplier)
+		.Process(this->DamageAlliesMultiplier)
+		.Process(this->DamageEnemiesMultiplier)
+		.Process(this->DamageSourceHealthMultiplier)
+		.Process(this->DamageTargetHealthMultiplier)
+
+		.Process(this->Parasite_CullingTarget)
 
 		.Process(this->Nonprovocative)
 
@@ -489,16 +544,37 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CLIsBlack)
 		.Process(this->Particle_AlphaImageIsLightFlash)
 
+		.Process(this->BuildingSell)
+		.Process(this->BuildingSell_IgnoreUnsellable)
+		.Process(this->BuildingUndeploy)
+		.Process(this->BuildingUndeploy_Leave)
+
+		.Process(this->CombatAlert_Suppress)
+
+		.Process(this->KillWeapon)
+		.Process(this->KillWeapon_OnFirer)
+		.Process(this->KillWeapon_AffectsHouses)
+		.Process(this->KillWeapon_OnFirer_AffectsHouses)
+		.Process(this->KillWeapon_Affects)
+		.Process(this->KillWeapon_OnFirer_Affects)
+
+		.Process(this->ElectricAssaultLevel)
+
+		.Process(this->AirstrikeTargets)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
 		.Process(this->EffectsRequireVerses)
+		.Process(this->Malicious)
 
 		.Process(this->WasDetonatedOnAllMapObjects)
 		.Process(this->RemainingAnimCreationInterval)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
+
+		.Process(this->CanKill)
 		;
 }
 
@@ -577,7 +653,7 @@ DEFINE_HOOK(0x75E39C, WarheadTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x75DEAF, WarheadTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x75DEAF, WarheadTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x75DEA0, WarheadTypeClass_LoadFromINI, 0x5)
 {
 	GET(WarheadTypeClass*, pItem, ESI);

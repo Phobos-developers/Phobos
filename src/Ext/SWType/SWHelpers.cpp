@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <MessageListClass.h>
 
 // Universal handler of the rolls-weights system
 std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>* rolls, std::vector<ValueableVector<int>>* weights, size_t size)
@@ -16,6 +17,8 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		rollOnce = true;
 	}
 
+	indices.reserve(rollsSize);
+
 	for (size_t i = 0; i < rollsSize; i++)
 	{
 		this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
@@ -31,6 +34,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		if (size_t(index) < size)
 			indices.push_back(index);
 	}
+
 	return indices;
 }
 
@@ -43,7 +47,7 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 	{
 		if (!pOwner->IsAlliedWith(pTechno))
 		{
-			if (auto pBld = abstract_cast<BuildingClass*>(pTechno))
+			if (auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
 			{
 				if (!pBld->IsPowerOnline())
 					return false;
@@ -79,7 +83,7 @@ bool SWTypeExt::ExtData::HasInhibitor(HouseClass* pOwner, const CellStruct& coor
 		return false;
 
 	// a single inhibitor in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+	return std::any_of(TechnoClass::Array.begin(), TechnoClass::Array.end(), [=, &coords](TechnoClass* pTechno)
 		{ return this->IsInhibitorEligible(pOwner, coords, pTechno); }
 	);
 }
@@ -117,7 +121,7 @@ bool SWTypeExt::ExtData::HasDesignator(HouseClass* pOwner, const CellStruct& coo
 		return true;
 
 	// a single designator in range suffices
-	return std::any_of(TechnoClass::Array->begin(), TechnoClass::Array->end(), [=, &coords](TechnoClass* pTechno)
+	return std::any_of(TechnoClass::Array.begin(), TechnoClass::Array.end(), [=, &coords](TechnoClass* pTechno)
 		{ return this->IsDesignatorEligible(pOwner, coords, pTechno); });
 }
 
@@ -164,8 +168,14 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	const auto pThis = this->OwnerObject();
 
 	// check whether the optional aux building exists
-	if (pThis->AuxBuilding && pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
-		return false;
+	if (pThis->AuxBuilding)
+	{
+		if ((BuildingTypeExt::ExtMap.Find(pThis->AuxBuilding)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pThis->AuxBuilding->PowersUpBuilding))
+			&& BuildingTypeExt::GetUpgradesAmount(pThis->AuxBuilding, pHouse) <= 0)
+			return false;
+		else if (pHouse->CountOwnedAndPresent(pThis->AuxBuilding) <= 0)
+			return false;
+	}
 
 	// allow only certain houses, disallow forbidden houses
 	const auto OwnerBits = 1u << pHouse->Type->ArrayIndex;
@@ -176,7 +186,15 @@ bool SWTypeExt::ExtData::IsAvailable(HouseClass* pHouse) const
 	// check that any aux building exist and no neg building
 	auto IsBuildingPresent = [pHouse](BuildingTypeClass* pType)
 		{
-			return pType && pHouse->CountOwnedAndPresent(pType) > 0;
+			if (pType)
+			{
+				if (BuildingTypeExt::ExtMap.Find(pType)->PowersUp_Buildings.size() > 0 || BuildingTypeClass::Find(pType->PowersUpBuilding))
+					return BuildingTypeExt::GetUpgradesAmount(pType, pHouse) > 0;
+				else
+					return pHouse->CountOwnedAndPresent(pType) > 0;
+			}
+
+			return false;
 		};
 
 	const auto& Aux = this->SW_AuxBuildings;
@@ -241,16 +259,48 @@ std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClas
 	{
 		double maxRange = this->SW_RangeMaximum;
 		if (maxRange < 0.0)
-			maxRange = pWeapon->Range / 256.0;
+			maxRange = pWeapon->Range / (double)Unsorted::LeptonsPerCell;
 
 		double minRange = this->SW_RangeMinimum;
 		if (minRange < 0.0)
 		{
-			minRange = pWeapon->MinimumRange / 256.0;
+			minRange = pWeapon->MinimumRange / (double)Unsorted::LeptonsPerCell;
 		}
 
 		return std::make_pair(minRange, maxRange);
 	}
 
 	return std::make_pair(this->SW_RangeMinimum.Get(), this->SW_RangeMaximum.Get());
+}
+
+void SWTypeExt::ExtData::PrintMessage(const CSFText& message, HouseClass* pFirer) const
+{
+	if (message.empty())
+		return;
+
+	int color = ColorScheme::FindIndex("Gold");
+	if (this->Message_FirerColor)
+	{
+		// firer color
+		if (pFirer)
+		{
+			color = pFirer->ColorSchemeIndex;
+		}
+	}
+	else
+	{
+		if (this->Message_ColorScheme > -1)
+		{
+			// user defined color
+			color = this->Message_ColorScheme;
+		}
+		else if (const auto pCurrent = HouseClass::CurrentPlayer)
+		{
+			// default way: the current player's color
+			color = pCurrent->ColorSchemeIndex;
+		}
+	}
+
+	// print the message
+	MessageListClass::Instance.PrintMessage(message, RulesClass::Instance->MessageDelay, color);
 }
