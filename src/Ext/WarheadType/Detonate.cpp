@@ -35,13 +35,8 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 {
 	auto const pBullet = pBulletExt ? pBulletExt->OwnerObject() : nullptr;
 
-	if (pOwner && pBulletExt)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
-
-		if (pTypeExt->InterceptorType && pBulletExt->IsInterceptor)
-			this->InterceptBullets(pOwner, pBullet->WeaponType, coords);
-	}
+	if (pBulletExt && pBulletExt->InterceptorTechnoType)
+		this->InterceptBullets(pOwner, pBullet, coords);
 
 	if (pHouse)
 	{
@@ -80,7 +75,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		if (reveal > 0)
 		{
-			const auto pCurrent = HouseClass::CurrentPlayer;;
+			const auto pCurrent = HouseClass::CurrentPlayer;
 
 			if ((pHouse->IsControlledByCurrentPlayer() || pHouse->IsAlliedWith(pCurrent)) && !pCurrent->Defeated && !pCurrent->Visionary)
 			{
@@ -166,7 +161,7 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pOwner, pHouse);
 		}
 
-		bool bulletWasIntercepted = pBulletExt && pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted;
+		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
 		const float cellSpread = this->OwnerObject()->CellSpread;
 
 		if (cellSpread)
@@ -178,15 +173,15 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 		{
 			if (auto pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
 			{
-				// Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
+				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
-				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4)
+				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4.0)
 					this->DetonateOnOneUnit(pHouse, pTarget, pOwner, bulletWasIntercepted);
 			}
 		}
 		else if (this->DamageAreaTarget)
 		{
-			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4)
+			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4.0)
 				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, pOwner, bulletWasIntercepted);
 		}
 	}
@@ -197,12 +192,10 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
 
-	TechnoExt::ExtData* pTargetExt = nullptr;
-
-	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget, pTargetExt))
+	if (!this->CanTargetHouse(pHouse, pTarget) || !this->CanAffectTarget(pTarget))
 		return;
 
-	this->ApplyShieldModifiers(pTarget, pTargetExt);
+	this->ApplyShieldModifiers(pTarget);
 
 	if (this->RemoveDisguise)
 		this->ApplyRemoveDisguise(pHouse, pTarget);
@@ -211,7 +204,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyRemoveMindControl(pTarget);
 
 	if (this->Crit_CurrentChance > 0.0 && (!this->Crit_SuppressWhenIntercepted || !bulletWasIntercepted))
-		this->ApplyCrit(pHouse, pTarget, pOwner, pTargetExt);
+		this->ApplyCrit(pHouse, pTarget, pOwner);
 
 	if (this->Convert_Pairs.size() > 0)
 		this->ApplyConvert(pHouse, pTarget);
@@ -234,7 +227,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 {
-	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	const auto pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
 
 	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0 || !pBuilding->IsOnMap || pBuilding->InLimbo)
 		return;
@@ -334,92 +327,90 @@ void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
 	pBuilding->Sell(1);
 }
 
-void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr)
+void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 {
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto& pShield = pTargetExt->Shield;
+	int shieldIndex = -1;
+	double ratio = 1.0;
 
-	if (pTargetExt)
+	// Remove shield.
+	if (pShield)
 	{
-		int shieldIndex = -1;
-		double ratio = 1.0;
+		const auto shieldType = pShield->GetType();
+		shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
 
-		// Remove shield.
-		if (pTargetExt->Shield)
+		if (shieldIndex >= 0 || this->Shield_RemoveAll)
 		{
-			const auto shieldType = pTargetExt->Shield->GetType();
-			shieldIndex = this->Shield_RemoveTypes.IndexOf(shieldType);
+			ratio = pShield->GetHealthRatio();
+			pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+			pShield->KillAnim();
+			pShield = nullptr;
+		}
+	}
 
-			if (shieldIndex >= 0 || this->Shield_RemoveAll)
-			{
-				ratio = pTargetExt->Shield->GetHealthRatio();
-				pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
-				pTargetExt->Shield->KillAnim();
-				pTargetExt->Shield = nullptr;
-			}
+	// Attach shield.
+	if (Shield_AttachTypes.size() > 0)
+	{
+		ShieldTypeClass* shieldType = nullptr;
+
+		if (this->Shield_ReplaceOnly)
+		{
+			if (shieldIndex >= 0)
+				shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+			else if (this->Shield_RemoveAll)
+				shieldType = Shield_AttachTypes[0];
+		}
+		else
+		{
+			shieldType = Shield_AttachTypes[0];
 		}
 
-		// Attach shield.
-		if (Shield_AttachTypes.size() > 0)
+		if (shieldType)
 		{
-			ShieldTypeClass* shieldType = nullptr;
+			if (shieldType->Strength && (!pShield || (this->Shield_ReplaceNonRespawning && pShield->IsBrokenAndNonRespawning() &&
+				pShield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
+			{
+				pTargetExt->CurrentShieldType = shieldType;
+				pShield = std::make_unique<ShieldClass>(pTarget, true);
 
-			if (this->Shield_ReplaceOnly)
-			{
-				if (shieldIndex >= 0)
-					shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
-				else if (this->Shield_RemoveAll)
-					shieldType = Shield_AttachTypes[0];
-			}
-			else
-			{
-				shieldType = Shield_AttachTypes[0];
-			}
-
-			if (shieldType)
-			{
-				if (shieldType->Strength && (!pTargetExt->Shield || (this->Shield_ReplaceNonRespawning && pTargetExt->Shield->IsBrokenAndNonRespawning() &&
-					pTargetExt->Shield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
+				if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 				{
-					pTargetExt->CurrentShieldType = shieldType;
-					pTargetExt->Shield = std::make_unique<ShieldClass>(pTarget, true);
+					pShield->SetHP((int)(shieldType->Strength * ratio));
 
-					if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
-					{
-						pTargetExt->Shield->SetHP((int)(shieldType->Strength * ratio));
-
-						if (pTargetExt->Shield->GetHP() == 0)
-							pTargetExt->Shield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
-					}
+					if (pShield->GetHP() == 0)
+						pShield->SetRespawn(shieldType->Respawn_Rate, shieldType->Respawn, shieldType->Respawn_Rate, true);
 				}
 			}
 		}
+	}
 
-		// Apply other modifiers.
-		if (pTargetExt->Shield)
+	// Apply other modifiers.
+	if (pShield)
+	{
+		const auto shieldType = pShield->GetType();
+
+		auto isShieldTypeEligible = [pTargetExt, shieldType](Iterator<ShieldTypeClass*> pShieldTypeList) -> bool
+			{
+				return !(pShieldTypeList.size() > 0 && !pShieldTypeList.contains(shieldType));
+			};
+
+		if (this->Shield_Break && pShield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
+			pShield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
+
+		if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 		{
-			auto isShieldTypeEligible = [pTargetExt](Iterator<ShieldTypeClass*> pShieldTypeList) -> bool
-				{
-					return !(pShieldTypeList.size() > 0 && !pShieldTypeList.contains(pTargetExt->Shield->GetType()));
-				};
+			double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
+			pShield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
+		}
 
-			if (this->Shield_Break && pTargetExt->Shield->IsActive() && isShieldTypeEligible(this->Shield_Break_Types.GetElements(this->Shield_AffectTypes)))
-				pTargetExt->Shield->BreakShield(this->Shield_BreakAnim, this->Shield_BreakWeapon);
+		if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
+		{
+			double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
 
-			if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
-			{
-				double amount = this->Shield_Respawn_Amount.Get(pTargetExt->Shield->GetType()->Respawn);
-				pTargetExt->Shield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
-			}
-
-			if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
-			{
-				double amount = this->Shield_SelfHealing_Amount.Get(pTargetExt->Shield->GetType()->SelfHealing);
-
-				pTargetExt->Shield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate,
-					this->Shield_SelfHealing_RestartInCombat.Get(pTargetExt->Shield->GetType()->SelfHealing_RestartInCombat),
-					this->Shield_SelfHealing_RestartInCombatDelay, this->Shield_SelfHealing_RestartTimer);
-			}
+			pShield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate,
+				this->Shield_SelfHealing_RestartInCombat.Get(shieldType->SelfHealing_RestartInCombat),
+				this->Shield_SelfHealing_RestartInCombatDelay, this->Shield_SelfHealing_RestartTimer);
 		}
 	}
 }
@@ -428,9 +419,9 @@ void WarheadTypeExt::ExtData::ApplyRemoveDisguise(HouseClass* pHouse, TechnoClas
 {
 	if (pTarget->IsDisguised())
 	{
-		if (auto pSpy = specific_cast<InfantryClass*>(pTarget))
+		if (auto pSpy = specific_cast<InfantryClass*, true>(pTarget))
 			pSpy->Disguised = false;
-		else if (auto pMirage = specific_cast<UnitClass*>(pTarget))
+		else if (auto pMirage = specific_cast<UnitClass*, true>(pTarget))
 			pMirage->ClearDisguise();
 	}
 }
@@ -441,7 +432,7 @@ void WarheadTypeExt::ExtData::ApplyRemoveMindControl(TechnoClass* pTarget)
 		pTarget->MindControlledBy->CaptureManager->FreeUnit(pTarget);
 }
 
-void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner, TechnoExt::ExtData* pTargetExt = nullptr)
+void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner)
 {
 	double dice;
 
@@ -453,23 +444,18 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	if (this->Crit_CurrentChance < dice)
 		return;
 
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 
-	if (pTargetExt)
-	{
-		auto const pTypeExt = pTargetExt->TypeExtData;
+	if (pTargetExt->TypeExtData->ImmuneToCrit)
+		return;
 
-		if (pTypeExt->ImmuneToCrit)
-			return;
+	auto pSld = pTargetExt->Shield.get();
 
-		auto pSld = pTargetExt->Shield.get();
-		if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
-			return;
+	if (pSld && pSld->IsActive() && pSld->GetType()->ImmuneToCrit)
+		return;
 
-		if (pTarget->GetHealthPercentage() > this->Crit_AffectBelowPercent)
-			return;
-	}
+	if (!TechnoExt::IsHealthInThreshold(pTarget, this->Crit_AffectAbovePercent, this->Crit_AffectBelowPercent))
+		return;
 
 	if (pHouse && !EnumFunctions::CanTargetHouse(this->Crit_AffectsHouses, pHouse, pTarget->Owner))
 		return;
@@ -520,49 +506,45 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 		pTarget->ReceiveDamage(&damage, 0, this->OwnerObject(), pOwner, false, false, pHouse);
 }
 
-void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, WeaponTypeClass* pWeapon, CoordStruct coords)
+void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords)
 {
-	if (!pOwner || !pWeapon)
-		return;
-
-	float cellSpread = this->OwnerObject()->CellSpread;
+	const float cellSpread = this->OwnerObject()->CellSpread;
 
 	if (cellSpread == 0.0)
 	{
-		if (auto const pBullet = specific_cast<BulletClass*>(pOwner->Target))
+		if (const auto pBullet = abstract_cast<BulletClass*>(pInterceptor->Target))
 		{
-			auto const pExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pTypeExt = pExt->TypeExtData;
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+			if (!pBulletExt->TypeExtData->Interceptable)
+				return;
 
 			// 1/8th of a cell as a margin of error if not Inviso interceptor.
-			bool distanceCheck = pWeapon->Projectile->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0;
-
-			if (pTypeExt && pTypeExt->Interceptable && distanceCheck)
-				pExt->InterceptBullet(pOwner, pWeapon);
+			if (pInterceptor->Type->Inviso || pBullet->Location.DistanceFrom(coords) <= Unsorted::LeptonsPerCell / 8.0)
+				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 	else
 	{
-		for (auto const pBullet : BulletClass::Array)
+		for (const auto& pBullet : BulletClass::Array)
 		{
-			if (pBullet->Location.DistanceFrom(coords) > cellSpread * Unsorted::LeptonsPerCell)
-				continue;
-
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pBulletTypeExt = pBulletExt->TypeExtData;
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 			// Cells don't know about bullets that may or may not be located on them so it has to be this way.
-			if (pBulletTypeExt && pBulletTypeExt->Interceptable)
-				pBulletExt->InterceptBullet(pOwner, pWeapon);
+			if (!pBulletExt->TypeExtData->Interceptable || pBullet->SpawnNextAnim)
+				continue;
+
+			if (pBullet->Location.DistanceFrom(coords) <= cellSpread * Unsorted::LeptonsPerCell)
+				pBulletExt->InterceptBullet(pOwner, pInterceptor);
 		}
 	}
 }
 
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
-	if (!pTargetFoot || this->Convert_Pairs.size() == 0)
+	if (!pTargetFoot)
 		return;
 
 	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
@@ -570,7 +552,8 @@ void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTar
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+
 	if (!pTargetFoot)
 		return;
 
@@ -591,7 +574,7 @@ void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInflictionReset(TechnoClass* pTarget)
 {
-	auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
+	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
 	if (!pTargetFoot)
 		return;

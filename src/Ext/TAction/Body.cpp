@@ -1,15 +1,16 @@
 #include "Body.h"
 
-#include <SessionClass.h>
 #include <MessageListClass.h>
-#include <HouseClass.h>
-#include <CRT.h>
-#include <SuperWeaponTypeClass.h>
-#include <SuperClass.h>
-#include <Ext/SWType/Body.h>
-#include <Utilities/SavegameDef.h>
 
 #include <Ext/Scenario/Body.h>
+#include <Ext/SWType/Body.h>
+
+#include <New/Entity/BannerClass.h>
+
+#include <New/Type/BannerTypeClass.h>
+
+#include <Utilities/SavegameDef.h>
+#include <Ext/House/Body.h>
 
 //Static init
 TActionExt::ExtContainer TActionExt::ExtMap;
@@ -69,6 +70,20 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 
 	case PhobosTriggerAction::ToggleMCVRedeploy:
 		return TActionExt::ToggleMCVRedeploy(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::EditAngerNode:
+		return TActionExt::EditAngerNode(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::ClearAngerNode:
+		return TActionExt::ClearAngerNode(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::SetForceEnemy:
+		return TActionExt::SetForceEnemy(pThis, pHouse, pObject, pTrigger, location);
+
+	case PhobosTriggerAction::CreateBannerLocal:
+		return TActionExt::CreateBannerLocal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateBannerGlobal:
+		return TActionExt::CreateBannerGlobal(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::DeleteBanner:
+		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
 
 	default:
 		bHandled = false;
@@ -294,6 +309,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		switch (pThis->Param4)
 		{
 		case -1:
+			housesList.reserve(HouseClass::Array.Count);
+
 			// Random non-neutral
 			for (auto pHouse : HouseClass::Array)
 			{
@@ -326,6 +343,8 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			break;
 
 		case -3:
+			housesList.reserve(HouseClass::Array.Count);
+
 			// Random Human Player
 			for (auto pHouse : HouseClass::Array)
 			{
@@ -356,7 +375,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 		if (pExecuteHouse)
 		{
 			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
-	
+
 			CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
@@ -371,6 +390,193 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 bool TActionExt::ToggleMCVRedeploy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	GameModeOptionsClass::Instance.MCVRedeploy = pThis->Param3 != 0;
+	return true;
+}
+
+bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
+	auto setValue = [pThis, pHouse](HouseClass* pTargetHouse)
+	{
+		if (!pTargetHouse || pHouse == pTargetHouse ||
+			pHouse->IsAlliedWith(pTargetHouse))
+			return;
+
+		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
+			if (pAngerNode.House != pTargetHouse)
+				continue;
+
+			switch (pThis->Param3)
+			{
+			case 0: { pAngerNode.AngerLevel = pThis->Param4; break; }
+			case 1: { pAngerNode.AngerLevel += pThis->Param4; break; }
+			case 2: { pAngerNode.AngerLevel -= pThis->Param4; break; }
+			case 3: { pAngerNode.AngerLevel *= pThis->Param4; break; }
+			case 4: { pAngerNode.AngerLevel /= pThis->Param4; break; }
+			case 5: { pAngerNode.AngerLevel %= pThis->Param4; break; }
+			case 6: { pAngerNode.AngerLevel <<= pThis->Param4; break; }
+			case 7: { pAngerNode.AngerLevel >>= pThis->Param4; break; }
+			case 8: { pAngerNode.AngerLevel = ~pAngerNode.AngerLevel; break; }
+			case 9: { pAngerNode.AngerLevel ^= pThis->Param4; break; }
+			case 10: { pAngerNode.AngerLevel |= pThis->Param4; break; }
+			case 11: { pAngerNode.AngerLevel &= pThis->Param4; break; }
+			default:break;
+			}
+
+			break;
+		}
+	};
+
+	if (pThis->Value >= 0)
+	{
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
+			HouseClass::FindByIndex(pThis->Value) :
+			HouseClass::FindByCountryIndex(pThis->Value);
+
+		setValue(pTargetHouse);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+	else if (pThis->Value == -1)
+	{
+		for (auto pTargetHouse : HouseClass::Array)
+		{
+			setValue(pTargetHouse);
+		}
+
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (pHouse->AngerNodes.Count <= 0)
+		return true;
+
+	if (pThis->Value >= 0)
+	{
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
+			HouseClass::FindByIndex(pThis->Value) :
+			HouseClass::FindByCountryIndex(pThis->Value);
+
+		if (pTargetHouse)
+		{
+			for (auto& pAngerNode : pHouse->AngerNodes)
+			{
+				if (pAngerNode.House != pTargetHouse)
+					continue;
+
+				pAngerNode.AngerLevel = 0;
+				pHouse->UpdateAngerNodes(0, pHouse);
+				break;
+			}
+		}
+	}
+	else if (pThis->Value == -1)
+	{
+		for (auto& pAngerNode : pHouse->AngerNodes)
+		{
+			pAngerNode.AngerLevel = 0;
+		}
+
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (pThis->Param3 >= 0 || pThis->Param3 == -2)
+	{
+		if (pThis->Param3 != -2)
+		{
+			HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Param3) ?
+				HouseClass::FindByIndex(pThis->Param3) :
+				HouseClass::FindByCountryIndex(pThis->Param3);
+
+			if (pTargetHouse && pHouse != pTargetHouse &&
+				!pHouse->IsAlliedWith(pTargetHouse))
+			{
+				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
+				pHouse->UpdateAngerNodes(0, pHouse);
+			}
+		}
+		else
+		{
+			pHouseExt->SetForceEnemyIndex(-2);
+			pHouse->UpdateAngerNodes(0, pHouse);
+		}
+	}
+	else if (pThis->Param3 == -1)
+	{
+		pHouseExt->SetForceEnemyIndex(-1);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}
+
+	return true;
+}
+
+static void CreateOrReplaceBanner(TActionClass* pTAction, bool isGlobal)
+{
+	const auto pBannerType = BannerTypeClass::Find(pTAction->Text);
+
+	if (!pBannerType)
+		return;
+
+	auto& banners = BannerClass::Array;
+
+	const auto it = std::find_if(banners.begin(), banners.end(),
+		[pTAction](const std::unique_ptr<BannerClass>& pBanner)
+		{
+			return pBanner->ID == pTAction->Param3;
+		});
+
+	if (it != banners.end())
+	{
+		auto& pBanner = *it;
+		pBanner->Type = pBannerType;
+		pBanner->Position = { static_cast<int>(pTAction->Param4 / 100.0 * DSurface::ViewBounds.Width), static_cast<int>(pTAction->Param5 / 100.0 * DSurface::ViewBounds.Height) };
+		pBanner->Variable = pTAction->Param6;
+		pBanner->IsGlobalVariable = isGlobal;
+	}
+	else
+	{
+		banners.emplace_back(
+			std::make_unique<BannerClass>(pBannerType, pTAction->Param3, Point2D { pTAction->Param4, pTAction->Param5 }, pTAction->Param6, isGlobal)
+		);
+	}
+}
+
+bool TActionExt::CreateBannerLocal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, false);
+	return true;
+}
+
+bool TActionExt::CreateBannerGlobal(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	CreateOrReplaceBanner(pThis, true);
+	return true;
+}
+
+bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	const auto it = std::find_if(BannerClass::Array.cbegin(), BannerClass::Array.cend(),
+		[pThis](const std::unique_ptr<BannerClass>& pBanner)
+		{
+			return pBanner->ID == pThis->Value;
+		});
+
+	if (it != BannerClass::Array.cend())
+		BannerClass::Array.erase(it);
+
 	return true;
 }
 

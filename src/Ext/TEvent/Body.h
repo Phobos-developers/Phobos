@@ -2,8 +2,9 @@
 
 #include <Utilities/Container.h>
 #include <Utilities/Template.h>
-
 #include <Helpers/Template.h>
+
+#include <optional>
 
 #include <TEventClass.h>
 
@@ -53,6 +54,7 @@ enum PhobosTriggerEvent
 	HouseDoesntOwnTechnoType = 602,
 	CellHasTechnoType = 604,
 	CellHasAnyTechnoTypeFromList = 605,
+	AttachedIsUnderAttachedEffect = 606,
 
 	_DummyMaximum,
 };
@@ -82,8 +84,10 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static bool Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse, ObjectClass* pObject,
-					CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource, bool& bHandled);
+	static int GetFlags(int iEvent);
+
+	static std::optional<bool> Execute(TEventClass* pThis, int iEvent, HouseClass* pHouse,
+		ObjectClass* pObject, CDTimerClass* pTimer, bool* isPersitant, TechnoClass* pSource);
 
 	template<bool IsGlobal, typename _Pr>
 	static bool VariableCheck(TEventClass* pThis);
@@ -95,6 +99,8 @@ public:
 
 	static bool CellHasAnyTechnoTypeFromListTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
 	static bool CellHasTechnoTypeTEvent(TEventClass* pThis, ObjectClass* pObject, HouseClass* pHouse);
+
+	static bool AttachedIsUnderAttachedEffectTEvent(TEventClass* pThis, ObjectClass* pObject);
 
 
 	class ExtContainer final : public Container<TEventExt>

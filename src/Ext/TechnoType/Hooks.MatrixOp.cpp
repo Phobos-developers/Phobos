@@ -9,6 +9,7 @@
 #include <UnitClass.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/Macro.h>
+#include <Ext/Techno/Body.h>
 
 #include "Body.h"
 
@@ -160,8 +161,9 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 
 		if (onGround)
 		{
-			double scalex = linked->GetTechnoType()->VoxelScaleX;
-			double scaley = linked->GetTechnoType()->VoxelScaleY;
+			const auto pType = linked->GetTechnoType();
+			double scalex = pType->VoxelScaleX;
+			double scaley = pType->VoxelScaleY;
 			Matrix3D pre = Matrix3D::GetIdentity();
 			pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
 			ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
@@ -179,7 +181,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	}
 	else
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
 
 		if (pTypeExt->JumpjetTilt && !onGround && pThis->CurrentSpeed > 0.0
 			&& linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
@@ -245,8 +247,9 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 		if (pIndex)
 			pIndex->Invalidate();
 
-		double scalex = linked->GetTechnoType()->VoxelScaleX;
-		double scaley = linked->GetTechnoType()->VoxelScaleY;
+		const auto pType = linked->GetTechnoType();
+		double scalex = pType->VoxelScaleX;
+		double scaley = pType->VoxelScaleY;
 
 		Matrix3D pre = Matrix3D::GetIdentity();
 		pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
@@ -757,7 +760,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	if (l2 < 0.03) R->Stack(STACK_OFFSET(0xE8, 0x20), true);
 
 	// Recover vanilla instructions
-	if (pThis->GetTechnoType()->UseBuffer)
+	if (pType->UseBuffer)
 		*reinterpret_cast<DWORD*>(0xB43180) = 1;
 
 	REF_STACK(Matrix3D, b, STACK_OFFSET(0xE8, -0x90));

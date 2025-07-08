@@ -9,6 +9,8 @@
 #include <Ext/BuildingType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/Cell/Body.h>
+#include <Ext/EBolt/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/OverlayType/Body.h>
 #include <Ext/ParticleSystemType/Body.h>
@@ -30,9 +32,12 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 
-#include <New/Type/RadTypeClass.h>
-#include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/BannerTypeClass.h>
 #include <New/Type/DigitalDisplayTypeClass.h>
+#include <New/Type/LaserTrailTypeClass.h>
+#include <New/Type/RadTypeClass.h>
+
+#include <New/Entity/BannerClass.h>
 #include <New/Type/SelectBoxTypeClass.h>
 
 #include <utility>
@@ -205,6 +210,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	BuildingTypeExt,
 	BulletExt,
 	BulletTypeExt,
+	CellExt,
+	EBoltExt,
 	HouseExt,
 	OverlayTypeExt,
 	ParticleSystemTypeExt,
@@ -230,6 +237,8 @@ using PhobosTypeRegistry = TypeRegistry <
 	RadTypeClass,
 	ShieldClass,
 	DigitalDisplayTypeClass,
+	BannerTypeClass,
+	BannerClass,
 	AttachEffectTypeClass,
 	AttachEffectClass,
 	NewSWType,

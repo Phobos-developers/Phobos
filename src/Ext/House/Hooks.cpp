@@ -127,13 +127,13 @@ DEFINE_HOOK(0x4FD1CD, HouseClass_RecalcCenter_LimboDelivery, 0x6)
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
+	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords()))
+		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
+
 	auto const pExt = RecalcCenterTemp::pExtData;
 
-	if (!MapClass::Instance.CoordinatesLegal(pBuilding->GetMapCoords())
-		|| (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding)))
-	{
+	if (pExt && pExt->OwnsLimboDeliveredBuilding(pBuilding))
 		return R->Origin() == 0x4FD1CD ? SkipBuilding1 : SkipBuilding2;
-	}
 
 	return 0;
 }
@@ -182,12 +182,13 @@ DEFINE_HOOK(0x687B18, ScenarioClass_ReadINI_StartTracking, 0x7)
 
 void __fastcall TechnoClass_UnInit_Wrapper(TechnoClass* pThis)
 {
-	auto const pType = pThis->GetTechnoType();
 
-	if (LimboTrackingTemp::Enabled && pThis->InLimbo && !pType->Insignificant && !pType->DontScore)
+	if (LimboTrackingTemp::Enabled && pThis->InLimbo)
 	{
-		auto const pOwnerExt = HouseExt::ExtMap.Find(pThis->Owner);
-		pOwnerExt->RemoveFromLimboTracking(pType);
+		auto const pType = pThis->GetTechnoType();
+
+		if (!pType->Insignificant && !pType->DontScore)
+			HouseExt::ExtMap.Find(pThis->Owner)->RemoveFromLimboTracking(pType);
 	}
 
 	LimboTrackingTemp::IsBeingDeleted = true;
@@ -260,20 +261,20 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (auto pMe = generic_cast<FootClass*>(pThis))
+	if (auto const pMe = generic_cast<FootClass*, true>(pThis))
 	{
-		bool I_am_human = pThis->Owner->IsControlledByHuman();
-		bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
+		const bool I_am_human = pThis->Owner->IsControlledByHuman();
+		const bool You_are_human = pNewOwner->IsControlledByHuman();
+		auto const pConvertTo = (I_am_human && !You_are_human) ? pExt->TypeExtData->Convert_HumanToComputer.Get() :
 			(!I_am_human && You_are_human) ? pExt->TypeExtData->Convert_ComputerToHuman.Get() : nullptr;
 
 		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
 			TechnoExt::ConvertToType(pMe, pConvertTo);
 
-		for (auto& trail : pExt->LaserTrails)
+		for (const auto& pTrail : pExt->LaserTrails)
 		{
-			if (trail.Type->IsHouseColor)
-				trail.CurrentColor = pNewOwner->LaserColor;
+			if (pTrail->Type->IsHouseColor)
+				pTrail->CurrentColor = pNewOwner->LaserColor;
 		}
 
 		if (!I_am_human && You_are_human)
