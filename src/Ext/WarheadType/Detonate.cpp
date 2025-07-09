@@ -714,6 +714,11 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 	}
 
 	// Building fully cleaned!
-	if (!pBuilding->Occupants.Count && PenetratesGarrison_CleanSound.isset())
-		VocClass::PlayAt(PenetratesGarrison_CleanSound.Get(), location);
+	if (!pBuilding->Occupants.Count)
+	{
+		pBuilding->Mark(MarkType::Change);
+
+		if (PenetratesGarrison_CleanSound.isset())
+			VocClass::PlayAt(PenetratesGarrison_CleanSound.Get(), location);
+	}
 }
