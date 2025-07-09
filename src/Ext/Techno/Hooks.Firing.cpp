@@ -259,7 +259,7 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 		return 0x52194E;
 
 	if (pType->IsGattling || TechnoTypeExt::ExtMap.Find(pType)->MultiWeapon.Get())
-		return !pThis->IsDeployed() ? 0x52194E : 0x52190D;;
+		return !pThis->IsDeployed() ? 0x52194E : 0x52190D;
 
 	return 0;
 }
