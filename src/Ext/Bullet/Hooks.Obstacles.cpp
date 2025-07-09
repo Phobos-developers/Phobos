@@ -134,6 +134,13 @@ DEFINE_HOOK(0x4688A9, BulletClass_Unlimbo_Obstacles, 0x6)
 	GET(CoordStruct const* const, sourceCoords, EDI);
 	REF_STACK(CoordStruct const, targetCoords, STACK_OFFSET(0x54, -0x10));
 
+	// Jul 5, 2025 - Starkku: Borrowing this hook for a parabomb check instead of adding a new one.
+	if (pThis->HasParachute)
+	{
+		pThis->Velocity = BulletVelocity::Empty;
+		return SkipGameCode;
+	}
+
 	if (pThis->Type->Inviso)
 	{
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
@@ -161,15 +168,16 @@ DEFINE_HOOK(0x468C86, BulletClass_ShouldExplode_Obstacles, 0xA)
 
 	GET(BulletClass*, pThis, ESI);
 
-	BulletTypeExt::ExtData* pBulletTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
+	auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
-	if (BulletObstacleHelper::SubjectToObstacles(pThis->Type, pBulletTypeExt))
+	if (BulletObstacleHelper::SubjectToObstacles(pType, pBulletTypeExt))
 	{
 		auto const pCellSource = MapClass::Instance.GetCellAt(pThis->SourceCoords);
 		auto const pCellTarget = MapClass::Instance.GetCellAt(pThis->TargetCoords);
 		auto const pCellCurrent = MapClass::Instance.GetCellAt(pThis->LastMapCoords);
 		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		const auto pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pThis->Type, pBulletTypeExt, false);
+		auto const pObstacleCell = BulletObstacleHelper::GetObstacle(pCellSource, pCellTarget, pCellCurrent, pThis->Location, pThis->Owner, pThis->Target, pOwner, pType, pBulletTypeExt, false);
 
 		if (pObstacleCell)
 			return Explode;

@@ -35,7 +35,9 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 	auto& bestChoicesNaval = HouseExt::AIProduction_BestChoicesNaval;
 
 	auto const count = static_cast<unsigned int>(UnitTypeClass::Array.Count);
+	creationFrames.reserve(count);
 	creationFrames.assign(count, 0x7FFFFFFF);
+	values.reserve(count);
 	values.assign(count, 0);
 
 	for (auto currentTeam : TeamClass::Array)
@@ -73,7 +75,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 
 	for (auto unit : UnitClass::Array)
 	{
-		auto const index = static_cast<unsigned int>(unit->GetType()->GetArrayIndex());
+		auto const index = static_cast<unsigned int>(unit->Type->GetArrayIndex());
 
 		if (values[index] > 0 && unit->CanBeRecruited(pThis))
 			--values[index];
@@ -907,7 +909,7 @@ CanBuildResult HouseExt::BuildLimitGroupCheck(const HouseClass* pThis, const Tec
 int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	const BuildCat buildCat = (absType == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
 	const FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	int queued = 0;
 
@@ -928,7 +930,7 @@ int QueuedNum(const HouseClass* pHouse, const TechnoTypeClass* pType)
 void RemoveProduction(const HouseClass* pHouse, const TechnoTypeClass* pType, int num)
 {
 	const AbstractType absType = pType->WhatAmI();
-	const BuildCat buildCat = (pType->WhatAmI() == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
+	const BuildCat buildCat = (absType == AbstractType::BuildingType ? static_cast<const BuildingTypeClass*>(pType)->BuildCat : BuildCat::DontCare);
 	FactoryClass* pFactory = pHouse->GetPrimaryFactory(absType, pType->Naval, buildCat);
 	if (pFactory)
 	{

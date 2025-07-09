@@ -25,7 +25,7 @@ DEFINE_HOOK(0x423B95, AnimClass_AI_HideIfNoOre_Threshold, 0x8)
 
 	if (pType->HideIfNoOre)
 	{
-		auto nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
+		const int nThreshold = abs(AnimTypeExt::ExtMap.Find(pThis->Type)->HideIfNoOre_Threshold.Get());
 		pThis->Invisible = pThis->GetCell()->GetContainedTiberiumValue() <= nThreshold;
 	}
 
@@ -42,71 +42,93 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 
 	GET(AnimClass*, pThis, ESI);
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-	int delay = pTypeExt->Damage_Delay.Get();
-	int damageMultiplier = 1;
-	double damage = 0;
-	int appliedDamage = 0;
+	if (pThis->IsInert)
+		return SkipDamage;
 
-	if (pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain)
-		damageMultiplier = 5;
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	const int delay = pTypeExt->Damage_Delay.Get();
+	const bool isTerrain = pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain;
+	const int damageMultiplier = isTerrain ? 5 : 1;
+	const double baseDamage = pThis->Type->Damage;
+
+	int appliedDamage = 0;
 
 	if (pTypeExt->Damage_ApplyOncePerLoop) // If damage is to be applied only once per animation loop
 	{
 		if (pThis->Animation.Value == std::max(delay - 1, 1))
-			appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
+			appliedDamage = static_cast<int>(std::round(baseDamage)) * damageMultiplier;
 		else
 			return SkipDamage;
 	}
-	else if (delay <= 0 || pThis->Type->Damage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
+	else if (delay <= 0 || baseDamage < 1.0) // If Damage.Delay is less than 1 or Damage is a fraction.
 	{
-		damage = damageMultiplier * pThis->Type->Damage + pThis->Accum;
+		const double totalDamage = damageMultiplier * baseDamage + pThis->Accum;
 
 		// Deal damage if it is at least 1, otherwise accumulate it for later.
-		if (damage >= 1.0)
+		if (totalDamage >= 1.0)
 		{
-			appliedDamage = static_cast<int>(std::round(damage));
-			pThis->Accum = damage - appliedDamage;
+			appliedDamage = static_cast<int>(std::round(totalDamage));
+			pThis->Accum = totalDamage - appliedDamage;
 		}
 		else
 		{
-			pThis->Accum = damage;
+			pThis->Accum = totalDamage;
 			return SkipDamage;
 		}
 	}
 	else
 	{
 		// Accum here is used as a counter for Damage.Delay, which cannot deal fractional damage.
-		damage = pThis->Accum + 1.0;
-		pThis->Accum = damage;
+		pThis->Accum += 1.0;
 
-		if (damage < delay)
+		if (pThis->Accum < delay)
 			return SkipDamage;
 
 		// Use Type->Damage as the actually dealt damage.
-		appliedDamage = static_cast<int>(std::round(pThis->Type->Damage)) * damageMultiplier;
+		appliedDamage = static_cast<int>(std::round(baseDamage)) * damageMultiplier;
 		pThis->Accum = 0.0;
 	}
 
-	if (appliedDamage <= 0 || pThis->IsInert)
+	if (appliedDamage <= 0)
 		return SkipDamage;
 
 	TechnoClass* pInvoker = nullptr;
-	HouseClass* pOwner = nullptr;
+	HouseClass* pOwner = pThis->Owner;
 
 	if (pTypeExt->Damage_DealtByInvoker)
 	{
-		auto const pExt = AnimExt::ExtMap.Find(pThis);
+		const auto pExt = AnimExt::ExtMap.Find(pThis);
 		pInvoker = pExt->Invoker;
-		pOwner = pExt->InvokerHouse;
 
 		if (!pInvoker)
 		{
-			pInvoker = pThis->OwnerObject ? abstract_cast<TechnoClass*>(pThis->OwnerObject) : nullptr;
-
-			if (pInvoker && !pOwner)
-				pOwner = pInvoker->Owner;
+			if (pThis->OwnerObject)
+				pInvoker = abstract_cast<TechnoClass*, true>(pThis->OwnerObject);
+			else if (pThis->IsBuildingAnim)
+				pInvoker = pExt->ParentBuilding;
 		}
+
+		if (pExt->InvokerHouse)
+			pOwner = pExt->InvokerHouse;
+
+		if (pInvoker)
+		{
+			if (!pExt->InvokerHouse)
+				pOwner = pInvoker->Owner;
+
+			if (pTypeExt->Damage_ApplyFirepowerMult)
+				appliedDamage = static_cast<int>(appliedDamage * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier);
+		}
+	}
+
+	// Jun 29, 2025 - Starkku: Owner != Invoker. Previously OwnerObject / ParentBuilding fallback only existed for Warheads
+	// but if we are unifying the approaches it needs to be available even without and separately from invoker.
+	if (!pOwner)
+	{
+		if (pThis->OwnerObject)
+			pOwner = pThis->OwnerObject->GetOwningHouse();
+		else if (pThis->IsBuildingAnim)
+			pOwner = AnimExt::ExtMap.Find(pThis)->ParentBuilding->Owner;
 	}
 
 	if (pTypeExt->Weapon)
@@ -115,27 +137,6 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	}
 	else
 	{
-		if (!pOwner)
-		{
-			if (pThis->Owner)
-			{
-				pOwner = pThis->Owner;
-			}
-			else if (pInvoker)
-			{
-				pOwner = pInvoker->Owner;
-			}
-			else if (pThis->OwnerObject)
-			{
-				pOwner = pThis->OwnerObject->GetOwningHouse();
-			}
-			else if (pThis->IsBuildingAnim)
-			{
-				auto const pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
-				pOwner = pBuilding ? pBuilding->Owner : nullptr;
-			}
-		}
-
 		auto pWarhead = pThis->Type->Warhead;
 
 		if (!pWarhead)
@@ -483,4 +484,10 @@ DEFINE_HOOK(0x425060, AnimClass_Expire_ScorchFlamer, 0x6)
 
 #pragma endregion
 
+DEFINE_HOOK(0x4250E1, AnimClass_Middle_CraterDestroyTiberium, 0x6)
+{
+	enum { SkipDestroyTiberium = 0x4250EC };
+	GET(AnimTypeClass*, pType, EDX);
+	return AnimTypeExt::ExtMap.Find(pType)->Crater_DestroyTiberium.Get(RulesExt::Global()->AnimCraterDestroyTiberium) ? 0 : SkipDestroyTiberium;
+}
 

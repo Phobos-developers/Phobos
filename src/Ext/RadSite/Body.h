@@ -22,14 +22,12 @@ public:
 	class ExtData final : public Extension<RadSiteClass>
 	{
 	public:
-		int LastUpdateFrame;
 		WeaponTypeClass* Weapon;
 		RadTypeClass* Type;
 		HouseClass* RadHouse;
 		TechnoClass* RadInvoker;
 
 		ExtData(RadSiteClass* OwnerObject) : Extension<RadSiteClass>(OwnerObject)
-			, LastUpdateFrame { -1 }
 			, RadHouse { nullptr }
 			, RadInvoker { nullptr }
 			, Type {}
@@ -41,7 +39,7 @@ public:
 		bool ApplyRadiationDamage(TechnoClass* pTarget, int& damage);
 		void Add(int amount);
 		void SetRadLevel(int amount);
-		double GetRadLevelAt(CellStruct const& cell) const;
+		// double GetRadLevelAt(CellStruct const& cell) const;
 		void CreateLight();
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
@@ -58,7 +56,7 @@ public:
 		void Serialize(T& Stm);
 	};
 
-	static void CreateInstance(CellStruct location, int spread, int amount, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
+	static void CreateInstance(CellStruct location, int spread, int radLevel, WeaponTypeExt::ExtData* pWeaponExt, HouseClass* const pOwner, TechnoClass* const pInvoker);
 
 	class ExtContainer final : public Container<RadSiteExt>
 	{
