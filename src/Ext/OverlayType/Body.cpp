@@ -30,11 +30,10 @@ void OverlayTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	//INI_EX exINI(pINI);
 
 	auto pArtSection = pThis->ImageFile;
-	auto const pArtINI = &CCINIClass::INI_Art();
-	INI_EX exArtINI(pArtINI);
+	INI_EX exArtINI(&CCINIClass::INI_Art);
 
 	this->ZAdjust.Read(exArtINI, pArtSection, "ZAdjust");
-	this->PaletteFile.Read(pArtINI, pArtSection, "Palette");
+	this->PaletteFile.Read(&CCINIClass::INI_Art, pArtSection, "Palette");
 	this->Palette = GeneralUtils::BuildPalette(this->PaletteFile);
 
 	if (GeneralUtils::IsValidString(this->PaletteFile) && !this->Palette)
@@ -119,8 +118,8 @@ DEFINE_HOOK(0x5FEC2A, OverlayTypeClass_Save_Suffix, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x5FEA11, OverlayTypeClass_LoadFromINI, 0xA)
-DEFINE_HOOK(0x5FEA1E, OverlayTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x5FEA1E, OverlayTypeClass_LoadFromINI, 0xA)// Section dont exist!
+DEFINE_HOOK(0x5FEA11, OverlayTypeClass_LoadFromINI, 0xA)
 {
 	GET(OverlayTypeClass*, pItem, ESI);
 	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x28C, 0x4));

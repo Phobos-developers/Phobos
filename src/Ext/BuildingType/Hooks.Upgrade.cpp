@@ -142,7 +142,7 @@ DEFINE_HOOK(0x464749, BuildingTypeClass_ReadINI_PowerUpAnims, 0x6)
 
 	GET(BuildingTypeClass*, pThis, EBP);
 
-	auto const pINI = &CCINIClass::INI_Art();
+	auto const pINI = &CCINIClass::INI_Art;
 
 	int index = 1;
 	char buffer[0x20];

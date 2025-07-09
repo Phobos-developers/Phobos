@@ -61,7 +61,7 @@ public:
 	{
 		return this->Type;
 	}
-	ArmorType GetArmorType() const;
+	ArmorType GetArmorType(TechnoTypeClass* pTechnoType = nullptr) const;
 	int GetFramesSinceLastBroken() const;
 	void SetAnimationVisibility(bool visible);
 
@@ -99,6 +99,7 @@ private:
 	void OnlineCheck();
 	void TemporalCheck();
 	bool ConvertCheck();
+	void EnabledByCheck();
 
 	int DrawShieldBar_Pip(const bool isBuilding) const;
 	int DrawShieldBar_PipAmount(const int length) const;
@@ -116,6 +117,7 @@ private:
 	bool Available;
 	bool Attached;
 	bool AreAnimsHidden;
+	bool IsSelfHealingEnabled;
 
 	double SelfHealing_Warhead;
 	int SelfHealing_Rate_Warhead;
