@@ -3,52 +3,36 @@
 DEFINE_HOOK(0x6FA697, TechnoClass_Update_DontScanIfUnarmed, 0x6)
 {
 	enum { SkipTargeting = 0x6FA6F5 };
-	GET(TechnoClass*, pThis, ESI);
+	GET(TechnoClass* const, pThis, ESI);
 	return pThis->IsArmed() ? 0 : SkipTargeting;
 }
 
-DEFINE_HOOK(0x709866, TechnoClass_TargetAndEstimateDamage_ScanDelayGuardArea, 0x6)
+DEFINE_HOOK(0x70982C, TechnoClass_TargetAndEstimateDamage_TargetingDelay, 0x8)
 {
-	GET(TechnoClass*, pThis, ESI);
+	enum { SkipGameCode = 0x70989C };
 
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	auto const pOwner = pThis->Owner;
-	int delay = 1;
+	GET(TechnoClass* const, pThis, ESI);
+	GET(const int, frame, EAX);
 
-	if (pOwner->IsControlledByHuman())
-	{
-		delay = pTypeExt->PlayerGuardAreaTargetingDelay.Get(RulesExt::Global()->
-			PlayerGuardAreaTargetingDelay.Get(RulesClass::Instance->GuardAreaTargetingDelay));
-	}
-	else
-	{
-		delay = pTypeExt->AIGuardAreaTargetingDelay.Get(RulesExt::Global()->
-			AIGuardAreaTargetingDelay.Get(RulesClass::Instance->GuardAreaTargetingDelay));
-	}
-
-	R->ECX(delay);
-	return 0;
-}
-
-DEFINE_HOOK(0x70989C, TechnoClass_TargetAndEstimateDamage_ScanDelayNormal, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
-	auto const pOwner = pThis->Owner;
+	pThis->unknown_4FC = frame;
 	int delay = ScenarioClass::Instance->Random.RandomRanged(0, 2);
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pOwner->IsControlledByHuman())
+	if (pThis->CurrentMission == Mission::Area_Guard)
 	{
-		delay += pTypeExt->PlayerNormalTargetingDelay.Get(RulesExt::Global()->
-			PlayerNormalTargetingDelay.Get(RulesClass::Instance->NormalTargetingDelay));
+		delay += pThis->Owner->IsControlledByHuman()
+			? pTypeExt->PlayerGuardAreaTargetingDelay.Get(RulesExt::Global()->PlayerGuardAreaTargetingDelay.Get(RulesClass::Instance->GuardAreaTargetingDelay))
+			: pTypeExt->AIGuardAreaTargetingDelay.Get(RulesExt::Global()->AIGuardAreaTargetingDelay.Get(RulesClass::Instance->GuardAreaTargetingDelay));
 	}
 	else
 	{
-		delay += pTypeExt->AINormalTargetingDelay.Get(RulesExt::Global()->
-			AINormalTargetingDelay.Get(RulesClass::Instance->NormalTargetingDelay));
+		delay += pThis->Owner->IsControlledByHuman()
+			? pTypeExt->PlayerNormalTargetingDelay.Get(RulesExt::Global()->PlayerNormalTargetingDelay.Get(RulesClass::Instance->NormalTargetingDelay))
+			: pTypeExt->AINormalTargetingDelay.Get(RulesExt::Global()->AINormalTargetingDelay.Get(RulesClass::Instance->NormalTargetingDelay));
 	}
 
 	R->ECX(delay);
-	return 0;
+	R->EDX(frame);
+
+	return SkipGameCode;
 }
