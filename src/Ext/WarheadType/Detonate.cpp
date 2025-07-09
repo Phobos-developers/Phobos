@@ -217,7 +217,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 
 	if (this->PenetratesGarrison)
 		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, pBullet, coords);
-	
+
 
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
@@ -655,24 +655,24 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 
 	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
 
-	if (pTargetTypeExt->PenetratesGarrison_Allowed)
+	if (!pTargetTypeExt->PenetratesGarrison_Allowed)
 		return;
 
 	auto const pWH = this->OwnerObject();
 	auto const& location = pTarget->GetCenterCoords();
 	const int damage = pBullet->Health; // already multiply firepower multipliers
 	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
-	const double diatance = location.DistanceFrom(coords);
+	const int distance = static_cast<int>(location.DistanceFrom(coords));
 
 	auto doDamage = [=](InfantryClass* pPassenger, int damage)
 		{
 			auto const pType = pPassenger->Type;
 			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-			if (pTypeExt->PenetratesGarrison_Allowed)
+			if (!pTypeExt->PenetratesGarrison_Allowed)
 				return;
 
-			damage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, diatance);
+			damage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
 			pPassenger->Health = std::clamp(pPassenger->Health - damage, 0, pType->Strength);
 
 			if (!pPassenger->Health)

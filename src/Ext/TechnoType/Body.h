@@ -736,7 +736,7 @@ public:
 			, FallingDownDamage { 1.0 }
 			, FallingDownDamage_Water {}
 
-			, PenetratesGarrison_Allowed { false }
+			, PenetratesGarrison_Allowed { true }
 
 			, FiringForceScatter { true }
 
