@@ -2271,7 +2271,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 
 	GET(BulletClass*, pBullet, ESI);
 
-	if (pBullet->Type->Vertical || pBullet->HasParachute)
+	if (pBullet->HasParachute || (pBullet->Type->Vertical && BulletTypeExt::ExtMap.Find(pBullet->Type)->Vertical_AircraftFix))
 	{
 		pBullet->Velocity = BulletVelocity{ 0, 0, pBullet->Velocity.Z };
 		return SkipGameCode;
