@@ -32,35 +32,34 @@ const wchar_t* NextIdleHarvesterCommandClass::GetUIDescription() const
 void NextIdleHarvesterCommandClass::Execute(WWKey eInput) const
 {
 	// Debug::Log("[Phobos] Dummy command runs.\n");
-	// MessageListClass::Instance->PrintMessage(L"[Phobos] Dummy command rums");
+	// MessageListClass::Instance.PrintMessage(L"[Phobos] Dummy command rums");
 
-	MapClass::Instance->SetTogglePowerMode(0);
-	MapClass::Instance->SetWaypointMode(0, false);
-	MapClass::Instance->SetRepairMode(0);
-	MapClass::Instance->SetSellMode(0);
+	MapClass::Instance.SetTogglePowerMode(0);
+	MapClass::Instance.SetWaypointMode(0, false);
+	MapClass::Instance.SetRepairMode(0);
+	MapClass::Instance.SetSellMode(0);
 
-	auto pObjectToSelect = MapClass::Instance->NextObject(
-		ObjectClass::CurrentObjects->Count ? ObjectClass::CurrentObjects->GetItem(0) : nullptr);
+	auto pObjectToSelect = MapClass::Instance.NextObject(
+		ObjectClass::CurrentObjects.Count ? ObjectClass::CurrentObjects.GetItem(0) : nullptr);
 
 	bool idleHarvestersPresent = false;
 	auto pNextObject = pObjectToSelect;
 
 	do
 	{
-		if (auto pTechno = abstract_cast<TechnoClass*>(pNextObject))
+		if (auto const pTechno = abstract_cast<TechnoClass*>(pNextObject))
 		{
-			if (auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType()))
+			auto const pTypeExt = TechnoExt::ExtMap.Find(pTechno)->TypeExtData;
+
+			if (pTypeExt->Harvester_Counted && !TechnoExt::IsHarvesting(pTechno))
 			{
-				if (pTypeExt->Harvester_Counted.Get() && !TechnoExt::IsHarvesting(pTechno))
-				{
-					pObjectToSelect = pNextObject;
-					idleHarvestersPresent = true;
-					break;
-				}
+				pObjectToSelect = pNextObject;
+				idleHarvestersPresent = true;
+				break;
 			}
 		}
 
-		pNextObject = MapClass::Instance->NextObject(pNextObject);
+		pNextObject = MapClass::Instance.NextObject(pNextObject);
 	}
 	while (pNextObject != pObjectToSelect);
 
@@ -68,11 +67,11 @@ void NextIdleHarvesterCommandClass::Execute(WWKey eInput) const
 	{
 		MapClass::UnselectAll();
 		pObjectToSelect->Select();
-		MapClass::Instance->CenterMap();
-		MapClass::Instance->MarkNeedsRedraw(1);
+		MapClass::Instance.CenterMap();
+		MapClass::Instance.MarkNeedsRedraw(1);
 	}
 	else
 	{
-		MessageListClass::Instance->PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
+		MessageListClass::Instance.PrintMessage(StringTable::LoadString("MSG:NothingSelected"), RulesClass::Instance->MessageDelay, HouseClass::CurrentPlayer->ColorSchemeIndex, true);
 	}
 }

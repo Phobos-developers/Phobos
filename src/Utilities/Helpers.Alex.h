@@ -145,18 +145,18 @@ namespace Helpers
 			double const spreadMult = spread * Unsorted::LeptonsPerCell;
 
 			// the quick way. only look at stuff residing on the very cells we are affecting.
-			auto const cellCoords = MapClass::Instance->GetCellAt(coords)->MapCoords;
+			auto const cellCoords = MapClass::Instance.GetCellAt(coords)->MapCoords;
 			auto const range = static_cast<size_t>(spread + 0.99);
 			for (CellSpreadEnumerator it(range); it; ++it)
 			{
-				auto const pCell = MapClass::Instance->TryGetCellAt(*it + cellCoords);
+				auto const pCell = MapClass::Instance.TryGetCellAt(*it + cellCoords);
 				if (!pCell)continue;
 				bool isCenter = pCell->MapCoords == cellCoords;
 				for (NextObject obj(pCell->GetContent()); obj; ++obj)
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
-						// Starkku: Buildings need their distance from the origin coords checked at cell level.
+						// May 22, 2024 - Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
 							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
@@ -187,11 +187,11 @@ namespace Helpers
 			}
 
 			// flying objects are not included normally
-			// Starkku: Reimplemented using AircraftTrackerClass.
+			// May 22, 2024 - Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance;
-				airTracker->FillCurrentVector(MapClass::Instance->GetCellAt(coords), Game::F2I(spread));
+				airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(coords), Game::F2I(spread));
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{

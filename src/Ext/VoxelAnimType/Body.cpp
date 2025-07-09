@@ -16,6 +16,7 @@ void VoxelAnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
 	this->SplashAnims.Read(exINI, pID, "SplashAnims");
 	this->SplashAnims_PickRandom.Read(exINI, pID, "SplashAnims.PickRandom");
+	this->Trailer_SpawnDelay.Read(exINI, pID, "Trailer.SpawnDelay");
 }
 
 // =============================
@@ -30,6 +31,7 @@ void VoxelAnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->WakeAnim)
 		.Process(this->SplashAnims)
 		.Process(this->SplashAnims_PickRandom)
+		.Process(this->Trailer_SpawnDelay)
 		;
 }
 

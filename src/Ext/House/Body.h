@@ -21,8 +21,9 @@ public:
 	class ExtData final : public Extension<HouseClass>
 	{
 	public:
-		std::map<BuildingTypeExt::ExtData*, int> PowerPlantEnhancers;
+		std::map<int, int> PowerPlantEnhancers;
 		std::vector<BuildingClass*> OwnedLimboDeliveredBuildings;
+		std::vector<TechnoClass*> OwnedCountedHarvesters;
 
 		CounterClass LimboAircraft;  // Currently owned aircraft in limbo
 		CounterClass LimboBuildings; // Currently owned buildings in limbo
@@ -35,6 +36,7 @@ public:
 		BuildingClass* Factory_NavyType;
 		BuildingClass* Factory_AircraftType;
 
+		CDTimerClass CombatAlertTimer;
 		CDTimerClass AISuperWeaponDelayTimer;
 		CDTimerClass AIFireSaleDelayTimer;
 
@@ -54,7 +56,7 @@ public:
 		int NumConYards_NonMFB;
 		int NumShipyards_NonMFB;
 
-		std::map<SuperClass*, std::vector<SuperClass*>> SuspendedEMPulseSWs;
+		std::map<int, std::vector<int>> SuspendedEMPulseSWs;
 		// standalone? no need and not a good idea
 		struct SWExt
 		{
@@ -62,9 +64,12 @@ public:
 		};
 		std::vector<SWExt> SuperExts;
 
+		int ForceEnemyIndex;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
+			, OwnedCountedHarvesters {}
 			, LimboAircraft {}
 			, LimboBuildings {}
 			, LimboInfantry {}
@@ -79,6 +84,7 @@ public:
 			, RestrictedFactoryPlants {}
 			, LastBuiltNavalVehicleType { -1 }
 			, ProducingNavalUnitTypeIndex { -1 }
+			, CombatAlertTimer {}
 			, NumAirpads_NonMFB { 0 }
 			, NumBarracks_NonMFB { 0 }
 			, NumWarFactories_NonMFB { 0 }
@@ -86,7 +92,8 @@ public:
 			, NumShipyards_NonMFB { 0 }
 			, AIFireSaleDelayTimer {}
 			, SuspendedEMPulseSWs {}
-			, SuperExts(SuperWeaponTypeClass::Array->Count)
+			, SuperExts(SuperWeaponTypeClass::Array.Count)
+			, ForceEnemyIndex(-1)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -96,6 +103,9 @@ public:
 		void UpdateNonMFBFactoryCounts(AbstractType rtti, bool remove, bool isNaval);
 		int GetFactoryCountWithoutNonMFB(AbstractType rtti, bool isNaval);
 		float GetRestrictedFactoryPlantMult(TechnoTypeClass* pTechnoType) const;
+
+		int GetForceEnemyIndex();
+		void SetForceEnemyIndex(int EnemyIndex);
 
 		virtual ~ExtData() = default;
 

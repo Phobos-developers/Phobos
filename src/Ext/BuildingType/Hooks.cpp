@@ -23,13 +23,14 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 
 DEFINE_HOOK(0x44043D, BuildingClass_AI_Temporaled_Chronosparkle_MuzzleFix, 0x8)
 {
+	GET(int, nFiringIndex, EBX);
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
+
 	if (pType->MaxNumberOccupants > 10)
 	{
-		GET(int, nFiringIndex, EBX);
-		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 		R->EAX(&pTypeExt->OccupierMuzzleFlashes[nFiringIndex]);
 	}
 
@@ -40,10 +41,11 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
+
 	if (pType->MaxNumberOccupants > 10)
 	{
-		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 		R->EDX(&pTypeExt->OccupierMuzzleFlashes[pThis->FiringOccupantIndex]);
 	}
 
@@ -52,13 +54,14 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 
 DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 {
+	GET(int, nFiringIndex, EDI);
 	GET(BuildingClass*, pThis, ESI);
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
+
 	if (pType->MaxNumberOccupants > 10)
 	{
-		GET(int, nFiringIndex, EDI);
-		auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 		R->ECX(&pTypeExt->OccupierMuzzleFlashes[nFiringIndex]);
 	}
 
@@ -67,24 +70,22 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	auto pRules = RulesExt::Global();
-
-	if (!pRules->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+	if (!RulesExt::Global()->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
 		return 0;
 
-	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
-	auto pType = pBuilding ? pBuilding->Type : nullptr;
-	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
-	bool isShow = pTypeExt && pTypeExt->PlacementPreview;
+	const auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
+	const auto pType = pBuilding ? pBuilding->Type : nullptr;
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	const bool isShow = pTypeExt && pTypeExt->PlacementPreview;
 
 	if (isShow)
 	{
 		CellClass* pCell = nullptr;
 		{
-			CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
-			CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
+			const CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
+			const CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
 
-			pCell = MapClass::Instance->TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
+			pCell = MapClass::Instance.TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
 			if (!pCell)
 				return 0;
 		}
@@ -110,21 +111,21 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 		Point2D point;
 		{
-			CoordStruct offset = pTypeExt->PlacementPreview_Offset;
-			int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
+			const CoordStruct offset = pTypeExt->PlacementPreview_Offset;
+			const int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
+			const CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
 
 			point = TacticalClass::Instance->CoordsToClient(coords).first;
 			point.X += offset.X;
 			point.Y += offset.Y;
 		}
 
-		BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRules->PlacementPreview_Translucency) |
+		const BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(RulesExt::Global()->PlacementPreview_Translucency) |
 			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 
 		ConvertClass* pPalette = pTypeExt->PlacementPreview_Remap.Get()
 			? pBuilding->GetDrawer()
-			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL());
+			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL);
 
 		DSurface* pSurface = DSurface::Temp;
 		RectangleStruct rect = pSurface->GetRect();
@@ -139,10 +140,9 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 {
-	auto pRules = RulesExt::Global();
-	BlitterFlags translucency = (pRules->PlacementPreview && Phobos::Config::ShowPlacementPreview)
-		? pRules->PlacementGrid_TranslucencyWithPreview.Get(pRules->PlacementGrid_Translucency)
-		: pRules->PlacementGrid_Translucency;
+	const BlitterFlags translucency = (RulesExt::Global()->PlacementPreview && Phobos::Config::ShowPlacementPreview)
+		? RulesExt::Global()->PlacementGrid_TranslucencyWithPreview.Get(RulesExt::Global()->PlacementGrid_Translucency)
+		: RulesExt::Global()->PlacementGrid_Translucency;
 
 	if (translucency != BlitterFlags::None)
 	{
@@ -151,30 +151,6 @@ DEFINE_HOOK(0x47EFAE, CellClass_Draw_It_SetPlacementGridTranslucency, 0x6)
 	}
 
 	return 0;
-}
-
-DEFINE_HOOK(0x6F34B7, TechnoClass_WhatWeaponShouldIUse_AllowAirstrike, 0x6)
-{
-	enum { SkipGameCode = 0x6F34BD };
-
-	GET(BuildingTypeClass*, pThis, ECX);
-
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
-	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));
-
-	return SkipGameCode;
-}
-
-DEFINE_HOOK(0x51EAF2, TechnoClass_WhatAction_AllowAirstrike, 0x6)
-{
-	enum { SkipGameCode = 0x51EAF8 };
-
-	GET(BuildingTypeClass*, pThis, ESI);
-
-	const auto pExt = BuildingTypeExt::ExtMap.Find(pThis);
-	R->EAX(pExt->AllowAirstrike.Get(pThis->CanC4));
-
-	return SkipGameCode;
 }
 
 // Rewritten
@@ -225,7 +201,7 @@ namespace ProximityTemp
 	BuildingTypeClass* pType = nullptr;
 }
 
-DEFINE_HOOK(0x4A8F20, isplayClass_BuildingProximityCheck_SetContext, 0x5)
+DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
 {
 	GET(BuildingTypeClass*, pType, ESI);
 
@@ -259,3 +235,171 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0xB)
+{
+	enum { ApplyDamageBonus = 0x6FE405 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (const auto Building = specific_cast<BuildingClass*>(pThis))
+	{
+		GET_STACK(int, damage, STACK_OFFSET(0xC8, -0x9C));
+		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		return ApplyDamageBonus;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
+{
+	enum { ApplyDamageBonus = 0x6FE435 };
+
+	GET(TechnoClass* const, pThis, ESI);
+
+	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+	{
+		GET_STACK(int, damage, STACK_OFFSET(0xC8, -0x9C));
+		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		return ApplyDamageBonus;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
+{
+	enum { ApplyRofMod = 0x6FD1AB, SkipRofMod = 0x6FD1B1 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto Building = specific_cast<BuildingClass*>(pThis))
+	{
+		const auto multiplier = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyROFMult.Get(RulesClass::Instance->OccupyROFMultiplier);
+
+		if (multiplier > 0.0f)
+		{
+			GET_STACK(int, rof, STACK_OFFSET(0x10, 0x4));
+			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
+			return ApplyRofMod;
+		}
+
+		return SkipRofMod;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
+{
+	enum { ApplyRofMod = 0x6FD1EF, SkipRofMod = 0x6FD1F1 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
+	{
+		const auto multiplier = BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerROFMult.Get(RulesClass::Instance->BunkerROFMultiplier);
+
+		if (multiplier > 0.0f)
+		{
+			GET_STACK(int, rof, STACK_OFFSET(0x10, 0x4));
+			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
+			return ApplyRofMod;
+		}
+
+		return SkipRofMod;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x45933D, BuildingClass_BunkerSound, 0x5)
+DEFINE_HOOK_AGAIN(0x4595D9, BuildingClass_BunkerSound, 0x5)
+DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
+{
+	enum
+	{
+		BunkerWallUpSound = 0x45933D,
+		BunkerWallUpSound_Handled_ret = 0x459374,
+
+		BunkerWallDownSound_01 = 0x4595D9,
+		BunkerWallDownSound_01_Handled_ret = 0x459612,
+
+		BunkerWallDownSound_02 = 0x459494,
+		BunkerWallDownSound_02_Handled_ret = 0x4594CD
+	};
+
+	BuildingClass const* pThis = R->Origin() == BunkerWallDownSound_01 ?
+		R->EDI<BuildingClass*>() : R->ESI<BuildingClass*>();
+
+	BuildingTypeExt::PlayBunkerSound(pThis, R->Origin() == BunkerWallUpSound);
+
+	switch (R->Origin())
+	{
+	case BunkerWallUpSound:
+		return BunkerWallUpSound_Handled_ret;
+	case BunkerWallDownSound_01:
+		return BunkerWallDownSound_01_Handled_ret;
+	case BunkerWallDownSound_02:
+		return BunkerWallDownSound_02_Handled_ret;
+	default:
+		__assume(0); // Just avoiding compilation warnings, shouldn't go this way
+	}
+}
+
+DEFINE_HOOK_AGAIN(0x4426DB, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
+DEFINE_HOOK_AGAIN(0x702777, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
+DEFINE_HOOK(0x70272E, BuildingClass_ReceiveDamage_DisableDamageSound, 0x8)
+{
+	enum
+	{
+		BuildingClass_TakeDamage_DamageSound = 0x4426DB,
+		BuildingClass_TakeDamage_DamageSound_Handled_ret = 0x44270B,
+
+		TechnoClass_TakeDamage_Building_DamageSound_01 = 0x702777,
+		TechnoClass_TakeDamage_Building_DamageSound_01_Handled_ret = 0x7027AE,
+
+		TechnoClass_TakeDamage_Building_DamageSound_02 = 0x70272E,
+		TechnoClass_TakeDamage_Building_DamageSound_02_Handled_ret = 0x702765,
+	};
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (auto const pBuilding = specific_cast<BuildingClass*>(pThis))
+	{
+		if (BuildingTypeExt::ExtMap.Find(pBuilding->Type)->DisableDamageSound)
+		{
+			switch (R->Origin())
+			{
+			case BuildingClass_TakeDamage_DamageSound:
+				return BuildingClass_TakeDamage_DamageSound_Handled_ret;
+			case TechnoClass_TakeDamage_Building_DamageSound_01:
+				return TechnoClass_TakeDamage_Building_DamageSound_01_Handled_ret;
+			case TechnoClass_TakeDamage_Building_DamageSound_02:
+				return TechnoClass_TakeDamage_Building_DamageSound_02_Handled_ret;
+			}
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
+{
+	enum { Handled = 0x44E86F };
+
+	GET(BuildingClass*, pThis, ESI);
+	GET_STACK(int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
+
+	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
+
+	if (factor == 1.0)
+		R->EAX(Game::F2I(powerMultiplier * pThis->GetHealthPercentage()));
+	else if (factor == 0.0)
+		R->EAX(powerMultiplier);
+	else
+		R->EAX(Math::max(Game::F2I(powerMultiplier * (1.0 - factor + factor * pThis->GetHealthPercentage())), 0));
+
+	return Handled;
+}
