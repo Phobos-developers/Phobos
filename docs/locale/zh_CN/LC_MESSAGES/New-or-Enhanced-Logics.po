@@ -5869,7 +5869,7 @@ msgstr "现在你可以自定义 `RateDown` 的一些效果。"
 msgid ""
 "`RateDown.Delay` controls the delay before using `RateDown` to reduce the"
 " gattling value."
-msgstr "`RateDown.Delay` 控制使用 `RateDown` 减少盖特计时器的间隔。"
+msgstr "`RateDown.Delay` 控制停火多少帧后才开始使用 `RateDown` 减少盖特计时器。"
 
 #: ../../New-or-Enhanced-Logics.md:1509
 msgid ""
