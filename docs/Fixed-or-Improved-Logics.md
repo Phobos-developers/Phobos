@@ -238,6 +238,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically.
+- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
+- Player-controlled spies are not forced to perform other tasks while attacking buildings
 
 ## Fixes / interactions with other extensions
 
