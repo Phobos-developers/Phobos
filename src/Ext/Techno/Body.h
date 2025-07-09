@@ -54,7 +54,6 @@ public:
 		WeaponTypeClass* LastWeaponType;
 		CellClass* FiringObstacleCell; // Set on firing if there is an obstacle cell between target and techno, used for updating WaveClass target etc.
 		bool IsDetachingForCloak; // Used for checking animation detaching, set to true before calling Detach_All() on techno when this anim is attached to and to false after when cloaking only.
-		int MyTargetingFrame;
 		int BeControlledThreatFrame;
 		DWORD LastTargetID;
 		int AccumulatedGattlingValue;
@@ -129,7 +128,6 @@ public:
 			, HasRemainingWarpInDelay { false }
 			, LastWarpInDelay { 0 }
 			, IsBeingChronoSphered { false }
-			, MyTargetingFrame { ScenarioClass::Instance->Random.RandomRanged(0,15) }
 			, KeepTargetOnMove { false }
 			, LastSensorsMapCoords { CellStruct::Empty }
 			, TiberiumEater_Timer {}
