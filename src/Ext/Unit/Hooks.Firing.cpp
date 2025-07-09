@@ -100,7 +100,9 @@ DEFINE_HOOK(0x736F67, UnitClass_UpdateFiring_BurstNoDelay, 0x6)
 	{
 		if (pWeapon->Burst > 1)
 		{
-			if (WeaponTypeExt::ExtMap.Find(pWeapon)->Burst_NoDelay)
+			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+			if (pExt->Burst_NoDelay && (!pExt->DelayedFire_Duration.isset() || pExt->DelayedFire_OnlyOnInitialBurst))
 			{
 				if (pThis->Fire(pTarget, wpIdx))
 				{
