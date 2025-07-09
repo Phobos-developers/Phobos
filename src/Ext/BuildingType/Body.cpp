@@ -514,20 +514,18 @@ void BuildingTypeExt::CreateLimboBuilding(BuildingClass* pBuilding, BuildingType
 		pBuilding->IsAlive = true;
 		pBuilding->IsOnMap = true;
 
-		// For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
+		// Jun 3, 2023 - Starkku: For reasons beyond my comprehension, the discovery logic is checked for certain logics like power drain/output in campaign only.
 		// Normally on unlimbo the buildings are revealed to current player if unshrouded or if game is a campaign and to non-player houses always.
 		// Because of the unique nature of LimboDelivered buildings, this has been adjusted to always reveal to the current player in singleplayer
-		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist - Starkku
+		// and to the owner of the building regardless, removing the shroud check from the equation since they don't physically exist
 		if (SessionClass::IsCampaign())
 			pBuilding->DiscoveredBy(HouseClass::CurrentPlayer);
 
 		pBuilding->DiscoveredBy(pOwner);
 
 		pOwner->RegisterGain(pBuilding, false);
-		pOwner->UpdatePower();
 		pOwner->RecheckTechTree = true;
 		pOwner->RecheckPower = true;
-		pOwner->RecheckRadar = true;
 		pOwner->Buildings.AddItem(pBuilding);
 
 		// Different types of building logics
@@ -704,7 +702,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
-	
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
