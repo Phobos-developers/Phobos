@@ -589,6 +589,7 @@ This page lists all the individual contributions to the project by their author.
 - **Joshy** - Original FlyingStrings implementation
 - **CnCVK** - Original custom locomotors experiment
 - **ZΞPHYɌUS** - win/lose themes code
+- **Fridge** - Cursor Fix code
 - **Neargye (Daniil Goncharov)** - [nameof library](https://github.com/Neargye/nameof) (MIT)
 - **ayylmao** - help with docs, extensive and thorough testing
 - **SMxReaver** - help with docs, extensive and thorough testing
