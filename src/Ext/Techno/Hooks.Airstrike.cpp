@@ -23,13 +23,10 @@ DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 		return Primary;
 
 	const auto pTargetType = pTargetTechno->GetTechnoType();
+	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 
 	if (pTargetTechno->AbstractFlags & AbstractFlags::Foot)
-	{
-		const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
-
 		return pTargetTypeExt->AllowAirstrike.Get(true) ? Secondary : Primary;
-	}
 
 	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 
