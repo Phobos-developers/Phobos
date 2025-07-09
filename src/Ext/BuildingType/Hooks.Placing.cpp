@@ -161,22 +161,11 @@ static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* co
 	const auto pTechnoType = pTechno->GetTechnoType();
 
 	if (TechnoTypeExt::ExtMap.Find(pTechnoType)->CanBeBuiltOn)
-	{
-		if (pTechno->GetMapCoords() == pTechno->CurrentMapCoords)
-			builtOnCanBeBuiltOn = true;
-		else if (expand)
-			landFootOnly = true;
-		else
-			return true;
-	}
+		builtOnCanBeBuiltOn = true;
 	else if (!expand || pTechnoType->Speed <= 0 || !BuildingTypeExt::CheckOccupierCanLeave(pOwner, pTechno->Owner))
-	{
 		return true;
-	}
 	else
-	{
 		landFootOnly = true;
-	}
 
 	return false;
 }
