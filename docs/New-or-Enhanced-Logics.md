@@ -2336,7 +2336,7 @@ RemoveParasite=   ; boolean
   - `PenetratesGarrison.RandomTarget` specifies if the damage will go at some random garrisoned soldier or if all infantry should be damaged at the same time.
   - `PenetratesGarrison.DamageMultiplier` can be used to modify the damage applied against the garrisoned infantry. A random percentage value will be picked between the specified range.
   - `PenetratesGarrison.CleanSound` can be used to specify a sound to play when the structure lost all the garrisoned soldiers with this logic.
-  - `PenetratesGarrison.Allowed` can be set on garrisonable buildings to protect the garrisoned infantry. If used on infantry these units won't affected by this logic.
+  - `PenetratesGarrison.Allowed` can be set on garrisonable buildings to protect the garrisoned infantry, or used on garrisoned infantry to make them not be affected by this logic.
 
 In `rulesmd.ini`:
 ```ini

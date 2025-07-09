@@ -186,6 +186,13 @@ public:
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
 
+		Valueable<bool> CanKill;
+
+		Valueable<bool> PenetratesGarrison;
+		Valueable<bool> PenetratesGarrison_RandomTarget;
+		Valueable<PartialVector2D<double>> PenetratesGarrison_DamageMultiplier;
+		NullableIdx<VocClass> PenetratesGarrison_CleanSound;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -204,13 +211,6 @@ public:
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
 		TechnoClass* DamageAreaTarget;
-
-		Valueable<bool> CanKill;
-
-		Valueable<bool> PenetratesGarrison;
-		Valueable<bool> PenetratesGarrison_RandomTarget;
-		Valueable<PartialVector2D<double>> PenetratesGarrison_DamageMultiplier;
-		NullableIdx<VocClass> PenetratesGarrison_CleanSound;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;

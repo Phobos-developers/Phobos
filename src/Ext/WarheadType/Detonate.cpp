@@ -654,7 +654,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 	if (!pBuilding || !pBuilding->Occupants.Count)
 		return;
 
-	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTarget->GetTechnoType());
+	auto const pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pBuilding->Type);
 
 	if (!pTargetTypeExt->PenetratesGarrison_Allowed)
 		return;
@@ -663,6 +663,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 	auto const& location = pTarget->GetCenterCoords();
 	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
 	const int distance = static_cast<int>(location.DistanceFrom(coords));
+	damage = static_cast<int>(damage * GeneralUtils::GetRangedRandomOrSingleValue(this->PenetratesGarrison_DamageMultiplier));
 
 	auto doDamage = [=](InfantryClass* pPassenger)
 		{
@@ -718,7 +719,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 	{
 		pBuilding->Mark(MarkType::Change);
 
-		if (PenetratesGarrison_CleanSound.isset())
-			VocClass::PlayAt(PenetratesGarrison_CleanSound.Get(), location);
+		if (this->PenetratesGarrison_CleanSound.isset())
+			VocClass::PlayAt(this->PenetratesGarrison_CleanSound.Get(), location);
 	}
 }

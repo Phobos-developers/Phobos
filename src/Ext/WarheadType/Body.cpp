@@ -299,6 +299,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
 
+	this->PenetratesGarrison.Read(exINI, pSection, "PenetratesGarrison");
+	this->PenetratesGarrison_RandomTarget.Read(exINI, pSection, "PenetratesGarrison.RandomTarget");
+	this->PenetratesGarrison_DamageMultiplier.Read(exINI, pSection, "PenetratesGarrison.DamageMultiplier");
+	this->PenetratesGarrison_CleanSound.Read(exINI, pSection, "PenetratesGarrison.CleanSound");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -394,11 +399,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		else
 			this->SpawnsCrate_Weights.push_back(weight);
 	}
-
-	this->PenetratesGarrison.Read(exINI, pSection, "PenetratesGarrison");
-	this->PenetratesGarrison_RandomTarget.Read(exINI, pSection, "PenetratesGarrison.RandomTarget");
-	this->PenetratesGarrison_DamageMultiplier.Read(exINI, pSection, "PenetratesGarrison.DamageMultiplier");
-	this->PenetratesGarrison_CleanSound.Read(exINI, pSection, "PenetratesGarrison.CleanSound");
 }
 
 template <typename T>
@@ -568,6 +568,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AirstrikeTargets)
 
+		.Process(this->CanKill)
+
+		.Process(this->PenetratesGarrison)
+		.Process(this->PenetratesGarrison_RandomTarget)
+		.Process(this->PenetratesGarrison_DamageMultiplier)
+		.Process(this->PenetratesGarrison_CleanSound)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
@@ -579,13 +586,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
-
-		.Process(this->CanKill)
-
-		.Process(this->PenetratesGarrison)
-		.Process(this->PenetratesGarrison_RandomTarget)
-		.Process(this->PenetratesGarrison_DamageMultiplier)
-		.Process(this->PenetratesGarrison_CleanSound)
 		;
 }
 
