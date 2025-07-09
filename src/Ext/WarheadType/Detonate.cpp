@@ -163,11 +163,12 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 
 		const bool bulletWasIntercepted = pBulletExt && (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted);
 		const float cellSpread = this->OwnerObject()->CellSpread;
+		const int damage = pBullet->Health;
 
 		if (cellSpread)
 		{
 			for (auto pTarget : Helpers::Alex::getCellSpreadItems(coords, cellSpread, true))
-				this->DetonateOnOneUnit(pHouse, pTarget, coords, pOwner, bulletWasIntercepted, pBullet);
+				this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 		}
 		else if (pBullet)
 		{
@@ -176,18 +177,18 @@ void WarheadTypeExt::ExtData::Detonate(TechnoClass* pOwner, HouseClass* pHouse, 
 				// Jun 2, 2024 - Starkku: We should only detonate on the target if the bullet, at the moment of detonation is within acceptable distance of the target.
 				// Ares uses 64 leptons / quarter of a cell as a tolerance, so for sake of consistency we're gonna do the same here.
 				if (pBullet->DistanceFrom(pTarget) < Unsorted::LeptonsPerCell / 4.0)
-					this->DetonateOnOneUnit(pHouse, pTarget, coords, pOwner, bulletWasIntercepted);
+					this->DetonateOnOneUnit(pHouse, pTarget, coords, damage, pOwner, bulletWasIntercepted);
 			}
 		}
 		else if (this->DamageAreaTarget)
 		{
 			if (coords.DistanceFrom(this->DamageAreaTarget->GetCoords()) < Unsorted::LeptonsPerCell / 4.0)
-				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, coords, pOwner, bulletWasIntercepted);
+				this->DetonateOnOneUnit(pHouse, this->DamageAreaTarget, coords, damage, pOwner, bulletWasIntercepted);
 		}
 	}
 }
 
-void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, TechnoClass* pOwner, bool bulletWasIntercepted, BulletClass* pBullet)
+void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner, bool bulletWasIntercepted)
 {
 	if (!pTarget || pTarget->InLimbo || !pTarget->IsAlive || !pTarget->Health || pTarget->IsSinking || pTarget->BeingWarpedOut)
 		return;
@@ -216,7 +217,7 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyBuildingUndeploy(pTarget);
 
 	if (this->PenetratesGarrison)
-		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, pBullet, coords);
+		this->ApplyPenetratesGarrison(pHouse, pTarget, pOwner, damage, coords);
 
 
 #ifdef LOCO_TEST_WARHEADS
@@ -646,7 +647,7 @@ double WarheadTypeExt::ExtData::GetCritChance(TechnoClass* pFirer) const
 	return critChance + extraChance;
 }
 
-void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, BulletClass* pBullet, const CoordStruct& coords)
+void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, int damage, const CoordStruct& coords)
 {
 	auto const pBuilding = abstract_cast<BuildingClass*, true>(pTarget);
 
@@ -660,11 +661,10 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 
 	auto const pWH = this->OwnerObject();
 	auto const& location = pTarget->GetCenterCoords();
-	const int damage = pBullet->Health; // already multiply firepower multipliers
 	const int occupantIndex = this->PenetratesGarrison_RandomTarget ? ScenarioClass::Instance->Random.RandomRanged(0, pBuilding->Occupants.Count - 1) : -1;
 	const int distance = static_cast<int>(location.DistanceFrom(coords));
 
-	auto doDamage = [=](InfantryClass* pPassenger, int damage)
+	auto doDamage = [=](InfantryClass* pPassenger)
 		{
 			auto const pType = pPassenger->Type;
 			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -672,8 +672,8 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 			if (!pTypeExt->PenetratesGarrison_Allowed)
 				return;
 
-			damage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
-			pPassenger->Health = std::clamp(pPassenger->Health - damage, 0, pType->Strength);
+			const int totalDamage = MapClass::GetTotalDamage(damage, pWH, pType->Armor, distance);
+			pPassenger->Health = std::clamp(pPassenger->Health - totalDamage, 0, pType->Strength);
 
 			if (!pPassenger->Health)
 			{
@@ -704,13 +704,13 @@ void WarheadTypeExt::ExtData::ApplyPenetratesGarrison(HouseClass* pInvokerHouse,
 		for (int i = 0; i < pBuilding->Occupants.Count; i++)
 		{
 			auto const pPassenger = pBuilding->Occupants.GetItem(i);
-			doDamage(pPassenger, damage);
+			doDamage(pPassenger);
 		}
 	}
 	else
 	{
 		auto const pPassenger = pBuilding->Occupants.GetItem(occupantIndex);
-		doDamage(pPassenger, damage);
+		doDamage(pPassenger);
 	}
 
 	// Building fully cleaned!
