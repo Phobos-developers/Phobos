@@ -1172,7 +1172,6 @@ ForbidParallelAIQueues=false        ; boolean
 - When you create many technos in a same frame (i.e. starting the game with a campaign map that initially has a large number of technos), they will always scan for targets in a synchronous period, causing game lag. Increasing targeting delay alone will not make things better, as their targeting is still synchronized.
 - It is now possible to force them to seek targets separately. When a techno spawns, it will generate a random number in \[0,15\]. If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
   - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
-  - For technos with low ROF (i.e. Tanya), this will significantly reduce their efficiency in killing enemies.
 
 In `rulesmd.ini`
 ```ini
