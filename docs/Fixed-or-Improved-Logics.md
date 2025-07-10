@@ -238,7 +238,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
-- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically.
+- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically. This behaviour can be turned off by setting `Vertical.AircraftFix=false` on the projectile.
 
 ## Fixes / interactions with other extensions
 
@@ -829,17 +829,17 @@ AirstrikeLineColor=         ; integer - Red,Green,Blue, default to [AudioVisual]
 
 ### Airstrike target eligibility
 
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-- For non building situations, the default value is true.
+- By default whether or not a building can be targeted by airstrikes (`Airstrike=true` Warhead) depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`. For non-building targets, the default value is true.
+- `AirstrikeTargets` determines what types of targets are valid airstrike targets for this Warhead.
 - The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet, therefore it is possible to properly designate air strikes against non-building targets.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]               ; TechnoType
-AllowAirstrike=            ; boolean
+[SOMETECHNO]                ; TechnoType
+AllowAirstrike=             ; boolean
 
-[SOMEWARHEAD]              ; WarheadType
-AirstrikeTargets=all       ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
+[SOMEWARHEAD]               ; WarheadType
+AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Alternate FLH customizations

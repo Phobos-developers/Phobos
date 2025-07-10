@@ -102,12 +102,7 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI, 0x6)
 		for (int i = 0; i <= pThis->CurrentBurstIndex; i++)
 		{
 			const int burstDelay = pWeaponExt->GetBurstDelay(i);
-			int delay = 0;
-
-			if (burstDelay > -1)
-				delay = burstDelay;
-			else
-				delay = ScenarioClass::Instance->Random.RandomRanged(3, 5);
+			int delay = (burstDelay > -1) ? burstDelay : ScenarioClass::Instance->Random.RandomRanged(3, 5);
 
 			// Other than initial delay, treat 0 frame delays as 1 frame delay due to per-frame processing.
 			if (i != 0)
@@ -166,6 +161,47 @@ DEFINE_HOOK(0x520AD9, InfantryClass_FiringAI_IsGattling, 0x5)
 		}
 
 		FiringAITemp::CanFire = false;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x5209EE, InfantryClass_UpdateFiring_BurstNoDelay, 0x5)
+{
+	enum { SkipVanillaFire = 0x520A57 };
+
+	GET(InfantryClass* const, pThis, EBP);
+	GET(const int, wpIdx, ESI);
+	GET(AbstractClass* const, pTarget, EAX);
+
+	if (const auto pWeapon = pThis->GetWeapon(wpIdx)->WeaponType)
+	{
+		if (pWeapon->Burst > 1)
+		{
+			const auto pExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+			if (pExt->Burst_NoDelay && (!pExt->DelayedFire_Duration.isset() || pExt->DelayedFire_OnlyOnInitialBurst))
+			{
+				if (pThis->Fire(pTarget, wpIdx))
+				{
+					if (!pThis->CurrentBurstIndex)
+						return SkipVanillaFire;
+
+					auto rof = pThis->RearmTimer.TimeLeft;
+					pThis->RearmTimer.Start(0);
+
+					for (auto i = pThis->CurrentBurstIndex; i < pWeapon->Burst && pThis->GetFireError(pTarget, wpIdx, true) == FireError::OK && pThis->Fire(pTarget, wpIdx); ++i)
+					{
+						rof = pThis->RearmTimer.TimeLeft;
+						pThis->RearmTimer.Start(0);
+					}
+
+					pThis->RearmTimer.Start(rof);
+				}
+
+				return SkipVanillaFire;
+			}
+		}
 	}
 
 	return 0;
