@@ -43,9 +43,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
 			multiplier = pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier);
 		else if (pSourceHouse != pTargetHouse)
-			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageMultiplierByHouse_SmartDefault && !pWHExt->AffectsEnemies ? 1.0 : pRules->DamageAlliesMultiplier);
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? pRules->DamageAlliesMultiplier_NotAffectsEnemies.Get(pRules->DamageAlliesMultiplier) : pRules->DamageAlliesMultiplier);
 		else
-			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageMultiplierByHouse_SmartDefault && !pWHExt->AffectsEnemies ? 1.0 : pRules->DamageOwnerMultiplier);
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? pRules->DamageOwnerMultiplier_NotAffectsEnemies.Get(pRules->DamageOwnerMultiplier) : pRules->DamageOwnerMultiplier);
 
 		if (pWHExt->DamageSourceHealthMultiplier && args->Attacker)
 			multiplier += pWHExt->DamageSourceHealthMultiplier * args->Attacker->GetHealthPercentage();

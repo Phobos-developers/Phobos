@@ -175,7 +175,8 @@ public:
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
-		Valueable<bool> DamageMultiplierByHouse_SmartDefault;
+		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -369,7 +370,8 @@ public:
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
-			, DamageMultiplierByHouse_SmartDefault { false }
+			, DamageOwnerMultiplier_NotAffectsEnemies {}
+			, DamageAlliesMultiplier_NotAffectsEnemies {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
