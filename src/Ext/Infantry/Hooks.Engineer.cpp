@@ -24,9 +24,7 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_MouseOverObject_EnigneerEnterBuilding, 0x6)
 	if (InputManagerClass::Instance->IsForceFireKeyPressed())
 		return Skip;
 
-	bool BridgeRepairHut = pBuildingType->BridgeRepairHut;
-
-	if (!BridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
+	if (!pBuildingType->BridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
 	{
 		if (InputManagerClass::Instance->IsForceMoveKeyPressed()
 			|| pBuilding->Health >= pBuildingType->Strength)
