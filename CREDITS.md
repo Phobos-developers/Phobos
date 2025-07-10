@@ -451,6 +451,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that healing weapons could not automatically acquire aerial targets
   - Fix an issue where AI would select unreachable buildings and get stuck when looking for buildings like tank bunkers, bio reactors, etc
   - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
+  - Skip target scanning function calling for unarmed technos (code)
+- **solar-III (凤九歌)**
+  - Skip target scanning function calling for unarmed technos (documentation)
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

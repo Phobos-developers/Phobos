@@ -207,16 +207,17 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+	pExt->CurrentShieldType = pTypeExt->ShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeLaserTrails();
 
 	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
 		pExt->UpdateTintValues();
 
-	if (pExt->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
 
 	return 0;
@@ -616,4 +617,11 @@ DEFINE_HOOK(0x70EFE0, TechnoClass_GetMaxSpeed, 0x6)
 
 	R->EAX(maxSpeed);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x6FA697, TechnoClass_Update_DontScanIfUnarmed, 0x6)
+{
+	enum { SkipTargeting = 0x6FA6F5 };
+	GET(TechnoClass* const, pThis, ESI);
+	return pThis->IsArmed() ? 0 : SkipTargeting;
 }
