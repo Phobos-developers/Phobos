@@ -1369,8 +1369,9 @@ SubterraneanSpeed=-1     ; floating point value
 
 ### Target scanning delay optimization
 
-- In vanilla, the game used 'NormalTargetingDelay' and 'GuardAreaTargetingDelay' to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause game lag.
+- In vanilla, the game used `NormalTargetingDelay` and `GuardAreaTargetingDelay` to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause game lag.
 - Now, you can define them per techno, also allowing different values for AI and players. The default values are the same as those originally defined by the vanilla flags.
+  - You can also specific this delay for attack move mission. The default value is `NormalTargetingDelay`.
 
 In `rulesmd.ini`:
 ```ini
@@ -1379,12 +1380,16 @@ AINormalTargetingDelay=              ; integer, game frames
 PlayerNormalTargetingDelay=          ; integer, game frames
 AIGuardAreaTargetingDelay=           ; integer, game frames
 PlayerGuardAreaTargetingDelay=       ; integer, game frames
+AIAttackMoveTargetingDelay=          ; integer, game frames
+PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 [SOMETECHNO]                         ; TechnoType
 AINormalTargetingDelay=              ; integer, game frames
 PlayerNormalTargetingDelay=          ; integer, game frames
 AIGuardAreaTargetingDelay=           ; integer, game frames
 PlayerGuardAreaTargetingDelay=       ; integer, game frames
+AIAttackMoveTargetingDelay=          ; integer, game frames
+PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
 ### Voxel body multi-section shadows
