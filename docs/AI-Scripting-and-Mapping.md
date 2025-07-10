@@ -36,7 +36,6 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 ### Default loading screen and briefing offsets
 
 - It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
-  - Note that despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 
 In `missionmd.ini`:
 ```ini
@@ -48,6 +47,10 @@ DefaultLS800BriefLocY=0  ; integer
 DefaultLS640BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdName=    ; filename - including the .shp extension.
 DefaultLS800BkgdPal=     ; filename - including the .pal extension
+```
+
+```{note}
+Despite the key name being `DefaultLS800BkgdPal`, this applies to both shapes just like the original scenario-specific `LS800BkgdPal` does.
 ```
 
 ### MCV redeploying
@@ -806,16 +809,16 @@ ID=EventCount,...,600,2,0,0,...
 - `602`: Springs when specified house doesn't own a single instance of set TechnoType.
   - Multiplayer houses (indices 4475 through 4482) are supported.
 
-```{note}
-These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
-```
-
 In `mycampaign.map`:
 ```ini
 [Events]
 ...
 ID=EventCount,...,[EVENTID],2,[HouseIndex],[TechnoType],...
 ...
+```
+
+```{note}
+These events, as opposed to [events 81 & 82 from Ares](https://ares-developers.github.io/Ares-docs/new/triggerevents.html#house-owns-techno-type-81-82), take house as a parameter instead of using the trigger owner.
 ```
 
 ### `604-605` Checking if a specific Techno enters in a cell
