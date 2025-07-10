@@ -307,6 +307,8 @@ public:
 		Nullable<int> PlayerNormalTargetingDelay;
 		Nullable<int> AIGuardAreaTargetingDelay;
 		Nullable<int> PlayerGuardAreaTargetingDelay;
+		Nullable<int> AIAttackMoveTargetingDelay;
+		Nullable<int> PlayerAttackMoveTargetingDelay;
 		Nullable<bool> DistributeTargetingFrame;
 
 		Nullable<bool> AttackMove_Aggressive;
@@ -685,6 +687,8 @@ public:
 			, PlayerNormalTargetingDelay {}
 			, AIGuardAreaTargetingDelay {}
 			, PlayerGuardAreaTargetingDelay {}
+			, AIAttackMoveTargetingDelay {}
+			, PlayerAttackMoveTargetingDelay {}
 			, DistributeTargetingFrame {}
 
 			, DigitalDisplay_Health_FakeAtDisguise { true }

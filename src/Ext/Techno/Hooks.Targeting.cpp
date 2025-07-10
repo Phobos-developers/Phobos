@@ -18,7 +18,13 @@ DEFINE_HOOK(0x70982C, TechnoClass_TargetAndEstimateDamage_TargetingDelay, 0x8)
 	int delay = ScenarioClass::Instance->Random.RandomRanged(0, 2);
 	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	if (pThis->CurrentMission == Mission::Area_Guard)
+	if (pThis->MegaMissionIsAttackMove())
+	{
+		delay += pThis->Owner->IsControlledByHuman()
+			? pTypeExt->PlayerAttackMoveTargetingDelay.Get(RulesExt::Global()->PlayerAttackMoveTargetingDelay.Get(RulesClass::Instance->NormalTargetingDelay))
+			: pTypeExt->AIAttackMoveTargetingDelay.Get(RulesExt::Global()->AIAttackMoveTargetingDelay.Get(RulesClass::Instance->NormalTargetingDelay));
+	}
+	else if (pThis->CurrentMission == Mission::Area_Guard)
 	{
 		delay += pThis->Owner->IsControlledByHuman()
 			? pTypeExt->PlayerGuardAreaTargetingDelay.Get(RulesExt::Global()->PlayerGuardAreaTargetingDelay.Get(RulesClass::Instance->GuardAreaTargetingDelay))
