@@ -37,7 +37,7 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 
 	const auto pInuptManager = InputManagerClass::Instance;
 	WhatActionObjectTemp::Fire = pInuptManager->IsForceFireKeyPressed();
-	WhatActionObjectTemp::Move = pInuptManager->IsForceFireKeyPressed();
+	WhatActionObjectTemp::Move = pInuptManager->IsForceMoveKeyPressed();
 
 	if (!pThis->Type->Engineer)
 		return Skip;
