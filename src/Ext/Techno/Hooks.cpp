@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <AircraftClass.h>
 #include <EventClass.h>
@@ -1016,7 +1016,7 @@ DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->FiringSequencePaused)
+	if (pExt->DelayedFireSequencePaused)
 		return SkipGameCode;
 
 	return 0;
