@@ -160,6 +160,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
 - Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Skip target scanning function calling for unarmed technos.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General] -> ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
@@ -1166,6 +1167,22 @@ ForbidParallelAIQueues.Building=no  ; boolean
 ForbidParallelAIQueues=false        ; boolean
 ```
 
+### Force techno targeting in distributed frames to improve performance
+
+- When you create many technos in a same frame (i.e. starting the game with a campaign map that initially has a large number of technos), they will always scan for targets in a synchronous period, causing game lag. Increasing targeting delay alone will not make things better, as their targeting is still synchronized.
+- It is now possible to force them to seek targets separately. When a techno spawns, it will generate a random number in \[0,15\]. If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
+  - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
+
+In `rulesmd.ini`
+```ini
+[General]
+DistributeTargetingFrame=false         ; boolean
+DistributeTargetingFrame.AIOnly=true   ; boolean
+
+[SOMETECHNO]                           ; TechnoType
+DistributeTargetingFrame=              ; boolean
+```
+
 ### Iron Curtain & Force Shield effects on organics customization
 
 - In vanilla game, when Iron Curtain is applied on `Organic=true` units like squids or infantry, they could only get killed instantly by `C4Warhead`. This behavior is now unhardcoded and can be set with `IronCurtain.EffectOnOrganics` globally and on per-TechnoType basis with `IronCurtain.Effect`. Following values are respected:
@@ -1347,6 +1364,31 @@ SubterraneanSpeed=-1     ; floating point value
 
 ```{warning}
 `SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50.
+```
+
+### Target scanning delay optimization
+
+- In vanilla, the game used `NormalTargetingDelay` and `GuardAreaTargetingDelay` to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause game lag.
+- Now, you can define them per techno, also allowing different values for AI and players. The default values are the same as those originally defined by the vanilla flags.
+  - You can also specific this delay for attack move mission. The default value is `NormalTargetingDelay`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
+AIAttackMoveTargetingDelay=          ; integer, game frames
+PlayerAttackMoveTargetingDelay=      ; integer, game frames
+
+[SOMETECHNO]                         ; TechnoType
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
+AIAttackMoveTargetingDelay=          ; integer, game frames
+PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
 ### Voxel body multi-section shadows
