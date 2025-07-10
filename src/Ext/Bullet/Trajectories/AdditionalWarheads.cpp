@@ -18,15 +18,15 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 	const CoordStruct cor4Coord { static_cast<int>((-walkCoord.Y) * sideMult), static_cast<int>(walkCoord.X * sideMult), 0 };
 	const auto thisCell = CellClass::Coord2Cell(pBullet->Location);
 
-	auto cor1Cell = CellClass::Coord2Cell((pBullet->Location + cor1Coord));
-	auto cor4Cell = CellClass::Coord2Cell((pBullet->Location + cor4Coord));
+	auto cor1Cell = CellClass::Coord2Cell(pBullet->Location + cor1Coord);
+	auto cor4Cell = CellClass::Coord2Cell(pBullet->Location + cor4Coord);
 
 	const auto off1Cell = cor1Cell - thisCell;
 	const auto off4Cell = cor4Cell - thisCell;
 
 	const auto predictRatio = (walkDistance + radius) / walkDistance;
 	const CoordStruct predictCoord { static_cast<int>(walkCoord.X * predictRatio), static_cast<int>(walkCoord.Y * predictRatio), 0 };
-	const auto nextCell = CellClass::Coord2Cell((pBullet->Location + predictCoord));
+	const auto nextCell = CellClass::Coord2Cell(pBullet->Location + predictCoord);
 
 	auto cor2Cell = nextCell + off1Cell;
 	auto cor3Cell = nextCell + off4Cell;
@@ -439,24 +439,26 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				if (distanceCrd * velocityCrd < 0)
 					continue;
 
+				auto distanceOffset = 0;
+				// Building type have an extra bonus to distance (0x5F6403)
+				if (isBuilding)
+				{
+					const auto pBldType = static_cast<BuildingClass*>(pTechno)->Type;
+					distanceOffset = 64 * (pBldType->GetFoundationHeight(false) + pBldType->GetFoundationWidth());
+				}
+
 				const auto nextDistanceCrd = distanceCrd - velocityCrd;
 				// Should be behind the bullet's next frame position
 				if (nextDistanceCrd * velocityCrd > 0)
 				{
 					// Otherwise, at least within the spherical range of future position
-					if (nextDistanceCrd.Magnitude() > radius)
+					if (static_cast<int>(nextDistanceCrd.Magnitude()) > (radius + distanceOffset))
 						continue;
 				}
 				// Calculate the distance between the point and the line
-				auto distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
-				// Building type have an extra bonus to distance (0x5F6403)
-				if (isBuilding)
-				{
-					const auto pBldType = static_cast<BuildingClass*>(pTechno)->Type;
-					distance = Math::max(0, (distance - 64 * (pBldType->GetFoundationHeight(false) + pBldType->GetFoundationWidth())));
-				}
+				const auto distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 				// Should be in the center cylinder
-				if (distance > radius)
+				if (distance > (radius + distanceOffset))
 					continue;
 				// Manual expansion
 				if (thisSize >= vectSize)
