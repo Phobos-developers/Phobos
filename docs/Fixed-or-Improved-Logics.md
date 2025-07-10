@@ -241,7 +241,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically. This behaviour can be turned off by setting `Vertical.AircraftFix=false` on the projectile.
 - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
 - Player-controlled spies are not forced to perform other tasks while attacking buildings
-- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse cursor
+- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
 
 ## Fixes / interactions with other extensions
 
