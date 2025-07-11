@@ -933,14 +933,12 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 
 	int nWeaponIndex = pThis->IsNotSprayAttack();
 
-	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
+	if (pThis->WhatAmI() == AbstractType::Infantry)
 	{
-		const auto pInfantryType = pInfantry->Type;
+		int DeployFireWeapon = static_cast<InfantryClass*>(pThis)->Type->DeployFireWeapon;
 
-		if (pInfantryType->IsGattling || TechnoTypeExt::ExtMap.Find(pInfantryType)->MultiWeapon.Get())
-		{
-			nWeaponIndex = pInfantryType->DeployFireWeapon;
-		}
+		if (DeployFireWeapon >= 0)
+			nWeaponIndex = DeployFireWeapon;
 	}
 
 	R->EAX(nWeaponIndex);
