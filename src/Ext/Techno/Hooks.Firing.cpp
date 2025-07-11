@@ -926,3 +926,23 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
 	return 0x5223B9;
 }
+
+DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	int nWeaponIndex = pThis->IsNotSprayAttack();
+
+	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
+	{
+		const auto pInfantryType = pInfantry->Type;
+
+		if (pInfantryType->IsGattling || TechnoTypeExt::ExtMap.Find(pInfantryType)->MultiWeapon.Get())
+		{
+			nWeaponIndex = pInfantryType->DeployFireWeapon;
+		}
+	}
+
+	R->EAX(nWeaponIndex);
+	return 0x70E12C;
+}
