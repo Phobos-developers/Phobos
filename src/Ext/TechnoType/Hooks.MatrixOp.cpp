@@ -154,6 +154,8 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
+	size_t arfFace = 0;
+	size_t arsFace = 0;
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
@@ -183,13 +185,18 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	{
 		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
 
-		if (pTypeExt->JumpjetTilt && !onGround && pThis->CurrentSpeed > 0.0
-			&& linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+		if (pTypeExt->JumpjetTilt
+			&& !onGround
+			&& pThis->CurrentSpeed > 0.0
+			&& linked->WhatAmI() == AbstractType::Unit
+			&& linked->IsAlive
+			&& linked->Health > 0
+			&& !linked->IsAttackedByLocomotor)
 		{
 			const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
 			const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
 
-			arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+			arf = std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
 				* JumpjetTiltReference::ForwardBaseTilt));
 
 			const auto& locoFace = pThis->LocomotionFacing;
@@ -200,24 +207,35 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 				const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
 					* pTypeExt->JumpjetTilt_SidewaysRotationFactor;
 
-				ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+				ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+
+				const auto arsDir = DirStruct(ars);
+				arsFace = arsDir.GetFacing<128>();
+
+				if (arsFace)
+					ret->RotateX(static_cast<float>(arsDir.GetRadian<128>()));
 			}
 
-			if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
-			{
-				if (pIndex) *pIndex = -1;
+			const auto arfDir = DirStruct(arf);
+			arfFace = arfDir.GetFacing<128>();
 
-				ret->RotateX(ars);
-				ret->RotateY(arf);
-			}
+			if (arfFace)
+				ret->RotateY(static_cast<float>(arfDir.GetRadian<128>()));
 		}
 	}
 
 	if (pIndex && *pIndex != -1)
 	{
-		if (onGround) *pIndex = slope_idx + (*pIndex << 6);
-		*pIndex *= 32;
+		if (*pIndex == 0 && (arfFace || arsFace))
+			*pIndex = (((arfFace & 0x7Fu) << 7) + (arsFace & 0x7Fu)) << 7;
+		else if (onGround)
+			*pIndex <<= 6;
+
+		if (onGround)
+			*pIndex += slope_idx;
+
+		*pIndex <<= 5;
 		*pIndex |= curf.GetFacing<32>();
 	}
 
@@ -225,6 +243,16 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
+DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
+{
+	REF_STACK(int, vxlIndexKey, STACK_OFFSET(0x1C4, -0x1B0));
+
+	// In theory, SpawnAlt would overlap with TurretFrame, but I'm not sure if it was intentional. Anyway, keep it.
+	if (vxlIndexKey != -1)
+		vxlIndexKey &= 0x1FFFF;
+
+	return 0;
+}
 
 // Visual bugfix : Teleport loco vxls could not tilt
 Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
