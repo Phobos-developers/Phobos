@@ -2286,9 +2286,17 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	int DeployFireWeapon = pThis->GetTechnoType()->DeployFireWeapon;
+	if (pThis->WhatAmI() == AbstractType::Infantry)
+	{
+		int DeployFireWeapon = static_cast<InfantryClass*>(pThis)->Type->DeployFireWeapon;
 
-	R->EAX(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
+		R->EAX(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
+	}
+	else
+	{
+		R->EAX(pThis->IsNotSprayAttack());
+	}
+
 	return 0x70E12C;
 }
 

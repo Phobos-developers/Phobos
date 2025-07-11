@@ -458,6 +458,7 @@ Vanilla fixes:
 - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt) (by FlyStar)
 - Player-controlled spies are not forced to perform other tasks while attacking buildings (by FlyStar)
 - If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
+- Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
