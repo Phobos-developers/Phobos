@@ -2287,6 +2287,7 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 
 	int DeployFireWeapon = pThis->GetTechnoType()->DeployFireWeapon;
+
 	R->EAX(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
 	return 0x70E12C;
 }
