@@ -247,9 +247,9 @@ DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 {
 	REF_STACK(int, vxlIndexKey, STACK_OFFSET(0x1C4, -0x1B0));
 
-	// In theory, SpawnAlt would overlap with TurretFrame, but I'm not sure if it was intentional. Anyway, keep it.
-	if (vxlIndexKey != -1)
-		vxlIndexKey &= 0x1FFFF;
+	// Main body drawing completed, then enable accurate drawing of turrets and barrels
+	if (vxlIndexKey != -1 && (vxlIndexKey & 0x7FFE0000)) // Flags used by JumpjetTilt units
+		vxlIndexKey = -1;
 
 	return 0;
 }
@@ -459,8 +459,14 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_matrix.RotateY(arf);
 		shadow_matrix.RotateX(ars);
 	}
-	else if (jjloco && uTypeExt->JumpjetTilt && jjloco->State != JumpjetLocomotionClass::State::Grounded
-		&& jjloco->CurrentSpeed > 0.0 && pThis->IsAlive && pThis->Health > 0 && !pThis->IsAttackedByLocomotor)
+	else if (jjloco
+		&& uTypeExt->JumpjetTilt
+		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
+		&& jjloco->CurrentSpeed > 0.0
+		&& pThis->WhatAmI() == AbstractType::Unit
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->IsAttackedByLocomotor)
 	{
 		const auto forwardSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor;
 		const auto forwardAccelFactor = jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor;
