@@ -93,20 +93,48 @@ Building manually
 Credits
 -------
 
-### Developers
-- **Belonit (Gluk-v48)** - project author
-- **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer ([Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
-- **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
-- **Uranusian (Thrifinesma)** - developer, CN community ambassador
-- **secsome (SEC-SOME)** - developer
-- **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
-- **FS-21** - developer
-- **Morton (MortonPL)** - co-maintainer, developer
-- **Trsdy (chaserli)** - co-maintainer, developer
+This project was founded by @Belonit (Gluk-v48) and @Metadorius (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers.
 
-For all contributions see [full credits list](CREDITS.md).
+### Maintenance crew
 
-Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.
+Maintenance crew consists of experienced Phobos contributors who are recognized and given the permission to maintain and shape the project to the extent of their permissions.
+
+Every crew member is welcome to put a donation link to their entry in the list below, but it's not required.
+
+- **Kerbiter (@Metadorius)** - T3 maintainer (lead)
+  - [Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request
+- **@Starkku** - T2 maintainer
+  - [Patreon](https://www.patreon.com/Starkku)
+- **@CrimRecya (绯红热茶)** - T2 maintainer
+- **@ZivDero** - T2 maintainer
+  - [Patreon](https://www.patreon.com/c/ZivDero)
+- **Ollerus (@Coronia)** - T1 maintainer
+- **@NetsuNegi** - T1 maintainer
+- **@TaranDahl (航味麻酱)** - T1 maintainer
+- **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
+- **FlyStar (@a851903106)** - triage
+- **@Fryone** - triage
+
+#### Inactive
+*Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*
+
+- **Gluk-v48 (@Belonit)** - lead in the past
+- **Uranusian (@Thrifinesma)** - T2 maintainer, CN community ambassador, doc maintainer
+- **@secsome** - maintainer
+- **@Otamaa (Fahroni, BoredEXE)** - maintainer
+- **@FS-21** - inactive as a maintainer specifically
+- **Morton (@MortonPL)** - T2 maintainer
+- **Trsdy (@chaserli)** - T2 maintainer
+
+
+The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!
+
+Attribution
+-----
+
+You can show your appreciation and help project's publicity by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it a button that opens Phobos GitHub page for extra fanciness). To fit with the mod styling, you are allowed to stylize the monochrome logo in a non-intrusive way (for example, recolor it to match the mod theme) without otherwise changing it. If unsure - ask us first.
+
+When promoting features you implement with your mod, please give credit to the Phobos project and its contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: "This feature is made possible by Phobos", "Implemented using XYZ from Phobos", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors.
 
 Legal and License
 -----
