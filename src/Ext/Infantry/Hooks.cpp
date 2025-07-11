@@ -21,7 +21,7 @@ DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 
 namespace WhatActionObjectTemp
 {
-	bool ignoreForce = false;
+	bool IgnoreForce = false;
 	bool Fire = false;
 	bool Move = false;
 }
@@ -30,14 +30,12 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 {
 	GET(InfantryClass*, pThis, EDI);
 	GET(ObjectClass*, pTarget, ESI);
-	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x38, 0x8));
+	GET_STACK(const bool, ignoreForce, STACK_OFFSET(0x38, 0x8));
 	enum { Skip = 0x51E668, SkipBomb = 0x51E49E, CanBomb = 0x51E48F };
 
-	WhatActionObjectTemp::ignoreForce = ignoreForce;
-
-	const auto pInuptManager = InputManagerClass::Instance;
-	WhatActionObjectTemp::Fire = pInuptManager->IsForceFireKeyPressed();
-	WhatActionObjectTemp::Move = pInuptManager->IsForceMoveKeyPressed();
+	WhatActionObjectTemp::IgnoreForce = ignoreForce;
+	WhatActionObjectTemp::Fire = InputManagerClass::Instance->IsForceFireKeyPressed();
+	WhatActionObjectTemp::Move = InputManagerClass::Instance->IsForceMoveKeyPressed();
 
 	if (!pThis->Type->Engineer)
 		return Skip;
@@ -48,7 +46,7 @@ DEFINE_HOOK(0x51E462, InfantryClass_WhatAction_ObjectClass_SkipBomb, 0x6)
 		if (!ignoreForce && WhatActionObjectTemp::Move)
 			return SkipBomb;
 
-		int index = pThis->SelectWeapon(pTarget);
+		const int index = pThis->SelectWeapon(pTarget);
 		const auto pWeaponType = pThis->GetWeapon(index)->WeaponType;
 
 		return pWeaponType && pWeaponType->Warhead->BombDisarm ? CanBomb : SkipBomb;
@@ -64,14 +62,14 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 	GET(BuildingTypeClass*, pBuildingType, EAX);
 	enum { Skip = 0x51E668, Continue = 0x51E501 };
 
-	bool ignoreForce = WhatActionObjectTemp::ignoreForce;
+	const bool ignoreForce = WhatActionObjectTemp::IgnoreForce;
 
 	if (!ignoreForce && WhatActionObjectTemp::Fire)
 		return Skip;
 
-	bool BridgeRepairHut = pBuildingType->BridgeRepairHut;
+	const bool bridgeRepairHut = pBuildingType->BridgeRepairHut;
 
-	if (!BridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
+	if (!bridgeRepairHut && pThis->Owner->IsAlliedWith(pBuilding->Owner))
 	{
 		if ((!ignoreForce && WhatActionObjectTemp::Move)
 			|| pBuilding->Health >= pBuildingType->Strength)
@@ -80,13 +78,13 @@ DEFINE_HOOK(0x51E4FB, InfantryClass_WhatAction_ObjectClass_EnigneerEnterBuilding
 		}
 	}
 
-	R->CL(BridgeRepairHut);
+	R->CL(bridgeRepairHut);
 	return Continue;
 }
 
 DEFINE_HOOK(0x51EE6B, InfantryClass_WhatAction_ObjectClass_InfiltrateForceAttack, 0x6)
 {
-	return (!WhatActionObjectTemp::ignoreForce && WhatActionObjectTemp::Fire) ? 0x51F05E : 0;
+	return (!WhatActionObjectTemp::IgnoreForce && WhatActionObjectTemp::Fire) ? 0x51F05E : 0;
 }
 
 #pragma endregion
