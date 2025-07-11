@@ -2279,3 +2279,35 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 
 	return 0;
 }
+
+#pragma region InfantryDeployFireWeaponFix
+
+DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	int DeployFireWeapon = pThis->GetTechnoType()->DeployFireWeapon;
+	R->EAX(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
+	return 0x70E12C;
+}
+
+DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
+{
+	enum { SkipFire = 0x521443, CannotFire = 0x521478 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	const auto pTarget = pThis->Target;
+	int DeployFireWeapon = pThis->Type->DeployFireWeapon;
+	int nWeaponIndex = DeployFireWeapon == -1 ? pThis->SelectWeapon(pTarget) : DeployFireWeapon;
+
+	if (pThis->GetFireError(pThis->Target, nWeaponIndex, true) == FireError::OK)
+	{
+		pThis->Fire(pTarget, nWeaponIndex);
+		return SkipFire;
+	}
+
+	return CannotFire;
+}
+
+#pragma endregion

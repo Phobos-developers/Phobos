@@ -923,24 +923,9 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+
+	int DeployFireWeapon = pThis->Type->DeployFireWeapon;
+
+	R->EDI(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
 	return 0x5223B9;
-}
-
-DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
-{
-	GET(TechnoClass*, pThis, ESI);
-
-	int nWeaponIndex = pThis->IsNotSprayAttack();
-
-	if (pThis->WhatAmI() == AbstractType::Infantry)
-	{
-		int DeployFireWeapon = static_cast<InfantryClass*>(pThis)->Type->DeployFireWeapon;
-
-		if (DeployFireWeapon >= 0)
-			nWeaponIndex = DeployFireWeapon;
-	}
-
-	R->EAX(nWeaponIndex);
-	return 0x70E12C;
 }
