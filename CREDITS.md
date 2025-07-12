@@ -351,6 +351,10 @@ This page lists all the individual contributions to the project by their author.
   - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
   - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
   - Fix the issue where some units crashed after the deployment transformation
+  - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
+  - Player-controlled spies are not forced to perform other tasks while attacking buildings
+  - If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
+  - Fixed an unusual use of DeployFireWeapon for InfantryType
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
