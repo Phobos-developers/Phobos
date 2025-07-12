@@ -1091,7 +1091,7 @@ DEFINE_HOOK(0x546C95, IsometricTileTypeClass_ReadINI_LunarFixes, 0x6)
 	return 0;
 }
 
-// Oct 26, 2024 - Starkku: Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes 
+// Oct 26, 2024 - Starkku: Fixes an edge case that affects AI-owned technos where they lose ally targets instantly even if they have AttackFriendlies=yes
 DEFINE_HOOK(0x6FA467, TechnoClass_AI_AttackFriendlies, 0x5)
 {
 	enum { SkipResetTarget = 0x6FA472 };
@@ -2250,7 +2250,7 @@ DEFINE_HOOK(0x489E47, DamageArea_RockerItemsFix2, 0x6)
 	return 0;
 }
 
-#pragma region
+#pragma endregion
 
 DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 {
@@ -2286,11 +2286,11 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (pThis->WhatAmI() == AbstractType::Infantry)
+	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
 	{
-		int DeployFireWeapon = static_cast<InfantryClass*>(pThis)->Type->DeployFireWeapon;
+		const int deployFireWeapon = pInfantry->Type->DeployFireWeapon;
 
-		R->EAX(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
+		R->EAX(deployFireWeapon == -1 ? pInfantry->SelectWeapon(pInfantry->Target) : deployFireWeapon);
 	}
 	else
 	{
@@ -2307,12 +2307,12 @@ DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
 	GET(InfantryClass*, pThis, ESI);
 
 	const auto pTarget = pThis->Target;
-	int DeployFireWeapon = pThis->Type->DeployFireWeapon;
-	int nWeaponIndex = DeployFireWeapon == -1 ? pThis->SelectWeapon(pTarget) : DeployFireWeapon;
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+	const int weaponIndex = deployFireWeapon == -1 ? pThis->SelectWeapon(pTarget) : deployFireWeapon;
 
-	if (pThis->GetFireError(pThis->Target, nWeaponIndex, true) == FireError::OK)
+	if (pThis->GetFireError(pTarget, weaponIndex, true) == FireError::OK)
 	{
-		pThis->Fire(pTarget, nWeaponIndex);
+		pThis->Fire(pTarget, weaponIndex);
 		return SkipFire;
 	}
 

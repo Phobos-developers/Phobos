@@ -924,8 +924,8 @@ DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
 
-	int DeployFireWeapon = pThis->Type->DeployFireWeapon;
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
 
-	R->EDI(DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : DeployFireWeapon);
+	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
 }
