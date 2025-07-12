@@ -578,3 +578,138 @@ msgstr ""
 "Conquer Red Alert 2」 和 「Command & Conquer Yuri's "
 "Revenge」均为艺电公司的注册商标。版权所有。"
 
+#: ../../../README.md:97
+msgid "This project was founded by @Belonit (Gluk-v48) and @Metadorius (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers."
+msgstr "本项目由 @Belonit（Gluk-v48）和 @Metadorius（Kerbiter）于 2020 年创立，2021 年首次发布稳定版。此后它已发展成为一个由众多贡献者和维护者组成的大型社区项目。"
+
+#: ../../../README.md:99
+msgid "Maintenance crew"
+msgstr "维护团队"
+
+#: ../../../README.md:101
+msgid "Maintenance crew consists of experienced Phobos contributors who are recognized and given the permission to maintain and shape the project to the extent of their permissions."
+msgstr "维护团队由经验丰富的 Phobos 贡献者组成，他们经过认可并获得相应权限，可在其权限范围内对项目进行维护和规划。"
+
+#: ../../../README.md:103
+msgid "Every maintenance crew member is welcome to put a donation link to their entry in the list below."
+msgstr "欢迎每位团队成员在下方为他们自己的条目添加捐款链接。"
+
+#: ../../../README.md:105
+msgid "**Kerbiter (@Metadorius)** - T3 maintainer (lead)"
+msgstr "**Kerbiter（@Metadorius）** - T3 维护者（领导者）"
+
+#: ../../../README.md:106
+msgid "[Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request"
+msgstr "[Patreon](https://www.patreon.com/kerbiter) 或私信请求使用 PayPal（更推荐，因为免手续费）"
+
+#: ../../../README.md:107
+msgid "**@Starkku** - T2 maintainer"
+msgstr "**@Starkku** - T2 维护者"
+
+#: ../../../README.md:108
+msgid "[Patreon](https://www.patreon.com/Starkku)"
+msgstr "[Patreon](https://www.patreon.com/Starkku)"
+
+#: ../../../README.md:109
+msgid "**@CrimRecya (绯红热茶)** - T2 maintainer"
+msgstr "**@CrimRecya（绯红热茶）** - T2 维护者"
+
+#: ../../../README.md:110
+msgid "[Alipay](images/Donation-CrimRecya.jpg)"
+msgstr "[支付宝](images/Donation-CrimRecya.jpg)"
+
+#: ../../../README.md:111
+msgid "**@ZivDero** - T2 maintainer"
+msgstr "**@ZivDero** - T2 维护者"
+
+#: ../../../README.md:112
+msgid "[Patreon](https://www.patreon.com/c/ZivDero)"
+msgstr "[Patreon](https://www.patreon.com/c/ZivDero)"
+
+#: ../../../README.md:113
+msgid "**Ollerus (@Coronia)** - T1 maintainer"
+msgstr "**Ollerus (@Coronia)** - T1 维护者"
+
+#: ../../../README.md:114
+msgid "**@NetsuNegi** - T1 maintainer"
+msgstr "**@NetsuNegi** - T1 维护者"
+
+#: ../../../README.md:115
+msgid "[Alipay](images/Donation-NetsuNegi.jpg)"
+msgstr "[支付宝](images/Donation-NetsuNegi.jpg)"
+
+#: ../../../README.md:116
+msgid "**@TaranDahl (航味麻酱)** - T1 maintainer"
+msgstr "**@TaranDahl（航味麻酱）** - T1 维护者"
+
+#: ../../../README.md:117
+msgid "[WeChatPay](images/Donation-TaranDahl.jpg)"
+msgstr "[微信](images/Donation-TaranDahl.jpg)"
+
+#: ../../../README.md:118
+msgid "**DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer"
+msgstr "**DeathFish（@DeathFishAtEase, Noble Fish）** - 分派、文档维护者"
+
+#: ../../../README.md:119
+msgid "[Alipay](images/Donation-DeathFish.jpg)"
+msgstr "[支付宝](images/Donation-DeathFish.jpg)"
+
+#: ../../../README.md:120
+msgid "**FlyStar (@a851903106)** - triage"
+msgstr "**FlyStar（@a851903106）** - 分派"
+
+#: ../../../README.md:121
+msgid "**@Fryone** - triage"
+msgstr "**@Fryone** - 分派"
+
+#: ../../../README.md:123
+msgid "Inactive"
+msgstr "不活跃的维护团队成员"
+
+#: ../../../README.md:124
+msgid "*Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*"
+msgstr "*请注意：被列在此处仅表示您作为维护团队的成员但似乎并不活跃。如果您想再次提供帮助，欢迎您随时归队！*"
+
+#: ../../../README.md:126
+msgid "**Gluk-v48 (@Belonit)** - lead in the past"
+msgstr "**Gluk-v48（@Belonit）** - 旧有领导者"
+
+#: ../../../README.md:127
+msgid "**Uranusian (@Thrifinesma)** - T2 maintainer, CN community ambassador, doc maintainer"
+msgstr "**Uranusian（@Thrifinesma）** - T2 维护者、中国社区大使、文档维护者"
+
+#: ../../../README.md:128
+msgid "**@secsome** - maintainer"
+msgstr "**@secsome** - 维护者"
+
+#: ../../../README.md:129
+msgid "**@Otamaa (Fahroni, BoredEXE)** - maintainer"
+msgstr "**@Otamaa（Fahroni 或 BoredEXE）** - 维护者"
+
+#: ../../../README.md:130
+msgid "**@FS-21** - inactive as a maintainer specifically"
+msgstr "**@FS-21** - 作为维护者而言并不活跃"
+
+#: ../../../README.md:131
+msgid "**Morton (@MortonPL)** - T2 maintainer"
+msgstr "**Morton（@MortonPL）** - T2 维护者"
+
+#: ../../../README.md:132
+msgid "**Trsdy (@chaserli)** - T2 maintainer"
+msgstr "**Trsdy (@chaserli)** - T2 维护者"
+
+#: ../../../README.md:135
+msgid "The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!"
+msgstr "项目规模如此庞大以至于在此处列出我们正在或曾经获得的所有帮助将使自述文件的篇幅急剧膨胀，因此请查阅 [完整致谢列表](CREDITS.md) 以获取相关信息。无论您提供何种帮助、贡献或支持，我们都表示感谢！"
+
+#: ../../../README.md:137
+msgid "Attribution"
+msgstr "归属"
+
+#: ../../../README.md:140
+msgid "You can show your appreciation and help project's publicity by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it a button that opens Phobos GitHub page for extra fanciness). To fit with the mod styling, you are allowed to stylize the monochrome logo in a non-intrusive way (for example, recolor it to match the mod theme) without otherwise changing it. If unsure - ask us first."
+msgstr "你可以通过在你的客户端／启动器中展示我们的 Logo（单色版本可在 [此处](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png) 获取）来表达支持并助力项目宣传（可以将其设为点击即可打开 Phobos 项目 GitHub 主页的按钮，效果更佳）。为契合 Mod 风格，你可以在不改变基本图形的前提下以不突兀的方式设计单色 Logo（例如，将其重新着色以匹配 Mod 的主题）。如有疑问，请 **先** 询问我们。"
+
+#: ../../../README.md:142
+msgid "When promoting features of your mod that you implemented using Phobos, please give credit to Phobos and it's contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: \"This feature is made possible by Phobos\", \"Implemented using XYZ from Phobos\", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors."
+msgstr "在宣传你通过 Phobos 实现的 Mod 功能时，请给予 Phobos 项目及其贡献者应有的感谢。一个对 Phobos 的良好宣传应当简洁明了且聚焦于所展示的功能，例如：「此功能由 Phobos 实现」、「使用 Phobos 的 XYZ 功能实现」等。这有助于最终用户了解 Phobos 的性质及其在修改社区中的作用，也为该项目及其贡献者提供应有的认可。"
