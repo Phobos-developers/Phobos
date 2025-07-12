@@ -549,7 +549,6 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		&& uTypeExt->JumpjetTilt
 		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
 		&& jjloco->CurrentSpeed > 0.0
-		&& pThis->WhatAmI() == AbstractType::Unit
 		&& pThis->IsAlive
 		&& pThis->Health > 0
 		&& !pThis->IsAttackedByLocomotor)
