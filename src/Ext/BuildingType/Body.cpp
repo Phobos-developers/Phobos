@@ -127,12 +127,11 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 
 void BuildingTypeExt::DrawAdjacentLines()
 {
-	const auto pBuilding = abstract_cast<BuildingClass*>(DisplayClass::Instance->CurrentBuilding);
+	const auto pType = abstract_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingType);
 
-	if (!pBuilding)
+	if (!pType)
 		return;
 
-	const auto pType = pBuilding->Type;
 	const auto adjacent = static_cast<short>(pType->Adjacent + 1);
 
 	if (adjacent <= 0)
@@ -143,69 +142,86 @@ void BuildingTypeExt::DrawAdjacentLines()
 	if (foundation == CellStruct::Empty)
 		return;
 
-	const auto topLeft = DisplayClass::Instance->CurrentFoundation_CenterCell + DisplayClass::Instance->CurrentFoundation_TopLeftOffset;
+	const auto topLeft = DisplayClass::Instance.CurrentFoundation_CenterCell + DisplayClass::Instance.CurrentFoundation_TopLeftOffset;
 	const auto min = CellStruct { static_cast<short>(topLeft.X - adjacent), static_cast<short>(topLeft.Y - adjacent) };
 	const auto max = CellStruct { static_cast<short>(topLeft.X + foundation.X + adjacent - 1), static_cast<short>(topLeft.Y + foundation.Y + adjacent - 1) };
 
 	auto rect = DSurface::Temp->GetRect();
 	rect.Height -= 32;
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(min))
+	const auto offset = Unsorted::CurrentFrame % 15;
+	bool pattern[16] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 };
+
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(min)) // Top
 	{
-		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-		point.Y -= 1;
-		auto nextPoint = point;
+		const auto height = 1 + pCell->GetFloorHeight(Point2D::Empty);
+		const auto coords = CellClass::Cell2Coord(pCell->MapCoords, height);
+		const auto pair = TacticalClass::Instance->CoordsToClient(coords);
 
-		point.Y -= 14;
-		nextPoint.X += 29;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+		if (pair.second)
+		{
+			auto point = pair.first + Point2D { 0, -15 };
+			auto nextPoint = pair.first + Point2D { 29, -1 };
+			DSurface::Composite->DrawDashed(&point, &nextPoint, COLOR_WHITE, offset, pattern);
 
-		point.X -= 1;
-		nextPoint.X -= 59;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+			point = pair.first + Point2D { -1, -15 };
+			nextPoint = pair.first + Point2D { -30, -1 };
+			DSurface::Composite->DrawDashed(&nextPoint, &point, COLOR_WHITE, offset, pattern);
+		}
 	}
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(CellStruct{ min.X, max.Y }))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(CellStruct{ min.X, max.Y })) // Left
 	{
-		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-		point.X -= 1;
-		auto nextPoint = point;
+		const auto height = 1 + pCell->GetFloorHeight(Point2D::Empty);
+		const auto coords = CellClass::Cell2Coord(pCell->MapCoords, height);
+		const auto pair = TacticalClass::Instance->CoordsToClient(coords);
 
-		point.X -= 29;
-		nextPoint.Y += 14;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+		if (pair.second)
+		{
+			auto point = pair.first + Point2D { -30, 0 };
+			auto nextPoint = pair.first + Point2D { -1, 14 };
+			DSurface::Composite->DrawDashed(&nextPoint, &point, COLOR_WHITE, offset, pattern);
 
-		point.Y -= 1;
-		nextPoint.Y -= 29;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+			point = pair.first + Point2D { -30, -1 };
+			nextPoint = pair.first + Point2D { -1, -15 };
+			DSurface::Composite->DrawDashed(&point, &nextPoint, COLOR_WHITE, offset, pattern);
+		}
 	}
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(max))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(max)) // Bottom
 	{
-		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-		auto nextPoint = point;
+		const auto height = 1 + pCell->GetFloorHeight(Point2D::Empty);
+		const auto coords = CellClass::Cell2Coord(pCell->MapCoords, height);
+		const auto pair = TacticalClass::Instance->CoordsToClient(coords);
 
-		point.Y += 14;
-		nextPoint.X += 29;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+		if (pair.second)
+		{
+			auto point = pair.first + Point2D { 0, 14 };
+			auto nextPoint = pair.first + Point2D { 29, 0 };
+			DSurface::Composite->DrawDashed(&nextPoint, &point, COLOR_WHITE, offset, pattern);
 
-		point.X -= 1;
-		nextPoint.X -= 59;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+			point = pair.first + Point2D { -1, 14 };
+			nextPoint = pair.first + Point2D { -30, 0 };
+			DSurface::Composite->DrawDashed(&point, &nextPoint, COLOR_WHITE, offset, pattern);
+		}
 	}
 
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(CellStruct{ max.X, min.Y }))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(CellStruct{ max.X, min.Y })) // Right
 	{
-		auto point = TacticalClass::Instance->CoordsToClient(CellClass::Cell2Coord(pCell->MapCoords, (1 + pCell->GetFloorHeight(Point2D::Empty)))).first;
-		auto nextPoint = point;
+		const auto height = 1 + pCell->GetFloorHeight(Point2D::Empty);
+		const auto coords = CellClass::Cell2Coord(pCell->MapCoords, height);
+		const auto pair = TacticalClass::Instance->CoordsToClient(coords);
 
-		point.X += 29;
-		nextPoint.Y += 14;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+		if (pair.second)
+		{
+			auto point = pair.first + Point2D { 29, 0 };
+			auto nextPoint = pair.first + Point2D { 0, 14 };
+			DSurface::Composite->DrawDashed(&point, &nextPoint, COLOR_WHITE, offset, pattern);
 
-		point.Y -= 1;
-		nextPoint.Y -= 29;
-		DSurface::Temp->DrawLineEx(&rect, &point, &nextPoint, COLOR_WHITE);
+			point = pair.first + Point2D { 29, -1 };
+			nextPoint = pair.first + Point2D { 0, -15 };
+			DSurface::Composite->DrawDashed(&nextPoint, &point, COLOR_WHITE, offset, pattern);
+		}
 	}
 }
 
@@ -309,7 +325,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
-	
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)

@@ -121,7 +121,7 @@ DEFINE_HOOK(0x4A904E, MapClass_PassesProximityCheck_RestoreResult, 0x5)
 
 					if (pOwner->ArrayIndex == idxHouse)
 						return pTypeExt->ExtraBaseNormal.Get();
-					else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array->Items[idxHouse]))
+					else if (RulesClass::Instance->BuildOffAlly && pOwner->IsAlliedWith(HouseClass::Array.Items[idxHouse]))
 						return pTypeExt->ExtraBaseForAllyBuilding.Get();
 
 					return false;
@@ -189,7 +189,7 @@ DEFINE_HOOK(0x47EF52, CellClass_DrawPlaceGrid_DrawGrids, 0x6)
 
 	const auto pCell = ProximityTemp::CurrentCell;
 	const auto cell = pCell->MapCoords;
-	const auto pObj = DisplayClass::Instance->CurrentBuildingType;
+	const auto pObj = DisplayClass::Instance.CurrentBuildingType;
 	const auto range = static_cast<short>((pObj && pObj->WhatAmI() == AbstractType::BuildingType) ? static_cast<BuildingTypeClass*>(pObj)->Adjacent + 1 : 0);
 
 	const auto maxX = static_cast<short>(cell.X + range);
