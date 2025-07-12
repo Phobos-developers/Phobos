@@ -6,6 +6,7 @@
 #include <TacticalClass.h>
 #include <IsometricTileTypeClass.h>
 
+#include <Ext/Scenario/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
@@ -121,6 +122,10 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 
 	return 0;
 }
+
+// Let the game do the proximity and shroud check when the cell which mouse is pointing at has not changed
+DEFINE_JUMP(LJMP, 0x4AACD9, 0x4AACF5);
+DEFINE_JUMP(LJMP, 0x4A9361, 0x4A9371);
 
 static inline bool IsSameFenceType(const BuildingTypeClass* const pPostType, const BuildingTypeClass* const pFenceType)
 {
@@ -395,8 +400,9 @@ static inline void ClearPlacingBuildingData(PlacingBuildingStruct* const pPlace)
 	pPlace->Type = nullptr;
 	pPlace->DrawType = nullptr;
 	pPlace->Times = 0;
-	pPlace->TopLeft = CellStruct::Empty;
 	pPlace->Timer.Stop();
+	pPlace->TopLeft = CellStruct::Empty;
+	pPlace->PlaceType = 0;
 }
 
 static inline void ClearCurrentBuildingData(DisplayClass* const pDisplay)
@@ -452,35 +458,10 @@ static inline bool CheckBuildingFoundation(BuildingTypeClass* const pBuildingTyp
 	return true;
 }
 
-static inline BuildingTypeClass* GetAnotherPlacingType(BuildingTypeClass* pType, BuildingTypeExt::ExtData* pTypeExt, CellStruct checkCell, bool opposite)
+// Place Another Type Helper
+namespace PlaceTypeTemp
 {
-	if (!pType->PlaceAnywhere && !pTypeExt->LimboBuild)
-	{
-		const auto onWater = MapClass::Instance.GetCellAt(checkCell)->LandType == LandType::Water;
-		const auto waterBound = pType->SpeedType == SpeedType::Float;
-
-		if (const auto pAnotherType = (opposite ^ onWater) ? (waterBound ? nullptr : pTypeExt->PlaceBuilding_OnWater) : (waterBound ? pTypeExt->PlaceBuilding_OnLand : nullptr))
-		{
-			if (pAnotherType->BuildCat == pType->BuildCat && !pAnotherType->PlaceAnywhere && !BuildingTypeExt::ExtMap.Find(pAnotherType)->LimboBuild)
-				return pAnotherType;
-		}
-	}
-
-	return nullptr;
-}
-
-static inline BuildingTypeClass* GetAnotherPlacingType(DisplayClass* pDisplay)
-{
-	if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
-	{
-		const auto pType = pCurrentBuilding->Type;
-		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
-
-		if (pTypeExt->PlaceBuilding_OnLand || pTypeExt->PlaceBuilding_OnWater)
-			return GetAnotherPlacingType(pType, pTypeExt, pDisplay->CurrentFoundation_CenterCell, false);
-	}
-
-	return nullptr;
+	size_t PlaceType = 0;
 }
 
 // Place Another Type Hook #1 -> sub_4FB0E0 - Replace the factory product
@@ -524,70 +505,17 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 		return BuildSucceeded;
 	}
 
-	const bool expand = RulesExt::Global()->ExtendedBuildingPlacing && !pBuildingType->PlaceAnywhere && !pBuildingType->PowersUpBuilding[0];
+	const bool upgrade = pBuildingType->PowersUpBuilding[0];
+	const bool expand = RulesExt::Global()->ExtendedBuildingPlacing && !pBuildingType->PlaceAnywhere && !upgrade;
+	const size_t placeType = PlaceTypeTemp::PlaceType;
 
-	if (pTypeExt->PlaceBuilding_OnWater || pTypeExt->PlaceBuilding_OnLand)
+	if (pTypeExt->PlaceBuilding_Extra)
 	{
-		if (!SessionClass::IsMultiplayer())
-		{
-			if (expand)
-			{
-				const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-				auto& place = pBufferType->BuildCat != BuildCat::Combat ? pHouseExt->Common : pHouseExt->Combat;
-
-				if (place.DrawType && (place.DrawType == pTypeExt->PlaceBuilding_OnLand || place.DrawType == pTypeExt->PlaceBuilding_OnWater))
-					pBuildingType = place.DrawType;
-			}
-
-			const auto& pTypeCopy = pDisplay->CurrentBuildingTypeCopy;
-
-			if (pTypeCopy && (pTypeCopy == pTypeExt->PlaceBuilding_OnLand || pTypeCopy == pTypeExt->PlaceBuilding_OnWater))
-				pBuildingType = static_cast<BuildingTypeClass*>(pTypeCopy);
-		}
-		else // When playing online, this can not rely on locally stored replicas, and must made speculation based on the event
-		{
-			auto checkCell = topLeftCell;
-
-			if (pBuildingType->Gate)
-			{
-				if (pBuildingType->GetFoundationWidth() > 2)
-					checkCell.X += 1;
-				else if (pBuildingType->GetFoundationHeight(false) > 2)
-					checkCell.Y += 1;
-			}
-			else if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
-			{
-				checkCell += CellStruct { 1, 1 };
-			}
-
-			if (const auto pOtherType = GetAnotherPlacingType(pBuildingType, pTypeExt, checkCell, false))
-			{
-				pBuildingType = pOtherType;
-			}
-			else if (const auto pAnotherType = GetAnotherPlacingType(pBuildingType, pTypeExt, topLeftCell, true)) // Center cell may be different, so make assumptions
-			{
-				checkCell = topLeftCell;
-
-				if (pAnotherType->Gate)
-				{
-					if (pAnotherType->GetFoundationWidth() > 2)
-						checkCell.X += 1;
-					else if (pAnotherType->GetFoundationHeight(false) > 2)
-						checkCell.Y += 1;
-				}
-				else if (pAnotherType->GetFoundationWidth() > 2 || pAnotherType->GetFoundationHeight(false) > 2)
-				{
-					checkCell += CellStruct { 1, 1 };
-				}
-
-				// If the land occupation of the two buildings is different, the larger one will prevail, And the smaller one may not be placed on the shore.
-				if ((MapClass::Instance.GetCellAt(checkCell)->LandType == LandType::Water) ^ (pBuildingType->SpeedType == SpeedType::Float))
-					pBuildingType = pAnotherType;
-			}
-		}
+		if (const auto pSelectType = pTypeExt->GetAnotherPlacingType(((placeType >> 1u) & 0x1Fu), (placeType & 1u)))
+			pBuildingType = pSelectType;
 	}
 
-	bool revert = false;
+	bool revert = upgrade;
 
 	if (expand)
 	{
@@ -611,6 +539,7 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 						place.DrawType = pBuildingType;
 						place.Times = 30;
 						place.TopLeft = topLeftCell;
+						place.PlaceType = placeType;
 					}
 					else if (place.Times <= 0)
 					{
@@ -690,6 +619,174 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 		ProximityTemp::Mouse = true;
 
 	return CanNotBuild;
+}
+
+// Place Another Type Hook #2 -> sub_4A91B0 - Replace current building type for check
+DEFINE_HOOK(0x4A937D, DisplayClass_CallBuildingPlaceCheck_ReplaceBuildingType, 0x8)
+{
+	enum { SkipGameCode = 0x4A943A };
+
+	GET(const CellStruct, cell, EBP);
+
+	const auto pDisplay = &DisplayClass::Instance;
+
+	auto updateCurrentFoundation = [pDisplay, cell]()
+		{
+			if (pDisplay->CurrentFoundation_CenterCell != cell)
+			{
+				auto oldCell = pDisplay->CurrentFoundation_CenterCell;
+
+				if (oldCell != CellStruct::Empty)
+				{
+					oldCell += pDisplay->CurrentFoundation_TopLeftOffset;
+					pDisplay->MarkFoundation(&oldCell, false);
+				}
+
+				auto newCell = cell;
+
+				if (newCell != CellStruct::Empty)
+				{
+					newCell += pDisplay->CurrentFoundation_TopLeftOffset;
+					pDisplay->MarkFoundation(&newCell, true);
+				}
+
+				pDisplay->CurrentFoundation_CenterCell = cell;
+			}
+		};
+
+	const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding);
+	const auto pTypeExt = pCurrentBuilding ? BuildingTypeExt::ExtMap.Find(pCurrentBuilding->Type) : nullptr;
+
+	if (pTypeExt && pTypeExt->PlaceBuilding_Extra)
+	{
+		if (!ScrollClass::Instance.unknown_byte_554A) // 555A: AnyMouseButtonDown
+			updateCurrentFoundation();
+		else // bp
+			R->EBP(pDisplay->CurrentFoundation_CenterCell.X);
+
+		const auto delta = cell - pDisplay->CurrentFoundation_CenterCell;
+		ScenarioExt::Global()->PlacingDirection = DirStruct(Math::atan2(-delta.Y, delta.X)).GetFacing<32>();
+
+		auto getAnotherPlacingType = [pDisplay, pTypeExt]() -> BuildingTypeClass*
+			{
+				if (pTypeExt)
+				{
+					const auto pCenterCell = MapClass::Instance.GetCellAt(pDisplay->CurrentFoundation_CenterCell);
+					const bool onWater = pCenterCell->LandType == LandType::Water;
+					return pTypeExt->GetAnotherPlacingType(ScenarioExt::Global()->PlacingDirection, onWater);
+				}
+
+				return nullptr;
+			};
+
+		if (const auto pAnotherType = getAnotherPlacingType())
+		{
+			if (pDisplay->CurrentBuildingType && pDisplay->CurrentBuildingType != pAnotherType)
+			{
+				pDisplay->CurrentBuildingType = pAnotherType;
+				pDisplay->SetActiveFoundation(pAnotherType->GetFoundationData(true));
+			}
+		}
+		else if (pCurrentBuilding)
+		{
+			if (pDisplay->CurrentBuildingType && pDisplay->CurrentBuildingType != pCurrentBuilding->Type)
+			{
+				pDisplay->CurrentBuildingType = pCurrentBuilding->Type;
+				pDisplay->SetActiveFoundation(pCurrentBuilding->Type->GetFoundationData(true));
+			}
+		}
+	}
+	else
+	{
+		updateCurrentFoundation();
+	}
+
+	return SkipGameCode;
+}
+
+// Place Another Type Hook #3 -> sub_4AB9B0 - Keep current foundation center cell
+DEFINE_HOOK(0x4AB9FF, DisplayClass_LeftMouseButtonUp_MaintainCell, 0x6)
+{
+	enum { ContinueCheckUpgrade = 0x4ABA84, SkipCheckUpgrade = 0x4ABAA4 };
+
+	const auto pCellStruct = &DisplayClass::Instance.CurrentFoundation_CenterCell;
+
+	R->EBX(pCellStruct);
+
+	const auto pType = DisplayClass::Instance.CurrentBuildingType;
+
+	if (pType->WhatAmI() != AbstractType::BuildingType || !static_cast<BuildingTypeClass*>(pType)->PowersUpBuilding[0])
+		return SkipCheckUpgrade;
+
+	const auto pCellBuilding = MapClass::Instance.GetCellAt(*pCellStruct)->GetBuilding();
+
+	if (!pCellBuilding)
+		return SkipCheckUpgrade;
+	else
+		R->ESI(pCellBuilding);
+
+	return ContinueCheckUpgrade;
+}
+
+// Place Another Type Hook #4 -> sub_4AB9B0 - Replace event
+DEFINE_HOOK(0x4ABAC0, DisplayClass_LeftMouseButtonUp_ReplaceBuildingType, 0x6)
+{
+	enum { SkipGameCode = 0x4ABBB3 };
+
+	const auto pDisplay = &DisplayClass::Instance;
+
+	const auto centerCell = pDisplay->CurrentFoundation_CenterCell;
+	const auto placeCell = centerCell + pDisplay->CurrentFoundation_TopLeftOffset;
+
+	const auto pType = pDisplay->CurrentBuildingType;
+	const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
+
+	int placeType = 0;
+
+	if (pBuildingType && BuildingTypeExt::ExtMap.Find(pBuildingType)->PlaceBuilding_Extra)
+	{
+		const auto pCenterCell = MapClass::Instance.GetCellAt(centerCell);
+		placeType |= pCenterCell->LandType == LandType::Water;
+		placeType |= (ScenarioExt::Global()->PlacingDirection << 1);
+	}
+	else
+	{
+		const auto pTechnoType = TechnoTypeExt::GetTechnoType(pType);
+		placeType |= (pTechnoType && pTechnoType->Naval);
+	}
+
+	const int arrayIndex = pType->GetArrayIndex();
+	const auto absType = pDisplay->CurrentBuilding->WhatAmI();
+
+	const EventClass event (HouseClass::CurrentPlayer->ArrayIndex, EventType::Place, absType, arrayIndex, placeType, placeCell);
+	EventClass::AddEvent(event);
+
+	return SkipGameCode;
+}
+
+// Place Another Type Hook #5 -> sub_4C6CB0 - Replace placing action
+DEFINE_HOOK(0x4C70E1, EventClass_RespondToEvent_SetPlaceType, 0x8)
+{
+	enum { SkipGameCode = 0x4C7110 };
+
+	GET(EventClass* const, pThis, ESI);
+	GET(HouseClass* const, pHouse, EDI);
+
+	const auto cell = pThis->Place.Location;
+	const int flags = pThis->Place.IsNaval;
+	const bool isNaval = flags & 1;
+	const int arrayIndex = pThis->Place.HeapID;
+	const auto absType = pThis->Place.RTTIType;
+
+	if (absType == AbstractType::Building || absType == AbstractType::BuildingType)
+		PlaceTypeTemp::PlaceType = static_cast<size_t>(flags);
+
+	reinterpret_cast<void(__thiscall*)(HouseClass*, AbstractType, int, bool, const CellStruct*)>
+		(0x4FB0E0)(pHouse, absType, arrayIndex, isNaval, &cell); // UnitFromFactory
+
+	PlaceTypeTemp::PlaceType = 0;
+
+	return SkipGameCode;
 }
 
 // Buildable-upon TechnoTypes Hook #4-1 -> sub_4FB0E0 - Check whether need to skip the replace command
@@ -1061,58 +1158,64 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 		return 0;
 
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
-	auto buildCurrent = [&pHouse, &pHouseExt](BuildingTypeClass* pType, CellStruct cell)
-	{
-		if (!pType)
-			return;
-
-		auto currentCanBuild = [&pHouse, &pType]() -> const bool
+	auto buildCurrent = [&pHouse, &pHouseExt](BuildingTypeClass* pType, CellStruct cell, size_t placeType)
 		{
-			auto const bitsOwners = pType->GetOwners();
+			if (!pType)
+				return;
 
-			for(auto const& pConYard : pHouse->ConYards)
+			auto currentCanBuild = [&pHouse, &pType]() -> const bool
+				{
+					auto const bitsOwners = pType->GetOwners();
+
+					for(auto const& pConYard : pHouse->ConYards)
+					{
+						if (pConYard->InLimbo || !pConYard->HasPower || pConYard->Deactivated)
+							continue;
+
+						if (pConYard->CurrentMission == Mission::Selling || pConYard->QueuedMission == Mission::Selling)
+							continue;
+
+						const auto pConYardType = pConYard->Type;
+
+						if (pConYardType->Factory != AbstractType::BuildingType || !pConYardType->InOwners(bitsOwners))
+							continue;
+
+						return true;
+					}
+
+					return false;
+				};
+
+			if (!currentCanBuild())
 			{
-				if (pConYard->InLimbo || !pConYard->HasPower || pConYard->Deactivated)
-					continue;
+				ClearPlacingBuildingData(pType->BuildCat != BuildCat::Combat ? &pHouseExt->Common : &pHouseExt->Combat);
 
-				if (pConYard->CurrentMission == Mission::Selling || pConYard->QueuedMission == Mission::Selling)
-					continue;
-
-				const auto pConYardType = pConYard->Type;
-
-				if (pConYardType->Factory != AbstractType::BuildingType || !pConYardType->InOwners(bitsOwners))
-					continue;
-
-				return true;
+				if (pHouse == HouseClass::CurrentPlayer)
+					VoxClass::Play(GameStrings::EVA_CannotDeployHere);
 			}
-
-			return false;
+			else if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
+			{
+				const int place = static_cast<int>(placeType);
+				const auto arrayIndex = pType->GetArrayIndex();
+				const EventClass event (pHouse->ArrayIndex, EventType::Place, AbstractType::Building, arrayIndex, place, cell);
+				EventClass::AddEvent(event);
+			}
 		};
 
-		if (!currentCanBuild())
-		{
-			ClearPlacingBuildingData(pType->BuildCat != BuildCat::Combat ? &pHouseExt->Common : &pHouseExt->Combat);
+	auto& commonPlace = pHouseExt->Common;
 
-			if (pHouse == HouseClass::CurrentPlayer)
-				VoxClass::Play(GameStrings::EVA_CannotDeployHere);
-		}
-		else if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
-		{
-			const EventClass event (pHouse->ArrayIndex, EventType::Place, AbstractType::Building, pType->GetArrayIndex(), pType->Naval, cell);
-			EventClass::AddEvent(event);
-		}
-	};
-
-	if (pHouseExt->Common.Timer.Completed())
+	if (commonPlace.Timer.Completed())
 	{
-		pHouseExt->Common.Timer.Stop();
-		buildCurrent(pHouseExt->Common.Type, pHouseExt->Common.TopLeft);
+		commonPlace.Timer.Stop();
+		buildCurrent(commonPlace.Type, commonPlace.TopLeft, commonPlace.PlaceType);
 	}
 
-	if (pHouseExt->Combat.Timer.Completed())
+	auto& combatPlace = pHouseExt->Combat;
+
+	if (combatPlace.Timer.Completed())
 	{
-		pHouseExt->Combat.Timer.Stop();
-		buildCurrent(pHouseExt->Combat.Type, pHouseExt->Combat.TopLeft);
+		combatPlace.Timer.Stop();
+		buildCurrent(combatPlace.Type, combatPlace.TopLeft, combatPlace.PlaceType);
 	}
 
 	if (pHouseExt->OwnedDeployingUnits.size() > 0)
@@ -1143,32 +1246,6 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	return 0;
 }
 
-// Place Another Type Hook #2 -> sub_4AB9B0 - Replace current building type for check
-DEFINE_HOOK_AGAIN(0x4ABA47, DisplayClass_PreparePassesProximityCheck_ReplaceBuildingType, 0x6)
-DEFINE_HOOK(0x4A946E, DisplayClass_PreparePassesProximityCheck_ReplaceBuildingType, 0x6)
-{
-	const auto pDisplay = &DisplayClass::Instance;
-
-	if (const auto pAnotherType = GetAnotherPlacingType(pDisplay))
-	{
-		if (pDisplay->CurrentBuildingType && pDisplay->CurrentBuildingType != pAnotherType)
-		{
-			pDisplay->CurrentBuildingType = pAnotherType;
-			pDisplay->SetActiveFoundation(pAnotherType->GetFoundationData(true));
-		}
-	}
-	else if (const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding))
-	{
-		if (pDisplay->CurrentBuildingType && pDisplay->CurrentBuildingType != pCurrentBuilding->Type)
-		{
-			pDisplay->CurrentBuildingType = pCurrentBuilding->Type;
-			pDisplay->SetActiveFoundation(pCurrentBuilding->Type->GetFoundationData(true));
-		}
-	}
-
-	return 0;
-}
-
 // Buildable-upon TechnoTypes Hook #12 -> sub_6D5030 - Draw the placing building preview
 DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 {
@@ -1182,7 +1259,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 	{
 		const auto pCell = pDisplay->TryGetCellAt(cell);
 
-		if (!pCell || cell == CellStruct::Empty)
+		if (!pCell || cell == CellStruct::Empty || pType->PowersUpBuilding[0])
 			return;
 
 		auto pImage = pType->LoadBuildup();
@@ -1217,10 +1294,10 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 			if (const auto pType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingTypeCopy))
 				drawImage(pType, pHouse, (pDisplay->CurrentFoundationCopy_TopLeftOffset + pDisplay->CurrentFoundationCopy_CenterCell));
 
-			if (const auto pType = pHouseExt->Common.Type)
+			if (const auto pType = pHouseExt->Common.DrawType)
 				drawImage(pType, pHouse, pHouseExt->Common.TopLeft);
 
-			if (const auto pType = pHouseExt->Combat.Type)
+			if (const auto pType = pHouseExt->Combat.DrawType)
 				drawImage(pType, pHouse, pHouseExt->Combat.TopLeft);
 
 			if (pHouseExt->OwnedDeployingUnits.size() <= 0)

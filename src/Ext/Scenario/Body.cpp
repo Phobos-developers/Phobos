@@ -163,6 +163,7 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransportReloaders)
 		.Process(this->SWSidebar_Enable)
 		.Process(this->SWSidebar_Indices)
+		.Process(this->PlacingDirection)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }

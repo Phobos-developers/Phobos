@@ -67,8 +67,11 @@ public:
 		Valueable<bool> LimboBuild;
 		Valueable<int> LimboBuildID;
 		Valueable<BuildingTypeClass*> LaserFencePost_Fence;
-		Valueable<BuildingTypeClass*> PlaceBuilding_OnLand;
-		Valueable<BuildingTypeClass*> PlaceBuilding_OnWater;
+		ValueableVector<BuildingTypeClass*> PlaceBuilding_OnLand;
+		ValueableVector<BuildingTypeClass*> PlaceBuilding_OnWater;
+		Valueable<SHPStruct*> PlaceBuilding_DirectionShape;
+		CustomPalette PlaceBuilding_DirectionPalette;
+		Valueable<bool> PlaceBuilding_Extra;
 
 		Valueable<bool> IsAnimDelayedBurst;
 
@@ -145,6 +148,9 @@ public:
 			, LaserFencePost_Fence {}
 			, PlaceBuilding_OnLand {}
 			, PlaceBuilding_OnWater {}
+			, PlaceBuilding_DirectionShape { nullptr }
+			, PlaceBuilding_DirectionPalette {}
+			, PlaceBuilding_Extra { false }
 			, AircraftDockingDirs {}
 			, FactoryPlant_AllowTypes {}
 			, FactoryPlant_DisallowTypes {}
@@ -170,6 +176,8 @@ public:
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
 		{ }
+
+		BuildingTypeClass* GetAnotherPlacingType(size_t direction, bool onWater);
 
 		// Ares 0.A functions
 		int GetSuperWeaponCount() const;

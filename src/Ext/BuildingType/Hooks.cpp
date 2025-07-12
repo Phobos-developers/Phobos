@@ -2,6 +2,7 @@
 
 #include <TacticalClass.h>
 #include <Ext/Rules/Body.h>
+#include <Ext/Scenario/Body.h>
 
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
@@ -70,31 +71,72 @@ DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 
 DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 {
-	if (!RulesExt::Global()->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+	const auto pDisplay = &DisplayClass::Instance;
+	const auto pBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding);
+
+	if (!pBuilding)
 		return 0;
 
-	auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
-	auto pType = specific_cast<BuildingTypeClass*>(DisplayClass::Instance.CurrentBuildingType);
-	auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
+	const auto pRulesExt = RulesExt::Global();
+	const auto pTactical = TacticalClass::Instance;
 
-	if (pBuilding && pTypeExt && pTypeExt->PlacementPreview)
+	do
 	{
-		CellClass* pCell = nullptr;
-		{
-			const CellStruct nDisplayCell = Make_Global<CellStruct>(0x88095C);
-			const CellStruct nDisplayCell_Offset = Make_Global<CellStruct>(0x880960);
+		const auto pType = pBuilding->Type;
+		const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
 
-			pCell = MapClass::Instance.TryGetCellAt(nDisplayCell + nDisplayCell_Offset);
-			if (!pCell)
-				return 0;
-		}
+		if (!pTypeExt->PlaceBuilding_Extra)
+			break;
+
+		const auto pShape = pTypeExt->PlaceBuilding_DirectionShape.Get();
+
+		if (!pShape || pShape->Frames <= 0)
+			break;
+
+		const auto pCell = MapClass::Instance.GetCellAt(pDisplay->CurrentFoundation_CenterCell);
+		const auto& types = pCell->LandType == LandType::Water ? pTypeExt->PlaceBuilding_OnWater : pTypeExt->PlaceBuilding_OnLand;
+		const size_t size = types.size();
+
+		if (!size)
+			break;
+
+		constexpr BlitterFlags blit = BlitterFlags::Centered | BlitterFlags::TransLucent50 | BlitterFlags::bf_400 | BlitterFlags::Zero;
+		const auto pPalette = pTypeExt->PlaceBuilding_DirectionPalette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+
+		const auto location = CoordStruct { (pCell->MapCoords.X << 8), (pCell->MapCoords.Y << 8), 0 };
+		const int height = pCell->Level * 15;
+		const int zAdjust = -height - (pCell->SlopeIndex ? 12 : 2);
+		const auto position = pTactical->CoordsToScreen(location) - pTactical->TacticalPos - Point2D { 0, (1 + height) };
+
+		const auto direction = (ScenarioExt::Global()->PlacingDirection + (16u / size)) & 0x1Fu;
+		const int frameIndex = Math::min(static_cast<int>(pShape->Frames - 1), static_cast<int>(direction * size / 32u));
+
+		DSurface::Temp->DrawSHP(pPalette, pShape, frameIndex, &position,
+			&DSurface::ViewBounds, blit, 0, zAdjust, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
+	}
+	while (false);
+
+	if (!pRulesExt->PlacementPreview || !Phobos::Config::ShowPlacementPreview)
+		return 0;
+
+	// DrawType
+	const auto pType = abstract_cast<BuildingTypeClass*>(pDisplay->CurrentBuildingType);
+	const auto pTypeExt = pType ? BuildingTypeExt::ExtMap.Find(pType) : nullptr;
+
+	if (pTypeExt && pTypeExt->PlacementPreview)
+	{
+		const auto pCell = MapClass::Instance.TryGetCellAt(pDisplay->CurrentFoundation_CenterCell + pDisplay->CurrentFoundation_TopLeftOffset);
+
+		if (!pCell)
+			return 0;
 
 		int nImageFrame = 0;
-		SHPStruct* pImage = pTypeExt->PlacementPreview_Shape.GetSHP();
+		auto pImage = pTypeExt->PlacementPreview_Shape.GetSHP();
 		{
 			if (!pImage)
 			{
 				pImage = pType->LoadBuildup();
+
 				if (pImage)
 					nImageFrame = ((pImage->Frames / 2) - 1);
 				else
@@ -111,26 +153,26 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		Point2D point;
 		{
 			const CoordStruct offset = pTypeExt->PlacementPreview_Offset;
-			const int nHeight = offset.Z + pCell->GetFloorHeight({ 0, 0 });
-			const CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, nHeight);
+			const int height = offset.Z + pCell->GetFloorHeight({ 0, 0 });
+			const CoordStruct coords = CellClass::Cell2Coord(pCell->MapCoords, height);
 
-			point = TacticalClass::Instance->CoordsToClient(coords).first;
+			point = pTactical->CoordsToClient(coords).first;
 			point.X += offset.X;
 			point.Y += offset.Y;
 		}
 
-		const BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(RulesExt::Global()->PlacementPreview_Translucency) |
-			BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
+		const BlitterFlags blitFlags = pTypeExt->PlacementPreview_Translucency.Get(pRulesExt->PlacementPreview_Translucency)
+			| BlitterFlags::Centered | BlitterFlags::Nonzero | BlitterFlags::MultiPass;
 
-		ConvertClass* pPalette = pTypeExt->PlacementPreview_Remap.Get()
+		const auto pPalette = pTypeExt->PlacementPreview_Remap.Get()
 			? pBuilding->GetDrawer()
 			: pTypeExt->PlacementPreview_Palette.GetOrDefaultConvert(FileSystem::UNITx_PAL);
 
-		DSurface* pSurface = DSurface::Temp;
-		RectangleStruct rect = pSurface->GetRect();
+		const auto pSurface = DSurface::Temp;
+		auto rect = pSurface->GetRect();
 		rect.Height -= 32; // account for bottom bar
 
-		CC_Draw_Shape(pSurface, pPalette, pImage, nImageFrame, &point, &rect, blitFlags,
+		pSurface->DrawSHP(pPalette, pImage, nImageFrame, &point, &rect, blitFlags,
 			0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 	}
 

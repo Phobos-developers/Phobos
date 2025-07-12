@@ -16,6 +16,7 @@ struct PlacingBuildingStruct
 	int Times;
 	CDTimerClass Timer;
 	CellStruct TopLeft;
+	size_t PlaceType;
 };
 
 class HouseExt

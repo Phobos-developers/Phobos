@@ -40,6 +40,8 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
+		size_t PlacingDirection;
+
 		std::unique_ptr<MessageListClass> NewMessageList;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
@@ -51,6 +53,7 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
+			, PlacingDirection { 0 }
 			, NewMessageList {}
 		{ }
 
