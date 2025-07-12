@@ -5,12 +5,10 @@
 #include <InputManagerClass.h>
 #include <WarheadTypeClass.h>
 
-DEFINE_JUMP(LJMP,0x51B2CB, 0x51B2CF)
-
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0xC, 0x4));
+	GET(AbstractClass*, pTarget, EDI);
 
 	return (!pTarget || pThis->Owner->IsControlledByHuman()) ? 0x51B33F : 0;
 }

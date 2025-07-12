@@ -103,6 +103,78 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 
 #pragma region draw_matrix
 
+struct BodyVoxelIndexKey
+{
+	unsigned bodyFrame : 5;
+	unsigned bodyFace : 5;
+	unsigned slopeIndex : 6;
+	unsigned isSpawnAlt : 1;
+	unsigned reserved : 15;
+};
+
+struct JumpjetTiltVoxelIndexKey
+{
+	unsigned bodyFrame : 5;
+	unsigned bodyFace : 5;
+	unsigned slopeIndex : 6;
+	unsigned isSpawnAlt : 1;
+	unsigned forwards : 7;
+	unsigned sideways : 7;
+	unsigned reserved : 1;
+};
+
+struct PhobosVoxelIndexKey
+{
+	union
+	{
+		int Value;
+		union
+		{
+			VoxelIndexKey Base;
+			BodyVoxelIndexKey Body;
+			// add other references here as needed
+		} BaseIndexKey;
+		union
+		{
+			JumpjetTiltVoxelIndexKey JumpjetTiltVoxel;
+			// add other definitions here as needed
+		} CustomIndexKey;
+	};
+
+	// add funcs here if needed
+	constexpr PhobosVoxelIndexKey(int val = 0) noexcept
+	{
+		Value = val;
+	}
+
+	constexpr operator int () const
+	{
+		return Value;
+	}
+
+	constexpr bool IsCleanKey() const
+	{
+		return Value == 0;
+	}
+
+	constexpr bool IsValidKey() const
+	{
+		return Value != -1;
+	}
+
+	constexpr void Invalidate()
+	{
+		Value = -1;
+	}
+
+	constexpr bool IsExtraBodyKey() const
+	{
+		return BaseIndexKey.Body.reserved != 0;
+	}
+};
+
+static_assert(sizeof(PhobosVoxelIndexKey) == sizeof(VoxelIndexKey), "PhobosVoxelIndexKey size mismatch");
+
 DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
@@ -140,7 +212,7 @@ namespace JumpjetTiltReference
 }
 
 // Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, int* pIndex)
+Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -155,10 +227,13 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
+	size_t arfFace = 0;
+	size_t arsFace = 0;
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		if (pIndex) *pIndex = -1;
+		if (key)
+			key->Invalidate();
 
 		if (onGround)
 		{
@@ -184,48 +259,87 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	{
 		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
 
-		if (pTypeExt->JumpjetTilt && !onGround && pThis->CurrentSpeed > 0.0
-			&& linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+		if (pTypeExt->JumpjetTilt
+			&& !onGround
+			&& pThis->CurrentSpeed > 0.0
+			&& linked->WhatAmI() == AbstractType::Unit
+			&& linked->IsAlive
+			&& linked->Health > 0
+			&& !linked->IsAttackedByLocomotor)
 		{
-			const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
-			const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
+			const float forwardSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor);
+			const float forwardAccelFactor = static_cast<float>(pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor);
 
-			arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
-				* JumpjetTiltReference::ForwardBaseTilt));
+			arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+				* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 
 			const auto& locoFace = pThis->LocomotionFacing;
 
 			if (locoFace.IsRotating())
 			{
-				const auto sidewaysSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor;
-				const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
-					* pTypeExt->JumpjetTilt_SidewaysRotationFactor;
+				const float sidewaysSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+				const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
+					* pTypeExt->JumpjetTilt_SidewaysRotationFactor);
 
-				ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+				ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+
+				const auto arsDir = DirStruct(ars);
+				arsFace = (arsDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+				if (arsFace)
+					ret->RotateX(static_cast<float>(arsDir.GetRadian<128>()));
 			}
 
-			if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
-			{
-				if (pIndex) *pIndex = -1;
+			const auto arfDir = DirStruct(arf);
+			arfFace = (arfDir.GetFacing<128>() + 96u) & 0x7Fu;
 
-				ret->RotateX(ars);
-				ret->RotateY(arf);
-			}
+			if (arfFace)
+				ret->RotateY(static_cast<float>(arfDir.GetRadian<128>()));
 		}
 	}
 
-	if (pIndex && *pIndex != -1)
+	if (key && key->IsValidKey())
 	{
-		if (onGround) *pIndex = slope_idx + (*pIndex << 6);
-		*pIndex *= 32;
-		*pIndex |= curf.GetFacing<32>();
+		// It is currently unclear whether the passed key only has two situations:
+		// all 0s and all 1s, so I use the safest approach for now
+		if (key->IsCleanKey() && (arfFace || arsFace))
+		{
+			key->CustomIndexKey.JumpjetTiltVoxel.forwards = arfFace;
+			key->CustomIndexKey.JumpjetTiltVoxel.sideways = arsFace;
+
+			if (onGround)
+				key->CustomIndexKey.JumpjetTiltVoxel.slopeIndex = slope_idx;
+
+			key->CustomIndexKey.JumpjetTiltVoxel.bodyFace = curf.GetFacing<32>();
+
+			// Outside the function, there is another step to add a frame number to the key for drawing
+			key->Value >>= 5;
+		}
+		else // Keep the original code
+		{
+			if (onGround)
+				key->Value = slope_idx + (key->Value << 6);
+
+			key->Value <<= 5;
+			key->Value |= curf.GetFacing<32>();
+		}
 	}
 
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
+DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
+{
+	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
+
+	// Main body drawing completed, then enable accurate drawing of turrets and barrels
+	if (key.IsValidKey() && key.IsExtraBodyKey()) // Flags used by JumpjetTilt units
+		key.Invalidate();
+
+	return 0;
+}
 
 // Visual bugfix : Teleport loco vxls could not tilt
 Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
@@ -432,24 +546,29 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_matrix.RotateY(arf);
 		shadow_matrix.RotateX(ars);
 	}
-	else if (jjloco && uTypeExt->JumpjetTilt && jjloco->State != JumpjetLocomotionClass::State::Grounded
-		&& jjloco->CurrentSpeed > 0.0 && pThis->IsAlive && pThis->Health > 0 && !pThis->IsAttackedByLocomotor)
+	else if (jjloco
+		&& uTypeExt->JumpjetTilt
+		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
+		&& jjloco->CurrentSpeed > 0.0
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->IsAttackedByLocomotor)
 	{
-		const auto forwardSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor;
-		const auto forwardAccelFactor = jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor;
+		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor);
+		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor);
 
-		arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
-			* JumpjetTiltReference::ForwardBaseTilt));
+		arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+			* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 
 		const auto& locoFace = jjloco->LocomotionFacing;
 
 		if (locoFace.IsRotating())
 		{
-			const auto sidewaysSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor;
-			const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
-				* uTypeExt->JumpjetTilt_SidewaysRotationFactor;
+			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+			const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
+				* uTypeExt->JumpjetTilt_SidewaysRotationFactor);
 
-			ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+			ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 		}
 
