@@ -160,17 +160,9 @@ DEFINE_HOOK(0x4A904E, MapClass_PassesProximityCheck_RestoreResult, 0x5)
 	return 0;
 }
 
-// BaseNormal for units Hook #2-1 -> sub_4AAC10 - Let the game do the PassesProximityCheck when the cell which mouse is pointing at has not changed
-DEFINE_HOOK(0x4AACD9, MapClass_TacticalAction_BaseNormalRecheck, 0x5)
-{
-	return (RulesExt::Global()->CheckExtraBaseNormal && !(Unsorted::CurrentFrame % 8)) ? 0x4AACF5 : 0;
-}
-
-// BaseNormal for units Hook #2-2 -> sub_4A91B0 - Let the game do the PassesProximityCheck when the cell which mouse is pointing at has not changed
-DEFINE_HOOK(0x4A9361, MapClass_CallBuildingPlaceCheck_BaseNormalRecheck, 0x5)
-{
-	return (RulesExt::Global()->CheckExtraBaseNormal && !(Unsorted::CurrentFrame % 8)) ? 0x4A9371 : 0;
-}
+// Let the game do the proximity and shroud check when the cell which mouse is pointing at has not changed
+DEFINE_JUMP(LJMP, 0x4AACD9, 0x4AACF5);
+DEFINE_JUMP(LJMP, 0x4A9361, 0x4A9371);
 
 // Buildable-upon TechnoTypes Hook #2-1 -> sub_47EC90 - Record cell before draw it then skip vanilla AltFlags check
 DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
