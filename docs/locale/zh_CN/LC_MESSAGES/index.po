@@ -183,7 +183,7 @@ msgstr "**[🌐国际性的 Discord 频道：C&C Mod Haven](https://discord.gg/s
 msgid ""
 "[🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-"
 "bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
-"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)(630590659)"
+"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659) (630590659)"
 msgstr ""
 "[🇨🇳 中文 QQ 群组：Phobos CN](http://qm.qq.com/cgi-"
 "bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"

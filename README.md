@@ -115,6 +115,7 @@ Every crew member is welcome to put a donation link to their entry in the list b
 - **@TaranDahl (航味麻酱)** - T1 maintainer
   - [WeChatPay](images/Donation-TaranDahl.jpg)
 - **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
+  - [Alipay](images/Donation-DeathFish.jpg)
 - **FlyStar (@a851903106)** - triage
 - **@Fryone** - triage
 
