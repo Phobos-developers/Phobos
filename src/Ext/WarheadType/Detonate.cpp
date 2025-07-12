@@ -680,12 +680,14 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			while (passenger)
 			{
 				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
-				passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse);
 
-				if (isFirst && pTargetType->Gunner && pTargetFoot)
+				if (this->PenetratesTransport_Level > TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 				{
-					pTargetFoot->RemoveGunner(passenger);
-					gunnerRemoved = true;
+					if (passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+					{
+						pTargetFoot->RemoveGunner(passenger);
+						gunnerRemoved = true;
+					}
 				}
 
 				passenger = nextPassenger;
@@ -699,13 +701,16 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			while (passenger)
 			{
 				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
-				int damage = adjustedDamage;
-				const auto damageResult = passenger->ReceiveDamage(&damage, distance, pWH, pInvoker, false, true, pInvokerHouse);
 
-				if (damageResult == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+				if (this->PenetratesTransport_Level > TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 				{
-					pTargetFoot->RemoveGunner(passenger);
-					gunnerRemoved = true;
+					int applyDamage = adjustedDamage;
+
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+					{
+						pTargetFoot->RemoveGunner(passenger);
+						gunnerRemoved = true;
+					}
 				}
 
 				passenger = nextPassenger;
@@ -724,11 +729,12 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			--poorBastardIdx;
 		}
 
+		if (this->PenetratesTransport_Level <= TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+			return;
+
 		if (fatal)
 		{
-			passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse);
-
-			if (isFirst && pTargetType->Gunner && pTargetFoot)
+			if (passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 			{
 				pTargetFoot->RemoveGunner(passenger);
 				gunnerRemoved = true;
@@ -737,9 +743,8 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 		else
 		{
 			int adjustedDamage = static_cast<int>(std::ceil(damage * this->PenetratesTransport_DamageMultiplier * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
-			const auto damageResult = passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse);
 
-			if (damageResult == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+			if (passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 			{
 				pTargetFoot->RemoveGunner(passenger);
 				gunnerRemoved = true;
