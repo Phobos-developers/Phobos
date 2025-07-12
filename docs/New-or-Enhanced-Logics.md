@@ -2329,7 +2329,7 @@ RemoveParasite=   ; boolean
 ### Penetrates damage on transporter
 
 - Warheads can now damage passenger on impact.
-  - If `PenetratesTransport.Level` of warhead larger than `PenetratesTransport.Level` of target, it will enable penetrates damage logic on this impact.
+  - If `PenetratesTransport.Level` of warhead larger than `PenetratesTransport.Level` of target, it will enable penetrates damage logic on target.
   - `PenetratesTransport.PassThrough` is the chance of penetration, actual chance will multiply by `PenetratesTransport.PassThroughMultiplier` of target.
   - `PenetratesTransport.FatalRate` is the chance of one hit kill, actual change will multiply by `PenetratesTransport.FatalRateMultiplier` of target.
   - `PenetratesTransport.DamageAll` control whether it will damage all passengers or random one passenger in transport.
