@@ -2180,21 +2180,22 @@ SplashList.PickRandom=false  ; boolean
 ### Damage multipliers
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
-  - If `DamageMultiplierByHouse.SmartDefault` is set, warhead with `AffectsEnemies=false` will use `1.0` as the default value of `DamageOwnerMultiplier` and `DamageAlliesMultiplier`, instead of the global default values.
+  - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0                   ; floating point value
-DamageAlliesMultiplier=1.0                  ; floating point value
-DamageEnemiesMultiplier=1.0                 ; floating point value
-DamageMultiplierByHouse.SmartDefault=false  ; boolean
+DamageOwnerMultiplier=1.0                       ; floating point value
+DamageAlliesMultiplier=1.0                      ; floating point value
+DamageEnemiesMultiplier=1.0                     ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 
 [SOMEWARHEAD]                       ; WarheadType
-DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
 DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 DamageSourceHealthMultiplier=0.0    ; floating point value
 DamageTargetHealthMultiplier=0.0    ; floating point value
