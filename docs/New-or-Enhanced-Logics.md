@@ -2326,6 +2326,33 @@ In `rulesmd.ini`:
 RemoveParasite=   ; boolean
 ```
 
+### Penetrates damage on transporter
+
+- Warheads can now damage passenger on impact.
+  - If `PenetratesTransport.Level` of warhead larger than `PenetratesTransport.Level` of target, it will enable penetrates damage logic on this impact.
+  - `PenetratesTransport.PassThrough` is the chance of penetration, actual chance will multiply by `PenetratesTransport.PassThroughMultiplier` of target.
+  - `PenetratesTransport.FatalRate` is the chance of one hit kill, actual change will multiply by `PenetratesTransport.FatalRateMultiplier` of target.
+  - `PenetratesTransport.DamageAll` control whether it will damage all passengers or random one passenger in transport.
+  - `PenetratesTransport.DamageMultiplier` is multiplier of damage on passenger.
+
+In `rulesmd.ini`
+```ini
+[SOMEWARHEAD]                                              ; WarheadType
+PenetratesTransport.Level=0                              ; integer
+PenetratesTransport.PassThrough=1.0                ; double
+PenetratesTransport.FatalRate=0.0                    ; double
+PenetratesTransport.DamageAll=false                ; boolean
+
+[SOMETECHNO]                                                  ; TechnoType
+PenetratesTransport.Level=                                ; integer
+PenetratesTransport.PassThroughMultiplier=1.0   ; double
+PenetratesTransport.FatalRateMultiplier=1.0        ; double
+PenetratesTransport.DamageMultiplier=1.0          ; double
+
+[CombatDamage]
+PenetratesTransport.Level=10                             ; integer, default value of technotype's penetrate level
+```
+
 ### Remove disguise on impact
 
 - Warheads can now remove disguise from disguised spies or mirage tanks. This will work even if the disguised was acquired by default through `PermaDisguise`.

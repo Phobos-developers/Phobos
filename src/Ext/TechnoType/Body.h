@@ -406,6 +406,11 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 		Valueable<bool> AttackMove_PursuitTarget;
 
+		Nullable<int> PenetratesTransport_Level;
+		Valueable<double> PenetratesTransport_PassThroughMultiplier;
+		Valueable<double> PenetratesTransport_FatalRateMultiplier;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
+
 		Valueable<bool> MultiWeapon;
 		ValueableVector<bool> MultiWeapon_IsSecondary;
 		Valueable<int> MultiWeapon_SelectCount;
@@ -766,6 +771,11 @@ public:
 			, AttackMove_Follow_IfMindControlIsFull { false }
 			, AttackMove_StopWhenTargetAcquired { }
 			, AttackMove_PursuitTarget { false }
+
+			, PenetratesTransport_Level {}
+			, PenetratesTransport_PassThroughMultiplier { 1.0 }
+			, PenetratesTransport_FatalRateMultiplier { 1.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
 
 			, MultiWeapon { false }
 			, MultiWeapon_IsSecondary {}

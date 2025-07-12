@@ -241,6 +241,8 @@ public:
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
+
+		Valueable<int> PenetratesTransport_Level;
 		
 		// cache tint color
 		int TintColorIronCurtain;
@@ -437,6 +439,8 @@ public:
 
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
+
+			, PenetratesTransport_Level { 10 }
 		{ }
 
 		virtual ~ExtData() = default;

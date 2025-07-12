@@ -422,6 +422,7 @@ This page lists all the individual contributions to the project by their author.
   - Display banner improvement
   - Electric/RadBeam trail for laser tails
   - Ground line for select box
+  - Penetrates damage on transporter
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
