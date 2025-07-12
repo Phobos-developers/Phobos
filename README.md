@@ -106,10 +106,12 @@ Every crew member is welcome to put a donation link to their entry in the list b
 - **@Starkku** - T2 maintainer
   - [Patreon](https://www.patreon.com/Starkku)
 - **@CrimRecya (绯红热茶)** - T2 maintainer
+  - [Alipay](images/Donation-CrimRecya.jpg)
 - **@ZivDero** - T2 maintainer
   - [Patreon](https://www.patreon.com/c/ZivDero)
 - **Ollerus (@Coronia)** - T1 maintainer
 - **@NetsuNegi** - T1 maintainer
+  - [Alipay](images/Donation-NetsuNegi.jpg)
 - **@TaranDahl (航味麻酱)** - T1 maintainer
   - [WeChatPay](images/Donation-TaranDahl.jpg)
 - **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
