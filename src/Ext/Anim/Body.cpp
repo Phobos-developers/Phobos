@@ -405,6 +405,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachedSystem)
 		.Process(this->ParentBuilding)
 		.Process(this->IsTechnoTrailerAnim)
+		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
 		;

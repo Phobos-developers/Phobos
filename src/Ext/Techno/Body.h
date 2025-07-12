@@ -69,6 +69,10 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 		CDTimerClass TiberiumEater_Timer;
+		bool DelayedFireSequencePaused;
+		int DelayedFireWeaponIndex;
+		CDTimerClass DelayedFireTimer;
+		AnimClass* CurrentDelayedFireAnim;
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
@@ -129,6 +133,10 @@ public:
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 			, FiringAnimationTimer {}
+			, DelayedFireSequencePaused { false }
+			, DelayedFireWeaponIndex { -1 }
+			, DelayedFireTimer {}
+			, CurrentDelayedFireAnim { nullptr }
 			, AttachedEffectInvokerCount { 0 }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
@@ -172,6 +180,7 @@ public:
 		void InitializeDisplayInfo();
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
+		void ResetDelayedFireTimer();
 		void UpdateTintValues();
 
 		UnitTypeClass* GetUnitTypeExtra() const;
@@ -251,6 +260,8 @@ public:
 	static void ProcessDigitalDisplays(TechnoClass* pThis);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
+	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
+	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
 
 	// WeaponHelpers.cpp
