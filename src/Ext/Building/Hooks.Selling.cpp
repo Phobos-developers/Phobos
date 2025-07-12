@@ -11,7 +11,7 @@ DEFINE_HOOK(0x4D9F7B, FootClass_Sell, 0x6)
 
 	if (pThis->Owner->IsControlledByCurrentPlayer())
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_UnitSold)));
 		//WW used VocClass::PlayGlobal to play the SellSound, why did they do that?
 		VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
@@ -35,10 +35,10 @@ bool __forceinline BuildingExt::CanUndeployOnSell(BuildingClass* pThis)
 	if (pType->ConstructionYard)
 	{
 		// Conyards can't undeploy if MCVRedeploy=no
-		if (!GameModeOptionsClass::Instance->MCVRedeploy)
+		if (!GameModeOptionsClass::Instance.MCVRedeploy)
 			return false;
 		// or MindControlledBy YURIX (why? for balance?)
-		if (pThis->MindControlledBy || !pThis->Owner->IsControlledByHuman())
+		if (pThis->MindControlledBy)
 			return false;
 	}
 

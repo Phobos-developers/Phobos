@@ -17,8 +17,6 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 	if (!pThis)
 		return;
 
-	HouseClass* pInvoker = pKiller ? pKiller->Owner : nullptr;
-
 	if (pThis->Type->DestroyAnim.Count > 0)
 	{
 		auto const facing = pThis->PrimaryFacing.Current().GetDir();
@@ -31,9 +29,9 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 
 			if (pThis->Type->DestroyAnim.Count >= 8)
 			{
-				idxAnim = pThis->Type->DestroyAnim.Count;
+				idxAnim = pThis->Type->DestroyAnim.Count - 1;
 				if (pThis->Type->DestroyAnim.Count % 2 == 0)
-					idxAnim *= static_cast<int>(static_cast<unsigned char>(facing) / 256.0);
+					idxAnim = static_cast<int>(static_cast<unsigned char>(facing) / 256.0 * idxAnim);
 			}
 
 			pAnimType = pThis->Type->DestroyAnim[idxAnim];
@@ -49,6 +47,7 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 		if (pAnimType)
 		{
 			auto const pAnim = GameCreate<AnimClass>(pAnimType, pThis->Location);
+			auto const pInvoker = pKiller ? pKiller->Owner : nullptr;
 
 			//auto VictimOwner = pThis->IsMindControlled() && pThis->GetOriginalOwner()
 			//	? pThis->GetOriginalOwner() : pThis->Owner;
@@ -61,15 +60,18 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 			pAnimExt->SetInvoker(pThis);
 			pAnimExt->FromDeathUnit = true;
 
-			if (pAnimTypeExt->CreateUnit_InheritDeathFacings.Get())
-				pAnimExt->DeathUnitFacing = facing;
-
-			if (pAnimTypeExt->CreateUnit_InheritTurretFacings.Get())
+			if (auto const pCreateUnit = pAnimTypeExt->CreateUnitType.get())
 			{
-				if (pThis->HasTurret())
+				if (pCreateUnit->InheritDeathFacings)
+					pAnimExt->DeathUnitFacing = facing;
+
+				if (pCreateUnit->InheritTurretFacings)
 				{
-					pAnimExt->DeathUnitHasTurret = true;
-					pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
+					if (pThis->HasTurret())
+					{
+						pAnimExt->DeathUnitHasTurret = true;
+						pAnimExt->DeathUnitTurretFacing = pThis->SecondaryFacing.Current();
+					}
 				}
 			}
 		}
@@ -83,20 +85,6 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	INI_EX exINI(pINI);
 
 	this->Palette.LoadFromINI(pINI, pID, "CustomPalette");
-	this->CreateUnit.Read(exINI, pID, "CreateUnit");
-	this->CreateUnit_Facing.Read(exINI, pID, "CreateUnit.Facing");
-	this->CreateUnit_InheritDeathFacings.Read(exINI, pID, "CreateUnit.InheritFacings");
-	this->CreateUnit_InheritTurretFacings.Read(exINI, pID, "CreateUnit.InheritTurretFacings");
-	this->CreateUnit_RemapAnim.Read(exINI, pID, "CreateUnit.RemapAnim");
-	this->CreateUnit_Mission.Read(exINI, pID, "CreateUnit.Mission");
-	this->CreateUnit_AIMission.Read(exINI, pID, "CreateUnit.AIMission");
-	this->CreateUnit_Owner.Read(exINI, pID, "CreateUnit.Owner");
-	this->CreateUnit_RandomFacing.Read(exINI, pID, "CreateUnit.RandomFacing");
-	this->CreateUnit_AlwaysSpawnOnGround.Read(exINI, pID, "CreateUnit.AlwaysSpawnOnGround");
-	this->CreateUnit_SpawnParachutedInAir.Read(exINI, pID, "CreateUnit.SpawnParachutedInAir");
-	this->CreateUnit_ConsiderPathfinding.Read(exINI, pID, "CreateUnit.ConsiderPathfinding");
-	this->CreateUnit_SpawnAnim.Read(exINI, pID, "CreateUnit.SpawnAnim");
-	this->CreateUnit_SpawnHeight.Read(exINI, pID, "CreateUnit.SpawnHeight");
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
@@ -105,6 +93,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
 	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
+	this->Damage_ApplyFirepowerMult.Read(exINI, pID, "Damage.ApplyFirepowerMult");
 	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
@@ -130,6 +119,23 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->LargeFireAnims.Read(exINI, pID, "LargeFireAnims");
 	this->LargeFireChances.Read(exINI, pID, "LargeFireChances");
 	this->LargeFireDistances.Read(exINI, pID, "LargeFireDistances");
+	this->Crater_DestroyTiberium.Read(exINI, pID, "Crater.DestroyTiberium");
+
+	// Parasitic types
+	Nullable<TechnoTypeClass*> createUnit;
+	createUnit.Read(exINI, pID, "CreateUnit");
+
+	if (createUnit)
+	{
+		if (this->CreateUnitType == nullptr)
+			this->CreateUnitType = std::make_unique<CreateUnitTypeClass>();
+
+		this->CreateUnitType->LoadFromINI(pINI, pID);
+	}
+	else if (createUnit.isset())
+	{
+		this->CreateUnitType.reset();
+	}
 }
 
 template <typename T>
@@ -137,20 +143,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Palette)
-		.Process(this->CreateUnit)
-		.Process(this->CreateUnit_Facing)
-		.Process(this->CreateUnit_InheritDeathFacings)
-		.Process(this->CreateUnit_RemapAnim)
-		.Process(this->CreateUnit_Mission)
-		.Process(this->CreateUnit_AIMission)
-		.Process(this->CreateUnit_InheritTurretFacings)
-		.Process(this->CreateUnit_Owner)
-		.Process(this->CreateUnit_RandomFacing)
-		.Process(this->CreateUnit_AlwaysSpawnOnGround)
-		.Process(this->CreateUnit_SpawnParachutedInAir)
-		.Process(this->CreateUnit_ConsiderPathfinding)
-		.Process(this->CreateUnit_SpawnAnim)
-		.Process(this->CreateUnit_SpawnHeight)
+		.Process(this->CreateUnitType)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
@@ -159,6 +152,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByInvoker)
 		.Process(this->Damage_ApplyOncePerLoop)
+		.Process(this->Damage_ApplyFirepowerMult)
 		.Process(this->ExplodeOnWater)
 		.Process(this->Warhead_Detonate)
 		.Process(this->WakeAnim)
@@ -184,6 +178,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LargeFireAnims)
 		.Process(this->LargeFireChances)
 		.Process(this->LargeFireDistances)
+		.Process(this->Crater_DestroyTiberium)
 		;
 }
 
@@ -242,7 +237,7 @@ DEFINE_HOOK(0x42898A, AnimTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 {
 	GET(AnimTypeClass*, pItem, ESI);
