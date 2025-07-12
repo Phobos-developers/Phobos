@@ -22,7 +22,7 @@ DEFINE_HOOK(0x73D223, UnitClass_DrawIt_OreGath, 0x6)
 	{
 		auto const pAnimType = pData->OreGathering_Anims.size() > 0 ? pData->OreGathering_Anims[idxArray] : nullptr;
 		auto const nFramesPerFacing = pData->OreGathering_FramesPerDir.size() > 0 ? pData->OreGathering_FramesPerDir[idxArray] : 15;
-		auto const pAnimExt = AnimTypeExt::ExtMap.Find(pAnimType);
+		auto const pAnimExt = AnimTypeExt::ExtMap.TryFind(pAnimType);
 		if (pAnimType)
 		{
 			pSHP = pAnimType->GetImage();
