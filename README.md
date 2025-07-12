@@ -99,7 +99,7 @@ This project was founded by @Belonit (Gluk-v48) and @Metadorius (Kerbiter) in 20
 
 Maintenance crew consists of experienced Phobos contributors who are recognized and given the permission to maintain and shape the project to the extent of their permissions.
 
-Every crew member is welcome to put a donation link to their entry in the list below, but it's not required.
+Every maintenance crew member is welcome to put a donation link to their entry in the list below.
 
 - **Kerbiter (@Metadorius)** - T3 maintainer (lead)
   - [Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request
@@ -120,6 +120,7 @@ Every crew member is welcome to put a donation link to their entry in the list b
 - **@Fryone** - triage
 
 #### Inactive
+
 *Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*
 
 - **Gluk-v48 (@Belonit)** - lead in the past
@@ -130,7 +131,6 @@ Every crew member is welcome to put a donation link to their entry in the list b
 - **Morton (@MortonPL)** - T2 maintainer
 - **Trsdy (@chaserli)** - T2 maintainer
 
-
 The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!
 
 Attribution
@@ -138,7 +138,7 @@ Attribution
 
 You can show your appreciation and help project's publicity by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it a button that opens Phobos GitHub page for extra fanciness). To fit with the mod styling, you are allowed to stylize the monochrome logo in a non-intrusive way (for example, recolor it to match the mod theme) without otherwise changing it. If unsure - ask us first.
 
-When promoting features you implement with your mod, please give credit to the Phobos project and its contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: "This feature is made possible by Phobos", "Implemented using XYZ from Phobos", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors.
+When promoting features of your mod that you implemented using Phobos, please give credit to Phobos and it's contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: "This feature is made possible by Phobos", "Implemented using XYZ from Phobos", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors.
 
 Legal and License
 -----
