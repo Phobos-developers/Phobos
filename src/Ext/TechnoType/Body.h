@@ -315,10 +315,8 @@ public:
 
 		Nullable<bool> AllowAirstrike;
 
-		Nullable<AircraftTypeClass*> AircraftImage_ConditionYellow;
-		Nullable<AircraftTypeClass*> AircraftImage_ConditionRed;
-		Nullable<UnitTypeClass*> Image_ConditionYellow;
-		Nullable<UnitTypeClass*> Image_ConditionRed;
+		Nullable<TechnoTypeClass*> Image_ConditionYellow;
+		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
 
@@ -691,8 +689,6 @@ public:
 
 			, AllowAirstrike { }
 
-			, AircraftImage_ConditionYellow { }
-			, AircraftImage_ConditionRed { }
 			, Image_ConditionYellow { }
 			, Image_ConditionRed { }
 			, WaterImage_ConditionYellow { }

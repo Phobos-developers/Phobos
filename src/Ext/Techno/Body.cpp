@@ -571,7 +571,7 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 			}
 			else if (auto const imageYellow = pData->Image_ConditionYellow)
 			{
-				return imageYellow;
+				return abstract_cast<UnitTypeClass*, true>(imageYellow);
 			}
 		}
 		else
@@ -587,11 +587,11 @@ UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
 			}
 			else if (auto const imageRed = pData->Image_ConditionRed)
 			{
-				return imageRed;
+				return abstract_cast<UnitTypeClass*, true>(imageRed);
 			}
 			else if (auto const imageYellow = pData->Image_ConditionYellow)
 			{
-				return imageYellow;
+				return abstract_cast<UnitTypeClass*, true>(imageYellow);
 			}
 		}
 	}
@@ -611,26 +611,31 @@ AircraftTypeClass* TechnoExt::ExtData::GetAircraftTypeExtra() const
 		{
 			auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
 
-			if (auto const imageYellow = pData->AircraftImage_ConditionYellow)
+			if (auto const imageYellow = pData->Image_ConditionYellow)
 			{
-				return imageYellow;
+				return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 			}
 		}
 		else
 		{
 			auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
-			if (auto const imageRed = pData->AircraftImage_ConditionRed)
+			if (auto const imageRed = pData->Image_ConditionRed)
 			{
-				return imageRed;
+				return abstract_cast<AircraftTypeClass*, true>(imageRed);
 			}
-			else if (auto const imageYellow = pData->AircraftImage_ConditionYellow)
+			else if (auto const imageYellow = pData->Image_ConditionYellow)
 			{
-				return imageYellow;
+				return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+			}
+			else
+			{
+				return pAircraft->Type;
 			}
 		}
 	}
 
 	return nullptr;
+
 }
 
 void TechnoExt::ExtData::ResetDelayedFireTimer()

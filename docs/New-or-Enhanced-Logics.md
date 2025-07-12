@@ -473,14 +473,14 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 ### Damaged aircraft image changes
 
-- When an aircraft is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `AircraftImage.ConditionYellow` AircraftType.
-- Similar, `AircraftImage.ConditionRed` is used as image if aircraft health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
+- When an aircraft is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` AircraftType.
+- Similar, `Image.ConditionRed` is used as image if aircraft health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEAIRCRAFT]                         ; AircraftType
-AircraftImage.ConditionYellow=        ; AircraftType entry
-AircraftImage.ConditionRed=           ; AircraftType entry
+Image.ConditionYellow=        ; AircraftType entry
+Image.ConditionRed=           ; AircraftType entry
 ```
 
 ```{warning}
@@ -2458,7 +2458,7 @@ Burst.FireWithinSequence=false  ; boolean
     - If `DelayedFire.CenterAnimOnFirer` is set the animation is created at the firer's center rather than at the firing coordinates.
   - If the weapon was fired by InfantryType and `DelayedFire.PauseFiringSequence` is set to true, the infantry's firing sequence animation is paused when it hits the firing frame defined by `FireUp/Prone` or `SecondaryFire/Prone` in its `artmd.ini` entry until the delay timer has expired.
   - If the weapon has `Burst` > 1 and `DelayedFire.OnlyOnInitialBurst` set to true, the delay occurs only before the initial burst shot. Note that if using Ares, `Burst` index does not reset if firing is interrupted or the firer loses target, meaning it will be able to resume firing without waiting for the delay.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                           ; WeaponType

@@ -845,8 +845,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AllowAirstrike.Read(exINI, pSection, "AllowAirstrike");
 
-	this->AircraftImage_ConditionYellow.Read(exINI, pSection, "AircraftImage.ConditionYellow");
-	this->AircraftImage_ConditionRed.Read(exINI, pSection, "AircraftImage.ConditionRed");
 	this->Image_ConditionYellow.Read(exINI, pSection, "Image.ConditionYellow");
 	this->Image_ConditionRed.Read(exINI, pSection, "Image.ConditionRed");
 	this->WaterImage_ConditionYellow.Read(exINI, pSection, "WaterImage.ConditionYellow");
@@ -1454,8 +1452,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AllowAirstrike)
 
-		.Process(this->AircraftImage_ConditionYellow)
-		.Process(this->AircraftImage_ConditionRed)
 		.Process(this->Image_ConditionYellow)
 		.Process(this->Image_ConditionRed)
 		.Process(this->WaterImage_ConditionYellow)
