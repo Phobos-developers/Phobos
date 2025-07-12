@@ -1111,7 +1111,7 @@ DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto mission = pThis->GetCurrentMission();
+	auto const mission = pThis->GetCurrentMission();
 	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
 		? (mission != Mission::Move && mission != Mission::Guard) : mission != Mission::Guard)
 		? ClearMegaMission : ContinueMegaMission;
@@ -1129,7 +1129,7 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	GET(FootClass* const, pThis, ESI);
 
-	Mission mission = pThis->GetCurrentMission();
+	auto const mission = pThis->GetCurrentMission();
 
 	// Refresh mega mission if mission is somehow changed to incorrect missions.
 	if (mission != Mission::Attack && mission != Mission::Move)
