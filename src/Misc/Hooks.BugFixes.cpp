@@ -21,6 +21,7 @@
 #include <HashTable.h>
 #include <TunnelLocomotionClass.h>
 #include <TacticalClass.h>
+#include <Unsorted.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
@@ -2278,4 +2279,15 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 	}
 
 	return 0;
+}
+
+
+//Jul 7, 2025 - Fridge: Cursor Refresh rate fix(from 60 to game render rate)
+DEFINE_HOOK(0x7B8536, StartMouseThread_AdjustMouseInterval, 0xA)
+{
+	
+	// Original - Thread_Mouse_Args.Interval = 16ms
+	Game::MouseThread.Interval = 1;
+
+	return 0x7B8540;
 }

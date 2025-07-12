@@ -455,7 +455,7 @@ Vanilla fixes:
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes (by CrimRecya)
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP (by CrimRecya)
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
-
+- Fixed cursor from being hardcoded to update/render 60 times a second no matter how fast the game is rendering. Now the Cursor will update and render much more frequently (by Fridge)
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 - `600 The shield of the attached object is broken` bug fix for the triggered event (by FlyStar)
