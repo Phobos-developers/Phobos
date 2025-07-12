@@ -47,7 +47,7 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 	{
 		for (auto const& pUpgrade : pThis->Upgrades)
 		{
-			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.Find(pUpgrade))
+			if (const auto pUpgradeExt = BuildingTypeExt::ExtMap.TryFind(pUpgrade))
 			{
 				const auto countUpgrade = pUpgradeExt->GetSuperWeaponCount();
 				for (auto i = 0; i < countUpgrade; ++i)
@@ -254,7 +254,7 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 
 bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechno, int refund)
 {
-	if (auto const pExt = BuildingExt::ExtMap.Find(pBuilding))
+	if (auto const pExt = BuildingExt::ExtMap.TryFind(pBuilding))
 	{
 		auto const pTypeExt = pExt->TypeExtData;
 

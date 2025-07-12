@@ -601,10 +601,6 @@ EngineerRepairAmount=0             ; integer
 ![image](_static/images/powersup.owner-01.png)
 *Upgrading own and allied Power Plants in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
-```{note}
-Due to technical limitations, with Ares, upgrades placed through `PowersUp.Buildings` instead of `PowersUpBuilding` (note that internally `PowersUpBuilding` is set to first entry of `PowersUp.Buildings` if former is not set but latter is) **DO NOT** satisfy prerequisites. Suggested workaround is to use the upgrades to provide Superweapons that spawn in buildings via [LimboDelivery](#limbodelivery) logic to function as prerequisites, which are destroyed by another SW that becomes available if parent building is gone and so on.
-```
-
 - Building upgrades now can be placed on own buildings, on allied buildings and/or on enemy buildings. These three owners can be specified by `PowersUp.Owner`. When upgrade is placed on building, it automatically changes it's owner to match the building's owner.
 - One upgrade can now be applied to multiple different types of buildings specified by `PowersUp.Buildings`.
   - Ares-introduced build limit for building upgrades works with this feature.
@@ -614,6 +610,10 @@ In `rulesmd.ini`:
 [SOMEBUILDING]      ; BuildingType, as an upgrade
 PowersUp.Owner=Self ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PowersUp.Buildings= ; List of BuildingTypes
+```
+
+```{note}
+Due to technical limitations, with Ares, upgrades placed through `PowersUp.Buildings` instead of `PowersUpBuilding` (note that internally `PowersUpBuilding` is set to first entry of `PowersUp.Buildings` if former is not set but latter is) **DO NOT** satisfy prerequisites. Suggested workaround is to use the upgrades to provide Superweapons that spawn in buildings via [LimboDelivery](#limbodelivery) logic to function as prerequisites, which are destroyed by another SW that becomes available if parent building is gone and so on.
 ```
 
 ### Power plant enhancer
@@ -721,16 +721,16 @@ OnlyUseLandSequences=false  ; boolean
 
 - Restored feature from Red Alert 1 (also partially implemented in Ares but undocumented, if used together Phobos' version takes priority) that allows projectiles to be parachuted down to ground if fired by an aerial unit.
   - Setting `Parachuted` to true enables this behaviour. Note that using any other projectile logics like `ROT` > 0 or `Vertical=true` together with this feature is unnecessary and can cause unwanted effects.
-  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate` which defaults to `[General]` -> `ParachuteMaxFallRate`.
-  - `BombParachute` can be used to customize the parachute animation used, defaults to `[General]` -> `BombParachute`. The animation is drawn in unit palette using team color of the firing house if available.
+  - Falling speed can be customized by setting `Parachuted.FallRate` and is capped to `Parachuted.MaxFallRate`.
+  - `BombParachute` can be used to customize the parachute animation used. The animation is drawn in unit palette using team color of the firing house if available.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]         ; Projectile
 Parachuted=false         ; boolean
 Parachuted.FallRate=1    ; integer
-Parachuted.MaxFallRate=  ; integer
-BombParachute=           ; AnimationType
+Parachuted.MaxFallRate=  ; integer, default to [General] -> ParachuteMaxFallRate
+BombParachute=           ; AnimationType, default to [General] -> BombParachute
 ```
 
 ### Projectile interception logic
@@ -1133,7 +1133,10 @@ Remember that Limbo Delivered buildings don't exist physically! This means they 
 - `SW.Link.Grant` allow the linked superweapons to be added 1-time to the firer like the nuke crate if it's not presented.
 - `SW.Link.Ready` specifies if superweapons timers should be set to readiness.
 - `SW.Link.Reset` specifies if superweapons timers should be reset. Takes precedence over `SW.Link.Ready`.
-  - For a granted superweapon, the other will be: check `SW.Link.Reset` to see if it needs to be reset. If false, check `SW.Link.Ready` to see if it needs to be set to readiness. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
+  - For a granted superweapon, the other will be:
+    1. Check `SW.Link.Reset` to see if it needs to be reset.
+    2. If false, check `SW.Link.Ready` to see if it needs to be set to readiness.
+    3. If false, whether it'll be ready or not is decided by the granted superweapon's `SW.InitialReady`.
 - `Message.LinkedSWAcquired` will be displayed to the firer when at least 1 linked superweapon is acquired or has timer set.
 - `EVA.LinkedSWAcquired` will be played to the firer when at least 1 linked superweapon is acquired or has timer set.
 - These superweapons can be made random with these optional tags. The game will randomly choose only a single superweapon from the list for each roll chance provided.
@@ -1145,7 +1148,7 @@ In `rulesmd.ini`:
 [SOMESW]                     ; SuperWeaponType
 SW.Link=                     ; List of SuperWeaponTypes
 SW.Link.Grant=false          ; boolean
-SW.Link.Ready=               ; boolean, default to `SW.InitialReady` for granted superweapons, false otherwise
+SW.Link.Ready=               ; boolean, default to SW.InitialReady for granted superweapons, false otherwise
 SW.Link.Reset=false          ; boolean
 SW.Link.RollChances=         ; List of percentages.
 SW.Link.RandomWeightsN=      ; List of integers.
@@ -1451,14 +1454,18 @@ Note that all spawnees in a queue should have `MissileSpawn` set to the same val
 ### Customize EVA voice and `SellSound` when selling units
 
 - When a building or a unit is sold, a sell sound as well as an EVA is played to the owner. These configurations have been deglobalized.
-  - `EVA.Sold` is used to customize the EVA voice when selling, default to `EVA_StructureSold` for buildings and `EVA_UnitSold` for vehicles.
-  - `SellSound` is used to customize the report sound when selling, default to `[AudioVisual] -> SellSound`. Note that vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
+  - `EVA.Sold` is used to customize the EVA voice when selling.
+  - `SellSound` is used to customize the report sound when selling.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]    ; BuildingType or VehicleType
-EVA.Sold=       ; EVA entry
-SellSound=      ; Sound entry
+EVA.Sold=       ; EVA entry, default to EVA_StructureSold for buildings and EVA_UnitSold for vehicles
+SellSound=      ; Sound entry, default to [AudioVisual] -> SellSound
+```
+
+```{note}
+Vanilla game played vehicles' `SellSound` globally. This has been changed in consistency with buildings' `SellSound`.
 ```
 
 ### Disabling fallback to (Elite)Secondary weapon
@@ -1618,14 +1625,8 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `kill`: The object will be destroyed normally.
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
-
-If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
-
-```{note}
-Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
-```
-
-This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
+- If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
+- This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
 ```ini
@@ -1642,6 +1643,10 @@ AutoDeath.TechnosExist=                        ; List of TechnoTypes
 AutoDeath.TechnosExist.Any=true                ; boolean
 AutoDeath.TechnosExist.AllowLimboed=false      ; boolean
 AutoDeath.TechnosExist.Houses=owner            ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
+```
+
+```{note}
+Please notice that if the object is a unit which carries passengers, they will not be released even with the `kill` option **if you are not using Ares 3.0+**.
 ```
 
 ### Mind Control enhancement
@@ -1811,7 +1816,7 @@ CombatAlert.Suppress=                  ; boolean
 
 ### Recount burst index
 
-- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames). Defaults to `[General] -> RecountBurst`, which defaults to false.
+- You can now make technos recount their current burst index when they have changed the firing weapon or have maintained for a period of time without any targets (take the larger value of last firing weapon's `ROF` and 30 frames).
 
 In `rulesmd.ini`:
 ```ini
@@ -1819,7 +1824,7 @@ In `rulesmd.ini`:
 RecountBurst=false  ; boolean
 
 [SOMETECHNO]        ; TechnoType
-RecountBurst=       ; boolean
+RecountBurst=       ; boolean, default to [General] -> RecountBurst
 ```
 
 ### Revenge weapon
@@ -2079,7 +2084,7 @@ CanKill=true   ; boolean
   - `Crit.Warhead.FullDetonation` controls whether or not the Warhead is detonated fully on the targets (as part of a dummy weapon) or simply deals area damage and applies Phobos' Warhead effects.
   - `Crit.Affects` can be used to customize types of targets that this Warhead can deal critical hits against. Critical hits cannot affect empty cells or cells containing only TerrainTypes, overlays etc.
   - `Crit.AffectsHouses` can be used to customize houses that this Warhead can deal critical hits against.
-  - `Crit.AffectBelowPercent` & `Crit.AffectsAbovePercent` can be used to set minimum percentage of their maximum/minimum health percentage respectively that targets must have left to be affected by a critical hit.
+  - `Crit.AffectBelowPercent` and `Crit.AffectsAbovePercent` can be used to set the health percentage that targets must be below or above respectively to be affected by critical hits.
   - `Crit.AnimList` can be used to set a list of animations used instead of Warhead's `AnimList` if Warhead deals a critical hit to even one target. If `Crit.AnimList.PickRandom` is set (defaults to `AnimList.PickRandom`) then the animation is chosen randomly from the list. If `Crit.AnimList.CreateAll` is set (defaults to `AnimList.CreateAll`), all animations from the list are created.
     - `Crit.AnimOnAffectedTargets`, if set, makes the animation(s) from `Crit.AnimList` play on each affected target *in addition* to animation from Warhead's `AnimList` playing as normal instead of replacing `AnimList` animation. Note that because these animations are independent from `AnimList`, `Crit.AnimList.PickRandom` and `Crit.AnimList.CreateAll` will not default to their `AnimList` counterparts here and need to be explicitly set if needed.
   - `Crit.ActiveChanceAnims` can be used to set animation to be always displayed at the Warhead's detonation coordinates if the current Warhead has a chance to critically hit. If more than one animation is listed, a random one is selected.
@@ -2105,7 +2110,7 @@ Crit.AnimList.CreateAll=                   ; boolean
 Crit.ActiveChanceAnims=                    ; List of AnimationTypes
 Crit.AnimOnAffectedTargets=false           ; boolean
 Crit.SuppressWhenIntercepted=false         ; boolean
-                                           
+
 [SOMETECHNO]                               ; TechnoType
 ImmuneToCrit=false                         ; boolean
 ```
@@ -2152,7 +2157,7 @@ This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not dete
 ```
 
 ### Custom Mind Control Animation
-- Allows Warheads to play custom `MindControl.Anim` which defaults to `[CombatDamage] -> ControlledAnimationType`.
+- Allows Warheads to play custom `MindControl.Anim`.
 
 In `rulesmd.ini`:
 ```ini
@@ -2174,23 +2179,30 @@ SplashList.PickRandom=false  ; boolean
 
 ### Damage multipliers
 
-- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses. If the warhead's own `Damage(Owner|Allies|Enemies)Multiplier` are not set, these will default to respective `[CombatDamage] -> Damage(Owner|Allies|Enemies)Multiplier` which all default to 1.0 .Note that `DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
+- Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
+  - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0           ; floating point value
-DamageAlliesMultiplier=1.0          ; floating point value
-DamageEnemiesMultiplier=1.0         ; floating point value
+DamageOwnerMultiplier=1.0                       ; floating point value
+DamageAlliesMultiplier=1.0                      ; floating point value
+DamageEnemiesMultiplier=1.0                     ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 
 [SOMEWARHEAD]                       ; WarheadType
-DamageOwnerMultiplier=              ; floating point value
-DamageAlliesMultiplier=             ; floating point value
-DamageEnemiesMultiplier=            ; floating point value
+DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 DamageSourceHealthMultiplier=0.0    ; floating point value
 DamageTargetHealthMultiplier=0.0    ; floating point value
+```
+
+```{note}
+`DamageAlliesMultiplier` won't affect your own units like `AffectsAllies` did.
 ```
 
 ### Detonate Warhead on all objects on map
@@ -2288,9 +2300,6 @@ PenetratesForceShield=       ; boolean
 
 ```{note}
 - For animation warheads/weapons to take effect, `Damage.DealtByInvoker` must be set.
-
-- Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
-
 - The superweapons are launched on the *cell* where the warhead is detonated, instead of being click-fired.
 ```
 
@@ -2304,6 +2313,10 @@ LaunchSW.IgnoreDesignators=true   ; boolean
 LaunchSW.DisplayMoney=false       ; boolean
 LaunchSW.DisplayMoney.Houses=all  ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 LaunchSW.DisplayMoney.Offset=0,0  ; X,Y, pixels relative to default
+```
+
+```{warning}
+Due to the nature of some superweapon types, not all superweapons are suitable for launch. **Please use with caution!**
 ```
 
 ### Parasite removal
@@ -2419,6 +2432,53 @@ Burst.Delays=-1                 ; integer - burst delays (comma-separated) for s
 Burst.FireWithinSequence=false  ; boolean
 ```
 
+### Burst without delay
+
+- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+Burst.NoDelay=false   ; boolean
+```
+
+```{note}
+- This is useless for buildings and aircraft.
+- This will ignore `Burst.Delays` setting.
+```
+
+### Delayed firing
+
+- It is possible to have any weapon fire with a delay by setting `DelayedFire.Duration` on a WeaponType - it supports a single integer or two comma-separated ones for a random range to pick value from.
+  - If `DelayedFire.SkipInTransport` is set to true and firer is in a transport, no delay is applied to firing.
+  - `DelayedFire.Animation` can be used to define animation to create when the delay timer starts. `DelayedFire.OpenToppedAnimation` is used instead if set if the firer is in a transport.
+    - If `DelayedFire.AnimIsAttached` is set to true, the animation is attached to the firing TechnoType. If `DelayedFire.RemoveAnimOnNoDelay` is also set to true the animation is removed when the duration expires or firing is interrupted regardless of its remaining lifetime.
+    - `DelayedFire.AnimOffset` can be used to override the weapon's firing coordinates / FLH for the animation's position.
+    - `DelayedFire.AnimOnTurret` determines whether or not the animation's position is calculated relative to firer's body or turret (only if it has one).
+    - If `DelayedFire.CenterAnimOnFirer` is set the animation is created at the firer's center rather than at the firing coordinates.
+  - If the weapon was fired by InfantryType and `DelayedFire.PauseFiringSequence` is set to true, the infantry's firing sequence animation is paused when it hits the firing frame defined by `FireUp/Prone` or `SecondaryFire/Prone` in its `artmd.ini` entry until the delay timer has expired.
+  - If the weapon has `Burst` > 1 and `DelayedFire.OnlyOnInitialBurst` set to true, the delay occurs only before the initial burst shot. Note that if using Ares, `Burst` index does not reset if firing is interrupted or the firer loses target, meaning it will be able to resume firing without waiting for the delay.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]                           ; WeaponType
+DelayedFire.Duration=                  ; integer - single or comma-sep. range (game frames)
+DelayedFire.SkipInTransport=false      ; boolean
+DelayedFire.Animation=                 ; Animation
+DelayedFire.OpenToppedAnimation=       ; Animation
+DelayedFire.AnimIsAttached=true        ; boolean
+DelayedFire.AnimOffset=                ; integer - Forward,Lateral,Height
+DelayedFire.AnimOnTurret=true          ; boolean
+DelayedFire.CenterAnimOnFirer=false    ; boolean
+DelayedFire.RemoveAnimOnNoDelay=false  ; boolean
+DelayedFire.PauseFiringSequence=false  ; boolean
+DelayedFire.OnlyOnInitialBurst=false   ; boolean
+```
+
+```{note}
+AircraftTypes, due to their different attack patterns, will not wait for the delay to expire before attempting to fire and will instead continue without firing if the delay is too long.
+```
+
 ### Extra warhead detonations
 
 - It is now possible to have same weapon detonate multiple Warheads on impact by listing `ExtraWarheads`. The warheads are detonated at same location as the main one, after it in listed order. This only works in cases where a projectile has been fired by a weapon and still remembers it when it is detonated (due to currently existing technical limitations, this excludes `AirburstWeapon`).
@@ -2527,7 +2587,6 @@ This function is only used as an additional scattering visual display, which is 
 *`Weapon target filter - different weapon used against enemies & allies as well as units & buildings in [Project Phantom](https://www.moddb.com/mods/project-phantom)*
 
 - You can now specify which targets or houses a weapon can fire at. This also affects weapon selection, other than certain special cases where the selection is fixed.
-  - Note that `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
   - `CanTarget.MaxHealth` and `CanTarget.MinHealth` set health percentage thresholds for allowed targets (TechnoTypes only), maximum/minimum respectively.
 
 In `rulesmd.ini`:
@@ -2537,4 +2596,8 @@ CanTarget=all            ; List of Affected Target Enumeration (none|land|water|
 CanTargetHouses=all      ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 CanTarget.MaxHealth=1.0  ; floating point value, percents or absolute
 CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
+```
+
+```{note}
+`CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
 ```

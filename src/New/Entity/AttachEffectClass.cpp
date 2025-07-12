@@ -846,7 +846,6 @@ int AttachEffectClass::DetachByGroups(TechnoClass* pTarget, AEAttachInfoTypeClas
 /// <returns>Number of AttachEffect instances removed.</returns>
 int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass const& attachEffectInfo, std::vector<AttachEffectTypeClass*> const& types)
 {
-	auto const pTargetExt = TechnoExt::ExtMap.Find(pTarget);
 	int detachedCount = 0;
 	bool markForRedraw = false;
 	auto const& minCounts = attachEffectInfo.CumulativeRemoveMinCounts;
@@ -870,7 +869,7 @@ int AttachEffectClass::DetachTypes(TechnoClass* pTarget, AEAttachInfoTypeClass c
 	}
 
 	if (detachedCount > 0)
-		pTargetExt->RecalculateStatMultipliers();
+		TechnoExt::ExtMap.Find(pTarget)->RecalculateStatMultipliers();
 
 	if (markForRedraw)
 		pTarget->MarkForRedraw();

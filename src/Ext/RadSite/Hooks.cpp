@@ -408,7 +408,7 @@ DEFINE_HOOK(0x65BAC1, RadSiteClass_UpdateLevel, 0x8)// RadSiteClass_Radiate_Incr
 		else
 			cell = R->lea_Stack<CellStruct*>(STACK_OFFSET(0x60, -0x50));
 
-		if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(*cell)))
+		if (const auto pCellExt = CellExt::ExtMap.TryFind(MapClass::Instance.TryGetCellAt(*cell)))
 		{
 			auto& radLevels = pCellExt->RadLevels;
 

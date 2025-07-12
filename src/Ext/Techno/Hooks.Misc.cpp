@@ -144,7 +144,7 @@ DEFINE_HOOK(0x6B6D44, SpawnManagerClass_Init_Spawns, 0x5)
 	if (pTypeExt->Spawns_Queue.size() <= i || !pTypeExt->Spawns_Queue[i])
 		return Continue;
 
-	R->EAX(pTypeExt->Spawns_Queue[i]->CreateObject(pThis->Owner->GetOwningHouse()));
+	R->EAX(pTypeExt->Spawns_Queue[i]->CreateObject(pThis->Owner->Owner));
 	return Change;
 }
 
@@ -173,7 +173,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 	if (vec.empty() || !vec[0])
 		return 0;
 
-	R->EAX(vec[0]->CreateObject(pOwner->GetOwningHouse()));
+	R->EAX(vec[0]->CreateObject(pOwner->Owner));
 	return 0x6B78EA;
 }
 

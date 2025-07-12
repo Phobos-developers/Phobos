@@ -43,7 +43,7 @@ void AnimExt::ExtData::SetInvoker(TechnoClass* pInvoker, HouseClass* pInvokerHou
 void AnimExt::ExtData::CreateAttachedSystem()
 {
 	const auto pThis = this->OwnerObject();
-	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTypeExt = AnimTypeExt::ExtMap.TryFind(pThis->Type);
 
 	if (pTypeExt && pTypeExt->AttachedSystem && !this->AttachedSystem)
 	{
@@ -407,6 +407,7 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachedSystem)
 		.Process(this->ParentBuilding)
 		.Process(this->IsTechnoTrailerAnim)
+		.Process(this->DelayedFireRemoveOnNoDelay)
 		.Process(this->IsAttachedEffectAnim)
 		.Process(this->IsShieldIdleAnim)
 		;
@@ -438,7 +439,7 @@ void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 {
 	for (auto const& pAnim : AnimClass::Array)
 	{
-		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+		auto const pExt = AnimExt::ExtMap.TryFind(pAnim);
 
 		if (!pExt)
 			continue; // Skip animation, chances are it is a null type anim in process of being removed.
@@ -455,7 +456,7 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 {
 	for (auto const& pAnim : AnimExt::AnimsWithAttachedParticles)
 	{
-		auto const pExt = AnimExt::ExtMap.Find(pAnim);
+		auto const pExt = AnimExt::ExtMap.TryFind(pAnim);
 
 		if (!pExt)
 			continue; // Skip animation, chances are it is a null type anim in process of being removed.

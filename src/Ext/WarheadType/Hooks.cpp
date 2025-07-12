@@ -97,7 +97,7 @@ DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 
 	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.TryFind(pWarhead))
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.TryFind(receiveDamageArgs.WH))
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;

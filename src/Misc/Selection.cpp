@@ -97,10 +97,9 @@ public:
 				else
 				{
 					const auto pBldType = abstract_cast<BuildingTypeClass*, true>(pTechnoType);
-					const auto pOwner = pTechno->GetOwningHouse();
 
-					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
-						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsVehicle())))
+					if (pTechno->Owner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
+						&& (!pBldType || (pBldType->UndeploysInto && pBldType->IsVehicle())))
 					{
 						Unsorted::MoveFeedback = !pTechno->Select();
 					}

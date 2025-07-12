@@ -141,7 +141,7 @@ DEFINE_HOOK(0x702299, TechnoClass_ReceiveDamage_Debris, 0xA)
 		const auto pOwner = pThis->Owner;
 		auto coord = pThis->GetCoords();
 
-		int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
+		const int count = Math::min(debrisTypes.Count, debrisMaximums.Count);
 
 		// Restore DebrisMaximums logic
 		// Make DebrisTypes generate completely in accordance with DebrisMaximums,
@@ -602,9 +602,7 @@ static DamageAreaResult __fastcall _BombClass_Detonate_DamageArea
 		if (!pAnim->Owner)
 			pAnim->Owner = pThisBomb->OwnerHouse;
 
-		if (const auto pExt = AnimExt::ExtMap.Find(pAnim))
-			pExt->SetInvoker(pThisBomb->Owner);
-
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pThisBomb->Owner);
 	}
 
 	return nDamageAreaResult;
@@ -2284,7 +2282,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 
 	GET(BulletClass*, pBullet, ESI);
 
-	if (pBullet->Type->Vertical || pBullet->HasParachute)
+	if (pBullet->HasParachute || (pBullet->Type->Vertical && BulletTypeExt::ExtMap.Find(pBullet->Type)->Vertical_AircraftFix))
 	{
 		pBullet->Velocity = BulletVelocity{ 0, 0, pBullet->Velocity.Z };
 		return SkipGameCode;

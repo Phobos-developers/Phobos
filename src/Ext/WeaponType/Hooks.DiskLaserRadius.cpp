@@ -24,7 +24,7 @@ DEFINE_HOOK(0x4A757B, DiskLaser_Circle, 0x6)
 {
 	GET(WeaponTypeClass*, pWeapon, EDX);
 
-	auto const pTypeData = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto const pTypeData = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 
 	if (pTypeData && WeaponTypeExt::OldRadius != pTypeData->DiskLaser_Radius)
 	{

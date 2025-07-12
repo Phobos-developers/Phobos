@@ -82,7 +82,7 @@ void SWSidebarClass::InitIO()
 	if (!Phobos::UI::SuperWeaponSidebar || Unsorted::ArmageddonMode)
 		return;
 
-	if (const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]))
+	if (const auto pSideExt = SideExt::ExtMap.TryFind(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex]))
 	{
 		const auto pOnPCX = pSideExt->SuperWeaponSidebar_OnPCX.GetSurface();
 		const auto pOffPCX = pSideExt->SuperWeaponSidebar_OffPCX.GetSurface();
@@ -181,8 +181,8 @@ void SWSidebarClass::SortButtons()
 
 	std::stable_sort(vec_Buttons.begin(), vec_Buttons.end(), [ownerBits](SWButtonClass* const a, SWButtonClass* const b)
 		{
-			const auto pExtA = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItemOrDefault(a->SuperIndex));
-			const auto pExtB = SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItemOrDefault(b->SuperIndex));
+			const auto pExtA = SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItemOrDefault(a->SuperIndex));
+			const auto pExtB = SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItemOrDefault(b->SuperIndex));
 
 			if (pExtB && (pExtB->SuperWeaponSidebar_PriorityHouses & ownerBits) && (!pExtA || !(pExtA->SuperWeaponSidebar_PriorityHouses & ownerBits)))
 				return false;
@@ -193,7 +193,7 @@ void SWSidebarClass::SortButtons()
 			return BuildType::SortsBefore(AbstractType::Special, a->SuperIndex, AbstractType::Special, b->SuperIndex);
 		});
 
-	const auto pTopPCX = SideExt::ExtMap.Find(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex])->SuperWeaponSidebar_TopPCX.GetSurface();
+	const auto pTopPCX = SideExt::ExtMap.TryFind(SideClass::Array.Items[ScenarioClass::Instance->PlayerSideIndex])->SuperWeaponSidebar_TopPCX.GetSurface();
 	const int buttonCount = static_cast<int>(vec_Buttons.size());
 	const int cameoWidth = 60, cameoHeight = 48;
 	const int firstColumn = Phobos::UI::SuperWeaponSidebar_Max;

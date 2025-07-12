@@ -208,7 +208,7 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 	if (const auto pBullet = FireAtTemp::FireBullet)
 	{
 		// The weapon may not have been set up
-		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
+		const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pBullet->WeaponType);
 
 		if (pWeaponExt && pWeaponExt->VisualScatter)
 		{
@@ -274,7 +274,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 	GET(WeaponTypeClass* const, pWeapon, ECX);
 	GET(LaserDrawClass* const, pLaser, EAX);
 
-	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
 	{
 		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
 			pLaser->IsHouseColor = true;

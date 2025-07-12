@@ -86,8 +86,8 @@ DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 	if (pUnit->Type->DeployToFire && pUnit->Target)
 		pStructure->LastTarget = pUnit->Target;
 
-	if (const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
-		pStructureExt->DeployedTechno = true;
+	const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure);
+	pStructureExt->DeployedTechno = true;
 
 	return 0;
 }

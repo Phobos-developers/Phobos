@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <AircraftClass.h>
 #include <EventClass.h>
@@ -234,6 +234,12 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (pTypeExt->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
 
+	if ((pThis->Owner->IsControlledByHuman() || !RulesExt::Global()->DistributeTargetingFrame_AIOnly)
+		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
+	{
+		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
+	}
+
 	return 0;
 }
 
@@ -301,17 +307,17 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Limbo, 0x5)
 
 bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool markForRedraw = false;
-	bool altered = false;
-	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-
 	// Do not remove attached effects from undeploying buildings.
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
 		if (pBuilding->Type->UndeploysInto && pBuilding->CurrentMission == Mission::Selling && pBuilding->MissionStatus == 2)
 			return pThis->TechnoClass::Limbo();
 	}
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool markForRedraw = false;
+	bool altered = false;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
@@ -372,7 +378,7 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	else
 		pTarget = R->EBP<ObjectClass*>();
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
+	if (const auto pExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*>(pTarget)))
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -1001,10 +1007,27 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	pThis->Target = pTarget;
 	pExt->UpdateGattlingRateDownReset();
 
+	if (!pThis->Target)
+		pExt->ResetDelayedFireTimer();
+
 	return 0x6FCF44;
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
+{
+	enum { SkipGameCode = 0x6FAC31 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->DelayedFireSequencePaused)
+		return SkipGameCode;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 {
@@ -1089,6 +1112,19 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
+{
+	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const mission = pThis->GetCurrentMission();
+	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
+		? (mission != Mission::Move && mission != Mission::Guard) : mission != Mission::Guard)
+		? ClearMegaMission : ContinueMegaMission;
+}
+
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
@@ -1100,6 +1136,12 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 	enum { FuncRet = 0x4DF425 };
 
 	GET(FootClass* const, pThis, ESI);
+
+	auto const mission = pThis->GetCurrentMission();
+
+	// Refresh mega mission if mission is somehow changed to incorrect missions.
+	if (mission != Mission::Attack && mission != Mission::Move)
+		pThis->ContinueMegaMission();
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 

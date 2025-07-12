@@ -63,15 +63,10 @@ DEFINE_HOOK(0x4AE670, DisplayClass_GetToolTip_EnemyUIName, 0x8)
 
 	if (pFoot && pTechnoType && !pObject->IsDisguised())
 	{
-		bool IsAlly = true;
-		bool IsCivilian = false;
+		const auto pOwnerHouse = pFoot->Owner;
+		const bool IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
+		const bool IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
 		const bool IsObserver = HouseClass::Observer || HouseClass::IsCurrentPlayerObserver();
-
-		if (const auto pOwnerHouse = pFoot->GetOwningHouse())
-		{
-			IsAlly = pOwnerHouse->IsAlliedWith(HouseClass::CurrentPlayer);
-			IsCivilian = (pOwnerHouse == HouseClass::FindCivilianSide()) || pOwnerHouse->IsNeutral();
-		}
 
 		if (!IsAlly && !IsCivilian && !IsObserver)
 		{

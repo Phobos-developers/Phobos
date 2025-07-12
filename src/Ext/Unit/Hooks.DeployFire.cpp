@@ -65,7 +65,7 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 		return SkipGameCode;
 	}
 
-	auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
+	const auto pCell = MapClass::Instance.GetCellAt(pThis->GetMapCoords());
 	pThis->SetTarget(pCell);
 
 	if (pThis->GetFireError(pCell, weaponIndex, true) == FireError::OK)
@@ -78,7 +78,7 @@ DEFINE_HOOK(0x73DCEF, UnitClass_Mission_Unload_DeployFire, 0x6)
 			pThis->QueueMission(Mission::Guard, true);
 			const auto pExt = TechnoExt::ExtMap.Find(pThis);
 			const auto UnloadControl = &MissionControlClass::Array[(int)Mission::Unload];
-			int delay = static_cast<int>(UnloadControl->Rate * 900) + ScenarioClass::Instance->Random(0, 2);
+			const int delay = static_cast<int>(UnloadControl->Rate * 900) + ScenarioClass::Instance->Random(0, 2);
 			pExt->DeployFireTimer.Start(Math::min(pWeapon->ROF, delay));
 		}
 	}

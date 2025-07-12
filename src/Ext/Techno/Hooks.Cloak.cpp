@@ -95,7 +95,7 @@ DEFINE_HOOK(0x703789, TechnoClass_Cloak_BeforeDetach, 0x6)        // TechnoClass
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
 	{
 		if (!pExt->MindControlRingAnimType)
 			pExt->UpdateMindControlAnim();
@@ -111,7 +111,7 @@ DEFINE_HOOK(0x703799, TechnoClass_Cloak_AfterDetach, 0xA)        // TechnoClass_
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
 		pExt->IsDetachingForCloak = false;
 
 	return 0;
@@ -121,7 +121,7 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_Cloak_RestoreMCAnim, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
 		pExt->UpdateMindControlAnim();
 
 	return 0;

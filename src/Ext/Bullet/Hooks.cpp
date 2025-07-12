@@ -13,7 +13,7 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	if (auto const pExt = BulletExt::ExtMap.TryFind(pThis))
 	{
 		auto const pType = pThis->Type;
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;

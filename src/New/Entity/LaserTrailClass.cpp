@@ -36,6 +36,8 @@ bool LaserTrailClass::Update(CoordStruct location)
 			{
 				const auto pBolt = GameCreate<EBolt>();
 				const auto pBoltExt = EBoltExt::ExtMap.Find(pBolt);
+				const auto& boltDisable = pType->Bolt_Disable;
+				const auto& boltColor = pType->Bolt_Color;
 
 				const int alternateIdx = pType->IsAlternateColor ? 5 : 10;
 				const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
@@ -43,10 +45,10 @@ bool LaserTrailClass::Update(CoordStruct location)
 
 				for (int idx = 0; idx < 3; ++idx)
 				{
-					if (pType->Bolt_Disable[idx])
+					if (boltDisable[idx])
 						pBoltExt->Disable[idx] = true;
-					else if (pType->Bolt_Color[idx].isset())
-						pBoltExt->Color[idx] = pType->Bolt_Color[idx].Get();
+					else if (boltColor[idx].isset())
+						pBoltExt->Color[idx] = boltColor[idx].Get();
 					else
 						pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
 				}

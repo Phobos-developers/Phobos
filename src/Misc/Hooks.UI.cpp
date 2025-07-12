@@ -154,7 +154,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 	{
 		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor);
+		const ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor);
 
 		swprintf_s(counter, L"%d", static_cast<int>(pPlayer->OwnedWeed.GetTotalAmount()));
 
@@ -200,12 +200,12 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	GET_STACK(const int, idxRight, STACK_OFFSET(0x1C, 0x10));
 	GET_STACK(AbstractType, rttiLeft, STACK_OFFSET(0x1C, 0x4));
 	GET_STACK(AbstractType, rttiRight, STACK_OFFSET(0x1C, 0xC));
-	const auto pLeftTechnoExt = pLeft ? TechnoTypeExt::ExtMap.Find(pLeft) : nullptr;
-	const auto pRightTechnoExt = pRight ? TechnoTypeExt::ExtMap.Find(pRight) : nullptr;
+	const auto pLeftTechnoExt = TechnoTypeExt::ExtMap.TryFind(pLeft);
+	const auto pRightTechnoExt = TechnoTypeExt::ExtMap.TryFind(pRight);
 	const auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
-		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItem(idxLeft)) : nullptr;
+		? SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItem(idxLeft)) : nullptr;
 	const auto pRightSWExt = (rttiRight == AbstractType::Special || rttiRight == AbstractType::Super || rttiRight == AbstractType::SuperWeaponType)
-		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItem(idxRight)) : nullptr;
+		? SWTypeExt::ExtMap.TryFind(SuperWeaponTypeClass::Array.GetItem(idxRight)) : nullptr;
 
 	if ((pLeftTechnoExt || pLeftSWExt) && (pRightTechnoExt || pRightSWExt))
 	{
@@ -298,7 +298,7 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 	{
 		const SideClass* pSide = SideClass::Array.GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex);
 
-		if (const auto pSideExt = SideExt::ExtMap.Find(pSide))
+		if (const auto pSideExt = SideExt::ExtMap.TryFind(pSide))
 			theme = pSideExt->BriefingTheme;
 	}
 

@@ -80,9 +80,8 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 		pWHExt->WasDetonatedOnAllMapObjects = true;
 		auto const originalLocation = pThis->Location;
 		auto const pOriginalTarget = pThis->Target;
-		auto const pExt = BulletExt::ExtMap.Find(pThis);
 		auto const isFull = pWHExt->DetonateOnAllMapObjects_Full;
-		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : pExt->FirerHouse;
+		auto const pOwner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
 
 		auto copy_dvc = []<typename T>(const DynamicVectorClass<T>&dvc)
 		{
@@ -221,7 +220,7 @@ DEFINE_HOOK(0x469D1A, BulletClass_Logics_Debris, 0x6)
 			{
 				do
 				{
-					int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
+					const int debrisIndex = ScenarioClass::Instance->Random.RandomRanged(0, maxIndex);
 					const auto pAnim = GameCreate<AnimClass>(debrisAnims[debrisIndex], coord);
 					AnimExt::SetAnimOwnerHouseKind(pAnim, pOwner, nullptr, false, true);
 				}
@@ -412,7 +411,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 
 		if (auto const pWeapon = pTypeExt->ReturnWeapon)
 		{
-			auto damage = pWeapon->Damage;
+			int damage = pWeapon->Damage;
 
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
 				damage = static_cast<int>(damage * pTechno->FirepowerMultiplier * TechnoExt::ExtMap.Find(pTechno)->AE.FirepowerMultiplier);
@@ -479,10 +478,9 @@ DEFINE_HOOK(0x468EB3, BulletClass_Explodes_AirburstCheck1, 0x6)
 	GET(BulletClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
 	R->EAX(pType);
-	return !(pType->Airburst || pTypeExt->Splits) ? Continue : Skip;
+	return !(pType->Airburst || BulletTypeExt::ExtMap.Find(pType)->Splits) ? Continue : Skip;
 }
 
 DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
@@ -492,10 +490,9 @@ DEFINE_HOOK(0x468FF4, BulletClass_Explodes_AirburstCheck2, 0x6)
 	GET(BulletClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
-	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pType);
 
 	R->EAX(pType);
-	return (pType->Airburst || pTypeExt->Splits) ? Continue : Skip;
+	return (pType->Airburst || BulletTypeExt::ExtMap.Find(pType)->Splits) ? Continue : Skip;
 }
 
 DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)

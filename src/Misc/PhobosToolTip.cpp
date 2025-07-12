@@ -434,7 +434,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
 	if (auto const pSide = SideClass::Array.GetItemOrDefault(nPlayerSideIndex))
 	{
-		if (auto const pData = SideExt::ExtMap.Find(pSide))
+		if (auto const pData = SideExt::ExtMap.TryFind(pSide))
 		{
 			// Could this flag be lazy?
 			if (isCameo)

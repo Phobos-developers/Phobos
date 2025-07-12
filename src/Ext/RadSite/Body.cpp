@@ -60,7 +60,7 @@ void RadSiteExt::CreateInstance(CellStruct location, int spread, int radLevel, W
 	pRadExt->SetRadLevel(std::min(radLevel, pRadType->GetLevelMax()));
 	pRadExt->CreateLight();
 
-	if (const auto pCellExt = CellExt::ExtMap.Find(MapClass::Instance.TryGetCellAt(location)))
+	if (const auto pCellExt = CellExt::ExtMap.TryFind(MapClass::Instance.TryGetCellAt(location)))
 		pCellExt->RadSites.emplace_back(pRadSite);
 }
 
@@ -117,11 +117,11 @@ void RadSiteExt::ExtData::CreateLight()
 void RadSiteExt::ExtData::Add(int amount)
 {
 	const auto pThis = this->OwnerObject();
-	const auto RadExt = RadSiteExt::ExtMap.Find(pThis);
+	const auto pRadExt = RadSiteExt::ExtMap.Find(pThis);
 	const int value = pThis->RadLevel * pThis->RadTimeLeft / pThis->RadDuration;
 	pThis->Deactivate();
 	pThis->RadLevel = value + amount;
-	pThis->RadDuration = pThis->RadLevel * RadExt->Type->GetDurationMultiple();
+	pThis->RadDuration = pThis->RadLevel * pRadExt->Type->GetDurationMultiple();
 	pThis->RadTimeLeft = pThis->RadDuration;
 	this->CreateLight();
 }

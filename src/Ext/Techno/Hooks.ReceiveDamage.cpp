@@ -42,9 +42,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
 			multiplier = pWHExt->DamageEnemiesMultiplier.Get(RulesExt::Global()->DamageEnemiesMultiplier);
 		else if (pSourceHouse != pTargetHouse)
-			multiplier = pWHExt->DamageAlliesMultiplier.Get(RulesExt::Global()->DamageAlliesMultiplier);
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageAlliesMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageAlliesMultiplier) : RulesExt::Global()->DamageAlliesMultiplier);
 		else
-			multiplier = pWHExt->DamageOwnerMultiplier.Get(RulesExt::Global()->DamageOwnerMultiplier);
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? RulesExt::Global()->DamageOwnerMultiplier_NotAffectsEnemies.Get(RulesExt::Global()->DamageOwnerMultiplier) : RulesExt::Global()->DamageOwnerMultiplier);
 
 		if (pWHExt->DamageSourceHealthMultiplier && args->Attacker)
 			multiplier += pWHExt->DamageSourceHealthMultiplier * args->Attacker->GetHealthPercentage();
@@ -177,7 +177,7 @@ DEFINE_HOOK(0x702819, TechnoClass_ReceiveDamage_Decloak, 0xA)
 	GET(TechnoClass* const, pThis, ESI);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
-	if (auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	if (auto const pExt = WarheadTypeExt::ExtMap.TryFind(pWarhead))
 	{
 		if (pExt->DecloakDamagedTargets)
 			pThis->Uncloak(false);
@@ -252,12 +252,11 @@ DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
 
 	if (receiveDamageArgs.WH)
 	{
-		if (auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
-		{
-			const int whSequence = pWarheadExt->NotHuman_DeathSequence.Get();
-			if (whSequence > 0)
-				resultSequence = Math::min(Die(whSequence), Die(5));
-		}
+		auto const pWarheadExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH);
+		const int whSequence = pWarheadExt->NotHuman_DeathSequence.Get();
+
+		if (whSequence > 0)
+			resultSequence = Math::min(Die(whSequence), Die(5));
 	}
 
 	R->ECX(pThis);

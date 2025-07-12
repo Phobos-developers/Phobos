@@ -19,9 +19,8 @@ DEFINE_HOOK(0x444113, BuildingClass_ExitObject_NavalProductionFix1, 0x6)
 
 	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
 	{
-		if (auto const pHouseExt = HouseExt::ExtMap.Find(pHouse))
-			pHouseExt->ProducingNavalUnitTypeIndex = -1;
-
+		auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+		pHouseExt->ProducingNavalUnitTypeIndex = -1;
 		ExitObjectTemp::ProducingUnitIndex = pHouse->ProducingUnitTypeIndex;
 	}
 
@@ -104,7 +103,7 @@ DEFINE_HOOK(0x4CA0A1, FactoryClass_Abandon_NavalProductionFix, 0x5)
 
 	if (pObject->WhatAmI() == AbstractType::Unit && pObject->GetTechnoType()->Naval)
 	{
-		if (auto const pHouseExt = HouseExt::ExtMap.Find(pThis->Owner))
+		if (auto const pHouseExt = HouseExt::ExtMap.TryFind(pThis->Owner))
 		{
 			pHouseExt->ProducingNavalUnitTypeIndex = -1;
 			return SkipUnitTypeCheck;
@@ -148,7 +147,7 @@ DEFINE_HOOK(0x4FE0A3, HouseClass_AI_RaiseMoney_NavalProductionFix, 0x6)
 {
 	GET(HouseClass* const, pThis, ESI);
 
-	if (auto const pExt = HouseExt::ExtMap.Find(pThis))
+	if (auto const pExt = HouseExt::ExtMap.TryFind(pThis))
 		pExt->ProducingNavalUnitTypeIndex = -1;
 
 	return 0;

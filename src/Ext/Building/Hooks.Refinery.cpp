@@ -23,7 +23,7 @@ DEFINE_HOOK(0x73E4D0, UnitClass_Mission_Unload_CheckBalanceAfter, 0xA)
 	GET(HouseClass* const, pHouse, EBX);
 	GET(BuildingClass* const, pDock, EDI);
 
-	if (auto pBldExt = BuildingExt::ExtMap.Find(pDock))
+	if (auto const pBldExt = BuildingExt::ExtMap.TryFind(pDock))
 	{
 		pBldExt->AccumulatedIncome += pHouse->Available_Money() - OwnerBalanceBefore::HarversterUnloads;
 	}
@@ -49,7 +49,7 @@ DEFINE_HOOK(0x522E4F, InfantryClass_SlaveGiveMoney_CheckBalanceAfter, 0x6)
 		auto const pBldExt = BuildingExt::ExtMap.Find(pBld);
 		pBldExt->AccumulatedIncome += money;
 	}
-	else if (auto const pBldTypeExt = BuildingTypeExt::ExtMap.Find(slaveMiner->GetTechnoType()->DeploysInto))
+	else if (auto const pBldTypeExt = BuildingTypeExt::ExtMap.TryFind(slaveMiner->GetTechnoType()->DeploysInto))
 	{
 		if (pBldTypeExt->DisplayIncome.Get(RulesExt::Global()->DisplayIncome.Get()))
 			FlyingStrings::AddMoneyString(money, slaveMiner->Owner, RulesExt::Global()->DisplayIncome_Houses.Get(), slaveMiner->Location);

@@ -23,7 +23,7 @@ DEFINE_HOOK(0x4401BB, BuildingClass_AI_PickWithFreeDocks, 0x6)
 		if (pBuilding->Factory
 			&& !BuildingExt::HasFreeDocks(pBuilding))
 		{
-			if (auto const pBldExt = BuildingExt::ExtMap.Find(pBuilding))
+			if (auto const pBldExt = BuildingExt::ExtMap.TryFind(pBuilding))
 				pBldExt->UpdatePrimaryFactoryAI();
 		}
 	}
