@@ -218,6 +218,15 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Nullable<int> AINormalTargetingDelay;
+		Nullable<int> PlayerNormalTargetingDelay;
+		Nullable<int> AIGuardAreaTargetingDelay;
+		Nullable<int> PlayerGuardAreaTargetingDelay;
+		Nullable<int> AIAttackMoveTargetingDelay;
+		Nullable<int> PlayerAttackMoveTargetingDelay;
+		Valueable<bool> DistributeTargetingFrame;
+		Valueable<bool> DistributeTargetingFrame_AIOnly;
+
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
 
@@ -405,6 +414,14 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, AINormalTargetingDelay {}
+			, PlayerNormalTargetingDelay {}
+			, AIGuardAreaTargetingDelay {}
+			, PlayerGuardAreaTargetingDelay {}
+			, AIAttackMoveTargetingDelay {}
+			, PlayerAttackMoveTargetingDelay {}
+			, DistributeTargetingFrame { false }
+			, DistributeTargetingFrame_AIOnly { true }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }

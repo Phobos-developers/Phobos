@@ -565,6 +565,12 @@ This page lists all the individual contributions to the project by their author.
   - Several attackmove related enhancement
   - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
   - Burst without delay
+  - Target scanning delay customization (code)
+  - Skip target scanning function calling for unarmed technos (code)
+  - Force techno targeting in distributed frames to improve performance
+- **solar-III (凤九歌)**
+  - Target scanning delay customization (documentation)
+  - Skip target scanning function calling for unarmed technos (documentation)
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

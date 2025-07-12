@@ -70,7 +70,7 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 		CDTimerClass TiberiumEater_Timer;
-		bool FiringSequencePaused;
+		bool DelayedFireSequencePaused;
 		int DelayedFireWeaponIndex;
 		CDTimerClass DelayedFireTimer;
 		AnimClass* CurrentDelayedFireAnim;
@@ -135,7 +135,7 @@ public:
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 			, FiringAnimationTimer {}
-			, FiringSequencePaused { false }
+			, DelayedFireSequencePaused { false }
 			, DelayedFireWeaponIndex { -1 }
 			, DelayedFireTimer {}
 			, CurrentDelayedFireAnim { nullptr }
