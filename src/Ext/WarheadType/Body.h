@@ -189,7 +189,9 @@ public:
 		Valueable<int> PenetratesTransport_Level;
 		Valueable<double> PenetratesTransport_PassThrough;
 		Valueable<double> PenetratesTransport_FatalRate;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
 		Valueable<bool> PenetratesTransport_DamageAll;
+		ValueableIdx<VocClass> PenetratesTransport_CleanSound;
 
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
@@ -379,7 +381,9 @@ public:
 			, PenetratesTransport_Level { 0 }
 			, PenetratesTransport_PassThrough { 1.0 }
 			, PenetratesTransport_FatalRate { 0.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
 			, PenetratesTransport_DamageAll { false }
+			, PenetratesTransport_CleanSound { -1 }
 
 			, AffectsEnemies { true }
 			, AffectsOwner {}

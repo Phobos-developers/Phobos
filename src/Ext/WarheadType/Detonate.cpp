@@ -694,7 +694,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 		}
 		else
 		{
-			const int adjustedDamage = static_cast<int>(std::ceil(damage * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
+			const int adjustedDamage = static_cast<int>(std::ceil(damage * this->PenetratesTransport_DamageMultiplier * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
 
 			while (passenger)
 			{
@@ -736,7 +736,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 		}
 		else
 		{
-			int adjustedDamage = static_cast<int>(std::ceil(damage * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
+			int adjustedDamage = static_cast<int>(std::ceil(damage * this->PenetratesTransport_DamageMultiplier * pTargetTypeExt->PenetratesTransport_DamageMultiplier));
 			const auto damageResult = passenger->ReceiveDamage(&adjustedDamage, distance, pWH, pInvoker, false, true, pInvokerHouse);
 
 			if (damageResult == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
@@ -749,6 +749,16 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 	passenger = passengers.GetFirstPassenger();
 
-	if (passenger && gunnerRemoved)
-		pTargetFoot->ReceiveGunner(passenger);
+	if (passenger)
+	{
+		if (gunnerRemoved)
+			pTargetFoot->ReceiveGunner(passenger);
+	}
+	else
+	{
+		const int cleanSound = this->PenetratesTransport_CleanSound;
+
+		if (cleanSound != -1)
+			VocClass::PlayAt(cleanSound, coords);
+	}
 }

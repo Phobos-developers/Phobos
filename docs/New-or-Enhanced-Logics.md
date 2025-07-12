@@ -2334,6 +2334,7 @@ RemoveParasite=   ; boolean
   - `PenetratesTransport.FatalRate` is the chance of one hit kill, actual change will multiply by `PenetratesTransport.FatalRateMultiplier` of target.
   - `PenetratesTransport.DamageAll` control whether it will damage all passengers or random one passenger in transport.
   - `PenetratesTransport.DamageMultiplier` is multiplier of damage on passenger.
+  - `PenetratesTransport.CleanSound` will play when all passengers has been killed.
 
 In `rulesmd.ini`
 ```ini
@@ -2341,7 +2342,9 @@ In `rulesmd.ini`
 PenetratesTransport.Level=0                     ; integer
 PenetratesTransport.PassThrough=1.0             ; double
 PenetratesTransport.FatalRate=0.0               ; double
+PenetratesTransport.DamageMultiplier=1.0        ; double
 PenetratesTransport.DamageAll=false             ; boolean
+PenetratesTransport.CleanSound=                 ; sound entry
 
 [SOMETECHNO]                                    ; TechnoType
 PenetratesTransport.Level=                      ; integer
