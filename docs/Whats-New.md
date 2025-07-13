@@ -422,6 +422,7 @@ New:
 - Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
 - Target scanning delay customization (by TaranDahl and solar-III)
 - Force techno targeting in distributed frames to improve performance (by TaranDahl)
+- [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
