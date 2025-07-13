@@ -2957,7 +2957,7 @@ msgstr "拥有 `CanC4=false` 的建筑在受到负值杀伤时不再获得 1 点
 msgid ""
 "Buildings with primary weapon that has `AG=false` projectile now have "
 "attack cursor when selected (by Starkku)"
-msgstr "使用抛射体 `AG=false` 的主武器的建筑现在在选中时正常显示攻击光标（by Starkku）"
+msgstr "主武器使用 `AG=false` 抛射体的的建筑现在在选中时将正常显示攻击光标（by Starkku）"
 
 #: ../../Whats-New.md:661
 msgid ""

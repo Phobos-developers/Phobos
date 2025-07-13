@@ -623,7 +623,7 @@ msgstr ""
 msgid ""
 "Buildings with primary weapon that has `AG=false` projectile now have "
 "attack cursor when selected."
-msgstr "现在主武器具有 `AG=false` 抛射体的建筑在被选中时会正常拥有攻击光标"
+msgstr "主武器使用 `AG=false` 抛射体的的建筑现在在选中时将正常显示攻击光标"
 
 #: ../../Fixed-or-Improved-Logics.md:107
 msgid ""
