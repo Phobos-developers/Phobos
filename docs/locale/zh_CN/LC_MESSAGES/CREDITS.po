@@ -1503,7 +1503,7 @@ msgstr "多武器逻辑"
 msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt)"
-msgstr "工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入"
+msgstr "工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入）"
 
 #: ../../../CREDITS.md:383
 msgid ""

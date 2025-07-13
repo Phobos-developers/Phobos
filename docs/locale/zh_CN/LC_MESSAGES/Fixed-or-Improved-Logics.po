@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Phobos \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-13 21:48+0800\n"
+"POT-Creation-Date: 2025-07-14 01:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1467,28 +1467,27 @@ msgid ""
 "Projectiles with `Vertical=true` now drop straight down if fired off by "
 "AircraftTypes instead of behaving erratically. This behaviour can be "
 "turned off by setting `Vertical.AircraftFix=false` on the projectile."
-msgstr "现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠。可以通过在抛射体上设置 `Vertical.AircraftFix=false` 来关闭这一行为。"
+msgstr ""
+"现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠。可以通过在抛射体上设置 "
+"`Vertical.AircraftFix=false` 来关闭这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:242
 msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt)."
-msgstr ""
-"工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入。"
+msgstr "工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入）。"
 
 #: ../../Fixed-or-Improved-Logics.md:243
 msgid ""
 "Player-controlled spies are not forced to perform other tasks while "
 "attacking buildings."
-msgstr ""
-"人类玩家控制的间谍在攻击建筑时不会强制执行其他任务。"
+msgstr "人类玩家控制的间谍在攻击建筑时不会强制执行其他任务。"
 
 #: ../../Fixed-or-Improved-Logics.md:244
 msgid ""
 "If `BombDisarm=yes` is not present for all weapon warheads, then the "
 "engineer will no longer use the appropriate mouse action."
-msgstr ""
-"如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作。"
+msgstr "如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作。"
 
 #: ../../Fixed-or-Improved-Logics.md:245
 msgid "Fixed an unusual use of DeployFireWeapon for InfantryType."
@@ -1647,6 +1646,7 @@ msgstr "现在可以通过设置 `VoicePickup` 来覆盖 `Carryall=true` 战机�
 #: ../../Fixed-or-Improved-Logics.md:1124
 #: ../../Fixed-or-Improved-Logics.md:1145
 #: ../../Fixed-or-Improved-Logics.md:1160
+#: ../../Fixed-or-Improved-Logics.md:1180
 #: ../../Fixed-or-Improved-Logics.md:1198
 #: ../../Fixed-or-Improved-Logics.md:1217
 #: ../../Fixed-or-Improved-Logics.md:1228
@@ -3353,15 +3353,14 @@ msgid ""
 "`AllowAirstrike`. If not set, defaults to value of `CanC4`. For non-"
 "building targets, the default value is true."
 msgstr ""
-"默认情况下建筑能否被空袭武器（弹头 `Airstrike=true`）作为目标取决于 `CanC4` 的值，这也会影响其他方面。现在可以通过设置 `AllowAirstrike` "
-"来独立更改这一点，如果未设置，默认为 `CanC4` 的值。对于非建筑类单位这默认为 true。"
+"默认情况下建筑能否被空袭武器（弹头 `Airstrike=true`）作为目标取决于 `CanC4` 的值，这也会影响其他方面。现在可以通过设置 "
+"`AllowAirstrike` 来独立更改这一点，如果未设置，默认为 `CanC4` 的值。对于非建筑类单位这默认为 true。"
 
 #: ../../Fixed-or-Improved-Logics.md:837
 msgid ""
 "`AirstrikeTargets` determines what types of targets are valid airstrike "
 "targets for this Warhead."
-msgstr ""
-"`AirstrikeTargets` 决定了哪些目标是该弹头的有效空袭目标。"
+msgstr "`AirstrikeTargets` 决定了哪些目标是该弹头的有效空袭目标。"
 
 #: ../../Fixed-or-Improved-Logics.md:838
 msgid ""
@@ -4417,25 +4416,23 @@ msgid ""
 "always scan for targets in a synchronous period, causing game lag. "
 "Increasing targeting delay alone will not make things better, as their "
 "targeting is still synchronized."
-msgstr ""
-"当你在同一帧内创建大量单位（例如进入一个初始预置了大量单位的战役地图）时它们总是会同时扫描目标从而导致游戏卡顿。仅通过增大索敌间隔并不能改善这点，因为它们仍会同时索敌。"
+msgstr "当你在同一帧内创建大量单位（例如进入一个初始预置了大量单位的战役地图）时它们总是会同时扫描目标从而导致游戏卡顿。仅通过增大索敌间隔并不能改善这点，因为它们仍会同时索敌。"
 
 #: ../../Fixed-or-Improved-Logics.md:1177
 msgid ""
-"It is now possible to force them to seek targets separately. When a "
-"techno spawns, it will generate a random number in \\[0,15\\]. If "
-"`DistributeTargetingFrame=true` is set, only when the current frame "
-"number is congruent with the technos own number under modulo 16, will it "
-"do targeting."
+"It is now possible to force them to seek targets separately. If "
+"`DistributeTargetingFrame=true` is set, techno's targeting timer will be "
+"initiated with a random delay, ranging in \\[0,15\\]. This can distribute"
+" their targeting timing within 15 frames, thus alleviating the above-"
+"mentioned lag."
 msgstr ""
-"现在可以强制这些单位的索敌行为分散到不同帧。当一个单位创建时它会生成一个 `[0,15]` 区间内的随机数 `N`。如果设置了 `DistributeTargetingFrame=true` 那么仅当 `游戏已经过帧数 % 16 == N` 时单位才会执行索敌。"
+"现在可以强制它们分别寻找目标。如果设置 `DistributeTargetingFrame=true`，单位的瞄准计时器将在随机延迟后启动，延迟范围在 `[0,15]` 之间。这可以将它们的瞄准时间分散在 15 帧内，从而缓解上述卡顿问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:1178
 msgid ""
 "You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI"
 " (Players are not likely to have so many technos.)"
-msgstr ""
-"你可以使用 `DistributeTargetingFrame.AIOnly` 使其仅对 AI 生效（人类玩家通常不太可能有那么多单位）。"
+msgstr "你可以使用 `DistributeTargetingFrame.AIOnly` 使其仅对 AI 生效（人类玩家通常不太可能有那么多单位）。"
 
 #: ../../Fixed-or-Improved-Logics.md:1181
 msgid ""
@@ -5011,22 +5008,21 @@ msgid ""
 "intervals. Increasing these values would make units stupid, while "
 "decreasing them would cause game lag."
 msgstr ""
-"原版中游戏使用 `NormalTargetingDelay` 和 `GuardAreaTargetingDelay` 来全局控制单位的索敌间隔。增大这些值会导致单位反应迟钝，减小这些值则可能导致游戏卡顿。"
+"原版中游戏使用 `NormalTargetingDelay` 和 `GuardAreaTargetingDelay` "
+"来全局控制单位的索敌间隔。增大这些值会导致单位反应迟钝，减小这些值则可能导致游戏卡顿。"
 
 #: ../../Fixed-or-Improved-Logics.md:1376
 msgid ""
 "Now, you can define them per techno, also allowing different values for "
 "AI and players. The default values are the same as those originally "
 "defined by the vanilla flags."
-msgstr ""
-"现在可以在每种单位上微观定义这些参数，且可为 AI 玩家和人类玩家分离设置。默认值取自原版全局。"
+msgstr "现在可以在每种单位上微观定义这些参数，且可为 AI 玩家和人类玩家分离设置。默认值取自原版全局。"
 
 #: ../../Fixed-or-Improved-Logics.md:1377
 msgid ""
 "You can also specific this delay for attack move mission. The default "
 "value is `NormalTargetingDelay`."
-msgstr ""
-"你还可以为移动攻击指令单独设定间隔。默认使用 `NormalTargetingDelay` 的值。"
+msgstr "你还可以为移动攻击指令单独设定间隔。默认使用 `NormalTargetingDelay` 的值。"
 
 #: ../../Fixed-or-Improved-Logics.md:1380
 msgid ""
@@ -7259,4 +7255,19 @@ msgstr ""
 
 #~ msgid "For non building situations, the default value is true."
 #~ msgstr "对非建筑单位默认为 true。"
+
+#~ msgid ""
+#~ "It is now possible to force them"
+#~ " to seek targets separately. When a"
+#~ " techno spawns, it will generate a"
+#~ " random number in \\[0,15\\]. If "
+#~ "`DistributeTargetingFrame=true` is set, only "
+#~ "when the current frame number is "
+#~ "congruent with the technos own number"
+#~ " under modulo 16, will it do "
+#~ "targeting."
+#~ msgstr ""
+#~ "现在可以强制这些单位的索敌行为分散到不同帧。当一个单位创建时它会生成一个 `[0,15]` 区间内的随机数 "
+#~ "`N`。如果设置了 `DistributeTargetingFrame=true` 那么仅当 "
+#~ "`游戏已经过帧数 % 16 == N` 时单位才会执行索敌。"
 

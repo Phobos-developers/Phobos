@@ -2011,7 +2011,7 @@ msgstr "现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时�
 msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt) (by FlyStar)"
-msgstr "工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入（by FlyStar）"
+msgstr "工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入）（by FlyStar）"
 
 #: ../../Whats-New.md:460
 msgid ""
