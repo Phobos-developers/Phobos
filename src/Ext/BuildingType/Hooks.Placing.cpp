@@ -738,7 +738,8 @@ DEFINE_HOOK(0x4ABAC0, DisplayClass_LeftMouseButtonUp_ReplaceBuildingType, 0x6)
 	const auto centerCell = pDisplay->CurrentFoundation_CenterCell;
 	const auto placeCell = centerCell + pDisplay->CurrentFoundation_TopLeftOffset;
 
-	const auto pType = pDisplay->CurrentBuildingType;
+	const auto pPlace = pDisplay->CurrentBuilding;
+	const auto pType = pPlace->GetType(); // Should not use CurrentBuildingType
 	const auto pBuildingType = abstract_cast<BuildingTypeClass*>(pType);
 
 	int placeType = 0;
@@ -756,7 +757,7 @@ DEFINE_HOOK(0x4ABAC0, DisplayClass_LeftMouseButtonUp_ReplaceBuildingType, 0x6)
 	}
 
 	const int arrayIndex = pType->GetArrayIndex();
-	const auto absType = pDisplay->CurrentBuilding->WhatAmI();
+	const auto absType = pPlace->WhatAmI();
 
 	const EventClass event (HouseClass::CurrentPlayer->ArrayIndex, EventType::Place, absType, arrayIndex, placeType, placeCell);
 	EventClass::AddEvent(event);
