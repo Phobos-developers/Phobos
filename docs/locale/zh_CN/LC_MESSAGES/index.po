@@ -655,8 +655,11 @@ msgid "[Alipay](images/Donation-DeathFish.jpg)"
 msgstr "[支付宝](images/Donation-DeathFish.jpg)"
 
 #: ../../../README.md:120
-msgid "**FlyStar (@a851903106)** - triage"
-msgstr "**FlyStar（@a851903106）** - 分派"
+msgid "**FlyStar (@Fly-Star-him)** - triage"
+msgstr "**FlyStar（@aFly-Star-him）** - 分派"
+
+msgid "[WeChatPay](images/Donation-FlyStar.jpg)"
+msgstr "[微信](images/Donation-FlyStar.jpg)"
 
 #: ../../../README.md:121
 msgid "**@Fryone** - triage"

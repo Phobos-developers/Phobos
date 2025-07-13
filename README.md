@@ -116,7 +116,8 @@ Every maintenance crew member is welcome to put a donation link to their entry i
   - [WeChatPay](images/Donation-TaranDahl.jpg)
 - **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
   - [Alipay](images/Donation-DeathFish.jpg)
-- **FlyStar (@a851903106)** - triage
+- **FlyStar (@Fly-Star-him)** - triage
+  - [WeChatPay](images/Donation-FlyStar.jpg)
 - **@Fryone** - triage
 
 #### Inactive
