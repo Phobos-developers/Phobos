@@ -1052,14 +1052,9 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ### Voxel light source customization
 
-- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
-
-```{note}
-Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
-```
-
-![image](_static/images/VoxelLightSourceComparison.png)
-*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">CCS_qkl</a>*
+![image](_static/images/VoxelLightSourceComparison1.png)
+![image](_static/images/VoxelLightSourceComparison2.png)
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
