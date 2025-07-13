@@ -2073,8 +2073,8 @@ msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题（by Fl
 #: ../../Whats-New.md:472
 msgid ""
 "Fixed the issue where some units crashed after the deployment "
-"transformation (by ststl, FlyStar)"
-msgstr "修复了某些单位部署变形后崩溃的问题（by ststl, FlyStar）"
+"transformation (by ststl & FlyStar)"
+msgstr "修复了某些单位部署变形后崩溃的问题（by ststl & FlyStar）"
 
 #: ../../Whats-New.md:473
 msgid ""
