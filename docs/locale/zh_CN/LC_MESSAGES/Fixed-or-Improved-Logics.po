@@ -4428,7 +4428,7 @@ msgid ""
 "number is congruent with the technos own number under modulo 16, will it "
 "do targeting."
 msgstr ""
-"现在可以强制这些单位的索敌行为分散到不同帧。当一个单位创建时它会生成一个 `[0,15]` 区间内的随机数 N。如果设置了 `DistributeTargetingFrame=true` 那么仅当 `游戏当前帧数 % 16 ==N` 时单位才会执行索敌。"
+"现在可以强制这些单位的索敌行为分散到不同帧。当一个单位创建时它会生成一个 `[0,15]` 区间内的随机数 `N`。如果设置了 `DistributeTargetingFrame=true` 那么仅当 `游戏已经过帧数 % 16 == N` 时单位才会执行索敌。"
 
 #: ../../Fixed-or-Improved-Logics.md:1178
 msgid ""

@@ -1821,7 +1821,7 @@ msgstr "升级动画"
 
 #: ../../../CREDITS.md:457
 msgid "Damaged unit image changes"
-msgstr "单位伤残更换图像"
+msgstr "载具伤残更换图像"
 
 #: ../../../CREDITS.md:458
 msgid "`VoiceDeploy` through hot-key/command bar fix"

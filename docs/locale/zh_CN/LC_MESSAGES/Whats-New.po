@@ -1280,7 +1280,7 @@ msgid ""
 "[Damaged unit image changes](New-or-Enhanced-Logics.md#damaged-unit-"
 "image-changes) (by Fryone)"
 msgstr ""
-"[单位伤残更换图像](New-or-Enhanced-Logics.md#damaged-unit-image-changes)（by "
+"[载具伤残更换图像](New-or-Enhanced-Logics.md#damaged-unit-image-changes)（by "
 "Fryone）"
 
 #: ../../Whats-New.md:353

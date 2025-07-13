@@ -2234,9 +2234,8 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:487
 msgid ""
-"Note that the AircraftTypes had to be defined under [AircraftTypes] and "
-"use same image type (SHP/VXL) for vanilla/damaged states."
-msgstr "注意这些被使用的战机必须在 `[AircraftTypes]` 下注册并且在常规／伤残状态下使用相同的图像类型（Shape／Voxel）。"
+"Note that the AircraftTypes had to be defined under [AircraftTypes]."
+msgstr "注意这些被使用的战机必须在 `[AircraftTypes]` 下注册。"
 
 #: ../../New-or-Enhanced-Logics.md:490
 msgid "Animations"
@@ -7308,7 +7307,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1996
 msgid "Damaged unit image changes"
-msgstr "单位伤残更换图像"
+msgstr "载具伤残更换图像"
 
 #: ../../New-or-Enhanced-Logics.md:1998
 msgid ""
@@ -7316,15 +7315,15 @@ msgid ""
 "`[AudioVisual] -> ConditionYellow` percentage), it now may use different "
 "image set by `Image.ConditionYellow` VehicleType."
 msgstr ""
-"现在当单位伤残（生命值低于 `[AudioVisual] -> ConditionYellow` 的百分比）时可以通过 "
-"`Image.ConditionYellow` 为单位设置不同的图像。"
+"现在当载具伤残（生命值低于 `[AudioVisual] -> ConditionYellow` 的百分比）时可以通过 "
+"`Image.ConditionYellow` 为载具设置不同的图像。"
 
 #: ../../New-or-Enhanced-Logics.md:1999
 msgid ""
 "Similar, `Image.ConditionRed` is used as image if unit health points "
 "percentage is lower than `[AudioVisual] -> ConditionRed` percentage."
 msgstr ""
-"同样的如果单位生命值低于 `[AudioVisual] -> ConditionRed` 的百分比那么将会使用 "
+"同样的如果载具生命值低于 `[AudioVisual] -> ConditionRed` 的百分比那么将会使用 "
 "`Image.ConditionRed` 作为图像。"
 
 #: ../../New-or-Enhanced-Logics.md:2000
@@ -7333,7 +7332,7 @@ msgid ""
 "`WaterImage.ConditionRed` VehicleType, similar to Ares' `WaterImage`."
 msgstr ""
 "类似于 Ares 的 `WaterImage`，可以通过设置 `WaterImage.ConditionYellow` 和 "
-"`WaterImage.ConditionRed` 的单位类型来在水上应用这一效果。"
+"`WaterImage.ConditionRed` 的载具类型来在水上应用这一效果。"
 
 #: ../../New-or-Enhanced-Logics.md:2003
 msgid ""
@@ -7353,7 +7352,7 @@ msgstr ""
 msgid ""
 "Note that the VehicleTypes had to be defined under [VehicleTypes] and use"
 " same image type (SHP/VXL) for vanilla/damaged states."
-msgstr "注意这些被使用的单位必须在 `[VehicleTypes]` 下注册并且在常规／伤残状态下使用相同的图像类型（Shape／Voxel）。"
+msgstr "注意这些被使用的载具必须在 `[VehicleTypes]` 下注册并且在常规／伤残状态下使用相同的图像类型（Shape／Voxel）。"
 
 #: ../../New-or-Enhanced-Logics.md:2015
 msgid "Fast access vehicle"
@@ -8646,7 +8645,7 @@ msgid ""
 "even if their `ROF` or `BurstDelay` is set to 0. Now you can force units "
 "to fire all bursts in one frame by setting the `Burst.NoDelay` to true."
 msgstr ""
-"原版中即便单位的 `ROF` 或载具的 `BurstDelay` 设为 0 也最快每帧发射一次。现在可以通过将 `Burst.NoDelay` "
+"原版中即便武器的 `ROF` 或载具的 `BurstDelay` 设为 0 也最快每帧发射一次。现在可以通过将 `Burst.NoDelay` "
 "设为 true 强制单位在一帧内全部发射。"
 
 #: ../../New-or-Enhanced-Logics.md:2458

@@ -484,7 +484,7 @@ Image.ConditionRed=           ; AircraftType entry
 ```
 
 ```{warning}
-Note that the AircraftTypes had to be defined under [AircraftTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+Note that the AircraftTypes had to be defined under [AircraftTypes].
 ```
 
 ## Animations
