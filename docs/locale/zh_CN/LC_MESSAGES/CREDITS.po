@@ -2312,27 +2312,27 @@ msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 
 #: ../../../CREDITS.md:572
 msgid "Target scanning delay customization (code)"
-msgstr ""
+msgstr "自定义索敌间隔（代码）"
 
 #: ../../../CREDITS.md:573
 msgid "Skip target scanning function calling for unarmed technos (code)"
-msgstr ""
+msgstr "禁用了无武器单位的索敌（代码）"
 
 #: ../../../CREDITS.md:574
 msgid "Force techno targeting in distributed frames to improve performance"
-msgstr ""
+msgstr "强制单位索敌行为分散到不同帧以提升性能"
 
 #: ../../../CREDITS.md:575
 msgid "**solar-III (凤九歌)**"
-msgstr ""
+msgstr "**solar-III（凤九歌）**"
 
 #: ../../../CREDITS.md:576
 msgid "Target scanning delay customization (documentation)"
-msgstr ""
+msgstr "自定义索敌间隔（文档）"
 
 #: ../../../CREDITS.md:577
 msgid "Skip target scanning function calling for unarmed technos (documentation)"
-msgstr ""
+msgstr "禁用了无武器单位的索敌（文档）"
 
 #: ../../../CREDITS.md:578
 msgid "**tyuah8**:"

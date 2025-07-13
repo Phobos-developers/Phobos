@@ -419,9 +419,9 @@ New:
 - [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
 - [Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by Starkku)
 - [Burst without delay](New-or-Enhanced-Logics.md#burst-without-delay) (by CrimRecya & TaranDahl)
-- Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
-- Target scanning delay customization (by TaranDahl and solar-III)
-- Force techno targeting in distributed frames to improve performance (by TaranDahl)
+- Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
+- [Target scanning delay customization](Fixed-or-Improved-Logics.md#target-scanning-delay-optimization) (by TaranDahl & solar-III)
+- [Force techno targeting in distributed frames to improve performance](Fixed-or-Improved-Logics.md#force-techno-targeting-in-distributed-frames-to-improve-performance) (by TaranDahl)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

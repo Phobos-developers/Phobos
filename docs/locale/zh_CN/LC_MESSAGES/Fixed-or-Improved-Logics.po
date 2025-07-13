@@ -996,7 +996,7 @@ msgstr "修复了核弹和心灵支配的光照等级未应用于战机类别的
 
 #: ../../Fixed-or-Improved-Logics.md:163
 msgid "Skip target scanning function calling for unarmed technos."
-msgstr ""
+msgstr "禁用了无武器单位的索敌。"
 
 #: ../../Fixed-or-Improved-Logics.md:164
 msgid ""
@@ -4405,7 +4405,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1174
 msgid "Force techno targeting in distributed frames to improve performance"
-msgstr ""
+msgstr "强制单位索敌行为分散到不同帧以提升性能"
 
 #: ../../Fixed-or-Improved-Logics.md:1176
 msgid ""
@@ -4415,6 +4415,7 @@ msgid ""
 "Increasing targeting delay alone will not make things better, as their "
 "targeting is still synchronized."
 msgstr ""
+"当你在同一帧内创建大量单位（例如进入一个初始预置了大量单位的战役地图）时它们总是会同时扫描目标从而导致游戏卡顿。仅通过增大索敌间隔并不能改善这点，因为它们仍会同时索敌。"
 
 #: ../../Fixed-or-Improved-Logics.md:1177
 msgid ""
@@ -4424,12 +4425,14 @@ msgid ""
 "number is congruent with the technos own number under modulo 16, will it "
 "do targeting."
 msgstr ""
+"现在可以强制这些单位的索敌行为分散到不同帧。当一个单位创建时它会生成一个 `[0,15]` 区间内的随机数 N。如果设置了 `DistributeTargetingFrame=true` 那么仅当 `游戏当前帧数 % 16 ==N` 时单位才会执行索敌。"
 
 #: ../../Fixed-or-Improved-Logics.md:1178
 msgid ""
 "You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI"
 " (Players are not likely to have so many technos.)"
 msgstr ""
+"你可以使用 `DistributeTargetingFrame.AIOnly` 使其仅对 AI 生效（人类玩家通常不太可能有那么多单位）。"
 
 #: ../../Fixed-or-Improved-Logics.md:1181
 msgid ""
@@ -4440,6 +4443,7 @@ msgid ""
 "[SOMETECHNO]                           ; TechnoType\n"
 "DistributeTargetingFrame=              ; boolean\n"
 msgstr ""
+"[General]\n"
 "DistributeTargetingFrame=false         ; boolean\n"
 "DistributeTargetingFrame.AIOnly=true   ; boolean\n"
 "\n"
@@ -4995,7 +4999,7 @@ msgstr "`SubterraneanHeight` 最好使用一个负值并且如果设置为大于
 
 #: ../../Fixed-or-Improved-Logics.md:1373
 msgid "Target scanning delay optimization"
-msgstr ""
+msgstr "索敌间隔优化"
 
 #: ../../Fixed-or-Improved-Logics.md:1375
 msgid ""
@@ -5004,6 +5008,7 @@ msgid ""
 "intervals. Increasing these values would make units stupid, while "
 "decreasing them would cause game lag."
 msgstr ""
+"原版中游戏使用 `NormalTargetingDelay` 和 `GuardAreaTargetingDelay` 来全局控制单位的索敌间隔。增大这些值会导致单位反应迟钝，减小这些值则可能导致游戏卡顿。"
 
 #: ../../Fixed-or-Improved-Logics.md:1376
 msgid ""
@@ -5011,12 +5016,14 @@ msgid ""
 "AI and players. The default values are the same as those originally "
 "defined by the vanilla flags."
 msgstr ""
+"现在可以在每种单位上微观定义这些参数，且可为 AI 玩家和人类玩家分离设置。默认值取自原版全局。"
 
 #: ../../Fixed-or-Improved-Logics.md:1377
 msgid ""
 "You can also specific this delay for attack move mission. The default "
 "value is `NormalTargetingDelay`."
 msgstr ""
+"你还可以为移动攻击指令单独设定间隔。默认使用 `NormalTargetingDelay` 的值。"
 
 #: ../../Fixed-or-Improved-Logics.md:1380
 msgid ""

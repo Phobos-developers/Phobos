@@ -1772,18 +1772,20 @@ msgstr "[无间隔连发](New-or-Enhanced-Logics.md#burst-without-delay)（by Cr
 #: ../../Whats-New.md:422
 msgid ""
 "Skip target scanning function calling for unarmed technos (by TaranDahl "
-"and solar-III)"
+"& solar-III)"
 msgstr ""
+"禁用了无武器单位的索敌（by TaranDahl & solar-III）"
 
 #: ../../Whats-New.md:423
-msgid "Target scanning delay customization (by TaranDahl and solar-III)"
-msgstr ""
+msgid "[Target scanning delay customization](Fixed-or-Improved-Logics.md#target-scanning-delay-optimization) (by TaranDahl & solar-III)"
+msgstr "[自定义索敌间隔](Fixed-or-Improved-Logics.md#target-scanning-delay-optimization)（by TaranDahl & solar-III）"
 
 #: ../../Whats-New.md:424
 msgid ""
-"Force techno targeting in distributed frames to improve performance (by "
+"[Force techno targeting in distributed frames to improve performance](Fixed-or-Improved-Logics.md#force-techno-targeting-in-distributed-frames-to-improve-performance) (by "
 "TaranDahl)"
 msgstr ""
+"[强制单位索敌行为分散到不同帧以提升性能](Fixed-or-Improved-Logics.md#force-techno-targeting-in-distributed-frames-to-improve-performance)（by TaranDahl）"
 
 #: ../../Whats-New.md:426 ../../Whats-New.md:644 ../../Whats-New.md:960
 #: ../../Whats-New.md:1069 ../../Whats-New.md:1094 ../../Whats-New.md:1133

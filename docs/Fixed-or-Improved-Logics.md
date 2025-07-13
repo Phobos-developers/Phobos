@@ -1177,7 +1177,7 @@ ForbidParallelAIQueues=false        ; boolean
 - It is now possible to force them to seek targets separately. When a techno spawns, it will generate a random number in \[0,15\]. If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
   - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [General]
 DistributeTargetingFrame=false         ; boolean
