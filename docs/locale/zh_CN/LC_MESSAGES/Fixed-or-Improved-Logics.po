@@ -1652,7 +1652,6 @@ msgstr ""
 "将禁用间隔。请注意这是以动画帧为单位而不是游戏帧。动画会根据 `Rate` 可能在每个游戏帧上推进动画帧也可能不进行推进。"
 
 #: ../../Fixed-or-Improved-Logics.md:292
-#, fuzzy
 msgid ""
 "`Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be "
 "considered as coming from the animation's invoker (f.ex, firer of the "
@@ -1667,7 +1666,7 @@ msgstr ""
 "如果设置 `Damage.DealtByInvoker` 为 true，则任何造成的 `Damage` 都被视为来自动画的调用者（例如弹头的 "
 "`AnimList/SplashList` 动画则为武器发射者；如果是 `DestroyAnim` "
 "动画则为被摧毁的载具；或者动画所附着的对象）。即便调用者已经死亡或不存在也会继续使用调用者的所属方来造成伤害并应用 Phobos "
-"引入的弹头效果。不影响由 `Warhead` 造成 `Damage` 的所属方。"
+"引入的弹头效果。若未设置该参数则默认使用动画所有者的所属方，若动画无所有者则使用动画所附着对象的所属方。"
 
 #: ../../Fixed-or-Improved-Logics.md:293
 msgid ""
@@ -3186,7 +3185,6 @@ msgid "Voxel light source customization"
 msgstr "自定义 Voxel 光源"
 
 #: ../../Fixed-or-Improved-Logics.md:1055
-#, fuzzy
 msgid ""
 "![image](_static/images/VoxelLightSourceComparison1.png) "
 "![image](_static/images/VoxelLightSourceComparison2.png) *Voxel by <a "
@@ -3194,11 +3192,11 @@ msgid ""
 "href=\"https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index\" "
 "target=\"_blank\">C&CrispS</a>*"
 msgstr ""
-"![image](_static/images/VoxelLightSourceComparison.png) *<a "
+"![image](_static/images/VoxelLightSourceComparison1.png) "
+"![image](_static/images/VoxelLightSourceComparison2.png) *Voxel by <a "
 "class=\"reference external\" "
 "href=\"https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index\" "
-"target=\"_blank\">CCS_qkl</a> 将 `VoxelLightSource=0.02,-0.69,0.36`（假设 "
-"`UseFixedVoxelLighting=false`）与默认光照分别应用于光棱坦克 Voxel*"
+"target=\"_blank\">C&CrispS</a>*"
 
 #: ../../Fixed-or-Improved-Logics.md:1059
 msgid ""
@@ -4274,14 +4272,12 @@ msgid "DropPod"
 msgstr "空降仓"
 
 #: ../../Fixed-or-Improved-Logics.md:1668
-#, fuzzy
 msgid ""
 "DropPod properties can now be customized on a per-TechnoType (non-"
 "building) basis."
-msgstr "现在可以在步兵类型上微观定义 DropPod 属性。"
+msgstr "现在可以在每个非建筑类单位上微观定义 DropPod 属性。"
 
 #: ../../Fixed-or-Improved-Logics.md:1669
-#, fuzzy
 msgid ""
 "Note that due to technical constraints `DropPod.AirImage` is only drawn "
 "for InfantryTypes (as the DropPod is the infantry itself with its image "
@@ -4327,7 +4323,6 @@ msgid ""
 msgstr "由于技术限制，`DropPod.AirImage` 仅在步兵类单位上绘制（因为空降仓本身就是替换了图像的步兵自身）。未来可能会进行更改。"
 
 #: ../../Fixed-or-Improved-Logics.md:1698
-#, fuzzy
 msgid ""
 "`[General] -> DropPodTrailer` is [Ares feature](https://ares-"
 "developers.github.io/Ares-docs/new/droppod.html)."
