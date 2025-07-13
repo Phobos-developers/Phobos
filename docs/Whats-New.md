@@ -457,7 +457,7 @@ New:
 - Custom object palettes for TerrainTypes (by Starkku)
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
-- Buildings considered as destroyable pathfinding obstacles (by Starkku)
+- Option to restore `PowerSurplus` setting for AI (by Starkku)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
 - Assign Super Weapon cameo to any sidebar tab (by NetsuNegi)
 - Customizing effect of level lighting on air units (by Starkku)
@@ -476,7 +476,7 @@ New:
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
-- Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
+- Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -607,7 +607,7 @@ Vanilla fixes:
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP (by CrimRecya)
 - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt) (by FlyStar)
 - Player-controlled spies are not forced to perform other tasks while attacking buildings (by FlyStar)
-- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
+- If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
 - Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)
 
 Phobos fixes:
