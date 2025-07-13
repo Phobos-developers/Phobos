@@ -1254,8 +1254,8 @@ msgid "Nonprovocative Warheads (by Starkku)"
 msgstr "非挑衅弹头（by Starkku）"
 
 #: ../../Whats-New.md:460 ../../Whats-New.md:465
-msgid "Buildings considered as destroyable pathfinding obstacles (by Starkku)"
-msgstr "允许建筑被视为可摧毁的寻路障碍（by Starkku）"
+msgid "Option to restore `PowerSurplus` setting for AI (by Starkku)"
+msgstr "为 AI 重启 `PowerSurplus` 设置（by Starkku）"
 
 #: ../../Whats-New.md:461
 msgid "`FireOnce` infantry sequence reset toggle (by Starkku)"
@@ -1274,6 +1274,9 @@ msgid ""
 "Reimplemented `Airburst` & `Splits` logic with more customization options"
 " (by Starkku)"
 msgstr "重新实现 `Airburst` 和 `Splits` 逻辑并添加更多自定义项（by Starkku）"
+
+msgid "Buildings considered as destroyable pathfinding obstacles (by Starkku)"
+msgstr "允许建筑被视为可摧毁的寻路障碍（by Starkku）"
 
 #: ../../Whats-New.md:466
 msgid "Animation visibility customization settings (by Starkku)"
