@@ -1327,7 +1327,7 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 // Auto Build Hook -> sub_6A8B30 - Auto Build Buildings
 DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 {
-	enum { SkipGameCode = 0x6A8E1E };
+	enum { SkipGameCode = 0x6A8F49 };
 
 	GET(BuildingClass* const, pBuilding, ESI);
 
