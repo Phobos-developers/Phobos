@@ -553,17 +553,21 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_Interceptor, 0x6)
 	GET_BASE(AbstractClass* const, pTarget, 0x8);
 	GET_STACK(BulletClass* const, pBullet, STACK_OFFSET(0xB0, -0x74));
 
-	auto const pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
+	const auto pSourceTypeExt = TechnoExt::ExtMap.Find(pSource)->TypeExtData;
 
-	if (pSourceTypeExt->InterceptorType)
+	if (const auto pInterceptorType = pSourceTypeExt->InterceptorType.get())
 	{
-		if (auto const pTargetObject = specific_cast<BulletClass* const>(pTarget))
+		if (const auto pTargetBullet = abstract_cast<BulletClass*, true>(pTarget))
 		{
-			if (auto const pBulletExt = BulletExt::ExtMap.Find(pBullet))
-			{
-				pBulletExt->IsInterceptor = true;
-				pBulletExt->InterceptedStatus = InterceptedStatus::Targeted;
-			}
+			const auto pTargetExt = BulletExt::ExtMap.Find(pTargetBullet);
+
+			if (!pTargetExt->TypeExtData->Armor.isset())
+				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
+
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+			pBulletExt->InterceptorTechnoType = pSourceTypeExt;
+			pBulletExt->InterceptedStatus |= InterceptedStatus::Targeted;
 		}
 	}
 
@@ -886,6 +890,9 @@ DEFINE_HOOK(0x5209AF, InfantryClass_FiringAI_BurstDelays, 0x6)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+
+	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
 }

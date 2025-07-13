@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include "Constructs.h"
- 
+
 class TechnoClass;
 class TechnoTypeClass;
 class EBolt;

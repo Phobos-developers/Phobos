@@ -476,6 +476,7 @@ New:
 - Draw visual effects for airburst weapons (by CrimRecya)
 - Unit `Speed` setting now accepts floating point values (by Starkku)
 - `Strafing` is now disabled by default when using `Trajectory` (by CrimRecya)
+- Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
 
 Vanilla fixes:
 - Allow AI to repair structures built from base nodes/trigger action 125/SW delivery in single player missions (by Trsdy)
@@ -600,6 +601,14 @@ Vanilla fixes:
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
+- Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
+- Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)
+- Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes (by CrimRecya)
+- Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP (by CrimRecya)
+- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt) (by FlyStar)
+- Player-controlled spies are not forced to perform other tasks while attacking buildings (by FlyStar)
+- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
+- Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

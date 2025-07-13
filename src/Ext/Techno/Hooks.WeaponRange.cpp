@@ -77,8 +77,7 @@ DEFINE_HOOK(0x6F7294, TechnoClass_InRange_OccupyRange, 0x5)
 	GET(TechnoClass*, pThis, ESI);
 	GET(int, range, EDI);
 
-	int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis);
-	occupyRange /= Unsorted::LeptonsPerCell;
+	const int occupyRange = WeaponTypeExt::GetRangeWithModifiers(nullptr, pThis) / Unsorted::LeptonsPerCell;
 
 	R->EDI(range + occupyRange);
 

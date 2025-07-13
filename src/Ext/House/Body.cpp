@@ -75,7 +75,7 @@ void HouseExt::ExtData::UpdateVehicleProduction()
 
 	for (auto unit : UnitClass::Array)
 	{
-		auto const index = static_cast<unsigned int>(unit->GetType()->GetArrayIndex());
+		auto const index = static_cast<unsigned int>(unit->Type->GetArrayIndex());
 
 		if (values[index] > 0 && unit->CanBeRecruited(pThis))
 			--values[index];

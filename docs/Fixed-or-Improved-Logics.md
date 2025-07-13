@@ -161,6 +161,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
 - Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Skip target scanning function calling for unarmed technos.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General] -> ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
@@ -219,6 +220,14 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
+- Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
+- Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
+- Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
+- Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
+- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
+- Player-controlled spies are not forced to perform other tasks while attacking buildings
+- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
+- Fixed an unusual use of DeployFireWeapon for InfantryType
 
 ## Fixes / interactions with other extensions
 
@@ -280,7 +289,7 @@ LandingDir=     ; Direction type (integers from 0-255). Accepts negative values 
 
 - `Weapon` can be set to a WeaponType, to create a projectile and immediately detonate it instead of simply dealing `Damage` by `Warhead`. This allows weapon effects to be applied.
 - `Damage.Delay` determines delay between two applications of `Damage`. Requires `Damage` to be set to 1.0 or above. Value of 0 disables the delay. Keep in mind that this is measured in animation frames, not game frames. Depending on `Rate`, animation may or may not advance animation frames on every game frame.
-- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects. Does not affect which house the `Damage` dealt by `Warhead` is dealt by.
+- `Damage.DealtByInvoker`, if set to true, makes any `Damage` dealt to be considered as coming from the animation's invoker (f.ex, firer of the weapon if it is Warhead `AnimList/SplashList` animation, the destroyed vehicle if it is `DestroyAnim` animation or the object the animation is attached to). If invoker has died or does not exist, the house the invoker belonged to is still used to deal damage and apply Phobos-introduced Warhead effects etc. If not set, the animation's owner house, or failing that, owning house of object it is attached to or the building it belongs to is used to deal the damage.
 - `Damage.ApplyOncePerLoop`, if set to true, makes `Damage` be dealt only once per animation loop (on single loop animations, only once, period) instead of on every frame or intervals defined by `Damage.Delay`. The frame on which it is dealt is determined by `Damage.Delay`, defaulting to after the first animation frame.
 
 In `artmd.ini`:
@@ -1043,14 +1052,9 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ### Voxel light source customization
 
-- Vanilla game applies some weird unnecessary math which resulted in the voxel light source being "nudged" up by a bit and light being applied incorrectly on tilted voxels. It is now possible to fix that.
-
-```{note}
-Please note that enabling this will remove the vertical offset vanilla engine applies to the light source position. Assuming vanilla lighting this will make the light shine even more from below the ground than it was before, so it is recommended to turn the Z value up in value of `VoxelLightSource`.
-```
-
-![image](_static/images/VoxelLightSourceComparison.png)
-*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">CCS_qkl</a>*
+![image](_static/images/VoxelLightSourceComparison1.png)
+![image](_static/images/VoxelLightSourceComparison2.png)
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
@@ -1661,12 +1665,13 @@ CrateGoodie.RerollChance=0.0   ; floating point value, percents or absolute (0.0
 
 ## DropPod
 
-DropPod properties can now be customized on a per-InfantryType basis.
-- If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
-- By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
-  - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
-- If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
-- The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
+- DropPod properties can now be customized on a per-TechnoType (non-building) basis.
+  - Note that due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
+  - If you want to attach the trailer animation to the pod, set `DropPod.Trailer.Attached` to yes.
+  - By default LaserTrails that are attached to the infantry will not be drawn if it's on DropPod.
+    - If you really want to use it, set `DropPodOnly` on the LaserTrail's type entry in art.
+  - If you want `DropPod.Weapon` to be fired only upon hard landing, set `DropPod.Weapon.HitLandOnly` to true.
+  - The landing speed is not smaller than it's current height /10 + 2 for unknown reason. A small `DropPod.Speed` value therefore results in exponential deceleration.
 
 ```{note}
 Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes (as the DropPod is the infantry itself with its image swapped). This may change in future.
@@ -1674,7 +1679,7 @@ Due to technical constraints `DropPod.AirImage` is only drawn for InfantryTypes 
 
 In `rulesmd.ini`:
 ```ini
-[SOMEINFANTRY]                ; InfantryType
+[SOMETECHNO]                  ; TechnoType
 DropPod.Angle=                ; double, default to [General] -> DropPodAngle, measured in radians
 DropPod.AtmosphereEntry=      ; anim, default to [AudioVisual] -> AtmosphereEntry
 DropPod.GroundAnim=           ; 2 anims, default to [General] -> DropPod
@@ -1690,5 +1695,5 @@ DropPod.Weapon.HitLandOnly=   ; boolean, default to no
 ```
 
 ```{note}
-`[General] -> DropPodTrailer` is [Ares features](https://ares-developers.github.io/Ares-docs/new/droppod.html).
+`[General] -> DropPodTrailer` is [Ares feature](https://ares-developers.github.io/Ares-docs/new/droppod.html).
 ```
