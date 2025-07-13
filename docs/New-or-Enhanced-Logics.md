@@ -484,7 +484,7 @@ Image.ConditionRed=           ; AircraftType entry
 ```
 
 ```{warning}
-Note that the AircraftTypes had to be defined under [AircraftTypes] and use same image type (SHP/VXL) for vanilla/damaged states.
+Note that the AircraftTypes had to be defined under [AircraftTypes].
 ```
 
 ## Animations
@@ -2191,7 +2191,7 @@ MindControl.Anim=                     ; Animation, defaults to [CombatDamage] ->
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                ; WarheadType
-SplashList=                  ; List of AnimationTypes
+SplashList=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false  ; boolean
 ```
 
