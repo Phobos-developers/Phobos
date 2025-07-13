@@ -243,7 +243,7 @@ public:
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
-		
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;

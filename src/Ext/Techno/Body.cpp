@@ -607,9 +607,7 @@ AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
 
 		if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-		}
 	}
 	else
 	{
@@ -617,17 +615,9 @@ AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (auto const imageRed = pData->Image_ConditionRed)
-		{
 			return abstract_cast<AircraftTypeClass*, true>(imageRed);
-		}
 		else if (auto const imageYellow = pData->Image_ConditionYellow)
-		{
 			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-		}
-		else
-		{
-			return pAircraft->Type;
-		}
 	}
 
 	return pAircraft->Type;
