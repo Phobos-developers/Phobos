@@ -285,6 +285,22 @@ TechnoClass* TechnoTypeExt::CreateUnit(TechnoTypeClass* pType, CoordStruct locat
 	return nullptr;
 }
 
+WeaponTypeClass* TechnoTypeExt::GetWeaponType(TechnoTypeClass* pThis, int weaponIndex, bool isElite)
+{
+	if (isElite)
+	{
+		if (const auto pEliteStruct = pThis->GetEliteWeapon(weaponIndex))
+		{
+			if (const auto pEliteWeapon = pEliteStruct->WeaponType)
+				return pEliteWeapon;
+		}
+	}
+
+	const auto pWeaponStruct = pThis->GetWeapon(weaponIndex);
+
+	return pWeaponStruct ? pWeaponStruct->WeaponType : nullptr;
+}
+
 // =============================
 // load / save
 
