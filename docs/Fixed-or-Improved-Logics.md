@@ -1174,7 +1174,7 @@ ForbidParallelAIQueues=false        ; boolean
 ### Force techno targeting in distributed frames to improve performance
 
 - When you create many technos in a same frame (i.e. starting the game with a campaign map that initially has a large number of technos), they will always scan for targets in a synchronous period, causing game lag. Increasing targeting delay alone will not make things better, as their targeting is still synchronized.
-- It is now possible to force them to seek targets separately. When a techno spawns, it will generate a random number in \[0,15\]. If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
+- It is now possible to force them to seek targets separately. If `DistributeTargetingFrame=true` is set, techno's targeting timer will be initiated with a random delay, ranging in \[0,15\]. This can distribute their targeting timing within 15 frames, thus alleviating the above-mentioned lag.
   - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
 
 In `rulesmd.ini`:
