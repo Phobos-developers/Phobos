@@ -7803,6 +7803,7 @@ msgid ""
 "`DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value "
 "if `AffectsEnemies=false` is set on the warhead."
 msgstr ""
+"`DamageOwnerMultiplier.NotAffectsEnemies` 和 `DamageAlliesMultiplier.NotAffectsEnemies` 用于设定弹头 `AffectsEnemies=false` 时的默认值。"
 
 #: ../../New-or-Enhanced-Logics.md:2184
 msgid ""
