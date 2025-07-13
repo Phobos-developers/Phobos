@@ -378,6 +378,10 @@ This page lists all the individual contributions to the project by their author.
   - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
   - Infantry support `IsGattling=yes`
   - Support for more optional weapons
+  - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
+  - Player-controlled spies are not forced to perform other tasks while attacking buildings
+  - If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
+  - Fixed an unusual use of DeployFireWeapon for InfantryType
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -508,6 +512,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory
   - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
   - Fix an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP
+  - Burst without delay
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -562,6 +567,13 @@ This page lists all the individual contributions to the project by their author.
   - Allows refineries to use multiple ActiveAnim simultaneously
   - Several attackmove related enhancement
   - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
+  - Burst without delay
+  - Target scanning delay customization (code)
+  - Skip target scanning function calling for unarmed technos (code)
+  - Force techno targeting in distributed frames to improve performance
+- **solar-III (凤九歌)**
+  - Target scanning delay customization (documentation)
+  - Skip target scanning function calling for unarmed technos (documentation)
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

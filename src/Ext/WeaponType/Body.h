@@ -43,6 +43,7 @@ public:
 		Valueable<double> CanTarget_MinHealth;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
+		Valueable<bool> Burst_NoDelay;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
@@ -111,6 +112,7 @@ public:
 			, CanTarget_MinHealth { 0.0 }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
+			, Burst_NoDelay { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }

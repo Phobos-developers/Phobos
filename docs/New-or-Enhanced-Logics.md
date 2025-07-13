@@ -2110,7 +2110,7 @@ Crit.AnimList.CreateAll=                   ; boolean
 Crit.ActiveChanceAnims=                    ; List of AnimationTypes
 Crit.AnimOnAffectedTargets=false           ; boolean
 Crit.SuppressWhenIntercepted=false         ; boolean
-                                           
+
 [SOMETECHNO]                               ; TechnoType
 ImmuneToCrit=false                         ; boolean
 ```
@@ -2180,19 +2180,22 @@ SplashList.PickRandom=false  ; boolean
 ### Damage multipliers
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
+  - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0           ; floating point value
-DamageAlliesMultiplier=1.0          ; floating point value
-DamageEnemiesMultiplier=1.0         ; floating point value
+DamageOwnerMultiplier=1.0                       ; floating point value
+DamageAlliesMultiplier=1.0                      ; floating point value
+DamageEnemiesMultiplier=1.0                     ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 
 [SOMEWARHEAD]                       ; WarheadType
-DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
 DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 DamageSourceHealthMultiplier=0.0    ; floating point value
 DamageTargetHealthMultiplier=0.0    ; floating point value
@@ -2429,6 +2432,21 @@ Burst.Delays=-1                 ; integer - burst delays (comma-separated) for s
 Burst.FireWithinSequence=false  ; boolean
 ```
 
+### Burst without delay
+
+- In vanilla, vehicles and infantries will only fire once in one frame, even if their `ROF` or `BurstDelay` is set to 0. Now you can force units to fire all bursts in one frame by setting the `Burst.NoDelay` to true.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWEAPON]          ; WeaponType
+Burst.NoDelay=false   ; boolean
+```
+
+```{note}
+- This is useless for buildings and aircraft.
+- This will ignore `Burst.Delays` setting.
+```
+
 ### Delayed firing
 
 - It is possible to have any weapon fire with a delay by setting `DelayedFire.Duration` on a WeaponType - it supports a single integer or two comma-separated ones for a random range to pick value from.
@@ -2440,7 +2458,7 @@ Burst.FireWithinSequence=false  ; boolean
     - If `DelayedFire.CenterAnimOnFirer` is set the animation is created at the firer's center rather than at the firing coordinates.
   - If the weapon was fired by InfantryType and `DelayedFire.PauseFiringSequence` is set to true, the infantry's firing sequence animation is paused when it hits the firing frame defined by `FireUp/Prone` or `SecondaryFire/Prone` in its `artmd.ini` entry until the delay timer has expired.
   - If the weapon has `Burst` > 1 and `DelayedFire.OnlyOnInitialBurst` set to true, the delay occurs only before the initial burst shot. Note that if using Ares, `Burst` index does not reset if firing is interrupted or the firer loses target, meaning it will be able to resume firing without waiting for the delay.
-  
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                           ; WeaponType

@@ -599,6 +599,7 @@ void TechnoExt::ExtData::ResetDelayedFireTimer()
 {
 	this->DelayedFireTimer.Stop();
 	this->DelayedFireWeaponIndex = -1;
+	this->DelayedFireSequencePaused = false;
 
 	if (this->CurrentDelayedFireAnim)
 	{
@@ -643,7 +644,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 	if (pExt->DelayedFireWeaponIndex >= 0 && pExt->DelayedFireWeaponIndex != weaponIndex)
 	{
 		pExt->ResetDelayedFireTimer();
-		pExt->FiringSequencePaused = false;
+		pExt->DelayedFireSequencePaused = false;
 	}
 
 	if (pWeaponExt->DelayedFire_PauseFiringSequence && pWeaponExt->DelayedFire_Duration.isset() && (!pThis->Transporter || !pWeaponExt->DelayedFire_SkipInTransport))
@@ -651,7 +652,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 		if (pWeapon->Burst <= 1 || !pWeaponExt->DelayedFire_OnlyOnInitialBurst || pThis->CurrentBurstIndex == 0)
 		{
 			if (pThis->Animation.Value == firingFrame)
-				pExt->FiringSequencePaused = true;
+				pExt->DelayedFireSequencePaused = true;
 
 			if (!timer.HasStarted())
 			{
@@ -681,7 +682,7 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 				pExt->ResetDelayedFireTimer();
 		}
 
-		pExt->FiringSequencePaused = false;
+		pExt->DelayedFireSequencePaused = false;
 	}
 
 	return false;
@@ -743,7 +744,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->FiringAnimationTimer)
-		.Process(this->FiringSequencePaused)
+		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)
 		.Process(this->CurrentDelayedFireAnim)

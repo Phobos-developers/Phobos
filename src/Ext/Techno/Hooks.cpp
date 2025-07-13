@@ -1,4 +1,4 @@
-﻿#include "Body.h"
+#include "Body.h"
 
 #include <AircraftClass.h>
 #include <EventClass.h>
@@ -220,9 +220,10 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+	pExt->CurrentShieldType = pTypeExt->ShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
@@ -230,8 +231,14 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
 		pExt->UpdateTintValues();
 
-	if (pExt->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
+
+	if ((pThis->Owner->IsControlledByHuman() || !RulesExt::Global()->DistributeTargetingFrame_AIOnly)
+		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
+	{
+		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
+	}
 
 	return 0;
 }
@@ -1016,7 +1023,7 @@ DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (pExt->FiringSequencePaused)
+	if (pExt->DelayedFireSequencePaused)
 		return SkipGameCode;
 
 	return 0;
@@ -1104,6 +1111,19 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 	return 0;
 }
 
+DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
+{
+	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
+	GET(TechnoClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const mission = pThis->GetCurrentMission();
+	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
+		? (mission != Mission::Move && mission != Mission::Guard) : mission != Mission::Guard)
+		? ClearMegaMission : ContinueMegaMission;
+}
+
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
@@ -1115,6 +1135,12 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 	enum { FuncRet = 0x4DF425 };
 
 	GET(FootClass* const, pThis, ESI);
+
+	auto const mission = pThis->GetCurrentMission();
+
+	// Refresh mega mission if mission is somehow changed to incorrect missions.
+	if (mission != Mission::Attack && mission != Mission::Move)
+		pThis->ContinueMegaMission();
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
