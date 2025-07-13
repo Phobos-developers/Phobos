@@ -1463,12 +1463,11 @@ msgid ""
 msgstr "修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:241
-#, fuzzy
 msgid ""
 "Projectiles with `Vertical=true` now drop straight down if fired off by "
 "AircraftTypes instead of behaving erratically. This behaviour can be "
 "turned off by setting `Vertical.AircraftFix=false` on the projectile."
-msgstr "现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠。"
+msgstr "现在当一个拥有 `Vertical=true` 的抛射体被战机类发射时将会正常下坠。可以通过在抛射体上设置 `Vertical.AircraftFix=false` 来关闭这一行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:242
 msgid ""

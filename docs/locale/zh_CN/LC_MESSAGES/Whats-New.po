@@ -52,6 +52,7 @@ msgid ""
 "aircraft by default. To re-enable this behaviour set "
 "`Vertical.AircraftFix=false` on the projectile."
 msgstr ""
+"`Vertical=true` 在由战机发射时不再默认水平移动。若要恢复该行为请在抛射体上设置 `Vertical.AircraftFix=false`。"
 
 #: ../../Whats-New.md:14
 msgid ""
