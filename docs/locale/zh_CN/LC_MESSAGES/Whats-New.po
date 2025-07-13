@@ -61,6 +61,7 @@ msgid ""
 "`AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore "
 "previous behaviour."
 msgstr ""
+"使用 `Airstrike=true` 弹头的武器现在无论在哪个武器槽位都将检查目标的类别是否可被空袭。需要在作为主武器的空袭武器弹头上使用 `AirstrikeTargets=all` 来恢复旧有行为。"
 
 #: ../../Whats-New.md:15
 msgid ""

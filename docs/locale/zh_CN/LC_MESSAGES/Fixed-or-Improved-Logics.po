@@ -3343,7 +3343,6 @@ msgid "Airstrike target eligibility"
 msgstr "空袭目标筛选"
 
 #: ../../Fixed-or-Improved-Logics.md:836
-#, fuzzy
 msgid ""
 "By default whether or not a building can be targeted by airstrikes "
 "(`Airstrike=true` Warhead) depends on value of `CanC4`, which also "
@@ -3351,14 +3350,15 @@ msgid ""
 "`AllowAirstrike`. If not set, defaults to value of `CanC4`. For non-"
 "building targets, the default value is true."
 msgstr ""
-"默认情况下建筑能否作为空袭目标取决于 `CanC4` 的值，这也会影响其他方面。现在可以通过设置 `AllowAirstrike` "
-"来独立更改这一点，如果未设置，默认为 `CanC4` 的值。"
+"默认情况下建筑能否被空袭武器（弹头 `Airstrike=true`）作为目标取决于 `CanC4` 的值，这也会影响其他方面。现在可以通过设置 `AllowAirstrike` "
+"来独立更改这一点，如果未设置，默认为 `CanC4` 的值。对于非建筑类单位这默认为 true。"
 
 #: ../../Fixed-or-Improved-Logics.md:837
 msgid ""
 "`AirstrikeTargets` determines what types of targets are valid airstrike "
 "targets for this Warhead."
 msgstr ""
+"`AirstrikeTargets` 决定了哪些目标是该弹头的有效空袭目标。"
 
 #: ../../Fixed-or-Improved-Logics.md:838
 msgid ""
