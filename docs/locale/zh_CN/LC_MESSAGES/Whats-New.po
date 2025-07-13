@@ -1993,22 +1993,25 @@ msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt) (by FlyStar)"
 msgstr ""
+"工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入（by FlyStar）"
 
 #: ../../Whats-New.md:459
 msgid ""
 "Player-controlled spies are not forced to perform other tasks while "
 "attacking buildings (by FlyStar)"
 msgstr ""
+"人类玩家控制的间谍在攻击建筑时不会强制执行其他任务（by FlyStar）"
 
 #: ../../Whats-New.md:460
 msgid ""
-"If `BombDisarm=Yes` is not present for all weapon warheads, then the "
+"If `BombDisarm=yes` is not present for all weapon warheads, then the "
 "engineer will no longer use the appropriate mouse action (by FlyStar)"
 msgstr ""
+"如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作（by FlyStar）"
 
 #: ../../Whats-New.md:461
 msgid "Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)"
-msgstr ""
+msgstr "修复了步兵使用 `DeployFireWeapon` 时的异常情况（by FlyStar）"
 
 #: ../../Whats-New.md:463 ../../Whats-New.md:755 ../../Whats-New.md:832
 #: ../../Whats-New.md:996 ../../Whats-New.md:1037 ../../Whats-New.md:1049

@@ -1504,22 +1504,25 @@ msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt)"
 msgstr ""
+"工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入"
 
 #: ../../../CREDITS.md:383
 msgid ""
 "Player-controlled spies are not forced to perform other tasks while "
 "attacking buildings"
 msgstr ""
+"人类玩家控制的间谍在攻击建筑时不会强制执行其他任务"
 
 #: ../../../CREDITS.md:384
 msgid ""
-"If `BombDisarm=Yes` is not present for all weapon warheads, then the "
+"If `BombDisarm=yes` is not present for all weapon warheads, then the "
 "engineer will no longer use the appropriate mouse action"
 msgstr ""
+"如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作"
 
 #: ../../../CREDITS.md:385
-msgid "Fixed an unusual use of DeployFireWeapon for InfantryType"
-msgstr ""
+msgid "Fix an unusual use of DeployFireWeapon for InfantryType"
+msgstr "修复了步兵使用 `DeployFireWeapon` 时的异常情况"
 
 #: ../../../CREDITS.md:386
 msgid "**NetsuNegi**:"
