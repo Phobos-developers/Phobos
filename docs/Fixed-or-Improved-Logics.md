@@ -224,10 +224,10 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
-- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
-- Player-controlled spies are not forced to perform other tasks while attacking buildings
-- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
-- Fixed an unusual use of DeployFireWeapon for InfantryType
+- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt).
+- Player-controlled spies are not forced to perform other tasks while attacking buildings.
+- If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
+- Fixed an unusual use of DeployFireWeapon for InfantryType.
 
 ## Fixes / interactions with other extensions
 

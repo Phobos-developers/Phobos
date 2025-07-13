@@ -1394,22 +1394,25 @@ msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt)"
 msgstr ""
+"工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入）"
 
 #: ../../../CREDITS.md:356
 msgid ""
 "Player-controlled spies are not forced to perform other tasks while "
 "attacking buildings"
 msgstr ""
+"人类玩家控制的间谍在攻击建筑时不会强制执行其他任务"
 
 #: ../../../CREDITS.md:357
 msgid ""
-"If `BombDisarm=Yes` is not present for all weapon warheads, then the "
+"If `BombDisarm=yes` is not present for all weapon warheads, then the "
 "engineer will no longer use the appropriate mouse action"
 msgstr ""
+"如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作"
 
 #: ../../../CREDITS.md:358
-msgid "Fixed an unusual use of DeployFireWeapon for InfantryType"
-msgstr ""
+msgid "Fix an unusual use of DeployFireWeapon for InfantryType"
+msgstr "修复了步兵使用 `DeployFireWeapon` 时的异常情况"
 
 #: ../../../CREDITS.md:359
 msgid "**NetsuNegi**:"
@@ -1750,24 +1753,28 @@ msgid ""
 "Fix an issue that `MovementZone=Fly` harvesters can not be able to enter "
 "refinery buildings manually"
 msgstr ""
+"修复了 `MovementZone=Fly` 的矿车无法手动进入矿场的问题"
 
 #: ../../../CREDITS.md:434
 msgid ""
 "Fix an issue that jumpjet harvester cannot automatically go mining when "
 "leaving the weapons factory"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车出厂后不会自动去采矿的问题"
 
 #: ../../../CREDITS.md:435
 msgid ""
 "Fix an issue that jumpjet harvester will overlap when manually entering "
 "refinery buildings and cause game crashes"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交叠并导致游戏崩溃的问题"
 
 #: ../../../CREDITS.md:436
 msgid ""
 "Fix an issue that `Spawned` aircraft will fly towards the edge of the map"
 " when its `Spawner` is under EMP"
 msgstr ""
+"修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题"
 
 #: ../../../CREDITS.md:437
 msgid "**Ollerus**:"
@@ -1846,15 +1853,15 @@ msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 
 #: ../../../CREDITS.md:455
 msgid "Skip target scanning function calling for unarmed technos (code)"
-msgstr ""
+msgstr "禁用了无武器单位的索敌（代码）"
 
 #: ../../../CREDITS.md:456
 msgid "**solar-III (凤九歌)**"
-msgstr ""
+msgstr "**solar-III（凤九歌）**"
 
 #: ../../../CREDITS.md:457
 msgid "Skip target scanning function calling for unarmed technos (documentation)"
-msgstr ""
+msgstr "禁用了无武器单位的索敌（文档）"
 
 #: ../../../CREDITS.md:458
 msgid "**tyuah8**:"

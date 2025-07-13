@@ -1338,8 +1338,9 @@ msgstr "现在 `Strafing` 在抛射体使用了 `Trajectory` 时默认禁用（b
 #: ../../Whats-New.md:479
 msgid ""
 "Skip target scanning function calling for unarmed technos (by TaranDahl "
-"and solar-III)"
+"& solar-III)"
 msgstr ""
+"禁用了无武器单位的索敌（by TaranDahl & solar-III）"
 
 #: ../../Whats-New.md:481 ../../Whats-New.md:819 ../../Whats-New.md:928
 #: ../../Whats-New.md:953 ../../Whats-New.md:991 ../../Whats-New.md:1036
@@ -2126,46 +2127,53 @@ msgid ""
 "Fixed an issue that `MovementZone=Fly` harvesters can not be able to "
 "enter refinery buildings manually (by CrimRecya)"
 msgstr ""
+"修复了 `MovementZone=Fly` 的矿车无法手动进入矿场的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:605
 msgid ""
 "Fixed an issue that jumpjet harvester cannot automatically go mining when"
 " leaving the weapons factory (by CrimRecya)"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车出厂后不会自动去采矿的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:606
 msgid ""
 "Fixed an issue that jumpjet harvester will overlap when manually entering"
 " refinery buildings and cause game crashes (by CrimRecya)"
 msgstr ""
+"修复了 `Locomotor=Jumpjet` 的矿车会因为手动进入矿场而交叠并导致游戏崩溃的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:607
 msgid ""
 "Fixed an issue that `Spawned` aircraft will fly towards the edge of the "
 "map when its `Spawner` is under EMP (by CrimRecya)"
 msgstr ""
+"修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP 状态时飞向地图边界的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:608
 msgid ""
 "Engineers can enter buildings normally when they don't need to be "
 "repaired (or you can force it by pressing Alt) (by FlyStar)"
 msgstr ""
+"工程师在建筑无需维修时可以正常进入（也可以通过按住 `[Alt]` 强制进入）（by FlyStar）"
 
 #: ../../Whats-New.md:609
 msgid ""
 "Player-controlled spies are not forced to perform other tasks while "
 "attacking buildings (by FlyStar)"
 msgstr ""
+"人类玩家控制的间谍在攻击建筑时不会强制执行其他任务（by FlyStar）"
 
 #: ../../Whats-New.md:610
 msgid ""
-"If `BombDisarm=Yes` is not present for all weapon warheads, then the "
+"If `BombDisarm=yes` is not present for all weapon warheads, then the "
 "engineer will no longer use the appropriate mouse action (by FlyStar)"
 msgstr ""
+"如果所有武器的弹头都没有 `BombDisarm=yes` 则工程师将不再使用相应的鼠标动作（by FlyStar）"
 
 #: ../../Whats-New.md:611
 msgid "Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)"
-msgstr ""
+msgstr "修复了步兵使用 `DeployFireWeapon` 时的异常情况（by FlyStar）"
 
 #: ../../Whats-New.md:613 ../../Whats-New.md:693 ../../Whats-New.md:855
 #: ../../Whats-New.md:896 ../../Whats-New.md:908 ../../Whats-New.md:931
