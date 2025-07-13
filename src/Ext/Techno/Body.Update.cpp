@@ -528,7 +528,10 @@ void TechnoExt::ExtData::UpdateShield()
 
 	// Create shield class instance if it does not exist.
 	if (this->CurrentShieldType && this->CurrentShieldType->Strength && !this->Shield)
+	{
 		this->Shield = std::make_unique<ShieldClass>(this->OwnerObject());
+		this->Shield->UpdateTint();
+	}
 
 	if (const auto pShieldData = this->Shield.get())
 		pShieldData->AI();
