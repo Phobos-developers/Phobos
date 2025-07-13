@@ -478,7 +478,7 @@ Shield.InheritStateOnReplace=false          ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMEAIRCRAFT]                         ; AircraftType
+[SOMEAIRCRAFT]                ; AircraftType
 Image.ConditionYellow=        ; AircraftType entry
 Image.ConditionRed=           ; AircraftType entry
 ```

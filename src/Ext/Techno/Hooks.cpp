@@ -663,7 +663,7 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = TechnoExt::GetUnitTypeExtra(pThis))
 			R->EBX<ObjectTypeClass*>(pCustomType);
 	}
 
@@ -678,7 +678,7 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
+		if (const UnitTypeClass* pCustomType = TechnoExt::GetUnitTypeExtra(pThis))
 		{
 			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -695,8 +695,7 @@ DEFINE_HOOK(0x414987, AircraftClass_Draw_Extra, 0x6)
 
 	GET(AircraftClass*, pThis, EBP);
 
-	if (AircraftTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetAircraftTypeExtra())
-		R->ESI<AircraftTypeClass*>(pCustomType);
+	R->ESI<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
 }
@@ -707,8 +706,7 @@ DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
 
 	GET(AircraftClass*, pThis, EBP);
 
-	if (AircraftTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetAircraftTypeExtra())
-		R->EAX<AircraftTypeClass*>(pCustomType);
+	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
 
 	return Continue;
 }

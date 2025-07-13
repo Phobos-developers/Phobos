@@ -724,8 +724,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	if (pAircraftType->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
-	if (AircraftTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetAircraftTypeExtra())
-		pAircraftType = pCustomType;
+	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);
 
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
 	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pAircraftType);

@@ -552,89 +552,85 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 {
-	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
+	if (pUnit->IsGreenHP())
 	{
-		if (pUnit->IsGreenHP())
-		{
-			return nullptr;
-		}
-		else if (pUnit->IsYellowHP())
-		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+		return nullptr;
+	}
+	else if (pUnit->IsYellowHP())
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-			{
-				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-					return imageYellow;
-			}
-			else if (auto const imageYellow = pData->Image_ConditionYellow)
-			{
-				return abstract_cast<UnitTypeClass*, true>(imageYellow);
-			}
-		}
-		else
+		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
 		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+				return imageYellow;
+		}
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageYellow);
+		}
+	}
+	else
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-			{
-				if (auto const imageRed = pData->WaterImage_ConditionRed)
-					return imageRed;
-				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-					return imageYellow;
-			}
-			else if (auto const imageRed = pData->Image_ConditionRed)
-			{
-				return abstract_cast<UnitTypeClass*, true>(imageRed);
-			}
-			else if (auto const imageYellow = pData->Image_ConditionYellow)
-			{
-				return abstract_cast<UnitTypeClass*, true>(imageYellow);
-			}
+		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+		{
+			if (auto const imageRed = pData->WaterImage_ConditionRed)
+				return imageRed;
+			else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
+				return imageYellow;
+		}
+		else if (auto const imageRed = pData->Image_ConditionRed)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageRed);
+		}
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageYellow);
 		}
 	}
 
 	return nullptr;
 }
 
-AircraftTypeClass* TechnoExt::ExtData::GetAircraftTypeExtra() const
+AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 {
-	if (auto const pAircraft = abstract_cast<AircraftClass*, true>(this->OwnerObject()))
+	if (pAircraft->IsGreenHP())
 	{
-		if (pAircraft->IsGreenHP())
-		{
-			return pAircraft->Type;
-		}
-		else if (pAircraft->IsYellowHP())
-		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+		return pAircraft->Type;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
 
-			if (auto const imageYellow = pData->Image_ConditionYellow)
-			{
-				return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-			}
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+		}
+	}
+	else
+	{
+		auto const pType = pAircraft->Type;
+		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (auto const imageRed = pData->Image_ConditionRed)
+		{
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		}
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
 		}
 		else
 		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
-			if (auto const imageRed = pData->Image_ConditionRed)
-			{
-				return abstract_cast<AircraftTypeClass*, true>(imageRed);
-			}
-			else if (auto const imageYellow = pData->Image_ConditionYellow)
-			{
-				return abstract_cast<AircraftTypeClass*, true>(imageYellow);
-			}
-			else
-			{
-				return pAircraft->Type;
-			}
+			return pAircraft->Type;
 		}
 	}
 
-	return nullptr;
+	return pAircraft->Type;
 
 }
 
