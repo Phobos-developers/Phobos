@@ -1766,8 +1766,8 @@ msgid ""
 msgstr "[延迟开火](New-or-Enhanced-Logics.md#delayed-firing)（by Starkku）"
 
 #: ../../Whats-New.md:421
-msgid "Burst without delay (by CrimRecya & TaranDahl)"
-msgstr ""
+msgid "[Burst without delay](New-or-Enhanced-Logics.md#burst-without-delay) (by CrimRecya & TaranDahl)"
+msgstr "[无间隔连发](New-or-Enhanced-Logics.md#burst-without-delay)（by CrimRecya & TaranDahl）"
 
 #: ../../Whats-New.md:422
 msgid ""

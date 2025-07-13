@@ -418,7 +418,7 @@ New:
 - [Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno) (by FS-21)
 - [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
 - [Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by Starkku)
-- Burst without delay (by CrimRecya & TaranDahl)
+- [Burst without delay](New-or-Enhanced-Logics.md#burst-without-delay) (by CrimRecya & TaranDahl)
 - Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
 - Target scanning delay customization (by TaranDahl and solar-III)
 - Force techno targeting in distributed frames to improve performance (by TaranDahl)

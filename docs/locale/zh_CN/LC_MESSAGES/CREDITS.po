@@ -2093,7 +2093,7 @@ msgstr "修了拥有 `Spawned` 的战机会在子机发射器单位处于 EMP �
 
 #: ../../../CREDITS.md:516 ../../../CREDITS.md:571
 msgid "Burst without delay"
-msgstr ""
+msgstr "无间隔连发"
 
 #: ../../../CREDITS.md:517
 msgid "**Ollerus**:"
@@ -2311,9 +2311,8 @@ msgid ""
 msgstr "修复了建筑类目标 `OpenToppedWarpDistance` 计算错误的 Bug"
 
 #: ../../../CREDITS.md:572
-#, fuzzy
 msgid "Target scanning delay customization (code)"
-msgstr "自定义子机生成间隔"
+msgstr ""
 
 #: ../../../CREDITS.md:573
 msgid "Skip target scanning function calling for unarmed technos (code)"
@@ -2328,9 +2327,8 @@ msgid "**solar-III (凤九歌)**"
 msgstr ""
 
 #: ../../../CREDITS.md:576
-#, fuzzy
 msgid "Target scanning delay customization (documentation)"
-msgstr "自定义子机生成间隔"
+msgstr ""
 
 #: ../../../CREDITS.md:577
 msgid "Skip target scanning function calling for unarmed technos (documentation)"

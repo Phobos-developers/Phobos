@@ -8594,7 +8594,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2435
 msgid "Burst without delay"
-msgstr ""
+msgstr "无间隔连发"
 
 #: ../../New-or-Enhanced-Logics.md:2437
 msgid ""
@@ -8602,6 +8602,7 @@ msgid ""
 "even if their `ROF` or `BurstDelay` is set to 0. Now you can force units "
 "to fire all bursts in one frame by setting the `Burst.NoDelay` to true."
 msgstr ""
+"原版中即便单位的 `ROF` 或载具的 `BurstDelay` 设为 0 也最快每帧发射一次。现在可以通过将 `Burst.NoDelay` 设为 true 强制单位在一帧内全部发射。"
 
 #: ../../New-or-Enhanced-Logics.md:2440
 msgid ""
@@ -8613,11 +8614,11 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2446
 msgid "This is useless for buildings and aircraft."
-msgstr ""
+msgstr "此功能对建筑和战机无效。"
 
 #: ../../New-or-Enhanced-Logics.md:2447
 msgid "This will ignore `Burst.Delays` setting."
-msgstr ""
+msgstr "这会无视 `Burst.Delays` 设置。"
 
 #: ../../New-or-Enhanced-Logics.md:2450
 msgid "Delayed firing"
