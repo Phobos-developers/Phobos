@@ -2721,9 +2721,9 @@ msgstr "禁止特定科技类型的 AI 并行生产队列（by Starkku）"
 msgid "Nonprovocative Warheads (by Starkku)"
 msgstr "非挑衅弹头（by Starkku）"
 
-#: ../../Whats-New.md:614 ../../Whats-New.md:619
-msgid "Buildings considered as destroyable pathfinding obstacles (by Starkku)"
-msgstr "允许建筑被视为可摧毁的寻路障碍（by Starkku）"
+#: ../../Whats-New.md:614
+msgid "Option to restore `PowerSurplus` setting for AI (by Starkku)"
+msgstr "为 AI 重启 `PowerSurplus` 设置（by Starkku）"
 
 #: ../../Whats-New.md:615
 msgid "`FireOnce` infantry sequence reset toggle (by Starkku)"
@@ -2742,6 +2742,10 @@ msgid ""
 "Reimplemented `Airburst` & `Splits` logic with more customization options"
 " (by Starkku)"
 msgstr "重新实现 `Airburst` 和 `Splits` 逻辑并添加更多自定义项（by Starkku）"
+
+#: ../../Whats-New.md:619
+msgid "Buildings considered as destroyable pathfinding obstacles (by Starkku)"
+msgstr "允许建筑被视为可摧毁的寻路障碍（by Starkku）"
 
 #: ../../Whats-New.md:620
 msgid "Animation visibility customization settings (by Starkku)"
