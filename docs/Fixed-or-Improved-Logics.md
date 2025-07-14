@@ -358,12 +358,15 @@ Damage.ApplyFirepowerMult=false ; boolean
 
 ### Attached animation position customization
 
-- You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).
+- You can now customize position of attached animations via different values for `AttachedAnimPosition`.
+    - `default`: Animation shows up at the parent object's logical position (for buildings, this is the top-leftmost cell / cell #0).
+    - `center`: Animation shows up at the parent object's visual center.
+    - `ground`: Animation shows up at the parent object's visual center but forced to ground level. Note that the animations is still considered attached to the object and is likely to be drawn above objects that the object itself would cover unless other settings are used to compensate.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                       ; AnimationType
-UseCenterCoordsIfAttached=false  ; boolean
+[SOMEANIM]                   ; AnimationType
+AttachedAnimPosition=object  ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
