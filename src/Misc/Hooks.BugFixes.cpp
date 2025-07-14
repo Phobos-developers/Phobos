@@ -2312,7 +2312,7 @@ static WeaponStruct* __fastcall InfantryClass__GetDeployWeapon_Wrapper(InfantryC
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB448, InfantryClass__GetDeployWeapon_Wrapper)
 
-DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
+DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_DeployWeapon, 0x6)
 {
 	enum { SkipFire = 0x521443, CannotFire = 0x521478 };
 
@@ -2341,7 +2341,7 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 	if (const auto pInfantry = abstract_cast<InfantryClass*>(pThis))
 	{
 		GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x28, 0x4));
-		const int deployWeaponIdx = pThis->GetTechnoType()->DeployFireWeapon;
+		const int deployWeaponIdx = pInfantry->Type->DeployFireWeapon;
 		weaponIdx = deployWeaponIdx >= 0 ? deployWeaponIdx : pThis->SelectWeapon(pTarget);
 	}
 	else
@@ -2350,7 +2350,9 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 	}
 
 	const auto deployWeaponStruct = pThis->GetWeapon(weaponIdx);
-	return deployWeaponStruct && deployWeaponStruct->WeaponType && deployWeaponStruct->WeaponType->AreaFire ? ContinueIn : NotAreaFire;
+	const auto deployWeaponType = deployWeaponStruct ? deployWeaponStruct->WeaponType : nullptr;
+
+	return deployWeaponType && deployWeaponType->AreaFire ? ContinueIn : NotAreaFire;
 }
 
 #pragma endregion
