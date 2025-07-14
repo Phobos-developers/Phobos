@@ -2282,6 +2282,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 
 #pragma region InfantryDeployFireWeaponFix
 
+/*
 DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -2299,6 +2300,17 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 
 	return 0x70E12C;
 }
+*/
+
+WeaponStruct* __fastcall InfantryClass__GetDeployWeapon_Wrapper(InfantryClass* pThis)
+{
+	int deployFireWeapon = pThis->Type->DeployFireWeapon;
+	int weaponIndex = deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon;
+
+	return pThis->GetWeapon(weaponIndex);
+}
+
+DEFINE_JUMP(VTABLE, 0x7EB448, GET_OFFSET(InfantryClass__GetDeployWeapon_Wrapper))
 
 DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
 {
