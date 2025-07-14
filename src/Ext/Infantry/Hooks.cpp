@@ -78,4 +78,16 @@ DEFINE_HOOK(0x51EE6B, InfantryClass_WhatAction_ObjectClass_InfiltrateForceAttack
 	return WhatActionObjectTemp::Fire ? 0x51F05E : 0;
 }
 
+DEFINE_HOOK(0x51ECC0, InfantryClass_MouseOverObject_IsAreaFire, 0xA)
+{
+	enum { IsAreaFire = 0x51ECE5, NotAreaFire = 0x51ECEC };
+
+	GET(InfantryClass*, pThis, EDI);
+	GET(ObjectClass*, pObject, ESI);
+	const int deployWeaponIdx = pThis->Type->DeployFireWeapon;
+	const auto deployWeapon = pThis->GetWeapon(deployWeaponIdx >= 0 ? deployWeaponIdx : pThis->SelectWeapon(pObject))->WeaponType;
+
+	return deployWeapon && deployWeapon->AreaFire ? IsAreaFire : NotAreaFire;
+}
+
 #pragma endregion
