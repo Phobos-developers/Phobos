@@ -1631,7 +1631,7 @@ Image=SOMEIMAGEM1
 Trajectory=Missile
 Trajectory.BulletROT=6
 Trajectory.BulletFacing=Target
-Trajectory.Missile.PreAimCoord=0,0,240
+Trajectory.Missile.PreAimCoord=0,0,360
 Trajectory.Missile.ReduceCoord=no
 Trajectory.Missile.LaunchSpeed=20
 Trajectory.Missile.Acceleration=12
@@ -1663,7 +1663,7 @@ Trajectory.Speed=40.0
 ````
 
 ````{note}
-> Trajectory_Demo_O_Image_Placeholder
+![Trajectory-Demo-O](_static/images/Trajectory-Demo-O.gif)
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEO1]
 AA=no
@@ -1673,7 +1673,8 @@ SubjectToElevation=yes
 SubjectToWalls=no
 Image=SOMEIMAGEO1
 Trajectory=Parabola
-Trajectory.Parabola.OpenFireMode=Speed
+Trajectory.Parabola.OpenFireMode=Height
+Trajectory.Parabola.ThrowHeight=1
 Trajectory.PeacefulVanish=no
 Trajectory.DisperseSuicide=yes
 Trajectory.DisperseWeapons=SOMEWEAPONO2
@@ -1681,8 +1682,7 @@ Trajectory.DisperseBursts=12
 Trajectory.DisperseCounts=1
 Trajectory.DisperseCycle=1
 Trajectory.DisperseEffectiveRange=-1
-Trajectory.Speed=200.0
-Gravity=12.0
+Gravity=3.0
 
 [SOMEPROJECTILEO2]
 AA=no
@@ -1858,7 +1858,7 @@ Trajectory.Speed=45.0
 ````
 
 ````{note}
-> Trajectory_Demo_U_Image_Placeholder
+![Trajectory-Demo-U](_static/images/Trajectory-Demo-U.gif)
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEU1]
 AA=no
@@ -1890,24 +1890,25 @@ Image=SOMEIMAGEU2
 Trajectory=Engrave
 Trajectory.PassDetonate=yes
 Trajectory.PassDetonateDelay=2
-Trajectory.Engrave.SourceCoord=0,600
-Trajectory.Engrave.TargetCoord=0,-600
+Trajectory.Engrave.SourceCoord=0,150
+Trajectory.Engrave.TargetCoord=0,-150
 Trajectory.UseDisperseCoord=yes
 Trajectory.AllowFirerTurning=no
 Trajectory.Engrave.IsIntense=yes
 Trajectory.Engrave.IsSingleColor=yes
-Trajectory.Engrave.LaserInnerColor=255,0,0
+Trajectory.Engrave.LaserInnerColor=0,255,0
+Trajectory.Engrave.LaserThickness=1
 Trajectory.Engrave.AttachToTarget=yes
 Trajectory.Engrave.UpdateDirection=yes
-Trajectory.Speed=40.0
+Trajectory.Speed=8.0
 
 [SOMEPROJECTILEU3]:[SOMEPROJECTILEU2]
-Trajectory.Engrave.SourceCoord=300,520
-Trajectory.Engrave.TargetCoord=-300,-520
+Trajectory.Engrave.SourceCoord=130,75
+Trajectory.Engrave.TargetCoord=-130,-75
 
 [SOMEPROJECTILEU4]:[SOMEPROJECTILEU2]
-Trajectory.Engrave.SourceCoord=-300,520
-Trajectory.Engrave.TargetCoord=300,-520
+Trajectory.Engrave.SourceCoord=-130,75
+Trajectory.Engrave.TargetCoord=130,-75
 ```
 ````
 
@@ -1986,7 +1987,7 @@ Trajectory.Speed=10000.0
 ````
 
 ````{note}
-> Trajectory_Demo_W_Image_Placeholder
+![Trajectory-Demo-W](_static/images/Trajectory-Demo-W.gif)
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEW1]
 AA=no
@@ -1994,20 +1995,27 @@ AG=yes
 SubjectToCliffs=no
 SubjectToElevation=no
 SubjectToWalls=no
-Image=SOMEIMAGEQ1
+Image=SOMEIMAGEW1
 Trajectory=Tracing
-Trajectory.Duration=100
+Trajectory.Duration=210
 Trajectory.Synchronize=yes
 Trajectory.Tracing.CreateCoord=150,0,0
-Trajectory.DisperseWeapons=SOMEWEAPONW1
+Trajectory.PassDetonate=yes
+Trajectory.PassDetonateWarhead=SOMEWARHEADW2
+Trajectory.PassDetonateDamage=40
+Trajectory.PassDetonateDelay=5
+Trajectory.PassDetonateInitialDelay=1
+Trajectory.DisperseWeapons=SOMEWEAPONW2
 Trajectory.DisperseBursts=3
 Trajectory.DisperseCounts=-1
 Trajectory.DisperseDelays=30
 Trajectory.DisperseInitialDelay=40
 Trajectory.DisperseCycle=1
+Trajectory.DisperseRetarget=yes
 Trajectory.DisperseLocation=yes
+Trajectory.DisperseFromFirer=no
 Trajectory.DisperseForceFire=no
-Trajectory.Speed=30.0
+Trajectory.Speed=20.0
 ```
 ````
 

@@ -638,6 +638,15 @@ int PhobosTrajectory::GetTheTrueDamage(int damage, bool self)
 		if (!damage && pType->DamageEdgeAttenuation > 0.0)
 			damage = signal;
 	}
+	else if (!self)
+	{
+		const auto calculatedDamage = damage * this->FirepowerMult;
+		const auto signal = Math::sgn(calculatedDamage);
+		damage = static_cast<int>(calculatedDamage);
+		// Retain minimal damage
+		if (!damage)
+			damage = signal;
+	}
 
 	return damage;
 }
