@@ -520,14 +520,17 @@ void TechnoExt::ExtData::UpdateTiberiumEater()
 
 void TechnoExt::ExtData::UpdateShield()
 {
-	auto const pTypeExt = this->TypeExtData;
-
 	// Set current shield type if it is not set.
-	if (!this->CurrentShieldType->Strength && pTypeExt->ShieldType->Strength)
-		this->CurrentShieldType = pTypeExt->ShieldType;
+	if (!this->CurrentShieldType || this->CurrentShieldType->Strength <= 0)
+	{
+		auto const pTypeExt = this->TypeExtData;
+
+		if (pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0)
+			this->CurrentShieldType = pTypeExt->ShieldType;
+	}
 
 	// Create shield class instance if it does not exist.
-	if (this->CurrentShieldType && this->CurrentShieldType->Strength && !this->Shield)
+	if (this->CurrentShieldType && this->CurrentShieldType->Strength > 0 && !this->Shield)
 	{
 		this->Shield = std::make_unique<ShieldClass>(this->OwnerObject());
 		this->Shield->UpdateTint();

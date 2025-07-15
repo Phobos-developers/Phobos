@@ -343,27 +343,27 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		if (shieldIndex >= 0 || this->Shield_RemoveAll)
 		{
 			ratio = pShield->GetHealthRatio();
-			pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+			pTargetExt->CurrentShieldType = nullptr;
 			pShield->KillAnim();
 			pShield = nullptr;
 		}
 	}
 
 	// Attach shield.
-	if (Shield_AttachTypes.size() > 0)
+	if (this->Shield_AttachTypes.size() > 0)
 	{
 		ShieldTypeClass* shieldType = nullptr;
 
 		if (this->Shield_ReplaceOnly)
 		{
 			if (shieldIndex >= 0)
-				shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+				shieldType = this->Shield_AttachTypes[Math::min(shieldIndex, (signed)this->Shield_AttachTypes.size() - 1)];
 			else if (this->Shield_RemoveAll)
-				shieldType = Shield_AttachTypes[0];
+				shieldType = this->Shield_AttachTypes[0];
 		}
 		else
 		{
-			shieldType = Shield_AttachTypes[0];
+			shieldType = this->Shield_AttachTypes[0];
 		}
 
 		if (shieldType)
@@ -401,13 +401,13 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 		if (this->Shield_Respawn_Duration > 0 && isShieldTypeEligible(this->Shield_Respawn_Types.GetElements(this->Shield_AffectTypes)))
 		{
-			double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
+			const double amount = this->Shield_Respawn_Amount.Get(shieldType->Respawn);
 			pShield->SetRespawn(this->Shield_Respawn_Duration, amount, this->Shield_Respawn_Rate, this->Shield_Respawn_RestartTimer);
 		}
 
 		if (this->Shield_SelfHealing_Duration > 0 && isShieldTypeEligible(this->Shield_SelfHealing_Types.GetElements(this->Shield_AffectTypes)))
 		{
-			double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
+			const double amount = this->Shield_SelfHealing_Amount.Get(shieldType->SelfHealing);
 
 			pShield->SetSelfHealing(this->Shield_SelfHealing_Duration, amount, this->Shield_SelfHealing_Rate,
 				this->Shield_SelfHealing_RestartInCombat.Get(shieldType->SelfHealing_RestartInCombat),
