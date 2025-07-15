@@ -525,7 +525,7 @@ void TechnoExt::ExtData::UpdateShield()
 	{
 		auto const pTypeExt = this->TypeExtData;
 
-		if (pTypeExt->ShieldType->Strength)
+		if (pTypeExt->ShieldType && pTypeExt->ShieldType->Strength > 0)
 			this->CurrentShieldType = pTypeExt->ShieldType;
 	}
 
