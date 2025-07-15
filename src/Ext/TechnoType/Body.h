@@ -285,7 +285,7 @@ public:
 			, InitialStrength {}
 			, ReloadInTransport { false }
 			, ForbidParallelAIQueues { false }
-			, ShieldType {}
+			, ShieldType { nullptr }
 			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
@@ -462,7 +462,7 @@ public:
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override;
+		virtual void Initialize() override { }
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
