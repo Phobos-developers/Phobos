@@ -418,10 +418,11 @@ New:
 - [Event 606: AttachEffect is attaching to a Techno](AI-Scripting-and-Mapping.md#attacheffect-is-attaching-to-a-techno) (by FS-21)
 - [Linked superweapons](New-or-Enhanced-Logics.md#linked-superweapons) (by FS-21)
 - [Delayed fire weapons](New-or-Enhanced-Logics.md#delayed-firing) (by Starkku)
-- Burst without delay (by CrimRecya & TaranDahl)
-- Skip target scanning function calling for unarmed technos (by TaranDahl and solar-III)
-- Target scanning delay customization (by TaranDahl and solar-III)
-- Force techno targeting in distributed frames to improve performance (by TaranDahl)
+- [Burst without delay](New-or-Enhanced-Logics.md#burst-without-delay) (by CrimRecya & TaranDahl)
+- Skip target scanning function calling for unarmed technos (by TaranDahl & solar-III)
+- [Target scanning delay customization](Fixed-or-Improved-Logics.md#target-scanning-delay-optimization) (by TaranDahl & solar-III)
+- [Force techno targeting in distributed frames to improve performance](Fixed-or-Improved-Logics.md#force-techno-targeting-in-distributed-frames-to-improve-performance) (by TaranDahl)
+- [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -457,7 +458,7 @@ Vanilla fixes:
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
 - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt) (by FlyStar)
 - Player-controlled spies are not forced to perform other tasks while attacking buildings (by FlyStar)
-- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
+- If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
 - Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)
 
 Phobos fixes:
@@ -621,7 +622,7 @@ New:
 - Custom object palettes for TerrainTypes (by Starkku)
 - Forbidding parallel AI queues for specific TechnoTypes (by Starkku)
 - Nonprovocative Warheads (by Starkku)
-- Buildings considered as destroyable pathfinding obstacles (by Starkku)
+- Option to restore `PowerSurplus` setting for AI (by Starkku)
 - `FireOnce` infantry sequence reset toggle (by Starkku)
 - Assign Super Weapon cameo to any sidebar tab (by NetsuNegi)
 - Customizing effect of level lighting on air units (by Starkku)

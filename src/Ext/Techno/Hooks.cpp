@@ -663,7 +663,7 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = TechnoExt::GetUnitTypeExtra(pThis))
 			R->EBX<ObjectTypeClass*>(pCustomType);
 	}
 
@@ -678,7 +678,7 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
+		if (const UnitTypeClass* pCustomType = TechnoExt::GetUnitTypeExtra(pThis))
 		{
 			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -686,6 +686,28 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	}
 
 	R->ECX(pThis->Type);
+	return Continue;
+}
+
+DEFINE_HOOK(0x414987, AircraftClass_Draw_Extra, 0x6)
+{
+	enum { Continue = 0x41498D };
+
+	GET(AircraftClass*, pThis, EBP);
+
+	R->ESI<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
+{
+	enum { Continue = 0x41466B };
+
+	GET(AircraftClass*, pThis, EBP);
+
+	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+
 	return Continue;
 }
 
