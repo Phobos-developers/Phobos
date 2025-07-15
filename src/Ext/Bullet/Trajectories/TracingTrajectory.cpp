@@ -87,6 +87,7 @@ void TracingTrajectory::Serialize(T& Stm)
 	Stm
 		.Process(this->Type)
 		.Process(this->RotateRadian)
+		.Process(this->AsPeacefulVanish)
 		;
 }
 
@@ -122,6 +123,21 @@ bool TracingTrajectory::OnEarlyUpdate()
 	const auto pFirer = pBullet->Owner;
 	// Followed the launcher, but the launcher was destroyed
 	return !pType->TraceTheTarget && !pFirer;
+}
+
+void TracingTrajectory::OnPreDetonate()
+{
+	this->PhobosTrajectory::OnPreDetonate();
+	// Overwrite the ordinary behavior
+	if (this->ShouldDetonate && this->AsPeacefulVanish)
+	{
+		const auto pBullet = this->Bullet;
+		pBullet->Health = 0;
+		pBullet->Limbo();
+		pBullet->UnInit();
+		// To skip all extra effects
+		this->ShouldDetonate = false;
+	}
 }
 
 bool TracingTrajectory::OnVelocityCheck()
@@ -180,25 +196,30 @@ bool TracingTrajectory::ChangeVelocity()
 	// Tracing the target
 	if (const auto pTarget = pBullet->Target)
 		pBullet->TargetCoords = pTarget->GetCoords();
+
+	const auto chaseRange = pType->ChasableDistance.Get();
+	// Special handling is required when the firer dies
+	if (!pFirer)
+	{
+		if (!pType->TraceTheTarget)
+			return true;
+
+		if (chaseRange >= 0)
+			this->AsPeacefulVanish = true;
+	}
 	// Confirm the center position of the tracing target
-	auto destination = (pType->TraceTheTarget || !pFirer) ? pBullet->TargetCoords : pFirer->GetCoords();
+	auto destination = pType->TraceTheTarget ? pBullet->TargetCoords : pFirer->GetCoords();
 	// Calculate the maximum separation distance
 	const auto pWeapon = pBullet->WeaponType;
-	const auto cRange = pType->ChasableDistance.Get();
-	const auto bRange = cRange ? std::abs(cRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
-	const auto aRange = (pType->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, bRange) : bRange) + 32;
+	const auto baseRange = chaseRange ? std::abs(chaseRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
+	const auto applyRange = (pType->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32;
 	// Calculate the distance between the projectile and the firer
 	const auto source = (pFirer && !this->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
 	const auto delta = destination - source;
 	const auto distance = (this->NotMainWeapon || this->TargetInTheAir || (pFirer && pFirer->IsInAir())) ? PhobosTrajectory::Get2DDistance(delta) : delta.Magnitude();
 	// Check if the limit has been exceeded
-	if (static_cast<int>(distance) >= aRange)
-	{
-		if (cRange < 0)
-			return true;
-		else
-			destination = source + delta * (aRange / distance);
-	}
+	if (static_cast<int>(distance) >= applyRange)
+		destination = source + (delta * (applyRange / distance));
 
 	CoordStruct offset = pType->VirtualTargetCoord.Get();
 	// Calculate only when there is an offset value

@@ -16,13 +16,19 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 {
 	enum { SkipShaking = 0x469130, GoToExtras = 0x469AA4 };
 
-	GET(BulletClass*, pBullet, ESI);
+	GET(BulletClass*, pThis, ESI);
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct*, pCoords, 0x8);
 
+	if (const auto pTraj = BulletExt::ExtMap.Find(pThis)->Trajectory.get())
+	{
+		if (!pTraj->ShouldDetonate)
+			return GoToExtras;
+	}
+
 	auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
-	if (auto const pTarget = abstract_cast<TechnoClass*>(pBullet->Target))
+	if (auto const pTarget = abstract_cast<TechnoClass*>(pThis->Target))
 	{
 		// Check if the WH should affect the techno target or skip it
 		if (!pExt->IsHealthInThreshold(pTarget) || (!pExt->AffectsNeutral && pTarget->Owner->IsNeutral()))

@@ -484,11 +484,15 @@ void PhobosTrajectory::OnPreDetonate()
 		pBullet->Health = 0;
 		pBullet->Limbo();
 		pBullet->UnInit();
+		// To skip all extra effects
+		this->ShouldDetonate = false;
 	}
 	else
 	{
 		// Calculate the current damage
 		pBullet->Health = this->GetTheTrueDamage(pBullet->Health, true);
+		// Ensure the detonation flag is established
+		this->ShouldDetonate = true;
 	}
 }
 
