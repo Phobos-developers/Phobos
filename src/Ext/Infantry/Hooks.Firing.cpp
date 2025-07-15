@@ -152,8 +152,14 @@ DEFINE_HOOK(0x520AD9, InfantryClass_FiringAI_IsGattling, 0x5)
 			case FireError::REARM:
 			case FireError::FACING:
 			case FireError::ROTATING:
-				pThis->GattlingRateUp(1);
+			{
+				if (pThis->IsDeployed())
+					pThis->GattlingRateDown(1);
+				else
+					pThis->GattlingRateUp(1);
+
 				break;
+			}
 			default:
 				pThis->GattlingRateDown(1);
 				break;

@@ -469,6 +469,24 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+## Aircraft
+
+### Damaged aircraft image changes
+
+- When an aircraft is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` AircraftType.
+- Similar, `Image.ConditionRed` is used as image if aircraft health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]                ; AircraftType
+Image.ConditionYellow=        ; AircraftType entry
+Image.ConditionRed=           ; AircraftType entry
+```
+
+```{warning}
+Note that the AircraftTypes had to be defined under [AircraftTypes].
+```
+
 ## Animations
 
 ### Anim-to-Unit
@@ -3187,26 +3205,29 @@ MindControl.Anim=                     ; Animation, defaults to [CombatDamage] ->
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                ; WarheadType
-SplashList=                  ; List of AnimationTypes
+SplashList=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false  ; boolean
 ```
 
 ### Damage multipliers
 
 - Warheads are now able to define the extra damage multiplier for owner house, ally houses and enemy houses.
+  - `DamageOwnerMultiplier.NotAffectsEnemies` and `DamageAlliesMultiplier.NotAffectsEnemies` is used as the default value if `AffectsEnemies=false` is set on the warhead.
 - An extra damage multiplier based on the firer or target's health percentage will be added to the total multiplier. To be elaborate: the damage multiplier will firstly increased by the firer's health percentage multiplies `DamageSourceHealthMultiplier`, then increased by the target's health percentage multiplies `DamageTargetHealthMultiplier`.
 - These multipliers will not affect damage with ignore defenses like `Suicide`.etc .
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageOwnerMultiplier=1.0           ; floating point value
-DamageAlliesMultiplier=1.0          ; floating point value
-DamageEnemiesMultiplier=1.0         ; floating point value
+DamageOwnerMultiplier=1.0                       ; floating point value
+DamageAlliesMultiplier=1.0                      ; floating point value
+DamageEnemiesMultiplier=1.0                     ; floating point value
+DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
+DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 
 [SOMEWARHEAD]                       ; WarheadType
-DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
-DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
+DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
 DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
 DamageSourceHealthMultiplier=0.0    ; floating point value
 DamageTargetHealthMultiplier=0.0    ; floating point value

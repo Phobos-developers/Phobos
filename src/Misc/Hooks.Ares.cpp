@@ -68,7 +68,7 @@ void Apply_Ares3_0_Patches()
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x436DA, &LetGo);
 
 	// SuperClass_Launch_SkipRelatedTags
-  Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3207C, AresHelper::AresBaseAddress + 0x320DF);
+	Patch::Apply_LJMP(AresHelper::AresBaseAddress + 0x3207C, AresHelper::AresBaseAddress + 0x320DF);
 
 	// Convert ManagerFix
 	Patch::Apply_CALL(AresHelper::AresBaseAddress + 0x039DAE, &ConvertToType);
