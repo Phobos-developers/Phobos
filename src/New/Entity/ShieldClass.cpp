@@ -622,7 +622,7 @@ bool ShieldClass::ConvertCheck()
 	if (!allowTransfer && !pTechnoTypeExt->ShieldType->Strength)
 	{
 		this->KillAnim();
-		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+		pTechnoExt->CurrentShieldType = nullptr;
 		pTechnoExt->Shield = nullptr;
 		this->UpdateTint();
 

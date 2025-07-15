@@ -343,7 +343,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		if (shieldIndex >= 0 || this->Shield_RemoveAll)
 		{
 			ratio = pShield->GetHealthRatio();
-			pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+			pTargetExt->CurrentShieldType = nullptr;
 			pShield->KillAnim();
 			pShield = nullptr;
 		}

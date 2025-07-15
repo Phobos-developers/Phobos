@@ -20,7 +20,7 @@ bool TechnoTypeExt::SelectWeaponMutex = false;
 
 void TechnoTypeExt::ExtData::Initialize()
 {
-	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+	this->ShieldType = nullptr;
 }
 
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
