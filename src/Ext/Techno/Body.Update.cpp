@@ -43,7 +43,7 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	this->ApplyMindControlRangeLimit();
 	this->UpdateRecountBurst();
 	this->UpdateRearmInEMPState();
-	
+
 	if (this->AttackMoveFollowerTempCount)
 	{
 		this->AttackMoveFollowerTempCount--;
@@ -52,59 +52,126 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 void TechnoExt::ExtData::ApplyInterceptor()
 {
-	auto const pThis = this->OwnerObject();
-	auto const pTypeExt = this->TypeExtData;
+	const auto pThis = this->OwnerObject();
+	const auto pTypeExt = this->TypeExtData;
+	const auto pInterceptorType = pTypeExt->InterceptorType.get();
 
-	if (pTypeExt->InterceptorType && !pThis->Target && !this->IsBurrowed)
+	if (!pInterceptorType)
+		return;
+
+	const auto pTarget = pThis->Target;
+
+	if (pTarget)
 	{
-		BulletClass* pTargetBullet = nullptr;
-		const auto pInterceptorType = pTypeExt->InterceptorType.get();
-		const double guardRange = pInterceptorType->GuardRange.Get(pThis);
-		const double guardRangeSq = guardRange * guardRange;
-		const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
-		const double minguardRangeSq = minguardRange * minguardRange;
-		// Interceptor weapon is always fixed
-		const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+		if (pTarget->WhatAmI() != AbstractType::Bullet)
+			return;
 
-		// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
-		// so it can differ across players throwing target management out of sync.
-		for (auto const& pBullet : BulletClass::Array)
+		const auto pTargetExt = BulletExt::ExtMap.Find(static_cast<BulletClass*>(pTarget));
+
+		if ((pTargetExt->InterceptedStatus & InterceptedStatus::Locked) == InterceptedStatus::None)
+			return;
+	}
+
+	const int count = BulletClass::Array.Count;
+
+	if (this->IsBurrowed || !count)
+		return;
+
+	BulletClass* pTargetBullet = nullptr;
+	const double guardRange = pInterceptorType->GuardRange.Get(pThis);
+	const double guardRangeSq = guardRange * guardRange;
+	const double minguardRange = pInterceptorType->MinimumGuardRange.Get(pThis);
+	const double minguardRangeSq = minguardRange * minguardRange;
+	// Interceptor weapon is always fixed
+	const auto pWeapon = pThis->GetWeapon(pInterceptorType->Weapon)->WeaponType;
+
+	// DO NOT iterate BulletExt::ExtMap here, the order of items is not deterministic
+	// so it can differ across players throwing target management out of sync.
+	int i = 0;
+
+	for ( ; i < count; ++i)
+	{
+		const auto& pBullet = BulletClass::Array.GetItem(i);
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		const auto pBulletTypeExt = pBulletExt->TypeExtData;
+
+		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+			continue;
+
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+			continue;
+
+		if (pBulletTypeExt->Armor.isset())
 		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			auto const pBulletTypeExt = pBulletExt->TypeExtData;
+			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
 
-			if (!pBulletTypeExt->Interceptable)
+			if (versus == 0.0)
 				continue;
-
-			auto const distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
-
-			if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
-				continue;
-
-			if (pBulletTypeExt->Armor.isset())
-			{
-				const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
-
-				if (versus == 0.0)
-					continue;
-			}
-
-			auto const bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
-
-			if (EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
-			{
-				pTargetBullet = pBullet;
-
-				if (pBulletExt->InterceptedStatus == InterceptedStatus::Targeted)
-					continue;
-
-				break;
-			}
 		}
 
-		if (pTargetBullet)
-			pThis->SetTarget(pTargetBullet);
+		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+			continue;
+
+		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+		{
+			// Set as optional target
+			pTargetBullet = pBullet;
+			break;
+		}
+
+		// Establish target
+		pThis->SetTarget(pBullet);
+		return;
 	}
+
+	// Loop ends and there is no target
+	if (!pTargetBullet)
+		return;
+
+	// There is an optional target, but it is still possible to continue checking for more suitable target
+	for ( ; i < count; ++i)
+	{
+		const auto& pBullet = BulletClass::Array.GetItem(i);
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+		if (pBulletExt->InterceptedStatus & (InterceptedStatus::Targeted | InterceptedStatus::Locked))
+			continue;
+
+		const auto pBulletTypeExt = pBulletExt->TypeExtData;
+
+		if (!pBulletTypeExt->Interceptable || pBullet->SpawnNextAnim)
+			continue;
+
+		const auto distanceSq = pBullet->Location.DistanceFromSquared(pThis->Location);
+
+		if (distanceSq > guardRangeSq || distanceSq < minguardRangeSq)
+			continue;
+
+		if (pBulletTypeExt->Armor.isset())
+		{
+			const double versus = GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBulletTypeExt->Armor.Get());
+
+			if (versus == 0.0)
+				continue;
+		}
+
+		const auto bulletOwner = pBullet->Owner ? pBullet->Owner->Owner : pBulletExt->FirerHouse;
+
+		if (!EnumFunctions::CanTargetHouse(pInterceptorType->CanTargetHouses, pThis->Owner, bulletOwner))
+			continue;
+
+		// Establish target
+		pThis->SetTarget(pBullet);
+		return;
+	}
+
+	// There is no more suitable target, establish optional target
+	if (pTargetBullet)
+		pThis->SetTarget(pTargetBullet);
 }
 
 void TechnoExt::ExtData::DepletedAmmoActions()
@@ -461,7 +528,10 @@ void TechnoExt::ExtData::UpdateShield()
 
 	// Create shield class instance if it does not exist.
 	if (this->CurrentShieldType && this->CurrentShieldType->Strength && !this->Shield)
+	{
 		this->Shield = std::make_unique<ShieldClass>(this->OwnerObject());
+		this->Shield->UpdateTint();
+	}
 
 	if (const auto pShieldData = this->Shield.get())
 		pShieldData->AI();

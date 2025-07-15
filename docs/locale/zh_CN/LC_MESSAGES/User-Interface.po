@@ -340,7 +340,7 @@ msgstr ""
 msgid ""
 "Default `Offset.ShieldDelta` for `InfoType=Shield` is `0,-10`, `0,0` for "
 "others."
-msgstr "对于 `InfoType=Shield` 其默认为 `Offset.ShieldDelta` 为 `0,-10`，其他为 `0,0`。"
+msgstr "`Offset.ShieldDelta` 在 `InfoType=Shield` 时默认为 `0,-10`，其他情况默认为 `0,0`。"
 
 #: ../../User-Interface.md:78
 msgid "Default `Shape.Spacing` for buildings is `4,-2`, `4,0` for others."
@@ -1174,10 +1174,11 @@ msgstr ""
 
 #: ../../User-Interface.md:377
 msgid ""
-"When the mouse hovers over the subtitle area (simply judged as a "
+"If you also set `MessageApplyHoverState` to true, when the mouse hovers over the subtitle area (simply judged as a "
 "rectangle), its opacity will increase and it will not disappear during "
 "this period."
-msgstr "当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
+msgstr ""
+"若你同时设置了 `MessageApplyHoverState` 为 true 那么当鼠标选停在消息区域时（系统会将其按矩形范围判定），其不透明度会提高且在此期间不会消失。"
 
 #: ../../User-Interface.md:380
 msgid ""

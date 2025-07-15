@@ -41,8 +41,22 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	BulletAITemp::ExtData = pBulletExt;
 	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
 
-	if (pBulletExt->InterceptedStatus == InterceptedStatus::Intercepted)
+	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
 	{
+		if (const auto pTarget = abstract_cast<BulletClass*>(pThis->Target))
+		{
+			const auto pTargetExt = BulletExt::ExtMap.Find(pTarget);
+
+			if (!pTargetExt->TypeExtData->Armor.isset())
+				pTargetExt->InterceptedStatus |= InterceptedStatus::Locked;
+		}
+	}
+
+	if (pBulletExt->InterceptedStatus & InterceptedStatus::Intercepted)
+	{
+		if (const auto pTarget = abstract_cast<BulletClass*>(pThis->Target))
+			BulletExt::ExtMap.Find(pTarget)->InterceptedStatus &= ~InterceptedStatus::Locked;
+
 		if (pBulletExt->DetonateOnInterception)
 			pThis->Detonate(pThis->GetCoords());
 
@@ -94,6 +108,18 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	}
 
+	if (pThis->HasParachute)
+	{
+		int fallRate = pBulletExt->ParabombFallRate - pBulletExt->TypeExtData->Parachuted_FallRate;
+		int maxFallRate = pBulletExt->TypeExtData->Parachuted_MaxFallRate.Get(RulesClass::Instance->ParachuteMaxFallRate);
+
+		if (fallRate < maxFallRate)
+			fallRate = maxFallRate;
+
+		pBulletExt->ParabombFallRate = fallRate;
+		pThis->FallRate = fallRate;
+	}
+
 	return 0;
 }
 
@@ -125,7 +151,7 @@ DEFINE_HOOK(0x4668BD, BulletClass_AI_Interceptor_InvisoSkip, 0x6)
 
 	if (auto const pExt = BulletAITemp::ExtData)
 	{
-		if (pThis->Type->Inviso && pExt->IsInterceptor)
+		if (pThis->Type->Inviso && pExt->InterceptorTechnoType)
 			return DetonateBullet;
 	}
 
@@ -508,11 +534,26 @@ DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 	if (pAnimType)
 	{
 		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
+		pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
+		int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
+		pAnim->LightConvert = ColorScheme::Array[schemeIndex]->LightConvert;
 		pThis->Parachute = pAnim;
 	}
 
 	R->EAX(pAnim);
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x467AB2, BulletClass_AI_Parabomb, 0x7)
+{
+	enum { SkipGameCode = 0x467B1A };
+
+	GET(BulletClass*, pThis, EBP);
+
+	if (pThis->HasParachute)
+		return SkipGameCode;
+
+	return 0;
 }
 
 #pragma endregion

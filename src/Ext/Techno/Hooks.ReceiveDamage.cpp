@@ -19,13 +19,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(args_ReceiveDamage*, args, 0x4);
 
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
+	int& damage = *args->Damage;
+
+	// AffectsAbove/BelowPercent & AffectsNeutral can ignore IgnoreDefenses like AffectsAllies/Enmies/Owner
+	// They should be checked here to cover all cases that directly use ReceiveDamage to deal damage
+	if (!pWHExt->IsHealthInThreshold(pThis) || (!pWHExt->AffectsNeutral && pThis->Owner->IsNeutral()))
+	{
+		damage = 0;
+		return 0;
+	}
+
 	const auto pRules = RulesExt::Global();
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(args->WH);
-
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
-	int& damage = *args->Damage;
 
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
@@ -35,9 +43,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		if (!pSourceHouse || !pTargetHouse || !pSourceHouse->IsAlliedWith(pTargetHouse))
 			multiplier = pWHExt->DamageEnemiesMultiplier.Get(pRules->DamageEnemiesMultiplier);
 		else if (pSourceHouse != pTargetHouse)
-			multiplier = pWHExt->DamageAlliesMultiplier.Get(pRules->DamageAlliesMultiplier);
+			multiplier = pWHExt->DamageAlliesMultiplier.Get(!pWHExt->AffectsEnemies ? pRules->DamageAlliesMultiplier_NotAffectsEnemies.Get(pRules->DamageAlliesMultiplier) : pRules->DamageAlliesMultiplier);
 		else
-			multiplier = pWHExt->DamageOwnerMultiplier.Get(pRules->DamageOwnerMultiplier);
+			multiplier = pWHExt->DamageOwnerMultiplier.Get(!pWHExt->AffectsEnemies ? pRules->DamageOwnerMultiplier_NotAffectsEnemies.Get(pRules->DamageOwnerMultiplier) : pRules->DamageOwnerMultiplier);
 
 		if (pWHExt->DamageSourceHealthMultiplier && args->Attacker)
 			multiplier += pWHExt->DamageSourceHealthMultiplier * args->Attacker->GetHealthPercentage();
