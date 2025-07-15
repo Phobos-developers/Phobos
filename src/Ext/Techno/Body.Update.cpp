@@ -1370,7 +1370,7 @@ void TechnoExt::ApplyGainedSelfHeal(TechnoClass* pThis)
 					return cap;
 
 				const bool isCampaign = SessionClass::IsCampaign();
-				const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign;
+				const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign && (pOwner->IsHumanPlayer || pOwner->IsInPlayerControl);
 				const bool fromAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
 				if (fromPlayer || fromAllies)
