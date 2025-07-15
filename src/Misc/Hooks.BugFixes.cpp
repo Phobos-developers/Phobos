@@ -2333,14 +2333,15 @@ DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_DeployWeapon, 0x6)
 
 DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 {
-	enum { NotAreaFire = 0x6F7776, ContinueIn = 0x6F7682 };
+	enum { SkipGameCode = 0x6F7776, ContinueIn = 0x6F7688 };
 
 	GET(TechnoClass*, pThis, ESI);
 	int weaponIdx;
 
-	if (const auto pInfantry = abstract_cast<InfantryClass*>(pThis))
+	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
 	{
 		GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x28, 0x4));
+
 		const int deployWeaponIdx = pInfantry->Type->DeployFireWeapon;
 		weaponIdx = deployWeaponIdx >= 0 ? deployWeaponIdx : pThis->SelectWeapon(pTarget);
 	}
@@ -2352,7 +2353,11 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 	const auto deployWeaponStruct = pThis->GetWeapon(weaponIdx);
 	const auto deployWeaponType = deployWeaponStruct ? deployWeaponStruct->WeaponType : nullptr;
 
-	return deployWeaponType && deployWeaponType->AreaFire ? ContinueIn : NotAreaFire;
+	if (!deployWeaponType || !deployWeaponType->AreaFire)
+		return SkipGameCode;
+
+	R->EAX(deployWeaponType->Warhead);
+	return ContinueIn;
 }
 
 #pragma endregion
