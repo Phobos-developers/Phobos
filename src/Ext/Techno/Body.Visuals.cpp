@@ -41,7 +41,7 @@ void TechnoExt::DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, Rectang
 				return true;
 
 			const bool isCampaign = SessionClass::IsCampaign();
-			const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign;
+			const bool fromPlayer = RulesExt::Global()->GainSelfHealFromPlayerControl && isCampaign && (pOwner->IsHumanPlayer || pOwner->IsInPlayerControl);
 			const bool fromAllies = RulesExt::Global()->GainSelfHealFromAllies;
 
 			if (fromPlayer || fromAllies)
