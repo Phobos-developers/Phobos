@@ -2542,7 +2542,7 @@ In `rulesmd.ini`:
 KeepRange=0                       ; floating point value
 KeepRange.AllowAI=false           ; boolean
 KeepRange.AllowPlayer=false       ; boolean
-KeepRange.MaxRearmTimerAllowed=0  ; boolean
+KeepRange.MaxRearmTimerAllowed=0  ; integer
 ```
 
 ### Make units try turning to target when firing with `OmniFire=yes`
