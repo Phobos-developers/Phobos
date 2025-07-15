@@ -91,3 +91,40 @@ DEFINE_HOOK(0x51ECC0, InfantryClass_WhatAction_ObjectClass_IsAreaFire, 0xA)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x7093F8, TechnoClass_709290_DeployWeapon, 0x5)
+{
+	enum { ReturnTrue = 0x70944F, ReturnFalse = 0x709449 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (const auto pInfantry = abstract_cast<InfantryClass*>(pThis))
+	{
+		const int deployWeaponIdx = pInfantry->Type->DeployFireWeapon;
+
+		if (deployWeaponIdx >= 0)
+		{
+			const auto pWeaponStruct = pThis->GetWeapon(deployWeaponIdx);
+
+			if (pWeaponStruct && pWeaponStruct->WeaponType && pWeaponStruct->WeaponType->AreaFire && deployWeaponIdx == pThis->SelectWeapon(pThis->Target))
+				return ReturnFalse;
+		}
+		else
+		{
+			const auto pWeaponStruct = pThis->GetWeapon(pThis->SelectWeapon(pThis->Target));
+
+			if (pWeaponStruct && pWeaponStruct->WeaponType && pWeaponStruct->WeaponType->AreaFire)
+				return ReturnFalse;
+		}
+	}
+	else
+	{
+		const int weaponIdx = pThis->IsNotSprayAttack();
+		const auto pWeaponStruct = pThis->GetWeapon(weaponIdx);
+
+		if (pWeaponStruct && pWeaponStruct->WeaponType && pWeaponStruct->WeaponType->AreaFire && weaponIdx == pThis->SelectWeapon(pThis->Target))
+			return ReturnFalse;
+	}
+
+	return ReturnTrue;
+}
