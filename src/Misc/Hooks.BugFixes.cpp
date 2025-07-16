@@ -2304,8 +2304,8 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 
 static WeaponStruct* __fastcall InfantryClass__GetDeployWeapon_Wrapper(InfantryClass* pThis)
 {
-	int deployFireWeapon = pThis->Type->DeployFireWeapon;
-	int weaponIndex = deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon;
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+	const int weaponIndex = deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon;
 
 	return pThis->GetWeapon(weaponIndex);
 }

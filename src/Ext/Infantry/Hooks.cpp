@@ -98,7 +98,7 @@ DEFINE_HOOK(0x7093F8, TechnoClass_709290_DeployWeapon, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	if (const auto pInfantry = abstract_cast<InfantryClass*>(pThis))
+	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
 	{
 		const int deployWeaponIdx = pInfantry->Type->DeployFireWeapon;
 
