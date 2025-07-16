@@ -9,6 +9,7 @@
 #include <UnitClass.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/Macro.h>
+#include <Ext/Techno/Body.h>
 
 #include "Body.h"
 
@@ -102,6 +103,78 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 
 #pragma region draw_matrix
 
+struct BodyVoxelIndexKey
+{
+	unsigned bodyFrame : 5;
+	unsigned bodyFace : 5;
+	unsigned slopeIndex : 6;
+	unsigned isSpawnAlt : 1;
+	unsigned reserved : 15;
+};
+
+struct JumpjetTiltVoxelIndexKey
+{
+	unsigned bodyFrame : 5;
+	unsigned bodyFace : 5;
+	unsigned slopeIndex : 6;
+	unsigned isSpawnAlt : 1;
+	unsigned forwards : 7;
+	unsigned sideways : 7;
+	unsigned reserved : 1;
+};
+
+struct PhobosVoxelIndexKey
+{
+	union
+	{
+		int Value;
+		union
+		{
+			VoxelIndexKey Base;
+			BodyVoxelIndexKey Body;
+			// add other references here as needed
+		} BaseIndexKey;
+		union
+		{
+			JumpjetTiltVoxelIndexKey JumpjetTiltVoxel;
+			// add other definitions here as needed
+		} CustomIndexKey;
+	};
+
+	// add funcs here if needed
+	constexpr PhobosVoxelIndexKey(int val = 0) noexcept
+	{
+		Value = val;
+	}
+
+	constexpr operator int () const
+	{
+		return Value;
+	}
+
+	constexpr bool IsCleanKey() const
+	{
+		return Value == 0;
+	}
+
+	constexpr bool IsValidKey() const
+	{
+		return Value != -1;
+	}
+
+	constexpr void Invalidate()
+	{
+		Value = -1;
+	}
+
+	constexpr bool IsExtraBodyKey() const
+	{
+		return BaseIndexKey.Body.reserved != 0;
+	}
+};
+
+static_assert(sizeof(PhobosVoxelIndexKey) == sizeof(VoxelIndexKey), "PhobosVoxelIndexKey size mismatch");
+
 DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
@@ -138,7 +211,7 @@ namespace JumpjetTiltReference
 }
 
 // Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, int* pIndex)
+Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -153,10 +226,13 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
+	size_t arfFace = 0;
+	size_t arsFace = 0;
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		if (pIndex) *pIndex = -1;
+		if (key)
+			key->Invalidate();
 
 		if (onGround)
 		{
@@ -180,50 +256,89 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	}
 	else
 	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(linked->GetTechnoType());
+		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
 
-		if (pTypeExt->JumpjetTilt && !onGround && pThis->CurrentSpeed > 0.0
-			&& linked->IsAlive && linked->Health > 0 && !linked->IsAttackedByLocomotor)
+		if (pTypeExt->JumpjetTilt
+			&& !onGround
+			&& pThis->CurrentSpeed > 0.0
+			&& linked->WhatAmI() == AbstractType::Unit
+			&& linked->IsAlive
+			&& linked->Health > 0
+			&& !linked->IsAttackedByLocomotor)
 		{
-			const auto forwardSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor;
-			const auto forwardAccelFactor = pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor;
+			const float forwardSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor);
+			const float forwardAccelFactor = static_cast<float>(pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor);
 
-			arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
-				* JumpjetTiltReference::ForwardBaseTilt));
+			arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+				* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 
 			const auto& locoFace = pThis->LocomotionFacing;
 
 			if (locoFace.IsRotating())
 			{
-				const auto sidewaysSpeedFactor = pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor;
-				const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
-					* pTypeExt->JumpjetTilt_SidewaysRotationFactor;
+				const float sidewaysSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+				const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
+					* pTypeExt->JumpjetTilt_SidewaysRotationFactor);
 
-				ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+				ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+
+				const auto arsDir = DirStruct(ars);
+				arsFace = (arsDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+				if (arsFace)
+					ret->RotateX(static_cast<float>(arsDir.GetRadian<128>()));
 			}
 
-			if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
-			{
-				if (pIndex) *pIndex = -1;
+			const auto arfDir = DirStruct(arf);
+			arfFace = (arfDir.GetFacing<128>() + 96u) & 0x7Fu;
 
-				ret->RotateX(ars);
-				ret->RotateY(arf);
-			}
+			if (arfFace)
+				ret->RotateY(static_cast<float>(arfDir.GetRadian<128>()));
 		}
 	}
 
-	if (pIndex && *pIndex != -1)
+	if (key && key->IsValidKey())
 	{
-		if (onGround) *pIndex = slope_idx + (*pIndex << 6);
-		*pIndex *= 32;
-		*pIndex |= curf.GetFacing<32>();
+		// It is currently unclear whether the passed key only has two situations:
+		// all 0s and all 1s, so I use the safest approach for now
+		if (key->IsCleanKey() && (arfFace || arsFace))
+		{
+			key->CustomIndexKey.JumpjetTiltVoxel.forwards = arfFace;
+			key->CustomIndexKey.JumpjetTiltVoxel.sideways = arsFace;
+
+			if (onGround)
+				key->CustomIndexKey.JumpjetTiltVoxel.slopeIndex = slope_idx;
+
+			key->CustomIndexKey.JumpjetTiltVoxel.bodyFace = curf.GetFacing<32>();
+
+			// Outside the function, there is another step to add a frame number to the key for drawing
+			key->Value >>= 5;
+		}
+		else // Keep the original code
+		{
+			if (onGround)
+				key->Value = slope_idx + (key->Value << 6);
+
+			key->Value <<= 5;
+			key->Value |= curf.GetFacing<32>();
+		}
 	}
 
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
+DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
+{
+	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
+
+	// Main body drawing completed, then enable accurate drawing of turrets and barrels
+	if (key.IsValidKey() && key.IsExtraBodyKey()) // Flags used by JumpjetTilt units
+		key.Invalidate();
+
+	return 0;
+}
 
 // Visual bugfix : Teleport loco vxls could not tilt
 Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
@@ -430,24 +545,29 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_matrix.RotateY(arf);
 		shadow_matrix.RotateX(ars);
 	}
-	else if (jjloco && uTypeExt->JumpjetTilt && jjloco->State != JumpjetLocomotionClass::State::Grounded
-		&& jjloco->CurrentSpeed > 0.0 && pThis->IsAlive && pThis->Health > 0 && !pThis->IsAttackedByLocomotor)
+	else if (jjloco
+		&& uTypeExt->JumpjetTilt
+		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
+		&& jjloco->CurrentSpeed > 0.0
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->IsAttackedByLocomotor)
 	{
-		const auto forwardSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor;
-		const auto forwardAccelFactor = jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor;
+		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor);
+		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor);
 
-		arf += std::min(JumpjetTiltReference::MaxTilt, static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
-			* JumpjetTiltReference::ForwardBaseTilt));
+		arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+			* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 
 		const auto& locoFace = jjloco->LocomotionFacing;
 
 		if (locoFace.IsRotating())
 		{
-			const auto sidewaysSpeedFactor = jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor;
-			const auto sidewaysRotationFactor = static_cast<short>(locoFace.Difference().Raw)
-				* uTypeExt->JumpjetTilt_SidewaysRotationFactor;
+			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+			const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
+				* uTypeExt->JumpjetTilt_SidewaysRotationFactor);
 
-			ars += Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+			ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 		}
 
@@ -598,12 +718,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
+	AircraftTypeClass* pAircraftType = pThis->Type;
 	const auto loco = pThis->Locomotor.GetInterfacePtr();
-	if (pThis->Type->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
+
+	if (pAircraftType->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
+	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);
+
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pAircraftType);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
@@ -612,7 +736,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		if (RulesExt::Global()->HeightShadowScaling)
 		{
 			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pAircraftType->GetFlightLevel());
 
 			if (cHeight > 0)
 			{
@@ -621,14 +745,14 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 					key.Invalidate();
 			}
 		}
-		else if (pThis->Type->ConsideredAircraft)
+		else if (pAircraftType->ConsideredAircraft)
 		{
 			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 		}
 
 		double arf = pThis->AngleRotatedForwards;
-		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
-			arf += pThis->Type->PitchAngle;
+		if (flyLoco->CurrentSpeed > pAircraftType->PitchSpeed)
+			arf += pAircraftType->PitchAngle;
 		float ars = pThis->AngleRotatedSideways;
 		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
 			key.Invalidate();
@@ -645,16 +769,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix * shadow_mtx;
 
-	auto const main_vxl = &pThis->Type->MainVoxel;
+	auto const main_vxl = &pAircraftType->MainVoxel;
 	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
-		auto const shadow_index = pThis->Type->ShadowIndex;
+		auto const shadow_index = pAircraftType->ShadowIndex;
 		if (shadow_index >= 0 && shadow_index < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(main_vxl,
 				shadow_index,
 				key,
-				&pThis->Type->VoxelShadowCache,
+				&pAircraftType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
@@ -668,12 +792,12 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				index == pThis->Type->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
-				&pThis->Type->VoxelShadowCache,
+				index == pAircraftType->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
+				&pAircraftType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				index == pThis->Type->ShadowIndex,
+				index == pAircraftType->ShadowIndex,
 				nullptr,
 				{ 0, 0 }
 			);

@@ -88,11 +88,12 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
-	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
+	this->AttachedAnimPosition.Read(exINI, pID, "AttachedAnimPosition");
 	this->Weapon.Read<true>(exINI, pID, "Weapon");
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
 	this->Damage_ApplyOncePerLoop.Read(exINI, pID, "Damage.ApplyOncePerLoop");
+	this->Damage_ApplyFirepowerMult.Read(exINI, pID, "Damage.ApplyFirepowerMult");
 	this->ExplodeOnWater.Read(exINI, pID, "ExplodeOnWater");
 	this->Warhead_Detonate.Read(exINI, pID, "Warhead.Detonate");
 	this->WakeAnim.Read(exINI, pID, "WakeAnim");
@@ -146,11 +147,12 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
-		.Process(this->UseCenterCoordsIfAttached)
+		.Process(this->AttachedAnimPosition)
 		.Process(this->Weapon)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByInvoker)
 		.Process(this->Damage_ApplyOncePerLoop)
+		.Process(this->Damage_ApplyFirepowerMult)
 		.Process(this->ExplodeOnWater)
 		.Process(this->Warhead_Detonate)
 		.Process(this->WakeAnim)
@@ -235,7 +237,7 @@ DEFINE_HOOK(0x42898A, AnimTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x4287E9, AnimTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 {
 	GET(AnimTypeClass*, pItem, ESI);
@@ -243,4 +245,35 @@ DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 
 	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
+}
+
+namespace detail
+{
+	template <>
+	inline bool read<AttachedAnimPosition>(AttachedAnimPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "default") == 0)
+			{
+				value = AttachedAnimPosition::Default;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = AttachedAnimPosition::Center;
+			}
+			else if (_strcmpi(str, "ground") == 0)
+			{
+				value = AttachedAnimPosition::Ground;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected attached animation position type");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 }
