@@ -8,6 +8,7 @@
 #include <Ext/Techno/Body.h>
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Constructs.h>
+#include "AresHelper.h"
 
 bool GeneralUtils::IsValidString(const char* str)
 {
@@ -50,6 +51,7 @@ const wchar_t* GeneralUtils::LoadStringUnlessMissing(const char* key, const wcha
 std::vector<CellStruct> GeneralUtils::AdjacentCellsInRange(unsigned int range)
 {
 	std::vector<CellStruct> result;
+	result.reserve((2 * range + 1) * (2 * range + 1));
 
 	for (CellSpreadEnumerator it(range); it; ++it)
 		result.push_back(*it);
@@ -70,9 +72,24 @@ const double GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<double> 
 	return range.X >= range.Y || range.ValueCount < 2 ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
 }
 
-const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor ArmorType)
+struct VersesData
 {
-	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+	double Verses;
+	WarheadFlags Flags;
+};
+
+struct DummyTypeExtHere
+{
+	char _[0x24];
+	std::vector<VersesData> Verses;
+};
+
+const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, Armor armorType)
+{
+	if (!AresHelper::CanUseAres)
+		return pWH->Verses[static_cast<int>(armorType)];
+
+	return reinterpret_cast<DummyTypeExtHere*>(*(uintptr_t*)((char*)pWH + 0x1CC))->Verses[static_cast<int>(armorType)].Verses;
 }
 
 const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoClass* pThis, TechnoTypeClass* pType)
@@ -80,13 +97,13 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoCl
 	if (!pType)
 		pType = pThis->GetTechnoType();
 
-	auto ArmorType = pType->Armor;
+	auto armorType = pType->Armor;
 	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 
 	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
-		ArmorType = pShield->GetArmorType();
+		armorType = pShield->GetArmorType(pType);
 
-	return double(MapClass::GetTotalDamage(100, pWH, ArmorType, 0)) / 100.0;
+	return GeneralUtils::GetWarheadVersusArmor(pWH, armorType);
 }
 
 // Weighted random element choice (weight) - roll for one.
@@ -151,6 +168,7 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 std::string GeneralUtils::IntToDigits(int num)
 {
 	std::string digits;
+	digits.reserve(10); // 32-bit int max: 2,147,483,647 (10 digits)
 
 	if (num == 0)
 	{
