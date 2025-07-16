@@ -1597,6 +1597,7 @@ Skipping checks with this feature doesn't mean that vehicles and tank bunkers wi
 - `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
 - `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
 - It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.
+- You can also disable the slowdown completely by using the flag `SkipCrushSlowdown`. This is not the same as `CrushSlowdownMultiplier=1.0`. Used to avoid a bug where the vehicle sometimes loses speed when `Accelerates=true` and `MovementZone=CrushAll` are set.
 
 In `rulesmd.ini`:
 ```ini
@@ -1606,6 +1607,7 @@ TiltsWhenCrushes.Overlays=         ; boolean
 CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
 CrushSlowdownMultiplier=0.2        ; floating point value
+SkipCrushSlowdown=false            ; boolean
 ```
 
 ### Destroy animations

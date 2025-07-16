@@ -572,6 +572,7 @@ This page lists all the individual contributions to the project by their author.
   - Target scanning delay customization (code)
   - Skip target scanning function calling for unarmed technos (code)
   - Force techno targeting in distributed frames to improve performance
+  - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)
