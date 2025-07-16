@@ -17,14 +17,14 @@ class TracingTrajectoryType final : public VirtualTrajectoryType
 public:
 	TracingTrajectoryType() : VirtualTrajectoryType()
 		, TraceMode { TraceTargetMode::Connection }
-		, TraceTheTarget { true }
+		, TrackTarget { true }
 		, CreateAtTarget { false }
 		, StableRotation { false }
 		, ChasableDistance { Leptons(0) }
 	{ }
 
 	Valueable<TraceTargetMode> TraceMode;
-	Valueable<bool> TraceTheTarget;
+	Valueable<bool> TrackTarget;
 	Valueable<bool> CreateAtTarget;
 	Valueable<bool> StableRotation;
 	Valueable<Leptons> ChasableDistance;

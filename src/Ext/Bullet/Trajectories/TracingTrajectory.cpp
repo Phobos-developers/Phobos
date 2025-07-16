@@ -44,7 +44,7 @@ void TracingTrajectoryType::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->TraceMode)
-		.Process(this->TraceTheTarget)
+		.Process(this->TrackTarget)
 		.Process(this->CreateAtTarget)
 		.Process(this->StableRotation)
 		.Process(this->ChasableDistance)
@@ -75,7 +75,7 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.AllowFirerTurning");
 	// Tracing
 	this->TraceMode.Read(exINI, pSection, "Trajectory.Tracing.TraceMode");
-	this->TraceTheTarget.Read(exINI, pSection, "Trajectory.Tracing.TraceTheTarget");
+	this->TrackTarget.Read(exINI, pSection, "Trajectory.Tracing.TrackTarget");
 	this->CreateAtTarget.Read(exINI, pSection, "Trajectory.Tracing.CreateAtTarget");
 	this->StableRotation.Read(exINI, pSection, "Trajectory.Tracing.StableRotation");
 	this->ChasableDistance.Read(exINI, pSection, "Trajectory.Tracing.ChasableDistance");
@@ -122,7 +122,7 @@ bool TracingTrajectory::OnEarlyUpdate()
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
 	// Followed the launcher, but the launcher was destroyed
-	return !pType->TraceTheTarget && !pFirer;
+	return !pType->TrackTarget && !pFirer;
 }
 
 void TracingTrajectory::OnPreDetonate()
@@ -201,14 +201,14 @@ bool TracingTrajectory::ChangeVelocity()
 	// Special handling is required when the firer dies
 	if (!pFirer)
 	{
-		if (!pType->TraceTheTarget)
+		if (!pType->TrackTarget)
 			return true;
 
 		if (chaseRange >= 0)
 			this->AsPeacefulVanish = true;
 	}
 	// Confirm the center position of the tracing target
-	auto destination = pType->TraceTheTarget ? pBullet->TargetCoords : pFirer->GetCoords();
+	auto destination = pType->TrackTarget ? pBullet->TargetCoords : pFirer->GetCoords();
 	// Calculate the maximum separation distance
 	const auto pWeapon = pBullet->WeaponType;
 	const auto baseRange = chaseRange ? std::abs(chaseRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
@@ -235,7 +235,7 @@ bool TracingTrajectory::ChangeVelocity()
 		}
 		case TraceTargetMode::Body:
 		{
-			if (const auto pTechno = abstract_cast<TechnoClass*>(pType->TraceTheTarget ? pBullet->Target : pBullet->Owner))
+			if (const auto pTechno = abstract_cast<TechnoClass*>(pType->TrackTarget ? pBullet->Target : pBullet->Owner))
 			{
 				const auto rotateRadian = -(pTechno->PrimaryFacing.Current().GetRadian<32>());
 				// Rotate the body angle
@@ -251,7 +251,7 @@ bool TracingTrajectory::ChangeVelocity()
 		}
 		case TraceTargetMode::Turret:
 		{
-			if (const auto pTechno = abstract_cast<TechnoClass*>(pType->TraceTheTarget ? pBullet->Target : pBullet->Owner))
+			if (const auto pTechno = abstract_cast<TechnoClass*>(pType->TrackTarget ? pBullet->Target : pBullet->Owner))
 			{
 				const auto rotateRadian = (pTechno->HasTurret() ? -(pTechno->TurretFacing().GetRadian<32>()) : -(pTechno->PrimaryFacing.Current().GetRadian<32>()));
 				// Rotate the turret angle

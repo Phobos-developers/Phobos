@@ -1222,7 +1222,7 @@ Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value
     - Turret - Follow the turret. The F axis is the turret orientation of the tracking target.
     - RotateCW - Rotate clockwise. Rotate clockwise around the H axis with the resultant offset in the FL direction as the radius.
     - RotateCCW - Rotate counterclockwise. Rotate counterclockwise around the H axis with the resultant offset in the FL direction as the radius.
-  - `Trajectory.Tracing.TraceTheTarget` controls whether the target tracked by the projectile is the target of the projectile. Otherwise, it will trace the firer, and at the same time, the projectile will detonate if the firer dies.
+  - `Trajectory.Tracing.TrackTarget` controls whether the target tracked by the projectile is the target of the projectile. Otherwise, it will trace the firer, and at the same time, the projectile will detonate if the firer dies.
   - `Trajectory.Tracing.CreateAtTarget` controls whether the projectile is directly generated at the target position.
   - `Trajectory.Tracing.StableRotation` controls whether the projectile will automatically rotate at the same angle interval when `Trajectory.Tracing.TraceMode` is `RotateCW` or `RotateCCW`.
   - `Trajectory.Tracing.CreateCoord` controls the generate position. Not related to `Trajectory.Tracing.TraceMode`.
@@ -1232,7 +1232,7 @@ Trajectory.Parabola.BounceCoefficient=0.8  ; floating point value
 In `rulesmd.ini`:
 ```ini
 Trajectory.Tracing.TraceMode=Connection  ; TraceMode value enumeration (Connection|Global|Body|Turret|RotateCW|RotateCCW)
-Trajectory.Tracing.TraceTheTarget=true   ; boolean
+Trajectory.Tracing.TrackTarget=true      ; boolean
 Trajectory.Tracing.CreateAtTarget=false  ; boolean
 Trajectory.Tracing.StableRotation=false  ; boolean
 Trajectory.Tracing.CreateCoord=0,0,0     ; integer - Forward,Lateral,Height
@@ -1824,7 +1824,7 @@ Trajectory.CreateCapacity=3
 Trajectory.BulletROT=3
 Trajectory.BulletFacing=Target
 Trajectory.PeacefulVanish=yes
-Trajectory.Tracing.TraceTheTarget=no
+Trajectory.Tracing.TrackTarget=no
 Trajectory.Tracing.AttachCoord=520,0,400
 Trajectory.Synchronize=yes
 Trajectory.DisperseCoord=100,0,0
@@ -1855,7 +1855,6 @@ Image=SOMEIMAGET1
 Trajectory=Tracing
 Trajectory.Tracing.TraceMode=RotateCCW
 Trajectory.Tracing.StableRotation=yes
-Trajectory.Tracing.TraceTheTarget=yes
 Trajectory.Tracing.AttachCoord=640,0,500
 Trajectory.Tracing.ChasableDistance=10
 Trajectory.Synchronize=yes
