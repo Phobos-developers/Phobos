@@ -269,7 +269,7 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 #pragma region TechnoClass_GetFireError
 DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 {
-	enum { CannotFire = 0x6FCB7E, TemporarilyCannotFire = 0x6FC0DF };
+	enum { CannotFire = 0x6FCB7E, TemporarilyCannotFire = 0x6FCD0E };
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(WeaponTypeClass*, pWeapon, EDI);
@@ -354,7 +354,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			pFirerExt->TrajectoryGroup = std::make_shared<PhobosMap<DWORD, PhobosTrajectory::GroupData>>();
 
 		if (pTrajType->CreateCapacity <= static_cast<int>((*pFirerExt->TrajectoryGroup)[pBulletType->UniqueID].Bullets.size()))
-			return TemporarilyCannotFire;
+			return (pWeapon->Damage >= 0 || (pTargetTechno && pTargetTechno->GetHealthPercentage() < RulesClass::Instance->unknown_double_16F8)) ? TemporarilyCannotFire : CannotFire;
 	}
 
 	return 0;
