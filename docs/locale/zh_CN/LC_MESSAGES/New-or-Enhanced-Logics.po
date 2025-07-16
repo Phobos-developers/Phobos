@@ -7454,7 +7454,7 @@ msgid ""
 "`FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is "
 "reset when its target changes. Forced to be `yes` when there is no "
 "target."
-msgstr "`FireUp.ResetInRetarget` 决定当前载具目标改变时其前摇是否重置。当没有目标时该参数强制 `yes`。"
+msgstr "`FireUp.ResetInRetarget` 决定当前载具目标改变时其前摇是否重置。失去目标强制重置。"
 
 #: ../../New-or-Enhanced-Logics.md:2056
 msgid ""
