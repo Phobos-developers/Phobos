@@ -106,16 +106,16 @@ Every maintenance crew member is welcome to put a donation link to their entry i
 - **@Starkku** - T2 maintainer
   - [Patreon](https://www.patreon.com/Starkku)
 - **@CrimRecya (绯红热茶)** - T2 maintainer
-  - [Alipay](images/Donation-CrimRecya.jpg)
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)
 - **@ZivDero** - T2 maintainer
   - [Patreon](https://www.patreon.com/c/ZivDero)
 - **Ollerus (@Coronia)** - T1 maintainer
 - **@NetsuNegi** - T1 maintainer
-  - [Alipay](images/Donation-NetsuNegi.jpg)
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)
 - **@TaranDahl (航味麻酱)** - T1 maintainer
-  - [WeChatPay](images/Donation-TaranDahl.jpg)
+  - [WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)
 - **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
-  - [Alipay](images/Donation-DeathFish.jpg)
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)
 - **FlyStar (@Fly-Star-him)** - triage
 - **@Fryone** - triage
 

@@ -615,8 +615,8 @@ msgid "**@CrimRecya (绯红热茶)** - T2 maintainer"
 msgstr "**@CrimRecya（绯红热茶）** - T2 维护者"
 
 #: ../../../README.md:110
-msgid "[Alipay](images/Donation-CrimRecya.jpg)"
-msgstr "[支付宝](images/Donation-CrimRecya.jpg)"
+msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)"
+msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)"
 
 #: ../../../README.md:111
 msgid "**@ZivDero** - T2 maintainer"
@@ -635,24 +635,24 @@ msgid "**@NetsuNegi** - T1 maintainer"
 msgstr "**@NetsuNegi** - T1 维护者"
 
 #: ../../../README.md:115
-msgid "[Alipay](images/Donation-NetsuNegi.jpg)"
-msgstr "[支付宝](images/Donation-NetsuNegi.jpg)"
+msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)"
+msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)"
 
 #: ../../../README.md:116
 msgid "**@TaranDahl (航味麻酱)** - T1 maintainer"
 msgstr "**@TaranDahl（航味麻酱）** - T1 维护者"
 
 #: ../../../README.md:117
-msgid "[WeChatPay](images/Donation-TaranDahl.jpg)"
-msgstr "[微信](images/Donation-TaranDahl.jpg)"
+msgid "[WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
+msgstr "[微信](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
 
 #: ../../../README.md:118
 msgid "**DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer"
 msgstr "**DeathFish（@DeathFishAtEase, Noble Fish）** - 分派、文档维护者"
 
 #: ../../../README.md:119
-msgid "[Alipay](images/Donation-DeathFish.jpg)"
-msgstr "[支付宝](images/Donation-DeathFish.jpg)"
+msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)"
+msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)"
 
 #: ../../../README.md:120
 msgid "**FlyStar (@Fly-Star-him)** - triage"
