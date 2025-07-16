@@ -630,6 +630,9 @@ msgstr "[Patreon](https://www.patreon.com/c/ZivDero)"
 msgid "**Ollerus (@Coronia)** - T1 maintainer"
 msgstr "**Ollerus (@Coronia)** - T1 维护者"
 
+msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
+msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
+
 #: ../../../README.md:114
 msgid "**@NetsuNegi** - T1 maintainer"
 msgstr "**@NetsuNegi** - T1 维护者"

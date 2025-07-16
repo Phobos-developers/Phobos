@@ -110,6 +110,7 @@ Every maintenance crew member is welcome to put a donation link to their entry i
 - **@ZivDero** - T2 maintainer
   - [Patreon](https://www.patreon.com/c/ZivDero)
 - **Ollerus (@Coronia)** - T1 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)
 - **@NetsuNegi** - T1 maintainer
   - [Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)
 - **@TaranDahl (航味麻酱)** - T1 maintainer
