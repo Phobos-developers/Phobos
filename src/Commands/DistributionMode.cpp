@@ -143,20 +143,6 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 		const auto mode2 = Phobos::Config::DistributionFilterMode;
 		const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
 
-		auto isEnterGrinder = [mouseAction](TechnoClass* pTechno)
-			{
-				if (mouseAction != Action::Enter)
-					return false;
-
-				if (const auto pBuilding = abstract_cast<BuildingClass*, true>(pTechno))
-				{
-					if (pBuilding->Type->Grinding)
-						return true;
-				}
-
-				return false;
-			};
-
 		// Distribution mode main
 		if (DistributionModeHoldDownCommandClass::Enabled
 			&& mode1
@@ -166,7 +152,7 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 			&& pTechno
 			&& !pTarget->IsInAir()
 			&& (HouseClass::CurrentPlayer->IsAlliedWith(pTechno->Owner)
-				? (Phobos::Config::AllowDistributionCommand_AffectsAllies && !isEnterGrinder(pTechno))
+				? Phobos::Config::AllowDistributionCommand_AffectsAllies
 				: Phobos::Config::AllowDistributionCommand_AffectsEnemies))
 		{
 			VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
@@ -223,7 +209,6 @@ DEFINE_HOOK(0x4AE818, DisplayClass_sub_4AE750_AutoDistribution, 0xA)
 
 					if (pSelect->MouseOverObject(pItem) == mouseAction
 						&& (targetIsNeutral || !pItem->Owner->IsNeutral())
-						&& !isEnterGrinder(pItem)
 						&& (mode2 < 2 || (pItem->WhatAmI() == pTarget->WhatAmI()
 							&& (mode2 < 3 || TechnoTypeExt::GetSelectionGroupID(pItem->GetTechnoType()) == TechnoTypeExt::GetSelectionGroupID(pTarget->GetTechnoType())))))
 					{
