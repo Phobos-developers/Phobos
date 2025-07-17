@@ -351,12 +351,63 @@ DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x5885D1, MapClass_BuildingToFirestormWall_SkipExtraWalls, 0x6)
+{
+	enum { NextDirection = 0x588730 };
+
+	GET_STACK(const HouseClass* const, pHouse, STACK_OFFSET(0x38, 0x8));
+	GET_STACK(const int, count, STACK_OFFSET(0x38, -0x24));
+
+	if (pHouse->IsControlledByHuman() || !RulesExt::Global()->AINodeWallsOnly || count)
+		return 0;
+
+	GET(const CellStruct, cell, EBX);
+	GET(const BuildingTypeClass* const, pType, EBP);
+
+	const auto index = pType->ArrayIndex;
+	const auto& nodes = pHouse->Base.BaseNodes;
+
+	for (const auto& pNode : nodes)
+	{
+		if (pNode.MapCoords == cell && pNode.BuildingTypeIndex == index)
+			return 0;
+	}
+
+	return NextDirection;
+}
+
+DEFINE_HOOK(0x5887C1, MapClass_BuildingToWall_SkipExtraWalls, 0x6)
+{
+	enum { NextDirection = 0x588935 };
+
+	GET_STACK(const HouseClass* const, pHouse, STACK_OFFSET(0x3C, 0x8));
+	GET_STACK(const int, count, STACK_OFFSET(0x3C, -0x2C));
+
+	if (pHouse->IsControlledByHuman() || !RulesExt::Global()->AINodeWallsOnly || count)
+		return 0;
+
+	GET(const CellStruct, cell, EDX);
+	GET(const BuildingTypeClass* const, pType, EDI);
+
+	const auto index = pType->ArrayIndex;
+	const auto& nodes = pHouse->Base.BaseNodes;
+
+	for (const auto& pNode : nodes)
+	{
+		if (pNode.MapCoords == cell && pNode.BuildingTypeIndex == index)
+			return 0;
+	}
+
+	return NextDirection;
+}
+
 DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 {
-	enum { BuildFailed = 0x445696 };
+	enum { CanNotBuild = 0x4454E6, BuildFailed = 0x445696 };
 
 	GET(BaseNodeClass* const, pBaseNode, EBX);
 	GET(BuildingClass* const, pBuilding, EDI);
+	GET(const CellStruct, topLeftCell, EDX);
 
 	const auto pBuildingType = pBuilding->Type;
 
@@ -369,6 +420,28 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 		}
 
 		return BuildFailed;
+	}
+
+	if (RulesExt::Global()->AICleanWallNode && pBuildingType->Wall)
+	{
+		auto notValidWallNode = [topLeftCell]()
+			{
+				const auto pCell = MapClass::Instance.GetCellAt(topLeftCell);
+
+				for (int i = 0; i < 8; ++i)
+				{
+					if (const auto pAdjBuilding = pCell->GetNeighbourCell(static_cast<FacingType>(i))->GetBuilding())
+					{
+						if (pAdjBuilding->Type->ProtectWithWall)
+							return false;
+					}
+				}
+
+				return true;
+			};
+
+		if (notValidWallNode())
+			return CanNotBuild;
 	}
 
 	return 0;
