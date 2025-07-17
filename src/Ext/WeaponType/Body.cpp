@@ -133,7 +133,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepRange.Read(exINI, pSection, "KeepRange");
 	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
 	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
-	this->KeepRange_MaxRearmTimerAllowed.Read(exINI, pSection, "KeepRange.MaxRearmTimerAllowed");
+	this->KeepRange_EarlyStopFrame.Read(exINI, pSection, "KeepRange.EarlyStopFrame");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
 	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
 	this->Beam_Duration.Read(exINI, pSection, "Beam.Duration");
@@ -214,7 +214,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepRange)
 		.Process(this->KeepRange_AllowAI)
 		.Process(this->KeepRange_AllowPlayer)
-		.Process(this->KeepRange_MaxRearmTimerAllowed)
+		.Process(this->KeepRange_EarlyStopFrame)
 		.Process(this->KickOutPassengers)
 		.Process(this->Beam_Color)
 		.Process(this->Beam_Duration)
@@ -393,7 +393,7 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 		return 0;
 	}
 
-	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_MaxRearmTimerAllowed)
+	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_EarlyStopFrame)
 		return 0;
 
 	if (!pFirer->RearmTimer.InProgress())
