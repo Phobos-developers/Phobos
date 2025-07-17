@@ -43,6 +43,7 @@ public:
 		Valueable<double> CanTarget_MinHealth;
 		ValueableVector<int> Burst_Delays;
 		Valueable<bool> Burst_FireWithinSequence;
+		Valueable<bool> Burst_NoDelay;
 		Valueable<AreaFireTarget> AreaFire_Target;
 		Valueable<WeaponTypeClass*> FeedbackWeapon;
 		Valueable<bool> Laser_IsSingleColor;
@@ -70,6 +71,7 @@ public:
 		Valueable<Leptons> KeepRange;
 		Valueable<bool> KeepRange_AllowAI;
 		Valueable<bool> KeepRange_AllowPlayer;
+		Valueable<int> KeepRange_EarlyStopFrame;
 		Valueable<bool> KickOutPassengers;
 		Nullable<ColorStruct> Beam_Color;
 		Valueable<int> Beam_Duration;
@@ -111,6 +113,7 @@ public:
 			, CanTarget_MinHealth { 0.0 }
 			, Burst_Delays {}
 			, Burst_FireWithinSequence { false }
+			, Burst_NoDelay { false }
 			, AreaFire_Target { AreaFireTarget::Base }
 			, FeedbackWeapon {}
 			, Laser_IsSingleColor { false }
@@ -138,6 +141,7 @@ public:
 			, KeepRange { Leptons(0) }
 			, KeepRange_AllowAI { false }
 			, KeepRange_AllowPlayer { false }
+			, KeepRange_EarlyStopFrame { 0 }
 			, KickOutPassengers { true }
 			, Beam_Color {}
 			, Beam_Duration { 15 }
