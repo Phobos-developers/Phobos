@@ -318,16 +318,17 @@ DEFINE_HOOK(0x422BF1, AnimClass_GetCoords_AttachedAnimPosition, 0x5)
 {
 	enum { ReturnResult = 0x422C31 };
 
-	GET(AnimClass*, pThis, ESI);
+	GET(AnimClass*, pThis, EDI);
 	GET_STACK(CoordStruct*, retValue, STACK_OFFSET(0x20, 0x4));
 
 	auto const pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const position = pExt->AttachedAnimPosition.Get();
 
-	if (pExt->AttachedAnimPosition != AttachedAnimPosition::Default)
+	if (position != AttachedAnimPosition::Default)
 	{
-		auto coords = pThis->OwnerObject->GetCenterCoords() + pThis->Location;
+		auto coords = pThis->OwnerObject->GetCoords() + pThis->Location;
 
-		if (pExt->AttachedAnimPosition == AttachedAnimPosition::Ground)
+		if (position == AttachedAnimPosition::Ground)
 			coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
 
 		*retValue = coords;

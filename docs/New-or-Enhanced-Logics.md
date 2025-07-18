@@ -3600,13 +3600,15 @@ FeedbackWeapon=  ; WeaponType
   - `KeepRange` controls how long the distance to maintain when the techno's ROF timer is ticking. What is actually read is its absolute value. If it is a positive value, it will be stayed outside this distance, just like it has a special `MinimumRange` after firing. If it is a negative value, it will be kept as close as possible to this distance, just like it has a special `Range` after firing. In addition, if the effective range section is too small, it will be considered unable to fire. It is best to have an effective range of 1.0, and 2.0 is best for Infantry.
     - `KeepRange.AllowAI` controls whether this function is effective for computer.
     - `KeepRange.AllowPlayer` controls whether this function is effective for human.
+    - The function won't take effect if the techno's rearm time left is shorter than `KeepRange.EarlyStopFrame`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                 ; WeaponType
-KeepRange=0                  ; floating point value
-KeepRange.AllowAI=false      ; boolean
-KeepRange.AllowPlayer=false  ; boolean
+[SOMEWEAPON]                  ; WeaponType
+KeepRange=0                   ; floating point value
+KeepRange.AllowAI=false       ; boolean
+KeepRange.AllowPlayer=false   ; boolean
+KeepRange.EarlyStopFrame=0    ; integer
 ```
 
 ### Make units try turning to target when firing with `OmniFire=yes`
