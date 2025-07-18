@@ -1918,7 +1918,7 @@ msgid ""
 "A TechnoType with a shield will show its shield Strength. An empty shield"
 " strength bar will be left after destroyed if it is respawnable. Several "
 "customizations are available for the shield strength pips."
-msgstr "拥有护盾的科技类型将显示其护盾值。若护盾可以重生则会在被击碎后留下一个空的胡盾条。对于护盾条的 pip 有多种自定义选项可选。"
+msgstr "拥有护盾的科技类型将显示其护盾值。若护盾可以重生则会在被击碎后留下一个空的护盾条。对于护盾条的 pip 有多种自定义选项可选。"
 
 #: ../../New-or-Enhanced-Logics.md:442
 msgid ""

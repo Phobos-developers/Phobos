@@ -5521,7 +5521,7 @@ msgid ""
 " to harvest mission. Now you can make them perform area guard mission "
 "normally like other technos."
 msgstr ""
-"在原版中档一个矿车进入 `Area Guard` 任务时会立即切换为 `Havrest` 任务。现在你可以让它们像其他单位那样正常执行 `Area"
+"在原版中当一个矿车进入 `Area Guard` 任务时会立即切换为 `Havrest` 任务。现在你可以让它们像其他单位那样正常执行 `Area"
 " Guard` 任务了。"
 
 #: ../../Fixed-or-Improved-Logics.md:1567
