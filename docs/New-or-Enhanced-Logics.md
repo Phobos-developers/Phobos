@@ -1543,7 +1543,7 @@ AG=yes
 SubjectToCliffs=no
 SubjectToElevation=no
 SubjectToWalls=no
-Image=RROCKET
+Image=SOMEIMAGEI1
 Trajectory=Missile
 Trajectory.Missile.UniqueCurve=yes
 ```
@@ -1654,8 +1654,8 @@ Trajectory.Speed=200.0
 ````
 
 ````{note}
-> Trajectory_Demo_N_Image_Placeholder
-> The assets of the case come from mod *???*.
+> ![Trajectory-Demo-N](_static/images/Trajectory-Demo-N.gif)
+> The assets of the case come from mod *Light Cone*.
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEN1]
 AA=no
@@ -1806,8 +1806,8 @@ Gravity=15.0
 ````
 
 ````{note}
-> Trajectory_Demo_S_Image_Placeholder
-> The assets of the case come from mod *???*.
+> ![Trajectory-Demo-S](_static/images/Trajectory-Demo-S.gif)
+> The assets of the case come from an unreleased mod *Horizon*.
 ```{dropdown} Click to show ini
 [SOMEPROJECTILES1]
 AA=no
@@ -1818,26 +1818,48 @@ SubjectToWalls=no
 Image=SOMEIMAGES1
 Trajectory=Tracing
 Trajectory.Tracing.TraceMode=RotateCW
+Trajectory.Tracing.StableRotation=yes
+Trajectory.Tracing.TrackTarget=no
+Trajectory.Tracing.AttachCoord=520,0,-200
 Trajectory.Duration=-1
 Trajectory.TolerantTime=30
 Trajectory.CreateCapacity=3
-Trajectory.BulletROT=3
+Trajectory.BulletROT=-3
 Trajectory.BulletFacing=Target
 Trajectory.PeacefulVanish=yes
-Trajectory.Tracing.TrackTarget=no
-Trajectory.Tracing.AttachCoord=520,0,400
 Trajectory.Synchronize=yes
 Trajectory.DisperseCoord=100,0,0
 Trajectory.DisperseFromFirer=no
 Trajectory.DisperseWeapons=SOMEWEAPONS2
-Trajectory.DisperseBursts=1
+Trajectory.DisperseBursts=2
 Trajectory.DisperseCounts=-1
-Trajectory.DisperseDelays=18
-Trajectory.DisperseInitialDelay=30
+Trajectory.DisperseDelays=40
 Trajectory.DisperseCycle=1
+Trajectory.DisperseRetarget=yes
+Trajectory.DisperseTendency=yes
 Trajectory.DisperseFaceCheck=yes
 Trajectory.DisperseForceFire=no
 Trajectory.Speed=30.0
+
+[SOMEPROJECTILES2]
+AA=yes
+AG=yes
+SubjectToCliffs=no
+SubjectToElevation=no
+SubjectToWalls=no
+Image=SOMEIMAGES2
+Trajectory=Missile
+Trajectory.Missile.PreAimCoord=0,0,-50
+Trajectory.Missile.ReduceCoord=no
+Trajectory.Missile.LaunchSpeed=50
+Trajectory.Missile.Acceleration=5
+Trajectory.Missile.TurningSpeed=12
+Trajectory.Missile.RetargetRadius=2.5
+Trajectory.Missile.CruiseEnable=yes
+Trajectory.Missile.CruiseUnableRange=3.0
+Trajectory.Missile.CruiseAltitude=450
+Trajectory.Missile.CruiseAlongLevel=yes
+Trajectory.Speed=90.0
 ```
 ````
 
