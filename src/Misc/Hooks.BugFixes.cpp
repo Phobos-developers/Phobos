@@ -2186,6 +2186,25 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x71B151, TemporalClass_Fire_ReleaseTargetTarget, 0x6)
+{
+	GET(TechnoClass*, pTarget, ECX);
+	const auto pTargetType = pTarget->GetTechnoType();
+
+	if (pTargetType->OpenTopped)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			const auto pTemporal = pPassenger->TemporalImUsing;
+
+			if (pTemporal && pTemporal->Target)
+				pTemporal->LetGo();
+		}
+	}
+
+	return 0;
+}
+
 #pragma region InfantryDeployFireWeaponFix
 
 DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)

@@ -228,6 +228,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Player-controlled spies are not forced to perform other tasks while attacking buildings.
 - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
 - Fixed an unusual use of DeployFireWeapon for InfantryType.
+- Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead.
 
 ## Fixes / interactions with other extensions
 

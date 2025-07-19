@@ -381,6 +381,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
+  - Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
