@@ -2262,6 +2262,25 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x71B151, TemporalClass_Fire_ReleaseTargetTarget, 0x6)
+{
+	GET(TechnoClass*, pTarget, ECX);
+	const auto pTargetType = pTarget->GetTechnoType();
+
+	if (pTargetType->OpenTopped)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			const auto pTemporal = pPassenger->TemporalImUsing;
+
+			if (pTemporal && pTemporal->Target)
+				pTemporal->LetGo();
+		}
+	}
+
+	return 0;
+}
+
 // Jul 5, 2025 - Starkku: Fixes Vertical=true projectiles for AircraftTypes (also makes sure parabombs work correctly)
 DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 {
