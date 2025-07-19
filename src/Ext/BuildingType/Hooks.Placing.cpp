@@ -155,7 +155,8 @@ static inline bool IsSameFenceType(const BuildingTypeClass* const pPostType, con
 	return true;
 }
 
-static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* const pOwner, bool expand, bool& skipFlag, bool& builtOnCanBeBuiltOn, bool& landFootOnly)
+static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* const pOwner,
+	bool expand, bool& skipFlag, bool& builtOnCanBeBuiltOn, bool& landFootOnly, bool canBuildUnderUnits)
 {
 	if (pTechno == TechnoExt::Deployer)
 	{
@@ -165,7 +166,7 @@ static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* co
 
 	const auto pTechnoType = pTechno->GetTechnoType();
 
-	if (TechnoTypeExt::ExtMap.Find(pTechnoType)->CanBeBuiltOn)
+	if (canBuildUnderUnits || TechnoTypeExt::ExtMap.Find(pTechnoType)->CanBeBuiltOn)
 		builtOnCanBeBuiltOn = true;
 	else if (!expand || pTechnoType->Speed <= 0 || !BuildingTypeExt::CheckOccupierCanLeave(pOwner, pTechno->Owner))
 		return true;
@@ -192,7 +193,8 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	if (!Game::IsActive)
 		return CanExistHere;
 
-	const auto expand = RulesExt::Global()->ExtendedBuildingPlacing.Get();
+	const bool expand = RulesExt::Global()->ExtendedBuildingPlacing.Get();
+	const bool canBuildUnderUnits = BuildingTypeExt::ExtMap.Find(pBuildingType)->CanBuildUnderUnits.Get();
 	bool landFootOnly = false;
 
 	if (pBuildingType->LaserFence)
@@ -235,7 +237,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			{
 				case AbstractType::Aircraft:
 				{
-					if (!TechnoTypeExt::ExtMap.Find(static_cast<AircraftClass*>(pObject)->Type)->CanBeBuiltOn)
+					if (!canBuildUnderUnits && !TechnoTypeExt::ExtMap.Find(static_cast<AircraftClass*>(pObject)->Type)->CanBeBuiltOn)
 						return CanNotExistHere;
 
 					builtOnCanBeBuiltOn = true;
@@ -260,7 +262,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 				case AbstractType::Infantry:
 				case AbstractType::Unit:
 				{
-					if (CheckCanNotExistHere(static_cast<FootClass*>(pObject), pOwner, expand, skipFlag, builtOnCanBeBuiltOn, landFootOnly))
+					if (CheckCanNotExistHere(static_cast<FootClass*>(pObject), pOwner, expand, skipFlag, builtOnCanBeBuiltOn, landFootOnly, canBuildUnderUnits))
 						return CanNotExistHere;
 
 					break;
@@ -316,6 +318,15 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 			switch (pObject->WhatAmI())
 			{
 				case AbstractType::Aircraft:
+				{
+					if (canBuildUnderUnits)
+					{
+						builtOnCanBeBuiltOn = true;
+						break;
+					}
+
+					// No break
+				}
 				case AbstractType::Building:
 				{
 					if (!TechnoTypeExt::ExtMap.Find(pObject->GetTechnoType())->CanBeBuiltOn)
@@ -328,7 +339,7 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 				case AbstractType::Infantry:
 				case AbstractType::Unit:
 				{
-					if (CheckCanNotExistHere(static_cast<FootClass*>(pObject), pOwner, expand, skipFlag, builtOnCanBeBuiltOn, landFootOnly))
+					if (CheckCanNotExistHere(static_cast<FootClass*>(pObject), pOwner, expand, skipFlag, builtOnCanBeBuiltOn, landFootOnly, canBuildUnderUnits))
 						return CanNotExistHere;
 
 					break;

@@ -680,6 +680,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PlaceBuilding_DirectionShape.Read(exINI, pSection, "PlaceBuilding.DirectionShape");
 	this->PlaceBuilding_DirectionPalette.LoadFromINI(pINI, pSection, "PlaceBuilding.DirectionPalette");
 	this->PlaceBuilding_Extra.Read(exINI, pSection, "PlaceBuilding.Extra");
+	this->CanBuildUnderUnits.Read(exINI, pSection, "CanBuildUnderUnits");
 
 	this->FactoryPlant_AllowTypes.Read(exINI, pSection, "FactoryPlant.AllowTypes");
 	this->FactoryPlant_DisallowTypes.Read(exINI, pSection, "FactoryPlant.DisallowTypes");
@@ -830,6 +831,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PlaceBuilding_DirectionShape)
 		.Process(this->PlaceBuilding_DirectionPalette)
 		.Process(this->PlaceBuilding_Extra)
+		.Process(this->CanBuildUnderUnits)
 		.Process(this->AircraftDockingDirs)
 		.Process(this->FactoryPlant_AllowTypes)
 		.Process(this->FactoryPlant_DisallowTypes)
