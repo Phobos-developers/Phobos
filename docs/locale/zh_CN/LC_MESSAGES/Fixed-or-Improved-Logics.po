@@ -2003,16 +2003,18 @@ msgid ""
 "You can now customize position of attached animations via different "
 "values for `AttachedAnimPosition`."
 msgstr ""
+"现在你可以通过为 `AttachedAnimPosition` 设置不同的值来自定义附着动画显示的位置。"
 
 #: ../../Fixed-or-Improved-Logics.md:362
 msgid ""
 "`default`: Animation shows up at the parent object's logical position "
 "(for buildings, this is the top-leftmost cell / cell #0)."
 msgstr ""
+"`default`：动画显示在父对象的逻辑中心（对于建筑，这是最上方的 0 号单元格）。"
 
 #: ../../Fixed-or-Improved-Logics.md:363
 msgid "`center`: Animation shows up at the parent object's visual center."
-msgstr ""
+msgstr "`center`：动画显示在父对象的视觉中心。"
 
 #: ../../Fixed-or-Improved-Logics.md:364
 msgid ""
@@ -2021,15 +2023,16 @@ msgid ""
 "attached to the object and is likely to be drawn above objects that the "
 "object itself would cover unless other settings are used to compensate."
 msgstr ""
+"`ground`：动画显示在父对象视觉中心正下方所对应的地面。注意该动画仍被视为附着于对象，因此如果不通过其他设置进行调整的话该动画的图层可能在该对象本应覆盖的其他对象之上。"
 
 #: ../../Fixed-or-Improved-Logics.md:367
 msgid ""
 "[SOMEANIM]                   ; AnimationType\n"
-"AttachedAnimPosition=object  ; Attached animation position enumeration "
+"AttachedAnimPosition=default ; Attached animation position enumeration "
 "(default|center|ground)\n"
 msgstr ""
 "[SOMEANIM]                   ; AnimationType\n"
-"AttachedAnimPosition=object  ; Attached animation position enumeration "
+"AttachedAnimPosition=default ; Attached animation position enumeration "
 "(default|center|ground)\n"
 
 #: ../../Fixed-or-Improved-Logics.md:372 ../../Fixed-or-Improved-Logics.md:1875

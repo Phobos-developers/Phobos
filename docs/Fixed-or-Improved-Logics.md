@@ -366,7 +366,7 @@ Damage.ApplyFirepowerMult=false ; boolean
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                   ; AnimationType
-AttachedAnimPosition=object  ; Attached animation position enumeration (default|center|ground)
+AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
