@@ -5656,6 +5656,8 @@ msgid ""
 "sometimes loses speed when `Accelerates=true` and `MovementZone=CrushAll`"
 " are set."
 msgstr ""
+"你还可以使用 `SkipCrushSlowdown` 来完全禁用这一减速效果。这不同于 `CrushSlowdownMultiplier=1.0`。"
+"它可以避免 `Accelerates=true` 与 `MovementZone=CrushAll` 共用时单位有时会减速的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:1603
 msgid ""

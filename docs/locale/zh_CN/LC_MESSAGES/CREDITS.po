@@ -2331,6 +2331,7 @@ msgid ""
 "Use `SkipCrushSlowdown=true` to avoid the bug related to "
 "`Accelerates=true` and `MovementZone=CrushAll`"
 msgstr ""
+"使用 `SkipCrushSlowdown=true` 来避免 `Accelerates=true` 与 `MovementZone=CrushAll` 相关的 Bug"
 
 #: ../../../CREDITS.md:577
 msgid "**solar-III (凤九歌)**"

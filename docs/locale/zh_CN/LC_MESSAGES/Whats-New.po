@@ -1824,6 +1824,7 @@ msgid ""
 "Use `SkipCrushSlowdown=true` to avoid the bug related to "
 "`Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)"
 msgstr ""
+"使用 `SkipCrushSlowdown=true` 来避免 `Accelerates=true` 与 `MovementZone=CrushAll` 相关的 Bug（by TaranDahl）"
 
 #: ../../Whats-New.md:429 ../../Whats-New.md:620 ../../Whats-New.md:964
 #: ../../Whats-New.md:1073 ../../Whats-New.md:1098 ../../Whats-New.md:1137
