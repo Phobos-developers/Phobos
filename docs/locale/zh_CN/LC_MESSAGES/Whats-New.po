@@ -1910,6 +1910,7 @@ msgid ""
 "Fixed the bug that passengers' Temporal attacks wouldn't stop when an "
 "OpenTopped vehicle was frozen by a Temporal warhead (by NetsuNegi)"
 msgstr ""
+"修复了即便 `OpenTopped` 载具被超时空弹头冻结其乘客的超时空武器攻击也不会停止的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:443 ../../Whats-New.md:756 ../../Whats-New.md:837
 #: ../../Whats-New.md:1001 ../../Whats-New.md:1042 ../../Whats-New.md:1054
