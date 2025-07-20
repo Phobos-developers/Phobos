@@ -3585,6 +3585,13 @@ msgstr "如果你将 `Crit.Warhead` 设为定义暴击的弹头或者创建一�
 msgid "Convert TechnoType on impact"
 msgstr "单位转换弹头"
 
+msgid ""
+"![image](_static/images/convertwh.gif) "
+"*Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)*"
+msgstr ""
+"![image](_static/images/convertwh.gif) "
+"*[NanodaSupercalifragilisticexpialidocious](https://www.bilibili.com/opus/896077937747427433) 中的载具版基因突变*"
+
 #: ../../New-or-Enhanced-Logics.md:1445
 msgid ""
 "In example, this warhead would convert all affected owned and friendly "

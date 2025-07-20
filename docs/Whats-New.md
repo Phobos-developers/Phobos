@@ -597,9 +597,9 @@ Vanilla fixes:
 - Fixed the bug that ships can travel on elevated bridges (by NetsuNegi)
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it (by NetsuNegi)
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes` (by FlyStar)
-- Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case (by CrimRecya)
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce (by NetsuNegi)
-- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
+- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by CrimRecya)
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target (by TaranDahl)
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually (by CrimRecya)
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory (by CrimRecya)
@@ -680,7 +680,7 @@ Fixes / interactions with other extensions:
 - Fixed Ares' InitialPayload not being created for vehicles spawned by trigger actions (by Trsdy)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully (by FlyStar)
-- Fixed the issue where some units crashed after the deployment transformation (by ststl, FlyStar)
+- Fixed an issue where some units crashed after the deployment transformation (by ststl & FlyStar)
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 ```
 
