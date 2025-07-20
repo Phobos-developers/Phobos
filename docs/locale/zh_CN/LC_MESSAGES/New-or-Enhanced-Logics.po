@@ -8935,6 +8935,12 @@ msgid ""
 "The function won't take effect if the techno's rearm time left is shorter"
 " than `KeepRange.EarlyStopFrame`."
 msgstr ""
+"如果单位开火剩余 CD 短于 `KeepRange.EarlyStopFrame` 的时间则该功能不会生效。"
+
+msgid ""
+"That is to say, the total duration of executing KeepRange equals the value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`"
+msgstr ""
+"也就是说执行 KeepRange 效果的总时长 = 武器 `ROF` 的值 - `KeepRange.EarlyStopFrame` 的值。"
 
 #: ../../New-or-Enhanced-Logics.md:2540
 msgid ""

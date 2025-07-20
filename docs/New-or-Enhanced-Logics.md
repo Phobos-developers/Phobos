@@ -2536,6 +2536,10 @@ FeedbackWeapon=  ; WeaponType
     - `KeepRange.AllowPlayer` controls whether this function is effective for human.
     - The function won't take effect if the techno's rearm time left is shorter than `KeepRange.EarlyStopFrame`.
 
+```{note}
+That is to say, the total duration of executing KeepRange equals the value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`.
+```
+
 In `rulesmd.ini`:
 ```ini
 [SOMEWEAPON]                  ; WeaponType
