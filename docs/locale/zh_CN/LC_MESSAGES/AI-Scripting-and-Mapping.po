@@ -2116,6 +2116,7 @@ msgid ""
 "values mean the banner can always be displayed until being deleted. The "
 "banner itself won't be deleted when it's not displaying."
 msgstr ""
+"`Duration` 决定横幅的显示时长。负值代表会在被删除前一直显示。横幅自身不会在不显示时被删除。"
 
 #: ../../AI-Scripting-and-Mapping.md:688
 msgid ""
@@ -2123,6 +2124,7 @@ msgid ""
 " displaying by a positive `Duration`. Neagtive values mean it can't be "
 "displayed again."
 msgstr ""
+"`Delay` 决定横幅因一个正值 `Duration` 而结束显示后多久才会再次显示。负值代表不会再次显示。"
 
 #: ../../AI-Scripting-and-Mapping.md:689
 msgid ""
@@ -2130,6 +2132,7 @@ msgid ""
 "frame when it's stopped last time. This can also be changed to its first "
 "frame if `SHP.RefreshAfterDelay` set to true."
 msgstr ""
+"一个 `SHP` 横幅会在再次显示时从上次结束时的帧开始。这可以通过 `SHP.RefreshAfterDelay=true` 更改为从头开始。"
 
 #: ../../AI-Scripting-and-Mapping.md:692
 msgid ""
