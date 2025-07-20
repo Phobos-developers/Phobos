@@ -518,6 +518,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
   - Fix an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP
   - Burst without delay
+  - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

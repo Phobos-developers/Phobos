@@ -467,6 +467,7 @@ Vanilla fixes:
 - Fixed the bug that vehicle owned by computer will scatter when cloaking (by NetsuNegi)
 - Fixed the bug that submarine always turn left after changed owner by map event (by NetsuNegi)
 - Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants (by NetsuNegi)
+- Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
