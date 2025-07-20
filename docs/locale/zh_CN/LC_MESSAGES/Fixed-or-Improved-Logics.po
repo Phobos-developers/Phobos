@@ -778,7 +778,7 @@ msgstr "现在飞行单位上所附加的动画会紧随其父单位之后立即
 
 #: ../../Fixed-or-Improved-Logics.md:126
 msgid ""
-"Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` "
+"Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` "
 "buildings cease to update when being captured by enemies."
 msgstr "修复了 `Powered`／`PoweredSpecial` 的建筑在被敌人占领时其受电力影响的动画不再更新的问题。"
 
@@ -1365,7 +1365,7 @@ msgstr "修复了 `AllowAirstrike=no` 未能完全阻止对某个单位进行空
 
 #: ../../Fixed-or-Improved-Logics.md:223
 msgid ""
-"Fixed the issue where computer players did not search for new enemies "
+"Fixed an issue where computer players did not search for new enemies "
 "after defeating them or forming alliances with them."
 msgstr "修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题。"
 
@@ -1429,7 +1429,7 @@ msgid ""
 msgstr "修复了建筑在被工程师修复后受损粒子不会移除的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:235
-msgid "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
+msgid "Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:236
@@ -1603,7 +1603,7 @@ msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:265
 msgid ""
-"Fixed the issue where some units crashed after the deployment "
+"Fixed an issue where some units crashed after the deployment "
 "transformation."
 msgstr "修复了某些单位部署变形后崩溃的问题。"
 

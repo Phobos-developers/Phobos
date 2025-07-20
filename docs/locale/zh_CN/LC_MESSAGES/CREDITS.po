@@ -1457,7 +1457,7 @@ msgstr "`608 强制宣战` 触发结果"
 
 #: ../../../CREDITS.md:373
 msgid ""
-"Fix the issue where computer players did not search for new enemies after"
+"Fix an issue where computer players did not search for new enemies after"
 " defeating them or forming alliances with them"
 msgstr "修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题"
 
@@ -1484,7 +1484,7 @@ msgid ""
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑"
 
 #: ../../../CREDITS.md:378 ../../../CREDITS.md:441
-msgid "Fix the issue where some units crashed after the deployment transformation"
+msgid "Fix an issue where some units crashed after the deployment transformation"
 msgstr "修复了某些单位部署变形后崩溃的问题"
 
 #: ../../../CREDITS.md:379

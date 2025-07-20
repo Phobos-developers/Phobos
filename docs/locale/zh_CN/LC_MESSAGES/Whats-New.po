@@ -1883,7 +1883,7 @@ msgstr "修复了建筑总是被染色为空袭所属方颜色的 Bug（by Netsu
 
 #: ../../Whats-New.md:437
 msgid ""
-"Fixed the issue where computer players did not search for new enemies "
+"Fixed an issue where computer players did not search for new enemies "
 "after defeating them or forming alliances with them (by FlyStar)"
 msgstr "修复了 AI 玩家在消灭一家敌人或敌人结盟后不再搜索新敌人的问题（FlyStar）"
 
@@ -3519,9 +3519,8 @@ msgid ""
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑（by FlyStar）"
 
 #: ../../Whats-New.md:743
-#, fuzzy
 msgid ""
-"Fixed the issue that the widespread damage caused by detonation on the "
+"Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case (by CrimRecya)"
 msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题（by CrimRecya）"
@@ -3534,7 +3533,7 @@ msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug（
 
 #: ../../Whats-New.md:745
 msgid ""
-"Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by"
+"Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by"
 " CrimRecya)"
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by CrimRecya）"
 
@@ -4011,7 +4010,7 @@ msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题（by Fl
 
 #: ../../Whats-New.md:825
 msgid ""
-"Fixed the issue where some units crashed after the deployment "
+"Fixed an issue where some units crashed after the deployment "
 "transformation (by ststl & FlyStar)"
 msgstr "修复了某些单位部署变形后崩溃的问题（by ststl & FlyStar）"
 

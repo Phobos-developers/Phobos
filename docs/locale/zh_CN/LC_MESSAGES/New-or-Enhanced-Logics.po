@@ -8937,7 +8937,6 @@ msgid ""
 msgstr "如果单位开火剩余 CD 短于 `KeepRange.EarlyStopFrame` 的时间则该功能不会生效。"
 
 #: ../../New-or-Enhanced-Logics.md:2540
-#, fuzzy
 msgid ""
 "That is to say, the total duration of executing KeepRange equals the "
 "value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`."
