@@ -54,7 +54,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 			for (int i = 0; i <= currentBurstIndex; i++)
 			{
 				const int burstDelay = pWeaponExt->GetBurstDelay(i);
-				int delay = (burstDelay > -1) ? burstDelay : ScenarioClass::Instance->Random.RandomRanged(3, 5);
+				int delay = (burstDelay > -1) ? burstDelay : random.RandomRanged(3, 5);
 
 				// Other than initial delay, treat 0 frame delays as 1 frame delay due to per-frame processing.
 				if (i != 0)

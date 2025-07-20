@@ -343,27 +343,27 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 		if (shieldIndex >= 0 || this->Shield_RemoveAll)
 		{
 			ratio = pShield->GetHealthRatio();
-			pTargetExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+			pTargetExt->CurrentShieldType = nullptr;
 			pShield->KillAnim();
 			pShield = nullptr;
 		}
 	}
 
 	// Attach shield.
-	if (Shield_AttachTypes.size() > 0)
+	if (this->Shield_AttachTypes.size() > 0)
 	{
 		ShieldTypeClass* shieldType = nullptr;
 
 		if (this->Shield_ReplaceOnly)
 		{
 			if (shieldIndex >= 0)
-				shieldType = Shield_AttachTypes[Math::min(shieldIndex, (signed)Shield_AttachTypes.size() - 1)];
+				shieldType = this->Shield_AttachTypes[Math::min(shieldIndex, (signed)this->Shield_AttachTypes.size() - 1)];
 			else if (this->Shield_RemoveAll)
-				shieldType = Shield_AttachTypes[0];
+				shieldType = this->Shield_AttachTypes[0];
 		}
 		else
 		{
-			shieldType = Shield_AttachTypes[0];
+			shieldType = this->Shield_AttachTypes[0];
 		}
 
 		if (shieldType)
@@ -373,6 +373,7 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 			{
 				pTargetExt->CurrentShieldType = shieldType;
 				pShield = std::make_unique<ShieldClass>(pTarget, true);
+				pShield->UpdateTint();
 
 				if (this->Shield_ReplaceOnly && this->Shield_InheritStateOnReplace)
 				{

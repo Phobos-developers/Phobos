@@ -43,7 +43,7 @@ public:
 	// Reversed from Tactical::Select
 	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, LTRBStruct* pRect, const TacticalSelectableStruct& selectable)
 	{
-		if (selectable.Techno && selectable.Techno->IsAlive)
+		if (selectable.Object && selectable.Object->IsAlive)
 		{
 			const int nLocalX = selectable.X - pThis->TacticalPos.X;
 			const int nLocalY = selectable.Y - pThis->TacticalPos.Y;
@@ -60,9 +60,14 @@ public:
 	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, LTRBStruct* rect)
 	{
 		for (const auto& selected : Array)
-			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Techno))
-				if (!TechnoExt::ExtMap.Find(selected.Techno)->TypeExtData->LowSelectionPriority)
-					return true;
+			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Object))
+			{
+				if ((selected.Object->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+				{
+					if (!TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(selected.Object))->TypeExtData->LowSelectionPriority)
+						return true;
+				}
+			}
 
 		return false;
 	}
@@ -79,29 +84,34 @@ public:
 		{
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
-				const auto pTechno = selected.Techno;
-				const auto pTechnoType = pTechno->GetTechnoType();
-				const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				const auto pObject = selected.Object;
+				const auto pTechnoType = pObject->GetTechnoType(); // Returns nullptr on non techno objects
 
-				if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
-					continue;
-
-				if (Game::IsTypeSelecting())
+				if (auto const pTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
 				{
-					Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+					if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
+						continue;
+
+					if (Game::IsTypeSelecting())
+					{
+						Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+						continue;
+					}
 				}
-				else if (check_callback)
+
+				if (check_callback)
 				{
-					(*check_callback)(pTechno);
+					(*check_callback)(pObject);
 				}
 				else
 				{
 					const auto pBldType = abstract_cast<BuildingTypeClass*, true>(pTechnoType);
+					const auto pOwner = pObject->GetOwningHouse();
 
-					if (pTechno->Owner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
+					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pObject->CanBeSelected()
 						&& (!pBldType || (pBldType->UndeploysInto && pBldType->IsVehicle())))
 					{
-						Unsorted::MoveFeedback = !pTechno->Select();
+						Unsorted::MoveFeedback = !pObject->Select();
 					}
 				}
 			}

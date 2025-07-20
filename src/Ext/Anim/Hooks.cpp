@@ -303,7 +303,7 @@ DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_CenterCoords, 0x6)
+DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_AttachedAnimPosition, 0x6)
 {
 	enum { SkipGameCode = 0x424C76 };
 
@@ -311,11 +311,35 @@ DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_CenterCoords, 0x6)
 
 	auto const pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
 
-	if (pExt->UseCenterCoordsIfAttached)
+	if (pExt->AttachedAnimPosition != AttachedAnimPosition::Default)
 	{
 		pThis->SetLocation(CoordStruct::Empty);
-
 		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x422BF1, AnimClass_GetCoords_AttachedAnimPosition, 0x5)
+{
+	enum { ReturnResult = 0x422C31 };
+
+	GET(AnimClass*, pThis, EDI);
+	GET_STACK(CoordStruct*, retValue, STACK_OFFSET(0x20, 0x4));
+
+	auto const pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const position = pExt->AttachedAnimPosition.Get();
+
+	if (position != AttachedAnimPosition::Default)
+	{
+		auto coords = pThis->OwnerObject->GetCoords() + pThis->Location;
+
+		if (position == AttachedAnimPosition::Ground)
+			coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
+
+		*retValue = coords;
+		R->EAX(retValue);
+		return ReturnResult;
 	}
 
 	return 0;

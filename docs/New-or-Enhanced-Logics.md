@@ -469,6 +469,24 @@ Shield.InheritStateOnReplace=false          ; boolean
     - `Shield.MinimumReplaceDelay` can be used to control how long after the shield has been broken (in game frames) can it be replaced. If not enough frames have passed, it won't be replaced.
     - If `Shield.InheritStateOnReplace` is set, shields replaced via `Shield.ReplaceOnly` inherit the current strength (relative to ShieldType `Strength`) of the previous shield and whether or not the shield was currently broken. Self-healing and respawn timers are always reset.
 
+## Aircraft
+
+### Damaged aircraft image changes
+
+- When an aircraft is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` AircraftType.
+- Similar, `Image.ConditionRed` is used as image if aircraft health points percentage is lower than `[AudioVisual] -> ConditionRed` percentage.
+
+In `rulesmd.ini`:
+```ini
+[SOMEAIRCRAFT]                ; AircraftType
+Image.ConditionYellow=        ; AircraftType entry
+Image.ConditionRed=           ; AircraftType entry
+```
+
+```{warning}
+Note that the AircraftTypes had to be defined under [AircraftTypes].
+```
+
 ## Animations
 
 ### Anim-to-Unit
@@ -2173,7 +2191,7 @@ MindControl.Anim=                     ; Animation, defaults to [CombatDamage] ->
 In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]                ; WarheadType
-SplashList=                  ; List of AnimationTypes
+SplashList=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
 SplashList.PickRandom=false  ; boolean
 ```
 
@@ -2516,13 +2534,15 @@ FeedbackWeapon=  ; WeaponType
   - `KeepRange` controls how long the distance to maintain when the techno's ROF timer is ticking. What is actually read is its absolute value. If it is a positive value, it will be stayed outside this distance, just like it has a special `MinimumRange` after firing. If it is a negative value, it will be kept as close as possible to this distance, just like it has a special `Range` after firing. In addition, if the effective range section is too small, it will be considered unable to fire. It is best to have an effective range of 1.0, and 2.0 is best for Infantry.
     - `KeepRange.AllowAI` controls whether this function is effective for computer.
     - `KeepRange.AllowPlayer` controls whether this function is effective for human.
+    - The function won't take effect if the techno's rearm time left is shorter than `KeepRange.EarlyStopFrame`.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                 ; WeaponType
-KeepRange=0                  ; floating point value
-KeepRange.AllowAI=false      ; boolean
-KeepRange.AllowPlayer=false  ; boolean
+[SOMEWEAPON]                  ; WeaponType
+KeepRange=0                   ; floating point value
+KeepRange.AllowAI=false       ; boolean
+KeepRange.AllowPlayer=false   ; boolean
+KeepRange.EarlyStopFrame=0    ; integer
 ```
 
 ### Make units try turning to target when firing with `OmniFire=yes`

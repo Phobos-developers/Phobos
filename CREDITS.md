@@ -380,8 +380,8 @@ This page lists all the individual contributions to the project by their author.
   - Support for more optional weapons
   - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
   - Player-controlled spies are not forced to perform other tasks while attacking buildings
-  - If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
-  - Fixed an unusual use of DeployFireWeapon for InfantryType
+  - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
+  - Fix an unusual use of DeployFireWeapon for InfantryType
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -426,6 +426,7 @@ This page lists all the individual contributions to the project by their author.
   - Display banner improvement
   - Electric/RadBeam trail for laser tails
   - Ground line for select box
+  - Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -455,6 +456,7 @@ This page lists all the individual contributions to the project by their author.
   - Promotion animation
   - Damaged unit image changes
   - `VoiceDeploy` through hot-key/command bar fix
+  - Damaged aircraft image changes
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
@@ -572,6 +574,7 @@ This page lists all the individual contributions to the project by their author.
   - Target scanning delay customization (code)
   - Skip target scanning function calling for unarmed technos (code)
   - Force techno targeting in distributed frames to improve performance
+  - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

@@ -90,7 +90,7 @@ void AnimTypeExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->XDrawOffset.Read(exINI, pID, "XDrawOffset");
 	this->HideIfNoOre_Threshold.Read(exINI, pID, "HideIfNoOre.Threshold");
 	this->Layer_UseObjectLayer.Read(exINI, pID, "Layer.UseObjectLayer");
-	this->UseCenterCoordsIfAttached.Read(exINI, pID, "UseCenterCoordsIfAttached");
+	this->AttachedAnimPosition.Read(exINI, pID, "AttachedAnimPosition");
 	this->Weapon.Read<true>(exINI, pID, "Weapon");
 	this->Damage_Delay.Read(exINI, pID, "Damage.Delay");
 	this->Damage_DealtByInvoker.Read(exINI, pID, "Damage.DealtByInvoker");
@@ -149,7 +149,7 @@ void AnimTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->XDrawOffset)
 		.Process(this->HideIfNoOre_Threshold)
 		.Process(this->Layer_UseObjectLayer)
-		.Process(this->UseCenterCoordsIfAttached)
+		.Process(this->AttachedAnimPosition)
 		.Process(this->Weapon)
 		.Process(this->Damage_Delay)
 		.Process(this->Damage_DealtByInvoker)
@@ -247,4 +247,35 @@ DEFINE_HOOK(0x4287DC, AnimTypeClass_LoadFromINI, 0xA)
 
 	AnimTypeExt::ExtMap.LoadFromINI(pItem, pINI);
 	return 0;
+}
+
+namespace detail
+{
+	template <>
+	inline bool read<AttachedAnimPosition>(AttachedAnimPosition& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto str = parser.value();
+			if (_strcmpi(str, "default") == 0)
+			{
+				value = AttachedAnimPosition::Default;
+			}
+			else if (_strcmpi(str, "center") == 0 || _strcmpi(str, "centre") == 0)
+			{
+				value = AttachedAnimPosition::Center;
+			}
+			else if (_strcmpi(str, "ground") == 0)
+			{
+				value = AttachedAnimPosition::Ground;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, str, "Expected attached animation position type");
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 }

@@ -239,10 +239,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically. This behaviour can be turned off by setting `Vertical.AircraftFix=false` on the projectile.
-- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
-- Player-controlled spies are not forced to perform other tasks while attacking buildings
-- If `BombDisarm=Yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
-- Fixed an unusual use of DeployFireWeapon for InfantryType
+- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt).
+- Player-controlled spies are not forced to perform other tasks while attacking buildings.
+- If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
+- Fixed an unusual use of DeployFireWeapon for InfantryType.
+- Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead.
 
 ## Fixes / interactions with other extensions
 
@@ -358,12 +359,15 @@ Damage.ApplyFirepowerMult=false ; boolean
 
 ### Attached animation position customization
 
-- You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).
+- You can now customize position of attached animations via different values for `AttachedAnimPosition`.
+    - `default`: Animation shows up at the parent object's logical position (for buildings, this is the top-leftmost cell / cell #0).
+    - `center`: Animation shows up at the parent object's visual center.
+    - `ground`: Animation shows up at the parent object's visual center but forced to ground level. Note that the animations is still considered attached to the object and is likely to be drawn above objects that the object itself would cover unless other settings are used to compensate.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                       ; AnimationType
-UseCenterCoordsIfAttached=false  ; boolean
+[SOMEANIM]                   ; AnimationType
+AttachedAnimPosition=object  ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
@@ -1174,10 +1178,10 @@ ForbidParallelAIQueues=false        ; boolean
 ### Force techno targeting in distributed frames to improve performance
 
 - When you create many technos in a same frame (i.e. starting the game with a campaign map that initially has a large number of technos), they will always scan for targets in a synchronous period, causing game lag. Increasing targeting delay alone will not make things better, as their targeting is still synchronized.
-- It is now possible to force them to seek targets separately. When a techno spawns, it will generate a random number in \[0,15\]. If `DistributeTargetingFrame=true` is set, only when the current frame number is congruent with the technos own number under modulo 16, will it do targeting.
+- It is now possible to force them to seek targets separately. If `DistributeTargetingFrame=true` is set, techno's targeting timer will be initiated with a random delay, ranging in \[0,15\]. This can distribute their targeting timing within 15 frames, thus alleviating the above-mentioned lag.
   - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
 
-In `rulesmd.ini`
+In `rulesmd.ini`:
 ```ini
 [General]
 DistributeTargetingFrame=false         ; boolean
@@ -1410,8 +1414,9 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ### Voxel light source customization
 
-![image](_static/images/VoxelLightSourceComparison.png)
-*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">CCS_qkl</a>*
+![image](_static/images/VoxelLightSourceComparison1.png)
+![image](_static/images/VoxelLightSourceComparison2.png)
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
@@ -1593,6 +1598,7 @@ Skipping checks with this feature doesn't mean that vehicles and tank bunkers wi
 - `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
 - `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
 - It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.
+- You can also disable the slowdown completely by using the flag `SkipCrushSlowdown`. This is not the same as `CrushSlowdownMultiplier=1.0`. Used to avoid a bug where the vehicle sometimes loses speed when `Accelerates=true` and `MovementZone=CrushAll` are set.
 
 In `rulesmd.ini`:
 ```ini
@@ -1602,6 +1608,7 @@ TiltsWhenCrushes.Overlays=         ; boolean
 CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
 CrushSlowdownMultiplier=0.2        ; floating point value
+SkipCrushSlowdown=false            ; boolean
 ```
 
 ### Destroy animations
