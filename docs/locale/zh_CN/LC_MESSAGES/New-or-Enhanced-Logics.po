@@ -7444,6 +7444,15 @@ msgstr ""
 msgid "Turretless Shape Vehicle FireUp"
 msgstr "无炮塔 Shape 载具开火前摇"
 
+msgid ""
+"![image](_static/images/vehiclefireup.gif) *Use the pre-firing animation effect for Shape vehicle-type mecha units in "
+"**Zero Boundary** by "
+"@[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*"
+msgstr ""
+"![image](_static/images/vehiclefireup.gif) "
+"*@[暴风硫](https://space.bilibili.com/11638715/lists/5358986) 在 **零点界限** "
+"中为 Shape 载具类型的机甲单位使用开火前摇效果*"
+
 #: ../../New-or-Enhanced-Logics.md:2052
 msgid "`Voxel=no` turretless vehicles now support the use of `FireUp`."
 msgstr "现在 `Voxel=no` 的无炮塔载具现在已经支持 `FireUp`。"
@@ -7732,6 +7741,13 @@ msgstr "如果你将 `Crit.Warhead` 设为定义暴击的弹头或者创建一�
 #: ../../New-or-Enhanced-Logics.md:2140
 msgid "Convert TechnoType on impact"
 msgstr "单位转换弹头"
+
+msgid ""
+"![image](_static/images/convertwh.gif) "
+"*Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)*"
+msgstr ""
+"![image](_static/images/convertwh.gif) "
+"*[NanodaSupercalifragilisticexpialidocious](https://www.bilibili.com/opus/896077937747427433) 中的载具版基因突变*"
 
 #: ../../New-or-Enhanced-Logics.md:2148
 msgid ""

@@ -4158,6 +4158,15 @@ msgstr ""
 msgid "Customize bridge falling down damage"
 msgstr "自定义桥上坠落伤害"
 
+msgid ""
+"![image](_static/images/fallingdowndamage.gif) *Use different fall damage depending on whether it lands in water in "
+"**Zero Boundary** by "
+"@[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*"
+msgstr ""
+"![image](_static/images/fallingdowndamage.gif) "
+"*@[暴风硫](https://space.bilibili.com/11638715/lists/5358986) 在 **零点界限** "
+"中根据是否落入水中使用不同的坠落伤害*"
+
 #: ../../Fixed-or-Improved-Logics.md:1074
 msgid ""
 "Now you can customize the damage a unit receives when it falls from a "
@@ -5089,6 +5098,13 @@ msgstr ""
 #: ../../Fixed-or-Improved-Logics.md:1402
 msgid "Voxel body multi-section shadows"
 msgstr "Voxel 主体多组件阴影"
+
+msgid ""
+"![image](_static/images/uh0-be.gif) "
+"*UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)*"
+msgstr ""
+"![image](_static/images/uh0-be.gif) "
+"*[万世之战](https://ra2be.com/zh/download.html) 中拥有可动螺旋桨及其影子的 UH-0 直升机*"
 
 #: ../../Fixed-or-Improved-Logics.md:1404
 msgid ""

@@ -1071,6 +1071,9 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 
 ### Customize bridge falling down damage
 
+![image](_static/images/fallingdowndamage.gif)
+*Use different fall damage depending on whether it lands in water in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
  - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
@@ -1400,6 +1403,9 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 ```
 
 ### Voxel body multi-section shadows
+
+![image](_static/images/uh0-be.gif)
+*UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)*
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
   - `ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize which frame of the HVA animation for the section from `ShadowIndex` and `ShadowIndices` is used to display the shadow, respectively. -1 is special value which means currently shown frame is used, and `ShadowIndices.Frame` defaults to this.
