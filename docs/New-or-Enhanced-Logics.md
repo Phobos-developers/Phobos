@@ -1466,8 +1466,8 @@ Gravity=0
 ````
 
 ````{note}
-> Trajectory_Demo_I_Image_Placeholder
-> The assets of the case come from mod *???*.
+> ![Trajectory-Demo-I](_static/images/Trajectory-Demo-I.gif)
+> The assets of the case come from mod *Light Cone*.
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEI1]
 AA=no
@@ -1733,7 +1733,7 @@ Trajectory.Speed=45.0
 
 ````{note}
 > ![Trajectory-Demo-U](_static/images/Trajectory-Demo-U.gif)
-> The assets of the case come from mod *Source Deity*.
+> The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEU1]
 AA=no
@@ -1787,8 +1787,8 @@ Trajectory.Engrave.TargetCoord=300,-520
 ````
 
 ````{note}
-> Trajectory_Demo_V_Image_Placeholder
-> The assets of the case come from mod *???*.
+> ![Trajectory-Demo-V](_static/images/Trajectory-Demo-V.gif)
+> The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
 ```{dropdown} Click to show ini
 [SOMEPROJECTILEV1]
 AA=no
@@ -1845,7 +1845,6 @@ Trajectory.Duration=80
 Trajectory.TolerantTime=0
 Trajectory.UseDisperseCoord=yes
 Trajectory.PeacefulVanish=yes
-Trajectory.Synchronize=yes
 Trajectory.AllowFirerTurning=no
 Trajectory.DisperseWeapons=SOMEWEAPONV5,SOMEWEAPONV6
 Trajectory.DisperseBursts=1
@@ -1874,6 +1873,7 @@ SubjectToWalls=no
 Image=SOMEIMAGEW1
 Trajectory=Tracing
 Trajectory.Duration=210
+Trajectory.TolerantTime=30
 Trajectory.Synchronize=yes
 Trajectory.Tracing.CreateCoord=150,0,0
 Trajectory.PassDetonate=yes
