@@ -2403,11 +2403,13 @@ DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x
 	// Remain unchanged in other cases like dead when receive damage or neutral ones get red
 	if (retnAddr != 0x44D8A1)
 		pThis->KillOccupants(nullptr);
+	else
+		pThis->SetTarget(nullptr);
 
 	return SkipGameCode;
 }
 
-DEFINE_PATCH(0x501503, 0x6A, 0x1)// HouseClass::All_To_Hunt
-DEFINE_PATCH(0x6DF779, 0x6A, 0x1)// TActionClass::Execute
+DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
+DEFINE_PATCH(0x6DF77A, 0x01); // TActionClass::Execute
 
 #pragma endregion
