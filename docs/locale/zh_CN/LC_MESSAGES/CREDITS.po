@@ -1544,6 +1544,7 @@ msgid ""
 "Fix the bug that passengers' Temporal attacks wouldn't stop when an "
 "OpenTopped vehicle was frozen by a Temporal warhead"
 msgstr ""
+"修复了即便 `OpenTopped` 载具被超时空弹头冻结其乘客的超时空武器攻击也不会停止的 Bug"
 
 #: ../../../CREDITS.md:386
 msgid "**Apollo** - Translucent SHP drawing patches"
