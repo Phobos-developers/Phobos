@@ -124,7 +124,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
-- Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
+- Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fix a glitch related to incorrect target setting for missiles.
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
@@ -216,9 +216,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that ships can travel on elevated bridges.
 - Fixed the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it.
 - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`.
-- Fixed the issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
+- Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
-- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.

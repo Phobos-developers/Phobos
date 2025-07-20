@@ -787,7 +787,7 @@ msgstr "现在飞行单位上所附加的动画会紧随其父单位之后立即
 
 #: ../../Fixed-or-Improved-Logics.md:127
 msgid ""
-"Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` "
+"Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` "
 "buildings cease to update when being captured by enemies."
 msgstr "修复了 `Powered`／`PoweredSpecial` 的建筑在被敌人占领时其受电力影响的动画不再更新的问题。"
 
@@ -1333,7 +1333,7 @@ msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Ov
 
 #: ../../Fixed-or-Improved-Logics.md:219
 msgid ""
-"Fixed the issue that the widespread damage caused by detonation on the "
+"Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case."
 msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题。"
@@ -1345,7 +1345,7 @@ msgid ""
 msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:221
-msgid "Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
+msgid "Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`."
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:222

@@ -2102,7 +2102,7 @@ msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Ov
 
 #: ../../Whats-New.md:600
 msgid ""
-"Fixed the issue that the widespread damage caused by detonation on the "
+"Fixed an issue that the widespread damage caused by detonation on the "
 "bridge/ground cannot affect objects on the ground/bridge who are in the "
 "opposite case (by CrimRecya)"
 msgstr "修复了范围伤害在桥上／地面引爆时无法影响相对情况即在地面／桥上的对象的问题（by CrimRecya）"
@@ -2115,7 +2115,7 @@ msgstr "修复了 `DamageSelf` 和 `AllowDamageOnSelf` 对空军无效的 Bug（
 
 #: ../../Whats-New.md:602
 msgid ""
-"Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by"
+"Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim` (by"
 " CrimRecya)"
 msgstr "修复了 Voxel 碎片 `TrailerAnim` 生成位置不正确的问题（by CrimRecya）"
 
@@ -2616,7 +2616,7 @@ msgstr "修复了 Ares 触发条件 75/77 有时判定不成功的问题（by Fl
 
 #: ../../Whats-New.md:683
 msgid ""
-"Fixed the issue where some units crashed after the deployment "
+"Fixed an issue where some units crashed after the deployment "
 "transformation (by ststl & FlyStar)"
 msgstr "修复了某些单位部署变形后崩溃的问题（by ststl & FlyStar）"
 
