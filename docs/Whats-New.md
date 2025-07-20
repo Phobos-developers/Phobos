@@ -438,6 +438,7 @@ Vanilla fixes:
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
+- Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
