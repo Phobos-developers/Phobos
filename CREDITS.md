@@ -427,6 +427,8 @@ This page lists all the individual contributions to the project by their author.
   - Electric/RadBeam trail for laser tails
   - Ground line for select box
   - Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead
+  - Fix the bug that vehicle owned by computer will scatter when cloaking
+  - Fix the bug that submarine always turn left after changed owner by map event
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
