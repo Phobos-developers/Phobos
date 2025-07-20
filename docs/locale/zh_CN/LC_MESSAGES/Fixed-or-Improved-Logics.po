@@ -3163,6 +3163,13 @@ msgstr "`SubterraneanHeight` 最好使用一个负值并且如果设置为大于
 msgid "Voxel body multi-section shadows"
 msgstr "Voxel 主体多组件阴影"
 
+msgid ""
+"![image](_static/images/uh0-be.gif) "
+"*UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)*"
+msgstr ""
+"![image](_static/images/uh0-be.gif) "
+"*[万世之战](https://ra2be.com/zh/download.html) 中拥有可动螺旋桨及其影子的 UH-0 直升机*"
+
 #: ../../Fixed-or-Improved-Logics.md:1043
 msgid ""
 "It is also now possible for vehicles and aircraft to display shadows for "
