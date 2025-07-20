@@ -466,6 +466,7 @@ Vanilla fixes:
 - Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead (by NetsuNegi)
 - Fixed the bug that vehicle owned by computer will scatter when cloaking (by NetsuNegi)
 - Fixed the bug that submarine always turn left after changed owner by map event (by NetsuNegi)
+- Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

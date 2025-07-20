@@ -2380,3 +2380,12 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 #pragma endregion
 
 DEFINE_JUMP(LJMP, 0x6FBC0B, 0x6FBC80) // TechnoClass::UpdateCloak
+
+DEFINE_HOOK(0x457DEB, BuildingClass_ClearOccupants_Redraw, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->Mark(MarkType::Change);
+
+	return 0;
+}
