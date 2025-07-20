@@ -2049,6 +2049,9 @@ JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 
 ### Turretless Shape Vehicle FireUp
 
+![image](_static/images/vehiclefireup.gif)
+*Use the pre-firing animation effect for Shape vehicle-type mecha units in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+
 - `Voxel=no` turretless vehicles now support the use of `FireUp`.
  - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Forced to be `yes` when there is no target.
 
@@ -2138,6 +2141,9 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 ```
 
 ### Convert TechnoType on impact
+
+![image](_static/images/convertwh.gif)
+*Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)*
 
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
@@ -2535,6 +2541,10 @@ FeedbackWeapon=  ; WeaponType
     - `KeepRange.AllowAI` controls whether this function is effective for computer.
     - `KeepRange.AllowPlayer` controls whether this function is effective for human.
     - The function won't take effect if the techno's rearm time left is shorter than `KeepRange.EarlyStopFrame`.
+
+```{note}
+That is to say, the total duration of executing KeepRange equals the value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`.
+```
 
 In `rulesmd.ini`:
 ```ini
