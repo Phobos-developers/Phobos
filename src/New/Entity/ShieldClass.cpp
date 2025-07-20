@@ -202,7 +202,7 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 		if (damage > 0)
 			nDamage = MapClass::GetTotalDamage(damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
 		else
-			nDamage = -MapClass::GetTotalDamage(damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
+			nDamage = -MapClass::GetTotalDamage(-damage, pWH, this->GetArmorType(pTechnoType), args->DistanceToEpicenter);
 
 		const bool affectsShield = pWHExt->Shield_AffectTypes.size() <= 0 || pWHExt->Shield_AffectTypes.Contains(pType);
 		const double absorbPercent = affectsShield ? pWHExt->Shield_AbsorbPercent.Get(pType->AbsorbPercent) : pType->AbsorbPercent;
@@ -582,19 +582,19 @@ bool ShieldClass::ConvertCheck()
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(newID);
 	const auto pOldType = this->Type;
-	bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
+	const bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
 
 	// Update shield type.
-	if (!allowTransfer && !pTechnoTypeExt->ShieldType->Strength)
+	if (!allowTransfer && (!pTechnoTypeExt->ShieldType || pTechnoTypeExt->ShieldType->Strength <= 0))
 	{
 		this->KillAnim();
-		pTechnoExt->CurrentShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
+		pTechnoExt->CurrentShieldType = nullptr;
 		pTechnoExt->Shield = nullptr;
 		this->UpdateTint();
 
 		return true;
 	}
-	else if (pTechnoTypeExt->ShieldType->Strength)
+	else if (pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0)
 	{
 		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType;
 	}
@@ -602,10 +602,10 @@ bool ShieldClass::ConvertCheck()
 	const auto pNewType = pTechnoExt->CurrentShieldType;
 
 	// Update shield properties.
-	if (pNewType->Strength && this->Available)
+	if (pNewType && pNewType->Strength > 0 && this->Available)
 	{
-		bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
-		double healthRatio = this->GetHealthRatio();
+		const bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+		const double healthRatio = this->GetHealthRatio();
 
 		if (pOldType->GetIdleAnimType(isDamaged, healthRatio) != pNewType->GetIdleAnimType(isDamaged, healthRatio))
 			this->KillAnim();
@@ -619,7 +619,7 @@ bool ShieldClass::ConvertCheck()
 	else
 	{
 		const auto timer = (this->HP <= 0) ? &this->Timers.Respawn : &this->Timers.SelfHealing;
-		if (pNewType->Strength && !this->Available)
+		if (pNewType && pNewType->Strength > 0 && !this->Available)
 		{ // Resume this shield when became Available
 			timer->Resume();
 			this->Available = true;

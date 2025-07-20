@@ -1546,15 +1546,13 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x73FA92, UnitClass_IsCellOccupied_LandType, 0x8)
+DEFINE_HOOK(0x73AE70, UnitClass_UpdatePosition_Bridge, 0x5)
 {
-	enum { ContinueCheck = 0x73FC24, NoMove = 0x73FACD };
+	enum { CantMoveHere = 0x73AEB4 };
 
-	GET(UnitClass*, pThis, EBX);
-	GET(CellClass*, pCell, EDI);
-	GET_STACK(bool, containsBridge, STACK_OFFSET(0x90, -0x7D));
+	GET(UnitClass*, pThis, EBP);
 
-	return GroundType::Array[static_cast<int>(containsBridge ? LandType::Road : pCell->LandType)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? NoMove : ContinueCheck;
+	return pThis->OnBridge && GroundType::Array[static_cast<int>(LandType::Road)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? CantMoveHere : 0;
 }
 
 #pragma region XSurfaceFix
@@ -2188,8 +2186,28 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x71B151, TemporalClass_Fire_ReleaseTargetTarget, 0x6)
+{
+	GET(TechnoClass*, pTarget, ECX);
+	const auto pTargetType = pTarget->GetTechnoType();
+
+	if (pTargetType->OpenTopped)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			const auto pTemporal = pPassenger->TemporalImUsing;
+
+			if (pTemporal && pTemporal->Target)
+				pTemporal->LetGo();
+		}
+	}
+
+	return 0;
+}
+
 #pragma region InfantryDeployFireWeaponFix
 
+/*
 DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -2207,8 +2225,19 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 
 	return 0x70E12C;
 }
+*/
 
-DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
+static WeaponStruct* __fastcall InfantryClass__GetDeployWeapon_Wrapper(InfantryClass* pThis)
+{
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+	const int weaponIndex = deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon;
+
+	return pThis->GetWeapon(weaponIndex);
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB448, InfantryClass__GetDeployWeapon_Wrapper)
+
+DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_DeployWeapon, 0x6)
 {
 	enum { SkipFire = 0x521443, CannotFire = 0x521478 };
 
@@ -2225,6 +2254,35 @@ DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
 	}
 
 	return CannotFire;
+}
+
+DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
+{
+	enum { SkipGameCode = 0x6F7776, ContinueIn = 0x6F7688 };
+
+	GET(TechnoClass*, pThis, ESI);
+	int weaponIdx;
+
+	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
+	{
+		GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x28, 0x4));
+
+		const int deployWeaponIdx = pInfantry->Type->DeployFireWeapon;
+		weaponIdx = deployWeaponIdx >= 0 ? deployWeaponIdx : pThis->SelectWeapon(pTarget);
+	}
+	else
+	{
+		weaponIdx = pThis->IsNotSprayAttack();
+	}
+
+	const auto deployWeaponStruct = pThis->GetWeapon(weaponIdx);
+	const auto deployWeaponType = deployWeaponStruct ? deployWeaponStruct->WeaponType : nullptr;
+
+	if (!deployWeaponType || !deployWeaponType->AreaFire)
+		return SkipGameCode;
+
+	R->EAX(deployWeaponType->Warhead);
+	return ContinueIn;
 }
 
 #pragma endregion
