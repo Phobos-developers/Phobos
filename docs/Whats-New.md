@@ -467,6 +467,7 @@ Vanilla fixes:
 - Player-controlled spies are not forced to perform other tasks while attacking buildings (by FlyStar)
 - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
 - Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)
+- Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead (by NetsuNegi)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)

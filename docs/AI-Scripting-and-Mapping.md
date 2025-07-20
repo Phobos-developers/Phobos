@@ -684,6 +684,9 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
     - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
     - `prefix`/`prefixed` will make the text banner display the variable before any other text.
     - `suffix`/`suffixed` will make the text banner display the variable after any other text.
+  - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
+  - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
+    - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
 
 In `rulesmd.ini`:
 ```ini
@@ -694,10 +697,13 @@ In `rulesmd.ini`:
 PCX=                        ; filename - excluding the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
 SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
 CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                 ; integer
+Delay=-1                    ; integer
 ```
 
 In `mycampaign.map`:

@@ -426,6 +426,7 @@ This page lists all the individual contributions to the project by their author.
   - Display banner improvement
   - Electric/RadBeam trail for laser tails
   - Ground line for select box
+  - Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
