@@ -269,6 +269,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
 - Fixed an issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
+- Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving.
 
 ## Aircraft
 
