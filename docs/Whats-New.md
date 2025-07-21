@@ -752,6 +752,11 @@ Vanilla fixes:
 - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action (by FlyStar)
 - Fixed an unusual use of DeployFireWeapon for InfantryType (by FlyStar)
 - Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead (by NetsuNegi)
+- Fixed the bug that vehicle owned by computer will scatter when cloaking (by NetsuNegi)
+- Fixed the bug that submarine always turn left after changed owner by map event (by NetsuNegi)
+- Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants (by NetsuNegi)
+- Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants (by CrimRecya)
+- Fix the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
