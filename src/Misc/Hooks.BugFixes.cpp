@@ -2189,6 +2189,10 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 DEFINE_HOOK(0x71B151, TemporalClass_Fire_ReleaseTargetTarget, 0x6)
 {
 	GET(TechnoClass*, pTarget, ECX);
+
+	if (pTarget->LocomotorTarget)
+		pTarget->ReleaseLocomotor(true);
+
 	const auto pTargetType = pTarget->GetTechnoType();
 
 	if (pTargetType->OpenTopped)
@@ -2284,5 +2288,40 @@ DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
 	R->EAX(deployWeaponType->Warhead);
 	return ContinueIn;
 }
+
+#pragma endregion
+
+DEFINE_JUMP(LJMP, 0x6FBC0B, 0x6FBC80) // TechnoClass::UpdateCloak
+
+DEFINE_HOOK(0x457DEB, BuildingClass_ClearOccupants_Redraw, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->Mark(MarkType::Change);
+
+	return 0;
+}
+
+#pragma region BuildingUnloadFix
+
+DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x9)
+{
+	enum { SkipGameCode = 0x458189, UnloadAsSell = 0x458148 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET_STACK(const DWORD, retnAddr, STACK_OFFSET(0x3C, 0x0));
+
+	// If it is called from Mission_Unload, then skip execution if there is not enough space
+	// Remain unchanged in other cases like dead when receive damage or neutral ones get red
+	if (retnAddr != 0x44D8A1)
+		pThis->KillOccupants(nullptr);
+	else
+		pThis->SetTarget(nullptr);
+
+	return SkipGameCode;
+}
+
+DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
+DEFINE_PATCH(0x6DF77A, 0x01); // TActionClass::Execute
 
 #pragma endregion

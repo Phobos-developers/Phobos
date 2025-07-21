@@ -382,6 +382,10 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that AlphaImage remained after unit entered tunnel
   - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
   - Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead
+  - Fix the bug that vehicle owned by computer will scatter when cloaking
+  - Fix the bug that submarine always turn left after changed owner by map event
+  - Fix the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants
+  - Fix the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -434,6 +438,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory
   - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
   - Fix an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP
+  - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

@@ -229,6 +229,11 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
 - Fixed an unusual use of DeployFireWeapon for InfantryType.
 - Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead.
+- Fix the bug that vehicle owned by computer will scatter when cloaking.
+- Fix the bug that submarine always turn left after changed owner by map event.
+- Fix the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
+- Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants.
+- Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead.
 
 ## Fixes / interactions with other extensions
 
