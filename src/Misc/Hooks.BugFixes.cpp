@@ -2265,6 +2265,10 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 DEFINE_HOOK(0x71B151, TemporalClass_Fire_ReleaseTargetTarget, 0x6)
 {
 	GET(TechnoClass*, pTarget, ECX);
+
+	if (pTarget->LocomotorTarget)
+		pTarget->ReleaseLocomotor(true);
+
 	const auto pTargetType = pTarget->GetTechnoType();
 
 	if (pTargetType->OpenTopped)
