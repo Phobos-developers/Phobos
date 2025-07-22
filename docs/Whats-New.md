@@ -758,8 +758,8 @@ Vanilla fixes:
 - Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants (by CrimRecya)
 - Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead (by NetsuNegi)
 - Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge (by NetsuNegi)
-- Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing (by NetsuNegi)
+- Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
