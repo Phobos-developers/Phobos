@@ -1007,6 +1007,9 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	if (pThis->LocomotorTarget != pTarget)
+		pThis->ReleaseLocomotor(true);
+
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
@@ -1036,6 +1039,8 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_JUMP(LJMP, 0x7389B1, 0x7389C4) // Skip ReleaseLocomotor in UnitClass::EnterIdleMode()
 
 DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
 {

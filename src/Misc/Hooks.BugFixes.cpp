@@ -1989,13 +1989,15 @@ DEFINE_HOOK(0x51A298, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x6)
 	return (pThis->SendCommand(RadioCommand::QueryCanEnter, pDestination) == RadioCommand::AnswerPositive) ? 0 : CannotEnter;
 }
 
-DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
+DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_FixSomething, 0x7)
 {
 	GET(FootClass*, pTarget, ESI);
 
 	if (const auto pUnit = abstract_cast<UnitClass*>(pTarget))
 		pUnit->Unloading = false;
 
+	pTarget->Mark(MarkType::Up);
+	pTarget->OnBridge = false;
 	return 0;
 }
 
@@ -2011,6 +2013,16 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_Bridge, 0x6)
+{
+	enum { Explode = 0x737E63 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	return pThis->OnBridge ? Explode : 0;
+}
+
 
 // These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
 //namespace RemoveCellContentTemp
