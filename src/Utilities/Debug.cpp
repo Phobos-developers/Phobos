@@ -233,6 +233,10 @@ void Console::PatchLog(DWORD dwAddr, void* fakeFunc, DWORD* pdwRealFunc)
 	VirtualProtect((LPVOID)dwAddr, 5, dwOldFlag, NULL);
 }
 
+// Patch out sound buffer size etc. logging calls.
+DEFINE_JUMP(LJMP, 0x40A55D, 0x40A562);
+DEFINE_JUMP(LJMP, 0x40A5BC, 0x40A5C1);
+
 DEFINE_HOOK(0x7504C9, VocClass_ReadINI_LogMissingSamples, 0x5)
 {
 	GET(VocClass*, pThis, ECX);
