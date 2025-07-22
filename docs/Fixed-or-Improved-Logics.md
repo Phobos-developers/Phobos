@@ -1422,7 +1422,7 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ![image](_static/images/VoxelLightSourceComparison1.png)
 ![image](_static/images/VoxelLightSourceComparison2.png)
-*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>, [download with pal & vpl](http://ys-l.ysepan.com/616305259/218632818/VItxwuk6I5I4875GJN82bb/howitzer.zip?lx=xz)*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
