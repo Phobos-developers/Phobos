@@ -696,15 +696,15 @@ ProneSpeed=                   ; floating point value, multiplier, by default, us
 
 ## Overlays
 
-### Customization on whether the wall is recursively damaged
+### Customize the chained damage of the wall
 
 - In vanilla, when the wall is damaged, it will deal 200 damage to the walls in the 4 nearby cells. This makes connected walls more vulnerable to damage compared to single walls. 
-- Now you can customize whether to enable this behavior.
+- Now you can customize that damage by using the following flag.
 
 In `rulesmd.ini`:
 ```ini
 [CombatDamage]
-DamageWallRecursivly=true  ; boolean
+AdjacentWallDamage=200  ; integer
 ```
 
 ## Particle systems

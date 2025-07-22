@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <CCINIClass.h>
 #include <RulesClass.h>
@@ -244,7 +244,7 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
-		Valueable<bool> DamageWallRecursivly;
+		Valueable<int> AdjacentWallDamage;
 
 		// cache tint color
 		int TintColorIronCurtain;
@@ -444,7 +444,7 @@ public:
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
 
-			, DamageWallRecursivly { true }
+			, AdjacentWallDamage { 200 }
 		{ }
 
 		virtual ~ExtData() = default;

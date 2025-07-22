@@ -2,8 +2,10 @@
 
 #include <Ext/Rules/Body.h>
 
-DEFINE_HOOK(0x480E27, CellClass_DamageWall_DamageWallRecursivly, 0x5)
+DEFINE_HOOK(0x480EA8, CellClass_DamageWall_AdjacentWallDamage, 0x7)
 {
-	enum { SkipGameCode = 0x480EBC };
-	return RulesExt::Global()->DamageWallRecursivly ? 0 : SkipGameCode;
+	enum{ SkipGameCode = 0x480EB4 };
+	GET(CellClass*, pThis, EAX);
+	pThis->DamageWall(RulesExt::Global()->AdjacentWallDamage);
+	return SkipGameCode;
 }
