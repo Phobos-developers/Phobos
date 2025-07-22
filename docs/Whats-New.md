@@ -445,6 +445,7 @@ Phobos fixes:
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
+- Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving (by CrimRecya)
 ```
 
 ### 0.4
