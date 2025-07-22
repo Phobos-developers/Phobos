@@ -625,3 +625,16 @@ DEFINE_HOOK(0x6FA697, TechnoClass_Update_DontScanIfUnarmed, 0x6)
 	GET(TechnoClass* const, pThis, ESI);
 	return pThis->IsArmed() ? 0 : SkipTargeting;
 }
+
+DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
+{
+	GET(TechnoClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EDI);
+
+	if (pThis->LocomotorTarget != pTarget)
+		pThis->ReleaseLocomotor(true);
+
+	return 0;
+}
+
+DEFINE_JUMP(LJMP, 0x7389B1, 0x7389C4) // Skip ReleaseLocomotor in UnitClass::EnterIdleMode()
