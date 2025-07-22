@@ -2014,7 +2014,7 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable, 0x6)
+DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_Bridge, 0x6)
 {
 	enum { Explode = 0x737E63 };
 
