@@ -2429,3 +2429,36 @@ DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
 DEFINE_PATCH(0x6DF77A, 0x01); // TActionClass::Execute
 
 #pragma endregion
+
+#pragma region MouseOverObjectROF
+
+// canEnter and ignoreForce should come before GetFireError().
+DEFINE_JUMP(LJMP, 0x70054D, 0x70056C)
+
+namespace MouseOverROFTemp
+{
+	bool Skip = false;
+}
+
+DEFINE_HOOK(0x700536, TechnoClass_MouseOverObject_AllowEnter, 0x6)
+{
+	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
+	enum { CanAttack = 0x70055D };
+
+	MouseOverROFTemp::Skip = true;
+	return (canEnter || ignoreForce) ? CanAttack : 0;
+}
+
+DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
+{
+	if (MouseOverROFTemp::Skip)
+	{
+		MouseOverROFTemp::Skip = false;
+		return 0x6FC981;
+	}
+
+	return 0;
+}
+
+#pragma endregion
