@@ -387,7 +387,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 			if (pSelectBox->GroundLine_Dashed)
 				pSurface->DrawDashed(&start, &point, color, 0);
-			else
+			else if (Line_In_Bounds(&start, &point, &DSurface::ViewBounds))
 				pSurface->DrawLine(&start, &point, color);
 		}
 	}

@@ -85,7 +85,6 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 		return;
 	}
 
-	const auto pLeaderUnitType = pLeaderUnit->GetTechnoType();
 	const auto pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
@@ -97,6 +96,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 
 		if (pSelectedTarget)
 		{
+			/*const auto pLeaderUnitType = pLeaderUnit->GetTechnoType();
 			ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as destination target.\n",
 				pTeam->Type->ID,
 				pScriptType->ID,
@@ -106,7 +106,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 				pLeaderUnitType->get_ID(),
 				pLeaderUnit->UniqueID,
 				pSelectedTarget->GetTechnoType()->get_ID(),
-				pSelectedTarget->UniqueID);
+				pSelectedTarget->UniqueID);*/
 
 			pTeam->Focus = pSelectedTarget;
 			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
@@ -206,7 +206,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 			// This action finished
 			pTeam->StepCompleted = true;
 
-			const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+			/*const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
 			const int nextMission = pScript->CurrentMission + 1;
 			const auto& nextNode = pScriptType->ScriptActions[nextMission];
 			ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Reached destination)\n",
@@ -217,7 +217,7 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 				node.Argument,
 				nextMission,
 				nextNode.Action,
-				nextNode.Argument);
+				nextNode.Argument);*/
 
 			return;
 		}
@@ -462,7 +462,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 				idxSelectedObject = validIndexes[ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.size() - 1)];
 				selected = true;
 
-				const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+				/*const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
 				ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n",
 					pTeam->Type->ID,
 					pScriptType->ID,
@@ -471,7 +471,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 					node.Argument,
 					attackAITargetType,
 					idxSelectedObject,
-					objectsList[idxSelectedObject]->ID);
+					objectsList[idxSelectedObject]->ID);*/
 			}
 		}
 
