@@ -237,6 +237,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge.
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
+- Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 
 ## Fixes / interactions with other extensions
 

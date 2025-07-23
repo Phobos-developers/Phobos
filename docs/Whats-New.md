@@ -618,6 +618,7 @@ Vanilla fixes:
 - Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge (by NetsuNegi)
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing (by NetsuNegi)
 - Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
+- Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)

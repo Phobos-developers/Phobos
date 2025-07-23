@@ -2337,3 +2337,41 @@ DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
 DEFINE_PATCH(0x6DF77A, 0x01); // TActionClass::Execute
 
 #pragma endregion
+
+#pragma region WhatActionObjectFix
+
+// canEnter and ignoreForce should come before GetFireError().
+DEFINE_JUMP(LJMP, 0x70054D, 0x70056C)
+
+namespace WhatActionObjectTemp
+{
+	bool Skip = false;
+}
+
+DEFINE_HOOK(0x700536, TechnoClass_WhatAction_Object_AllowAttack, 0x6)
+{
+	enum { CanAttack = 0x70055D, Continue = 0x700548 };
+
+	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
+
+	if (canEnter || ignoreForce)
+		return CanAttack;
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
+	GET_STACK(int, WeaponIndex, STACK_OFFSET(0x1C, -0x8));
+
+	WhatActionObjectTemp::Skip = true;
+	R->EAX(pThis->GetFireError(pObject, WeaponIndex, true));
+	WhatActionObjectTemp::Skip = false;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
+{
+	return WhatActionObjectTemp::Skip ? 0x6FC981 : 0;
+}
+
+#pragma endregion
