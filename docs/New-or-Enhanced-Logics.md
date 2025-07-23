@@ -892,38 +892,38 @@ Trajectory.AllowFirerTurning=true     ; boolean
 ```
 
 - It also has linkage functions with `Inaccurate`, `BallisticScatter.Min`, `BallisticScatter.Max`, `Gravity`, `SubjectToGround`.
-- The following table will briefly display the support of various types for various general functions. (⚪ - effective / · - invalid)
+- The following table will briefly display the support of various types for various general functions. (✔️ - effective / ❌ - invalid)
 
 | Key | `Straight` | `Bombard` | `Missile` | `Engrave` | `Parabola` | `Tracing` |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| `Inaccurate` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `BallisticScatter` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Gravity` | · | ⚪ | ⚪ | · | ⚪ | · |
-| `SubjectToGround` | ⚪ | ⚪ | · | · | · | · |
-| `ProjectileRange(Weapon's)` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.Speed` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.Duration` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.TolerantTime` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.CreateCapacity` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.BulletROT` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.BulletFacing` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.RetargetRadius` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.Synchronize` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.PeacefulVanish` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.ApplyRangeModifiers` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.UseDisperseCoord` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.RecordSourceCoord` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.OffsetCoord` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.RotateCoord` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.MirrorCoord` | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ | ⚪ |
-| `Trajectory.AxisOfRotation` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.LeadTimeCalculate` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.LeadTimeMaximum` | ⚪ | ⚪ | · | · | ⚪ | · |
-| `Trajectory.DetonationDistance` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.TargetSnapDistance` | ⚪ | ⚪ | ⚪ | · | ⚪ | · |
-| `Trajectory.EarlyDetonation` | · | ⚪ | · | · | ⚪ | · |
-| `Trajectory.DetonationHeight` | · | ⚪ | · | · | ⚪ | · |
-| `Trajectory.AllowFirerTurning` | · | · | · | ⚪ | · | ⚪ |
+| `Inaccurate` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `BallisticScatter` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Gravity` | ❌ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `SubjectToGround` | ✔️ | ✔️ | ❌ | ❌ | ❌ | ❌ |
+| `ProjectileRange(Weapon's)` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.Speed` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.Duration` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.TolerantTime` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.CreateCapacity` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.BulletROT` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.BulletFacing` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.RetargetRadius` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.Synchronize` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.PeacefulVanish` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.ApplyRangeModifiers` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.UseDisperseCoord` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.RecordSourceCoord` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.OffsetCoord` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.RotateCoord` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.MirrorCoord` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.AxisOfRotation` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.LeadTimeCalculate` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.LeadTimeMaximum` | ✔️ | ✔️ | ❌ | ❌ | ✔️ | ❌ |
+| `Trajectory.DetonationDistance` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.TargetSnapDistance` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
+| `Trajectory.EarlyDetonation` | ❌ | ✔️ | ❌ | ❌ | ✔️ | ❌ |
+| `Trajectory.DetonationHeight` | ❌ | ✔️ | ❌ | ❌ | ✔️ | ❌ |
+| `Trajectory.AllowFirerTurning` | ❌ | ❌ | ❌ | ✔️ | ❌ | ✔️ |
 
 ```{note}
 - `SubjectToGround` can cause the projectile with `Trajectory=Straight` during the entire process or the projectile with `Trajectory=Bombard` during the ascent phase to detonate prematurely due to impact with the ground.
@@ -1246,653 +1246,693 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
 #### Trajectory demo
 
-- The referenced images, weapons, and warheads should be supplemented by yourself.
+````{dropdown} Click to show
 
-````{note}
-> ![Trajectory-Demo-A](_static/images/Trajectory-Demo-A.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEA1]
-AA=no
-AG=yes
-Inaccurate=yes
-BallisticScatter.Min=0
-BallisticScatter.Max=0.5
-SubjectToCliffs=yes
-SubjectToElevation=yes
-SubjectToWalls=yes
-SubjectToBuildings=yes
-SubjectToGround=yes
-Image=SOMEIMAGEA1
-Trajectory=Straight
-Trajectory.DetonationDistance=0
-Trajectory.TargetSnapDistance=0
-Trajectory.Speed=400.0
-```
-````
+  - The referenced images, weapons, and warheads should be supplemented by yourself.
 
-````{note}
-> ![Trajectory-Demo-B](_static/images/Trajectory-Demo-B.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEB1]
-AA=no
-AG=yes
-SubjectToCliffs=yes
-SubjectToElevation=no
-SubjectToWalls=yes
-SubjectToBuildings=yes
-SubjectToGround=yes
-Image=SOMEIMAGEB1
-Trajectory=Missile
-Trajectory.Missile.LaunchSpeed=0
-Trajectory.Missile.Acceleration=0
-Trajectory.Missile.TurningSpeed=0
-Trajectory.Missile.LockDirection=yes
-Trajectory.DisperseSuicide=yes
-Trajectory.DisperseWeapons=SOMEWEAPONB2
-Trajectory.DisperseBursts=5
-Trajectory.DisperseCounts=1
-Trajectory.DisperseCycle=1
-Trajectory.Speed=0
+  ---
 
-[SOMEPROJECTILEB2]
-AA=no
-AG=yes
-SubjectToCliffs=yes
-SubjectToElevation=no
-SubjectToWalls=yes
-SubjectToBuildings=yes
-Image=SOMEIMAGEB2
-Trajectory=Straight
-Trajectory.ApplyRangeModifiers=yes
-Trajectory.RotateCoord=15
-Trajectory.MirrorCoord=no
-Trajectory.DetonationDistance=-0.5
-Trajectory.TargetSnapDistance=0
-Trajectory.Straight.PassThrough=yes
-Trajectory.PeacefulVanish=no
-Trajectory.ProximityImpact=1
-Trajectory.ProximityWarhead=SOMEWARHEADB2
-Trajectory.ProximityDamage=50
-Trajectory.ProximityRadius=0.4
-Trajectory.ProximityDirect=yes
-Trajectory.ThroughVehicles=no
-Trajectory.ThroughBuilding=no
-Trajectory.DamageEdgeAttenuation=0.6
-Trajectory.Speed=300.0
-```
-````
+  > ![Trajectory-Demo-A](_static/images/Trajectory-Demo-A.gif)
+  > The assets of the case come from mod *Light Cone*.
 
-````{note}
-> ![Trajectory-Demo-C](_static/images/Trajectory-Demo-C.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEC1]
-AA=yes
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEC1
-Trajectory=Missile
-Trajectory.Missile.PreAimCoord=0,200,250
-Trajectory.Missile.ReduceCoord=no
-Trajectory.RotateCoord=120
-Trajectory.AxisOfRotation=-1,0,0
-Trajectory.Missile.LaunchSpeed=50
-Trajectory.Missile.Acceleration=10
-Trajectory.Missile.TurningSpeed=20
-Trajectory.RetargetRadius=4
-Trajectory.Speed=250.0
-```
-````
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEA1]
+  AA=no
+  AG=yes
+  Inaccurate=yes
+  BallisticScatter.Min=0
+  BallisticScatter.Max=0.5
+  SubjectToCliffs=yes
+  SubjectToElevation=yes
+  SubjectToWalls=yes
+  SubjectToBuildings=yes
+  SubjectToGround=yes
+  Image=SOMEIMAGEA1
+  Trajectory=Straight
+  Trajectory.DetonationDistance=0
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Speed=400.0
+  ```
 
-````{note}
-> ![Trajectory-Demo-D](_static/images/Trajectory-Demo-D.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILED1]
-AA=no
-AG=yes
-Inaccurate=yes
-BallisticScatter.Min=0.8
-BallisticScatter.Max=1.2
-SubjectToCliffs=yes
-SubjectToElevation=no
-SubjectToWalls=yes
-SubjectToBuildings=yes
-Image=SOMEIMAGED1
-Trajectory=Straight
-Trajectory.ApplyRangeModifiers=yes
-Trajectory.DetonationDistance=4.7
-Trajectory.TargetSnapDistance=0
-Trajectory.Straight.PassThrough=yes
-Trajectory.ProximityImpact=-1
-Trajectory.ProximityWarhead=SOMEWARHEADD1
-Trajectory.ProximityDamage=40
-Trajectory.ProximityRadius=0.8
-Trajectory.ProximityDirect=yes
-Trajectory.ProximityAllies=yes
-Trajectory.ThroughVehicles=no
-Trajectory.ThroughBuilding=no
-Trajectory.Straight.ConfineAtHeight=75
-Trajectory.Speed=60.0
-```
-````
+  ---
 
-````{note}
-> ![Trajectory-Demo-E](_static/images/Trajectory-Demo-E.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEE1]
-AA=no
-AG=yes
-Inaccurate=yes
-BallisticScatter.Min=0.25
-BallisticScatter.Max=0.75
-SubjectToCliffs=yes
-SubjectToElevation=no
-SubjectToWalls=yes
-SubjectToBuildings=yes
-SubjectToGround=yes
-Image=SOMEIMAGEE1
-Trajectory=Straight
-Trajectory.ApplyRangeModifiers=yes
-Trajectory.DetonationDistance=6.7
-Trajectory.TargetSnapDistance=0
-Trajectory.Straight.PassThrough=yes
-Trajectory.PeacefulVanish=no
-Trajectory.ProximityImpact=3
-Trajectory.ProximityWarhead=SOMEWARHEADE1
-Trajectory.ProximityDamage=40
-Trajectory.ProximityRadius=0.4
-Trajectory.ProximityDirect=yes
-Trajectory.ThroughBuilding=no
-Trajectory.DamageEdgeAttenuation=0.75
-Trajectory.Speed=300.0
-```
-````
+  > ![Trajectory-Demo-B](_static/images/Trajectory-Demo-B.gif)
+  > The assets of the case come from mod *Light Cone*.
 
-````{note}
-> ![Trajectory-Demo-F](_static/images/Trajectory-Demo-F.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEF1]
-AA=no
-AG=yes
-Inaccurate=yes
-BallisticScatter.Min=0
-BallisticScatter.Max=1
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEF1
-Trajectory=Straight
-Trajectory.ApplyRangeModifiers=yes
-Trajectory.DetonationDistance=12.5
-Trajectory.TargetSnapDistance=0
-Trajectory.Straight.PassThrough=yes
-Trajectory.PassDetonate=yes
-Trajectory.PassDetonateWarhead=SOMEWARHEADF1
-Trajectory.PassDetonateDamage=60
-Trajectory.PassDetonateDelay=5
-Trajectory.PassDetonateInitialDelay=1
-Trajectory.PassDetonateLocal=yes
-Trajectory.Straight.ConfineAtHeight=32
-Trajectory.Speed=60.0
-```
-````
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEB1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=yes
+  SubjectToElevation=no
+  SubjectToWalls=yes
+  SubjectToBuildings=yes
+  SubjectToGround=yes
+  Image=SOMEIMAGEB1
+  Trajectory=Missile
+  Trajectory.Missile.LaunchSpeed=0
+  Trajectory.Missile.Acceleration=0
+  Trajectory.Missile.TurningSpeed=0
+  Trajectory.Missile.LockDirection=yes
+  Trajectory.DisperseSuicide=yes
+  Trajectory.DisperseWeapons=SOMEWEAPONB2
+  Trajectory.DisperseBursts=5
+  Trajectory.DisperseCounts=1
+  Trajectory.DisperseCycle=1
+  Trajectory.Speed=0
 
-````{note}
-> ![Trajectory-Demo-G](_static/images/Trajectory-Demo-G.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEG1]
-AA=yes
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEG1
-Trajectory=Missile
-Trajectory.Missile.LaunchSpeed=50
-Trajectory.Missile.Acceleration=50
-Trajectory.Missile.TurningSpeed=30
-Trajectory.RetargetRadius=2.5
-Trajectory.Speed=150.0
-Gravity=0
-```
-````
+  [SOMEPROJECTILEB2]
+  AA=no
+  AG=yes
+  SubjectToCliffs=yes
+  SubjectToElevation=no
+  SubjectToWalls=yes
+  SubjectToBuildings=yes
+  Image=SOMEIMAGEB2
+  Trajectory=Straight
+  Trajectory.ApplyRangeModifiers=yes
+  Trajectory.RotateCoord=15
+  Trajectory.MirrorCoord=no
+  Trajectory.DetonationDistance=-0.5
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Straight.PassThrough=yes
+  Trajectory.PeacefulVanish=no
+  Trajectory.ProximityImpact=1
+  Trajectory.ProximityWarhead=SOMEWARHEADB2
+  Trajectory.ProximityDamage=50
+  Trajectory.ProximityRadius=0.4
+  Trajectory.ProximityDirect=yes
+  Trajectory.ThroughVehicles=no
+  Trajectory.ThroughBuilding=no
+  Trajectory.DamageEdgeAttenuation=0.6
+  Trajectory.Speed=300.0
+  ```
 
-````{note}
-> ![Trajectory-Demo-I](_static/images/Trajectory-Demo-I.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEI1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEI1
-Trajectory=Missile
-Trajectory.Missile.UniqueCurve=yes
-```
-````
+  ---
 
-````{note}
-> ![Trajectory-Demo-M](_static/images/Trajectory-Demo-M.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEM1]
-AA=yes
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEM1
-Trajectory=Missile
-Trajectory.BulletROT=6
-Trajectory.BulletFacing=Target
-Trajectory.Missile.PreAimCoord=0,0,360
-Trajectory.Missile.ReduceCoord=no
-Trajectory.Missile.LaunchSpeed=20
-Trajectory.Missile.Acceleration=12
-Trajectory.RetargetRadius=5
-Trajectory.Speed=200.0
-```
-````
+  > ![Trajectory-Demo-C](_static/images/Trajectory-Demo-C.gif)
+  > The assets of the case come from mod *Light Cone*.
 
-````{note}
-> ![Trajectory-Demo-N](_static/images/Trajectory-Demo-N.gif)
-> The assets of the case come from mod *Light Cone*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEN1]
-AA=no
-AG=yes
-SubjectToCliffs=yes
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEN1
-Trajectory=Engrave
-Trajectory.PassDetonate=yes
-Trajectory.PassDetonateDelay=2
-Trajectory.Duration=75
-Trajectory.Engrave.IsSingleColor=yes
-Trajectory.Engrave.LaserInnerColor=255,50,255
-Trajectory.Engrave.LaserThickness=6
-Trajectory.Engrave.LaserDuration=6
-Trajectory.Speed=40.0
-```
-````
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEC1]
+  AA=yes
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEC1
+  Trajectory=Missile
+  Trajectory.Missile.PreAimCoord=0,200,250
+  Trajectory.Missile.ReduceCoord=no
+  Trajectory.RotateCoord=120
+  Trajectory.AxisOfRotation=-1,0,0
+  Trajectory.Missile.LaunchSpeed=50
+  Trajectory.Missile.Acceleration=10
+  Trajectory.Missile.TurningSpeed=20
+  Trajectory.RetargetRadius=4
+  Trajectory.Speed=250.0
+  ```
 
-````{note}
-> ![Trajectory-Demo-O](_static/images/Trajectory-Demo-O.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEO1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=yes
-SubjectToWalls=no
-Image=SOMEIMAGEO1
-Trajectory=Parabola
-Trajectory.Parabola.OpenFireMode=Height
-Trajectory.Parabola.ThrowHeight=1
-Trajectory.PeacefulVanish=no
-Trajectory.DisperseSuicide=yes
-Trajectory.DisperseWeapons=SOMEWEAPONO2
-Trajectory.DisperseBursts=12
-Trajectory.DisperseCounts=1
-Trajectory.DisperseCycle=1
-Trajectory.DisperseEffectiveRange=-1
-Gravity=3.0
+  ---
 
-[SOMEPROJECTILEO2]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEO2
-Trajectory=Parabola
-Trajectory.DetonationDistance=0
-Trajectory.TargetSnapDistance=0
-Trajectory.Parabola.OpenFireMode=SpeedAndAngle
-Trajectory.Parabola.LaunchAngle=60
-Trajectory.Parabola.BounceTimes=3
-Trajectory.Parabola.BounceOnTarget=all
-Trajectory.Parabola.BounceDetonate=yes
-Trajectory.Parabola.BounceAttenuation=0.9
-Trajectory.Parabola.BounceCoefficient=0.9
-Trajectory.OffsetCoord=100000,0,0
-Trajectory.RotateCoord=330
-Trajectory.MirrorCoord=no
-Trajectory.Speed=40.0
-Gravity=8.0
-```
-````
+  > ![Trajectory-Demo-D](_static/images/Trajectory-Demo-D.gif)
+  > The assets of the case come from mod *Light Cone*.
 
-````{note}
-> ![Trajectory-Demo-P](_static/images/Trajectory-Demo-P.gif)
-> The assets of the case come from mod *Mental Omega*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILEP1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=yes
-SubjectToWalls=no
-Image=SOMEIMAGEP1
-Trajectory=Parabola
-Trajectory.DetonationDistance=-1
-Trajectory.TargetSnapDistance=0
-Trajectory.Parabola.OpenFireMode=Angle
-Trajectory.Parabola.LaunchAngle=65.0
-Trajectory.Parabola.DetonationAngle=0
-Trajectory.DisperseWeapons=SOMEWEAPONP2
-Trajectory.DisperseBursts=3
-Trajectory.DisperseCounts=1
-Trajectory.DisperseCycle=1
-Trajectory.DisperseEffectiveRange=-1
-Trajectory.DisperseRetarget=yes
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILED1]
+  AA=no
+  AG=yes
+  Inaccurate=yes
+  BallisticScatter.Min=0.8
+  BallisticScatter.Max=1.2
+  SubjectToCliffs=yes
+  SubjectToElevation=no
+  SubjectToWalls=yes
+  SubjectToBuildings=yes
+  Image=SOMEIMAGED1
+  Trajectory=Straight
+  Trajectory.ApplyRangeModifiers=yes
+  Trajectory.DetonationDistance=4.7
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Straight.PassThrough=yes
+  Trajectory.ProximityImpact=-1
+  Trajectory.ProximityWarhead=SOMEWARHEADD1
+  Trajectory.ProximityDamage=40
+  Trajectory.ProximityRadius=0.8
+  Trajectory.ProximityDirect=yes
+  Trajectory.ProximityAllies=yes
+  Trajectory.ThroughVehicles=no
+  Trajectory.ThroughBuilding=no
+  Trajectory.Straight.ConfineAtHeight=75
+  Trajectory.Speed=60.0
+  ```
 
-[SOMEPROJECTILEP2]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEP2
-Trajectory=Parabola
-Trajectory.DetonationDistance=0.2
-Trajectory.TargetSnapDistance=0.2
-Trajectory.Parabola.OpenFireMode=Angle
-Trajectory.Parabola.LaunchAngle=0.0
-```
-````
+  ---
 
-````{note}
-> ![Trajectory-Demo-R](_static/images/Trajectory-Demo-R.gif)
-> The assets of the case come from mod *Mental Omega*.
-```{dropdown} Click to show ini
-[SOMEPROJECTILER1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGER1
-Trajectory=Bombard
-Trajectory.Bombard.Height=12000.0
-Trajectory.Bombard.NoLaunch=yes
-Trajectory.PeacefulVanish=no
-Trajectory.DisperseSuicide=no
-Trajectory.DisperseWeapons=SOMEWEAPONR2
-Trajectory.DisperseBursts=1
-Trajectory.DisperseCounts=1
-Trajectory.DisperseCycle=1
-Gravity=15.0
-```
-````
+  > ![Trajectory-Demo-E](_static/images/Trajectory-Demo-E.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
-````{note}
-> ![Trajectory-Demo-S](_static/images/Trajectory-Demo-S.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILES1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGES1
-Trajectory=Tracing
-Trajectory.Tracing.TraceMode=RotateCW
-Trajectory.Tracing.StableRotation=yes
-Trajectory.Tracing.TrackTarget=no
-Trajectory.Tracing.AttachCoord=520,0,-200
-Trajectory.Duration=-1
-Trajectory.TolerantTime=30
-Trajectory.CreateCapacity=3
-Trajectory.BulletROT=-3
-Trajectory.BulletFacing=Target
-Trajectory.PeacefulVanish=yes
-Trajectory.Synchronize=yes
-Trajectory.DisperseCoord=100,0,0
-Trajectory.DisperseFromFirer=no
-Trajectory.DisperseWeapons=SOMEWEAPONS2
-Trajectory.DisperseBursts=2
-Trajectory.DisperseCounts=-1
-Trajectory.DisperseDelays=40
-Trajectory.DisperseCycle=1
-Trajectory.DisperseRetarget=yes
-Trajectory.DisperseTendency=yes
-Trajectory.DisperseFaceCheck=yes
-Trajectory.DisperseForceFire=no
-Trajectory.Speed=30.0
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEE1]
+  AA=no
+  AG=yes
+  Inaccurate=yes
+  BallisticScatter.Min=0.25
+  BallisticScatter.Max=0.75
+  SubjectToCliffs=yes
+  SubjectToElevation=no
+  SubjectToWalls=yes
+  SubjectToBuildings=yes
+  SubjectToGround=yes
+  Image=SOMEIMAGEE1
+  Trajectory=Straight
+  Trajectory.ApplyRangeModifiers=yes
+  Trajectory.DetonationDistance=6.7
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Straight.PassThrough=yes
+  Trajectory.PeacefulVanish=no
+  Trajectory.ProximityImpact=3
+  Trajectory.ProximityWarhead=SOMEWARHEADE1
+  Trajectory.ProximityDamage=40
+  Trajectory.ProximityRadius=0.4
+  Trajectory.ProximityDirect=yes
+  Trajectory.ThroughBuilding=no
+  Trajectory.DamageEdgeAttenuation=0.75
+  Trajectory.Speed=300.0
+  ```
 
-[SOMEPROJECTILES2]
-AA=yes
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGES2
-Trajectory=Missile
-Trajectory.Missile.PreAimCoord=0,0,-50
-Trajectory.Missile.ReduceCoord=no
-Trajectory.Missile.LaunchSpeed=50
-Trajectory.Missile.Acceleration=5
-Trajectory.Missile.TurningSpeed=12
-Trajectory.Missile.RetargetRadius=2.5
-Trajectory.Missile.CruiseEnable=yes
-Trajectory.Missile.CruiseUnableRange=3.0
-Trajectory.Missile.CruiseAltitude=450
-Trajectory.Missile.CruiseAlongLevel=yes
-Trajectory.Speed=90.0
-```
-````
+  ---
 
-````{note}
-> ![Trajectory-Demo-T](_static/images/Trajectory-Demo-T.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILET1]
-AA=yes
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGET1
-Trajectory=Tracing
-Trajectory.Tracing.TraceMode=RotateCCW
-Trajectory.Tracing.StableRotation=yes
-Trajectory.Tracing.AttachCoord=640,0,500
-Trajectory.Tracing.ChasableDistance=10
-Trajectory.Synchronize=yes
-Trajectory.Duration=-1
-Trajectory.TolerantTime=0
-Trajectory.CreateCapacity=5
-Trajectory.BulletFacing=Target
-Trajectory.PeacefulVanish=yes
-Trajectory.DisperseCoord=100,0,0
-Trajectory.DisperseFromFirer=no
-Trajectory.DisperseWeapons=SOMEWEAPONT2
-Trajectory.DisperseBursts=1
-Trajectory.DisperseCounts=-1
-Trajectory.DisperseDelays=1
-Trajectory.DisperseInitialDelay=50
-Trajectory.DisperseCycle=-1
-Trajectory.DisperseForceFire=no
-Trajectory.Speed=45.0
-```
-````
+  > ![Trajectory-Demo-F](_static/images/Trajectory-Demo-F.gif)
+  > The assets of the case come from mod *Light Cone*.
 
-````{note}
-> ![Trajectory-Demo-U](_static/images/Trajectory-Demo-U.gif)
-> The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEU1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=yes
-SubjectToWalls=no
-SubjectToGround=yes
-Image=SOMEIMAGEU1
-Trajectory=Missile
-Trajectory.RecordSourceCoord=yes
-Trajectory.Missile.LaunchSpeed=0
-Trajectory.Missile.Acceleration=0
-Trajectory.Missile.TurningSpeed=0
-Trajectory.DisperseSuicide=yes
-Trajectory.DisperseWeapons=SOMEWEAPONU2,SOMEWEAPONU3,SOMEWEAPONU4
-Trajectory.DisperseBursts=1
-Trajectory.DisperseCounts=1
-Trajectory.DisperseCycle=1
-Trajectory.Speed=0
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEF1]
+  AA=no
+  AG=yes
+  Inaccurate=yes
+  BallisticScatter.Min=0
+  BallisticScatter.Max=1
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEF1
+  Trajectory=Straight
+  Trajectory.ApplyRangeModifiers=yes
+  Trajectory.DetonationDistance=12.5
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Straight.PassThrough=yes
+  Trajectory.PassDetonate=yes
+  Trajectory.PassDetonateWarhead=SOMEWARHEADF1
+  Trajectory.PassDetonateDamage=60
+  Trajectory.PassDetonateDelay=5
+  Trajectory.PassDetonateInitialDelay=1
+  Trajectory.PassDetonateLocal=yes
+  Trajectory.Straight.ConfineAtHeight=32
+  Trajectory.Speed=60.0
+  ```
 
-[SOMEPROJECTILEU2]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=yes
-SubjectToWalls=no
-Image=SOMEIMAGEU2
-Trajectory=Engrave
-Trajectory.PassDetonate=yes
-Trajectory.PassDetonateDelay=2
-Trajectory.Engrave.SourceCoord=0,600
-Trajectory.Engrave.TargetCoord=0,-600
-Trajectory.UseDisperseCoord=yes
-Trajectory.AllowFirerTurning=no
-Trajectory.Engrave.IsIntense=yes
-Trajectory.Engrave.IsSingleColor=yes
-Trajectory.Engrave.LaserInnerColor=255,0,0
-Trajectory.Engrave.AttachToTarget=yes
-Trajectory.Engrave.UpdateDirection=yes
-Trajectory.Speed=40.0
+  ---
 
-[SOMEPROJECTILEU3]:[SOMEPROJECTILEU2]
-Trajectory.Engrave.SourceCoord=300,520
-Trajectory.Engrave.TargetCoord=-300,-520
+  > ![Trajectory-Demo-G](_static/images/Trajectory-Demo-G.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
-[SOMEPROJECTILEU4]:[SOMEPROJECTILEU2]
-Trajectory.Engrave.SourceCoord=-300,520
-Trajectory.Engrave.TargetCoord=300,-520
-```
-````
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEG1]
+  AA=yes
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEG1
+  Trajectory=Missile
+  Trajectory.Missile.LaunchSpeed=50
+  Trajectory.Missile.Acceleration=50
+  Trajectory.Missile.TurningSpeed=30
+  Trajectory.RetargetRadius=2.5
+  Trajectory.Speed=150.0
+  Gravity=0
+  ```
 
-````{note}
-> ![Trajectory-Demo-V](_static/images/Trajectory-Demo-V.gif)
-> The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEV1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=yes
-SubjectToWalls=no
-SubjectToGround=yes
-Image=SOMEIMAGEV1
-Trajectory=Missile
-Trajectory.RecordSourceCoord=yes
-Trajectory.Missile.LaunchSpeed=0
-Trajectory.Missile.Acceleration=0
-Trajectory.Missile.TurningSpeed=0
-Trajectory.DisperseSuicide=yes
-Trajectory.DisperseWeapons=SOMEWEAPONV2,SOMEWEAPONV3,SOMEWEAPONV4
-Trajectory.DisperseBursts=1
-Trajectory.DisperseCounts=1
-Trajectory.DisperseCycle=1
-Trajectory.Speed=0
+  ---
 
-[SOMEPROJECTILEV2]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=yes
-SubjectToWalls=no
-Image=SOMEIMAGEV2
-Trajectory=Engrave
-Trajectory.Engrave.SourceCoord=0,400
-Trajectory.Engrave.TargetCoord=0,0
-Trajectory.UseDisperseCoord=yes
-Trajectory.AllowFirerTurning=no
-Trajectory.Engrave.IsSingleColor=yes
-Trajectory.Engrave.LaserInnerColor=50,50,128
-Trajectory.Engrave.LaserThickness=1
-Trajectory.Engrave.AttachToTarget=yes
-Trajectory.Engrave.UpdateDirection=yes
-Trajectory.Speed=10.0
+  > ![Trajectory-Demo-I](_static/images/Trajectory-Demo-I.gif)
+  > The assets of the case come from mod *Light Cone*.
 
-[SOMEPROJECTILEV3]:[SOMEPROJECTILEV2]
-Trajectory.Engrave.SourceCoord=0,-400
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEI1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEI1
+  Trajectory=Missile
+  Trajectory.Missile.UniqueCurve=yes
+  ```
 
-[SOMEPROJECTILEV4]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-SubjectToGround=no
-Image=SOMEIMAGEV4
-Trajectory=Tracing
-Trajectory.Duration=80
-Trajectory.TolerantTime=0
-Trajectory.UseDisperseCoord=yes
-Trajectory.PeacefulVanish=yes
-Trajectory.AllowFirerTurning=no
-Trajectory.DisperseWeapons=SOMEWEAPONV5,SOMEWEAPONV6
-Trajectory.DisperseBursts=1
-Trajectory.DisperseCounts=10,1
-Trajectory.DisperseDelays=1
-Trajectory.DisperseInitialDelay=40
-Trajectory.DisperseCycle=1
-Trajectory.DisperseSeparate=yes
-Trajectory.DisperseSuicide=yes
-Trajectory.Tracing.CreateAtTarget=yes
-Trajectory.Tracing.ChasableDistance=15
-Trajectory.Speed=10000.0
-```
-````
+  ---
 
-````{note}
-> ![Trajectory-Demo-W](_static/images/Trajectory-Demo-W.gif)
-> The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
-```{dropdown} Click to show ini
-[SOMEPROJECTILEW1]
-AA=no
-AG=yes
-SubjectToCliffs=no
-SubjectToElevation=no
-SubjectToWalls=no
-Image=SOMEIMAGEW1
-Trajectory=Tracing
-Trajectory.Duration=210
-Trajectory.TolerantTime=30
-Trajectory.Synchronize=yes
-Trajectory.Tracing.CreateCoord=150,0,0
-Trajectory.PassDetonate=yes
-Trajectory.PassDetonateWarhead=SOMEWARHEADW2
-Trajectory.PassDetonateDamage=40
-Trajectory.PassDetonateDelay=5
-Trajectory.PassDetonateInitialDelay=1
-Trajectory.DisperseWeapons=SOMEWEAPONW2
-Trajectory.DisperseBursts=3
-Trajectory.DisperseCounts=-1
-Trajectory.DisperseDelays=30
-Trajectory.DisperseInitialDelay=40
-Trajectory.DisperseCycle=1
-Trajectory.DisperseRetarget=yes
-Trajectory.DisperseLocation=yes
-Trajectory.DisperseFromFirer=no
-Trajectory.DisperseForceFire=no
-Trajectory.Speed=20.0
-```
+  > ![Trajectory-Demo-M](_static/images/Trajectory-Demo-M.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEM1]
+  AA=yes
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEM1
+  Trajectory=Missile
+  Trajectory.BulletROT=6
+  Trajectory.BulletFacing=Target
+  Trajectory.Missile.PreAimCoord=0,0,360
+  Trajectory.Missile.ReduceCoord=no
+  Trajectory.Missile.LaunchSpeed=20
+  Trajectory.Missile.Acceleration=12
+  Trajectory.RetargetRadius=5
+  Trajectory.Speed=200.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-N](_static/images/Trajectory-Demo-N.gif)
+  > The assets of the case come from mod *Light Cone*.
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEN1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=yes
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEN1
+  Trajectory=Engrave
+  Trajectory.PassDetonate=yes
+  Trajectory.PassDetonateDelay=2
+  Trajectory.Duration=75
+  Trajectory.Engrave.IsSingleColor=yes
+  Trajectory.Engrave.LaserInnerColor=255,50,255
+  Trajectory.Engrave.LaserThickness=6
+  Trajectory.Engrave.LaserDuration=6
+  Trajectory.Speed=40.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-O](_static/images/Trajectory-Demo-O.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEO1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=yes
+  SubjectToWalls=no
+  Image=SOMEIMAGEO1
+  Trajectory=Parabola
+  Trajectory.Parabola.OpenFireMode=Height
+  Trajectory.Parabola.ThrowHeight=1
+  Trajectory.PeacefulVanish=no
+  Trajectory.DisperseSuicide=yes
+  Trajectory.DisperseWeapons=SOMEWEAPONO2
+  Trajectory.DisperseBursts=12
+  Trajectory.DisperseCounts=1
+  Trajectory.DisperseCycle=1
+  Trajectory.DisperseEffectiveRange=-1
+  Gravity=3.0
+
+  [SOMEPROJECTILEO2]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEO2
+  Trajectory=Parabola
+  Trajectory.DetonationDistance=0
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Parabola.OpenFireMode=SpeedAndAngle
+  Trajectory.Parabola.LaunchAngle=60
+  Trajectory.Parabola.BounceTimes=3
+  Trajectory.Parabola.BounceOnTarget=all
+  Trajectory.Parabola.BounceDetonate=yes
+  Trajectory.Parabola.BounceAttenuation=0.9
+  Trajectory.Parabola.BounceCoefficient=0.9
+  Trajectory.OffsetCoord=100000,0,0
+  Trajectory.RotateCoord=330
+  Trajectory.MirrorCoord=no
+  Trajectory.Speed=40.0
+  Gravity=8.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-P](_static/images/Trajectory-Demo-P.gif)
+  > The assets of the case come from mod *Mental Omega*.
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEP1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=yes
+  SubjectToWalls=no
+  Image=SOMEIMAGEP1
+  Trajectory=Parabola
+  Trajectory.DetonationDistance=-1
+  Trajectory.TargetSnapDistance=0
+  Trajectory.Parabola.OpenFireMode=Angle
+  Trajectory.Parabola.LaunchAngle=65.0
+  Trajectory.Parabola.DetonationAngle=0
+  Trajectory.DisperseWeapons=SOMEWEAPONP2
+  Trajectory.DisperseBursts=3
+  Trajectory.DisperseCounts=1
+  Trajectory.DisperseCycle=1
+  Trajectory.DisperseEffectiveRange=-1
+  Trajectory.DisperseRetarget=yes
+
+  [SOMEPROJECTILEP2]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEP2
+  Trajectory=Parabola
+  Trajectory.DetonationDistance=0.2
+  Trajectory.TargetSnapDistance=0.2
+  Trajectory.Parabola.OpenFireMode=Angle
+  Trajectory.Parabola.LaunchAngle=0.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-R](_static/images/Trajectory-Demo-R.gif)
+  > The assets of the case come from mod *Mental Omega*.
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILER1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGER1
+  Trajectory=Bombard
+  Trajectory.Bombard.Height=12000.0
+  Trajectory.Bombard.NoLaunch=yes
+  Trajectory.PeacefulVanish=no
+  Trajectory.DisperseSuicide=no
+  Trajectory.DisperseWeapons=SOMEWEAPONR2
+  Trajectory.DisperseBursts=1
+  Trajectory.DisperseCounts=1
+  Trajectory.DisperseCycle=1
+  Gravity=15.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-S](_static/images/Trajectory-Demo-S.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILES1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGES1
+  Trajectory=Tracing
+  Trajectory.Tracing.TraceMode=RotateCW
+  Trajectory.Tracing.StableRotation=yes
+  Trajectory.Tracing.TrackTarget=no
+  Trajectory.Tracing.AttachCoord=520,0,-200
+  Trajectory.Duration=-1
+  Trajectory.TolerantTime=30
+  Trajectory.CreateCapacity=3
+  Trajectory.BulletROT=-3
+  Trajectory.BulletFacing=Target
+  Trajectory.PeacefulVanish=yes
+  Trajectory.Synchronize=yes
+  Trajectory.DisperseCoord=100,0,0
+  Trajectory.DisperseFromFirer=no
+  Trajectory.DisperseWeapons=SOMEWEAPONS2
+  Trajectory.DisperseBursts=2
+  Trajectory.DisperseCounts=-1
+  Trajectory.DisperseDelays=40
+  Trajectory.DisperseCycle=1
+  Trajectory.DisperseRetarget=yes
+  Trajectory.DisperseTendency=yes
+  Trajectory.DisperseFaceCheck=yes
+  Trajectory.DisperseForceFire=no
+  Trajectory.Speed=30.0
+
+  [SOMEPROJECTILES2]
+  AA=yes
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGES2
+  Trajectory=Missile
+  Trajectory.Missile.PreAimCoord=0,0,-50
+  Trajectory.Missile.ReduceCoord=no
+  Trajectory.Missile.LaunchSpeed=50
+  Trajectory.Missile.Acceleration=5
+  Trajectory.Missile.TurningSpeed=12
+  Trajectory.Missile.RetargetRadius=2.5
+  Trajectory.Missile.CruiseEnable=yes
+  Trajectory.Missile.CruiseUnableRange=3.0
+  Trajectory.Missile.CruiseAltitude=450
+  Trajectory.Missile.CruiseAlongLevel=yes
+  Trajectory.Speed=90.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-T](_static/images/Trajectory-Demo-T.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILET1]
+  AA=yes
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGET1
+  Trajectory=Tracing
+  Trajectory.Tracing.TraceMode=RotateCCW
+  Trajectory.Tracing.StableRotation=yes
+  Trajectory.Tracing.AttachCoord=640,0,500
+  Trajectory.Tracing.ChasableDistance=10
+  Trajectory.Synchronize=yes
+  Trajectory.Duration=-1
+  Trajectory.TolerantTime=0
+  Trajectory.CreateCapacity=5
+  Trajectory.BulletFacing=Target
+  Trajectory.PeacefulVanish=yes
+  Trajectory.DisperseCoord=100,0,0
+  Trajectory.DisperseFromFirer=no
+  Trajectory.DisperseWeapons=SOMEWEAPONT2
+  Trajectory.DisperseBursts=1
+  Trajectory.DisperseCounts=-1
+  Trajectory.DisperseDelays=1
+  Trajectory.DisperseInitialDelay=50
+  Trajectory.DisperseCycle=-1
+  Trajectory.DisperseForceFire=no
+  Trajectory.Speed=45.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-U](_static/images/Trajectory-Demo-U.gif)
+  > The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEU1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=yes
+  SubjectToWalls=no
+  SubjectToGround=yes
+  Image=SOMEIMAGEU1
+  Trajectory=Missile
+  Trajectory.RecordSourceCoord=yes
+  Trajectory.Missile.LaunchSpeed=0
+  Trajectory.Missile.Acceleration=0
+  Trajectory.Missile.TurningSpeed=0
+  Trajectory.DisperseSuicide=yes
+  Trajectory.DisperseWeapons=SOMEWEAPONU2,SOMEWEAPONU3,SOMEWEAPONU4
+  Trajectory.DisperseBursts=1
+  Trajectory.DisperseCounts=1
+  Trajectory.DisperseCycle=1
+  Trajectory.Speed=0
+
+  [SOMEPROJECTILEU2]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=yes
+  SubjectToWalls=no
+  Image=SOMEIMAGEU2
+  Trajectory=Engrave
+  Trajectory.PassDetonate=yes
+  Trajectory.PassDetonateDelay=2
+  Trajectory.Engrave.SourceCoord=0,600
+  Trajectory.Engrave.TargetCoord=0,-600
+  Trajectory.UseDisperseCoord=yes
+  Trajectory.AllowFirerTurning=no
+  Trajectory.Engrave.IsIntense=yes
+  Trajectory.Engrave.IsSingleColor=yes
+  Trajectory.Engrave.LaserInnerColor=255,0,0
+  Trajectory.Engrave.AttachToTarget=yes
+  Trajectory.Engrave.UpdateDirection=yes
+  Trajectory.Speed=40.0
+
+  [SOMEPROJECTILEU3]:[SOMEPROJECTILEU2]
+  Trajectory.Engrave.SourceCoord=300,520
+  Trajectory.Engrave.TargetCoord=-300,-520
+
+  [SOMEPROJECTILEU4]:[SOMEPROJECTILEU2]
+  Trajectory.Engrave.SourceCoord=-300,520
+  Trajectory.Engrave.TargetCoord=300,-520
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-V](_static/images/Trajectory-Demo-V.gif)
+  > The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEV1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=yes
+  SubjectToWalls=no
+  SubjectToGround=yes
+  Image=SOMEIMAGEV1
+  Trajectory=Missile
+  Trajectory.RecordSourceCoord=yes
+  Trajectory.Missile.LaunchSpeed=0
+  Trajectory.Missile.Acceleration=0
+  Trajectory.Missile.TurningSpeed=0
+  Trajectory.DisperseSuicide=yes
+  Trajectory.DisperseWeapons=SOMEWEAPONV2,SOMEWEAPONV3,SOMEWEAPONV4
+  Trajectory.DisperseBursts=1
+  Trajectory.DisperseCounts=1
+  Trajectory.DisperseCycle=1
+  Trajectory.Speed=0
+
+  [SOMEPROJECTILEV2]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=yes
+  SubjectToWalls=no
+  Image=SOMEIMAGEV2
+  Trajectory=Engrave
+  Trajectory.Engrave.SourceCoord=0,400
+  Trajectory.Engrave.TargetCoord=0,0
+  Trajectory.UseDisperseCoord=yes
+  Trajectory.AllowFirerTurning=no
+  Trajectory.Engrave.IsSingleColor=yes
+  Trajectory.Engrave.LaserInnerColor=50,50,128
+  Trajectory.Engrave.LaserThickness=1
+  Trajectory.Engrave.AttachToTarget=yes
+  Trajectory.Engrave.UpdateDirection=yes
+  Trajectory.Speed=10.0
+
+  [SOMEPROJECTILEV3]:[SOMEPROJECTILEV2]
+  Trajectory.Engrave.SourceCoord=0,-400
+
+  [SOMEPROJECTILEV4]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  SubjectToGround=no
+  Image=SOMEIMAGEV4
+  Trajectory=Tracing
+  Trajectory.Duration=80
+  Trajectory.TolerantTime=0
+  Trajectory.UseDisperseCoord=yes
+  Trajectory.PeacefulVanish=yes
+  Trajectory.AllowFirerTurning=no
+  Trajectory.DisperseWeapons=SOMEWEAPONV5,SOMEWEAPONV6
+  Trajectory.DisperseBursts=1
+  Trajectory.DisperseCounts=10,1
+  Trajectory.DisperseDelays=1
+  Trajectory.DisperseInitialDelay=40
+  Trajectory.DisperseCycle=1
+  Trajectory.DisperseSeparate=yes
+  Trajectory.DisperseSuicide=yes
+  Trajectory.Tracing.CreateAtTarget=yes
+  Trajectory.Tracing.ChasableDistance=15
+  Trajectory.Speed=10000.0
+  ```
+
+  ---
+
+  > ![Trajectory-Demo-W](_static/images/Trajectory-Demo-W.gif)
+  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  In `rulesmd.ini`:
+  ```ini
+  [SOMEPROJECTILEW1]
+  AA=no
+  AG=yes
+  SubjectToCliffs=no
+  SubjectToElevation=no
+  SubjectToWalls=no
+  Image=SOMEIMAGEW1
+  Trajectory=Tracing
+  Trajectory.Duration=210
+  Trajectory.TolerantTime=30
+  Trajectory.Synchronize=yes
+  Trajectory.Tracing.CreateCoord=150,0,0
+  Trajectory.PassDetonate=yes
+  Trajectory.PassDetonateWarhead=SOMEWARHEADW2
+  Trajectory.PassDetonateDamage=40
+  Trajectory.PassDetonateDelay=5
+  Trajectory.PassDetonateInitialDelay=1
+  Trajectory.DisperseWeapons=SOMEWEAPONW2
+  Trajectory.DisperseBursts=3
+  Trajectory.DisperseCounts=-1
+  Trajectory.DisperseDelays=30
+  Trajectory.DisperseInitialDelay=40
+  Trajectory.DisperseCycle=1
+  Trajectory.DisperseRetarget=yes
+  Trajectory.DisperseLocation=yes
+  Trajectory.DisperseFromFirer=no
+  Trajectory.DisperseForceFire=no
+  Trajectory.Speed=20.0
+  ```
+
 ````
 
 ### Projectiles blocked by land or water
