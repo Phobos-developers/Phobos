@@ -2430,38 +2430,39 @@ DEFINE_PATCH(0x6DF77A, 0x01); // TActionClass::Execute
 
 #pragma endregion
 
-#pragma region MouseOverObjectROF
+#pragma region WhatActionObjectFix
 
 // canEnter and ignoreForce should come before GetFireError().
 DEFINE_JUMP(LJMP, 0x70054D, 0x70056C)
 
-namespace MouseOverROFTemp
+namespace WhatActionObjectTemp
 {
 	bool Skip = false;
 }
 
-DEFINE_HOOK(0x700536, TechnoClass_MouseOverObject_AllowAttack, 0x6)
+DEFINE_HOOK(0x700536, TechnoClass_WhatAction_ObjectObject_AllowAttack, 0x6)
 {
+	enum { CanAttack = 0x70055D, Continue = 0x700548 };
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
 	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
 	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
-	enum { CanAttack = 0x70055D };
+	GET_STACK(int, WeaponIndex, STACK_OFFSET(0x1C, -0x8));
 
 	if (canEnter || ignoreForce)
 		return CanAttack;
 
-	MouseOverROFTemp::Skip = true;
-	return 0;
+	WhatActionObjectTemp::Skip = true;
+	R->EAX(pThis->GetFireError(pObject, WeaponIndex, true));
+	WhatActionObjectTemp::Skip = false;
+
+	return Continue;
 }
 
 DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 {
-	if (MouseOverROFTemp::Skip)
-	{
-		MouseOverROFTemp::Skip = false;
-		return 0x6FC981;
-	}
-
-	return 0;
+	return WhatActionObjectTemp::Skip ? 0x6FC981 : 0;
 }
 
 #pragma endregion
