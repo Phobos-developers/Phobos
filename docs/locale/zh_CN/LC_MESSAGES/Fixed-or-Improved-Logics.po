@@ -1503,53 +1503,60 @@ msgstr "修复了即便 `OpenTopped` 载具被超时空弹头冻结其乘客的�
 
 #: ../../Fixed-or-Improved-Logics.md:247
 msgid "Fixed the bug that vehicle owned by computer will scatter when cloaking."
-msgstr ""
+msgstr "修复了 AI 的载具在隐形时会乱跑的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:248
 msgid ""
 "Fixed the bug that submarine always turn left after changed owner by map "
 "event."
 msgstr ""
+"修复了水下单位在被地图触发修改所属后总会朝向左方的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:249
 msgid ""
 "Fixed the bug that occupyable structure won't redraw when press deploy "
 "hotkey to release all occupants."
 msgstr ""
+"修复了可驻军建筑在按部署键释放全部驻兵后绘图不会刷新的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:250
 msgid ""
 "Fixed an issue that if the garrison unload occupants when there is no "
 "open space around it would result in the disappearance of the occupants."
 msgstr ""
+"修复了周围没有空地时释放驻军会导致它们消失的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:251
 msgid ""
 "Fixed the bug that Locomotor warhead won’t stop working when the attacker"
 " is being affected by `Temporal=yes` warhead."
 msgstr ""
+"修复了攻击者被 `Temporal=yes` 弹头作用时运动模式弹头不会停止工作的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:252
 msgid ""
 "Fixed the bug that `IsLocomotor=yes` warhead rendering hover units "
 "unselectable and undamageable on elevated bridge."
 msgstr ""
+"修复了 `IsLocomotor=yes` 弹头会导致高架桥上的悬浮载具无法选中且无法被伤害的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:253
 msgid ""
 "Fixed the bug that Locomotor warhead won't stop working when firer "
 "(except for vehicle) stop firing."
 msgstr ""
+"修复了非载具单位使用运动模式弹头时停止开火也不会停止工作的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:254
 msgid "Fixed the bug that hover vehicle will sink if destroyed on bridge."
-msgstr ""
+msgstr "修复了悬浮载具在桥上被摧毁会沉没（而不是爆炸）的 Bug。"
 
 #: ../../Fixed-or-Improved-Logics.md:255
 msgid ""
 "Fixed the fact that when the selected unit is in a rearmed state, it can "
 "unconditionally use attack mouse on the target."
 msgstr ""
+"修复了当被选中的单位武器正在 CD 时可以无条件对目标使用 Attack 光标的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:257
 msgid "Fixes / interactions with other extensions"
@@ -1668,6 +1675,7 @@ msgid ""
 "Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the "
 "unit is turning or moving."
 msgstr ""
+"修复了 Ares 的 `Convert.Deploy` 会在单位转向或移动中反复触发的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:278
 msgid "Aircraft"

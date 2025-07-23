@@ -1910,6 +1910,7 @@ msgid ""
 "Fixed the fact that when the selected unit is in a rearmed state, it can "
 "unconditionally use attack mouse on the target (by FlyStar)"
 msgstr ""
+"修复了当被选中的单位武器正在 CD 时可以无条件对目标使用 Attack 光标的问题（by FlyStar）"
 
 #: ../../Whats-New.md:443 ../../Whats-New.md:766 ../../Whats-New.md:847
 #: ../../Whats-New.md:1011 ../../Whats-New.md:1052 ../../Whats-New.md:1064
@@ -3606,18 +3607,21 @@ msgid ""
 "Fixed the bug that vehicle owned by computer will scatter when cloaking "
 "(by NetsuNegi)"
 msgstr ""
+"修复了 AI 的载具在隐形时会乱跑的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:758
 msgid ""
 "Fixed the bug that submarine always turn left after changed owner by map "
 "event (by NetsuNegi)"
 msgstr ""
+"修复了水下单位在被地图触发修改所属后总会朝向左方的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:759
 msgid ""
 "Fixed the bug that occupyable structure won't redraw when press deploy "
 "hotkey to release all occupants (by NetsuNegi)"
 msgstr ""
+"修复了可驻军建筑在按部署键释放全部驻兵后绘图不会刷新的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:760
 msgid ""
@@ -3625,30 +3629,35 @@ msgid ""
 "open space around it would result in the disappearance of the occupants "
 "(by CrimRecya)"
 msgstr ""
+"修复了周围没有空地时释放驻军会导致它们消失的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:761
 msgid ""
 "Fixed the bug that Locomotor warhead won’t stop working when the attacker"
 " is being affected by `Temporal=yes` warhead (by NetsuNegi)"
 msgstr ""
+"修复了攻击者被 `Temporal=yes` 弹头作用时运动模式弹头不会停止工作的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:762
 msgid ""
 "Fixed the bug that `IsLocomotor=yes` warhead rendering hover units "
 "unselectable and undamageable on elevated bridge (by NetsuNegi)"
 msgstr ""
+"修复了 `IsLocomotor=yes` 弹头会导致高架桥上的悬浮载具无法选中且无法被伤害的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:763
 msgid ""
 "Fixed the bug that Locomotor warhead won't stop working when firer "
 "(except for vehicle) stop firing (by NetsuNegi)"
 msgstr ""
+"修复了非载具单位使用运动模式弹头时停止开火也不会停止工作的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:764
 msgid ""
 "Fixed the bug that hover vehicle will sink if destroyed on bridge (by "
 "NetsuNegi)"
 msgstr ""
+"修复了悬浮载具在桥上被摧毁会沉没（而不是爆炸）的 Bug（by NetsuNegi）"
 
 #: ../../Whats-New.md:767
 msgid ""
@@ -4080,6 +4089,12 @@ msgid ""
 "Fixed the bug that AlphaImage remained after unit entered tunnel (by "
 "NetsuNegi)"
 msgstr "修复了 AlphaImage 在单位进入隧道后会遗留在隧道口的 Bug（by NetsuNegi）"
+
+msgid ""
+"Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the "
+"unit is turning or moving (by CrimRecya)"
+msgstr ""
+"修复了 Ares 的 `Convert.Deploy` 会在单位转向或移动中反复触发的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:840
 msgid "0.3.0.1"
