@@ -438,6 +438,7 @@ Vanilla fixes:
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
+- Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
