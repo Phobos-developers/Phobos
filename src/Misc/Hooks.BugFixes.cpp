@@ -2440,14 +2440,17 @@ namespace MouseOverROFTemp
 	bool Skip = false;
 }
 
-DEFINE_HOOK(0x700536, TechnoClass_MouseOverObject_AllowEnter, 0x6)
+DEFINE_HOOK(0x700536, TechnoClass_MouseOverObject_AllowAttack, 0x6)
 {
 	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
 	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
 	enum { CanAttack = 0x70055D };
 
+	if (canEnter || ignoreForce)
+		return CanAttack;
+
 	MouseOverROFTemp::Skip = true;
-	return (canEnter || ignoreForce) ? CanAttack : 0;
+	return 0;
 }
 
 DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
