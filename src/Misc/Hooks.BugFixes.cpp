@@ -2440,7 +2440,7 @@ namespace WhatActionObjectTemp
 	bool Skip = false;
 }
 
-DEFINE_HOOK(0x700536, TechnoClass_WhatAction_ObjectObject_AllowAttack, 0x6)
+DEFINE_HOOK(0x700536, TechnoClass_WhatAction_Object_AllowAttack, 0x6)
 {
 	enum { CanAttack = 0x70055D, Continue = 0x700548 };
 
