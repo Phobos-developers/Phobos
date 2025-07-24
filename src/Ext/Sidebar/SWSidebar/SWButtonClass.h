@@ -1,13 +1,13 @@
 #pragma once
-#include <ControlClass.h>
+#include <GadgetClass.h>
 
-class SWButtonClass : public ControlClass
+class SWButtonClass : public GadgetClass
 {
 public:
 	SWButtonClass() = default;
-	SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height);
+	SWButtonClass(int superIdx, int x, int y, int width, int height);
 
-	~SWButtonClass() = default;
+	~SWButtonClass();
 
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;
@@ -18,8 +18,6 @@ public:
 	bool LaunchSuper() const;
 
 public:
-	static constexpr int StartID = 2200;
-
 	bool IsHovering { false };
 	int ColumnIndex { -1 };
 	int SuperIndex { -1 };

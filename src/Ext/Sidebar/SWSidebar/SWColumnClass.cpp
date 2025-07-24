@@ -4,12 +4,25 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/Side/Body.h>
 
-SWColumnClass::SWColumnClass(unsigned int id, int maxButtons, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, static_cast<GadgetFlag>(0), false)
+SWColumnClass::SWColumnClass(int maxButtons, int x, int y, int width, int height)
+	: GadgetClass(x, y, width, height, static_cast<GadgetFlag>(0), false)
 	, MaxButtons(maxButtons)
 {
 	SWSidebarClass::Instance.Columns.emplace_back(this);
 	this->Disabled = !SWSidebarClass::IsEnabled();
+}
+
+SWColumnClass::~SWColumnClass()
+{
+	// The vanilla game did not consider adding/deleting buttons midway through the game,
+	// so this behavior needs to be made known to the global variable and then remove it
+	auto& pCurrentMouseOverGadget = Make_Global<GadgetClass*>(0x8B3E94);
+
+	if (pCurrentMouseOverGadget == this)
+	{
+		pCurrentMouseOverGadget = nullptr;
+		this->OnMouseLeave();
+	}
 }
 
 bool SWColumnClass::Draw(bool forced)
@@ -108,13 +121,8 @@ bool SWColumnClass::AddButton(int superIdx)
 		sidebar.DisableEntry = false;
 	}
 
-	int currentID = SWButtonClass::StartID;
-
-	for (const auto column : sidebar.Columns)
-		currentID += static_cast<int>(column->Buttons.size());
-
 	const int cameoWidth = 60, cameoHeight = 48;
-	const auto button = GameCreate<SWButtonClass>(currentID, superIdx, 0, 0, cameoWidth, cameoHeight);
+	const auto button = GameCreate<SWButtonClass>(superIdx, 0, 0, cameoWidth, cameoHeight);
 
 	if (!button)
 		return false;
@@ -146,7 +154,9 @@ bool SWColumnClass::RemoveButton(int superIdx)
 	if (it_Idx != indices.cend())
 		indices.erase(it_Idx);
 
-	GScreenClass::Instance.RemoveButton(*it);
+	const auto pButton = *it;
+	GScreenClass::Instance.RemoveButton(pButton);
+	GameDelete(pButton);
 	buttons.erase(it);
 	return true;
 }
@@ -158,7 +168,10 @@ void SWColumnClass::ClearButtons(bool remove)
 	if (remove)
 	{
 		for (const auto button : buttons)
+		{
 			GScreenClass::Instance.RemoveButton(button);
+			GameDelete(button);
+		}
 	}
 
 	buttons.clear();
