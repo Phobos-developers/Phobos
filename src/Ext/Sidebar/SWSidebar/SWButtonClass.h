@@ -12,7 +12,7 @@ public:
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;
 	virtual void OnMouseLeave() override;
-	virtual bool Action(GadgetFlag fags, DWORD* pKey, KeyModifier modifier) override;
+	virtual bool Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier) override;
 
 	void SetColumn(int column);
 	bool LaunchSuper() const;
