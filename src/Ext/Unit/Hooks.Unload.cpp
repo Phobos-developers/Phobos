@@ -126,11 +126,13 @@ DEFINE_HOOK(0x73DE78, UnitClass_Unload_ChangeAmmo, 0x6) // converters
 	return Continue;
 }
 
+// TODO: Replace all of Ares SimpleDeployer code.
 #pragma region SimpleDeployer
 
 namespace SimpleDeployerTemp
 {
 	bool HoverDeployedToLand = false;
+	AnimTypeClass* DeployingAnim = nullptr;
 }
 
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
@@ -270,6 +272,45 @@ DEFINE_HOOK(0x513D2C, HoverLocomotionClass_ProcessBobbing_DeployToLand, 0x6)
 	{
 		if (pUnit->Deploying && pUnit->Type->DeployToLand)
 			return SkipBobbing;
+	}
+
+	return 0;
+}
+
+// Trick Ares into thinking it can deploy in any direction if anim does not constrain it by temporarily removing the anim.
+DEFINE_HOOK(0x514325, HoverLocomotionClass_Process_DeployingAnim1, 0x8)
+{
+	GET(ILocomotion*, iLoco, ESI);
+	GET(bool, isMoving, EAX);
+
+	auto const pLinkedTo = static_cast<LocomotionClass*>(iLoco)->LinkedTo;
+	auto const pType = pLinkedTo->GetTechnoType();
+
+	if (pType->DeployToLand && pType->DeployingAnim)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->DeployingAnim_AllowAnyDirection)
+		{
+			SimpleDeployerTemp::DeployingAnim = pType->DeployingAnim;
+			pType->DeployingAnim = nullptr;
+		}
+	}
+
+	return isMoving ? 0x51432D : 0x514A21;
+}
+
+// Restore the DeployingAnim to normal after.
+DEFINE_HOOK(0x514AD0, HoverLocomotionClass_Process_DeployingAnim2, 0x5)
+{
+	GET(ILocomotion*, iLoco, ESI);
+
+	if (SimpleDeployerTemp::DeployingAnim)
+	{
+		auto const pLinkedTo = static_cast<LocomotionClass*>(iLoco)->LinkedTo;
+		auto const pType = pLinkedTo->GetTechnoType();
+		pType->DeployingAnim = SimpleDeployerTemp::DeployingAnim;
+		SimpleDeployerTemp::DeployingAnim = nullptr;
 	}
 
 	return 0;
