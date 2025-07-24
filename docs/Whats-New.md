@@ -41,6 +41,8 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
+- Aircraft's weapon with `Trajectory` projectile will no longer make `Strafing` default to true.
+- `Trajectory.Straight.TargetSnapDistance` and other similar keys has been renamed to some more universal name like `Trajectory.TargetSnapDistance`. You can view detailed content in [Projectile trajectories](New-or-Enhanced-Logics.md#Projectile-trajectories).
 
 #### From 0.3
 

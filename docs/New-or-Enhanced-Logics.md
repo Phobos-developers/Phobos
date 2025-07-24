@@ -1252,8 +1252,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-A](_static/images/Trajectory-Demo-A.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-A](_static/images/Trajectory-demo-A.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1277,8 +1277,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-B](_static/images/Trajectory-Demo-B.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-B](_static/images/Trajectory-demo-B.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1332,8 +1332,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-C](_static/images/Trajectory-Demo-C.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-C](_static/images/Trajectory-demo-C.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1358,8 +1358,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-D](_static/images/Trajectory-Demo-D.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-D](_static/images/Trajectory-demo-D.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1393,8 +1393,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-E](_static/images/Trajectory-Demo-E.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-E](_static/images/Trajectory-demo-E.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1428,8 +1428,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-F](_static/images/Trajectory-Demo-F.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-F](_static/images/Trajectory-demo-F.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1460,8 +1460,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-G](_static/images/Trajectory-Demo-G.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-G](_static/images/Trajectory-demo-G.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1483,8 +1483,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-I](_static/images/Trajectory-Demo-I.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-I](_static/images/Trajectory-demo-I.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1501,8 +1501,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-M](_static/images/Trajectory-Demo-M.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-M](_static/images/Trajectory-demo-M.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1526,8 +1526,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-N](_static/images/Trajectory-Demo-N.gif)
-  > The assets of the case come from mod *Light Cone*.
+  ![Trajectory-Demo-N](_static/images/Trajectory-demo-N.gif)
+  The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1551,8 +1551,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-O](_static/images/Trajectory-Demo-O.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-O](_static/images/Trajectory-demo-O.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1601,8 +1601,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-P](_static/images/Trajectory-Demo-P.gif)
-  > The assets of the case come from mod *Mental Omega*.
+  ![Trajectory-Demo-P](_static/images/Trajectory-demo-P.gif)
+  The assets of the case come from mod *Mental Omega*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1642,8 +1642,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-R](_static/images/Trajectory-Demo-R.gif)
-  > The assets of the case come from mod *Mental Omega*.
+  ![Trajectory-Demo-R](_static/images/Trajectory-demo-R.gif)
+  The assets of the case come from mod *Mental Omega*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1668,8 +1668,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-S](_static/images/Trajectory-Demo-S.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-S](_static/images/Trajectory-demo-S.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1728,8 +1728,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-T](_static/images/Trajectory-Demo-T.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-T](_static/images/Trajectory-demo-T.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1765,8 +1765,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-U](_static/images/Trajectory-Demo-U.gif)
-  > The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
+  ![Trajectory-Demo-U](_static/images/Trajectory-demo-U.gif)
+  The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
 
   In `rulesmd.ini`:
   ```ini
@@ -1822,8 +1822,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-V](_static/images/Trajectory-Demo-V.gif)
-  > The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
+  ![Trajectory-Demo-V](_static/images/Trajectory-demo-V.gif)
+  The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
 
   In `rulesmd.ini`:
   ```ini
@@ -1898,8 +1898,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ---
 
-  > ![Trajectory-Demo-W](_static/images/Trajectory-Demo-W.gif)
-  > The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+  ![Trajectory-Demo-W](_static/images/Trajectory-demo-W.gif)
+  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
