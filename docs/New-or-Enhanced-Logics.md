@@ -1249,17 +1249,25 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 ````{dropdown} Click to show
 
   - The referenced images, weapons, and warheads should be supplemented by yourself.
+    - SOMEWEAPON[] - SOMEPROJECTILE[] - SOMEIMAGE[] / SOMEWARHEAD[]
+
+  ```{note}
+  - It is recommended to start reading from the first one, as some of the content may have already been explained in previous cases.
+  ```
 
   ---
 
   ![Trajectory-Demo-A](_static/images/Trajectory-demo-A.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
   [SOMEPROJECTILEA1]
   AA=no
   AG=yes
+  ; Same as vanilla, when the distance reaches or exceeds the weapon's `Range`,
+  ; the deviation distance will reach the setting here
   Inaccurate=yes
   BallisticScatter.Min=0
   BallisticScatter.Max=0.5
@@ -1267,18 +1275,23 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToElevation=yes
   SubjectToWalls=yes
   SubjectToBuildings=yes
+  ; Enable units to automatically select suitable terrain height for firing,
+  ; avoiding bullet passing through the ground
   SubjectToGround=yes
   Image=SOMEIMAGEA1
   Trajectory=Straight
   Trajectory.DetonationDistance=0
+  ; Ensure that inaccurate take effect normally without snapping to the target
   Trajectory.TargetSnapDistance=0
+  ; Supporting ultra-high projectile speeds
   Trajectory.Speed=400.0
   ```
 
   ---
 
   ![Trajectory-Demo-B](_static/images/Trajectory-demo-B.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1289,14 +1302,20 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToElevation=no
   SubjectToWalls=yes
   SubjectToBuildings=yes
+  ; Just need to perform a terrain height check on the main weapon's projectile,
+  ; and the unit will automatically find the suitable terrain height for firing
   SubjectToGround=yes
+  ; Invisible images can be used
   Image=SOMEIMAGEB1
   Trajectory=Missile
   Trajectory.Missile.LaunchSpeed=0
   Trajectory.Missile.Acceleration=0
   Trajectory.Missile.TurningSpeed=0
   Trajectory.Missile.LockDirection=yes
+  ; After the launch is completed, it will be automatically destroyed,
+  ; and an automatically set `Trajectory.PeacefulVanish=yes` is hidden here
   Trajectory.DisperseSuicide=yes
+  ; Weapons that actually cause damage
   Trajectory.DisperseWeapons=SOMEWEAPONB2
   Trajectory.DisperseBursts=5
   Trajectory.DisperseCounts=1
@@ -1313,19 +1332,32 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGEB2
   Trajectory=Straight
   Trajectory.ApplyRangeModifiers=yes
+  ; Rotate the fire angle within a range of half the angle on each side
   Trajectory.RotateCoord=15
   Trajectory.MirrorCoord=no
+  ; Aiming at the position behind the target
   Trajectory.DetonationDistance=-0.5
   Trajectory.TargetSnapDistance=0
+  ; Make the setting of 'aiming behind the target' effective
   Trajectory.Straight.PassThrough=yes
+  ; This is necessary if you need to activate the original warhead of the weapon,
+  ; if the damage, animation, etc. of the weapon's original warhead is useless,
+  ; you can ignore this setting or explicitly set it as `yes`
   Trajectory.PeacefulVanish=no
+  ; Due to the use of impact damage, recommend using `Damage=1` on weapon
   Trajectory.ProximityImpact=1
+  ; If left blank, the warhead of the original weapon will be used
   Trajectory.ProximityWarhead=SOMEWARHEADB2
+  ; If left blank, the damage of the original weapon will be used
   Trajectory.ProximityDamage=50
   Trajectory.ProximityRadius=0.4
+  ; Not actually detonating the warhead, directly causing damage
   Trajectory.ProximityDirect=yes
+  ; Vehicles and buildings will not trigger impact,
+  ; but they will block projectiles on the route
   Trajectory.ThroughVehicles=no
   Trajectory.ThroughBuilding=no
+  ; The farther the target is, the lower the damage
   Trajectory.DamageEdgeAttenuation=0.6
   Trajectory.Speed=300.0
   ```
@@ -1333,7 +1365,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-C](_static/images/Trajectory-demo-C.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1345,13 +1378,23 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToWalls=no
   Image=SOMEIMAGEC1
   Trajectory=Missile
+  ; Launch towards the side
   Trajectory.Missile.PreAimCoord=0,200,250
+  ; Avoid the influence of distance on the angle
   Trajectory.Missile.ReduceCoord=no
+  ; The rotation angle is relatively large,
+  ; and an automatically set `Trajectory.MirrorCoord=yes` is hidden here,
+  ; so it is recommended that weapon's `Burst` be greater than or equal to 6
   Trajectory.RotateCoord=120
+  ; The orientation of the rotation axis is the same as that of the unit,
+  ; positive and negative values will affect the direction of rotation
+  ; It will only rotate to one side with `Trajectory.MirrorCoord=yes`,
+  ; half of the projectiles will be mirrored to the other side of the unit
   Trajectory.AxisOfRotation=-1,0,0
   Trajectory.Missile.LaunchSpeed=50
   Trajectory.Missile.Acceleration=10
   Trajectory.Missile.TurningSpeed=20
+  ; After losing the original target, a new target will be searched
   Trajectory.RetargetRadius=4
   Trajectory.Speed=250.0
   ```
@@ -1359,7 +1402,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-D](_static/images/Trajectory-demo-D.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1376,25 +1420,33 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGED1
   Trajectory=Straight
   Trajectory.ApplyRangeModifiers=yes
+  ; The projectile flies to a fixed length position and detonates,
+  ; the corresponding weapon's `Range` here is 4.5
   Trajectory.DetonationDistance=4.7
   Trajectory.TargetSnapDistance=0
   Trajectory.Straight.PassThrough=yes
+  ; Damage all targets along the way
   Trajectory.ProximityImpact=-1
   Trajectory.ProximityWarhead=SOMEWARHEADD1
   Trajectory.ProximityDamage=40
   Trajectory.ProximityRadius=0.8
   Trajectory.ProximityDirect=yes
+  ; It can also cause damage to friendly forces,
+  ; and you can also use it in conjunction with allies damage multiplier
   Trajectory.ProximityAllies=yes
   Trajectory.ThroughVehicles=no
   Trajectory.ThroughBuilding=no
+  ; The projectile is 'hovering' at a height of 75 leptons over the ground
   Trajectory.Straight.ConfineAtHeight=75
+  ; 'Hovering' only effective at low speeds
   Trajectory.Speed=60.0
   ```
 
   ---
 
   ![Trajectory-Demo-E](_static/images/Trajectory-demo-E.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1412,10 +1464,12 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGEE1
   Trajectory=Straight
   Trajectory.ApplyRangeModifiers=yes
+  ; The corresponding weapon's `Range` here is 6.5
   Trajectory.DetonationDistance=6.7
   Trajectory.TargetSnapDistance=0
   Trajectory.Straight.PassThrough=yes
   Trajectory.PeacefulVanish=no
+  ; The projectile will detonate after triggering impact three times
   Trajectory.ProximityImpact=3
   Trajectory.ProximityWarhead=SOMEWARHEADE1
   Trajectory.ProximityDamage=40
@@ -1429,7 +1483,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-F](_static/images/Trajectory-demo-F.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1445,14 +1500,23 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGEF1
   Trajectory=Straight
   Trajectory.ApplyRangeModifiers=yes
+  ; The corresponding weapon's `Range` here is 12
   Trajectory.DetonationDistance=12.5
   Trajectory.TargetSnapDistance=0
   Trajectory.Straight.PassThrough=yes
+  ; This involves detonating the projectile at regular intervals,
+  ; and if the target is within the range of multiple warheads,
+  ; it will cause multiple damages to the target
   Trajectory.PassDetonate=yes
+  ; If left blank, the warhead of the original weapon will be used
   Trajectory.PassDetonateWarhead=SOMEWARHEADF1
+  ; If left blank, the damage of the original weapon will be used
   Trajectory.PassDetonateDamage=60
   Trajectory.PassDetonateDelay=5
   Trajectory.PassDetonateInitialDelay=1
+  ; Combination use allows projectiles to advance at a fixed horizontal speed,
+  ; ignoring changes in height, and detonate the warhead at ground level
+  ; This can make the horizontal distance between the detonated warheads the same
   Trajectory.PassDetonateLocal=yes
   Trajectory.Straight.ConfineAtHeight=32
   Trajectory.Speed=60.0
@@ -1461,7 +1525,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-G](_static/images/Trajectory-demo-G.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1473,18 +1538,22 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToWalls=no
   Image=SOMEIMAGEG1
   Trajectory=Missile
+  ; An automatically set `Trajectory.Missile.PreAimCoord=0,0,0` is hidden here,
+  ; this can make the missile launch directly towards the target like a shell
   Trajectory.Missile.LaunchSpeed=50
   Trajectory.Missile.Acceleration=50
   Trajectory.Missile.TurningSpeed=30
   Trajectory.RetargetRadius=2.5
   Trajectory.Speed=150.0
+  ; This can eliminate the influence of gravity on missiles
   Gravity=0
   ```
 
   ---
 
   ![Trajectory-Demo-I](_static/images/Trajectory-demo-I.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1496,13 +1565,15 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToWalls=no
   Image=SOMEIMAGEI1
   Trajectory=Missile
+  ; A ballistic missile with a unique trajectory
   Trajectory.Missile.UniqueCurve=yes
   ```
 
   ---
 
   ![Trajectory-Demo-M](_static/images/Trajectory-demo-M.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1514,8 +1585,12 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToWalls=no
   Image=SOMEIMAGEM1
   Trajectory=Missile
+  ; Different from the rotational speed in the direction of motion,
+  ; it is the rotational speed in the direction of facing
   Trajectory.BulletROT=6
+  ; The direction facing is the direction of the target
   Trajectory.BulletFacing=Target
+  ; Vertically launched missile
   Trajectory.Missile.PreAimCoord=0,0,360
   Trajectory.Missile.ReduceCoord=no
   Trajectory.Missile.LaunchSpeed=20
@@ -1527,13 +1602,15 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-N](_static/images/Trajectory-demo-N.gif)
-  The assets of the case come from mod *Light Cone*.
+
+  - The assets of the case come from mod *Light Cone*.
 
   In `rulesmd.ini`:
   ```ini
   [SOMEPROJECTILEN1]
   AA=no
   AG=yes
+  ; Cannot pass through a cliff even if encounter it halfway
   SubjectToCliffs=yes
   SubjectToElevation=no
   SubjectToWalls=no
@@ -1541,6 +1618,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory=Engrave
   Trajectory.PassDetonate=yes
   Trajectory.PassDetonateDelay=2
+  ; The coordinates were set to default and stop after 75 frames
   Trajectory.Duration=75
   Trajectory.Engrave.IsSingleColor=yes
   Trajectory.Engrave.LaserInnerColor=255,50,255
@@ -1552,7 +1630,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-O](_static/images/Trajectory-demo-O.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1564,6 +1643,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToWalls=no
   Image=SOMEIMAGEO1
   Trajectory=Parabola
+  ; Combined use to achieve horizontal firing effect
   Trajectory.Parabola.OpenFireMode=Height
   Trajectory.Parabola.ThrowHeight=1
   Trajectory.PeacefulVanish=no
@@ -1572,7 +1652,9 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.DisperseBursts=12
   Trajectory.DisperseCounts=1
   Trajectory.DisperseCycle=1
+  ; Trigger disperse weapons only when about to detonate
   Trajectory.DisperseEffectiveRange=-1
+  ; Low gravity can prevent trajectory from being too straight
   Gravity=3.0
 
   [SOMEPROJECTILEO2]
@@ -1585,14 +1667,23 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory=Parabola
   Trajectory.DetonationDistance=0
   Trajectory.TargetSnapDistance=0
+  ; Using a relatively fixed trajectory
   Trajectory.Parabola.OpenFireMode=SpeedAndAngle
   Trajectory.Parabola.LaunchAngle=60
+  ; The projectile can bounce an additional three times
   Trajectory.Parabola.BounceTimes=3
   Trajectory.Parabola.BounceOnTarget=all
+  ; Each bounce will trigger an additional warhead of the weapon
   Trajectory.Parabola.BounceDetonate=yes
+  ; After bouncing, the damage caused next time will be 0.9 times that of this time
   Trajectory.Parabola.BounceAttenuation=0.9
+  ; After bouncing, the velocity next time will be 0.9 times that of this time
   Trajectory.Parabola.BounceCoefficient=0.9
+  ; Due to the existence of target deviation,
+  ; the actual detonation position and target position may be different,
+  ; and a huge offset value can offset the impact of errors
   Trajectory.OffsetCoord=100000,0,0
+  ; Each weapon rotates 30 degrees
   Trajectory.RotateCoord=330
   Trajectory.MirrorCoord=no
   Trajectory.Speed=40.0
@@ -1602,7 +1693,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-P](_static/images/Trajectory-demo-P.gif)
-  The assets of the case come from mod *Mental Omega*.
+
+  - The assets of the case come from mod *Mental Omega*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1617,13 +1709,18 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.DetonationDistance=-1
   Trajectory.TargetSnapDistance=0
   Trajectory.Parabola.OpenFireMode=Angle
+  ; Similar to the angle of the unit's barrel
   Trajectory.Parabola.LaunchAngle=65.0
+  ; Ignite at the highest point
   Trajectory.Parabola.DetonationAngle=0
   Trajectory.DisperseWeapons=SOMEWEAPONP2
   Trajectory.DisperseBursts=3
   Trajectory.DisperseCounts=1
   Trajectory.DisperseCycle=1
   Trajectory.DisperseEffectiveRange=-1
+  ; Disperse weapon will search for enemies on its own,
+  ; and the range will be determined by disperse weapon's `Range`,
+  ; `SOMEWEAPONP2`'s `Range` here is 2
   Trajectory.DisperseRetarget=yes
 
   [SOMEPROJECTILEP2]
@@ -1636,6 +1733,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory=Parabola
   Trajectory.DetonationDistance=0.2
   Trajectory.TargetSnapDistance=0.2
+  ; Combined use to achieve horizontal firing effect
   Trajectory.Parabola.OpenFireMode=Angle
   Trajectory.Parabola.LaunchAngle=0.0
   ```
@@ -1643,7 +1741,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-R](_static/images/Trajectory-demo-R.gif)
-  The assets of the case come from mod *Mental Omega*.
+
+  - The assets of the case come from mod *Mental Omega*.
 
   In `rulesmd.ini`:
   ```ini
@@ -1655,21 +1754,30 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToWalls=no
   Image=SOMEIMAGER1
   Trajectory=Bombard
+  ; Free fall from a high altitude,
+  ; an automatically set `Trajectory.Bombard.FreeFallOnTarget=yes` is hidden here
   Trajectory.Bombard.Height=12000.0
+  ; Skip the rising phase
   Trajectory.Bombard.NoLaunch=yes
+  ; It should still retain its ability to inflict damage,
+  ; because the projectile that actually causes damage is still itself
   Trajectory.PeacefulVanish=no
+  ; Similarly, it should not self destruct after firing the weapon
   Trajectory.DisperseSuicide=no
+  ; Disperse weapon uses `Inviso` projectile can provide a landing point prompt
   Trajectory.DisperseWeapons=SOMEWEAPONR2
   Trajectory.DisperseBursts=1
   Trajectory.DisperseCounts=1
   Trajectory.DisperseCycle=1
+  ; Make the projectile fall faster
   Gravity=15.0
   ```
 
   ---
 
   ![Trajectory-Demo-S](_static/images/Trajectory-demo-S.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1682,17 +1790,27 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGES1
   Trajectory=Tracing
   Trajectory.Tracing.TraceMode=RotateCW
+  ; Projectiles will maintain the same angles between each other
   Trajectory.Tracing.StableRotation=yes
+  ; Rotate around the launcher itself
   Trajectory.Tracing.TrackTarget=no
+  ; Rotate with a radius of 520 leptons on a plane 200 leptons below the launcher
   Trajectory.Tracing.AttachCoord=520,0,-200
+  ; Unlimited duration
   Trajectory.Duration=-1
+  ; But if there is no target, it will disappear after 30 frames
   Trajectory.TolerantTime=30
+  ; Up to 3 can be generated
   Trajectory.CreateCapacity=3
+  ; Facing only supports rotation on the horizontal plane
   Trajectory.BulletROT=-3
   Trajectory.BulletFacing=Target
   Trajectory.PeacefulVanish=yes
+  ; Projectile will synchronize with the target of the launcher
   Trajectory.Synchronize=yes
+  ; Launch the disperse weapon from a position of 100 leptons in front of it
   Trajectory.DisperseCoord=100,0,0
+  ; Launch the disperse weapon based on projectile position
   Trajectory.DisperseFromFirer=no
   Trajectory.DisperseWeapons=SOMEWEAPONS2
   Trajectory.DisperseBursts=2
@@ -1700,8 +1818,13 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.DisperseDelays=40
   Trajectory.DisperseCycle=1
   Trajectory.DisperseRetarget=yes
+  ; Each group of weapons should have at least one weapon that does not retarget,
+  ; and directly attacks the original target
   Trajectory.DisperseTendency=yes
+  ; When the projectile is not facing the target, the disperse weapon cannot be fired
   Trajectory.DisperseFaceCheck=yes
+  ; When the projectile has no target or the target is beyond the weapon's `Range`,
+  ; it will temporarily stop firing
   Trajectory.DisperseForceFire=no
   Trajectory.Speed=30.0
 
@@ -1719,9 +1842,14 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.Missile.Acceleration=5
   Trajectory.Missile.TurningSpeed=12
   Trajectory.Missile.RetargetRadius=2.5
+  ; The missile will have a cruising phase
   Trajectory.Missile.CruiseEnable=yes
+  ; When the horizontal distance from the target is below this value,
+  ; the missile will turn towards the target
   Trajectory.Missile.CruiseUnableRange=3.0
+  ; The missile will try to maintain at this altitude during the cruise phase
   Trajectory.Missile.CruiseAltitude=450
+  ; The cruise altitude will change with the terrain height
   Trajectory.Missile.CruiseAlongLevel=yes
   Trajectory.Speed=90.0
   ```
@@ -1729,7 +1857,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-T](_static/images/Trajectory-demo-T.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1744,6 +1873,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.Tracing.TraceMode=RotateCCW
   Trajectory.Tracing.StableRotation=yes
   Trajectory.Tracing.AttachCoord=640,0,500
+  ; The projectile can only pursue targets within 10 cells from the launcher
   Trajectory.Tracing.ChasableDistance=10
   Trajectory.Synchronize=yes
   Trajectory.Duration=-1
@@ -1766,7 +1896,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-U](_static/images/Trajectory-demo-U.gif)
-  The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
+
+  - The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
 
   In `rulesmd.ini`:
   ```ini
@@ -1779,6 +1910,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToGround=yes
   Image=SOMEIMAGEU1
   Trajectory=Missile
+  ; Record the launch location for disperse weapons
   Trajectory.RecordSourceCoord=yes
   Trajectory.Missile.LaunchSpeed=0
   Trajectory.Missile.Acceleration=0
@@ -1796,18 +1928,25 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToCliffs=no
   SubjectToElevation=yes
   SubjectToWalls=no
+  ; If there is no suitable warhead animation,
+  ; using invisible projectile image with laser trails is also a good choice
   Image=SOMEIMAGEU2
   Trajectory=Engrave
   Trajectory.PassDetonate=yes
   Trajectory.PassDetonateDelay=2
   Trajectory.Engrave.SourceCoord=0,600
   Trajectory.Engrave.TargetCoord=0,-600
+  ; Use the recorded launch location
   Trajectory.UseDisperseCoord=yes
+  ; When the orientation of the launcher changes significantly,
+  ; it will directly destroy the projectile
   Trajectory.AllowFirerTurning=no
   Trajectory.Engrave.IsIntense=yes
   Trajectory.Engrave.IsSingleColor=yes
   Trajectory.Engrave.LaserInnerColor=255,0,0
+  ; The calculation of coordinates will be updated with the target position
   Trajectory.Engrave.AttachToTarget=yes
+  ; The calculation of direction will be updated with the target position
   Trajectory.Engrave.UpdateDirection=yes
   Trajectory.Speed=40.0
 
@@ -1823,7 +1962,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-V](_static/images/Trajectory-demo-V.gif)
-  The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
+
+  - The assets of the case come from mod [*Source Deity*](https://www.moddb.com/mods/source-deity).
 
   In `rulesmd.ini`:
   ```ini
@@ -1883,14 +2023,18 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.UseDisperseCoord=yes
   Trajectory.PeacefulVanish=yes
   Trajectory.AllowFirerTurning=no
+  ; Here, the corresponding `SOMEWEAPONV5` is the thick laser,
+  ; and `SOMEWEAPONV6` is the final weapon fired
   Trajectory.DisperseWeapons=SOMEWEAPONV5,SOMEWEAPONV6
   Trajectory.DisperseBursts=1
   Trajectory.DisperseCounts=10,1
   Trajectory.DisperseDelays=1
   Trajectory.DisperseInitialDelay=40
   Trajectory.DisperseCycle=1
+  ; The disperse weapons will be fired one by one in sequence
   Trajectory.DisperseSeparate=yes
   Trajectory.DisperseSuicide=yes
+  ; Generate projectile directly at the target location
   Trajectory.Tracing.CreateAtTarget=yes
   Trajectory.Tracing.ChasableDistance=15
   Trajectory.Speed=10000.0
@@ -1899,7 +2043,8 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ---
 
   ![Trajectory-Demo-W](_static/images/Trajectory-demo-W.gif)
-  The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
+
+  - The assets of the case come from an unreleased mod by [jingliujiang](https://github.com/jingliujiang).
 
   In `rulesmd.ini`:
   ```ini
@@ -1927,6 +2072,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.DisperseInitialDelay=40
   Trajectory.DisperseCycle=1
   Trajectory.DisperseRetarget=yes
+  ; Using the position of the projectile to search for enemies
   Trajectory.DisperseLocation=yes
   Trajectory.DisperseFromFirer=no
   Trajectory.DisperseForceFire=no
