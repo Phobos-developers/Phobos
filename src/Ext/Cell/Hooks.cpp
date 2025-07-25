@@ -5,7 +5,7 @@
 
 // because 🦅💣 takes over, we have to do reimpl even more of the func and replicate Ares code
 
-void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, discard_t, CoordStruct* pCrd)
+void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, void*, CoordStruct* pCrd)
 {
 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
 		return;
@@ -35,7 +35,7 @@ void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, discard_t, Coord
 
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5D60, UnitClass_SetOccupyBit_Reimpl);
 
-void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, discard_t, CoordStruct* pCrd)
+void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, void*, CoordStruct* pCrd)
 {
 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
 		return;

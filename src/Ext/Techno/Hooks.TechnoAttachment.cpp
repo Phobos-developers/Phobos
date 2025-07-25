@@ -229,7 +229,7 @@ namespace TechnoAttachmentTemp
 }
 
 #define DEFINE_CELLTECHNO_WRAPPER(mode) \
-TechnoClass* __fastcall CellTechno_##mode(CellClass* pThis, discard_t, Point2D *a2, bool check_alt, TechnoClass* techno) \
+TechnoClass* __fastcall CellTechno_##mode(CellClass* pThis, void*, Point2D *a2, bool check_alt, TechnoClass* techno) \
 { \
 	TechnoAttachmentTemp::currentMode = CellTechnoMode::mode; \
 	auto const retval = pThis->FindTechnoNearestTo(*a2, check_alt, techno); \
@@ -377,7 +377,7 @@ namespace TechnoAttachmentTemp
 }
 
 #define DEFINE_ATTACH_WRAPPER(mode) \
-void __fastcall CargoClass_Attach_##mode(PassengersClass* pThis, discard_t, FootClass* pThat) \
+void __fastcall CargoClass_Attach_##mode(PassengersClass* pThis, void*, FootClass* pThat) \
 { \
 	TechnoAttachmentTemp::currentAttachMode = AttachCargoMode::mode; \
 	pThis->AddPassenger(pThat); \
@@ -726,7 +726,7 @@ DEFINE_HOOK(0x736A2F, UnitClass_RotationAI_ForbidAttachmentRotation, 0x7)
 		: ContinueCheck;
 }
 
-Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, discard_t, CellStruct const* pCell, bool checkFog, bool ignoreForce)
+Action __fastcall UnitClass_MouseOverCell_Wrapper(UnitClass* pThis, void*, CellStruct const* pCell, bool checkFog, bool ignoreForce)
 {
 	Action result = pThis->UnitClass::MouseOverCell(pCell, checkFog, ignoreForce);
 
