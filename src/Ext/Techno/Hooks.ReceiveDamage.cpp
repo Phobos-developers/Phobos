@@ -61,6 +61,21 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		}
 	}
 
+	// Repair/Destroy bridges at Bridge Repair Huts buildings
+	if (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges)
+	{
+		bool destroyBridge = pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
+		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, nullptr, pSourceHouse, destroyBridge);
+	}
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+	if (pBuilding && pWHExt->FakeEngineer_CanCaptureBuildings
+		&& !pSourceHouse->IsAlliedWith(pTargetHouse)
+		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	{
+		reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pBuilding, pSourceHouse, true);
+	}
+
 	// Raise Combat Alert
 	if (pRules->CombatAlert && damage > 1)
 	{

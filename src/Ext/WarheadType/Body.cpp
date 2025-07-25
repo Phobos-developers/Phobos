@@ -6,6 +6,8 @@
 #include <Ext/BulletType/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <RadarEventClass.h>
+#include <Ext/WeaponType/Body.h>
 
 WarheadTypeExt::ExtContainer WarheadTypeExt::ExtMap;
 
@@ -121,6 +123,75 @@ DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct
 	auto result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
 	this->DamageAreaTarget = nullptr;
 	return result;
+}
+
+void WarheadTypeExt::DetonateAtBridgeRepairHut(AbstractClass* pTarget, TechnoClass* pOwner, HouseClass* pFiringHouse, bool destroyBridge)
+{
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (!pBuilding || !pBuilding->Type->BridgeRepairHut || !pBuilding->IsAlive || pBuilding->Health <= 0)
+		return;
+
+	const CoordStruct targetCoords = pTarget->GetCenterCoords();
+	const CellStruct baseCell = CellClass::Coord2Cell(targetCoords);
+
+	if (!MapClass::Instance.IsLinkedBridgeDestroyed(baseCell))
+		return;
+
+	// Send engineer's "enter" event
+	auto const pTag = pBuilding->AttachedTag;
+
+	if (pTag && pOwner)
+		pTag->RaiseEvent(TriggerEvent::EnteredBy, pOwner, CellStruct::Empty);
+
+	// Check a 5x5 area for bridge tiles to determine if we should repair or destroy
+	bool foundWoodBridge = false;
+
+	for (int y = -2; y <= 2; ++y)
+	{
+		for (int x = -2; x <= 2; ++x)
+		{
+			CellStruct checkCellCoords = { static_cast<short>(baseCell.X + x), static_cast<short>(baseCell.Y + y) };
+			auto const checkCell = MapClass::Instance.GetCellAt(checkCellCoords);
+
+			if (checkCell->Tile_Is_WoodBridge() || (checkCell->OverlayTypeIndex >= 74 && checkCell->OverlayTypeIndex <= 101))
+				foundWoodBridge = true;
+
+			if (foundWoodBridge)
+				break;
+		}
+
+		if (foundWoodBridge)
+			break;
+	}
+
+	// Destroying bridges
+	if (destroyBridge)
+	{
+		if (foundWoodBridge) // Repair wood bridges
+			MapClass::Instance.DestroyWoodBridgeAt(baseCell);
+		else // Destroy concrete bridges
+			MapClass::Instance.DestroyConcreteBridgeAt(baseCell);
+
+		return;
+	}
+
+	auto const pFiringOwner = pOwner ? pOwner->Owner : pFiringHouse;
+
+	// Repairing bridges
+	if (pFiringOwner && pFiringOwner->IsControlledByCurrentPlayer())
+	{
+		if (RadarEventClass::Create(RadarEventType::BridgeRepaired, CellClass::Coord2Cell(targetCoords)))
+			VoxClass::PlayIndex(VoxClass::FindIndex("EVA_BridgeRepaired"));
+	}
+
+	if (RulesClass::Instance->RepairBridgeSound != -1)
+		VocClass::PlayAt(RulesClass::Instance->RepairBridgeSound, targetCoords, nullptr);
+
+	if (foundWoodBridge) // Repair wood bridges
+		MapClass::Instance.RepairWoodBridgeAt(baseCell);
+	else // Repair concrete bridges
+		MapClass::Instance.RepairConcreteBridgeAt(baseCell);
 }
 
 // =============================
@@ -334,6 +405,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AffectsOwner.Read(exINI, pSection, "AffectsOwner");
 	this->EffectsRequireVerses.Read(exINI, pSection, "EffectsRequireVerses");
 	this->Malicious.Read(exINI, pSection, "Malicious");
+
+	this->FakeEngineer_CanRepairBridges.Read(exINI, pSection, "FakeEngineer.CanRepairBridges");
+	this->FakeEngineer_CanDestroyBridges.Read(exINI, pSection, "FakeEngineer.CanDestroyBridges");
+	this->FakeEngineer_CanCaptureBuildings.Read(exINI, pSection, "FakeEngineer.CanCaptureBuildings");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -575,6 +650,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageAreaTarget)
 
 		.Process(this->CanKill)
+
+		.Process(this->FakeEngineer_CanRepairBridges)
+		.Process(this->FakeEngineer_CanDestroyBridges)
+		.Process(this->FakeEngineer_CanCaptureBuildings)
 		;
 }
 

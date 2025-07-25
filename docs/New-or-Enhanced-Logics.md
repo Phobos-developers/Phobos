@@ -2249,6 +2249,21 @@ DetonateOnAllMapObjects.RequireVerses=false  ; boolean
 While this feature can provide better performance than a large `CellSpread` value, it still has potential to slow down the game, especially if used in conjunction with things like animations, alpha lights etc. Modder discretion and use of the filter keys (`AffectTargets/Houses/Types` etc.) is advised.
 ```
 
+### Engineer logics on Warheads
+
+- Now `infantry` and `units` can execute some operations engineers do without loosing the firer like happens with engineers.
+- `FakeEngineer.CanRepairBridges`, if set to true, when a building with `BridgeRepairHut=yes` linked to a bridge is affected by the Warhead then all destroyed bridge sections will be fixed.
+- `FakeEngineer.CanDestroyBridges`, if set to true, when a building with `BridgeRepairHut=yes` linked to a bridge is affected by the Warhead then all the bridge will be destroyed.
+- `FakeEngineer.CanCaptureBuildings`, if set to true, a building with `Capturable=true` or `NeedsEngineer=true` is affected by the Warhead then the building will be captured by the house's firer.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                          ; WarheadType
+FakeEngineer.CanRepairBridges=false    ; boolean
+FakeEngineer.CanDestroyBridges=false   ; boolean
+FakeEngineer.CanCaptureBuildings=false ; boolean
+```
+
 ### Fire weapon when Warhead kills something
 
 - `KillWeapon` will be fired at the target TechnoType's location once it's killed by this Warhead.

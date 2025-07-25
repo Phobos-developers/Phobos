@@ -1,6 +1,156 @@
 #include "Body.h"
+#include <Ext/WarheadType/Body.h>
+#include <Ext/WeaponType/Body.h>
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
+DEFINE_HOOK(0x51F179, InfantryClass_WhatAction_Immune_FakeEngineer, 0x5)
+{
+	enum { ForceNewValue = 0x51F17E };
+
+	GET(TechnoClass* const, pThis, EDI);
+	GET(AbstractClass* const, pTarget, ESI);
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	if (!pBuilding->Type->BridgeRepairHut && !pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
+		return 0;
+
+	int nWeaponIndex = pThis->SelectWeapon(pTarget);
+
+	if (nWeaponIndex < 0)
+		return 0;
+
+	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (pBuilding->Type->BridgeRepairHut)
+	{
+		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
+		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
+
+		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+		{
+			R->EBP(Action::Attack);
+			return ForceNewValue;
+		}
+	}
+	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	{
+		R->EBP(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer, 0x5)
+{
+	enum { ForceNewValue = 0x6FCBA6 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x10, 0x8));
+
+	auto const pTechno = abstract_cast<TechnoClass*>(pTarget);
+
+	if (!pTechno)
+		return 0;
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
+
+	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0)
+		return 0;
+
+	if (!pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
+		return 0;
+
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (pWHExt->FakeEngineer_CanCaptureBuildings)
+	{
+		int weaponRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
+		int currentRange = pThis->DistanceFrom(pBuilding);
+
+		if (currentRange <= weaponRange)
+			R->EAX(FireError::OK);
+		else
+			R->EAX(FireError::RANGE); // Out of range
+
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x740414, UnitClass_WhatAction_Immune_FakeEngineer1, 0x5)
+{
+	enum { ForceNewValue = 0x74049F };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0)
+		return 0;
+
+	if (!pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
+		return 0;
+
+	int nWeaponIndex = pThis->SelectWeapon(pTarget);
+	if (nWeaponIndex < 0)
+		return 0;
+
+	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (pWHExt->FakeEngineer_CanCaptureBuildings)
+	{
+		R->EBX(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x74049A, UnitClass_WhatAction_Immune_FakeEngineer2, 0x5)
+{
+	enum { ForceNewValue = 0x74049F };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
+	GET(int, originalValue, EBX);
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+
+	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0)
+		return 0;
+
+	int nWeaponIndex = pThis->SelectWeapon(pTarget);
+	if (nWeaponIndex < 0)
+		return 0;
+
+	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (pBuilding->Type->BridgeRepairHut)
+	{
+		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
+		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
+
+		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+		{
+			R->EBX(originalValue);
+			return ForceNewValue;
+		}
+	}
+	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	{
+		R->EBX(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
 
 #pragma region TargetAcquisition
 
