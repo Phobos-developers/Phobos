@@ -1,14 +1,9 @@
 #pragma once
-
 #include <CellClass.h>
 
 #include <Utilities/Container.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
-#include <Utilities/TemplateDef.h>
-#include <Utilities/Debug.h>
-
-#include <Helpers/Macro.h>
 
 class CellExt
 {
@@ -16,17 +11,34 @@ public:
 	using base_type = CellClass;
 
 	static constexpr DWORD Canary = 0x13371337;
-	// static constexpr size_t ExtPointerOffset = 0x144;
+	static constexpr size_t ExtPointerOffset = 0x144;
+
+	struct RadLevel
+	{
+		RadSiteClass* Rad { nullptr };
+		int Level { 0 };
+
+		RadLevel() = default;
+		RadLevel(RadSiteClass* pRad, int level) : Rad(pRad), Level(level)
+		{ }
+
+		bool Load(PhobosStreamReader& stm, bool registerForChange);
+		bool Save(PhobosStreamWriter& stm) const;
+
+	private:
+		template <typename T>
+		bool Serialize(T& stm);
+	};
 
 	class ExtData final : public Extension<CellClass>
 	{
 	public:
+		std::vector<RadSiteClass*> RadSites {};
+		std::vector<RadLevel> RadLevels { };
 		UnitClass* IncomingUnit;
 		UnitClass* IncomingUnitAlt;
 
 		ExtData(CellClass* OwnerObject) : Extension<CellClass>(OwnerObject)
-			, IncomingUnit()
-			, IncomingUnitAlt()
 		{ }
 
 		virtual ~ExtData() = default;
@@ -48,7 +60,6 @@ public:
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
-		virtual void Initialize() override;
 
 	private:
 		template <typename T>
@@ -60,6 +71,8 @@ public:
 	public:
 		ExtContainer();
 		~ExtContainer();
+
+		virtual bool InvalidateExtDataIgnorable(void* const ptr) const override;
 	};
 
 	static ExtContainer ExtMap;

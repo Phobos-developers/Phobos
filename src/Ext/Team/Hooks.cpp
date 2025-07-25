@@ -29,7 +29,8 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 	if (!pPayload || !pThis->Full)
 		return 0x65E004;
 
-	const bool isTransportOpenTopped = pTransport->GetTechnoType()->OpenTopped;
+	const auto pType = pTransport->GetTechnoType();
+	const bool isTransportOpenTopped = pType->OpenTopped;
 	FootClass* pGunner = nullptr;
 
 	for (auto pNext = pPayload;
@@ -44,10 +45,10 @@ DEFINE_HOOK(0x65DF67, TeamTypeClass_CreateMembers_LoadOntoTransport, 0x6)
 	}
 
 	// Add to transport - this will load the payload object and everything linked to it (rest of the team) in reverse order
-	pTransport->AddPassenger(pPayload);
+	pTransport->Passengers.AddPassenger(pPayload);
 
 	// Handle gunner change - this is the 'last' passenger because of reverse order
-	if (pTransport->GetTechnoType()->Gunner && pGunner)
+	if (pType->Gunner && pGunner)
 		pTransport->ReceiveGunner(pGunner);
 
 	return 0x65DF8D;

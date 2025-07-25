@@ -11,7 +11,12 @@
 #include <Ext/Scenario/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/SWType/Body.h>
+
 #include <Misc/FlyingStrings.h>
+
+#include <New/Entity/BannerClass.h>
+#include <New/Type/BannerTypeClass.h>
+
 #include <Utilities/Debug.h>
 
 DEFINE_HOOK(0x777C41, UI_ApplyAppIcon, 0x9)
@@ -78,7 +83,7 @@ DEFINE_HOOK(0x641EE0, PreviewClass_ReadPreview, 0x6)
 
 DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 {
-	auto const pPlayer = HouseClass::CurrentPlayer();
+	auto const pPlayer = HouseClass::CurrentPlayer;
 	if (pPlayer->Defeated)
 		return 0;
 
@@ -86,14 +91,14 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
 	{
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 		auto nActive = HouseExt::ActiveHarvesterCount(pPlayer);
 		auto nTotal = HouseExt::TotalHarvesterCount(pPlayer);
 		auto nPercentage = nTotal == 0 ? 1.0 : (double)nActive / (double)nTotal;
 
 		ColorStruct clrToolTip = nPercentage > Phobos::UI::HarvesterCounter_ConditionYellow
-			? Drawing::TooltipColor() : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
+			? Drawing::TooltipColor : nPercentage > Phobos::UI::HarvesterCounter_ConditionRed
 			? pSideExt->Sidebar_HarvesterCounter_Yellow : pSideExt->Sidebar_HarvesterCounter_Red;
 
 		swprintf_s(counter, L"%ls%d/%d", Phobos::UI::HarvesterLabel, nActive, nTotal);
@@ -109,7 +114,7 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	if (Phobos::UI::PowerDelta_Show && Phobos::Config::ShowPowerDelta && pPlayer->Buildings.Count)
 	{
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
 
 		ColorStruct clrToolTip;
@@ -147,9 +152,9 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 
 	if (Phobos::UI::WeedsCounter_Show && Phobos::Config::ShowWeedsCounter)
 	{
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(pPlayer->SideIndex));
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
 		wchar_t counter[0x20];
-		ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor());
+		ColorStruct clrToolTip = pSideExt->Sidebar_WeedsCounter_Color.Get(Drawing::TooltipColor);
 
 		swprintf_s(counter, L"%d", static_cast<int>(pPlayer->OwnedWeed.GetTotalAmount()));
 
@@ -198,9 +203,9 @@ DEFINE_HOOK(0x6A8463, StripClass_OperatorLessThan_CameoPriority, 0x5)
 	auto pLeftTechnoExt = pLeft ? TechnoTypeExt::ExtMap.Find(pLeft) : nullptr;
 	auto pRightTechnoExt = pRight ? TechnoTypeExt::ExtMap.Find(pRight) : nullptr;
 	auto pLeftSWExt = (rttiLeft == AbstractType::Special || rttiLeft == AbstractType::Super || rttiLeft == AbstractType::SuperWeaponType)
-		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxLeft)) : nullptr;
+		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItem(idxLeft)) : nullptr;
 	auto pRightSWExt = (rttiRight == AbstractType::Special || rttiRight == AbstractType::Super || rttiRight == AbstractType::SuperWeaponType)
-		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array->GetItem(idxRight)) : nullptr;
+		? SWTypeExt::ExtMap.Find(SuperWeaponTypeClass::Array.GetItem(idxRight)) : nullptr;
 
 	if ((pLeftTechnoExt || pLeftSWExt) && (pRightTechnoExt || pRightSWExt))
 	{
@@ -240,6 +245,14 @@ DEFINE_HOOK(0x456776, BuildingClass_DrawRadialIndicator_Visibility, 0x6)
 	return DoNotDraw;
 }
 
+DEFINE_HOOK(0x6D4B25, TacticalClass_Render_Banner, 0x5)
+{
+	for (const auto& pBanner : BannerClass::Array)
+		pBanner->Render();
+
+	return 0;
+}
+
 #pragma region ShowBriefing
 
 namespace BriefingTemp
@@ -260,9 +273,9 @@ __forceinline void ShowBriefing()
 		int theme = ScenarioClass::Instance->ThemeIndex;
 
 		if (theme == -1)
-			ThemeClass::Instance->Stop(true);
+			ThemeClass::Instance.Stop(true);
 		else
-			ThemeClass::Instance->Queue(theme);
+			ThemeClass::Instance.Queue(theme);
 	}
 }
 
@@ -283,14 +296,14 @@ DEFINE_HOOK(0x683E41, ScenarioClass_Start_ShowBriefing, 0x6)
 
 	if (theme == -1)
 	{
-		SideClass* pSide = SideClass::Array->GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex);
+		SideClass* pSide = SideClass::Array.GetItemOrDefault(ScenarioClass::Instance->PlayerSideIndex);
 
 		if (const auto pSideExt = SideExt::ExtMap.Find(pSide))
 			theme = pSideExt->BriefingTheme;
 	}
 
 	if (theme != -1)
-		ThemeClass::Instance->Queue(theme);
+		ThemeClass::Instance.Queue(theme);
 
 	// Skip over playing scenario theme.
 	return SkipGameCode;
@@ -302,7 +315,7 @@ DEFINE_HOOK(0x48CE85, MainGame_ShowBriefing, 0x5)
 	enum { SkipGameCode = 0x48CE8A };
 
 	// Restore overridden instructions.
-	SessionClass::Instance->Resume();
+	SessionClass::Instance.Resume();
 
 	ShowBriefing();
 
@@ -315,7 +328,7 @@ DEFINE_HOOK(0x55D14F, AuxLoop_ShowBriefing, 0x5)
 	enum { SkipGameCode = 0x55D159 };
 
 	// Restore overridden instructions.
-	SessionClass::Instance->Resume();
+	SessionClass::Instance.Resume();
 
 	ShowBriefing();
 

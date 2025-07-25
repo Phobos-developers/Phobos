@@ -62,9 +62,9 @@ bool BuildingExt::ExtData::HasSuperWeapon(const int index, const bool withUpgrad
 
 void BuildingExt::StoreTiberium(BuildingClass* pThis, float amount, int idxTiberiumType, int idxStorageTiberiumType)
 {
-	auto const pDepositableTiberium = TiberiumClass::Array->GetItem(idxStorageTiberiumType);
+	auto const pDepositableTiberium = TiberiumClass::Array.GetItem(idxStorageTiberiumType);
 	float depositableTiberiumAmount = 0.0f; // Number of 'bails' that will be stored.
-	auto const pTiberium = TiberiumClass::Array->GetItem(idxTiberiumType);
+	auto const pTiberium = TiberiumClass::Array.GetItem(idxTiberiumType);
 
 	if (amount > 0.0)
 	{
@@ -90,7 +90,7 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 	if (!pOwner || pOwner->ProducingAircraftTypeIndex < 0)
 		return;
 
-	AircraftTypeClass* pAircraft = AircraftTypeClass::Array->GetItem(pOwner->ProducingAircraftTypeIndex);
+	AircraftTypeClass* pAircraft = AircraftTypeClass::Array.GetItem(pOwner->ProducingAircraftTypeIndex);
 	FactoryClass* currFactory = pOwner->GetFactoryProducing(pAircraft);
 	std::vector<BuildingClass*> airFactoryBuilding;
 	BuildingClass* newBuilding = nullptr;
@@ -137,9 +137,9 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 
 				if (pBuilding->Factory)
 				{
-					auto const* prodType = pBuilding->Factory->Object->GetType();
+					//auto const* prodType = pBuilding->Factory->Object->GetType();
 					pBuilding->Factory->AbandonProduction();
-					Debug::Log("%s is not CurrentAirFactory of %s, production of %s aborted\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
+					//Debug::Log("%s is not CurrentAirFactory of %s, production of %s aborted\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
 				}
 			}
 		}
@@ -172,9 +172,9 @@ void BuildingExt::ExtData::UpdatePrimaryFactoryAI()
 
 		if (pBuilding->Factory)
 		{
-			auto const* prodType = pBuilding->Factory->Object->GetType();
+			//auto const* prodType = pBuilding->Factory->Object->GetType();
 			pBuilding->Factory->AbandonProduction();
-			Debug::Log("%s of %s abandonded production of %s due to redundancies\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
+			//Debug::Log("%s of %s abandonded production of %s due to redundancies\n", pBuilding->Type->ID, pOwner->PlainName, prodType->ID);
 		}
 	}
 
@@ -218,12 +218,14 @@ bool BuildingExt::HasFreeDocks(BuildingClass* pBuilding)
 
 bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 {
-	if (!pBuilding->Type->Grinding || (pTechno->WhatAmI() != AbstractType::Infantry && pTechno->WhatAmI() != AbstractType::Unit))
+	auto const whatAmI = pTechno->WhatAmI();
+
+	if (!pBuilding->Type->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
 	if ((pBuilding->Type->InfantryAbsorb || pBuilding->Type->UnitAbsorb) &&
-		(pTechno->WhatAmI() == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
-			pTechno->WhatAmI() == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
+		(whatAmI == AbstractType::Infantry && !pBuilding->Type->InfantryAbsorb ||
+			whatAmI == AbstractType::Unit && !pBuilding->Type->UnitAbsorb))
 	{
 		return false;
 	}
@@ -236,10 +238,12 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 		if (pBuilding->Owner != pTechno->Owner && pBuilding->Owner->IsAlliedWith(pTechno) && !pExt->Grinding_AllowAllies)
 			return false;
 
-		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pTechno->GetTechnoType()))
+		auto const pType = pTechno->GetTechnoType();
+
+		if (pExt->Grinding_AllowTypes.size() > 0 && !pExt->Grinding_AllowTypes.Contains(pType))
 			return false;
 
-		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pTechno->GetTechnoType()))
+		if (pExt->Grinding_DisallowTypes.size() > 0 && pExt->Grinding_DisallowTypes.Contains(pType))
 			return false;
 	}
 
@@ -361,7 +365,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	}
 
 	auto buffer = CoordStruct::Empty;
-	auto pCell = MapClass::Instance->GetCellAt(*pThis->GetExitCoords(&buffer, 0));
+	auto pCell = MapClass::Instance.GetCellAt(*pThis->GetExitCoords(&buffer, 0));
 	int i = 0;
 
 	while (true)
@@ -423,7 +427,7 @@ const std::vector<CellStruct> BuildingExt::GetFoundationCells(BuildingClass* con
 
 		for (auto i = occupyHeight; i > 0; --i)
 		{
-			foundationCells.push_back(actualCell);
+			foundationCells.emplace_back(actualCell);
 			--actualCell.X;
 			--actualCell.Y;
 		}
@@ -537,7 +541,7 @@ DEFINE_HOOK(0x454174, BuildingClass_Load_LightSource, 0xA)
 {
 	GET(BuildingClass*, pThis, EDI);
 
-	SwizzleManagerClass::Instance->Swizzle((void**)&pThis->LightSource);
+	SwizzleManagerClass::Instance.Swizzle((void**)&pThis->LightSource);
 
 	return 0x45417E;
 }

@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "SWSidebar/SWSidebarClass.h"
 
 #include <HouseClass.h>
 #include <FactoryClass.h>
@@ -36,8 +37,8 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
 	if (Phobos::UI::ProducingProgress_Show)
 	{
-		auto pPlayer = HouseClass::CurrentPlayer();
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array->GetItem(HouseClass::CurrentPlayer->SideIndex));
+		auto pPlayer = HouseClass::CurrentPlayer;
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(HouseClass::CurrentPlayer->SideIndex));
 		int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
 		int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
 		int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;
@@ -67,11 +68,11 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 					: -1;
 
 				Point2D vPos = { XBase + i * XOffset, YBase };
-				RectangleStruct sidebarRect = DSurface::Sidebar()->GetRect();
+				RectangleStruct sidebarRect = DSurface::Sidebar->GetRect();
 
 				if (idxFrame != -1)
 				{
-					DSurface::Sidebar()->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
+					DSurface::Sidebar->DrawSHP(FileSystem::SIDEBAR_PAL, pSHP, idxFrame, &vPos,
 						&sidebarRect, BlitterFlags::bf_400, 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 				}
 			}
@@ -97,3 +98,31 @@ DEFINE_HOOK(0x72FCB5, InitSideRectangles_CenterBackground, 0x5)
 
 	return 0;
 }
+
+#pragma region SWSidebarButtonsRelated
+
+DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
+{
+	enum { DoNothing = 0x6925FC };
+
+	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentColumn)
+		return DoNothing;
+
+	const auto toggleButton = SWSidebarClass::Instance.ToggleButton;
+
+	return toggleButton && toggleButton->IsHovering ? DoNothing : 0;
+}
+
+DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeSWSidebar, 0x5)
+{
+	SWSidebarClass::Instance.InitClear();
+	return 0;
+}
+
+DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
+{
+	SWSidebarClass::Instance.InitIO();
+	return 0;
+}
+
+#pragma endregion

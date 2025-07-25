@@ -9,27 +9,18 @@
 #include <UnitClass.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/Macro.h>
+#include <Ext/Techno/Body.h>
 
 #include "Body.h"
 
 
-constexpr reference<double, 0xB1D008> const Pixel_Per_Lepton {};
+DEFINE_REFERENCE(double, Pixel_Per_Lepton, 0xB1D008)
 
 #pragma region FLH_Turrets
 
 void TechnoTypeExt::ApplyTurretOffset(TechnoTypeClass* pType, Matrix3D* mtx, double factor)
 {
 	TechnoTypeExt::ExtMap.Find(pType)->ApplyTurretOffset(mtx, factor);
-}
-
-DEFINE_HOOK(0x6F3C56, TechnoClass_GetFLH_TurretMultiOffset, 0x0)
-{
-	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0xD8, -0x90));
-	GET(TechnoTypeClass*, technoType, EDX);
-
-	TechnoTypeExt::ApplyTurretOffset(technoType, mtx);
-
-	return 0x6F3C6D;
 }
 
 DEFINE_HOOK(0x6F3E6E, TechnoClass_ActionLines_TurretMultiOffset, 0x0)
@@ -53,7 +44,6 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 
 	return 0x73B790;
 }
-
 
 DEFINE_HOOK(0x73BA4C, UnitClass_DrawVXL_TurretMultiOffset1, 0x0)
 {
@@ -113,6 +103,78 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 
 #pragma region draw_matrix
 
+struct BodyVoxelIndexKey
+{
+	unsigned bodyFrame : 5;
+	unsigned bodyFace : 5;
+	unsigned slopeIndex : 6;
+	unsigned isSpawnAlt : 1;
+	unsigned reserved : 15;
+};
+
+struct JumpjetTiltVoxelIndexKey
+{
+	unsigned bodyFrame : 5;
+	unsigned bodyFace : 5;
+	unsigned slopeIndex : 6;
+	unsigned isSpawnAlt : 1;
+	unsigned forwards : 7;
+	unsigned sideways : 7;
+	unsigned reserved : 1;
+};
+
+struct PhobosVoxelIndexKey
+{
+	union
+	{
+		int Value;
+		union
+		{
+			VoxelIndexKey Base;
+			BodyVoxelIndexKey Body;
+			// add other references here as needed
+		} BaseIndexKey;
+		union
+		{
+			JumpjetTiltVoxelIndexKey JumpjetTiltVoxel;
+			// add other definitions here as needed
+		} CustomIndexKey;
+	};
+
+	// add funcs here if needed
+	constexpr PhobosVoxelIndexKey(int val = 0) noexcept
+	{
+		Value = val;
+	}
+
+	constexpr operator int () const
+	{
+		return Value;
+	}
+
+	constexpr bool IsCleanKey() const
+	{
+		return Value == 0;
+	}
+
+	constexpr bool IsValidKey() const
+	{
+		return Value != -1;
+	}
+
+	constexpr void Invalidate()
+	{
+		Value = -1;
+	}
+
+	constexpr bool IsExtraBodyKey() const
+	{
+		return BaseIndexKey.Body.reserved != 0;
+	}
+};
+
+static_assert(sizeof(PhobosVoxelIndexKey) == sizeof(VoxelIndexKey), "PhobosVoxelIndexKey size mismatch");
+
 DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
@@ -122,7 +184,7 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	if (pThis->GetHeight() <= 0)
 	{
 		REF_STACK(Matrix3D, mat, STACK_OFFSET(0x38, -0x30));
-		auto slope_idx = MapClass::Instance->GetCellAt(pThis->Location)->SlopeIndex;
+		auto slope_idx = MapClass::Instance.GetCellAt(pThis->Location)->SlopeIndex;
 		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
 		float ars = pThis->AngleRotatedSideways;
 		float arf = pThis->AngleRotatedForwards;
@@ -138,8 +200,18 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 	return 0x4CF6A0;
 }
 
+namespace JumpjetTiltReference
+{
+	constexpr auto BaseSpeed = 32;
+	constexpr auto BaseTilt = Math::HalfPi / 4;
+	constexpr auto BaseTurnRaw = 32768;
+	constexpr auto MaxTilt = static_cast<float>(Math::HalfPi);
+	constexpr auto ForwardBaseTilt = BaseTilt / BaseSpeed;
+	constexpr auto SidewaysBaseTilt = BaseTilt / (BaseTurnRaw * BaseSpeed);
+}
+
 // Just rewrite this completely to avoid headache
-Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, int* pIndex)
+Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, PhobosVoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
@@ -147,22 +219,26 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	// no more TiltCrashJumpjet, do that above svp
 	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
 	// Man, what can I say, you don't want to stick your rotor into the ground
-	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+	auto slope_idx = MapClass::Instance.GetCellAt(linked->Location)->SlopeIndex;
 	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0];
 	// Only use LocomotionFacing for general Jumpjet to avoid the problem that ground units being lifted will turn to attacker weirdly.
 	auto curf = linked->IsAttackedByLocomotor ? linked->PrimaryFacing.Current() : pThis->LocomotionFacing.Current();
 	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
+	size_t arfFace = 0;
+	size_t arsFace = 0;
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
-		if (pIndex) *pIndex = -1;
+		if (key)
+			key->Invalidate();
 
 		if (onGround)
 		{
-			double scalex = linked->GetTechnoType()->VoxelScaleX;
-			double scaley = linked->GetTechnoType()->VoxelScaleY;
+			const auto pType = linked->GetTechnoType();
+			double scalex = pType->VoxelScaleX;
+			double scaley = pType->VoxelScaleY;
 			Matrix3D pre = Matrix3D::GetIdentity();
 			pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
 			ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
@@ -178,18 +254,91 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 			ret->RotateY(arf);
 		}
 	}
-
-	if (pIndex && *pIndex != -1)
+	else
 	{
-		if (onGround) *pIndex = slope_idx + (*pIndex << 6);
-		*pIndex *= 32;
-		*pIndex |= curf.GetFacing<32>();
+		const auto pTypeExt = TechnoExt::ExtMap.Find(linked)->TypeExtData;
+
+		if (pTypeExt->JumpjetTilt
+			&& !onGround
+			&& pThis->CurrentSpeed > 0.0
+			&& linked->WhatAmI() == AbstractType::Unit
+			&& linked->IsAlive
+			&& linked->Health > 0
+			&& !linked->IsAttackedByLocomotor)
+		{
+			const float forwardSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_ForwardSpeedFactor);
+			const float forwardAccelFactor = static_cast<float>(pThis->Accel * pTypeExt->JumpjetTilt_ForwardAccelFactor);
+
+			arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+				* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+
+			const auto& locoFace = pThis->LocomotionFacing;
+
+			if (locoFace.IsRotating())
+			{
+				const float sidewaysSpeedFactor = static_cast<float>(pThis->CurrentSpeed * pTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+				const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
+					* pTypeExt->JumpjetTilt_SidewaysRotationFactor);
+
+				ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+
+				const auto arsDir = DirStruct(ars);
+				arsFace = (arsDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+				if (arsFace)
+					ret->RotateX(static_cast<float>(arsDir.GetRadian<128>()));
+			}
+
+			const auto arfDir = DirStruct(arf);
+			arfFace = (arfDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+			if (arfFace)
+				ret->RotateY(static_cast<float>(arfDir.GetRadian<128>()));
+		}
+	}
+
+	if (key && key->IsValidKey())
+	{
+		// It is currently unclear whether the passed key only has two situations:
+		// all 0s and all 1s, so I use the safest approach for now
+		if (key->IsCleanKey() && (arfFace || arsFace))
+		{
+			key->CustomIndexKey.JumpjetTiltVoxel.forwards = arfFace;
+			key->CustomIndexKey.JumpjetTiltVoxel.sideways = arsFace;
+
+			if (onGround)
+				key->CustomIndexKey.JumpjetTiltVoxel.slopeIndex = slope_idx;
+
+			key->CustomIndexKey.JumpjetTiltVoxel.bodyFace = curf.GetFacing<32>();
+
+			// Outside the function, there is another step to add a frame number to the key for drawing
+			key->Value >>= 5;
+		}
+		else // Keep the original code
+		{
+			if (onGround)
+				key->Value = slope_idx + (key->Value << 6);
+
+			key->Value <<= 5;
+			key->Value |= curf.GetFacing<32>();
+		}
 	}
 
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7ECD8C, JumpjetLocomotionClass_Draw_Matrix);
 
+DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
+{
+	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
+
+	// Main body drawing completed, then enable accurate drawing of turrets and barrels
+	if (key.IsValidKey() && key.IsExtraBodyKey()) // Flags used by JumpjetTilt units
+		key.Invalidate();
+
+	return 0;
+}
 
 // Visual bugfix : Teleport loco vxls could not tilt
 Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* pIndex)
@@ -197,7 +346,7 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<LocomotionClass*>(iloco);
 	auto linked = pThis->LinkedTo;
-	auto slope_idx = MapClass::Instance->GetCellAt(linked->Location)->SlopeIndex;
+	auto slope_idx = MapClass::Instance.GetCellAt(linked->Location)->SlopeIndex;
 
 	if (pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
@@ -212,8 +361,9 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 		if (pIndex)
 			pIndex->Invalidate();
 
-		double scalex = linked->GetTechnoType()->VoxelScaleX;
-		double scaley = linked->GetTechnoType()->VoxelScaleY;
+		const auto pType = linked->GetTechnoType();
+		double scalex = pType->VoxelScaleX;
+		double scaley = pType->VoxelScaleY;
 
 		Matrix3D pre = Matrix3D::GetIdentity();
 		pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
@@ -380,7 +530,6 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	auto const main_vxl = GetMainVoxel();
 
-
 	auto shadow_point = loco->Shadow_Point();
 	auto why = *pt + shadow_point;
 
@@ -396,8 +545,41 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_matrix.RotateY(arf);
 		shadow_matrix.RotateX(ars);
 	}
+	else if (jjloco
+		&& uTypeExt->JumpjetTilt
+		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
+		&& jjloco->CurrentSpeed > 0.0
+		&& pThis->IsAlive
+		&& pThis->Health > 0
+		&& !pThis->IsAttackedByLocomotor)
+	{
+		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor);
+		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor);
 
-	auto mtx = Matrix3D::VoxelDefaultMatrix() * shadow_matrix;
+		arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
+			* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+
+		const auto& locoFace = jjloco->LocomotionFacing;
+
+		if (locoFace.IsRotating())
+		{
+			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+			const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
+				* uTypeExt->JumpjetTilt_SidewaysRotationFactor);
+
+			ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
+				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
+		}
+
+		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
+		{
+			vxl_index_key.Invalidate();
+			shadow_matrix.RotateX(ars);
+			shadow_matrix.RotateY(arf);
+		}
+	}
+
+	auto mtx = Matrix3D::VoxelDefaultMatrix * shadow_matrix;
 
 	if (height > 0)
 		shadow_point.Y += 1;
@@ -536,12 +718,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
+	AircraftTypeClass* pAircraftType = pThis->Type;
 	const auto loco = pThis->Locomotor.GetInterfacePtr();
-	if (pThis->Type->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
+
+	if (pAircraftType->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
+	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);
+
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pAircraftType);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
@@ -550,7 +736,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		if (RulesExt::Global()->HeightShadowScaling)
 		{
 			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pAircraftType->GetFlightLevel());
 
 			if (cHeight > 0)
 			{
@@ -559,14 +745,14 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 					key.Invalidate();
 			}
 		}
-		else if (pThis->Type->ConsideredAircraft)
+		else if (pAircraftType->ConsideredAircraft)
 		{
 			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 		}
 
 		double arf = pThis->AngleRotatedForwards;
-		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
-			arf += pThis->Type->PitchAngle;
+		if (flyLoco->CurrentSpeed > pAircraftType->PitchSpeed)
+			arf += pAircraftType->PitchAngle;
 		float ars = pThis->AngleRotatedSideways;
 		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
 			key.Invalidate();
@@ -581,18 +767,18 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		key.Invalidate();
 	}
 
-	shadow_mtx = Matrix3D::VoxelDefaultMatrix() * shadow_mtx;
+	shadow_mtx = Matrix3D::VoxelDefaultMatrix * shadow_mtx;
 
-	auto const main_vxl = &pThis->Type->MainVoxel;
+	auto const main_vxl = &pAircraftType->MainVoxel;
 	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
-		auto const shadow_index = pThis->Type->ShadowIndex;
+		auto const shadow_index = pAircraftType->ShadowIndex;
 		if (shadow_index >= 0 && shadow_index < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(main_vxl,
 				shadow_index,
 				key,
-				&pThis->Type->VoxelShadowCache,
+				&pAircraftType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
@@ -606,12 +792,12 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				index == pThis->Type->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
-				&pThis->Type->VoxelShadowCache,
+				index == pAircraftType->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
+				&pAircraftType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				index == pThis->Type->ShadowIndex,
+				index == pAircraftType->ShadowIndex,
 				nullptr,
 				{ 0, 0 }
 			);
@@ -697,7 +883,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	if (l2 < 0.03) R->Stack(STACK_OFFSET(0xE8, 0x20), true);
 
 	// Recover vanilla instructions
-	if (pThis->GetTechnoType()->UseBuffer)
+	if (pType->UseBuffer)
 		*reinterpret_cast<DWORD*>(0xB43180) = 1;
 
 	REF_STACK(Matrix3D, b, STACK_OFFSET(0xE8, -0x90));
@@ -713,4 +899,28 @@ Matrix3D* __fastcall BounceClass_ShadowMatrix(BounceClass* self, void*, Matrix3D
 	return ret;
 }
 DEFINE_FUNCTION_JUMP(CALL, 0x749CAC, BounceClass_ShadowMatrix);
+#pragma endregion
+
+#pragma region voxel_ramp_matrix
+
+// I don't know how can WW miscalculated
+// In fact, there should be three different degrees of tilt angles
+// - EBX -> atan((2*104)/(256√2)) should only be used on the steepest slopes (13-16)
+// - EBP -> atan(104/256) should be used on the most common slopes (1-4)
+// - A smaller radian atan(104/(256√2)) should be use to other slopes (5-12)
+// But this position is too far ahead, I can't find a good way to solve it perfectly
+// Using hooks and filling in floating-point numbers will cause the register to reset to zero
+// So I have to do it this way for now, make changes based on the existing data
+// Thanks to NetsuNegi for providing a simpler patch method to replace the hook method
+DEFINE_PATCH(0x75546D, 0x55) // push ebp
+DEFINE_PATCH(0x755484, 0x55) // push ebp
+DEFINE_PATCH(0x7554A1, 0x55) // push ebp
+DEFINE_PATCH(0x7554BE, 0x55) // push ebp
+DEFINE_PATCH(0x755656, 0x55) // push ebp
+DEFINE_PATCH(0x755677, 0x55) // push ebp
+DEFINE_PATCH(0x755698, 0x55) // push ebp
+DEFINE_PATCH(0x7556B9, 0x55) // push ebp
+// Although it is not the perfectest
+// It can still solve the most common situations on slopes - CrimRecya
+
 #pragma endregion

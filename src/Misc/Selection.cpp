@@ -46,7 +46,7 @@ public:
 	// Reversed from Tactical::Select
 	static bool Tactical_IsInSelectionRect(TacticalClass* pThis, LTRBStruct* pRect, const TacticalSelectableStruct& selectable)
 	{
-		if (selectable.Techno && selectable.Techno->IsAlive)
+		if (selectable.Object && selectable.Object->IsAlive)
 		{
 			int nLocalX = selectable.X - pThis->TacticalPos.X;
 			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
@@ -66,14 +66,17 @@ public:
 	{
 		for (const auto& selected : Array)
 		{
-			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Techno))
+			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Object))
 			{
-				auto const& pExt = TechnoExt::ExtMap.Find(selected.Techno);
-				auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(selected.Techno->GetTechnoType());
+				if ((selected.Object->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+				{
+					auto const& pExt = TechnoExt::ExtMap.Find(selected.Object);
+					auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(selected.Object->GetTechnoType());
 
-				bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
-				if (!pTypeExt->LowSelectionPriority && !isLowPriorityByAttachment)
-					return true;
+					bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
+					if (!pTypeExt->LowSelectionPriority && !isLowPriorityByAttachment)
+						return true;
+				}
 			}
 		}
 
@@ -92,35 +95,39 @@ public:
 		{
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
-				auto const& pTechno = selected.Techno;
-				auto const& pExt = TechnoExt::ExtMap.Find(pTechno);
-				auto const& pTechnoType = pTechno->GetTechnoType();
-				auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+				auto const& pObject = selected.Object;
+				TechnoTypeClass* pTechnoType = pObject->GetTechnoType(); // Returns nullptr on non techno objects
 
-				// Attached units shouldn't be selected regardless of the setting
-				bool isLowPriorityByAttachment = pExt && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
-				bool isLowPriorityByTechno = Phobos::Config::PrioritySelectionFiltering && pTypeExt && pTypeExt->LowSelectionPriority;
-
-				if (bFilter && (isLowPriorityByAttachment || isLowPriorityByTechno))
-					continue;
-
-				if (pTypeExt && Game::IsTypeSelecting())
+				if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
 				{
-					Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+					auto const& pExt = TechnoExt::ExtMap.Find(pObject);
+
+					// Attached units shouldn't be selected regardless of the setting
+					bool isLowPriorityByAttachment = pExt && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
+					bool isLowPriorityByTechno = Phobos::Config::PrioritySelectionFiltering && pTypeExt && pTypeExt->LowSelectionPriority;
+
+					if (bFilter && (isLowPriorityByAttachment || isLowPriorityByTechno))
+						continue;
+
+					if (pTypeExt && Game::IsTypeSelecting())
+					{
+						Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+					}
 				}
+
 				else if (fpCheckCallback)
 				{
-					(*fpCheckCallback)(pTechno);
+					(*fpCheckCallback)(pObject);
 				}
 				else
 				{
-					const auto& pBldType = abstract_cast<BuildingTypeClass*>(pTechnoType);
-					const auto& pOwner = pTechno->GetOwningHouse();
+					const auto pBldType = abstract_cast<BuildingTypeClass*, true>(pTechnoType);
+					const auto pOwner = pObject->GetOwningHouse();
 
-					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pTechno->CanBeSelected()
+					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pObject->CanBeSelected()
 						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsVehicle())))
 					{
-						Unsorted::MoveFeedback = !pTechno->Select();
+						Unsorted::MoveFeedback = !pObject->Select();
 					}
 				}
 			}

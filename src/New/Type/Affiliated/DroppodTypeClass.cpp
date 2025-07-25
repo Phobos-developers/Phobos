@@ -95,7 +95,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 
 		if (timeSinceCreation % podType->Trailer_SpawnDelay == 1)
 		{
-			if (auto trailerType = podType->Trailer.Get(RulesExt::Global()->DropPodTrailer))
+			if (auto trailerType = podType->Trailer.Get(RulesExt::Global()->DropPodTrailer.Get(RulesExt::Global()->DropPodDefaultTrailer)))
 			{
 				auto trailer = GameCreate<AnimClass>(trailerType, oldLoc);
 				AnimExt::SetAnimOwnerHouseKind(trailer, pLinked->Owner, nullptr, false, true);
@@ -108,14 +108,14 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 		{
 			if (timeSinceCreation % std::max(dWpn->ROF, 3) == 1)
 			{
-				auto cell = MapClass::Instance->GetCellAt(lThis->DestinationCoords);
+				auto cell = MapClass::Instance.GetCellAt(lThis->DestinationCoords);
 				auto techno = cell->FindTechnoNearestTo({ 0,0 }, false);
 				if (!pLinked->Owner->IsAlliedWith(techno))
 				{
 					// really? not firing for real?
 					auto locnear = MapClass::GetRandomCoordsNear(lThis->DestinationCoords, 85, false);
 					if (int count = dWpn->Report.Count)
-						VocClass::PlayAt(dWpn->Report[Randomizer::Global->Random() % count], coords);
+						VocClass::PlayAt(dWpn->Report[Randomizer::Global.Random() % count], coords);
 					MapClass::DamageArea(locnear, 2 * dWpn->Damage, pLinked, dWpn->Warhead, true, pLinked->Owner);
 					if (auto dmgAnim = MapClass::SelectDamageAnimation(2 * dWpn->Damage, dWpn->Warhead, LandType::Clear, locnear))
 					{
@@ -152,7 +152,7 @@ DEFINE_HOOK(0x4B5B70, DroppodLocomotionClass_ILoco_Process, 0x5)
 
 			auto& vec = linkedExt->LaserTrails;
 			if (!vec.empty())
-				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto& trail) { return trail.Type->DroppodOnly; }));
+				vec.erase(std::remove_if(vec.begin(), vec.end(), [](auto const& pTrail) { return pTrail->Type->DroppodOnly; }));
 
 			pLinked->Mark(MarkType::Down);
 			pLinked->SetHeight(0);
@@ -185,18 +185,18 @@ DEFINE_HOOK(0x4B607D, DroppodLocomotionClass_ILoco_MoveTo, 0x8)
 
 	auto const lThis = static_cast<DropPodLocomotionClass*>(iloco);
 	auto const pLinked = lThis->LinkedTo;
-	const auto podType = TechnoTypeExt::ExtMap.Find(pLinked->GetTechnoType())->DroppodType.get();
+	const auto podType = TechnoExt::ExtMap.Find(pLinked)->TypeExtData->DroppodType.get();
 
 	if (!podType)
 		return 0;
 
 	lThis->DestinationCoords = to;
-	lThis->DestinationCoords.Z = MapClass::Instance->GetCellFloorHeight(to);
+	lThis->DestinationCoords.Z = MapClass::Instance.GetCellFloorHeight(to);
 
 	const int height = podType->Height.Get(RulesClass::Instance->DropPodHeight);
 	const double angle = podType->Angle.Get(RulesClass::Instance->DropPodAngle);
 
-	lThis->OutOfMap = !MapClass::Instance->IsWithinUsableArea(to);
+	lThis->OutOfMap = !MapClass::Instance.IsWithinUsableArea(to);
 	to.X -= (lThis->OutOfMap ? 1 : -1) * int(height / Math::tan(angle));
 	to.Z += height;
 

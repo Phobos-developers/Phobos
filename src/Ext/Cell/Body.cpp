@@ -1,19 +1,20 @@
 #include "Body.h"
 
-#include <Utilities/Macro.h>
+#include <Helpers/Macro.h>
+
+#include <Utilities/TemplateDef.h>
 
 CellExt::ExtContainer CellExt::ExtMap;
 
-void CellExt::ExtData::Initialize() { }
-
-
-
 // =============================
 // load / save
+
 template <typename T>
 void CellExt::ExtData::Serialize(T& Stm)
 {
 	Stm
+		.Process(this->RadSites)
+		.Process(this->RadLevels)
 		.Process(IncomingUnit)
 		.Process(IncomingUnitAlt)
 		;
@@ -31,20 +32,47 @@ void CellExt::ExtData::SaveToStream(PhobosStreamWriter& Stm)
 	this->Serialize(Stm);
 }
 
+void CellExt::ExtData::InvalidatePointer(void* ptr, bool removed)
+{ }
+
+bool CellExt::RadLevel::Load(PhobosStreamReader& stm, bool registerForChange)
+{
+	return this->Serialize(stm);
+}
+
+bool CellExt::RadLevel::Save(PhobosStreamWriter& stm) const
+{
+	return const_cast<CellExt::RadLevel*>(this)->Serialize(stm);
+}
+
+template <typename T>
+bool CellExt::RadLevel::Serialize(T& stm)
+{
+	return stm
+		.Process(this->Rad)
+		.Process(this->Level)
+		.Success();
+}
+
 // =============================
 // container
 
 CellExt::ExtContainer::ExtContainer() : Container("CellClass") { }
 CellExt::ExtContainer::~ExtContainer() = default;
 
+bool CellExt::ExtContainer::InvalidateExtDataIgnorable(void* const ptr) const
+{
+	return true;
+}
+
 // =============================
 // container hooks
 
-DEFINE_HOOK(0x47BBF0, CellClass_CTOR, 0x6)
+DEFINE_HOOK(0x47BDA1, CellClass_CTOR, 0x5)
 {
-	GET(CellClass*, pItem, ECX);
+	GET(CellClass*, pItem, ESI);
 
-	CellExt::ExtMap.TryAllocate(pItem);
+	CellExt::ExtMap.Allocate(pItem);
 
 	return 0;
 }
@@ -69,7 +97,7 @@ DEFINE_HOOK(0x4839F0, CellClass_SaveLoad_Prefix, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x483C00, CellClass_Load_Suffix, 0x5)
+DEFINE_HOOK(0x483C00, CellClass_Load_Suffix, 5)
 {
 	CellExt::ExtMap.LoadStatic();
 	return 0;
