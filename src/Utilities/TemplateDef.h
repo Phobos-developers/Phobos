@@ -526,7 +526,7 @@ namespace detail
 
 			if ((int)DirType::North <= absValue && absValue <= (int)DirType::Max)
 			{
-				value = static_cast<DirType>(!isNegative ? absValue : (int)DirType::Max - absValue);
+				value = static_cast<DirType>(!isNegative ? absValue : (int)DirType::Max + 1 - absValue);
 				return true;
 			}
 			else
