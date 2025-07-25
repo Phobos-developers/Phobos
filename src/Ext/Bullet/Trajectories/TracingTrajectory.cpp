@@ -268,6 +268,8 @@ bool TracingTrajectory::ChangeVelocity()
 		case TraceTargetMode::RotateCW:
 		{
 			cw = true;
+
+			// No break
 		}
 		case TraceTargetMode::RotateCCW:
 		{

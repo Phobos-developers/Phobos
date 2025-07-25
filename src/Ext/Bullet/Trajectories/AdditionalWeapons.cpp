@@ -492,7 +492,6 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 							std::swap((*pVector)[i], (*pVector)[j]);
 					}
 				}
-
 				// Fill in multiple items in order
 				for (int i = 0; i < size; ++i)
 				{
@@ -528,7 +527,6 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 							std::swap((*pVector)[i], (*pVector)[j]);
 					}
 				}
-
 				// Fill in all optional targets in order once
 				validTargets.insert(validTargets.end(), pVector->begin(), pVector->begin() + take);
 				burstRemain -= take;
