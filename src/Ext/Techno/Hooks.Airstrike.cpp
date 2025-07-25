@@ -272,3 +272,58 @@ int BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity(int currentIntensit
 DEFINE_FUNCTION_JUMP(CALL, 0x450A5D, BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity); // BuildingClass_Animation_AI
 
 #pragma endregion
+
+#pragma region DrawAirstrikeFlare
+
+namespace DrawAirstrikeFlareTemp
+{
+	TechnoClass* pTechno = nullptr;
+}
+
+DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	// This is not used in vanilla function so ECX gets overwritten later.
+	DrawAirstrikeFlareTemp::pTechno = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare_LineColor, 0x5)
+{
+	enum { SkipGameCode = 0x705976 };
+
+	GET(int, zSrc, EBP);
+	GET(int, zDest, EBX);
+	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
+
+	// Fix depth buffer value.
+	int zValue = Math::min(zSrc, zDest) + RulesExt::Global()->AirstrikeLineZAdjust;
+	R->EBP(zValue);
+	R->EBX(zValue);
+
+	// Allow custom colors.
+	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
+	auto const baseColor = TechnoExt::ExtMap.Find(pThis)->TypeExtData->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
+	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
+	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
+	R->ESI(Drawing::RGB_To_Int(baseColor));
+
+	return SkipGameCode;
+}
+
+// Always draw the dot and skip setting color, it is already done in previous hook.
+DEFINE_HOOK(0x70597A, TechnoClass_DrawAirstrikeFlare_DotColor, 0x6)
+{
+	enum { SkipGameCode = 0x7059C7 };
+
+	GET_STACK(int, xCoord, STACK_OFFSET(0x70, -0x38));
+
+	// Restore overridden instructions.
+	R->ECX(xCoord);
+
+	return SkipGameCode;
+}
+
+#pragma endregion

@@ -80,7 +80,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 				// This action finished
 				pTeam->StepCompleted = true;
 
-				const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+				/*const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
 				const int nextMission = pScript->CurrentMission + 1;
 				const auto& nextNode = pScriptType->ScriptActions[nextMission];
 				ScriptExt::Log("AI Scripts - Attack: [%s] [%s] (line: %d = %d,%d) Force the jump to next line: %d = %d,%d (This action wont repeat)\n",
@@ -91,7 +91,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 					node.Argument,
 					nextMission,
 					nextNode.Action,
-					nextNode.Argument);
+					nextNode.Argument);*/
 
 				return;
 			}
@@ -181,7 +181,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 		if (pSelectedTarget)
 		{
-			ScriptExt::Log("AI Scripts - Attack: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as target.\n",
+			/*ScriptExt::Log("AI Scripts - Attack: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as target.\n",
 				pTeamType->ID,
 				pScriptType->ID,
 				pScript->CurrentMission,
@@ -190,7 +190,7 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 				pLeaderUnit->GetTechnoType()->get_ID(),
 				pLeaderUnit->UniqueID,
 				pSelectedTarget->GetTechnoType()->get_ID(),
-				pSelectedTarget->UniqueID);
+				pSelectedTarget->UniqueID);*/
 
 			pTeam->Focus = pSelectedTarget;
 			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
@@ -1406,7 +1406,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode,
 				idxSelectedObject = validIndexes[ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.size() - 1)];
 				selected = true;
 
-				const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+				/*const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
 				ScriptExt::Log("AI Scripts - AttackListRandom: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n",
 					pTeam->Type->ID,
 					pScriptType->ID,
@@ -1415,7 +1415,7 @@ void ScriptExt::Mission_Attack_List1Random(TeamClass* pTeam, int calcThreatMode,
 					node.Argument,
 					attackAITargetType,
 					idxSelectedObject,
-					objectsList[idxSelectedObject]->ID);
+					objectsList[idxSelectedObject]->ID);*/
 			}
 		}
 
