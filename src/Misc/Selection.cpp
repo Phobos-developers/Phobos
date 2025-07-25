@@ -1,10 +1,7 @@
 #include "Phobos.h"
-#include <Utilities/Macro.h>
-
-#include <New/Entity/AttachmentClass.h>
-#include <New/Type/AttachmentTypeClass.h>
-#include <Ext/TechnoType/Body.h>
-#include <Ext/Techno/Body.h>
+#include "Utilities/Macro.h"
+#include "Ext/Techno/Body.h"
+#include "Ext/TechnoType/Body.h"
 
 #include <TacticalClass.h>
 #include <HouseClass.h>
@@ -56,8 +53,6 @@ public:
 			{
 				return true;
 			}
-			return (nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
-				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top);
 		}
 		return false;
 	}
@@ -65,12 +60,11 @@ public:
 	static bool Tactical_IsHighPriorityInRect(TacticalClass* pThis, LTRBStruct* rect)
 	{
 		for (const auto& selected : Array)
-		{
 			if (Tactical_IsInSelectionRect(pThis, rect, selected) && ObjectClass_IsSelectable(selected.Object))
 			{
 				if ((selected.Object->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 				{
-					auto const& pExt = TechnoExt::ExtMap.Find(selected.Object);
+					auto const& pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(selected.Object));
 					auto const& pTypeExt = TechnoTypeExt::ExtMap.Find(selected.Object->GetTechnoType());
 
 					bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
@@ -78,13 +72,12 @@ public:
 						return true;
 				}
 			}
-		}
 
 		return false;
 	}
 
-	static // Reversed from Tactical::Select
-	void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type fpCheckCallback, bool bFilter)
+	// Reversed from Tactical::Select
+	static void Tactical_SelectFiltered(TacticalClass* pThis, LTRBStruct* pRect, callback_type check_callback, bool bPriorityFiltering)
 	{
 		Unsorted::MoveFeedback = true;
 
@@ -95,29 +88,32 @@ public:
 		{
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
-				auto const& pObject = selected.Object;
+				const auto pObject = selected.Object;
 				TechnoTypeClass* pTechnoType = pObject->GetTechnoType(); // Returns nullptr on non techno objects
 
 				if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
 				{
-					auto const& pExt = TechnoExt::ExtMap.Find(pObject);
+					if (bPriorityFiltering)
+					{
+						auto const& pExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pObject));
+						// Attached units shouldn't be selected regardless of the setting
+						bool isLowPriorityByAttachment = pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
+						bool isLowPriorityByTechno = Phobos::Config::PrioritySelectionFiltering && pTypeExt->LowSelectionPriority;
 
-					// Attached units shouldn't be selected regardless of the setting
-					bool isLowPriorityByAttachment = pExt && pExt->ParentAttachment && pExt->ParentAttachment->GetType()->LowSelectionPriority;
-					bool isLowPriorityByTechno = Phobos::Config::PrioritySelectionFiltering && pTypeExt && pTypeExt->LowSelectionPriority;
+						if (isLowPriorityByAttachment || isLowPriorityByTechno)
+							continue;
+					}
 
-					if (bFilter && (isLowPriorityByAttachment || isLowPriorityByTechno))
-						continue;
-
-					if (pTypeExt && Game::IsTypeSelecting())
+					if (Game::IsTypeSelecting())
 					{
 						Game::UICommands_TypeSelect_7327D0(pTypeExt->GetSelectionGroupID());
+						continue;
 					}
 				}
 
-				else if (fpCheckCallback)
+				if (check_callback)
 				{
-					(*fpCheckCallback)(pObject);
+					(*check_callback)(pObject);
 				}
 				else
 				{
@@ -136,8 +132,8 @@ public:
 		Unsorted::MoveFeedback = true;
 	}
 
-	static // Reversed from Tactical::MakeSelection
-	void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void*_, callback_type fpCheckCallback)
+	// Reversed from Tactical::MakeSelection
+	static void __fastcall Tactical_MakeFilteredSelection(TacticalClass* pThis, void* _, callback_type check_callback)
 	{
 		if (pThis->Band.Left || pThis->Band.Top)
 		{
@@ -153,8 +149,8 @@ public:
 
 			LTRBStruct rect { nLeft , nTop, nRight - nLeft + 1, nBottom - nTop + 1 };
 
-			Tactical_SelectFiltered(pThis, &rect, fpCheckCallback,
-				Tactical_IsHighPriorityInRect(pThis, &rect));
+			bool bPriorityFiltering = Tactical_IsHighPriorityInRect(pThis, &rect);
+			Tactical_SelectFiltered(pThis, &rect, check_callback, bPriorityFiltering);
 
 			pThis->Band.Left = 0;
 			pThis->Band.Top = 0;

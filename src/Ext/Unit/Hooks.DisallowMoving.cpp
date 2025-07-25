@@ -100,13 +100,11 @@ DEFINE_HOOK(0x740744, UnitClass_What_Action_DisallowMoving_2, 0x6)
 	return 0;
 }
 
-// Makes the vehicle keep it's current turret heading without snapping back to neutral position
 DEFINE_HOOK(0x736B60, UnitClass_Rotation_AI_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return pThis->Type->Speed == 0
-		? 0x736AFB : 0;
+	return pThis->Type->Speed == 0 ? 0x736AFB : 0;
 }
 
 DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)

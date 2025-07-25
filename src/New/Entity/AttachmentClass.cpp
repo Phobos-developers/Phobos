@@ -20,7 +20,7 @@ AttachmentTypeClass* AttachmentClass::GetType()
 TechnoTypeClass* AttachmentClass::GetChildType()
 {
 	return this->Data->TechnoType.isset()
-		? TechnoTypeClass::Array()->GetItem(this->Data->TechnoType)
+		? TechnoTypeClass::Array[this->Data->TechnoType]
 		: nullptr;
 }
 
@@ -197,9 +197,9 @@ void AttachmentClass::Unlimbo()
 
 		childDir.Raw += DirStruct(this->Data->RotationAdjust).Raw; // overflow = free modulo for rotation
 
-		++Unsorted::IKnowWhatImDoing;
+		++Unsorted::ScenarioInit;
 		this->Child->Unlimbo(childCoord, childDir.GetDir());
-		--Unsorted::IKnowWhatImDoing;
+		--Unsorted::ScenarioInit;
 	}
 }
 

@@ -11,8 +11,6 @@
 
 #include <Utilities/AresFunctions.h>
 
-#include <math.h>
-
 TechnoExt::ExtContainer TechnoExt::ExtMap;
 UnitClass* TechnoExt::Deployer = nullptr;
 
@@ -926,6 +924,9 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+
+	for (auto const& pAttachment : ChildAttachments)
+		pAttachment->InvalidatePointer(ptr);
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

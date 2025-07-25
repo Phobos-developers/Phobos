@@ -322,15 +322,6 @@ HideLightFlashEffects=false      ; boolean
 
 ## Changelog
 
-### 0.4
-
-<details>
-  <summary>Click to show</summary>
-
-New:
-- Techno Attachment logic (by Kerbiter)
-</details>
-
 ### Version TBD (develop branch nightly builds)
 
 ```{dropdown} Click to show
@@ -434,6 +425,7 @@ New:
 - [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 - [Additional attached animation position customizations](Fixed-or-Improved-Logics.md#attached-animation-position-customization) (by Starkku)
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
+- [Techno attachment system](New-or-Enhanced-Logics.md#attachments) (by Kerbiter)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

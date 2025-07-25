@@ -3,9 +3,6 @@
 #include <Ext/Techno/Body.h>
 #include <SpawnManagerClass.h>
 
-#include <BulletTypeClass.h>
-#include <BulletClass.h>
-
 WeaponTypeExt::ExtContainer WeaponTypeExt::ExtMap;
 
 bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, TechnoClass* pFirer) const

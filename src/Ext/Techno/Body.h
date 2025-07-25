@@ -196,12 +196,6 @@ public:
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 
-		virtual void InvalidatePointer(void* ptr, bool bRemoved) override
-		{
-			for (auto const& pAttachment : ChildAttachments)
-				pAttachment->InvalidatePointer(ptr);
-		}
-
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
@@ -244,13 +238,9 @@ public:
 	static bool HasAvailableDock(TechnoClass* pThis);
 	static bool HasRadioLinkWithDock(TechnoClass* pThis);
 
-	static void InitializeLaserTrails(TechnoClass* pThis);
+	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool turretFLH = false);
 	static void InitializeShield(TechnoClass* pThis);
 
-	static Matrix3D GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey = nullptr, bool isShadow = false);
-	static Matrix3D GetFLHMatrix(TechnoClass* pThis, CoordStruct flh, bool isOnTurret, double factor = 1.0, bool isShadow = false);
-	static Matrix3D TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor = 1.0);
-	static CoordStruct GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct flh, bool isOnTurret = false);
 
 	static CoordStruct GetBurstFLH(TechnoClass* pThis, int weaponIndex, bool& FLHFound);
 	static CoordStruct GetSimpleFLH(InfantryClass* pThis, int weaponIndex, bool& FLHFound);

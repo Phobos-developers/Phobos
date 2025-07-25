@@ -10,9 +10,9 @@ void __fastcall UnitClass_SetOccupyBit_Reimpl(UnitClass* pThis, void*, CoordStru
 	if (TechnoExt::DoesntOccupyCellAsChild(pThis))
 		return;
 
-	CellClass* pCell = MapClass::Instance->GetCellAt(*pCrd);
+	CellClass* pCell = MapClass::Instance.GetCellAt(*pCrd);
 	auto pCellExt = CellExt::ExtMap.Find(pCell);
-	int height = MapClass::Instance->GetCellFloorHeight(*pCrd) + CellClass::BridgeHeight;
+	int height = MapClass::Instance.GetCellFloorHeight(*pCrd) + CellClass::BridgeHeight;
 	bool alt = (pCrd->Z >= height && pCell->ContainsBridge());
 
 	// remember which occupation bit we set
@@ -42,9 +42,9 @@ void __fastcall UnitClass_ClearOccupyBit_Reimpl(UnitClass* pThis, void*, CoordSt
 
 	enum { obNormal = 1, obAlt = 2 };
 
-	CellClass* pCell = MapClass::Instance->GetCellAt(*pCrd);
+	CellClass* pCell = MapClass::Instance.GetCellAt(*pCrd);
 	auto pCellExt = CellExt::ExtMap.Find(pCell);
-	int height = MapClass::Instance->GetCellFloorHeight(*pCrd) + CellClass::BridgeHeight;
+	int height = MapClass::Instance.GetCellFloorHeight(*pCrd) + CellClass::BridgeHeight;
 	int alt = (pCrd->Z >= height) ? obAlt : obNormal;
 
 	// also clear the last occupation bit, if set

@@ -101,16 +101,16 @@ bool AttachmentLocomotionClass::Process()
 
 		if (oldLayer != newLayer)
 		{
-			DisplayClass::Instance->Submit(this->LinkedTo);
+			DisplayClass::Instance.Submit(this->LinkedTo);
 
 			if (oldLayer < Layer::Air && Layer::Air <= newLayer)
 			{
-				AircraftTrackerClass::Instance->Add(this->LinkedTo);
+				AircraftTrackerClass::Instance.Add(this->LinkedTo);
 				changedAirborneStatus = true;
 			}
 			else if (newLayer < Layer::Air && Layer::Air <= oldLayer)
 			{
-				AircraftTrackerClass::Instance->Remove(this->LinkedTo);
+				AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 				changedAirborneStatus = true;
 			}
 
@@ -123,7 +123,7 @@ bool AttachmentLocomotionClass::Process()
 		if (oldPos != newPos)
 		{
 			if (Layer::Air <= newLayer && !changedAirborneStatus)
-				AircraftTrackerClass::Instance->Update(this->LinkedTo, oldPos, newPos);
+				AircraftTrackerClass::Instance.Update(this->LinkedTo, oldPos, newPos);
 
 			if (this->LinkedTo->GetTechnoType()->SensorsSight)
 			{
@@ -240,7 +240,7 @@ HRESULT AttachmentLocomotionClass::Begin_Piggyback(ILocomotion* pointer)
 
 	// since LinkedTo may've been managed by AircraftTracker before we need to remove the AircraftTracker entry
 	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
-		AircraftTrackerClass::Instance->Remove(this->LinkedTo);
+		AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 
 	this->Piggybacker = pointer;
 
@@ -257,7 +257,7 @@ HRESULT AttachmentLocomotionClass::End_Piggyback(ILocomotion** pointer)
 
 	// since LinkedTo may no longer be considered airborne we need to remove the AircraftTracker entry
 	if (this->LinkedTo && this->LinkedTo->GetLastFlightMapCoords() != CellStruct::Empty)
-		AircraftTrackerClass::Instance->Remove(this->LinkedTo);
+		AircraftTrackerClass::Instance.Remove(this->LinkedTo);
 
 	// since pointer is a dumb pointer, we don't need to call Release,
 	// hence we use Detach, otherwise the locomotor gets trashed
@@ -373,6 +373,6 @@ Layer AttachmentLocomotionClass::CalculateLayer()
 
 bool AttachmentLocomotionClass::ShouldBeOnBridge()
 {
-	return MapClass::Instance->GetCellAt(this->LinkedTo->Location)->ContainsBridge()
+	return MapClass::Instance.GetCellAt(this->LinkedTo->Location)->ContainsBridge()
 		&& this->LinkedTo->GetHeight() >= CellClass::BridgeHeight && !this->LinkedTo->IsFallingDown;
 }

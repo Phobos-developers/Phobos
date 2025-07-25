@@ -1,5 +1,7 @@
 #include "Body.h"
+
 #include <AirstrikeClass.h>
+
 #include <Utilities/EnumFunctions.h>
 
 // Unsorted methods
@@ -32,26 +34,23 @@ void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
 	}
 }
 
-Matrix3D TechnoExt::GetTransform(TechnoClass* pThis, VoxelIndexKey* pKey, bool isShadow)
+// reversed from 6F3D60
+CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
 {
+	auto const pType = pThis->GetTechnoType();
+	auto const pFoot = abstract_cast<FootClass*, true>(pThis);
 	Matrix3D mtx;
 
-	if ((pThis->AbstractFlags & AbstractFlags::Foot) && ((FootClass*)pThis)->Locomotor)
-		mtx = isShadow ? ((FootClass*)pThis)->Locomotor->Shadow_Matrix(pKey) : ((FootClass*)pThis)->Locomotor->Draw_Matrix(pKey);
+	// Step 1: get body transform matrix
+	if (pFoot && pFoot->Locomotor)
+		mtx = pFoot->Locomotor->Draw_Matrix(nullptr);
 	else // no locomotor means no rotation or transform of any kind (f.ex. buildings) - Kerbiter
 		mtx.MakeIdentity();
 
-	return mtx;
-}
-
-Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool isOnTurret, double factor)
-{
-	auto const pType = pThis->GetTechnoType();
-
-	// turret offset and rotation
-	if (isOnTurret && pThis->HasTurret())
+	// Steps 2-3: turret offset and rotation
+	if (isOnTurret && (pType->Turret || !pFoot)) // If building has no turret, it's TurretFacing is TargetDirection
 	{
-		TechnoTypeExt::ApplyTurretOffset(pType, &mtx, factor);
+		TechnoTypeExt::ApplyTurretOffset(pType, &mtx);
 
 		double turretRad = pThis->TurretFacing().GetRadian<32>();
 		// For BuildingClass turret facing is equal to primary facing
@@ -60,27 +59,12 @@ Matrix3D TechnoExt::TransformFLHForTurret(TechnoClass* pThis, Matrix3D mtx, bool
 		mtx.RotateZ(angle);
 	}
 
-	return mtx;
-}
+	// Step 4: apply FLH offset
+	mtx.Translate((float)pCoord.X, (float)pCoord.Y, (float)pCoord.Z);
 
-Matrix3D TechnoExt::GetFLHMatrix(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret, double factor, bool isShadow)
-{
-	Matrix3D transform = TechnoExt::GetTransform(pThis, nullptr, isShadow);
-	Matrix3D mtx = TechnoExt::TransformFLHForTurret(pThis, transform, isOnTurret, factor);
+	auto result = mtx.GetTranslation();
 
-	CoordStruct scaledCoord = pCoord * factor;
-	// apply FLH offset
-	mtx.Translate((float)scaledCoord.X, (float)scaledCoord.Y, (float)scaledCoord.Z);
-
-	return mtx;
-}
-
-// reversed from 6F3D60
-CoordStruct TechnoExt::GetFLHAbsoluteCoords(TechnoClass* pThis, CoordStruct pCoord, bool isOnTurret)
-{
-	auto result = TechnoExt::GetFLHMatrix(pThis, pCoord, isOnTurret).GetTranslation();
-
-	// apply as an offset to global object coords
+	// Step 5: apply as an offset to global object coords
 	// Resulting coords are mirrored along X axis, so we mirror it back
 	auto location = pThis->GetRenderCoords() + CoordStruct { (int)result.X, -(int)result.Y, (int)result.Z };
 

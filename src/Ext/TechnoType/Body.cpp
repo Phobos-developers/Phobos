@@ -665,6 +665,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// vector contents can be properly overriden via scenario rules - Kerbiter
 	for (size_t i = 0; i <= this->AttachmentData.size(); ++i)
 	{
+		char tempBuffer[32];
 		NullableIdx<AttachmentTypeClass> type;
 		_snprintf_s(tempBuffer, sizeof(tempBuffer), "Attachment%d.Type", i);
 		type.Read(exINI, pSection, tempBuffer);
@@ -1299,8 +1300,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->OreGathering_Anims)
 		.Process(this->OreGathering_Tiberiums)
 		.Process(this->OreGathering_FramesPerDir)
-		.Process(this->DestroyAnim_Random)
 		.Process(this->LaserTrailData)
+		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->DefaultDisguise)
 		.Process(this->UseDisguiseMovementSpeed)

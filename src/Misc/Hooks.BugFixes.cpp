@@ -21,7 +21,6 @@
 #include <HashTable.h>
 #include <TunnelLocomotionClass.h>
 #include <TacticalClass.h>
-#include <EventClass.h>
 
 #include <Ext/Rules/Body.h>
 #include <Ext/BuildingType/Body.h>
