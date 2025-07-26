@@ -22,7 +22,7 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 
 	if (const auto pTraj = BulletExt::ExtMap.Find(pThis)->Trajectory.get())
 	{
-		if (!pTraj->ShouldDetonate)
+		if (pTraj->Status & TrajectoryStatus::Vanish)
 			return GoToExtras;
 	}
 

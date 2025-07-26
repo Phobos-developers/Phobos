@@ -37,6 +37,15 @@ enum class TrajectoryFacing : int
 	FirerTurret = 6
 };
 
+enum class TrajectoryStatus : unsigned char
+{
+	None = 0x0,
+	Detonate = 0x1,
+	Vanish = 0x2,
+	Bounce = 0x4
+};
+MAKE_ENUM_FLAGS(TrajectoryStatus);
+
 class PhobosTrajectory;
 class PhobosTrajectoryType
 {
@@ -184,7 +193,7 @@ public:
 		, TargetIsInAir { false }
 		, TargetIsTechno { false }
 		, NotMainWeapon { false }
-		, ShouldDetonate { false }
+		, Status { false }
 		, FLHCoord { CoordStruct::Empty }
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }
@@ -216,7 +225,7 @@ public:
 	bool TargetIsInAir; // Is the original target the Air Force
 	bool TargetIsTechno; // Is the original target a techno type
 	bool NotMainWeapon; // Does it ignore the launcher
-	bool ShouldDetonate; // Should detonate when checking before and after moving
+	TrajectoryStatus Status; // Should detonate or vanish
 	CoordStruct FLHCoord; // Launch FLH
 	int CurrentBurst; // Current burst index, mirror is required for negative numbers
 	int CountOfBurst; // Upper limit of burst counts

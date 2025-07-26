@@ -199,7 +199,7 @@ void StraightTrajectory::FireTrajectory()
 
 	// Substitute the speed to calculate velocity
 	if (this->CalculateBulletVelocity(pType->Speed))
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 
 	// Rotate the selected angle
 	if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)

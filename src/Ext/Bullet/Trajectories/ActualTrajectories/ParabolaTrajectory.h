@@ -59,14 +59,12 @@ public:
 		, Type { trajType }
 		, ThrowHeight { trajType->ThrowHeight > 0 ? trajType->ThrowHeight : 600 }
 		, BounceTimes { trajType->BounceTimes }
-		, ShouldBounce { false }
 		, LastVelocity {}
 	{ }
 
 	const ParabolaTrajectoryType* Type;
 	int ThrowHeight;
 	int BounceTimes;
-	bool ShouldBounce;
 	BulletVelocity LastVelocity;
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;

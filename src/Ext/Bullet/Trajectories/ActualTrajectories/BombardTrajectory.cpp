@@ -196,7 +196,7 @@ void BombardTrajectory::FireTrajectory()
 		this->MovingVelocity = PhobosTrajectory::Coord2Vector(middleLocation - pBullet->SourceCoords);
 
 		if (this->CalculateBulletVelocity(pType->Speed))
-			this->ShouldDetonate = true;
+			this->Status |= TrajectoryStatus::Detonate;
 
 		// Rotate the selected angle
 		if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
@@ -216,7 +216,7 @@ void BombardTrajectory::FireTrajectory()
 			this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - middleLocation);
 
 			if (this->CalculateBulletVelocity(fallSpeed))
-				this->ShouldDetonate = true;
+				this->Status |= TrajectoryStatus::Detonate;
 
 			// Rotate the selected angle
 			if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
@@ -261,7 +261,7 @@ void BombardTrajectory::MultiplyBulletVelocity(const double ratio, const bool sh
 
 	// Only be truly detonated during the descent phase
 	if (shouldDetonate && this->IsFalling)
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 }
 
 CoordStruct BombardTrajectory::CalculateMiddleCoords()

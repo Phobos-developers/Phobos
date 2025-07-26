@@ -80,7 +80,7 @@ public:
 			pBullet->Range -= Game::F2I(this->MovingSpeed);
 
 			if (pBullet->Range <= 0)
-				this->ShouldDetonate = true;
+				this->Status |= TrajectoryStatus::Detonate;
 		}
 	}
 	inline double GetLeadTime(const double defaultTime)

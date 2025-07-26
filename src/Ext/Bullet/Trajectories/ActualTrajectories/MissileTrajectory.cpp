@@ -224,7 +224,7 @@ void MissileTrajectory::OpenFire()
 
 		// Calculate speed
 		if (this->CalculateBulletVelocity(pType->LaunchSpeed))
-			this->ShouldDetonate = true;
+			this->Status |= TrajectoryStatus::Detonate;
 	}
 
 	this->PhobosTrajectory::OpenFire();

@@ -108,7 +108,6 @@ void ParabolaTrajectory::Serialize(T& Stm)
 		.Process(this->Type)
 		.Process(this->ThrowHeight)
 		.Process(this->BounceTimes)
-		.Process(this->ShouldBounce)
 		.Process(this->LastVelocity)
 		;
 }
@@ -355,7 +354,7 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	const auto pCell = MapClass::Instance.TryGetCellAt(position);
 
 	// Bounce
-	if (!pCell || (this->ShouldBounce && this->CalculateBulletVelocityAfterBounce(pCell, position)))
+	if (!pCell || ((this->Status & TrajectoryStatus::Bounce) && this->CalculateBulletVelocityAfterBounce(pCell, position)))
 		return TrajectoryCheckReturnType::Detonate;
 
 	return TrajectoryCheckReturnType::SkipGameCheck;
@@ -412,7 +411,7 @@ void ParabolaTrajectory::FireTrajectory()
 
 	if (gravity <= 1e-10)
 	{
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
@@ -439,9 +438,9 @@ void ParabolaTrajectory::MultiplyBulletVelocity(const double ratio, const bool s
 
 	// Is it detonating or bouncing?
 	if (shouldDetonate || this->BounceTimes <= 0)
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 	else
-		this->ShouldBounce = true;
+		this->Status |= TrajectoryStatus::Bounce;
 }
 
 void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& source, const double gravity)
@@ -658,7 +657,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 
 	if (distance <= 1e-10)
 	{
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
@@ -1012,7 +1011,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 
 	// Record bouncing once
 	--this->BounceTimes;
-	this->ShouldBounce = false;
+	this->Status &= ~TrajectoryStatus::Bounce;
 
 	// Calculate the velocity vector after bouncing
 	this->MovingVelocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;

@@ -261,8 +261,7 @@ void PhobosTrajectory::OnUnlimbo()
 			if (size >= pType->CreateCapacity)
 			{
 				// Peaceful vanish
-				pBullet->Health = 0;
-				this->ShouldDetonate = true;
+				this->Status |= TrajectoryStatus::Vanish;
 			}
 			else
 			{
@@ -301,7 +300,7 @@ bool PhobosTrajectory::OnEarlyUpdate()
 		return false;
 
 	// The previous check requires detonation at this time
-	if (this->ShouldDetonate)
+	if (this->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
 		return true;
 
 	// Check the remaining existence time
@@ -503,7 +502,7 @@ void PhobosTrajectory::OnVelocityUpdate(BulletVelocity* pSpeed, BulletVelocity* 
 TrajectoryCheckReturnType PhobosTrajectory::OnDetonateUpdate(const CoordStruct& position)
 {
 	// Need to detonate at the next location
-	if (this->ShouldDetonate)
+	if (this->Status & (TrajectoryStatus::Detonate | TrajectoryStatus::Vanish))
 		return TrajectoryCheckReturnType::Detonate;
 
 	// Below ground level? (16 -> error range)
@@ -525,23 +524,23 @@ void PhobosTrajectory::OnPreDetonate()
 
 	const auto pBullet = this->Bullet;
 
-	// No damage, no anims...
 	if (pType->PeacefulVanish.Get(this->Flag() == TrajectoryFlag::Engrave || pType->ProximityImpact || pType->DisperseCycle))
 	{
-		pBullet->Health = 0;
-		pBullet->Limbo();
-		pBullet->UnInit();
-
 		// To skip all extra effects
-		this->ShouldDetonate = false;
+		this->Status |= TrajectoryStatus::Vanish;
 	}
 	else
 	{
 		// Calculate the current damage
 		pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
+	}
 
-		// Ensure the detonation flag is established
-		this->ShouldDetonate = true;
+	// No damage, no anims...
+	if (this->Status & TrajectoryStatus::Vanish)
+	{
+		pBullet->Health = 0;
+		pBullet->Limbo();
+		pBullet->UnInit();
 	}
 }
 
@@ -577,7 +576,7 @@ void PhobosTrajectory::OpenFire()
 			const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
 			if (TrajectoryHelper::GetObstacle(pSourceCell, pTargetCell, pSourceCell, pBullet->Location, pBulletType, pOwner))
-				this->ShouldDetonate = true;
+				this->Status |= TrajectoryStatus::Detonate;
 		}
 	}
 }
@@ -614,7 +613,7 @@ void PhobosTrajectory::MultiplyBulletVelocity(const double ratio, const bool sho
 
 	// The next frame needs to detonate itself
 	if (shouldDetonate)
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 }
 
 /*!
@@ -843,7 +842,7 @@ void PhobosTrajectory::DetonateOnObstacle()
 	if (speed && distance < speed)
 		this->MultiplyBulletVelocity(distance / speed, true);
 	else
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 
 	// Need to cause additional damage?
 	if (!this->ProximityImpact)
@@ -1114,7 +1113,7 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
 		.Process(this->NotMainWeapon)
-		.Process(this->ShouldDetonate)
+		.Process(this->Status)
 		.Process(this->FLHCoord)
 		.Process(this->CurrentBurst)
 		.Process(this->CountOfBurst)

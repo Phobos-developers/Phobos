@@ -89,7 +89,6 @@ void TracingTrajectory::Serialize(T& Stm)
 	Stm
 		.Process(this->Type)
 		.Process(this->RotateRadian)
-		.Process(this->AsPeacefulVanish)
 		;
 }
 
@@ -127,23 +126,6 @@ bool TracingTrajectory::OnEarlyUpdate()
 
 	// Followed the launcher, but the launcher was destroyed
 	return !pType->TrackTarget && !pFirer;
-}
-
-void TracingTrajectory::OnPreDetonate()
-{
-	this->PhobosTrajectory::OnPreDetonate();
-
-	// Overwrite the ordinary behavior
-	if (this->ShouldDetonate && this->AsPeacefulVanish)
-	{
-		const auto pBullet = this->Bullet;
-		pBullet->Health = 0;
-		pBullet->Limbo();
-		pBullet->UnInit();
-
-		// To skip all extra effects
-		this->ShouldDetonate = false;
-	}
 }
 
 bool TracingTrajectory::OnVelocityCheck()
@@ -219,7 +201,7 @@ bool TracingTrajectory::ChangeVelocity()
 			return true;
 
 		if (chaseRange >= 0)
-			this->AsPeacefulVanish = true;
+			this->Status |= TrajectoryStatus::Vanish;
 	}
 
 	// Confirm the center position of the tracing target

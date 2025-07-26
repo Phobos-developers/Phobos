@@ -174,7 +174,7 @@ void EngraveTrajectory::OpenFire()
 	this->MovingVelocity.Z = 0;
 
 	if (this->CalculateBulletVelocity(pType->Speed))
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 
 	this->PhobosTrajectory::OpenFire();
 }
@@ -268,7 +268,7 @@ void EngraveTrajectory::ChangeVelocity()
 
 	if (distance < 1e-10)
 	{
-		this->ShouldDetonate = true;
+		this->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
