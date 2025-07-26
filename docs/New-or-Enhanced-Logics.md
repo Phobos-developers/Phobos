@@ -1249,10 +1249,10 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 ````{dropdown} Click to show
 
   - The referenced images, weapons, and warheads should be supplemented by yourself.
-    - SOMEWEAPON[] - SOMEPROJECTILE[] - SOMEIMAGE[] / SOMEWARHEAD[]
 
   ```{note}
   - It is recommended to start reading from the first one, as some of the content may have already been explained in previous cases.
+  - Regarding the name: `SOMEPROJECTILEXX` corresponds to its image `SOMEIMAGEXX`, its weapon `SOMEWEAPONXX` and its warhead `SOMEWARHEADXX` (Can be the same as the warhead of the weapon, please determine according to the actual situation).
   ```
 
   ---
@@ -1694,7 +1694,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-P](_static/images/Trajectory-demo-P.gif)
 
-  - The assets of the case come from mod *Mental Omega*.
+  - The assets of the case come from mod [*Mental Omega*](https://www.mentalomega.com).
 
   In `rulesmd.ini`:
   ```ini
@@ -1742,7 +1742,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-R](_static/images/Trajectory-demo-R.gif)
 
-  - The assets of the case come from mod *Mental Omega*.
+  - The assets of the case come from mod [*Mental Omega*](https://www.mentalomega.com).
 
   In `rulesmd.ini`:
   ```ini
