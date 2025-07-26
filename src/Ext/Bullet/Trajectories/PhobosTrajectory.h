@@ -341,6 +341,19 @@ public:
 
 		return pTechno->CloakState != CloakState::Cloaked || pCell->Sensors_InclHouse(pHouse->ArrayIndex);
 	}
+	static inline bool CheckCanRetarget(TechnoClass* const pTechno, HouseClass* const pOwner, const AffectedHouse retargetHouses, const CoordStruct& center, const int retargetRange, const int range,
+		const BulletClass* const pBullet, const WeaponTypeClass* const pWeapon, const WeaponTypeExt::ExtData* const pWeaponExt, TechnoClass* const pFirer)
+	{
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		return pTechnoType->LegalTarget
+			&& !pTechno->IsBeingWarpedOut()
+			&& PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), retargetHouses)
+			&& PhobosTrajectory::GetDistanceFrom(center, pTechno) <= retargetRange
+			&& MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) != 0
+			&& (!pWeapon || PhobosTrajectory::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) <= range)
+			&& PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno);
+	}
 	static inline void SetNewDamage(int& damage, const double ratio)
 	{
 		if (damage)

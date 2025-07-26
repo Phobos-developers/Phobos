@@ -401,19 +401,16 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	// Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius();
-	const size_t cellSize = recCellClass.size() * 2;
-	size_t vectSize = cellSize;
-	size_t thisSize = 0;
 
 	const auto velocityCrd = PhobosTrajectory::Vector2Coord(this->MovingVelocity);
 	const auto velocity = this->MovingSpeed;
 	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
-	validTechnos.reserve(vectSize);
+	validTechnos.reserve(recCellClass.size() * 2);
 
-	auto checkCellContent = [pType, pBullet, pTarget, pOwner, radius, cellSize, velocity, pWHExt,
-		&velocityCrd, &thisSize, &vectSize, &validTechnos](ObjectClass* pFirstObject)
+	auto checkCellContent = [pType, pBullet, pTarget, pOwner, radius, velocity, pWHExt,
+		&velocityCrd, &validTechnos](ObjectClass* pFirstObject)
 		{
 			for (auto pObject = pFirstObject; pObject; pObject = pObject->NextObject)
 			{
@@ -460,15 +457,8 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				// Should be in the center cylinder
 				if (distance > (radius + distanceOffset))
 					continue;
-				// Manual expansion
-				if (thisSize >= vectSize)
-				{
-					vectSize += cellSize;
-					validTechnos.reserve(vectSize);
-				}
 
 				validTechnos.push_back(pTechno);
-				thisSize += 1;
 			}
 		};
 
@@ -515,15 +505,8 @@ void PhobosTrajectory::PrepareForDetonateAt()
 			// Should be in the center cylinder
 			if (distance > radius)
 				continue;
-			// Manual expansion
-			if (thisSize >= vectSize)
-			{
-				vectSize += cellSize;
-				validTechnos.reserve(vectSize);
-			}
 
 			validTechnos.push_back(pTechno);
-			thisSize += 1;
 		}
 	}
 	// Step 3: Record each target without repetition.

@@ -61,27 +61,12 @@ bool PhobosTrajectory::BulletRetargetTechno()
 				for (auto pObject = pCell->GetContent(); pObject; pObject = pObject->NextObject)
 				{
 					const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
+					const bool canRetarget = pTechno
+						&& !PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
+						&& (pTechno->WhatAmI() != AbstractType::Building || !static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame
+						&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer));
 
-					if (!pTechno || PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
-						continue;
-
-					const auto pTechnoType = pTechno->GetTechnoType();
-
-					if (!pTechnoType->LegalTarget)
-						continue;
-					else if (pTechno->IsBeingWarpedOut())
-						continue;
-					else if (pTechno->WhatAmI() == AbstractType::Building && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
-						continue;
-					else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pType->RetargetHouses))
-						continue;
-					else if (PhobosTrajectory::GetDistanceFrom(retargetCoords, pTechno) > retargetRange)
-						continue;
-					else if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
-						continue;
-					else if (pWeapon && PhobosTrajectory::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) > range)
-						continue;
-					else if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
+					if (!canRetarget)
 						continue;
 
 					pNewTechno = pTechno;
@@ -101,24 +86,10 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
-				continue;
+			const bool canRetarget = !PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
+				&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer);
 
-			const auto pTechnoType = pTechno->GetTechnoType();
-
-			if (!pTechnoType->LegalTarget)
-				continue;
-			else if (pTechno->IsBeingWarpedOut())
-				continue;
-			else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pTechno->GetCell(), pType->RetargetHouses))
-				continue;
-			else if (PhobosTrajectory::GetDistanceFrom(retargetCoords, pTechno) > retargetRange)
-				continue;
-			else if (MapClass::GetTotalDamage(100, pBullet->WH, pTechnoType->Armor, 0) == 0)
-				continue;
-			else if (pWeapon && PhobosTrajectory::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) > range)
-				continue;
-			else if (!PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno))
+			if (!canRetarget)
 				continue;
 
 			pNewTechno = pTechno;
