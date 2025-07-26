@@ -165,7 +165,7 @@ bool MissileTrajectory::OnVelocityCheck()
 	if (this->LastDotProduct > 0)
 	{
 		const auto pBullet = this->Bullet;
-		const auto distance = pBullet->Location.DistanceFrom(pBullet->TargetCoords + this->OffsetCoord);
+		const double distance = pBullet->Location.DistanceFrom(pBullet->TargetCoords + this->OffsetCoord);
 
 		if (this->MovingSpeed > distance)
 			this->MultiplyBulletVelocity(distance / this->MovingSpeed, true);
@@ -262,7 +262,7 @@ void MissileTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 
 bool MissileTrajectory::CalculateBulletVelocity(const double speed)
 {
-	const auto velocityLength = this->MovingVelocity.Magnitude();
+	const double velocityLength = this->MovingVelocity.Magnitude();
 
 	if (velocityLength < 1e-10)
 		return true;
@@ -350,7 +350,7 @@ bool MissileTrajectory::CalculateReducedVelocity(const double rotateRadian)
 		return false;
 
 	// Check if its steering ability is sufficient
-	const auto coordMult = (this->OriginalDistance * pType->TurningSpeed / (Unsorted::LeptonsPerCell * 90 / 2));
+	const double coordMult = (this->OriginalDistance * pType->TurningSpeed / (Unsorted::LeptonsPerCell * 90 / 2));
 
 	// Cancel when the coordinate correction is greater than the original coordinate
 	if (coordMult >= 1.0)
@@ -387,15 +387,15 @@ bool MissileTrajectory::CurveVelocityChange()
 	if (!this->InStraight) // In the launch phase
 	{
 		const auto horizonVelocity = PhobosTrajectory::Coord2Point(targetLocation - pBullet->Location);
-		const auto horizonDistance = horizonVelocity.Magnitude();
+		const double horizonDistance = horizonVelocity.Magnitude();
 
 		if (horizonDistance > 0)
 		{
 			// Slowly step up
-			auto horizonMult = std::abs(this->MovingVelocity.Z / 64.0) / horizonDistance;
+			double horizonMult = std::abs(this->MovingVelocity.Z / 64.0) / horizonDistance;
 			this->MovingVelocity.X += horizonMult * horizonVelocity.X;
 			this->MovingVelocity.Y += horizonMult * horizonVelocity.Y;
-			const auto horizonLength = sqrt(this->MovingVelocity.X * this->MovingVelocity.X + this->MovingVelocity.Y * this->MovingVelocity.Y);
+			const double horizonLength = sqrt(this->MovingVelocity.X * this->MovingVelocity.X + this->MovingVelocity.Y * this->MovingVelocity.Y);
 
 			// Limit horizontal maximum speed
 			if (horizonLength > 64.0)
@@ -417,7 +417,7 @@ bool MissileTrajectory::CurveVelocityChange()
 			this->Accelerate = false;
 
 			// Predict the lowest position
-			const auto futureHeight = pBullet->Location.Z + 8 * this->MovingVelocity.Z;
+			const double futureHeight = pBullet->Location.Z + 8 * this->MovingVelocity.Z;
 
 			// Start decelerating/accelerating downwards
 			if (this->MovingVelocity.Z > -160.0)
@@ -433,7 +433,7 @@ bool MissileTrajectory::CurveVelocityChange()
 	else // In the gliding stage
 	{
 		// Predict hit time
-		const auto timeMult = targetLocation.DistanceFrom(pBullet->Location) / 192.0;
+		const double timeMult = targetLocation.DistanceFrom(pBullet->Location) / 192.0;
 		targetLocation.Z += static_cast<int>(timeMult * 48);
 
 		// Calculate the target lead time
@@ -494,8 +494,8 @@ bool MissileTrajectory::StandardVelocityChange()
 			// Only movable targets need to be calculated
 			if ((pTargetFoot && !PhobosTrajectory::CheckTechnoIsInvalid(pTargetFoot)) || pTarget->WhatAmI() == AbstractType::Bullet)
 			{
-				const auto leadSpeed = (pType->Speed + this->MovingSpeed) / 2;
-				const auto timeMult = targetLocation.DistanceFrom(pBullet->Location) / leadSpeed;
+				const double leadSpeed = (pType->Speed + this->MovingSpeed) / 2;
+				const double timeMult = targetLocation.DistanceFrom(pBullet->Location) / leadSpeed;
 				targetLocation += (pBullet->TargetCoords - this->LastTargetCoord) * timeMult;
 			}
 		}
@@ -504,15 +504,15 @@ bool MissileTrajectory::StandardVelocityChange()
 		if (this->CruiseEnable)
 		{
 			const auto horizontal = PhobosTrajectory::Coord2Point(targetLocation - pBullet->Location);
-			const auto horizontalDistance = horizontal.Magnitude();
+			const double horizontalDistance = horizontal.Magnitude();
 
 			// The distance is still long, continue cruising
 			if (horizontalDistance > pType->CruiseUnableRange.Get())
 			{
-				const auto ratio = this->MovingSpeed / horizontalDistance;
+				const double ratio = this->MovingSpeed / horizontalDistance;
 				targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
 				targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
-				const auto altitude = pType->CruiseAltitude + (pType->CruiseAlongLevel ? MapClass::Instance.GetCellFloorHeight(pBullet->Location) : pBullet->SourceCoords.Z);
+				const int altitude = pType->CruiseAltitude + (pType->CruiseAlongLevel ? MapClass::Instance.GetCellFloorHeight(pBullet->Location) : pBullet->SourceCoords.Z);
 
 				// Smooth curve for low turning speed projectile
 				targetLocation.Z = (altitude + pBullet->Location.Z) / 2;
@@ -537,7 +537,7 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	// Add gravity
 	auto& bulletVelocity = this->MovingVelocity;
 	bulletVelocity.Z -= BulletTypeExt::GetAdjustedGravity(this->Bullet->Type);
-	const auto currentSpeed = bulletVelocity.Magnitude();
+	const double currentSpeed = bulletVelocity.Magnitude();
 	this->MovingSpeed = currentSpeed + pType->Acceleration;
 
 	// Calculate new speed with acceleration
@@ -556,14 +556,14 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	const auto targetVelocity = PhobosTrajectory::Coord2Vector(targetLocation - pBullet->Location);
 
 	// Calculate the new velocity vector based on turning speed
-	const auto dotProduct = (targetVelocity * bulletVelocity);
-	const auto cosTheta = dotProduct / (targetVelocity.Magnitude() * this->MovingSpeed);
+	const double dotProduct = (targetVelocity * bulletVelocity);
+	const double cosTheta = dotProduct / (targetVelocity.Magnitude() * this->MovingSpeed);
 
 	// Ensure that the result range of cos is correct
-	const auto radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0));
+	const double radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0));
 
 	// TurningSpeed uses angles as units and requires conversion
-	const auto turningRadius = pType->TurningSpeed * (Math::TwoPi / 360);
+	const double turningRadius = pType->TurningSpeed * (Math::TwoPi / 360);
 
 	// The angle that needs to be rotated is relatively large
 	if (std::abs(radian) > turningRadius)

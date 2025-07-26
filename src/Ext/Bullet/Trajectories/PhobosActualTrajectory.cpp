@@ -166,10 +166,10 @@ CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseC
 	const auto pTypeExt = BulletTypeExt::ExtMap.Find(pBullet->Type);
 
 	// Don't know whether the weapon is correctly set, if not, a fixed value of 10 will be used
-	const auto offsetMult = distance / (pWeapon ? pWeapon->Range : (10.0 * Unsorted::LeptonsPerCell));
-	const auto offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
-	const auto offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
-	const auto offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);
+	const double offsetMult = distance / (pWeapon ? pWeapon->Range : (10.0 * Unsorted::LeptonsPerCell));
+	const int offsetMin = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Min.Get(Leptons(0)));
+	const int offsetMax = static_cast<int>(offsetMult * pTypeExt->BallisticScatter_Max.Get(Leptons(RulesClass::Instance->BallisticScatter)));
+	const int offsetDistance = ScenarioClass::Instance->Random.RandomRanged(offsetMin, offsetMax);
 
 	// Substitute to calculate random coordinates
 	return MapClass::GetRandomCoordsNear(baseCoord, offsetDistance, false);
@@ -183,7 +183,7 @@ void ActualTrajectory::DisperseBurstSubstitution(const double baseRadian)
 	// Calculate the actual rotation axis
 	auto rotationAxis = PhobosTrajectory::HorizontalRotate(axis, baseRadian);
 	double extraRotate = 0.0;
-	const auto burst = (this->CurrentBurst < 0) ? (-this->CurrentBurst - 1) : this->CurrentBurst;
+	const int burst = (this->CurrentBurst < 0) ? (-this->CurrentBurst - 1) : this->CurrentBurst;
 
 	// Symmetry and initial direction can be calculated separately
 	if (pType->MirrorCoord)

@@ -183,7 +183,7 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 {
 	// Only call once
 	// Substitute the speed to calculate velocity
-	auto velocityLength = this->MovingVelocity.Magnitude();
+	double velocityLength = this->MovingVelocity.Magnitude();
 
 	if (velocityLength < 1e-10)
 		return true;
@@ -213,8 +213,8 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 
 int EngraveTrajectory::GetFloorCoordHeight(const CoordStruct& coord)
 {
-	const auto onFloor = MapClass::Instance.GetCellFloorHeight(coord);
-	const auto onBridge = MapClass::Instance.GetCellAt(coord)->ContainsBridge() ? onFloor + CellClass::BridgeHeight : onFloor;
+	const int onFloor = MapClass::Instance.GetCellFloorHeight(coord);
+	const int onBridge = MapClass::Instance.GetCellAt(coord)->ContainsBridge() ? onFloor + CellClass::BridgeHeight : onFloor;
 	const auto pBullet = this->Bullet;
 
 	// Take the higher position
@@ -254,7 +254,7 @@ void EngraveTrajectory::ChangeVelocity()
 		virtualTarget.Y = -virtualTarget.Y;
 	}
 
-	const auto path = (this->DurationTimer.CurrentTime - this->DurationTimer.StartTime + 1) * pType->Speed;
+	const double path = (this->DurationTimer.CurrentTime - this->DurationTimer.StartTime + 1) * pType->Speed;
 	auto source = PhobosTrajectory::Coord2Point(pBullet->SourceCoords);
 	auto target = PhobosTrajectory::Coord2Point(pBullet->TargetCoords);
 
@@ -264,7 +264,7 @@ void EngraveTrajectory::ChangeVelocity()
 
 	target += PhobosTrajectory::PointRotate(virtualTarget, this->RotateRadian);
 	const auto delta = target - source;
-	const auto distance = delta.Magnitude();
+	const double distance = delta.Magnitude();
 
 	if (distance < 1e-10)
 	{
@@ -300,7 +300,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight()
 		}
 		else
 		{
-			const auto nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(bulletCoords);
+			const int nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(bulletCoords);
 
 			// Less than 384 and greater than the maximum difference that can be achieved between two non cliffs
 			if (nowDifference >= 256)

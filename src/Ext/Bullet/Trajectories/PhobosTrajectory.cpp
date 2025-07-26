@@ -593,7 +593,7 @@ void PhobosTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 // Something that needs to be done when setting the new speed of the projectile
 bool PhobosTrajectory::CalculateBulletVelocity(const double speed)
 {
-	const auto velocityLength = this->MovingVelocity.Magnitude();
+	const double velocityLength = this->MovingVelocity.Magnitude();
 
 	// Check if it is a zero vector
 	if (velocityLength < 1e-10)
@@ -630,7 +630,7 @@ void PhobosTrajectory::MultiplyBulletVelocity(const double ratio, const bool sho
 */
 void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity& aim, const double turningRadian)
 {
-	const auto baseFactor = sqrt(aim.MagnitudeSquared() * vector.MagnitudeSquared());
+	const double baseFactor = sqrt(aim.MagnitudeSquared() * vector.MagnitudeSquared());
 
 	// Not valid vector
 	if (baseFactor <= 1e-10)
@@ -640,13 +640,13 @@ void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity
 	}
 
 	// Try using the vector to calculate the included angle
-	const auto dotProduct = (aim * vector);
+	const double dotProduct = (aim * vector);
 
 	// Calculate the cosine of the angle when the conditions are suitable
-	const auto cosTheta = dotProduct / baseFactor;
+	const double cosTheta = dotProduct / baseFactor;
 
 	// Ensure that the result range of cos is correct
-	const auto radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0));
+	const double radian = Math::acos(Math::clamp(cosTheta, -1.0, 1.0));
 
 	// When the angle is small, aim directly at the target
 	if (std::abs(radian) <= turningRadian)
@@ -659,7 +659,7 @@ void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity
 	auto rotationAxis = aim.CrossProduct(vector);
 
 	// The radian can rotate, input the correct direction
-	const auto rotateRadian = (radian < 0 ? turningRadian : -turningRadian);
+	const double rotateRadian = (radian < 0 ? turningRadian : -turningRadian);
 
 	// Substitute to calculate new velocity
 	PhobosTrajectory::RotateAboutTheAxis(vector, rotationAxis, rotateRadian);
@@ -761,7 +761,7 @@ void PhobosTrajectory::OnFacingUpdate()
 	}
 	else if (const auto pFirer = pBullet->Owner)
 	{
-		const auto radian = -(facing == TrajectoryFacing::FirerTurret ? pFirer->TurretFacing() : pFirer->PrimaryFacing.Current()).GetRadian<65536>();
+		const double radian = -(facing == TrajectoryFacing::FirerTurret ? pFirer->TurretFacing() : pFirer->PrimaryFacing.Current()).GetRadian<65536>();
 		desiredFacing.X = Math::cos(radian);
 		desiredFacing.Y = Math::sin(radian);
 		desiredFacing.Z = 0;
@@ -833,11 +833,11 @@ void PhobosTrajectory::DetonateOnObstacle()
 	// Slow down and reset the target
 	this->ExtraCheck = nullptr;
 	const auto pBullet = this->Bullet;
-	const auto distance = pDetonateAt->GetCoords().DistanceFrom(pBullet->Location);
+	const double distance = pDetonateAt->GetCoords().DistanceFrom(pBullet->Location);
 
 	// Set the new target so that the snap function can take effect
 	this->SetBulletNewTarget(pDetonateAt);
-	const auto speed = this->MovingSpeed;
+	const double speed = this->MovingSpeed;
 
 	// Check whether need to slow down
 	if (speed && distance < speed)
@@ -919,7 +919,7 @@ void PhobosTrajectory::UpdateGroupIndex()
 	// Should update group index
 	if (groupData.ShouldUpdate)
 	{
-		if (const auto size = static_cast<int>(groupData.Bullets.size()))
+		if (const int size = static_cast<int>(groupData.Bullets.size()))
 		{
 			for (int i = 0; i < size; ++i)
 			{

@@ -52,7 +52,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 	// The central location and radius for searching for enemies
 	const auto retargetCoords = this->GetRetargetCenter();
-	const auto retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
+	const double retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
 	const auto pWeapon = pBullet->WeaponType;
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	TechnoClass* pNewTechno = nullptr;
@@ -60,7 +60,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	// Find the first target
 	if (!this->TargetIsInAir) // Only get same type (on ground / in air)
 	{
-		const auto range = pWeapon ? pWeapon->Range : 0;
+		const int range = pWeapon ? pWeapon->Range : 0;
 		const auto retargetCell = CellClass::Coord2Cell(retargetCoords);
 
 		for (CellSpreadEnumerator thisCell(static_cast<size_t>(pType->RetargetRadius + 0.99)); thisCell; ++thisCell)
@@ -89,7 +89,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	}
 	else
 	{
-		const auto range = (pWeapon ? pWeapon->Range : 0) + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
+		const int range = (pWeapon ? pWeapon->Range : 0) + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
 		const auto airTracker = &AircraftTrackerClass::Instance;
 		airTracker->FillCurrentVector(MapClass::Instance.GetCellAt(retargetCoords), Game::F2I(pType->RetargetRadius));
 
@@ -151,7 +151,7 @@ CoordStruct PhobosTrajectory::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
 	if (weaponCoord == CoordStruct::Empty)
 		return pBullet->Location;
 
-	const auto rotateRadian = Math::atan2(pBullet->TargetCoords.Y - pBullet->Location.Y , pBullet->TargetCoords.X - pBullet->Location.X);
+	const double rotateRadian = Math::atan2(pBullet->TargetCoords.Y - pBullet->Location.Y , pBullet->TargetCoords.X - pBullet->Location.X);
 	const auto fireOffsetCoord = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(weaponCoord, rotateRadian));
 	return pBullet->Location + fireOffsetCoord;
 }
@@ -186,7 +186,7 @@ bool PhobosTrajectory::PrepareDisperseWeapon()
 
 	if (const int validDelays = pType->DisperseDelays.size())
 	{
-		const auto delay = pType->DisperseDelays[(this->DisperseIndex < validDelays) ? this->DisperseIndex : (validDelays - 1)];
+		const int delay = pType->DisperseDelays[(this->DisperseIndex < validDelays) ? this->DisperseIndex : (validDelays - 1)];
 		this->DisperseTimer.Start((delay > 0) ? delay : 1);
 	}
 
@@ -242,9 +242,9 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 		{
 			if (const auto pWeapon = pBullet->WeaponType)
 			{
-				const auto range = (pType->ApplyRangeModifiers && pFirer ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, pWeapon->Range) : pWeapon->Range) + 32;
+				const int range = (pType->ApplyRangeModifiers && pFirer ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, pWeapon->Range) : pWeapon->Range) + 32;
 				const auto pSource = (pFirer && !this->NotMainWeapon) ? static_cast<ObjectClass*>(pFirer) : pBullet;
-				const auto distance = (this->NotMainWeapon || this->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? pSource->DistanceFrom(pTarget) : pSource->DistanceFrom3D(pTarget);
+				const int distance = (this->NotMainWeapon || this->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? pSource->DistanceFrom(pTarget) : pSource->DistanceFrom3D(pTarget);
 
 				if (distance >= range)
 					return false;
@@ -273,7 +273,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 		const auto pWeapon = pType->DisperseWeapons[curIndex];
 		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
-		const auto burstCount = pType->DisperseBursts[(curIndex < validBursts) ? curIndex : (validBursts - 1)];
+		const int burstCount = pType->DisperseBursts[(curIndex < validBursts) ? curIndex : (validBursts - 1)];
 
 		if (burstCount <= 0)
 			continue;
@@ -392,7 +392,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 						else if (!PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pWeaponExt->CanTargetHouses))
 							continue;
 
-						const auto isBuilding = pTechno->WhatAmI() == AbstractType::Building;
+						const bool isBuilding = pTechno->WhatAmI() == AbstractType::Building;
 
 						if (isBuilding && (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame || inserted.contains(pTechno)))
 							continue;
@@ -414,7 +414,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 		if (pType->DisperseHolistic || this->TargetIsInAir) // In air targets
 		{
-			const auto range = pWeapon->Range + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
+			const int range = pWeapon->Range + (pFirer ? pFirer->GetTechnoType()->AirRangeBonus : 0);
 
 			if (checkTechnos)
 			{

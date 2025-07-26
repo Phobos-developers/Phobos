@@ -11,9 +11,9 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 
 	// Seems like the y-axis is reversed, but it's okay.
 	const Vector2D<double> walkCoord { this->MovingVelocity.X, this->MovingVelocity.Y };
-	const auto walkDistance = walkCoord.Magnitude();
+	const double walkDistance = walkCoord.Magnitude();
 	const auto radius = this->GetType()->ProximityRadius.Get();
-	const auto sideMult = radius / walkDistance;
+	const double sideMult = radius / walkDistance;
 
 	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
 	const CoordStruct cor4Coord { static_cast<int>((-walkCoord.Y) * sideMult), static_cast<int>(walkCoord.X * sideMult), 0 };
@@ -25,7 +25,7 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 	const auto off1Cell = cor1Cell - thisCell;
 	const auto off4Cell = cor4Cell - thisCell;
 
-	const auto predictRatio = (walkDistance + radius) / walkDistance;
+	const double predictRatio = (walkDistance + radius) / walkDistance;
 	const CoordStruct predictCoord { static_cast<int>(walkCoord.X * predictRatio), static_cast<int>(walkCoord.Y * predictRatio), 0 };
 	const auto nextCell = CellClass::Coord2Cell(pBullet->Location + predictCoord);
 
@@ -80,7 +80,7 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 std::vector<CellStruct> PhobosTrajectory::GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell)
 {
 	std::vector<CellStruct> recCells;
-	const auto cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
+	const int cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
 	recCells.reserve(cellNums);
 	recCells.push_back(bottomStaCell);
 
@@ -91,7 +91,7 @@ std::vector<CellStruct> PhobosTrajectory::GetCellsInRectangle(const CellStruct b
 		const auto middleTheDist = topEndCell - bottomStaCell;
 		const CellStruct middleTheUnit { static_cast<short>(Math::sgn(middleTheDist.X)), static_cast<short>(Math::sgn(middleTheDist.Y)) };
 		const CellStruct middleThePace { static_cast<short>(middleTheDist.X * middleTheUnit.X), static_cast<short>(middleTheDist.Y * middleTheUnit.Y) };
-		auto mTheCurN = static_cast<float>((middleThePace.Y - middleThePace.X) / 2.0);
+		short mTheCurN = static_cast<short>((middleThePace.Y - middleThePace.X) / 2);
 
 		while (middleCurCell != topEndCell)
 		{
@@ -136,22 +136,22 @@ std::vector<CellStruct> PhobosTrajectory::GetCellsInRectangle(const CellStruct b
 		const auto left1stDist = leftMidCell - bottomStaCell;
 		const CellStruct left1stUnit { static_cast<short>(Math::sgn(left1stDist.X)), static_cast<short>(Math::sgn(left1stDist.Y)) };
 		const CellStruct left1stPace { static_cast<short>(left1stDist.X * left1stUnit.X), static_cast<short>(left1stDist.Y * left1stUnit.Y) };
-		auto left1stCurN = static_cast<float>((left1stPace.Y - left1stPace.X) / 2.0);
+		short left1stCurN = static_cast<short>((left1stPace.Y - left1stPace.X) / 2);
 
 		const auto left2ndDist = topEndCell - leftMidCell;
 		const CellStruct left2ndUnit { static_cast<short>(Math::sgn(left2ndDist.X)), static_cast<short>(Math::sgn(left2ndDist.Y)) };
 		const CellStruct left2ndPace { static_cast<short>(left2ndDist.X * left2ndUnit.X), static_cast<short>(left2ndDist.Y * left2ndUnit.Y) };
-		auto left2ndCurN = static_cast<float>((left2ndPace.Y - left2ndPace.X) / 2.0);
+		short left2ndCurN = static_cast<short>((left2ndPace.Y - left2ndPace.X) / 2);
 
 		const auto right1stDist = rightMidCell - bottomStaCell;
 		const CellStruct right1stUnit { static_cast<short>(Math::sgn(right1stDist.X)), static_cast<short>(Math::sgn(right1stDist.Y)) };
 		const CellStruct right1stPace { static_cast<short>(right1stDist.X * right1stUnit.X), static_cast<short>(right1stDist.Y * right1stUnit.Y) };
-		auto right1stCurN = static_cast<float>((right1stPace.Y - right1stPace.X) / 2.0);
+		short right1stCurN = static_cast<short>((right1stPace.Y - right1stPace.X) / 2);
 
 		const auto right2ndDist = topEndCell - rightMidCell;
 		const CellStruct right2ndUnit { static_cast<short>(Math::sgn(right2ndDist.X)), static_cast<short>(Math::sgn(right2ndDist.Y)) };
 		const CellStruct right2ndPace { static_cast<short>(right2ndDist.X * right2ndUnit.X), static_cast<short>(right2ndDist.Y * right2ndUnit.Y) };
-		auto right2ndCurN = static_cast<float>((right2ndPace.Y - right2ndPace.X) / 2.0);
+		short right2ndCurN = static_cast<short>((right2ndPace.Y - right2ndPace.X) / 2);
 
 		while (leftCurCell != topEndCell || rightCurCell != topEndCell)
 		{
@@ -345,7 +345,7 @@ bool PhobosTrajectory::CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass
 void PhobosTrajectory::CalculateNewDamage()
 {
 	const auto pBullet = this->Bullet;
-	const auto ratio = this->GetType()->DamageCountAttenuation.Get();
+	const double ratio = this->GetType()->DamageCountAttenuation.Get();
 
 	// Calculate the attenuation damage under three different scenarios
 	if (ratio != 1.0)
@@ -387,7 +387,7 @@ void PhobosTrajectory::PassWithDetonateAt()
 
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-	const auto damage = this->GetTrueDamage(this->PassDetonateDamage, false);
+	const int damage = this->GetTrueDamage(this->PassDetonateDamage, false);
 	WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
 	this->CalculateNewDamage();
 }
@@ -411,7 +411,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius();
 
 	const auto velocityCrd = PhobosTrajectory::Vector2Coord(this->MovingVelocity);
-	const auto velocity = this->MovingSpeed;
+	const double velocity = this->MovingSpeed;
 	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
@@ -434,7 +434,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				if (pTechno->IsBeingWarpedOut() || !pWHExt->IsHealthInThreshold(pTechno))
 					continue;
 
-				const auto isBuilding = pTechno->WhatAmI() == AbstractType::Building;
+				const bool isBuilding = pTechno->WhatAmI() == AbstractType::Building;
 
 				if (isBuilding && static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
 					continue;
@@ -447,7 +447,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				if (distanceCrd * velocityCrd < 0)
 					continue;
 
-				auto distanceOffset = 0;
+				int distanceOffset = 0;
 
 				// Building type have an extra bonus to distance (0x5F6403)
 				if (isBuilding)
@@ -467,7 +467,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				}
 
 				// Calculate the distance between the point and the line
-				const auto distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+				const double distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 
 				// Should be in the center cylinder
 				if (distance > (radius + distanceOffset))
@@ -522,7 +522,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 			}
 
 			// Calculate the distance between the point and the line
-			const auto distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+			const double distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 
 			// Should be in the center cylinder
 			if (distance > radius)
@@ -572,8 +572,8 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	{
 		std::sort(&validTargets[0], &validTargets[targetsSize],[pBullet](TechnoClass* pTechnoA, TechnoClass* pTechnoB)
 			{
-				const auto distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
-				const auto distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
+				const double distanceA = pTechnoA->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
+				const double distanceB = pTechnoB->GetCoords().DistanceFromSquared(pBullet->SourceCoords);
 
 				// Distance priority
 				if (distanceA < distanceB)
@@ -620,7 +620,7 @@ void PhobosTrajectory::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTar
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->GetType();
-	auto damage = this->GetTrueDamage(this->ProximityDamage, false);
+	int damage = this->GetTrueDamage(this->ProximityDamage, false);
 	auto pWH = pType->ProximityWarhead.Get();
 
 	if (!pWH)
@@ -647,9 +647,9 @@ int PhobosTrajectory::GetTrueDamage(int damage, bool self)
 	// Calculate damage distance attenuation
 	if (pType->DamageEdgeAttenuation != 1.0)
 	{
-		const auto damageMultiplier = this->GetExtraDamageMultiplier();
-		const auto calculatedDamage = self ? damage * damageMultiplier : damage * this->FirepowerMult * damageMultiplier;
-		const auto signal = Math::sgn(calculatedDamage);
+		const double damageMultiplier = this->GetExtraDamageMultiplier();
+		const double calculatedDamage = self ? damage * damageMultiplier : damage * this->FirepowerMult * damageMultiplier;
+		const int signal = Math::sgn(calculatedDamage);
 		damage = static_cast<int>(calculatedDamage);
 
 		// Retain minimal damage
@@ -658,8 +658,8 @@ int PhobosTrajectory::GetTrueDamage(int damage, bool self)
 	}
 	else if (!self)
 	{
-		const auto calculatedDamage = damage * this->FirepowerMult;
-		const auto signal = Math::sgn(calculatedDamage);
+		const double calculatedDamage = damage * this->FirepowerMult;
+		const int signal = Math::sgn(calculatedDamage);
 		damage = static_cast<int>(calculatedDamage);
 
 		// Retain minimal damage
@@ -674,7 +674,7 @@ double PhobosTrajectory::GetExtraDamageMultiplier()
 {
 	const auto pBullet = this->Bullet;
 	double damageMult = 1.0;
-	const auto distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
+	const double distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
 
 	if (this->AttenuationRange < static_cast<int>(distance))
 		return this->GetType()->DamageEdgeAttenuation;

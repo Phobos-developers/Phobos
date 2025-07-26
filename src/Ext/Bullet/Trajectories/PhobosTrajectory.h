@@ -341,7 +341,7 @@ public:
 
 		return pTechno->CloakState != CloakState::Cloaked || pCell->Sensors_InclHouse(pHouse->ArrayIndex);
 	}
-	static inline bool CheckCanRetarget(TechnoClass* const pTechno, HouseClass* const pOwner, const AffectedHouse retargetHouses, const CoordStruct& center, const int retargetRange, const int range,
+	static inline bool CheckCanRetarget(TechnoClass* const pTechno, HouseClass* const pOwner, const AffectedHouse retargetHouses, const CoordStruct& center, const double retargetRange, const int range,
 		const BulletClass* const pBullet, const WeaponTypeClass* const pWeapon, const WeaponTypeExt::ExtData* const pWeaponExt, TechnoClass* const pFirer)
 	{
 		const auto pTechnoType = pTechno->GetTechnoType();
