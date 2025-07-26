@@ -53,6 +53,9 @@ private:
 class MissileTrajectory final : public ActualTrajectory
 {
 public:
+	static constexpr double UniqueCurveSpeed = 192.0;
+	static constexpr double UniqueCurveAcceleration = 4.0;
+
 	MissileTrajectory(noinit_t) { }
 	MissileTrajectory(MissileTrajectoryType const* trajType, BulletClass* pBullet)
 		: ActualTrajectory(trajType, pBullet)

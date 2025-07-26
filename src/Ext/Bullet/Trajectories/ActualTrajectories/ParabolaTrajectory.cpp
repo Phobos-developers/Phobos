@@ -135,7 +135,7 @@ void ParabolaTrajectory::OnUnlimbo()
 	const auto pBullet = this->Bullet;
 
 	// Special case: Set the target to the ground
-	if (this->Type->DetonationDistance.Get() <= -1e-10)
+	if (this->Type->DetonationDistance.Get() <= -PhobosTrajectory::Epsilon)
 	{
 		const auto pTarget = pBullet->Target;
 
@@ -164,7 +164,15 @@ bool ParabolaTrajectory::OnVelocityCheck()
 
 	// Adopting independent logic
 	double ratio = 1.0;
-	int velocityCheck = 0;
+
+	enum class VelocityCheckType : unsigned char
+	{
+		SkipCheck = 0,
+		CanBounce = 1,
+		Detonate = 2
+	};
+
+	VelocityCheckType velocityCheck = VelocityCheckType::SkipCheck;
 
 	const auto pType = this->Type;
 	const bool checkThrough = (!pType->ThroughBuilding || !pType->ThroughVehicles);
@@ -182,10 +190,10 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			// Check for additional obstacles on the ground
 			if (this->CheckThroughAndSubjectInCell(MapClass::Instance.GetCellAt(pBullet->Location), pOwner))
 			{
-				if (32.0 < velocity)
-					ratio = (32.0 / velocity);
+				if (velocity > PhobosTrajectory::LowSpeedOffset)
+					ratio = (PhobosTrajectory::LowSpeedOffset / velocity);
 
-				velocityCheck = 2;
+				velocityCheck = VelocityCheckType::Detonate;
 			}
 		}
 
@@ -205,7 +213,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 				if (ratio > newRatio)
 					ratio = newRatio;
 
-				velocityCheck = 1;
+				velocityCheck = VelocityCheckType::CanBounce;
 			}
 		}
 	}
@@ -251,13 +259,13 @@ bool ParabolaTrajectory::OnVelocityCheck()
 							: (pBulletTypeExt->SubjectToLand.Get(false) && pBulletTypeExt->SubjectToLand_Detonate))))
 				{
 					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
-					velocityCheck = 2;
+					velocityCheck = VelocityCheckType::Detonate;
 					break;
 				}
 				else if (curCoord.Z < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level?
 				{
 					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
-					velocityCheck = 1;
+					velocityCheck = VelocityCheckType::CanBounce;
 					break;
 				}
 
@@ -279,24 +287,24 @@ bool ParabolaTrajectory::OnVelocityCheck()
 				const double distance = PhobosTrajectory::Get2DDistance(fireStormCoords, theSourceCoords);
 
 				// Only record when the ratio is smaller
-				if (!velocityCheck || distance < locationDistance)
+				if (velocityCheck == VelocityCheckType::SkipCheck || distance < locationDistance)
 				{
 					locationDistance = distance;
-					velocityCheck = 2;
+					velocityCheck = VelocityCheckType::Detonate;
 				}
 			}
 		}
 
 		// Let the distance slightly exceed
-		ratio = (locationDistance + 32.0) / velocity;
+		ratio = (locationDistance + PhobosTrajectory::LowSpeedOffset) / velocity;
 	}
 
 	// No need for change
-	if (!velocityCheck)
+	if (velocityCheck == VelocityCheckType::SkipCheck)
 		return false;
 
 	// Detonates itself in the next frame
-	if (velocityCheck == 2)
+	if (velocityCheck == VelocityCheckType::Detonate)
 	{
 		this->MultiplyBulletVelocity(ratio, true);
 		return false;
@@ -310,7 +318,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 
 TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct& position)
 {
-	if (this->WaitOneFrame)
+	if (this->WaitStatus != TrajectoryWaitStatus::NowReady)
 		return TrajectoryCheckReturnType::SkipGameCheck;
 	else if (this->PhobosTrajectory::OnDetonateUpdate(position) == TrajectoryCheckReturnType::Detonate)
 		return TrajectoryCheckReturnType::Detonate;
@@ -325,27 +333,27 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	// Height
 	if (pType->DetonationHeight >= 0 && (pType->EarlyDetonation
 		? ((position.Z - pBullet->SourceCoords.Z) > pType->DetonationHeight)
-		: (this->MovingVelocity.Z < 1e-10 && (position.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)))
+		: (this->MovingVelocity.Z < PhobosTrajectory::Epsilon && (position.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)))
 	{
 		return TrajectoryCheckReturnType::Detonate;
 	}
 
 	// Angle
-	if (std::abs(pType->DetonationAngle) < 1e-10)
+	if (std::abs(pType->DetonationAngle) < PhobosTrajectory::Epsilon)
 	{
-		if (this->MovingVelocity.Z < 1e-10)
+		if (this->MovingVelocity.Z < PhobosTrajectory::Epsilon)
 			return TrajectoryCheckReturnType::Detonate;
 	}
 	else if (std::abs(pType->DetonationAngle) < 90.0)
 	{
 		const double velocity = PhobosTrajectory::Get2DVelocity(this->MovingVelocity);
 
-		if (velocity > 1e-10)
+		if (velocity > PhobosTrajectory::Epsilon)
 		{
 			if ((this->MovingVelocity.Z / velocity) < Math::tan(pType->DetonationAngle * Math::Pi / 180.0))
 				return TrajectoryCheckReturnType::Detonate;
 		}
-		else if (pType->DetonationAngle > 1e-10 || this->MovingVelocity.Z < 1e-10)
+		else if (pType->DetonationAngle > PhobosTrajectory::Epsilon || this->MovingVelocity.Z < PhobosTrajectory::Epsilon)
 		{
 			return TrajectoryCheckReturnType::Detonate;
 		}
@@ -379,7 +387,7 @@ void ParabolaTrajectory::OpenFire()
 	if (!this->Type->LeadTimeCalculate.Get(false) || !abstract_cast<FootClass*>(this->Bullet->Target))
 		this->FireTrajectory();
 	else
-		this->WaitOneFrame = 2;
+		this->WaitStatus = TrajectoryWaitStatus::JustUnlimbo;
 
 	this->PhobosTrajectory::OpenFire();
 }
@@ -409,7 +417,7 @@ void ParabolaTrajectory::FireTrajectory()
 	// Non positive gravity is not accepted
 	const double gravity = BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 
-	if (gravity <= 1e-10)
+	if (gravity <= PhobosTrajectory::Epsilon)
 	{
 		this->Status |= TrajectoryStatus::Detonate;
 		return;
@@ -424,7 +432,7 @@ void ParabolaTrajectory::FireTrajectory()
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
 
 	// Rotate the selected angle
-	if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+	if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
 		this->DisperseBurstSubstitution(rotateRadian);
 }
 
@@ -462,7 +470,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
+		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
 			break;
 
 		// Step 4: Determine the maximum height that the projectile should reach
@@ -495,7 +503,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 4: Check if it is an unsolvable solution
-		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
+		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
 			break;
 
 		// Step 5: Recalculate the speed when time is limited
@@ -527,12 +535,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
+		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
-		const double mult = horizontalDistance > 1e-10 ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate the horizontal component of the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X * mult;
@@ -557,7 +565,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
+		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
 			break;
 
 		// Step 4: Determine the maximum height that the projectile should reach
@@ -570,7 +578,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 
 		// Step 6: Read the appropriate fire angle
 		double radian = pType->LaunchAngle * Math::Pi / 180.0;
-		radian = (radian >= Math::HalfPi || radian <= 1e-10) ? (Math::HalfPi / 3) : radian;
+		radian = (radian >= Math::HalfPi || radian <= PhobosTrajectory::Epsilon) ? (Math::HalfPi / 3) : radian;
 
 		// Step 7: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
@@ -591,12 +599,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
+		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
-		const double mult = horizontalDistance > 1e-10 ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate each horizontal component of the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X * mult;
@@ -623,12 +631,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= 1e-10 || destinationCoords.Magnitude() <= 1e-10)
+		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
-		const double mult = horizontalDistance > 1e-10 ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X * mult;
@@ -655,7 +663,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	const double distance = distanceCoords.Magnitude();
 	const double horizontalDistance = PhobosTrajectory::Get2DDistance(distanceCoords);
 
-	if (distance <= 1e-10)
+	if (distance <= PhobosTrajectory::Epsilon)
 	{
 		this->Status |= TrajectoryStatus::Detonate;
 		return;
@@ -711,7 +719,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 		this->MovingVelocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight));
 
 		// Step 3: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > 1e-10 ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 4: Calculate the horizontal component of the projectile velocity
 		this->MovingVelocity.X = distanceCoords.X * mult;
@@ -730,7 +738,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 
 		// Step 3: Read the appropriate fire angle
 		double radian = pType->LaunchAngle * Math::Pi / 180.0;
-		radian = (radian >= Math::HalfPi || radian <= 1e-10) ? (Math::HalfPi / 3) : radian;
+		radian = (radian >= Math::HalfPi || radian <= PhobosTrajectory::Epsilon) ? (Math::HalfPi / 3) : radian;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double mult = (this->MovingVelocity.Z / Math::tan(radian)) / horizontalDistance;
@@ -743,7 +751,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	case ParabolaFireMode::SpeedAndAngle: // Fixed horizontal speed and fixed fire angle
 	{
 		// Step 1: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > 1e-10 ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 2: Calculate the horizontal component of the projectile velocity
 		this->MovingVelocity.X = distanceCoords.X * mult;
@@ -760,7 +768,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	default: // Fixed horizontal speed and aim at the target
 	{
 		// Step 1: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > 1e-10 ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 2: Calculate the projectile velocity
 		this->MovingVelocity.X = distanceCoords.X * mult;
@@ -778,23 +786,20 @@ double ParabolaTrajectory::SearchVelocity(const double horizontalDistance, int d
 {
 	// Estimate initial velocity
 	const double mult = Math::sin(2 * radian);
-	double velocity = std::abs(mult) > 1e-10 ? sqrt(horizontalDistance * gravity / mult) : 0.0;
+	double velocity = std::abs(mult) > PhobosTrajectory::Epsilon ? sqrt(horizontalDistance * gravity / mult) : 0.0;
 	velocity += distanceCoordsZ / gravity;
 	velocity = velocity > 8.0 ? velocity : 8.0;
 	const double error = velocity / 16;
 
-	// Step size
-	constexpr double delta = 1e-5;
-
 	// Newton Iteration Method
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < ParabolaTrajectory::Attempts; ++i)
 	{
 		// Substitute into the estimate speed
 		const double differential = this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, velocity, radian, gravity);
-		const double dDifferential = (this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, (velocity + delta), radian, gravity) - differential) / delta;
+		const double dDifferential = (this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, (velocity + ParabolaTrajectory::Delta), radian, gravity) - differential) / ParabolaTrajectory::Delta;
 
 		// Check unacceptable divisor
-		if (std::abs(dDifferential) < 1e-10)
+		if (std::abs(dDifferential) < PhobosTrajectory::Epsilon)
 			return velocity;
 
 		// Calculate the speed of the next iteration
@@ -849,7 +854,7 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	const double speedSq = horizontalSpeed * horizontalSpeed;
 	const double divisor = targetSpeedSq - speedSq;
 	const double factor = targetSpeedCrd * destinationCrd;
-	const double cosTheta = factor / (sqrt(targetSpeedSq * destinationSq) + 1e-10);
+	const double cosTheta = factor / (sqrt(targetSpeedSq * destinationSq) + PhobosTrajectory::Epsilon);
 
 	// The target speed is too fast
 	if (speedSq < (1.0 + 0.2 * Math::max(0.0, -cosTheta)) * targetSpeedSq)
@@ -859,8 +864,8 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	const double delta = factor * factor - divisor * destinationSq;
 
 	// Check if there is no solution
-	if (delta < 1e-10)
-		return (delta >= -1e-10) ? (-factor / divisor) + (factor > 0 ? 1.0 : 0) : -1.0;
+	if (delta < PhobosTrajectory::Epsilon)
+		return (delta >= -PhobosTrajectory::Epsilon) ? (-factor / divisor) + (factor > 0 ? 1.0 : 0) : -1.0;
 
 	// Quadratic formula
 	const double sqrtDelta = sqrt(delta);
@@ -868,9 +873,9 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	const double timeM = (-factor - sqrtDelta) / divisor;
 
 	// When the target is moving away, provide an additional frame of correction
-	if (timeM > 1e-10)
-		return ((timeP > 1e-10) ? Math::min(timeM, timeP) : timeM) + (factor > 0 ? 1.0 : 0);
-	else if (timeP > 1e-10)
+	if (timeM > PhobosTrajectory::Epsilon)
+		return ((timeP > PhobosTrajectory::Epsilon) ? Math::min(timeM, timeP) : timeM) + (factor > 0 ? 1.0 : 0);
+	else if (timeP > PhobosTrajectory::Epsilon)
 		return timeP + (factor > 0 ? 1.0 : 0);
 
 	// Unsolvable
@@ -880,15 +885,14 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 double ParabolaTrajectory::SearchFixedHeightMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double gravity)
 {
 	// Similar to method SearchVelocity, no further elaboration will be provided
-	constexpr double delta = 1e-5;
 	double meetTime = (this->ThrowHeight << 2) / gravity;
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < ParabolaTrajectory::Attempts; ++i)
 	{
 		const double differential = this->CheckFixedHeightEquation(source, target, offset, meetTime, gravity);
-		const double dDifferential = (this->CheckFixedHeightEquation(source, target, offset, (meetTime + delta), gravity) - differential) / delta;
+		const double dDifferential = (this->CheckFixedHeightEquation(source, target, offset, (meetTime + ParabolaTrajectory::Delta), gravity) - differential) / ParabolaTrajectory::Delta;
 
-		if (std::abs(dDifferential) < 1e-10)
+		if (std::abs(dDifferential) < PhobosTrajectory::Epsilon)
 			return meetTime;
 
 		const double difference = differential / dDifferential;
@@ -918,15 +922,14 @@ double ParabolaTrajectory::CheckFixedHeightEquation(const CoordStruct& source, c
 double ParabolaTrajectory::SearchFixedAngleMeetTime(const CoordStruct& source, const CoordStruct& target, const CoordStruct& offset, const double radian, const double gravity)
 {
 	// Similar to method SearchVelocity, no further elaboration will be provided
-	constexpr double delta = 1e-5;
 	double meetTime = 512 * Math::sin(radian) / gravity;
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < ParabolaTrajectory::Attempts; ++i)
 	{
 		const double differential = this->CheckFixedAngleEquation(source, target, offset, meetTime, radian, gravity);
-		const double dDifferential = (this->CheckFixedAngleEquation(source, target, offset, (meetTime + delta), radian, gravity) - differential) / delta;
+		const double dDifferential = (this->CheckFixedAngleEquation(source, target, offset, (meetTime + ParabolaTrajectory::Delta), radian, gravity) - differential) / ParabolaTrajectory::Delta;
 
-		if (std::abs(dDifferential) < 1e-10)
+		if (std::abs(dDifferential) < PhobosTrajectory::Epsilon)
 			return meetTime;
 
 		const double difference = differential / dDifferential;
@@ -1001,7 +1004,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 	const auto groundNormalVector = this->GetGroundNormalVector(pCell, position);
 
 	// Bounce only occurs when the velocity is in different directions or the surface is not cliff
-	if (this->LastVelocity * groundNormalVector > 0 && std::abs(groundNormalVector.Z) < 1e-10)
+	if (this->LastVelocity * groundNormalVector > 0 && std::abs(groundNormalVector.Z) < PhobosTrajectory::Epsilon)
 	{
 		// Restore original velocity
 		this->MovingVelocity = this->LastVelocity;
@@ -1032,18 +1035,24 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 	{
 		Vector2D<double> factor { 0.0, 0.0 };
 
-		// 0.3763770469559380854890894443664 -> Unsorted::LevelHeight / sqrt(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-		// 0.9264665771223091335116047861327 -> Unsorted::LeptonsPerCell / sqrt(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-		// 0.3522530794922131411764879370407 -> Unsorted::LevelHeight / sqrt(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-		// 0.8670845033654477321267395373309 -> Unsorted::LeptonsPerCell / sqrt(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-		// 0.5333964609104418418483761938761 -> Unsorted::CellHeight / sqrt(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-		// 0.6564879518897745745826168540013 -> Unsorted::LeptonsPerCell / sqrt(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
 		if (index <= 4)
-			factor = Vector2D<double>{ 0.3763770469559380854890894443664, 0.9264665771223091335116047861327 };
+		{
+			constexpr double horizontalCommonOffset = 0.3763770469559380854890894443664; // Unsorted::LevelHeight / sqrt(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			constexpr double verticalCommonOffset = 0.9264665771223091335116047861327; // Unsorted::LeptonsPerCell / sqrt(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			factor = Vector2D<double>{ horizontalCommonOffset, verticalCommonOffset };
+		}
 		else if (index <= 12)
-			factor = Vector2D<double>{ 0.3522530794922131411764879370407, 0.8670845033654477321267395373309 };
+		{
+			constexpr double horizontalTiltOffset = 0.3522530794922131411764879370407; // Unsorted::LevelHeight / sqrt(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			constexpr double verticalTiltOffset = 0.8670845033654477321267395373309; // Unsorted::LeptonsPerCell / sqrt(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			factor = Vector2D<double>{ horizontalTiltOffset, verticalTiltOffset };
+		}
 		else
-			factor = Vector2D<double>{ 0.5333964609104418418483761938761, 0.6564879518897745745826168540013 };
+		{
+			constexpr double horizontalSteepOffset = 0.5333964609104418418483761938761; // Unsorted::CellHeight / sqrt(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			constexpr double verticalSteepOffset = 0.6564879518897745745826168540013; // Unsorted::LeptonsPerCell / sqrt(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			factor = Vector2D<double>{ horizontalSteepOffset, verticalSteepOffset };
+		}
 
 		switch (index)
 		{
@@ -1076,9 +1085,9 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 		}
 	}
 
-	// 362.1 -> Unsorted::LeptonsPerCell * sqrt(2)
+	constexpr double diagonalLeptonsPerCell = 362.1; // Unsorted::LeptonsPerCell * sqrt(2)
 	const double horizontalVelocity = PhobosTrajectory::Get2DVelocity(this->LastVelocity);
-	const auto velocity = PhobosTrajectory::Vector2Coord(horizontalVelocity > 362.1 ? this->LastVelocity * (362.1 / horizontalVelocity) : this->LastVelocity);
+	const auto velocity = PhobosTrajectory::Vector2Coord(horizontalVelocity > diagonalLeptonsPerCell ? this->LastVelocity * (diagonalLeptonsPerCell / horizontalVelocity) : this->LastVelocity);
 	const int cellHeight = pCell->Level * Unsorted::LevelHeight;
 	const int bulletHeight = position.Z;
 	const int lastCellHeight = MapClass::Instance.GetCellFloorHeight(position - velocity);
@@ -1089,7 +1098,15 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 		auto cell = pCell->MapCoords;
 		const short reverseSgnX = static_cast<short>(this->LastVelocity.X > 0.0 ? -1 : 1);
 		const short reverseSgnY = static_cast<short>(this->LastVelocity.Y > 0.0 ? -1 : 1);
-		int index = 0;
+
+		enum class CliffType : unsigned char
+		{
+			Type_1_1 = 0,
+			Type_1_2 = 1,
+			Type_2_1 = 2
+		};
+
+		CliffType cliffType = CliffType::Type_1_1;
 
 		// Determine the shape of the cliff using 9 surrounding cells
 		if (this->CheckBulletHitCliff(cell.X + reverseSgnX, cell.Y, bulletHeight, lastCellHeight))
@@ -1099,7 +1116,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 				if (!this->CheckBulletHitCliff(cell.X - reverseSgnX, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
 					return BulletVelocity{ 0.0, static_cast<double>(reverseSgnY), 0.0 };
 
-				index = 2;
+				cliffType = CliffType::Type_2_1;
 			}
 		}
 		else
@@ -1107,28 +1124,30 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 			if (this->CheckBulletHitCliff(cell.X + reverseSgnX, cell.Y - reverseSgnY, bulletHeight, lastCellHeight))
 			{
 				if (this->CheckBulletHitCliff(cell.X, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
-					index = 1;
+					cliffType = CliffType::Type_1_2;
 				else if (!this->CheckBulletHitCliff(cell.X - reverseSgnX, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
-					index = 2;
+					cliffType = CliffType::Type_2_1;
 			}
 			else
 			{
 				if (this->CheckBulletHitCliff(cell.X, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
 					return BulletVelocity{ static_cast<double>(reverseSgnX), 0.0, 0.0 };
 				else if (this->CheckBulletHitCliff(cell.X - reverseSgnX, cell.Y + reverseSgnY, bulletHeight, lastCellHeight))
-					index = 1;
+					cliffType = CliffType::Type_1_2;
 			}
 		}
 
-		// 0.4472135954999579392818347337463 -> 1 / sqrt(5)
-		// 0.8944271909999158785636694674925 -> 2 / sqrt(5)
-		if (index == 1)
-			return BulletVelocity{ 0.8944271909999158785636694674925 * reverseSgnX, 0.4472135954999579392818347337463 * reverseSgnY, 0.0 };
-		else if (index == 2)
-			return BulletVelocity{ 0.4472135954999579392818347337463 * reverseSgnX, 0.8944271909999158785636694674925 * reverseSgnY, 0.0 };
+		constexpr double shortRightAngledEdge = 0.4472135954999579392818347337463; // -> 1 / sqrt(5)
+		constexpr double longRightAngledEdge = 0.8944271909999158785636694674925; // -> 2 / sqrt(5)
 
-		// 0.7071067811865475244008443621049 -> 1 / sqrt(2)
-		return BulletVelocity{ 0.7071067811865475244008443621049 * reverseSgnX, 0.7071067811865475244008443621049 * reverseSgnY, 0.0 };
+		if (cliffType == CliffType::Type_1_2)
+			return BulletVelocity{ longRightAngledEdge * reverseSgnX, shortRightAngledEdge * reverseSgnY, 0.0 };
+		else if (cliffType == CliffType::Type_2_1)
+			return BulletVelocity{ shortRightAngledEdge * reverseSgnX, longRightAngledEdge * reverseSgnY, 0.0 };
+
+		constexpr double hypotenuse = 0.7071067811865475244008443621049; // 1 / sqrt(2)
+
+		return BulletVelocity{ hypotenuse * reverseSgnX, hypotenuse * reverseSgnY, 0.0 };
 	}
 
 	// Just ordinary ground

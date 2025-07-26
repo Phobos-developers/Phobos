@@ -54,7 +54,7 @@ void ActualTrajectory::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->LastTargetCoord)
-		.Process(this->WaitOneFrame)
+		.Process(this->WaitStatus)
 		;
 }
 
@@ -87,7 +87,7 @@ void ActualTrajectory::OnUnlimbo()
 
 bool ActualTrajectory::OnEarlyUpdate()
 {
-	if (this->WaitOneFrame && this->BulletPrepareCheck())
+	if (this->WaitStatus != TrajectoryWaitStatus::NowReady && this->BulletPrepareCheck())
 		return false;
 
 	// Check whether need to detonate first
@@ -130,18 +130,18 @@ bool ActualTrajectory::BulletPrepareCheck()
 	// Target will update location after techno firing, which may result in inaccurate
 	// target position recorded by the LastTargetCoord in Unlimbo(). Therefore, it's
 	// necessary to record the position during the first Update(). - CrimRecya
-	if (this->WaitOneFrame == 2)
+	if (this->WaitStatus == TrajectoryWaitStatus::JustUnlimbo)
 	{
 		if (const auto pTarget = this->Bullet->Target)
 		{
 			this->LastTargetCoord = pTarget->GetCoords();
-			this->WaitOneFrame = 1;
+			this->WaitStatus = TrajectoryWaitStatus::NextFrame;
 			return true;
 		}
 	}
 
 	// Confirm the launch of the trajectory
-	this->WaitOneFrame = 0;
+	this->WaitStatus = TrajectoryWaitStatus::NowReady;
 	this->FireTrajectory();
 	return false;
 }

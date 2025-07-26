@@ -467,7 +467,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				}
 
 				// Calculate the distance between the point and the line
-				const double distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+				const double distance = (velocity > PhobosTrajectory::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 
 				// Should be in the center cylinder
 				if (distance > (radius + distanceOffset))
@@ -522,7 +522,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 			}
 
 			// Calculate the distance between the point and the line
-			const double distance = (velocity > 1e-10) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+			const double distance = (velocity > PhobosTrajectory::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 
 			// Should be in the center cylinder
 			if (distance > radius)

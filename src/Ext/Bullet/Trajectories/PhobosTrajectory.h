@@ -181,6 +181,9 @@ private:
 class PhobosTrajectory
 {
 public:
+	static constexpr double Epsilon = 1e-10;
+	static constexpr double LowSpeedOffset = 32.0;
+
 	PhobosTrajectory() { }
 	PhobosTrajectory(PhobosTrajectoryType const* trajType, BulletClass* pBullet) :
 		Bullet { pBullet }
@@ -195,7 +198,7 @@ public:
 		, TargetIsInAir { false }
 		, TargetIsTechno { false }
 		, NotMainWeapon { false }
-		, Status { false }
+		, Status { TrajectoryStatus::None }
 		, FLHCoord { CoordStruct::Empty }
 		, CurrentBurst { 0 }
 		, CountOfBurst { 0 }

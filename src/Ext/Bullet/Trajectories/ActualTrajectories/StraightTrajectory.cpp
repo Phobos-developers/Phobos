@@ -114,7 +114,7 @@ bool StraightTrajectory::OnVelocityCheck()
 
 TrajectoryCheckReturnType StraightTrajectory::OnDetonateUpdate(const CoordStruct& position)
 {
-	if (this->WaitOneFrame)
+	if (this->WaitStatus != TrajectoryWaitStatus::NowReady)
 		return TrajectoryCheckReturnType::SkipGameCheck;
 	else if (this->PhobosTrajectory::OnDetonateUpdate(position) == TrajectoryCheckReturnType::Detonate)
 		return TrajectoryCheckReturnType::Detonate;
@@ -157,7 +157,7 @@ void StraightTrajectory::OpenFire()
 	if (!this->Type->LeadTimeCalculate.Get(false) || !abstract_cast<FootClass*>(this->Bullet->Target))
 		this->FireTrajectory();
 	else
-		this->WaitOneFrame = 2;
+		this->WaitStatus = TrajectoryWaitStatus::JustUnlimbo;
 
 	this->PhobosTrajectory::OpenFire();
 }
@@ -202,7 +202,7 @@ void StraightTrajectory::FireTrajectory()
 		this->Status |= TrajectoryStatus::Detonate;
 
 	// Rotate the selected angle
-	if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+	if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
 		this->DisperseBurstSubstitution(rotateRadian);
 }
 
@@ -235,7 +235,7 @@ CoordStruct StraightTrajectory::CalculateBulletLeadTime()
 				const double horizonDistance = sqrt(horizonDistanceSquared);
 
 				// Calculate using vertical distance
-				if (horizonDistance < 1e-10)
+				if (horizonDistance < PhobosTrajectory::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(verticalDistanceSquared) / pType->Speed));
 
 				const double targetSpeed = sqrt(targetSpeedSquared);
@@ -246,13 +246,13 @@ CoordStruct StraightTrajectory::CalculateBulletLeadTime()
 				const int extraTime = distanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
 
 				// Linear equation solving
-				if (std::abs(baseFactor) < 1e-10)
+				if (std::abs(baseFactor) < PhobosTrajectory::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(distanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
 
 				const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
 				// Is there a solution?
-				if (squareFactor > 1e-10)
+				if (squareFactor > PhobosTrajectory::Epsilon)
 				{
 					const double minusFactor = -(horizonDistance * targetSpeed);
 					const double factor = sqrt(squareFactor);
@@ -312,7 +312,7 @@ int StraightTrajectory::GetVelocityZ()
 		const double theDistance = (this->DetonationDistance < 0) ? (distanceOfTwo - this->DetonationDistance) : this->DetonationDistance;
 
 		// Calculate the ratio for subsequent speed calculation
-		if (std::abs(theDistance) < 1e-10)
+		if (std::abs(theDistance) < PhobosTrajectory::Epsilon)
 			return 0;
 
 		bulletVelocityZ = static_cast<int>(bulletVelocityZ * (distanceOfTwo / theDistance));

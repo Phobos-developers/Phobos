@@ -53,6 +53,9 @@ private:
 class ParabolaTrajectory final : public ActualTrajectory
 {
 public:
+	static constexpr int Attempts = 10;
+	static constexpr double Delta = 1e-5;
+
 	ParabolaTrajectory(noinit_t) { }
 	ParabolaTrajectory(ParabolaTrajectoryType const* trajType, BulletClass* pBullet)
 		: ActualTrajectory(trajType, pBullet)

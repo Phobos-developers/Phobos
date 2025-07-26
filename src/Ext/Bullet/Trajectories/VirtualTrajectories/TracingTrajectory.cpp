@@ -290,7 +290,7 @@ bool TracingTrajectory::ChangeVelocity()
 					this->RotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
 
 					// The arc of rotation per frame can be determined by the radius and speed
-					if (std::abs(radius) > 1e-10)
+					if (std::abs(radius) > PhobosTrajectory::Epsilon)
 						this->RotateRadian = cw ? (this->RotateRadian + pType->Speed / radius) : (this->RotateRadian - pType->Speed / radius);
 				}
 			}

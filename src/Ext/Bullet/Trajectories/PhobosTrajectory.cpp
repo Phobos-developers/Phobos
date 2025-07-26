@@ -322,7 +322,7 @@ bool PhobosTrajectory::OnEarlyUpdate()
 		return true;
 
 	// Check if the target needs to be changed
-	if (std::abs(this->GetType()->RetargetRadius) > 1e-10 && this->BulletRetargetTechno())
+	if (std::abs(this->GetType()->RetargetRadius) > PhobosTrajectory::Epsilon && this->BulletRetargetTechno())
 		return true;
 
 	// After the new target is confirmed, check if the tolerance time has ended
@@ -368,8 +368,8 @@ bool PhobosTrajectory::OnVelocityCheck()
 			// Check for additional obstacles on the ground
 			if (this->CheckThroughAndSubjectInCell(MapClass::Instance.GetCellAt(pBullet->Location), pOwner))
 			{
-				if (32.0 < velocity)
-					ratio = (32.0 / velocity);
+				if (velocity > PhobosTrajectory::LowSpeedOffset)
+					ratio = (PhobosTrajectory::LowSpeedOffset / velocity);
 			}
 		}
 
@@ -474,7 +474,7 @@ bool PhobosTrajectory::OnVelocityCheck()
 			if (velocityCheck)
 			{
 				// Let the distance slightly exceed
-				locationDistance += 32.0;
+				locationDistance += PhobosTrajectory::LowSpeedOffset;
 
 				// It may not be necessary to compare them again, but still do so
 				if (locationDistance < velocity)
@@ -605,7 +605,7 @@ bool PhobosTrajectory::CalculateBulletVelocity(const double speed)
 	const double velocityLength = this->MovingVelocity.Magnitude();
 
 	// Check if it is a zero vector
-	if (velocityLength < 1e-10)
+	if (velocityLength < PhobosTrajectory::Epsilon)
 		return true;
 
 	// Reset speed vector
@@ -642,7 +642,7 @@ void PhobosTrajectory::RotateVector(BulletVelocity& vector, const BulletVelocity
 	const double baseFactor = sqrt(aim.MagnitudeSquared() * vector.MagnitudeSquared());
 
 	// Not valid vector
-	if (baseFactor <= 1e-10)
+	if (baseFactor <= PhobosTrajectory::Epsilon)
 	{
 		vector = aim;
 		return;
@@ -690,7 +690,7 @@ void PhobosTrajectory::RotateAboutTheAxis(BulletVelocity& vector, BulletVelocity
 	const auto axisLengthSquared = axis.MagnitudeSquared();
 
 	// Zero axis vector is not acceptable
-	if (axisLengthSquared < 1e-10)
+	if (axisLengthSquared < PhobosTrajectory::Epsilon)
 		return;
 
 	// Standardize rotation axis

@@ -185,7 +185,7 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 	// Substitute the speed to calculate velocity
 	double velocityLength = this->MovingVelocity.Magnitude();
 
-	if (velocityLength < 1e-10)
+	if (velocityLength < PhobosTrajectory::Epsilon)
 		return true;
 
 	const auto pBullet = this->Bullet;
@@ -266,7 +266,7 @@ void EngraveTrajectory::ChangeVelocity()
 	const auto delta = target - source;
 	const double distance = delta.Magnitude();
 
-	if (distance < 1e-10)
+	if (distance < PhobosTrajectory::Epsilon)
 	{
 		this->Status |= TrajectoryStatus::Detonate;
 		return;

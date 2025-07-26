@@ -15,6 +15,13 @@
 		- Parabola
 */
 
+enum class TrajectoryWaitStatus : unsigned char
+{
+	NowReady = 0,
+	NextFrame = 1,
+	JustUnlimbo = 2,
+};
+
 class ActualTrajectoryType : public PhobosTrajectoryType
 {
 public:
@@ -58,12 +65,12 @@ public:
 	ActualTrajectory(ActualTrajectoryType const* trajType, BulletClass* pBullet)
 		: PhobosTrajectory(trajType, pBullet)
 		, LastTargetCoord { CoordStruct::Empty }
-		, WaitOneFrame { 0 }
+		, WaitStatus { TrajectoryWaitStatus::NowReady }
 	{ }
 
 	// TODO If we could calculate this before firing, perhaps it can solve the problem of one frame delay and not so correct turret orientation.
 	CoordStruct LastTargetCoord; // The target is located in the previous frame, used to calculate the lead time
-	int WaitOneFrame; // Attempts to launch when update
+	TrajectoryWaitStatus WaitStatus; // Attempts to launch when update
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;

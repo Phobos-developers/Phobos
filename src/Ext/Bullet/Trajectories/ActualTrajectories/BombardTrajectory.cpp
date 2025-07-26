@@ -116,7 +116,7 @@ void BombardTrajectory::OnUnlimbo()
 	this->InitialTargetCoord = pBullet->TargetCoords;
 
 	// Special case: Set the target to the ground
-	if (this->Type->DetonationDistance.Get() <= -1e-10)
+	if (this->Type->DetonationDistance.Get() <= -PhobosTrajectory::Epsilon)
 	{
 		const auto pTarget = pBullet->Target;
 
@@ -142,7 +142,7 @@ bool BombardTrajectory::OnVelocityCheck()
 
 TrajectoryCheckReturnType BombardTrajectory::OnDetonateUpdate(const CoordStruct& position)
 {
-	if (this->WaitOneFrame)
+	if (this->WaitStatus != TrajectoryWaitStatus::NowReady)
 		return TrajectoryCheckReturnType::SkipGameCheck;
 	else if (this->PhobosTrajectory::OnDetonateUpdate(position) == TrajectoryCheckReturnType::Detonate)
 		return TrajectoryCheckReturnType::Detonate;
@@ -178,7 +178,7 @@ void BombardTrajectory::OpenFire()
 	if (!pType->NoLaunch || !pType->LeadTimeCalculate.Get(false) || !abstract_cast<FootClass*>(this->Bullet->Target))
 		this->FireTrajectory();
 	else
-		this->WaitOneFrame = 2;
+		this->WaitStatus = TrajectoryWaitStatus::JustUnlimbo;
 
 	this->PhobosTrajectory::OpenFire();
 }
@@ -199,7 +199,7 @@ void BombardTrajectory::FireTrajectory()
 			this->Status |= TrajectoryStatus::Detonate;
 
 		// Rotate the selected angle
-		if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+		if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
 			this->DisperseBurstSubstitution(this->RotateRadian);
 	}
 	else
@@ -219,7 +219,7 @@ void BombardTrajectory::FireTrajectory()
 				this->Status |= TrajectoryStatus::Detonate;
 
 			// Rotate the selected angle
-			if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+			if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
 				this->DisperseBurstSubstitution(this->RotateRadian);
 		}
 		else
@@ -359,7 +359,7 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const double fallSpeed = pType->FallSpeed.Get(pType->Speed);
 
 				// Calculate using vertical distance
-				if (horizonDistance < 1e-10)
+				if (horizonDistance < PhobosTrajectory::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(verticalDistanceSquared) / fallSpeed));
 
 				const double targetSpeed = sqrt(targetSpeedSquared);
@@ -370,13 +370,13 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const int extraTime = distanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
 
 				// Linear equation solving
-				if (std::abs(baseFactor) < 1e-10)
+				if (std::abs(baseFactor) < PhobosTrajectory::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(distanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
 
 				const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
 				// Is there a solution?
-				if (squareFactor > 1e-10)
+				if (squareFactor > PhobosTrajectory::Epsilon)
 				{
 					const double minusFactor = -(horizonDistance * targetSpeed);
 					const double factor = sqrt(squareFactor);
@@ -421,7 +421,7 @@ bool BombardTrajectory::BulletVelocityChange()
 					return true;
 
 				// Rotate the selected angle
-				if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+				if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
 					this->DisperseBurstSubstitution(this->RotateRadian);
 
 				this->RemainingDistance += static_cast<int>(pBullet->TargetCoords.DistanceFrom(middleLocation));

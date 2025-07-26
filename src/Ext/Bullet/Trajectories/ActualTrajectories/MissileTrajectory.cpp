@@ -68,10 +68,10 @@ void MissileTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 		this->DetonationDistance = Leptons(128);
 
 		// Fixed and appropriate final speed
-		this->Speed = 192.0;
+		this->Speed = MissileTrajectory::UniqueCurveSpeed;
 
 		// Fixed and appropriate acceleration
-		this->Acceleration = 4.0;
+		this->Acceleration = MissileTrajectory::UniqueCurveAcceleration;
 
 		// Fixed and appropriate steering speed
 		this->TurningSpeed = 10.0;
@@ -214,7 +214,8 @@ void MissileTrajectory::OpenFire()
 			this->OriginalDistance = (Unsorted::LeptonsPerCell * 8);
 
 		// Calculate the maximum height during the ascending phase
-		this->OriginalDistance = this->OriginalDistance < 3200 ? this->OriginalDistance / 2 : this->OriginalDistance - 1600;
+		constexpr int thresholdDistance = 3200;
+		this->OriginalDistance = this->OriginalDistance < thresholdDistance ? this->OriginalDistance / 2 : this->OriginalDistance - (thresholdDistance / 2);
 		this->RemainingDistance = INT_MAX;
 	}
 	else // Under normal circumstances, the trajectory is similar to ROT projectile with an initial launch direction
@@ -264,7 +265,7 @@ bool MissileTrajectory::CalculateBulletVelocity(const double speed)
 {
 	const double velocityLength = this->MovingVelocity.Magnitude();
 
-	if (velocityLength < 1e-10)
+	if (velocityLength < PhobosTrajectory::Epsilon)
 		return true;
 
 	this->MovingVelocity *= speed / velocityLength;
@@ -313,17 +314,18 @@ void MissileTrajectory::InitializeBulletNotCurve()
 	else
 	{
 		this->PreAimDistance = (pType->PreAimCoord.Get()).Magnitude();
+		constexpr int coordReducingBaseCells = 10;
 
 		// When the distance is short, the initial moving distance will be reduced
-		if (pType->ReduceCoord && this->OriginalDistance < (Unsorted::LeptonsPerCell * 10))
-			this->PreAimDistance *= this->OriginalDistance / (Unsorted::LeptonsPerCell * 10);
+		if (pType->ReduceCoord && this->OriginalDistance < (Unsorted::LeptonsPerCell * coordReducingBaseCells))
+			this->PreAimDistance *= this->OriginalDistance / (Unsorted::LeptonsPerCell * coordReducingBaseCells);
 
 		// Determine the firing velocity vector of the bullet
 		if (!this->CalculateReducedVelocity(rotateRadian))
 			this->MovingVelocity = PhobosTrajectory::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
 
 		// Rotate the selected angle
-		if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
+		if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
 			this->DisperseBurstSubstitution(rotateRadian);
 	}
 }
@@ -346,7 +348,7 @@ bool MissileTrajectory::CalculateReducedVelocity(const double rotateRadian)
 	const auto pType = this->Type;
 
 	// Check if it can reduce
-	if (!pType->ReduceCoord || pType->TurningSpeed <= 1e-10)
+	if (!pType->ReduceCoord || pType->TurningSpeed <= PhobosTrajectory::Epsilon)
 		return false;
 
 	// Check if its steering ability is sufficient
@@ -392,36 +394,41 @@ bool MissileTrajectory::CurveVelocityChange()
 		if (horizonDistance > 0)
 		{
 			// Slowly step up
-			double horizonMult = std::abs(this->MovingVelocity.Z / 64.0) / horizonDistance;
+			constexpr double uniqueCurveVelocityScale = 64.0;
+			double horizonMult = std::abs(this->MovingVelocity.Z / uniqueCurveVelocityScale) / horizonDistance;
 			this->MovingVelocity.X += horizonMult * horizonVelocity.X;
 			this->MovingVelocity.Y += horizonMult * horizonVelocity.Y;
 			const double horizonLength = sqrt(this->MovingVelocity.X * this->MovingVelocity.X + this->MovingVelocity.Y * this->MovingVelocity.Y);
+			constexpr double uniqueCurveMaxHorizontalSpeed = 64.0;
 
 			// Limit horizontal maximum speed
-			if (horizonLength > 64.0)
+			if (horizonLength > uniqueCurveMaxHorizontalSpeed)
 			{
-				horizonMult = 64.0 / horizonLength;
+				horizonMult = uniqueCurveMaxHorizontalSpeed / horizonLength;
 				this->MovingVelocity.X *= horizonMult;
 				this->MovingVelocity.Y *= horizonMult;
 			}
 		}
 
+		constexpr double uniqueCurveMaxVerticalSpeed = 160.0;
+
 		// The launch phase is divided into ascending and descending stages
 		if (this->Accelerate && (pBullet->Location.Z - pBullet->SourceCoords.Z) < this->OriginalDistance)
 		{
-			if (this->MovingVelocity.Z < 160.0) // Accelerated phase of ascent
-				this->MovingVelocity.Z += 4.0;
+			if (this->MovingVelocity.Z < uniqueCurveMaxVerticalSpeed) // Accelerated phase of ascent
+				this->MovingVelocity.Z += MissileTrajectory::UniqueCurveAcceleration;
 		}
 		else // End of ascent
 		{
 			this->Accelerate = false;
 
 			// Predict the lowest position
-			const double futureHeight = pBullet->Location.Z + 8 * this->MovingVelocity.Z;
+			constexpr int predictFrame = 8;
+			const double futureHeight = pBullet->Location.Z + predictFrame * this->MovingVelocity.Z;
 
 			// Start decelerating/accelerating downwards
-			if (this->MovingVelocity.Z > -160.0)
-				this->MovingVelocity.Z -= 4.0;
+			if (this->MovingVelocity.Z > -uniqueCurveMaxVerticalSpeed)
+				this->MovingVelocity.Z -= MissileTrajectory::UniqueCurveAcceleration;
 
 			// Enter gliding phase below predicted altitude
 			if (futureHeight <= targetLocation.Z || futureHeight <= pBullet->SourceCoords.Z)
@@ -433,8 +440,9 @@ bool MissileTrajectory::CurveVelocityChange()
 	else // In the gliding stage
 	{
 		// Predict hit time
-		const double timeMult = targetLocation.DistanceFrom(pBullet->Location) / 192.0;
-		targetLocation.Z += static_cast<int>(timeMult * 48);
+		const double timeMult = targetLocation.DistanceFrom(pBullet->Location) / MissileTrajectory::UniqueCurveSpeed;
+		constexpr int uniqueCurveTimeHeightBaseOffset = 48;
+		targetLocation.Z += static_cast<int>(timeMult * uniqueCurveTimeHeightBaseOffset);
 
 		// Calculate the target lead time
 		if (checkValid)
@@ -486,8 +494,10 @@ bool MissileTrajectory::StandardVelocityChange()
 		// Add calculated fixed offset
 		targetLocation = pBullet->TargetCoords + this->OffsetCoord;
 
+		constexpr double minLeadTimeAllowableSpeed = 64.0;
+
 		// If the speed is too low, it will cause the lead time calculation results to be too far away and unable to be used
-		if (pType->LeadTimeCalculate.Get(true) && checkValid && (pType->UniqueCurve || pType->Speed > 64.0))
+		if (pType->LeadTimeCalculate.Get(true) && checkValid && (pType->UniqueCurve || pType->Speed > minLeadTimeAllowableSpeed))
 		{
 			const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
