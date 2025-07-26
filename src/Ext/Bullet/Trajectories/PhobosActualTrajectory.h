@@ -2,6 +2,16 @@
 
 #include "PhobosTrajectory.h"
 
+/*
+	base class, used to share the properties/functions
+
+	for:
+		Straight
+		Bombard
+		Missile
+		Parabola
+*/
+
 class ActualTrajectoryType : public PhobosTrajectoryType
 {
 public:

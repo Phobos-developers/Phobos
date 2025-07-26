@@ -223,9 +223,9 @@ public:
 
 	struct GroupData
 	{
-		std::vector<DWORD> Bullets {};
-		double Angle { 0.0 };
-		bool ShouldUpdate { true };
+		std::vector<DWORD> Bullets {}; // <UniqueID>, Capacity
+		double Angle { 0.0 }; // Tracing.StableRotation use this value to update the angle
+		bool ShouldUpdate { true }; // Remind members to update themselves
 
 		GroupData() = default;
 
@@ -237,7 +237,7 @@ public:
 		bool Serialize(T& stm);
 	};
 
-	std::shared_ptr<PhobosMap<DWORD, PhobosTrajectory::GroupData>> TrajectoryGroup; // For capacity count
+	std::shared_ptr<PhobosMap<DWORD, PhobosTrajectory::GroupData>> TrajectoryGroup; // <UniqueID, Data>, for capacity count
 	int GroupIndex; // Index in trajectory group
 
 	int PassDetonateDamage; // Current damage caused by the pass warhead
@@ -394,7 +394,7 @@ public:
 
 	bool BulletRetargetTechno();
 	void GetTechnoFLHCoord();
-	CoordStruct GetWeaponFireCoord(TechnoClass* pTechno);
+	CoordStruct GetDisperseWeaponFireCoord(TechnoClass* pTechno);
 	bool PrepareDisperseWeapon();
 	bool FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner);
 	void CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst);

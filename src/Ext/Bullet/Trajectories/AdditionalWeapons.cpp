@@ -115,12 +115,12 @@ void PhobosTrajectory::GetTechnoFLHCoord()
 		this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-CoordStruct PhobosTrajectory::GetWeaponFireCoord(TechnoClass* pTechno)
+CoordStruct PhobosTrajectory::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->GetType();
 	const auto flag = this->Flag();
-
+	// Fire from the original firer's position
 	if (pType->DisperseFromFirer.Get(flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing))
 	{
 		// Find the outermost transporter
@@ -131,7 +131,7 @@ CoordStruct PhobosTrajectory::GetWeaponFireCoord(TechnoClass* pTechno)
 
 		return pBullet->SourceCoords;
 	}
-
+	// Fire from the bullet's position
 	const auto& weaponCoord = pType->DisperseCoord.Get();
 
 	if (weaponCoord == CoordStruct::Empty)
@@ -163,7 +163,7 @@ bool PhobosTrajectory::PrepareDisperseWeapon()
 				return true;
 		}
 
-		const auto fireCoord = this->GetWeaponFireCoord(pFirer);
+		const auto fireCoord = this->GetDisperseWeaponFireCoord(pFirer);
 
 		if (!this->FireDisperseWeapon(pFirer, fireCoord, pOwner))
 			return false;
@@ -302,16 +302,16 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 		const bool checkObjects = pType->DisperseMarginal;
 		const bool checkCells = (pWeaponExt->CanTarget & AffectedTarget::AllCells) != AffectedTarget::None;
 
-		const size_t initialSize = pWeapon->Range >> 7;
-
+		const size_t initialSize = pWeapon->Range / Unsorted::LeptonsPerCell + 1;
+		// The number of technos cannot be predicted, only estimated
 		if (checkTechnos)
-			validTechnos.reserve(initialSize);
-
+			validTechnos.reserve(initialSize * 2);
+		// Object type has a small quantity, reduce the pre allocation quantity
 		if (checkObjects)
-			validObjects.reserve(initialSize >> 1);
-
+			validObjects.reserve(initialSize);
+		// The number of cells is square times the size
 		if (checkCells)
-			validCells.reserve(initialSize);
+			validCells.reserve(initialSize * initialSize);
 		// How to select?
 		if (pType->DisperseHolistic || !this->TargetIsInAir || checkCells) // On land targets
 		{

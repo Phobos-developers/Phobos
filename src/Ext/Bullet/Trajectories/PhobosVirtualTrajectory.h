@@ -2,6 +2,14 @@
 
 #include "PhobosTrajectory.h"
 
+/*
+	base class, used to share the properties/functions
+
+	for:
+		Engrave
+		Tracing
+*/
+
 class VirtualTrajectoryType : public PhobosTrajectoryType
 {
 public:
