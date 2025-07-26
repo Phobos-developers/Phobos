@@ -100,6 +100,7 @@ private:
 		if (const auto pCell = MapClass::Instance.TryGetCellAt(CellStruct{ X, Y }))
 		{
 			const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
+
 			// (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 			if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
 				return true;

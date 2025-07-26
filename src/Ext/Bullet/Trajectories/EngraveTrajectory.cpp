@@ -48,12 +48,15 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	this->PhobosTrajectoryType::Read(pINI, pSection);
 	INI_EX exINI(pINI);
+
 	// Limitation
 	this->Speed = Math::min(128.0, this->Speed);
+
 	// Virtual
 	this->VirtualSourceCoord.Read(exINI, pSection, "Trajectory.Engrave.SourceCoord");
 	this->VirtualTargetCoord.Read(exINI, pSection, "Trajectory.Engrave.TargetCoord");
 	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.AllowFirerTurning");
+
 	// Engrave
 	this->IsLaser.Read(exINI, pSection, "Trajectory.Engrave.IsLaser");
 	this->IsIntense.Read(exINI, pSection, "Trajectory.Engrave.IsIntense");
@@ -99,9 +102,11 @@ bool EngraveTrajectory::Save(PhobosStreamWriter& Stm) const
 void EngraveTrajectory::OnUnlimbo()
 {
 	this->VirtualTrajectory::OnUnlimbo();
+
 	// Engrave
 	this->LaserTimer.Start(0);
 	const auto pBullet = this->Bullet;
+
 	// Waiting for launch trigger
 	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
 		this->OpenFire();
@@ -111,6 +116,7 @@ bool EngraveTrajectory::OnEarlyUpdate()
 {
 	if (this->VirtualTrajectory::OnEarlyUpdate())
 		return true;
+
 	// Draw laser
 	if (this->Type->IsLaser && this->LaserTimer.Completed())
 		this->DrawEngraveLaser();
@@ -138,22 +144,27 @@ void EngraveTrajectory::OpenFire()
 	const auto pFirer = pBullet->Owner;
 	auto virtualSource = PhobosTrajectory::Coord2Point(pType->VirtualSourceCoord.Get());
 	auto virtualTarget = PhobosTrajectory::Coord2Point(pType->VirtualTargetCoord.Get());
+
 	// Mirror trajectory
 	if (!this->NotMainWeapon && pType->MirrorCoord && this->CurrentBurst < 0)
 	{
 		virtualSource.Y = -virtualSource.Y;
 		virtualTarget.Y = -virtualTarget.Y;
 	}
+
 	// To be used later, no reference
 	auto source = pBullet->SourceCoords;
 	auto target = pBullet->TargetCoords;
 	this->RotateRadian = this->Get2DOpRadian((pFirer ? pFirer->GetCoords() : source), target);
+
 	// Special case: Starting from the launch position
 	if (virtualSource.X != 0 || virtualSource.Y != 0)
 		source = target + PhobosTrajectory::Point2Coord(PhobosTrajectory::PointRotate(virtualSource, this->RotateRadian));
+
 	// If the target is in the air, there is no need to attach it to the ground
 	if (!this->TargetIsInAir)
 		source.Z = this->GetFloorCoordHeight(source);
+
 	// set initial status
 	pBullet->SetLocation(source);
 	target += PhobosTrajectory::Point2Coord(PhobosTrajectory::PointRotate(virtualTarget, this->RotateRadian));
@@ -180,12 +191,14 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
+
 	// Calculate additional range
 	if (pType->ApplyRangeModifiers && pFirer)
 	{
 		if (const auto pWeapon = pBullet->WeaponType)
 			velocityLength = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, static_cast<int>(velocityLength)));
 	}
+
 	// Automatically calculate duration
 	if (pType->Duration <= 0)
 		this->DurationTimer.Start(static_cast<int>(velocityLength / pType->Speed) + 1);
@@ -203,6 +216,7 @@ int EngraveTrajectory::GetFloorCoordHeight(const CoordStruct& coord)
 	const auto onFloor = MapClass::Instance.GetCellFloorHeight(coord);
 	const auto onBridge = MapClass::Instance.GetCellAt(coord)->ContainsBridge() ? onFloor + CellClass::BridgeHeight : onFloor;
 	const auto pBullet = this->Bullet;
+
 	// Take the higher position
 	return (pBullet->SourceCoords.Z >= onBridge || pBullet->TargetCoords.Z >= onBridge) ? onBridge : onFloor;
 }
@@ -211,6 +225,7 @@ void EngraveTrajectory::ChangeVelocity()
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
+
 	// The center is located on the target
 	if (pType->AttachToTarget)
 	{
@@ -221,12 +236,14 @@ void EngraveTrajectory::ChangeVelocity()
 				pBullet->TargetCoords = pTarget->GetCoords();
 		}
 	}
+
 	// The angle will be updated according to the orientation
 	if (pType->UpdateDirection)
 	{
 		const auto pFirer = pBullet->Owner;
 		this->RotateRadian = this->Get2DOpRadian((pFirer ? pFirer->GetCoords() : pBullet->SourceCoords), pBullet->TargetCoords);
 	}
+
 	// Recalculate speed and position
 	auto virtualSource = PhobosTrajectory::Coord2Point(pType->VirtualSourceCoord.Get());
 	auto virtualTarget = PhobosTrajectory::Coord2Point(pType->VirtualTargetCoord.Get());
@@ -240,6 +257,7 @@ void EngraveTrajectory::ChangeVelocity()
 	const auto path = (this->DurationTimer.CurrentTime - this->DurationTimer.StartTime + 1) * pType->Speed;
 	auto source = PhobosTrajectory::Coord2Point(pBullet->SourceCoords);
 	auto target = PhobosTrajectory::Coord2Point(pBullet->TargetCoords);
+
 	// Special case: Starting from the launch position
 	if (virtualSource.X != 0 || virtualSource.Y != 0)
 		source = target + PhobosTrajectory::PointRotate(virtualSource, this->RotateRadian);
@@ -264,13 +282,16 @@ bool EngraveTrajectory::PlaceOnCorrectHeight()
 	const auto pBullet = this->Bullet;
 	auto bulletCoords = pBullet->Location;
 	const auto futureCoords = bulletCoords + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
+
 	// Calculate where will be located in the next frame
 	const auto checkDifference = this->GetFloorCoordHeight(futureCoords) - futureCoords.Z;
+
 	// When crossing the cliff, directly move the position of the bullet, otherwise change the vertical velocity (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (std::abs(checkDifference) >= 384)
 	{
 		if (pBullet->Type->SubjectToCliffs)
 			return true;
+
 		// Move from low altitude to high altitude
 		if (checkDifference > 0)
 		{
@@ -280,6 +301,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight()
 		else
 		{
 			const auto nowDifference = bulletCoords.Z - this->GetFloorCoordHeight(bulletCoords);
+
 			// Less than 384 and greater than the maximum difference that can be achieved between two non cliffs
 			if (nowDifference >= 256)
 			{
@@ -305,11 +327,14 @@ void EngraveTrajectory::DrawEngraveLaser()
 	const auto pType = this->Type;
 	this->LaserTimer.Start(pType->LaserDelay);
 	auto fireCoord = pBullet->SourceCoords;
+
 	// Find the outermost transporter
 	pFirer = this->GetSurfaceFirer(pFirer);
+
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
 	if (!this->NotMainWeapon && pFirer && !pFirer->InLimbo)
 		fireCoord = TechnoExt::GetFLHAbsoluteCoords(pFirer, this->FLHCoord, pFirer->HasTurret());
+
 	// Draw laser from head to tail
 	if (pType->IsHouseColor || pType->IsSingleColor)
 	{

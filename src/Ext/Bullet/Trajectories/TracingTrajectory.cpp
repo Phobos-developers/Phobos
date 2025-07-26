@@ -69,10 +69,12 @@ void TracingTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	this->PhobosTrajectoryType::Read(pINI, pSection);
 	INI_EX exINI(pINI);
+
 	// Virtual
 	this->VirtualSourceCoord.Read(exINI, pSection, "Trajectory.Tracing.CreateCoord");
 	this->VirtualTargetCoord.Read(exINI, pSection, "Trajectory.Tracing.AttachCoord");
 	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.AllowFirerTurning");
+
 	// Tracing
 	this->TraceMode.Read(exINI, pSection, "Trajectory.Tracing.TraceMode");
 	this->TrackTarget.Read(exINI, pSection, "Trajectory.Tracing.TrackTarget");
@@ -108,6 +110,7 @@ bool TracingTrajectory::Save(PhobosStreamWriter& Stm) const
 void TracingTrajectory::OnUnlimbo()
 {
 	this->VirtualTrajectory::OnUnlimbo();
+
 	// Waiting for launch trigger
 	if (!BulletExt::ExtMap.Find(this->Bullet)->DispersedTrajectory)
 		this->OpenFire();
@@ -121,6 +124,7 @@ bool TracingTrajectory::OnEarlyUpdate()
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
+
 	// Followed the launcher, but the launcher was destroyed
 	return !pType->TrackTarget && !pFirer;
 }
@@ -128,6 +132,7 @@ bool TracingTrajectory::OnEarlyUpdate()
 void TracingTrajectory::OnPreDetonate()
 {
 	this->PhobosTrajectory::OnPreDetonate();
+
 	// Overwrite the ordinary behavior
 	if (this->ShouldDetonate && this->AsPeacefulVanish)
 	{
@@ -135,6 +140,7 @@ void TracingTrajectory::OnPreDetonate()
 		pBullet->Health = 0;
 		pBullet->Limbo();
 		pBullet->UnInit();
+
 		// To skip all extra effects
 		this->ShouldDetonate = false;
 	}
@@ -155,16 +161,20 @@ void TracingTrajectory::OpenFire()
 	const auto pType = this->Type;
 	const auto& coords = pType->VirtualSourceCoord.Get();
 	CoordStruct offset = coords;
+
 	// Offset during creation
 	if (coords.X != 0 || coords.Y != 0)
 	{
 		const auto rotateRadian = this->Get2DOpRadian(pBullet->SourceCoords, pBullet->TargetCoords);
+
 		// Check if mirroring is required
 		if (pType->MirrorCoord && this->CurrentBurst < 0)
 			offset.Y = -offset.Y;
+
 		// Rotate the angle
 		offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
 	}
+
 	// Add the basic coordinate position and then set it
 	if (!pType->CreateAtTarget)
 		pBullet->SetLocation(pBullet->SourceCoords + offset);
@@ -176,6 +186,7 @@ void TracingTrajectory::OpenFire()
 	this->PhobosTrajectory::OpenFire();
 
 	const auto duration = pType->Duration.Get();
+
 	// Calculate survival time
 	if (duration < 0)
 		return;
@@ -191,13 +202,16 @@ bool TracingTrajectory::ChangeVelocity()
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
+
 	// Find the outermost transporter
 	const auto pFirer = this->GetSurfaceFirer(pBullet->Owner);
+
 	// Tracing the target
 	if (const auto pTarget = pBullet->Target)
 		pBullet->TargetCoords = pTarget->GetCoords();
 
 	const auto chaseRange = pType->ChasableDistance.Get();
+
 	// Special handling is required when the firer dies
 	if (!pFirer)
 	{
@@ -207,21 +221,26 @@ bool TracingTrajectory::ChangeVelocity()
 		if (chaseRange >= 0)
 			this->AsPeacefulVanish = true;
 	}
+
 	// Confirm the center position of the tracing target
 	auto destination = pType->TrackTarget ? pBullet->TargetCoords : pFirer->GetCoords();
+
 	// Calculate the maximum separation distance
 	const auto pWeapon = pBullet->WeaponType;
 	const auto baseRange = chaseRange ? std::abs(chaseRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
 	const auto applyRange = (pType->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32;
+
 	// Calculate the distance between the projectile and the firer
 	const auto source = (pFirer && !this->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
 	const auto delta = destination - source;
 	const auto distance = (this->NotMainWeapon || this->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? PhobosTrajectory::Get2DDistance(delta) : delta.Magnitude();
+
 	// Check if the limit has been exceeded
 	if (static_cast<int>(distance) >= applyRange)
 		destination = source + (delta * (applyRange / distance));
 
 	CoordStruct offset = pType->VirtualTargetCoord.Get();
+
 	// Calculate only when there is an offset value
 	if (offset.X != 0 || offset.Y != 0)
 	{
@@ -238,6 +257,7 @@ bool TracingTrajectory::ChangeVelocity()
 			if (const auto pTechno = abstract_cast<TechnoClass*>(pType->TrackTarget ? pBullet->Target : pBullet->Owner))
 			{
 				const auto rotateRadian = -(pTechno->PrimaryFacing.Current().GetRadian<32>());
+
 				// Rotate the body angle
 				offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
 			}
@@ -254,6 +274,7 @@ bool TracingTrajectory::ChangeVelocity()
 			if (const auto pTechno = abstract_cast<TechnoClass*>(pType->TrackTarget ? pBullet->Target : pBullet->Owner))
 			{
 				const auto rotateRadian = (pTechno->HasTurret() ? -(pTechno->TurretFacing().GetRadian<32>()) : -(pTechno->PrimaryFacing.Current().GetRadian<32>()));
+
 				// Rotate the turret angle
 				offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
 			}
@@ -274,15 +295,18 @@ bool TracingTrajectory::ChangeVelocity()
 		case TraceTargetMode::RotateCCW:
 		{
 			const auto radius = PhobosTrajectory::Get2DDistance(offset);
+
 			// Individual or entirety
 			if (!pType->StableRotation || !this->TrajectoryGroup)
 			{
 				const auto distanceCoords = pBullet->Location - destination;
+
 				// Rotate around the center only when the distance is less than 1.2 times the radius
 				if ((radius * 1.2) > PhobosTrajectory::Get2DDistance(distanceCoords))
 				{
 					// Recalculate
 					this->RotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
+
 					// The arc of rotation per frame can be determined by the radius and speed
 					if (std::abs(radius) > 1e-10)
 						this->RotateRadian = cw ? (this->RotateRadian + pType->Speed / radius) : (this->RotateRadian - pType->Speed / radius);
@@ -291,6 +315,7 @@ bool TracingTrajectory::ChangeVelocity()
 			else
 			{
 				auto& groupData = (*this->TrajectoryGroup)[pBullet->Type->UniqueID];
+
 				// Valid group
 				if (const auto size = static_cast<int>(groupData.Bullets.size()))
 				{
@@ -301,6 +326,7 @@ bool TracingTrajectory::ChangeVelocity()
 						this->RotateRadian = groupData.Angle + (Math::TwoPi * this->GroupIndex / size);
 				}
 			}
+
 			// Calculate the actual offset value
 			offset.X = static_cast<int>(radius * Math::cos(this->RotateRadian));
 			offset.Y = static_cast<int>(radius * Math::sin(this->RotateRadian));
@@ -310,21 +336,26 @@ bool TracingTrajectory::ChangeVelocity()
 		default:
 		{
 			const auto rotateRadian = this->Get2DOpRadian(pBullet->SourceCoords, pBullet->TargetCoords);
+
 			// Check if mirroring is required
 			if (pType->MirrorCoord && this->CurrentBurst < 0)
 				offset.Y = -offset.Y;
+
 			// Rotate the angle
 			offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
 			break;
 		}
 		}
 	}
+
 	// Calculate distance
 	const auto difference = ((destination + offset) - pBullet->Location);
 	const auto differenceDistance = difference.Magnitude();
+
 	// Set as speed
 	this->MovingVelocity = BulletVelocity { static_cast<double>(difference.X), static_cast<double>(difference.Y), static_cast<double>(difference.Z) };
 	this->MovingSpeed = differenceDistance;
+
 	// Prevent exceeding the actual speed
 	if (pType->Speed <= differenceDistance)
 		this->MultiplyBulletVelocity(pType->Speed / differenceDistance, false);

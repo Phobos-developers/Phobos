@@ -46,6 +46,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	this->PhobosTrajectoryType::Read(pINI, pSection);
 	INI_EX exINI(pINI);
+
 	// Actual
 	this->RotateCoord.Read(exINI, pSection, "Trajectory.RotateCoord");
 	this->OffsetCoord.Read(exINI, pSection, "Trajectory.OffsetCoord");
@@ -56,6 +57,7 @@ void BombardTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->DetonationHeight.Read(exINI, pSection, "Trajectory.DetonationHeight");
 	this->DetonationDistance.Read(exINI, pSection, "Trajectory.DetonationDistance");
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.TargetSnapDistance");
+
 	// Bombard
 	this->Height.Read(exINI, pSection, "Trajectory.Bombard.Height");
 	this->Height = Math::max(0.0, this->Height);
@@ -102,13 +104,17 @@ bool BombardTrajectory::Save(PhobosStreamWriter& Stm) const
 void BombardTrajectory::OnUnlimbo()
 {
 	this->ActualTrajectory::OnUnlimbo();
+
 	// Bombard
 	const auto pBullet = this->Bullet;
+
 	// use scaling since RandomRanged only support int
 	this->FallPercent += ScenarioClass::Instance->Random.RandomRanged(0, static_cast<int>(200 * this->Type->FallPercentShift)) / 100.0;
 	this->Height += std::lerp(pBullet->SourceCoords.Z, pBullet->TargetCoords.Z, std::clamp(this->FallPercent, 0.0, 1.0));
+
 	// Record the initial target coordinates without offset
 	this->InitialTargetCoord = pBullet->TargetCoords;
+
 	// Special case: Set the target to the ground
 	if (this->Type->DetonationDistance.Get() <= -1e-10)
 	{
@@ -123,6 +129,7 @@ void BombardTrajectory::OnUnlimbo()
 			}
 		}
 	}
+
 	// Waiting for launch trigger
 	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
 		this->OpenFire();
@@ -143,12 +150,15 @@ TrajectoryCheckReturnType BombardTrajectory::OnDetonateUpdate(const CoordStruct&
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
 	this->RemainingDistance -= static_cast<int>(this->MovingSpeed);
+
 	// Check the remaining travel distance of the bullet
 	if (this->IsFalling && this->RemainingDistance < 0)
 		return TrajectoryCheckReturnType::Detonate;
+
 	// Close enough
 	if (pBullet->TargetCoords.DistanceFrom(position) < pType->DetonationDistance.Get())
 		return TrajectoryCheckReturnType::Detonate;
+
 	// Height
 	if (pType->DetonationHeight >= 0 && (pType->EarlyDetonation
 		? ((position.Z - pBullet->SourceCoords.Z) > pType->DetonationHeight)
@@ -163,6 +173,7 @@ TrajectoryCheckReturnType BombardTrajectory::OnDetonateUpdate(const CoordStruct&
 void BombardTrajectory::OpenFire()
 {
 	const auto pType = this->Type;
+
 	// Wait, or launch immediately?
 	if (!pType->NoLaunch || !pType->LeadTimeCalculate.Get(false) || !abstract_cast<FootClass*>(this->Bullet->Target))
 		this->FireTrajectory();
@@ -186,6 +197,7 @@ void BombardTrajectory::FireTrajectory()
 
 		if (this->CalculateBulletVelocity(pType->Speed))
 			this->ShouldDetonate = true;
+
 		// Rotate the selected angle
 		if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 			this->DisperseBurstSubstitution(this->RotateRadian);
@@ -205,6 +217,7 @@ void BombardTrajectory::FireTrajectory()
 
 			if (this->CalculateBulletVelocity(fallSpeed))
 				this->ShouldDetonate = true;
+
 			// Rotate the selected angle
 			if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 				this->DisperseBurstSubstitution(this->RotateRadian);
@@ -245,6 +258,7 @@ void BombardTrajectory::MultiplyBulletVelocity(const double ratio, const bool sh
 {
 	this->MovingVelocity *= ratio;
 	this->MovingSpeed = this->MovingSpeed * ratio;
+
 	// Only be truly detonated during the descent phase
 	if (shouldDetonate && this->IsFalling)
 		this->ShouldDetonate = true;
@@ -296,11 +310,14 @@ void BombardTrajectory::CalculateTargetCoords()
 
 	if (pType->NoLaunch)
 		target += this->CalculateBulletLeadTime();
+
 	// Calculate the orientation of the coordinate system
 	this->RotateRadian = this->Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
+
 	// Add the fixed offset value
 	if (pType->OffsetCoord != CoordStruct::Empty)
 		target += this->GetOnlyStableOffsetCoords(this->RotateRadian);
+
 	// Add random offset value
 	if (pBullet->Type->Inaccurate)
 		target = this->GetInaccurateTargetCoords(target, source.DistanceFrom(target));
@@ -317,6 +334,7 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 		{
 			const auto target = pTarget->GetCoords();
 			const auto& source = pBullet->Location;
+
 			// Solving trigonometric functions
 			if (target != this->LastTargetCoord)
 			{
@@ -339,6 +357,7 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const auto horizonDistanceSquared = distanceSquared - verticalDistanceSquared;
 				const auto horizonDistance = sqrt(horizonDistanceSquared);
 				const auto fallSpeed = pType->FallSpeed.Get(pType->Speed);
+
 				// Calculate using vertical distance
 				if (horizonDistance < 1e-10)
 					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(verticalDistanceSquared) / fallSpeed));
@@ -346,13 +365,16 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const auto targetSpeed = sqrt(targetSpeedSquared);
 				const auto straightSpeedSquared = fallSpeed * fallSpeed;
 				const auto baseFactor = straightSpeedSquared - targetSpeedSquared;
+
 				// When the target is moving away, provide an additional frame of correction
 				const int extraTime = distanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
+
 				// Linear equation solving
 				if (std::abs(baseFactor) < 1e-10)
 					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(distanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
 
 				const auto squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
+
 				// Is there a solution?
 				if (squareFactor > 1e-10)
 				{
@@ -397,6 +419,7 @@ bool BombardTrajectory::BulletVelocityChange()
 
 				if (this->CalculateBulletVelocity(fallSpeed))
 					return true;
+
 				// Rotate the selected angle
 				if (std::abs(pType->RotateCoord) > 1e-10 && this->CountOfBurst > 1)
 					this->DisperseBurstSubstitution(this->RotateRadian);

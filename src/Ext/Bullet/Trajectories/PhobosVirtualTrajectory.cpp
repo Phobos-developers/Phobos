@@ -61,8 +61,10 @@ bool VirtualTrajectory::Save(PhobosStreamWriter& Stm) const
 void VirtualTrajectory::OnUnlimbo()
 {
 	this->PhobosTrajectory::OnUnlimbo();
+
 	// Virtual
 	this->RemainingDistance = INT_MAX;
+
 	// Find the outermost transporter
 	if (const auto pFirer = this->GetSurfaceFirer(this->Bullet->Owner))
 		this->SurfaceFirerID = pFirer->UniqueID;
@@ -80,6 +82,7 @@ bool VirtualTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 {
 	if (!pTechno)
 		return true;
+
 	// Find the outermost transporter
 	pTechno = this->GetSurfaceFirer(pTechno);
 
@@ -92,6 +95,7 @@ bool VirtualTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 	const auto tgtDir = DirStruct(-PhobosTrajectory::Get2DOpRadian(pTechno->GetCoords(), this->Bullet->TargetCoords));
 	const auto& face = pTechno->HasTurret() && pTechno->WhatAmI() == AbstractType::Unit ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
 	const auto curDir = face.Current();
+
 	// Similar to the vanilla 45 degree turret facing check design
 	return (std::abs(static_cast<short>(static_cast<short>(tgtDir.Raw) - static_cast<short>(curDir.Raw))) >= 4096);
 }

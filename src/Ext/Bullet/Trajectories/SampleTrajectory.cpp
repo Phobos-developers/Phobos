@@ -36,6 +36,7 @@ void SampleTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 {
 	this->PhobosTrajectoryType::Read(pINI, pSection);
 	INI_EX exINI(pINI);
+
 	// Sample
 	this->TargetSnapDistance.Read(exINI, pSection, "Trajectory.TargetSnapDistance");
 }
@@ -67,9 +68,11 @@ bool SampleTrajectory::Save(PhobosStreamWriter& Stm) const
 void SampleTrajectory::OnUnlimbo()
 {
 	this->PhobosTrajectory::OnUnlimbo();
+
 	// Sample
 	const auto pBullet = this->Bullet;
 	this->RemainingDistance += static_cast<int>(pBullet->SourceCoords.DistanceFrom(pBullet->TargetCoords));
+
 	// Waiting for launch trigger
 	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
 		this->OpenFire();
@@ -120,6 +123,7 @@ void SampleTrajectory::OnPreDetonate()
 	const auto pBullet = this->Bullet;
 	auto pTarget = abstract_cast<ObjectClass*>(pBullet->Target);
 	auto pCoords = pTarget ? pTarget->GetCoords() : pBullet->TargetCoords;
+
 	// Can snap to target?
 	if (pCoords.DistanceFrom(pBullet->Location) <= this->Type->TargetSnapDistance.Get())
 	{
