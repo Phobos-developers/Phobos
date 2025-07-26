@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PhobosActualTrajectory.h"
+#include "../PhobosActualTrajectory.h"
 
 class StraightTrajectoryType final : public ActualTrajectoryType
 {

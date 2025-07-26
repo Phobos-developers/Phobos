@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PhobosActualTrajectory.h"
+#include "../PhobosActualTrajectory.h"
 
 enum class ParabolaFireMode : int
 {
