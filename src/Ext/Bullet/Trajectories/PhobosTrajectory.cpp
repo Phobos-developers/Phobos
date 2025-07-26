@@ -207,7 +207,7 @@ void PhobosTrajectory::OnUnlimbo()
 	const auto pType = this->GetType();
 	// Record the status of the target
 	this->TargetIsTechno = (pTarget->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None;
-	this->TargetInTheAir = (pTarget->AbstractFlags & AbstractFlags::Object) ? (static_cast<ObjectClass*>(pTarget)->GetHeight() > Unsorted::CellHeight) : false;
+	this->TargetIsInAir = (pTarget->AbstractFlags & AbstractFlags::Object) ? (static_cast<ObjectClass*>(pTarget)->GetHeight() > Unsorted::CellHeight) : false;
 	int damage = pBullet->Health;
 	// Record some information of weapon
 	if (const auto pWeapon = pBullet->WeaponType)
@@ -490,7 +490,7 @@ void PhobosTrajectory::OnPreDetonate()
 	else
 	{
 		// Calculate the current damage
-		pBullet->Health = this->GetTheTrueDamage(pBullet->Health, true);
+		pBullet->Health = this->GetTrueDamage(pBullet->Health, true);
 		// Ensure the detonation flag is established
 		this->ShouldDetonate = true;
 	}
@@ -788,7 +788,7 @@ bool PhobosTrajectory::CheckSynchronize()
 		if (pBullet->Target != pTarget && !this->GetType()->TolerantTime)
 			return true;
 		// Check if the target can be synchronized
-		if (pTarget && (pTarget->IsInAir() != this->TargetInTheAir))
+		if (pTarget && (pTarget->IsInAir() != this->TargetIsInAir))
 			pTarget = nullptr;
 		// Replace with a new target
 		pBullet->SetTarget(pTarget);
@@ -1020,7 +1020,7 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)
 		.Process(this->RemainingDistance)
-		.Process(this->TargetInTheAir)
+		.Process(this->TargetIsInAir)
 		.Process(this->TargetIsTechno)
 		.Process(this->NotMainWeapon)
 		.Process(this->ShouldDetonate)
@@ -1035,7 +1035,7 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->ProximityImpact)
 		.Process(this->ProximityDamage)
 		.Process(this->ExtraCheck)
-		.Process(this->TheCasualty)
+		.Process(this->Casualty)
 
 		.Process(this->DisperseIndex)
 		.Process(this->DisperseCount)

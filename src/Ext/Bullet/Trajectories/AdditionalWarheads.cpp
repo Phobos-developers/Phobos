@@ -380,7 +380,7 @@ void PhobosTrajectory::PassWithDetonateAt()
 
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-	const auto damage = this->GetTheTrueDamage(this->PassDetonateDamage, false);
+	const auto damage = this->GetTrueDamage(this->PassDetonateDamage, false);
 	WarheadTypeExt::DetonateAt(pWH, detonateCoords, pBullet->Owner, damage, pOwner);
 	this->CalculateNewDamage();
 }
@@ -528,31 +528,31 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	}
 	// Step 3: Record each target without repetition.
 	std::vector<int> casualtyChecked;
-	casualtyChecked.reserve(Math::max(validTechnos.size(), this->TheCasualty.size()));
+	casualtyChecked.reserve(Math::max(validTechnos.size(), this->Casualty.size()));
 	// No impact on firer
 	if (pFirer)
-		this->TheCasualty[pFirer->UniqueID] = 5;
+		this->Casualty[pFirer->UniqueID] = 5;
 	// Update Record
-	for (const auto& [ID, remainTime] : this->TheCasualty)
+	for (const auto& [ID, remainTime] : this->Casualty)
 	{
 		if (remainTime > 0)
-			this->TheCasualty[ID] = remainTime - 1;
+			this->Casualty[ID] = remainTime - 1;
 		else
 			casualtyChecked.push_back(ID);
 	}
 
 	for (const auto& ID : casualtyChecked)
-		this->TheCasualty.erase(ID);
+		this->Casualty.erase(ID);
 
 	std::vector<TechnoClass*> validTargets;
 	validTargets.reserve(validTechnos.size());
 	// checking for duplicate
 	for (const auto& pTechno : validTechnos)
 	{
-		if (!this->TheCasualty.contains(pTechno->UniqueID))
+		if (!this->Casualty.contains(pTechno->UniqueID))
 			validTargets.push_back(pTechno);
 		// Record 5 frames
-		this->TheCasualty[pTechno->UniqueID] = 5;
+		this->Casualty[pTechno->UniqueID] = 5;
 	}
 	// Step 4: Detonate warheads in sequence based on distance.
 	const auto targetsSize = validTargets.size();
@@ -605,7 +605,7 @@ void PhobosTrajectory::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTar
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->GetType();
-	auto damage = this->GetTheTrueDamage(this->ProximityDamage, false);
+	auto damage = this->GetTrueDamage(this->ProximityDamage, false);
 	auto pWH = pType->ProximityWarhead.Get();
 
 	if (!pWH)
@@ -621,7 +621,7 @@ void PhobosTrajectory::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTar
 	this->CalculateNewDamage();
 }
 
-int PhobosTrajectory::GetTheTrueDamage(int damage, bool self)
+int PhobosTrajectory::GetTrueDamage(int damage, bool self)
 {
 	if (damage == 0)
 		return 0;

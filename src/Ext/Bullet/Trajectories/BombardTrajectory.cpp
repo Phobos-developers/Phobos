@@ -330,13 +330,13 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				if (pType->NoLaunch)
 					return extraOffsetCoord * this->GetLeadTime(std::round((this->Height - target.Z) / pType->FallSpeed.Get(pType->Speed)));
 
-				const auto theDistanceSquared = targetSourceCoord.MagnitudeSquared();
+				const auto distanceSquared = targetSourceCoord.MagnitudeSquared();
 				const auto targetSpeedSquared = extraOffsetCoord.MagnitudeSquared();
 
 				const auto crossFactor = lastSourceCoord.CrossProduct(targetSourceCoord).MagnitudeSquared();
 				const auto verticalDistanceSquared = crossFactor / targetSpeedSquared;
 
-				const auto horizonDistanceSquared = theDistanceSquared - verticalDistanceSquared;
+				const auto horizonDistanceSquared = distanceSquared - verticalDistanceSquared;
 				const auto horizonDistance = sqrt(horizonDistanceSquared);
 				const auto fallSpeed = pType->FallSpeed.Get(pType->Speed);
 				// Calculate using vertical distance
@@ -347,10 +347,10 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const auto straightSpeedSquared = fallSpeed * fallSpeed;
 				const auto baseFactor = straightSpeedSquared - targetSpeedSquared;
 				// When the target is moving away, provide an additional frame of correction
-				const int extraTime = theDistanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
+				const int extraTime = distanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
 				// Linear equation solving
 				if (std::abs(baseFactor) < 1e-10)
-					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(theDistanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
+					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(distanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
 
 				const auto squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 				// Is there a solution?

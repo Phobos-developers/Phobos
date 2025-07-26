@@ -125,7 +125,7 @@ bool EngraveTrajectory::OnVelocityCheck()
 	if (pType->AttachToTarget || pType->UpdateDirection)
 		this->ChangeVelocity();
 
-	if (!this->TargetInTheAir && this->PlaceOnCorrectHeight())
+	if (!this->TargetIsInAir && this->PlaceOnCorrectHeight())
 		return true;
 
 	return this->PhobosTrajectory::OnVelocityCheck();
@@ -152,7 +152,7 @@ void EngraveTrajectory::OpenFire()
 	if (virtualSource.X != 0 || virtualSource.Y != 0)
 		source = target + PhobosTrajectory::Point2Coord(PhobosTrajectory::PointRotate(virtualSource, this->RotateRadian));
 	// If the target is in the air, there is no need to attach it to the ground
-	if (!this->TargetInTheAir)
+	if (!this->TargetIsInAir)
 		source.Z = this->GetFloorCoordHeight(source);
 	// set initial status
 	pBullet->SetLocation(source);

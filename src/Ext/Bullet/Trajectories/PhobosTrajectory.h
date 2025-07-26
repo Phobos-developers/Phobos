@@ -181,7 +181,7 @@ public:
 		, FirepowerMult { 1.0 }
 		, AttenuationRange { 0 }
 		, RemainingDistance { 1 }
-		, TargetInTheAir { false }
+		, TargetIsInAir { false }
 		, TargetIsTechno { false }
 		, NotMainWeapon { false }
 		, ShouldDetonate { false }
@@ -196,7 +196,7 @@ public:
 		, ProximityImpact { trajType->ProximityImpact }
 		, ProximityDamage { 0 }
 		, ExtraCheck { nullptr }
-		, TheCasualty {}
+		, Casualty {}
 
 		, DisperseIndex { 0 }
 		, DisperseCount { 0 }
@@ -213,7 +213,7 @@ public:
 	double FirepowerMult; // Inherited firepower bonus
 	int AttenuationRange; // Maximum range
 	int RemainingDistance; // Remaining distance from the self explosion location
-	bool TargetInTheAir; // Is the original target the Air Force
+	bool TargetIsInAir; // Is the original target the Air Force
 	bool TargetIsTechno; // Is the original target a techno type
 	bool NotMainWeapon; // Does it ignore the launcher
 	bool ShouldDetonate; // Should detonate when checking before and after moving
@@ -245,7 +245,7 @@ public:
 	int ProximityImpact; // How many times can proximity warhead be triggered
 	int ProximityDamage; // Current damage caused by the proximity warhead
 	TechnoClass* ExtraCheck; // The obstacle, no taken out for use in next frame
-	std::map<DWORD, int> TheCasualty; // <UniqueID, Frames>, only for recording existence to check whether have damaged
+	std::map<DWORD, int> Casualty; // <UniqueID, Frames>, only for recording existence to check whether have damaged
 
 	int DisperseIndex; // Launch weapon group Index
 	int DisperseCount; // Launch weapon group remaining times
@@ -376,7 +376,7 @@ public:
 	void PassWithDetonateAt();
 	void PrepareForDetonateAt();
 	void ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget);
-	int GetTheTrueDamage(int damage, bool self);
+	int GetTrueDamage(int damage, bool self);
 	double GetExtraDamageMultiplier();
 
 	bool BulletRetargetTechno();

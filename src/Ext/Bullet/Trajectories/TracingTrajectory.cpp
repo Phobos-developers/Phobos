@@ -216,7 +216,7 @@ bool TracingTrajectory::ChangeVelocity()
 	// Calculate the distance between the projectile and the firer
 	const auto source = (pFirer && !this->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
 	const auto delta = destination - source;
-	const auto distance = (this->NotMainWeapon || this->TargetInTheAir || (pFirer && pFirer->IsInAir())) ? PhobosTrajectory::Get2DDistance(delta) : delta.Magnitude();
+	const auto distance = (this->NotMainWeapon || this->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? PhobosTrajectory::Get2DDistance(delta) : delta.Magnitude();
 	// Check if the limit has been exceeded
 	if (static_cast<int>(distance) >= applyRange)
 		destination = source + (delta * (applyRange / distance));
