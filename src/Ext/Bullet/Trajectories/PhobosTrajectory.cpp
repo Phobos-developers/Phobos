@@ -250,11 +250,11 @@ void PhobosTrajectory::OnUnlimbo()
 			const auto pFirerExt = TechnoExt::ExtMap.Find(pFirer);
 
 			if (!pFirerExt->TrajectoryGroup)
-				pFirerExt->TrajectoryGroup = std::make_shared<PhobosMap<DWORD, PhobosTrajectory::GroupData>>();
+				pFirerExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, PhobosTrajectory::GroupData>>();
 
 			// Get shared container
 			this->TrajectoryGroup = pFirerExt->TrajectoryGroup;
-			auto& group = (*this->TrajectoryGroup)[pBullet->Type->UniqueID].Bullets;
+			auto& group = (*this->TrajectoryGroup)[pBullet->Type].Bullets;
 			const auto size = static_cast<int>(group.size());
 
 			// Check trajectory capacity
@@ -914,7 +914,7 @@ bool PhobosTrajectory::CheckTolerantTime()
 void PhobosTrajectory::UpdateGroupIndex()
 {
 	const auto pBullet = this->Bullet;
-	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type->UniqueID];
+	auto& groupData = (*this->TrajectoryGroup)[pBullet->Type];
 
 	// Should update group index
 	if (groupData.ShouldUpdate)

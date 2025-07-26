@@ -237,7 +237,7 @@ public:
 		bool Serialize(T& stm);
 	};
 
-	std::shared_ptr<PhobosMap<DWORD, PhobosTrajectory::GroupData>> TrajectoryGroup; // <UniqueID, Data>, for capacity count
+	std::shared_ptr<PhobosMap<BulletTypeClass*, PhobosTrajectory::GroupData>> TrajectoryGroup; // <UniqueID, Data>, for capacity count
 	int GroupIndex; // Index in trajectory group
 
 	int PassDetonateDamage; // Current damage caused by the pass warhead

@@ -21,7 +21,7 @@ BulletExt::ExtData::~ExtData()
 		{
 			if (const auto pMap = pTraj->TrajectoryGroup)
 			{
-				auto& groupData = (*pMap)[this->TypeExtData->OwnerObject()->UniqueID];
+				auto& groupData = (*pMap)[this->TypeExtData->OwnerObject()];
 				auto& vec = groupData.Bullets;
 				vec.erase(std::remove(vec.begin(), vec.end(), this->OwnerObject()->UniqueID), vec.end());
 				groupData.ShouldUpdate = true;
