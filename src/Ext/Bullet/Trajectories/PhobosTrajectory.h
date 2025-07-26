@@ -354,6 +354,19 @@ public:
 			&& (!pWeapon || PhobosTrajectory::GetDistanceFrom(pFirer ? pFirer->GetCoords() : pBullet->SourceCoords, pTechno) <= range)
 			&& PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno);
 	}
+	static inline bool CheckCanDisperse(TechnoClass* const pTechno, HouseClass* const pOwner, const PhobosTrajectoryType* const pType, const CoordStruct& center, const CellClass* const pCell, const int range,
+		const AbstractClass* const pTarget, const WeaponTypeClass* const pWeapon, const WeaponTypeExt::ExtData* const pWeaponExt, TechnoClass* const pFirer)
+	{
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		return pTechnoType->LegalTarget
+			&& (!pType->DisperseTendency || pType->DisperseDoRepeat || pTechno != pTarget)
+			&& !pTechno->IsBeingWarpedOut()
+			&& PhobosTrajectory::CheckWeaponValidness(pOwner, pTechno, pCell, pWeaponExt->CanTargetHouses)
+			&& PhobosTrajectory::GetDistanceFrom(center, pTechno) <= range
+			&& MapClass::GetTotalDamage(100, pWeapon->Warhead, pTechnoType->Armor, 0) != 0
+			&& PhobosTrajectory::CheckWeaponCanTarget(pWeaponExt, pFirer, pTechno);
+	}
 	static inline void SetNewDamage(int& damage, const double ratio)
 	{
 		if (damage)
