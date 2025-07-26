@@ -171,6 +171,8 @@ public:
 	virtual void Read(CCINIClass* const pINI, const char* pSection);
 	[[nodiscard]] virtual std::unique_ptr<PhobosTrajectory> CreateInstance(BulletClass* pBullet) const = 0;
 
+	bool CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, PhobosTrajectory* pTraj = nullptr) const;
+
 private:
 	template <typename T>
 	void Serialize(T& Stm);

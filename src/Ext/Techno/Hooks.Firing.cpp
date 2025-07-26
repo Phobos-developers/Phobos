@@ -344,16 +344,9 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 		}
 	}
 
-	const auto pTrajType = pBulletTypeExt->TrajectoryType.get();
-
-	if (pTrajType && pTrajType->CreateCapacity >= 0)
+	if (const auto pTrajType = pBulletTypeExt->TrajectoryType.get())
 	{
-		const auto pFirerExt = TechnoExt::ExtMap.Find(pThis);
-
-		if (!pFirerExt->TrajectoryGroup)
-			pFirerExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, PhobosTrajectory::GroupData>>();
-
-		if (pTrajType->CreateCapacity <= static_cast<int>((*pFirerExt->TrajectoryGroup)[pBulletType].Bullets.size()))
+		if (pTrajType->CreateCapacity >= 0 && pTrajType->CheckExceededCapacity(pThis, pBulletType))
 			return (pWeapon->Damage >= 0 || (pTargetTechno && pTargetTechno->GetHealthPercentage() < RulesClass::Instance->unknown_double_16F8)) ? TemporarilyCannotFire : CannotFire;
 	}
 

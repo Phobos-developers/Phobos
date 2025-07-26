@@ -195,6 +195,39 @@ bool TrajectoryPointer::Save(PhobosStreamWriter& Stm) const
 
 // ------------------------------------------------------------------------------ //
 
+// Check and set the group
+bool PhobosTrajectoryType::CheckExceededCapacity(TechnoClass* pTechno, BulletTypeClass* pBulletType, PhobosTrajectory* pTraj) const
+{
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+	if (!pTechnoExt->TrajectoryGroup)
+		pTechnoExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, PhobosTrajectory::GroupData>>();
+
+	// Get shared container
+	auto& group = (*pTechnoExt->TrajectoryGroup)[pBulletType].Bullets;
+	const auto size = static_cast<int>(group.size());
+
+	if (!pTraj)
+		return size >= this->CreateCapacity;
+
+	pTraj->TrajectoryGroup = pTechnoExt->TrajectoryGroup;
+
+	// Check trajectory capacity
+	if (size >= this->CreateCapacity)
+	{
+		// Peaceful vanish
+		pTraj->Status |= TrajectoryStatus::Vanish;
+		return true;
+	}
+	else
+	{
+		// Increase trajectory count
+		pTraj->GroupIndex = size;
+		group.push_back(pTraj->Bullet->UniqueID);
+		return false;
+	}
+}
+
 // Have generated projectile on the map and prepare for launch
 void PhobosTrajectory::OnUnlimbo()
 {
@@ -246,30 +279,7 @@ void PhobosTrajectory::OnUnlimbo()
 
 		// Check trajectory capacity
 		if (pType->CreateCapacity >= 0)
-		{
-			const auto pFirerExt = TechnoExt::ExtMap.Find(pFirer);
-
-			if (!pFirerExt->TrajectoryGroup)
-				pFirerExt->TrajectoryGroup = std::make_shared<PhobosMap<BulletTypeClass*, PhobosTrajectory::GroupData>>();
-
-			// Get shared container
-			this->TrajectoryGroup = pFirerExt->TrajectoryGroup;
-			auto& group = (*this->TrajectoryGroup)[pBullet->Type].Bullets;
-			const auto size = static_cast<int>(group.size());
-
-			// Check trajectory capacity
-			if (size >= pType->CreateCapacity)
-			{
-				// Peaceful vanish
-				this->Status |= TrajectoryStatus::Vanish;
-			}
-			else
-			{
-				// Increase trajectory count
-				this->GroupIndex = size;
-				group.push_back(pBullet->UniqueID);
-			}
-		}
+			pType->CheckExceededCapacity(pFirer, pBullet->Type, this);
 	}
 	else
 	{
