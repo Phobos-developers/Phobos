@@ -3,11 +3,14 @@
 #include "PhobosTrajectory.h"
 
 /*
-	base class, used to share the properties/functions
+	Base class: Virtual Trajectory
 
-	for:
-		Engrave
-		Tracing
+	- The trajectory itself is just a carrier for attacking objects
+	- Used to share the properties/functions
+
+	- for:
+		- Engrave
+		- Tracing
 */
 
 class VirtualTrajectoryType : public PhobosTrajectoryType
