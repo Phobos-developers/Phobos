@@ -23,7 +23,7 @@ Community
 As the project is international and English is currently studied the most commonly as a second language, it's the main project language. We do not limit the creation of language-specific community groups though, because we understand that many may not know English as well as their native language and/or may have trouble accessing Discord.
 
 - **[🌐 International Discord channel on C&C Mod Haven](https://discord.gg/sZeMzz6qVg)**
-- [🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)(630590659)
+- [🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659) (630590659)
 
 Downloads
 ---------
@@ -91,20 +91,53 @@ Building manually
 Credits
 -------
 
-### Developers
-- **Belonit (Gluk-v48)** - project author
-- **Kerbiter (Metadorius)** - project co-author, BDFL, maintainer ([Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid fees)
-- **Starkku** - co-maintainer, developer ([Patreon](https://www.patreon.com/Starkku))
-- **Uranusian (Thrifinesma)** - developer, CN community ambassador
-- **secsome (SEC-SOME)** - developer
-- **Otamaa (Fahroni, BoredEXE)** - developer ([PayPal](https://paypal.me/GeneralOtama))
-- **FS-21** - developer
-- **Morton (MortonPL)** - co-maintainer, developer
-- **Trsdy (chaserli)** - co-maintainer, developer
+This project was founded by @Belonit (Gluk-v48) and @Metadorius (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers.
 
-For all contributions see [full credits list](CREDITS.md).
+### Maintenance crew
 
-Thanks to everyone who uses Phobos, tests changes and reports bugs! You can show your appreciation and help project by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it open Phobos GitHub page for extra fanciness), linking to Phobos repository, contributing or donating to us via the links above.
+Maintenance crew consists of experienced Phobos contributors who are recognized and given the permission to maintain and shape the project to the extent of their permissions.
+
+Every maintenance crew member is welcome to put a donation link to their entry in the list below.
+
+- **Kerbiter (@Metadorius)** - T3 maintainer (lead)
+  - [Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request
+- **@Starkku** - T2 maintainer
+  - [Patreon](https://www.patreon.com/Starkku)
+- **@CrimRecya (绯红热茶)** - T2 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)
+- **@ZivDero** - T2 maintainer
+  - [Patreon](https://www.patreon.com/c/ZivDero)
+- **Ollerus (@Coronia)** - T1 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)
+- **@NetsuNegi** - T1 maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)
+- **@TaranDahl (航味麻酱)** - T1 maintainer
+  - [WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)
+- **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
+  - [Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)
+- **FlyStar (@Fly-Star-him)** - triage
+- **@Fryone** - triage
+
+#### Inactive
+
+*Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*
+
+- **Gluk-v48 (@Belonit)** - lead in the past
+- **Uranusian (@Thrifinesma)** - T2 maintainer, CN community ambassador, doc maintainer
+- **@secsome** - maintainer
+- **@Otamaa (Fahroni, BoredEXE)** - maintainer
+- **@FS-21** - inactive as a maintainer specifically
+- **Morton (@MortonPL)** - T2 maintainer
+- **Trsdy (@chaserli)** - T2 maintainer
+
+The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!
+
+Attribution
+-----
+
+You can show your appreciation and help project's publicity by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it a button that opens Phobos GitHub page for extra fanciness). To fit with the mod styling, you are allowed to stylize the monochrome logo in a non-intrusive way (for example, recolor it to match the mod theme) without otherwise changing it. If unsure - ask us first.
+
+When promoting features of your mod that you implemented using Phobos, please give credit to Phobos and it's contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: "This feature is made possible by Phobos", "Implemented using XYZ from Phobos", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors.
 
 Legal and License
 -----
