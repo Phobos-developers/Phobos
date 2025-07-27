@@ -1037,20 +1037,20 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 
 		if (index <= 4)
 		{
-			constexpr double horizontalCommonOffset = 0.3763770469559380854890894443664; // Unsorted::LevelHeight / sqrt(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-			constexpr double verticalCommonOffset = 0.9264665771223091335116047861327; // Unsorted::LeptonsPerCell / sqrt(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			constexpr double horizontalCommonOffset = Unsorted::LevelHeight / ParabolaTrajectory::SqrtConstexpr(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell);
+			constexpr double verticalCommonOffset = Unsorted::LeptonsPerCell / ParabolaTrajectory::SqrtConstexpr(Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell);
 			factor = Vector2D<double>{ horizontalCommonOffset, verticalCommonOffset };
 		}
 		else if (index <= 12)
 		{
-			constexpr double horizontalTiltOffset = 0.3522530794922131411764879370407; // Unsorted::LevelHeight / sqrt(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-			constexpr double verticalTiltOffset = 0.8670845033654477321267395373309; // Unsorted::LeptonsPerCell / sqrt(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			constexpr double horizontalTiltOffset = Unsorted::LevelHeight / ParabolaTrajectory::SqrtConstexpr(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell);
+			constexpr double verticalTiltOffset = Unsorted::LeptonsPerCell / ParabolaTrajectory::SqrtConstexpr(2 * Unsorted::LevelHeight * Unsorted::LevelHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell);
 			factor = Vector2D<double>{ horizontalTiltOffset, verticalTiltOffset };
 		}
 		else
 		{
-			constexpr double horizontalSteepOffset = 0.5333964609104418418483761938761; // Unsorted::CellHeight / sqrt(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
-			constexpr double verticalSteepOffset = 0.6564879518897745745826168540013; // Unsorted::LeptonsPerCell / sqrt(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell)
+			constexpr double horizontalSteepOffset = Unsorted::CellHeight / ParabolaTrajectory::SqrtConstexpr(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell);
+			constexpr double verticalSteepOffset = Unsorted::LeptonsPerCell / ParabolaTrajectory::SqrtConstexpr(2 * Unsorted::CellHeight * Unsorted::CellHeight + Unsorted::LeptonsPerCell * Unsorted::LeptonsPerCell);
 			factor = Vector2D<double>{ horizontalSteepOffset, verticalSteepOffset };
 		}
 
@@ -1085,7 +1085,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 		}
 	}
 
-	constexpr double diagonalLeptonsPerCell = 362.1; // Unsorted::LeptonsPerCell * sqrt(2)
+	constexpr double diagonalLeptonsPerCell = Unsorted::LeptonsPerCell * ParabolaTrajectory::SqrtConstexpr(2);
 	const double horizontalVelocity = PhobosTrajectory::Get2DVelocity(this->LastVelocity);
 	const auto velocity = PhobosTrajectory::Vector2Coord(horizontalVelocity > diagonalLeptonsPerCell ? this->LastVelocity * (diagonalLeptonsPerCell / horizontalVelocity) : this->LastVelocity);
 	const int cellHeight = pCell->Level * Unsorted::LevelHeight;
@@ -1137,15 +1137,15 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 			}
 		}
 
-		constexpr double shortRightAngledEdge = 0.4472135954999579392818347337463; // -> 1 / sqrt(5)
-		constexpr double longRightAngledEdge = 0.8944271909999158785636694674925; // -> 2 / sqrt(5)
+		constexpr double shortRightAngledEdge = 1 / ParabolaTrajectory::SqrtConstexpr(5);
+		constexpr double longRightAngledEdge = 2 / ParabolaTrajectory::SqrtConstexpr(5);
 
 		if (cliffType == CliffType::Type_1_2)
 			return BulletVelocity{ longRightAngledEdge * reverseSgnX, shortRightAngledEdge * reverseSgnY, 0.0 };
 		else if (cliffType == CliffType::Type_2_1)
 			return BulletVelocity{ shortRightAngledEdge * reverseSgnX, longRightAngledEdge * reverseSgnY, 0.0 };
 
-		constexpr double hypotenuse = 0.7071067811865475244008443621049; // 1 / sqrt(2)
+		constexpr double hypotenuse = 1 / ParabolaTrajectory::SqrtConstexpr(2);
 
 		return BulletVelocity{ hypotenuse * reverseSgnX, hypotenuse * reverseSgnY, 0.0 };
 	}

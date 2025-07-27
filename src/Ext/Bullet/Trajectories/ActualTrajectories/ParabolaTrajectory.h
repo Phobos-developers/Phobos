@@ -110,6 +110,11 @@ private:
 		return false;
 	}
 
+	static constexpr double SqrtConstexpr(double x, double curr = 1.0, double prev = 0.0)
+	{
+		return curr == prev ? curr : SqrtConstexpr(x, 0.5 * (curr + x / curr), curr);
+	}
+
 	template <typename T>
 	void Serialize(T& Stm);
 };
