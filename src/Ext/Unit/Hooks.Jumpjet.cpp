@@ -214,11 +214,11 @@ DEFINE_JUMP(VTABLE, 0x7ECDB8, GET_OFFSET(JumpjetLocomotionClass_Unlimbo))
 namespace JumpjetRushHelpers
 {
 	bool Skip = false;
-	int GetJumpjetHeightWithOccupyTechno(CellClass* pCell); // Replace sub_485080
+	int GetJumpjetHeightWithOccupyTechno(const CellClass* pCell); // Replace sub_485080
 	int JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* pThis); // Replace sub_54D820
 }
 
-int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(CellClass* pCell)
+int JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(const CellClass* pCell)
 {
 	if (const auto pBuilding = pCell->GetBuilding())
 	{
@@ -243,97 +243,98 @@ int JumpjetRushHelpers::JumpjetLocomotionPredictHeight(JumpjetLocomotionClass* p
 	const auto pFoot = pThis->LinkedTo;
 	const auto pLocation = &pFoot->Location;
 
-	// Initial
+	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
+	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
+		{
+			return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
+		};
+	auto getJumpjetHeight = [](const CellClass* const pCell, const Point2D& point) -> int
+		{
+			return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell);
+		};
+
+	// Initialize
 	auto curCoord = Point2D { pLocation->X, pLocation->Y };
-	auto pCurCell = MapClass::Instance->GetCellAt(CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) });
-	auto maxHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X, curCoord.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
+	const CellClass* pCurCell = MapClass::Instance.GetCellAt(point2Cell(curCoord));
+	int maxHeight = getJumpjetHeight(pCurCell, curCoord);
 
 	// If is moving
 	if (pThis->CurrentSpeed > 0.0)
 	{
-		const auto checkLength = (pThis->LocomotionFacing.IsRotating() || !pFoot->Destination) ? Unsorted::LeptonsPerCell
+		// Prepare for prediction
+		auto lastCoord = Point2D::Empty;
+		const int checkLength = (pThis->LocomotionFacing.IsRotating() || !pFoot->Destination)
+			? Unsorted::LeptonsPerCell
 			: Math::min((Unsorted::LeptonsPerCell * 5), pFoot->DistanceFrom(pFoot->Destination)); // Predict the distance of 5 cells ahead
-		const auto angle = -pThis->LocomotionFacing.Current().GetRadian<65536>();
-		const auto checkCoord = Point2D { static_cast<int>(checkLength * cos(angle) + 0.5), static_cast<int>(checkLength * sin(angle) + 0.5) };
-		const auto largeStep = Math::max(abs(checkCoord.X), abs(checkCoord.Y));
-		const auto checkSteps = (largeStep > Unsorted::LeptonsPerCell) ? (largeStep / Unsorted::LeptonsPerCell + 1) : 1;
+		const double angle = -pThis->LocomotionFacing.Current().GetRadian<65536>();
+		const auto checkCoord = Point2D { static_cast<int>(checkLength * Math::cos(angle) + 0.5), static_cast<int>(checkLength * Math::sin(angle) + 0.5) };
+		const int largeStep = Math::max(std::abs(checkCoord.X), std::abs(checkCoord.Y));
+		const int checkSteps = (largeStep > Unsorted::LeptonsPerCell) ? (largeStep / Unsorted::LeptonsPerCell + 1) : 1;
 		const auto stepCoord = Point2D { (checkCoord.X / checkSteps), (checkCoord.Y / checkSteps) };
 
-		// Check forward
-		auto lastCoord = curCoord;
-		curCoord += stepCoord;
-		pCurCell = MapClass::Instance->GetCellAt(CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) });
-		auto newHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X, curCoord.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
-
-		if (newHeight > maxHeight)
-			maxHeight = newHeight;
-
-		// "Anti-Aliasing"
-		if ((curCoord.X >> 8) != (lastCoord.X >> 8) && (curCoord.Y >> 8) != (lastCoord.Y >> 8))
-		{
-			bool lastX = (abs(stepCoord.X) > abs(stepCoord.Y))
-				? (((curCoord.Y - ((stepCoord.X > 0)
-					? (curCoord.X & 0XFF)
-					: ((curCoord.X & 0XFF) - Unsorted::LeptonsPerCell))
-				* checkCoord.Y / checkCoord.X) >> 8) == (curCoord.Y >> 8))
-				: (((curCoord.X - ((stepCoord.Y > 0)
-					? (curCoord.Y & 0XFF)
-					: ((curCoord.Y & 0XFF) - Unsorted::LeptonsPerCell))
-				* checkCoord.X / checkCoord.Y) >> 8) != (curCoord.X >> 8));
-
-			if (const auto pCheckCell = MapClass::Instance->TryGetCellAt(lastX
-				? CellStruct { static_cast<short>(lastCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) }
-				: CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(lastCoord.Y >> 8) }))
+		auto getSideHeight = [](const CellClass* const pCell) -> int
 			{
-				const auto checkHeight = (pCheckCell->Level * Unsorted::LevelHeight) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCheckCell);
-
-				if (checkHeight > maxHeight)
-					maxHeight = checkHeight;
-			}
-		}
-
-		// The forward cell is not so high, keep moving
-		if ((pLocation->Z - maxHeight) >= pFoot->GetTechnoType()->JumpjetHeight)
-			JumpjetRushHelpers::Skip = true;
-
-		// Check further
-		for (int i = 1; i < checkSteps; ++i)
-		{
-			lastCoord = curCoord;
-			curCoord += stepCoord;
-			pCurCell = MapClass::Instance->TryGetCellAt(CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) });
-
-			if (!pCurCell)
-				return maxHeight;
-
-			newHeight = pCurCell->GetFloorHeight(Point2D { curCoord.X, curCoord.Y }) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCurCell);
-
-			if (newHeight > maxHeight)
-				maxHeight = newHeight;
-
-			// "Anti-Aliasing"
-			if ((curCoord.X >> 8) != (lastCoord.X >> 8) && (curCoord.Y >> 8) != (lastCoord.Y >> 8))
+				return (pCell->Level * Unsorted::LevelHeight) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCell);
+			};
+		auto getAntiAliasingCell = [&stepCoord, &checkCoord](const Point2D& curCoord, const Point2D& lastCoord) -> CellClass*
 			{
-				bool lastX = (abs(stepCoord.X) > abs(stepCoord.Y))
-					? (((curCoord.Y - ((stepCoord.X > 0)
-						? (curCoord.X & 0XFF)
-						: ((curCoord.X & 0XFF) - Unsorted::LeptonsPerCell))
-					* checkCoord.Y / checkCoord.X) >> 8) == (curCoord.Y >> 8))
-					: (((curCoord.X - ((stepCoord.Y > 0)
-						? (curCoord.Y & 0XFF)
-						: ((curCoord.Y & 0XFF) - Unsorted::LeptonsPerCell))
-					* checkCoord.X / checkCoord.Y) >> 8) != (curCoord.X >> 8));
+				// Check if it is a diagonal relationship
+				if ((curCoord.X >> shift) == (lastCoord.X >> shift) || (curCoord.Y >> shift) == (lastCoord.Y >> shift))
+					return nullptr;
 
-				if (const auto pCheckCell = MapClass::Instance->TryGetCellAt(lastX
-					? CellStruct { static_cast<short>(lastCoord.X >> 8), static_cast<short>(curCoord.Y >> 8) }
-					: CellStruct { static_cast<short>(curCoord.X >> 8), static_cast<short>(lastCoord.Y >> 8) }))
+				constexpr int mask = 0xFF; // & mask -> % Unsorted::LeptonsPerCell
+				bool lastX = false;
+
+				// Calculate the bias of the previous cell
+				if (std::abs(stepCoord.X) > std::abs(stepCoord.Y))
 				{
-					const auto checkHeight = (pCheckCell->Level * Unsorted::LevelHeight) + JumpjetRushHelpers::GetJumpjetHeightWithOccupyTechno(pCheckCell);
-
-					if (checkHeight > maxHeight)
-						maxHeight = checkHeight;
+					const int offsetX = curCoord.X & mask;
+					const int deltaX = (stepCoord.X > 0) ? deltaX : (deltaX - Unsorted::LeptonsPerCell);
+					const int projectedY = curCoord.Y - deltaX * checkCoord.Y / checkCoord.X;
+					lastX = (projectedY ^ curCoord.Y) >> shift == 0;
 				}
-			}
+				else
+				{
+					const int offsetY = curCoord.Y & mask;
+					const int deltaY = (stepCoord.Y > 0) ? offsetY : (offsetY - Unsorted::LeptonsPerCell);
+					const int projectedX = curCoord.X - deltaY * checkCoord.X / checkCoord.Y;
+					lastX = (projectedX ^ curCoord.X) >> shift != 0;
+				}
+
+				// Get cell
+				return MapClass::Instance.TryGetCellAt(lastX
+					? CellStruct { static_cast<short>(lastCoord.X >> shift), static_cast<short>(curCoord.Y >> shift) }
+					: CellStruct { static_cast<short>(curCoord.X >> shift), static_cast<short>(lastCoord.Y >> shift) });
+			};
+		auto checkStepHeight = [&maxHeight, &curCoord, &lastCoord, &pCurCell, &stepCoord,
+			&getJumpjetHeight, &getAntiAliasingCell, &getSideHeight]() -> bool
+			{
+				// Check forward
+				lastCoord = curCoord;
+				curCoord += stepCoord;
+				pCurCell = MapClass::Instance.TryGetCellAt(point2Cell(curCoord));
+
+				if (!pCurCell)
+					return false;
+
+				maxHeight = Math::max(maxHeight, getJumpjetHeight(pCurCell, curCoord));
+
+				// "Anti-Aliasing"
+				if (const auto pCheckCell = getAntiAliasingCell(curCoord, lastCoord))
+					maxHeight = Math::max(maxHeight, getSideHeight(pCheckCell));
+
+				return true;
+			};
+
+		// Predict height
+		if (checkStepHeight())
+		{
+			// The forward cell is not so high, keep moving
+			if ((pLocation->Z - maxHeight) >= pFoot->GetTechnoType()->JumpjetHeight)
+				JumpjetRushHelpers::Skip = true;
+
+			// Check further
+			for (int i = 1; i < checkSteps && checkStepHeight(); ++i);
 		}
 	}
 
