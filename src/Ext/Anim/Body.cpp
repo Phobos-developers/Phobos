@@ -70,7 +70,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 {
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pAnim->Type);
 	bool makeInf = pAnim->Type->MakeInfantry > -1;
-	bool createUnit = pTypeExt->CreateUnit.Get();
+	bool createUnit = pTypeExt->CreateUnitType != nullptr;
 	auto ownerKind = OwnerHouseKind::Default;
 	HouseClass* pDefaultOwner = nullptr;
 
@@ -83,7 +83,7 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 		ownerKind = pTypeExt->MakeInfantryOwner;
 
 	if (createUnit)
-		ownerKind = pTypeExt->CreateUnit_Owner;
+		ownerKind = pTypeExt->CreateUnitType->Owner;
 
 	auto newOwner = HouseExt::GetHouseKind(ownerKind, true, pDefaultOwner, pInvoker, pVictim);
 
@@ -96,10 +96,10 @@ bool AnimExt::SetAnimOwnerHouseKind(AnimClass* pAnim, HouseClass* pInvoker, Hous
 			isRemappable = true;
 
 		if (createUnit)
-			isRemappable = pTypeExt->CreateUnit_RemapAnim;
+			isRemappable = pTypeExt->CreateUnitType->RemapAnim;
 
 		if (isRemappable && !newOwner->Defeated)
-			pAnim->LightConvert = ColorScheme::Array->Items[newOwner->ColorSchemeIndex]->LightConvert;
+			pAnim->LightConvert = ColorScheme::Array[newOwner->ColorSchemeIndex]->LightConvert;
 	}
 
 	return newOwner;
@@ -124,7 +124,7 @@ HouseClass* AnimExt::GetOwnerHouse(AnimClass* pAnim, HouseClass* pDefaultOwner)
 void AnimExt::VeinAttackAI(AnimClass* pAnim)
 {
 	CellStruct pCoordinates = pAnim->GetMapCoords();
-	CellClass* pCell = MapClass::Instance->GetCellAt(pCoordinates);
+	CellClass* pCell = MapClass::Instance.GetCellAt(pCoordinates);
 	ObjectClass* pOccupier = pCell->FirstObject;
 	constexpr unsigned char fullyFlownWeedStart = 0x30; // Weeds starting from this overlay frame are fully grown
 	constexpr unsigned int weedOverlayIndex = 126;
@@ -141,7 +141,7 @@ void AnimExt::VeinAttackAI(AnimClass* pAnim)
 		{
 			ObjectClass* pNext = pOccupier->NextObject;
 			int damage = RulesClass::Instance->VeinDamage;
-			TechnoClass* pTechno = abstract_cast<TechnoClass*>(pOccupier);
+			TechnoClass* pTechno = abstract_cast<TechnoClass*, true>(pOccupier);
 
 			if (pTechno && !pTechno->GetTechnoType()->ImmuneToVeins && !pTechno->HasAbility(Ability::VeinProof)
 				&& pTechno->Health > 0 && pTechno->IsAlive && pTechno->GetHeight() <= 5)
@@ -187,7 +187,7 @@ void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool res
 		rate = ScenarioClass::Instance->Random.RandomRanged(pNewType->RandomRate.Min, pNewType->RandomRate.Max);
 
 	if (pNewType->Normalized)
-		rate = GameOptionsClass::Instance->GetAnimSpeed(rate);
+		rate = GameOptionsClass::Instance.GetAnimSpeed(rate);
 
 	pAnim->Animation.Start(rate, pNewType->Reverse ? -1 : 1);
 
@@ -285,7 +285,7 @@ void AnimExt::SpawnFireAnims(AnimClass* pThis)
 
 			auto const loopCount = ScenarioClass::Instance->Random.RandomRanged(1, 2);
 			auto const pAnim = GameCreate<AnimClass>(pType, newCoords, 0, loopCount, 0x600u, 0, false);
-			pAnim->Owner = pThis->Owner;
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pThis->Owner, nullptr, false, true);
 			auto const pExtNew = AnimExt::ExtMap.Find(pAnim);
 			pExtNew->SetInvoker(pExt->Invoker, pExt->InvokerHouse);
 
@@ -370,7 +370,7 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 
 	auto const pAnim = GameCreate<AnimClass>(pAnimType, coords);
 
-	if (!pAnim || !pTechno)
+	if (!pTechno)
 		return;
 
 	AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse ? pHouse : pTechno->Owner, nullptr, false, true);
@@ -381,9 +381,6 @@ void AnimExt::CreateRandomAnim(const std::vector<AnimTypeClass*>& AnimList, Coor
 	if (invoker)
 	{
 		auto const pAnimExt = AnimExt::ExtMap.Find(pAnim);
-
-		if (!pAnimExt)
-			return;
 
 		if (pHouse)
 			pAnimExt->SetInvoker(pTechno, pHouse);
@@ -408,6 +405,9 @@ void AnimExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttachedSystem)
 		.Process(this->ParentBuilding)
 		.Process(this->IsTechnoTrailerAnim)
+		.Process(this->DelayedFireRemoveOnNoDelay)
+		.Process(this->IsAttachedEffectAnim)
+		.Process(this->IsShieldIdleAnim)
 		;
 }
 
@@ -435,15 +435,12 @@ void AnimExt::ExtData::InitializeConstants()
 
 void AnimExt::InvalidateTechnoPointers(TechnoClass* pTechno)
 {
-	for (auto const& pAnim : *AnimClass::Array)
+	for (auto const& pAnim : AnimClass::Array)
 	{
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
 		if (!pExt)
-		{
-			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
-			Debug::FatalErrorAndExit(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
-		}
+			continue; // Skip animation, chances are it is a null type anim in process of being removed.
 
 		if (pExt->Invoker == pTechno)
 			pExt->Invoker = nullptr;
@@ -460,10 +457,7 @@ void AnimExt::InvalidateParticleSystemPointers(ParticleSystemClass* pParticleSys
 		auto const pExt = AnimExt::ExtMap.Find(pAnim);
 
 		if (!pExt)
-		{
-			auto const ID = pAnim->Type ? pAnim->Type->get_ID() : "N/A";
-			Debug::FatalErrorAndExit(__FUNCTION__": Animation of type[%s] has no ExtData!", ID);
-		}
+			continue; // Skip animation, chances are it is a null type anim in process of being removed.
 
 		if (pExt->AttachedSystem == pParticleSystem)
 		{

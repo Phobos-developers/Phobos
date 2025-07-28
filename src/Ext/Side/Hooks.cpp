@@ -7,14 +7,14 @@ DEFINE_HOOK_AGAIN(0x4FCB7D, HouseClass_WinLoseTheme, 0x5)  // HouseClass::Flag_T
 DEFINE_HOOK(0x4FCD66, HouseClass_WinLoseTheme, 0x5)        // HouseClass::Flag_To_Lose
 {
 	HouseClass* pThis = HouseClass::CurrentPlayer;
-	SideClass* pSide = SideClass::Array->GetItemOrDefault(pThis->SideIndex);
+	SideClass* pSide = SideClass::Array.GetItemOrDefault(pThis->SideIndex);
 	auto pSideExt = SideExt::ExtMap.Find(pSide);
 
 	if (pSideExt)
 	{
 		int themeIndex = (pThis->IsWinner) ? pSideExt->IngameScore_WinTheme : pSideExt->IngameScore_LoseTheme;
 		if (themeIndex >= 0)
-			ThemeClass::Instance->Play(themeIndex);
+			ThemeClass::Instance.Play(themeIndex);
 	}
 
 	return 0;

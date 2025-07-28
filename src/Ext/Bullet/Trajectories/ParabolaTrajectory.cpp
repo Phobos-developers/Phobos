@@ -134,7 +134,7 @@ void ParabolaTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 	// Special case: Set the target to the ground
 	if (pType->DetonationDistance.Get() <= -1e-10 && pTarget)
 	{
-		if (const auto pCell = MapClass::Instance->TryGetCellAt(pTarget->GetCoords()))
+		if (const auto pCell = MapClass::Instance.TryGetCellAt(pTarget->GetCoords()))
 		{
 			pBullet->Target = pCell;
 			pBullet->TargetCoords = pCell->GetCoords();
@@ -169,7 +169,7 @@ bool ParabolaTrajectory::OnAI(BulletClass* pBullet)
 	if (this->BulletDetonatePreCheck(pBullet))
 		return true;
 
-	const auto pCell = MapClass::Instance->TryGetCellAt(pBullet->Location);
+	const auto pCell = MapClass::Instance.TryGetCellAt(pBullet->Location);
 	const auto bounce = this->ShouldBounce;
 
 	if (!pCell || (bounce && this->CalculateBulletVelocityAfterBounce(pBullet, pCell)))
@@ -198,7 +198,7 @@ void ParabolaTrajectory::OnAIPreDetonate(BulletClass* pBullet)
 	}
 
 	// If the speed is too fast, it may smash through the floor
-	const auto cellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location);
+	const auto cellHeight = MapClass::Instance.GetCellFloorHeight(pBullet->Location);
 
 	if (pBullet->Location.Z < cellHeight)
 		pBullet->SetLocation(CoordStruct{ pBullet->Location.X, pBullet->Location.Y, cellHeight });
@@ -971,7 +971,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(BulletClass* pBullet, C
 
 	const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
 	const auto bulletHeight = pBullet->Location.Z;
-	const auto lastCellHeight = MapClass::Instance->GetCellFloorHeight(pBullet->Location - velocityCoords);
+	const auto lastCellHeight = MapClass::Instance.GetCellFloorHeight(pBullet->Location - velocityCoords);
 
 	// Check if it has hit a cliff (384 -> (4 * Unsorted::LevelHeight - 32(error range)))
 	if (bulletHeight < cellHeight && (cellHeight - lastCellHeight) > 384)
@@ -1026,7 +1026,7 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(BulletClass* pBullet, C
 
 bool ParabolaTrajectory::CheckBulletHitCliff(short X, short Y, int bulletHeight, int lastCellHeight)
 {
-	if (const auto pCell = MapClass::Instance->TryGetCellAt(CellStruct{ X, Y }))
+	if (const auto pCell = MapClass::Instance.TryGetCellAt(CellStruct{ X, Y }))
 	{
 		const auto cellHeight = pCell->Level * Unsorted::LevelHeight;
 
@@ -1091,7 +1091,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 		for (size_t i = 1; i <= largePace; ++i)
 		{
 			// Below ground level?
-			const auto cellHeight = MapClass::Instance->GetCellFloorHeight(curCoord);
+			const auto cellHeight = MapClass::Instance.GetCellFloorHeight(curCoord);
 
 			if (curCoord.Z < cellHeight)
 			{
@@ -1104,7 +1104,7 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 			}
 
 			// Impact on the wall?
-			if (pBullet->Type->SubjectToWalls && pCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array->GetItem(pCell->OverlayTypeIndex)->Wall)
+			if (pBullet->Type->SubjectToWalls && pCell->OverlayTypeIndex != -1 && OverlayTypeClass::Array.GetItem(pCell->OverlayTypeIndex)->Wall)
 			{
 				pBullet->Velocity *= static_cast<double>(i) / largePace;
 				this->ShouldDetonate = true;
@@ -1112,12 +1112,12 @@ bool ParabolaTrajectory::BulletDetonateLastCheck(BulletClass* pBullet, CellClass
 			}
 
 			curCoord += stepCoord;
-			pCell = MapClass::Instance->GetCellAt(curCoord);
+			pCell = MapClass::Instance.GetCellAt(curCoord);
 		}
 	}
 	else
 	{
-		const auto cellHeight = MapClass::Instance->GetCellFloorHeight(futureCoords);
+		const auto cellHeight = MapClass::Instance.GetCellFloorHeight(futureCoords);
 
 		if (cellHeight < futureCoords.Z)
 			return false;

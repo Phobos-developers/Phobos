@@ -19,6 +19,14 @@ enum class PhobosTriggerAction : unsigned int
 	RunSuperWeaponAtLocation = 505,
 	RunSuperWeaponAtWaypoint = 506,
 	ToggleMCVRedeploy = 510,
+
+	EditAngerNode = 606,
+	ClearAngerNode = 607,
+	SetForceEnemy = 608,
+
+	CreateBannerLocal = 800, // any banner w/ local variable
+	CreateBannerGlobal = 801, // any banner w/ global variable
+	DeleteBanner = 802,
 };
 
 class TActionExt
@@ -63,6 +71,14 @@ public:
 	ACTION_FUNC(RunSuperWeaponAtLocation);
 	ACTION_FUNC(RunSuperWeaponAtWaypoint);
 	ACTION_FUNC(ToggleMCVRedeploy);
+
+	ACTION_FUNC(EditAngerNode);
+	ACTION_FUNC(ClearAngerNode);
+	ACTION_FUNC(SetForceEnemy);
+
+	ACTION_FUNC(CreateBannerLocal);
+	ACTION_FUNC(CreateBannerGlobal);
+	ACTION_FUNC(DeleteBanner);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

@@ -13,10 +13,10 @@ void VoxelAnimExt::InitializeLaserTrails(VoxelAnimClass* pThis)
 	if (pThisExt->LaserTrails.size())
 		return;
 
+	pThisExt->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
+
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)
-	{
-		pThisExt->LaserTrails.emplace_back(LaserTrailTypeClass::Array[idxTrail].get(), pThis->OwnerHouse);
-	}
+		pThisExt->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(LaserTrailTypeClass::Array[idxTrail].get(), pThis->OwnerHouse));
 }
 
 void VoxelAnimExt::ExtData::Initialize() { }
@@ -27,7 +27,8 @@ template <typename T>
 void VoxelAnimExt::ExtData::Serialize(T& Stm)
 {
 	Stm
-		.Process(LaserTrails)
+		.Process(this->LaserTrails)
+		.Process(this->TrailerSpawnTimer)
 		;
 }
 
