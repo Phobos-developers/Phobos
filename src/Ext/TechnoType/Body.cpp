@@ -18,11 +18,6 @@
 TechnoTypeExt::ExtContainer TechnoTypeExt::ExtMap;
 bool TechnoTypeExt::SelectWeaponMutex = false;
 
-void TechnoTypeExt::ExtData::Initialize()
-{
-	this->ShieldType = ShieldTypeClass::FindOrAllocate(NONE_STR);
-}
-
 void TechnoTypeExt::ExtData::ApplyTurretOffset(Matrix3D* mtx, double factor)
 {
 	// Does not verify if the offset actually has all values parsed as it makes no difference, it will be 0 for the unparsed ones either way.
@@ -763,6 +758,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CrushForwardTiltPerFrame.Read(exINI, pSection, "CrushForwardTiltPerFrame");
 	this->CrushOverlayExtraForwardTilt.Read(exINI, pSection, "CrushOverlayExtraForwardTilt");
 	this->CrushSlowdownMultiplier.Read(exINI, pSection, "CrushSlowdownMultiplier");
+	this->SkipCrushSlowdown.Read(exINI, pSection, "SkipCrushSlowdown");
 
 	this->DigitalDisplay_Disable.Read(exINI, pSection, "DigitalDisplay.Disable");
 	this->DigitalDisplayTypes.Read(exINI, pSection, "DigitalDisplayTypes");
@@ -830,6 +826,15 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Wake.Read(exINI, pSection, "Wake");
 	this->Wake_Grapple.Read(exINI, pSection, "Wake.Grapple");
 	this->Wake_Sinking.Read(exINI, pSection, "Wake.Sinking");
+
+	this->AINormalTargetingDelay.Read(exINI, pSection, "AINormalTargetingDelay");
+	this->PlayerNormalTargetingDelay.Read(exINI, pSection, "PlayerNormalTargetingDelay");
+	this->AIGuardAreaTargetingDelay.Read(exINI, pSection, "AIGuardAreaTargetingDelay");
+	this->PlayerGuardAreaTargetingDelay.Read(exINI, pSection, "PlayerGuardAreaTargetingDelay");
+	this->AIAttackMoveTargetingDelay.Read(exINI, pSection, "AIAttackMoveTargetingDelay");
+	this->PlayerAttackMoveTargetingDelay.Read(exINI, pSection, "PlayerAttackMoveTargetingDelay");
+	this->DistributeTargetingFrame.Read(exINI, pSection, "DistributeTargetingFrame");
+
 	this->BunkerableAnyway.Read(exINI, pSection, "BunkerableAnyway");
 
 	this->DigitalDisplay_Health_FakeAtDisguise.Read(exINI, pSection, "DigitalDisplay.Health.FakeAtDisguise");
@@ -1364,6 +1369,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->CrushForwardTiltPerFrame)
 		.Process(this->CrushOverlayExtraForwardTilt)
 		.Process(this->CrushSlowdownMultiplier)
+		.Process(this->SkipCrushSlowdown)
 
 		.Process(this->DigitalDisplay_Disable)
 		.Process(this->DigitalDisplayTypes)
@@ -1437,6 +1443,14 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Wake)
 		.Process(this->Wake_Grapple)
 		.Process(this->Wake_Sinking)
+
+		.Process(this->AINormalTargetingDelay)
+		.Process(this->PlayerNormalTargetingDelay)
+		.Process(this->AIGuardAreaTargetingDelay)
+		.Process(this->PlayerGuardAreaTargetingDelay)
+		.Process(this->AIAttackMoveTargetingDelay)
+		.Process(this->PlayerAttackMoveTargetingDelay)
+		.Process(this->DistributeTargetingFrame)
 
 		.Process(this->DigitalDisplay_Health_FakeAtDisguise)
 

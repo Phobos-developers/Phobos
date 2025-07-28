@@ -1,18 +1,18 @@
 #pragma once
-#include <ControlClass.h>
+#include <GadgetClass.h>
 
-class ToggleSWButtonClass : public ControlClass
+class ToggleSWButtonClass : public GadgetClass
 {
 public:
 	ToggleSWButtonClass() = default;
-	ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height);
+	ToggleSWButtonClass(int x, int y, int width, int height);
 
 	~ToggleSWButtonClass() = default;
 
 	virtual bool Draw(bool forced) override;
 	virtual void OnMouseEnter() override;
 	virtual void OnMouseLeave() override;
-	virtual bool Action(GadgetFlag fags, DWORD* pKey, KeyModifier modifier) override;
+	virtual bool Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier) override;
 
 	void UpdatePosition();
 

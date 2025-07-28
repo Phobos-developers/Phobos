@@ -123,7 +123,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
-- Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
+- Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fix a glitch related to incorrect target setting for missiles.
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
@@ -160,6 +160,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Animations with `MakeInfantry` and `UseNormalLight=false` that are drawn in unit palette will now have cell lighting changes applied on them.
 - Removed 0 damage effect on jumpjet infantries from `InfDeath=9` warhead.
 - Fixed Nuke & Dominator Level lighting not applying to AircraftTypes.
+- Skip target scanning function calling for unarmed technos.
 - Projectiles created from `AirburstWeapon` now remember the WeaponType and can apply radiation etc.
 - Fixed damaged aircraft not repairing on `UnitReload=true` docks unless they land on the dock first.
 - Certain global tileset indices (`ShorePieces`, `WaterSet`, `CliffSet`, `WaterCliffs`, `WaterBridge`, `BridgeSet` and `WoodBridgeSet`) can now be toggled to be parsed for lunar theater by setting `[General] -> ApplyLunarFixes` to true in `lunarmd.ini`. Do note that enabling this without fixing f.ex `WoodBridgeTileSet` pointing to a tileset with `TilesInSet=0` will cause issues in-game.
@@ -219,7 +220,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
-- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
+- Fixed an issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
@@ -231,13 +232,27 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
-- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
 - Fixed an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes.
 - Fixed an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP.
-- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically.
+- Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically. This behaviour can be turned off by setting `Vertical.AircraftFix=false` on the projectile.
+- Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt).
+- Player-controlled spies are not forced to perform other tasks while attacking buildings.
+- If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
+- Fixed an unusual use of DeployFireWeapon for InfantryType.
+- Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead.
+- Fixed the bug that vehicle owned by computer will scatter when cloaking.
+- Fixed the bug that submarine always turn left after changed owner by map event.
+- Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
+- Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants.
+- Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead.
+- Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge.
+- Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
+- Fixed the bug that hover vehicle will sink if destroyed on bridge.
+- Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 
 ## Fixes / interactions with other extensions
 
@@ -256,8 +271,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
-- Fixed the issue where some units crashed after the deployment transformation.
+- Fixed an issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
+- Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving.
 
 ## Aircraft
 
@@ -353,12 +369,15 @@ Damage.ApplyFirepowerMult=false ; boolean
 
 ### Attached animation position customization
 
-- You can now customize whether or not animations attached to objects are centered at the object's actual center rather than the bottom of their top-leftmost cell (cell #0).
+- You can now customize position of attached animations via different values for `AttachedAnimPosition`.
+    - `default`: Animation shows up at the parent object's logical position (for buildings, this is the top-leftmost cell / cell #0).
+    - `center`: Animation shows up at the parent object's visual center.
+    - `ground`: Animation shows up at the parent object's visual center but forced to ground level. Note that the animations is still considered attached to the object and is likely to be drawn above objects that the object itself would cover unless other settings are used to compensate.
 
 In `artmd.ini`:
 ```ini
-[SOMEANIM]                       ; AnimationType
-UseCenterCoordsIfAttached=false  ; boolean
+[SOMEANIM]                   ; AnimationType
+AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
@@ -828,17 +847,17 @@ AirstrikeLineColor=         ; integer - Red,Green,Blue, default to [AudioVisual]
 
 ### Airstrike target eligibility
 
-- By default whether or not a building can be targeted by airstrikes depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`.
-- For non building situations, the default value is true.
+- By default whether or not a building can be targeted by airstrikes (`Airstrike=true` Warhead) depends on value of `CanC4`, which also affects other things. This can now be changed independently by setting `AllowAirstrike`. If not set, defaults to value of `CanC4`. For non-building targets, the default value is true.
+- `AirstrikeTargets` determines what types of targets are valid airstrike targets for this Warhead.
 - The airstrike aircraft will now aim at the target itself rather than the cell beneath its feet, therefore it is possible to properly designate air strikes against non-building targets.
 
 In `rulesmd.ini`:
 ```ini
-[SOMETECHNO]               ; TechnoType
-AllowAirstrike=            ; boolean
+[SOMETECHNO]                ; TechnoType
+AllowAirstrike=             ; boolean
 
-[SOMEWARHEAD]              ; WarheadType
-AirstrikeTargets=all       ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
+[SOMEWARHEAD]               ; WarheadType
+AirstrikeTargets=buildings  ; List of Affected Target Enumeration (none|infantry|units|buildings|all)
 ```
 
 ### Alternate FLH customizations
@@ -1062,6 +1081,9 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 
 ### Customize bridge falling down damage
 
+![image](_static/images/fallingdowndamage.gif)
+*Use different fall damage depending on whether it lands in water in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
  - `FallingDownDamage.Water` customizes the damage a unit receives when it falls onto the water. Defaults to `FallingDownDamage`.
@@ -1164,6 +1186,22 @@ ForbidParallelAIQueues.Building=no  ; boolean
 
 [SOMETECHNO]                        ; TechnoType
 ForbidParallelAIQueues=false        ; boolean
+```
+
+### Force techno targeting in distributed frames to improve performance
+
+- When you create many technos in a same frame (i.e. starting the game with a campaign map that initially has a large number of technos), they will always scan for targets in a synchronous period, causing game lag. Increasing targeting delay alone will not make things better, as their targeting is still synchronized.
+- It is now possible to force them to seek targets separately. If `DistributeTargetingFrame=true` is set, techno's targeting timer will be initiated with a random delay, ranging in \[0,15\]. This can distribute their targeting timing within 15 frames, thus alleviating the above-mentioned lag.
+  - You can use `DistributeTargetingFrame.AIOnly` to make it only work for AI (Players are not likely to have so many technos.)
+
+In `rulesmd.ini`:
+```ini
+[General]
+DistributeTargetingFrame=false         ; boolean
+DistributeTargetingFrame.AIOnly=true   ; boolean
+
+[SOMETECHNO]                           ; TechnoType
+DistributeTargetingFrame=              ; boolean
 ```
 
 ### Iron Curtain & Force Shield effects on organics customization
@@ -1349,7 +1387,35 @@ SubterraneanSpeed=-1     ; floating point value
 `SubterraneanHeight` expects negative values to be used and may behave erratically if set to above -50.
 ```
 
+### Target scanning delay optimization
+
+- In vanilla, the game used `NormalTargetingDelay` and `GuardAreaTargetingDelay` to globally control the target searching intervals. Increasing these values would make units stupid, while decreasing them would cause game lag.
+- Now, you can define them per techno, also allowing different values for AI and players. The default values are the same as those originally defined by the vanilla flags.
+  - You can also specific this delay for attack move mission. The default value is `NormalTargetingDelay`.
+
+In `rulesmd.ini`:
+```ini
+[General]
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
+AIAttackMoveTargetingDelay=          ; integer, game frames
+PlayerAttackMoveTargetingDelay=      ; integer, game frames
+
+[SOMETECHNO]                         ; TechnoType
+AINormalTargetingDelay=              ; integer, game frames
+PlayerNormalTargetingDelay=          ; integer, game frames
+AIGuardAreaTargetingDelay=           ; integer, game frames
+PlayerGuardAreaTargetingDelay=       ; integer, game frames
+AIAttackMoveTargetingDelay=          ; integer, game frames
+PlayerAttackMoveTargetingDelay=      ; integer, game frames
+```
+
 ### Voxel body multi-section shadows
+
+![image](_static/images/uh0-be.gif)
+*UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)*
 
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
   - `ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize which frame of the HVA animation for the section from `ShadowIndex` and `ShadowIndices` is used to display the shadow, respectively. -1 is special value which means currently shown frame is used, and `ShadowIndices.Frame` defaults to this.
@@ -1364,8 +1430,9 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ### Voxel light source customization
 
-![image](_static/images/VoxelLightSourceComparison.png)
-*Applying `VoxelLightSource=0.02,-0.69,0.36` (assuming `UseFixedVoxelLighting=false`) vs default lighting, Prism Tank voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">CCS_qkl</a>*
+![image](_static/images/VoxelLightSourceComparison1.png)
+![image](_static/images/VoxelLightSourceComparison2.png)
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>, (Save and unzip the second image to obtain an example file including pal & vpl.)*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
@@ -1547,6 +1614,7 @@ Skipping checks with this feature doesn't mean that vehicles and tank bunkers wi
 - `CrushForwardTiltPerFrame` determines how much the forward tilt is adjusted per frame when crushing overlays or vehicles. Defaults to -0.02 for vehicles using Ship locomotor crushing overlays, -0.050000001 for all other cases.
 - `CrushOverlayExtraForwardTilt` is additional forward tilt applied after an overlay has been crushed by the vehicle.
 - It is possible to customize the movement speed slowdown when `MovementZone=CrusherAll` vehicle crushes walls by setting `CrushSlowdownMultiplier`.
+- You can also disable the slowdown completely by using the flag `SkipCrushSlowdown`. This is not the same as `CrushSlowdownMultiplier=1.0`. Used to avoid a bug where the vehicle sometimes loses speed when `Accelerates=true` and `MovementZone=CrushAll` are set.
 
 In `rulesmd.ini`:
 ```ini
@@ -1556,6 +1624,7 @@ TiltsWhenCrushes.Overlays=         ; boolean
 CrushForwardTiltPerFrame=          ; floating point value
 CrushOverlayExtraForwardTilt=0.02  ; floating point value
 CrushSlowdownMultiplier=0.2        ; floating point value
+SkipCrushSlowdown=false            ; boolean
 ```
 
 ### Destroy animations

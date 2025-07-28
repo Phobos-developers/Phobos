@@ -258,7 +258,10 @@ DEFINE_HOOK(0x5218F3, InfantryClass_WhatWeaponShouldIUse_DeployFireWeapon, 0x6)
 	if (pType->DeployFireWeapon == -1)
 		return 0x52194E;
 
-	return pType->IsGattling && !pThis->IsDeployed() ? 0x52194E : 0;
+	if (pType->IsGattling || TechnoTypeExt::ExtMap.Find(pType)->MultiWeapon.Get())
+		return !pThis->IsDeployed() ? 0x52194E : 0x52190D;
+
+	return 0;
 }
 
 #pragma endregion
@@ -920,6 +923,9 @@ DEFINE_HOOK(0x6FB086, TechnoClass_Reload_ReloadAmount, 0x8)
 DEFINE_HOOK(0x5223B3, InfantryClass_Approach_Target_DeployFireWeapon, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
-	R->EDI(pThis->Type->DeployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : pThis->Type->DeployFireWeapon);
+
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+
+	R->EDI(deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon);
 	return 0x5223B9;
 }
