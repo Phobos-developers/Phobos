@@ -689,6 +689,16 @@ In `rulesmd.ini`:
 BuildingWaypoints=false  ; boolean
 ```
 
+### Customize palette of rubble
+
+- In vanilla, rubble overlay is hardcoded to use cell's palette. Now you can choose it.
+
+In `artmd.ini`
+```
+[SOMEBUILDING]        ; BuildingType
+RubblePalette=           ; filename - excluding .pal extension and three-character theater-specific suffix
+```
+
 ## Infantry
 
 ### Prone speed customization

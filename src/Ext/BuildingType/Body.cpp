@@ -263,6 +263,8 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// Art
 	this->IsAnimDelayedBurst.Read(exArtINI, pArtSection, "IsAnimDelayedBurst");
 	this->ZShapePointMove_OnBuildup.Read(exArtINI, pArtSection, "ZShapePointMove.OnBuildup");
+
+	this->RubblePalette.LoadFromINI(pArtINI, pArtSection, "RubblePalette");
 }
 
 void BuildingTypeExt::ExtData::CompleteInitialization()
@@ -336,6 +338,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BunkerWallsDownSound)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
+		.Process(this->RubblePalette)
 		;
 }
 

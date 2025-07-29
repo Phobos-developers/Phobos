@@ -97,6 +97,8 @@ public:
 
 		Valueable<bool> Refinery_UseNormalActiveAnim;
 
+		CustomPalette RubblePalette;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -158,6 +160,7 @@ public:
 			, BunkerWallsDownSound {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
+			, RubblePalette { CustomPalette::PaletteMode::Temperate }
 		{ }
 
 		// Ares 0.A functions
