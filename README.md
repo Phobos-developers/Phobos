@@ -93,7 +93,7 @@ Building manually
 Credits
 -------
 
-This project was founded by @Belonit (Gluk-v48) and @Metadorius (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers.
+This project was founded by [@Belonit](https://github.com/Belonit) (Gluk-v48) and [@Metadorius](https://github.com/Metadorius) (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers.
 
 ### Maintenance crew
 
@@ -101,36 +101,36 @@ Maintenance crew consists of experienced Phobos contributors who are recognized 
 
 Every maintenance crew member is welcome to put a donation link to their entry in the list below.
 
-- **Kerbiter (@Metadorius)** - T3 maintainer (lead)
+- **Kerbiter ([@Metadorius](https://github.com/Metadorius))** - T3 maintainer (lead)
   - [Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request
-- **@Starkku** - T2 maintainer
+- **[@Starkku](https://github.com/Starkku)** - T2 maintainer
   - [Patreon](https://www.patreon.com/Starkku)
-- **@CrimRecya (绯红热茶)** - T2 maintainer
+- **[@CrimRecya](https://github.com/CrimRecya) (绯红热茶)** - T2 maintainer
   - [Alipay](https://i2.hdslb.com/bfs/new_dyn/8de77b17b8fc2e005613821b62008e37362533219.jpg)
-- **@ZivDero** - T2 maintainer
+- **[@ZivDero](https://github.com/ZivDero)** - T2 maintainer
   - [Patreon](https://www.patreon.com/c/ZivDero)
-- **Ollerus (@Coronia)** - T1 maintainer
+- **Ollerus ([@Coronia](https://github.com/Coronia))** - T1 maintainer
   - [Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)
-- **@NetsuNegi** - T1 maintainer
+- **[@NetsuNegi](https://github.com/NetsuNegi)** - T1 maintainer
   - [Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)
-- **@TaranDahl (航味麻酱)** - T1 maintainer
+- **[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer
   - [WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)
-- **DeathFish (@DeathFishAtEase, Noble Fish)** - triage, doc maintainer
+- **Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** - triage, doc maintainer
   - [Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)
-- **FlyStar (@Fly-Star-him)** - triage
-- **@Fryone** - triage
+- **FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage
+- **[@Fryone](https://github.com/Fryone)** - triage
 
 #### Inactive
 
 *Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*
 
-- **Gluk-v48 (@Belonit)** - lead in the past
-- **Uranusian (@Thrifinesma)** - T2 maintainer, CN community ambassador, doc maintainer
-- **@secsome** - maintainer
-- **@Otamaa (Fahroni, BoredEXE)** - maintainer
-- **@FS-21** - inactive as a maintainer specifically
-- **Morton (@MortonPL)** - T2 maintainer
-- **Trsdy (@chaserli)** - T2 maintainer
+- **Gluk-v48 ([@Belonit](https://github.com/Belonit))** - lead in the past
+- **Uranusian ([@Thrifinesma](https://github.com/Thrifinesma))** - T2 maintainer, CN community ambassador, doc maintainer
+- **[@secsome](https://github.com/secsome)** - maintainer
+- **[@Otamaa](https://github.com/Otamaa) (Fahroni, BoredEXE)** - maintainer
+- **[@FS-21](https://github.com/FS-21)** - inactive as a maintainer specifically
+- **Morton ([@MortonPL](https://github.com/FS-21))** - T2 maintainer
+- **Trsdy ([@chaserli](https://github.com/chaserli))** - T2 maintainer
 
 The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!
 
