@@ -32,7 +32,7 @@ public:
 	static const wchar_t* VersionDescription;
 	static bool DisplayDamageNumbers;
 	static bool IsLoadingSaveGame;
-	static bool ShouldQuickSave;
+	static bool ShouldSave;
 	static std::wstring CustomGameSaveDescription;
 	static void PassiveSaveGame();
 #ifdef DEBUG

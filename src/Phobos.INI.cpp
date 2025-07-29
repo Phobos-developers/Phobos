@@ -279,7 +279,7 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 }
 
 
-bool Phobos::ShouldQuickSave = false;
+bool Phobos::ShouldSave = false;
 std::wstring Phobos::CustomGameSaveDescription {};
 
 void Phobos::PassiveSaveGame()
@@ -290,18 +290,34 @@ void Phobos::PassiveSaveGame()
 			pMessage,
 			RulesClass::Instance->MessageDelay,
 			HouseClass::CurrentPlayer->ColorSchemeIndex,
-			true
+			/* bSilent: */ true
 		);
+
+		// Force a redraw so that our message gets printed.
+		if (Game::SpecialDialog == 0)
+		{
+			MapClass::Instance.MarkNeedsRedraw(2);
+			MapClass::Instance.Render();
+		}
 	};
 
 	PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
 	char fName[0x80];
 
-	SYSTEMTIME time;
-	GetLocalTime(&time);
+	if (SessionClass::IsSingleplayer())
+	{
+		SYSTEMTIME time;
+		GetLocalTime(&time);
 
-	_snprintf_s(fName, 0x7F, "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-		time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+		_snprintf_s(fName, sizeof(fName), "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
+			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
+	}
+	else if (SessionClass::IsMultiplayer())
+	{
+		// Support for this is in the YRpp Spawner, be sure to read the respective comments
+
+		_snprintf_s(fName, sizeof(fName), GameStrings::SAVEGAME_NET);
+	}
 
 	if (ScenarioClass::SaveGame(fName, Phobos::CustomGameSaveDescription.c_str()))
 		PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
@@ -318,10 +334,10 @@ DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
 	if (SessionClass::IsSingleplayer() && !scenario_saved)
 	{
 		scenario_saved = true;
-		if (Phobos::ShouldQuickSave)
+		if (Phobos::ShouldSave)
 		{
 			Phobos::PassiveSaveGame();
-			Phobos::ShouldQuickSave = false;
+			Phobos::ShouldSave = false;
 			Phobos::CustomGameSaveDescription.clear();
 		}
 		else if (Phobos::Config::SaveGameOnScenarioStart && SessionClass::IsCampaign())

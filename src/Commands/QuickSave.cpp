@@ -3,7 +3,9 @@
 #include <ScenarioClass.h>
 #include <HouseClass.h>
 #include <SessionClass.h>
+#include <EventClass.h>
 #include <Utilities/GeneralUtils.h>
+#include <Utilities/SpawnerHelper.h>
 
 const char* QuickSaveCommandClass::GetName() const
 {
@@ -22,7 +24,7 @@ const wchar_t* QuickSaveCommandClass::GetUICategory() const
 
 const wchar_t* QuickSaveCommandClass::GetUIDescription() const
 {
-	return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game (Singleplayer only).");
+	return GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_DESC", L"Save the current game.");
 }
 
 void QuickSaveCommandClass::Execute(WWKey eInput) const
@@ -40,7 +42,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 	if (SessionClass::IsSingleplayer())
 	{
 		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldQuickSave = true;
+		Phobos::ShouldSave = true;
 
 		if (SessionClass::IsCampaign())
 			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
@@ -48,6 +50,12 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
 		Phobos::CustomGameSaveDescription += L" - ";
 		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");
+	}
+	else if (SpawnerHelper::SaveGameEventHooked())
+	{
+		// Relinquish handling of the save game to spawner
+		EventClass event { HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame };
+		EventClass::AddEvent(event);
 	}
 	else
 	{

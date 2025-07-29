@@ -200,6 +200,7 @@
     <ClCompile Include="src\Phobos.INI.cpp" />
     <ClCompile Include="src\Phobos.cpp" />
     <ClCompile Include="src\Utilities\ShapeTextPrinter.cpp" />
+    <ClCompile Include="src\Utilities\SpawnerHelper.cpp" />
     <ClCompile Include="src\Utilities\Stream.cpp" />
     <ClCompile Include="src\Utilities\Constructs.cpp" />
     <ClCompile Include="src\Utilities\EnumFunctions.cpp" />
@@ -293,6 +294,7 @@
     <ClInclude Include="src\Utilities\Savegame.h" />
     <ClInclude Include="src\Utilities\SavegameDef.h" />
     <ClInclude Include="src\Utilities\ShapeTextPrinter.h" />
+    <ClInclude Include="src\Utilities\SpawnerHelper.h" />
     <ClInclude Include="src\Utilities\Stream.h" />
     <ClInclude Include="src\Utilities\Swizzle.h" />
     <ClInclude Include="src\Phobos.COM.h" />
