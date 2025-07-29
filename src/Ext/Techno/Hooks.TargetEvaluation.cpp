@@ -3,6 +3,85 @@
 #include <Ext/WeaponType/Body.h>
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
+
+DEFINE_HOOK(0x417F63, AircraftClass_WhatAction_Immune_FakeEngineer, 0x5)
+{
+	enum { ForceNewValue = 0x417F68 };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(BuildingClass* const, pTarget, EDI);
+
+	//auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	if (!pTarget->Type->BridgeRepairHut && !pTarget->Type->Capturable && !pTarget->Type->NeedsEngineer)
+		return 0;
+
+	int nWeaponIndex = pThis->SelectWeapon(pTarget);
+
+	if (nWeaponIndex < 0)
+		return 0;
+
+	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (pTarget->Type->BridgeRepairHut)
+	{
+		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
+		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
+
+		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+		{
+			//R->EBP(Action::Attack);
+			return ForceNewValue;
+		}
+	}
+	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pTarget->Type->Capturable || pTarget->Type->NeedsEngineer))
+	{
+		//R->EBP(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x447527, BuildingClass_WhatAction_Immune_FakeEngineer, 0x5)
+{
+	enum { ForceNewValue = 0x44752C };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(AbstractClass* const, pTarget, EBP);
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	if (!pBuilding->Type->BridgeRepairHut && !pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
+		return 0;
+
+	int nWeaponIndex = pThis->SelectWeapon(pTarget);
+
+	if (nWeaponIndex < 0)
+		return 0;
+
+	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+
+	if (pBuilding->Type->BridgeRepairHut)
+	{
+		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
+		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
+
+		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+		{
+			R->EBP(Action::Attack);
+			return ForceNewValue;
+		}
+	}
+	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	{
+		R->EBP(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x51F179, InfantryClass_WhatAction_Immune_FakeEngineer, 0x5)
 {
 	enum { ForceNewValue = 0x51F17E };

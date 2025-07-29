@@ -2257,7 +2257,7 @@ While this feature can provide better performance than a large `CellSpread` valu
 
 ### Engineer logics on Warheads
 
-- Now `infantry` and `units` can execute some operations engineers do without loosing the firer like happens with engineers.
+- Now any `InfantryType`, `VehicleType`, `BuildingType` or `AircraftType` can execute some operations engineers do without loosing the firer in the process.
 - `FakeEngineer.CanRepairBridges`, if set to true, when a building with `BridgeRepairHut=yes` linked to a bridge is affected by the Warhead then all destroyed bridge sections will be fixed.
 - `FakeEngineer.CanDestroyBridges`, if set to true, when a building with `BridgeRepairHut=yes` linked to a bridge is affected by the Warhead then all the bridge will be destroyed.
 - `FakeEngineer.CanCaptureBuildings`, if set to true, a building with `Capturable=true` or `NeedsEngineer=true` is affected by the Warhead then the building will be captured by the house's firer.
