@@ -244,15 +244,15 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
 - Fixed an unusual use of DeployFireWeapon for InfantryType.
 - Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead.
-- Fix the bug that vehicle owned by computer will scatter when cloaking.
-- Fix the bug that submarine always turn left after changed owner by map event.
-- Fix the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
+- Fixed the bug that vehicle owned by computer will scatter when cloaking.
+- Fixed the bug that submarine always turn left after changed owner by map event.
+- Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
 - Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants.
 - Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead.
 - Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge.
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
-- Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
+- Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 
 ## Fixes / interactions with other extensions
 
@@ -1432,7 +1432,7 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ![image](_static/images/VoxelLightSourceComparison1.png)
 ![image](_static/images/VoxelLightSourceComparison2.png)
-*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>, (Save and unzip the second image to obtain an example file including pal & vpl.)*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
