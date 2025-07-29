@@ -15,10 +15,11 @@
 
 namespace FireAtTemp
 {
-	CoordStruct originalTargetCoords;
+	CoordStruct OriginalTargetCoords;
 	CellClass* pObstacleCell = nullptr;
 	AbstractClass* pOriginalTarget = nullptr;
 	AbstractClass* pWaveOwnerTarget = nullptr;
+	bool IgnoreTargetForWaveAmbientDamage = false;
 }
 
 // Set obstacle cell.
@@ -179,9 +180,24 @@ DEFINE_HOOK(0x75F39D, WaveClass_DamageAI_AmbientDamageWarhead, 0x6)
 
 	GET(WeaponTypeClass*, pWeapon, EBX);
 
-	R->EAX(WeaponTypeExt::ExtMap.Find(pWeapon)->AmbientDamage_Warhead.Get(pWeapon->Warhead));
+	auto const pTypeExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	FireAtTemp::IgnoreTargetForWaveAmbientDamage = pTypeExt->AmbientDamage_IgnoreTarget;
+	R->EAX(pTypeExt->AmbientDamage_Warhead.Get(pWeapon->Warhead));
 
 	return SkipGameCode;
+}
+
+DEFINE_HOOK(0x75F415, WaveClass_DamageAI_AmbientDamageIgnoreTarget, 0x6)
+{
+	enum { IgnoreTarget = 0x75F432 };
+
+	GET(WaveClass*, pThis, EBP);
+	GET(ObjectClass*, pObject, ESI);
+
+	if (FireAtTemp::IgnoreTargetForWaveAmbientDamage && pThis->Target == pObject)
+		return IgnoreTarget;
+
+	return 0;
 }
 
 // Do not adjust map coordinates for railgun or fire stream particles that are below cell coordinates.
@@ -223,7 +239,7 @@ DEFINE_HOOK(0x6FF43F, TechnoClass_FireAt_TargetSet, 0x6)
 	GET_BASE(AbstractClass*, pOriginalTarget, 0x8);
 
 	// Store original target & coords
-	FireAtTemp::originalTargetCoords = *pTargetCoords;
+	FireAtTemp::OriginalTargetCoords = *pTargetCoords;
 	FireAtTemp::pOriginalTarget = pOriginalTarget;
 
 	if (FireAtTemp::pObstacleCell)
@@ -241,12 +257,12 @@ DEFINE_HOOK(0x6FF660, TechnoClass_FireAt_ObstacleCellUnset, 0x6)
 	LEA_STACK(CoordStruct*, pTargetCoords, STACK_OFFSET(0xB0, -0x28));
 
 	// Restore original target & coords
-	*pTargetCoords = FireAtTemp::originalTargetCoords;
+	*pTargetCoords = FireAtTemp::OriginalTargetCoords;
 	R->Base(8, FireAtTemp::pOriginalTarget);
 	R->EDI(FireAtTemp::pOriginalTarget);
 
 	// Reset temp values
-	FireAtTemp::originalTargetCoords = CoordStruct::Empty;
+	FireAtTemp::OriginalTargetCoords = CoordStruct::Empty;
 	FireAtTemp::pObstacleCell = nullptr;
 	FireAtTemp::pOriginalTarget = nullptr;
 
