@@ -314,6 +314,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 			if (burstCount <= 1)
 				continue;
 		}
+
 		// Select new targets:
 		// Where to select?
 		const auto centerCoords = pType->DisperseLocation ? pBullet->Location : pBullet->TargetCoords;
