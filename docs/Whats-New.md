@@ -834,6 +834,7 @@ Fixes / interactions with other extensions:
 - Fixed an issue where some units crashed after the deployment transformation (by ststl & FlyStar)
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving (by CrimRecya)
+- Fixed quicksave command and save game trigger action to work with YRpp spawner's multiplayer saves (by Kerbiter)
 ```
 
 ### 0.3.0.1
