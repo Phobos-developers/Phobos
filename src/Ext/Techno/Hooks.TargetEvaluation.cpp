@@ -4,6 +4,8 @@
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
+#pragma region FakeEngineer
+
 DEFINE_HOOK(0x740414, UnitClass_WhatAction_Immune_FakeEngineer1, 0x5)
 {
 	enum { ForceNewValue = 0x74049F };
@@ -93,7 +95,7 @@ DEFINE_HOOK(0x51F179, InfantryClass_WhatAction_Immune_FakeEngineer, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer, 0x5)
+DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer_CanCaptureBuildings, 0x5)
 {
 	enum { ForceNewValue = 0x6FCBA6 };
 
@@ -130,6 +132,8 @@ DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer, 0x5)
 
 	return 0;
 }
+
+#pragma endregion
 
 #pragma region TargetAcquisition
 
