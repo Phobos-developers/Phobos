@@ -4,41 +4,55 @@
 
 // Cursor & target acquisition stuff not directly tied to other features can go here.
 
+DEFINE_HOOK(0x740414, UnitClass_WhatAction_Immune_FakeEngineer1, 0x5)
+{
+	enum { ForceNewValue = 0x74049F };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, false, true);
+
+	if (canBeAttacked)
+	{
+		R->EBX(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x74049A, UnitClass_WhatAction_Immune_FakeEngineer2, 0x5)
+{
+	enum { ForceNewValue = 0x74049F };
+
+	GET(TechnoClass* const, pThis, ESI);
+	GET(TechnoClass* const, pTarget, EDI);
+
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true);
+
+	if (canBeAttacked)
+	{
+		R->EBX(Action::Attack);
+		return ForceNewValue;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x417F63, AircraftClass_WhatAction_Immune_FakeEngineer, 0x5)
 {
 	enum { ForceNewValue = 0x417F68 };
 
 	GET(TechnoClass* const, pThis, ESI);
-	GET(BuildingClass* const, pTarget, EDI);
+	GET(BuildingClass* const, pBuilding, EDI);
 
-	//auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
-	if (!pTarget->Type->BridgeRepairHut && !pTarget->Type->Capturable && !pTarget->Type->NeedsEngineer)
-		return 0;
+	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true);
 
-	int nWeaponIndex = pThis->SelectWeapon(pTarget);
-
-	if (nWeaponIndex < 0)
-		return 0;
-
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-
-	if (pTarget->Type->BridgeRepairHut)
-	{
-		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
-		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
-
-		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
-		{
-			//R->EBP(Action::Attack);
-			return ForceNewValue;
-		}
-	}
-	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pTarget->Type->Capturable || pTarget->Type->NeedsEngineer))
-	{
-		//R->EBP(Action::Attack);
+	if (canBeAttacked)
 		return ForceNewValue;
-	}
 
 	return 0;
 }
@@ -48,32 +62,11 @@ DEFINE_HOOK(0x447527, BuildingClass_WhatAction_Immune_FakeEngineer, 0x5)
 	enum { ForceNewValue = 0x44752C };
 
 	GET(TechnoClass* const, pThis, ESI);
-	GET(AbstractClass* const, pTarget, EBP);
+	GET(BuildingClass* const, pBuilding, EBP);
 
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
-	if (!pBuilding->Type->BridgeRepairHut && !pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
-		return 0;
+	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true);
 
-	int nWeaponIndex = pThis->SelectWeapon(pTarget);
-
-	if (nWeaponIndex < 0)
-		return 0;
-
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-
-	if (pBuilding->Type->BridgeRepairHut)
-	{
-		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
-		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
-
-		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
-		{
-			R->EBP(Action::Attack);
-			return ForceNewValue;
-		}
-	}
-	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	if (canBeAttacked)
 	{
 		R->EBP(Action::Attack);
 		return ForceNewValue;
@@ -87,32 +80,11 @@ DEFINE_HOOK(0x51F179, InfantryClass_WhatAction_Immune_FakeEngineer, 0x5)
 	enum { ForceNewValue = 0x51F17E };
 
 	GET(TechnoClass* const, pThis, EDI);
-	GET(AbstractClass* const, pTarget, ESI);
+	GET(BuildingClass* const, pBuilding, ESI);
 
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
-	if (!pBuilding->Type->BridgeRepairHut && !pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
-		return 0;
+	bool canBeAttacked = TechnoExt::CanBeAffectedByFakeEngineer(pThis, pBuilding, true, true);
 
-	int nWeaponIndex = pThis->SelectWeapon(pTarget);
-
-	if (nWeaponIndex < 0)
-		return 0;
-
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-
-	if (pBuilding->Type->BridgeRepairHut)
-	{
-		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
-		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
-
-		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
-		{
-			R->EBP(Action::Attack);
-			return ForceNewValue;
-		}
-	}
-	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+	if (canBeAttacked)
 	{
 		R->EBP(Action::Attack);
 		return ForceNewValue;
@@ -130,7 +102,6 @@ DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer, 0x5)
 	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x10, 0x8));
 
 	auto const pTechno = abstract_cast<TechnoClass*>(pTarget);
-
 	if (!pTechno)
 		return 0;
 
@@ -154,77 +125,6 @@ DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer, 0x5)
 		else
 			R->EAX(FireError::RANGE); // Out of range
 
-		return ForceNewValue;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x740414, UnitClass_WhatAction_Immune_FakeEngineer1, 0x5)
-{
-	enum { ForceNewValue = 0x74049F };
-
-	GET(TechnoClass* const, pThis, ESI);
-	GET(TechnoClass* const, pTarget, EDI);
-
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
-
-	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0)
-		return 0;
-
-	if (!pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
-		return 0;
-
-	int nWeaponIndex = pThis->SelectWeapon(pTarget);
-	if (nWeaponIndex < 0)
-		return 0;
-
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-
-	if (pWHExt->FakeEngineer_CanCaptureBuildings)
-	{
-		R->EBX(Action::Attack);
-		return ForceNewValue;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x74049A, UnitClass_WhatAction_Immune_FakeEngineer2, 0x5)
-{
-	enum { ForceNewValue = 0x74049F };
-
-	GET(TechnoClass* const, pThis, ESI);
-	GET(TechnoClass* const, pTarget, EDI);
-	GET(int, originalValue, EBX);
-
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
-
-	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0)
-		return 0;
-
-	int nWeaponIndex = pThis->SelectWeapon(pTarget);
-	if (nWeaponIndex < 0)
-		return 0;
-
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
-
-	if (pBuilding->Type->BridgeRepairHut)
-	{
-		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pTarget->GetCenterCoords());
-		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
-
-		if (isBridgeDamaged && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
-		{
-			R->EBX(originalValue);
-			return ForceNewValue;
-		}
-	}
-	else if (pWHExt->FakeEngineer_CanCaptureBuildings && (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
-	{
-		R->EBX(Action::Attack);
 		return ForceNewValue;
 	}
 
