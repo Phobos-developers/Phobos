@@ -144,6 +144,7 @@ public:
 		Valueable<bool> RemoveInflictedLocomotor;
 
 		Valueable<AffectedTarget> Parasite_CullingTarget;
+		NullableIdx<AnimTypeClass> Parasite_GrippleAnim;
 
 		Valueable<bool> Nonprovocative;
 
@@ -336,6 +337,7 @@ public:
 			, RemoveInflictedLocomotor { false }
 
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
+			, Parasite_GrippleAnim {}
 
 			, Nonprovocative { false }
 
