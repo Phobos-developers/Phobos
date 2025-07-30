@@ -51,7 +51,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 		Phobos::CustomGameSaveDescription += L" - ";
 		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");
 	}
-	else if (SpawnerHelper::SaveGameEventHooked())
+	else if (SpawnerHelper::IsSaveGameEventHooked())
 	{
 		// Relinquish handling of the save game to spawner
 		EventClass event { HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame };

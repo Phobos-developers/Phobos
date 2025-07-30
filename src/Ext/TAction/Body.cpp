@@ -117,7 +117,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (SessionClass::IsSingleplayer() || SpawnerHelper::SaveGameEventHooked())
+	if (SessionClass::IsSingleplayer() || SpawnerHelper::IsSaveGameEventHooked())
 	{
 		*reinterpret_cast<bool*>(0xABCE08) = false;
 		Phobos::ShouldSave = true;

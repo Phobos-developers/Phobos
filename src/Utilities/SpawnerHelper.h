@@ -18,5 +18,5 @@ public:
 	//
 	// To read more about this mess and possibly engineer a better solution, look up the comments mentioning 0x4C7A14 in spawner.
 	// - Kerbiter
-	static bool SaveGameEventHooked();
+	static bool IsSaveGameEventHooked();
 };
