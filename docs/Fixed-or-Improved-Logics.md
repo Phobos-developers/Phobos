@@ -2036,7 +2036,7 @@ Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|ai
 Parasite.GrippleAnim=               ; animation
 
 [AudioVisual]
-Parasite.GrippleAnim                 ; animation
+Parasite.GrippleAnim=               ; animation
 ```
 
 ### Delay automatic attack on the controlled unit
