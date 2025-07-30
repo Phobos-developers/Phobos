@@ -210,8 +210,7 @@ bool SWButtonClass::LaunchSuper() const
 
 			if (pSuper->Type->Action == Action::None || pSWExt->SW_UseAITargeting)
 			{
-				EventClass Event = EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty);
-				EventClass::AddEvent(Event);
+				EventClass::OutList.Add(EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty));
 			}
 			else
 			{
