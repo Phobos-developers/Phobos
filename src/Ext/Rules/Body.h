@@ -245,7 +245,7 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
-		NullableIdx<AnimTypeClass> Parasite_GrippleAnim;
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
 		// cache tint color
 		int TintColorIronCurtain;
@@ -446,7 +446,7 @@ public:
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
 
-			, Parasite_GrippleAnim {}
+			, Parasite_GrappleAnim {}
 		{ }
 
 		virtual ~ExtData() = default;
