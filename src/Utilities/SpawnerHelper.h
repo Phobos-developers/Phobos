@@ -7,7 +7,7 @@
 class SpawnerHelper
 {
 private:
-	DEFINE_REFERENCE(const char, SaveGameHookStart, 0x4C7A14u);
+	DEFINE_REFERENCE(const unsigned char, SaveGameHookStart, 0x4C7A14u);
 
 public:
 	// Spawner hooks 0x4C7A14 and places an LJMP there. We check that memory address on whether it is a valid LJMP opcode
