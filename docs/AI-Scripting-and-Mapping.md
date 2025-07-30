@@ -484,7 +484,12 @@ This category is empty for now.
 
 ### `500` Save Game
 
-- Save the current game immediately (singleplayer game only).
+- Save the current game immediately.
+
+```{note}
+For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
 - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
