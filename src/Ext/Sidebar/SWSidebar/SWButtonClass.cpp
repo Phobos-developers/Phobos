@@ -8,14 +8,27 @@
 #include <Ext/SWType/Body.h>
 #include <Utilities/AresFunctions.h>
 
-SWButtonClass::SWButtonClass(unsigned int id, int superIdx, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::RightPress), false)
+SWButtonClass::SWButtonClass(int superIdx, int x, int y, int width, int height)
+	: GadgetClass(x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::RightPress), false)
 	, SuperIndex(superIdx)
 {
 	if (const auto backColumn = SWSidebarClass::Instance.Columns.back())
 		backColumn->Buttons.emplace_back(this);
 
 	this->Disabled = !SWSidebarClass::IsEnabled();
+}
+
+SWButtonClass::~SWButtonClass()
+{
+	// The vanilla game did not consider adding/deleting buttons midway through the game,
+	// so this behavior needs to be made known to the global variable and then remove it
+	auto& pCurrentMouseOverGadget = Make_Global<GadgetClass*>(0x8B3E94);
+
+	if (pCurrentMouseOverGadget == this)
+	{
+		pCurrentMouseOverGadget = nullptr;
+		this->OnMouseLeave();
+	}
 }
 
 bool SWButtonClass::Draw(bool forced)
@@ -66,8 +79,8 @@ bool SWButtonClass::Draw(bool forced)
 		pSurface->DrawRect(&cameoRect, tooltipColor);
 	}
 
-	if (pSuper->IsReady && !pCurrent->CanTransactMoney(pSWExt->Money_Amount) ||
-		(pSWExt->SW_UseAITargeting && AresFunctions::IsTargetConstraintsEligible && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pType), HouseClass::CurrentPlayer, true)))
+	if (pSuper->IsReady && !pCurrent->CanTransactMoney(pSWExt->Money_Amount)
+		|| (pSWExt->SW_UseAITargeting && AresFunctions::IsTargetConstraintsEligible && !AresFunctions::IsTargetConstraintsEligible(AresFunctions::SWTypeExtMap_Find(pSuper->Type), HouseClass::CurrentPlayer, true)))
 	{
 		RectangleStruct darkenBounds { 0, 0, location.X + this->Width, location.Y + this->Height };
 		pSurface->DrawSHP(FileSystem::SIDEBAR_PAL, FileSystem::DARKEN_SHP, 0, &location, &darkenBounds, BlitterFlags::bf_400 | BlitterFlags::Darken, 0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
@@ -162,8 +175,7 @@ bool SWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modifier)
 		this->LaunchSuper();
 	}
 
-	// this->ControlClass::Action(flags, pKey, KeyModifier::None);
-	reinterpret_cast<bool(__thiscall*)(ControlClass*, GadgetFlag, DWORD*, KeyModifier)>(0x48E5A0)(this, flags, pKey, KeyModifier::None);
+	this->GadgetClass::Action(flags, pKey, KeyModifier::None);
 	return true;
 }
 
@@ -200,8 +212,7 @@ bool SWButtonClass::LaunchSuper() const
 
 			if (pType->Action == Action::None || pSWExt->SW_UseAITargeting)
 			{
-				EventClass Event = EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty);
-				EventClass::AddEvent(Event);
+				EventClass::OutList.Add(EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty));
 			}
 			else
 			{

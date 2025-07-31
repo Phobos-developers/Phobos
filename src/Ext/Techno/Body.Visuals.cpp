@@ -171,7 +171,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 	int insigniaFrame = insigniaFrames.X;
 	int frameIndex = pTechnoTypeExt->InsigniaFrame.Get(pThis);
 
-	if (pTechnoType->Passengers > 0)
+	if (pTechnoType->Passengers > 0 && pTechnoTypeExt->Insignia_Passengers.size() > 0)
 	{
 		int passengersIndex = pTechnoTypeExt->Passengers_BySize ? pThis->Passengers.GetTotalSize() : pThis->Passengers.NumPassengers;
 		passengersIndex = Math::min(passengersIndex, pTechnoType->Passengers);
@@ -194,7 +194,7 @@ void TechnoExt::DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleSt
 			insigniaFrames = frames.Get();
 	}
 
-	if (pTechnoType->Gunner)
+	if (pTechnoType->Gunner && pTechnoTypeExt->Insignia_Weapon.size() > 0)
 	{
 		const int weaponIndex = pThis->CurrentWeaponNumber;
 
@@ -387,7 +387,7 @@ void TechnoExt::DrawSelectBox(TechnoClass* pThis, const Point2D* pLocation, cons
 
 			if (pSelectBox->GroundLine_Dashed)
 				pSurface->DrawDashed(&start, &point, color, 0);
-			else
+			else if (Line_In_Bounds(&start, &point, &DSurface::ViewBounds))
 				pSurface->DrawLine(&start, &point, color);
 		}
 	}

@@ -23,7 +23,7 @@ bool LaserTrailClass::Update(CoordStruct location)
 		{
 			if (pType->DrawType == LaserTrailDrawType::Laser)
 			{
-				LaserDrawClass* pLaser = GameCreate<LaserDrawClass>(
+				const auto pLaser = GameCreate<LaserDrawClass>(
 					this->LastLocation.Get(), location,
 					this->CurrentColor, ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 },
 					pType->FadeDuration.Get(64));

@@ -848,51 +848,6 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 #pragma endregion
 
-#pragma region DrawAirstrikeFlare
-
-namespace DrawAirstrikeFlareTemp
-{
-	TechnoClass* pTechno = nullptr;
-}
-
-DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
-{
-	GET(TechnoClass*, pThis, ECX);
-
-	// This is not used in vanilla function so ECX gets overwritten later.
-	DrawAirstrikeFlareTemp::pTechno = pThis;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
-{
-	enum { SkipGameCode = 0x705976 };
-
-	GET(const int, zSrc, EBP);
-	GET(const int, zDest, EBX);
-	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
-
-	// Fix depth buffer value.
-	const int zValue = Math::min(zSrc, zDest);
-	R->EBP(zValue);
-	R->EBX(zValue);
-
-	// Allow custom colors.
-	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
-	auto const baseColor = TechnoExt::ExtMap.Find(pThis)->TypeExtData->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
-	const double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
-	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
-	R->ESI(Drawing::RGB_To_Int(baseColor));
-
-	return SkipGameCode;
-}
-
-// Skip setting color for the dot, it is already done in previous hook.
-DEFINE_JUMP(LJMP, 0x705986, 0x7059C7);
-
-#pragma endregion
-
 #pragma region Customized FallingDown Damage
 
 DEFINE_HOOK(0x5F416A, ObjectClass_DropAsBomb_ResetFallRateRate, 0x7)
@@ -1007,6 +962,9 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	if (pThis->LocomotorTarget != pTarget)
+		pThis->ReleaseLocomotor(true);
+
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
@@ -1036,6 +994,8 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_JUMP(LJMP, 0x7389B1, 0x7389C4) // Skip ReleaseLocomotor in UnitClass::EnterIdleMode()
 
 DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
 {
@@ -1137,13 +1097,13 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
 {
 	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
-	GET(TechnoClass* const, pThis, ESI);
+	GET(FootClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const mission = pThis->GetCurrentMission();
 	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
-		? (mission != Mission::Move && mission != Mission::Guard) : mission != Mission::Guard)
+		? (!(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256) && mission != Mission::Guard) : mission != Mission::Guard)
 		? ClearMegaMission : ContinueMegaMission;
 }
 

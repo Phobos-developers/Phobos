@@ -278,6 +278,8 @@ DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 	return 0;
 }
 
+#pragma region AttachedAnims
+
 DEFINE_HOOK(0x424CB0, AnimClass_InWhichLayer_AttachedObjectLayer, 0x6)
 {
 	enum { ReturnValue = 0x424CBF };
@@ -320,30 +322,32 @@ DEFINE_HOOK(0x424C3D, AnimClass_AttachTo_AttachedAnimPosition, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x422BF1, AnimClass_GetCoords_AttachedAnimPosition, 0x5)
+
+class AnimClassFake final : public AnimClass
 {
-	enum { ReturnResult = 0x422C31 };
+	CoordStruct* _GetCenterCoords(CoordStruct* pCrd) const;
+};
 
-	GET(AnimClass*, pThis, EDI);
-	GET_STACK(CoordStruct*, retValue, STACK_OFFSET(0x20, 0x4));
+CoordStruct* AnimClassFake::_GetCenterCoords(CoordStruct* pCrd) const
+{
+	CoordStruct* coords = pCrd;
+	*coords = this->Location;
+	auto const pObject = this->OwnerObject;
 
-	auto const pExt = AnimTypeExt::ExtMap.Find(pThis->Type);
-	auto const position = pExt->AttachedAnimPosition.Get();
-
-	if (position != AttachedAnimPosition::Default)
+	if (pObject)
 	{
-		auto coords = pThis->OwnerObject->GetCoords() + pThis->Location;
+		*coords += pObject->GetCoords();
 
-		if (position == AttachedAnimPosition::Ground)
-			coords.Z = MapClass::Instance.GetCellFloorHeight(coords);
-
-		*retValue = coords;
-		R->EAX(retValue);
-		return ReturnResult;
+		if (AnimTypeExt::ExtMap.Find(this->Type)->AttachedAnimPosition == AttachedAnimPosition::Ground)
+			coords->Z = MapClass::Instance.GetCellFloorHeight(*coords);
 	}
 
-	return 0;
+	return coords;
 }
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7E339C, AnimClassFake::_GetCenterCoords);
+
+#pragma endregion
 
 DEFINE_HOOK(0x4236F0, AnimClass_DrawIt_Tiled_Palette, 0x6)
 {

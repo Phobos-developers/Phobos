@@ -111,9 +111,9 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 			else
 				location.Z += pType->MindControlRingOffset;
 
-			if (auto const pAnimType = pControlledAnimType)
+			if (pControlledAnimType)
 			{
-				auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
+				auto const pAnim = GameCreate<AnimClass>(pControlledAnimType, location);
 
 				pTarget->MindControlRingAnim = pAnim;
 				pAnim->SetOwnerObject(pTarget);

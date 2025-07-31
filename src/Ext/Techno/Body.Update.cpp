@@ -696,13 +696,11 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 				for (int i = 0; i < count; i++)
 				{
-					if (const auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>())
-					{
-						pSlaveNode->Slave = nullptr;
-						pSlaveNode->State = SlaveControlStatus::Dead;
-						pSlaveNode->RespawnTimer.Start(pCurrentType->SlaveRegenRate);
-						pSlaveManager->SlaveNodes.AddItem(pSlaveNode);
-					}
+					const auto pSlaveNode = GameCreate<SlaveManagerClass::SlaveControl>();
+					pSlaveNode->Slave = nullptr;
+					pSlaveNode->State = SlaveControlStatus::Dead;
+					pSlaveNode->RespawnTimer.Start(pCurrentType->SlaveRegenRate);
+					pSlaveManager->SlaveNodes.AddItem(pSlaveNode);
 				}
 			}
 			else
@@ -772,14 +770,12 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 				// Add the missing Spawns, but don't intend for them to be born right away.
 				for (int i = 0; i < count; i++)
 				{
-					if (const auto pSpawnNode = GameCreate<SpawnControl>())
-					{
-						pSpawnNode->Unit = nullptr;
-						pSpawnNode->Status = SpawnNodeStatus::Dead;
-						pSpawnNode->SpawnTimer.Start(pCurrentType->SpawnRegenRate);
-						pSpawnNode->IsSpawnMissile = false;
-						pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
-					}
+					const auto pSpawnNode = GameCreate<SpawnControl>();
+					pSpawnNode->Unit = nullptr;
+					pSpawnNode->Status = SpawnNodeStatus::Dead;
+					pSpawnNode->SpawnTimer.Start(pCurrentType->SpawnRegenRate);
+					pSpawnNode->IsSpawnMissile = false;
+					pSpawnManager->SpawnedNodes.AddItem(pSpawnNode);
 				}
 			}
 			else
