@@ -681,12 +681,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	GET_STACK(RectangleStruct*, bound, STACK_OFFSET(0xCC, 0x10));
 	enum { FinishDrawing = 0x4148A5 };
 
+	AircraftTypeClass* pAircraftType = pThis->Type;
 	const auto loco = pThis->Locomotor.GetInterfacePtr();
-	if (pThis->Type->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
+
+	if (pAircraftType->NoShadow || pThis->CloakState != CloakState::Uncloaked || pThis->IsSinking || !loco->Is_To_Have_Shadow())
 		return FinishDrawing;
 
+	pAircraftType = TechnoExt::GetAircraftTypeExtra(pThis);
+
 	auto shadow_mtx = loco->Shadow_Matrix(&key);
-	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto aTypeExt = TechnoTypeExt::ExtMap.Find(pAircraftType);
 
 	if (auto const flyLoco = locomotion_cast<FlyLocomotionClass*>(loco))
 	{
@@ -695,7 +699,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		if (RulesExt::Global()->HeightShadowScaling)
 		{
 			const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
-			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pThis->Type->GetFlightLevel());
+			const float cHeight = (float)aTypeExt->ShadowSizeCharacteristicHeight.Get(pAircraftType->GetFlightLevel());
 
 			if (cHeight > 0)
 			{
@@ -704,14 +708,14 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 					key.Invalidate();
 			}
 		}
-		else if (pThis->Type->ConsideredAircraft)
+		else if (pAircraftType->ConsideredAircraft)
 		{
 			shadow_mtx.Scale((float)Pade2_2(baseScale_log));
 		}
 
 		double arf = pThis->AngleRotatedForwards;
-		if (flyLoco->CurrentSpeed > pThis->Type->PitchSpeed)
-			arf += pThis->Type->PitchAngle;
+		if (flyLoco->CurrentSpeed > pAircraftType->PitchSpeed)
+			arf += pAircraftType->PitchAngle;
 		float ars = pThis->AngleRotatedSideways;
 		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
 			key.Invalidate();
@@ -728,16 +732,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix * shadow_mtx;
 
-	auto const main_vxl = &pThis->Type->MainVoxel;
+	auto const main_vxl = &pAircraftType->MainVoxel;
 	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
-		auto const shadow_index = pThis->Type->ShadowIndex;
+		auto const shadow_index = pAircraftType->ShadowIndex;
 		if (shadow_index >= 0 && shadow_index < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(main_vxl,
 				shadow_index,
 				key,
-				&pThis->Type->VoxelShadowCache,
+				&pAircraftType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
@@ -751,12 +755,12 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				index == pThis->Type->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
-				&pThis->Type->VoxelShadowCache,
+				index == pAircraftType->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
+				&pAircraftType->VoxelShadowCache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				index == pThis->Type->ShadowIndex,
+				index == pAircraftType->ShadowIndex,
 				nullptr,
 				{ 0, 0 }
 			);

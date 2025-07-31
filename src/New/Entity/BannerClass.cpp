@@ -21,15 +21,45 @@ BannerClass::BannerClass
 	, Position(static_cast<int>(position.X / 100.0 * DSurface::ViewBounds.Width), static_cast<int>(position.Y / 100.0 * DSurface::ViewBounds.Height))
 	, Variable(variable)
 	, IsGlobalVariable(isGlobalVariable)
-{ }
+{
+	this->Duration = pBannerType->Duration;
+	this->Delay = pBannerType->Delay;
+}
 
 void BannerClass::Render()
 {
-	if (this->Type->PCX.GetSurface())
+	const auto pType = this->Type;
+
+	if (this->Duration > 0)
+	{
+		this->Duration--;
+	}
+	else if (this->Duration == 0)
+	{
+		if (this->Delay < 0)
+		{
+			return;
+		}
+		else if (this->Delay > 0)
+		{
+			this->Delay--;
+			return;
+		}
+		else if (this->Delay == 0)
+		{
+			this->Duration = pType->Duration;
+			this->Delay = pType->Delay;
+
+			if (pType->Shape_RefreshAfterDelay)
+				this->ShapeFrameIndex = 0;
+		}
+	}
+
+	if (pType->PCX.GetSurface())
 		this->RenderPCX(this->Position);
-	else if (this->Type->Shape)
+	else if (pType->Shape)
 		this->RenderSHP(this->Position);
-	else if (!this->Type->CSF.Get().empty() || this->Type->CSF_VariableFormat != BannerNumberType::None)
+	else if (!pType->CSF.Get().empty() || pType->CSF_VariableFormat != BannerNumberType::None)
 		this->RenderCSF(this->Position);
 }
 
@@ -133,6 +163,8 @@ bool BannerClass::Serialize(T& Stm)
 		.Process(this->Variable)
 		.Process(this->ShapeFrameIndex)
 		.Process(this->IsGlobalVariable)
+		.Process(this->Duration)
+		.Process(this->Delay)
 		.Success();
 }
 

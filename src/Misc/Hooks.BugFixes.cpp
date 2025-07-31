@@ -1627,15 +1627,13 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 	return SkipGameCode;
 }
 
-DEFINE_HOOK(0x73FA92, UnitClass_IsCellOccupied_LandType, 0x8)
+DEFINE_HOOK(0x73AE70, UnitClass_UpdatePosition_Bridge, 0x5)
 {
-	enum { ContinueCheck = 0x73FC24, NoMove = 0x73FACD };
+	enum { CantMoveHere = 0x73AEB4 };
 
-	GET(UnitClass*, pThis, EBX);
-	GET(CellClass*, pCell, EDI);
-	GET_STACK(bool, containsBridge, STACK_OFFSET(0x90, -0x7D));
+	GET(UnitClass*, pThis, EBP);
 
-	return GroundType::Array[static_cast<int>(containsBridge ? LandType::Road : pCell->LandType)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? NoMove : ContinueCheck;
+	return pThis->OnBridge && GroundType::Array[static_cast<int>(LandType::Road)].Cost[static_cast<int>(pThis->Type->SpeedType)] == 0.0f ? CantMoveHere : 0;
 }
 
 #pragma region XSurfaceFix
@@ -1991,13 +1989,15 @@ DEFINE_HOOK(0x51A298, InfantryClass_UpdatePosition_EnterBuilding_CheckSize, 0x6)
 	return (pThis->SendCommand(RadioCommand::QueryCanEnter, pDestination) == RadioCommand::AnswerPositive) ? 0 : CannotEnter;
 }
 
-DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_ResetUnloadingHarvester, 0x7)
+DEFINE_HOOK(0x710352, FootClass_ImbueLocomotor_FixSomething, 0x7)
 {
 	GET(FootClass*, pTarget, ESI);
 
 	if (const auto pUnit = abstract_cast<UnitClass*>(pTarget))
 		pUnit->Unloading = false;
 
+	pTarget->Mark(MarkType::Up);
+	pTarget->OnBridge = false;
 	return 0;
 }
 
@@ -2013,6 +2013,16 @@ DEFINE_HOOK(0x73C43F, UnitClass_DrawAsVXL_Shadow_IsLocomotorFix2, 0x6)
 	R->AL(pType->BalloonHover || pThis->IsAttackedByLocomotor);
 	return SkipGameCode;
 }
+
+DEFINE_HOOK(0x737E2A, UnitClass_ReceiveDamage_Sinkable_Bridge, 0x6)
+{
+	enum { Explode = 0x737E63 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	return pThis->OnBridge ? Explode : 0;
+}
+
 
 // These hooks cause invisible barrier in multiplayer games, when a tank destroyed in tank bunker, and then the bunker has been sold
 //namespace RemoveCellContentTemp
@@ -2264,6 +2274,29 @@ DEFINE_HOOK(0x71A7BC, TemporalClass_Update_DistCheck, 0x6)
 	return SkipGameCode;
 }
 
+DEFINE_HOOK(0x71B151, TemporalClass_Fire_ReleaseTargetTarget, 0x6)
+{
+	GET(TechnoClass*, pTarget, ECX);
+
+	if (pTarget->LocomotorTarget)
+		pTarget->ReleaseLocomotor(true);
+
+	const auto pTargetType = pTarget->GetTechnoType();
+
+	if (pTargetType->OpenTopped)
+	{
+		for (auto pPassenger = pTarget->Passengers.GetFirstPassenger(); pPassenger; pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject))
+		{
+			const auto pTemporal = pPassenger->TemporalImUsing;
+
+			if (pTemporal && pTemporal->Target)
+				pTemporal->LetGo();
+		}
+	}
+
+	return 0;
+}
+
 // Jul 5, 2025 - Starkku: Fixes Vertical=true projectiles for AircraftTypes (also makes sure parabombs work correctly)
 DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 {
@@ -2282,6 +2315,7 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 
 #pragma region InfantryDeployFireWeaponFix
 
+/*
 DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
@@ -2299,8 +2333,19 @@ DEFINE_HOOK(0x70E126, TechnoClass_GetDeployWeapon_InfantryDeployFireWeapon, 0x6)
 
 	return 0x70E12C;
 }
+*/
 
-DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
+static WeaponStruct* __fastcall InfantryClass__GetDeployWeapon_Wrapper(InfantryClass* pThis)
+{
+	const int deployFireWeapon = pThis->Type->DeployFireWeapon;
+	const int weaponIndex = deployFireWeapon == -1 ? pThis->SelectWeapon(pThis->Target) : deployFireWeapon;
+
+	return pThis->GetWeapon(weaponIndex);
+}
+
+DEFINE_FUNCTION_JUMP(VTABLE, 0x7EB448, InfantryClass__GetDeployWeapon_Wrapper)
+
+DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_DeployWeapon, 0x6)
 {
 	enum { SkipFire = 0x521443, CannotFire = 0x521478 };
 
@@ -2317,6 +2362,108 @@ DEFINE_HOOK(0x521417, InfantryClass_AIDeployment_InfantryDeployFireWeapon, 0x6)
 	}
 
 	return CannotFire;
+}
+
+DEFINE_HOOK(0x6F7666, TechnoClass_TriggersCellInset_DeployWeapon, 0x8)
+{
+	enum { SkipGameCode = 0x6F7776, ContinueIn = 0x6F7688 };
+
+	GET(TechnoClass*, pThis, ESI);
+	int weaponIdx;
+
+	if (const auto pInfantry = abstract_cast<InfantryClass*, true>(pThis))
+	{
+		GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x28, 0x4));
+
+		const int deployWeaponIdx = pInfantry->Type->DeployFireWeapon;
+		weaponIdx = deployWeaponIdx >= 0 ? deployWeaponIdx : pThis->SelectWeapon(pTarget);
+	}
+	else
+	{
+		weaponIdx = pThis->IsNotSprayAttack();
+	}
+
+	const auto deployWeaponStruct = pThis->GetWeapon(weaponIdx);
+	const auto deployWeaponType = deployWeaponStruct ? deployWeaponStruct->WeaponType : nullptr;
+
+	if (!deployWeaponType || !deployWeaponType->AreaFire)
+		return SkipGameCode;
+
+	R->EAX(deployWeaponType->Warhead);
+	return ContinueIn;
+}
+
+#pragma endregion
+
+DEFINE_JUMP(LJMP, 0x6FBC0B, 0x6FBC80) // TechnoClass::UpdateCloak
+
+DEFINE_HOOK(0x457DEB, BuildingClass_ClearOccupants_Redraw, 0xA)
+{
+	GET(BuildingClass*, pThis, ESI);
+
+	pThis->Mark(MarkType::Change);
+
+	return 0;
+}
+
+#pragma region BuildingUnloadFix
+
+DEFINE_HOOK(0x458180, BuildingClass_RemoveOccupants_CheckWhenNoPlaceToUnload, 0x9)
+{
+	enum { SkipGameCode = 0x458189, UnloadAsSell = 0x458148 };
+
+	GET(BuildingClass* const, pThis, ESI);
+	GET_STACK(const DWORD, retnAddr, STACK_OFFSET(0x3C, 0x0));
+
+	// If it is called from Mission_Unload, then skip execution if there is not enough space
+	// Remain unchanged in other cases like dead when receive damage or neutral ones get red
+	if (retnAddr != 0x44D8A1)
+		pThis->KillOccupants(nullptr);
+	else
+		pThis->SetTarget(nullptr);
+
+	return SkipGameCode;
+}
+
+DEFINE_PATCH(0x501504, 0x01); // HouseClass::All_To_Hunt
+DEFINE_PATCH(0x6DF77A, 0x01); // TActionClass::Execute
+
+#pragma endregion
+
+#pragma region WhatActionObjectFix
+
+// canEnter and ignoreForce should come before GetFireError().
+DEFINE_JUMP(LJMP, 0x70054D, 0x70056C)
+
+namespace WhatActionObjectTemp
+{
+	bool Skip = false;
+}
+
+DEFINE_HOOK(0x700536, TechnoClass_WhatAction_Object_AllowAttack, 0x6)
+{
+	enum { CanAttack = 0x70055D, Continue = 0x700548 };
+
+	GET_STACK(bool, canEnter, STACK_OFFSET(0x1C, 0x4));
+	GET_STACK(bool, ignoreForce, STACK_OFFSET(0x1C, 0x8));
+
+	if (canEnter || ignoreForce)
+		return CanAttack;
+
+	GET(TechnoClass*, pThis, ESI);
+	GET(ObjectClass*, pObject, EDI);
+	GET_STACK(int, WeaponIndex, STACK_OFFSET(0x1C, -0x8));
+
+	WhatActionObjectTemp::Skip = true;
+	R->EAX(pThis->GetFireError(pObject, WeaponIndex, true));
+	WhatActionObjectTemp::Skip = false;
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
+{
+	return WhatActionObjectTemp::Skip ? 0x6FC981 : 0;
 }
 
 #pragma endregion

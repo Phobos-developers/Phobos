@@ -71,6 +71,7 @@ public:
 		Valueable<Leptons> KeepRange;
 		Valueable<bool> KeepRange_AllowAI;
 		Valueable<bool> KeepRange_AllowPlayer;
+		Valueable<int> KeepRange_EarlyStopFrame;
 		Valueable<bool> KickOutPassengers;
 		Nullable<ColorStruct> Beam_Color;
 		Valueable<int> Beam_Duration;
@@ -140,6 +141,7 @@ public:
 			, KeepRange { Leptons(0) }
 			, KeepRange_AllowAI { false }
 			, KeepRange_AllowPlayer { false }
+			, KeepRange_EarlyStopFrame { 0 }
 			, KickOutPassengers { true }
 			, Beam_Color {}
 			, Beam_Duration { 15 }
