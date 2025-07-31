@@ -99,38 +99,42 @@ DEFINE_HOOK(0x6FCB81, TechnoClass_CanFire_Immune_FakeEngineer_CanCaptureBuilding
 {
 	enum { ForceNewValue = 0x6FCBA6 };
 
-	GET(TechnoClass* const, pThis, ESI);
-	GET(WeaponTypeClass* const, pWeapon, EBX);
-	GET_STACK(AbstractClass*, pTarget, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(AbstractClass* const, pThis, STACK_OFFSET(0x10, 0x18));
+	GET_STACK(AbstractClass* const, pTarget, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(int, nWeaponIdx, STACK_OFFSET(0x10, 0xC));
 
-	auto const pTechno = abstract_cast<TechnoClass*>(pTarget);
-	if (!pTechno)
+	auto const pFirer = abstract_cast<TechnoClass*>(pThis);
+
+	if (!pFirer)
 		return 0;
 
-	auto const pBuilding = abstract_cast<BuildingClass*>(pTechno);
+	auto const pBuilding = abstract_cast<BuildingClass*>(pTarget);
 
-	if (!pBuilding || !pBuilding->IsAlive || pBuilding->Health <= 0)
+	if (!pBuilding
+		|| !pBuilding->IsAlive
+		|| pBuilding->Health <= 0
+		|| pFirer->Owner->IsAlliedWith(pBuilding)
+		|| (!pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer))
 		return 0;
 
-	if (!pBuilding->Type->Capturable && !pBuilding->Type->NeedsEngineer)
+	auto const pWeapon = pFirer->GetWeapon(nWeaponIdx)->WeaponType;
+	if (!pWeapon)
 		return 0;
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
-	if (pWHExt->FakeEngineer_CanCaptureBuildings)
-	{
-		int weaponRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pThis);
-		int currentRange = pThis->DistanceFrom(pBuilding);
+	if (!pWHExt->FakeEngineer_CanCaptureBuildings)
+		return 0;
 
-		if (currentRange <= weaponRange)
-			R->EAX(FireError::OK);
-		else
-			R->EAX(FireError::RANGE); // Out of range
+	int weaponRange = WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer);
+	int currentRange = pFirer->DistanceFrom(pBuilding);
 
-		return ForceNewValue;
-	}
+	if (currentRange <= weaponRange)
+		R->EAX(FireError::OK);
+	else
+		R->EAX(FireError::RANGE); // Out of range
 
-	return 0;
+	return ForceNewValue;
 }
 
 #pragma endregion

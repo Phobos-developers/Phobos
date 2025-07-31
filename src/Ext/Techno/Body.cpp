@@ -640,6 +640,10 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, BuildingClass* p
 		return false;
 
 	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+
+	if (!pWeapon)
+		return false;
+
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
 
 	// Check if a Bridge Repair Hut can be affected
@@ -658,7 +662,8 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, BuildingClass* p
 	// Check if a capturable building can be affected
 	if (checkCapturableBuilding
 		&& pWHExt->FakeEngineer_CanCaptureBuildings
-		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
+		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer)
+		&& !pThis->Owner->IsAlliedWith(pBuilding))
 	{
 		return true;
 	}
