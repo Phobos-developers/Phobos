@@ -54,8 +54,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 	else if (SpawnerHelper::IsSaveGameEventHooked())
 	{
 		// Relinquish handling of the save game to spawner
-		EventClass event { HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame };
-		EventClass::AddEvent(event);
+		EventClass::OutList.Add(EventClass { HouseClass::CurrentPlayer->ArrayIndex, EventType::SaveGame });
 	}
 	else
 	{
