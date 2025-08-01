@@ -331,7 +331,7 @@ DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
 	enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
 
 	bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
-	if (SessionClass::IsSingleplayer() && !scenario_saved)
+	if (!scenario_saved)
 	{
 		scenario_saved = true;
 		if (Phobos::ShouldSave)
