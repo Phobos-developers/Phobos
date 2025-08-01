@@ -1910,6 +1910,7 @@ msgid ""
 "Adjust the dehardcoding of the 255 `OverlayType` limit to a different "
 "format"
 msgstr ""
+"将 255 种覆盖物数量限制解编码方式调整为使用一种不同的格式"
 
 #: ../../../CREDITS.md:476
 msgid "**CrimRecya**:"

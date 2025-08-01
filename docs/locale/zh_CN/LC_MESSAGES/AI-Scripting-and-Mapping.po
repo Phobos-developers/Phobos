@@ -111,19 +111,19 @@ msgstr ""
 
 #: ../../AI-Scripting-and-Mapping.md:17
 msgid "Increased Overlay Limit"
-msgstr ""
+msgstr "更高的覆盖物数量上限"
 
 #: ../../AI-Scripting-and-Mapping.md:19
 msgid "Maps can now contain OverlayTypes with indices up to 65535."
-msgstr ""
+msgstr "现在可以让地图包含索引上限高达 65536 的覆盖物。"
 
 #: ../../AI-Scripting-and-Mapping.md:21
 msgid "To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file."
-msgstr ""
+msgstr "在地图文件中设置 `[Basic] -> NewINIFormat=5` 以启用该功能。"
 
 #: ../../AI-Scripting-and-Mapping.md:24
 msgid "Maps using this feature cannot be loaded by the vanilla game."
-msgstr ""
+msgstr "使用此功能的地图 **无法** 被原版游戏加载。"
 
 #: ../../AI-Scripting-and-Mapping.md:28
 msgid ""
@@ -132,6 +132,8 @@ msgid ""
 "Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when "
 "using this feature."
 msgstr ""
+"并非所有工具都完全支持此功能，它们可能会崩溃或损坏地图。我们推荐在使用此功能时使用 [World-Altering "
+"Editor](https://github.com/CnCNet/WorldAlteringEditor) 地图编辑器。"
 
 #: ../../AI-Scripting-and-Mapping.md:31
 msgid "Singleplayer Mission Maps"

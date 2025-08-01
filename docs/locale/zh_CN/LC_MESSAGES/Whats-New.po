@@ -1579,9 +1579,8 @@ msgstr ""
 "damage)（by FlyStar）"
 
 #: ../../Whats-New.md:393
-#, fuzzy
-msgid "Dehardcoded 255 limit of `OverlayType` (by secsome, ZivDero)"
-msgstr "解除了覆盖物最多 255 个的数量限制（by secsome）"
+msgid "Dehardcoded 255 limit of `OverlayType` (by secsome & ZivDero)"
+msgstr "解除了覆盖物最多 255 个的数量限制（by secsome & ZivDero）"
 
 #: ../../Whats-New.md:394
 msgid ""
