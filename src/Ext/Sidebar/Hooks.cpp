@@ -125,4 +125,12 @@ DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK_AGAIN(0x4E13B2, GadgetClass_DTOR_ClearCurrentOverGadget, 0x6)
+DEFINE_HOOK(0x4E1A84, GadgetClass_DTOR_ClearCurrentOverGadget, 0x6)
+{
+	GadgetClass* const pThis = (R->Origin() == 0x4E1A84) ? R->ESI<GadgetClass*>() : R->ECX<GadgetClass*>();
+	AnnounceInvalidPointer(Make_Global<GadgetClass*>(0x8B3E94), pThis);
+	return 0;
+}
+
 #pragma endregion

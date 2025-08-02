@@ -15,14 +15,9 @@ SWColumnClass::SWColumnClass(int maxButtons, int x, int y, int width, int height
 SWColumnClass::~SWColumnClass()
 {
 	// The vanilla game did not consider adding/deleting buttons midway through the game,
-	// so this behavior needs to be made known to the global variable and then remove it
-	auto& pCurrentMouseOverGadget = Make_Global<GadgetClass*>(0x8B3E94);
-
-	if (pCurrentMouseOverGadget == this)
-	{
-		pCurrentMouseOverGadget = nullptr;
+	// so this behavior needs to be made known to the global variable
+	if (this == Make_Global<GadgetClass*>(0x8B3E94))
 		this->OnMouseLeave();
-	}
 }
 
 bool SWColumnClass::Draw(bool forced)

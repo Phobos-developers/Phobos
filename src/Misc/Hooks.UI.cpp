@@ -400,3 +400,31 @@ DEFINE_FUNCTION_JUMP(CALL, 0x63B100, Fake_HouseIsAlliedWith);
 DEFINE_FUNCTION_JUMP(CALL, 0x63B17F, Fake_HouseIsAlliedWith);
 DEFINE_FUNCTION_JUMP(CALL, 0x63B1BA, Fake_HouseIsAlliedWith);
 DEFINE_FUNCTION_JUMP(CALL, 0x63B2CE, Fake_HouseIsAlliedWith);
+
+DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
+{
+	GET_STACK(int, index, 0x4);
+
+	bool isRandom = index == PlayerColorSlot::Random;
+
+	if (Phobos::Config::SkirmishUnlimitedColors)
+	{
+		// Allow player color indices to map directly to color scheme indices.
+		if (isRandom)
+			index = ColorScheme::FindIndex("LightGrey", 53);
+		else
+			index = index * 2 + 1;
+	}
+	else
+	{
+		// Vanilla behaviour.
+		if (isRandom)
+			index = ColorScheme::PlayerColorToColorSchemeLUT[PlayerColorSlot::White];
+		else if (index < PlayerColorSlot::Count)
+			index = ColorScheme::PlayerColorToColorSchemeLUT[index];
+	}
+
+	R->EAX(index);
+
+	return 0x69A325;
+}

@@ -103,15 +103,6 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 
 #pragma region draw_matrix
 
-struct BodyVoxelIndexKey
-{
-	unsigned bodyFrame : 5;
-	unsigned bodyFace : 5;
-	unsigned slopeIndex : 6;
-	unsigned isSpawnAlt : 1;
-	unsigned reserved : 15;
-};
-
 struct JumpjetTiltVoxelIndexKey
 {
 	unsigned bodyFrame : 5;
@@ -127,13 +118,7 @@ struct PhobosVoxelIndexKey
 {
 	union
 	{
-		int Value;
-		union
-		{
-			VoxelIndexKey Base;
-			BodyVoxelIndexKey Body;
-			// add other references here as needed
-		} BaseIndexKey;
+		VoxelIndexKey Base;
 		union
 		{
 			JumpjetTiltVoxelIndexKey JumpjetTiltVoxel;
@@ -142,35 +127,8 @@ struct PhobosVoxelIndexKey
 	};
 
 	// add funcs here if needed
-	constexpr PhobosVoxelIndexKey(int val = 0) noexcept
-	{
-		Value = val;
-	}
-
-	constexpr operator int () const
-	{
-		return Value;
-	}
-
-	constexpr bool IsCleanKey() const
-	{
-		return Value == 0;
-	}
-
-	constexpr bool IsValidKey() const
-	{
-		return Value != -1;
-	}
-
-	constexpr void Invalidate()
-	{
-		Value = -1;
-	}
-
-	constexpr bool IsExtraBodyKey() const
-	{
-		return BaseIndexKey.Body.reserved != 0;
-	}
+	constexpr bool IsCleanKey() const { return Base.Value == 0; }
+	constexpr bool IsJumpjetKey() const { return Base.MainVoxel.Reserved != 0; }
 };
 
 static_assert(sizeof(PhobosVoxelIndexKey) == sizeof(VoxelIndexKey), "PhobosVoxelIndexKey size mismatch");
@@ -233,7 +191,7 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
 		if (key)
-			key->Invalidate();
+			key->Base.Invalidate();
 
 		if (onGround)
 		{
@@ -285,21 +243,26 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 
 				const auto arsDir = DirStruct(ars);
-				arsFace = (arsDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+				// When changing the radian to DirStruct, it will rotate 90 degrees.
+				// To ensure that 0 is still 0, it needs to be rotated back
+				arsFace = arsDir.GetFacing<128>(96);
 
 				if (arsFace)
 					ret->RotateX(static_cast<float>(arsDir.GetRadian<128>()));
 			}
 
 			const auto arfDir = DirStruct(arf);
-			arfFace = (arfDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+			// Similarly, turn it back
+			arfFace = arfDir.GetFacing<128>(96);
 
 			if (arfFace)
 				ret->RotateY(static_cast<float>(arfDir.GetRadian<128>()));
 		}
 	}
 
-	if (key && key->IsValidKey())
+	if (key && key->Base.Is_Valid_Key())
 	{
 		// It is currently unclear whether the passed key only has two situations:
 		// all 0s and all 1s, so I use the safest approach for now
@@ -314,15 +277,15 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 			key->CustomIndexKey.JumpjetTiltVoxel.bodyFace = curf.GetFacing<32>();
 
 			// Outside the function, there is another step to add a frame number to the key for drawing
-			key->Value >>= 5;
+			key->Base.Value >>= 5;
 		}
 		else // Keep the original code
 		{
 			if (onGround)
-				key->Value = slope_idx + (key->Value << 6);
+				key->Base.Value = slope_idx + (key->Base.Value << 6);
 
-			key->Value <<= 5;
-			key->Value |= curf.GetFacing<32>();
+			key->Base.Value <<= 5;
+			key->Base.Value |= curf.GetFacing<32>();
 		}
 	}
 
@@ -335,8 +298,8 @@ DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
 
 	// Main body drawing completed, then enable accurate drawing of turrets and barrels
-	if (key.IsValidKey() && key.IsExtraBodyKey()) // Flags used by JumpjetTilt units
-		key.Invalidate();
+	if (key.Base.Is_Valid_Key() && key.IsJumpjetKey())
+		key.Base.Invalidate();
 
 	return 0;
 }
@@ -666,7 +629,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	const auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
 	const auto haveBar = bar && bar->VXL && bar->HVA && !bar->VXL->Initialized;
 	if (vxl_index_key.Is_Valid_Key())
-		vxl_index_key.TurretWeapon.Facing = pThis->SecondaryFacing.Current().GetFacing<32>();
+		vxl_index_key.MinorVoxel.TurretFacing = pThis->SecondaryFacing.Current().GetFacing<32>();
 
 	auto* cache = &pType->VoxelShadowCache;
 	if (!pType->UseTurretShadow)
