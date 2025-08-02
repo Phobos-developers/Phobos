@@ -142,10 +142,13 @@ DEFINE_HOOK(0x464749, BuildingTypeClass_ReadINI_PowerUpAnims, 0x6)
 
 	GET(BuildingTypeClass*, pThis, EBP);
 
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis);
 	auto const pINI = &CCINIClass::INI_Art;
 
 	int index = 1;
 	char buffer[0x20];
+
+	pTypeExt->HasPowerUpAnim.clear();
 
 	while (index - 1 < 3)
 	{
@@ -153,6 +156,8 @@ DEFINE_HOOK(0x464749, BuildingTypeClass_ReadINI_PowerUpAnims, 0x6)
 
 		sprintf_s(buffer, "PowerUp%01dAnim", index);
 		pINI->GetString(pThis->ImageFile, buffer, animData->Anim);
+
+		pTypeExt->HasPowerUpAnim.emplace_back(GeneralUtils::IsValidString(animData->Anim));
 
 		sprintf_s(buffer, "PowerUp%01dDamagedAnim", index);
 		pINI->GetString(pThis->ImageFile, buffer, animData->Damaged);
@@ -206,8 +211,8 @@ DEFINE_HOOK(0x440988, BuildingClass_Unlimbo_UpgradeAnims, 0x7)
 
 	auto const animData = &pTarget->Type->BuildingAnim[animIndex];
 
-	// Only copy image name to BuildingType anim struct if it is not already set.
-	if (!GeneralUtils::IsValidString(animData->Anim))
+	// Only copy image name to BuildingType anim struct if theres no explicit PowersUpAnim for this level.
+	if (!pTargetExt->TypeExtData->HasPowerUpAnim[animIndex])
 		strncpy(animData->Anim, pThis->Type->ImageFile, 16u);
 
 	return SkipGameCode;
