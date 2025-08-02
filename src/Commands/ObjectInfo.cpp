@@ -51,7 +51,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 	{
 		memset(Phobos::wideBuffer, 0, sizeof Phobos::wideBuffer);
 		CRT::mbstowcs(Phobos::wideBuffer, buffer, strlen(buffer));
-		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer, 600, 5, true);
+		MessageListClass::Instance.PrintMessage(Phobos::wideBuffer, 600, -1, true);
 		Debug::Log("%s\n", buffer);
 		buffer[0] = 0;
 	};
@@ -252,7 +252,7 @@ void ObjectInfoCommandClass::Execute(WWKey eInput) const
 		if (ObjectClass::CurrentObjects.Count > 0)
 		{
 			if (ObjectClass::CurrentObjects.Count != 1)
-				MessageListClass::Instance.PrintMessage(L"This command will only dump one of these selected object", 600, 5, true);
+				MessageListClass::Instance.PrintMessage(L"This command will only dump one of these selected object", 600, -1, true);
 
 			dumpInfo(ObjectClass::CurrentObjects.GetItem(ObjectClass::CurrentObjects.Count - 1));
 		}
