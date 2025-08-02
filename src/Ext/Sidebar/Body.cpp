@@ -65,30 +65,26 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	// Here make correction to the hardcoded BuildCat::DontCare.
 	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
 	{
-		const EventClass event
-		(
+		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
 			EventType::AbandonAll,
 			static_cast<int>(pItem->ItemType),
 			pItem->ItemIndex,
 			pTechnoType->Naval
-		);
-		EventClass::AddEvent(event);
+		));
 	}
 
 	// The original code is as follows
 /*
 	if (pItem->CurrentFactory)
 	{
-		const EventClass event
-		(
+		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
 			EventType::Abandon,
 			static_cast<int>(pItem->ItemType),
 			pItem->ItemIndex,
 			pTechnoType && pTechnoType->Naval
-		);
-		EventClass::AddEvent(event);
+		));
 	}
 
 	auto buildCat = BuildCat::DontCare;
@@ -105,15 +101,13 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	// Here make correction to the hardcoded BuildCat::DontCare.
 	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
 	{
-		const EventClass event
-		(
+		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
 			EventType::AbandonAll,
 			static_cast<int>(pItem->ItemType),
 			pItem->ItemIndex,
 			pTechnoType->Naval
-		);
-		EventClass::AddEvent(event);
+		));
 	}
 */
 	return true;

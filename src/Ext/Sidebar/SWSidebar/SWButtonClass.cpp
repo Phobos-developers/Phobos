@@ -21,14 +21,9 @@ SWButtonClass::SWButtonClass(int superIdx, int x, int y, int width, int height)
 SWButtonClass::~SWButtonClass()
 {
 	// The vanilla game did not consider adding/deleting buttons midway through the game,
-	// so this behavior needs to be made known to the global variable and then remove it
-	auto& pCurrentMouseOverGadget = Make_Global<GadgetClass*>(0x8B3E94);
-
-	if (pCurrentMouseOverGadget == this)
-	{
-		pCurrentMouseOverGadget = nullptr;
+	// so this behavior needs to be made known to the global variable
+	if (this == Make_Global<GadgetClass*>(0x8B3E94))
 		this->OnMouseLeave();
-	}
 }
 
 bool SWButtonClass::Draw(bool forced)
@@ -210,8 +205,7 @@ bool SWButtonClass::LaunchSuper() const
 
 			if (pSuper->Type->Action == Action::None || pSWExt->SW_UseAITargeting)
 			{
-				EventClass Event = EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty);
-				EventClass::AddEvent(Event);
+				EventClass::OutList.Add(EventClass(pCurrent->ArrayIndex, EventType::SpecialPlace, swIndex, CellStruct::Empty));
 			}
 			else
 			{
