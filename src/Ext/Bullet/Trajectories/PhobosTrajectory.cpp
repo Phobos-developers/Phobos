@@ -284,6 +284,9 @@ void PhobosTrajectory::OnUnlimbo()
 	else
 	{
 		this->NotMainWeapon = true;
+
+		if (pType->CreateCapacity >= 0)
+			this->Status |= TrajectoryStatus::Vanish;
 	}
 
 	// Initialize additional warheads
