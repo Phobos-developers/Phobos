@@ -407,7 +407,7 @@ DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
 		// Vanilla behaviour.
 		if (isRandom)
 			index = ColorScheme::PlayerColorToColorSchemeLUT[PlayerColorSlot::White];
-		else
+		else if (index < PlayerColorSlot::Count)
 			index = ColorScheme::PlayerColorToColorSchemeLUT[index];
 	}
 
