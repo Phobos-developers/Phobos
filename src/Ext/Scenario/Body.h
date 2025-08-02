@@ -40,7 +40,7 @@ public:
 		bool SWSidebar_Enable;
 		std::vector<int> SWSidebar_Indices;
 
-		std::unique_ptr<MessageListClass> NewMessageList;
+		std::vector<std::wstring> RecordMessages;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -51,7 +51,7 @@ public:
 			, TransportReloaders {}
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
-			, NewMessageList {}
+			, RecordMessages {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

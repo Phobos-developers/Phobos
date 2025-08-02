@@ -4,7 +4,9 @@
 #include <HouseClass.h>
 #include <FactoryClass.h>
 #include <FileSystem.h>
+
 #include <Ext/Side/Body.h>
+#include <Misc/MessageColumn.h>
 
 DEFINE_HOOK(0x6A593E, SidebarClass_InitForHouse_AdditionalFiles, 0x5)
 {
@@ -99,29 +101,29 @@ DEFINE_HOOK(0x72FCB5, InitSideRectangles_CenterBackground, 0x5)
 	return 0;
 }
 
-#pragma region SWSidebarButtonsRelated
+#pragma region NewButtonsRelated
 
-DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SWSidebar, 0x7)
+DEFINE_HOOK(0x692419, DisplayClass_ProcessClickCoords_SkipOnNewButtons, 0x7)
 {
 	enum { DoNothing = 0x6925FC };
 
-	if (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentColumn)
-		return DoNothing;
-
-	const auto toggleButton = SWSidebarClass::Instance.ToggleButton;
-
-	return toggleButton && toggleButton->IsHovering ? DoNothing : 0;
+	return (SWSidebarClass::IsEnabled() && SWSidebarClass::Instance.CurrentColumn
+		|| SWSidebarClass::Instance.ToggleButton && SWSidebarClass::Instance.ToggleButton->IsHovering
+		|| MessageColumnClass::Instance.IsBlocked())
+		? DoNothing : 0;
 }
 
-DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeSWSidebar, 0x5)
+DEFINE_HOOK(0x6A5082, SidebarClass_InitClear_InitializeNewButtons, 0x5)
 {
 	SWSidebarClass::Instance.InitClear();
+	MessageColumnClass::Instance.InitClear();
 	return 0;
 }
 
-DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeSWSidebar, 0x5)
+DEFINE_HOOK(0x6A5839, SidebarClass_InitIO_InitializeNewButtons, 0x5)
 {
 	SWSidebarClass::Instance.InitIO();
+	MessageColumnClass::Instance.InitIO();
 	return 0;
 }
 
