@@ -612,7 +612,7 @@ Gravity=6.0             ; floating point value
 
 ### FlakScatter distance customization
 
-- By default `FlakScatter=true` makes `Inviso=true` projectiles scatter by random distance (in cells) from 0 to `[CombatDamage] -> BallisticScatter`. This distance range can now be customized by setting `BallisticScatter.Min` & `BallisticScatter.Max` on the projectile. If not set, the default values are used.
+- By default `FlakScatter=true` makes `Inviso=true` projectiles scatter within a distance range calculated as `[Minimum * 2, Maximum * 2]` in cells, where the Minimum is 0 and Maximum is `[CombatDamage] -> BallisticScatter`, resulting in a range of `0` to `2 * BallisticScatter` cells. This behavior can now be customized using `BallisticScatter.Min` to set the Minimum value and `BallisticScatter.Max` to set the Maximum value. If not set, the default values are used. When estimating the actual scatter range, remember that the original `*2` multiplier mechanism still applies.
 
 In `rulesmd.ini`:
 ```ini
