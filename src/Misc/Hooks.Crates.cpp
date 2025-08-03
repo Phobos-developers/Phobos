@@ -10,14 +10,14 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 {
 	enum { SpawnCrate = 0x56BE7B, SkipSpawn = 0x56BE91 };
 
-	int XP = 2 * MapClass::Instance.VisibleRect.X - MapClass::Instance.MapRect.Width
+	const int XP = 2 * MapClass::Instance.VisibleRect.X - MapClass::Instance.MapRect.Width
 		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Width);
 
-	int YP = 2 * MapClass::Instance.VisibleRect.Y + MapClass::Instance.MapRect.Width
+	const int YP = 2 * MapClass::Instance.VisibleRect.Y + MapClass::Instance.MapRect.Width
 		+ ScenarioClass::Instance->Random.RandomRanged(0, 2 * MapClass::Instance.VisibleRect.Height + 2);
 
 	CellStruct candidate { (short)((XP + YP) / 2),(short)((YP - XP) / 2) };
-	auto pCell = MapClass::Instance.TryGetCellAt(candidate);
+	const auto pCell = MapClass::Instance.TryGetCellAt(candidate);
 
 	if (!pCell)
 		return SkipSpawn;
@@ -25,7 +25,7 @@ DEFINE_HOOK(0x56BD8B, MapClass_PlaceRandomCrate_Sampling, 0x5)
 	if (!MapClass::Instance.IsWithinUsableArea(pCell, true))
 		return SkipSpawn;
 
-	bool isWater = pCell->LandType == LandType::Water;
+	const bool isWater = pCell->LandType == LandType::Water;
 
 	if (isWater && RulesExt::Global()->CrateOnlyOnLand.Get())
 		return SkipSpawn;
