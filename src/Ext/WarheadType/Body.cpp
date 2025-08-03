@@ -18,12 +18,14 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 		if (!this->AffectsNeutral && pOwner->IsNeutral())
 			return false;
 
-		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pOwner == pHouse)
+		const auto affectsAllies = this->OwnerObject()->AffectsAllies;
+
+		if (this->AffectsOwner.Get(affectsAllies) && pOwner == pHouse)
 			return true;
 
 		const bool isAllies = pHouse->IsAlliedWith(pTarget);
 
-		if (this->OwnerObject()->AffectsAllies && isAllies)
+		if (affectsAllies && isAllies)
 			return pOwner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)
@@ -118,7 +120,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
 {
 	this->DamageAreaTarget = pTarget;
-	auto result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
+	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
 	this->DamageAreaTarget = nullptr;
 	return result;
 }

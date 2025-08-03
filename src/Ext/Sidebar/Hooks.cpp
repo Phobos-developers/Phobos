@@ -37,17 +37,17 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 {
 	if (Phobos::UI::ProducingProgress_Show)
 	{
-		auto pPlayer = HouseClass::CurrentPlayer;
-		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(HouseClass::CurrentPlayer->SideIndex));
-		int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
-		int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
-		int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;
+		const auto pPlayer = HouseClass::CurrentPlayer;
+		const auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(HouseClass::CurrentPlayer->SideIndex));
+		const int XOffset = pSideExt->Sidebar_GDIPositions ? 29 : 32;
+		const int XBase = (pSideExt->Sidebar_GDIPositions ? 26 : 20) + pSideExt->Sidebar_ProducingProgress_Offset.Get().X;
+		const int YBase = 197 + pSideExt->Sidebar_ProducingProgress_Offset.Get().Y;
 
 		for (int i = 0; i < 4; i++)
 		{
-			if (auto pSHP = SidebarExt::TabProducingProgress[i])
+			if (const auto pSHP = SidebarExt::TabProducingProgress[i])
 			{
-				auto rtti = i == 0 || i == 1 ? AbstractType::BuildingType : AbstractType::InfantryType;
+				const auto rtti = i == 0 || i == 1 ? AbstractType::BuildingType : AbstractType::InfantryType;
 				FactoryClass* pFactory = nullptr;
 
 				if (i != 3)
@@ -63,7 +63,7 @@ DEFINE_HOOK(0x6A6EB1, SidebarClass_DrawIt_ProducingProgress, 0x6)
 						pFactory = pPlayer->GetPrimaryFactory(AbstractType::AircraftType, false, BuildCat::DontCare);
 				}
 
-				int idxFrame = pFactory
+				const int idxFrame = pFactory
 					? (int)(((double)pFactory->GetProgress() / 54) * (pSHP->Frames - 1))
 					: -1;
 
@@ -87,8 +87,8 @@ DEFINE_HOOK(0x72FCB5, InitSideRectangles_CenterBackground, 0x5)
 	if (Phobos::UI::CenterPauseMenuBackground)
 	{
 		GET(RectangleStruct*, pRect, EAX);
-		GET_STACK(int, width, STACK_OFFSET(0x18, -0x4));
-		GET_STACK(int, height, STACK_OFFSET(0x18, -0x8));
+		GET_STACK(const int, width, STACK_OFFSET(0x18, -0x4));
+		GET_STACK(const int, height, STACK_OFFSET(0x18, -0x8));
 
 		pRect->X = (width - 168 - pRect->Width) / 2;
 		pRect->Y = (height - 32 - pRect->Height) / 2;
