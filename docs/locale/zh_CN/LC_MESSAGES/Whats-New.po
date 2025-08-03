@@ -2846,7 +2846,7 @@ msgid ""
 "targeting TerrainTypes (trees etc.) on land with `Primary` weapon (by "
 "Starkku)"
 msgstr ""
-"修复了 `NavalTargeting=7` 和／或 `LandTargeting=2` 仍允许使用主武器对陆地上的地形对象（树等）的问题（by "
+"修复了 `NavalTargeting=7` 和 `LandTargeting=2` 仍允许使用主武器对陆地上的地形对象（树等）的问题（by "
 "Starkku）"
 
 #: ../../Whats-New.md:638

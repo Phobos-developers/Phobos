@@ -1898,7 +1898,7 @@ msgid ""
 "`Psychedelic=true` Warheads can be applied to TechnoTypes with shields by"
 " setting `Tint.Color` and/or `Tint Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和／或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
+"通过设置 `Tint.Color` 和 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:439 ../../New-or-Enhanced-Logics.md:1427
@@ -3028,7 +3028,7 @@ msgid ""
 "from ground. If you don't set those then the weapon won't be able to "
 "target low-flying or high-flying projectiles respectively."
 msgstr ""
-"拦截武器可能需要在其抛射体上将 `AG` 和／或 `AA` 设为 true "
+"拦截武器可能需要在其抛射体上将 `AG` 和 `AA` 设为 true "
 "以使其能够根据抛射体相对地面的高度来瞄准。如果你不设置这些那么武器将无法分别瞄准低空或高空飞行的抛射体。"
 
 #: ../../New-or-Enhanced-Logics.md:762
@@ -5601,7 +5601,7 @@ msgid ""
 "`Psychedelic=true` Warheads can be applied to TechnoTypes naturally by "
 "setting `Tint.Color` and/or `Tint Intensity`."
 msgstr ""
-"通过设置 `Tint.Color` 和／或 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
+"通过设置 `Tint.Color` 和 `Tint Intensity` 可以为拥有护盾的科技类型使用类似于铁幕／力场护盾或 "
 "`Psychedelic=true` 弹头的染色效果。"
 
 #: ../../New-or-Enhanced-Logics.md:1429
@@ -8205,7 +8205,7 @@ msgid ""
 "Curtained and/or Force Shielded objects. `PenetratesForceShield` defaults"
 " to value of `PenetratesIronCurtain`."
 msgstr ""
-"现在可以让弹头对被铁幕和／或力场护盾保护的对象造成伤害。`PenetratesForceShield` 默认为 "
+"现在可以让弹头对被铁幕和力场护盾保护的对象造成伤害。`PenetratesForceShield` 默认为 "
 "`PenetratesIronCurtain` 的值。"
 
 #: ../../New-or-Enhanced-Logics.md:2299
@@ -9074,7 +9074,7 @@ msgstr ""
 "`Strafing.EndDelay` 可用于覆盖战机在扫射过程中射出最后一发后进行另一轮扫射或返航前的时间间隔。默认为 "
 "(`[WeaponType] -> Range` * 256 + 1024) / `[AircraftType] -> "
 "Speed`。注意对于弹药量足够进行多次扫射的战机而言过短的间隔可能导致并不理想的行为例如四处游走或朝向怪异的方向，具体取决于 "
-"`[WeaponType] -> ROF` 和／或 `[AircraftType] -> Speed` 等其他因素。"
+"`[WeaponType] -> ROF` 和 `[AircraftType] -> Speed` 等其他因素。"
 
 #: ../../New-or-Enhanced-Logics.md:2578
 msgid ""
