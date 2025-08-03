@@ -2228,9 +2228,8 @@ msgid "Damage multiplier for health percentage"
 msgstr "对不同剩余血量的伤害修正比"
 
 #: ../../../CREDITS.md:548
-#, fuzzy
 msgid "Linked superweapons tweak"
-msgstr "联动超武"
+msgstr "对联动超武的调整"
 
 #: ../../../CREDITS.md:549
 msgid "**NaotoYuuki** - Vertical & meteor trajectory projectile prototypes"
