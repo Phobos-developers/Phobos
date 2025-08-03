@@ -764,8 +764,7 @@ DEFINE_HOOK(0x44B630, BuildingClass_MissionAttack_AnimDelayedFire, 0x6)
 {
 	enum { JustFire = 0x44B6C4, VanillaCheck = 0 };
 	GET(BuildingClass* const, pThis, ESI);
-	auto const pTypeExt = BuildingTypeExt::ExtMap.TryFind(pThis->Type);
-	return (pTypeExt && !pTypeExt->IsAnimDelayedBurst && pThis->CurrentBurstIndex != 0) ? JustFire : VanillaCheck;
+	return (pThis->CurrentBurstIndex != 0 && !BuildingTypeExt::ExtMap.Find(pThis->Type)->IsAnimDelayedBurst) ? JustFire : VanillaCheck;
 }
 
 #pragma endregion

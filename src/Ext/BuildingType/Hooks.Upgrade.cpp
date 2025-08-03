@@ -102,11 +102,8 @@ DEFINE_HOOK(0x4F8361, HouseClass_CanBuild_UpgradesInteraction, 0x5)
 
 	if (auto const pBuilding = abstract_cast<BuildingTypeClass const* const>(pItem))
 	{
-		if (auto const pBuildingExt = BuildingTypeExt::ExtMap.TryFind(pBuilding))
-		{
-			if (pBuildingExt->PowersUp_Buildings.size() > 0 && resultOfAres == CanBuildResult::Buildable)
-				R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
-		}
+		if (resultOfAres == CanBuildResult::Buildable && BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings.size() > 0)
+			R->EAX(CheckBuildLimit(pThis, pBuilding, includeInProduction));
 	}
 
 	if (resultOfAres == CanBuildResult::Buildable)
