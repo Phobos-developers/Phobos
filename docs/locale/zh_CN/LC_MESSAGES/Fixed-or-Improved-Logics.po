@@ -307,7 +307,7 @@ msgid ""
 "of turning and/or `DeployingAnim`."
 msgstr ""
 "现在 `IsSimpleDeployer` 的单位只会在（反）部署时播放一次 `DeploySound` 和 `UndeploySound` "
-"而不再是转向和／或播放 `DeployingAnim` 期间持续播放。"
+"而不再是转向和播放 `DeployingAnim` 期间持续播放。"
 
 #: ../../Fixed-or-Improved-Logics.md:57
 msgid "AITrigger can now recognize Building Upgrades as legal condition."
@@ -587,7 +587,7 @@ msgid ""
 "Fixed `NavalTargeting=7` and/or `LandTargeting=2` resulting in still "
 "targeting TerrainTypes (trees etc.) on land with `Primary` weapon."
 msgstr ""
-"修复了 `NavalTargeting=7` 和／或 `LandTargeting=2` 导致在陆地上仍然使用 `Primary` "
+"修复了 `NavalTargeting=7` 和 `LandTargeting=2` 导致在陆地上仍然使用 `Primary` "
 "武器来瞄准地形对象（树木等）的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:102
@@ -2022,7 +2022,7 @@ msgid ""
 " a `FactoryPlant=true` building by listing them on "
 "`FactoryPlant.AllowTypes` and/or `FactoryPlant.DisallowTypes`."
 msgstr ""
-"现在可以通过在 `FactoryPlant.AllowTypes` 和／或 `FactoryPlant.DisallowTypes` "
+"现在可以通过在 `FactoryPlant.AllowTypes` 和 `FactoryPlant.DisallowTypes` "
 "中列出有哪些科技类型受到 `FactoryPlant=true` 建筑的加成。"
 
 #: ../../Fixed-or-Improved-Logics.md:429
