@@ -1386,7 +1386,6 @@ msgid ""
 msgstr "有 `ElectricAssault=yes` 的副武不再会无条件地攻击己方 `Overpowerable=yes` 的建筑"
 
 #: ../../../CREDITS.md:354 ../../../CREDITS.md:402
-#, fuzzy
 msgid "Fix the issue where some units crashed after the deployment transformation"
 msgstr "修复了某些单位部署变形后崩溃的问题"
 
