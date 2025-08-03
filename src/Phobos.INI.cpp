@@ -11,6 +11,7 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
+#include <Utilities/Debug.h>
 
 #include "Misc/BlittersFix.h"
 
@@ -278,7 +279,6 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	return 0;
 }
 
-
 bool Phobos::ShouldSave = false;
 std::wstring Phobos::CustomGameSaveDescription {};
 
@@ -323,6 +323,45 @@ void Phobos::PassiveSaveGame()
 		PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
 	else
 		PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
+}
+
+namespace SaveGameTemp
+{
+	int NextSaveIndex = 0;
+}
+
+// Existing XNA CNCNet Client can't handle renaming savegames when they
+// are being saved too fast, which may happen when quicksaving f.ex., hence
+// we do this here. Hooked at low level saving function for better compatibility
+// with other DLLs that may save MP games, like the spawner itself.
+// - Kerbiter
+DEFINE_HOOK(0x67CEF0, ScenarioClass_SaveGame_AdjustMPSaveFileName, 0x6)
+{
+	GET(const char* const, fileName, ECX);
+
+	// SAVEGAME.NET -> SVGM_XXX.NET
+	if (_strcmpi(fileName, GameStrings::SAVEGAME_NET) == 0 || _strcmpi(fileName, "SAVEGAME.NET") == 0)
+	{
+		static char newFileName[sizeof("SVGM_XXX.NET")];
+		_snprintf_s(newFileName, sizeof(newFileName), "SVGM_%03d.NET", SaveGameTemp::NextSaveIndex);
+
+		R->ECX(newFileName);
+
+		Debug::Log("Renamed multiplayer save file from %s to %s\n", fileName, newFileName);
+	}
+
+	return 0;
+}
+
+// Only increment after it's confirmed that the file is created to mimic
+// the behavior that XNA CNCNet Client has and expects.
+DEFINE_HOOK(0x67CF64, ScenarioClass_SaveGame_IncrementMPSaveIndex, 0x7)
+{
+	// consistent with XNA CNCNet Client. don't ask me - Kerbiter
+	if (SaveGameTemp::NextSaveIndex + 1 < 1000)
+		SaveGameTemp::NextSaveIndex++;
+
+	return 0;
 }
 
 DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)

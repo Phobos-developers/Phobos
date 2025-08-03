@@ -50,6 +50,7 @@ This page lists all the individual contributions to the project by their author.
   - `UseFixedVoxelLighting`
   - Warhead activation target health thresholds
   - MP saves support for quicksave command and savegame trigger action
+  - `SAVEGAME.NET` -> `SVGM_XXX.NET` rename
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
