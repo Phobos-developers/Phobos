@@ -56,9 +56,9 @@ msgid ""
 "correctly `PowerUpNAnim` and such buildings should forgo using explicit "
 "upgrade animations."
 msgstr ""
-"现在如果设置了加载物动画那么将会使用 `PowersUpNAnim` 替代加载物建筑的图像文件。注意你仍需明确设置 "
-"`PowerUpXDamagedAnim` "
-"来启用伤残版本的加载物动画，因为并没有将自动回退到加载物图像的逻辑扩展到它，并且那也不是一个安全的做法。"
+"现在如果通过 `PowerUpNAnim` 设置了加载物动画那么它们将会使用替代加载物建筑自身的图像来显示。注意你仍需显式设置 "
+"`PowerUpNDamagedAnim` 来启用伤残版本的加载物动画，因为并没有添加一个它们不存在时回退到未伤残版本加载物图像的逻辑，并且那也不是一个安全的做法。"
+"`PowersUpToLevel=-1` 的加载物在使用 `PowerUpNAnim` 时仍然无法正常工作，因此这类建筑应当避免使用显式的加载物动画。"
 
 #: ../../Whats-New.md:14
 msgid ""
