@@ -77,7 +77,7 @@ DEFINE_HOOK(0x73E411, UnitClass_Mission_Unload_DumpAmount, 0x7)
 	enum { SkipGameCode = 0x73E41D };
 
 	GET(UnitClass*, pThis, ESI);
-	GET(int, tiberiumIdx, EBP);
+	GET(const int, tiberiumIdx, EBP);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 	const float totalAmount = pThis->Tiberium.GetAmount(tiberiumIdx);
 	float dumpAmount = pTypeExt->HarvesterDumpAmount.Get(RulesExt::Global()->HarvesterDumpAmount);
@@ -108,7 +108,7 @@ DEFINE_HOOK(0x73E730, UnitClass_MissionHarvest_HarvesterScanAfterUnload, 0x5)
 	GET(UnitClass* const, pThis, EBP);
 	GET(AbstractClass* const, pFocus, EAX);
 
-	auto pType = pThis->Type;
+	const auto pType = pThis->Type;
 	// Focus is set when the harvester is fully loaded and go home.
 	if (pFocus && !pType->Weeder && TechnoTypeExt::ExtMap.Find(pType)->HarvesterScanAfterUnload.Get(RulesExt::Global()->HarvesterScanAfterUnload))
 	{

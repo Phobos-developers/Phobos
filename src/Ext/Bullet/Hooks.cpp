@@ -13,13 +13,14 @@ DEFINE_HOOK(0x466556, BulletClass_Init, 0x6)
 {
 	GET(BulletClass*, pThis, ECX);
 
-	if (auto const pExt = BulletExt::ExtMap.Find(pThis))
+	if (auto const pExt = BulletExt::ExtMap.TryFind(pThis))
 	{
+		auto const pType = pThis->Type;
 		pExt->FirerHouse = pThis->Owner ? pThis->Owner->Owner : nullptr;
-		pExt->CurrentStrength = pThis->Type->Strength;
-		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pThis->Type);
+		pExt->CurrentStrength = pType->Strength;
+		pExt->TypeExtData = BulletTypeExt::ExtMap.Find(pType);
 
-		if (!pThis->Type->Inviso)
+		if (!pType->Inviso)
 			pExt->InitializeLaserTrails();
 	}
 
@@ -38,8 +39,9 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 	GET(BulletClass*, pThis, EBP);
 
 	const auto pBulletExt = BulletExt::ExtMap.Find(pThis);
+	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	BulletAITemp::ExtData = pBulletExt;
-	BulletAITemp::TypeExtData = pBulletExt->TypeExtData;
+	BulletAITemp::TypeExtData = pBulletTypeExt;
 
 	if (pBulletExt->InterceptedStatus & InterceptedStatus::Targeted)
 	{
@@ -110,8 +112,8 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 
 	if (pThis->HasParachute)
 	{
-		int fallRate = pBulletExt->ParabombFallRate - pBulletExt->TypeExtData->Parachuted_FallRate;
-		int maxFallRate = pBulletExt->TypeExtData->Parachuted_MaxFallRate.Get(RulesClass::Instance->ParachuteMaxFallRate);
+		int fallRate = pBulletExt->ParabombFallRate - pBulletTypeExt->Parachuted_FallRate;
+		const int maxFallRate = pBulletTypeExt->Parachuted_MaxFallRate.Get(RulesClass::Instance->ParachuteMaxFallRate);
 
 		if (fallRate < maxFallRate)
 			fallRate = maxFallRate;
@@ -312,6 +314,7 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 	const int min = pTypeExt->ClusterScatter_Min.Get();
 	const int max = pTypeExt->ClusterScatter_Max.Get();
 	auto coords = origCoords;
+	auto& random = ScenarioClass::Instance->Random;
 
 	for (int i = 0; i < pThis->Type->Cluster; i++)
 	{
@@ -320,7 +323,7 @@ DEFINE_HOOK(0x46902C, BulletClass_Explode_Cluster, 0x6)
 		if (!pThis->IsAlive)
 			break;
 
-		int distance = ScenarioClass::Instance->Random.RandomRanged(min, max);
+		const int distance = random.RandomRanged(min, max);
 		coords = MapClass::GetRandomCoordsNear(origCoords, distance, false);
 	}
 
@@ -341,17 +344,19 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 
 	GET(BulletClass*, pThis, EBP);
 
+	auto const pType = pThis->Type;
+
 	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
-	if (pThis->Type->Inviso)
+	if (pType->Inviso)
 	{
-		R->EAX(pThis->Type);
+		R->EAX(pType);
 		return SkipChecks;
 	}
 	else if (auto const pExt = BulletAITemp::ExtData)
 	{
 		if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()))
 		{
-			R->EAX(pThis->Type);
+			R->EAX(pType);
 			return SkipChecks;
 		}
 	}
@@ -365,13 +370,15 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
+	auto const pType = pThis->Type;
+
 	// Do not require Airburst=no to check target snapping for Inviso / Trajectory=Straight projectiles
-	if (pThis->Type->Inviso)
+	if (pType->Inviso)
 	{
-		R->EAX(pThis->Type);
+		R->EAX(pType);
 		return SkipChecks;
 	}
-	else if (pThis->Type->Arcing || pThis->Type->ROT > 0)
+	else if (pType->Arcing || pType->ROT > 0)
 	{
 		return 0;
 	}
@@ -380,7 +387,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
-		R->EAX(pThis->Type);
+		R->EAX(pType);
 		return SkipChecks;
 	}
 
@@ -393,13 +400,15 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 
 	GET(BulletClass*, pThis, ESI);
 
+	auto const pType = pThis->Type;
+
 	// Do not require EMEffect=no & Airburst=no to check target coordinate snapping for Inviso projectiles.
-	if (pThis->Type->Inviso)
+	if (pType->Inviso)
 	{
-		R->EAX(pThis->Type);
+		R->EAX(pType);
 		return SkipInitialChecks;
 	}
-	else if (pThis->Type->Arcing || pThis->Type->ROT > 0)
+	else if (pType->Arcing || pType->ROT > 0)
 	{
 		return 0;
 	}
@@ -431,16 +440,16 @@ DEFINE_HOOK(0x468D3F, BulletClass_ShouldExplode_AirTarget, 0x6)
 DEFINE_HOOK(0x4687F8, BulletClass_Unlimbo_FlakScatter, 0x6)
 {
 	GET(BulletClass*, pThis, EBX);
-	GET_STACK(float, mult, STACK_OFFSET(0x5C, -0x44));
+	GET_STACK(const float, mult, STACK_OFFSET(0x5C, -0x44));
 
 	if (pThis->WeaponType)
 	{
 		auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-		int defaultValue = RulesClass::Instance->BallisticScatter;
-		int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
-		int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
+		const int defaultValue = RulesClass::Instance->BallisticScatter;
+		const int min = pTypeExt->BallisticScatter_Min.Get(Leptons(0));
+		const int max = pTypeExt->BallisticScatter_Max.Get(Leptons(defaultValue));
 
-		int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
+		const int result = (int)((mult * ScenarioClass::Instance->Random.RandomRanged(2 * min, 2 * max)) / pThis->WeaponType->Range);
 		R->EAX(result);
 	}
 
@@ -535,7 +544,7 @@ DEFINE_HOOK(0x5F5A62, ObjectClass_SpawnParachuted_BombParachute, 0x5)
 	{
 		pAnim = GameCreate<AnimClass>(pAnimType, *coords);
 		pAnim->Owner = pThis->Owner ? pThis->Owner->Owner : BulletExt::ExtMap.Find(pThis)->FirerHouse;
-		int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
+		const int schemeIndex = pAnim->Owner ? pAnim->Owner->ColorSchemeIndex : RulesExt::Global()->AnimRemapDefaultColorScheme;
 		pAnim->LightConvert = ColorScheme::Array[schemeIndex]->LightConvert;
 		pThis->Parachute = pAnim;
 	}

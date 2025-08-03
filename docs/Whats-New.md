@@ -12,7 +12,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
-- `PowersUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpXDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add.
+- `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
 - `[CrateRules] -> FreeMCV` now controls whether or not player is forced to receive unit from `[General] -> BaseUnit` from goodie crate if they own no buildings or any existing `[General] -> BaseUnit` vehicles and own more than `[CrateRules] -> FreeMCV.CreditsThreshold` (defaults to 1500) credits.
 - Translucent RLE SHPs will now be drawn using a more precise and performant algorithm that has no green tint and banding. Can be disabled with `rulesmd.ini -> [General] -> FixTransparencyBlitters=no`.
 - Iron Curtain status is now preserved by default when converting between TechnoTypes via `DeploysInto` / `UndeploysInto`. This behavior can be turned off per-TechnoType and global basis using `[TechnoType]/[CombatDamage] -> IronCurtain.KeptOnDeploy=no`.
@@ -390,7 +390,7 @@ New:
 - [Use `InsigniaType` to set the properties of insignia in a batch](Miscellanous.md#insignia-type) (by Ollerus)
 - [Tiberium eater logic](New-or-Enhanced-Logics.md#tiberium-eater) (by NetsuNegi)
 - [Customize the damage taken when falling from a bridge](Fixed-or-Improved-Logics.md#customize-bridge-falling-down-damage) (by FlyStar)
-- Dehardcoded 255 limit of `OverlayType` (by secsome, ZivDero)
+- Dehardcoded 255 limit of `OverlayType` (by secsome & ZivDero)
 - [Customizable airstrike flare colors](Fixed-or-Improved-Logics.md#airstrike-flare-customizations) (by Starkku)
 - Allowed player's self-healing effects to be benefited by allied or `PlayerControl=true` houses (by Ollerus)
 - [Exclusive SuperWeapon Sidebar](User-Interface.md#superweapon-sidebar) (by NetsuNegi & CrimRecya)

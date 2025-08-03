@@ -135,7 +135,7 @@ DEFINE_HOOK(0x70CA64, TechnoClass_Railgun_Obstacles, 0x5)
 
 	REF_STACK(CoordStruct const, coords, STACK_OFFSET(0xC0, -0x80));
 
-	auto pCell = MapClass::Instance.GetCellAt(coords);
+	const auto pCell = MapClass::Instance.GetCellAt(coords);
 
 	if (pCell == FireAtTemp::pObstacleCell)
 		return Stop;
@@ -215,11 +215,12 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 
 	GET(ParticleClass*, pThis, ESI);
 
-	if (pThis->ParticleSystem
-		&& (pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Railgun
-			|| pThis->ParticleSystem->Type->BehavesLike == BehavesLike::Fire))
+	if (pThis->ParticleSystem)
 	{
-		return SkipCoordAdjust;
+		const auto behavesLike = pThis->ParticleSystem->Type->BehavesLike;
+
+		if (behavesLike == BehavesLike::Railgun || behavesLike == BehavesLike::Fire)
+			return SkipCoordAdjust;
 	}
 
 	return 0;
@@ -234,7 +235,7 @@ DEFINE_HOOK(0x6FD38D, TechnoClass_DrawSth_DrawToInvisoFlakScatterLocation, 0x7) 
 	if (const auto pBullet = FireAtTemp::FireBullet)
 	{
 		// The weapon may not have been set up
-		const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pBullet->WeaponType);
+		const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pBullet->WeaponType);
 
 		if (pWeaponExt && pWeaponExt->VisualScatter)
 		{
@@ -300,7 +301,7 @@ DEFINE_HOOK(0x6FD446, TechnoClass_LaserZap_IsSingleColor, 0x7)
 	GET(WeaponTypeClass* const, pWeapon, ECX);
 	GET(LaserDrawClass* const, pLaser, EAX);
 
-	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon))
+	if (auto const pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon))
 	{
 		if (!pLaser->IsHouseColor && pWeaponExt->Laser_IsSingleColor)
 			pLaser->IsHouseColor = true;
@@ -319,12 +320,13 @@ DEFINE_HOOK(0x762AFF, WaveClass_AI_TargetSet, 0x6)
 
 	if (pThis->Target && pThis->Owner)
 	{
+		auto const pOwner = pThis->Owner;
 		auto const pObstacleCell = TechnoExt::ExtMap.Find(pThis->Owner)->FiringObstacleCell;
 
-		if (pObstacleCell == pThis->Target && pThis->Owner->Target)
+		if (pObstacleCell == pThis->Target && pOwner->Target)
 		{
-			FireAtTemp::pWaveOwnerTarget = pThis->Owner->Target;
-			pThis->Owner->Target = pThis->Target;
+			FireAtTemp::pWaveOwnerTarget = pOwner->Target;
+			pOwner->Target = pThis->Target;
 		}
 	}
 

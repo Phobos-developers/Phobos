@@ -45,8 +45,8 @@ public:
 	{
 		if (selectable.Object && selectable.Object->IsAlive)
 		{
-			int nLocalX = selectable.X - pThis->TacticalPos.X;
-			int nLocalY = selectable.Y - pThis->TacticalPos.Y;
+			const int nLocalX = selectable.X - pThis->TacticalPos.X;
+			const int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
 			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
 				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
@@ -85,9 +85,9 @@ public:
 			if (Tactical_IsInSelectionRect(pThis, pRect, selected))
 			{
 				const auto pObject = selected.Object;
-				TechnoTypeClass* pTechnoType = pObject->GetTechnoType(); // Returns nullptr on non techno objects
+				const auto pTechnoType = pObject->GetTechnoType(); // Returns nullptr on non techno objects
 
-				if (auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
+				if (auto const pTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType)) // If pTechnoType is nullptr so will be pTypeExt
 				{
 					if (bPriorityFiltering && pTypeExt->LowSelectionPriority)
 						continue;
@@ -109,7 +109,7 @@ public:
 					const auto pOwner = pObject->GetOwningHouse();
 
 					if (pOwner && pOwner->IsControlledByCurrentPlayer() && pObject->CanBeSelected()
-						&& (!pBldType || (pBldType && pBldType->UndeploysInto && pBldType->IsVehicle())))
+						&& (!pBldType || (pBldType->UndeploysInto && pBldType->IsVehicle())))
 					{
 						Unsorted::MoveFeedback = !pObject->Select();
 					}
@@ -137,7 +137,7 @@ public:
 
 			LTRBStruct rect { nLeft , nTop, nRight - nLeft + 1, nBottom - nTop + 1 };
 
-			bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
+			const bool bPriorityFiltering = Phobos::Config::PrioritySelectionFiltering && Tactical_IsHighPriorityInRect(pThis, &rect);
 			Tactical_SelectFiltered(pThis, &rect, check_callback, bPriorityFiltering);
 
 			pThis->Band.Left = 0;
