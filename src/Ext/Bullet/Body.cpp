@@ -139,10 +139,9 @@ void BulletExt::ExtData::InitializeLaserTrails()
 	if (this->LaserTrails.size())
 		return;
 
-	auto pThis = this->OwnerObject();
-
-	auto pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
-	auto pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
+	auto const pThis = this->OwnerObject();
+	auto const pTypeExt = BulletTypeExt::ExtMap.Find(pThis->Type);
+	auto const pOwner = pThis->Owner ? pThis->Owner->Owner : nullptr;
 	this->LaserTrails.reserve(pTypeExt->LaserTrail_Types.size());
 
 	for (auto const& idxTrail : pTypeExt->LaserTrail_Types)

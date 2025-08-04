@@ -111,7 +111,7 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 		// Sometimes the target will DTOR first before it announce invalid pointer, so sanity check is necessary!
 		// At this point, the target's vtable has already been reset to AbstractClass_vtbl.
 		// If a virtual function that AbstractClass does not have is called without checking this, it will cause the vtable to exceed its bounds.
-		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		if (const auto pTargetExt = TechnoExt::ExtMap.TryFind(pTargetTechno))
 		{
 			pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
 
@@ -129,7 +129,7 @@ DEFINE_HOOK(0x41D604, AirstrikeClass_PointerGotInvalid_ResetForTarget, 0x6)
 
 	GET(ObjectClass*, pTarget, EAX);
 
-	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*, true>(pTarget)))
+	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*, true>(pTarget)))
 		pTargetTechnoExt->AirstrikeTargetingMe = nullptr;
 
 	return SkipGameCode;

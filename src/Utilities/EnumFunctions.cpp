@@ -18,7 +18,7 @@ bool EnumFunctions::IsCellEligible(CellClass* const pCell, AffectedTarget allowe
 
 	if (explicitEmptyCells)
 	{
-		auto pTechno = abstract_cast<TechnoClass*>(pCell->GetContent());
+		const auto pTechno = abstract_cast<TechnoClass*>(pCell->GetContent());
 
 		if (!pTechno && !(allowed & AffectedTarget::NoContent))
 			return false;

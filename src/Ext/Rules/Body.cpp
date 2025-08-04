@@ -50,7 +50,7 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	for (const auto& pTechnoType : TechnoTypeClass::Array)
 	{
-		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType))
 		{
 			// Spawner range
 			if (pTechnoTypeExt->Spawner_LimitRange)
