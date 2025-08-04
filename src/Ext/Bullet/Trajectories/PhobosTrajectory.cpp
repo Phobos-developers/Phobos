@@ -1175,11 +1175,10 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	GET(BulletClass* const, pThis, EBX);
 
 	const auto pExt = BulletExt::ExtMap.Find(pThis);
-	const auto pTypeExt = pExt->TypeExtData;
 
-	if (pTypeExt->TrajectoryType)
+	if (const auto pTrajType = pExt->TypeExtData->TrajectoryType.get())
 	{
-		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance(pThis);
+		pExt->Trajectory = pTrajType->CreateInstance(pThis);
 		pExt->Trajectory->OnUnlimbo();
 	}
 

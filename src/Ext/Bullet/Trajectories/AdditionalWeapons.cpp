@@ -54,7 +54,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	const auto retargetCoords = this->GetRetargetCenter();
 	const double retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
 	const auto pWeapon = pBullet->WeaponType;
-	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 	TechnoClass* pNewTechno = nullptr;
 
 	// Find the first target
@@ -115,7 +115,7 @@ void PhobosTrajectory::GetTechnoFLHCoord()
 {
 	const auto pBullet = this->Bullet;
 	const auto pTechno = pBullet->Owner;
-	const auto pExt = TechnoExt::ExtMap.Find(pTechno);
+	const auto pExt = TechnoExt::ExtMap.TryFind(pTechno);
 
 	// Record the launch location, the building has an additional offset
 	if (!pExt || !pExt->LastWeaponType || pExt->LastWeaponType->Projectile != pBullet->Type)

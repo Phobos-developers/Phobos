@@ -788,6 +788,7 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	{
 		bool found = false;
 		flh = TechnoExt::GetBurstFLH(pThis, weaponIndex, found);
+
 		if (!found)
 		{
 			if (auto const pInf = abstract_cast<InfantryClass*>(pThis))
@@ -823,8 +824,8 @@ DEFINE_HOOK(0x6F3AEB, TechnoClass_GetFLH, 0x6)
 	}
 
 	*pCoords = TechnoExt::GetFLHAbsoluteCoords(pThis, flh, allowOnTurret);
-
 	R->EAX(pCoords);
+
 	return SkipGameCode;
 }
 
