@@ -46,8 +46,8 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 					VocClass::PlayIndexAtPos(nSound, coord);
 
 				// Fix : Player defeated should not get this unit.
-				const auto pOriginOwner = pNode->OriginalOwner->Defeated ?
-					HouseClass::FindNeutral() : pNode->OriginalOwner;
+				const auto pOriginOwner = pNode->OriginalOwner->Defeated
+					? HouseClass::FindNeutral() : pNode->OriginalOwner;
 
 				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
 

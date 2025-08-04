@@ -1015,8 +1015,11 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 	const int strength = this->Type->Strength.Get();
 	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
 
-	const auto shieldPip = pipsShield.X != -1 ? pipsShield :
-		(isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get());
+	const auto shieldPip = pipsShield.X != -1
+		? pipsShield
+		: (isBuilding
+			? RulesExt::Global()->Pips_Shield_Building.Get()
+			: RulesExt::Global()->Pips_Shield.Get());
 
 	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;

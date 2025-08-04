@@ -239,8 +239,8 @@ static bool __forceinline IsOnBridge(FootClass* pUnit)
 	const bool containsBridge = pCell->ContainsBridge();
 	const bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
 
-	return (containsBridge || containsBridgeDir || pCellAdj->ContainsBridge()) &&
-		(!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge());
+	return (containsBridge || containsBridgeDir || pCellAdj->ContainsBridge())
+		&& (!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge());
 }
 
 static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, bool applyBridgeBonus)

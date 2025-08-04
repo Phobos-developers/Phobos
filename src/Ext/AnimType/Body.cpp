@@ -40,10 +40,9 @@ void AnimTypeExt::ProcessDestroyAnims(UnitClass* pThis, TechnoClass* pKiller)
 		}
 		else
 		{
-			int const nIDx_Rand = pType->DestroyAnim.Count == 1 ?
-				0 : ScenarioClass::Instance->Random.RandomRanged(0, (pType->DestroyAnim.Count - 1));
+			int const nIDx_Rand = pType->DestroyAnim.Count == 1
+				? 0 : ScenarioClass::Instance->Random.RandomRanged(0, (pType->DestroyAnim.Count - 1));
 			pAnimType = pType->DestroyAnim[nIDx_Rand];
-
 		}
 
 		if (pAnimType)
