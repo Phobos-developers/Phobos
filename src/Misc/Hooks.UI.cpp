@@ -430,7 +430,7 @@ DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
 	return 0x69A325;
 }
 
-DEFINE_HOOK(0x4F4480, GScreenClass_DrawOnTop_Start, 0x8)
+DEFINE_HOOK(0x4F4480, GScreenClass_Render_FrameSkip, 0x8)
 {
 	enum { retn = 0x4F45A8 };
 	int delay = Phobos::Config::SkipFrameDelay;
