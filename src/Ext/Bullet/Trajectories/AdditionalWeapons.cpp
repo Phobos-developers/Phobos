@@ -13,15 +13,15 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	const auto pType = this->GetType();
 	bool check = false;
 
-	// Will only attempt to search for a new target when the original target is a techno
+	// Will only attempt to search for a new target when the original target is a techno, in order to adapt to thermal decoys
 	if (this->TargetIsTechno)
 	{
-		if (!pBullet->Target)
-			check = true;
-		else if (pBullet->Target->AbstractFlags & AbstractFlags::Techno)
-			check = PhobosTrajectory::CheckTechnoIsInvalid(static_cast<TechnoClass*>(pBullet->Target));
+		const auto pTarget = pBullet->Target;
 
-		// Current target may be a bullet, and will not retarget at this time, in order to adapt to thermal decoys
+		if (!pTarget)
+			check = true;
+		else if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
+			check = PhobosTrajectory::CheckTechnoIsInvalid(pTargetTechno);
 	}
 
 	// It has not lost its target
@@ -36,8 +36,6 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	if (this->RetargetTimer.HasTimeLeft())
 		return false;
 
-	// Next time wait for so long first
-	this->RetargetTimer.Start(pType->RetargetInterval);
 	const auto pFirer = pBullet->Owner;
 	auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 
@@ -55,7 +53,6 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	const double retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
 	const auto pWeapon = pBullet->WeaponType;
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
-	TechnoClass* pNewTechno = nullptr;
 
 	// Find the first target
 	if (!this->TargetIsInAir) // Only get same type (on ground / in air)
@@ -76,14 +73,11 @@ bool PhobosTrajectory::BulletRetargetTechno()
 						&& (pTechno->WhatAmI() != AbstractType::Building || !static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame
 						&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer)))
 					{
-						pNewTechno = pTechno;
-						break;
+						this->SetBulletNewTarget(pTechno);
+						return false;
 					}
 				}
 			}
-
-			if (pNewTechno)
-				break;
 		}
 	}
 	else
@@ -97,17 +91,14 @@ bool PhobosTrajectory::BulletRetargetTechno()
 			if (!PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
 				&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
 			{
-				pNewTechno = pTechno;
-				break;
+				this->SetBulletNewTarget(pTechno);
+				return false;
 			}
 		}
 	}
 
-	// Replace if there is a new target
-	if (pNewTechno)
-		this->SetBulletNewTarget(pNewTechno);
-
-	// If not found, in order to minimize the response time, it will continue to check in the next frame, so the performance will be reduced a bit
+	// If not found, next time wait for so long first
+	this->RetargetTimer.Start(pType->RetargetInterval);
 	return false;
 }
 

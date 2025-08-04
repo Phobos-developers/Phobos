@@ -325,7 +325,7 @@ bool PhobosTrajectory::OnEarlyUpdate()
 		return true;
 
 	// Check if the target needs to be changed
-	if (std::abs(this->GetType()->RetargetRadius) > PhobosTrajectory::Epsilon && this->BulletRetargetTechno())
+	if (this->GetType()->RetargetRadius && this->BulletRetargetTechno())
 		return true;
 
 	// After the new target is confirmed, check if the tolerance time has ended
