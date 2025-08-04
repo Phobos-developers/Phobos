@@ -358,6 +358,17 @@ In `RA2MD.INI`:
 ShowDesignatorRange=false             ; boolean
 ```
 
+### Skip drawing frame to improve performance
+
+- Now you can make the game skip the drawing by 1 frame every `SkipFrameDelay` when the frame rate is lower than the vanilla defined `DetailMinFrameRateNormal`. This helps alleviate the frame rate drop caused by drawing.
+  - This logic only takes effect when `SkipFrameDelay` is greater than or equal to 2.
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+SkipFrameDelay=0  ; integer
+```
+
 ### SuperWeapon ShowTimer sorting
 
 - You can now sort the timers of superweapons in ascending order from top to bottom according to a given priority value.
