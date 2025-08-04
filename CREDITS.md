@@ -383,6 +383,7 @@ This page lists all the individual contributions to the project by their author.
   - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
+  - Units can customize the attack voice played when using `WeaponN` through `VoiceWeaponNAttack`
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

@@ -1706,10 +1706,21 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
+### Multi VoiceAttack
+
+- Units can customize the attack voice played when using `WeaponN` through `VoiceWeaponNAttack`.
+ - If you need to assign an attack-voice to `Weapon1`, simply set `VoiceWeapon1Attack`. The same applies to other weapons.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]            ; TechnoType
+VoiceWeaponNAttack=     ; Sound entry
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
-- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
+ - Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
 ```ini
