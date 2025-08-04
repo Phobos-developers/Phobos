@@ -318,6 +318,50 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
+void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE)
+{
+	if (!this->ReadMultiWeapon)
+	{
+		n.clear();
+		nE.clear();
+		return;
+	}
+
+	const auto pThis = this->OwnerObject();
+	const auto WeaponCount = Math::max(pThis->WeaponCount, 0);
+
+	while (int(n.size()) > WeaponCount)
+		n.erase(n.begin() + int(n.size()) - 1);
+
+	while (int(nE.size()) > WeaponCount)
+		nE.erase(nE.begin() + int(nE.size()) - 1);
+
+	char tempBuff[64];
+	for (int index = 0; index < WeaponCount; index++)
+	{
+		NullableIdx<VocClass> VoiceAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceWeapon%dAttack", index + 1);
+		VoiceAttack.Read(exINI, pSection, tempBuff);
+
+		NullableIdx<VocClass> VoiceEliteAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceEliteWeapon%dAttack", index + 1);
+		VoiceAttack.Read(exINI, pSection, tempBuff);
+
+		if (int(n.size()) > index)
+		{
+			n[index] = VoiceAttack.Get(n[index]);
+			nE[index] = VoiceEliteAttack.Get(nE[index]);
+		}
+		else
+		{
+			int voiceattack = VoiceAttack.Get(-1);
+
+			n.push_back(voiceattack);
+			nE.push_back(VoiceEliteAttack.Get(voiceattack));
+		}
+	}
+}
+
 void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 {
 	const auto pThis = this->OwnerObject();
@@ -1142,6 +1186,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
 
 	this->LoadFromINIByWhatAmI(exArtINI, pArtSection);
+
+	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
 void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection)
@@ -1532,6 +1578,10 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MultiWeapon_IsSecondary)
 		.Process(this->MultiWeapon_SelectCount)
 		.Process(this->ReadMultiWeapon)
+
+		.Process(this->VoiceIFVRepair)
+		.Process(this->VoiceWeaponAttacks)
+		.Process(this->VoiceEliteWeaponAttacks)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
