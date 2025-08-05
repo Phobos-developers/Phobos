@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 21:26+0800\n"
+"POT-Creation-Date: 2025-07-27 07:05+0800\n"
 "PO-Revision-Date: 2025-02-07 13:02+0800\n"
 "Last-Translator: \n"
 "Language: zh\n"
@@ -183,7 +183,8 @@ msgstr "**[🌐国际性的 Discord 频道：C&C Mod Haven](https://discord.gg/s
 msgid ""
 "[🇨🇳 Chinese QQ Phobos group](http://qm.qq.com/cgi-"
 "bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
-"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659) (630590659)"
+"ZedVFBMmjRrLBIzjMKJ&authKey=QfNyW4DZUFqL3ZKzGL5PgLUWTnISj0myWn4WGtPPQmi3F%2FP3vfnuBd3YjLFk%2BU94&noverify=0&group_code=630590659)"
+" (630590659)"
 msgstr ""
 "[🇨🇳 中文 QQ 群组：Phobos CN](http://qm.qq.com/cgi-"
 "bin/qm/qr?_wv=1027&k=f_h7TZoVX_8--"
@@ -426,9 +427,9 @@ msgid ""
 "editor or IDE and building via **command line scripts** included with the"
 " project is also an option."
 msgstr ""
-"使用 `.vsconfig` 中列出的依赖项安装 **Visual Studio**"
-"（至少安装 2022 版）（打开项目时会提示安装缺失的依赖项，也可以运行 VS 安装程序并导入配置）。如果你更喜欢使用 "
-"**Visual Studio Code**，也可以使用 `.vsconfig` 中的依赖项安装 **VS Build "
+"使用 `.vsconfig` 中列出的依赖项安装 **Visual Studio**（至少安装 2022 "
+"版）（打开项目时会提示安装缺失的依赖项，也可以运行 VS 安装程序并导入配置）。如果你更喜欢使用 **Visual Studio "
+"Code**，也可以使用 `.vsconfig` 中的依赖项安装 **VS Build "
 "Tools**。也可以不使用代码编辑器或集成开发环境而是通过项目中包含的 **命令行脚本** 进行构建。"
 
 #: ../../../README.md:87
@@ -465,141 +466,44 @@ msgid ""
 msgstr "构建完成后，生成的 `Phobos.dll` 和 `Phobos.pdb` 将被放置在与执行的构建配置名称相同的子目录中。"
 
 #: ../../../README.md:97
-msgid "Developers"
-msgstr "开发者"
-
-#: ../../../README.md:98
-msgid "**Belonit (Gluk-v48)** - project author"
-msgstr "**Belonit (Gluk-v48)** - 项目作者"
-
-#: ../../../README.md:99
 msgid ""
-"**Kerbiter (Metadorius)** - project co-author, BDFL, maintainer "
-"([Patreon](https://www.patreon.com/kerbiter), PM me for PayPal to avoid "
-"fees)"
+"This project was founded by [@Belonit](https://github.com/Belonit) "
+"(Gluk-v48) and [@Metadorius](https://github.com/Metadorius) (Kerbiter) in"
+" 2020, with the first public stable release in 2021. Since then it has "
+"grown into a large community project with many contributors and "
+"maintainers."
 msgstr ""
-"**Kerbiter (Metadorius)** - "
-"项目共同作者，BDFL，维护者（[Patreon](https://www.patreon.com/kerbiter)）"
-
-#: ../../../README.md:100
-msgid ""
-"**Starkku** - co-maintainer, developer "
-"([Patreon](https://www.patreon.com/Starkku))"
-msgstr "**Starkku** - 共同维护者，开发者（[Patreon](https://www.patreon.com/Starkku)）"
-
-#: ../../../README.md:101
-msgid "**Uranusian (Thrifinesma)** - developer, CN community ambassador"
-msgstr "**Uranusian (Thrifinesma)** - 开发者，中国社区大使"
-
-#: ../../../README.md:102
-msgid "**secsome (SEC-SOME)** - developer"
-msgstr "**secsome (SEC-SOME)** - 开发者"
-
-#: ../../../README.md:103
-msgid ""
-"**Otamaa (Fahroni, BoredEXE)** - developer "
-"([PayPal](https://paypal.me/GeneralOtama))"
-msgstr ""
-"**Otamaa (Fahroni, BoredEXE)** - "
-"开发者（[PayPal](https://paypal.me/GeneralOtama)）"
-
-#: ../../../README.md:104
-msgid "**FS-21** - developer"
-msgstr "**FS-21** - 开发者"
-
-#: ../../../README.md:105
-msgid "**Morton (MortonPL)** - co-maintainer, developer"
-msgstr "**Morton (MortonPL)** - 共同维护者，开发者"
-
-#: ../../../README.md:106
-msgid "**Trsdy (chaserli)** - co-maintainer, developer"
-msgstr "**Trsdy (chaserli)** - 共同维护者，开发者"
-
-#: ../../../README.md:108
-msgid "For all contributions see [full credits list](CREDITS.md)."
-msgstr "所有贡献者名单参见 [完整致谢列表](CREDITS.md)。"
-
-#: ../../../README.md:110
-msgid ""
-"Thanks to everyone who uses Phobos, tests changes and reports bugs! You "
-"can show your appreciation and help project by displaying the logo "
-"(monochrome version can be found [here](https://github.com/Phobos-"
-"developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher "
-"(make it open Phobos GitHub page for extra fanciness), linking to Phobos "
-"repository, contributing or donating to us via the links above."
-msgstr ""
-"感谢所有使用 Phobos、测试更改和报告 Bug 的人！ 你可以将我们的 Logo（单色版本可在 [此处](https://github.com"
-"/Phobos-developers/Phobos/blob/develop/logo-mono.png) "
-"获取）在你的客户端／启动器中展示（使其能够打开 Phobos 项目的 GitHub 主页以显得更加豪华）、将其链接到 Phobos "
-"仓库、通过上方链接想我没贡献代码或进行捐助等方式来表达你的感谢并为本项目提供助力。"
-
-#: ../../../README.md:112
-msgid "Legal and License"
-msgstr "法律与许可证"
-
-#: ../../../README.md:115
-msgid ""
-"[![GPL "
-"v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)"
-msgstr ""
-
-#: ../../../README.md:115
-msgid "GPL v3"
-msgstr ""
-
-#: ../../../README.md:117
-msgid ""
-"The Phobos project is an unofficial open-source community collaboration "
-"project to extend the Red Alert 2 Yuri's Revenge engine for modding and "
-"compatibility purposes."
-msgstr "Phobos 是一个非官方的开源社区合作项目，旨在扩展《红色警戒2尤里的复仇》引擎以用于 Mod 制作与兼容性目的。"
-
-#: ../../../README.md:119
-msgid ""
-"As a modification, the project complies with [EA C&C modding "
-"guidelines](https://www.ea.com/games/command-and-conquer/command-and-"
-"conquer-remastered/modding-faq); should there be conflict between the "
-"project's license and modding guidelines - the rules imposed by "
-"guidelines shall take precedence (for example, the project should not be "
-"commercial or used to make money)."
-msgstr ""
-"作为一项修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-conquer"
-"/command-and-conquer-remastered/modding-"
-"faq)；如果项目许可与修改指南之间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
-
-#: ../../../README.md:121
-msgid ""
-"This project has no direct affiliation with Electronic Arts Inc. Command "
-"& Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's "
-"Revenge are registered trademarks of Electronic Arts Inc. All Rights "
-"Reserved."
-msgstr ""
-"本项目与艺电公司（Electronic Arts Inc.）没有任何直接关联。「Command & Conquer」、「Command & "
-"Conquer Red Alert 2」 和 「Command & Conquer Yuri's "
-"Revenge」均为艺电公司的注册商标。版权所有。"
-
-#: ../../../README.md:97
-msgid "This project was founded by [@Belonit](https://github.com/Belonit) (Gluk-v48) and [@Metadorius](https://github.com/Metadorius) (Kerbiter) in 2020, with the first public stable release in 2021. Since then it has grown into a large community project with many contributors and maintainers."
-msgstr "本项目由 [@Belonit](https://github.com/Belonit)（Gluk-v48）和 [@Metadorius](https://github.com/Metadorius)（Kerbiter）于 2020 年创立，2021 年首次发布稳定版。此后它已发展成为一个由众多贡献者和维护者组成的大型社区项目。"
+"本项目由 [@Belonit](https://github.com/Belonit)（Gluk-v48）和 "
+"[@Metadorius](https://github.com/Metadorius)（Kerbiter）于 2020 年创立，2021 "
+"年首次发布稳定版。此后它已发展成为一个由众多贡献者和维护者组成的大型社区项目。"
 
 #: ../../../README.md:99
 msgid "Maintenance crew"
 msgstr "维护团队"
 
 #: ../../../README.md:101
-msgid "Maintenance crew consists of experienced Phobos contributors who are recognized and given the permission to maintain and shape the project to the extent of their permissions."
+msgid ""
+"Maintenance crew consists of experienced Phobos contributors who are "
+"recognized and given the permission to maintain and shape the project to "
+"the extent of their permissions."
 msgstr "维护团队由经验丰富的 Phobos 贡献者组成，他们经过认可并获得相应权限，可在其权限范围内对项目进行维护和规划。"
 
 #: ../../../README.md:103
-msgid "Every maintenance crew member is welcome to put a donation link to their entry in the list below."
+msgid ""
+"Every maintenance crew member is welcome to put a donation link to their "
+"entry in the list below."
 msgstr "欢迎每位团队成员在下方为他们自己的条目添加捐款链接。"
 
 #: ../../../README.md:105
-msgid "**Kerbiter ([@Metadorius](https://github.com/Metadorius))** - T3 maintainer (lead)"
+msgid ""
+"**Kerbiter ([@Metadorius](https://github.com/Metadorius))** - T3 "
+"maintainer (lead)"
 msgstr "**Kerbiter（[@Metadorius](https://github.com/Metadorius)）** - T3 维护者（领导者）"
 
 #: ../../../README.md:106
-msgid "[Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because of no fees) on request"
+msgid ""
+"[Patreon](https://www.patreon.com/kerbiter) · PayPal (preferable because "
+"of no fees) on request"
 msgstr "[Patreon](https://www.patreon.com/kerbiter) 或私信请求使用 PayPal（更推荐，因为免手续费）"
 
 #: ../../../README.md:107
@@ -630,89 +534,242 @@ msgstr "[Patreon](https://www.patreon.com/c/ZivDero)"
 msgid "**Ollerus ([@Coronia](https://github.com/Coronia))** - T1 maintainer"
 msgstr "**Ollerus ([@Coronia](https://github.com/Coronia))** - T1 维护者"
 
+#: ../../../README.md:114
 msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
 msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/7c5f82c5530c88dc076a6f1ca2c02b46362533219.jpg)"
 
-#: ../../../README.md:114
+#: ../../../README.md:115
 msgid "**[@NetsuNegi](https://github.com/NetsuNegi)** - T1 maintainer"
 msgstr "**[@NetsuNegi](https://github.com/NetsuNegi)** - T1 维护者"
 
-#: ../../../README.md:115
+#: ../../../README.md:116
 msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)"
 msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/cb69d2b5eb08c13d03bc79664e68b6c2362533219.png)"
 
-#: ../../../README.md:116
+#: ../../../README.md:117
 msgid "**[@TaranDahl](https://github.com/TaranDahl) (航味麻酱)** - T1 maintainer"
 msgstr "**[@TaranDahl](https://github.com/TaranDahl)（航味麻酱）** - T1 维护者"
 
-#: ../../../README.md:117
+#: ../../../README.md:118
 msgid "[WeChatPay](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
 msgstr "[微信](https://i2.hdslb.com/bfs/new_dyn/ffd5d36cc5efcdd83d93138062ec116e362533219.jpg)"
 
-#: ../../../README.md:118
-msgid "**Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** - triage, doc maintainer"
-msgstr "**Noble_Fish（[@DeathFishAtEase](https://github.com/DeathFishAtEase)）** - 分派、文档维护者"
-
 #: ../../../README.md:119
+msgid ""
+"**Noble_Fish ([@DeathFishAtEase](https://github.com/DeathFishAtEase))** -"
+" triage, doc maintainer"
+msgstr ""
+"**Noble_Fish（[@DeathFishAtEase](https://github.com/DeathFishAtEase)）** - "
+"分派、文档维护者"
+
+#: ../../../README.md:120
 msgid "[Alipay](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)"
 msgstr "[支付宝](https://i2.hdslb.com/bfs/new_dyn/b080641faea49ae3e10b4728679ef2e5362533219.jpg)"
 
-#: ../../../README.md:120
+#: ../../../README.md:121
 msgid "**FlyStar ([@Fly-Star-him](https://github.com/Fly-Star-him))** - triage"
 msgstr "**FlyStar（[@Fly-Star-him](https://github.com/Fly-Star-him)）** - 分派"
 
-#: ../../../README.md:121
+#: ../../../README.md:122
 msgid "**[@Fryone](https://github.com/Fryone)** - triage"
 msgstr "**[@Fryone](https://github.com/Fryone)** - 分派"
 
-#: ../../../README.md:123
+#: ../../../README.md:124
 msgid "Inactive"
 msgstr "不活跃的维护团队成员"
 
-#: ../../../README.md:124
-msgid "*Please note that being put here just means that you seem to be currently inactive as a part of maintenance crew. You are always welcome to return to the active crew if you want to help out again!*"
+#: ../../../README.md:126
+msgid ""
+"*Please note that being put here just means that you seem to be currently"
+" inactive as a part of maintenance crew. You are always welcome to return"
+" to the active crew if you want to help out again!*"
 msgstr "*请注意：被列在此处仅表示您作为维护团队的成员但似乎并不活跃。如果您想再次提供帮助，欢迎您随时归队！*"
 
-#: ../../../README.md:126
+#: ../../../README.md:128
 msgid "**Gluk-v48 ([@Belonit](https://github.com/Belonit))** - lead in the past"
 msgstr "**Gluk-v48（[@Belonit](https://github.com/Belonit)）** - 旧有领导者"
 
-#: ../../../README.md:127
-msgid "**Uranusian ([@Thrifinesma](https://github.com/Thrifinesma))** - T2 maintainer, CN community ambassador, doc maintainer"
-msgstr "**Uranusian（[@Thrifinesma](https://github.com/Thrifinesma)）** - T2 维护者、中国社区大使、文档维护者"
+#: ../../../README.md:129
+msgid ""
+"**Uranusian ([@Thrifinesma](https://github.com/Thrifinesma))** - T2 "
+"maintainer, CN community ambassador, doc maintainer"
+msgstr ""
+"**Uranusian（[@Thrifinesma](https://github.com/Thrifinesma)）** - T2 "
+"维护者、中国社区大使、文档维护者"
 
-#: ../../../README.md:128
+#: ../../../README.md:130
 msgid "**[@secsome](https://github.com/secsome)** - maintainer"
 msgstr "**[@secsome](https://github.com/secsome)** - 维护者"
 
-#: ../../../README.md:129
+#: ../../../README.md:131
 msgid "**[@Otamaa](https://github.com/Otamaa) (Fahroni, BoredEXE)** - maintainer"
 msgstr "**[@Otamaa](https://github.com/Otamaa)（Fahroni 或 BoredEXE）** - 维护者"
 
-#: ../../../README.md:130
-msgid "**[@FS-21](https://github.com/FS-21)** - inactive as a maintainer specifically"
+#: ../../../README.md:132
+msgid ""
+"**[@FS-21](https://github.com/FS-21)** - inactive as a maintainer "
+"specifically"
 msgstr "**[@FS-21](https://github.com/FS-21)** - 作为维护者而言并不活跃"
 
-#: ../../../README.md:131
+#: ../../../README.md:133
 msgid "**Morton ([@MortonPL](https://github.com/FS-21))** - T2 maintainer"
 msgstr "**Morton（[@MortonPL](https://github.com/FS-21)）** - T2 维护者"
 
-#: ../../../README.md:132
+#: ../../../README.md:134
 msgid "**Trsdy ([@chaserli](https://github.com/chaserli))** - T2 maintainer"
 msgstr "**Trsdy ([@chaserli](https://github.com/chaserli))** - T2 维护者"
 
-#: ../../../README.md:135
-msgid "The project is so big that listing here all the help we receive or received will make the size of the readme explode, so please see the [full credits list](CREDITS.md) for that. We appreciate your help, contributions and support regardless!"
-msgstr "项目规模如此庞大以至于在此处列出我们正在或曾经获得的所有帮助将使自述文件的篇幅急剧膨胀，因此请查阅 [完整致谢列表](CREDITS.md) 以获取相关信息。无论您提供何种帮助、贡献或支持，我们都表示感谢！"
+#: ../../../README.md:136
+msgid ""
+"The project is so big that listing here all the help we receive or "
+"received will make the size of the readme explode, so please see the "
+"[full credits list](CREDITS.md) for that. We appreciate your help, "
+"contributions and support regardless!"
+msgstr ""
+"项目规模如此庞大以至于在此处列出我们正在或曾经获得的所有帮助将使自述文件的篇幅急剧膨胀，因此请查阅 [完整致谢列表](CREDITS.md) "
+"以获取相关信息。无论您提供何种帮助、贡献或支持，我们都表示感谢！"
 
-#: ../../../README.md:137
+#: ../../../README.md:138
 msgid "Attribution"
 msgstr "归属"
 
-#: ../../../README.md:140
-msgid "You can show your appreciation and help project's publicity by displaying the logo (monochrome version can be found [here](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your client/launcher (make it a button that opens Phobos GitHub page for extra fanciness). To fit with the mod styling, you are allowed to stylize the monochrome logo in a non-intrusive way (for example, recolor it to match the mod theme) without otherwise changing it. If unsure - ask us first."
-msgstr "你可以通过在你的客户端／启动器中展示我们的 Logo（单色版本可在 [此处](https://github.com/Phobos-developers/Phobos/blob/develop/logo-mono.png) 获取）来表达支持并助力项目宣传（可以将其设为点击即可打开 Phobos 项目 GitHub 主页的按钮，效果更佳）。为契合 Mod 风格，你可以在不改变基本图形的前提下以不突兀的方式设计单色 Logo（例如，将其重新着色以匹配 Mod 的主题）。如有疑问，请 **先** 询问我们。"
+#: ../../../README.md:141
+msgid ""
+"You can show your appreciation and help project's publicity by displaying"
+" the logo (monochrome version can be found [here](https://github.com"
+"/Phobos-developers/Phobos/blob/develop/logo-mono.png)) in your "
+"client/launcher (make it a button that opens Phobos GitHub page for extra"
+" fanciness). To fit with the mod styling, you are allowed to stylize the "
+"monochrome logo in a non-intrusive way (for example, recolor it to match "
+"the mod theme) without otherwise changing it. If unsure - ask us first."
+msgstr ""
+"你可以通过在你的客户端／启动器中展示我们的 Logo（单色版本可在 [此处](https://github.com/Phobos-"
+"developers/Phobos/blob/develop/logo-mono.png) "
+"获取）来表达支持并助力项目宣传（可以将其设为点击即可打开 Phobos 项目 GitHub 主页的按钮，效果更佳）。为契合 Mod "
+"风格，你可以在不改变基本图形的前提下以不突兀的方式设计单色 Logo（例如，将其重新着色以匹配 Mod 的主题）。如有疑问，请 **先** "
+"询问我们。"
 
-#: ../../../README.md:142
-msgid "When promoting features of your mod that you implemented using Phobos, please give credit to Phobos and it's contributors. A good promotion for Phobos is concise and specific to features that are being showcased, for example: \"This feature is made possible by Phobos\", \"Implemented using XYZ from Phobos\", etc. This helps end users understand the nature of Phobos and its role in the modding community, and gives the needed recognition to the project and its contributors."
-msgstr "在宣传你通过 Phobos 实现的 Mod 功能时，请给予 Phobos 项目及其贡献者应有的感谢。一个对 Phobos 的良好宣传应当简洁明了且聚焦于所展示的功能，例如：「此功能由 Phobos 实现」、「使用 Phobos 的 XYZ 功能实现」等。这有助于最终用户了解 Phobos 的性质及其在修改社区中的作用，也为该项目及其贡献者提供应有的认可。"
+#: ../../../README.md:143
+msgid ""
+"When promoting features of your mod that you implemented using Phobos, "
+"please give credit to Phobos and it's contributors. A good promotion for "
+"Phobos is concise and specific to features that are being showcased, for "
+"example: \"This feature is made possible by Phobos\", \"Implemented using"
+" XYZ from Phobos\", etc. This helps end users understand the nature of "
+"Phobos and its role in the modding community, and gives the needed "
+"recognition to the project and its contributors."
+msgstr ""
+"在宣传你通过 Phobos 实现的 Mod 功能时，请给予 Phobos 项目及其贡献者应有的感谢。一个对 Phobos "
+"的良好宣传应当简洁明了且聚焦于所展示的功能，例如：「此功能由 Phobos 实现」、「使用 Phobos 的 XYZ "
+"功能实现」等。这有助于最终用户了解 Phobos 的性质及其在修改社区中的作用，也为该项目及其贡献者提供应有的认可。"
+
+#: ../../../README.md:145
+msgid "Legal and License"
+msgstr "法律与许可证"
+
+#: ../../../README.md:148
+msgid ""
+"[![GPL "
+"v3](https://www.gnu.org/graphics/gplv3-127x51.png)](https://opensource.org/license/GPL-3.0)"
+msgstr ""
+
+#: ../../../README.md:148
+msgid "GPL v3"
+msgstr ""
+
+#: ../../../README.md:150
+msgid ""
+"The Phobos project is an unofficial open-source community collaboration "
+"project to extend the Red Alert 2 Yuri's Revenge engine for modding and "
+"compatibility purposes."
+msgstr "Phobos 是一个非官方的开源社区合作项目，旨在扩展《红色警戒2尤里的复仇》引擎以用于 Mod 制作与兼容性目的。"
+
+#: ../../../README.md:152
+msgid ""
+"As a modification, the project complies with [EA C&C modding "
+"guidelines](https://www.ea.com/games/command-and-conquer/command-and-"
+"conquer-remastered/modding-faq); should there be conflict between the "
+"project's license and modding guidelines - the rules imposed by "
+"guidelines shall take precedence (for example, the project should not be "
+"commercial or used to make money)."
+msgstr ""
+"作为一项修改，该项目符合 [EA C&C 修改指南](https://www.ea.com/games/command-and-conquer"
+"/command-and-conquer-remastered/modding-"
+"faq)；如果项目许可与修改指南之间存在冲突，则以指南中的规则为准（例如，该项目不应用于商业用途或用于盈利）。"
+
+#: ../../../README.md:154
+msgid ""
+"This project has no direct affiliation with Electronic Arts Inc. Command "
+"& Conquer, Command & Conquer Red Alert 2, Command & Conquer Yuri's "
+"Revenge are registered trademarks of Electronic Arts Inc. All Rights "
+"Reserved."
+msgstr ""
+"本项目与艺电公司（Electronic Arts Inc.）没有任何直接关联。「Command & Conquer」、「Command & "
+"Conquer Red Alert 2」 和 「Command & Conquer Yuri's "
+"Revenge」均为艺电公司的注册商标。版权所有。"
+
+#~ msgid "Developers"
+#~ msgstr "开发者"
+
+#~ msgid "**Belonit (Gluk-v48)** - project author"
+#~ msgstr "**Belonit (Gluk-v48)** - 项目作者"
+
+#~ msgid ""
+#~ "**Kerbiter (Metadorius)** - project co-"
+#~ "author, BDFL, maintainer "
+#~ "([Patreon](https://www.patreon.com/kerbiter), PM me "
+#~ "for PayPal to avoid fees)"
+#~ msgstr ""
+#~ "**Kerbiter (Metadorius)** - "
+#~ "项目共同作者，BDFL，维护者（[Patreon](https://www.patreon.com/kerbiter)）"
+
+#~ msgid ""
+#~ "**Starkku** - co-maintainer, developer "
+#~ "([Patreon](https://www.patreon.com/Starkku))"
+#~ msgstr "**Starkku** - 共同维护者，开发者（[Patreon](https://www.patreon.com/Starkku)）"
+
+#~ msgid "**Uranusian (Thrifinesma)** - developer, CN community ambassador"
+#~ msgstr "**Uranusian (Thrifinesma)** - 开发者，中国社区大使"
+
+#~ msgid "**secsome (SEC-SOME)** - developer"
+#~ msgstr "**secsome (SEC-SOME)** - 开发者"
+
+#~ msgid ""
+#~ "**Otamaa (Fahroni, BoredEXE)** - developer "
+#~ "([PayPal](https://paypal.me/GeneralOtama))"
+#~ msgstr ""
+#~ "**Otamaa (Fahroni, BoredEXE)** - "
+#~ "开发者（[PayPal](https://paypal.me/GeneralOtama)）"
+
+#~ msgid "**FS-21** - developer"
+#~ msgstr "**FS-21** - 开发者"
+
+#~ msgid "**Morton (MortonPL)** - co-maintainer, developer"
+#~ msgstr "**Morton (MortonPL)** - 共同维护者，开发者"
+
+#~ msgid "**Trsdy (chaserli)** - co-maintainer, developer"
+#~ msgstr "**Trsdy (chaserli)** - 共同维护者，开发者"
+
+#~ msgid "For all contributions see [full credits list](CREDITS.md)."
+#~ msgstr "所有贡献者名单参见 [完整致谢列表](CREDITS.md)。"
+
+#~ msgid ""
+#~ "Thanks to everyone who uses Phobos, "
+#~ "tests changes and reports bugs! You "
+#~ "can show your appreciation and help "
+#~ "project by displaying the logo "
+#~ "(monochrome version can be found "
+#~ "[here](https://github.com/Phobos-developers/Phobos/blob/develop"
+#~ "/logo-mono.png)) in your client/launcher "
+#~ "(make it open Phobos GitHub page "
+#~ "for extra fanciness), linking to Phobos"
+#~ " repository, contributing or donating to"
+#~ " us via the links above."
+#~ msgstr ""
+#~ "感谢所有使用 Phobos、测试更改和报告 Bug 的人！ 你可以将我们的 "
+#~ "Logo（单色版本可在 [此处](https://github.com/Phobos-"
+#~ "developers/Phobos/blob/develop/logo-mono.png) "
+#~ "获取）在你的客户端／启动器中展示（使其能够打开 Phobos 项目的 GitHub "
+#~ "主页以显得更加豪华）、将其链接到 Phobos "
+#~ "仓库、通过上方链接想我没贡献代码或进行捐助等方式来表达你的感谢并为本项目提供助力。"
+

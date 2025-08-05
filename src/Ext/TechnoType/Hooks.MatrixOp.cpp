@@ -84,13 +84,13 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 	mtx.RotateZ(static_cast<float>(pThis->PrimaryFacing.Current().GetRadian<32>()));
 	TechnoTypeExt::ApplyTurretOffset(pThis->Type, &mtx);
 
-	double turretRad = pThis->TurretFacing().GetRadian<32>();
-	double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
-	float angle = static_cast<float>(turretRad - bodyRad);
+	const double turretRad = pThis->TurretFacing().GetRadian<32>();
+	const double bodyRad = pThis->PrimaryFacing.Current().GetRadian<32>();
+	const float angle = static_cast<float>(turretRad - bodyRad);
 	mtx.RotateZ(angle);
 
-	auto res = mtx.GetTranslation();
-	auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
+	const auto res = mtx.GetTranslation();
+	const auto location = CoordStruct { static_cast<int>(res.X), static_cast<int>(-res.Y), static_cast<int>(res.Z) };
 
 	pos += TacticalClass::CoordsToScreen(location);
 
@@ -102,15 +102,6 @@ DEFINE_HOOK(0x73CCE1, UnitClass_DrawSHP_TurretOffest, 0x6)
 // Hi there copycat
 
 #pragma region draw_matrix
-
-struct BodyVoxelIndexKey
-{
-	unsigned bodyFrame : 5;
-	unsigned bodyFace : 5;
-	unsigned slopeIndex : 6;
-	unsigned isSpawnAlt : 1;
-	unsigned reserved : 15;
-};
 
 struct JumpjetTiltVoxelIndexKey
 {
@@ -127,13 +118,7 @@ struct PhobosVoxelIndexKey
 {
 	union
 	{
-		int Value;
-		union
-		{
-			VoxelIndexKey Base;
-			BodyVoxelIndexKey Body;
-			// add other references here as needed
-		} BaseIndexKey;
+		VoxelIndexKey Base;
 		union
 		{
 			JumpjetTiltVoxelIndexKey JumpjetTiltVoxel;
@@ -142,35 +127,8 @@ struct PhobosVoxelIndexKey
 	};
 
 	// add funcs here if needed
-	constexpr PhobosVoxelIndexKey(int val = 0) noexcept
-	{
-		Value = val;
-	}
-
-	constexpr operator int () const
-	{
-		return Value;
-	}
-
-	constexpr bool IsCleanKey() const
-	{
-		return Value == 0;
-	}
-
-	constexpr bool IsValidKey() const
-	{
-		return Value != -1;
-	}
-
-	constexpr void Invalidate()
-	{
-		Value = -1;
-	}
-
-	constexpr bool IsExtraBodyKey() const
-	{
-		return BaseIndexKey.Body.reserved != 0;
-	}
+	constexpr bool IsCleanKey() const { return Base.Value == 0; }
+	constexpr bool IsJumpjetKey() const { return Base.MainVoxel.Reserved != 0; }
 };
 
 static_assert(sizeof(PhobosVoxelIndexKey) == sizeof(VoxelIndexKey), "PhobosVoxelIndexKey size mismatch");
@@ -179,19 +137,20 @@ DEFINE_HOOK(0x4CF68D, FlyLocomotionClass_DrawMatrix_OnAirport, 0x5)
 {
 	GET(ILocomotion*, iloco, ESI);
 	__assume(iloco != nullptr);
-	auto loco = static_cast<FlyLocomotionClass*>(iloco);
-	auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
+	const auto loco = static_cast<FlyLocomotionClass*>(iloco);
+	const auto pThis = static_cast<AircraftClass*>(loco->LinkedTo);
 	if (pThis->GetHeight() <= 0)
 	{
 		REF_STACK(Matrix3D, mat, STACK_OFFSET(0x38, -0x30));
-		auto slope_idx = MapClass::Instance.GetCellAt(pThis->Location)->SlopeIndex;
+		const auto slope_idx = MapClass::Instance.GetCellAt(pThis->Location)->SlopeIndex;
 		mat = Matrix3D::VoxelRampMatrix[slope_idx] * mat;
-		float ars = pThis->AngleRotatedSideways;
-		float arf = pThis->AngleRotatedForwards;
+		const float ars = pThis->AngleRotatedSideways;
+		const float arf = pThis->AngleRotatedForwards;
 		if (std::abs(ars) > 0.005 || std::abs(arf) > 0.005)
 		{
-			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pThis->Type->VoxelScaleX
-				+ std::abs(Math::sin(arf)) * pThis->Type->VoxelScaleY));
+			const auto pType = pThis->Type;
+			mat.TranslateZ(float(std::abs(Math::sin(ars)) * pType->VoxelScaleX
+				+ std::abs(Math::sin(arf)) * pType->VoxelScaleY));
 			R->ECX(pThis);
 			return 0x4CF6AD;
 		}
@@ -215,14 +174,14 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<JumpjetLocomotionClass*>(iloco);
-	auto linked = pThis->LinkedTo;
+	auto const linked = pThis->LinkedTo;
 	// no more TiltCrashJumpjet, do that above svp
 	bool const onGround = pThis->State == JumpjetLocomotionClass::State::Grounded;
 	// Man, what can I say, you don't want to stick your rotor into the ground
-	auto slope_idx = MapClass::Instance.GetCellAt(linked->Location)->SlopeIndex;
+	auto const slope_idx = MapClass::Instance.GetCellAt(linked->Location)->SlopeIndex;
 	*ret = Matrix3D::VoxelRampMatrix[onGround ? slope_idx : 0];
 	// Only use LocomotionFacing for general Jumpjet to avoid the problem that ground units being lifted will turn to attacker weirdly.
-	auto curf = linked->IsAttackedByLocomotor ? linked->PrimaryFacing.Current() : pThis->LocomotionFacing.Current();
+	auto const curf = linked->IsAttackedByLocomotor ? linked->PrimaryFacing.Current() : pThis->LocomotionFacing.Current();
 	ret->RotateZ((float)curf.GetRadian<32>());
 	float arf = linked->AngleRotatedForwards;
 	float ars = linked->AngleRotatedSideways;
@@ -232,13 +191,13 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
 		if (key)
-			key->Invalidate();
+			key->Base.Invalidate();
 
 		if (onGround)
 		{
 			const auto pType = linked->GetTechnoType();
-			double scalex = pType->VoxelScaleX;
-			double scaley = pType->VoxelScaleY;
+			const double scalex = pType->VoxelScaleX;
+			const double scaley = pType->VoxelScaleY;
 			Matrix3D pre = Matrix3D::GetIdentity();
 			pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
 			ret->TranslateX(float(Math::sgn(arf) * (scaley * (1 - Math::cos(arf)))));
@@ -284,21 +243,26 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 					* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
 
 				const auto arsDir = DirStruct(ars);
-				arsFace = (arsDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+				// When changing the radian to DirStruct, it will rotate 90 degrees.
+				// To ensure that 0 is still 0, it needs to be rotated back
+				arsFace = arsDir.GetFacing<128>(96);
 
 				if (arsFace)
 					ret->RotateX(static_cast<float>(arsDir.GetRadian<128>()));
 			}
 
 			const auto arfDir = DirStruct(arf);
-			arfFace = (arfDir.GetFacing<128>() + 96u) & 0x7Fu;
+
+			// Similarly, turn it back
+			arfFace = arfDir.GetFacing<128>(96);
 
 			if (arfFace)
 				ret->RotateY(static_cast<float>(arfDir.GetRadian<128>()));
 		}
 	}
 
-	if (key && key->IsValidKey())
+	if (key && key->Base.Is_Valid_Key())
 	{
 		// It is currently unclear whether the passed key only has two situations:
 		// all 0s and all 1s, so I use the safest approach for now
@@ -313,15 +277,15 @@ Matrix3D* __stdcall JumpjetLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matri
 			key->CustomIndexKey.JumpjetTiltVoxel.bodyFace = curf.GetFacing<32>();
 
 			// Outside the function, there is another step to add a frame number to the key for drawing
-			key->Value >>= 5;
+			key->Base.Value >>= 5;
 		}
 		else // Keep the original code
 		{
 			if (onGround)
-				key->Value = slope_idx + (key->Value << 6);
+				key->Base.Value = slope_idx + (key->Base.Value << 6);
 
-			key->Value <<= 5;
-			key->Value |= curf.GetFacing<32>();
+			key->Base.Value <<= 5;
+			key->Base.Value |= curf.GetFacing<32>();
 		}
 	}
 
@@ -334,8 +298,8 @@ DEFINE_HOOK(0x73B748, UnitClass_DrawVXL_ResetKeyForTurretUse, 0x7)
 	REF_STACK(PhobosVoxelIndexKey, key, STACK_OFFSET(0x1C4, -0x1B0));
 
 	// Main body drawing completed, then enable accurate drawing of turrets and barrels
-	if (key.IsValidKey() && key.IsExtraBodyKey()) // Flags used by JumpjetTilt units
-		key.Invalidate();
+	if (key.Base.Is_Valid_Key() && key.IsJumpjetKey())
+		key.Base.Invalidate();
 
 	return 0;
 }
@@ -345,16 +309,16 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 {
 	__assume(iloco != nullptr);
 	auto const pThis = static_cast<LocomotionClass*>(iloco);
-	auto linked = pThis->LinkedTo;
-	auto slope_idx = MapClass::Instance.GetCellAt(linked->Location)->SlopeIndex;
+	auto const linked = pThis->LinkedTo;
+	auto const slope_idx = MapClass::Instance.GetCellAt(linked->Location)->SlopeIndex;
 
 	if (pIndex && pIndex->Is_Valid_Key())
 		*(int*)(pIndex) = slope_idx + (*(int*)(pIndex) << 6);
 
 	*ret = Matrix3D::VoxelRampMatrix[slope_idx] * pThis->LocomotionClass::Draw_Matrix(pIndex);
 
-	float arf = linked->AngleRotatedForwards;
-	float ars = linked->AngleRotatedSideways;
+	const float arf = linked->AngleRotatedForwards;
+	const float ars = linked->AngleRotatedSideways;
 
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
@@ -362,8 +326,8 @@ Matrix3D* __stdcall TeleportLocomotionClass_Draw_Matrix(ILocomotion* iloco, Matr
 			pIndex->Invalidate();
 
 		const auto pType = linked->GetTechnoType();
-		double scalex = pType->VoxelScaleX;
-		double scaley = pType->VoxelScaleY;
+		const double scalex = pType->VoxelScaleX;
+		const double scaley = pType->VoxelScaleY;
 
 		Matrix3D pre = Matrix3D::GetIdentity();
 		pre.TranslateZ(float(std::abs(Math::sin(ars)) * scalex + std::abs(Math::sin(arf)) * scaley));
@@ -411,7 +375,7 @@ DEFINE_FUNCTION_JUMP(CALL, 0x55A814, sub7559B0);
 Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matrix3D* ret, VoxelIndexKey* key)
 {
 	__assume(iloco != nullptr);
-	auto tLoco = static_cast<TunnelLocomotionClass*>(iloco);
+	const auto tLoco = static_cast<TunnelLocomotionClass*>(iloco);
 	*ret = tLoco->LocomotionClass::Shadow_Matrix(key);
 	if (tLoco->State != TunnelLocomotionClass::State::Idle)
 	{
@@ -421,7 +385,7 @@ Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matri
 		case TunnelLocomotionClass::State::DiggingIn:
 			if (key)key->Invalidate();
 			theta = Math::HalfPi;
-			if (auto total = tLoco->DigTimer.Rate)
+			if (const auto total = tLoco->DigTimer.Rate)
 				theta *= 1.0 - double(tLoco->DigTimer.GetTimeLeft()) / double(total);
 			break;
 		case TunnelLocomotionClass::State::DugIn:
@@ -433,13 +397,13 @@ Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matri
 		case TunnelLocomotionClass::State::DiggingOut:
 			if (key)key->Invalidate();
 			theta = -Math::HalfPi;
-			if (auto total = tLoco->DigTimer.Rate)
+			if (const auto total = tLoco->DigTimer.Rate)
 				theta *= double(tLoco->DigTimer.GetTimeLeft()) / double(total);
 			break;
 		case TunnelLocomotionClass::State::DugOut:
 			if (key)key->Invalidate();
 			theta = Math::HalfPi;
-			if (auto total = tLoco->DigTimer.Rate)
+			if (const auto total = tLoco->DigTimer.Rate)
 				theta *= double(tLoco->DigTimer.GetTimeLeft()) / double(total);
 			break;
 		default:break;
@@ -585,37 +549,39 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_point.Y += 1;
 
 	if (!pType->UseTurretShadow)
-	if (uTypeExt->ShadowIndices.empty())
 	{
-		if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
-			pThis->DrawVoxelShadow(
-				main_vxl,
-				pType->ShadowIndex,
-				vxl_index_key,
-				&pType->VoxelShadowCache,
-				bnd,
-				&why,
-				&mtx,
-				true,
-				surface,
-				shadow_point
-			);
-	}
-	else
-	{
-		for (auto& [index, _] : uTypeExt->ShadowIndices)
-			pThis->DrawVoxelShadow(
-				main_vxl,
-				index,
-				index == pType->ShadowIndex ? vxl_index_key : VoxelIndexKey(-1),
-				&pType->VoxelShadowCache,
-				bnd,
-				&why,
-				&mtx,
-				index == pType->ShadowIndex,
-				surface,
-				shadow_point
-			);
+		if (uTypeExt->ShadowIndices.empty())
+		{
+			if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
+				pThis->DrawVoxelShadow(
+					main_vxl,
+					pType->ShadowIndex,
+					vxl_index_key,
+					&pType->VoxelShadowCache,
+					bnd,
+					&why,
+					&mtx,
+					true,
+					surface,
+					shadow_point
+				);
+		}
+		else
+		{
+			for (auto& [index, _] : uTypeExt->ShadowIndices)
+				pThis->DrawVoxelShadow(
+					main_vxl,
+					index,
+					index == pType->ShadowIndex ? vxl_index_key : VoxelIndexKey(-1),
+					&pType->VoxelShadowCache,
+					bnd,
+					&why,
+					&mtx,
+					index == pType->ShadowIndex,
+					surface,
+					shadow_point
+				);
+		}
 	}
 
 	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
@@ -658,25 +624,28 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	uTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
 
-	auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
+	const auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
 	if (!(tur && tur->VXL && tur->HVA))
 		return SkipDrawing;
 
-	auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
-	auto haveBar = bar && bar->VXL && bar->HVA && !bar->VXL->Initialized;
+	const auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
+	const auto haveBar = bar && bar->VXL && bar->HVA && !bar->VXL->Initialized;
 	if (vxl_index_key.Is_Valid_Key())
-		vxl_index_key.TurretWeapon.Facing = pThis->SecondaryFacing.Current().GetFacing<32>();
+		vxl_index_key.MinorVoxel.TurretFacing = pThis->SecondaryFacing.Current().GetFacing<32>();
 
 	auto* cache = &pType->VoxelShadowCache;
 	if (!pType->UseTurretShadow)
 	{
 		if (haveBar)
+		{
 			cache = nullptr;
+		}
 		else
-			cache = tur != &pType->TurretVoxel ?
-			nullptr // man what can I say, you are fucked, for now
-			: reinterpret_cast<decltype(cache)>(&pType->VoxelTurretBarrelCache) // excuse me
-			;
+		{
+			cache = tur != &pType->TurretVoxel
+				? nullptr // man what can I say, you are fucked, for now
+				: reinterpret_cast<decltype(cache)>(&pType->VoxelTurretBarrelCache); // excuse me
+		}
 	}
 
 	pThis->DrawVoxelShadow(
@@ -692,7 +661,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_point
 	);
 
-	if (haveBar)// you are utterly fucked, for now
+	if (haveBar) // you are utterly fucked, for now
+	{
 		pThis->DrawVoxelShadow(
 			bar,
 			0,
@@ -705,6 +675,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			surface,
 			shadow_point
 		);
+	}
 
 	return SkipDrawing;
 }
@@ -757,7 +728,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 		if (key.Is_Valid_Key() && (std::abs(arf) > 0.005 || std::abs(ars) > 0.005))
 			key.Invalidate();
 
-		shadow_mtx.RotateX((float)ars);
+		shadow_mtx.RotateX(ars);
 		shadow_mtx.RotateY((float)arf);
 	}
 	else if (height > 0)
@@ -770,15 +741,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	shadow_mtx = Matrix3D::VoxelDefaultMatrix * shadow_mtx;
 
 	auto const main_vxl = &pAircraftType->MainVoxel;
+	auto shadow_cache = &pAircraftType->VoxelShadowCache;
 	// flor += loco->Shadow_Point(); // no longer needed
 	if (aTypeExt->ShadowIndices.empty())
 	{
-		auto const shadow_index = pAircraftType->ShadowIndex;
+		const int shadow_index = pAircraftType->ShadowIndex;
 		if (shadow_index >= 0 && shadow_index < main_vxl->HVA->LayerCount)
 			pThis->DrawVoxelShadow(main_vxl,
 				shadow_index,
 				key,
-				&pAircraftType->VoxelShadowCache,
+				shadow_cache,
 				bound,
 				&flor,
 				&shadow_mtx,
@@ -789,15 +761,16 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 	}
 	else
 	{
+		const int shadow_index = pAircraftType->ShadowIndex;
 		for (auto& [index, _] : aTypeExt->ShadowIndices)
 			pThis->DrawVoxelShadow(main_vxl,
 				index,
-				index == pAircraftType->ShadowIndex ? key : std::bit_cast<VoxelIndexKey>(-1),
-				&pAircraftType->VoxelShadowCache,
+				index == shadow_index ? key : std::bit_cast<VoxelIndexKey>(-1),
+				shadow_cache,
 				bound,
 				&flor,
 				&shadow_mtx,
-				index == pAircraftType->ShadowIndex,
+				index == shadow_index,
 				nullptr,
 				{ 0, 0 }
 			);
@@ -821,14 +794,14 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 	GET(FootClass*, pThis, EBX);//Maybe Techno later, for GTGCAN
 	GET(VoxelStruct*, pVXL, EBP);
 	GET_STACK(Matrix3D*, pMat, STACK_OFFSET(0xE8, 0xC));
-	GET_STACK(int, shadow_index_now, STACK_OFFSET(0xE8, 0x18));// it's used later, otherwise I could have chosen the frame index earlier
+	GET_STACK(const int, shadow_index_now, STACK_OFFSET(0xE8, 0x18));// it's used later, otherwise I could have chosen the frame index earlier
 
 	REF_STACK(Matrix3D, matRet, STACK_OFFSET(0xE8, -0x60));
 	auto pType = pThis->GetTechnoType();
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
-	auto hva = pVXL->HVA;
+	const auto hva = pVXL->HVA;
 
 	auto ChooseFrame = [&]()->int //Don't want to use goto
 		{
@@ -836,7 +809,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 			if (pVXL != &pType->MainVoxel)
 			{
 				// verify just in case:
-				auto who_are_you = reinterpret_cast<uintptr_t*>(reinterpret_cast<DWORD>(pVXL) - (offsetof(TechnoTypeClass, MainVoxel)));
+				const auto who_are_you = reinterpret_cast<uintptr_t*>(reinterpret_cast<DWORD>(pVXL) - (offsetof(TechnoTypeClass, MainVoxel)));
 				if (who_are_you[0] == UnitTypeClass::AbsVTable)
 					pType = reinterpret_cast<TechnoTypeClass*>(who_are_you);//you are someone else
 				else
@@ -855,7 +828,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 				// Only ShadowIndex
 				if (pType->ShadowIndex == shadow_index_now)
 				{
-					int shadow_index_frame = pTypeExt->ShadowIndex_Frame;
+					const int shadow_index_frame = pTypeExt->ShadowIndex_Frame;
 					if (shadow_index_frame > -1)
 						return shadow_index_frame % hva->FrameCount;
 				}
@@ -867,7 +840,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 			}
 			else
 			{
-				int idx_of_now = shadowIndices[shadow_index_now];
+				const int idx_of_now = shadowIndices[shadow_index_now];
 				if (idx_of_now > -1)
 					return idx_of_now % hva->FrameCount;
 			}
