@@ -23,15 +23,10 @@ DEFINE_HOOK(0x6F348F, TechnoClass_WhatWeaponShouldIUse_Airstrike, 0x7)
 		return Primary;
 
 	const auto pTargetType = pTargetTechno->GetTechnoType();
+	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 
 	if (pTargetTechno->AbstractFlags & AbstractFlags::Foot)
-	{
-		const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
-
 		return pTargetTypeExt->AllowAirstrike.Get(true) ? Secondary : Primary;
-	}
-
-	const auto pTargetTypeExt = TechnoTypeExt::ExtMap.Find(pTargetType);
 
 	return pTargetTypeExt->AllowAirstrike.Get(static_cast<BuildingTypeClass*>(pTargetType)->CanC4) && (!pTargetType->ResourceDestination || !pTargetType->ResourceGatherer) ? Secondary : Primary;
 }
@@ -116,7 +111,7 @@ DEFINE_HOOK(0x41DBD4, AirstrikeClass_Stop_ResetForTarget, 0x7)
 		// Sometimes the target will DTOR first before it announce invalid pointer, so sanity check is necessary!
 		// At this point, the target's vtable has already been reset to AbstractClass_vtbl.
 		// If a virtual function that AbstractClass does not have is called without checking this, it will cause the vtable to exceed its bounds.
-		if (const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno))
+		if (const auto pTargetExt = TechnoExt::ExtMap.TryFind(pTargetTechno))
 		{
 			pTargetExt->AirstrikeTargetingMe = pLastTargetingMe;
 
@@ -134,7 +129,7 @@ DEFINE_HOOK(0x41D604, AirstrikeClass_PointerGotInvalid_ResetForTarget, 0x6)
 
 	GET(ObjectClass*, pTarget, EAX);
 
-	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*, true>(pTarget)))
+	if (const auto pTargetTechnoExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*, true>(pTarget)))
 		pTargetTechnoExt->AirstrikeTargetingMe = nullptr;
 
 	return SkipGameCode;
@@ -198,7 +193,7 @@ DEFINE_HOOK(0x70E92F, TechnoClass_UpdateAirstrikeTint, 0x5)
 	return TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe ? ContinueIn : Skip;
 }
 
-// 9.6.2025 - Starkku: Moved to BuildingClass_AI hook in Buildings/Hooks.cpp for optimization's sake.
+// Jun 9, 2025 - Starkku: Moved to BuildingClass_AI hook in Buildings/Hooks.cpp for optimization's sake.
 // Said hook is later but shouldn't matter in this case, the purpose is to force redraw on every frame.
 /*
 DEFINE_HOOK(0x43FDD6, BuildingClass_AI_Airstrike, 0x6)
@@ -275,5 +270,60 @@ int BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity(int currentIntensit
 }
 
 DEFINE_FUNCTION_JUMP(CALL, 0x450A5D, BuildingClassFake::_GetAirstrikeInvulnerabilityIntensity); // BuildingClass_Animation_AI
+
+#pragma endregion
+
+#pragma region DrawAirstrikeFlare
+
+namespace DrawAirstrikeFlareTemp
+{
+	TechnoClass* pTechno = nullptr;
+}
+
+DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
+{
+	GET(TechnoClass*, pThis, ECX);
+
+	// This is not used in vanilla function so ECX gets overwritten later.
+	DrawAirstrikeFlareTemp::pTechno = pThis;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare_LineColor, 0x5)
+{
+	enum { SkipGameCode = 0x705976 };
+
+	GET(int, zSrc, EBP);
+	GET(int, zDest, EBX);
+	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
+
+	// Fix depth buffer value.
+	int zValue = Math::min(zSrc, zDest) + RulesExt::Global()->AirstrikeLineZAdjust;
+	R->EBP(zValue);
+	R->EBX(zValue);
+
+	// Allow custom colors.
+	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
+	auto const baseColor = TechnoExt::ExtMap.Find(pThis)->TypeExtData->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
+	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
+	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
+	R->ESI(Drawing::RGB_To_Int(baseColor));
+
+	return SkipGameCode;
+}
+
+// Always draw the dot and skip setting color, it is already done in previous hook.
+DEFINE_HOOK(0x70597A, TechnoClass_DrawAirstrikeFlare_DotColor, 0x6)
+{
+	enum { SkipGameCode = 0x7059C7 };
+
+	GET_STACK(int, xCoord, STACK_OFFSET(0x70, -0x38));
+
+	// Restore overridden instructions.
+	R->ECX(xCoord);
+
+	return SkipGameCode;
+}
 
 #pragma endregion

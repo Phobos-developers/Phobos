@@ -4,6 +4,7 @@
 #include <EventClass.h>
 #include <ScenarioClass.h>
 #include <TunnelLocomotionClass.h>
+#include <JumpjetLocomotionClass.h>
 #include <AlphaShapeClass.h>
 #include <TacticalClass.h>
 
@@ -14,6 +15,7 @@
 #include <Ext/WeaponType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/Helpers.Alex.h>
 #include <Utilities/AresHelper.h>
 #include <Utilities/AresFunctions.h>
 
@@ -104,9 +106,9 @@ DEFINE_HOOK(0x735A26, FootClass_TunnelAI_Enter, 0x6)       // UnitClass_TunnelAI
 			GameDelete(pAlpha);
 
 			const auto tacticalPos = TacticalClass::Instance->TacticalPos;
-			Point2D off = { tacticalPos.X - (pImage->Width / 2), tacticalPos.Y - (pImage->Height / 2) };
+			const Point2D off = { tacticalPos.X - (pImage->Width / 2), tacticalPos.Y - (pImage->Height / 2) };
 			const auto point = TacticalClass::Instance->CoordsToClient(pThis->GetCoords()).first + off;
-			RectangleStruct dirty = { point.X - tacticalPos.X, point.Y - tacticalPos.Y, pImage->Width, pImage->Height };
+			const RectangleStruct dirty = { point.X - tacticalPos.X, point.Y - tacticalPos.Y, pImage->Width, pImage->Height };
 			TacticalClass::Instance->RegisterDirtyArea(dirty, true);
 		}
 	}
@@ -193,7 +195,7 @@ DEFINE_HOOK(0x6FA540, TechnoClass_AI_ChargeTurret, 0x6)
 	else if (pExt->ChargeTurretTimer.Expired())
 		pExt->ChargeTurretTimer.Stop();
 
-	int turretCount = pType->TurretCount;
+	const int turretCount = pType->TurretCount;
 	int turretIndex = Math::max(0, timeLeft * turretCount / pThis->ChargeTurretDelay);
 
 	if (turretIndex >= turretCount)
@@ -218,9 +220,10 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 		return 0;
 
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	pExt->TypeExtData = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	pExt->TypeExtData = pTypeExt;
 
-	pExt->CurrentShieldType = pExt->TypeExtData->ShieldType;
+	pExt->CurrentShieldType = pTypeExt->ShieldType;
 	pExt->InitializeAttachEffects();
 	pExt->InitializeDisplayInfo();
 	pExt->InitializeLaserTrails();
@@ -228,8 +231,14 @@ DEFINE_HOOK(0x6F42F7, TechnoClass_Init, 0x2)
 	if (!pExt->AE.HasTint && !pExt->CurrentShieldType)
 		pExt->UpdateTintValues();
 
-	if (pExt->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 		HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters.push_back(pThis);
+
+	if ((pThis->Owner->IsControlledByHuman() || !RulesExt::Global()->DistributeTargetingFrame_AIOnly)
+		&& pTypeExt->DistributeTargetingFrame.Get(RulesExt::Global()->DistributeTargetingFrame))
+	{
+		pThis->TargetingTimer.Start(ScenarioClass::Instance->Random.RandomRanged(0, 15));
+	}
 
 	return 0;
 }
@@ -298,17 +307,17 @@ DEFINE_HOOK(0x6F6AC4, TechnoClass_Limbo, 0x5)
 
 bool __fastcall TechnoClass_Limbo_Wrapper(TechnoClass* pThis)
 {
-	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool markForRedraw = false;
-	bool altered = false;
-	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
-
 	// Do not remove attached effects from undeploying buildings.
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
 		if (pBuilding->Type->UndeploysInto && pBuilding->CurrentMission == Mission::Selling && pBuilding->MissionStatus == 2)
 			return pThis->TechnoClass::Limbo();
 	}
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+	bool markForRedraw = false;
+	bool altered = false;
+	std::vector<std::unique_ptr<AttachEffectClass>>::iterator it;
 
 	for (it = pExt->AttachedEffects.begin(); it != pExt->AttachedEffects.end(); )
 	{
@@ -369,7 +378,7 @@ DEFINE_HOOK(0x708AEB, TechnoClass_ReplaceArmorWithShields, 0x6) //TechnoClass_Sh
 	else
 		pTarget = R->EBP<ObjectClass*>();
 
-	if (const auto pExt = TechnoExt::ExtMap.Find(abstract_cast<TechnoClass*>(pTarget)))
+	if (const auto pExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*>(pTarget)))
 	{
 		if (const auto pShieldData = pExt->Shield.get())
 		{
@@ -431,7 +440,7 @@ static int CalculateArmorMultipliers(TechnoClass* pThis, int damage, WarheadType
 DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 {
 	GET(TechnoClass*, pTarget, EDI);
-	GET(int, damage, EAX);
+	GET(const int, damage, EAX);
 	GET_STACK(WeaponTypeClass*, pWeapon, STACK_OFFSET(0x18, 0x8));
 
 	R->EAX(CalculateArmorMultipliers(pTarget, damage, pWeapon->Warhead));
@@ -442,7 +451,7 @@ DEFINE_HOOK(0x6FDC87, TechnoClass_AdjustDamage_ArmorMultiplier, 0x6)
 DEFINE_HOOK(0x701966, TechnoClass_ReceiveDamage_ArmorMultiplier, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
-	GET(int, damage, EAX);
+	GET(const int, damage, EAX);
 	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0xC4, 0xC));
 
 	R->EAX(CalculateArmorMultipliers(pThis, damage, pWarhead));
@@ -475,7 +484,7 @@ bool __fastcall IsAlly_Wrapper(HouseClass* pTechnoOwner, void* _, HouseClass* pC
 bool __fastcall IsControlledByCurrentPlayer_Wrapper(HouseClass* pThis)
 {
 	HouseClass* pCurrent = HouseClass::CurrentPlayer;
-	AffectedHouse visibilityFlags = RulesExt::Global()->DisguiseBlinkingVisibility;
+	const AffectedHouse visibilityFlags = RulesExt::Global()->DisguiseBlinkingVisibility;
 
 	if (SessionClass::IsCampaign() && (pThis->IsHumanPlayer || pThis->IsInPlayerControl))
 	{
@@ -502,7 +511,7 @@ DEFINE_HOOK(0x7060A9, TechnoClas_DrawObject_DisguisePalette, 0x6)
 	LightConvertClass* convert = nullptr;
 
 	auto const pType = pThis->IsDisguised() ? TechnoTypeExt::GetTechnoType(pThis->Disguise) : nullptr;
-	int colorIndex = pThis->GetDisguiseHouse(true)->ColorSchemeIndex;
+	const int colorIndex = pThis->GetDisguiseHouse(true)->ColorSchemeIndex;
 
 	if (pType && pType->Palette && pType->Palette->Count > 0)
 		convert = pType->Palette->GetItem(colorIndex)->LightConvert;
@@ -563,16 +572,17 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 	GET(FootClass*, pThis, ESI);
 	GET(TechnoTypeClass*, pType, EAX);
 	GET_STACK(HouseClass*, pSource, STACK_OFFSET(0x10, 0x8));
-	GET_STACK(bool, isForceShield, STACK_OFFSET(0x10, 0xC));
+	GET_STACK(const bool, isForceShield, STACK_OFFSET(0x10, 0xC));
 
 	enum { MakeInvulnerable = 0x4DEB38, SkipGameCode = 0x4DEBA2 };
 
 	if (!pType->Organic && pThis->WhatAmI() != AbstractType::Infantry)
 		return MakeInvulnerable;
 
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
-		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const IronCurtainEffect icEffect = !isForceShield
+		? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics)
+		: pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
 
 	switch (icEffect)
 	{
@@ -654,7 +664,7 @@ DEFINE_HOOK(0x73B4DA, UnitClass_DrawVXL_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
+		if (UnitTypeClass* pCustomType = TechnoExt::GetUnitTypeExtra(pThis))
 			R->EBX<ObjectTypeClass*>(pCustomType);
 	}
 
@@ -669,7 +679,7 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 
 	if (pThis->IsClearlyVisibleTo(HouseClass::CurrentPlayer) && !pThis->Deployed)
 	{
-		if (UnitTypeClass* pCustomType = TechnoExt::ExtMap.Find(pThis)->GetUnitTypeExtra())
+		if (const UnitTypeClass* pCustomType = TechnoExt::GetUnitTypeExtra(pThis))
 		{
 			if (SHPStruct* Image = pCustomType->GetImage())
 				R->EAX<SHPStruct*>(Image);
@@ -677,6 +687,28 @@ DEFINE_HOOK(0x73C602, UnitClass_DrawSHP_WaterType_Extra, 0x6)
 	}
 
 	R->ECX(pThis->Type);
+	return Continue;
+}
+
+DEFINE_HOOK(0x414987, AircraftClass_Draw_Extra, 0x6)
+{
+	enum { Continue = 0x41498D };
+
+	GET(AircraftClass*, pThis, EBP);
+
+	R->ESI<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+
+	return Continue;
+}
+
+DEFINE_HOOK(0x414665, AircraftClass_Draw_ExtraSHP, 0x6)
+{
+	enum { Continue = 0x41466B };
+
+	GET(AircraftClass*, pThis, EBP);
+
+	R->EAX<AircraftTypeClass*>(TechnoExt::GetAircraftTypeExtra(pThis));
+
 	return Continue;
 }
 
@@ -759,9 +791,9 @@ DEFINE_HOOK(0x521D94, InfantryClass_CurrentSpeed_ProneSpeed, 0x6)
 	GET(InfantryClass*, pThis, ESI);
 	GET(int, currentSpeed, ECX);
 
-	auto pType = pThis->Type;
-	auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	auto multiplier = pTypeExt->ProneSpeed.Get(pType->Crawls ? RulesExt::Global()->ProneSpeed_Crawls : RulesExt::Global()->ProneSpeed_NoCrawls);
+	const auto pType = pThis->Type;
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const double multiplier = pTypeExt->ProneSpeed.Get(pType->Crawls ? RulesExt::Global()->ProneSpeed_Crawls : RulesExt::Global()->ProneSpeed_NoCrawls);
 	currentSpeed = static_cast<int>(static_cast<double>(currentSpeed) * multiplier);
 	R->ECX(currentSpeed);
 	return 0x521DC5;
@@ -796,17 +828,17 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 {
 	enum { Invisible = 0x655E66, GoOtherChecks = 0x655E19 };
 
-	GET_STACK(bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
+	GET_STACK(const bool, isInShrouded, STACK_OFFSET(0x40, 0x4));
 	GET(TechnoClass*, pTechno, EBP);
 
 	if (isInShrouded && !pTechno->Owner->IsControlledByCurrentPlayer())
 		return Invisible;
 
-	auto pType = pTechno->GetTechnoType();
+	auto const pType = pTechno->GetTechnoType();
 
 	if (pType->RadarInvisible)
 	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		if (EnumFunctions::CanTargetHouse(pTypeExt->RadarInvisibleToHouse.Get(AffectedHouse::Enemies), pTechno->Owner, HouseClass::CurrentPlayer))
 			return Invisible;
@@ -814,51 +846,6 @@ DEFINE_HOOK(0x655DDD, RadarClass_ProcessPoint_RadarInvisible, 0x6)
 
 	return GoOtherChecks;
 }
-
-#pragma endregion
-
-#pragma region DrawAirstrikeFlare
-
-namespace DrawAirstrikeFlareTemp
-{
-	TechnoClass* pTechno = nullptr;
-}
-
-DEFINE_HOOK(0x705860, TechnoClass_DrawAirstrikeFlare_SetContext, 0x8)
-{
-	GET(TechnoClass*, pThis, ECX);
-
-	// This is not used in vanilla function so ECX gets overwritten later.
-	DrawAirstrikeFlareTemp::pTechno = pThis;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x7058F6, TechnoClass_DrawAirstrikeFlare, 0x5)
-{
-	enum { SkipGameCode = 0x705976 };
-
-	GET(int, zSrc, EBP);
-	GET(int, zDest, EBX);
-	REF_STACK(ColorStruct, color, STACK_OFFSET(0x70, -0x60));
-
-	// Fix depth buffer value.
-	int zValue = Math::min(zSrc, zDest);
-	R->EBP(zValue);
-	R->EBX(zValue);
-
-	// Allow custom colors.
-	auto const pThis = DrawAirstrikeFlareTemp::pTechno;
-	auto const baseColor = TechnoExt::ExtMap.Find(pThis)->TypeExtData->AirstrikeLineColor.Get(RulesExt::Global()->AirstrikeLineColor);
-	double percentage = Randomizer::Global.RandomRanged(745, 1000) / 1000.0;
-	color = { (BYTE)(baseColor.R * percentage), (BYTE)(baseColor.G * percentage), (BYTE)(baseColor.B * percentage) };
-	R->ESI(Drawing::RGB_To_Int(baseColor));
-
-	return SkipGameCode;
-}
-
-// Skip setting color for the dot, it is already done in previous hook.
-DEFINE_JUMP(LJMP, 0x705986, 0x7059C7);
 
 #pragma endregion
 
@@ -976,6 +963,9 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
+	if (pThis->LocomotorTarget != pTarget)
+		pThis->ReleaseLocomotor(true);
+
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
@@ -998,10 +988,29 @@ DEFINE_HOOK(0x6FCF3E, TechnoClass_SetTarget_After, 0x6)
 	pThis->Target = pTarget;
 	pExt->UpdateGattlingRateDownReset();
 
+	if (!pThis->Target)
+		pExt->ResetDelayedFireTimer();
+
 	return 0x6FCF44;
 }
 
 #pragma endregion
+
+DEFINE_JUMP(LJMP, 0x7389B1, 0x7389C4) // Skip ReleaseLocomotor in UnitClass::EnterIdleMode()
+
+DEFINE_HOOK(0x6FABC4, TechnoClass_AI_AnimationPaused, 0x6)
+{
+	enum { SkipGameCode = 0x6FAC31 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (pExt->DelayedFireSequencePaused)
+		return SkipGameCode;
+
+	return 0;
+}
 
 DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 {
@@ -1013,9 +1022,10 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 
 	pTarget->Mark(MarkType::Change);
 
-	const int repairBuilding = TechnoTypeExt::ExtMap.Find(pTarget->Type)->EngineerRepairAmount;
+	const auto pTargetType = pTarget->Type;
+	const int repairBuilding = TechnoTypeExt::ExtMap.Find(pTargetType)->EngineerRepairAmount;
 	const int repairEngineer = TechnoTypeExt::ExtMap.Find(pThis->Type)->EngineerRepairAmount;
-	const int strength = pTarget->Type->Strength;
+	const int strength = pTargetType->Strength;
 
 	auto repair = [strength, pTarget](int repair)
 		{
@@ -1046,6 +1056,138 @@ DEFINE_HOOK(0x519FEC, InfantryClass_UpdatePosition_EngineerRepair, 0xA)
 			pTarget->DamageParticleSystem->UnInit();
 	}
 
-	VocClass::PlayAt(BuildingTypeExt::ExtMap.Find(pTarget->Type)->BuildingRepairedSound.Get(RulesClass::Instance->BuildingRepairedSound), pTarget->GetCoords());
+	VocClass::PlayAt(BuildingTypeExt::ExtMap.Find(pTargetType)->BuildingRepairedSound.Get(RulesClass::Instance->BuildingRepairedSound), pTarget->GetCoords());
 	return SkipGameCode;
 }
+
+#pragma region AttackMove
+
+DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
+{
+	GET(FootClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+	if (pThis->IsCloseEnoughToAttack(pThis->Target)
+		&& pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire)))
+	{
+		if (auto const pJumpjetLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		{
+			auto const crd = pThis->GetCoords();
+			pJumpjetLoco->DestinationCoords.X = crd.X;
+			pJumpjetLoco->DestinationCoords.Y = crd.Y;
+			pJumpjetLoco->CurrentSpeed = 0;
+			pJumpjetLoco->MaxSpeed = 0;
+			pJumpjetLoco->State = JumpjetLocomotionClass::State::Hovering;
+			pThis->AbortMotion();
+		}
+		else
+		{
+			pThis->StopMoving();
+			pThis->AbortMotion();
+		}
+	}
+
+	if (pTypeExt->AttackMove_PursuitTarget)
+		pThis->SetDestination(pThis->Target, true);
+
+	return 0;
+}
+
+DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
+{
+	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
+	GET(FootClass* const, pThis, ESI);
+
+	auto const pType = pThis->GetTechnoType();
+	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const mission = pThis->GetCurrentMission();
+	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
+		? (!(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256) && mission != Mission::Guard) : mission != Mission::Guard)
+		? ClearMegaMission : ContinueMegaMission;
+}
+
+DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
+{
+	enum { SkipGameCode = 0x711E9A };
+	return RulesExt::Global()->AttackMove_IgnoreWeaponCheck ? SkipGameCode : 0;
+}
+
+DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
+{
+	enum { FuncRet = 0x4DF425 };
+
+	GET(FootClass* const, pThis, ESI);
+
+	auto const mission = pThis->GetCurrentMission();
+
+	// Refresh mega mission if mission is somehow changed to incorrect missions.
+	if (mission != Mission::Attack && mission != Mission::Move)
+		pThis->ContinueMegaMission();
+
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	if (pTypeExt->AttackMove_Follow || pTypeExt->AttackMove_Follow_IfMindControlIsFull && pThis->CaptureManager && pThis->CaptureManager->CannotControlAnyMore())
+	{
+		auto const& pTechnoVectors = Helpers::Alex::getCellSpreadItems(pThis->GetCoords(),
+			pThis->GetGuardRange(2) / (double)Unsorted::LeptonsPerCell, pTypeExt->AttackMove_Follow_IncludeAir);
+
+		TechnoClass* pClosestTarget = nullptr;
+		int closestRange = 65536;
+		const auto pMegaMissionTarget = pThis->MegaDestination ? pThis->MegaDestination : (pThis->MegaTarget ? pThis->MegaTarget : pThis);
+		const auto pOwner = pThis->Owner;
+
+		for (auto const pTechno : pTechnoVectors)
+		{
+			if ((pTechno->AbstractFlags & AbstractFlags::Foot) != AbstractFlags::None
+				&& pTechno != pThis && pTechno->Owner == pOwner
+				&& pTechno->MegaMissionIsAttackMove())
+			{
+				auto const pTargetExt = TechnoExt::ExtMap.Find(pTechno);
+
+				// Check this to prevent the followed techno from being surrounded
+				if (pTargetExt->AttackMoveFollowerTempCount >= 6)
+					continue;
+
+				auto const pTargetTypeExt = pTargetExt->TypeExtData;
+
+				if (!pTargetTypeExt->AttackMove_Follow)
+				{
+					auto const dist = pTechno->DistanceFrom(pMegaMissionTarget);
+
+					if (dist < closestRange)
+					{
+						pClosestTarget = pTechno;
+						closestRange = dist;
+					}
+				}
+			}
+		}
+
+		if (pClosestTarget)
+		{
+			auto const pTargetExt = TechnoExt::ExtMap.Find(pClosestTarget);
+			pTargetExt->AttackMoveFollowerTempCount += pThis->WhatAmI() == AbstractType::Infantry ? 1 : 3;
+			pThis->SetDestination(pClosestTarget, false);
+			pThis->SetArchiveTarget(pClosestTarget);
+			pThis->QueueMission(Mission::Area_Guard, true);
+		}
+		else
+		{
+			if (pThis->MegaTarget)
+				pThis->SetDestination(pThis->MegaTarget, false);
+			else // MegaDestination can be nullptr
+				pThis->SetDestination(pThis->MegaDestination, false);
+		}
+
+		pThis->ClearMegaMissionData();
+
+		R->EAX(pClosestTarget);
+		return FuncRet;
+	}
+
+	return 0;
+}
+
+#pragma endregion

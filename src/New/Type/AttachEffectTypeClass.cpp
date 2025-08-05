@@ -62,6 +62,12 @@ AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount
 	return this->CumulativeAnimations.at(index);
 }
 
+void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget) const
+{
+	if (const auto pTag = pTarget->AttachedTag)
+		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
+}
+
 template<>
 const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 {
@@ -72,7 +78,7 @@ void AttachEffectTypeClass::AddToGroupsMap()
 {
 	auto const map = &AttachEffectTypeClass::GroupsMap;
 
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
 		if (!map->contains(group))
 		{
