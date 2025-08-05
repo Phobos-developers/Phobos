@@ -118,17 +118,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	if (SessionClass::IsSingleplayer() || SpawnerHelper::IsSaveGameEventHooked())
-	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += StringTable::LoadString(pThis->Text);
-	}
+		Phobos::ScheduleGameSave(StringTable::LoadString(pThis->Text));
 
 	return true;
 }

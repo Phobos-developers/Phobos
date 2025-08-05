@@ -41,15 +41,7 @@ void QuickSaveCommandClass::Execute(WWKey eInput) const
 
 	if (SessionClass::IsSingleplayer())
 	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved");
+		Phobos::ScheduleGameSave(GeneralUtils::LoadStringUnlessMissing("TXT_QUICKSAVE_SUFFIX", L"Quicksaved"));
 	}
 	else if (SpawnerHelper::IsSaveGameEventHooked())
 	{

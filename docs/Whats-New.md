@@ -835,8 +835,7 @@ Fixes / interactions with other extensions:
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving (by CrimRecya)
 - Fixed quicksave command and save game trigger action to work with YRpp spawner's multiplayer saves (by Kerbiter)
-- The game now automatically renames `SAVEGAME.NET` to `SVGM_XXX.NET` (where `XXX` is a number) when saving to prevent occasional overwriting of the save file when using Phobos with XNA CnCNet Client and spamming game save (by Kerbiter)
-
+- Ported XNA CnCNet Client multiplayer save handling to get rid of occasional multiplayer save file overwriting when saving too fast (by Kerbiter)
 ```
 
 ### 0.3.0.1

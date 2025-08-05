@@ -11,7 +11,6 @@
 #include <Utilities/GeneralUtils.h>
 #include <Utilities/Patch.h>
 #include <Utilities/Macro.h>
-#include <Utilities/Debug.h>
 
 #include "Misc/BlittersFix.h"
 
@@ -277,111 +276,4 @@ DEFINE_HOOK(0x52D21F, InitRules_ThingsThatShouldntBeSerailized, 0x6)
 	Phobos::Config::ShowPlanningPath = pINI_RULESMD->ReadBool("GlobalControls", "DebugPlanningPaths", Phobos::Config::ShowPlanningPath);
 
 	return 0;
-}
-
-bool Phobos::ShouldSave = false;
-std::wstring Phobos::CustomGameSaveDescription {};
-
-void Phobos::PassiveSaveGame()
-{
-	auto PrintMessage = [](const wchar_t* pMessage)
-	{
-		MessageListClass::Instance.PrintMessage(
-			pMessage,
-			RulesClass::Instance->MessageDelay,
-			HouseClass::CurrentPlayer->ColorSchemeIndex,
-			/* bSilent: */ true
-		);
-
-		// Force a redraw so that our message gets printed.
-		if (Game::SpecialDialog == 0)
-		{
-			MapClass::Instance.MarkNeedsRedraw(2);
-			MapClass::Instance.Render();
-		}
-	};
-
-	PrintMessage(StringTable::LoadString(GameStrings::TXT_SAVING_GAME));
-	char fName[0x80];
-
-	if (SessionClass::IsSingleplayer())
-	{
-		SYSTEMTIME time;
-		GetLocalTime(&time);
-
-		_snprintf_s(fName, sizeof(fName), "Map.%04u%02u%02u-%02u%02u%02u-%05u.sav",
-			time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond, time.wMilliseconds);
-	}
-	else if (SessionClass::IsMultiplayer())
-	{
-		// Support for this is in the YRpp Spawner, be sure to read the respective comments
-
-		_snprintf_s(fName, sizeof(fName), GameStrings::SAVEGAME_NET);
-	}
-
-	if (ScenarioClass::SaveGame(fName, Phobos::CustomGameSaveDescription.c_str()))
-		PrintMessage(StringTable::LoadString(GameStrings::TXT_GAME_WAS_SAVED));
-	else
-		PrintMessage(StringTable::LoadString(GameStrings::TXT_ERROR_SAVING_GAME));
-}
-
-namespace SaveGameTemp
-{
-	int NextSaveIndex = 0;
-}
-
-// Existing XNA CNCNet Client can't handle renaming savegames when they
-// are being saved too fast, which may happen when quicksaving f.ex., hence
-// we do this here. Hooked at low level saving function for better compatibility
-// with other DLLs that may save MP games, like the spawner itself.
-// - Kerbiter
-DEFINE_HOOK(0x67CEF0, ScenarioClass_SaveGame_AdjustMPSaveFileName, 0x6)
-{
-	GET(const char* const, fileName, ECX);
-
-	// SAVEGAME.NET -> SVGM_XXX.NET
-	if (_strcmpi(fileName, GameStrings::SAVEGAME_NET) == 0 || _strcmpi(fileName, "SAVEGAME.NET") == 0)
-	{
-		static char newFileName[sizeof("SVGM_XXX.NET")];
-		_snprintf_s(newFileName, sizeof(newFileName), "SVGM_%03d.NET", SaveGameTemp::NextSaveIndex);
-
-		R->ECX(newFileName);
-
-		Debug::Log("Renamed multiplayer save file from %s to %s\n", fileName, newFileName);
-	}
-
-	return 0;
-}
-
-// Only increment after it's confirmed that the file is created to mimic
-// the behavior that XNA CNCNet Client has and expects.
-DEFINE_HOOK(0x67CF64, ScenarioClass_SaveGame_IncrementMPSaveIndex, 0x7)
-{
-	// consistent with XNA CNCNet Client. don't ask me - Kerbiter
-	if (SaveGameTemp::NextSaveIndex + 1 < 1000)
-		SaveGameTemp::NextSaveIndex++;
-
-	return 0;
-}
-
-DEFINE_HOOK(0x55DBCD, MainLoop_SaveGame, 0x6)
-{
-	// This happens right before LogicClass::Update()
-	enum { SkipSave = 0x55DC99, InitialSave = 0x55DBE6 };
-
-	bool& scenario_saved = *reinterpret_cast<bool*>(0xABCE08);
-	if (!scenario_saved)
-	{
-		scenario_saved = true;
-		if (Phobos::ShouldSave)
-		{
-			Phobos::PassiveSaveGame();
-			Phobos::ShouldSave = false;
-			Phobos::CustomGameSaveDescription.clear();
-		}
-		else if (Phobos::Config::SaveGameOnScenarioStart && SessionClass::IsCampaign())
-			return InitialSave;
-	}
-
-	return SkipSave;
 }
