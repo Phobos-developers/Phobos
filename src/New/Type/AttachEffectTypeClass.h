@@ -3,8 +3,10 @@
 #include <set>
 #include <unordered_map>
 
+#include <Ext/TEvent/Body.h>
 #include <Utilities/Enumerable.h>
 #include <Utilities/TemplateDef.h>
+#include "LaserTrailTypeClass.h"
 
 // AE discard condition
 enum class DiscardCondition : unsigned char
@@ -95,6 +97,7 @@ public:
 	Valueable<bool> ReflectDamage_UseInvokerAsOwner;
 	Valueable<bool> DisableWeapons;
 	Valueable<bool> Unkillable;
+	ValueableIdx<LaserTrailTypeClass> LaserTrail_Type;
 
 	std::vector<std::string> Groups;
 
@@ -154,6 +157,7 @@ public:
 		, ReflectDamage_UseInvokerAsOwner { false }
 		, DisableWeapons { false }
 		, Unkillable { false }
+		, LaserTrail_Type { -1 }
 		, Groups {}
 	{};
 
@@ -165,6 +169,7 @@ public:
 	bool HasGroup(const std::string& groupID) const;
 	bool HasGroups(const std::vector<std::string>& groupIDs, bool requireAll) const;
 	AnimTypeClass* GetCumulativeAnimation(int cumulativeCount) const;
+	void HandleEvent(TechnoClass* pTarget) const;
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);

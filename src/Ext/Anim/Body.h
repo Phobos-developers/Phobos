@@ -28,6 +28,7 @@ public:
 		ParticleSystemClass* AttachedSystem;
 		BuildingClass* ParentBuilding; // Only set on building anims, used for tinting the anims etc. especially when not on same cell as building
 		bool IsTechnoTrailerAnim;
+		bool DelayedFireRemoveOnNoDelay;
 		bool IsAttachedEffectAnim;
 		bool IsShieldIdleAnim;
 
@@ -41,6 +42,7 @@ public:
 			, AttachedSystem {}
 			, ParentBuilding {}
 			, IsTechnoTrailerAnim { false }
+			, DelayedFireRemoveOnNoDelay { false }
 			, IsAttachedEffectAnim { false }
 			, IsShieldIdleAnim { false }
 		{ }

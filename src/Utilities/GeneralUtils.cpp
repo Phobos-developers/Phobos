@@ -66,8 +66,8 @@ const int GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<int> range)
 
 const double GeneralUtils::GetRangedRandomOrSingleValue(PartialVector2D<double> range)
 {
-	int min = static_cast<int>(range.X * 100);
-	int max = static_cast<int>(range.Y * 100);
+	const int min = static_cast<int>(range.X * 100);
+	const int max = static_cast<int>(range.Y * 100);
 
 	return range.X >= range.Y || range.ValueCount < 2 ? range.X : (ScenarioClass::Instance->Random.RandomRanged(min, max) / 100.0);
 }
@@ -101,7 +101,7 @@ const double GeneralUtils::GetWarheadVersusArmor(WarheadTypeClass* pWH, TechnoCl
 	auto const pShield = TechnoExt::ExtMap.Find(pThis)->Shield.get();
 
 	if (pShield && pShield->IsActive() && !pShield->CanBePenetrated(pWH))
-		armorType = pShield->GetArmorType();
+		armorType = pShield->GetArmorType(pType);
 
 	return GeneralUtils::GetWarheadVersusArmor(pWH, armorType);
 }
@@ -133,16 +133,19 @@ bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRat
 	if (oldRatio == newRatio)
 		return false;
 
-	if (oldRatio > RulesClass::Instance->ConditionYellow && newRatio <= RulesClass::Instance->ConditionYellow)
+	if (oldRatio > RulesClass::Instance->ConditionYellow
+		&& newRatio <= RulesClass::Instance->ConditionYellow)
 	{
 		return true;
 	}
-	else if (oldRatio <= RulesClass::Instance->ConditionYellow && oldRatio > RulesClass::Instance->ConditionRed &&
-		(newRatio <= RulesClass::Instance->ConditionRed || newRatio > RulesClass::Instance->ConditionYellow))
+	else if (oldRatio <= RulesClass::Instance->ConditionYellow
+		&& oldRatio > RulesClass::Instance->ConditionRed
+		&& (newRatio <= RulesClass::Instance->ConditionRed || newRatio > RulesClass::Instance->ConditionYellow))
 	{
 		return true;
 	}
-	else if (oldRatio <= RulesClass::Instance->ConditionRed && newRatio > RulesClass::Instance->ConditionRed)
+	else if (oldRatio <= RulesClass::Instance->ConditionRed
+		&& newRatio > RulesClass::Instance->ConditionRed)
 	{
 		return true;
 	}
@@ -154,8 +157,8 @@ bool GeneralUtils::ApplyTheaterSuffixToString(char* str)
 {
 	if (auto pSuffix = strstr(str, "~~~"))
 	{
-		auto theater = ScenarioClass::Instance->Theater;
-		auto pExtension = Theater::GetTheater(theater).Extension;
+		const auto theater = ScenarioClass::Instance->Theater;
+		const auto pExtension = Theater::GetTheater(theater).Extension;
 		pSuffix[0] = pExtension[0];
 		pSuffix[1] = pExtension[1];
 		pSuffix[2] = pExtension[2];
@@ -203,13 +206,13 @@ int GeneralUtils::CountDigitsInNumber(int number)
 // Calculates a new coordinates based on current & target coordinates within specified distance (can be negative to switch the direction) in leptons.
 CoordStruct GeneralUtils::CalculateCoordsFromDistance(CoordStruct currentCoords, CoordStruct targetCoords, int distance)
 {
-	int deltaX = currentCoords.X - targetCoords.X;
-	int deltaY = targetCoords.Y - currentCoords.Y;
+	const int deltaX = currentCoords.X - targetCoords.X;
+	const int deltaY = targetCoords.Y - currentCoords.Y;
 
-	double atan = Math::atan2(deltaY, deltaX);
-	double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
-	int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
-	int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
+	const double atan = Math::atan2(deltaY, deltaX);
+	const double radians = (((atan - Math::HalfPi) * (1.0 / Math::GameDegreesToRadiansCoefficient)) - Math::GameDegrees90) * Math::GameDegreesToRadiansCoefficient;
+	const int x = static_cast<int>(targetCoords.X + Math::cos(radians) * distance);
+	const int y = static_cast<int>(targetCoords.Y - Math::sin(radians) * distance);
 
 	return CoordStruct { x, y, targetCoords.Z };
 }
@@ -236,7 +239,7 @@ void GeneralUtils::DisplayDamageNumberString(int damage, DamageDisplayType type,
 		break;
 	}
 
-	int maxOffset = Unsorted::CellWidthInPixels / 2;
+	const int maxOffset = Unsorted::CellWidthInPixels / 2;
 	int width = 0, height = 0;
 	wchar_t damageStr[0x20];
 	swprintf_s(damageStr, L"%d", damage);
@@ -279,9 +282,9 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 	if (RulesExt::Global()->ColorAddUse8BitRGB)
 		return Drawing::RGB_To_Int(color);
 
-	int red = color.R;
-	int green = color.G;
-	int blue = color.B;
+	const int red = color.R;
+	const int green = color.G;
+	const int blue = color.B;
 
 	if (Drawing::ColorMode == RGBMode::RGB565)
 		colorValue |= blue | (32 * (green | (red << 6)));

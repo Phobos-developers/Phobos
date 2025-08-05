@@ -62,6 +62,12 @@ AnimTypeClass* AttachEffectTypeClass::GetCumulativeAnimation(int cumulativeCount
 	return this->CumulativeAnimations.at(index);
 }
 
+void AttachEffectTypeClass::HandleEvent(TechnoClass* pTarget) const
+{
+	if (const auto pTag = pTarget->AttachedTag)
+		pTag->RaiseEvent((TriggerEvent)PhobosTriggerEvent::AttachedIsUnderAttachedEffect, pTarget, CellStruct::Empty);
+}
+
 template<>
 const char* Enumerable<AttachEffectTypeClass>::GetMainSection()
 {
@@ -72,7 +78,7 @@ void AttachEffectTypeClass::AddToGroupsMap()
 {
 	auto const map = &AttachEffectTypeClass::GroupsMap;
 
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
 		if (!map->contains(group))
 		{
@@ -90,7 +96,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* pSection = this->Name;
 
-	if (INIClass::IsBlank(pSection))
+	if (INIClass::IsBlank(pSection) || !pINI->GetSection(pSection))
 		return;
 
 	INI_EX exINI(pINI);
@@ -160,6 +166,7 @@ void AttachEffectTypeClass::LoadFromINI(CCINIClass* pINI)
 
 	this->DisableWeapons.Read(exINI, pSection, "DisableWeapons");
 	this->Unkillable.Read(exINI, pSection, "Unkillable");
+	this->LaserTrail_Type.Read(exINI, pSection, "LaserTrail.Type");
 
 	// Groups
 	exINI.ParseStringList(this->Groups, pSection, "Groups");
@@ -225,6 +232,7 @@ void AttachEffectTypeClass::Serialize(T& Stm)
 		.Process(this->ReflectDamage_UseInvokerAsOwner)
 		.Process(this->DisableWeapons)
 		.Process(this->Unkillable)
+		.Process(this->LaserTrail_Type)
 		.Process(this->Groups)
 		;
 }

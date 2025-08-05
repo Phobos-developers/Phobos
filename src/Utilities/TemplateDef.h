@@ -1054,6 +1054,35 @@ namespace detail
 	}
 
 	template <>
+	inline bool read<LaserTrailDrawType>(LaserTrailDrawType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			if (_strcmpi(parser.value(), "laser") == 0)
+			{
+				value = LaserTrailDrawType::Laser;
+			}
+			else if (_strcmpi(parser.value(), "ebolt") == 0)
+			{
+				value = LaserTrailDrawType::EBolt;
+			}
+			else if (_strcmpi(parser.value(), "radbeam") == 0)
+			{
+				value = LaserTrailDrawType::RadBeam;
+			}
+			else
+			{
+				Debug::INIParseFailed(pSection, pKey, parser.value(), "Expected a LaserTrail draw type");
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<CLSID>(CLSID& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (!parser.ReadString(pSection, pKey))
@@ -1549,7 +1578,7 @@ bool ValueableVector<T>::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 		{
 			value_type buffer = value_type();
 			Savegame::ReadPhobosStream(Stm, buffer, false);
-			this->push_back(std::move(buffer));
+			this->emplace_back(std::move(buffer));
 
 			if (RegisterForChange)
 				Swizzle swizzle(this->back());
@@ -1568,6 +1597,7 @@ inline bool ValueableVector<bool>::Load(PhobosStreamReader& stm, bool registerFo
 	if (Savegame::ReadPhobosStream(stm, size, registerForChange))
 	{
 		this->clear();
+		this->reserve(size);
 
 		for (size_t i = 0; i < size; ++i)
 		{

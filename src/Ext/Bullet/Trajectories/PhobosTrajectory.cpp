@@ -447,7 +447,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	bool detonate = false;
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 		detonate = pTraj->OnAI(pThis);
 
 	if (detonate && !pThis->SpawnNextAnim)
@@ -462,7 +462,7 @@ DEFINE_HOOK(0x467E53, BulletClass_AI_PreDetonation_Trajectories, 0x6)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIPreDetonate(pThis);
 
 	return 0;
@@ -476,7 +476,7 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 		pTraj->OnAIVelocity(pThis, pSpeed, pPosition);
 
 	// Trajectory can use Velocity only for turning Image's direction
@@ -490,12 +490,12 @@ DEFINE_HOOK(0x46745C, BulletClass_AI_Position_Trajectories, 0x7)
 			static_cast<int>(pSpeed->Z + pPosition->Z)
 		};
 
-		for (auto& trail : pExt->LaserTrails)
+		for (const auto& pTrail : pExt->LaserTrails)
 		{
-			if (!trail.LastLocation.isset())
-				trail.LastLocation = pThis->Location;
+			if (!pTrail->LastLocation.isset())
+				pTrail->LastLocation = pThis->Location;
 
-			trail.Update(futureCoords);
+			pTrail->Update(futureCoords);
 		}
 	}
 
@@ -510,7 +510,7 @@ DEFINE_HOOK(0x4677D3, BulletClass_AI_TargetCoordCheck_Trajectories, 0x5)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 	{
 		switch (pTraj->OnAITargetCoordCheck(pThis))
 		{
@@ -540,7 +540,7 @@ DEFINE_HOOK(0x467927, BulletClass_AI_TechnoCheck_Trajectories, 0x5)
 
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 	{
 		switch (pTraj->OnAITechnoCheck(pThis, pTechno))
 		{
@@ -567,7 +567,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
-	if (pTypeExt && pTypeExt->TrajectoryType)
+	if (pTypeExt->TrajectoryType)
 	{
 		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
 		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);
