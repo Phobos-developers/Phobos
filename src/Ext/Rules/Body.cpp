@@ -224,6 +224,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 	this->DefaultInfantrySelectBox.Read(exINI, GameStrings::AudioVisual, "DefaultInfantrySelectBox");
 	this->DefaultUnitSelectBox.Read(exINI, GameStrings::AudioVisual, "DefaultUnitSelectBox");
 
+	this->MergeBuildingDamage.Read(exINI, GameStrings::CombatDamage, "MergeBuildingDamage");
+
 	this->DamageOwnerMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageAlliesMultiplier");
 	this->DamageEnemiesMultiplier.Read(exINI, GameStrings::CombatDamage, "DamageEnemiesMultiplier");
@@ -490,6 +492,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropPodTrailer)
 		.Process(this->DropPodDefaultTrailer)
 		.Process(this->PodImage)
+		.Process(this->MergeBuildingDamage)
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)

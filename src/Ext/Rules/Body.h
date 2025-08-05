@@ -173,6 +173,8 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<bool> MergeBuildingDamage;
+
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
@@ -378,6 +380,7 @@ public:
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
+			, MergeBuildingDamage { false }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
