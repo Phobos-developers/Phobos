@@ -500,7 +500,7 @@ In `ra2md.ini`:
 ```ini
 [Phobos]
 DefaultDistributionSpreadMode=2                 ; integer, 0 - r=0 , 1 - r=4 , 2 - r=8 , 3 - r=16
-DefaultDistributionFilterMode=0                 ; integer, 0 - None , 1 - Auto , 2 - Type , 3 - Name
+DefaultDistributionFilterMode=2                 ; integer, 0 - None , 1 - Auto , 2 - Type , 3 - Name
 ```
 
 ## Loading screen
