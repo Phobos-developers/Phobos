@@ -39,4 +39,8 @@ public:
 
 	static void DistributionSpreadModeExpand();
 	static void DistributionSpreadModeReduce();
+	static void __fastcall ClickedWaypoint(ObjectClass* pSelect, int idxPath, signed char idxWP);
+	static void __fastcall ClickedTargetAction(ObjectClass* pSelect, Action action, ObjectClass* pTarget);
+	static void __fastcall ClickedCellAction(ObjectClass* pSelect, Action action, CellStruct* pCell, CellStruct* pSecondCell);
+	static void __fastcall AreaGuardAction(TechnoClass* pTechno);
 };
