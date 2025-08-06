@@ -474,6 +474,19 @@ bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* cons
 			}
 		}
 
+		if (pTechnoType->Immune)
+		{
+			bool canBypassImmune = WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_CanCaptureBuildings
+				|| WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_CanRepairBridges
+				|| WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_CanDestroyBridges
+				|| WarheadTypeExt::ExtMap.Find(pWH)->FakeEngineer_BombDisarm;
+
+			if (canBypassImmune)
+				return true;
+
+			return false;
+		}
+
 		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
 			return false;
 	}

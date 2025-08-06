@@ -2,6 +2,7 @@
 
 #include <TacticalClass.h>
 #include <RadarEventClass.h>
+#include <BombClass.h>
 
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
@@ -68,13 +69,19 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, nullptr, pSourceHouse, destroyBridge);
 	}
 
+	// Capture enemy buildings
 	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
 	if (pBuilding && pWHExt->FakeEngineer_CanCaptureBuildings
 		&& !pSourceHouse->IsAlliedWith(pTargetHouse)
 		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
 	{
 		reinterpret_cast<bool(__thiscall*)(BuildingClass*, HouseClass*, bool)>(0x448260)(pBuilding, pSourceHouse, true);
 	}
+
+	// Disarm bomb
+	if (pThis->AttachedBomb && pWHExt->FakeEngineer_BombDisarm)
+		pThis->AttachedBomb->Disarm();
 
 	// Raise Combat Alert
 	if (pRules->CombatAlert && damage > 1)

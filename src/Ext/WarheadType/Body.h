@@ -210,6 +210,7 @@ public:
 		Valueable<bool> FakeEngineer_CanRepairBridges;
 		Valueable<bool> FakeEngineer_CanDestroyBridges;
 		Valueable<bool> FakeEngineer_CanCaptureBuildings;
+		Valueable<bool> FakeEngineer_BombDisarm;
 
 	private:
 		Valueable<double> Shield_Respawn_Rate_InMinutes;
@@ -404,6 +405,7 @@ public:
 			, FakeEngineer_CanRepairBridges { false }
 			, FakeEngineer_CanDestroyBridges { false }
 			, FakeEngineer_CanCaptureBuildings { false }
+			, FakeEngineer_BombDisarm { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

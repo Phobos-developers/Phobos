@@ -191,6 +191,7 @@ public:
 		Valueable<int> ForceAAWeapon_Infantry;
 		Valueable<int> ForceAAWeapon_Units;
 		Valueable<int> ForceAAWeapon_Aircraft;
+		Valueable<int> ForceWeapon_Capture;
 
 		Valueable<bool> Ammo_Shared;
 		Valueable<int> Ammo_Shared_Group;
@@ -562,6 +563,7 @@ public:
 			, ForceAAWeapon_Infantry { -1 }
 			, ForceAAWeapon_Units { -1 }
 			, ForceAAWeapon_Aircraft { -1 }
+			, ForceWeapon_Capture { -1 }
 
 			, Ammo_Shared { false }
 			, Ammo_Shared_Group { -1 }

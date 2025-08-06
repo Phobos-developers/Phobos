@@ -1560,6 +1560,7 @@ FLHKEY.BurstN=  ; integer - Forward,Lateral,Height. FLHKey refers to weapon-spec
   - `ForceWeapon.Cloaked` forces specified weapon to be used against any cloaked targets.
   - `ForceWeapon.Disguised` forces specified weapon to be used against any disguised targets.
   - `ForceWeapon.UnderEMP` forces specified weapon to be used if the target is under EMP effect.
+  - `ForceWeapon.Capture` forces specified weapon to be used if the target building is capturable.
   - `ForceWeapon.InRange` forces specified a list of weapons to be used once the target is within their `Range`. If `ForceWeapon.InRange.TechnoOnly` set to true, it'll only be forced on TechnoTypes like other forced weapons, otherwise it'll also be forced when attacking empty grounds. The first weapon in the listed order satisfied will be selected. Can be applied to both ground and air target if `ForceAAWeapon.InRange` is not set.
     - `ForceAAWeapon.InRange` does the same thing but only for air target. Taking priority to `ForceWeapon.InRange`, which means that it can only be applied to ground target when they're both set.
     - `Force(AA)Weapon.InRange.Overrides` overrides the range when decides which weapon to use. Value from position matching the position from `Force(AA)Weapon.InRange` is used if found, or the weapon's own `Range` if not found or set to a value below 0.
@@ -1577,6 +1578,7 @@ ForceWeapon.Naval.Decloaked=-1                  ; integer, -1 to disable
 ForceWeapon.Cloaked=-1                          ; integer, -1 to disable
 ForceWeapon.Disguised=-1                        ; integer, -1 to disable
 ForceWeapon.UnderEMP=-1                         ; integer, -1 to disable
+ForceWeapon.Capture=-1                          ; integer, -1 to disable
 ForceWeapon.InRange=                            ; List of integers
 ForceWeapon.InRange.Overrides=                  ; List of floating-point values
 ForceWeapon.InRange.ApplyRangeModifiers=false   ; boolean
@@ -2261,6 +2263,7 @@ While this feature can provide better performance than a large `CellSpread` valu
 - `FakeEngineer.CanRepairBridges`, if set to true, when a building with `BridgeRepairHut=yes` linked to a bridge is affected by the Warhead then all destroyed bridge sections will be fixed.
 - `FakeEngineer.CanDestroyBridges`, if set to true, when a building with `BridgeRepairHut=yes` linked to a bridge is affected by the Warhead then all the bridge will be destroyed.
 - `FakeEngineer.CanCaptureBuildings`, if set to true, a building with `Capturable=true` or `NeedsEngineer=true` is affected by the Warhead then the building will be captured by the house's firer.
+- `FakeEngineer.DisarmBombs`, if set to true, an attached bomb will be removed if the target is affected by the Warhead.
 
 In `rulesmd.ini`:
 ```ini
@@ -2268,6 +2271,7 @@ In `rulesmd.ini`:
 FakeEngineer.CanRepairBridges=false    ; boolean
 FakeEngineer.CanDestroyBridges=false   ; boolean
 FakeEngineer.CanCaptureBuildings=false ; boolean
+FakeEngineer.DisarmBombs=false         ; boolean
 ```
 
 ### Fire weapon when Warhead kills something

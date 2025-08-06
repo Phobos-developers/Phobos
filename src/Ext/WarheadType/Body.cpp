@@ -409,6 +409,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->FakeEngineer_CanRepairBridges.Read(exINI, pSection, "FakeEngineer.CanRepairBridges");
 	this->FakeEngineer_CanDestroyBridges.Read(exINI, pSection, "FakeEngineer.CanDestroyBridges");
 	this->FakeEngineer_CanCaptureBuildings.Read(exINI, pSection, "FakeEngineer.CanCaptureBuildings");
+	this->FakeEngineer_BombDisarm.Read(exINI, pSection, "FakeEngineer.BombDisarm");
 
 	// List all Warheads here that respect CellSpread
 	// Used in WarheadTypeExt::ExtData::Detonate
@@ -654,6 +655,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->FakeEngineer_CanRepairBridges)
 		.Process(this->FakeEngineer_CanDestroyBridges)
 		.Process(this->FakeEngineer_CanCaptureBuildings)
+		.Process(this->FakeEngineer_BombDisarm)
 		;
 }
 

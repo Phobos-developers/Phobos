@@ -625,29 +625,45 @@ AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
 
 }
 
-bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, BuildingClass* pBuilding, bool checkBridge, bool checkCapturableBuilding)
+bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTarget, bool checkBridge, bool checkCapturableBuilding, bool checkAttachedBombs)
 {
-	if ((!checkBridge && !checkCapturableBuilding)
-		|| !pBuilding
-		|| !pBuilding->IsAlive
-		|| pBuilding->Health <= 0)
-	{
-		return false;
-	}
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
-	int nWeaponIndex = pThis->SelectWeapon(pBuilding);
+	// Force weapon check
+	int nWeaponIndex = pTypeExt->SelectForceWeapon(pThis, pTarget);
+
+	if (nWeaponIndex < 0) // Multi weapon check
+		nWeaponIndex = pTypeExt->SelectMultiWeapon(pThis, pTarget);
+
+	if (nWeaponIndex < 0) // Vanilla weapon check
+		nWeaponIndex = pThis->SelectWeapon(pTarget);
+
 	if (nWeaponIndex < 0)
 		return false;
 
-	auto const pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
+	const auto pWeapon = pThis->GetWeapon(nWeaponIndex)->WeaponType;
 
-	if (!pWeapon)
+	if (!pWeapon || !pTarget)
 		return false;
 
-	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWeapon->Warhead);
+	bool canAffectCapturableBuildings = false;
+	bool canAffectBridges = false;
+	bool canAffectAttachedBombs = false;
+
+	// Check if an attached bomb can be disarmed
+	if (checkAttachedBombs
+		&& pWHExt->FakeEngineer_BombDisarm
+		&& pTarget->AttachedBomb)
+	{
+		canAffectAttachedBombs = true;
+	}
+
+	const auto pBuilding = abstract_cast<BuildingClass*>(pTarget);
+	bool isBuilding = pBuilding && pBuilding->IsAlive && pBuilding->Health > 0;
 
 	// Check if a Bridge Repair Hut can be affected
-	if (checkBridge && pBuilding->Type->BridgeRepairHut)
+	if (checkBridge && isBuilding && pBuilding->Type->BridgeRepairHut)
 	{
 		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
 		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
@@ -655,20 +671,21 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, BuildingClass* p
 		if (isBridgeDamaged
 			&& (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
 		{
-			return true;
+			canAffectBridges = true;
 		}
 	}
 
 	// Check if a capturable building can be affected
 	if (checkCapturableBuilding
+		&& isBuilding
 		&& pWHExt->FakeEngineer_CanCaptureBuildings
 		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer)
-		&& !pThis->Owner->IsAlliedWith(pBuilding))
+		&& !pThis->Owner->IsAlliedWith(pBuilding)) // Anti-crash check
 	{
-		return true;
+		canAffectCapturableBuildings = true;
 	}
 
-	return false;
+	return canAffectCapturableBuildings || canAffectBridges || canAffectAttachedBombs;
 }
 
 void TechnoExt::ExtData::ResetDelayedFireTimer()
