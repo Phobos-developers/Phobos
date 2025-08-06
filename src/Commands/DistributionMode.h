@@ -2,6 +2,8 @@
 
 #include "Commands.h"
 
+#include <ObjectClass.h>
+
 class SwitchNoMoveCommandClass : public CommandClass
 {
 public:
