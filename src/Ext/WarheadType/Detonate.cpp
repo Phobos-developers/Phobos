@@ -368,8 +368,11 @@ void WarheadTypeExt::ExtData::ApplyShieldModifiers(TechnoClass* pTarget)
 
 		if (shieldType)
 		{
-			if (shieldType->Strength && (!pShield || (this->Shield_ReplaceNonRespawning && pShield->IsBrokenAndNonRespawning() &&
-				pShield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
+			if (shieldType->Strength
+				&& (!pShield
+					|| (this->Shield_ReplaceNonRespawning
+						&& pShield->IsBrokenAndNonRespawning()
+						&& pShield->GetFramesSinceLastBroken() >= this->Shield_MinimumReplaceDelay)))
 			{
 				pTargetExt->CurrentShieldType = shieldType;
 				pShield = std::make_unique<ShieldClass>(pTarget, true);
@@ -473,8 +476,8 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	{
 		if (!this->Crit_AnimList_CreateAll.Get(false))
 		{
-			const int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false) ?
-				ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
+			const int idx = this->OwnerObject()->EMEffect || this->Crit_AnimList_PickRandom.Get(false)
+				? ScenarioClass::Instance->Random.RandomRanged(0, this->Crit_AnimList.size() - 1) : 0;
 
 			auto const pAnim = GameCreate<AnimClass>(this->Crit_AnimList[idx], pTarget->Location);
 			AnimExt::SetAnimOwnerHouseKind(pAnim, pHouse, nullptr, false, true);

@@ -22,8 +22,8 @@ DEFINE_HOOK(0x508C30, HouseClass_UpdatePower_UpdateCounter, 0x5)
 			const auto pType = pBld->Type;
 			const auto pExt = BuildingTypeExt::ExtMap.Find(pType);
 
-			if (pExt->PowerPlantEnhancer_Buildings.size() &&
-				(pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
+			if (pExt->PowerPlantEnhancer_Buildings.size()
+				&& (pExt->PowerPlantEnhancer_Amount != 0 || pExt->PowerPlantEnhancer_Factor != 1.0f))
 			{
 				++pHouseExt->PowerPlantEnhancers[pType->ArrayIndex];
 			}
@@ -263,24 +263,29 @@ DEFINE_HOOK(0x7015C9, TechnoClass_Captured_UpdateTracking, 0x6)
 		pNewOwnerExt->OwnedCountedHarvesters.push_back(pThis);
 	}
 
-	if (auto const pMe = generic_cast<FootClass*, true>(pThis))
+	if (const auto pMe = generic_cast<FootClass*, true>(pThis))
 	{
 		const bool I_am_human = pThis->Owner->IsControlledByHuman();
-		const bool You_are_human = pNewOwner->IsControlledByHuman();
-		auto const pConvertTo = (I_am_human && !You_are_human) ? pTypeExt->Convert_HumanToComputer.Get() :
-			(!I_am_human && You_are_human) ? pTypeExt->Convert_ComputerToHuman.Get() : nullptr;
 
-		if (pConvertTo && pConvertTo->WhatAmI() == pType->WhatAmI())
-			TechnoExt::ConvertToType(pMe, pConvertTo);
-
-		for (const auto& pTrail : pExt->LaserTrails)
+		if (I_am_human != pNewOwner->IsControlledByHuman())
 		{
-			if (pTrail->Type->IsHouseColor)
-				pTrail->CurrentColor = pNewOwner->LaserColor;
-		}
+			if (const auto pConvertTo = I_am_human
+				? pTypeExt->Convert_HumanToComputer.Get()
+				: pTypeExt->Convert_ComputerToHuman.Get())
+			{
+				if (pConvertTo->WhatAmI() == pType->WhatAmI())
+					TechnoExt::ConvertToType(pMe, pConvertTo);
+			}
 
-		if (!I_am_human && You_are_human)
-			TechnoExt::ChangeOwnerMissionFix(pMe);
+			if (!I_am_human)
+				TechnoExt::ChangeOwnerMissionFix(pMe);
+		}
+	}
+
+	for (const auto& pTrail : pExt->LaserTrails)
+	{
+		if (pTrail->Type->IsHouseColor)
+			pTrail->CurrentColor = pNewOwner->LaserColor;
 	}
 
 	return 0;
@@ -441,21 +446,14 @@ DEFINE_HOOK(0x4FD8F7, HouseClass_UpdateAI_OnLastLegs, 0x10)
 	{
 		auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-		if (RulesExt::Global()->AIFireSaleDelay <= 0 || !pExt ||
-			pExt->AIFireSaleDelayTimer.Completed())
-		{
+		if (RulesExt::Global()->AIFireSaleDelay <= 0 || pExt->AIFireSaleDelayTimer.Completed())
 			pThis->Fire_Sale();
-		}
 		else if (!pExt->AIFireSaleDelayTimer.HasStarted())
-		{
 			pExt->AIFireSaleDelayTimer.Start(RulesExt::Global()->AIFireSaleDelay);
-		}
 	}
 
 	if (RulesExt::Global()->AIAllToHunt)
-	{
 		pThis->All_To_Hunt();
-	}
 
 	return ret;
 }
