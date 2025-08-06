@@ -469,20 +469,22 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 
 ### `[ ]` Distribution Mode Spread / Filter / Enable
 
-- Change the click action when hold down the specific hotkey if enabled `AllowDistributionCommand`.
+- Now you can change the click action by using `AllowSwitchNoMoveCommand` hotkey. If the behavior to be executed by the current techno is different from the behavior displayed by the mouse, and the behavior to be executed will make the techno move near the target, the behavior will be replaced with area guard. Regardless of whether or not switch hotkey is used, default behavior can be changed through `DefaultApplyNoMoveCommand`.
+- Now you can also change the click action when hold down the specific hotkey if enabled `AllowDistributionCommand`. The new behavior is like using the selected objects one by one to click on each target within the range.
 - `AllowDistributionCommand.SpreadMode` & `AllowDistributionCommand.FilterMode` allow you to set spread range and target filter by hotkeys, which default to `DefaultDistributionSpreadMode` and `DefaultDistributionFilterMode`.
   - When the range is 0, it is the original default behavior of the game. The range can be adjusted to 4, 8 or 16 cells by another shortcut key. You can also adjust this by using the mouse wheel while holding down the specific hotkey if `AllowDistributionCommand.SpreadModeScroll` set to true;
     - The targets within the range will be allocated equally to the selected technos. Only when the behavior to be performed by the current techno is the same as that displayed by the mouse will it be allocated. Otherwise, it will return to the original default behavior of the game (it will not be effective for technos in the air). This will display a range ring.
   - When the filter is `None`, it is the default behavior of the game. If the range is not zero at this time, a green ring will be displayed. You can adjust the filter mode to:
-    - `Auto` - if the behavior to be executed by the current techno is different from the behavior displayed by the mouse, and the behavior to be executed will make the techno move near the target, the behavior will be replaced with area guard. At this time, a blue ring will be displayed.
-    - `Type` - on the basis of `Auto`, only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
-    - `Name` - on the basis of `Type`, only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
+    - `Like` - only targets with the same armor type (Completely identical `Armor`) will be selected among the targets allocated in the range. At this time, a blue ring will be displayed.
+    - `Type` - only targets of the same type (like infantries, vehicles or buildings) will be selected among the targets allocated in the range. At this time, a yellow ring will be displayed.
+    - `Name` - only targets of the same name (or with the same `GroupAs`) will be selected among the targets allocated in the range. At this time, a red ring will be displayed.
 - `AllowDistributionCommand.AffectsAllies` & `AllowDistributionCommand.AffectsEnemies` allow the distribution command to work on allies (including owner) or enemies target. If picking a target that's not eligible, it'll fallback to vanilla command.
-- For localization add `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC`, `TXT_DISTR_HOLDDOWN_DESC`, `MSG:DistributionModeOn`, `MSG:DistributionModeOff` into your `.csf` file.
+- For localization add `TXT_SWITCH_NOMOVE`, `TXT_DISTR_SPREAD`, `TXT_DISTR_FILTER`, `TXT_DISTR_HOLDDOWN`, `TXT_SWITCH_NOMOVE_DESC`, `TXT_DISTR_SPREAD_DESC`, `TXT_DISTR_FILTER_DESC`, `TXT_DISTR_HOLDDOWN_DESC`, `MSG:DistributionModeOn`, `MSG:DistributionModeOff` into your `.csf` file.
 
 In `rulesmd.ini`:
 ```ini
 [GlobalControls]
+AllowSwitchNoMoveCommand=false                  ; boolean
 AllowDistributionCommand=false                  ; boolean
 AllowDistributionCommand.SpreadMode=true        ; boolean
 AllowDistributionCommand.SpreadModeScroll=true  ; boolean
@@ -499,8 +501,9 @@ AddDistributionModeCommandSound=                ; sound entry
 In `ra2md.ini`:
 ```ini
 [Phobos]
+DefaultApplyNoMoveCommand=true                  ; boolean
 DefaultDistributionSpreadMode=2                 ; integer, 0 - r=0 , 1 - r=4 , 2 - r=8 , 3 - r=16
-DefaultDistributionFilterMode=2                 ; integer, 0 - None , 1 - Auto , 2 - Type , 3 - Name
+DefaultDistributionFilterMode=2                 ; integer, 0 - None , 1 - Like , 2 - Type , 3 - Name
 ```
 
 ## Loading screen

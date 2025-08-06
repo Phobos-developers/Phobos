@@ -11,6 +11,31 @@ bool DistributionModeHoldDownCommandClass::OnMessageShowed = false;
 bool DistributionModeHoldDownCommandClass::OffMessageShowed = false;
 int DistributionModeHoldDownCommandClass::ShowTime = 0;
 
+const char* SwitchNoMoveCommandClass::GetName() const
+{
+	return "Switch No Move Command";
+}
+
+const wchar_t* SwitchNoMoveCommandClass::GetUIName() const
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_SWITCH_NOMOVE", L"Switch no-move");
+}
+
+const wchar_t* SwitchNoMoveCommandClass::GetUICategory() const
+{
+	return CATEGORY_CONTROL;
+}
+
+const wchar_t* SwitchNoMoveCommandClass::GetUIDescription() const
+{
+	return GeneralUtils::LoadStringUnlessMissing("TXT_SWITCH_NOMOVE_DESC", L"Make unit does not move around the target when receiving no-move command");
+}
+
+void SwitchNoMoveCommandClass::Execute(WWKey eInput) const
+{
+	Phobos::Config::ApplyNoMoveCommand = !Phobos::Config::ApplyNoMoveCommand;
+}
+
 const char* DistributionModeSpreadCommandClass::GetName() const
 {
 	return "Distribution Mode Spread";
@@ -177,13 +202,14 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 		if (pTarget)
 		{
-			const int mode1 = Phobos::Config::DistributionSpreadMode;
-			const int mode2 = Phobos::Config::DistributionFilterMode;
+			const int spreadMode = Phobos::Config::DistributionSpreadMode;
+			const int filterMode = Phobos::Config::DistributionFilterMode;
+			const bool noMove = !Phobos::Config::ApplyNoMoveCommand;
 			const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
 
 			// Distribution mode main
 			if (DistributionModeHoldDownCommandClass::Enabled
-				&& mode1
+				&& spreadMode
 				&& count > 1
 				&& action != Action::NoMove
 				&& !PlanningNodeClass::PlanningModeActive
@@ -196,7 +222,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 				VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 				const bool targetIsNeutral = pTechno->Owner->IsNeutral();
 
-				const int range = (2 << mode1);
+				const int range = (2 << spreadMode);
 				const auto center = pTarget->GetCoords();
 				const auto pItems = Helpers::Alex::getCellSpreadItems(center, range);
 
@@ -255,17 +281,31 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 						if (!targetIsNeutral && pItem->Owner->IsNeutral())
 							continue;
 
-						if (mode2 < 2 || (pItem->WhatAmI() == pTarget->WhatAmI()
-							&& (mode2 < 3 || TechnoTypeExt::GetSelectionGroupID(pItem->GetTechnoType())
-								== TechnoTypeExt::GetSelectionGroupID(pTarget->GetTechnoType()))))
+						if (filterMode)
 						{
-							canTargetIndex = i;
-
-							if (num < current)
+							if (filterMode == 1)
 							{
-								newTargetIndex = i;
-								break;
+								if (pItem->GetType()->Armor != pTarget->GetType()->Armor)
+									continue;
 							}
+							else if (filterMode == 2)
+							{
+								if (pItem->WhatAmI() != pTarget->WhatAmI())
+									continue;
+							}
+							else // filterMode == 3
+							{
+								if (TechnoTypeExt::GetSelectionGroupID(pItem->GetType()) != TechnoTypeExt::GetSelectionGroupID(pTarget->GetType()))
+									continue;
+							}
+						}
+
+						canTargetIndex = i;
+
+						if (num < current)
+						{
+							newTargetIndex = i;
+							break;
 						}
 					}
 
@@ -287,7 +327,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 					const auto currentAction = pSelect->MouseOverObject(pTarget);
 
-					if (mode2 && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+					if (noMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 						DistributionModeHoldDownCommandClass::AreaGuardAction(static_cast<TechnoClass*>(pSelect));
 					else
 						DistributionModeHoldDownCommandClass::ClickedTargetAction(pSelect, currentAction, pTarget);
@@ -299,7 +339,7 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 				{
 					const auto currentAction = pSelect->MouseOverObject(pTarget);
 
-					if (mode2 && action != Action::NoMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
+					if (noMove && action != Action::NoMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 						DistributionModeHoldDownCommandClass::AreaGuardAction(static_cast<TechnoClass*>(pSelect));
 					else
 						DistributionModeHoldDownCommandClass::ClickedTargetAction(pSelect, currentAction, pTarget);
@@ -332,16 +372,16 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 	if (!DistributionModeHoldDownCommandClass::Enabled && SystemTimer::GetTime() - DistributionModeHoldDownCommandClass::ShowTime > 30)
 		return 0;
 
-	const auto mode1 = Phobos::Config::DistributionSpreadMode;
-	const auto mode2 = Phobos::Config::DistributionFilterMode;
+	const auto spreadMode = Phobos::Config::DistributionSpreadMode;
+	const auto filterMode = Phobos::Config::DistributionFilterMode;
 
-	if (mode1 || mode2)
+	if (spreadMode || filterMode)
 	{
 		const auto pCell = MapClass::Instance.GetCellAt(DisplayClass::Instance.CurrentFoundation_CenterCell);
-		const auto color = (mode2 > 1)
-			? ((mode2 == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
-			: ((mode2 == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
-		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, static_cast<float>(mode1 ? (2 << mode1) : 0.5), false, true);
+		const auto color = (filterMode > 1)
+			? ((filterMode == 3) ? ColorStruct { 255, 0, 0 } : ColorStruct { 200, 200, 0 })
+			: ((filterMode == 1) ? ColorStruct { 0, 100, 255 } : ColorStruct { 0, 255, 50 });
+		Game::DrawRadialIndicator(false, true, pCell->GetCoords(), color, static_cast<float>(spreadMode ? (2 << spreadMode) : 0.5), false, true);
 	}
 
 	return 0;

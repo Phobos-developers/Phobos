@@ -104,12 +104,14 @@ public:
 		static bool HideLightFlashEffects;
 		static bool ShowFlashOnSelecting;
 		static bool UnitPowerDrain;
+		static bool AllowSwitchNoMoveCommand;
 		static bool AllowDistributionCommand;
 		static bool AllowDistributionCommand_SpreadMode;
 		static bool AllowDistributionCommand_SpreadModeScroll;
 		static bool AllowDistributionCommand_FilterMode;
 		static bool AllowDistributionCommand_AffectsAllies;
 		static bool AllowDistributionCommand_AffectsEnemies;
+		static bool ApplyNoMoveCommand;
 		static int DistributionSpreadMode;
 		static int DistributionFilterMode;
 		static int SuperWeaponSidebar_RequiredSignificance;

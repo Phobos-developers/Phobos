@@ -40,6 +40,9 @@ DEFINE_HOOK(0x533066, CommandClassCallback_Register, 0x6)
 		SWSidebarClass::Commands[9] = MakeCommand<FireTacticalSWCommandClass<9>>();
 	}
 
+	if (Phobos::Config::AllowSwitchNoMoveCommand)
+		MakeCommand<SwitchNoMoveCommandClass>();
+
 	if (Phobos::Config::AllowDistributionCommand)
 	{
 		if (Phobos::Config::AllowDistributionCommand_SpreadMode)
