@@ -327,8 +327,10 @@ private:
 		if (allied && pType->Repairable)
 			return true;
 
-		if (!allied && pType->Capturable &&
-			(!pBuilding->Owner->Type->MultiplayPassive || !pType->CanBeOccupied || pBuilding->IsBeingWarpedOut()))
+		if (!allied && pType->Capturable
+			&& (!pBuilding->Owner->Type->MultiplayPassive
+				|| !pType->CanBeOccupied
+				|| pBuilding->IsBeingWarpedOut()))
 		{
 			return true;
 		}

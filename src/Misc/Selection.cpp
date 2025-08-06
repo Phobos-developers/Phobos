@@ -48,8 +48,8 @@ public:
 			const int nLocalX = selectable.X - pThis->TacticalPos.X;
 			const int nLocalY = selectable.Y - pThis->TacticalPos.Y;
 
-			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left) &&
-				(nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
+			if ((nLocalX >= pRect->Left && nLocalX < pRect->Right + pRect->Left)
+				&& (nLocalY >= pRect->Top && nLocalY < pRect->Bottom + pRect->Top))
 			{
 				return true;
 			}

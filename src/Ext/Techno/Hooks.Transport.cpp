@@ -107,8 +107,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		}
 
-		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit &&
-			pExt->OriginalPassengerOwner)
+		if (pTransTypeExt->Passengers_SyncOwner
+			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit
+			&& pExt->OriginalPassengerOwner)
 		{
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 		}

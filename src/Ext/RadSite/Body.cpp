@@ -17,7 +17,6 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 {
 	const auto pType = this->Type;
 	const auto pWarhead = pType->GetWarhead();
-	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	if (!pType->GetWarheadDetonate())
 	{
@@ -29,7 +28,7 @@ bool RadSiteExt::ExtData::ApplyRadiationDamage(TechnoClass* pTarget, int& damage
 		if (pType->GetWarheadDetonateFull())
 			WarheadTypeExt::DetonateAt(pWarhead, pTarget, this->RadInvoker, damage, this->RadHouse);
 		else
-			pWHExt->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
+			WarheadTypeExt::ExtMap.Find(pWarhead)->DamageAreaWithTarget(pTarget->GetCoords(), damage, this->RadInvoker, pWarhead, true, this->RadHouse, pTarget);
 
 		if (!pTarget->IsAlive)
 			return false;
