@@ -134,60 +134,24 @@ void __fastcall DistributionModeHoldDownCommandClass::ClickedWaypoint(ObjectClas
 
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pSelect))
 		pFoot->unknown_bool_430 = false;
-
-	if (const auto pExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*, true>(pSelect)))
-	{
-		for (const auto& pAttachment : pExt->ChildAttachments)
-		{
-			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-				DistributionModeHoldDownCommandClass::ClickedWaypoint(pAttachment->Child, idxPath, idxWP);
-		}
-	}
 }
 
 void __fastcall DistributionModeHoldDownCommandClass::ClickedTargetAction(ObjectClass* pSelect, Action action, ObjectClass* pTarget)
 {
 	pSelect->ObjectClickedAction(action, pTarget, false);
 	Unsorted::MoveFeedback = false;
-
-	if (const auto pExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*, true>(pSelect)))
-	{
-		for (const auto& pAttachment : pExt->ChildAttachments)
-		{
-			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-				DistributionModeHoldDownCommandClass::ClickedTargetAction(pAttachment->Child, action, pTarget);
-		}
-	}
 }
 
 void __fastcall DistributionModeHoldDownCommandClass::ClickedCellAction(ObjectClass* pSelect, Action action, CellStruct* pCell, CellStruct* pSecondCell)
 {
 	pSelect->CellClickedAction(action, pCell, pSecondCell, false);
 	Unsorted::MoveFeedback = false;
-
-	if (const auto pExt = TechnoExt::ExtMap.TryFind(abstract_cast<TechnoClass*, true>(pSelect)))
-	{
-		for (const auto& pAttachment : pExt->ChildAttachments)
-		{
-			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-				DistributionModeHoldDownCommandClass::ClickedCellAction(pAttachment->Child, action, pCell, pSecondCell);
-		}
-	}
 }
 
 void __fastcall DistributionModeHoldDownCommandClass::AreaGuardAction(TechnoClass* pTechno)
 {
 	pTechno->ClickedMission(Mission::Area_Guard, reinterpret_cast<ObjectClass*>(pTechno->GetCellAgain()), nullptr, nullptr);
 	Unsorted::MoveFeedback = false;
-
-	if (const auto pExt = TechnoExt::ExtMap.Find(pTechno))
-	{
-		for (const auto& pAttachment : pExt->ChildAttachments)
-		{
-			if (pAttachment->Child && pAttachment->GetType()->InheritCommands)
-				DistributionModeHoldDownCommandClass::AreaGuardAction(pAttachment->Child);
-		}
-	}
 }
 
 DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
