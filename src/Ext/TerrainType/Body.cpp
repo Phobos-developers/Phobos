@@ -50,6 +50,7 @@ void TerrainTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SpawnsTiberium_Range)
 		.Process(this->SpawnsTiberium_GrowthStage)
 		.Process(this->SpawnsTiberium_CellsPerAnim)
+		.Process(this->SpawnsTiberium_Particle)
 		.Process(this->DestroyAnim)
 		.Process(this->DestroySound)
 		.Process(this->MinimapColor)
@@ -73,6 +74,7 @@ void TerrainTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnsTiberium_Range.Read(exINI, pSection, "SpawnsTiberium.Range");
 	this->SpawnsTiberium_GrowthStage.Read(exINI, pSection, "SpawnsTiberium.GrowthStage");
 	this->SpawnsTiberium_CellsPerAnim.Read(exINI, pSection, "SpawnsTiberium.CellsPerAnim");
+	this->SpawnsTiberium_Particle.Read(exINI, pSection, "SpawnsTiberium.Particle");
 
 	this->DestroyAnim.Read(exINI, pSection, "DestroyAnim");
 	this->DestroySound.Read(exINI, pSection, "DestroySound");
