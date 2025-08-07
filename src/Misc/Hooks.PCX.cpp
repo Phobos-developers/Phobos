@@ -19,7 +19,7 @@ DEFINE_HOOK(0x5535D0, LoadProgressMgr_Draw_PCXLoadingScreen, 0x6)
 	strcpy_s(pFilename, name);
 	_strlwr_s(pFilename);
 
-	int ScreenWidth = *(int*)0x8A00A4;
+	const int ScreenWidth = *(int*)0x8A00A4;
 	BSurface* pcx = nullptr;
 
 	sprintf_s(Phobos::readBuffer, GameStrings::LSSOBS_SHP /* "ls%sobs.shp" */,
@@ -89,7 +89,7 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 
 	if (pCameo)
 	{
-		auto pCameoRef = pCameo->AsReference();
+		const auto pCameoRef = pCameo->AsReference();
 		char pFilename[0x20];
 		strcpy_s(pFilename, RulesExt::Global()->MissingCameo.data());
 		_strlwr_s(pFilename);
@@ -98,10 +98,10 @@ DEFINE_HOOK(0x6A99F3, StripClass_Draw_DrawMissing, 0x6)
 			&& strstr(pFilename, ".pcx"))
 		{
 			PCX::Instance.LoadFile(pFilename);
-			if (auto CameoPCX = PCX::Instance.GetSurface(pFilename))
+			if (const auto CameoPCX = PCX::Instance.GetSurface(pFilename))
 			{
-				GET(int, destX, ESI);
-				GET(int, destY, EBP);
+				GET(const int, destX, ESI);
+				GET(const int, destY, EBP);
 
 				RectangleStruct bounds = { destX, destY, 60, 48 };
 				PCX::Instance.BlitToSurface(&bounds, DSurface::Sidebar, CameoPCX);

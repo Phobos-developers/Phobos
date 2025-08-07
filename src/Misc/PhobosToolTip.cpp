@@ -70,7 +70,7 @@ inline int PhobosToolTip::GetBuildTime(TechnoTypeClass* pType) const
 	// BuildingTypeClass, AircraftTypeClass, InfantryTypeClass and UnitTypeClass
 	// It has to be these four classes, otherwise pType will just be nullptr
 	reinterpret_cast<TechnoClass*>(pTrick)->Owner = HouseClass::CurrentPlayer;
-	int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
+	const int nTimeToBuild = reinterpret_cast<TechnoClass*>(pTrick)->TimeToBuild();
 	// 54 frames at least
 	return std::max(54, nTimeToBuild);
 }
@@ -91,7 +91,7 @@ inline int PhobosToolTip::GetPower(TechnoTypeClass* pType) const
 		}
 	case AbstractType::BuildingType:
 		{
-			auto pBldType = (BuildingTypeClass*)pType;
+			const auto pBldType = (BuildingTypeClass*)pType;
 			return pBldType->PowerBonus - pBldType->PowerDrain;
 		}
 	default:
@@ -134,11 +134,11 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 
 	auto const pData = TechnoTypeExt::ExtMap.Find(pType);
 
-	int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
-	int nSec = nBuildTime % 60;
-	int nMin = nBuildTime / 60;
+	const int nBuildTime = TickTimeToSeconds(this->GetBuildTime(pType));
+	const int nSec = nBuildTime % 60;
+	const int nMin = nBuildTime / 60;
 
-	int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
+	const int cost = pType->GetActualCost(HouseClass::CurrentPlayer);
 
 	std::wostringstream oss;
 	oss << pType->UIName << L"\n"
@@ -156,7 +156,7 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 		oss << std::setw(1) << nPower;
 	}
 
-	if (auto pDesc = this->GetUIDescription(pData))
+	if (auto const pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
 	this->TextBuffer = oss.str();
@@ -164,14 +164,15 @@ void PhobosToolTip::HelpText_Techno(TechnoTypeClass* pType)
 
 void PhobosToolTip::HelpText_Super(int swidx)
 {
-	auto pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
-	auto const pData = SWTypeExt::ExtMap.Find(pSuper->Type);
+	auto const pSuper = HouseClass::CurrentPlayer->Supers.Items[swidx];
+	auto const pType = pSuper->Type;
+	auto const pData = SWTypeExt::ExtMap.Find(pType);
 
 	std::wostringstream oss;
-	oss << pSuper->Type->UIName;
+	oss << pType->UIName;
 	bool showSth = false;
 
-	if (int nCost = std::abs(pData->Money_Amount))
+	if (const int nCost = std::abs(pData->Money_Amount))
 	{
 		oss << L"\n";
 
@@ -194,14 +195,14 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		showSth = true;
 	}
 
-	int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
+	const int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
 	if (rechargeTime > 0)
 	{
 		if (!showSth)
 			oss << L"\n";
 
-		int nSec = rechargeTime % 60;
-		int nMin = rechargeTime / 60;
+		const int nSec = rechargeTime % 60;
+		const int nMin = rechargeTime / 60;
 
 		oss << (showSth ? L" " : L"") << Phobos::UI::TimeLabel
 			<< std::setw(2) << std::setfill(L'0') << nMin << L":"
@@ -210,8 +211,8 @@ void PhobosToolTip::HelpText_Super(int swidx)
 	}
 
 	auto const& sw_ext = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer)->SuperExts[swidx];
-	int sw_shots = pData->SW_Shots;
-	int remain_shots = pData->SW_Shots - sw_ext.ShotCount;
+	const int sw_shots = pData->SW_Shots;
+	const int remain_shots = pData->SW_Shots - sw_ext.ShotCount;
 	if (sw_shots > 0)
 	{
 		if (!showSth)
@@ -222,7 +223,7 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		oss << (showSth ? L" " : L"") << buffer;
 	}
 
-	if (auto pDesc = this->GetUIDescription(pData))
+	if (auto const pDesc = this->GetUIDescription(pData))
 		oss << L"\n" << pDesc;
 
 	this->TextBuffer = oss.str();
@@ -290,7 +291,7 @@ DEFINE_HOOK(0x478EE1, CCToolTip_Draw2_SetBuffer, 0x6)
 DEFINE_HOOK(0x478E10, CCToolTip_Draw1, 0x0)
 {
 	GET(CCToolTip*, pThis, ECX);
-	GET_STACK(bool, bFullRedraw, 0x4);
+	GET_STACK(const bool, bFullRedraw, 0x4);
 
 	// !onSidebar or (onSidebar && ExtToolTip::IsCameo)
 	if (!bFullRedraw || PhobosToolTip::Instance.IsCameo)
@@ -404,7 +405,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 
 			const int x = pColumn->X + pColumn->Width + 2;
 			*/
-			GET_STACK(int, textHeight, STACK_OFFSET(0x44, -0x28));
+			GET_STACK(const int, textHeight, STACK_OFFSET(0x44, -0x28));
 
 			const auto pColumn = SWSidebarClass::Instance.Columns[pButton->ColumnIndex];
 			const int x = pColumn->X + pColumn->Width + 2;
@@ -428,7 +429,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	else if (const auto pButton = SWSidebarClass::Instance.CurrentButton)
 	{
 		LEA_STACK(LTRBStruct*, pTextRect, STACK_OFFSET(0x44, -0x20));
-		GET_STACK(int, textHeight, STACK_OFFSET(0x44, -0x28));
+		GET_STACK(const int, textHeight, STACK_OFFSET(0x44, -0x28));
 
 		const int x = pButton->X + pButton->Width;
 		const int y = std::clamp(pButton->Y + 43, 0, DSurface::ViewBounds.Height - textHeight);
@@ -445,7 +446,7 @@ DEFINE_HOOK(0x478FDC, CCToolTip_Draw2_FillRect, 0x5)
 	const int nPlayerSideIndex = ScenarioClass::Instance->PlayerSideIndex;
 	if (auto const pSide = SideClass::Array.GetItemOrDefault(nPlayerSideIndex))
 	{
-		if (auto const pData = SideExt::ExtMap.Find(pSide))
+		if (auto const pData = SideExt::ExtMap.TryFind(pSide))
 		{
 			// Could this flag be lazy?
 			if (isCameo)

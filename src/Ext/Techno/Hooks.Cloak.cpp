@@ -8,7 +8,7 @@ namespace CloakTemp
 bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool cloakable = pThis->Cloakable;
+	const bool cloakable = pThis->Cloakable;
 	int rearm = -1;
 	pThis->Cloakable |= pExt->AE.Cloakable;
 
@@ -19,7 +19,7 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 	}
 
 	CloakTemp::IsInReadyToCloak = true;
-	bool retVal = pThis->TechnoClass::IsReadyToCloak();
+	const bool retVal = pThis->TechnoClass::IsReadyToCloak();
 	CloakTemp::IsInReadyToCloak = false;
 
 	pThis->Cloakable = cloakable;
@@ -36,10 +36,10 @@ bool __fastcall TechnoClass_IsReadyToCloak_Wrapper(TechnoClass* pThis)
 bool __fastcall TechnoClass_ShouldNotCloak_Wrapper(TechnoClass* pThis)
 {
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
-	bool cloakable = pThis->Cloakable;
+	const bool cloakable = pThis->Cloakable;
 	pThis->Cloakable |= pExt->AE.Cloakable;
 
-	bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
+	const bool retVal = pThis->TechnoClass::ShouldNotBeCloaked();
 
 	pThis->Cloakable = cloakable;
 
@@ -73,7 +73,7 @@ DEFINE_HOOK(0x6F7792, TechnoClass_InWeaponRange_DecloakToFire, 0xA)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EBX);
-	GET(int, weaponIndex, EAX);
+	GET(const int, weaponIndex, EAX);
 
 	if (CloakTemp::IsInReadyToCloak)
 	{
@@ -95,7 +95,7 @@ DEFINE_HOOK(0x703789, TechnoClass_Cloak_BeforeDetach, 0x6)        // TechnoClass
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
 	{
 		if (!pExt->MindControlRingAnimType)
 			pExt->UpdateMindControlAnim();
@@ -111,7 +111,7 @@ DEFINE_HOOK(0x703799, TechnoClass_Cloak_AfterDetach, 0xA)        // TechnoClass_
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
 		pExt->IsDetachingForCloak = false;
 
 	return 0;
@@ -121,7 +121,7 @@ DEFINE_HOOK(0x6FB9D7, TechnoClass_Cloak_RestoreMCAnim, 0x6)
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	if (auto const pExt = TechnoExt::ExtMap.Find(pThis))
+	if (auto const pExt = TechnoExt::ExtMap.TryFind(pThis))
 		pExt->UpdateMindControlAnim();
 
 	return 0;
