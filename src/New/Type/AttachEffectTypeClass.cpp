@@ -78,7 +78,7 @@ void AttachEffectTypeClass::AddToGroupsMap()
 {
 	auto const map = &AttachEffectTypeClass::GroupsMap;
 
-	for (auto const group : this->Groups)
+	for (auto const& group : this->Groups)
 	{
 		if (!map->contains(group))
 		{
