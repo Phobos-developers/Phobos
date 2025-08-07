@@ -14,6 +14,20 @@ This page describes all AI scripting and mapping related additions and changes i
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
+### Increased Overlay Limit
+
+- Maps can now contain OverlayTypes with indices up to 65535.
+
+- To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file.
+
+```{note}
+Maps using this feature cannot be loaded by the vanilla game.
+```
+
+```{warning}
+Not all tools properly support this feature yet, and may crash or corrupt the map. We recommend using the [World-Altering Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when using this feature.
+```
+
 ## Singleplayer Mission Maps
 
 ### Base node repairing
@@ -684,6 +698,9 @@ ID=ActionCount,[Action1],608,0,0,[HouseIndex],0,0,0,A,[ActionX]
     - `variable` will make the text banner display the variable alone and will ignore the text in `CSF`.
     - `prefix`/`prefixed` will make the text banner display the variable before any other text.
     - `suffix`/`suffixed` will make the text banner display the variable after any other text.
+  - `Duration` determines how long the banner will be displayed. Negative values mean the banner can always be displayed until being deleted. The banner itself won't be deleted when it's not displaying.
+  - `Delay` determines when the banner will be displayed again after it stops displaying by a positive `Duration`. Neagtive values mean it can't be displayed again.
+    - If an `SHP` banner displays again after the delay, it'll start from the frame when it's stopped last time. This can also be changed to its first frame if `SHP.RefreshAfterDelay` set to true.
 
 In `rulesmd.ini`:
 ```ini
@@ -694,10 +711,13 @@ In `rulesmd.ini`:
 PCX=                        ; filename - excluding the .pcx extension
 SHP=                        ; filename - excluding the .shp extension
 SHP.Palette=palette.pal     ; filename - excluding the .pal extension
+SHP.RefreshAfterDelay=false ; boolean
 CSF=                        ; CSF entry key
 CSF.Color=                  ; integer - R,G,B, defaults to MessageTextColor of the owner Side
 CSF.Background=false        ; boolean
 CSF.VariableFormat=none     ; List of Variable Format Enumeration (none|variable|prefix/prefixed|surfix/surfixed)
+Duration=-1                 ; integer
+Delay=-1                    ; integer
 ```
 
 In `mycampaign.map`:
