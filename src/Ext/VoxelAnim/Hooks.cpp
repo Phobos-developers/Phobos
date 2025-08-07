@@ -36,9 +36,9 @@ DEFINE_HOOK(0x74A027, VoxelAnimClass_AI_Expired, 0x6)
 	enum { SkipGameCode = 0x74A22A };
 
 	GET(VoxelAnimClass* const, pThis, EBX);
-	GET(int, flag, EAX);
+	GET(const int, flag, EAX);
 
-	bool heightFlag = flag & 0xFF;
+	const bool heightFlag = flag & 0xFF;
 	auto const pType = pThis->Type;
 	auto const pTypeExt = VoxelAnimTypeExt::ExtMap.Find(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
@@ -59,7 +59,7 @@ DEFINE_HOOK(0x74A70E, VoxelAnimClass_AI_Trailer, 0x6)
 
 	if (const auto pAnimType = pType->TrailerAnim)
 	{
-		auto pExt = VoxelAnimExt::ExtMap.Find(pThis);
+		const auto pExt = VoxelAnimExt::ExtMap.Find(pThis);
 
 		if (pExt->TrailerSpawnTimer.Expired())
 		{
