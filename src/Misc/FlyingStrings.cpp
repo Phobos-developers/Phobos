@@ -27,13 +27,14 @@ void FlyingStrings::Add(const wchar_t* text, const CoordStruct& coords, ColorStr
 	item.CreationFrame = Unsorted::CurrentFrame;
 	item.Color = Drawing::RGB_To_Int(color);
 	PhobosCRT::wstrCopy(item.Text, text, 0x20);
-	Data.push_back(item);
+	Data.emplace_back(item);
 }
 
 void FlyingStrings::AddMoneyString(int amount, HouseClass* owner, AffectedHouse displayToHouses, const CoordStruct& coords, Point2D pixelOffset)
 {
-	if (amount && (displayToHouses == AffectedHouse::All ||
-		owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer)))
+	if (amount
+		&& (displayToHouses == AffectedHouse::All
+			|| owner && EnumFunctions::CanTargetHouse(displayToHouses, owner, HouseClass::CurrentPlayer)))
 	{
 		bool isPositive = amount > 0;
 		ColorStruct color = isPositive ? ColorStruct { 0, 255, 0 } : ColorStruct { 255, 0, 0 };

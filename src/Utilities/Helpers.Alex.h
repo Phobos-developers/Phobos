@@ -156,7 +156,7 @@ namespace Helpers
 				{
 					if (auto const pTechno = abstract_cast<TechnoClass*>(*obj))
 					{
-						// Starkku: Buildings need their distance from the origin coords checked at cell level.
+						// May 22, 2024 - Starkku: Buildings need their distance from the origin coords checked at cell level.
 						if (pTechno->WhatAmI() == AbstractType::Building)
 						{
 							if (static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
@@ -187,7 +187,7 @@ namespace Helpers
 			}
 
 			// flying objects are not included normally
-			// Starkku: Reimplemented using AircraftTrackerClass.
+			// May 22, 2024 - Starkku: Reimplemented using AircraftTrackerClass.
 			if (includeInAir)
 			{
 				auto const airTracker = &AircraftTrackerClass::Instance;

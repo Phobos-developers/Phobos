@@ -88,6 +88,14 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->EMPulse_SuspendOthers)
 		.Process(this->EMPulse_Cannons)
 		.Process(this->EMPulse_TargetSelf)
+		.Process(this->SW_Link)
+		.Process(this->SW_Link_Grant)
+		.Process(this->SW_Link_Ready)
+		.Process(this->SW_Link_Reset)
+		.Process(this->SW_Link_RandomWeightsData)
+		.Process(this->SW_Link_RollChances)
+		.Process(this->Message_LinkedSWAcquired)
+		.Process(this->EVA_LinkedSWAcquired)
 		;
 }
 
@@ -95,15 +103,9 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-	{
-		return;
-	}
+	INI_EX exINI(pINI);
 
 	this->TypeID.Read(pINI, pSection, "Type");
-
-	INI_EX exINI(pINI);
 
 	// from ares
 	this->Money_Amount.Read(exINI, pSection, "Money.Amount");
@@ -171,7 +173,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size() > i)
 			this->LimboDelivery_RandomWeightsData[i] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	ValueableVector<int> weights;
@@ -181,7 +183,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->LimboDelivery_RandomWeightsData.size())
 			this->LimboDelivery_RandomWeightsData[0] = std::move(weights);
 		else
-			this->LimboDelivery_RandomWeightsData.push_back(std::move(weights));
+			this->LimboDelivery_RandomWeightsData.emplace_back(std::move(weights));
 	}
 
 	// SW.Next.RandomWeights
@@ -197,7 +199,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size() > i)
 			this->SW_Next_RandomWeightsData[i] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
 	}
 
 	ValueableVector<int> weights2;
@@ -207,7 +209,37 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		if (this->SW_Next_RandomWeightsData.size())
 			this->SW_Next_RandomWeightsData[0] = std::move(weights2);
 		else
-			this->SW_Next_RandomWeightsData.push_back(std::move(weights2));
+			this->SW_Next_RandomWeightsData.emplace_back(std::move(weights2));
+	}
+
+	this->SW_Link.Read(exINI, pSection, "SW.Link");
+	this->SW_Link_Grant.Read(exINI, pSection, "SW.Link.Grant");
+	this->SW_Link_Ready.Read(exINI, pSection, "SW.Link.Ready");
+	this->SW_Link_Reset.Read(exINI, pSection, "SW.Link.Reset");
+	this->Message_LinkedSWAcquired.Read(exINI, pSection, "Message.LinkedSWAcquired");
+	this->EVA_LinkedSWAcquired.Read(exINI, pSection, "EVA.LinkedSWAcquired");
+	this->SW_Link_RollChances.Read(exINI, pSection, "SW.Link.RollChances");
+
+	// SW.Link.RandomWeights
+	for (size_t i = 0; ; ++i)
+	{
+		ValueableVector<int> weights3;
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "SW.Link.RandomWeights%d", i);
+		weights3.Read(exINI, pSection, tempBuffer);
+
+		if (!weights3.size())
+			break;
+
+		this->SW_Link_RandomWeightsData.emplace_back(std::move(weights3));
+	}
+	ValueableVector<int> weights3;
+	weights3.Read(exINI, pSection, "SW.Link.RandomWeights");
+	if (weights3.size())
+	{
+		if (this->SW_Link_RandomWeightsData.size())
+			this->SW_Link_RandomWeightsData[0] = std::move(weights3);
+		else
+			this->SW_Link_RandomWeightsData.emplace_back(std::move(weights3));
 	}
 
 	this->Detonate_Warhead.Read<true>(exINI, pSection, "Detonate.Warhead");
@@ -275,8 +307,8 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 {
-	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
+	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
 
 	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());
 
@@ -337,7 +369,7 @@ DEFINE_HOOK(0x6CE8EA, SuperWeaponTypeClass_Save_Suffix, 0x3)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)
+//DEFINE_HOOK_AGAIN(0x6CEE50, SuperWeaponTypeClass_LoadFromINI, 0xA)// Section dont exist!
 DEFINE_HOOK(0x6CEE43, SuperWeaponTypeClass_LoadFromINI, 0xA)
 {
 	GET(SuperWeaponTypeClass*, pItem, EBP);
