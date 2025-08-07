@@ -264,10 +264,12 @@ private:
 
 	typename container_t::const_iterator get_iterator(const TKey& key) const
 	{
-		return std::find_if(this->values.begin(), this->values.end(), [&](const container_t::value_type& item)
- {
-	 return item.first == key;
-			});
+		return std::find_if(this->values.begin(), this->values.end(),
+			[&](const container_t::value_type& item)
+			{
+				return item.first == key;
+			}
+		);
 	}
 
 	TValue& insert_unchecked(const TKey& key, TValue value)

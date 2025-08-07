@@ -37,7 +37,7 @@ DEFINE_HOOK(0x6E427D, TActionClass_CreateBuildingAt, 0x9)
 	GET(HouseClass*, pHouse, EDI);
 	REF_STACK(CoordStruct, coord, STACK_OFFSET(0x24, -0x18));
 
-	bool bPlayBuildUp = pBldType->LoadBuildup();
+	const bool bPlayBuildUp = pBldType->LoadBuildup();
 	//Param3 can be used for other purposes in the future
 	bool bCreated = false;
 	if (auto pBld = static_cast<BuildingClass*>(pBldType->CreateObject(pHouse)))
@@ -99,7 +99,7 @@ DEFINE_HOOK(0x6D4455, Tactical_Render_UpdateLightSources, 0x8)
 {
 	if (RetintTemp::UpdateLightSources)
 	{
-		for (auto lSource : LightSourceClass::Array)
+		for (auto const lSource : LightSourceClass::Array)
 		{
 			if (lSource->Activated)
 			{

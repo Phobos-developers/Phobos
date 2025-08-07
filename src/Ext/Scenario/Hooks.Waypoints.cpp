@@ -7,7 +7,7 @@
 DEFINE_HOOK(0x68BCC0, ScenarioClass_Get_Waypoint_Location, 0xB)
 {
 	GET_STACK(CellStruct*, pCell, 0x4);
-	GET_STACK(int, nWaypoint, 0x8);
+	GET_STACK(const int, nWaypoint, 0x8);
 
 	*pCell = ScenarioExt::Global()->Waypoints[nWaypoint];
 
@@ -18,7 +18,7 @@ DEFINE_HOOK(0x68BCC0, ScenarioClass_Get_Waypoint_Location, 0xB)
 
 DEFINE_HOOK(0x68BCE4, ScenarioClass_Get_Waypoint_Cell_0, 0x7)
 {
-	GET_STACK(int, nWaypoint, 0x4);
+	GET_STACK(const int, nWaypoint, 0x4);
 
 	R->ECX(&ScenarioExt::Global()->Waypoints[nWaypoint]);
 
@@ -27,7 +27,7 @@ DEFINE_HOOK(0x68BCE4, ScenarioClass_Get_Waypoint_Cell_0, 0x7)
 
 DEFINE_HOOK(0x68BD08, ScenarioClass_Get_Waypoint, 0x7)
 {
-	GET_STACK(int, nWaypoint, STACK_OFFSET(0x10, 0x8));
+	GET_STACK(const int, nWaypoint, STACK_OFFSET(0x10, 0x8));
 
 	R->ECX(&ScenarioExt::Global()->Waypoints[nWaypoint]);
 
@@ -43,7 +43,7 @@ DEFINE_HOOK(0x68BD60, ScenarioClass_Clear_All_Waypoints, 0x6)
 
 DEFINE_HOOK(0x68BD80, ScenarioClass_Is_Waypoint_Valid, 0x5)
 {
-	GET_STACK(int, nWaypoint, 0x4);
+	GET_STACK(const int, nWaypoint, 0x4);
 	auto& waypoints = ScenarioExt::Global()->Waypoints;
 
 	R->AL(nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end() && waypoints[nWaypoint].X && waypoints[nWaypoint].Y);
@@ -63,13 +63,13 @@ DEFINE_HOOK(0x68BDC0, ScenarioClass_ReadWaypoints, 0x8)
 		int id;
 		if (sscanf_s(pName, "%d", &id) != 1 || id < 0)
 			Debug::Log("[Developer warning] Failed to parse waypoint %s.\n", pName);
-		int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
+		const int nCoord = pINI->ReadInteger("Waypoints", pName, 0);
 
 		if (nCoord)
 		{
 			buffer.X = static_cast<short>(nCoord % 1000);
 			buffer.Y = static_cast<short>(nCoord / 1000);
-			if (auto pCell = MapClass::Instance.TryGetCellAt(buffer))
+			if (const auto pCell = MapClass::Instance.TryGetCellAt(buffer))
 				pCell->Flags |= CellFlags::IsWaypoint;
 			else if (ScenarioExt::CellParsed)
 				Debug::Log("[Developer warning] Can not get waypoint %d : [%d, %d]!\n", id, buffer.X, buffer.Y);
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x68BE90, ScenarioClass_Write_Waypoints, 0x5)
 
 DEFINE_HOOK(0x68BF50, ScenarioClass_Set_Waypoint, 0x8)
 {
-	GET_STACK(int, nWaypoint, 0x4);
+	GET_STACK(const int, nWaypoint, 0x4);
 	GET_STACK(CellStruct, cell, 0x8);
 
 	ScenarioExt::Global()->Waypoints[nWaypoint] = cell;
@@ -122,7 +122,7 @@ DEFINE_HOOK(0x68BF50, ScenarioClass_Set_Waypoint, 0x8)
 
 DEFINE_HOOK(0x68BF74, ScenarioClass_Get_Waypoint_Cell, 0x7)
 {
-	GET_STACK(int, nWaypoint, 0x4);
+	GET_STACK(const int, nWaypoint, 0x4);
 
 	R->ECX(&ScenarioExt::Global()->Waypoints[nWaypoint]);
 
@@ -160,7 +160,7 @@ DEFINE_HOOK(0x763690, String_To_Waypoint, 0x7)
 	GET(char*, pString, ECX);
 
 	int n = 0;
-	int len = strlen(pString);
+	const int len = strlen(pString);
 	for (int i = len - 1, j = 1; i >= 0; i--, j *= 26)
 	{
 		int c = toupper(pString[i]);
@@ -201,7 +201,7 @@ DEFINE_HOOK(0x68843B, ScenStruct_ScenStruct_2, 0x6)
 {
 	REF_STACK(DynamicVectorClass<CellStruct>, waypoints, STACK_OFFSET(0x40, -0x18));
 	REF_STACK(CellStruct, buffer, STACK_OFFSET(0x40, -0x20));
-	GET(int, i, ESI);
+	GET(const int, i, ESI);
 
 	if (ScenarioClass::Instance->IsDefinedWaypoint(i))
 	{
@@ -224,7 +224,7 @@ DEFINE_HOOK(0x68843B, ScenStruct_ScenStruct_2, 0x6)
 
 DEFINE_HOOK(0x684CB7, Scen_Waypoint_Call_1, 0x7)
 {
-	GET(int, nWaypoint, EAX);
+	GET(const int, nWaypoint, EAX);
 
 	CellStruct cell = ScenarioExt::Global()->Waypoints[nWaypoint];
 
@@ -241,7 +241,7 @@ DEFINE_HOOK(0x6855E4, Scen_Waypoint_Call_2, 0x5)
 
 DEFINE_HOOK(0x68AFE7, Scen_Waypoint_Call_3, 0x5)
 {
-	GET(int, nWaypoint, EDI);
+	GET(const int, nWaypoint, EDI);
 
 	CellStruct cell = ScenarioExt::Global()->Waypoints[nWaypoint];
 

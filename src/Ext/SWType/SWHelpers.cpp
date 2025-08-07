@@ -6,7 +6,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 {
 	bool rollOnce = false;
 	size_t rollsSize = rolls->size();
-	size_t weightsSize = weights->size();
+	const size_t weightsSize = weights->size();
 	int index;
 	std::vector<int> indices;
 
@@ -17,14 +17,17 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		rollOnce = true;
 	}
 
+	indices.reserve(rollsSize);
+
 	for (size_t i = 0; i < rollsSize; i++)
 	{
 		this->RandomBuffer = ScenarioClass::Instance->Random.RandomDouble();
+
 		if (!rollOnce && this->RandomBuffer > (*rolls)[i])
 			continue;
 
 		// If there are more rolls than weight lists, use the last weight list
-		size_t j = std::min(weightsSize - 1, i);
+		const size_t j = std::min(weightsSize - 1, i);
 		index = GeneralUtils::ChooseOneWeighted(this->RandomBuffer, &(*weights)[j]);
 
 		// If modder provides more weights than there are objects and we hit one of these, ignore it
@@ -32,6 +35,7 @@ std::vector<int> SWTypeExt::ExtData::WeightedRollsHandler(ValueableVector<float>
 		if (size_t(index) < size)
 			indices.push_back(index);
 	}
+
 	return indices;
 }
 
@@ -44,7 +48,7 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 	{
 		if (!pOwner->IsAlliedWith(pTechno))
 		{
-			if (auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
+			if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
 			{
 				if (!pBld->IsPowerOnline())
 					return false;
@@ -53,6 +57,7 @@ bool SWTypeExt::ExtData::IsInhibitor(HouseClass* pOwner, TechnoClass* pTechno) c
 			return this->SW_AnyInhibitor || this->SW_Inhibitors.Contains(pTechno->GetTechnoType());
 		}
 	}
+
 	return false;
 }
 
@@ -64,7 +69,7 @@ bool SWTypeExt::ExtData::IsInhibitorEligible(HouseClass* pOwner, const CellStruc
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		// get the inhibitor's center
-		auto center = pTechno->GetCenterCoords();
+		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the inhibitor range (which defaults to Sight)
 		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->InhibitorRange.Get(pType->Sight);
@@ -102,7 +107,7 @@ bool SWTypeExt::ExtData::IsDesignatorEligible(HouseClass* pOwner, const CellStru
 		const auto pExt = TechnoTypeExt::ExtMap.Find(pType);
 
 		// get the designator's center
-		auto center = pTechno->GetCenterCoords();
+		const auto center = pTechno->GetCenterCoords();
 
 		// has to be closer than the designator range (which defaults to Sight)
 		return coords.DistanceFrom(CellClass::Coord2Cell(center)) <= pExt->DesignatorRange.Get(pType->Sight);
@@ -131,17 +136,17 @@ bool SWTypeExt::ExtData::IsLaunchSiteEligible(const CellStruct& Coords, Building
 		return true;
 
 	// get the range for this building
-	auto range = this->GetLaunchSiteRange(pBuilding);
-	const auto& minRange = range.first;
-	const auto& maxRange = range.second;
+	const auto range = this->GetLaunchSiteRange(pBuilding);
+	const double minRange = range.first;
+	const double maxRange = range.second;
 
-	CoordStruct coords = pBuilding->GetCenterCoords();
+	const auto coords = pBuilding->GetCenterCoords();
 	const auto center = CellClass::Coord2Cell(coords);
-	const auto distance = Coords.DistanceFrom(center);
+	const int distance = static_cast<int>(Coords.DistanceFrom(center));
 
 	// negative range values just pass the test
-	return (minRange < 0.0 || distance >= minRange)
-		&& (maxRange < 0.0 || distance <= maxRange);
+	return (minRange < 0.0 || (double)distance >= minRange)
+		&& (maxRange < 0.0 || (double)distance <= maxRange);
 }
 
 bool SWTypeExt::ExtData::IsLaunchSite(BuildingClass* pBuilding) const
@@ -214,13 +219,14 @@ std::vector<BuildingClass*> SWTypeExt::ExtData::GetEMPulseCannons(HouseClass* pO
 	for (auto const& pBuilding : pOwner->Buildings)
 	{
 		bool eligible = false;
+		auto const pType = pBuilding->Type;
 
-		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pBuilding->Type) && pBuilding->IsAlive
+		if (!this->EMPulse_Cannons.empty() && this->EMPulse_Cannons.Contains(pType) && pBuilding->IsAlive
 			&& pBuilding->Health && !pBuilding->InLimbo && pBuilding->IsPowerOnline())
 		{
 			eligible = true;
 		}
-		else if (pBuilding->Type->EMPulseCannon && this->IsLaunchSite(pBuilding))
+		else if (pType->EMPulseCannon && this->IsLaunchSite(pBuilding))
 		{
 			eligible = true;
 		}
@@ -256,12 +262,12 @@ std::pair<double, double> SWTypeExt::ExtData::GetEMPulseCannonRange(BuildingClas
 	{
 		double maxRange = this->SW_RangeMaximum;
 		if (maxRange < 0.0)
-			maxRange = pWeapon->Range / 256.0;
+			maxRange = pWeapon->Range / (double)Unsorted::LeptonsPerCell;
 
 		double minRange = this->SW_RangeMinimum;
 		if (minRange < 0.0)
 		{
-			minRange = pWeapon->MinimumRange / 256.0;
+			minRange = pWeapon->MinimumRange / (double)Unsorted::LeptonsPerCell;
 		}
 
 		return std::make_pair(minRange, maxRange);
