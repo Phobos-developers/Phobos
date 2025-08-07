@@ -497,7 +497,7 @@ void WarheadTypeExt::ExtData::ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget
 	int damage = this->Crit_ExtraDamage.Get();
 
 	if (this->Crit_ExtraDamage_ApplyFirepowerMult && pOwner)
-		damage = static_cast<int>(damage * pOwner->FirepowerMultiplier * TechnoExt::ExtMap.Find(pOwner)->AE.FirepowerMultiplier);
+		damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pOwner));
 
 	if (this->Crit_Warhead)
 	{
