@@ -23,7 +23,7 @@ DEFINE_HOOK(0x460285, BuildingTypeClass_LoadFromINI_Muzzle, 0x6)
 
 DEFINE_HOOK(0x44043D, BuildingClass_AI_Temporaled_Chronosparkle_MuzzleFix, 0x8)
 {
-	GET(int, nFiringIndex, EBX);
+	GET(const int, nFiringIndex, EBX);
 	GET(BuildingClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
@@ -54,7 +54,7 @@ DEFINE_HOOK(0x45387A, BuildingClass_FireOffset_Replace_MuzzleFix, 0xA)
 
 DEFINE_HOOK(0x458623, BuildingClass_KillOccupiers_Replace_MuzzleFix, 0x7)
 {
-	GET(int, nFiringIndex, EDI);
+	GET(const int, nFiringIndex, EDI);
 	GET(BuildingClass*, pThis, ESI);
 
 	auto const pType = pThis->Type;
@@ -221,12 +221,13 @@ DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 	if (pTypeExt->NoBuildAreaOnBuildup && pCellBuilding->CurrentMission == Mission::Construction)
 		return SkipBuilding;
 
-	auto const& pBuildingsAllowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Allowed;
+	auto const pTmpTypeExt = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType);
+	auto const& pBuildingsAllowed = pTmpTypeExt->Adjacent_Allowed;
 
 	if (pBuildingsAllowed.size() > 0 && !pBuildingsAllowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
 
-	auto const& pBuildingsDisallowed = BuildingTypeExt::ExtMap.Find(ProximityTemp::pType)->Adjacent_Disallowed;
+	auto const& pBuildingsDisallowed = pTmpTypeExt->Adjacent_Disallowed;
 
 	if (pBuildingsDisallowed.size() > 0 && pBuildingsDisallowed.Contains(pCellBuilding->Type))
 		return SkipBuilding;
@@ -244,8 +245,8 @@ DEFINE_HOOK(0x6FE3F1, TechnoClass_FireAt_OccupyDamageBonus, 0xB)
 
 	if (const auto Building = specific_cast<BuildingClass*>(pThis))
 	{
-		GET_STACK(int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
+		R->EAX(static_cast<int>(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingOccupyDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 
@@ -260,8 +261,8 @@ DEFINE_HOOK(0x6FE421, TechnoClass_FireAt_BunkerDamageBonus, 0xB)
 
 	if (const auto Building = specific_cast<BuildingClass*>(pThis->BunkerLinkedItem))
 	{
-		GET_STACK(int, damage, STACK_OFFSET(0xC8, -0x9C));
-		R->EAX(Game::F2I(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
+		GET_STACK(const int, damage, STACK_OFFSET(0xC8, -0x9C));
+		R->EAX(static_cast<int>(damage * BuildingTypeExt::ExtMap.Find(Building->Type)->BuildingBunkerDamageMult.Get(RulesClass::Instance->OccupyDamageMultiplier)));
 		return ApplyDamageBonus;
 	}
 
@@ -280,7 +281,7 @@ DEFINE_HOOK(0x6FD183, TechnoClass_RearmDelay_BuildingOccupyROFMult, 0xC)
 
 		if (multiplier > 0.0f)
 		{
-			GET_STACK(int, rof, STACK_OFFSET(0x10, 0x4));
+			GET_STACK(const int, rof, STACK_OFFSET(0x10, 0x4));
 			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
 			return ApplyRofMod;
 		}
@@ -303,7 +304,7 @@ DEFINE_HOOK(0x6FD1C7, TechnoClass_RearmDelay_BuildingBunkerROFMult, 0xC)
 
 		if (multiplier > 0.0f)
 		{
-			GET_STACK(int, rof, STACK_OFFSET(0x10, 0x4));
+			GET_STACK(const int, rof, STACK_OFFSET(0x10, 0x4));
 			R->EAX(Game::F2I(static_cast<double>(rof) / multiplier));
 			return ApplyRofMod;
 		}
@@ -330,8 +331,8 @@ DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
 		BunkerWallDownSound_02_Handled_ret = 0x4594CD
 	};
 
-	BuildingClass const* pThis = R->Origin() == BunkerWallDownSound_01 ?
-		R->EDI<BuildingClass*>() : R->ESI<BuildingClass*>();
+	BuildingClass const* pThis = R->Origin() == BunkerWallDownSound_01
+		? R->EDI<BuildingClass*>() : R->ESI<BuildingClass*>();
 
 	BuildingTypeExt::PlayBunkerSound(pThis, R->Origin() == BunkerWallUpSound);
 
@@ -390,7 +391,7 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
 	enum { Handled = 0x44E86F };
 
 	GET(BuildingClass*, pThis, ESI);
-	GET_STACK(int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
+	GET_STACK(const int, powerMultiplier, STACK_OFFSET(0xC, -0x4));
 
 	const double factor = BuildingTypeExt::ExtMap.Find(pThis->Type)->PowerPlant_DamageFactor;
 

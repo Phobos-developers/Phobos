@@ -21,6 +21,7 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<TechnoClass>
 	{
@@ -75,6 +76,10 @@ public:
 		bool KeepTargetOnMove;
 		CellStruct LastSensorsMapCoords;
 		CDTimerClass TiberiumEater_Timer;
+		bool DelayedFireSequencePaused;
+		int DelayedFireWeaponIndex;
+		CDTimerClass DelayedFireTimer;
+		AnimClass* CurrentDelayedFireAnim;
 
 		AirstrikeClass* AirstrikeTargetingMe;
 
@@ -139,6 +144,10 @@ public:
 			, CurrentRandomTarget { nullptr }
 			, OriginalTargetWeaponIndex { -1 }
 			, FiringAnimationTimer {}
+			, DelayedFireSequencePaused { false }
+			, DelayedFireWeaponIndex { -1 }
+			, DelayedFireTimer {}
+			, CurrentDelayedFireAnim { nullptr }
 			, AttachedEffectInvokerCount { 0 }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
@@ -183,9 +192,8 @@ public:
 		void ApplyMindControlRangeLimit();
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
 		void UpdateRandomTargets();
+		void ResetDelayedFireTimer();
 		void UpdateTintValues();
-
-		UnitTypeClass* GetUnitTypeExtra() const;
 
 		virtual ~ExtData() override;
 
@@ -243,6 +251,7 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
+	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
@@ -268,7 +277,11 @@ public:
 	static bool IsValidTechno(AbstractClass* pObject, bool checkIfInTransportOrAbsorbed = true);
 	static void GetValuesForDisplay(TechnoClass* pThis, DisplayInfoType infoType, int& value, int& maxValue, int infoIndex);
 	static void GetDigitalDisplayFakeHealth(TechnoClass* pThis, int& value, int& maxValue);
+	static void CreateDelayedFireAnim(TechnoClass* pThis, AnimTypeClass* pAnimType, int weaponIndex, bool attach, bool center, bool removeOnNoDelay, bool onTurret, CoordStruct firingCoords);
+	static bool HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weaponIndex, int firingFrame);
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
+	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
+	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

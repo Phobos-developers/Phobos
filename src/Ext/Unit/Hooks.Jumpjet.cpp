@@ -15,10 +15,10 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 {
 	GET(UnitClass* const, pThis, ESI);
 
-	auto pType = pThis->Type;
+	const auto pType = pThis->Type;
 	CoordStruct& source = pThis->Location;
-	CoordStruct target = pThis->Target->GetCoords(); // Target checked so it's not null here
-	DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
+	const CoordStruct target = pThis->Target->GetCoords(); // Target checked so it's not null here
+	const DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
 	if (pType->Turret && !pType->HasTurret) // 0x736F92
 	{
@@ -26,7 +26,7 @@ DEFINE_HOOK(0x736F78, UnitClass_UpdateFiring_FireErrorIsFACING, 0x6)
 	}
 	else // 0x736FB6
 	{
-		if (auto jjLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		if (const auto jjLoco = locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 		{
 			//wrong destination check and wrong Is_Moving usage for jumpjets, should have used Is_Moving_Now
 			if (jjLoco->State != JumpjetLocomotionClass::State::Cruising)
@@ -60,7 +60,7 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 	if (pThis->IsWarpingIn())
 		return 0;
 
-	auto pType = pThis->Type;
+	auto const pType = pThis->Type;
 
 	if ((pType->Turret && !pType->HasTurret) || pType->TurretSpins)
 		return 0;
@@ -80,8 +80,8 @@ DEFINE_HOOK(0x736E6E, UnitClass_UpdateFiring_OmniFireTurnToTarget, 0x9)
 		if (WeaponTypeExt::ExtMap.Find(pWpn)->OmniFire_TurnToTarget.Get() && !pThis->Locomotor->Is_Moving_Now())
 		{
 			CoordStruct& source = pThis->Location;
-			CoordStruct target = pThis->Target->GetCoords();
-			DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
+			const CoordStruct target = pThis->Target->GetCoords();
+			const DirStruct tgtDir { Math::atan2(source.Y - target.Y, target.X - source.X) };
 
 			if (pThis->GetRealFacing() != tgtDir)
 			{
@@ -101,7 +101,7 @@ void __stdcall JumpjetLocomotionClass_DoTurn(ILocomotion* iloco, DirStruct dir)
 	__assume(iloco != nullptr);
 	// This seems to be used only when unloading shit on the ground
 	// Rewrite just in case
-	auto pThis = static_cast<JumpjetLocomotionClass*>(iloco);
+	const auto pThis = static_cast<JumpjetLocomotionClass*>(iloco);
 	pThis->LocomotionFacing.SetDesired(dir);
 	pThis->LinkedTo->PrimaryFacing.SetDesired(dir);
 }

@@ -7,7 +7,7 @@
 
 bool EventExt::AddEvent()
 {
-	return EventClass::AddEvent(*reinterpret_cast<EventClass*>(this));
+	return EventClass::OutList.Add(*reinterpret_cast<EventClass*>(this));
 }
 
 void EventExt::RespondEvent()

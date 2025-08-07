@@ -18,8 +18,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\TechnoType\Hooks.MultiWeapon.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Targeting.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
     <ClCompile Include="src\Ext\EBolt\Body.cpp" />
     <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
@@ -190,7 +192,6 @@
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
-    <ClCompile Include="src\Misc\Hooks.SkirmishColors.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
     <ClCompile Include="src\Misc\Hooks.Message.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
@@ -416,6 +417,7 @@
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4201;4530;4731;4740;4458;4819;5103;5105</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
