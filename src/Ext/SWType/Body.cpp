@@ -304,8 +304,8 @@ bool SWTypeExt::SaveGlobals(PhobosStreamWriter& Stm)
 
 bool SWTypeExt::Activate(SuperClass* pSuper, CellStruct cell, bool isPlayer)
 {
-	auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-	int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
+	const auto pSWTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+	const int newIdx = NewSWType::GetNewSWTypeIdx(pSWTypeExt->TypeID.data());
 
 	Debug::Log("[Phobos::SW::Active] %s\n", pSWTypeExt->TypeID.data());
 

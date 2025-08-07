@@ -13,13 +13,15 @@ EBolt* EBoltExt::CreateEBolt(WeaponTypeClass* pWeapon)
 	const int defaultAlternate = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, alternateIdx);
 	const int defaultWhite = EBoltExt::GetDefaultColor_Int(FileSystem::PALETTE_PAL, 15);
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto& boltDisable = pWeaponExt->Bolt_Disable;
+	const auto& boltColor = pWeaponExt->Bolt_Color;
 
 	for (int idx = 0; idx < 3; ++idx)
 	{
-		if (pWeaponExt->Bolt_Disable[idx])
+		if (boltDisable[idx])
 			pBoltExt->Disable[idx] = true;
-		else if (pWeaponExt->Bolt_Color[idx].isset())
-			pBoltExt->Color[idx] = pWeaponExt->Bolt_Color[idx].Get();
+		else if (boltColor[idx].isset())
+			pBoltExt->Color[idx] = boltColor[idx].Get();
 		else
 			pBoltExt->Color[idx] = Drawing::Int_To_RGB(idx < 2 ? defaultAlternate : defaultWhite);
 	}
