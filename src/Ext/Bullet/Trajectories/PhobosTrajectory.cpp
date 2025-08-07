@@ -268,7 +268,7 @@ void PhobosTrajectory::OnUnlimbo()
 	{
 		const auto burst = pFirer->CurrentBurstIndex;
 		this->CurrentBurst = (burst & 1) ? (-burst - 1) : burst;
-		this->FirepowerMult = pFirer->FirepowerMultiplier * TechnoExt::ExtMap.Find(pFirer)->AE.FirepowerMultiplier;
+		this->FirepowerMult = TechnoExt::GetCurrentFirepowerMultiplier(pFirer);
 		const auto flag = this->Flag();
 
 		// Obtain the launch location
