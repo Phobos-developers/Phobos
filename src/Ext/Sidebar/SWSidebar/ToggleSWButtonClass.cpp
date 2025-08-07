@@ -5,8 +5,8 @@
 
 #include <Ext/Side/Body.h>
 
-ToggleSWButtonClass::ToggleSWButtonClass(unsigned int id, int x, int y, int width, int height)
-	: ControlClass(id, x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), false)
+ToggleSWButtonClass::ToggleSWButtonClass(int x, int y, int width, int height)
+	: GadgetClass(x, y, width, height, (GadgetFlag::LeftPress | GadgetFlag::LeftRelease), false)
 {
 	SWSidebarClass::Instance.ToggleButton = this;
 }
@@ -75,8 +75,7 @@ bool ToggleSWButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modi
 		ToggleSWButtonClass::SwitchSidebar();
 	}
 
-	// this->ControlClass::Action(flags, pKey, KeyModifier::None);
-	reinterpret_cast<bool(__thiscall*)(ControlClass*, GadgetFlag, DWORD*, KeyModifier)>(0x48E5A0)(this, flags, pKey, KeyModifier::None);
+	this->GadgetClass::Action(flags, pKey, KeyModifier::None);
 	return true;
 }
 

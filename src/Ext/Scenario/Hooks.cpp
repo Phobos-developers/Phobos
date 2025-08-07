@@ -48,7 +48,7 @@ DEFINE_HOOK(0x50C186, GetHouseIndexFromName_PlayerAtX, 0x6)
 	if (SessionClass::IsCampaign() || *name != '<')
 		return 0;
 
-	int playerAtIndex = HouseClass::GetPlayerAtFromString(name);
+	const int playerAtIndex = HouseClass::GetPlayerAtFromString(name);
 
 	if (playerAtIndex != -1)
 	{

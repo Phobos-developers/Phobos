@@ -9,22 +9,27 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 	bool noWaitLoop = false;
 	bool bAircraftsWithoutAmmo = false;
 	const auto pTeamData = TeamExt::ExtMap.Find(pTeam);
+	auto& waitNoTargetCounter = pTeamData->WaitNoTargetCounter;
+	auto& waitNoTargetTimer = pTeamData->WaitNoTargetTimer;
+	auto& waitNoTargetAttempts = pTeamData->WaitNoTargetAttempts;
 
 	// When the new target wasn't found it sleeps some few frames before the new attempt. This can save cycles and cycles of unnecessary executed lines.
-	if (pTeamData->WaitNoTargetCounter > 0)
+	if (waitNoTargetCounter > 0)
 	{
-		if (pTeamData->WaitNoTargetTimer.InProgress())
+		if (waitNoTargetTimer.InProgress())
 			return;
 
-		pTeamData->WaitNoTargetTimer.Stop();
+		waitNoTargetTimer.Stop();
 		noWaitLoop = true;
-		pTeamData->WaitNoTargetCounter = 0;
+		waitNoTargetCounter = 0;
 
-		if (pTeamData->WaitNoTargetAttempts > 0)
-			pTeamData->WaitNoTargetAttempts--;
+		if (waitNoTargetAttempts > 0)
+			waitNoTargetAttempts--;
 	}
 
-	for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
+	const auto pFirstUnit = pTeam->FirstUnit;
+
+	for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 	{
 		if (pFoot && pFoot->IsAlive && !pFoot->InLimbo)
 		{
@@ -51,31 +56,36 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 
 	const auto pScript = pTeam->CurrentScript;
 	const auto pScriptType = pScript->Type;
+	const auto& scriptActions = pScriptType->ScriptActions;
+	const auto currentMission = pScript->CurrentMission;
+
+	auto& idxSelectedObjectFromAIList = pTeamData->IdxSelectedObjectFromAIList;
+	auto& closeEnough = pTeamData->CloseEnough;
 
 	if (!pLeaderUnit || bAircraftsWithoutAmmo)
 	{
-		pTeamData->IdxSelectedObjectFromAIList = -1;
+		idxSelectedObjectFromAIList = -1;
 
-		if (pTeamData->CloseEnough > 0)
-			pTeamData->CloseEnough = -1;
+		if (closeEnough > 0)
+			closeEnough = -1;
 
-		if (pTeamData->WaitNoTargetAttempts != 0)
+		if (waitNoTargetAttempts != 0)
 		{
-			pTeamData->WaitNoTargetTimer.Stop();
-			pTeamData->WaitNoTargetCounter = 0;
-			pTeamData->WaitNoTargetAttempts = 0;
+			waitNoTargetTimer.Stop();
+			waitNoTargetCounter = 0;
+			waitNoTargetAttempts = 0;
 		}
 
 		// This action finished
 		pTeam->StepCompleted = true;
 
-		const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
-		const int nextMission = pScript->CurrentMission + 1;
-		const auto& nextNode = pScriptType->ScriptActions[nextMission];
+		const auto& node = scriptActions[currentMission];
+		const int nextMission = currentMission + 1;
+		const auto& nextNode = scriptActions[nextMission];
 		ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d -> (Reasons: No Leader | Aircrafts without ammo)\n",
 			pTeam->Type->ID,
 			pScriptType->ID,
-			pScript->CurrentMission,
+			currentMission,
 			node.Action,
 			node.Argument,
 			nextMission,
@@ -85,35 +95,36 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 		return;
 	}
 
-	const auto pLeaderUnitType = pLeaderUnit->GetTechnoType();
-	const auto pFocus = abstract_cast<TechnoClass*>(pTeam->Focus);
+	auto& pTeamFocus = pTeam->Focus;
+	const auto pFocus = abstract_cast<TechnoClass*>(pTeamFocus);
 
 	if (!pFocus && !bAircraftsWithoutAmmo)
 	{
 		// This part of the code is used for picking a new target.
-		const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+		const auto& node = scriptActions[currentMission];
 		const int targetMask = node.Argument; // This is the target type
 		const auto pSelectedTarget = ScriptExt::FindBestObject(pLeaderUnit, targetMask, calcThreatMode, pickAllies, attackAITargetType, idxAITargetTypeItem);
 
 		if (pSelectedTarget)
 		{
+			/*const auto pLeaderUnitType = pLeaderUnit->GetTechnoType();
 			ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Leader [%s] (UID: %lu) selected [%s] (UID: %lu) as destination target.\n",
 				pTeam->Type->ID,
 				pScriptType->ID,
-				pScript->CurrentMission,
+				currentMission,
 				node.Action,
 				node.Argument,
 				pLeaderUnitType->get_ID(),
 				pLeaderUnit->UniqueID,
 				pSelectedTarget->GetTechnoType()->get_ID(),
-				pSelectedTarget->UniqueID);
+				pSelectedTarget->UniqueID);*/
 
-			pTeam->Focus = pSelectedTarget;
-			pTeamData->WaitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
-			pTeamData->WaitNoTargetTimer.Stop();
-			pTeamData->WaitNoTargetCounter = 0; // Disable Script Waits if there are any because a new target was selected
+			pTeamFocus = pSelectedTarget;
+			waitNoTargetAttempts = 0; // Disable Script Waits if there are any because a new target was selected
+			waitNoTargetTimer.Stop();
+			waitNoTargetCounter = 0; // Disable Script Waits if there are any because a new target was selected
 
-			for (auto pFoot = pTeam->FirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
+			for (auto pFoot = pFirstUnit; pFoot; pFoot = pFoot->NextTeamMember)
 			{
 				if (!pFoot)
 					continue;
@@ -154,35 +165,35 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 		{
 			// No target was found with the specific criteria.
 
-			if (!noWaitLoop && pTeamData->WaitNoTargetTimer.Completed())
+			if (!noWaitLoop && waitNoTargetTimer.Completed())
 			{
-				pTeamData->WaitNoTargetCounter = 30;
-				pTeamData->WaitNoTargetTimer.Start(30);
+				waitNoTargetCounter = 30;
+				waitNoTargetTimer.Start(30);
 			}
 
-			if (pTeamData->IdxSelectedObjectFromAIList >= 0)
-				pTeamData->IdxSelectedObjectFromAIList = -1;
+			if (idxSelectedObjectFromAIList >= 0)
+				idxSelectedObjectFromAIList = -1;
 
-			if (pTeamData->WaitNoTargetAttempts != 0 && pTeamData->WaitNoTargetTimer.Completed())
+			if (waitNoTargetAttempts != 0 && waitNoTargetTimer.Completed())
 			{
-				pTeamData->WaitNoTargetCounter = 30;
-				pTeamData->WaitNoTargetTimer.Start(30); // No target? let's wait some frames
+				waitNoTargetCounter = 30;
+				waitNoTargetTimer.Start(30); // No target? let's wait some frames
 
 				return;
 			}
 
-			if (pTeamData->CloseEnough >= 0)
-				pTeamData->CloseEnough = -1;
+			if (closeEnough >= 0)
+				closeEnough = -1;
 
 			// This action finished
 			pTeam->StepCompleted = true;
 
-			const int nextMission = pScript->CurrentMission + 1;
-			const auto& nextNode = pScriptType->ScriptActions[nextMission];
+			const int nextMission = currentMission + 1;
+			const auto& nextNode = scriptActions[nextMission];
 			ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (new target NOT FOUND)\n",
 				pTeam->Type->ID,
 				pScriptType->ID,
-				pScript->CurrentMission,
+				currentMission,
 				node.Action,
 				node.Argument,
 				nextMission,
@@ -194,30 +205,32 @@ void ScriptExt::Mission_Move(TeamClass* pTeam, int calcThreatMode, bool pickAlli
 	}
 	else
 	{
-		// This part of the code is used for updating the "Move" mission in each team unit
-		if (ScriptExt::MoveMissionEndStatus(pTeam, pFocus, pLeaderUnit, pTeamData->MoveMissionEndMode))
-		{
-			pTeamData->MoveMissionEndMode = 0;
-			pTeamData->IdxSelectedObjectFromAIList = -1;
+		auto& moveMissionEndMode = pTeamData->MoveMissionEndMode;
 
-			if (pTeamData->CloseEnough >= 0)
-				pTeamData->CloseEnough = -1;
+		// This part of the code is used for updating the "Move" mission in each team unit
+		if (ScriptExt::MoveMissionEndStatus(pTeam, pFocus, pLeaderUnit, moveMissionEndMode))
+		{
+			moveMissionEndMode = 0;
+			idxSelectedObjectFromAIList = -1;
+
+			if (closeEnough >= 0)
+				closeEnough = -1;
 
 			// This action finished
 			pTeam->StepCompleted = true;
 
-			const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+			/*const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
 			const int nextMission = pScript->CurrentMission + 1;
 			const auto& nextNode = pScriptType->ScriptActions[nextMission];
 			ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Jump to next line: %d = %d,%d (Reason: Reached destination)\n",
 				pTeam->Type->ID,
 				pScriptType->ID,
-				pScript->CurrentMission,
+				currentMission,
 				node.Action,
 				node.Argument,
 				nextMission,
 				nextNode.Action,
-				nextNode.Argument);
+				nextNode.Argument);*/
 
 			return;
 		}
@@ -230,6 +243,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 	double bestVal = -1;
 	HouseClass* pEnemyHouse = nullptr;
 	const auto pTechnoType = pTechno->GetTechnoType();
+	const auto pTechnoOwner = pTechno->Owner;
 
 	// Favorite Enemy House case. If set, AI will focus against that House
 	if (!pickAllies && pTechno->BelongsToATeam())
@@ -248,11 +262,12 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 	for (int i = 0; i < TechnoClass::Array.Count; i++)
 	{
 		const auto pTarget = TechnoClass::Array.GetItem(i);
+		const auto pTargetOwner = pTarget->Owner;
 
-		if (pickAllies != pTechno->Owner->IsAlliedWith(pTarget->Owner))
+		if (pickAllies != pTechnoOwner->IsAlliedWith(pTargetOwner))
 			continue;
 
-		if (pEnemyHouse && pEnemyHouse != pTarget->Owner)
+		if (pEnemyHouse && pEnemyHouse != pTargetOwner)
 			continue;
 
 		// Exclude most of invalid target first
@@ -270,10 +285,12 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		if (pTarget == pTechno)
 			continue;
 
+		const auto cloakState = pTarget->CloakState;
+
 		if (pTargetType->Naval)
 		{
 			// Submarines aren't a valid target
-			if (pTarget->CloakState == CloakState::Cloaked
+			if (cloakState == CloakState::Cloaked
 				&& pTargetType->Underwater)
 			{
 				const auto navalTargeting = pTechnoType->NavalTargeting;
@@ -294,11 +311,11 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 		}
 
 		// Stealth check.
-		if (pTarget->CloakState == CloakState::Cloaked)
+		if (cloakState == CloakState::Cloaked)
 		{
 			const auto pCell = pTarget->GetCell();
 
-			if (!pCell->Sensors_InclHouse(pTechno->Owner->ArrayIndex))
+			if (!pCell->Sensors_InclHouse(pTechnoOwner->ArrayIndex))
 				continue;
 		}
 
@@ -324,7 +341,7 @@ TechnoClass* ScriptExt::FindBestObject(TechnoClass* pTechno, int method, int cal
 			}
 
 			// Is Defender house targeting Attacker House? if "yes" then more Threat
-			if (pTechno->Owner == HouseClass::Array.GetItem(pTarget->Owner->EnemyHouseIndex))
+			if (pTechnoOwner == HouseClass::Array.GetItem(pTargetOwner->EnemyHouseIndex))
 			{
 				double const& EnemyHouseThreatBonus = RulesClass::Instance->EnemyHouseThreatBonus;
 				objectThreatValue += EnemyHouseThreatBonus;
@@ -435,7 +452,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 		// Still no random target selected
 		if (idxSelectedObject < 0 && objectsList.size() > 0 && !selected)
 		{
-			const auto pFirstUnit = pTeam->FirstUnit;
+			const auto pFirstUnitOwner = pTeam->FirstUnit->Owner;
 			validIndexes.reserve(TechnoClass::Array.Count * objectsList.size());
 
 			// Finding the objects from the list that actually exists in the map
@@ -449,7 +466,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 				{
 					if (pTechnoType == objectsList[j]
 						&& ScriptExt::IsUnitAvailable(pTechno, true)
-						&& pickAllies == pFirstUnit->Owner->IsAlliedWith(pTechno->Owner))
+						&& pickAllies == pFirstUnitOwner->IsAlliedWith(pTechno->Owner))
 					{
 						validIndexes.push_back(j);
 						found = true;
@@ -462,7 +479,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 				idxSelectedObject = validIndexes[ScenarioClass::Instance->Random.RandomRanged(0, validIndexes.size() - 1)];
 				selected = true;
 
-				const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
+				/*const auto& node = pScriptType->ScriptActions[pScript->CurrentMission];
 				ScriptExt::Log("AI Scripts - Move: [%s] [%s] (line: %d = %d,%d) Picked a random Techno from the list index [AITargetTypes][%d][%d] = %s\n",
 					pTeam->Type->ID,
 					pScriptType->ID,
@@ -471,7 +488,7 @@ void ScriptExt::Mission_Move_List1Random(TeamClass* pTeam, int calcThreatMode, b
 					node.Argument,
 					attackAITargetType,
 					idxSelectedObject,
-					objectsList[idxSelectedObject]->ID);
+					objectsList[idxSelectedObject]->ID);*/
 			}
 		}
 

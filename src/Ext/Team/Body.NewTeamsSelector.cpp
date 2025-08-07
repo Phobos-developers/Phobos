@@ -1,6 +1,6 @@
 #include "Body.h"
 
-enum teamCategory
+enum class teamCategory : int
 {
 	None = 0, // No category. Should be default value
 	Ground = 1,
