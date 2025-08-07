@@ -11,7 +11,7 @@ DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis);
 	pTypeExt->MultiWeapon.Read(exINI, pSection, "MultiWeapon");
-	bool multiWeapon = pThis->HasMultipleTurrets() || pTypeExt->MultiWeapon.Get();
+	const bool multiWeapon = pThis->HasMultipleTurrets() || pTypeExt->MultiWeapon.Get();
 
 	if (pTypeExt->ReadMultiWeapon != multiWeapon)
 	{
@@ -36,7 +36,7 @@ DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 	{
 		pTypeExt->MultiWeapon_SelectCount.Read(exINI, pSection, "MultiWeapon.SelectCount");
 
-		int weaponCount = pThis->WeaponCount;
+		const int weaponCount = pThis->WeaponCount;
 
 		if (weaponCount > 0)
 		{
