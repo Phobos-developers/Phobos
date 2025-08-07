@@ -545,6 +545,7 @@ This page lists all the individual contributions to the project by their author.
   - Allow faking digital display for `InfoType=Health` at disguise
   - Display banner improvement and doc
   - Damage multiplier for health percentage
+  - Linked superweapons tweak
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:

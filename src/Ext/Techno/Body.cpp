@@ -39,7 +39,7 @@ TechnoExt::ExtData::~ExtData()
 	if (this->AnimRefCount > 0)
 		AnimExt::InvalidateTechnoPointers(pThis);
 
-	if (this->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -127,7 +127,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 {
-	for (auto pBld : pThis->GetTechnoType()->Dock)
+	for (auto const pBld : pThis->GetTechnoType()->Dock)
 	{
 		if (pThis->Owner->CountOwnedAndPresent(pBld))
 			return true;
@@ -140,7 +140,7 @@ bool TechnoExt::HasRadioLinkWithDock(TechnoClass* pThis)
 {
 	if (pThis->HasAnyLink())
 	{
-		auto const pLink = abstract_cast<BuildingClass*>(pThis->GetNthLink(0));
+		auto const pLink = abstract_cast<BuildingClass*, true>(pThis->GetNthLink(0));
 
 		if (pLink && pThis->GetTechnoType()->Dock.FindItemIndex(pLink->Type) >= 0)
 			return true;
@@ -156,8 +156,9 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		const auto pTypeExt = TechnoExt::ExtMap.Find(pFrom)->TypeExtData;
 		const bool isForceShielded = pFrom->ForceShielded;
-		const bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
-			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
+		const bool allowSyncing = !isForceShielded
+			? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy)
+			: pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
 
 		if (allowSyncing)
 		{
@@ -472,6 +473,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& type : attachEffectTypes)
 	{
@@ -479,15 +481,15 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 		{
 			if (attachEffect->GetType() == type && attachEffect->IsActive())
 			{
-				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				unsigned int minSize = minCounts ? minCounts->size() : 0;
-				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+				const unsigned int minSize = minCounts ? minCounts->size() : 0;
+				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
 				if (type->Cumulative && (minSize > 0 || maxSize > 0))
 				{
-					int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
 
 					if (minSize > 0)
 					{
