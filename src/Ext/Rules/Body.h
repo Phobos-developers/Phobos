@@ -132,6 +132,7 @@ public:
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
+		Valueable<int> AirstrikeLineZAdjust;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -175,6 +176,8 @@ public:
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
+		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -216,6 +219,15 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Nullable<int> AINormalTargetingDelay;
+		Nullable<int> PlayerNormalTargetingDelay;
+		Nullable<int> AIGuardAreaTargetingDelay;
+		Nullable<int> PlayerGuardAreaTargetingDelay;
+		Nullable<int> AIAttackMoveTargetingDelay;
+		Nullable<int> PlayerAttackMoveTargetingDelay;
+		Valueable<bool> DistributeTargetingFrame;
+		Valueable<bool> DistributeTargetingFrame_AIOnly;
+
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
 
@@ -232,7 +244,7 @@ public:
 
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
-		
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
@@ -331,6 +343,7 @@ public:
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
+			, AirstrikeLineZAdjust { 0 }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -370,6 +383,8 @@ public:
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
+			, DamageOwnerMultiplier_NotAffectsEnemies {}
+			, DamageAlliesMultiplier_NotAffectsEnemies {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -403,6 +418,14 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, AINormalTargetingDelay {}
+			, PlayerNormalTargetingDelay {}
+			, AIGuardAreaTargetingDelay {}
+			, PlayerGuardAreaTargetingDelay {}
+			, AIAttackMoveTargetingDelay {}
+			, PlayerAttackMoveTargetingDelay {}
+			, DistributeTargetingFrame { false }
+			, DistributeTargetingFrame_AIOnly { true }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }

@@ -114,11 +114,8 @@ int BuildingTypeExt::GetUpgradesAmount(BuildingTypeClass* pBuilding, HouseClass*
 			checkUpgrade(pTPowersUp);
 	}
 
-	if (auto const pBuildingExt = BuildingTypeExt::ExtMap.Find(pBuilding))
-	{
-		for (auto pTPowersUp : pBuildingExt->PowersUp_Buildings)
-			checkUpgrade(pTPowersUp);
-	}
+	for (auto const pTPowersUp : BuildingTypeExt::ExtMap.Find(pBuilding)->PowersUp_Buildings)
+		checkUpgrade(pTPowersUp);
 
 	return isUpgrade ? result : -1;
 }
@@ -226,7 +223,7 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
-	
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -341,6 +338,7 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BunkerWallsDownSound)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
+		.Process(this->HasPowerUpAnim)
 		.Process(this->NewEvaVoice_Index)
 		.Process(this->NewEvaVoice_Priority)
 		.Process(this->NewEvaVoice_RecheckOnDeath)

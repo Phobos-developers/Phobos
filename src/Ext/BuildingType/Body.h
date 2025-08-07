@@ -92,11 +92,13 @@ public:
 		Nullable<float> BuildingBunkerROFMult;
 		NullableIdx<VocClass> BunkerWallsUpSound;
 		NullableIdx<VocClass> BunkerWallsDownSound;
-		
+
 		NullableIdx<VocClass> BuildingRepairedSound;
 
 		Valueable<bool> Refinery_UseNormalActiveAnim;
-		
+
+		ValueableVector<bool> HasPowerUpAnim;
+
 		Nullable<int> NewEvaVoice_Index;
 		Valueable<int> NewEvaVoice_Priority;
 		Valueable<bool> NewEvaVoice_RecheckOnDeath;
@@ -163,6 +165,7 @@ public:
 			, BunkerWallsDownSound {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
+			, HasPowerUpAnim {}
 			, NewEvaVoice_Index {}
 			, NewEvaVoice_Priority { 0 }
 			, NewEvaVoice_RecheckOnDeath { false }
