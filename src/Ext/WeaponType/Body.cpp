@@ -23,31 +23,27 @@ bool WeaponTypeExt::ExtData::HasRequiredAttachedEffects(TechnoClass* pTarget, Te
 			return true;
 
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+		auto const pWH = this->OwnerObject()->Warhead;
 
-		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
+		if (hasDisallowedTypes && pTechnoExt->HasAttachedEffects(this->AttachEffect_DisallowedTypes, false, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
 			return false;
 
-		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), false, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
+		if (hasDisallowedGroups && pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_DisallowedGroups), false, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_DisallowedMinCounts, &this->AttachEffect_DisallowedMaxCounts))
 			return false;
 
-		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
+		if (hasRequiredTypes && !pTechnoExt->HasAttachedEffects(this->AttachEffect_RequiredTypes, true, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
 			return false;
 
-		if (hasRequiredGroups &&
-			!pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), true, this->AttachEffect_IgnoreFromSameSource, pFirer, this->OwnerObject()->Warhead, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
+		if (hasRequiredGroups && !pTechnoExt->HasAttachedEffects(AttachEffectTypeClass::GetTypesFromGroups(this->AttachEffect_RequiredGroups), true, this->AttachEffect_IgnoreFromSameSource, pFirer, pWH, &this->AttachEffect_RequiredMinCounts, &this->AttachEffect_RequiredMaxCounts))
 			return false;
 	}
 
 	return true;
 }
 
-bool WeaponTypeExt::ExtData::IsHealthRatioEligible(TechnoClass* const pTarget) const
+bool WeaponTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	if (!pTarget)
-		return true;
-
-	const auto ratio = pTarget->GetHealthPercentage();
-	return ratio <= this->CanTarget_MaxHealth && ratio >= this->CanTarget_MinHealth;
+	return TechnoExt::IsHealthInThreshold(pTarget, this->CanTarget_MinHealth, this->CanTarget_MaxHealth);
 }
 
 void WeaponTypeExt::ExtData::Initialize()
@@ -76,18 +72,22 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
+	char tempBuffer[0x40];
 
 	this->DiskLaser_Radius.Read(exINI, pSection, "DiskLaser.Radius");
 	this->ProjectileRange.Read(exINI, pSection, "ProjectileRange");
 
-	this->Bolt_Disable1.Read(exINI, pSection, "Bolt.Disable1");
-	this->Bolt_Disable2.Read(exINI, pSection, "Bolt.Disable2");
-	this->Bolt_Disable3.Read(exINI, pSection, "Bolt.Disable3");
+	for (int idx = 0; idx < 3; ++idx)
+	{
+		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Color%d", idx + 1);
+		this->Bolt_Color[idx].Read(exINI, pSection, tempBuffer);
+
+		_snprintf_s(tempBuffer, _TRUNCATE, "Bolt.Disable%d", idx + 1);
+		this->Bolt_Disable[idx].Read(exINI, pSection, tempBuffer);
+	}
+
+	this->Bolt_ParticleSystem.Read(exINI, pSection, "Bolt.ParticleSystem");
 	this->Bolt_Arcs.Read(exINI, pSection, "Bolt.Arcs");
 	this->Bolt_Duration.Read(exINI, pSection, "Bolt.Duration");
 	this->Bolt_FollowFLH.Read(exINI, pSection, "Bolt.FollowFLH");
@@ -105,6 +105,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->CanTarget_MinHealth.Read(exINI, pSection, "CanTarget.MinHealth");
 	this->Burst_Delays.Read(exINI, pSection, "Burst.Delays");
 	this->Burst_FireWithinSequence.Read(exINI, pSection, "Burst.FireWithinSequence");
+	this->Burst_NoDelay.Read(exINI, pSection, "Burst.NoDelay");
 	this->AreaFire_Target.Read(exINI, pSection, "AreaFire.Target");
 	this->FeedbackWeapon.Read<true>(exINI, pSection, "FeedbackWeapon");
 	this->Laser_IsSingleColor.Read(exINI, pSection, "IsSingleColor");
@@ -124,7 +125,7 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	exINI.ParseStringList(this->AttachEffect_RequiredGroups, pSection, "AttachEffect.RequiredGroups");
 	exINI.ParseStringList(this->AttachEffect_DisallowedGroups, pSection, "AttachEffect.DisallowedGroups");
 	this->AttachEffect_RequiredMinCounts.Read(exINI, pSection, "AttachEffect.RequiredMinCounts");
-	this->AttachEffect_RequiredMaxCounts.Read(exINI, pSection, "AttachEffect.RequiredMaxCounts");
+	this->AttachEffect_RequiredMaxCounts.Read(exINI, pSection, "AttachEffect.RequiredMaxCounts");this->DelayedFire_Duration.Read(exINI, pSection, "DelayedFire.Duration");
 	this->AttachEffect_DisallowedMinCounts.Read(exINI, pSection, "AttachEffect.DisallowedMinCounts");
 	this->AttachEffect_DisallowedMaxCounts.Read(exINI, pSection, "AttachEffect.DisallowedMaxCounts");
 	this->AttachEffect_CheckOnFirer.Read(exINI, pSection, "AttachEffect.CheckOnFirer");
@@ -132,13 +133,24 @@ void WeaponTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KeepRange.Read(exINI, pSection, "KeepRange");
 	this->KeepRange_AllowAI.Read(exINI, pSection, "KeepRange.AllowAI");
 	this->KeepRange_AllowPlayer.Read(exINI, pSection, "KeepRange.AllowPlayer");
+	this->KeepRange_EarlyStopFrame.Read(exINI, pSection, "KeepRange.EarlyStopFrame");
 	this->KickOutPassengers.Read(exINI, pSection, "KickOutPassengers");
-
 	this->Beam_Color.Read(exINI, pSection, "Beam.Color");
 	this->Beam_Duration.Read(exINI, pSection, "Beam.Duration");
 	this->Beam_Amplitude.Read(exINI, pSection, "Beam.Amplitude");
 	this->Beam_IsHouseColor.Read(exINI, pSection, "Beam.IsHouseColor");
 	this->LaserThickness.Read(exINI, pSection, "LaserThickness");
+	this->DelayedFire_Duration.Read(exINI, pSection, "DelayedFire.Duration");
+	this->DelayedFire_SkipInTransport.Read(exINI, pSection, "DelayedFire.SkipInTransport");
+	this->DelayedFire_Animation.Read(exINI, pSection, "DelayedFire.Animation");
+	this->DelayedFire_OpenToppedAnimation.Read(exINI, pSection, "DelayedFire.OpenToppedAnimation");
+	this->DelayedFire_AnimIsAttached.Read(exINI, pSection, "DelayedFire.AnimIsAttached");
+	this->DelayedFire_CenterAnimOnFirer.Read(exINI, pSection, "DelayedFire.CenterAnimOnFirer");
+	this->DelayedFire_RemoveAnimOnNoDelay.Read(exINI, pSection, "DelayedFire.RemoveAnimOnNoDelay");
+	this->DelayedFire_PauseFiringSequence.Read(exINI, pSection, "DelayedFire.PauseFiringSequence");
+	this->DelayedFire_OnlyOnInitialBurst.Read(exINI, pSection, "DelayedFire.OnlyOnInitialBurst");
+	this->DelayedFire_AnimOffset.Read(exINI, pSection, "DelayedFire.AnimOffset");
+	this->DelayedFire_AnimOnTurret.Read(exINI, pSection, "DelayedFire.AnimOnTurret");
 
 	// handle SkipWeaponPicking
 	if (this->CanTarget != AffectedTarget::All || this->CanTargetHouses != AffectedHouse::All
@@ -158,9 +170,9 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 	Stm
 		.Process(this->DiskLaser_Radius)
 		.Process(this->ProjectileRange)
-		.Process(this->Bolt_Disable1)
-		.Process(this->Bolt_Disable2)
-		.Process(this->Bolt_Disable3)
+		.Process(this->Bolt_Color)
+		.Process(this->Bolt_Disable)
+		.Process(this->Bolt_ParticleSystem)
 		.Process(this->Bolt_Arcs)
 		.Process(this->Bolt_Duration)
 		.Process(this->Bolt_FollowFLH)
@@ -176,6 +188,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->RadType)
 		.Process(this->Burst_Delays)
 		.Process(this->Burst_FireWithinSequence)
+		.Process(this->Burst_NoDelay)
 		.Process(this->AreaFire_Target)
 		.Process(this->FeedbackWeapon)
 		.Process(this->Laser_IsSingleColor)
@@ -203,6 +216,7 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KeepRange)
 		.Process(this->KeepRange_AllowAI)
 		.Process(this->KeepRange_AllowPlayer)
+		.Process(this->KeepRange_EarlyStopFrame)
 		.Process(this->KickOutPassengers)
 		.Process(this->Beam_Color)
 		.Process(this->Beam_Duration)
@@ -210,6 +224,17 @@ void WeaponTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Beam_IsHouseColor)
 		.Process(this->LaserThickness)
 		.Process(this->SkipWeaponPicking)
+		.Process(this->DelayedFire_Duration)
+		.Process(this->DelayedFire_SkipInTransport)
+		.Process(this->DelayedFire_Animation)
+		.Process(this->DelayedFire_OpenToppedAnimation)
+		.Process(this->DelayedFire_AnimIsAttached)
+		.Process(this->DelayedFire_CenterAnimOnFirer)
+		.Process(this->DelayedFire_RemoveAnimOnNoDelay)
+		.Process(this->DelayedFire_PauseFiringSequence)
+		.Process(this->DelayedFire_OnlyOnInitialBurst)
+		.Process(this->DelayedFire_AnimOffset)
+		.Process(this->DelayedFire_AnimOnTurret)
 		.Process(this->Ammo)
 		;
 };
@@ -371,6 +396,9 @@ int WeaponTypeExt::GetTechnoKeepRange(WeaponTypeClass* pThis, TechnoClass* pFire
 		return 0;
 	}
 
+	if (pFirer->RearmTimer.GetTimeLeft() < pExt->KeepRange_EarlyStopFrame)
+		return 0;
+
 	if (!pFirer->RearmTimer.InProgress())
 	{
 		const auto spawnManager = pFirer->SpawnManager;
@@ -457,8 +485,8 @@ DEFINE_HOOK(0x772F8C, WeaponTypeClass_Save, 0x5)
 	return 0;
 }
 
+//DEFINE_HOOK_AGAIN(0x7729D6, WeaponTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK_AGAIN(0x7729C7, WeaponTypeClass_LoadFromINI, 0x5)
-DEFINE_HOOK_AGAIN(0x7729D6, WeaponTypeClass_LoadFromINI, 0x5)
 DEFINE_HOOK(0x7729B0, WeaponTypeClass_LoadFromINI, 0x5)
 {
 	GET(WeaponTypeClass*, pItem, ESI);

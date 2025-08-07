@@ -20,7 +20,7 @@ namespace UnitDeployConvertHelpers
 void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 {
 	GET(TechnoClass*, pThis, ESI);
-	auto const pThisType = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
 	const bool canDeploy = pThis->CanDeploySlashUnload();
 	R->AL(canDeploy);
@@ -28,14 +28,15 @@ void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 	if (!canDeploy || pThis->BunkerLinkedItem)
 		return;
 
-	const bool skipMinimum = pThisType->Ammo_DeployUnlockMinimumAmount < 0;
-	const bool skipMaximum = pThisType->Ammo_DeployUnlockMaximumAmount < 0;
+	const int skipMinimum = pTypeExt->Ammo_DeployUnlockMinimumAmount;
+	const int skipMaximum = pTypeExt->Ammo_DeployUnlockMaximumAmount;
 
-	if (skipMinimum && skipMaximum)
+	if (skipMinimum < 0 && skipMaximum < 0)
 		return;
 
-	const bool moreThanMinimum = pThis->Ammo >= pThisType->Ammo_DeployUnlockMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pThisType->Ammo_DeployUnlockMaximumAmount;
+	const int ammo = pThis->Ammo;
+	const bool moreThanMinimum = ammo >= skipMinimum;
+	const bool lessThanMaximum = ammo <= skipMaximum;
 
 	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
 		return;
@@ -46,26 +47,32 @@ void UnitDeployConvertHelpers::RemoveDeploying(REGISTERS* R)
 void UnitDeployConvertHelpers::ChangeAmmo(REGISTERS* R)
 {
 	GET(UnitClass*, pThis, ECX);
-	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
 
-	if (pThis->Deployed && !pThis->BunkerLinkedItem && !pThis->Deploying && pThisExt->Ammo_AddOnDeploy)
+	if (pThis->Deployed && !pThis->BunkerLinkedItem && !pThis->Deploying)
 	{
-		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
-		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
+		if (const bool addOnDeploy = TechnoTypeExt::ExtMap.Find(pType)->Ammo_AddOnDeploy)
+		{
+			const int ammoCalc = std::max(pThis->Ammo + addOnDeploy, 0);
+			pThis->Ammo = std::min(pType->Ammo, ammoCalc);
+		}
 	}
 
-	R->EAX(pThis->Type);
+	R->EAX(pType);
 }
 
 void UnitDeployConvertHelpers::ChangeAmmoOnUnloading(REGISTERS* R)
 {
 	GET(UnitClass*, pThis, ESI);
-	auto const pThisExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	auto const pType = pThis->Type;
 
-	if (pThis->Type->IsSimpleDeployer && !pThis->BunkerLinkedItem && pThisExt->Ammo_AddOnDeploy && (pThis->Type->UnloadingClass == nullptr))
+	if (pType->IsSimpleDeployer && !pThis->BunkerLinkedItem && pType->UnloadingClass == nullptr)
 	{
-		const int ammoCalc = std::max(pThis->Ammo + pThisExt->Ammo_AddOnDeploy, 0);
-		pThis->Ammo = std::min(pThis->Type->Ammo, ammoCalc);
+		if (const bool addOnDeploy = TechnoTypeExt::ExtMap.Find(pType)->Ammo_AddOnDeploy)
+		{
+			const int ammoCalc = std::max(pThis->Ammo + addOnDeploy, 0);
+			pThis->Ammo = std::min(pType->Ammo, ammoCalc);
+		}
 	}
 
 	R->AL(pThis->Deployed);
@@ -79,8 +86,8 @@ DEFINE_HOOK(0x7396D2, UnitClass_TryToDeploy_Transfer, 0x5)
 	if (pUnit->Type->DeployToFire && pUnit->Target)
 		pStructure->LastTarget = pUnit->Target;
 
-	if (auto pStructureExt = BuildingExt::ExtMap.Find(pStructure))
-		pStructureExt->DeployedTechno = true;
+	const auto pStructureExt = BuildingExt::ExtMap.Find(pStructure);
+	pStructureExt->DeployedTechno = true;
 
 	return 0;
 }
@@ -126,11 +133,13 @@ DEFINE_HOOK(0x73DE78, UnitClass_Unload_ChangeAmmo, 0x6) // converters
 	return Continue;
 }
 
+// TODO: Replace all of Ares SimpleDeployer code.
 #pragma region SimpleDeployer
 
 namespace SimpleDeployerTemp
 {
 	bool HoverDeployedToLand = false;
+	AnimTypeClass* DeployingAnim = nullptr;
 }
 
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
@@ -141,7 +150,7 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 
 	if (pThis->Deploying || pThis->Undeploying)
 	{
-		auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible)
 			return KeepUnitVisible;
@@ -176,9 +185,11 @@ DEFINE_HOOK(0x739B7C, UnitClass_Deploy_DeployDir, 0x6)
 
 	if (!pThis->InAir)
 	{
-		if (pThis->Type->DeployingAnim)
+		const auto pType = pThis->Type;
+
+		if (pType->DeployingAnim)
 		{
-			if (TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType())->DeployingAnim_AllowAnyDirection)
+			if (TechnoTypeExt::ExtMap.Find(pType)->DeployingAnim_AllowAnyDirection)
 				return PlayAnim;
 
 			return 0;
@@ -197,10 +208,11 @@ DEFINE_HOOK(0x739BA8, UnitClass_DeployUndeploy_DeployAnim, 0x5)
 
 	GET(UnitClass*, pThis, ESI);
 
-	bool isDeploying = R->Origin() == 0x739BA8;
+	const bool isDeploying = R->Origin() == 0x739BA8;
 
-	auto const pExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-	auto const pAnim = GameCreate<AnimClass>(pThis->Type->DeployingAnim,
+	auto const pType = pThis->Type;
+	auto const pExt = TechnoTypeExt::ExtMap.Find(pType);
+	auto const pAnim = GameCreate<AnimClass>(pType->DeployingAnim,
 		pThis->Location, 0, 1, 0x600, 0,
 		!isDeploying ? pExt->DeployingAnim_ReverseForUndeploy : false);
 
@@ -222,8 +234,8 @@ DEFINE_HOOK(0x739C86, UnitClass_DeployUndeploy_DeploySound, 0x6)
 
 	GET(UnitClass*, pThis, ESI);
 
-	bool isDeploying = R->Origin() == 0x739C86;
-	bool isDoneWithDeployUndeploy = isDeploying ? pThis->Deployed : !pThis->Deployed;
+	const bool isDeploying = R->Origin() == 0x739C86;
+	const bool isDoneWithDeployUndeploy = isDeploying ? pThis->Deployed : !pThis->Deployed;
 
 	if (isDoneWithDeployUndeploy)
 		return 0; // Only play sound when done with deploying or undeploying.
@@ -235,8 +247,13 @@ DEFINE_HOOK(0x739CBF, UnitClass_Deploy_DeployToLandHover, 0x5)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	if (pThis->Deployed && pThis->Type->DeployToLand && pThis->Type->Locomotor == LocomotionClass::CLSIDs::Hover)
-		SimpleDeployerTemp::HoverDeployedToLand = true;
+	if (pThis->Deployed)
+	{
+		const auto pType = pThis->Type;
+
+		if (pType->DeployToLand && pType->Locomotor == LocomotionClass::CLSIDs::Hover)
+			SimpleDeployerTemp::HoverDeployedToLand = true;
+	}
 
 	return 0;
 }
@@ -270,6 +287,45 @@ DEFINE_HOOK(0x513D2C, HoverLocomotionClass_ProcessBobbing_DeployToLand, 0x6)
 	{
 		if (pUnit->Deploying && pUnit->Type->DeployToLand)
 			return SkipBobbing;
+	}
+
+	return 0;
+}
+
+// Trick Ares into thinking it can deploy in any direction if anim does not constrain it by temporarily removing the anim.
+DEFINE_HOOK(0x514325, HoverLocomotionClass_Process_DeployingAnim1, 0x8)
+{
+	GET(ILocomotion*, iLoco, ESI);
+	GET(bool, isMoving, EAX);
+
+	auto const pLinkedTo = static_cast<LocomotionClass*>(iLoco)->LinkedTo;
+	auto const pType = pLinkedTo->GetTechnoType();
+
+	if (pType->DeployToLand && pType->DeployingAnim)
+	{
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (pTypeExt->DeployingAnim_AllowAnyDirection)
+		{
+			SimpleDeployerTemp::DeployingAnim = pType->DeployingAnim;
+			pType->DeployingAnim = nullptr;
+		}
+	}
+
+	return isMoving ? 0x51432D : 0x514A21;
+}
+
+// Restore the DeployingAnim to normal after.
+DEFINE_HOOK(0x514AD0, HoverLocomotionClass_Process_DeployingAnim2, 0x5)
+{
+	GET(ILocomotion*, iLoco, ESI);
+
+	if (SimpleDeployerTemp::DeployingAnim)
+	{
+		auto const pLinkedTo = static_cast<LocomotionClass*>(iLoco)->LinkedTo;
+		auto const pType = pLinkedTo->GetTechnoType();
+		pType->DeployingAnim = SimpleDeployerTemp::DeployingAnim;
+		SimpleDeployerTemp::DeployingAnim = nullptr;
 	}
 
 	return 0;

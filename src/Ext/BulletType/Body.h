@@ -27,6 +27,7 @@ public:
 		Valueable<WeaponTypeClass*> Interceptable_WeaponOverride;
 		ValueableIdxVector<LaserTrailTypeClass> LaserTrail_Types;
 		Nullable<double> Gravity;
+		Valueable<bool> Vertical_AircraftFix;
 
 		TrajectoryTypePointer TrajectoryType;
 
@@ -65,7 +66,10 @@ public:
 		Valueable<Leptons> AirburstWeapon_SourceScatterMin;
 		Valueable<Leptons> AirburstWeapon_SourceScatterMax;
 
-		Valueable<AnimTypeClass*> BombParachute;
+		Valueable<bool> Parachuted;
+		Valueable<int> Parachuted_FallRate;
+		Nullable<int> Parachuted_MaxFallRate;
+		Nullable<AnimTypeClass*> BombParachute;
 
 		Valueable<int> EMPulseCannon_InaccurateRadius;
 
@@ -80,6 +84,7 @@ public:
 			, Interceptable_WeaponOverride {}
 			, LaserTrail_Types {}
 			, Gravity {}
+			, Vertical_AircraftFix { true }
 			, TrajectoryType { }
 			, Shrapnel_AffectsGround { false }
 			, Shrapnel_AffectsBuildings { false }
@@ -113,7 +118,10 @@ public:
 			, AirburstWeapon_ApplyFirepowerMult { false }
 			, AirburstWeapon_SourceScatterMin { Leptons(0) }
 			, AirburstWeapon_SourceScatterMax { Leptons(0) }
-			, BombParachute { }
+			, Parachuted { false }
+			, Parachuted_FallRate { 1 }
+			, Parachuted_MaxFallRate {}
+			, BombParachute {}
 			, EMPulseCannon_InaccurateRadius { 0 }
 		{ }
 
