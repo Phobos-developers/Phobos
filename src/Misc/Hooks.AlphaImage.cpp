@@ -87,7 +87,7 @@ static void __fastcall UpdateAlphaShape(ObjectClass* pSource)
 
 	if (inactive)
 	{
-		if (auto pAlpha = alphaExt.get_or_default(pSource))
+		if (const auto pAlpha = alphaExt.get_or_default(pSource))
 			GameDelete(pAlpha);
 
 		return;
