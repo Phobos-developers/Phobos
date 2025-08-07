@@ -170,7 +170,7 @@ void StraightTrajectory::OnUnlimbo(BulletClass* pBullet, CoordStruct* pCoord, Bu
 		this->CurrentBurst = pFirer->CurrentBurstIndex;
 		this->FirepowerMult = pFirer->FirepowerMultiplier;
 
-		if (const auto pExt = TechnoExt::ExtMap.Find(pFirer))
+		if (const auto pExt = TechnoExt::ExtMap.TryFind(pFirer))
 			this->FirepowerMult *= pExt->AE.FirepowerMultiplier;
 
 		if (pType->MirrorCoord && pFirer->CurrentBurstIndex % 2 == 1)

@@ -21,15 +21,45 @@ BannerClass::BannerClass
 	, Position(static_cast<int>(position.X / 100.0 * DSurface::ViewBounds.Width), static_cast<int>(position.Y / 100.0 * DSurface::ViewBounds.Height))
 	, Variable(variable)
 	, IsGlobalVariable(isGlobalVariable)
-{ }
+{
+	this->Duration = pBannerType->Duration;
+	this->Delay = pBannerType->Delay;
+}
 
 void BannerClass::Render()
 {
-	if (this->Type->PCX.GetSurface())
+	const auto pType = this->Type;
+
+	if (this->Duration > 0)
+	{
+		this->Duration--;
+	}
+	else if (this->Duration == 0)
+	{
+		if (this->Delay < 0)
+		{
+			return;
+		}
+		else if (this->Delay > 0)
+		{
+			this->Delay--;
+			return;
+		}
+		else if (this->Delay == 0)
+		{
+			this->Duration = pType->Duration;
+			this->Delay = pType->Delay;
+
+			if (pType->Shape_RefreshAfterDelay)
+				this->ShapeFrameIndex = 0;
+		}
+	}
+
+	if (pType->PCX.GetSurface())
 		this->RenderPCX(this->Position);
-	else if (this->Type->Shape)
+	else if (pType->Shape)
 		this->RenderSHP(this->Position);
-	else if (!this->Type->CSF.Get().empty() || this->Type->CSF_VariableFormat != BannerNumberType::None)
+	else if (!pType->CSF.Get().empty() || pType->CSF_VariableFormat != BannerNumberType::None)
 		this->RenderCSF(this->Position);
 }
 
@@ -44,8 +74,9 @@ void BannerClass::RenderPCX(Point2D position)
 
 void BannerClass::RenderSHP(Point2D position)
 {
-	SHPStruct* shape = this->Type->Shape;
-	ConvertClass* palette = this->Type->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
+	auto const pType = this->Type;
+	SHPStruct* shape = pType->Shape;
+	ConvertClass* palette = pType->Palette.GetOrDefaultConvert(FileSystem::PALETTE_PAL);
 	position.X -= shape->Width / 2;
 	position.Y -= shape->Height / 2;
 
@@ -76,39 +107,40 @@ void BannerClass::RenderSHP(Point2D position)
 
 void BannerClass::RenderCSF(Point2D position)
 {
+	auto const pType = this->Type;
 	RectangleStruct rect = DSurface::ViewBounds;
 	std::wstring text;
 
-	if (this->Type->CSF_VariableFormat != BannerNumberType::None)
+	if (pType->CSF_VariableFormat != BannerNumberType::None)
 	{
 		const auto& variables = ScenarioExt::Global()->Variables[this->IsGlobalVariable != 0];
 		const auto& it = variables.find(this->Variable);
 
 		if (it != variables.end())
 		{
-			switch (this->Type->CSF_VariableFormat)
+			switch (pType->CSF_VariableFormat)
 			{
 				case BannerNumberType::Variable:
 					text = std::to_wstring(it->second.Value);
 					break;
 				case BannerNumberType::Prefixed:
-					text = std::to_wstring(it->second.Value) + this->Type->CSF.Get().Text;
+					text = std::to_wstring(it->second.Value) + pType->CSF.Get().Text;
 					break;
 				case BannerNumberType::Suffixed:
-					text = this->Type->CSF.Get().Text + std::to_wstring(it->second.Value);
+					text = pType->CSF.Get().Text + std::to_wstring(it->second.Value);
 					break;
 			}
 		}
 	}
 	else
 	{
-		text = this->Type->CSF.Get().Text;
+		text = pType->CSF.Get().Text;
 	}
 
 	TextPrintType textFlags = TextPrintType::UseGradPal
 		| TextPrintType::Center
 		| TextPrintType::Metal12
-		| (this->Type->CSF_Background
+		| (pType->CSF_Background
 			? TextPrintType::Background
 			: TextPrintType::LASTPOINT);
 
@@ -117,7 +149,7 @@ void BannerClass::RenderCSF(Point2D position)
 		text.c_str(),
 		&rect,
 		&position,
-		Drawing::RGB_To_Int(this->Type->CSF_Color.Get(Drawing::TooltipColor)),
+		Drawing::RGB_To_Int(pType->CSF_Color.Get(Drawing::TooltipColor)),
 		0,
 		textFlags
 	);
@@ -133,6 +165,8 @@ bool BannerClass::Serialize(T& Stm)
 		.Process(this->Variable)
 		.Process(this->ShapeFrameIndex)
 		.Process(this->IsGlobalVariable)
+		.Process(this->Duration)
+		.Process(this->Delay)
 		.Success();
 }
 
