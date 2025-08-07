@@ -121,8 +121,10 @@ DEFINE_HOOK(0x4F91A4, HouseClass_AI_BuildingProductionCheck, 0x6)
 
 	auto const pExt = HouseExt::ExtMap.Find(pThis);
 
-	bool cantBuild = pThis->ProducingUnitTypeIndex == -1 && pThis->ProducingInfantryTypeIndex == -1 &&
-		pThis->ProducingAircraftTypeIndex == -1 && pExt->ProducingNavalUnitTypeIndex == -1;
+	bool cantBuild = pThis->ProducingUnitTypeIndex == -1
+		&& pThis->ProducingInfantryTypeIndex == -1
+		&& pThis->ProducingAircraftTypeIndex == -1
+		&& pExt->ProducingNavalUnitTypeIndex == -1;
 
 	int index = pExt->ProducingNavalUnitTypeIndex;
 	if (index != -1 && !UnitTypeClass::Array.GetItem(index)->FindFactory(true, true, true, pThis))
@@ -189,8 +191,8 @@ DEFINE_HOOK(0x71F003, TEventClass_Execute_NavalProductionFix, 0x6)
 	GET(TEventClass* const, pThis, EBP);
 	GET(HouseClass* const, pHouse, EAX);
 
-	if (pHouse->LastBuiltVehicleType != pThis->Value &&
-		HouseExt::ExtMap.Find(pHouse)->LastBuiltNavalVehicleType != pThis->Value)
+	if (pHouse->LastBuiltVehicleType != pThis->Value
+		&& HouseExt::ExtMap.Find(pHouse)->LastBuiltNavalVehicleType != pThis->Value)
 	{
 		return Skip;
 	}

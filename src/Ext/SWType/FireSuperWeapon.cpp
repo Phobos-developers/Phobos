@@ -282,8 +282,8 @@ void SWTypeExt::ExtData::ApplySWNext(SuperClass* pSW, const CellStruct& cell)
 			if (const auto pSuper = pHouse->Supers.GetItem(swIdxToLaunch))
 			{
 				const auto pNextTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
-				if (!this->SW_Next_RealLaunch ||
-					(pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
+				if (!this->SW_Next_RealLaunch
+					|| (pSuper->IsPresent && pSuper->IsReady && !pSuper->IsSuspended && pHouse->CanTransactMoney(pNextTypeExt->Money_Amount)))
 				{
 					if ((this->SW_Next_IgnoreInhibitors || !pNextTypeExt->HasInhibitor(pHouse, cell))
 						&& (this->SW_Next_IgnoreDesignators || pNextTypeExt->HasDesignator(pHouse, cell)))

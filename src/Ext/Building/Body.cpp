@@ -223,9 +223,9 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 	if (!pBldType->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
-	if ((pBldType->InfantryAbsorb || pBldType->UnitAbsorb) &&
-		(whatAmI == AbstractType::Infantry && !pBldType->InfantryAbsorb ||
-			whatAmI == AbstractType::Unit && !pBldType->UnitAbsorb))
+	if ((pBldType->InfantryAbsorb || pBldType->UnitAbsorb)
+		&& (whatAmI == AbstractType::Infantry && !pBldType->InfantryAbsorb
+			|| whatAmI == AbstractType::Unit && !pBldType->UnitAbsorb))
 	{
 		return false;
 	}
@@ -261,9 +261,9 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 		pExt->AccumulatedIncome += refund;
 		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon &&
-			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF &&
-			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
+		if (pTypeExt->Grinding_Weapon
+			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF
+			&& pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
 			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon);
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;

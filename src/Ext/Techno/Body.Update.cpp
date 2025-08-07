@@ -376,8 +376,8 @@ void TechnoExt::ExtData::EatPassengers()
 				}
 
 				// Check if there is money refund
-				if (pDelType->Soylent &&
-					EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPassenger->Owner))
+				if (pDelType->Soylent
+					&& EnumFunctions::CanTargetHouse(pDelType->SoylentAllowedHouses, pOwner, pPassenger->Owner))
 				{
 					const int nMoneyToGive = (int)(pPassenger->GetTechnoType()->GetRefund(pPassenger->Owner, true) * pDelType->SoylentMultiplier);
 
@@ -614,8 +614,8 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 
 	// Cache the new type data
 	this->PreviousType = pOldType;
-	this->TypeExtData = TechnoTypeExt::ExtMap.Find(pCurrentType);
-	auto const pNewTypeExt = this->TypeExtData;
+	auto const pNewTypeExt = TechnoTypeExt::ExtMap.Find(pCurrentType);
+	this->TypeExtData = pNewTypeExt;
 
 	this->UpdateSelfOwnedAttachEffects();
 
@@ -792,8 +792,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 						{
 							pAircraft->SpawnOwner = nullptr;
 
-							if (pAircraft->InLimbo || pStatus == SpawnNodeStatus::Idle ||
-								pStatus == SpawnNodeStatus::Reloading || pStatus == SpawnNodeStatus::TakeOff)
+							if (pAircraft->InLimbo
+								|| pStatus == SpawnNodeStatus::Idle
+								|| pStatus == SpawnNodeStatus::Reloading
+								|| pStatus == SpawnNodeStatus::TakeOff)
 							{
 								if (pStatus == SpawnNodeStatus::TakeOff)
 									Kamikaze::Instance.Remove(pAircraft);
@@ -836,8 +838,10 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 			auto& pStatus = pSpawnNode->Status;
 
 			// A dead or idle Spawn is not killed.
-			if (!pAircraft || pStatus == SpawnNodeStatus::Dead ||
-				pStatus == SpawnNodeStatus::Idle || pStatus == SpawnNodeStatus::Reloading)
+			if (!pAircraft
+				|| pStatus == SpawnNodeStatus::Dead
+				|| pStatus == SpawnNodeStatus::Idle
+				|| pStatus == SpawnNodeStatus::Reloading)
 			{
 				continue;
 			}
@@ -1269,8 +1273,8 @@ void TechnoExt::ExtData::UpdateMindControlAnim()
 		{
 			this->MindControlRingAnimType = pThis->MindControlRingAnim->Type;
 		}
-		else if (!pThis->MindControlRingAnim && this->MindControlRingAnimType &&
-			pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
+		else if (!pThis->MindControlRingAnim && this->MindControlRingAnimType
+			&& pThis->CloakState == CloakState::Uncloaked && !pThis->InLimbo && pThis->IsAlive)
 		{
 			auto coords = pThis->GetCoords();
 			int offset = 0;
@@ -1462,8 +1466,8 @@ void TechnoExt::ExtData::ApplyMindControlRangeLimit()
 	{
 		auto const pCapturerExt = TechnoExt::ExtMap.Find(pCapturer)->TypeExtData;
 
-		if (pCapturerExt->MindControlRangeLimit.Get() > 0 &&
-			pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
+		if (pCapturerExt->MindControlRangeLimit.Get() > 0
+			&& pCapturer->DistanceFrom(pThis) > pCapturerExt->MindControlRangeLimit.Get())
 		{
 			pCapturer->CaptureManager->FreeUnit(pThis);
 		}

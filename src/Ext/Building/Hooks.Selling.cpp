@@ -58,10 +58,9 @@ DEFINE_HOOK(0x449CC1, BuildingClass_Mi_Selling_EVASold_UndeploysInto, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 
 	const auto pType = pThis->Type;
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	// Fix Conyards can't play EVA_StructureSold
 	if (pThis->IsOwnedByCurrentPlayer && (!pThis->ArchiveTarget || !pType->UndeploysInto))
-		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
+		VoxClass::PlayIndex(TechnoTypeExt::ExtMap.Find(pType)->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
 
 	return BuildingExt::CanUndeployOnSell(pThis) ? CreateUnit : SkipTheEntireShit;
 }
@@ -72,10 +71,7 @@ DEFINE_HOOK(0x44A7CF, BuildingClass_Mi_Selling_PlaySellSound, 0x6)
 	GET(BuildingClass*, pThis, EBP);
 
 	if (!BuildingExt::CanUndeployOnSell(pThis))
-	{
-		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-		VocClass::PlayAt(pTypeExt->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
-	}
+		VocClass::PlayAt(TechnoTypeExt::ExtMap.Find(pThis->Type)->SellSound.Get(RulesClass::Instance->SellSound), pThis->Location);
 
 	return FinishPlaying;
 }
@@ -102,10 +98,8 @@ DEFINE_HOOK(0x44AB22, BuildingClass_Mi_Selling_EVASold_Plug, 0x6)
 #if ANYBODY_NOTICED_THIS
 	GET(BuildingClass*, pThis, EBP);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
 	if (pThis->IsOwnedByCurrentPlayer)
-		VoxClass::PlayIndex(pTypeExt->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
+		VoxClass::PlayIndex(TechnoTypeExt::ExtMap.Find(pThis->Type)->EVA_Sold.Get(VoxClass::FindIndex(GameStrings::EVA_StructureSold)));
 #endif
 	return SkipVoxPlay;
 }

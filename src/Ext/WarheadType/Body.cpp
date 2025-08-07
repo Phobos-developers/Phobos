@@ -100,9 +100,8 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 
 	auto const pType = pTechno->GetTechnoType();
 
-	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 &&
-		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pType)) ||
-		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
+	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
+		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}

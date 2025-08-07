@@ -22,8 +22,7 @@ DEFINE_HOOK(0x736F61, UnitClass_UpdateFiring_FireUp, 0x6)
 	const int fireUp = pTypeExt->FireUp;
 	CDTimerClass& timer = pExt->FiringAnimationTimer;
 
-	if (fireUp >= 0 && !pType->OpportunityFire &&
-		pThis->Locomotor->Is_Really_Moving_Now())
+	if (fireUp >= 0 && !pType->OpportunityFire && pThis->Locomotor->Is_Really_Moving_Now())
 	{
 		if (timer.InProgress())
 			timer.Stop();

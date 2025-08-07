@@ -331,8 +331,8 @@ DEFINE_HOOK(0x459494, BuildingClass_BunkerSound, 0x5)
 		BunkerWallDownSound_02_Handled_ret = 0x4594CD
 	};
 
-	BuildingClass const* pThis = R->Origin() == BunkerWallDownSound_01 ?
-		R->EDI<BuildingClass*>() : R->ESI<BuildingClass*>();
+	BuildingClass const* pThis = R->Origin() == BunkerWallDownSound_01
+		? R->EDI<BuildingClass*>() : R->ESI<BuildingClass*>();
 
 	BuildingTypeExt::PlayBunkerSound(pThis, R->Origin() == BunkerWallUpSound);
 
