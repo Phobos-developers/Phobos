@@ -49,15 +49,15 @@ DEFINE_HOOK(0x489286, MapClass_DamageArea, 0x6)
 DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
+	GET(const int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 	pWHExt->Splashed = true;
 
-	int idx = pWHExt->SplashList_PickRandom ?
-		ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1) :
-		std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
+	const int idx = pWHExt->SplashList_PickRandom
+		? ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1)
+		: std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
 
 	R->EAX(animTypes.size() > 0 ? animTypes[idx] : nullptr);
 	return 0x48A5AD;
@@ -74,15 +74,15 @@ DEFINE_HOOK(0x48A5BD, SelectDamageAnimation_PickRandom, 0x6)
 DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 {
 	GET(WarheadTypeClass* const, pThis, ESI);
-	GET(int, nDamage, EDI);
+	GET(const int, nDamage, EDI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis);
 
 	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
-		int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
-			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+		const int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom)
+			? ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1)
+			: std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
 
 		R->EAX(pWHExt->Crit_AnimList[idx]);
 		return 0x48A5AD;
@@ -97,7 +97,7 @@ DEFINE_HOOK(0x4896EC, Explosion_Damage_DamageSelf, 0x6)
 
 	GET_BASE(WarheadTypeClass*, pWarhead, 0xC);
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.TryFind(pWarhead))
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x44224F, BuildingClass_ReceiveDamage_DamageSelf, 0x5)
 
 	REF_STACK(args_ReceiveDamage const, receiveDamageArgs, STACK_OFFSET(0x9C, 0x4));
 
-	if (auto const pWHExt = WarheadTypeExt::ExtMap.Find(receiveDamageArgs.WH))
+	if (auto const pWHExt = WarheadTypeExt::ExtMap.TryFind(receiveDamageArgs.WH))
 	{
 		if (pWHExt->AllowDamageOnSelf)
 			return SkipCheck;
@@ -189,7 +189,7 @@ DEFINE_HOOK(0x4891AF, GetTotalDamage_NegativeDamageModifiers1, 0x6)
 	enum { ApplyModifiers = 0x4891C6 };
 
 	GET(WarheadTypeClass* const, pWarhead, EDI);
-	GET(int, damage, ESI);
+	GET(const int, damage, ESI);
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
@@ -206,7 +206,7 @@ DEFINE_HOOK(0x48922D, GetTotalDamage_NegativeDamageModifiers2, 0x5)
 {
 	enum { SkipGameCode = 0x489235 };
 
-	GET(int, damage, ESI);
+	GET(const int, damage, ESI);
 
 	if (NegativeDamageTemp::ApplyNegativeDamageModifiers)
 	{
@@ -251,7 +251,7 @@ DEFINE_HOOK(0x489968, Explosion_Damage_PenetratesIronCurtain, 0x5)
 DEFINE_HOOK(0x489B49, MapClass_DamageArea_Rocker, 0xA)
 {
 	GET_BASE(WarheadTypeClass*, pWH, 0xC);
-	GET_STACK(int, damage, STACK_OFFSET(0xE0, -0xBC));
+	GET_STACK(const int, damage, STACK_OFFSET(0xE0, -0xBC));
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	double rocker = pWHExt->Rocker_AmplitudeOverride.Get(damage);
@@ -362,7 +362,7 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 	enum { Continue = 0x4D73E3, Skip = 0x4D7413 };
 
 	GET(WarheadTypeClass*, pWarhead, EBP);
-	GET(int*, damage, EDI);
+	GET(const int*, damage, EDI);
 
 	auto const pTypeExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 

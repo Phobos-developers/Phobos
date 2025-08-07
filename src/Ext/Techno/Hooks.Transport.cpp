@@ -48,9 +48,11 @@ DEFINE_HOOK(0x701881, TechnoClass_ChangeHouse_Passenger_SyncOwner, 0x5)
 	{
 		if (TechnoExt::ExtMap.Find(pThis)->TypeExtData->Passengers_SyncOwner)
 		{
+			const auto pOwner = pThis->Owner;
+
 			do
 			{
-				pPassenger->SetOwningHouse(pThis->Owner, false);
+				pPassenger->SetOwningHouse(pOwner, false);
 				pPassenger = abstract_cast<FootClass*>(pPassenger->NextObject);
 			}
 			while (pPassenger);
@@ -105,8 +107,9 @@ DEFINE_HOOK(0x4DE722, FootClass_LeaveTransport, 0x6)
 			vec.erase(std::remove(vec.begin(), vec.end(), pExt), vec.end());
 		}
 
-		if (pTransTypeExt->Passengers_SyncOwner && pTransTypeExt->Passengers_SyncOwner_RevertOnExit &&
-			pExt->OriginalPassengerOwner)
+		if (pTransTypeExt->Passengers_SyncOwner
+			&& pTransTypeExt->Passengers_SyncOwner_RevertOnExit
+			&& pExt->OriginalPassengerOwner)
 		{
 			pPassenger->SetOwningHouse(pExt->OriginalPassengerOwner, false);
 		}
@@ -393,9 +396,10 @@ DEFINE_HOOK(0x73DC9C, UnitClass_Mission_Unload_NoQueueUpToUnloadBreak, 0xA)
 	if (TransportUnloadTemp::ShouldPlaySound) // Only when NoQueueUpToUnload enabled
 	{
 		TransportUnloadTemp::ShouldPlaySound = false;
+		const auto pType = pThis->Type;
 
-		if (TechnoTypeExt::ExtMap.Find(pThis->Type)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
-			VoxClass::PlayAtPos(pThis->Type->LeaveTransportSound, &pThis->Location);
+		if (TechnoTypeExt::ExtMap.Find(pType)->NoQueueUpToUnload.Get(RulesExt::Global()->NoQueueUpToUnload))
+			VoxClass::PlayAtPos(pType->LeaveTransportSound, &pThis->Location);
 	}
 
 	return SkipGameCode;
