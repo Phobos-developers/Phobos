@@ -318,26 +318,30 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
-void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE)
+void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
 {
 	if (!this->ReadMultiWeapon)
 	{
-		n.clear();
-		nE.clear();
+		voice.clear();
+		voiceElite.clear();
 		return;
 	}
 
 	const auto pThis = this->OwnerObject();
-	const auto WeaponCount = Math::max(pThis->WeaponCount, 0);
+	const auto weaponCount = Math::max(pThis->WeaponCount, 0);
 
-	while (int(n.size()) > WeaponCount)
-		n.erase(n.begin() + int(n.size()) - 1);
+	while (int(voice.size()) > weaponCount)
+	{
+		voice.erase(voice.begin() + int(voice.size()) - 1);
+	}
 
-	while (int(nE.size()) > WeaponCount)
-		nE.erase(nE.begin() + int(nE.size()) - 1);
+	while (int(voiceElite.size()) > weaponCount)
+	{
+		voiceElite.erase(voiceElite.begin() + int(voiceElite.size()) - 1);
+	}
 
 	char tempBuff[64];
-	for (int index = 0; index < WeaponCount; index++)
+	for (int index = 0; index < weaponCount; index++)
 	{
 		NullableIdx<VocClass> VoiceAttack;
 		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceWeapon%dAttack", index + 1);
@@ -347,17 +351,16 @@ void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* 
 		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceEliteWeapon%dAttack", index + 1);
 		VoiceAttack.Read(exINI, pSection, tempBuff);
 
-		if (int(n.size()) > index)
+		if (int(voice.size()) > index)
 		{
-			n[index] = VoiceAttack.Get(n[index]);
-			nE[index] = VoiceEliteAttack.Get(nE[index]);
+			voice[index] = VoiceAttack.Get(voice[index]);
+			voiceElite[index] = VoiceEliteAttack.Get(voiceElite[index]);
 		}
 		else
 		{
-			int voiceattack = VoiceAttack.Get(-1);
-
-			n.push_back(voiceattack);
-			nE.push_back(VoiceEliteAttack.Get(voiceattack));
+			const int voiceAttack = VoiceAttack.Get(-1);
+			voice.push_back(voiceAttack);
+			voiceElite.push_back(VoiceEliteAttack.Get(voiceAttack));
 		}
 	}
 }

@@ -80,34 +80,34 @@ DEFINE_HOOK(0x715B10, TechnoTypeClass_ReadINI_MultiWeapon2, 0x7)
 	return Continue;
 }
 
-int GetVoiceAttack(TechnoTypeClass* pType, int WeaponIndex, bool isElite, WeaponTypeClass* pWeaponType)
+int GetVoiceAttack(TechnoTypeClass* pType, int weaponIndex, bool isElite, WeaponTypeClass* pWeaponType)
 {
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	int VoiceAttack = -1;
+	int voiceAttack = -1;
 
 	if (pWeaponType && pWeaponType->Damage < 0)
 	{
-		VoiceAttack = pTypeExt->VoiceIFVRepair.Get();
+		voiceAttack = pTypeExt->VoiceIFVRepair;
 
-		if (VoiceAttack < 0)
-			VoiceAttack = !strcmp(pType->ID, "FV") ? RulesClass::Instance->VoiceIFVRepair : -1;
+		if (voiceAttack < 0)
+			voiceAttack = !strcmp(pType->ID, "FV") ? RulesClass::Instance->VoiceIFVRepair : -1; // It's hardcoded like this in vanilla
 
-		if (VoiceAttack >= 0)
-			return VoiceAttack;
+		if (voiceAttack >= 0)
+			return voiceAttack;
 	}
 
-	if (WeaponIndex >= 0 && int(pTypeExt->VoiceWeaponAttacks.size()) > WeaponIndex)
-		VoiceAttack = isElite ? pTypeExt->VoiceEliteWeaponAttacks[WeaponIndex] : pTypeExt->VoiceWeaponAttacks[WeaponIndex];
+	if (weaponIndex >= 0 && int(pTypeExt->VoiceWeaponAttacks.size()) > weaponIndex)
+		voiceAttack = isElite ? pTypeExt->VoiceEliteWeaponAttacks[weaponIndex] : pTypeExt->VoiceWeaponAttacks[weaponIndex];
 
-	if (VoiceAttack < 0)
+	if (voiceAttack < 0)
 	{
-		if (pTypeExt->IsSecondary(WeaponIndex))
-			VoiceAttack = isElite ? pType->VoiceSecondaryEliteWeaponAttack : pType->VoiceSecondaryWeaponAttack;
+		if (pTypeExt->IsSecondary(weaponIndex))
+			voiceAttack = isElite ? pType->VoiceSecondaryEliteWeaponAttack : pType->VoiceSecondaryWeaponAttack;
 		else
-			VoiceAttack = isElite ? pType->VoicePrimaryEliteWeaponAttack : pType->VoicePrimaryWeaponAttack;
+			voiceAttack = isElite ? pType->VoicePrimaryEliteWeaponAttack : pType->VoicePrimaryWeaponAttack;
 	}
 
-	return VoiceAttack;
+	return voiceAttack;
 }
 
 DEFINE_HOOK(0x7090A0, TechnoClass_VoiceAttack, 0x7)
@@ -116,21 +116,21 @@ DEFINE_HOOK(0x7090A0, TechnoClass_VoiceAttack, 0x7)
 	GET_STACK(AbstractClass*, pTarget, 0x4);
 
 	const auto pType = pThis->GetTechnoType();
-	const int WeaponIndex = pThis->SelectWeapon(pTarget);
-	int VoiceAttack = GetVoiceAttack(pType, WeaponIndex, pThis->Veterancy.IsElite(), pThis->GetWeapon(WeaponIndex)->WeaponType);
+	const int weaponIndex = pThis->SelectWeapon(pTarget);
+	const int voiceAttack = GetVoiceAttack(pType, weaponIndex, pThis->Veterancy.IsElite(), pThis->GetWeapon(weaponIndex)->WeaponType);
 
-	if (VoiceAttack >= 0)
+	if (voiceAttack >= 0)
 	{
-		pThis->QueueVoice(VoiceAttack);
+		pThis->QueueVoice(voiceAttack);
 		return 0x7091C7;
 	}
 
-	const auto& Lists = pType->VoiceAttack;
+	const auto& voiceList = pType->VoiceAttack;
 
-	if (Lists.Count > 0)
+	if (voiceList.Count > 0)
 	{
-		int idx = Randomizer::Global.RandomRanged(0, Lists.Count - 1);
-		pThis->QueueVoice(Lists[idx]);
+		const int idx = Randomizer::Global.RandomRanged(0, voiceList.Count - 1);
+		pThis->QueueVoice(voiceList[idx]);
 	}
 
 	return 0x7091C7;
