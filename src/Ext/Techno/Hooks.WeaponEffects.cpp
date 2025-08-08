@@ -214,10 +214,11 @@ DEFINE_HOOK(0x62B8BC, ParticleClass_CTOR_CoordAdjust, 0x6)
 	enum { SkipCoordAdjust = 0x62B8CB };
 
 	GET(ParticleClass*, pThis, ESI);
+	const auto pParticleSys = pThis->ParticleSystem;
 
-	if (pThis->ParticleSystem)
+	if (pParticleSys && pParticleSys->Type)
 	{
-		const auto behavesLike = pThis->ParticleSystem->Type->BehavesLike;
+		const auto behavesLike = pParticleSys->Type->BehavesLike;
 
 		if (behavesLike == BehavesLike::Railgun || behavesLike == BehavesLike::Fire)
 			return SkipCoordAdjust;
