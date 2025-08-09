@@ -549,37 +549,39 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_point.Y += 1;
 
 	if (!pType->UseTurretShadow)
-	if (uTypeExt->ShadowIndices.empty())
 	{
-		if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
-			pThis->DrawVoxelShadow(
-				main_vxl,
-				pType->ShadowIndex,
-				vxl_index_key,
-				&pType->VoxelShadowCache,
-				bnd,
-				&why,
-				&mtx,
-				true,
-				surface,
-				shadow_point
-			);
-	}
-	else
-	{
-		for (auto& [index, _] : uTypeExt->ShadowIndices)
-			pThis->DrawVoxelShadow(
-				main_vxl,
-				index,
-				index == pType->ShadowIndex ? vxl_index_key : VoxelIndexKey(-1),
-				&pType->VoxelShadowCache,
-				bnd,
-				&why,
-				&mtx,
-				index == pType->ShadowIndex,
-				surface,
-				shadow_point
-			);
+		if (uTypeExt->ShadowIndices.empty())
+		{
+			if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
+				pThis->DrawVoxelShadow(
+					main_vxl,
+					pType->ShadowIndex,
+					vxl_index_key,
+					&pType->VoxelShadowCache,
+					bnd,
+					&why,
+					&mtx,
+					true,
+					surface,
+					shadow_point
+				);
+		}
+		else
+		{
+			for (auto& [index, _] : uTypeExt->ShadowIndices)
+				pThis->DrawVoxelShadow(
+					main_vxl,
+					index,
+					index == pType->ShadowIndex ? vxl_index_key : VoxelIndexKey(-1),
+					&pType->VoxelShadowCache,
+					bnd,
+					&why,
+					&mtx,
+					index == pType->ShadowIndex,
+					surface,
+					shadow_point
+				);
+		}
 	}
 
 	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
@@ -635,12 +637,15 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	if (!pType->UseTurretShadow)
 	{
 		if (haveBar)
+		{
 			cache = nullptr;
+		}
 		else
-			cache = tur != &pType->TurretVoxel ?
-			nullptr // man what can I say, you are fucked, for now
-			: reinterpret_cast<decltype(cache)>(&pType->VoxelTurretBarrelCache) // excuse me
-			;
+		{
+			cache = tur != &pType->TurretVoxel
+				? nullptr // man what can I say, you are fucked, for now
+				: reinterpret_cast<decltype(cache)>(&pType->VoxelTurretBarrelCache); // excuse me
+		}
 	}
 
 	pThis->DrawVoxelShadow(
@@ -656,7 +661,8 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		shadow_point
 	);
 
-	if (haveBar)// you are utterly fucked, for now
+	if (haveBar) // you are utterly fucked, for now
+	{
 		pThis->DrawVoxelShadow(
 			bar,
 			0,
@@ -669,6 +675,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			surface,
 			shadow_point
 		);
+	}
 
 	return SkipDrawing;
 }

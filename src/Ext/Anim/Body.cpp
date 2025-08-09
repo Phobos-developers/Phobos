@@ -242,9 +242,9 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		{
 			auto const lastIndex = (splashAnims.size() - 1);
 			auto const defaultIndex = isMeteor ? lastIndex : 0;
-			auto const animIndex = splashAnimsPickRandom ?
-				ScenarioClass::Instance->Random.RandomRanged(0, lastIndex) : defaultIndex;
-
+			auto const animIndex = splashAnimsPickRandom
+				? ScenarioClass::Instance->Random.RandomRanged(0, lastIndex)
+				: defaultIndex;
 			pSplashAnimToUse = splashAnims.at(animIndex);
 		}
 	}

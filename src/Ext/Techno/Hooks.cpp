@@ -580,8 +580,9 @@ DEFINE_HOOK(0x4DEAEE, FootClass_IronCurtain_Organics, 0x6)
 		return MakeInvulnerable;
 
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const IronCurtainEffect icEffect = !isForceShield ? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics) :
-		pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
+	const IronCurtainEffect icEffect = !isForceShield
+		? pTypeExt->IronCurtain_Effect.Get(RulesExt::Global()->IronCurtain_EffectOnOrganics)
+		: pTypeExt->ForceShield_Effect.Get(RulesExt::Global()->ForceShield_EffectOnOrganics);
 
 	switch (icEffect)
 	{
@@ -819,6 +820,17 @@ DEFINE_HOOK(0x62A0AA, ParasiteClass_AI_CullingTarget, 0x5)
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 
 	return EnumFunctions::IsTechnoEligible(pThis->Victim, pWHExt->Parasite_CullingTarget) ? ExecuteCulling : CannotCulling;
+}
+
+DEFINE_HOOK(0x6298CC, ParasiteClass_AI_GrippleAnim, 0x5)
+{
+	enum { SkipGameCode = 0x6298D6 };
+
+	GET_STACK(WarheadTypeClass*, pWarhead, STACK_OFFSET(0x68, -0x4C));
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWarhead);
+
+	R->EAX(pWHExt->Parasite_GrappleAnim.Get(RulesExt::Global()->Parasite_GrappleAnim.Get(AnimTypeClass::FindIndex("SQDG"))));
+	return SkipGameCode;
 }
 
 #pragma region RadarDrawing

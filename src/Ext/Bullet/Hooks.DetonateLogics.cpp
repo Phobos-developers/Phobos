@@ -73,9 +73,9 @@ DEFINE_HOOK(0x4690C1, BulletClass_Logics_DetonateOnAllMapObjects, 0x8)
 
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pThis->WH);
 
-	if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects &&
-		pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None &&
-		pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
+	if (pWHExt->DetonateOnAllMapObjects && !pWHExt->WasDetonatedOnAllMapObjects
+		&& pWHExt->DetonateOnAllMapObjects_AffectTargets != AffectedTarget::None
+		&& pWHExt->DetonateOnAllMapObjects_AffectHouses != AffectedHouse::None)
 	{
 		pWHExt->WasDetonatedOnAllMapObjects = true;
 		auto const originalLocation = pThis->Location;
@@ -400,7 +400,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			if (isFull)
 				WarheadTypeExt::DetonateAt(pWH, *coords, pTechno, damage, pOwner, pThis->Target);
 			else
-				WarheadTypeExt::ExtMap.Find(pWH)->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
+				pWHExt->DamageAreaWithTarget(*coords, damage, pTechno, pWH, true, pOwner, pTarget);
 		}
 	}
 
@@ -414,7 +414,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 			int damage = pWeapon->Damage;
 
 			if (pTypeExt->ReturnWeapon_ApplyFirepowerMult)
-				damage = static_cast<int>(damage * pTechno->FirepowerMultiplier * TechnoExt::ExtMap.Find(pTechno)->AE.FirepowerMultiplier);
+				damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pTechno));
 
 			if (BulletClass* pBullet = pWeapon->Projectile->CreateBullet(pTechno, pTechno,
 				damage, pWeapon->Warhead, pWeapon->Speed, pWeapon->Bright))
@@ -585,8 +585,8 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 				if (pTechno->IsInPlayfield && pTechno->IsOnMap && pTechno->IsAlive && pTechno->Health > 0 && !pTechno->InLimbo
 					&& (retargetSelf || pTechno != pSource))
 				{
-					if ((isAA || !pTechno->IsInAir()) &&
-						IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
+					if ((isAA || !pTechno->IsInAir())
+						&& IsAllowedSplitsTarget(pSource, pOwner, pWeapon, pTechno, useWeaponTargeting))
 					{
 						targets.AddItem(pTechno);
 					}
@@ -611,7 +611,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		int damage = pWeapon->Damage;
 
 		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pSource)
-			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
+			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
 
 		// Cache all pointer variables before the loop
 		auto const pWH = pWeapon->Warhead;
