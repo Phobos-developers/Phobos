@@ -2075,6 +2075,16 @@ FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
 ```
 
+### Vehicle disguise to vehicle
+
+- Now you can make vehicle disguise to other vehicles, like spy.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                           ; VehicleType
+DefaultVehicleDisguise=             ; vehicle type
+```
+
 ## Warheads
 
 ```{hint}
