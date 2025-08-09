@@ -2037,14 +2037,19 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
-### Customizing parasite culling targets
+### Customizing parasite
 
 - Now you can specify which targets the parasite will culling them.
+- Squid grapple anim is hardcoded to use `SQDG` in vanilla, Now you can choose it.
 
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+Parasite.GrappleAnim=             ; animation
+
 [SOMEWARHEAD]                     ; WarheadType
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=             ; animation
 ```
 
 ### Delay automatic attack on the controlled unit
