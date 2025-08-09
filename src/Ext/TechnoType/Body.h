@@ -232,6 +232,7 @@ public:
 		Nullable<double> CrushForwardTiltPerFrame;
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
+		Valueable<bool> SkipCrushSlowdown;
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -323,8 +324,8 @@ public:
 
 		Nullable<bool> AllowAirstrike;
 
-		Nullable<UnitTypeClass*> Image_ConditionYellow;
-		Nullable<UnitTypeClass*> Image_ConditionRed;
+		Nullable<TechnoTypeClass*> Image_ConditionYellow;
+		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
 
@@ -416,6 +417,10 @@ public:
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
 
+		ValueableIdx<VocClass> VoiceIFVRepair;
+		ValueableVector<int> VoiceWeaponAttacks;
+		ValueableVector<int> VoiceEliteWeaponAttacks;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -453,7 +458,7 @@ public:
 			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
-			, ShieldType {}
+			, ShieldType { nullptr }
 			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
@@ -615,6 +620,7 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+			, SkipCrushSlowdown { false }
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
@@ -781,11 +787,15 @@ public:
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
 			, ReadMultiWeapon { false }
+
+			, VoiceIFVRepair { -1 }
+			, VoiceWeaponAttacks {}
+			, VoiceEliteWeaponAttacks {}
 		{ }
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override;
+		virtual void Initialize() override { }
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
@@ -809,7 +819,7 @@ public:
 		void Serialize(T& Stm);
 
 		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
-
+		void ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE);
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>

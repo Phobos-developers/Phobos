@@ -21,6 +21,11 @@ public:
 	Valueable<bool> CSF_Background;
 	Valueable<BannerNumberType> CSF_VariableFormat;
 
+	//Duration
+	Valueable<int> Duration;
+	Valueable<int> Delay;
+	Valueable<bool> Shape_RefreshAfterDelay;
+
 	BannerTypeClass(const char* const pTitle) : Enumerable<BannerTypeClass>(pTitle)
 		, PCX { }
 		, Shape { }
@@ -29,6 +34,9 @@ public:
 		, CSF_Color { }
 		, CSF_Background { false }
 		, CSF_VariableFormat { BannerNumberType::None }
+		, Duration { -1 }
+		, Delay { -1 }
+		, Shape_RefreshAfterDelay { false }
 	{ }
 
 	virtual void LoadFromINI(CCINIClass* pINI);

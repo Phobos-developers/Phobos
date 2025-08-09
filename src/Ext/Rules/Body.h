@@ -132,6 +132,7 @@ public:
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
 		Valueable<ColorStruct> AirstrikeLineColor;
+		Valueable<int> AirstrikeLineZAdjust;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -175,6 +176,8 @@ public:
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
+		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -242,8 +245,10 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
-		Valueable<int> PenetratesTransport_Level;
-		
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+    
+    Valueable<int> PenetratesTransport_Level;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
@@ -340,6 +345,7 @@ public:
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
 			, AirstrikeLineColor { { 255, 0, 0 } }
+			, AirstrikeLineZAdjust { 0 }
 			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
@@ -379,6 +385,8 @@ public:
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
+			, DamageOwnerMultiplier_NotAffectsEnemies {}
+			, DamageAlliesMultiplier_NotAffectsEnemies {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -440,7 +448,9 @@ public:
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
 
-			, PenetratesTransport_Level { 10 }
+			, Parasite_GrappleAnim {}
+    
+      , PenetratesTransport_Level { 10 }
 		{ }
 
 		virtual ~ExtData() = default;

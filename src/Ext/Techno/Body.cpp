@@ -38,7 +38,7 @@ TechnoExt::ExtData::~ExtData()
 	if (this->AnimRefCount > 0)
 		AnimExt::InvalidateTechnoPointers(pThis);
 
-	if (this->TypeExtData->Harvester_Counted)
+	if (pTypeExt->Harvester_Counted)
 	{
 		auto& vec = HouseExt::ExtMap.Find(pThis->Owner)->OwnedCountedHarvesters;
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
@@ -126,7 +126,7 @@ bool TechnoExt::IsHarvesting(TechnoClass* pThis)
 
 bool TechnoExt::HasAvailableDock(TechnoClass* pThis)
 {
-	for (auto pBld : pThis->GetTechnoType()->Dock)
+	for (auto const pBld : pThis->GetTechnoType()->Dock)
 	{
 		if (pThis->Owner->CountOwnedAndPresent(pBld))
 			return true;
@@ -139,7 +139,7 @@ bool TechnoExt::HasRadioLinkWithDock(TechnoClass* pThis)
 {
 	if (pThis->HasAnyLink())
 	{
-		auto const pLink = abstract_cast<BuildingClass*>(pThis->GetNthLink(0));
+		auto const pLink = abstract_cast<BuildingClass*, true>(pThis->GetNthLink(0));
 
 		if (pLink && pThis->GetTechnoType()->Dock.FindItemIndex(pLink->Type) >= 0)
 			return true;
@@ -155,8 +155,9 @@ void TechnoExt::SyncInvulnerability(TechnoClass* pFrom, TechnoClass* pTo)
 	{
 		const auto pTypeExt = TechnoExt::ExtMap.Find(pFrom)->TypeExtData;
 		const bool isForceShielded = pFrom->ForceShielded;
-		const bool allowSyncing = !isForceShielded ? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy) :
-			pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
+		const bool allowSyncing = !isForceShielded
+			? pTypeExt->IronCurtain_KeptOnDeploy.Get(RulesExt::Global()->IronCurtain_KeptOnDeploy)
+			: pTypeExt->ForceShield_KeptOnDeploy.Get(RulesExt::Global()->ForceShield_KeptOnDeploy);
 
 		if (allowSyncing)
 		{
@@ -183,6 +184,12 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 
 	return pThis->SpeedMultiplier * houseMultiplier * pExt->AE.SpeedMultiplier *
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
+}
+
+double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
+{
+	return pThis->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
+		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
 }
 
 CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
@@ -471,6 +478,7 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 {
 	unsigned int foundCount = 0;
 	unsigned int typeCounter = 1;
+	const bool checkSource = ignoreSameSource && pInvoker && pSource;
 
 	for (auto const& type : attachEffectTypes)
 	{
@@ -478,15 +486,15 @@ bool TechnoExt::ExtData::HasAttachedEffects(std::vector<AttachEffectTypeClass*> 
 		{
 			if (attachEffect->GetType() == type && attachEffect->IsActive())
 			{
-				if (ignoreSameSource && pInvoker && pSource && attachEffect->IsFromSource(pInvoker, pSource))
+				if (checkSource && attachEffect->IsFromSource(pInvoker, pSource))
 					continue;
 
-				unsigned int minSize = minCounts ? minCounts->size() : 0;
-				unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
+				const unsigned int minSize = minCounts ? minCounts->size() : 0;
+				const unsigned int maxSize = maxCounts ? maxCounts->size() : 0;
 
 				if (type->Cumulative && (minSize > 0 || maxSize > 0))
 				{
-					int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
+					const int cumulativeCount = this->GetAttachedEffectCumulativeCount(type, ignoreSameSource, pInvoker, pSource);
 
 					if (minSize > 0)
 					{
@@ -552,47 +560,76 @@ int TechnoExt::ExtData::GetAttachedEffectCumulativeCount(AttachEffectTypeClass* 
 	return foundCount;
 }
 
-UnitTypeClass* TechnoExt::ExtData::GetUnitTypeExtra() const
+UnitTypeClass* TechnoExt::GetUnitTypeExtra(UnitClass* pUnit)
 {
-	if (auto const pUnit = abstract_cast<UnitClass*, true>(this->OwnerObject()))
+	if (pUnit->IsGreenHP())
 	{
-		if (pUnit->IsRedHP())
-		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+		return nullptr;
+	}
+	else if (pUnit->IsYellowHP())
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-			{
-				if (auto const imageRed = pData->WaterImage_ConditionRed)
-					return imageRed;
-				else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-					return imageYellow;
-			}
-			else if (auto const imageRed = pData->Image_ConditionRed)
-			{
-				return imageRed;
-			}
-			else if (auto const imageYellow = pData->Image_ConditionYellow)
-			{
+		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+		{
+			if (auto const imageYellow = pData->WaterImage_ConditionYellow)
 				return imageYellow;
-			}
 		}
-		else if (pUnit->IsYellowHP())
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
 		{
-			auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+			return abstract_cast<UnitTypeClass*, true>(imageYellow);
+		}
+	}
+	else
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pUnit->Type);
 
-			if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
-			{
-				if (auto const imageYellow = pData->WaterImage_ConditionYellow)
-					return imageYellow;
-			}
-			else if (auto const imageYellow = pData->Image_ConditionYellow)
-			{
+		if (pUnit->GetCell()->LandType == LandType::Water && !pUnit->OnBridge)
+		{
+			if (auto const imageRed = pData->WaterImage_ConditionRed)
+				return imageRed;
+			else if (auto const imageYellow = pData->WaterImage_ConditionYellow)
 				return imageYellow;
-			}
+		}
+		else if (auto const imageRed = pData->Image_ConditionRed)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageRed);
+		}
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+		{
+			return abstract_cast<UnitTypeClass*, true>(imageYellow);
 		}
 	}
 
 	return nullptr;
+}
+
+AircraftTypeClass* TechnoExt::GetAircraftTypeExtra(AircraftClass* pAircraft)
+{
+	if (pAircraft->IsGreenHP())
+	{
+		return pAircraft->Type;
+	}
+	else if (pAircraft->IsYellowHP())
+	{
+		auto const pData = TechnoTypeExt::ExtMap.Find(pAircraft->Type);
+
+		if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+	else
+	{
+		auto const pType = pAircraft->Type;
+		auto const pData = TechnoTypeExt::ExtMap.Find(pType);
+
+		if (auto const imageRed = pData->Image_ConditionRed)
+			return abstract_cast<AircraftTypeClass*, true>(imageRed);
+		else if (auto const imageYellow = pData->Image_ConditionYellow)
+			return abstract_cast<AircraftTypeClass*, true>(imageYellow);
+	}
+
+	return pAircraft->Type;
+
 }
 
 void TechnoExt::ExtData::ResetDelayedFireTimer()
