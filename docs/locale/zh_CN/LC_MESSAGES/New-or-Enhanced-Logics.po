@@ -6498,23 +6498,25 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:1709
 msgid "Multi VoiceAttack"
-msgstr ""
+msgstr "多武器的攻击指令音效"
 
 #: ../../New-or-Enhanced-Logics.md:1711
 msgid "Units can customize the attack voice that plays when using more weapons."
-msgstr ""
+msgstr "单位可以在使用更多武器时自定义各武器下达攻击指令时的音效。"
 
 #: ../../New-or-Enhanced-Logics.md:1712
 msgid ""
 "If you need to assign an attack-voice to `Weapon1`, simply set "
 "`VoiceWeapon1Attack`. The same applies to other weapons."
 msgstr ""
+"如果你需要为 `Weapon1` 分配攻击音效那么直接设置 `VoiceWeapon1Attack` 即可。其他武器同理。"
 
 #: ../../New-or-Enhanced-Logics.md:1713
 msgid ""
 "`VoiceEliteWeaponNAttack` can also be used to specify attack voices for "
 "`EliteWeaponN`. The default is `VoiceWeaponNAttack`."
 msgstr ""
+"也可使用 `VoiceEliteWeaponNAttack` 指定用于 `EliteWeaponN` 的音效。默认使用 `VoiceWeaponNAttack`。"
 
 #: ../../New-or-Enhanced-Logics.md:1716
 msgid ""

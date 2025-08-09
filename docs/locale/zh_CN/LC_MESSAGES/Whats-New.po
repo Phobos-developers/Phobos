@@ -1832,9 +1832,10 @@ msgstr ""
 
 #: ../../Whats-New.md:428
 msgid ""
-"Units can customize the attack voice that plays when using more weapons "
+"[Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) "
 "(by FlyStar)"
 msgstr ""
+"[单位可以在使用更多武器时自定义各武器下达攻击指令时的音效](New-or-Enhanced-Logics.md#multi-voiceattack)（by FlyStar）"
 
 #: ../../Whats-New.md:429
 msgid "Customize squid grapple animation (by NetsuNegi)"

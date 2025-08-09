@@ -1529,7 +1529,7 @@ msgstr "修复了当被选中的单位武器正在 CD 时可以无条件对目�
 
 #: ../../../CREDITS.md:387
 msgid "Units can customize the attack voice that plays when using more weapons"
-msgstr ""
+msgstr "单位可以在使用更多武器时自定义各武器下达攻击指令时的音效"
 
 #: ../../../CREDITS.md:388
 msgid "**NetsuNegi**:"
