@@ -676,7 +676,8 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 	const double fatalRate = this->PenetratesTransport_FatalRate * pTargetTypeExt->PenetratesTransport_FatalRateMultiplier;
 	const bool fatal = fatalRate > 0.0 && ScenarioClass::Instance->Random.RandomDouble() <= fatalRate;
 	const auto pTargetFoot = abstract_cast<FootClass*>(pTarget);
-	const int distance = static_cast<int>(coords.DistanceFrom(pTarget->GetCoords()));
+	const auto transporterCoords = pTarget->GetCoords();
+	const int distance = static_cast<int>(coords.DistanceFrom(transporterCoords));
 	const auto pWH = this->OwnerObject();
 	bool gunnerRemoved = false;
 
@@ -692,6 +693,8 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 				if (this->PenetratesTransport_Level > TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 				{
+					passenger->SetLocation(transporterCoords);
+
 					if (passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 					{
 						pTargetFoot->RemoveGunner(passenger);
@@ -713,6 +716,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 				if (this->PenetratesTransport_Level > TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 				{
+					passenger->SetLocation(transporterCoords);
 					int applyDamage = adjustedDamage;
 
 					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
@@ -740,6 +744,8 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 
 		if (this->PenetratesTransport_Level <= TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 			return;
+
+		passenger->SetLocation(transporterCoords);
 
 		if (fatal)
 		{
@@ -773,6 +779,6 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 		const int cleanSound = this->PenetratesTransport_CleanSound;
 
 		if (cleanSound != -1)
-			VocClass::PlayAt(cleanSound, coords);
+			VocClass::PlayAt(cleanSound, transporterCoords);
 	}
 }
