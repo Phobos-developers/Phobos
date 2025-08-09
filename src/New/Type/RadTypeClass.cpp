@@ -18,6 +18,9 @@ void RadTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
 
+	if (!pINI->GetSection(section))
+		return;
+
 	INI_EX exINI(pINI);
 
 	this->DurationMultiple.Read(exINI, section, "RadDurationMultiple");

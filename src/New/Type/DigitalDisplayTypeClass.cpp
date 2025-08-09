@@ -17,6 +17,9 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 {
 	const char* section = this->Name;
 
+	if (!pINI->GetSection(section))
+		return;
+
 	INI_EX exINI(pINI);
 
 	this->Text_Color.Read(exINI, section, "Text.Color.%s");
@@ -157,11 +160,12 @@ void DigitalDisplayTypeClass::DisplayShape(Point2D& position, int length, int va
 		}
 	}
 
-	Vector2D<int> spacing = (
-		Shape_Spacing.isset() ?
-		Shape_Spacing.Get() :
-		(isBuilding ? Vector2D<int> { 4, -2 } : Vector2D<int> { 4, 0 }) // default
-	);
+	Vector2D<int> spacing = (Shape_Spacing.isset()
+		? Shape_Spacing.Get()
+		: (isBuilding
+			? Vector2D<int> { 4, -2 }
+			: Vector2D<int> { 4, 0 })); // default
+
 	const int pipsHeight = hasShield ? 4 : 0;
 
 	if (AnchorType.Vertical == VerticalPosition::Top)

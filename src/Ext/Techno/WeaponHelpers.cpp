@@ -20,7 +20,6 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		return weaponIndexTwo;
 
 	auto const pWeaponTwo = pWeaponStructTwo->WeaponType;
-	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
 	auto const pSecondExt = WeaponTypeExt::ExtMap.Find(pWeaponTwo);
 
 	CellClass* pTargetCell = nullptr;
@@ -43,7 +42,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pSecondExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pSecondExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
-				|| !pSecondExt->IsHealthRatioEligible(pTargetTechno)
+				|| !pSecondExt->IsHealthInThreshold(pTargetTechno)
 				|| !pSecondExt->HasRequiredAttachedEffects(pTargetTechno, pThis))
 			{
 				return weaponIndexOne;
@@ -52,6 +51,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 	}
 
 	const bool secondIsAA = pTargetTechno && pTargetTechno->IsInAir() && pWeaponTwo->Projectile->AA;
+	auto const pFirstExt = WeaponTypeExt::ExtMap.Find(pWeaponStructOne->WeaponType);
 	const bool skipPrimaryPicking = pFirstExt->SkipWeaponPicking;
 	const bool firstAllowedAE = !skipPrimaryPicking && pFirstExt->HasRequiredAttachedEffects(pTargetTechno, pThis);
 
@@ -72,7 +72,7 @@ int TechnoExt::PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, A
 		{
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pFirstExt->CanTarget)
 				|| !EnumFunctions::CanTargetHouse(pFirstExt->CanTargetHouses, pThis->Owner, pTargetTechno->Owner)
-				|| !pFirstExt->IsHealthRatioEligible(pTargetTechno)
+				|| !pFirstExt->IsHealthInThreshold(pTargetTechno)
 				|| !firstAllowedAE)
 			{
 				return weaponIndexTwo;
@@ -207,14 +207,14 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 	else if (weaponIndex == -1)
 		return 0;
 
-	auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 	const bool aeForbidsPrimary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 	if (!pWeapon || (!pWeapon->Warhead->Wall && (!pWeapon->Warhead->Wood || pWallOverlayType->Armor != Armor::Wood)) || TechnoExt::CanFireNoAmmoWeapon(pThis, 1) || aeForbidsPrimary)
 	{
 		int weaponIndexSec = -1;
 		pWeapon = TechnoExt::GetCurrentWeapon(pThis, weaponIndexSec, true);
-		pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+		pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
 		const bool aeForbidsSecondary = pWeaponExt && !pWeaponExt->SkipWeaponPicking && pWeaponExt->AttachEffect_CheckOnFirer && !pWeaponExt->HasRequiredAttachedEffects(pThis, pThis);
 
 		if (pWeapon && (pWeapon->Warhead->Wall || (pWeapon->Warhead->Wood && pWallOverlayType->Armor == Armor::Wood))
@@ -231,7 +231,7 @@ int TechnoExt::GetWeaponIndexAgainstWall(TechnoClass* pThis, OverlayTypeClass* p
 
 void TechnoExt::ApplyKillWeapon(TechnoClass* pThis, TechnoClass* pSource, WarheadTypeClass* pWH)
 {
-	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	const bool hasFilters = pTypeExt->SuppressKillWeapons_Types.size() > 0;
 
@@ -257,15 +257,19 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 	auto const pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
-	const bool hasFilters = pWHExt->SuppressRevengeWeapons_Types.size() > 0;
+	auto const pThisOwner = pThis->Owner;
+	auto const pSourceOwner = pSource->Owner;
+	auto const& suppressType = pWHExt->SuppressRevengeWeapons_Types;
+	const bool suppress = pWHExt->SuppressRevengeWeapons;
+	const bool hasFilters = suppressType.size() > 0;
 
-	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+	if (pTypeExt->RevengeWeapon && EnumFunctions::CanTargetHouse(pTypeExt->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
 	{
-		if (!pWHExt->SuppressRevengeWeapons || (hasFilters && !pWHExt->SuppressRevengeWeapons_Types.Contains(pTypeExt->RevengeWeapon)))
+		if (!suppress || (hasFilters && !suppressType.Contains(pTypeExt->RevengeWeapon)))
 			WeaponTypeExt::DetonateAt(pTypeExt->RevengeWeapon, pSource, pThis);
 	}
 
-	for (auto& attachEffect : pExt->AttachedEffects)
+	for (auto const& attachEffect : pExt->AttachedEffects)
 	{
 		if (!attachEffect->IsActive())
 			continue;
@@ -275,11 +279,20 @@ void TechnoExt::ApplyRevengeWeapon(TechnoClass* pThis, TechnoClass* pSource, War
 		if (!pType->RevengeWeapon)
 			continue;
 
-		if (pWHExt->SuppressRevengeWeapons && (!hasFilters || pWHExt->SuppressRevengeWeapons_Types.Contains(pType->RevengeWeapon)))
+		if (suppress && (!hasFilters || suppressType.Contains(pType->RevengeWeapon)))
 			continue;
 
-		if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThis->Owner, pSource->Owner))
+		if (pType->RevengeWeapon_UseInvokerAsOwner)
+		{
+			auto const pInvoker = attachEffect->GetInvoker();
+
+			if (pInvoker && EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pInvoker->Owner, pSourceOwner))
+				WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pInvoker);
+		}
+		else if (EnumFunctions::CanTargetHouse(pType->RevengeWeapon_AffectsHouses, pThisOwner, pSourceOwner))
+		{
 			WeaponTypeExt::DetonateAt(pType->RevengeWeapon, pSource, pThis);
+		}
 	}
 }
 
@@ -340,4 +353,149 @@ int TechnoExt::ExtData::ApplyForceWeaponInRange(AbstractClass* pTarget)
 	}
 
 	return forceWeaponIndex;
+}
+
+bool TechnoExt::MultiWeaponCanFire(TechnoClass* const pThis, AbstractClass* const pTarget, WeaponTypeClass* const pWeaponType)
+{
+	if (!pWeaponType || pWeaponType->NeverUse
+		|| (pThis->InOpenToppedTransport && !pWeaponType->FireInTransport))
+	{
+		return false;
+	}
+
+	const auto rtti = pTarget->WhatAmI();
+	const bool isBuilding = rtti == AbstractType::Building;
+	const auto pWH = pWeaponType->Warhead;
+	const auto pBulletType = pWeaponType->Projectile;
+
+	const auto pTechno = abstract_cast<TechnoClass*, true>(pTarget);
+	const bool isInAir = pTechno ? pTechno->IsInAir() : false;
+
+	const auto pOwner = pThis->Owner;
+	const auto pTechnoOwner = pTechno ? pTechno->Owner : nullptr;
+	const bool isAllies = pTechnoOwner ? pOwner->IsAlliedWith(pTechnoOwner) : false;
+
+	if (isInAir)
+	{
+		if (!pBulletType->AA)
+			return false;
+	}
+	else
+	{
+		if (BulletTypeExt::ExtMap.Find(pBulletType)->AAOnly.Get())
+		{
+			return false;
+		}
+		else if (pWH->ElectricAssault)
+		{
+			if (!isBuilding || !isAllies
+				|| !static_cast<BuildingClass*>(pTarget)->Type->Overpowerable)
+			{
+				return false;
+			}
+		}
+		else if (pWH->IsLocomotor)
+		{
+			if (isBuilding)
+				return false;
+		}
+	}
+
+	CellClass* pTargetCell = nullptr;
+
+	// Ignore target cell for airborne target technos.
+	if (!pTechno || !isInAir)
+	{
+		if (auto const pObject = abstract_cast<ObjectClass*, true>(pTarget))
+			pTargetCell = pObject->GetCell();
+		else if (auto const pCell = abstract_cast<CellClass*, true>(pTarget))
+			pTargetCell = pCell;
+	}
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeaponType);
+
+	if (!pWeaponExt->SkipWeaponPicking)
+	{
+		if (pTargetCell && !EnumFunctions::IsCellEligible(pTargetCell, pWeaponExt->CanTarget, true, true))
+			return false;
+
+		if (pTechno)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTechno, pWeaponExt->CanTarget)
+				|| !EnumFunctions::CanTargetHouse(pWeaponExt->CanTargetHouses, pOwner, pTechnoOwner)
+				|| !pWeaponExt->IsHealthInThreshold(pTechno)
+				|| !pWeaponExt->HasRequiredAttachedEffects(pTechno, pThis))
+			{
+				return false;
+			}
+		}
+	}
+
+	if (pTechno)
+	{
+		if (pTechno->AttachedBomb ? pWH->IvanBomb : pWH->BombDisarm)
+			return false;
+
+		if (!pWH->Temporal && pTechno->BeingWarpedOut)
+			return false;
+
+		if (pWH->Parasite
+			&& (isBuilding || static_cast<FootClass*>(pTechno)->ParasiteEatingMe))
+		{
+			return false;
+		}
+
+		const auto pTechnoType = pTechno->GetTechnoType();
+
+		if (pWH->MindControl
+			&& (pTechnoType->ImmuneToPsionics || pTechno->IsMindControlled() || pOwner == pTechnoOwner))
+		{
+			return false;
+		}
+
+		if (pWeaponType->DrainWeapon
+			&& (!pTechnoType->Drainable || pTechno->DrainingMe || isAllies))
+		{
+			return false;
+		}
+
+		if (pWH->Airstrike)
+		{
+			if (!EnumFunctions::IsTechnoEligible(pTechno, WarheadTypeExt::ExtMap.Find(pWH)->AirstrikeTargets))
+				return false;
+
+			const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType);
+
+			if (pTechno->AbstractFlags & AbstractFlags::Foot)
+			{
+				if (!pTechnoTypeExt->AllowAirstrike.Get(true))
+					return false;
+			}
+			else if (pTechnoTypeExt->AllowAirstrike.Get(static_cast<BuildingTypeClass*>(pTechnoType)->CanC4)
+				&& (!pTechnoType->ResourceDestination || !pTechnoType->ResourceGatherer))
+			{
+				return false;
+			}
+		}
+
+		if (GeneralUtils::GetWarheadVersusArmor(pWH, pTechno, pTechnoType) == 0.0)
+			return false;
+	}
+	else if (rtti == AbstractType::Cell)
+	{
+		if (pTargetCell->OverlayTypeIndex >= 0)
+		{
+			const auto pOverlayType = OverlayTypeClass::Array.GetItem(pTargetCell->OverlayTypeIndex);
+
+			if (pOverlayType->Wall && !pWH->Wall && (!pWH->Wood || pOverlayType->Armor != Armor::Wood))
+				return false;
+		}
+	}
+	else if (rtti == AbstractType::Terrain)
+	{
+		if (!pWH->Wood)
+			return false;
+	}
+
+	return true;
 }

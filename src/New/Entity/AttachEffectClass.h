@@ -2,6 +2,8 @@
 
 #include <New/Type/AttachEffectTypeClass.h>
 
+class LaserTrailClass;
+
 class AttachEffectClass
 {
 public:
@@ -32,6 +34,7 @@ public:
 	bool IsActive() const;
 	bool IsActiveIgnorePowered() const;
 	bool IsFromSource(TechnoClass* pInvoker, AbstractClass* pSource) const;
+	TechnoClass* GetInvoker() const;
 
 	static void PointerGotInvalid(void* ptr, bool removed);
 	bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
@@ -78,6 +81,7 @@ private:
 	int LastDiscardCheckFrame;
 	bool LastDiscardCheckValue;
 	bool LastActiveStat;
+	LaserTrailClass* LaserTrail;
 
 public:
 	bool HasCumulativeAnim;

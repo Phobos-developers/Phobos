@@ -7,12 +7,12 @@ bool CaptureManagerExt::CanCapture(CaptureManagerClass* pManager, TechnoClass* p
 	if (pManager->MaxControlNodes == 1)
 		return pManager->CanCapture(pTarget);
 
-	auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType());
+	const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pManager->Owner)->TypeExtData;
 	if (pTechnoTypeExt->MultiMindControl_ReleaseVictim)
 	{
 		// I hate Ares' completely rewritten things - secsome
 		pManager->MaxControlNodes += 1;
-		bool result = pManager->CanCapture(pTarget);
+		const bool result = pManager->CanCapture(pTarget);
 		pManager->MaxControlNodes -= 1;
 		return result;
 	}
@@ -24,30 +24,30 @@ bool CaptureManagerExt::FreeUnit(CaptureManagerClass* pManager, TechnoClass* pTa
 {
 	if (pTarget)
 	{
+		auto& mindControlRingAnim = pTarget->MindControlRingAnim;
+		int nSound = pTarget->GetTechnoType()->MindClearedSound;
+		auto const coord = pTarget->GetCoords();
+
+		if (nSound == -1)
+			nSound = RulesClass::Instance->MindClearedSound;
+
 		for (int i = pManager->ControlNodes.Count - 1; i >= 0; --i)
 		{
 			const auto pNode = pManager->ControlNodes[i];
 			if (pTarget == pNode->Unit)
 			{
-				if (pTarget->MindControlRingAnim)
+				if (mindControlRingAnim)
 				{
-					pTarget->MindControlRingAnim->UnInit();
-					pTarget->MindControlRingAnim = nullptr;
+					mindControlRingAnim->UnInit();
+					mindControlRingAnim = nullptr;
 				}
 
-				if (!silent)
-				{
-					int nSound = pTarget->GetTechnoType()->MindClearedSound;
-
-					if (nSound == -1)
-						nSound = RulesClass::Instance->MindClearedSound;
-					if (nSound != -1)
-						VocClass::PlayIndexAtPos(nSound, pTarget->GetCoords());
-				}
+				if (!silent && nSound != -1)
+					VocClass::PlayIndexAtPos(nSound, coord);
 
 				// Fix : Player defeated should not get this unit.
-				auto pOriginOwner = pNode->OriginalOwner->Defeated ?
-					HouseClass::FindNeutral() : pNode->OriginalOwner;
+				const auto pOriginOwner = pNode->OriginalOwner->Defeated
+					? HouseClass::FindNeutral() : pNode->OriginalOwner;
 
 				TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = 0;
 
@@ -84,7 +84,7 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 					CaptureManagerExt::FreeUnit(pManager, pManager->ControlNodes[0]->Unit);
 		}
 
-		auto pControlNode = GameCreate<ControlNode>();
+		auto const pControlNode = GameCreate<ControlNode>();
 		pControlNode->OriginalOwner = pTarget->Owner;
 		pControlNode->Unit = pTarget;
 
@@ -94,9 +94,11 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 		if (threatDelay > 0)
 			TechnoExt::ExtMap.Find(pTarget)->BeControlledThreatFrame = Unsorted::CurrentFrame + threatDelay;
 
-		if (pTarget->SetOwningHouse(pManager->Owner->Owner, !silent))
+		auto const pOwner = pManager->Owner;
+
+		if (pTarget->SetOwningHouse(pOwner->Owner, !silent))
 		{
-			pTarget->MindControlledBy = pManager->Owner;
+			pTarget->MindControlledBy = pOwner;
 
 			pManager->DecideUnitFate(pTarget);
 
@@ -109,9 +111,9 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, TechnoClass* 
 			else
 				location.Z += pType->MindControlRingOffset;
 
-			if (auto const pAnimType = pControlledAnimType)
+			if (pControlledAnimType)
 			{
-				auto const pAnim = GameCreate<AnimClass>(pAnimType, location);
+				auto const pAnim = GameCreate<AnimClass>(pControlledAnimType, location);
 
 				pTarget->MindControlRingAnim = pAnim;
 				pAnim->SetOwnerObject(pTarget);
@@ -131,11 +133,8 @@ bool CaptureManagerExt::CaptureUnit(CaptureManagerClass* pManager, AbstractClass
 {
 	if (const auto pTarget = generic_cast<TechnoClass*>(pTechno))
 	{
-		bool bRemoveFirst = false;
-		if (auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pManager->Owner->GetTechnoType()))
-			bRemoveFirst = pTechnoTypeExt->MultiMindControl_ReleaseVictim;
-
-		return CaptureManagerExt::CaptureUnit(pManager, pTarget, bRemoveFirst, pControlledAnimType, false, threatDelay);
+		const auto pTechnoTypeExt = TechnoExt::ExtMap.Find(pManager->Owner)->TypeExtData;
+		return CaptureManagerExt::CaptureUnit(pManager, pTarget, pTechnoTypeExt->MultiMindControl_ReleaseVictim, pControlledAnimType, false, threatDelay);
 	}
 
 	return false;
