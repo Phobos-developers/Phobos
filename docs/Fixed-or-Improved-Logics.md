@@ -2031,12 +2031,12 @@ DecloakDamagedTargets=true  ; boolean
 
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+Parasite.GrappleAnim=             ; animation
+
 [SOMEWARHEAD]                     ; WarheadType
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
-Parasite.GrappleAnim=               ; animation
-
-[AudioVisual]
-Parasite.GrappleAnim=               ; animation
+Parasite.GrappleAnim=             ; animation
 ```
 
 ### Delay automatic attack on the controlled unit
