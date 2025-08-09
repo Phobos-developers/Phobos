@@ -4,6 +4,7 @@
 #include <PreviewClass.h>
 #include <Surface.h>
 #include <ThemeClass.h>
+#include <FPSCounter.h>
 
 #include <Ext/House/Body.h>
 #include <Ext/Side/Body.h>
@@ -427,4 +428,11 @@ DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
 	R->EAX(index);
 
 	return 0x69A325;
+}
+
+DEFINE_HOOK(0x4F4480, GScreenClass_Render_FrameSkip, 0x8)
+{
+	enum { retn = 0x4F45A8 };
+	int delay = Phobos::Config::SkipFrameDelay;
+	return delay && FPSCounter::CurrentFrameRate < RulesClass::Instance->DetailMinFrameRateNormal && !(Unsorted::CurrentFrame % delay) ? retn : 0;
 }
