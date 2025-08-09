@@ -697,7 +697,7 @@ BuildingWaypoints=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[General]                     ; InfantryType
+[General]
 InfantryAutoDeploy=false      ; boolean
 
 [SOMEINFANTRY]                ; InfantryType
