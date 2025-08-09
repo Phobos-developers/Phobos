@@ -277,19 +277,25 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	// Now load units into transports
 	for (auto pTransport : transports)
 	{
+		const auto pTransportType = pTransport->GetTechnoType();
+		const double sizeLimit = pTransportType->SizeLimit;
+		const int transportSize = pTransportType->Passengers - pTransport->Passengers.GetTotalSize();
+
 		for (auto pUnit = pTeam->FirstUnit; pUnit; pUnit = pUnit->NextTeamMember)
 		{
-			auto const pTransportType = pTransport->GetTechnoType();
-			auto const pUnitType = pUnit->GetTechnoType();
+			const auto pUnitType = pUnit->GetTechnoType();
+			const auto unitHealth = pUnit->Health;
 
 			if (pTransport != pUnit
 				&& pUnitType->WhatAmI() != AbstractType::AircraftType
 				&& !pUnit->InLimbo && !pUnitType->ConsideredAircraft
-				&& pUnit->Health > 0)
+				&& unitHealth > 0)
 			{
-				if (pUnitType->Size > 0
-					&& pUnitType->Size <= pTransportType->SizeLimit
-					&& pUnitType->Size <= pTransportType->Passengers - pTransport->Passengers.GetTotalSize())
+				const double size = pUnitType->Size;
+
+				if (size > 0
+					&& size <= sizeLimit
+					&& size <= transportSize)
 				{
 					// If is still flying wait a bit more
 					if (pTransport->IsInAir())
@@ -317,7 +323,7 @@ void ScriptExt::LoadIntoTransports(TeamClass* pTeam)
 	}
 
 	auto const pExt = TeamExt::ExtMap.Find(pTeam);
-	FootClass* pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
+	auto const pLeaderUnit = ScriptExt::FindTheTeamLeader(pTeam);
 	pExt->TeamLeader = pLeaderUnit;
 
 	// This action finished
@@ -361,7 +367,11 @@ void ScriptExt::WaitUntilFullAmmoAction(TeamClass* pTeam)
 void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 {
 	FootClass* pLeaderUnit = nullptr;
-	int initialCountdown = pTeam->CurrentScript->Type->ScriptActions[pTeam->CurrentScript->CurrentMission].Argument;
+	const auto pScript = pTeam->CurrentScript;
+	const auto pScriptType = pScript->Type;
+	const auto& scriptActions = pScriptType->ScriptActions;
+	const auto currentMission = pScript->CurrentMission;
+	const auto initialCountdown = scriptActions[currentMission].Argument;
 	bool gatherUnits = false;
 	auto const pExt = TeamExt::ExtMap.Find(pTeam);
 
@@ -436,7 +446,9 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 		}
 
 		// The leader should stay calm & be the group's center
-		if (pLeaderUnit->Locomotor->Is_Moving_Now())
+		const auto pLeaderLocomotor = pLeaderUnit->Locomotor;
+
+		if (pLeaderLocomotor->Is_Moving_Now())
 			pLeaderUnit->SetDestination(nullptr, false);
 
 		pLeaderUnit->QueueMission(Mission::Guard, false);
@@ -446,18 +458,18 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 		{
 			if (!ScriptExt::IsUnitAvailable(pUnit, true))
 			{
-				auto pTypeUnit = pUnit->GetTechnoType();
-
 				if (pUnit == pLeaderUnit)
 				{
 					nUnits++;
 					continue;
 				}
 
+				const auto pType = pUnit->GetTechnoType();
+
 				// Aircraft case
-				if (pTypeUnit->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pTypeUnit->Ammo > 0)
+				if (pType->WhatAmI() == AbstractType::AircraftType && pUnit->Ammo <= 0 && pType->Ammo > 0)
 				{
-					auto pAircraft = static_cast<AircraftTypeClass*>(pTypeUnit);
+					const auto pAircraft = static_cast<AircraftTypeClass*>(pType);
 
 					if (pAircraft->AirportBound)
 					{
@@ -481,7 +493,7 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 				}
 				else
 				{
-					auto mission = pUnit->GetCurrentMission();
+					const auto mission = pUnit->GetCurrentMission();
 
 					// Is near of the leader, then protect the area
 					if (mission != Mission::Area_Guard || mission != Mission::Attack)
@@ -491,7 +503,6 @@ void ScriptExt::Mission_Gather_NearTheLeader(TeamClass* pTeam, int countdown)
 				}
 			}
 		}
-
 
 		if (nUnits >= 0
 			&& nUnits == nTogether
@@ -825,7 +836,7 @@ void ScriptExt::SkipNextAction(TeamClass* pTeam, int successPercentage)
 	if (successPercentage > 100)
 		successPercentage = 100;
 
-	int percentage = ScenarioClass::Instance->Random.RandomRanged(1, 100);
+	const int percentage = ScenarioClass::Instance->Random.RandomRanged(1, 100);
 
 	if (percentage <= successPercentage)
 	{
@@ -1187,12 +1198,12 @@ void ScriptExt::ChronoshiftTeamToTarget(TeamClass* pTeam, TechnoClass* pTeamLead
 	{
 		if (pSuperCSphere->IsPresent && 1.0 - RulesClass::Instance->AIMinorSuperReadyPercent < pSuperCSphere->RechargeTimer.GetTimeLeft() / pSuperCSphere->GetRechargeTime())
 		{
-			ScriptExt::Log(logTextBase, "ChronoSphere superweapon [%s] charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet", pSuperCSphere->Type->get_ID());
+			ScriptExt::Log(logTextBase, "ChronoSphere superweapon [%s] charge not at AIMinorSuperReadyPercent yet, not jumping to next line yet");
 			return;
 		}
 		else
 		{
-			ScriptExt::Log(logTextJump, "ChronoSphere superweapon [%s] is not available", pSuperCSphere->Type->get_ID());
+			ScriptExt::Log(logTextJump, "ChronoSphere superweapon [%s] is not available");
 			pTeam->StepCompleted = true;
 			return;
 		}

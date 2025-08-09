@@ -39,7 +39,7 @@ ShieldClass::ShieldClass(TechnoClass* pTechno, bool isAttached)
 {
 	this->UpdateType();
 	this->SetHP(this->Type->InitialStrength.Get(this->Type->Strength));
-	this->TechnoID = this->Techno->GetTechnoType();
+	this->TechnoID = pTechno->GetTechnoType();
 	ShieldClass::Array.emplace_back(this);
 }
 
@@ -146,13 +146,10 @@ void ShieldClass::SyncShieldToAnother(TechnoClass* pFrom, TechnoClass* pTo)
 
 bool ShieldClass::ShieldIsBrokenTEvent(ObjectClass* pAttached)
 {
-	if (auto pTechno = abstract_cast<TechnoClass*>(pAttached))
+	if (auto const pTechno = abstract_cast<TechnoClass*>(pAttached))
 	{
-		if (auto pExt = TechnoExt::ExtMap.Find(pTechno))
-		{
-			ShieldClass* pShield = pExt->Shield.get();
-			return !pShield || pShield->HP <= 0;
-		}
+		auto const pShield = TechnoExt::ExtMap.Find(pTechno)->Shield.get();
+		return !pShield || pShield->HP <= 0;
 	}
 
 	return false;
@@ -328,14 +325,16 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 
 void ShieldClass::ResponseAttack()
 {
-	if (this->Techno->Owner != HouseClass::CurrentPlayer)
+	const auto pTechno = this->Techno;
+
+	if (pTechno->Owner != HouseClass::CurrentPlayer)
 		return;
 
-	if (const auto pBld = abstract_cast<BuildingClass*, true>(this->Techno))
+	if (const auto pBld = abstract_cast<BuildingClass*, true>(pTechno))
 	{
-		this->Techno->Owner->BuildingUnderAttack(pBld);
+		pTechno->Owner->BuildingUnderAttack(pBld);
 	}
-	else if (const auto pUnit = abstract_cast<UnitClass*, true>(this->Techno))
+	else if (const auto pUnit = abstract_cast<UnitClass*, true>(pTechno))
 	{
 		if (pUnit->Type->Harvester)
 		{
@@ -351,13 +350,14 @@ void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
 	if (this->AreAnimsHidden)
 		return;
 
+	const auto pTechno = this->Techno;
 	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
 
 	if (pAnimType)
 	{
-		auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->GetCoords());
-		AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->GetCoords());
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
+		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
 	}
 }
 
@@ -428,16 +428,15 @@ void ShieldClass::AI_Temporal()
 
 void ShieldClass::AI()
 {
-	if (!this->Techno || this->Techno->InLimbo || this->Techno->IsImmobilized || this->Techno->Transporter)
+	auto const pTechno = this->Techno;
+
+	if (!pTechno || pTechno->InLimbo || pTechno->IsImmobilized || pTechno->Transporter)
 		return;
 
-	if (this->Techno->Health <= 0 || !this->Techno->IsAlive || this->Techno->IsSinking)
+	if (pTechno->Health <= 0 || !pTechno->IsAlive || pTechno->IsSinking)
 	{
-		if (auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno))
-		{
-			pTechnoExt->Shield = nullptr;
-			return;
-		}
+		TechnoExt::ExtMap.Find(pTechno)->Shield = nullptr;
+		return;
 	}
 
 	if (this->ConvertCheck())
@@ -463,14 +462,14 @@ void ShieldClass::AI()
 		this->SelfHealing();
 	}
 
-	double ratio = this->Techno->GetHealthPercentage();
+	const double ratio = pTechno->GetHealthPercentage();
 
 	if (!this->AreAnimsHidden)
 	{
 		if (GeneralUtils::HasHealthRatioThresholdChanged(LastTechnoHealthRatio, ratio))
 			UpdateIdleAnim();
 
-		if (!this->Temporal && this->Online && (this->HP > 0 && this->Techno->Health > 0))
+		if (!this->Temporal && this->Online && (this->HP > 0 && pTechno->Health > 0))
 			this->CreateAnim();
 	}
 
@@ -496,17 +495,18 @@ void ShieldClass::CloakCheck()
 
 void ShieldClass::EnabledByCheck()
 {
-	if (this->Type->SelfHealing_EnabledBy.empty())
+	auto const& enabledBy = this->Type->SelfHealing_EnabledBy;
+
+	if (enabledBy.empty())
 		return;
 
 	this->IsSelfHealingEnabled = false;
-	auto const pOwner = this->Techno->Owner;
 
-	for (auto const pBuilding : pOwner->Buildings)
+	for (auto const pBuilding : this->Techno->Owner->Buildings)
 	{
 		bool isActive = !(pBuilding->Deactivated || pBuilding->IsUnderEMP()) && pBuilding->IsPowerOnline();
 
-		if (this->Type->SelfHealing_EnabledBy.Contains(pBuilding->Type) && isActive)
+		if (enabledBy.Contains(pBuilding->Type) && isActive)
 		{
 			this->IsSelfHealingEnabled = true;
 			break;
@@ -531,7 +531,7 @@ void ShieldClass::OnlineCheck()
 	const auto pTechno = this->Techno;
 	bool isActive = !(pTechno->Deactivated || pTechno->IsUnderEMP());
 
-	if (isActive && this->Techno->WhatAmI() == AbstractType::Building)
+	if (isActive && pTechno->WhatAmI() == AbstractType::Building)
 	{
 		auto const pBuilding = static_cast<BuildingClass const*>(pTechno);
 		isActive = pBuilding->IsPowerOnline();
@@ -616,7 +616,7 @@ bool ShieldClass::ConvertCheck()
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(this->Techno);
 	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(newID);
 	const auto pOldType = this->Type;
-	const bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
+	const bool allowTransfer = pOldType->AllowTransfer.Get(Attached);
 
 	// Update shield type.
 	if (!allowTransfer && (!pTechnoTypeExt->ShieldType || pTechnoTypeExt->ShieldType->Strength <= 0))
@@ -674,49 +674,52 @@ bool ShieldClass::ConvertCheck()
 
 void ShieldClass::SelfHealing()
 {
-	if (this->Timers.SelfHealing_CombatRestart.InProgress())
-	{
+	const auto timerCombatRestart = &this->Timers.SelfHealing_CombatRestart;
+
+	if (timerCombatRestart->InProgress())
 		return;
-	}
-	else if (this->Timers.SelfHealing_CombatRestart.Completed())
-	{
-		const int rate = this->Timers.SelfHealing_WHModifier.InProgress() ? this->SelfHealing_Rate_Warhead : this->Type->SelfHealing_Rate;
-		this->Timers.SelfHealing.Start(rate);
-		this->Timers.SelfHealing_CombatRestart.Stop();
-	}
 
 	const auto pType = this->Type;
 	const auto timer = &this->Timers.SelfHealing;
 	const auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
 
+	if (timerCombatRestart->Completed())
+	{
+		const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+		timer->Start(rate);
+		timerCombatRestart->Stop();
+	}
+
 	if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		double mult = this->SelfHealing_Rate_Warhead > 0 ? Type->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
+		const double mult = this->SelfHealing_Rate_Warhead > 0 ? pType->SelfHealing_Rate / this->SelfHealing_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 
 	const double amount = timerWHModifier->InProgress() ? this->SelfHealing_Warhead : pType->SelfHealing;
-	const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
-	const auto percentageAmount = this->GetPercentageAmount(amount);
+	const int percentageAmount = this->GetPercentageAmount(amount);
 
 	if (percentageAmount != 0)
 	{
-		if ((this->HP < this->Type->Strength || percentageAmount < 0) && timer->StartTime == -1)
+		const int rate = timerWHModifier->InProgress() ? this->SelfHealing_Rate_Warhead : pType->SelfHealing_Rate;
+		auto& health = this->HP;
+
+		if ((health < pType->Strength || percentageAmount < 0) && timer->StartTime == -1)
 			timer->Start(rate);
 
-		if (this->HP > 0 && timer->Completed())
+		if (health > 0 && timer->Completed())
 		{
 			timer->Start(rate);
-			this->HP += percentageAmount;
+			health += percentageAmount;
 
 			this->UpdateIdleAnim();
 
-			if (this->HP > pType->Strength)
+			if (health > pType->Strength)
 			{
-				this->HP = pType->Strength;
+				health = pType->Strength;
 				timer->Stop();
 			}
-			else if (this->HP <= 0)
+			else if (health <= 0)
 			{
 				this->BreakShield();
 			}
@@ -738,33 +741,34 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
+	auto const pType = this->Type;
+	auto const pTechno = this->Techno;
 
-	if (this->Type->Respawn)
-		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? Respawn_Rate_Warhead : this->Type->Respawn_Rate);
+	if (pType->Respawn)
+		this->Timers.Respawn.Start(Timers.Respawn_WHModifier.InProgress() ? this->Respawn_Rate_Warhead : pType->Respawn_Rate);
 
 	this->Timers.SelfHealing.Stop();
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
 	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : this->Type->BreakAnim;
+		const auto pAnimType = pBreakAnim ? pBreakAnim : pType->BreakAnim;
 
 		if (pAnimType)
 		{
-			auto const pAnim = GameCreate<AnimClass>(pAnimType, this->Techno->Location);
-
-			pAnim->SetOwnerObject(this->Techno);
-			AnimExt::SetAnimOwnerHouseKind(pAnim, this->Techno->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(this->Techno);
+			auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
+			pAnim->SetOwnerObject(pTechno);
+			AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
+			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
 		}
 	}
 
-	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : this->Type->BreakWeapon;
+	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : pType->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;
 	this->UpdateTint();
 
 	if (pWeaponType)
-		TechnoExt::FireWeaponAtSelf(this->Techno, pWeaponType);
+		TechnoExt::FireWeaponAtSelf(pTechno, pWeaponType);
 }
 
 void ShieldClass::RespawnShield()
@@ -775,13 +779,13 @@ void ShieldClass::RespawnShield()
 	if (this->HP <= 0 && timer->Completed())
 	{
 		timer->Stop();
-		double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
+		const double amount = timerWHModifier->InProgress() ? Respawn_Warhead : this->Type->Respawn;
 		this->HP = this->GetPercentageAmount(amount);
 		this->UpdateTint();
 	}
 	else if (timerWHModifier->Completed() && timer->InProgress())
 	{
-		double mult = this->Respawn_Rate_Warhead > 0 ? Type->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
+		const double mult = this->Respawn_Rate_Warhead > 0 ? this->Type->Respawn_Rate / this->Respawn_Rate_Warhead : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
@@ -791,7 +795,7 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	const auto timer = &this->Timers.Respawn;
 	const auto timerWHModifier = &this->Timers.Respawn_WHModifier;
 
-	bool modifierTimerInProgress = timerWHModifier->InProgress();
+	const bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->Respawn_Warhead = amount;
 	this->Respawn_Rate_Warhead = rate >= 0 ? rate : Type->Respawn_Rate;
 
@@ -803,21 +807,22 @@ void ShieldClass::SetRespawn(int duration, double amount, int rate, bool resetTi
 	}
 	else if (timer->InProgress() && !modifierTimerInProgress && this->Respawn_Rate_Warhead != Type->Respawn_Rate)
 	{
-		double mult = Type->Respawn_Rate > 0 ? this->Respawn_Rate_Warhead / Type->Respawn_Rate : 1.0;
+		const double mult = Type->Respawn_Rate > 0 ? this->Respawn_Rate_Warhead / Type->Respawn_Rate : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
 
 void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool restartInCombat, int restartInCombatDelay, bool resetTimer)
 {
-	auto timer = &this->Timers.SelfHealing;
-	auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
+	const auto pType = this->Type;
+	const auto timer = &this->Timers.SelfHealing;
+	const auto timerWHModifier = &this->Timers.SelfHealing_WHModifier;
 
-	bool modifierTimerInProgress = timerWHModifier->InProgress();
+	const bool modifierTimerInProgress = timerWHModifier->InProgress();
 	this->SelfHealing_Warhead = amount;
-	this->SelfHealing_Rate_Warhead = rate >= 0 ? rate : Type->SelfHealing_Rate;
+	this->SelfHealing_Rate_Warhead = rate >= 0 ? rate : pType->SelfHealing_Rate;
 	this->SelfHealing_RestartInCombat_Warhead = restartInCombat;
-	this->SelfHealing_RestartInCombatDelay_Warhead = restartInCombatDelay >= 0 ? restartInCombatDelay : Type->SelfHealing_RestartInCombatDelay;
+	this->SelfHealing_RestartInCombatDelay_Warhead = restartInCombatDelay >= 0 ? restartInCombatDelay : pType->SelfHealing_RestartInCombatDelay;
 
 	timerWHModifier->Start(duration);
 
@@ -825,16 +830,16 @@ void ShieldClass::SetSelfHealing(int duration, double amount, int rate, bool res
 	{
 		timer->Start(this->SelfHealing_Rate_Warhead);
 	}
-	else if (timer->InProgress() && !modifierTimerInProgress && this->SelfHealing_Rate_Warhead != Type->SelfHealing_Rate)
+	else if (timer->InProgress() && !modifierTimerInProgress && this->SelfHealing_Rate_Warhead != pType->SelfHealing_Rate)
 	{
-		double mult = Type->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / Type->SelfHealing_Rate : 1.0;
+		const double mult = pType->SelfHealing_Rate > 0 ? this->SelfHealing_Rate_Warhead / pType->SelfHealing_Rate : 1.0;
 		timer->TimeLeft = static_cast<int>(timer->GetTimeLeft() * mult);
 	}
 }
 
 void ShieldClass::CreateAnim()
 {
-	auto idleAnimType = this->GetIdleAnimType();
+	auto const idleAnimType = this->GetIdleAnimType();
 
 	if (this->Cloak && (!idleAnimType || AnimTypeExt::ExtMap.Find(idleAnimType)->DetachOnCloak))
 		return;
@@ -858,10 +863,10 @@ void ShieldClass::CreateAnim()
 
 void ShieldClass::KillAnim()
 {
-	if (this->IdleAnim)
+	if (auto& pAnim = this->IdleAnim)
 	{
-		this->IdleAnim->UnInit();
-		this->IdleAnim = nullptr;
+		pAnim->UnInit();
+		pAnim = nullptr;
 	}
 }
 
@@ -878,34 +883,47 @@ void ShieldClass::UpdateTint()
 {
 	if (this->Type->HasTint())
 	{
-		TechnoExt::ExtMap.Find(this->Techno)->UpdateTintValues();
-		this->Techno->MarkForRedraw();
+		auto const pTechno = this->Techno;
+		TechnoExt::ExtMap.Find(pTechno)->UpdateTintValues();
+		pTechno->MarkForRedraw();
 	}
 }
 
 AnimTypeClass* ShieldClass::GetIdleAnimType()
 {
-	if (!this->Type || !this->Techno)
+	auto const pType = this->Type;
+
+	if (!pType)
 		return nullptr;
 
-	bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+	auto const pTechno = this->Techno;
 
-	return this->Type->GetIdleAnimType(isDamaged, this->GetHealthRatio());
+	if (!pTechno)
+		return nullptr;
+
+	const bool isDamaged = pTechno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
+
+	return pType->GetIdleAnimType(isDamaged, this->GetHealthRatio());
 }
 
 bool ShieldClass::IsGreenSP()
 {
-	return this->Type->GetConditionYellow() * this->Type->Strength.Get() < this->HP;
+	auto const pType = this->Type;
+	return pType->GetConditionYellow() * pType->Strength.Get() < this->HP;
 }
 
 bool ShieldClass::IsYellowSP()
 {
-	return this->Type->GetConditionRed() * this->Type->Strength.Get() < this->HP && this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+	auto const pType = this->Type;
+	const int health = this->HP;
+	const int strength = pType->Strength.Get();
+	return pType->GetConditionRed() * strength < health && health <= pType->GetConditionYellow() * strength;
 }
 
 bool ShieldClass::IsRedSP()
 {
-	return this->HP <= this->Type->GetConditionYellow() * this->Type->Strength.Get();
+	auto const pType = this->Type;
+	return this->HP <= pType->GetConditionYellow() * pType->Strength.Get();
 }
 
 void ShieldClass::DrawShieldBar_Building(const int length, RectangleStruct* pBound)
@@ -997,8 +1015,11 @@ int ShieldClass::DrawShieldBar_Pip(const bool isBuilding) const
 	const int strength = this->Type->Strength.Get();
 	const auto pipsShield = isBuilding ? this->Type->Pips_Building.Get() : this->Type->Pips.Get();
 
-	const auto shieldPip = pipsShield.X != -1 ? pipsShield :
-		(isBuilding ? RulesExt::Global()->Pips_Shield_Building.Get() : RulesExt::Global()->Pips_Shield.Get());
+	const auto shieldPip = pipsShield.X != -1
+		? pipsShield
+		: (isBuilding
+			? RulesExt::Global()->Pips_Shield_Building.Get()
+			: RulesExt::Global()->Pips_Shield.Get());
 
 	if (this->HP > this->Type->GetConditionYellow() * strength && shieldPip.X != -1)
 		return shieldPip.X;
@@ -1020,11 +1041,12 @@ int ShieldClass::DrawShieldBar_PipAmount(int length) const
 ArmorType ShieldClass::GetArmorType(TechnoTypeClass* pTechnoType) const
 {
 	const auto pShieldType = this->Type;
+	const auto pTechno = this->Techno;
 
-	if (this->Techno && pShieldType->InheritArmorFromTechno)
+	if (pTechno && pShieldType->InheritArmorFromTechno)
 	{
 		if (!pTechnoType)
-			pTechnoType = this->Techno->GetTechnoType();
+			pTechnoType = pTechno->GetTechnoType();
 
 		if (pShieldType->InheritArmor_Allowed.empty() || pShieldType->InheritArmor_Allowed.Contains(pTechnoType)
 			&& (pShieldType->InheritArmor_Disallowed.empty() || !pShieldType->InheritArmor_Disallowed.Contains(pTechnoType)))

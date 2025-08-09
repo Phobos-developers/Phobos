@@ -50,7 +50,7 @@ void RulesExt::LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI)
 {
 	for (const auto& pTechnoType : TechnoTypeClass::Array)
 	{
-		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechnoType))
+		if (const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.TryFind(pTechnoType))
 		{
 			// Spawner range
 			if (pTechnoTypeExt->Spawner_LimitRange)
@@ -290,6 +290,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->AttackMove_IgnoreWeaponCheck.Read(exINI, GameStrings::General, "AttackMove.IgnoreWeaponCheck");
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, GameStrings::General, "AttackMove.StopWhenTargetAcquired");
+
+	this->Parasite_GrappleAnim.Read(exINI, GameStrings::AudioVisual, "Parasite.GrappleAnim");
 
 	this->AINormalTargetingDelay.Read(exINI, GameStrings::General, "AINormalTargetingDelay");
 	this->PlayerNormalTargetingDelay.Read(exINI, GameStrings::General, "PlayerNormalTargetingDelay");
@@ -553,6 +555,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintColorBerserk)
 		.Process(this->AttackMove_IgnoreWeaponCheck)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
+		.Process(this->Parasite_GrappleAnim)
 		;
 }
 

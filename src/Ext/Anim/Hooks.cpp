@@ -45,11 +45,13 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	if (pThis->IsInert)
 		return SkipDamage;
 
-	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	const auto pType = pThis->Type;
+	const auto pTypeExt = AnimTypeExt::ExtMap.Find(pType);
+	const auto pOwnerObject = pThis->OwnerObject;
 	const int delay = pTypeExt->Damage_Delay.Get();
-	const bool isTerrain = pThis->OwnerObject && pThis->OwnerObject->WhatAmI() == AbstractType::Terrain;
+	const bool isTerrain = pOwnerObject && pOwnerObject->WhatAmI() == AbstractType::Terrain;
 	const int damageMultiplier = isTerrain ? 5 : 1;
-	const double baseDamage = pThis->Type->Damage;
+	const double baseDamage = pType->Damage;
 
 	int appliedDamage = 0;
 
@@ -102,8 +104,8 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 
 		if (!pInvoker)
 		{
-			if (pThis->OwnerObject)
-				pInvoker = abstract_cast<TechnoClass*, true>(pThis->OwnerObject);
+			if (pOwnerObject)
+				pInvoker = abstract_cast<TechnoClass*, true>(pOwnerObject);
 			else if (pThis->IsBuildingAnim)
 				pInvoker = pExt->ParentBuilding;
 		}
@@ -117,7 +119,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 				pOwner = pInvoker->Owner;
 
 			if (pTypeExt->Damage_ApplyFirepowerMult)
-				appliedDamage = static_cast<int>(appliedDamage * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier);
+				appliedDamage = static_cast<int>(appliedDamage * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker));
 		}
 	}
 
@@ -125,8 +127,8 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	// but if we are unifying the approaches it needs to be available even without and separately from invoker.
 	if (!pOwner)
 	{
-		if (pThis->OwnerObject)
-			pOwner = pThis->OwnerObject->GetOwningHouse();
+		if (pOwnerObject)
+			pOwner = pOwnerObject->GetOwningHouse();
 		else if (pThis->IsBuildingAnim)
 			pOwner = AnimExt::ExtMap.Find(pThis)->ParentBuilding->Owner;
 	}
@@ -137,10 +139,10 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 	}
 	else
 	{
-		auto pWarhead = pThis->Type->Warhead;
+		auto pWarhead = pType->Warhead;
 
 		if (!pWarhead)
-			pWarhead = strcmp(pThis->Type->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
+			pWarhead = strcmp(pType->get_ID(), "INVISO") ? RulesClass::Instance->FlameDamage2 : RulesClass::Instance->C4Warhead;
 
 		MapClass::DamageArea(pThis->GetCoords(), appliedDamage, pInvoker, pWarhead, true, pOwner);
 	}
@@ -216,13 +218,17 @@ DEFINE_HOOK(0x423CC7, AnimClass_AI_HasExtras_Expired, 0x6)
 	GET(AnimClass* const, pThis, ESI);
 	GET(bool const, heightFlag, EAX);
 
-	if (!pThis || !pThis->Type)
+	if (!pThis)
 		return SkipGameCode;
 
 	auto const pType = pThis->Type;
+
+	if (!pType)
+		return SkipGameCode;
+
 	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pType);
 	auto const splashAnims = pTypeExt->SplashAnims.GetElements(RulesClass::Instance->SplashList);
-	auto const nDamage = Game::F2I(pType->Damage);
+	auto const nDamage = static_cast<int>(pType->Damage);
 	auto const pOwner = AnimExt::GetOwnerHouse(pThis);
 
 	AnimExt::HandleDebrisImpact(pType->ExpireAnim, pTypeExt->WakeAnim, splashAnims, pOwner, pType->Warhead, nDamage,
@@ -266,7 +272,7 @@ DEFINE_HOOK(0x423122, AnimClass_DrawIt_XDrawOffset, 0x6)
 	GET(AnimClass* const, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x110, 0x4));
 
-	if (auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type))
+	if (auto const pTypeExt = AnimTypeExt::ExtMap.TryFind(pThis->Type))
 		pLocation->X += pTypeExt->XDrawOffset;
 
 	return 0;
@@ -458,7 +464,7 @@ DEFINE_HOOK(0x4232E2, AnimClass_DrawIt_AltPalette, 0x6)
 // Set ShadeCount to 53 to initialize the palette fully shaded - this is required to make it not draw over shroud for some reason.
 DEFINE_HOOK(0x68C4C4, GenerateColorSpread_ShadeCountSet, 0x5)
 {
-	GET(int, shadeCount, EDX);
+	GET(const int, shadeCount, EDX);
 
 	if (shadeCount == 1)
 		R->EDX(53);
@@ -475,7 +481,7 @@ DEFINE_HOOK(0x425174, AnimClass_Detach_Cloak, 0x6)
 	GET(AnimClass*, pThis, ESI);
 	GET(AbstractClass*, pTarget, EDI);
 
-	auto const pTypeExt = AnimTypeExt::ExtMap.Find(pThis->Type);
+	auto const pTypeExt = AnimTypeExt::ExtMap.TryFind(pThis->Type);
 
 	if (pTypeExt && !pTypeExt->DetachOnCloak)
 	{
