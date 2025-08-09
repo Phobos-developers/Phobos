@@ -425,6 +425,7 @@ New:
 - [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 - [Additional attached animation position customizations](Fixed-or-Improved-Logics.md#attached-animation-position-customization) (by Starkku)
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
+- Units can customize the attack voice that plays when using more weapons (by FlyStar)
 - Spawns particle when spawns tiberium by terrain (by NetsuNegi)
 
 Vanilla fixes:
