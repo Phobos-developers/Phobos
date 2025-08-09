@@ -447,7 +447,7 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI_Trajectories, 0x6)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	bool detonate = false;
 
-	if (auto pTraj = pExt->Trajectory.get())
+	if (auto const pTraj = pExt->Trajectory.get())
 		detonate = pTraj->OnAI(pThis);
 
 	if (detonate && !pThis->SpawnNextAnim)
@@ -567,7 +567,7 @@ DEFINE_HOOK(0x468B72, BulletClass_Unlimbo_Trajectories, 0x5)
 	auto const pExt = BulletExt::ExtMap.Find(pThis);
 	auto const pTypeExt = pExt->TypeExtData;
 
-	if (pTypeExt && pTypeExt->TrajectoryType)
+	if (pTypeExt->TrajectoryType)
 	{
 		pExt->Trajectory = pTypeExt->TrajectoryType->CreateInstance();
 		pExt->Trajectory->OnUnlimbo(pThis, pCoord, pVelocity);

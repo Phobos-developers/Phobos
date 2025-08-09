@@ -166,8 +166,8 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 		{
 			for (short j = 0; j < 0x200; ++j)
 			{
-				CellStruct mapCoord{ j,i };
-				int nOvl = reader.Get();
+				const CellStruct mapCoord{ j,i };
+				const size_t nOvl = reader.Get();
 
 				if (nOvl != 0xFFFFFFFF)
 				{
@@ -181,7 +181,7 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 						if (!MapClass::Instance.CoordinatesLegal(mapCoord))
 							continue;
 
-						auto pCell = MapClass::Instance.GetCellAt(mapCoord);
+						auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
 						auto const nOriginOvlData = pCell->OverlayData;
 						GameCreate<OverlayClass>(pType, mapCoord, -1);
 
@@ -205,13 +205,13 @@ DEFINE_HOOK(0x5FD2E0, OverlayClass_ReadINI, 0x7)
 			{
 				for (short j = 0; j < 0x200; ++j)
 				{
-					CellStruct mapCoord { j,i };
+					const CellStruct mapCoord { j,i };
 					unsigned char buffer;
 					ls.Get(&buffer, sizeof(buffer));
 
 					if (MapClass::Instance.CoordinatesLegal(mapCoord))
 					{
-						auto pCell = MapClass::Instance.GetCellAt(mapCoord);
+						auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
 						pCell->OverlayData = buffer;
 					}
 				}
@@ -239,7 +239,7 @@ DEFINE_HOOK(0x5FD6A0, OverlayClass_WriteINI, 0x6)
 	{
 		for (short j = 0; j < 0x200; ++j)
 		{
-			CellStruct mapCoord { j,i };
+			const CellStruct mapCoord { j,i };
 			auto const pCell = MapClass::Instance.GetCellAt(mapCoord);
 			writer.Put(pCell->OverlayTypeIndex);
 			dataWriter.PutByte(pCell->OverlayData);

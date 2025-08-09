@@ -1706,10 +1706,23 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
+### Multi VoiceAttack
+
+- Units can customize the attack voice that plays when using more weapons.
+  - If you need to assign an attack-voice to `Weapon1`, simply set `VoiceWeapon1Attack`. The same applies to other weapons.
+  - `VoiceEliteWeaponNAttack` can also be used to specify attack voices for `EliteWeaponN`. The default is `VoiceWeaponNAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+VoiceWeaponNAttack=         ; Sound entry
+VoiceEliteWeaponNAttack=    ; Sound entry
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
-- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
+ - Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
 ```ini
@@ -2217,12 +2230,12 @@ DamageEnemiesMultiplier=1.0                     ; floating point value
 DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
 DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 
-[SOMEWARHEAD]                       ; WarheadType
-DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0    ; floating point value
-DamageTargetHealthMultiplier=0.0    ; floating point value
+[SOMEWARHEAD]                                   ; WarheadType
+DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageSourceHealthMultiplier=0.0                ; floating point value
+DamageTargetHealthMultiplier=0.0                ; floating point value
 ```
 
 ```{note}
