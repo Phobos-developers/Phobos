@@ -691,6 +691,19 @@ BuildingWaypoints=false  ; boolean
 
 ## Infantry
 
+### Auto deploy for GI-like infantry
+
+- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri’s Revenge. Now you can use the following flags to re-enable this feature.
+
+In `rulesmd.ini`:
+```ini
+[General]                     ; InfantryType
+InfantryAutoDeploy=false      ; boolean
+
+[SOMEINFANTRY]                ; InfantryType
+InfantryAutoDeploy=           ; boolean, default to [General] -> InfantryAutoDeploy
+```
+
 ### Prone speed customization
 
 - In vanilla, infantry has hardcoded prone speed. Now you can customize it.
