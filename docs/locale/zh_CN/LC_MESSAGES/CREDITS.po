@@ -1778,9 +1778,8 @@ msgid "Fix the bug that hover vehicle will sink if destroyed on bridge"
 msgstr "修复了悬浮载具在桥上被摧毁会沉没（而不是爆炸）的 Bug"
 
 #: ../../../CREDITS.md:440
-#, fuzzy
 msgid "Customize squid grapple animation"
-msgstr "自定义水波动画"
+msgstr "自定义乌贼拖拽动画"
 
 #: ../../../CREDITS.md:441
 msgid "**Apollo** - Translucent SHP drawing patches"
