@@ -690,12 +690,14 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			while (passenger)
 			{
 				const auto nextPassenger = abstract_cast<FootClass*>(passenger->NextObject);
+				const auto passengerType = passenger->GetTechnoType();
 
-				if (this->PenetratesTransport_Level > TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+				if (this->PenetratesTransport_Level > TechnoTypeExt::ExtMap.Find(passengerType)->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 				{
 					passenger->SetLocation(transporterCoords);
+					int applyDamage = passengerType->Strength;
 
-					if (passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 					{
 						pTargetFoot->RemoveGunner(passenger);
 						gunnerRemoved = true;
@@ -742,14 +744,18 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 			--poorBastardIdx;
 		}
 
-		if (this->PenetratesTransport_Level <= TechnoTypeExt::ExtMap.Find(passenger->GetTechnoType())->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
+		const auto passengerType = passenger->GetTechnoType();
+
+		if (this->PenetratesTransport_Level <= TechnoTypeExt::ExtMap.Find(passengerType)->PenetratesTransport_Level.Get(RulesExt::Global()->PenetratesTransport_Level))
 			return;
 
 		passenger->SetLocation(transporterCoords);
 
 		if (fatal)
 		{
-			if (passenger->ReceiveDamage(&passenger->Health, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+			int applyDamage = passengerType->Strength;
+
+			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 			{
 				pTargetFoot->RemoveGunner(passenger);
 				gunnerRemoved = true;
