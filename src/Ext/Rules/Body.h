@@ -254,6 +254,8 @@ public:
 		int TintColorForceShield;
 		int TintColorBerserk;
 
+		Valueable<bool> InfantryAutoDeploy;
+
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
 			, HarvesterDumpAmount { 0.0f }
@@ -449,6 +451,8 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
+
+			, InfantryAutoDeploy { false }
     
       , PenetratesTransport_Level { 10 }
 		{ }

@@ -427,6 +427,7 @@ New:
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
 - Units can customize the attack voice that plays when using more weapons (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
+- Auto deploy for GI-like infantry (by TaranDahl)
 - Penetrates damage on transporter (by NetsuNegi)
 
 Vanilla fixes:

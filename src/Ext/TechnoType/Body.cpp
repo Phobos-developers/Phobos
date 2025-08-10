@@ -955,6 +955,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
+  this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
+  
 	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
 	this->PenetratesTransport_PassThroughMultiplier.Read(exINI, pSection, "PenetratesTransport.PassThroughMultiplier");
 	this->PenetratesTransport_FatalRateMultiplier.Read(exINI, pSection, "PenetratesTransport.FatalRateMultiplier");
@@ -1597,6 +1599,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoiceIFVRepair)
 		.Process(this->VoiceWeaponAttacks)
 		.Process(this->VoiceEliteWeaponAttacks)
+
+		.Process(this->InfantryAutoDeploy)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
