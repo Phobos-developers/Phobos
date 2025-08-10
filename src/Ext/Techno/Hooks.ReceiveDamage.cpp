@@ -403,6 +403,18 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	return 0;
 }
 
+DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)
+{
+	enum { SkipParticle = 0x702A25, RemoveParticle = 0x70283C, SpawnParticle = 0x702857 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipParticle;
+
+	return pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow ? SpawnParticle : RemoveParticle;
+}
+
 DEFINE_HOOK(0x737E6E, UnitClass_ReceiveDamage_SkipExplode, 0xA)
 {
 	enum { ContinueCheck = 0x737E78, SkipExplode = 0x737F74 };
