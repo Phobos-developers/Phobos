@@ -115,7 +115,7 @@ msgstr "更高的覆盖物数量上限"
 
 #: ../../AI-Scripting-and-Mapping.md:19
 msgid "Maps can now contain OverlayTypes with indices up to 65535."
-msgstr "现在可以让地图包含索引上限高达 65536 的覆盖物。"
+msgstr "现在可以让地图包含索引上限高达 65535 的覆盖物。"
 
 #: ../../AI-Scripting-and-Mapping.md:21
 msgid "To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file."
