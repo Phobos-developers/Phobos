@@ -541,7 +541,7 @@ DEFINE_HOOK(0x469EC0, BulletClass_Logics_AirburstWeapon, 0x6)
 		int damage = pWeapon->Damage;
 
 		if (pTypeExt->AirburstWeapon_ApplyFirepowerMult && pSource)
-			damage = static_cast<int>(damage * pSource->FirepowerMultiplier * TechnoExt::ExtMap.Find(pSource)->AE.FirepowerMultiplier);
+			damage = static_cast<int>(damage * TechnoExt::GetCurrentFirepowerMultiplier(pSource));
 
 		for (int i = 0; i < clusterCount; ++i)
 		{
