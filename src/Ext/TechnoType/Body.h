@@ -417,6 +417,8 @@ public:
 		ValueableVector<int> VoiceWeaponAttacks;
 		ValueableVector<int> VoiceEliteWeaponAttacks;
 
+		Nullable<bool> InfantryAutoDeploy;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -783,6 +785,8 @@ public:
 			, VoiceIFVRepair { -1 }
 			, VoiceWeaponAttacks {}
 			, VoiceEliteWeaponAttacks {}
+
+			, InfantryAutoDeploy {}
 		{ }
 
 		virtual ~ExtData() = default;
