@@ -1843,8 +1843,8 @@ msgid "Customize squid grapple animation (by NetsuNegi)"
 msgstr "自定义乌贼拖拽动画（by NetsuNegi）"
 
 #: ../../Whats-New.md:430
-msgid "Auto deploy for GI-like infantry (by TaranDahl)"
-msgstr ""
+msgid "[Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)"
+msgstr "[GI 式步兵自动部署](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry)（by TaranDahl）"
 
 #: ../../Whats-New.md:432 ../../Whats-New.md:623 ../../Whats-New.md:977
 #: ../../Whats-New.md:1086 ../../Whats-New.md:1111 ../../Whats-New.md:1150

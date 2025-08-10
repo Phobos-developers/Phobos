@@ -2975,7 +2975,7 @@ msgstr "步兵"
 
 #: ../../Fixed-or-Improved-Logics.md:694
 msgid "Auto deploy for GI-like infantry"
-msgstr ""
+msgstr "GI 式步兵自动部署"
 
 #: ../../Fixed-or-Improved-Logics.md:696
 msgid ""
@@ -2984,6 +2984,9 @@ msgid ""
 "enemy. This feature was broken in Yuri’s Revenge. Now you can use the "
 "following flags to re-enable this feature."
 msgstr ""
+"在《红色警戒2》中，由 AI 控制的美国大兵在与敌人交战时会自动部署以使用火力更强的副武器。"
+"此特性在《尤里的复仇》中遭到破坏。"
+"现在你可以通过下面的开关语句重启这一特性。"
 
 #: ../../Fixed-or-Improved-Logics.md:699
 msgid ""

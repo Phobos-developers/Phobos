@@ -2416,7 +2416,7 @@ msgstr ""
 
 #: ../../../CREDITS.md:592
 msgid "Auto deploy for GI-like infantry"
-msgstr ""
+msgstr "GI 式步兵自动部署"
 
 #: ../../../CREDITS.md:593
 msgid "**solar-III (凤九歌)**"
