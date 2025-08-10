@@ -697,7 +697,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 					passenger->SetLocation(transporterCoords);
 					int applyDamage = passengerType->Strength;
 
-					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+					if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 					{
 						pTargetFoot->RemoveGunner(passenger);
 						gunnerRemoved = true;
@@ -755,7 +755,7 @@ void WarheadTypeExt::ExtData::ApplyPenetratesTransport(TechnoClass* pTarget, Tec
 		{
 			int applyDamage = passengerType->Strength;
 
-			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, false, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
+			if (passenger->ReceiveDamage(&applyDamage, distance, pWH, pInvoker, true, true, pInvokerHouse) == DamageState::NowDead && isFirst && pTargetType->Gunner && pTargetFoot)
 			{
 				pTargetFoot->RemoveGunner(passenger);
 				gunnerRemoved = true;
