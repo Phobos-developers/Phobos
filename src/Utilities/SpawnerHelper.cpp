@@ -1,7 +1,9 @@
 #include "SpawnerHelper.h"
+
 #include <Utilities/Debug.h>
+#include <Utilities/Macro.h>
 
 bool SpawnerHelper::IsSaveGameEventHooked()
 {
-	return SaveGameHookStart == 0xE9;
+	return SaveGameHookStart == LJMP_OPCODE;
 }
