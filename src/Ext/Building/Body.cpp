@@ -357,7 +357,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
 	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
-		if (!pUnit->IsTether && !pUnit->Locomotor->Is_Moving())
+		if (!pUnit->Locomotor->Is_Moving())
 		{
 			if (const auto pTeam = pUnit->Team)
 				pTeam->LiberateMember(pUnit);

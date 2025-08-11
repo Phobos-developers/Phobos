@@ -220,7 +220,7 @@ DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
 		{
 			const auto mission = pThis->CurrentMission;
 
-			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 1) // Unloading but stuck
+			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 3) // Unloading but stuck
 				BuildingExt::KickOutStuckUnits(pThis);
 		}
 	}
