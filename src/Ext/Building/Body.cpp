@@ -357,7 +357,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
 	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
-		if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
+		if (!pUnit->IsTether && !pUnit->Locomotor->Is_Moving())
 		{
 			if (const auto pTeam = pUnit->Team)
 				pTeam->LiberateMember(pUnit);
@@ -369,19 +369,22 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	}
 
 	auto buffer = CoordStruct::Empty;
-	auto pCell = MapClass::Instance.GetCellAt(*pThis->GetExitCoords(&buffer, 0));
-	const auto pOwner = pThis->Owner;
-	int i = 0;
+	pThis->GetExitCoords(&buffer, 0);
+
+	auto cell = CellClass::Coord2Cell(buffer);
+	auto pCell = MapClass::Instance.GetCellAt(cell);
+	const int max = pThis->Location.X / Unsorted::LeptonsPerCell + pThis->Type->GetFoundationWidth() - 1;
 
 	while (true)
 	{
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (pObject->WhatAmI() == AbstractType::Unit)
+			if (const auto pUnit = abstract_cast<UnitClass*, true>(pObject))
 			{
-				const auto pUnit = static_cast<UnitClass*>(pObject);
+				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Is_Moving())
+					continue;
 
-				if (pOwner != pUnit->Owner || pUnit->IsTether)
+				if (TechnoExt::IsAttached(pUnit))
 					continue;
 
 				const auto height = pUnit->GetHeight();
@@ -398,11 +401,11 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 			}
 		}
 
-		if (++i >= 2)
+		if (++cell.X >= max)
 			return; // no stuck
 
 		// Continue checking towards the bottom right corner
-		pCell = pCell->GetNeighbourCell(FacingType::East);
+		pCell = MapClass::Instance.GetCellAt(cell);
 	}
 }
 
