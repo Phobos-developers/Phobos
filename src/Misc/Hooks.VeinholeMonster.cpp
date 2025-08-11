@@ -16,7 +16,7 @@
 // Call removed from YR by WW
 DEFINE_HOOK(0x4AD097, DisplayClass_ReadIni_LoadVeinholeArt, 0x6)
 {
-	int theater = static_cast<int>(ScenarioClass::Instance->Theater);
+	const int theater = static_cast<int>(ScenarioClass::Instance->Theater);
 	VeinholeMonsterClass::LoadVeinholeArt(theater);
 
 	return 0;
@@ -170,7 +170,12 @@ DEFINE_HOOK(0x73D0DB, UnitClass_DrawAt_Weeder_Oregath, 0x6)
 
 	GET(UnitClass*, pUnit, ESI);
 
-	if (pUnit->Type->Harvester || pUnit->Type->Weeder || pUnit->IsHarvesting)
+	if (pUnit->IsHarvesting)
+		return DrawOregath;
+
+	const auto pType = pUnit->Type;
+
+	if (pType->Harvester || pType->Weeder)
 		return DrawOregath;
 
 	return Skip;
@@ -206,9 +211,10 @@ DEFINE_HOOK(0x73D49E, UnitClass_Harvesting_Weeder, 0x7)
 	GET(CellClass*, pCell, EBP);
 	constexpr unsigned char weedOverlayData = 0x30;
 
-	bool harvesterCanHarvest = pUnit->Type->Harvester && pCell->LandType == LandType::Tiberium;
-	bool weederCanWeed = pUnit->Type->Weeder && pCell->LandType == LandType::Weeds && pCell->OverlayData >= weedOverlayData;
-
+	const auto pType = pUnit->Type;
+	const auto landType = pCell->LandType;
+	const bool harvesterCanHarvest = pType->Harvester && landType == LandType::Tiberium;
+	const bool weederCanWeed = pType->Weeder && landType == LandType::Weeds && pCell->OverlayData >= weedOverlayData;
 
 	if ((harvesterCanHarvest || weederCanWeed) && pUnit->GetStoragePercentage() < 1.0)
 		return Harvest;
@@ -306,7 +312,9 @@ DEFINE_HOOK(0x73E9A0, UnitClass_Weeder_StopHarvesting, 0x6)
 
 	GET(UnitClass*, pUnit, EBP);
 
-	if ((pUnit->Type->Harvester || pUnit->Type->Weeder) && pUnit->GetStoragePercentage() == 1.0)
+	const auto pType = pUnit->Type;
+
+	if ((pType->Harvester || pType->Weeder) && pUnit->GetStoragePercentage() == 1.0)
 	{
 		return StopHarvesting;
 	}

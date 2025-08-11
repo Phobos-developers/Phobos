@@ -2,11 +2,18 @@
 
 #include <AnimTypeClass.h>
 
-#include <New/Type/Affiliated//CreateUnitTypeClass.h>
+#include <New/Type/Affiliated/CreateUnitTypeClass.h>
 #include <Utilities/Container.h>
 #include <Utilities/Enum.h>
 #include <Utilities/Constructs.h>
 #include <Utilities/Template.h>
+
+enum class AttachedAnimPosition : BYTE
+{
+	Default = 0,
+	Center = 1,
+	Ground = 2
+};
 
 class AnimTypeExt
 {
@@ -24,11 +31,12 @@ public:
 		Valueable<int> XDrawOffset;
 		Valueable<int> HideIfNoOre_Threshold;
 		Nullable<bool> Layer_UseObjectLayer;
-		Valueable<bool> UseCenterCoordsIfAttached;
+		Valueable<AttachedAnimPosition> AttachedAnimPosition;
 		Valueable<WeaponTypeClass*> Weapon;
 		Valueable<int> Damage_Delay;
 		Valueable<bool> Damage_DealtByInvoker;
 		Valueable<bool> Damage_ApplyOncePerLoop;
+		Valueable<bool> Damage_ApplyFirepowerMult;
 		Valueable<bool> ExplodeOnWater;
 		Valueable<bool> Warhead_Detonate;
 		Valueable<AnimTypeClass*> WakeAnim;
@@ -62,11 +70,12 @@ public:
 			, XDrawOffset { 0 }
 			, HideIfNoOre_Threshold { 0 }
 			, Layer_UseObjectLayer {}
-			, UseCenterCoordsIfAttached { false }
+			, AttachedAnimPosition { AttachedAnimPosition::Default }
 			, Weapon {}
 			, Damage_Delay { 0 }
 			, Damage_DealtByInvoker { false }
 			, Damage_ApplyOncePerLoop { false }
+			, Damage_ApplyFirepowerMult { false }
 			, ExplodeOnWater { false }
 			, Warhead_Detonate { false }
 			, WakeAnim {}

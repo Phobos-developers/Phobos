@@ -18,8 +18,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ext\Infantry\Hooks.cpp" />
     <ClCompile Include="src\Ext\Infantry\Hooks.Firing.cpp" />
+    <ClCompile Include="src\Ext\TechnoType\Hooks.MultiWeapon.cpp" />
+    <ClCompile Include="src\Ext\Techno\Hooks.Targeting.cpp" />
     <ClCompile Include="src\Ext\Unit\Hooks.Firing.cpp" />
+    <ClCompile Include="src\Ext\EBolt\Body.cpp" />
+    <ClCompile Include="src\Ext\EBolt\Hooks.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\CreateUnitTypeClass.cpp" />
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
@@ -90,8 +95,10 @@
     <ClCompile Include="src\Misc\Hooks.VeinholeMonster.cpp" />
     <ClCompile Include="src\Misc\PhobosToolTip.cpp" />
     <ClCompile Include="src\Misc\TextInput.cpp" />
+    <ClCompile Include="src\New\Entity\BannerClass.cpp" />
     <ClCompile Include="src\New\Entity\ShieldClass.cpp" />
     <ClCompile Include="src\Misc\RetryDialog.cpp" />
+    <ClCompile Include="src\New\Type\BannerTypeClass.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\DroppodTypeClass.cpp" />
     <ClCompile Include="src\New\Type\DigitalDisplayTypeClass.cpp" />
     <ClCompile Include="src\New\Type\InsigniaTypeClass.cpp" />
@@ -166,7 +173,6 @@
     <ClCompile Include="src\Ext\VoxelAnim\Body.cpp" />
     <ClCompile Include="src\Ext\VoxelAnim\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Body.cpp" />
-    <ClCompile Include="src\Ext\WeaponType\Hook.EBolt.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.cpp" />
     <ClCompile Include="src\Ext\WeaponType\Hooks.DiskLaserRadius.cpp" />
     <ClCompile Include="src\Misc\BlittersFix.cpp" />
@@ -184,8 +190,8 @@
     <ClCompile Include="src\Misc\Hooks.LaserDraw.cpp" />
     <ClCompile Include="src\Misc\Hooks.Timers.cpp" />
     <ClCompile Include="src\Misc\Hooks.INIInheritance.cpp" />
-    <ClCompile Include="src\Misc\Hooks.SkirmishColors.cpp" />
     <ClCompile Include="src\Misc\Hooks.Overlay.cpp" />
+    <ClCompile Include="src\Misc\Hooks.Message.cpp" />
     <ClCompile Include="src\New\Type\Affiliated\TypeConvertGroup.cpp" />
     <ClCompile Include="src\Ext\BuildingType\Hooks.Upgrade.cpp" />
     <ClCompile Include="src\Phobos.COM.cpp" />
@@ -205,6 +211,7 @@
     <ClCompile Include="YRpp\StaticInits.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Ext\EBolt\Body.h" />
     <ClInclude Include="src\New\Type\Affiliated\CreateUnitTypeClass.h" />
     <ClInclude Include="src\Blowfish\blowfish.h" />
     <ClInclude Include="src\Ext\Cell\Body.h" />
@@ -248,6 +255,8 @@
     <ClInclude Include="src\Misc\FlyingStrings.h" />
     <ClInclude Include="src\Misc\PhobosToolTip.h" />
     <ClInclude Include="src\Misc\SyncLogging.h" />
+    <ClInclude Include="src\New\Entity\BannerClass.h" />
+    <ClInclude Include="src\New\Type\BannerTypeClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TypeConvertGroup.h" />
     <ClInclude Include="src\New\Type\Affiliated\DroppodTypeClass.h" />
     <ClInclude Include="src\New\Type\DigitalDisplayTypeClass.h" />
@@ -326,21 +335,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevBuild|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
     <XPDeprecationWarning>false</XPDeprecationWarning>
   </PropertyGroup>
@@ -406,6 +415,7 @@
       <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4100;4201;4530;4731;4740;4458;4819;5103;5105</DisableSpecificWarnings>
       <EnableModules>true</EnableModules>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
