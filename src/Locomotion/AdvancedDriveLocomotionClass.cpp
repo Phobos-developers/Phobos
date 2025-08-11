@@ -150,7 +150,7 @@ bool AdvancedDriveLocomotionClass::Is_Moving_Here(CoordStruct to)
 
 		if (trackNum != -1)
 		{
-			if (const auto trackStructIndex = DriveLocomotionClass::TurnTrack[TrackNumber].NormalTrackStructIndex)
+			if (const auto trackStructIndex = DriveLocomotionClass::TurnTrack[trackNum].NormalTrackStructIndex)
 			{
 				const auto trackIdx = DriveLocomotionClass::RawTrack[trackStructIndex].CellIndex;
 
@@ -1188,7 +1188,7 @@ void AdvancedDriveLocomotionClass::MarkOccupation(const CoordStruct& to, MarkTyp
 
 		if (trackNum != -1)
 		{
-			if (const auto trackStructIndex = DriveLocomotionClass::TurnTrack[TrackNumber].NormalTrackStructIndex)
+			if (const auto trackStructIndex = DriveLocomotionClass::TurnTrack[trackNum].NormalTrackStructIndex)
 			{
 				const auto& track = DriveLocomotionClass::RawTrack[trackStructIndex];
 				const auto trackIdx = track.CellIndex;
