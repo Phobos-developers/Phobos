@@ -291,11 +291,12 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+	const auto pDefault = pTypeExt->DefaultDisguise.Get();
 
 	switch (pThis->WhatAmI())
 	{
 	case AbstractType::Unit:
-		if (const auto pDefault = pTypeExt->DefaultVehicleDisguise.Get())
+		if (pDefault && pDefault->WhatAmI() == AbstractType::UnitType)
 		{
 			pThis->Disguise = pDefault;
 			pThis->DisguisedAsHouse = pThis->Owner;
@@ -306,7 +307,7 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 		break;
 
 	case AbstractType::Infantry:
-		if (const auto pDefault = pTypeExt->DefaultDisguise.Get())
+		if (pDefault && pDefault->WhatAmI() == AbstractType::InfantryType)
 		{
 			pThis->Disguise = pDefault;
 			pThis->DisguisedAsHouse = pThis->Owner;
@@ -320,7 +321,6 @@ DEFINE_HOOK(0x6F421C, TechnoClass_Init_DefaultDisguise, 0x6)
 		break;
 	}
 
-	pThis->Disguised = false;
 	return 0;
 }
 
