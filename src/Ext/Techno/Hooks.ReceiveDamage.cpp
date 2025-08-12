@@ -61,8 +61,10 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 		}
 	}
 
+	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
+
 	// Repair/Destroy bridges at Bridge Repair Huts buildings
-	if (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges)
+	if (pBuilding && (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
 	{
 		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(CellClass::Coord2Cell(pThis->GetCenterCoords()));
 		bool destroyBridge = !isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
@@ -70,8 +72,6 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	}
 
 	// Capture enemy buildings
-	auto const pBuilding = abstract_cast<BuildingClass*>(pThis);
-
 	if (pBuilding && pWHExt->FakeEngineer_CanCaptureBuildings
 		&& !pSourceHouse->IsAlliedWith(pTargetHouse)
 		&& (pBuilding->Type->Capturable || pBuilding->Type->NeedsEngineer))
