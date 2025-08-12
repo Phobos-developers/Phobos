@@ -89,6 +89,8 @@ public:
 
 		int AttackMoveFollowerTempCount;
 
+		TechnoClass* Attacker;
+
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
 			, Shield {}
@@ -146,6 +148,7 @@ public:
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
 			, AttackMoveFollowerTempCount { 0 }
+			, Attacker { nullptr }
 		{ }
 
 		void OnEarlyUpdate();
@@ -206,6 +209,10 @@ public:
 
 			switch (abs)
 			{
+			case AbstractType::Unit:
+			case AbstractType::Aircraft:
+			case AbstractType::Building:
+			case AbstractType::Infantry:
 			case AbstractType::Airstrike:
 				return false;
 			default:

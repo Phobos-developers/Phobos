@@ -34,6 +34,9 @@ DEFINE_HOOK(0x701900, TechnoClass_ReceiveDamage_Shield, 0x6)
 	const auto pSourceHouse = args->SourceHouse;
 	const auto pTargetHouse = pThis->Owner;
 
+	if (pWHExt->OnlyAttacker.Get() && args->Attacker)
+		pExt->Attacker = args->Attacker;
+
 	// Calculate Damage Multiplier
 	if (!args->IgnoreDefenses && damage)
 	{
