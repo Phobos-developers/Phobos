@@ -1627,6 +1627,9 @@ void TechnoExt::ExtData::UpdateTemporal()
 		ae->AI_Temporal();
 
 	this->UpdateRearmInTemporal();
+
+	if (this->Attacker)
+		this->Attacker = nullptr;
 }
 
 void TechnoExt::ExtData::UpdateRearmInEMPState()
