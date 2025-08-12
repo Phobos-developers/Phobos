@@ -387,14 +387,14 @@ MessageDisplayInCenter=false  ; boolean
 
 - In vanilla game, type select can almost only be used on 1x1 buildings with `UndeploysInto`. Now it's possible to use it on all buildings if `BuildingTypeSelectable` set to true.
 
+```{note}
+In Vanilla, you can type select a building by holding down the T key in advance and then clicking on the building. However, other type selection methods (such as selecting a building first and then pressing the T key, or selecting a building first and then pressing the type select button in the bottom sidebar) are not valid for buildings.
+```
+
 In `rulesmd.ini`:
 ```ini
 [General]
 BuildingTypeSelectable=false  ; boolean
-```
-
-```{note}
-In Vanilla, you can type select a building by holding down the T key in advance and then clicking on the building. However, other type selection methods (such as selecting a building first and then pressing the T key, or selecting a building first and then pressing the type select button in the bottom sidebar) are not valid for buildings.
 ```
 
 ```{warning}
@@ -462,7 +462,12 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 
 ### `[ ]` Quicksave
 
-- Save the current singleplayer game.
+- Saves the current game.
+
+```{note}
+For this command to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
   - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.

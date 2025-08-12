@@ -13,13 +13,20 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 {
 	if (pHouse && pTarget)
 	{
-		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse)
+		const auto pOwner = pTarget->Owner;
+
+		if (!this->AffectsNeutral && pOwner->IsNeutral())
+			return false;
+
+		const auto affectsAllies = this->OwnerObject()->AffectsAllies;
+
+		if (this->AffectsOwner.Get(affectsAllies) && pOwner == pHouse)
 			return true;
 
-		bool isAllies = pHouse->IsAlliedWith(pTarget);
+		const bool isAllies = pHouse->IsAlliedWith(pTarget);
 
-		if (this->OwnerObject()->AffectsAllies && isAllies)
-			return pTarget->Owner != pHouse;
+		if (affectsAllies && isAllies)
+			return pOwner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)
 			return true;
@@ -32,9 +39,6 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 
 bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 {
-	if (!pTarget)
-		return false;
-
 	if (!IsHealthInThreshold(pTarget))
 		return false;
 
@@ -46,12 +50,10 @@ bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 
 bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
 {
-	// Check if the WH should affect the techno target or skip it
-	double hp = pTarget->GetHealthPercentage();
-	bool hpBelowPercent = hp <= this->AffectsBelowPercent;
-	bool hpAbovePercent = hp > this->AffectsAbovePercent;
+	if (!this->HealthCheck)
+		return true;
 
-	return hpBelowPercent && hpAbovePercent;
+	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -98,9 +100,8 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 
 	auto const pType = pTechno->GetTechnoType();
 
-	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 &&
-		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pType)) ||
-		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
+	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
+		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
@@ -118,7 +119,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
 {
 	this->DamageAreaTarget = pTarget;
-	auto result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
+	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
 	this->DamageAreaTarget = nullptr;
 	return result;
 }
@@ -179,7 +180,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_AffectAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
+
+	if (this->Crit_AffectAbovePercent > this->Crit_AffectBelowPercent)
+		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
@@ -247,6 +252,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
+	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
@@ -287,8 +293,10 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
 
-	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
 	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
+	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
+	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
@@ -438,6 +446,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_AffectAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
@@ -514,8 +523,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressReflectDamage_Types)
 		.Process(this->SuppressReflectDamage_Groups)
 
-		.Process(this->AffectsAbovePercent)
 		.Process(this->AffectsBelowPercent)
+		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsNeutral)
+		.Process(this->HealthCheck)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
@@ -527,6 +538,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageTargetHealthMultiplier)
 
 		.Process(this->Parasite_CullingTarget)
+		.Process(this->Parasite_GrappleAnim)
 
 		.Process(this->Nonprovocative)
 

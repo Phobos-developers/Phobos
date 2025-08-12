@@ -45,9 +45,10 @@ DWORD _cdecl EBoltExt::_EBolt_Draw_Colors(REGISTERS* R)
 
 	GET(EBolt*, pThis, ECX);
 	const auto pExt = BoltTemp::ExtData = EBoltExt::ExtMap.Find(pThis);
+	const auto& color = pExt->Color;
 
 	for (int idx = 0; idx < 3; ++idx)
-		BoltTemp::Color[idx] = Drawing::RGB_To_Int(pExt->Color[idx]);
+		BoltTemp::Color[idx] = Drawing::RGB_To_Int(color[idx]);
 
 	return SkipGameCode;
 }
@@ -140,7 +141,7 @@ DEFINE_HOOK(0x6FD5D6, TechnoClass_InitEBolt, 0x6)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(EBolt*, pBolt, EAX);
-	GET(int, weaponIndex, EBX);
+	GET(const int, weaponIndex, EBX);
 
 	if (pBolt)
 		((EBoltFake*)pBolt)->_SetOwner(pThis, weaponIndex);

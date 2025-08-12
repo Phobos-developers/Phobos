@@ -232,6 +232,7 @@ public:
 		Nullable<double> CrushForwardTiltPerFrame;
 		Valueable<double> CrushOverlayExtraForwardTilt;
 		Valueable<double> CrushSlowdownMultiplier;
+		Valueable<bool> SkipCrushSlowdown;
 
 		Valueable<bool> DigitalDisplay_Disable;
 		ValueableVector<DigitalDisplayTypeClass*> DigitalDisplayTypes;
@@ -318,6 +319,14 @@ public:
 		Nullable<AnimTypeClass*> Wake_Grapple;
 		Nullable<AnimTypeClass*> Wake_Sinking;
 
+		Nullable<int> AINormalTargetingDelay;
+		Nullable<int> PlayerNormalTargetingDelay;
+		Nullable<int> AIGuardAreaTargetingDelay;
+		Nullable<int> PlayerGuardAreaTargetingDelay;
+		Nullable<int> AIAttackMoveTargetingDelay;
+		Nullable<int> PlayerAttackMoveTargetingDelay;
+		Nullable<bool> DistributeTargetingFrame;
+
 		Nullable<bool> AttackMove_Aggressive;
 		Nullable<bool> AttackMove_UpdateTarget;
 
@@ -330,8 +339,8 @@ public:
 
 		Nullable<bool> AllowAirstrike;
 
-		Nullable<UnitTypeClass*> Image_ConditionYellow;
-		Nullable<UnitTypeClass*> Image_ConditionRed;
+		Nullable<TechnoTypeClass*> Image_ConditionYellow;
+		Nullable<TechnoTypeClass*> Image_ConditionRed;
 		Nullable<UnitTypeClass*> WaterImage_ConditionYellow;
 		Nullable<UnitTypeClass*> WaterImage_ConditionRed;
 
@@ -418,6 +427,12 @@ public:
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
 
+		ValueableIdx<VocClass> VoiceIFVRepair;
+		ValueableVector<int> VoiceWeaponAttacks;
+		ValueableVector<int> VoiceEliteWeaponAttacks;
+
+		Nullable<bool> InfantryAutoDeploy;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -455,7 +470,7 @@ public:
 			, TintColorAirstrike { 0 }
 			, LaserTargetColor {}
 			, AirstrikeLineColor {}
-			, ShieldType {}
+			, ShieldType { nullptr }
 			, PassengerDeletionType { nullptr }
 
 			, WarpOut {}
@@ -617,6 +632,7 @@ public:
 			, CrushSlowdownMultiplier { 0.2 }
 			, CrushForwardTiltPerFrame {}
 			, CrushOverlayExtraForwardTilt { 0.02 }
+			, SkipCrushSlowdown { false }
 
 			, DigitalDisplay_Disable { false }
 			, DigitalDisplayTypes {}
@@ -705,6 +721,14 @@ public:
 			, Wake_Grapple { }
 			, Wake_Sinking { }
 
+			, AINormalTargetingDelay {}
+			, PlayerNormalTargetingDelay {}
+			, AIGuardAreaTargetingDelay {}
+			, PlayerGuardAreaTargetingDelay {}
+			, AIAttackMoveTargetingDelay {}
+			, PlayerAttackMoveTargetingDelay {}
+			, DistributeTargetingFrame {}
+
 			, DigitalDisplay_Health_FakeAtDisguise { true }
 
 			, AttackMove_Aggressive {}
@@ -785,11 +809,17 @@ public:
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
 			, ReadMultiWeapon { false }
+
+			, VoiceIFVRepair { -1 }
+			, VoiceWeaponAttacks {}
+			, VoiceEliteWeaponAttacks {}
+
+			, InfantryAutoDeploy {}
 		{ }
 
 		virtual ~ExtData() = default;
 		virtual void LoadFromINIFile(CCINIClass* pINI) override;
-		virtual void Initialize() override;
+		virtual void Initialize() override { }
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 
@@ -818,7 +848,7 @@ public:
 		void Serialize(T& Stm);
 
 		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
-
+		void ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE);
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>
@@ -837,7 +867,7 @@ public:
 	static TechnoClass* CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType facing, DirType* secondaryFacing,
 	CoordStruct location, HouseClass* pOwner, TechnoClass* pInvoker, HouseClass* pInvokerHouse);
 
-	static WeaponStruct* GetWeaponStruct(TechnoTypeClass* pThis, int nWeaponIndex, bool isElite);
+	static WeaponTypeClass* GetWeaponType(TechnoTypeClass* pThis, int weaponIndex, bool isElite);
 
 	// Ares 0.A
 	static const char* GetSelectionGroupID(ObjectTypeClass* pType);
