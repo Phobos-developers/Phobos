@@ -2063,8 +2063,8 @@ void TechnoExt::ExtData::AddFirer(WeaponTypeClass* const Weapon, TechnoClass* co
 	if (Attacker->InLimbo)
 		return;
 
-	int index = this->FindFirer(Weapon);
-	OnlyAttackStruct Data { Weapon ,Attacker };
+	const int index = this->FindFirer(Weapon);
+	const OnlyAttackStruct Data { Weapon ,Attacker };
 
 	if (index < 0)
 	{
@@ -2078,7 +2078,7 @@ void TechnoExt::ExtData::AddFirer(WeaponTypeClass* const Weapon, TechnoClass* co
 
 bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker) const
 {
-	int index = this->FindFirer(Weapon);
+	const int index = this->FindFirer(Weapon);
 
 	if (index >= 0)
 		return this->OnlyAttackData[index].Attacker == Attacker;
