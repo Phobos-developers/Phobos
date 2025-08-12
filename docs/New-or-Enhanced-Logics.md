@@ -2077,7 +2077,7 @@ FireUp.ResetInRetarget=true     ; boolean
 
 ### Turret Response
 
-- Allow turret response when custom vehicle loses target. when `Speed=0`, the default value is no; in other cases, it is yes.
+- When the vehicle loses its target, customize whether its turret is allowed to rotate. when `Speed=0`, the default value is no; in other cases, it is yes.
 
 In `rulesmd.ini`:
 ```ini
