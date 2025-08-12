@@ -1,4 +1,5 @@
 #include "Body.h"
+#include <Randomizer.h>
 
 DEFINE_HOOK(0x7128B2, TechnoTypeClass_ReadINI_MultiWeapon, 0x6)
 {
@@ -77,4 +78,60 @@ DEFINE_HOOK(0x715B10, TechnoTypeClass_ReadINI_MultiWeapon2, 0x7)
 
 	R->AL(pThis->HasMultipleTurrets());
 	return Continue;
+}
+
+int GetVoiceAttack(TechnoTypeClass* pType, int weaponIndex, bool isElite, WeaponTypeClass* pWeaponType)
+{
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	int voiceAttack = -1;
+
+	if (pWeaponType && pWeaponType->Damage < 0)
+	{
+		voiceAttack = pTypeExt->VoiceIFVRepair;
+
+		if (voiceAttack < 0)
+			voiceAttack = !strcmp(pType->ID, "FV") ? RulesClass::Instance->VoiceIFVRepair : -1; // It's hardcoded like this in vanilla
+
+		if (voiceAttack >= 0)
+			return voiceAttack;
+	}
+
+	if (weaponIndex >= 0 && int(pTypeExt->VoiceWeaponAttacks.size()) > weaponIndex)
+		voiceAttack = isElite ? pTypeExt->VoiceEliteWeaponAttacks[weaponIndex] : pTypeExt->VoiceWeaponAttacks[weaponIndex];
+
+	if (voiceAttack < 0)
+	{
+		if (pTypeExt->IsSecondary(weaponIndex))
+			voiceAttack = isElite ? pType->VoiceSecondaryEliteWeaponAttack : pType->VoiceSecondaryWeaponAttack;
+		else
+			voiceAttack = isElite ? pType->VoicePrimaryEliteWeaponAttack : pType->VoicePrimaryWeaponAttack;
+	}
+
+	return voiceAttack;
+}
+
+DEFINE_HOOK(0x7090A0, TechnoClass_VoiceAttack, 0x7)
+{
+	GET(TechnoClass*, pThis, ECX);
+	GET_STACK(AbstractClass*, pTarget, 0x4);
+
+	const auto pType = pThis->GetTechnoType();
+	const int weaponIndex = pThis->SelectWeapon(pTarget);
+	const int voiceAttack = GetVoiceAttack(pType, weaponIndex, pThis->Veterancy.IsElite(), pThis->GetWeapon(weaponIndex)->WeaponType);
+
+	if (voiceAttack >= 0)
+	{
+		pThis->QueueVoice(voiceAttack);
+		return 0x7091C7;
+	}
+
+	const auto& voiceList = pType->VoiceAttack;
+
+	if (voiceList.Count > 0)
+	{
+		const int idx = Randomizer::Global.RandomRanged(0, voiceList.Count - 1);
+		pThis->QueueVoice(voiceList[idx]);
+	}
+
+	return 0x7091C7;
 }

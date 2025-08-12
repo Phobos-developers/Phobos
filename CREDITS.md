@@ -49,6 +49,8 @@ This page lists all the individual contributions to the project by their author.
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
   - Warhead activation target health thresholds
+  - MP saves support for quicksave command and savegame trigger action
+  - Ported XNA CnCNet Client MP save handling
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -384,6 +386,7 @@ This page lists all the individual contributions to the project by their author.
   - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
+  - Units can customize the attack voice that plays when using more weapons
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -436,6 +439,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge
   - Fix the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing
   - Fix the bug that hover vehicle will sink if destroyed on bridge
+  - Customize squid grapple animation
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -587,6 +591,7 @@ This page lists all the individual contributions to the project by their author.
   - Skip target scanning function calling for unarmed technos (code)
   - Force techno targeting in distributed frames to improve performance
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
+  - Auto deploy for GI-like infantry
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

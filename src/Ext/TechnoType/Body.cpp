@@ -327,6 +327,53 @@ void TechnoTypeExt::ExtData::ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSe
 	}
 }
 
+void TechnoTypeExt::ExtData::ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& voice, ValueableVector<int>& voiceElite)
+{
+	if (!this->ReadMultiWeapon)
+	{
+		voice.clear();
+		voiceElite.clear();
+		return;
+	}
+
+	const auto pThis = this->OwnerObject();
+	const auto weaponCount = Math::max(pThis->WeaponCount, 0);
+
+	while (int(voice.size()) > weaponCount)
+	{
+		voice.erase(voice.begin() + int(voice.size()) - 1);
+	}
+
+	while (int(voiceElite.size()) > weaponCount)
+	{
+		voiceElite.erase(voiceElite.begin() + int(voiceElite.size()) - 1);
+	}
+
+	char tempBuff[64];
+	for (int index = 0; index < weaponCount; index++)
+	{
+		NullableIdx<VocClass> VoiceAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceWeapon%dAttack", index + 1);
+		VoiceAttack.Read(exINI, pSection, tempBuff);
+
+		NullableIdx<VocClass> VoiceEliteAttack;
+		_snprintf_s(tempBuff, sizeof(tempBuff), "VoiceEliteWeapon%dAttack", index + 1);
+		VoiceAttack.Read(exINI, pSection, tempBuff);
+
+		if (int(voice.size()) > index)
+		{
+			voice[index] = VoiceAttack.Get(voice[index]);
+			voiceElite[index] = VoiceEliteAttack.Get(voiceElite[index]);
+		}
+		else
+		{
+			const int voiceAttack = VoiceAttack.Get(-1);
+			voice.push_back(voiceAttack);
+			voiceElite.push_back(VoiceEliteAttack.Get(voiceAttack));
+		}
+	}
+}
+
 void TechnoTypeExt::ExtData::CalculateSpawnerRange()
 {
 	const auto pThis = this->OwnerObject();
@@ -919,6 +966,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_StopWhenTargetAcquired.Read(exINI, pSection, "AttackMove.StopWhenTargetAcquired");
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
+	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
+
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1153,6 +1202,10 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
 
 	this->LoadFromINIByWhatAmI(exArtINI, pArtSection);
+
+	// VoiceIFVRepair from Ares 0.2
+	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
+	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
 void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection)
@@ -1544,6 +1597,12 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->MultiWeapon_IsSecondary)
 		.Process(this->MultiWeapon_SelectCount)
 		.Process(this->ReadMultiWeapon)
+
+		.Process(this->VoiceIFVRepair)
+		.Process(this->VoiceWeaponAttacks)
+		.Process(this->VoiceEliteWeaponAttacks)
+
+		.Process(this->InfantryAutoDeploy)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
