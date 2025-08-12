@@ -386,7 +386,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
   - Units can customize the attack voice that plays when using more weapons
-  - When Warhead has `OnlyAttacker=yes`, it prevents other units of the same type from attacking the same target
+  - When a warhead has `OnlyAttacker=yes`, it prevents other units using that warhead from attacking the same target
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building

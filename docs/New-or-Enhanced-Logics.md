@@ -2430,7 +2430,7 @@ SpawnsCrate(N).Weight=1  ; integer
 
 ### Single Attacker
 
-- When Warhead has `OnlyAttacker=yes`, it prevents other units of the same type from attacking the same target. The default value is no..
+- When a warhead has `OnlyAttacker=yes`, it prevents other units using that warhead from attacking the same target.
 
 In `rulesmd.ini`:
 ```ini
