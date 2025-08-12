@@ -81,3 +81,40 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 
 	return pThis->Type->Speed == 0 ? 0x738927 : 0;
 }
+
+DEFINE_HOOK_AGAIN(0x73F08A, UnitClass_Mission_DisallowMoving, 0x7)	//UnitClass::Mission_Hunt
+DEFINE_HOOK(0x74416C, UnitClass_Mission_DisallowMoving, 0x7)		//UnitClass::Mission_AreaGuard
+{
+	GET(UnitClass*, pThis, ESI);
+
+	DWORD address = R->Origin();
+
+	if (pThis->Type->Speed == 0)
+	{
+		pThis->QueueMission(Mission::Guard, false);
+		pThis->NextMission();
+
+		R->EAX(pThis->FootClass::Mission_Guard());
+	}
+	else if (address == 0x74416C)
+	{
+		R->EAX(pThis->FootClass::Mission_AreaGuard());
+	}
+	else
+	{
+		R->EAX(pThis->FootClass::Mission_Hunt());
+	}
+
+	return R->Origin() + 0x7;
+}
+
+DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(FireError, result, EAX);
+
+	if (result == FireError::RANGE && pThis->Type->Speed == 0)
+		R->EAX(FireError::ILLEGAL);
+
+	return 0;
+}
