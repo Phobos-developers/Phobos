@@ -1221,21 +1221,21 @@ void TechnoExt::ExtData::StopIdleAction()
 void TechnoExt::ExtData::ApplyIdleAction()
 {
 	const auto pThis = this->OwnerObject();
+	auto shouldNotTurn = [pThis]() -> bool
+	{
+		if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+			return pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
+
+		return pThis->WhatAmI() == AbstractType::Building;
+	};
 
 	if (this->UnitIdleActionTimer.Completed()) // Set first direction
 	{
 		this->UnitIdleActionTimer.Stop();
 		this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->Turret_IdleIntervalMin, RulesExt::Global()->Turret_IdleIntervalMax));
-		bool noTurn = false;
-
-		if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
-			noTurn = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
-		else if (pThis->WhatAmI() == AbstractType::Building)
-			noTurn = true;
-
-		const auto raw = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 65535) - 32768);
+		const short raw = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 65535) - 32768);
 		this->StopRotateWithNewROT(ScenarioClass::Instance->Random.RandomRanged(2,4) >> 1);
-		this->SetTurretDir(DirStruct { (this->TypeExtData->GetTurretLimitedRaw(noTurn ? raw : (raw / 4)) + static_cast<short>(pThis->PrimaryFacing.Current().Raw)) });
+		this->SetTurretDir(DirStruct { (this->TypeExtData->GetTurretLimitedRaw(shouldNotTurn() ? raw : (raw / 4)) + static_cast<short>(pThis->PrimaryFacing.Current().Raw)) });
 		return;
 	}
 	else if (this->UnitIdleActionGapTimer.IsTicking()) // Check change direction
@@ -1243,30 +1243,17 @@ void TechnoExt::ExtData::ApplyIdleAction()
 		if (!this->UnitIdleActionGapTimer.HasTimeLeft()) // Set next direction
 		{
 			this->UnitIdleActionGapTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->Turret_IdleIntervalMin, RulesExt::Global()->Turret_IdleIntervalMax));
-			bool noTurn = false;
-
-			if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
-				noTurn = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
-			else if (pThis->WhatAmI() == AbstractType::Building)
-				noTurn = true;
-
-			const auto raw = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 65535) - 32768);
+			const short raw = static_cast<short>(ScenarioClass::Instance->Random.RandomRanged(0, 65535) - 32768);
 			this->StopRotateWithNewROT(ScenarioClass::Instance->Random.RandomRanged(2,4) >> 1);
-			this->SetTurretDir(DirStruct { (this->TypeExtData->GetTurretLimitedRaw(noTurn ? raw : (raw / 4)) + static_cast<short>(pThis->PrimaryFacing.Current().Raw)) });
+			this->SetTurretDir(DirStruct { (this->TypeExtData->GetTurretLimitedRaw(shouldNotTurn() ? raw : (raw / 4)) + static_cast<short>(pThis->PrimaryFacing.Current().Raw)) });
 			return;
 		}
 	}
 	else if (!this->UnitIdleActionTimer.IsTicking()) // In idle now
 	{
 		this->UnitIdleActionTimer.Start(ScenarioClass::Instance->Random.RandomRanged(RulesExt::Global()->Turret_IdleRestartMin, RulesExt::Global()->Turret_IdleRestartMax));
-		bool noTurn = false;
 
-		if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
-			noTurn = pUnit->BunkerLinkedItem || !pUnit->Type->Speed || (pUnit->Type->IsSimpleDeployer && pUnit->Deployed);
-		else if (pThis->WhatAmI() == AbstractType::Building)
-			noTurn = true;
-
-		if (!noTurn)
+		if (!shouldNotTurn())
 		{
 			this->SetTurretDir(pThis->PrimaryFacing.Current());
 			return;
