@@ -15,17 +15,17 @@ bool CannotMove(UnitClass* pThis)
 
 	if (!pThis->IsInAir())
 	{
-		const auto pCell = pThis->GetCell();
-		const LandType Land = pCell->LandType;
-		const LandType MovementRestrictedTo = pType->MovementRestrictedTo;
+		LandType landType = pThis->GetCell()->LandType;
+		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
 
-		if (MovementRestrictedTo != LandType::None && MovementRestrictedTo != Land && Land != LandType::Tunnel)
+		if (pThis->OnBridge
+			&& (landType == LandType::Water || landType == LandType::Beach))
 		{
-			const int OverlayTypeIndex = pCell->OverlayTypeIndex;
-
-			if (OverlayTypeIndex < 237 || OverlayTypeIndex > 238)
-				return true;
+			landType = LandType::Road;
 		}
+
+		if (movementRestrictedTo != LandType::None && movementRestrictedTo != landType && landType != LandType::Tunnel)
+			return true;
 	}
 
 	return false;
@@ -97,7 +97,7 @@ DEFINE_HOOK(0x736B60, UnitClass_Rotation_AI_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return CannotMove(pThis) ? 0x736AFB : 0;
+	return !TechnoTypeExt::ExtMap.Find(pThis->Type)->TurretResponse.Get(pThis->Type->Speed != 0) ? 0x736AFB : 0;
 }
 
 DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)

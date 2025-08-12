@@ -2075,6 +2075,16 @@ FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
 ```
 
+### Turret Response
+
+- Allow turret response when custom vehicle loses target. when `Speed=0`, the default value is no; in other cases, it is yes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]       ; VehicleType
+TurretResponse=     ; boolean
+```
+
 ## Warheads
 
 ```{hint}
