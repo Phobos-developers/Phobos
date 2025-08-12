@@ -92,6 +92,8 @@ public:
 
 		bool SkipWeaponPicking;
 
+		Valueable<bool> OnlyAttacker;
+
 		ExtData(WeaponTypeClass* OwnerObject) : Extension<WeaponTypeClass>(OwnerObject)
 			, DiskLaser_Radius { DiskLaserClass::Radius }
 			, ProjectileRange { Leptons(100000) }
@@ -160,6 +162,8 @@ public:
 			, DelayedFire_OnlyOnInitialBurst { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
+
+			, OnlyAttacker { false }
 		{ }
 
 		int GetBurstDelay(int burstIndex) const;

@@ -2428,16 +2428,6 @@ SpawnsCrate(N).Type=     ; Powerup crate type enum (money|unit|healbase|cloak|ex
 SpawnsCrate(N).Weight=1  ; integer
 ```
 
-### Single Attacker
-
-- When a warhead has `OnlyAttacker=yes`, it prevents other units using that warhead from attacking the same target.
-
-In `rulesmd.ini`:
-```ini
-[SOMEWARHEAD]           ; WarheadType
-OnlyAttacker=no         ; boolean
-```
-
 ### Trigger specific NotHuman infantry Death anim sequence
 
 - Warheads are now able to trigger specific `NotHuman=yes` infantry `Death` anim sequence using the corresponding tag. It's value represents sequences from `Die1` to `Die5`.
@@ -2653,4 +2643,14 @@ CanTarget.MinHealth=0.0  ; floating point value, percents or absolute
 
 ```{note}
 `CanTarget` explicitly requires either `all` or `empty` to be listed for the weapon to be able to fire at cells containing no TechnoTypes.
+```
+
+### Single Attacker
+
+- When a weapon has `OnlyAttacker=yes`, it prevents other units using that weapon from attacking the same target.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]           ; WarheadType
+OnlyAttacker=no         ; boolean
 ```

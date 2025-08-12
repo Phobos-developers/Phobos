@@ -48,9 +48,23 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
 
-	const auto pAttacker = this->Attacker;
-	if (pAttacker && pAttacker->Target != pThis)
-		this->Attacker = nullptr;
+	if (!this->OnlyAttackData.empty())
+	{
+		for (int index = int(this->OnlyAttackData.size()) - 1; index >= 0; --index)
+		{
+			const auto Attacker = this->OnlyAttackData[index].Attacker;
+			Debug::Log("TEST : %s, %d\n", Attacker->get_ID(), Attacker->Target ? true : false);
+
+			if (const auto pTechno = abstract_cast<TechnoClass*>(Attacker->Target))
+				Debug::Log("TEST 2 : %s, 0x%x, 0x%x, %d\n", pTechno->get_ID(), pTechno, pThis, pTechno == pThis);
+
+			if (Attacker->Target != pThis)
+			{
+				Debug::Log("TEST 3\n");
+				this->OnlyAttackData.erase(this->OnlyAttackData.begin() + index);
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -1627,9 +1641,6 @@ void TechnoExt::ExtData::UpdateTemporal()
 		ae->AI_Temporal();
 
 	this->UpdateRearmInTemporal();
-
-	if (this->Attacker)
-		this->Attacker = nullptr;
 }
 
 void TechnoExt::ExtData::UpdateRearmInEMPState()
@@ -2051,4 +2062,48 @@ void TechnoExt::ExtData::UpdateTintValues()
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
 	}
+}
+
+void TechnoExt::ExtData::AddFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker)
+{
+	if (Attacker->InLimbo)
+		return;
+
+	int index = this->FindFirer(Weapon);
+	OnlyAttackStruct Data { Weapon ,Attacker };
+
+	if (index < 0)
+	{
+		this->OnlyAttackData.push_back(Data);
+	}
+	else
+	{
+		this->OnlyAttackData[index] = Data;
+	}
+}
+
+bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker) const
+{
+	int index = this->FindFirer(Weapon);
+
+	if (index >= 0)
+		return this->OnlyAttackData[index].Attacker == Attacker;
+
+	return true;
+}
+
+int TechnoExt::ExtData::FindFirer(WeaponTypeClass* const Weapon) const
+{
+	if (!this->OnlyAttackData.empty())
+	{
+		for (int index = 0; index < int(this->OnlyAttackData.size()); index++)
+		{
+			const auto pWeapon = this->OnlyAttackData[index].Weapon;
+
+			if (pWeapon == Weapon && this->OnlyAttackData[index].Attacker)
+				return index;
+		}
+	}
+
+	return -1;
 }

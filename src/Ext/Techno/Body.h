@@ -89,7 +89,19 @@ public:
 
 		int AttackMoveFollowerTempCount;
 
-		TechnoClass* Attacker;
+		struct OnlyAttackStruct
+		{
+			WeaponTypeClass* Weapon { nullptr };
+			TechnoClass* Attacker { nullptr };
+
+			bool Load(PhobosStreamReader& Stm, bool RegisterForChange);
+			bool Save(PhobosStreamWriter& Stm) const;
+
+		private:
+			template <typename T>
+			bool Serialize(T& Stm);
+		};
+		std::vector<OnlyAttackStruct> OnlyAttackData;
 
 		ExtData(TechnoClass* OwnerObject) : Extension<TechnoClass>(OwnerObject)
 			, TypeExtData { nullptr }
@@ -148,7 +160,7 @@ public:
 			, TintIntensityAllies { 0 }
 			, TintIntensityEnemies { 0 }
 			, AttackMoveFollowerTempCount { 0 }
-			, Attacker { nullptr }
+			, OnlyAttackData {}
 		{ }
 
 		void OnEarlyUpdate();
@@ -186,6 +198,10 @@ public:
 		int ApplyForceWeaponInRange(AbstractClass* pTarget);
 		void ResetDelayedFireTimer();
 		void UpdateTintValues();
+
+		void AddFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker);
+		bool ContainFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker) const;
+		int FindFirer(WeaponTypeClass* const Weapon) const;
 
 		virtual ~ExtData() override;
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
