@@ -828,7 +828,7 @@ void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 		auto& AttackerDatas = this->OnlyAttackData;
 		if (!AttackerDatas.empty())
 		{
-			for (size_t index = AttackerDatas.size() - 1; index >= 0; --index)
+			for (int index = int(AttackerDatas.size()) - 1; index >= 0; --index)
 			{
 				if (AttackerDatas[index].Attacker != ptr)
 					continue;

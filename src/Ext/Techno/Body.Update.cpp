@@ -48,20 +48,14 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
 
-	if (!this->OnlyAttackData.empty())
+	auto& AttackerDatas = this->OnlyAttackData;
+	if (!AttackerDatas.empty())
 	{
-		for (int index = int(this->OnlyAttackData.size()) - 1; index >= 0; --index)
+		for (int index = int(AttackerDatas.size()) - 1; index >= 0; --index)
 		{
-			const auto Attacker = this->OnlyAttackData[index].Attacker;
-			Debug::Log("TEST : %s, %d\n", Attacker->get_ID(), Attacker->Target ? true : false);
-
-			if (const auto pTechno = abstract_cast<TechnoClass*>(Attacker->Target))
-				Debug::Log("TEST 2 : %s, 0x%x, 0x%x, %d\n", pTechno->get_ID(), pTechno, pThis, pTechno == pThis);
-
-			if (Attacker->Target != pThis)
+			if (AttackerDatas[index].Attacker->Target != pThis)
 			{
-				Debug::Log("TEST 3\n");
-				this->OnlyAttackData.erase(this->OnlyAttackData.begin() + index);
+				AttackerDatas.erase(AttackerDatas.begin() + index);
 			}
 		}
 	}
@@ -2094,13 +2088,14 @@ bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* const Weapon, TechnoClass
 
 int TechnoExt::ExtData::FindFirer(WeaponTypeClass* const Weapon) const
 {
-	if (!this->OnlyAttackData.empty())
+	const auto& AttackerDatas = this->OnlyAttackData;
+	if (!AttackerDatas.empty())
 	{
-		for (int index = 0; index < int(this->OnlyAttackData.size()); index++)
+		for (int index = 0; index < int(AttackerDatas.size()); index++)
 		{
-			const auto pWeapon = this->OnlyAttackData[index].Weapon;
+			const auto pWeapon = AttackerDatas[index].Weapon;
 
-			if (pWeapon == Weapon && this->OnlyAttackData[index].Attacker)
+			if (pWeapon == Weapon && AttackerDatas[index].Attacker)
 				return index;
 		}
 	}
