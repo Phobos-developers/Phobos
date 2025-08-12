@@ -477,16 +477,15 @@ DEFINE_HOOK(0x522790, InfantryClass_ClearDisguise_DefaultDisguise, 0x6)
 
 	GET(InfantryClass*, pThis, ECX);
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+	const auto pDefault = pTypeExt->DefaultDisguise.Get();
 
-	if (const auto pDefault = pTypeExt->DefaultDisguise.Get())
+	if (pDefault && pDefault->WhatAmI() == AbstractType::InfantryType)
 	{
 		pThis->Disguise = pDefault;
 		pThis->DisguisedAsHouse = pThis->Owner;
 		pThis->Disguised = true;
 		return SetDisguise;
 	}
-
-	pThis->Disguised = false;
 
 	return 0;
 }
@@ -502,8 +501,8 @@ DEFINE_HOOK(0x746720, UnitClass_ClearDisguise_DefaultDisguise, 0x5)
 		return 0;
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
-	const auto pDefault = pTypeExt->DefaultVehicleDisguise.Get();
-	pThis->Disguise = pDefault ? pDefault : pType;
+	const auto pDefault = pTypeExt->DefaultDisguise.Get();
+	pThis->Disguise = pDefault && pDefault->WhatAmI() == AbstractType::UnitType ? pDefault : pType;
 	pThis->DisguisedAsHouse = pThis->Owner;
 	pThis->Disguised = true;
 	return SetDisguise;

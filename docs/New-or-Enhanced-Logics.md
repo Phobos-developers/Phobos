@@ -687,17 +687,6 @@ In `rulesmd.ini`:
 SlavesFreeSound=      ; Sound entry, default to [AudioVisual] -> SlavesFreeSound
 ```
 
-### Default disguise for individual InfantryTypes
-
-- Infantry can now have its `DefaultDisguise` overridden per-type.
-  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
-
-In `rulesmd.ini`:
-```ini
-[SOMEINFANTRY]      ; InfantryType
-DefaultDisguise=    ; InfantryType
-```
-
 ### Random death animaton for NotHuman infantry
 
 - Infantry with `NotHuman=yes` can now play random death anim sequence between `Die1` to `Die5` instead of the hardcoded `Die1`.
@@ -1976,6 +1965,18 @@ In `rulesmd.ini`:
 Convert.ResetMindControl=false          ; boolean
 ```
 
+### Default disguise for individual InfantryTypes or UnitTypes
+
+- Infantry can now have its `DefaultDisguise` overridden per-type.
+  - This tag's priority is higher than Ares' per-side `DefaultDisguise`.
+- Now you can make vehicle disguise to other vehicles, like spy.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]      ; InfantryType or UnitType 
+DefaultDisguise=    ; InfantryType or UnitType
+```
+
 ## Terrain
 
 ### Destroy animation & sound
@@ -2073,16 +2074,6 @@ In `artmd.ini`:
 [SOMEVEHICLE]                   ; VehicleType
 FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
-```
-
-### Vehicle disguise to vehicle
-
-- Now you can make vehicle disguise to other vehicles, like spy.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                           ; VehicleType
-DefaultVehicleDisguise=             ; vehicle type
 ```
 
 ## Warheads

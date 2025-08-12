@@ -139,8 +139,7 @@ public:
 		Valueable<bool> DestroyAnim_Random;
 		Valueable<bool> NotHuman_RandomDeathSequence;
 
-		Valueable<InfantryTypeClass*> DefaultDisguise;
-		Valueable<UnitTypeClass*> DefaultVehicleDisguise;
+		Valueable<TechnoTypeClass*> DefaultDisguise;
 		Valueable<bool> UseDisguiseMovementSpeed;
 
 		Nullable<int> OpenTopped_RangeBonus;
@@ -486,7 +485,6 @@ public:
 			, NotHuman_RandomDeathSequence { false }
 
 			, DefaultDisguise { nullptr }
-			, DefaultVehicleDisguise { nullptr }
 			, UseDisguiseMovementSpeed {}
 
 			, OpenTopped_RangeBonus {}

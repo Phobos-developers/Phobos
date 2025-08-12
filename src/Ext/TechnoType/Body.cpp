@@ -691,7 +691,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->NotHuman_RandomDeathSequence.Read(exINI, pSection, "NotHuman.RandomDeathSequence");
 
 	this->DefaultDisguise.Read(exINI, pSection, "DefaultDisguise");
-	this->DefaultVehicleDisguise.Read(exINI, pSection, "DefaultVehicleDisguise");
 	this->UseDisguiseMovementSpeed.Read(exINI, pSection, "UseDisguiseMovementSpeed");
 
 	this->OpenTopped_RangeBonus.Read(exINI, pSection, "OpenTopped.RangeBonus");
@@ -1320,7 +1319,6 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DestroyAnim_Random)
 		.Process(this->NotHuman_RandomDeathSequence)
 		.Process(this->DefaultDisguise)
-		.Process(this->DefaultVehicleDisguise)
 		.Process(this->UseDisguiseMovementSpeed)
 		.Process(this->WeaponBurstFLHs)
 		.Process(this->EliteWeaponBurstFLHs)
