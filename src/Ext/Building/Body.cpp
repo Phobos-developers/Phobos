@@ -357,7 +357,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
 	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
-		if (!pUnit->Locomotor->Is_Moving())
+		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
 		{
 			if (const auto pTeam = pUnit->Team)
 				pTeam->LiberateMember(pUnit);
@@ -381,7 +381,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 		{
 			if (const auto pUnit = abstract_cast<UnitClass*, true>(pObject))
 			{
-				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Is_Moving())
+				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Destination() != CoordStruct::Empty)
 					continue;
 
 				const auto height = pUnit->GetHeight();
