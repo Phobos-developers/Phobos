@@ -355,7 +355,8 @@ DEFINE_HOOK(0x4423B7, BuildingClass_ReceiveDamage_BridgeRepairHut, 0xC)
 
 	if (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges)
 	{
-		bool destroyBridge = pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
+		const bool isBridgeDestroyed = MapClass::Instance.IsLinkedBridgeDestroyed(CellClass::Coord2Cell(pThis->GetCenterCoords()));
+		bool destroyBridge = isBridgeDestroyed && pWHExt->FakeEngineer_CanRepairBridges ? false : pWHExt->FakeEngineer_CanDestroyBridges;
 
 		WarheadTypeExt::DetonateAtBridgeRepairHut(pThis, pSource, pHouse, destroyBridge);
 	}

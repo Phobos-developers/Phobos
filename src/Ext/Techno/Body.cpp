@@ -676,8 +676,8 @@ bool TechnoExt::CanBeAffectedByFakeEngineer(TechnoClass* pThis, TechnoClass* pTa
 		CellStruct bridgeRepairHutCell = CellClass::Coord2Cell(pBuilding->GetCenterCoords());
 		bool isBridgeDamaged = MapClass::Instance.IsLinkedBridgeDestroyed(bridgeRepairHutCell);
 
-		if (isBridgeDamaged
-			&& (pWHExt->FakeEngineer_CanRepairBridges || pWHExt->FakeEngineer_CanDestroyBridges))
+		if ((isBridgeDamaged && pWHExt->FakeEngineer_CanRepairBridges)
+			|| (!isBridgeDamaged && pWHExt->FakeEngineer_CanDestroyBridges))
 		{
 			canAffectBridges = true;
 		}

@@ -136,9 +136,6 @@ void WarheadTypeExt::DetonateAtBridgeRepairHut(AbstractClass* pTarget, TechnoCla
 	const CoordStruct targetCoords = pTarget->GetCenterCoords();
 	const CellStruct baseCell = CellClass::Coord2Cell(targetCoords);
 
-	if (!MapClass::Instance.IsLinkedBridgeDestroyed(baseCell))
-		return;
-
 	// Send engineer's "enter" event
 	auto const pTag = pBuilding->AttachedTag;
 
