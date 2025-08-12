@@ -118,3 +118,31 @@ DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
 
 	return 0;
 }
+
+DEFINE_HOOK(0x736E34, UnitClass_UpdateFiring_DisallowMoving, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+	GET(AbstractClass*, pTarget, EAX);
+	GET(int, nWeaponIndex, EDI);
+
+	const auto pType = pThis->Type;
+
+	if (pType->Speed == 0)
+	{
+		if (!pThis->IsCloseEnough(pTarget, nWeaponIndex))
+		{
+			if (pType->IsGattling)
+				pThis->GattlingRateDown(1);
+
+			pThis->SetTarget(nullptr);
+			return 0x737140;
+		}
+		else
+		{
+			R->EAX(pThis->GetFireError(pTarget, nWeaponIndex, false));
+			return 0x736E40;
+		}
+	}
+
+	return 0;
+}
