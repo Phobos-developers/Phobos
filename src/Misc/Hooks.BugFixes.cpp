@@ -2478,3 +2478,21 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 }
 
 #pragma endregion
+
+DEFINE_HOOK(0x71532B, TechnoTypeClass_LoadFromINI_BarrelAnimData_Fix, 0x8)
+{
+	GET(TechnoTypeClass*, pThis, EBP);
+	GET_STACK(CCINIClass*, pINI, STACK_OFFSET(0x37C, 0x4));
+
+	const auto pSection = pThis->ID;
+	auto& barrelData = pThis->BarrelAnimData;
+
+	barrelData.Travel = pINI->ReadInteger(pSection, "BarrelTravel", barrelData.Travel);
+	barrelData.CompressFrames = std::max(pINI->ReadInteger(pSection, "BarrelCompressFrames", barrelData.CompressFrames), 1);
+	barrelData.HoldFrames = std::max(pINI->ReadInteger(pSection, "BarrelHoldFrames", barrelData.HoldFrames), 1);
+	barrelData.RecoverFrames = std::max(pINI->ReadInteger(pSection, "BarrelRecoverFrames", barrelData.RecoverFrames), 1);
+
+	R->ESI(pINI);
+
+	return 0x7153DA;
+}
