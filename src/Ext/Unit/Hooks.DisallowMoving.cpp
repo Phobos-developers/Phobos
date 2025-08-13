@@ -107,12 +107,9 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 	return CannotMove(pThis) ? 0x738927 : 0;
 }
 
-DEFINE_HOOK_AGAIN(0x73F08A, UnitClass_Mission_DisallowMoving, 0x7)	//UnitClass::Mission_Hunt
-DEFINE_HOOK(0x74416C, UnitClass_Mission_DisallowMoving, 0x7)		//UnitClass::Mission_AreaGuard
+DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
-
-	DWORD address = R->Origin();
 
 	if (CannotMove(pThis))
 	{
@@ -120,17 +117,26 @@ DEFINE_HOOK(0x74416C, UnitClass_Mission_DisallowMoving, 0x7)		//UnitClass::Missi
 		pThis->NextMission();
 
 		R->EAX(pThis->FootClass::Mission_Guard());
-	}
-	else if (address == 0x74416C)
-	{
-		R->EAX(pThis->FootClass::Mission_AreaGuard());
-	}
-	else
-	{
-		R->EAX(pThis->FootClass::Mission_Hunt());
+		return 0x744173;
 	}
 
-	return R->Origin() + 0x7;
+	return 0;
+}
+
+DEFINE_HOOK(0x73EFC4, UnitClass_Mission_Hunt_DisallowMoving, 0x6)
+{
+	GET(UnitClass*, pThis, ESI);
+
+	if (CannotMove(pThis))
+	{
+		pThis->QueueMission(Mission::Guard, false);
+		pThis->NextMission();
+
+		R->EAX(pThis->FootClass::Mission_Guard());
+		return 0x73F091;
+	}
+
+	return 0;
 }
 
 DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
