@@ -144,29 +144,44 @@ DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x736E34, UnitClass_UpdateFiring_DisallowMoving, 0x6)
+namespace UnitApproachTargetTemp
 {
-	GET(UnitClass*, pThis, ESI);
-	GET(AbstractClass*, pTarget, EAX);
-	GET(int, nWeaponIndex, EDI);
+	int WeaponIndex;
+}
 
-	const auto pType = pThis->Type;
+DEFINE_HOOK(0x7414E0, UnitClass_ApproachTarget_DisallowMoving, 0xA)
+{
+	GET(UnitClass*, pThis, ECX);
+
+	int WeaponIndex = -1;
 
 	if (CannotMove(pThis))
 	{
-		if (!pThis->IsCloseEnough(pTarget, nWeaponIndex))
-		{
-			if (pType->IsGattling)
-				pThis->GattlingRateDown(1);
+		const auto pTarget = pThis->Target;
+		WeaponIndex = pThis->SelectWeapon(pTarget);
 
-			pThis->SetTarget(nullptr);
-			return 0x737140;
-		}
-		else
+		if (!pThis->IsCloseEnough(pTarget, WeaponIndex))
 		{
-			R->EAX(pThis->GetFireError(pTarget, nWeaponIndex, false));
-			return 0x736E40;
+			pThis->SetTarget(nullptr);
+			return 0x741690;
 		}
+	}
+
+	UnitApproachTargetTemp::WeaponIndex = WeaponIndex;
+	return 0;
+}
+
+DEFINE_HOOK(0x7415A9, UnitClass_ApproachTarget_SetWeaponIndex, 0x6)
+{
+	if (UnitApproachTargetTemp::WeaponIndex != -1)
+	{
+		GET(UnitClass*, pThis, ESI);
+
+		R->EDI(pThis);
+		R->EAX(UnitApproachTargetTemp::WeaponIndex);
+		UnitApproachTargetTemp::WeaponIndex = -1;
+
+		return 0x7415BA;
 	}
 
 	return 0;
