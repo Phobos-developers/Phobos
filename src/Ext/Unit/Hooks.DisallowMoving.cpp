@@ -153,21 +153,21 @@ DEFINE_HOOK(0x7414E0, UnitClass_ApproachTarget_DisallowMoving, 0xA)
 {
 	GET(UnitClass*, pThis, ECX);
 
-	int WeaponIndex = -1;
+	int weaponIndex = -1;
 
 	if (CannotMove(pThis))
 	{
 		const auto pTarget = pThis->Target;
-		WeaponIndex = pThis->SelectWeapon(pTarget);
+		weaponIndex = pThis->SelectWeapon(pTarget);
 
-		if (!pThis->IsCloseEnough(pTarget, WeaponIndex))
+		if (!pThis->IsCloseEnough(pTarget, weaponIndex))
 		{
 			pThis->SetTarget(nullptr);
 			return 0x741690;
 		}
 	}
 
-	UnitApproachTargetTemp::WeaponIndex = WeaponIndex;
+	UnitApproachTargetTemp::WeaponIndex = weaponIndex;
 	return 0;
 }
 
