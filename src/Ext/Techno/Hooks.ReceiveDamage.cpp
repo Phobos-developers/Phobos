@@ -234,6 +234,15 @@ DEFINE_HOOK(0x702672, TechnoClass_ReceiveDamage_RevengeWeapon, 0x5)
 	return 0;
 }
 
+DEFINE_HOOK(0x518434, InfantryClass_ReceiveDamage_SkipDeathAnim, 0x7)
+{
+	enum { SkipDeathAnim = 0x5185F1 };
+
+	GET(InfantryClass*, pThis, ESI);
+
+	return pThis->Transporter ? SkipDeathAnim : 0;
+}
+
 // Issue #237 NotHuman additional animations support
 // Author: Otamaa
 DEFINE_HOOK(0x518505, InfantryClass_ReceiveDamage_NotHuman, 0x4)
@@ -392,4 +401,29 @@ DEFINE_HOOK(0x701E18, TechnoClass_ReceiveDamage_ReflectDamage, 0x7)
 	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x702823, TechnoClass_ReceiveDamage_SkipDamagedParticle, 0x7)
+{
+	enum { SkipParticle = 0x702A25, RemoveParticle = 0x70283C, SpawnParticle = 0x702857 };
+
+	GET(TechnoClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipParticle;
+
+	return pThis->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow ? SpawnParticle : RemoveParticle;
+}
+
+DEFINE_HOOK(0x737E6E, UnitClass_ReceiveDamage_SkipExplode, 0xA)
+{
+	enum { ContinueCheck = 0x737E78, SkipExplode = 0x737F74 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Transporter)
+		return SkipExplode;
+
+	R->EAX(pThis->GetHeight());
+	return ContinueCheck;
 }

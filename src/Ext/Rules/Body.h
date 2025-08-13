@@ -246,6 +246,8 @@ public:
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+    
+    Valueable<int> PenetratesTransport_Level;
 
 		// cache tint color
 		int TintColorIronCurtain;
@@ -449,7 +451,10 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
+
 			, InfantryAutoDeploy { false }
+    
+      , PenetratesTransport_Level { 10 }
 		{ }
 
 		virtual ~ExtData() = default;

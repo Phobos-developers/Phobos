@@ -301,6 +301,13 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
 
+	this->PenetratesTransport_Level.Read(exINI, pSection, "PenetratesTransport.Level");
+	this->PenetratesTransport_PassThrough.Read(exINI, pSection, "PenetratesTransport.PassThrough");
+	this->PenetratesTransport_FatalRate.Read(exINI, pSection, "PenetratesTransport.FatalRate");
+	this->PenetratesTransport_DamageMultiplier.Read(exINI, pSection, "PenetratesTransport.DamageMultiplier");
+	this->PenetratesTransport_DamageAll.Read(exINI, pSection, "PenetratesTransport.DamageAll");
+	this->PenetratesTransport_CleanSound.Read(exINI, pSection, "PenetratesTransport.CleanSound");
+
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
 
@@ -356,6 +363,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.RemoveGroups.size() > 0
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
+		|| this->PenetratesTransport_Level > 0
 	);
 
 	char tempBuffer[32];
@@ -527,6 +535,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AffectsAbovePercent)
 		.Process(this->AffectsNeutral)
 		.Process(this->HealthCheck)
+
+		.Process(this->PenetratesTransport_Level)
+		.Process(this->PenetratesTransport_PassThrough)
+		.Process(this->PenetratesTransport_FatalRate)
+		.Process(this->PenetratesTransport_DamageMultiplier)
+		.Process(this->PenetratesTransport_DamageAll)
+		.Process(this->PenetratesTransport_CleanSound)
 
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)

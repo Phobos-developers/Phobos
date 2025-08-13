@@ -187,6 +187,13 @@ public:
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
 
+		Valueable<int> PenetratesTransport_Level;
+		Valueable<double> PenetratesTransport_PassThrough;
+		Valueable<double> PenetratesTransport_FatalRate;
+		Valueable<double> PenetratesTransport_DamageMultiplier;
+		Valueable<bool> PenetratesTransport_DamageAll;
+		ValueableIdx<VocClass> PenetratesTransport_CleanSound;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -373,6 +380,13 @@ public:
 			, AffectsAbovePercent { 0.0 }
 			, AffectsNeutral { true }
 
+			, PenetratesTransport_Level { 0 }
+			, PenetratesTransport_PassThrough { 1.0 }
+			, PenetratesTransport_FatalRate { 0.0 }
+			, PenetratesTransport_DamageMultiplier { 1.0 }
+			, PenetratesTransport_DamageAll { false }
+			, PenetratesTransport_CleanSound { -1 }
+
 			, AffectsEnemies { true }
 			, AffectsOwner {}
 			, EffectsRequireVerses { true }
@@ -426,13 +440,14 @@ public:
 		void InterceptBullets(TechnoClass* pOwner, BulletClass* pInterceptor, const CoordStruct& coords);
 		DamageAreaResult DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget);
 	private:
-		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
+		void DetonateOnOneUnit(HouseClass* pHouse, TechnoClass* pTarget, const CoordStruct& coords, int damage, TechnoClass* pOwner = nullptr, bool bulletWasIntercepted = false);
 		void ApplyRemoveDisguise(HouseClass* pHouse, TechnoClass* pTarget);
 		void ApplyRemoveMindControl(TechnoClass* pTarget);
 		void ApplyCrit(HouseClass* pHouse, TechnoClass* pTarget, TechnoClass* Owner);
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
+		void ApplyPenetratesTransport(TechnoClass* pTarget, TechnoClass* pInvoker, HouseClass* pInvokerHouse, const CoordStruct& coords, int damage);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 
