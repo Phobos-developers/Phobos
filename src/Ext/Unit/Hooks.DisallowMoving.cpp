@@ -107,7 +107,8 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 	return CannotMove(pThis) ? 0x738927 : 0;
 }
 
-DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6)
+DEFINE_HOOK_AGAIN(0x744103, UnitClass_Mission_DisallowMoving, 0x6)	// UnitClass::Mission_AreaGuard
+DEFINE_HOOK(0x73EFC4, UnitClass_Mission_DisallowMoving, 0x6)		// UnitClass::Mission_Hunt
 {
 	GET(UnitClass*, pThis, ESI);
 
@@ -116,24 +117,8 @@ DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6)
 		pThis->QueueMission(Mission::Guard, false);
 		pThis->NextMission();
 
-		R->EAX(pThis->FootClass::Mission_Guard());
-		return 0x744173;
-	}
-
-	return 0;
-}
-
-DEFINE_HOOK(0x73EFC4, UnitClass_Mission_Hunt_DisallowMoving, 0x6)
-{
-	GET(UnitClass*, pThis, ESI);
-
-	if (CannotMove(pThis))
-	{
-		pThis->QueueMission(Mission::Guard, false);
-		pThis->NextMission();
-
-		R->EAX(pThis->FootClass::Mission_Guard());
-		return 0x73F091;
+		R->EAX(pThis->Mission_Guard());
+		return R->Origin() == 0x744103 ? 0x744173 : 0x73F091;
 	}
 
 	return 0;
