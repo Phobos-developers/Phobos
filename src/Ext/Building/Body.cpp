@@ -376,6 +376,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 	const auto pType = pThis->Type;
 	const short start = static_cast<short>(pThis->Location.X / Unsorted::LeptonsPerCell + pType->GetFoundationWidth() - 2); // door
 	const short end = cell.X; // exit
+	cell.X = start;
 	auto pCell = MapClass::Instance.GetCellAt(cell);
 
 	while (true)
