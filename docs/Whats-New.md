@@ -445,7 +445,7 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
-- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTod`, the vehicle's `AreaGuard` and `Hunting` task will be disabled, and it will be prevented from attacking targets outside its range (by FlyStar)
+- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)

@@ -253,7 +253,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
-- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTod`, the vehicle's `AreaGuard` and `Hunting` task will be disabled, and it will be prevented from attacking targets outside its range.
+- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
 
 ## Fixes / interactions with other extensions
 

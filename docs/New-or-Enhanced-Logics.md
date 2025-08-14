@@ -2078,7 +2078,7 @@ FireUp.ResetInRetarget=true     ; boolean
 ### Turret Response
 
 - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
-  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTod`, the default value is no; in other cases, it is yes.
+  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
 
 In `rulesmd.ini`:
 ```ini
