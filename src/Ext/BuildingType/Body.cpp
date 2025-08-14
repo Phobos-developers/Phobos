@@ -582,9 +582,10 @@ void BuildingTypeExt::CreateLimboBuilding(BuildingClass* pBuilding, BuildingType
 
 		// Add building to list of owned limbo buildings
 		pOwnerExt->OwnedLimboDeliveredBuildings.push_back(pBuilding);
+		auto const pBldType = pBuilding->Type;
 
-		if (!pBuilding->Type->Insignificant && !pBuilding->Type->DontScore)
-			pOwnerExt->AddToLimboTracking(pBuilding->Type);
+		if (!pBldType->Insignificant && !pBldType->DontScore)
+			pOwnerExt->AddToLimboTracking(pBldType);
 
 		auto const pTechnoExt = TechnoExt::ExtMap.Find(pBuilding);
 		auto const pTechnoTypeExt = pTechnoExt->TypeExtData;
