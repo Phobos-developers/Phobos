@@ -445,6 +445,7 @@ Vanilla fixes:
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
+- `Speed = 0` will disable the vehicle's `Area Guard` or `Hunt` task (by FlyStar)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
