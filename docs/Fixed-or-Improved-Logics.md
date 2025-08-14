@@ -253,6 +253,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
+- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
 
 ## Fixes / interactions with other extensions
 
@@ -274,6 +275,19 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving.
+- The game now automatically changes save file name from `SAVEGAME.NET` to `SVGM_XXX.NET` (where `XXX` is a number) when saving to prevent occasional overwriting of the save file when using Phobos with XNA CnCNet Client and saving too frequently.
+  - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
+  - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
+  - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+
+
+```{note}
+The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+```
+
+```{note}
+At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+```
 
 ## Aircraft
 
@@ -690,6 +704,19 @@ BuildingWaypoints=false  ; boolean
 ```
 
 ## Infantry
+
+### Auto deploy for GI-like infantry
+
+- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri’s Revenge. Now you can use the following flags to re-enable this feature.
+
+In `rulesmd.ini`:
+```ini
+[General]
+InfantryAutoDeploy=false      ; boolean
+
+[SOMEINFANTRY]                ; InfantryType
+InfantryAutoDeploy=           ; boolean, default to [General] -> InfantryAutoDeploy
+```
 
 ### Prone speed customization
 
@@ -2024,14 +2051,19 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
-### Customizing parasite culling targets
+### Customizing parasite
 
 - Now you can specify which targets the parasite will culling them.
+- Squid grapple anim is hardcoded to use `SQDG` in vanilla, Now you can choose it.
 
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+Parasite.GrappleAnim=             ; animation
+
 [SOMEWARHEAD]                     ; WarheadType
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=             ; animation
 ```
 
 ### Delay automatic attack on the controlled unit

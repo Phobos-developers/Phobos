@@ -2734,7 +2734,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation                      ; AnimationType
+AutoDeath.VanishAnimation=                     ; AnimationType
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
@@ -2790,10 +2790,23 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
+### Multi VoiceAttack
+
+- Units can customize the attack voice that plays when using more weapons.
+  - If you need to assign an attack-voice to `Weapon1`, simply set `VoiceWeapon1Attack`. The same applies to other weapons.
+  - `VoiceEliteWeaponNAttack` can also be used to specify attack voices for `EliteWeaponN`. The default is `VoiceWeaponNAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+VoiceWeaponNAttack=         ; Sound entry
+VoiceEliteWeaponNAttack=    ; Sound entry
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
-- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
+ - Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
 ```ini
@@ -3144,6 +3157,17 @@ In `artmd.ini`:
 [SOMEVEHICLE]                   ; VehicleType
 FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
+```
+
+### Turret Response
+
+- When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
+  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]       ; VehicleType
+TurretResponse=     ; boolean
 ```
 
 ## Warheads

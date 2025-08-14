@@ -245,10 +245,14 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
+
+		Valueable<bool> InfantryAutoDeploy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -443,6 +447,9 @@ public:
 
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
+
+			, Parasite_GrappleAnim {}
+			, InfantryAutoDeploy { false }
 		{ }
 
 		virtual ~ExtData() = default;
