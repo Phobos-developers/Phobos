@@ -386,7 +386,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
   - Units can customize the attack voice that plays when using more weapons
-  - When the vehicle loses its target, customize whether its turret is allowed to rotate
+  - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
