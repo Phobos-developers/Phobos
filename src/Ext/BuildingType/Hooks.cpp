@@ -108,7 +108,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 		const int zAdjust = -height - (pCell->SlopeIndex ? 12 : 2);
 		const auto position = pTactical->CoordsToScreen(location) - pTactical->TacticalPos - Point2D { 0, (1 + height) };
 
-		const auto direction = (ScenarioExt::Global()->PlacingDirection + (16u / size)) & 0x1Fu;
+		const auto direction = (Phobos::Config::CurrentPlacingDirection + (16u / size)) & 0x1Fu;
 		const int frameIndex = Math::min(static_cast<int>(pShape->Frames - 1), static_cast<int>(direction * size / 32u));
 
 		DSurface::Temp->DrawSHP(pPalette, pShape, frameIndex, &position,

@@ -667,6 +667,7 @@ SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 - `LimboBuild` controls whether building can be automatically placed like `LimboDelivery`.
   - `LimboBuildID` defines the numeric ID of the building placed by `LimboBuild`.
 - `PlaceBuilding.Extra` controls whether the actual placement type of the building can be changed by holding the left mouse button and changing the mouse position when placing.
+  - `DefaultPlacingDirection` controls the default placing direction at the beginning of the game and every time after placing the building.
   - `PlaceBuilding.OnLand` controls buildings can be replaced when placed on land.
   - `PlaceBuilding.OnWater` controls buildings can be replaced when placed on water.
   - `PlaceBuilding.DirectionShape` and `PlaceBuilding.DirectionPalette` controls what additional directional guidance shape looks like when placing `PlaceBuilding.Extra=true` buildings.
@@ -684,6 +685,12 @@ PlaceBuilding.OnLand=           ; List of BuildingTypes
 PlaceBuilding.OnWater=          ; List of BuildingTypes
 PlaceBuilding.DirectionShape=   ; filename with .shp extension
 PlaceBuilding.DirectionPalette= ; filename with .pal extension
+```
+
+In `ra2md.ini`:
+```ini
+[Phobos]
+DefaultPlacingDirection=0       ; integer, 0-31
 ```
 
 ```{note}

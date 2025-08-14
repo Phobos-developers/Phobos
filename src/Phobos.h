@@ -89,6 +89,8 @@ public:
 		static bool DigitalDisplay_Enable;
 		static bool MessageApplyHoverState;
 		static bool MessageDisplayInCenter;
+		static size_t DefaultPlacingDirection;
+		static size_t CurrentPlacingDirection;
 		static bool RealTimeTimers;
 		static bool RealTimeTimers_Adaptive;
 		static int CampaignDefaultGameSpeed;
