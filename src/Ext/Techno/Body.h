@@ -19,6 +19,7 @@ public:
 
 	static constexpr DWORD Canary = 0x55555555;
 	static constexpr size_t ExtPointerOffset = 0x34C;
+	static constexpr bool ShouldConsiderInvalidatePointer = true;
 
 	class ExtData final : public Extension<TechnoClass>
 	{
@@ -239,6 +240,7 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
+	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);

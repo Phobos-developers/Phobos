@@ -107,6 +107,8 @@ public:
 
 		Valueable<bool> Refinery_UseNormalActiveAnim;
 
+		ValueableVector<bool> HasPowerUpAnim;
+
 		ExtData(BuildingTypeClass* OwnerObject) : Extension<BuildingTypeClass>(OwnerObject)
 			, PowersUp_Owner { AffectedHouse::Owner }
 			, PowersUp_Buildings {}
@@ -177,6 +179,7 @@ public:
 			, BunkerWallsDownSound {}
 			, BuildingRepairedSound {}
 			, Refinery_UseNormalActiveAnim { false }
+			, HasPowerUpAnim {}
 		{ }
 
 		BuildingTypeClass* GetAnotherPlacingType(size_t direction, bool onWater);

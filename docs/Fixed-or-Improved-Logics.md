@@ -123,7 +123,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Setting `ReloadInTransport` to true on units with `Ammo` will allow the ammo to be reloaded according to `Reload` or `EmptyReload` timers even while the unit is inside a transport.
 - It is now possible to enable `Verses` and `PercentAtMax` to be applied on negative damage by setting `ApplyModifiersOnNegativeDamage` to true on the Warhead.
 - Attached animations on flying units now have their layer updated immediately after the parent unit, if on same layer they always draw above the parent.
-- Fixed the issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
+- Fixed an issue where the powered anims of `Powered` / `PoweredSpecial` buildings cease to update when being captured by enemies.
 - Fix a glitch related to incorrect target setting for missiles.
 - Fix [EIP 00529A14](https://modenc.renegadeprojects.com/Internal_Error/YR#eip_00529A14) when attempting to read `[Header]` section of campaign maps.
 - Units will no longer rotate its turret under EMP.
@@ -220,7 +220,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Separated the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues.
 - Fixed the bug that buildings will always be tinted as airstrike owner.
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it.
-- Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them.
+- Fixed an issue where computer players did not search for new enemies after defeating them or forming alliances with them.
 - Fixed the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings.
 - Fixed `VoiceDeploy` not played, when deployed through hot-key/command bar.
 - Fixed the bug that ships can travel on elevated bridges.
@@ -232,7 +232,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case.
 - Fixed the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce.
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer.
-- Fixed the issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
+- Fixed an issue of incorrect position of `TrailerAnim` in `VoxelAnim`.
 - Fixed the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target.
 - Fixed an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually.
 - Fixed an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory.
@@ -243,6 +243,16 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Player-controlled spies are not forced to perform other tasks while attacking buildings.
 - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action.
 - Fixed an unusual use of DeployFireWeapon for InfantryType.
+- Fixed the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead.
+- Fixed the bug that vehicle owned by computer will scatter when cloaking.
+- Fixed the bug that submarine always turn left after changed owner by map event.
+- Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
+- Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants.
+- Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead.
+- Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge.
+- Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
+- Fixed the bug that hover vehicle will sink if destroyed on bridge.
+- Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 
 ## Fixes / interactions with other extensions
 
@@ -261,8 +271,22 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Allowed Ares' `SW.AuxBuildings` and `SW.NegBuildings` to count building upgrades.
 - Taking over Ares' AlphaImage respawn logic to make it not recreate in every frame for buildings, static techno and techno without turret, in order to reduce lags from it.
 - Fixed an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully.
-- Fixed the issue where some units crashed after the deployment transformation.
+- Fixed an issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
+- Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving.
+- The game now automatically changes save file name from `SAVEGAME.NET` to `SVGM_XXX.NET` (where `XXX` is a number) when saving to prevent occasional overwriting of the save file when using Phobos with XNA CnCNet Client and saving too frequently.
+  - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
+  - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
+  - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+
+
+```{note}
+The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+```
+
+```{note}
+At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+```
 
 ## Aircraft
 
@@ -366,7 +390,7 @@ Damage.ApplyFirepowerMult=false ; boolean
 In `artmd.ini`:
 ```ini
 [SOMEANIM]                   ; AnimationType
-AttachedAnimPosition=object  ; Attached animation position enumeration (default|center|ground)
+AttachedAnimPosition=default ; Attached animation position enumeration (default|center|ground)
 ```
 
 ### Customizable debris & meteor impact and warhead detonation behaviour
@@ -680,6 +704,19 @@ BuildingWaypoints=false  ; boolean
 
 ## Infantry
 
+### Auto deploy for GI-like infantry
+
+- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri’s Revenge. Now you can use the following flags to re-enable this feature.
+
+In `rulesmd.ini`:
+```ini
+[General]
+InfantryAutoDeploy=false      ; boolean
+
+[SOMEINFANTRY]                ; InfantryType
+InfantryAutoDeploy=           ; boolean, default to [General] -> InfantryAutoDeploy
+```
+
 ### Prone speed customization
 
 - In vanilla, infantry has hardcoded prone speed. Now you can customize it.
@@ -790,7 +827,7 @@ Gravity=6.0             ; floating point value
 
 ### FlakScatter distance customization
 
-- By default `FlakScatter=true` makes `Inviso=true` projectiles scatter by random distance (in cells) from 0 to `[CombatDamage] -> BallisticScatter`. This distance range can now be customized by setting `BallisticScatter.Min` & `BallisticScatter.Max` on the projectile. If not set, the default values are used.
+- By default `FlakScatter=true` makes `Inviso=true` projectiles scatter within a distance range calculated as `[Minimum * 2, Maximum * 2]` in cells, where the Minimum is 0 and Maximum is `[CombatDamage] -> BallisticScatter`, resulting in a range of `0` to `2 * BallisticScatter` cells. This behavior can now be customized using `BallisticScatter.Min` to set the Minimum value and `BallisticScatter.Max` to set the Maximum value. If not set, the default values are used. When estimating the actual scatter range, remember that the original `*2` multiplier mechanism still applies.
 
 In `rulesmd.ini`:
 ```ini
@@ -1069,6 +1106,9 @@ Wake.Sinking=        ; Anim (played when Techno sinking), defaults to [TechnoTyp
 ```
 
 ### Customize bridge falling down damage
+
+![image](_static/images/fallingdowndamage.gif)
+*Use different fall damage depending on whether it lands in water in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
 
 - Now you can customize the damage a unit receives when it falls from a bridge.
  - `FallingDownDamage` customizes the damage a unit receives at the end of a fall. It can be a percentage or an integer.
@@ -1400,6 +1440,9 @@ PlayerAttackMoveTargetingDelay=      ; integer, game frames
 
 ### Voxel body multi-section shadows
 
+![image](_static/images/uh0-be.gif)
+*UH-0 helicopter with dynamic propeller and its shadow in [Bellum Æternum](https://ra2be.com/download.html)*
+
 - It is also now possible for vehicles and aircraft to display shadows for multiple sections of the voxel body at once, instead of just one section specified by `ShadowIndex`, by specifying the section indices in `ShadowIndices` (which defaults to `ShadowIndex`) in unit's `artmd.ini` entry.
   - `ShadowIndex.Frame` and `ShadowIndices.Frame` can be used to customize which frame of the HVA animation for the section from `ShadowIndex` and `ShadowIndices` is used to display the shadow, respectively. -1 is special value which means currently shown frame is used, and `ShadowIndices.Frame` defaults to this.
 
@@ -1415,7 +1458,7 @@ ShadowIndices.Frame=  ; List of integers (HVA animation frame indices)
 
 ![image](_static/images/VoxelLightSourceComparison1.png)
 ![image](_static/images/VoxelLightSourceComparison2.png)
-*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>*
+*Voxel by <a class="reference external" href="https://bbs.ra2diy.com/home.php?mod=space&uid=20016&do=index" target="_blank">C&CrispS</a>, (Save and unzip the second image to obtain an example file including pal & vpl.)*
 
 - It is now possible to change the position of the light relative to the voxels. This allows for better lighting to be set up.
   - Only the direction of the light is accounted, the distance to the voxel is not accounted.
@@ -2032,14 +2075,19 @@ In `rulesmd.ini`:
 DecloakDamagedTargets=true  ; boolean
 ```
 
-### Customizing parasite culling targets
+### Customizing parasite
 
 - Now you can specify which targets the parasite will culling them.
+- Squid grapple anim is hardcoded to use `SQDG` in vanilla, Now you can choose it.
 
 In `rulesmd.ini`:
 ```ini
+[AudioVisual]
+Parasite.GrappleAnim=             ; animation
+
 [SOMEWARHEAD]                     ; WarheadType
 Parasite.CullingTarget=infantry   ; List of Affected Target Enumeration (none|aircraft|infantry|units|all)
+Parasite.GrappleAnim=             ; animation
 ```
 
 ### Delay automatic attack on the controlled unit

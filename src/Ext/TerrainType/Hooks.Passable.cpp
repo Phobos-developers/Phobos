@@ -13,11 +13,10 @@ DEFINE_HOOK(0x71C110, TerrainClass_SetOccupyBit_PassableTerrain, 0x6)
 
 	GET(TerrainClass*, pThis, ECX);
 
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type))
-	{
-		if (pTypeExt->IsPassable)
-			return Skip;
-	}
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->IsPassable)
+		return Skip;
 
 	return 0;
 }
@@ -29,7 +28,7 @@ DEFINE_HOOK(0x7002E9, TechnoClass_WhatAction_PassableTerrain, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 	GET(ObjectClass*, pTarget, EDI);
-	GET_STACK(bool, isForceFire, STACK_OFFSET(0x1C, 0x8));
+	GET_STACK(const bool, isForceFire, STACK_OFFSET(0x1C, 0x8));
 
 	if (!pThis->Owner->IsControlledByCurrentPlayer() || !pThis->IsControllable())
 		return 0;
@@ -54,13 +53,12 @@ DEFINE_HOOK(0x483DDF, CellClass_CheckPassability_PassableTerrain, 0x6)
 	GET(CellClass*, pThis, EDI);
 	GET(TerrainClass*, pTerrain, ESI);
 
-	if (auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type))
+	auto const pTypeExt = TerrainTypeExt::ExtMap.Find(pTerrain->Type);
+
+	if (pTypeExt->IsPassable)
 	{
-		if (pTypeExt->IsPassable)
-		{
-			pThis->Passability = PassabilityType::Passable;
-			return ReturnFromFunction;
-		}
+		pThis->Passability = PassabilityType::Passable;
+		return ReturnFromFunction;
 	}
 
 	return 0;

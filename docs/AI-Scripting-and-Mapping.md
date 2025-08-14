@@ -14,6 +14,20 @@ This page describes all AI scripting and mapping related additions and changes i
 - If a pre-placed building has a `NaturalParticleSystem`, it used to always be created when the game starts. This has been removed.
 - Superweapons used by AI for script actions `56 Chronoshift to Building`, `57 Chronoshift to a Target Type` and `10104 Chronoshift to Enemy Base` can now be explicitly set via `[General] -> AIChronoSphereSW` & `AIChronoWarpSW` respectively. If `AIChronoSphereSW` is set but `AIChronoWarpSW` is not, game will check former's `SW.PostDependent` for a second superweapon to use. Otherwise if not set, last superweapon listed in `[SuperWeaponTypes]` with `Type=ChronoSphere` or `Type=ChronoWarp` will be used, respectively.
 
+### Increased Overlay Limit
+
+- Maps can now contain OverlayTypes with indices up to 65535.
+
+- To enable this, set `[Basic] -> NewINIFormat=5` in the scenario file.
+
+```{note}
+Maps using this feature cannot be loaded by the vanilla game.
+```
+
+```{warning}
+Not all tools properly support this feature yet, and may crash or corrupt the map. We recommend using the [World-Altering Editor](https://github.com/CnCNet/WorldAlteringEditor) map editor when using this feature.
+```
+
 ## Singleplayer Mission Maps
 
 ### Base node repairing
@@ -484,7 +498,12 @@ This category is empty for now.
 
 ### `500` Save Game
 
-- Save the current game immediately (singleplayer game only).
+- Save the current game immediately.
+
+```{note}
+For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
 - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
