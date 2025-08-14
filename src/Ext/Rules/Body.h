@@ -247,12 +247,14 @@ public:
 
 		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
+		Valueable<bool> InfantryAutoDeploy;
+
+		Valueable<bool> ExtendedWeaponsFactory;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
-
-		Valueable<bool> InfantryAutoDeploy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -449,7 +451,10 @@ public:
 			, AttackMove_StopWhenTargetAcquired { }
 
 			, Parasite_GrappleAnim {}
+
 			, InfantryAutoDeploy { false }
+
+			, ExtendedWeaponsFactory { false }
 		{ }
 
 		virtual ~ExtData() = default;

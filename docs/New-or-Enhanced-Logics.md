@@ -586,6 +586,29 @@ Adjacent.Disallowed=        ; List of BuildingTypes
 NoBuildAreaOnBuildup=false  ; boolean
 ```
 
+### Customized bib & impassable rows & weapons factory direction
+
+- Now you can use `ExtendedWeaponsFactory` to remove the hard coding of `WeaponsFactory` position and direction, and adjust the position of the generated unit and the direction of the unit's exit separately through the original `ExitCoord` and the newly added `WeaponsFactory.Dir`. Similarly, the directions of `Bib` and `NumberImpassableRows` can also be modified through `Bib.Dir` and `NumberImpassableRows.Dir` respectively.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtendedWeaponsFactory=false  ; boolean
+
+[SOMEBUILDING]                ; BuildingType
+Bib.Dir=2                     ; integer
+NumberImpassableRows.Dir=2    ; integer
+WeaponsFactory.Dir=2          ; integer
+```
+
+```{note}
+- The available directions are:
+  - 0 - North (top right)
+  - 2 - East (bottom right)
+  - 4 - South (bottom left)
+  - 6 - West (top left)
+```
+
 ### Destroyable pathfinding obstacles
 
 - It is possible to make buildings be considered pathfinding obstacles that can be destroyed by setting `IsDestroyableBlockage` to true. What this does is make the building be considered impassable and impenetrable pathfinding obstacle to every unit that is not flying or have appropriate `MovementZone` (ones that allow destroyable obstacles to be overcome, e.g `(Infantry|Amphibious)Destroyer`) akin to wall overlays and TerrainTypes.

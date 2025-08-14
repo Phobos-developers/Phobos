@@ -219,6 +219,13 @@ void BuildingTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	this->Refinery_UseNormalActiveAnim.Read(exArtINI, pArtSection, "Refinery.UseNormalActiveAnim");
 
+	this->Bib_Dir.Read(exINI, pSection, "Bib.Dir");
+	this->Bib_Dir = Math::max(0, this->Bib_Dir) & 6; // Only accept 0,2,4,6
+	this->NumberImpassableRows_Dir.Read(exINI, pSection, "NumberImpassableRows.Dir");
+	this->NumberImpassableRows_Dir = Math::max(0, this->NumberImpassableRows_Dir) & 6; // Only accept 0,2,4,6
+	this->WeaponsFactory_Dir.Read(exINI, pSection, "WeaponsFactory.Dir");
+	this->WeaponsFactory_Dir = Math::max(0, this->WeaponsFactory_Dir) & 6; // Only accept 0,2,4,6
+
 	// Ares tag
 	this->SpyEffect_Custom.Read(exINI, pSection, "SpyEffect.Custom");
 	if (SuperWeaponTypeClass::Array.Count > 0)
@@ -334,6 +341,9 @@ void BuildingTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->BuildingRepairedSound)
 		.Process(this->Refinery_UseNormalActiveAnim)
 		.Process(this->HasPowerUpAnim)
+		.Process(this->Bib_Dir)
+		.Process(this->NumberImpassableRows_Dir)
+		.Process(this->WeaponsFactory_Dir)
 		;
 }
 

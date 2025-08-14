@@ -373,9 +373,56 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 
 	auto cell = CellClass::Coord2Cell(buffer);
 
+	bool upward = false;
+	short* pCur = nullptr;
+	short start = 0; // door
+
 	const auto pType = pThis->Type;
-	const short start = static_cast<short>(pThis->Location.X / Unsorted::LeptonsPerCell + pType->GetFoundationWidth() - 2); // door
-	const short end = cell.X; // exit
+
+	switch (RulesExt::Global()->ExtendedWeaponsFactory ? BuildingTypeExt::ExtMap.Find(pType)->WeaponsFactory_Dir.Get() : 2)
+	{
+
+	case 0: // North -> left+down/++Y
+	{
+		upward = false;
+		pCur = &cell.Y;
+		start = static_cast<short>(pThis->Location.Y / Unsorted::LeptonsPerCell + 1);
+		break;
+	}
+
+	case 2: // East -> left+up/--X
+	{
+		upward = true;
+		pCur = &cell.X;
+		start = static_cast<short>(pThis->Location.X / Unsorted::LeptonsPerCell + pType->GetFoundationWidth() - 2);
+		break;
+	}
+
+	case 4: // South -> right+up/--Y
+	{
+		upward = true;
+		pCur = &cell.Y;
+		start = static_cast<short>(pThis->Location.Y / Unsorted::LeptonsPerCell + pType->GetFoundationHeight(false) - 2);
+		break;
+	}
+
+	case 6: // West -> right+down/++X
+	{
+		upward = false;
+		pCur = &cell.X;
+		start = static_cast<short>(pThis->Location.X / Unsorted::LeptonsPerCell + 1);
+		break;
+	}
+
+	default: // Invalid direction
+	{
+		return;
+	}
+
+	}
+
+	const short end = *pCur; // exit
+	*pCur = start;
 	auto pCell = MapClass::Instance.GetCellAt(cell);
 
 	while (true)
@@ -401,7 +448,7 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 			}
 		}
 
-		if (--cell.X < end)
+		if (upward ? (--(*pCur) < end) : (++(*pCur) > end))
 			return; // no stuck
 
 		pCell = MapClass::Instance.GetCellAt(cell);

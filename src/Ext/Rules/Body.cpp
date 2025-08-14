@@ -301,6 +301,8 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
+	this->ExtendedWeaponsFactory.Read(exINI, GameStrings::General, "ExtendedWeaponsFactory");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -554,6 +556,7 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->InfantryAutoDeploy)
+		.Process(this->ExtendedWeaponsFactory)
 		;
 }
 
