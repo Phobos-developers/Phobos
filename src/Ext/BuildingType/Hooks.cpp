@@ -454,68 +454,33 @@ DEFINE_HOOK(0x44457B, BuildingClass_KickOutUnit_UnlimboDirection, 0x5)
 	return 0;
 }
 
-static inline CellStruct GetWeaponFactoryDoor(BuildingClass* pThis)
-{
-	auto cell = pThis->GetMapCoords();
-	auto buffer = CoordStruct::Empty;
-	pThis->GetExitCoords(&buffer, 0);
-	const auto pType = pThis->Type;
-
-	switch (RulesExt::Global()->ExtendedWeaponsFactory ? BuildingTypeExt::ExtMap.Find(pType)->WeaponsFactory_Dir.Get() : 2)
-	{
-
-	case 0:
-	{
-		cell.X = static_cast<short>(buffer.X / Unsorted::LeptonsPerCell);
-		break;
-	}
-
-	case 2:
-	{
-		cell.X += static_cast<short>(pType->GetFoundationWidth() - 1);
-		cell.Y = static_cast<short>(buffer.Y / Unsorted::LeptonsPerCell);
-		break;
-	}
-
-	case 4:
-	{
-		cell.X = static_cast<short>(buffer.X / Unsorted::LeptonsPerCell);
-		cell.Y += static_cast<short>(pType->GetFoundationHeight(false) - 1);
-		break;
-	}
-
-	case 6:
-	{
-		cell.Y = static_cast<short>(buffer.Y / Unsorted::LeptonsPerCell);
-		break;
-	}
-
-	default:
-	{
-		break;
-	}
-
-	}
-
-	return cell;
-}
-
 DEFINE_HOOK(0x44955D, BuildingClass_WeaponFactoryOutsideBusy_WeaponFactoryCell, 0x6)
 {
+	enum { StartCheck = 0x4495DF, NotBusy = 0x44969B };
+
+	GET(BuildingClass* const, pThis, ESI);
+
+	const auto pLink = pThis->GetNthLink();
+
+	if (!pLink)
+		return NotBusy;
+
+	const auto pLinkType = pLink->GetTechnoType();
+
+	if (pLinkType->JumpJet && pLinkType->BalloonHover)
+		return NotBusy;
+
 	if (!RulesExt::Global()->ExtendedWeaponsFactory)
 		return 0;
 
-	enum { SkipGameCode = 0x4495DF };
-
-	GET(BuildingClass* const, pThis, ESI);
 	REF_STACK(CoordStruct, coords, STACK_OFFSET(0x30, -0xC));
 
-	const auto cell = GetWeaponFactoryDoor(pThis);
+	const auto cell = BuildingTypeExt::GetWeaponFactoryDoor(pThis);
 	coords = CellClass::Cell2Coord(cell);
 
 	R->EAX(MapClass::Instance.GetCellAt(cell));
 
-	return SkipGameCode;
+	return StartCheck;
 }
 
 DEFINE_JUMP(LJMP, 0x44DCC7, 0x44DD3C);
@@ -528,7 +493,7 @@ DEFINE_HOOK(0x44E131, BuildingClass_Mission_Unload_WeaponFactoryFix1, 0x5)
 	GET(FootClass* const, pLink, EDI);
 //	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x50, -0x1C));
 
-	const auto cell = GetWeaponFactoryDoor(pThis);
+	const auto cell = BuildingTypeExt::GetWeaponFactoryDoor(pThis);
 	const auto coords = CellClass::Cell2Coord(cell);
 
 	if (RulesExt::Global()->ExtendedWeaponsFactory)
@@ -555,7 +520,7 @@ DEFINE_HOOK(0x44DF72, BuildingClass_Mission_Unload_WeaponFactoryFix2, 0x5)
 	GET_STACK(FootClass* const, pLink, STACK_OFFSET(0x50, -0x30));
 //	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x50, -0x1C));
 
-	const auto cell = GetWeaponFactoryDoor(pThis);
+	const auto cell = BuildingTypeExt::GetWeaponFactoryDoor(pThis);
 	const auto coords = CellClass::Cell2Coord(cell);
 
 	if (RulesExt::Global()->ExtendedWeaponsFactory)
@@ -580,7 +545,7 @@ DEFINE_HOOK(0x44DF1C, BuildingClass_Mission_Unload_WeaponFactoryFix3, 0x7)
 	REF_STACK(CellStruct, cell, STACK_OFFSET(0x50, -0x34));
 //	REF_STACK(const CoordStruct, coords, STACK_OFFSET(0x50, -0x1C));
 
-	cell = GetWeaponFactoryDoor(pThis);
+	cell = BuildingTypeExt::GetWeaponFactoryDoor(pThis);
 
 	R->ESI(pLink);
 
@@ -596,7 +561,7 @@ DEFINE_HOOK(0x742D98, UnitClass_SetDestination_WeaponFactoryCell, 0x6)
 
 	GET(BuildingClass* const, pLink, ESI);
 
-	const auto cell = GetWeaponFactoryDoor(pLink);
+	const auto cell = BuildingTypeExt::GetWeaponFactoryDoor(pLink);
 
 	R->EAX(MapClass::Instance.GetCellAt(cell));
 

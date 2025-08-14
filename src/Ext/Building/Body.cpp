@@ -355,19 +355,6 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 // For unit's weapons factory only
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
-	{
-		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
-		{
-			if (const auto pTeam = pUnit->Team)
-				pTeam->LiberateMember(pUnit);
-
-			pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
-			pUnit->QueueMission(Mission::Guard, false);
-			return; // one after another
-		}
-	}
-
 	auto buffer = CoordStruct::Empty;
 	pThis->GetExitCoords(&buffer, 0);
 
@@ -438,9 +425,6 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 
 				if (height < 0 || height > Unsorted::CellHeight)
 					continue;
-
-				if (const auto pTeam = pUnit->Team)
-					pTeam->LiberateMember(pUnit);
 
 				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
 				pThis->QueueMission(Mission::Unload, false);

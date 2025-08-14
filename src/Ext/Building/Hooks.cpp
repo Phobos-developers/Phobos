@@ -204,26 +204,32 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 
 #pragma region KickOutStuckUnits
 
-// Kick out stuck units when the factory building is not busy, only factory buildings can enter this hook
-DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
+DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 {
-	GET(BuildingClass*, pThis, ESI);
+	enum { Waiting = 0x44E267, NextStatus = 0x44E20C};
 
-	// This is not a solution to the problem at its root
-	// Currently the root cause of the problem is not located
-	// So the idle weapon factory is asked to search every second for any units that are stuck
-	if (!(Unsorted::CurrentFrame % 15)) // Check every 15 frames for factories
+	GET(BuildingClass*, pThis, EBP);
+
+	if (!pThis->IsTether)
+		return NextStatus;
+
+	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
-		const auto pType = pThis->Type;
-
-		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
 		{
-			const auto mission = pThis->CurrentMission;
-
-			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 3) // Unloading but stuck
-				BuildingExt::KickOutStuckUnits(pThis);
+			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x449540)(pThis);
+			pUnit->SetDestination(MapClass::Instance.GetCellAt(BuildingTypeExt::GetWeaponFactoryDoor(pThis)), true);
 		}
 	}
+
+	return Waiting;
+}
+
+DEFINE_HOOK(0x44E260, BuildingClass_Mission_Unload_KickOutStuckUnits, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	BuildingExt::KickOutStuckUnits(pThis);
 
 	return 0;
 }

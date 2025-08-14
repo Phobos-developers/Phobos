@@ -73,6 +73,52 @@ void BuildingTypeExt::PlayBunkerSound(BuildingClass const* pThis, bool buildUp)
 		VocClass::PlayAt(nSound, pThis->Location);
 }
 
+CellStruct BuildingTypeExt::GetWeaponFactoryDoor(BuildingClass* pThis)
+{
+	auto cell = pThis->GetMapCoords();
+	auto buffer = CoordStruct::Empty;
+	pThis->GetExitCoords(&buffer, 0);
+	const auto pType = pThis->Type;
+
+	switch (RulesExt::Global()->ExtendedWeaponsFactory ? BuildingTypeExt::ExtMap.Find(pType)->WeaponsFactory_Dir.Get() : 2)
+	{
+
+	case 0:
+	{
+		cell.X = static_cast<short>(buffer.X / Unsorted::LeptonsPerCell);
+		break;
+	}
+
+	case 2:
+	{
+		cell.X += static_cast<short>(pType->GetFoundationWidth() - 1);
+		cell.Y = static_cast<short>(buffer.Y / Unsorted::LeptonsPerCell);
+		break;
+	}
+
+	case 4:
+	{
+		cell.X = static_cast<short>(buffer.X / Unsorted::LeptonsPerCell);
+		cell.Y += static_cast<short>(pType->GetFoundationHeight(false) - 1);
+		break;
+	}
+
+	case 6:
+	{
+		cell.Y = static_cast<short>(buffer.Y / Unsorted::LeptonsPerCell);
+		break;
+	}
+
+	default:
+	{
+		break;
+	}
+
+	}
+
+	return cell;
+}
+
 int BuildingTypeExt::CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pType, HouseClass* pHouse)
 {
 	const auto upgrades = BuildingTypeExt::GetUpgradesAmount(pType, pHouse);

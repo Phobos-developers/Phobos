@@ -205,7 +205,7 @@ public:
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
 
 	static void PlayBunkerSound(BuildingClass const* pThis, bool buildUp = false);
-
+	static CellStruct GetWeaponFactoryDoor(BuildingClass* pThis);
 	static int GetEnhancedPower(BuildingClass* pBuilding, HouseClass* pHouse);
 	static bool CanUpgrade(BuildingClass* pBuilding, BuildingTypeClass* pUpgradeType, HouseClass* pUpgradeOwner);
 	static int CountOwnedNowWithDeployOrUpgrade(BuildingTypeClass* pBuilding, HouseClass* pHouse);
