@@ -1120,7 +1120,7 @@ Trajectory.Missile.SuicideShortOfROT=false  ; boolean
 ```
 
 ```{hint}
-- The trajectory can be affected by `Gravity`. If you are sure that you do not need it to be affected by it, you can set `Gravity=0` separately.
+- The trajectory can be affected by `Gravity`, so if `Trajectory.Missile.TurningSpeed` is too low, the missile will crash to the ground. If you are sure that you do not need it to be affected by it, you can set `Gravity=0` separately.
 - If the value of `Trajectory.Missile.CruiseUnableRange` is too small, it may cause the projectile to be permanently stay in cruise mode.
 ```
 
