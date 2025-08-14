@@ -4,73 +4,48 @@
 #include "UnitClass.h"
 
 #include <Utilities/GeneralUtils.h>
-#include <Ext/TechnoType/Body.h>
-
-bool CannotMove(UnitClass* pThis)
-{
-	const auto pType = pThis->Type;
-
-	if (pType->Speed == 0)
-		return true;
-
-	if (!pThis->IsInAir())
-	{
-		LandType landType = pThis->GetCell()->LandType;
-		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
-
-		if (pThis->OnBridge
-			&& (landType == LandType::Water || landType == LandType::Beach))
-		{
-			landType = LandType::Road;
-		}
-
-		if (movementRestrictedTo != LandType::None && movementRestrictedTo != landType && landType != LandType::Tunnel)
-			return true;
-	}
-
-	return false;
-}
+#include <Ext/Techno/Body.h>
 
 DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return CannotMove(pThis) ? 0x740AEF : 0;
+	return TechnoExt::TechnoExt::CannotMove(pThis) ? 0x740AEF : 0;
 }
 
 DEFINE_HOOK(0x741AA7, UnitClass_Assign_Destination_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, EBP);
 
-	return CannotMove(pThis) ? 0x743173 : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x743173 : 0;
 }
 
 DEFINE_HOOK(0x743B4B, UnitClass_Scatter_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, EBP);
 
-	return CannotMove(pThis) ? 0x74408E : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x74408E : 0;
 }
 
 DEFINE_HOOK(0x74038F, UnitClass_What_Action_ObjectClass_DisallowMoving_1, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return CannotMove(pThis) ? 0x7403A3 : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x7403A3 : 0;
 }
 
 DEFINE_HOOK(0x7403B7, UnitClass_What_Action_ObjectClass_DisallowMoving_2, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return CannotMove(pThis) ? 0x7403C1 : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x7403C1 : 0;
 }
 
 DEFINE_HOOK(0x740709, UnitClass_What_Action_DisallowMoving_1, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return CannotMove(pThis) ? 0x740727 : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x740727 : 0;
 }
 
 DEFINE_HOOK(0x740744, UnitClass_What_Action_DisallowMoving_2, 0x6)
@@ -80,7 +55,7 @@ DEFINE_HOOK(0x740744, UnitClass_What_Action_DisallowMoving_2, 0x6)
 	GET(UnitClass*, pThis, ESI);
 	GET_STACK(Action, result, 0x30);
 
-	if (CannotMove(pThis))
+	if (TechnoExt::CannotMove(pThis))
 	{
 		if (result == Action::Move)
 			return ReturnNoMove;
@@ -104,7 +79,7 @@ DEFINE_HOOK(0x73891D, UnitClass_Active_Click_With_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return CannotMove(pThis) ? 0x738927 : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x738927 : 0;
 }
 
 DEFINE_HOOK_AGAIN(0x744103, UnitClass_Mission_DisallowMoving, 0x6)	// UnitClass::Mission_AreaGuard
@@ -112,7 +87,7 @@ DEFINE_HOOK(0x73EFC4, UnitClass_Mission_DisallowMoving, 0x6)		// UnitClass::Miss
 {
 	GET(UnitClass*, pThis, ESI);
 
-	if (CannotMove(pThis))
+	if (TechnoExt::CannotMove(pThis))
 	{
 		pThis->QueueMission(Mission::Guard, false);
 		pThis->NextMission();
@@ -129,7 +104,7 @@ DEFINE_HOOK(0x74132B, UnitClass_GetFireError_DisallowMoving, 0x7)
 	GET(UnitClass*, pThis, ESI);
 	GET(FireError, result, EAX);
 
-	if (result == FireError::RANGE && CannotMove(pThis))
+	if (result == FireError::RANGE && TechnoExt::CannotMove(pThis))
 		R->EAX(FireError::ILLEGAL);
 
 	return 0;
@@ -146,7 +121,7 @@ DEFINE_HOOK(0x7414E0, UnitClass_ApproachTarget_DisallowMoving, 0xA)
 
 	int weaponIndex = -1;
 
-	if (CannotMove(pThis))
+	if (TechnoExt::CannotMove(pThis))
 	{
 		const auto pTarget = pThis->Target;
 		weaponIndex = pThis->SelectWeapon(pTarget);

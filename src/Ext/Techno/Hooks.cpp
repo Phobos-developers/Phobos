@@ -1234,7 +1234,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	{
 		auto const pUnit = static_cast<UnitClass*>(pThis);
 
-		if (pUnit->Type->Speed == 0)
+		if (TechnoExt::TechnoExt::CannotMove(pUnit))
 			return SkipResponse;
 	}
 
