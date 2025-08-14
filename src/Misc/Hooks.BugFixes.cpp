@@ -2478,12 +2478,3 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 }
 
 #pragma endregion
-
-#pragma region AStarBuffer
-
-// Buffer doubled
-DEFINE_PATCH(0x42A752, 0x08);
-DEFINE_PATCH(0x42A765, 0x02);
-DEFINE_PATCH(0x42A7E3, 0x20);
-
-#pragma endregion
