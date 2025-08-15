@@ -1434,9 +1434,8 @@ msgid "`[ ]` Quicksave"
 msgstr "`[ ]` 快速保存"
 
 #: ../../User-Interface.md:465
-#, fuzzy
 msgid "Saves the current game."
-msgstr "保存当前的单人游戏"
+msgstr "保存当前游戏"
 
 #: ../../User-Interface.md:468
 msgid ""
@@ -1444,6 +1443,7 @@ msgid ""
 "[YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer "
 "saves support."
 msgstr ""
+"要让此命令用于多人游戏，你必须使用支持多人存档后的 [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) 版本。"
 
 #: ../../User-Interface.md:471
 msgid ""

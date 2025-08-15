@@ -1684,12 +1684,16 @@ msgid ""
 "occasional overwriting of the save file when using Phobos with XNA CnCNet"
 " Client and saving too frequently."
 msgstr ""
+"游戏现在在保存时会自动将存档文件名从 `SAVEGAME.NET` 改为 `SVGM_XXX.NET`（此处 `XXX` 为数字）"
+"以防止在 Phobos 与 XNA CNCNet Client 共用切保存过于频繁时偶尔覆盖存档文件。"
 
 #: ../../Fixed-or-Improved-Logics.md:279
 msgid ""
 "1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. "
 "When the limit is reached, the game will overwrite the latest save file."
 msgstr ""
+"支持从 `SVGM_000.NET` 到 `SVGM_999.NET` 的 1000 个文件。"
+"当达到上线后游戏将会覆盖此前最新的存档文件。"
 
 #: ../../Fixed-or-Improved-Logics.md:280
 msgid ""
@@ -1697,18 +1701,22 @@ msgid ""
 "it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is "
 "found and the index is incremented, if possible."
 msgstr ""
+"如果是新游戏，在首次保存前会清理先前存在的 `SVGM_XXX.NET` 文件，"
+"否则游戏会查找编号最大的 `SVGM_XXX.NET` 文件并在可行的情况下递增编号。"
 
 #: ../../Fixed-or-Improved-Logics.md:281
 msgid ""
 "The game also automatically copies `spawn.ini` to the save folder as "
 "`spawnSG.ini` when saving a game."
 msgstr ""
+"游戏还会在保存时自动将 `spawn.ini` 复制到存档文件夹中的 `spawnSG.ini`。"
 
 #: ../../Fixed-or-Improved-Logics.md:285
 msgid ""
 "The described behavior is a replica of and is compliant with XNA CnCNet "
 "Client's multiplayer save game support."
 msgstr ""
+"上述行为复刻并兼容了 XNA CNCNet Client 的多人游戏存档功能支持。"
 
 #: ../../Fixed-or-Improved-Logics.md:289
 msgid ""
@@ -1717,6 +1725,9 @@ msgid ""
 "support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-"
 "cncnet-client))."
 msgstr ""
+"目前此功能仅在使用支持了多人游戏存档后的 [YRpp "
+"Spawner](https://github.com/CnCNet/yrpp-spawner) 版本（同时配合 [XNA CnCNet Client](https://github.com/CnCNet/xna-"
+"cncnet-client)） 时才有用。"
 
 #: ../../Fixed-or-Improved-Logics.md:292
 msgid "Aircraft"
