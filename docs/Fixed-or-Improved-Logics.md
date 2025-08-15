@@ -254,6 +254,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
+- Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
 
 ## Fixes / interactions with other extensions
 
@@ -1838,6 +1839,10 @@ BarrelRecoverFrames=1     ; integer, game frames
 
 [SOMEWEAPON]              ; WeaponType
 TurretRecoil.Suppress=no  ; boolean
+```
+
+```{note}
+This is not a 1:1 restoration but a separate thing, not like it was in *Tiberian Sun*.
 ```
 
 ### Customize harvester dump amount
