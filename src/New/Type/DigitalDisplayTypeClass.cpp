@@ -42,6 +42,7 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->InfoIndex.Read(exINI, section, "InfoIndex");
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
+	this->ShowType.Read(exINI, section, "ShowType");
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)
@@ -282,6 +283,7 @@ void DigitalDisplayTypeClass::Serialize(T& Stm)
 		.Process(this->InfoIndex)
 		.Process(this->ValueScaleDivisor)
 		.Process(this->ValueAsTimer)
+		.Process(this->ShowType)
 		;
 }
 

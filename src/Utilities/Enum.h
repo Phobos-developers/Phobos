@@ -300,6 +300,14 @@ enum class DisplayInfoType : BYTE
 	FactoryProcess = 20
 };
 
+enum class DisplayShowType : int
+{
+	None = -1,
+	Anything = 0,
+	Select = 1,
+	Selected = 2
+};
+
 enum class BannerNumberType : int
 {
 	None = 0,

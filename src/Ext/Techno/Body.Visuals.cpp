@@ -477,6 +477,24 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 		if (!pDisplayType->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
 			continue;
 
+		bool isSelected = pThis->IsSelected;
+		bool canShow = true;
+
+		switch (pDisplayType->ShowType)
+		{
+		case DisplayShowType::Select:
+			canShow = (pThis->IsMouseHovering || isSelected);
+			break;
+		case DisplayShowType::Selected:
+			canShow = isSelected;
+			break;
+		default:
+			break;
+		}
+
+		if (!canShow)
+			continue;
+
 		int value = -1;
 		int maxValue = 0;
 

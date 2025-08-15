@@ -1335,6 +1335,36 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	}
 
 	template <>
+	inline bool read<DisplayShowType>(DisplayShowType& value, INI_EX& parser, const char* pSection, const char* pKey)
+	{
+		if (parser.ReadString(pSection, pKey))
+		{
+			auto parsed = DisplayShowType::None;
+			auto str = parser.value();
+
+			if (_strcmpi(str, "anything") == 0)
+			{
+				parsed = DisplayShowType::Anything;
+			}
+			else if (_strcmpi(str, "select") == 0)
+			{
+				parsed = DisplayShowType::Select;
+			}
+			else if (_strcmpi(str, "selected") == 0)
+			{
+				parsed = DisplayShowType::Selected;
+			}
+
+			if (parsed != DisplayShowType::None)
+				value = parsed;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	template <>
 	inline bool read<BannerNumberType>(BannerNumberType& value, INI_EX& parser, const char* pSection, const char* pKey)
 	{
 		if (parser.ReadString(pSection, pKey))

@@ -23,6 +23,21 @@ DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 	return 0;
 }
 
+DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
+{
+	GET(TechnoClass*, pThis, EBP);
+
+	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
+
+	if ((pThis->IsMouseHovering || pTypeExt->HealthBar_Permanent.Get())
+		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
+	{
+		return 0x6F5E41;
+	}
+
+	return 0;
+}
+
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
@@ -31,6 +46,30 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 		return 0x6F6AB6;
 
 	return 0;
+}
+
+DEFINE_HOOK_AGAIN(0x6F683C, TechnoClass_DrawHealthBar_HidePips, 0x7)	// DrawOther
+DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HidePips, 0x5)			// DrawBuilding
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	bool HidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
+
+	if (R->Origin() == 0x6F6637)
+	{
+		return HidePips ? 0x6F677D : 0;
+	}
+
+	if (HidePips)
+	{
+		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
+
+		R->EDI(pLocation);
+		return 0x6F6A58;
+	}
+
+	R->EAX(pThis->WhatAmI());
+	return 0x6F6843;
 }
 
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
