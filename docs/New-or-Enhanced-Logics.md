@@ -2060,6 +2060,17 @@ JumpjetTilt.SidewaysRotationFactor=1.0  ; floating point value
 JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 ```
 
+### Turret Response
+
+- When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
+  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]       ; VehicleType
+TurretResponse=     ; boolean
+```
+
 ### Turretless Shape Vehicle FireUp
 
 ![image](_static/images/vehiclefireup.gif)
@@ -2073,17 +2084,6 @@ In `artmd.ini`:
 [SOMEVEHICLE]                   ; VehicleType
 FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
-```
-
-### Turret Response
-
-- When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
-  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]       ; VehicleType
-TurretResponse=     ; boolean
 ```
 
 ## Warheads
