@@ -132,7 +132,10 @@ bool SWSidebarClass::AddButton(int superIdx)
 
 	const auto pSWExt = SWTypeExt::ExtMap.Find(pSWType);
 
-	if (!pSWExt->SW_ShowCameo || !pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
+	if (!pSWExt->SW_ShowCameo && pSWExt->SW_AutoFire)
+		return false;
+
+	if (!pSWExt->SuperWeaponSidebar_Allow.Get(RulesExt::Global()->SuperWeaponSidebar_AllowByDefault))
 		return false;
 
 	const unsigned int ownerBits = 1u << HouseClass::CurrentPlayer->Type->ArrayIndex;
@@ -147,6 +150,9 @@ bool SWSidebarClass::AddButton(int superIdx)
 
 	if (columns.empty() && !this->AddColumn())
 		return false;
+
+	if (std::ranges::any_of(columns, [superIdx](SWColumnClass* column) { return std::ranges::any_of(column->Buttons, [superIdx](SWButtonClass* button) { return button->SuperIndex == superIdx; }); }))
+		return true;
 
 	return columns.back()->AddButton(superIdx);
 }
