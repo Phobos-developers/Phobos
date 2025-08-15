@@ -269,11 +269,6 @@ void Phobos::ApplyOptimizations()
 	if (Phobos::Optimizations::DisableRadDamageOnBuildings)
 		Patch::Apply_RAW(0x43FB23, { 0x53, 0x55, 0x56, 0x8B, 0xF1 });
 
-	if (SessionClass::IsMultiplayer())
-	{
-		// Disable MainLoop_SaveGame
-		Patch::Apply_LJMP(0x55DBCD, 0x55DC99);
-	}
 	else
 	{
 		// Disable Random2Class_Random_SyncLog

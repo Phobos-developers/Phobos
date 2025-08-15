@@ -37,6 +37,8 @@ public:
 		Nullable<int> InfantryGainSelfHealCap;
 		Nullable<int> UnitsGainSelfHealCap;
 		Valueable<bool> GainSelfHealAllowMultiplayPassive;
+		Valueable<bool> GainSelfHealFromPlayerControl;
+		Valueable<bool> GainSelfHealFromAllies;
 		Valueable<bool> EnemyInsignia;
 		Valueable<AffectedHouse> DisguiseBlinkingVisibility;
 		Valueable<int> ChronoSparkleDisplayDelay;
@@ -66,6 +68,8 @@ public:
 		Nullable<TranslucencyLevel> PlacementGrid_TranslucencyWithPreview;
 		Valueable<bool> PlacementPreview;
 		TranslucencyLevel PlacementPreview_Translucency;
+
+		Valueable<bool> SuperWeaponSidebar_AllowByDefault;
 
 		Nullable<double> ConditionYellow_Terrain;
 		Nullable<double> Shield_ConditionYellow;
@@ -127,6 +131,8 @@ public:
 		Valueable<double> IronCurtain_ExtraTintIntensity;
 		Valueable<double> ForceShield_ExtraTintIntensity;
 		Valueable<bool> ColorAddUse8BitRGB;
+		Valueable<ColorStruct> AirstrikeLineColor;
+		Valueable<int> AirstrikeLineZAdjust;
 
 		Valueable<PartialVector2D<int>> ROF_RandomDelay;
 		Valueable<ColorStruct> ToolTip_Background_Color;
@@ -155,19 +161,23 @@ public:
 		Valueable<bool> ShowDesignatorRange;
 		Valueable<bool> IsVoiceCreatedGlobal;
 		Valueable<int> SelectionFlashDuration;
-		AnimTypeClass* DropPodTrailer;
+		Nullable<AnimTypeClass*> DropPodTrailer;
+		AnimTypeClass* DropPodDefaultTrailer;
 		SHPStruct* PodImage;
 		Valueable<bool> DrawInsignia_OnlyOnSelected;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Infantry;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Buildings;
 		Nullable<BuildingSelectBracketPosition> DrawInsignia_AdjustPos_BuildingsAnchor;
 		Valueable<Point2D> DrawInsignia_AdjustPos_Units;
+		Valueable<bool> DrawInsignia_UsePixelSelectionBracketDelta;
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
+		Nullable<double> DamageOwnerMultiplier_NotAffectsEnemies;
+		Nullable<double> DamageAlliesMultiplier_NotAffectsEnemies;
 
 		Valueable<double> AircraftLevelLightMultiplier;
 		Valueable<double> JumpjetLevelLightMultiplier;
@@ -209,15 +219,40 @@ public:
 		Valueable<int> CombatLightDetailLevel;
 		Valueable<int> LightFlashAlphaImageDetailLevel;
 
+		Nullable<int> AINormalTargetingDelay;
+		Nullable<int> PlayerNormalTargetingDelay;
+		Nullable<int> AIGuardAreaTargetingDelay;
+		Nullable<int> PlayerGuardAreaTargetingDelay;
+		Nullable<int> AIAttackMoveTargetingDelay;
+		Nullable<int> PlayerAttackMoveTargetingDelay;
+		Valueable<bool> DistributeTargetingFrame;
+		Valueable<bool> DistributeTargetingFrame_AIOnly;
+
 		Valueable<bool> BuildingWaypoints;
 		Valueable<bool> BuildingTypeSelectable;
 
 		Valueable<double> ProneSpeed_Crawls;
 		Valueable<double> ProneSpeed_NoCrawls;
 
-    	Valueable<double> DamagedSpeed;
+		Valueable<double> DamagedSpeed;
 
 		Valueable<bool> HarvesterScanAfterUnload;
+
+		Valueable<bool> AnimCraterDestroyTiberium;
+
+		Valueable<AffectedHouse> BerzerkTargeting;
+
+		Valueable<bool> AttackMove_IgnoreWeaponCheck;
+		Nullable<bool> AttackMove_StopWhenTargetAcquired;
+
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+
+		// cache tint color
+		int TintColorIronCurtain;
+		int TintColorForceShield;
+		int TintColorBerserk;
+
+		Valueable<bool> InfantryAutoDeploy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -225,6 +260,8 @@ public:
 			, InfantryGainSelfHealCap {}
 			, UnitsGainSelfHealCap {}
 			, GainSelfHealAllowMultiplayPassive { true }
+			, GainSelfHealFromPlayerControl { false }
+			, GainSelfHealFromAllies { false }
 			, EnemyInsignia { true }
 			, DisguiseBlinkingVisibility { AffectedHouse::Owner }
 			, ChronoSparkleDisplayDelay { 24 }
@@ -252,6 +289,8 @@ public:
 			, PlacementGrid_TranslucencyWithPreview { }
 			, PlacementPreview { false }
 			, PlacementPreview_Translucency { 75 }
+
+			, SuperWeaponSidebar_AllowByDefault { false }
 
 			, Shield_ConditionYellow { }
 			, Shield_ConditionRed { }
@@ -305,7 +344,9 @@ public:
 			, ForceShield_ExtraTintIntensity { 0.0 }
 			, AllowWeaponSelectAgainstWalls { false }
 			, ColorAddUse8BitRGB { false }
-			, ROF_RandomDelay { { 0 ,2  } }
+			, AirstrikeLineColor { { 255, 0, 0 } }
+			, AirstrikeLineZAdjust { 0 }
+			, ROF_RandomDelay { { 0 ,2 } }
 			, ToolTip_Background_Color { { 0, 0, 0 } }
 			, ToolTip_Background_Opacity { 100 }
 			, ToolTip_Background_BlurSize { 0.0f }
@@ -320,10 +361,11 @@ public:
 			, IsVoiceCreatedGlobal { false }
 			, SelectionFlashDuration { 0 }
 			, DrawInsignia_OnlyOnSelected { false }
-			, DrawInsignia_AdjustPos_Infantry { { 5, 2  } }
-			, DrawInsignia_AdjustPos_Buildings { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Infantry { { 5, 2 } }
+			, DrawInsignia_AdjustPos_Buildings { { 10, 6 } }
 			, DrawInsignia_AdjustPos_BuildingsAnchor {}
-			, DrawInsignia_AdjustPos_Units { { 10, 6  } }
+			, DrawInsignia_AdjustPos_Units { { 10, 6 } }
+			, DrawInsignia_UsePixelSelectionBracketDelta { { false } }
 			, Promote_VeteranAnimation {}
 			, Promote_EliteAnimation {}
 			, AnimRemapDefaultColorScheme { 0 }
@@ -338,10 +380,13 @@ public:
 			, VisualScatter_Max { Leptons(32) }
 			, ShowDesignatorRange { true }
 			, DropPodTrailer { }
+			, DropPodDefaultTrailer { }
 			, PodImage { }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
+			, DamageOwnerMultiplier_NotAffectsEnemies {}
+			, DamageAlliesMultiplier_NotAffectsEnemies {}
 			, AircraftLevelLightMultiplier { 1.0 }
 			, JumpjetLevelLightMultiplier { 0.0 }
 			, VoxelLightSource { }
@@ -375,14 +420,36 @@ public:
 			, WarheadParticleAlphaImageIsLightFlash { false }
 			, CombatLightDetailLevel { 0 }
 			, LightFlashAlphaImageDetailLevel { 0 }
+			, AINormalTargetingDelay {}
+			, PlayerNormalTargetingDelay {}
+			, AIGuardAreaTargetingDelay {}
+			, PlayerGuardAreaTargetingDelay {}
+			, AIAttackMoveTargetingDelay {}
+			, PlayerAttackMoveTargetingDelay {}
+			, DistributeTargetingFrame { false }
+			, DistributeTargetingFrame_AIOnly { true }
 			, BuildingWaypoints { false }
 			, BuildingTypeSelectable { false }
 			, ProneSpeed_Crawls { 0.67 }
 			, ProneSpeed_NoCrawls { 1.5 }
 
-      		, DamagedSpeed { 0.75 }
-			
+			, DamagedSpeed { 0.75 }
+
 			, HarvesterScanAfterUnload { false }
+
+			, AnimCraterDestroyTiberium { true }
+
+			, BerzerkTargeting { AffectedHouse::All }
+
+			, TintColorIronCurtain { 0 }
+			, TintColorForceShield { 0 }
+			, TintColorBerserk { 0 }
+
+			, AttackMove_IgnoreWeaponCheck { false }
+			, AttackMove_StopWhenTargetAcquired { }
+
+			, Parasite_GrappleAnim {}
+			, InfantryAutoDeploy { false }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -392,6 +459,7 @@ public:
 		virtual void LoadAfterTypeData(RulesClass* pThis, CCINIClass* pINI);
 		virtual void InitializeConstants() override;
 		void InitializeAfterTypeData(RulesClass* pThis);
+		void InitializeAfterAllLoaded();
 
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override { }
 

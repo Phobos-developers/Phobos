@@ -48,6 +48,9 @@ This page lists all the individual contributions to the project by their author.
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
+  - Warhead activation target health thresholds
+  - MP saves support for quicksave command and savegame trigger action
+  - Ported XNA CnCNet Client MP save handling
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -68,6 +71,8 @@ This page lists all the individual contributions to the project by their author.
   - Wall-Gate links
   - Ability for deployed infantry to use both weapons
   - Observer PCX loading screen
+  - Original `Arcing` elevation inaccuracy fix
+  - Display banner improvement
   - Official CN docs for Build#29 and previous versions
 - **secsome (SEC-SOME)**:
   - Debug info dump hotkey
@@ -95,6 +100,8 @@ This page lists all the individual contributions to the project by their author.
   - Vanilla map preview reading bugfix
   - Customizable tooltip background
   - Parts of Ares calling code
+  - Original `Arcing` elevation inaccuracy fix
+  - Dehardcode 255 limit of `OverlayType`
 - **Otamaa (Fahroni, BoredEXE)**:
   - Help with CellSpread
   - Ported and fixed custom RadType code
@@ -118,6 +125,9 @@ This page lists all the individual contributions to the project by their author.
   - Help with custom locomotors
   - Extension class optimization
   - Overload characteristic dehardcoded
+  - Customizable garrison and bunker properties
+  - Disable `DamageSound` for buildings
+  - Power plant damage factor
 - **FS-21**:
   - Dump Object Info enhancements
   - `Powered.KillSpawns`
@@ -138,6 +148,9 @@ This page lists all the individual contributions to the project by their author.
   - Map Events 604 & 605 for checking if a specific Techno enters in a cell
   - Warhead that can not kill
   - `Pips.HideIfNoStrength` and `SelfHealing.EnabledBy` additions for shields
+  - Warhead activation target health thresholds enhancements
+  - Event 606: AttachEffect is attaching to a Techno
+  - Linked superweapons
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
@@ -217,7 +230,7 @@ This page lists all the individual contributions to the project by their author.
   - `PipScale` pip size & ammo pip frame customization
   - Extension class optimization
   - Additional sync logging
-  - `Arcing` elevation inaccuracy fix
+  - Original `Arcing` elevation inaccuracy fix
   - `EMPulseCannon` projectile gravity fix
   - Custom palette support for wall overlays
   - Warhead animation improvements
@@ -260,6 +273,9 @@ This page lists all the individual contributions to the project by their author.
   - Vehicles keeping target on move command
   - `IsSonic` wave drawing crash fix
   - Customizable electric bolt duration and electric bolt-related fixes
+  - Airstrike flare visual customizations & fixes
+  - Restored parabombs
+  - Delayed fire weapons
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -279,6 +295,7 @@ This page lists all the individual contributions to the project by their author.
   - `601 House owns TechnoType` and `602 House doesn't own TechnoType` trigger events
   - Voxel light source position customization
   - Extending `Power` to all TechnoTypes
+  - Display banner by triggers
   - Help with docs
 - **ChrisLv_CN** (work relicensed under [following permission](https://github.com/Phobos-developers/Phobos/blob/develop/images/ChrisLv-relicense.png)):
   - General assistance
@@ -305,7 +322,7 @@ This page lists all the individual contributions to the project by their author.
     - Redeployable MCV in campaigns
     - Allow buildings with `UndeploysInto` to be sold if `Unsellable=no` even if not conyard
     - Trigger actions that allow/forbid MCV to redeploy in game
-  - `AlternateFLH` of vehicles in `OpenTopped` transport.
+  - `AlternateFLH` of vehicles in `OpenTopped` transport
   - Slaves' house customization when owner is killed
   - Trigger Action spawned team IFV/OpenTopped logic fix
   - Singleplayer Campaign AI's base node/SW-delivered/trigger action `125 Create Building At...`'s auto-repairability dehardcode
@@ -314,7 +331,7 @@ This page lists all the individual contributions to the project by their author.
   - Income money string indication upon ore dump
   - Warhead superweapon launch logic
   - TechnoType conversion placeholder
-  - `606 The shield of the attached object is broken` trigger event
+  - `600 The shield of the attached object is broken` trigger event
   - `RadialIndicator` observer visibility
   - Cloaked objects from allies displaying to player in singleplayer campaigns
   - Skip `NaturalParticleSystem` displaying from in-map pre-placed structures
@@ -354,7 +371,23 @@ This page lists all the individual contributions to the project by their author.
   - Fix `Hospital=yes` building can't kick out infantry after loading a save
   - `Edit/Clear Hate-Value` Trigger Action
   - `Set Force Enemy` Trigger Action
-  - Fixed the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Fix the issue where computer players did not search for new enemies after defeating them or forming alliances with them
+  - Customize the damage taken when falling from a bridge
+  - `600 The shield of the attached object is broken` bug fix for the triggered event
+  - Fix an issue where a portion of Ares's trigger event 75/77 was determined unsuccessfully
+  - Second weapon with `ElectricAssault=yes` will not unconditionally attack your building with `Overpowerable=yes`
+  - Fix the issue where some units crashed after the deployment transformation
+  - Turretless vehicles with `Voxel=no` support use `FireUp` like infantry
+  - Infantry support `IsGattling=yes`
+  - Support for more optional weapons
+  - Engineers can enter buildings normally when they don't need to be repaired (or you can force it by pressing Alt)
+  - Player-controlled spies are not forced to perform other tasks while attacking buildings
+  - If `BombDisarm=yes` is not present for all weapon warheads, then the engineer will no longer use the appropriate mouse action
+  - Fix an unusual use of DeployFireWeapon for InfantryType
+  - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
+  - Units can customize the attack voice that plays when using more weapons
+  - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
+  - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -378,14 +411,36 @@ This page lists all the individual contributions to the project by their author.
   - Enhanced reveal & gap warhead
   - Fix an issue that teleport units board transport vehicles on the bridge will create an impassable invisible barrier, which may cause the game to freeze or even crash
   - Fix wrong shadow when a vehicle has hover locomotor and is being lifted by `IsLocomotor=yes` warhead
-  - Fix the bug that a unit can overlap with `Teleport` units after it's been damaged by a fallen unit lifted by `IsLocomotor=yes` warheads
   - Customize parasite culling targets
   - Customize harvester dump amount
   - Select box logic
   - Customize airstrike targets
   - Separate the AirstrikeClass pointer between the attacker/aircraft and the target to avoid erroneous overwriting issues
   - Fix the bug that buildings will always be tinted as airstrike owner
-  - Fix the bug that 'AllowAirstrike=no' cannot completely prevent air strikes from being launched against it
+  - Fix the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it
+  - Fix the bug that infantry ignored `Passengers` and `SizeLimit` when entering buildings
+  - Tiberium eater logic
+  - Fix the bug that ships can travel on elevated bridges
+  - Original `Arcing` elevation inaccuracy fix
+  - Fix the bug that uncontrolled scatter when elite techno attacked by aircraft or some unit try crush it
+  - Exclusive SuperWeapon Sidebar
+  - Fix the bug that AlphaImage remained after unit entered tunnel
+  - Weapon target filtering by health percentage
+  - Fix the bug that `DamageSelf` and `AllowDamageOnSelf` are ineffective on airforce
+  - Customize limit when engineer repair a building
+  - Fix the bug that damaged particle dont disappear after building has repaired by engineer
+  - Display banner improvement
+  - Electric/RadBeam trail for laser tails
+  - Ground line for select box
+  - Fix the bug that passengers' Temporal attacks wouldn't stop when an OpenTopped vehicle was frozen by a Temporal warhead
+  - Fix the bug that vehicle owned by computer will scatter when cloaking
+  - Fix the bug that submarine always turn left after changed owner by map event
+  - Fix the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants
+  - Fix the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead
+  - Fix the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge
+  - Fix the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing
+  - Fix the bug that hover vehicle will sink if destroyed on bridge
+  - Customize squid grapple animation
 - **Apollo** - Translucent SHP drawing patches
 - **ststl**:
   - Customizable `ShowTimer` priority of superweapons
@@ -394,7 +449,9 @@ This page lists all the individual contributions to the project by their author.
   - Unlimited `AlternateFLH` entries
   - Build limit group
   - Customizing whether passengers are kicked out when an aircraft fires
+  - Display banner by triggers
   - New SuperWeapon Type template
+  - Fix the issue where some units crashed after the deployment transformation
 - **TwinkleStar**:
   - Custom slaves free sound
   - Jumpjet crash rotation control
@@ -412,12 +469,15 @@ This page lists all the individual contributions to the project by their author.
   - Flashing Technos on selecting
   - Promotion animation
   - Damaged unit image changes
+  - `VoiceDeploy` through hot-key/command bar fix
+  - Damaged aircraft image changes
 - **ZivDero**:
   - Re-enable the Veinhole Monster and Weeds from TS
   - Recreate the weed-charging of SWs like the TS Chemical Missile
   - Allow to change the speed of gas particles
   - Fix a jumpjet crash related to voxel shadow drawing
   - Replace `BLOWFISH.DLL` using Red Alert source code
+  - Adjust the dehardcoding of the 255 `OverlayType` limit to a different format
 - **CrimRecya**:
   - Fix `LimboKill` not working reliably
   - Allow using waypoints, area guard and attack move with aircraft
@@ -459,19 +519,42 @@ This page lists all the individual contributions to the project by their author.
   - Aggressive attack move mission
   - Amphibious access vehicle
   - Fix an issue that spawned `Strafe` aircraft on aircraft carriers may not be able to return normally if aircraft carriers moved a short distance when the aircraft is landing
+  - Exclusive SuperWeapon Sidebar
+  - Fix an issue that the widespread damage caused by detonation on the bridge/ground cannot affect objects on the ground/bridge who are in the opposite case
+  - Several new Infotypes, no display in specific status and a new single frame display method
+  - Customizable spawn delay of `VoxelAnim`'s `TrailerAnim` and fix its incorrect position
+  - Add `DebrisMinimums` to keep the count of debris within a certain range
+  - Task subtitles display in the middle of the screen
+  - Fix an issue that `MovementZone=Fly` harvesters can not be able to enter refinery buildings manually
+  - Fix an issue that jumpjet harvester cannot automatically go mining when leaving the weapons factory
+  - Fix an issue that jumpjet harvester will overlap when manually entering refinery buildings and cause game crashes
+  - Fix an issue that `Spawned` aircraft will fly towards the edge of the map when its `Spawner` is under EMP
+  - Burst without delay
+  - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
+  - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
+  - Reverse engineer warhead
   - Restore turret recoil effect
   - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
+  - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
-  - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
+  - Allow `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades
   - Type select for buildings (doc)
   - Enhanced Bombard trajectory
   - Shield armor inheritance customization
   - Fix `DefaultDisguise` showing wrong house colors for different players
   - Fire weapon when Warhead kills something
   - Promotion animation deglobalization
-  - Forcing specific weapon by range
+  - Forcing specific weapon by range and target type
+  - Passenger-based insignias
+  - Use `InsigniaType` to set the properties of insignia in a batch
+  - Allow player's self-healing effects to be benefited by allied or `PlayerControl=true` houses
+  - Power plant damage factor
+  - Allow faking digital display for `InfoType=Health` at disguise
+  - Display banner improvement and doc
+  - Damage multiplier for health percentage
+  - Linked superweapons tweak
 - **NaotoYuuki** - Vertical & meteor trajectory projectile prototypes
 - **handama** - AI script action to `16005 Jump Back To Previous Script`
 - **TaranDahl (航味麻酱)**:
@@ -502,6 +585,21 @@ This page lists all the individual contributions to the project by their author.
   - RadarInvisible for non-enemy house
   - Allow miners do area guard
   - Make harvesters do addtional scan after unload
+  - Customize the scatter caused by aircraft attack mission
+  - Customize whether `Crater=yes` animation would destroy tiberium
+  - Targeting limitation for berzerk technos
+  - Allows refineries to use multiple ActiveAnim simultaneously
+  - Several attackmove related enhancement
+  - Fix the bug that `OpenToppedWarpDistance` is calculated incorrectly for building target
+  - Burst without delay
+  - Target scanning delay customization (code)
+  - Skip target scanning function calling for unarmed technos (code)
+  - Force techno targeting in distributed frames to improve performance
+  - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
+  - Auto deploy for GI-like infantry
+- **solar-III (凤九歌)**
+  - Target scanning delay customization (documentation)
+  - Skip target scanning function calling for unarmed technos (documentation)
 - **tyuah8**:
   - Drive/Jumpjet/Ship/Teleport locomotor did not power on when it is un-piggybacked bugfix
   - Destroyed unit leaves sensors bugfix

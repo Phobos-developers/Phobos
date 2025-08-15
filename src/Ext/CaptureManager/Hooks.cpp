@@ -1,6 +1,7 @@
 #include "Body.h"
 
 #include <ParticleSystemClass.h>
+#include <Ext/Techno/Body.h>
 #include <Utilities/Macro.h>
 #include <Utilities/EnumFunctions.h>
 
@@ -38,7 +39,7 @@ DEFINE_HOOK(0x519F71, InfantryClass_UpdatePosition_BeforeBuildingChangeHouse, 0x
 {
 	GET(BuildingClass*, pBld, EDI);
 
-	if (auto pBy = pBld->MindControlledBy)
+	if (auto const pBy = pBld->MindControlledBy)
 		CaptureManagerExt::FreeUnit(pBy->CaptureManager, pBld);
 
 	if (std::exchange(pBld->MindControlledByAUnit, false))
@@ -63,16 +64,16 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 {
 	GET(CaptureManagerClass*, pThis, EDI);
 	GET(TechnoClass*, pVictim, ECX);
-	GET_STACK(int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
+	GET_STACK(const int, nNodeCount, STACK_OFFSET(0x30, -0x1C));
 
 	auto const pAttacker = pThis->Owner;
-	const auto pExt = TechnoTypeExt::ExtMap.Find(pAttacker->GetTechnoType());
+	auto const pExt = TechnoExt::ExtMap.Find(pAttacker)->TypeExtData;
 
 	if (EnumFunctions::CanTargetHouse(pExt->MindControlLink_VisibleToHouse, pAttacker->Owner, HouseClass::CurrentPlayer))
 	{
 		auto nVictimCoord = pVictim->Location;
 		nVictimCoord.Z += pVictim->GetTechnoType()->LeptonMindControlOffset;
-		auto nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
+		auto const nFLH = pAttacker->GetFLH(-1 - nNodeCount % 5, CoordStruct::Empty);
 		DrawALinkTo(nFLH, nVictimCoord, pAttacker->Owner->Color);
 	}
 
@@ -83,7 +84,7 @@ DEFINE_HOOK(0x4721E6, CaptureManagerClass_DrawLinkToVictim, 0x6)
 void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void* _)
 {
 	auto const pOwner = pThis->Owner;
-	auto const pOwnerTypeExt = TechnoTypeExt::ExtMap.Find(pOwner->GetTechnoType());
+	auto const pOwnerTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
 	if (!pOwnerTypeExt) // we cant find type Ext for this , just return to original function !
 	{
@@ -142,11 +143,13 @@ void __fastcall CaptureManagerClass_Overload_AI(CaptureManagerClass* pThis, void
 
 				if (auto const pParticle = pOwnerTypeExt->Overload_ParticleSys.Get(pRules->DefaultSparkSystem))
 				{
+					auto& random = ScenarioClass::Instance->Random;
+
 					for (int i = pOwnerTypeExt->Overload_ParticleSysCount; i > 0; --i)
 					{
-						auto const nRandomY = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
-						auto const nRamdomX = ScenarioClass::Instance->Random.RandomRanged(-200, 200);
-						CoordStruct nParticleCoord{ pOwner->Location.X + nRamdomX, nRandomY + pOwner->Location.Y, pOwner->Location.Z + 100 };
+						auto const nRandomY = random.RandomRanged(-200, 200);
+						auto const nRamdomX = random.RandomRanged(-200, 200);
+						const CoordStruct nParticleCoord{ pOwner->Location.X + nRamdomX, nRandomY + pOwner->Location.Y, pOwner->Location.Z + 100 };
 						GameCreate<ParticleSystemClass>(pParticle, nParticleCoord, nullptr, nullptr, CoordStruct::Empty, nullptr);
 					}
 				}

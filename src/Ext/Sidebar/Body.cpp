@@ -1,4 +1,5 @@
 #include "Body.h"
+#include "SWSidebar/SWSidebarClass.h"
 
 #include <EventClass.h>
 #include <HouseClass.h>
@@ -37,7 +38,12 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 		const auto& supers = pCurrent->Supers;
 
 		if (supers.ValidIndex(pItem->ItemIndex) && supers[pItem->ItemIndex]->IsPresent)
-			return false;
+		{
+			if (SWSidebarClass::Instance.AddButton(pItem->ItemIndex))
+				ScenarioExt::Global()->SWSidebar_Indices.emplace_back(pItem->ItemIndex);
+			else
+				return false;
+		}
 	}
 
 	// The following sections have been modified
@@ -45,6 +51,7 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 
 	if (pItem->ItemType == AbstractType::BuildingType || pItem->ItemType == AbstractType::Building)
 	{
+		__assume(pTechnoType != nullptr);
 		buildCat = static_cast<BuildingTypeClass*>(pTechnoType)->BuildCat;
 		auto& pDisplay = DisplayClass::Instance;
 		pDisplay.SetActiveFoundation(nullptr);
@@ -58,30 +65,26 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	// Here make correction to the hardcoded BuildCat::DontCare.
 	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
 	{
-		const EventClass event
-		(
+		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
 			EventType::AbandonAll,
 			static_cast<int>(pItem->ItemType),
 			pItem->ItemIndex,
 			pTechnoType->Naval
-		);
-		EventClass::AddEvent(event);
+		));
 	}
 
 	// The original code is as follows
 /*
 	if (pItem->CurrentFactory)
 	{
-		const EventClass event
-		(
+		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
 			EventType::Abandon,
 			static_cast<int>(pItem->ItemType),
 			pItem->ItemIndex,
 			pTechnoType && pTechnoType->Naval
-		);
-		EventClass::AddEvent(event);
+		));
 	}
 
 	auto buildCat = BuildCat::DontCare;
@@ -98,15 +101,13 @@ bool __stdcall SidebarExt::AresTabCameo_RemoveCameo(BuildType* pItem)
 	// Here make correction to the hardcoded BuildCat::DontCare.
 	if (pTechnoType && pCurrent->GetPrimaryFactory(pItem->ItemType, pTechnoType->Naval, buildCat))
 	{
-		const EventClass event
-		(
+		EventClass::OutList.Add(EventClass(
 			pCurrent->ArrayIndex,
 			EventType::AbandonAll,
 			static_cast<int>(pItem->ItemType),
 			pItem->ItemIndex,
 			pTechnoType->Naval
-		);
-		EventClass::AddEvent(event);
+		));
 	}
 */
 	return true;

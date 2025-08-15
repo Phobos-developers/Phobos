@@ -13,18 +13,20 @@
 DEFINE_HOOK(0x71E940, TEventClass_Execute, 0x5)
 {
 	GET(TEventClass*, pThis, ECX);
-	GET_STACK(int, iEvent, 0x4); // now trigger what?
+	GET_STACK(const int, iEvent, 0x4); // now trigger what?
 	GET_STACK(HouseClass*, pHouse, 0x8);
 	GET_STACK(ObjectClass*, pObject, 0xC);
 	GET_STACK(CDTimerClass*, pTimer, 0x10);
 	GET_STACK(bool*, isPersitant, 0x14);
 	GET_STACK(TechnoClass*, pSource, 0x18);
 
-	bool handled;
+	const auto result = TEventExt::Execute(pThis, iEvent, pHouse, pObject, pTimer, isPersitant, pSource);
 
-	R->AL(TEventExt::Execute(pThis, iEvent, pHouse, pObject, pTimer, isPersitant, pSource, handled));
+	if (!result.has_value())
+		return 0;
 
-	return handled ? 0x71EA2D : 0;
+	R->AL(result.value());
+	return 0x71EA2D;
 }
 
 DEFINE_HOOK(0x7271F9, TEventClass_GetFlags, 0x5)
@@ -34,7 +36,9 @@ DEFINE_HOOK(0x7271F9, TEventClass_GetFlags, 0x5)
 
 	int nEvent = static_cast<int>(pThis->EventKind);
 	if (nEvent >= PhobosTriggerEvent::LocalVariableGreaterThan && nEvent < PhobosTriggerEvent::_DummyMaximum)
-		eAttach |= 0x10; // LOGIC
+	{
+		eAttach |= TEventExt::GetFlags(nEvent);
+	}
 
 	R->EAX(eAttach);
 

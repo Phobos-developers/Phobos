@@ -13,13 +13,20 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 {
 	if (pHouse && pTarget)
 	{
-		if (this->AffectsOwner.Get(this->OwnerObject()->AffectsAllies) && pTarget->Owner == pHouse)
+		const auto pOwner = pTarget->Owner;
+
+		if (!this->AffectsNeutral && pOwner->IsNeutral())
+			return false;
+
+		const auto affectsAllies = this->OwnerObject()->AffectsAllies;
+
+		if (this->AffectsOwner.Get(affectsAllies) && pOwner == pHouse)
 			return true;
 
-		bool isAllies = pHouse->IsAlliedWith(pTarget);
+		const bool isAllies = pHouse->IsAlliedWith(pTarget);
 
-		if (this->OwnerObject()->AffectsAllies && isAllies)
-			return pTarget->Owner != pHouse;
+		if (affectsAllies && isAllies)
+			return pOwner != pHouse;
 
 		if (this->AffectsEnemies && !isAllies)
 			return true;
@@ -30,32 +37,23 @@ bool WarheadTypeExt::ExtData::CanTargetHouse(HouseClass* pHouse, TechnoClass* pT
 	return true;
 }
 
-bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget, TechnoExt::ExtData* pTargetExt = nullptr) const
+bool WarheadTypeExt::ExtData::CanAffectTarget(TechnoClass* pTarget) const
 {
-	if (!pTarget)
+	if (!IsHealthInThreshold(pTarget))
 		return false;
 
 	if (!this->EffectsRequireVerses)
 		return true;
 
-	auto armorType = pTarget->GetTechnoType()->Armor;
+	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTarget) != 0.0;
+}
 
-	if (!pTargetExt)
-		pTargetExt = TechnoExt::ExtMap.Find(pTarget);
+bool WarheadTypeExt::ExtData::IsHealthInThreshold(TechnoClass* pTarget) const
+{
+	if (!this->HealthCheck)
+		return true;
 
-	if (pTargetExt)
-	{
-		if (const auto pShieldData = pTargetExt->Shield.get())
-		{
-			if (pShieldData->IsActive())
-			{
-				if (!pShieldData->CanBePenetrated(this->OwnerObject()))
-					armorType = pShieldData->GetArmorType();
-			}
-		}
-	}
-
-	return GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) != 0.0;
+	return TechnoExt::IsHealthInThreshold(pTarget, this->AffectsAbovePercent, this->AffectsBelowPercent);
 }
 
 // Checks if Warhead can affect target that might or might be currently invulnerable.
@@ -100,22 +98,17 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 	if (pOwner && !EnumFunctions::CanTargetHouse(this->DetonateOnAllMapObjects_AffectHouses, pOwner, pTechno->Owner))
 		return false;
 
-	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 &&
-		!this->DetonateOnAllMapObjects_AffectTypes.Contains(pTechno->GetTechnoType())) ||
-		this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pTechno->GetTechnoType()))
+	auto const pType = pTechno->GetTechnoType();
+
+	if ((this->DetonateOnAllMapObjects_AffectTypes.size() > 0 && !this->DetonateOnAllMapObjects_AffectTypes.Contains(pType))
+		|| this->DetonateOnAllMapObjects_IgnoreTypes.Contains(pType))
 	{
 		return false;
 	}
 
 	if (this->DetonateOnAllMapObjects_RequireVerses)
 	{
-		auto const pExt = TechnoExt::ExtMap.Find(pTechno);
-		auto armorType = pTechno->GetTechnoType()->Armor;
-
-		if (pExt->Shield && pExt->Shield->IsActive() && !pExt->Shield->CanBePenetrated(this->OwnerObject()))
-			armorType = pExt->Shield->GetArmorType();
-
-		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), armorType) == 0.0)
+		if (GeneralUtils::GetWarheadVersusArmor(this->OwnerObject(), pTechno) == 0.0)
 			return false;
 	}
 
@@ -126,7 +119,7 @@ bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno,
 DamageAreaResult WarheadTypeExt::ExtData::DamageAreaWithTarget(const CoordStruct& coords, int damage, TechnoClass* pSource, WarheadTypeClass* pWH, bool affectsTiberium, HouseClass* pSourceHouse, TechnoClass* pTarget)
 {
 	this->DamageAreaTarget = pTarget;
-	auto result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
+	auto const result = MapClass::DamageArea(coords, damage, pSource, pWH, true, pSourceHouse);
 	this->DamageAreaTarget = nullptr;
 	return result;
 }
@@ -138,10 +131,6 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 {
 	auto pThis = this->OwnerObject();
 	const char* pSection = pThis->ID;
-
-	if (!pINI->GetSection(pSection))
-		return;
-
 	INI_EX exINI(pINI);
 
 	// Miscs
@@ -191,7 +180,11 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Crit_ActiveChanceAnims.Read(exINI, pSection, "Crit.ActiveChanceAnims");
 	this->Crit_AnimOnAffectedTargets.Read(exINI, pSection, "Crit.AnimOnAffectedTargets");
 	this->Crit_AffectBelowPercent.Read(exINI, pSection, "Crit.AffectBelowPercent");
+	this->Crit_AffectAbovePercent.Read(exINI, pSection, "Crit.AffectAbovePercent");
 	this->Crit_SuppressWhenIntercepted.Read(exINI, pSection, "Crit.SuppressWhenIntercepted");
+
+	if (this->Crit_AffectAbovePercent > this->Crit_AffectBelowPercent)
+		Debug::Log("[Developer warning][%s] Crit.AffectsAbovePercent is bigger than Crit.AffectsBelowPercent, crit will never activate!\n", pSection);
 
 	this->MindControl_Anim.Read(exINI, pSection, "MindControl.Anim");
 	this->MindControl_ThreatDelay.Read(exINI, pSection, "MindControl.ThreatDelay");
@@ -247,6 +240,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AllowDamageOnSelf.Read(exINI, pSection, "AllowDamageOnSelf");
 	this->DebrisAnims.Read(exINI, pSection, "DebrisAnims");
 	this->Debris_Conventional.Read(exINI, pSection, "Debris.Conventional");
+	this->DebrisTypes_Limit.Read(exINI, pSection, "DebrisTypes.Limit");
+	this->DebrisMinimums.Read(exINI, pSection, "DebrisMinimums");
 
 	this->DetonateOnAllMapObjects.Read(exINI, pSection, "DetonateOnAllMapObjects");
 	this->DetonateOnAllMapObjects_Full.Read(exINI, pSection, "DetonateOnAllMapObjects.Full");
@@ -257,6 +252,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
+	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
@@ -268,6 +264,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DamageOwnerMultiplier.Read(exINI, pSection, "DamageOwnerMultiplier");
 	this->DamageAlliesMultiplier.Read(exINI, pSection, "DamageAlliesMultiplier");
 	this->DamageEnemiesMultiplier.Read(exINI, pSection, "DamageEnemiesMultiplier");
+	this->DamageSourceHealthMultiplier.Read(exINI, pSection, "DamageSourceHealthMultiplier");
+	this->DamageTargetHealthMultiplier.Read(exINI, pSection, "DamageTargetHealthMultiplier");
 
 	this->SuppressRevengeWeapons.Read(exINI, pSection, "SuppressRevengeWeapons");
 	this->SuppressRevengeWeapons_Types.Read(exINI, pSection, "SuppressRevengeWeapons.Types");
@@ -291,9 +289,19 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->KillWeapon_Affects.Read(exINI, pSection, "KillWeapon.Affects");
 	this->KillWeapon_OnFirer_Affects.Read(exINI, pSection, "KillWeapon.OnFirer.Affects");
 
-  	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
+	this->ElectricAssaultLevel.Read(exINI, pSection, "ElectricAssaultLevel");
 
 	this->AirstrikeTargets.Read(exINI, pSection, "AirstrikeTargets");
+
+	this->AffectsBelowPercent.Read(exINI, pSection, "AffectsBelowPercent");
+	this->AffectsAbovePercent.Read(exINI, pSection, "AffectsAbovePercent");
+	this->AffectsNeutral.Read(exINI, pSection, "AffectsNeutral");
+	this->HealthCheck = this->AffectsBelowPercent > 0.0 || this->AffectsAbovePercent < 1.0;
+
+	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
+		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
+
+	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -350,6 +358,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.RemoveGroups.size() > 0
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
+		|| this->ReverseEngineer
 	);
 
 	char tempBuffer[32];
@@ -440,6 +449,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->Crit_ActiveChanceAnims)
 		.Process(this->Crit_AnimOnAffectedTargets)
 		.Process(this->Crit_AffectBelowPercent)
+		.Process(this->Crit_AffectAbovePercent)
 		.Process(this->Crit_SuppressWhenIntercepted)
 
 		.Process(this->MindControl_Anim)
@@ -496,6 +506,8 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->AllowDamageOnSelf)
 		.Process(this->DebrisAnims)
 		.Process(this->Debris_Conventional)
+		.Process(this->DebrisTypes_Limit)
+		.Process(this->DebrisMinimums)
 
 		.Process(this->DetonateOnAllMapObjects)
 		.Process(this->DetonateOnAllMapObjects_Full)
@@ -514,14 +526,22 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuppressReflectDamage_Types)
 		.Process(this->SuppressReflectDamage_Groups)
 
+		.Process(this->AffectsBelowPercent)
+		.Process(this->AffectsAbovePercent)
+		.Process(this->AffectsNeutral)
+		.Process(this->HealthCheck)
+
 		.Process(this->InflictLocomotor)
 		.Process(this->RemoveInflictedLocomotor)
 
 		.Process(this->DamageOwnerMultiplier)
 		.Process(this->DamageAlliesMultiplier)
 		.Process(this->DamageEnemiesMultiplier)
+		.Process(this->DamageSourceHealthMultiplier)
+		.Process(this->DamageTargetHealthMultiplier)
 
 		.Process(this->Parasite_CullingTarget)
+		.Process(this->Parasite_GrappleAnim)
 
 		.Process(this->Nonprovocative)
 
@@ -544,9 +564,13 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->KillWeapon_Affects)
 		.Process(this->KillWeapon_OnFirer_Affects)
 
-    	.Process(this->ElectricAssaultLevel)
+		.Process(this->ElectricAssaultLevel)
 
 		.Process(this->AirstrikeTargets)
+
+		.Process(this->CanKill)
+
+		.Process(this->ReverseEngineer)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)
@@ -559,8 +583,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
-
-		.Process(this->CanKill)
 		;
 }
 
@@ -639,7 +661,7 @@ DEFINE_HOOK(0x75E39C, WarheadTypeClass_Save_Suffix, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x75DEAF, WarheadTypeClass_LoadFromINI, 0x5)
+//DEFINE_HOOK_AGAIN(0x75DEAF, WarheadTypeClass_LoadFromINI, 0x5)// Section dont exist!
 DEFINE_HOOK(0x75DEA0, WarheadTypeClass_LoadFromINI, 0x5)
 {
 	GET(WarheadTypeClass*, pItem, ESI);
