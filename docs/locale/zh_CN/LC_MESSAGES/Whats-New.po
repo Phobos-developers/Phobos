@@ -2694,6 +2694,7 @@ msgid ""
 "Fixed quicksave command and save game trigger action to work with YRpp "
 "spawner's multiplayer saves (by Kerbiter)"
 msgstr ""
+"修复了快速存档命令和触发结果以使其舰容 YRpp spawner 的多人游戏存档（by Kerbiter）"
 
 #: ../../Whats-New.md:696
 msgid ""
@@ -2701,6 +2702,7 @@ msgid ""
 "occasional multiplayer save file overwriting when saving too fast (by "
 "Kerbiter)"
 msgstr ""
+"移植了 XNA CNCNet Client 的多人游戏存档处理以解决保存过快时偶发的多人存档文件覆盖文件（by Kerbiter）"
 
 #: ../../Whats-New.md:699
 msgid "0.3.0.1"

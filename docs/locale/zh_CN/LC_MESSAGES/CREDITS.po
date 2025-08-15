@@ -199,11 +199,11 @@ msgstr "`UseFixedVoxelLighting`"
 
 #: ../../../CREDITS.md:52
 msgid "MP saves support for quicksave command and savegame trigger action"
-msgstr ""
+msgstr "快速存档命令和触发结果的多人游戏支持"
 
 #: ../../../CREDITS.md:53
 msgid "Ported XNA CnCNet Client MP save handling"
-msgstr ""
+msgstr "移植了 XNA CNCNet Client 的多人游戏存档处理"
 
 #: ../../../CREDITS.md:54
 msgid "**Uranusian (Thrifinesma)**:"

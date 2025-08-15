@@ -1373,9 +1373,8 @@ msgid "`500` Save Game"
 msgstr "`500` 单人任务存档"
 
 #: ../../AI-Scripting-and-Mapping.md:487
-#, fuzzy
 msgid "Save the current game immediately."
-msgstr "立即保存当前游戏（仅限单人游戏）。"
+msgstr "立即保存当前游戏。"
 
 #: ../../AI-Scripting-and-Mapping.md:490
 msgid ""
@@ -1383,6 +1382,7 @@ msgid ""
 "[YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer "
 "saves support."
 msgstr ""
+"要让此结果用于多人游戏，你必须使用支持多人存档后的 [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) 版本。"
 
 #: ../../AI-Scripting-and-Mapping.md:493
 msgid ""
