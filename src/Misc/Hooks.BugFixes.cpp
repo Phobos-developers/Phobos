@@ -1629,6 +1629,7 @@ DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 
 	GET(BuildingClass*, pThis, ECX);
 
+	// Placing check, only newly generated buildings in this mission
 	if (pThis->CurrentMission == Mission::None)
 		return PlacingCheck;
 
