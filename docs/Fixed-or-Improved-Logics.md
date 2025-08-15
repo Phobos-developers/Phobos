@@ -258,6 +258,19 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed some units of Ares crashing after deployment conversion.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving.
+- The game now automatically changes save file name from `SAVEGAME.NET` to `SVGM_XXX.NET` (where `XXX` is a number) when saving to prevent occasional overwriting of the save file when using Phobos with XNA CnCNet Client and saving too frequently.
+  - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
+  - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
+  - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+
+
+```{note}
+The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+```
+
+```{note}
+At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+```
 
 ## Aircraft
 

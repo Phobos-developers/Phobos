@@ -48,6 +48,8 @@ This page lists all the individual contributions to the project by their author.
   - Ability to disable shadow for debris & meteor animations
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
+  - MP saves support for quicksave command and savegame trigger action
+  - Ported XNA CnCNet Client MP save handling
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
