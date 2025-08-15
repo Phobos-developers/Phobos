@@ -10,7 +10,7 @@ DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return TechnoExt::TechnoExt::CannotMove(pThis) ? 0x740AEF : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x740AEF : 0;
 }
 
 DEFINE_HOOK(0x741AA7, UnitClass_Assign_Destination_DisallowMoving, 0x6)
