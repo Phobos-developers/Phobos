@@ -204,6 +204,7 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 
 #pragma region KickOutStuckUnits
 
+// Attempt to kick the stuck unit out again by setting the destination
 DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 {
 	enum { Waiting = 0x44E267, NextStatus = 0x44E20C};
@@ -215,8 +216,10 @@ DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 
 	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
+		// Detecting movement status
 		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
 		{
+			// Evacuate the congestion at the entrance
 			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x449540)(pThis);
 			const auto pDest = MapClass::Instance.GetCellAt(BuildingTypeExt::GetWeaponFactoryDoor(pThis));
 
@@ -226,6 +229,7 @@ DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 				return pDest->GetNeighbourCell(static_cast<FacingType>(dir));
 			};
 
+			// Hover units may stop one cell behind their destination, should forcing them to advance one more cell
 			pUnit->SetDestination((pUnit->Destination != pDest ? pDest : getAdjCell()), true);
 		}
 	}
@@ -233,6 +237,7 @@ DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 	return Waiting;
 }
 
+// Check for any stuck units inside after successful unload each time. If there is, kick it out
 DEFINE_HOOK(0x44E260, BuildingClass_Mission_Unload_KickOutStuckUnits, 0x7)
 {
 	GET(BuildingClass*, pThis, EBP);
