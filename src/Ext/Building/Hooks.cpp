@@ -218,7 +218,15 @@ DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
 		{
 			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x449540)(pThis);
-			pUnit->SetDestination(MapClass::Instance.GetCellAt(BuildingTypeExt::GetWeaponFactoryDoor(pThis)), true);
+			const auto pDest = MapClass::Instance.GetCellAt(BuildingTypeExt::GetWeaponFactoryDoor(pThis));
+
+			auto getAdjCell = [pThis, pDest]()
+			{
+				const int dir = RulesExt::Global()->ExtendedWeaponsFactory ? BuildingTypeExt::ExtMap.Find(pThis->Type)->WeaponsFactory_Dir.Get() : 2;
+				return pDest->GetNeighbourCell(static_cast<FacingType>(dir));
+			};
+
+			pUnit->SetDestination((pUnit->Destination != pDest ? pDest : getAdjCell()), true);
 		}
 	}
 
