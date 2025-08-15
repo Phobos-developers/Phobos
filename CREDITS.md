@@ -49,6 +49,8 @@ This page lists all the individual contributions to the project by their author.
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
   - Warhead activation target health thresholds
+  - MP saves support for quicksave command and savegame trigger action
+  - Ported XNA CnCNet Client MP save handling
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -384,6 +386,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
   - Units can customize the attack voice that plays when using more weapons
+  - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
+  - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -528,6 +532,7 @@ This page lists all the individual contributions to the project by their author.
   - Burst without delay
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
+  - Reverse engineer warhead
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

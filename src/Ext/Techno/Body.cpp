@@ -731,6 +731,35 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 	return hp <= max && hp >= min;
 }
 
+bool TechnoExt::CannotMove(UnitClass* pThis)
+{
+	const auto pType = pThis->Type;
+
+	if (pType->Speed == 0)
+		return true;
+
+	if (!pThis->IsInAir())
+	{
+		LandType landType = pThis->GetCell()->LandType;
+		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
+
+		if (pThis->OnBridge
+			&& (landType == LandType::Water || landType == LandType::Beach))
+		{
+			landType = LandType::Road;
+		}
+
+		if (movementRestrictedTo != LandType::None
+			&& movementRestrictedTo != landType
+			&& landType != LandType::Tunnel)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 // =============================
 // load / save
 
