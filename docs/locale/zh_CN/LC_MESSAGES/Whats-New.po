@@ -1852,9 +1852,10 @@ msgstr ""
 
 #: ../../Whats-New.md:431
 msgid ""
-"When the vehicle loses its target, you can customize whether to align the"
-" turret direction with the vehicle body (by FlyStar)"
+"[When the vehicle loses its target, you can customize whether to align the"
+" turret direction with the vehicle body](New-or-Enhanced-Logics.md#turret-response) (by FlyStar)"
 msgstr ""
+"[你可以自定义当载具丢失目标时炮塔方向是否回正（与车身对齐）](New-or-Enhanced-Logics.md#turret-response)（by FlyStar）"
 
 #: ../../Whats-New.md:432
 msgid "Reverse engineer warhead (by CrimRecya)"
@@ -1958,6 +1959,7 @@ msgid ""
 "weapon's range. `Area Guard` and `Hunt` missions will also become "
 "ineffective (by FlyStar)"
 msgstr ""
+"若 `Speed=0` 或单位由于 `MovementRestrictedTo` 导致无法移动，载具无法攻击超出武器射程的目标。`Area Guard` 和 `Hunt` 任务将不会生效（by FlyStar）"
 
 #: ../../Whats-New.md:451 ../../Whats-New.md:824 ../../Whats-New.md:1047
 msgid "Fixes / interactions with other extensions:"

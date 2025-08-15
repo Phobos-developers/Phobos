@@ -1558,6 +1558,7 @@ msgid ""
 "weapon's range. `Area Guard` and `Hunt` missions will also become "
 "ineffective."
 msgstr ""
+"若 `Speed=0` 或单位由于 `MovementRestrictedTo` 导致无法移动，载具无法攻击超出武器射程的目标。`Area Guard` 和 `Hunt` 任务将不会生效。"
 
 #: ../../Fixed-or-Improved-Logics.md:258
 msgid "Fixes / interactions with other extensions"

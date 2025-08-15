@@ -7512,13 +7512,14 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2078
 msgid "Turret Response"
-msgstr ""
+msgstr "炮塔响应"
 
 #: ../../New-or-Enhanced-Logics.md:2080
 msgid ""
 "When the vehicle loses its target, you can customize whether to align the"
 " turret direction with the vehicle body."
 msgstr ""
+"你可以自定义当载具丢失目标时炮塔方向是否回正（与车身对齐）"
 
 #: ../../New-or-Enhanced-Logics.md:2081
 msgid ""
@@ -7526,6 +7527,7 @@ msgid ""
 "`MovementRestrictedTo`, the default value is no; in other cases, it is "
 "yes."
 msgstr ""
+"若 `Speed=0` 或单位由于 `MovementRestrictedTo` 导致无法移动，则默认 no；否则默认 yes。"
 
 #: ../../New-or-Enhanced-Logics.md:2084
 msgid ""
