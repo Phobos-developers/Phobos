@@ -425,7 +425,7 @@ DEFINE_HOOK(0x73F5A7, UnitClass_IsCellOccupied_UnlimboDirection, 0x8)
 
 	GET(CellClass* const, pCell, EDI);
 
-	return pCell->MapCoords.Y == pType->FoundationOutside[10].Y ? NextObject : ContinueCheck;
+	return pCell->MapCoords.Y == pBuilding->Location.Y / Unsorted::LeptonsPerCell + pType->FoundationOutside[10].Y ? NextObject : ContinueCheck;
 }
 
 #pragma endregion
