@@ -1625,8 +1625,14 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 
 DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 {
-	enum { SkipGameCode = 0x449487 };
+	enum { PlacingCheck = 0x449493, SkipGameCode = 0x449487 };
 
+	GET(BuildingClass*, pThis, ECX);
+
+	if (pThis->CurrentMission == Mission::None)
+		return PlacingCheck;
+
+	// Undeploying check
 	GET(BuildingTypeClass*, pType, EAX);
 	LEA_STACK(CellStruct*, pDest, 0x4);
 	const auto pCell = MapClass::Instance.GetCellAt(*pDest);
