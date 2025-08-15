@@ -532,6 +532,7 @@ This page lists all the individual contributions to the project by their author.
   - Burst without delay
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
+  - Reverse engineer warhead
   - Customized bib & impassable rows & weapons factory direction
 - **Ollerus**:
   - Build limit group enhancement

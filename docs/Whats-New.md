@@ -429,6 +429,7 @@ New:
 - Customize squid grapple animation (by NetsuNegi)
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
 - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body (by FlyStar)
+- Reverse engineer warhead (by CrimRecya)
 - Customized bib & impassable rows & weapons factory direction (by CrimRecya)
 
 Vanilla fixes:

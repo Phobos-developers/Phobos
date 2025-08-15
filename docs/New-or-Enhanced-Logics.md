@@ -2421,6 +2421,20 @@ In `rulesmd.ini`:
 Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
 ```
 
+### Reverse engineer warhead
+
+- Warheads can now uses the reverse-engineering logic *(Ares feature)* , the technology of the victim will be reversed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]          ; WarheadType
+ReverseEngineer=false  ; boolean
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function!
+```
+
 ### Sell or undeploy building on impact
 
 - Warheads with `BuildingSell` can now sell buildings with build up image. It has a higher priority than `BuildingUndeploy`.
