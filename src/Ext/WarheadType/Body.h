@@ -20,7 +20,7 @@ public:
 	class ExtData final : public Extension<WarheadTypeClass>
 	{
 	public:
-
+		Nullable<int> Flash_Duration;
 		Valueable<int> Reveal;
 		Valueable<int> CreateGap;
 		Valueable<int> TransactMoney;
@@ -214,6 +214,7 @@ public:
 
 	public:
 		ExtData(WarheadTypeClass* OwnerObject) : Extension<WarheadTypeClass>(OwnerObject)
+			, Flash_Duration { 0 }
 			, Reveal { 0 }
 			, CreateGap { 0 }
 			, TransactMoney { 0 }
