@@ -152,3 +152,53 @@ DEFINE_HOOK(0x7415A9, UnitClass_ApproachTarget_SetWeaponIndex, 0x6)
 
 	return 0;
 }
+
+namespace UnitCanAutoTargetObjectTemp
+{
+	bool cannotMove = false;
+	bool isCloseEnough = false;
+}
+
+DEFINE_HOOK(0x6F7CF7, TechnoClass_CanAutoTargetObject_DisallowMoving, 0x8)
+{
+	GET(TechnoClass* const, pThis, EDI);
+	GET(AbstractClass* const, pTarget, ESI);
+	GET(const int, WeaponIndex, EBX);
+
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	{
+		UnitCanAutoTargetObjectTemp::cannotMove = TechnoExt::CannotMove(pUnit);
+
+		if (UnitCanAutoTargetObjectTemp::cannotMove)
+		{
+			bool isCloseEnough = pThis->IsCloseEnough(pTarget, WeaponIndex);
+
+			if (!isCloseEnough)
+			{
+				UnitCanAutoTargetObjectTemp::cannotMove = false;
+				return 0x6F894F;
+			}
+
+			UnitCanAutoTargetObjectTemp::isCloseEnough = isCloseEnough;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F81AA, TechnoClass_CanAutoTargetObject_DisallowMoving2, 0x6)
+{
+	GET(TechnoClass* const, pThis, EDI);
+
+	if (pThis->WhatAmI() == AbstractType::Unit
+		&& UnitCanAutoTargetObjectTemp::cannotMove)
+	{
+		R->AL(UnitCanAutoTargetObjectTemp::isCloseEnough);
+		UnitCanAutoTargetObjectTemp::cannotMove = false;
+		UnitCanAutoTargetObjectTemp::isCloseEnough = false;
+
+		return 0x6F81B6;
+	}
+
+	return 0;
+}
