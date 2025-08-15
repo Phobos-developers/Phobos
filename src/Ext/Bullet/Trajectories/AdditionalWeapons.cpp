@@ -70,8 +70,8 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 					if (pTechno
 						&& !PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
-						&& (pTechno->WhatAmI() != AbstractType::Building || !static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame
-						&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer)))
+						&& (pTechno->WhatAmI() != AbstractType::Building || !static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
+						&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
 					{
 						this->SetBulletNewTarget(pTechno);
 						return false;
