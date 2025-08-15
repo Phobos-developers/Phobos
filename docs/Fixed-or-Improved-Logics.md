@@ -1842,7 +1842,7 @@ TurretRecoil.Suppress=no  ; boolean
 ```
 
 ```{note}
-This is not a 1:1 restoration but a separate thing, not like it was in *Tiberian Sun*.
+The logic below was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
 ```
 
 ### Customize harvester dump amount
