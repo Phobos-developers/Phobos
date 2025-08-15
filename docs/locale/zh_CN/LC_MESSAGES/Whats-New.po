@@ -1858,8 +1858,8 @@ msgstr ""
 "[你可以自定义当载具丢失目标时炮塔方向是否回正（与车身对齐）](New-or-Enhanced-Logics.md#turret-response)（by FlyStar）"
 
 #: ../../Whats-New.md:432
-msgid "Reverse engineer warhead (by CrimRecya)"
-msgstr ""
+msgid "[Reverse engineer warhead](New-or-Enhanced-Logics.md#reverse-engineer-warhead) (by CrimRecya)"
+msgstr "[逆向工程弹头](New-or-Enhanced-Logics.md#reverse-engineer-warhead)（by CrimRecya）"
 
 #: ../../Whats-New.md:434 ../../Whats-New.md:626 ../../Whats-New.md:982
 #: ../../Whats-New.md:1091 ../../Whats-New.md:1116 ../../Whats-New.md:1155

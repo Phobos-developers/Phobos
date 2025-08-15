@@ -2201,7 +2201,7 @@ msgstr "修复了 Ares 的 `Convert.Deploy` 会在单位转向或移动中反复
 
 #: ../../../CREDITS.md:536
 msgid "Reverse engineer warhead"
-msgstr ""
+msgstr "逆向工程弹头"
 
 #: ../../../CREDITS.md:537
 msgid "**Ollerus**:"

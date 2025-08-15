@@ -8459,13 +8459,14 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2401
 msgid "Reverse engineer warhead"
-msgstr ""
+msgstr "逆向工程弹头"
 
 #: ../../New-or-Enhanced-Logics.md:2403
 msgid ""
 "Warheads can now uses the reverse-engineering logic *(Ares feature)* , "
 "the technology of the victim will be reversed."
 msgstr ""
+"现在弹头可以使用逆向工程逻辑（*Ares 功能*），被命中的单位将会被逆向工程。"
 
 #: ../../New-or-Enhanced-Logics.md:2406
 msgid ""
@@ -8477,7 +8478,7 @@ msgstr ""
 
 #: ../../New-or-Enhanced-Logics.md:2412
 msgid "This feature requires Ares 3.0 or higher to function!"
-msgstr ""
+msgstr "此功能需要 3.0 及以上版本的 Ares 才能运作！"
 
 #: ../../New-or-Enhanced-Logics.md:2415
 msgid "Sell or undeploy building on impact"
