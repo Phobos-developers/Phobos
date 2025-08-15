@@ -153,13 +153,7 @@ DEFINE_HOOK(0x7415A9, UnitClass_ApproachTarget_SetWeaponIndex, 0x6)
 	return 0;
 }
 
-namespace UnitCanAutoTargetObjectTemp
-{
-	bool cannotMove = false;
-	bool isCloseEnough = false;
-}
-
-DEFINE_HOOK(0x6F7CF7, TechnoClass_CanAutoTargetObject_DisallowMoving, 0x8)
+DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_DisallowMoving, 0x6)
 {
 	GET(TechnoClass* const, pThis, EDI);
 	GET(AbstractClass* const, pTarget, ESI);
@@ -167,37 +161,30 @@ DEFINE_HOOK(0x6F7CF7, TechnoClass_CanAutoTargetObject_DisallowMoving, 0x8)
 
 	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
-		UnitCanAutoTargetObjectTemp::cannotMove = TechnoExt::CannotMove(pUnit);
-
-		if (UnitCanAutoTargetObjectTemp::cannotMove)
+		if (TechnoExt::CannotMove(pUnit))
 		{
-			bool isCloseEnough = pThis->IsCloseEnough(pTarget, WeaponIndex);
-
-			if (!isCloseEnough)
-			{
-				UnitCanAutoTargetObjectTemp::cannotMove = false;
-				return 0x6F894F;
-			}
-
-			UnitCanAutoTargetObjectTemp::isCloseEnough = isCloseEnough;
+			R->EAX(pUnit->GetFireError(pTarget, WeaponIndex, true));
+			return 0x6F7CEE;
 		}
 	}
 
 	return 0;
 }
 
-DEFINE_HOOK(0x6F81AA, TechnoClass_CanAutoTargetObject_DisallowMoving2, 0x6)
+DEFINE_HOOK(0x7088E3, TechnoClass_ShouldRetaliate_DisallowMoving, 0x6)
 {
 	GET(TechnoClass* const, pThis, EDI);
+	GET(AbstractClass* const, pTarget, EBP);
+	GET(const int, WeaponIndex, EBX);
 
-	if (pThis->WhatAmI() == AbstractType::Unit
-		&& UnitCanAutoTargetObjectTemp::cannotMove)
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
 	{
-		R->AL(UnitCanAutoTargetObjectTemp::isCloseEnough);
-		UnitCanAutoTargetObjectTemp::cannotMove = false;
-		UnitCanAutoTargetObjectTemp::isCloseEnough = false;
-
-		return 0x6F81B6;
+		if (TechnoExt::CannotMove(pUnit))
+		{
+			R->Stack(STACK_OFFSET(0x18, 0x4), WeaponIndex);
+			R->EAX(pUnit->GetFireError(pTarget, WeaponIndex, true));
+			return 0x7088F3;
+		}
 	}
 
 	return 0;
