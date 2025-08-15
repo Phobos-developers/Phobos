@@ -48,9 +48,9 @@ class EngraveTrajectory final : public VirtualTrajectory
 {
 public:
 	EngraveTrajectory(noinit_t) { }
-	EngraveTrajectory(EngraveTrajectoryType const* trajType, BulletClass* pBullet)
-		: VirtualTrajectory(trajType, pBullet)
-		, Type { trajType }
+	EngraveTrajectory(EngraveTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: VirtualTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
 		, LaserTimer {}
 		, RotateRadian { 0 }
 	{ }

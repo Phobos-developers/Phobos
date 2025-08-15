@@ -28,10 +28,10 @@ class StraightTrajectory final : public ActualTrajectory
 {
 public:
 	StraightTrajectory(noinit_t) { }
-	StraightTrajectory(StraightTrajectoryType const* trajType, BulletClass* pBullet)
-		: ActualTrajectory(trajType, pBullet)
-		, Type { trajType }
-		, DetonationDistance { trajType->DetonationDistance }
+	StraightTrajectory(StraightTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: ActualTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
+		, DetonationDistance { pTrajType->DetonationDistance }
 	{ }
 
 	const StraightTrajectoryType* Type;

@@ -62,8 +62,8 @@ class ActualTrajectory : public PhobosTrajectory
 {
 public:
 	ActualTrajectory() { }
-	ActualTrajectory(ActualTrajectoryType const* trajType, BulletClass* pBullet)
-		: PhobosTrajectory(trajType, pBullet)
+	ActualTrajectory(ActualTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: PhobosTrajectory(pTrajType, pBullet)
 		, LastTargetCoord { CoordStruct::Empty }
 		, WaitStatus { TrajectoryWaitStatus::NowReady }
 	{ }

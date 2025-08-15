@@ -44,11 +44,11 @@ class BombardTrajectory final : public ActualTrajectory
 {
 public:
 	BombardTrajectory(noinit_t) { }
-	BombardTrajectory(BombardTrajectoryType const* trajType, BulletClass* pBullet)
-		: ActualTrajectory(trajType, pBullet)
-		, Type { trajType }
-		, Height { trajType->Height }
-		, FallPercent { trajType->FallPercent - trajType->FallPercentShift }
+	BombardTrajectory(BombardTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: ActualTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
+		, Height { pTrajType->Height }
+		, FallPercent { pTrajType->FallPercent - pTrajType->FallPercentShift }
 		, IsFalling { false }
 		, ToFalling { false }
 		, InitialTargetCoord {}

@@ -247,17 +247,18 @@ CoordStruct MissileTrajectory::GetRetargetCenter() const
 void MissileTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 {
 	const auto pBullet = this->Bullet;
+	const auto pType = this->Type;
 	pBullet->SetTarget(pTarget);
 
 	// Skip set target coords if is locked
-	if (!this->Type->LockDirection || !this->InStraight)
+	if (!pType->LockDirection || !this->InStraight)
 	{
 		pBullet->TargetCoords = pTarget->GetCoords();
 		this->LastTargetCoord = pBullet->TargetCoords;
 	}
 
 	// Reset cruise flag
-	if (this->Type->CruiseEnable)
+	if (pType->CruiseEnable)
 		this->CruiseEnable = true;
 }
 

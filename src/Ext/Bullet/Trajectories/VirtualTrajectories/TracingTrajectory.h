@@ -44,9 +44,9 @@ class TracingTrajectory final : public VirtualTrajectory
 {
 public:
 	TracingTrajectory(noinit_t) { }
-	TracingTrajectory(TracingTrajectoryType const* trajType, BulletClass* pBullet)
-		: VirtualTrajectory(trajType, pBullet)
-		, Type { trajType }
+	TracingTrajectory(TracingTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: VirtualTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
 		, RotateRadian { 0.0 }
 	{ }
 

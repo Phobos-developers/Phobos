@@ -26,9 +26,9 @@ class SampleTrajectory final : public PhobosTrajectory
 {
 public:
 	SampleTrajectory(noinit_t) { }
-	SampleTrajectory(SampleTrajectoryType const* trajType, BulletClass* pBullet)
-		: PhobosTrajectory(trajType, pBullet)
-		, Type { trajType }
+	SampleTrajectory(SampleTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: PhobosTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
 	{ }
 
 	SampleTrajectoryType const* Type;

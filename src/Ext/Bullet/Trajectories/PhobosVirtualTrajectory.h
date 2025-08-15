@@ -39,8 +39,8 @@ class VirtualTrajectory : public PhobosTrajectory
 {
 public:
 	VirtualTrajectory() { }
-	VirtualTrajectory(VirtualTrajectoryType const* trajType, BulletClass* pBullet)
-		: PhobosTrajectory(trajType, pBullet)
+	VirtualTrajectory(VirtualTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: PhobosTrajectory(pTrajType, pBullet)
 		, SurfaceFirerID { 0 }
 	{ }
 

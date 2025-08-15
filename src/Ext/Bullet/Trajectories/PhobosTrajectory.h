@@ -185,7 +185,7 @@ public:
 	static constexpr double LowSpeedOffset = 32.0;
 
 	PhobosTrajectory() { }
-	PhobosTrajectory(PhobosTrajectoryType const* trajType, BulletClass* pBullet) :
+	PhobosTrajectory(PhobosTrajectoryType const* pTrajType, BulletClass* pBullet) :
 		Bullet { pBullet }
 		, MovingVelocity { BulletVelocity::Empty }
 		, MovingSpeed { 0 }
@@ -207,14 +207,14 @@ public:
 
 		, PassDetonateDamage { 0 }
 		, PassDetonateTimer {}
-		, ProximityImpact { trajType->ProximityImpact }
+		, ProximityImpact { pTrajType->ProximityImpact }
 		, ProximityDamage { 0 }
 		, ExtraCheck { nullptr }
 		, Casualty {}
 
 		, DisperseIndex { 0 }
 		, DisperseCount { 0 }
-		, DisperseCycle { trajType->DisperseCycle }
+		, DisperseCycle { pTrajType->DisperseCycle }
 		, DisperseTimer {}
 	{ }
 

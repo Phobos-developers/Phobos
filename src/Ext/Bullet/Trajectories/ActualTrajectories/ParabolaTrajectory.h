@@ -57,11 +57,11 @@ public:
 	static constexpr double Delta = 1e-5;
 
 	ParabolaTrajectory(noinit_t) { }
-	ParabolaTrajectory(ParabolaTrajectoryType const* trajType, BulletClass* pBullet)
-		: ActualTrajectory(trajType, pBullet)
-		, Type { trajType }
-		, ThrowHeight { trajType->ThrowHeight > 0 ? trajType->ThrowHeight : 600 }
-		, BounceTimes { trajType->BounceTimes }
+	ParabolaTrajectory(ParabolaTrajectoryType const* pTrajType, BulletClass* pBullet)
+		: ActualTrajectory(pTrajType, pBullet)
+		, Type { pTrajType }
+		, ThrowHeight { pTrajType->ThrowHeight > 0 ? pTrajType->ThrowHeight : 600 }
+		, BounceTimes { pTrajType->BounceTimes }
 		, LastVelocity {}
 	{ }
 
