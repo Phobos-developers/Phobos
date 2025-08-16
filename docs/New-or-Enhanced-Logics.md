@@ -1650,7 +1650,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation                      ; AnimationType
+AutoDeath.VanishAnimation=                     ; AnimationType
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
@@ -1706,10 +1706,23 @@ MultiWeapon.IsSecondary=        ; List of integers
 MultiWeapon.SelectCount=2       ; integer
 ```
 
+### Multi VoiceAttack
+
+- Units can customize the attack voice that plays when using more weapons.
+  - If you need to assign an attack-voice to `Weapon1`, simply set `VoiceWeapon1Attack`. The same applies to other weapons.
+  - `VoiceEliteWeaponNAttack` can also be used to specify attack voices for `EliteWeaponN`. The default is `VoiceWeaponNAttack`.
+
+In `rulesmd.ini`:
+```ini
+[SOMETECHNO]                ; TechnoType
+VoiceWeaponNAttack=         ; Sound entry
+VoiceEliteWeaponNAttack=    ; Sound entry
+```
+
 ### No Manual Move
 
 - You can now specify whether a TechnoType is unable to receive move command.
-- Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
+ - Set this to `true` on a building with `UndeploysInto` set could prevent it from undeploying when setting the rally point.
 
 In `rulesmd.ini`:
 ```ini
@@ -2049,6 +2062,9 @@ JumpjetTilt.SidewaysSpeedFactor=1.0     ; floating point value
 
 ### Turretless Shape Vehicle FireUp
 
+![image](_static/images/vehiclefireup.gif)
+*Use the pre-firing animation effect for Shape vehicle-type mecha units in **Zero Boundary** by @[Stormsulfur](https://space.bilibili.com/11638715/lists/5358986)*
+
 - `Voxel=no` turretless vehicles now support the use of `FireUp`.
  - `FireUp.ResetInRetarget` determines whether a vehicle's FireUp count is reset when its target changes. Forced to be `yes` when there is no target.
 
@@ -2057,6 +2073,17 @@ In `artmd.ini`:
 [SOMEVEHICLE]                   ; VehicleType
 FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
+```
+
+### Turret Response
+
+- When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
+  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]       ; VehicleType
+TurretResponse=     ; boolean
 ```
 
 ## Warheads
@@ -2139,6 +2166,9 @@ If you set `Crit.Warhead` to the same Warhead it is defined on, or create a chai
 
 ### Convert TechnoType on impact
 
+![image](_static/images/convertwh.gif)
+*Vehicle version of Genetic Converter in [NanoStorm](https://www.bilibili.com/opus/896077937747427433)*
+
 - Warheads can now change TechnoTypes of affected units to other Types in the same category (infantry to infantry, vehicles to vehicles, aircraft to aircraft).
   - `ConvertN.From` (where N is 0, 1, 2...) specifies which TechnoTypes are valid for conversion. This entry can have many types listed, meanging that many types will be converted at once. When no types are included, conversion will affect all valid targets.
   - `ConvertN.To` specifies the TechnoType which is the result of conversion.
@@ -2211,12 +2241,12 @@ DamageEnemiesMultiplier=1.0                     ; floating point value
 DamageOwnerMultiplier.NotAffectsEnemies=        ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier
 DamageAlliesMultiplier.NotAffectsEnemies=       ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier
 
-[SOMEWARHEAD]                       ; WarheadType
-DamageOwnerMultiplier=              ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageAlliesMultiplier=             ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
-DamageEnemiesMultiplier=            ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
-DamageSourceHealthMultiplier=0.0    ; floating point value
-DamageTargetHealthMultiplier=0.0    ; floating point value
+[SOMEWARHEAD]                                   ; WarheadType
+DamageOwnerMultiplier=                          ; floating point value, default to [CombatDamage] -> DamageOwnerMultiplier or [CombatDamage] -> DamageOwnerMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageAlliesMultiplier=                         ; floating point value, default to [CombatDamage] -> DamageAlliesMultiplier or [CombatDamage] -> DamageAlliesMultiplier.NotAffectsEnemies, depending on AffectsEnemies
+DamageEnemiesMultiplier=                        ; floating point value, default to [CombatDamage] -> DamageEnemiesMultiplier
+DamageSourceHealthMultiplier=0.0                ; floating point value
+DamageTargetHealthMultiplier=0.0                ; floating point value
 ```
 
 ```{note}
@@ -2366,6 +2396,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
+```
+
+### Reverse engineer warhead
+
+- Warheads can now uses the reverse-engineering logic *(Ares feature)* , the technology of the victim will be reversed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]          ; WarheadType
+ReverseEngineer=false  ; boolean
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function!
 ```
 
 ### Sell or undeploy building on impact
@@ -2535,6 +2579,10 @@ FeedbackWeapon=  ; WeaponType
     - `KeepRange.AllowAI` controls whether this function is effective for computer.
     - `KeepRange.AllowPlayer` controls whether this function is effective for human.
     - The function won't take effect if the techno's rearm time left is shorter than `KeepRange.EarlyStopFrame`.
+
+```{note}
+That is to say, the total duration of executing KeepRange equals the value of weapon `ROF` minus the value of `KeepRange.EarlyStopFrame`.
+```
 
 In `rulesmd.ini`:
 ```ini

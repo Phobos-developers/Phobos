@@ -10,6 +10,7 @@
 #include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/SavegameDef.h>
+#include <Utilities/SpawnerHelper.h>
 #include <Ext/House/Body.h>
 
 //Static init
@@ -98,7 +99,7 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 	auto const pScen = ScenarioClass::Instance;
 
-	for (auto pair : ScenarioExt::Global()->Waypoints)
+	for (auto const pair : ScenarioExt::Global()->Waypoints)
 		if (pScen->IsDefinedWaypoint(pair.first))
 			waypoints.push_back(pair.first);
 
@@ -116,18 +117,8 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (SessionClass::IsSingleplayer())
-	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldQuickSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += StringTable::LoadString(pThis->Text);
-	}
+	if (SessionClass::IsSingleplayer() || SpawnerHelper::IsSaveGameEventHooked())
+		Phobos::ScheduleGameSave(StringTable::LoadString(pThis->Text));
 
 	return true;
 }
@@ -275,7 +266,7 @@ bool TActionExt::RunSuperWeaponAtWaypoint(TActionClass* pThis, HouseClass* pHous
 		return true;
 
 	auto& waypoints = ScenarioExt::Global()->Waypoints;
-	int nWaypoint = pThis->Param5;
+	const int nWaypoint = pThis->Param5;
 
 	// Check if is a valid Waypoint
 	if (nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end() && waypoints[nWaypoint].X && waypoints[nWaypoint].Y)
@@ -291,18 +282,18 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 {
 	if (SuperWeaponTypeClass::Array.Count > 0)
 	{
-		int swIdx = pThis->Param3;
 		HouseClass* pExecuteHouse = nullptr;  // House who will fire the SW.
 		std::vector<HouseClass*> housesList;
 		CellStruct targetLocation = { (short)X, (short)Y };
+		auto& random = ScenarioClass::Instance->Random;
 
 		do
 		{
 			if (X < 0)
-				targetLocation.X = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
+				targetLocation.X = (short)random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Right);
 
 			if (Y < 0)
-				targetLocation.Y = (short)ScenarioClass::Instance->Random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
+				targetLocation.Y = (short)random.RandomRanged(0, MapClass::Instance.MapCoordBounds.Bottom);
 		}
 		while (!MapClass::Instance.IsWithinUsableArea(targetLocation, false));
 
@@ -312,7 +303,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			housesList.reserve(HouseClass::Array.Count);
 
 			// Random non-neutral
-			for (auto pHouse : HouseClass::Array)
+			for (auto const pHouse : HouseClass::Array)
 			{
 				if (!pHouse->Defeated
 					&& !pHouse->IsObserver()
@@ -323,7 +314,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 
 			if (housesList.size() > 0)
-				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
+				pExecuteHouse = housesList[random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -331,7 +322,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		case -2:
 			// Find first Neutral
-			for (auto pHouseNeutral : HouseClass::Array)
+			for (auto const pHouseNeutral : HouseClass::Array)
 			{
 				if (pHouseNeutral->IsNeutral())
 				{
@@ -346,7 +337,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			housesList.reserve(HouseClass::Array.Count);
 
 			// Random Human Player
-			for (auto pHouse : HouseClass::Array)
+			for (auto const pHouse : HouseClass::Array)
 			{
 				if (pHouse->IsControlledByHuman()
 					&& !pHouse->Defeated
@@ -357,7 +348,7 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 			}
 
 			if (housesList.size() > 0)
-				pExecuteHouse = housesList[ScenarioClass::Instance->Random.RandomRanged(0, housesList.size() - 1)];
+				pExecuteHouse = housesList[random.RandomRanged(0, housesList.size() - 1)];
 			else
 				return true;
 
@@ -374,9 +365,9 @@ bool TActionExt::RunSuperWeaponAt(TActionClass* pThis, int X, int Y)
 
 		if (pExecuteHouse)
 		{
-			auto const pSuper = pExecuteHouse->Supers.Items[swIdx];
+			auto const pSuper = pExecuteHouse->Supers.Items[pThis->Param3];
 
-			CDTimerClass old_timer = pSuper->RechargeTimer;
+			const CDTimerClass old_timer = pSuper->RechargeTimer;
 			pSuper->SetReadiness(true);
 			pSuper->Launch(targetLocation, false);
 			pSuper->Reset();
@@ -400,8 +391,7 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 	auto setValue = [pThis, pHouse](HouseClass* pTargetHouse)
 	{
-		if (!pTargetHouse || pHouse == pTargetHouse ||
-			pHouse->IsAlliedWith(pTargetHouse))
+		if (!pTargetHouse || pHouse == pTargetHouse || pHouse->IsAlliedWith(pTargetHouse))
 			return;
 
 		for (auto& pAngerNode : pHouse->AngerNodes)
@@ -430,18 +420,20 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 		}
 	};
 
-	if (pThis->Value >= 0)
+	const int value = pThis->Value;
+
+	if (value >= 0)
 	{
-		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
-			HouseClass::FindByIndex(pThis->Value) :
-			HouseClass::FindByCountryIndex(pThis->Value);
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+			? HouseClass::FindByIndex(value)
+			: HouseClass::FindByCountryIndex(value);
 
 		setValue(pTargetHouse);
 		pHouse->UpdateAngerNodes(0, pHouse);
 	}
-	else if (pThis->Value == -1)
+	else if (value == -1)
 	{
-		for (auto pTargetHouse : HouseClass::Array)
+		for (auto const pTargetHouse : HouseClass::Array)
 		{
 			setValue(pTargetHouse);
 		}
@@ -457,11 +449,13 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 	if (pHouse->AngerNodes.Count <= 0)
 		return true;
 
-	if (pThis->Value >= 0)
+	const int value = pThis->Value;
+
+	if (value >= 0)
 	{
-		HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Value) ?
-			HouseClass::FindByIndex(pThis->Value) :
-			HouseClass::FindByCountryIndex(pThis->Value);
+		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+			? HouseClass::FindByIndex(value)
+			: HouseClass::FindByCountryIndex(value);
 
 		if (pTargetHouse)
 		{
@@ -476,7 +470,7 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 			}
 		}
 	}
-	else if (pThis->Value == -1)
+	else if (value == -1)
 	{
 		for (auto& pAngerNode : pHouse->AngerNodes)
 		{
@@ -492,17 +486,19 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
 	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+	const int value = pThis->Param3;
 
-	if (pThis->Param3 >= 0 || pThis->Param3 == -2)
+	if (value >= 0 || value == -2)
 	{
-		if (pThis->Param3 != -2)
+		if (value != -2)
 		{
-			HouseClass* pTargetHouse = HouseClass::Index_IsMP(pThis->Param3) ?
-				HouseClass::FindByIndex(pThis->Param3) :
-				HouseClass::FindByCountryIndex(pThis->Param3);
+			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+				? HouseClass::FindByIndex(value)
+				: HouseClass::FindByCountryIndex(value);
 
-			if (pTargetHouse && pHouse != pTargetHouse &&
-				!pHouse->IsAlliedWith(pTargetHouse))
+			if (pTargetHouse
+				&& pHouse != pTargetHouse
+				&& !pHouse->IsAlliedWith(pTargetHouse))
 			{
 				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
 				pHouse->UpdateAngerNodes(0, pHouse);
@@ -514,7 +510,7 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 			pHouse->UpdateAngerNodes(0, pHouse);
 		}
 	}
-	else if (pThis->Param3 == -1)
+	else if (value == -1)
 	{
 		pHouseExt->SetForceEnemyIndex(-1);
 		pHouse->UpdateAngerNodes(0, pHouse);

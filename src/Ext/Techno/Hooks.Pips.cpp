@@ -26,7 +26,7 @@ DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
 	GET(TechnoClass*, pThis, ECX);
-	auto pTypeData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	const auto pTypeData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	if (pTypeData->HealthBar_Hide)
 		return 0x6F6AB6;
 
@@ -36,7 +36,7 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
-	GET(int, length, EBX);
+	GET(const int, length, EBX);
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x709B2E, TechnoClass_DrawPips_Sizes, 0x5)
 	REF_STACK(int, pipWidth, STACK_OFFSET(0x74, -0x1C));
 
 	Point2D size;
-	bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
+	const bool isBuilding = pThis->WhatAmI() == AbstractType::Building;
 	auto const pType = pThis->GetTechnoType();
 
 	if (pType->PipScale == PipScale::Ammo)
@@ -151,10 +151,10 @@ DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
 	LEA_STACK(RectangleStruct*, offset, STACK_OFFSET(0x74, -0x24));
 	GET_STACK(RectangleStruct*, rect, STACK_OFFSET(0x74, 0xC));
 	GET_STACK(SHPStruct*, shape, STACK_OFFSET(0x74, -0x58));
-	GET_STACK(bool, isBuilding, STACK_OFFSET(0x74, -0x61));
-	GET(int, maxSpawnsCount, EBX);
+	GET_STACK(const bool, isBuilding, STACK_OFFSET(0x74, -0x61));
+	GET(const int, maxSpawnsCount, EBX);
 
-	int currentSpawnsCount = pThis->SpawnManager->CountDockedSpawns();
+	const int currentSpawnsCount = pThis->SpawnManager->CountDockedSpawns();
 	auto const pipOffset = pTypeExt->SpawnsPipOffset.Get();
 	Point2D position = { offset->X + pipOffset.X, offset->Y + pipOffset.Y };
 	Point2D size;
@@ -166,7 +166,7 @@ DEFINE_HOOK(0x709B8B, TechnoClass_DrawPips_Spawns, 0x5)
 
 	for (int i = 0; i < maxSpawnsCount; i++)
 	{
-		int frame = i < currentSpawnsCount ? pTypeExt->SpawnsPipFrame : pTypeExt->EmptySpawnsPipFrame;
+		const int frame = i < currentSpawnsCount ? pTypeExt->SpawnsPipFrame : pTypeExt->EmptySpawnsPipFrame;
 
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, frame,
 			&position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
@@ -185,22 +185,25 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	GET(TechnoClass*, pThis, ECX);
 	LEA_STACK(RectangleStruct*, offset, STACK_OFFSET(0x74, -0x24));
 	GET_STACK(RectangleStruct*, rect, STACK_OFFSET(0x74, 0xC));
-	GET(int, pipWrap, EBX);
-	GET_STACK(int, pipCount, STACK_OFFSET(0x74, -0x54));
-	GET_STACK(int, maxPips, STACK_OFFSET(0x74, -0x60));
-	GET(int, yOffset, ESI);
+	GET(const int, pipWrap, EBX);
+	GET_STACK(const int, pipCount, STACK_OFFSET(0x74, -0x54));
+	GET_STACK(const int, maxPips, STACK_OFFSET(0x74, -0x60));
+	GET(const int, yOffset, ESI);
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 	auto const pipOffset = pTypeExt->AmmoPipOffset.Get();
+	const int offsetWidth = offset->Width;
 	Point2D position = { offset->X + pipOffset.X, offset->Y + pipOffset.Y };
 
 	if (pipWrap > 0)
 	{
-		int levels = maxPips / pipWrap - 1;
+		const int ammo = pThis->Ammo;
+		const int levels = maxPips / pipWrap - 1;
+		const int startFrame = pTypeExt->AmmoPipWrapStartFrame;
 
 		for (int i = 0; i < pipWrap; i++)
 		{
-			int frame = pTypeExt->AmmoPipWrapStartFrame;
+			int frame = startFrame;
 
 			if (levels >= 0)
 			{
@@ -208,7 +211,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 				int frameCounter = levels;
 				bool calculateFrame = true;
 
-				while (counter >= pThis->Ammo)
+				while (counter >= ammo)
 				{
 					frameCounter--;
 					counter -= pipWrap;
@@ -224,7 +227,7 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 					frame = frameCounter + frame + 1;
 			}
 
-			position.X += offset->Width;
+			position.X += offsetWidth;
 			position.Y += yOffset;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
@@ -233,20 +236,20 @@ DEFINE_HOOK(0x70A36E, TechnoClass_DrawPips_Ammo, 0x6)
 	}
 	else
 	{
-		int ammoFrame = pTypeExt->AmmoPipFrame;
-		int emptyFrame = pTypeExt->EmptyAmmoPipFrame;
+		const int ammoFrame = pTypeExt->AmmoPipFrame;
+		const int emptyFrame = pTypeExt->EmptyAmmoPipFrame;
 
 		for (int i = 0; i < maxPips; i++)
 		{
 			if (i >= pipCount && emptyFrame < 0)
 				break;
 
-			int frame = i >= pipCount ? emptyFrame : ammoFrame;
+			const int frame = i >= pipCount ? emptyFrame : ammoFrame;
 
 			DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, FileSystem::PIPS2_SHP,
 				frame, &position, rect, BlitterFlags(0x600), 0, 0, ZGradient::Ground, 1000, 0, 0, 0, 0, 0);
 
-			position.X += offset->Width;
+			position.X += offsetWidth;
 			position.Y += yOffset;
 		}
 	}
@@ -262,8 +265,8 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 	LEA_STACK(RectangleStruct*, offset, STACK_OFFSET(0x74, -0x24));
 	GET_STACK(RectangleStruct*, rect, STACK_OFFSET(0x74, 0xC));
 	GET_STACK(SHPStruct*, shape, STACK_OFFSET(0x74, -0x58));
-	GET_STACK(int, maxPips, STACK_OFFSET(0x74, -0x60));
-	GET(int, yOffset, ESI);
+	GET_STACK(const int, maxPips, STACK_OFFSET(0x74, -0x60));
+	GET(const int, yOffset, ESI);
 
 	Point2D position = { offset->X, offset->Y };
 	const int totalStorage = pThis->GetTechnoType()->Storage;
@@ -288,9 +291,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	if (isWeeder)
 	{
-		const int fullWeedFrames = whatAmI == AbstractType::Building ?
-			static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5) :
-			static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
+		const int fullWeedFrames = whatAmI == AbstractType::Building
+			? static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5)
+			: static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
 
 		for (int i = 0; i < maxPips; i++)
 		{
@@ -320,8 +323,8 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
 		{
-			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
-				index >= 0 && index < count)
+			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end()
+				&& index >= 0 && index < count)
 			{
 				pipOrder.push_back(index);
 			}
@@ -358,13 +361,15 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		}
 	}
 
+	const int offsetWidth = offset->Width;
+
 	for (int pip : pipsToDraw)
 	{
 		DSurface::Temp->DrawSHP(FileSystem::PALETTE_PAL, shape, pip,
 			&position, rect, BlitterFlags::Centered | BlitterFlags::bf_400, 0, 0,
 			ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0);
 
-		position.X += offset->Width;
+		position.X += offsetWidth;
 		position.Y += yOffset;
 	}
 
