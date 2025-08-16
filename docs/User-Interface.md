@@ -184,8 +184,8 @@ In `rulesmd.ini`:
 [SOMENAME]                          ; TechnoType
 HealthBar.Hide=false                ; boolean
 HealthBar.HidePips=false            ; boolean
-HealthBar.Permanen=false            ; boolean
-HealthBar.Permanen.PipScale=false   ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
 ### Light flash effect toggling
