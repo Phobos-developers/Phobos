@@ -61,7 +61,7 @@ AttachEffectClass::AttachEffectClass(AttachEffectTypeClass* pType, TechnoClass* 
 	duration = this->DurationOverride != 0 ? this->DurationOverride : pType->Duration;
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && pInvoker)
-		duration = Math::max(static_cast<int>(duration * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier), 0);
+		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker)), 0);
 
 	const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
 
@@ -493,7 +493,7 @@ void AttachEffectClass::RefreshDuration(int durationOverride)
 		duration = this->DurationOverride ? this->DurationOverride : pType->Duration;
 
 	if (pType->Duration_ApplyFirepowerMult && duration > 0 && this->Invoker)
-		duration = Math::max(static_cast<int>(duration * this->Invoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(this->Invoker)->AE.FirepowerMultiplier), 0);
+		duration = Math::max(static_cast<int>(duration * TechnoExt::GetCurrentFirepowerMultiplier(this->Invoker)), 0);
 
 	if (pType->Duration_ApplyArmorMultOnTarget && duration > 0) // no need to count its own effect again
 		duration = Math::max(static_cast<int>(duration / this->Techno->ArmorMultiplier / TechnoExt::ExtMap.Find(this->Techno)->AE.ArmorMultiplier), 0);

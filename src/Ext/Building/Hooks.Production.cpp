@@ -101,18 +101,8 @@ DEFINE_HOOK(0x4502F4, BuildingClass_Update_Factory_Phobos, 0x6)
 				if (naval ? RulesExt::Global()->ForbidParallelAIQueues_Navy : RulesExt::Global()->ForbidParallelAIQueues_Vehicle)
 					return Skip;
 
-				if (naval)
-				{
-					auto const pExt = HouseExt::ExtMap.Find(pOwner);
-					index = pExt->ProducingNavalUnitTypeIndex;
-				}
-				else
-				{
-					index = pOwner->ProducingUnitTypeIndex;
-				}
-
+				index = naval ? HouseExt::ExtMap.Find(pOwner)->ProducingNavalUnitTypeIndex : pOwner->ProducingUnitTypeIndex;
 				pType = index >= 0 ? UnitTypeClass::Array.GetItem(index) : nullptr;
-
 				break;
 			default:
 				break;

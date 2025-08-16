@@ -10,6 +10,7 @@
 #include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/SavegameDef.h>
+#include <Utilities/SpawnerHelper.h>
 #include <Ext/House/Body.h>
 
 //Static init
@@ -116,18 +117,8 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (SessionClass::IsSingleplayer())
-	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldQuickSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += StringTable::LoadString(pThis->Text);
-	}
+	if (SessionClass::IsSingleplayer() || SpawnerHelper::IsSaveGameEventHooked())
+		Phobos::ScheduleGameSave(StringTable::LoadString(pThis->Text));
 
 	return true;
 }
@@ -400,8 +391,7 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 	auto setValue = [pThis, pHouse](HouseClass* pTargetHouse)
 	{
-		if (!pTargetHouse || pHouse == pTargetHouse ||
-			pHouse->IsAlliedWith(pTargetHouse))
+		if (!pTargetHouse || pHouse == pTargetHouse || pHouse->IsAlliedWith(pTargetHouse))
 			return;
 
 		for (auto& pAngerNode : pHouse->AngerNodes)
@@ -434,9 +424,9 @@ bool TActionExt::EditAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 
 	if (value >= 0)
 	{
-		HouseClass* pTargetHouse = HouseClass::Index_IsMP(value) ?
-			HouseClass::FindByIndex(value) :
-			HouseClass::FindByCountryIndex(value);
+		HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+			? HouseClass::FindByIndex(value)
+			: HouseClass::FindByCountryIndex(value);
 
 		setValue(pTargetHouse);
 		pHouse->UpdateAngerNodes(0, pHouse);
@@ -463,9 +453,9 @@ bool TActionExt::ClearAngerNode(TActionClass* pThis, HouseClass* pHouse, ObjectC
 
 	if (value >= 0)
 	{
-		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value) ?
-			HouseClass::FindByIndex(value) :
-			HouseClass::FindByCountryIndex(value);
+		const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+			? HouseClass::FindByIndex(value)
+			: HouseClass::FindByCountryIndex(value);
 
 		if (pTargetHouse)
 		{
@@ -502,12 +492,13 @@ bool TActionExt::SetForceEnemy(TActionClass* pThis, HouseClass* pHouse, ObjectCl
 	{
 		if (value != -2)
 		{
-			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value) ?
-				HouseClass::FindByIndex(value) :
-				HouseClass::FindByCountryIndex(value);
+			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+				? HouseClass::FindByIndex(value)
+				: HouseClass::FindByCountryIndex(value);
 
-			if (pTargetHouse && pHouse != pTargetHouse &&
-				!pHouse->IsAlliedWith(pTargetHouse))
+			if (pTargetHouse
+				&& pHouse != pTargetHouse
+				&& !pHouse->IsAlliedWith(pTargetHouse))
 			{
 				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
 				pHouse->UpdateAngerNodes(0, pHouse);

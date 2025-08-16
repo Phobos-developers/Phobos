@@ -1426,6 +1426,14 @@ DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
 
 #pragma endregion
 
+#pragma region TurretRecoilReadFix
+
+// Skip incorrect copy, why do copy like this?
+DEFINE_JUMP(LJMP, 0x715326, 0x715333); // TechnoTypeClass::LoadFromINI
+// Then EDI is BarrelAnimData now, not incorrect TurretAnimData
+
+#pragma endregion
+
 #pragma region TeamCloseRangeFix
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
@@ -1625,8 +1633,15 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 
 DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 {
-	enum { SkipGameCode = 0x449487 };
+	enum { PlacingCheck = 0x449493, SkipGameCode = 0x449487 };
 
+	GET(BuildingClass*, pThis, ECX);
+
+	// Placing check, only newly generated buildings in this mission
+	if (pThis->CurrentMission == Mission::None)
+		return PlacingCheck;
+
+	// Undeploying check
 	GET(BuildingTypeClass*, pType, EAX);
 	LEA_STACK(CellStruct*, pDest, 0x4);
 	const auto pCell = MapClass::Instance.GetCellAt(*pDest);
@@ -2120,8 +2135,8 @@ DEFINE_HOOK(0x4D6FE1, FootClass_ElectricAssultFix2, 0x7)		// Mission_AreaGuard
 	const auto pWeapon = ElectricAssultTemp::WeaponType;
 	const bool InGuard = (R->Origin() == 0x4D5184);
 
-	if (pBuilding->Owner == pThis->Owner &&
-		GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)
+	if (pBuilding->Owner == pThis->Owner
+		&& GeneralUtils::GetWarheadVersusArmor(pWeapon->Warhead, pBuilding, pBuilding->Type) != 0.0)
 	{
 		return InGuard ? SkipGuard : SkipAreaGuard;
 	}

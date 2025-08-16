@@ -223,9 +223,9 @@ bool BuildingExt::CanGrindTechno(BuildingClass* pBuilding, TechnoClass* pTechno)
 	if (!pBldType->Grinding || (whatAmI != AbstractType::Infantry && whatAmI != AbstractType::Unit))
 		return false;
 
-	if ((pBldType->InfantryAbsorb || pBldType->UnitAbsorb) &&
-		(whatAmI == AbstractType::Infantry && !pBldType->InfantryAbsorb ||
-			whatAmI == AbstractType::Unit && !pBldType->UnitAbsorb))
+	if ((pBldType->InfantryAbsorb || pBldType->UnitAbsorb)
+		&& (whatAmI == AbstractType::Infantry && !pBldType->InfantryAbsorb
+			|| whatAmI == AbstractType::Unit && !pBldType->UnitAbsorb))
 	{
 		return false;
 	}
@@ -261,9 +261,9 @@ bool BuildingExt::DoGrindingExtras(BuildingClass* pBuilding, TechnoClass* pTechn
 		pExt->AccumulatedIncome += refund;
 		pExt->GrindingWeapon_AccumulatedCredits += refund;
 
-		if (pTypeExt->Grinding_Weapon &&
-			Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF &&
-			pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
+		if (pTypeExt->Grinding_Weapon
+			&& Unsorted::CurrentFrame >= pExt->GrindingWeapon_LastFiredFrame + pTypeExt->Grinding_Weapon->ROF
+			&& pExt->GrindingWeapon_AccumulatedCredits >= pTypeExt->Grinding_Weapon_RequiredCredits)
 		{
 			TechnoExt::FireWeaponAtSelf(pBuilding, pTypeExt->Grinding_Weapon);
 			pExt->GrindingWeapon_LastFiredFrame = Unsorted::CurrentFrame;
@@ -355,33 +355,24 @@ bool BuildingExt::ExtData::HandleInfiltrate(HouseClass* pInfiltratorHouse, int m
 // For unit's weapons factory only
 void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 {
-	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
-	{
-		if (!pUnit->IsTether && pUnit->GetCurrentSpeed() <= 0)
-		{
-			if (const auto pTeam = pUnit->Team)
-				pTeam->LiberateMember(pUnit);
-
-			pThis->SendCommand(RadioCommand::NotifyUnlink, pUnit);
-			pUnit->QueueMission(Mission::Guard, false);
-			return; // one after another
-		}
-	}
-
 	auto buffer = CoordStruct::Empty;
-	auto pCell = MapClass::Instance.GetCellAt(*pThis->GetExitCoords(&buffer, 0));
-	const auto pOwner = pThis->Owner;
-	int i = 0;
+	pThis->GetExitCoords(&buffer, 0);
+
+	auto cell = CellClass::Coord2Cell(buffer);
+
+	const auto pType = pThis->Type;
+	const short start = static_cast<short>(pThis->Location.X / Unsorted::LeptonsPerCell + pType->GetFoundationWidth() - 2); // door
+	const short end = cell.X; // exit
+	cell.X = start;
+	auto pCell = MapClass::Instance.GetCellAt(cell);
 
 	while (true)
 	{
 		for (auto pObject = pCell->FirstObject; pObject; pObject = pObject->NextObject)
 		{
-			if (pObject->WhatAmI() == AbstractType::Unit)
+			if (const auto pUnit = abstract_cast<UnitClass*, true>(pObject))
 			{
-				const auto pUnit = static_cast<UnitClass*>(pObject);
-
-				if (pOwner != pUnit->Owner || pUnit->IsTether)
+				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Destination() != CoordStruct::Empty)
 					continue;
 
 				const auto height = pUnit->GetHeight();
@@ -389,20 +380,16 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 				if (height < 0 || height > Unsorted::CellHeight)
 					continue;
 
-				if (const auto pTeam = pUnit->Team)
-					pTeam->LiberateMember(pUnit);
-
 				pThis->SendCommand(RadioCommand::RequestLink, pUnit);
 				pThis->QueueMission(Mission::Unload, false);
 				return; // one after another
 			}
 		}
 
-		if (++i >= 2)
+		if (--cell.X < end)
 			return; // no stuck
 
-		// Continue checking towards the bottom right corner
-		pCell = pCell->GetNeighbourCell(FacingType::East);
+		pCell = MapClass::Instance.GetCellAt(cell);
 	}
 }
 

@@ -29,9 +29,9 @@ DEFINE_HOOK(0x738807, UnitClass_Destroy_DestroyAnim, 0x8)
 {
 	GET(UnitClass* const, pThis, ESI);
 
-	auto const Extension = TechnoExt::ExtMap.Find(pThis);
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
 
-	if (!Extension->ReceiveDamage)
+	if (!pExt->ReceiveDamage)
 		AnimTypeExt::ProcessDestroyAnims(pThis);
 
 	return 0x73887E;

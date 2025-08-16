@@ -55,9 +55,9 @@ DEFINE_HOOK(0x48A551, WarheadTypeClass_AnimList_SplashList, 0x6)
 	auto const animTypes = pWHExt->SplashList.GetElements(RulesClass::Instance->SplashList);
 	pWHExt->Splashed = true;
 
-	const int idx = pWHExt->SplashList_PickRandom ?
-		ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1) :
-		std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
+	const int idx = pWHExt->SplashList_PickRandom
+		? ScenarioClass::Instance->Random.RandomRanged(0, animTypes.size() - 1)
+		: std::min(animTypes.size() * 35 - 1, (size_t)nDamage) / 35;
 
 	R->EAX(animTypes.size() > 0 ? animTypes[idx] : nullptr);
 	return 0x48A5AD;
@@ -80,9 +80,9 @@ DEFINE_HOOK(0x48A5B3, SelectDamageAnimation_CritAnim, 0x6)
 
 	if (pWHExt->Crit_Active && pWHExt->Crit_AnimList.size() && !pWHExt->Crit_AnimOnAffectedTargets)
 	{
-		const int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom) ?
-			ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1) :
-			std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
+		const int idx = pThis->EMEffect || pWHExt->Crit_AnimList_PickRandom.Get(pWHExt->AnimList_PickRandom)
+			? ScenarioClass::Instance->Random.RandomRanged(0, pWHExt->Crit_AnimList.size() - 1)
+			: std::min(pWHExt->Crit_AnimList.size() * 25 - 1, (size_t)nDamage) / 25;
 
 		R->EAX(pWHExt->Crit_AnimList[idx]);
 		return 0x48A5AD;

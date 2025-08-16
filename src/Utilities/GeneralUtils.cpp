@@ -133,16 +133,19 @@ bool GeneralUtils::HasHealthRatioThresholdChanged(double oldRatio, double newRat
 	if (oldRatio == newRatio)
 		return false;
 
-	if (oldRatio > RulesClass::Instance->ConditionYellow && newRatio <= RulesClass::Instance->ConditionYellow)
+	if (oldRatio > RulesClass::Instance->ConditionYellow
+		&& newRatio <= RulesClass::Instance->ConditionYellow)
 	{
 		return true;
 	}
-	else if (oldRatio <= RulesClass::Instance->ConditionYellow && oldRatio > RulesClass::Instance->ConditionRed &&
-		(newRatio <= RulesClass::Instance->ConditionRed || newRatio > RulesClass::Instance->ConditionYellow))
+	else if (oldRatio <= RulesClass::Instance->ConditionYellow
+		&& oldRatio > RulesClass::Instance->ConditionRed
+		&& (newRatio <= RulesClass::Instance->ConditionRed || newRatio > RulesClass::Instance->ConditionYellow))
 	{
 		return true;
 	}
-	else if (oldRatio <= RulesClass::Instance->ConditionRed && newRatio > RulesClass::Instance->ConditionRed)
+	else if (oldRatio <= RulesClass::Instance->ConditionRed
+		&& newRatio > RulesClass::Instance->ConditionRed)
 	{
 		return true;
 	}

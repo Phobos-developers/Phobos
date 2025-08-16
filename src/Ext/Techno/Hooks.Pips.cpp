@@ -291,9 +291,9 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 
 	if (isWeeder)
 	{
-		const int fullWeedFrames = whatAmI == AbstractType::Building ?
-			static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5) :
-			static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
+		const int fullWeedFrames = whatAmI == AbstractType::Building
+			? static_cast<int>(pThis->Owner->GetWeedStoragePercentage() * maxPips + 0.5)
+			: static_cast<int>(pThis->Tiberium.GetTotalAmount() / totalStorage * maxPips + 0.5);
 
 		for (int i = 0; i < maxPips; i++)
 		{
@@ -323,8 +323,8 @@ DEFINE_HOOK(0x70A1F6, TechnoClass_DrawPips_Tiberium, 0x6)
 		// First make a new vector, removing all the duplicate and invalid tiberiums
 		for (int index : rawPipOrder)
 		{
-			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end() &&
-				index >= 0 && index < count)
+			if (std::find(pipOrder.begin(), pipOrder.end(), index) == pipOrder.end()
+				&& index >= 0 && index < count)
 			{
 				pipOrder.push_back(index);
 			}
