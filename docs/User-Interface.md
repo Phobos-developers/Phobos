@@ -385,7 +385,7 @@ In `RA2MD.INI`:
 [Phobos]
 MessageApplyHoverState=false            ; boolean
 MessageDisplayInCenter=false            ; boolean
-MessageDisplayInCenter.LabelsCount=4    ; integer
+MessageDisplayInCenter.LabelsCount=6    ; integer
 MessageDisplayInCenter.RecordsCount=12  ; integer
 ```
 
