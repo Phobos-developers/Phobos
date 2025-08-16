@@ -98,7 +98,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 
 	// When in recoiling, need to bypass cache and draw without saving
 	const auto turKey = inRecoil ? -1 : flags;
-	const auto turCache = inRecoil ? nullptr : reinterpret_cast<IndexClass<int, int>*>(&pDrawType->VoxelTurretWeaponCache);
+	const auto turCache = inRecoil ? nullptr : &pDrawType->VoxelTurretWeaponCache;
 
 	auto getTurretMatrix = [=, &mtx]() -> Matrix3D
 	{
@@ -112,7 +112,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 		return mtxTurret;
 	};
 	auto mtxTurret = shouldRedraw ? getTurretMatrix() : mtx;
-	constexpr size_t blit = static_cast<size_t>(BlitterFlags::Alpha | BlitterFlags::Flat);
+	constexpr BlitterFlags blit = BlitterFlags::Alpha | BlitterFlags::Flat;
 
 	// Only when there is a barrel will its calculation and drawing be considered
 	if (haveBar)
@@ -121,7 +121,7 @@ DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
 		{
 			// When in recoiling, need to bypass cache and draw without saving
 			const auto brlKey = inRecoil ? -1 : flags;
-			const auto brlCache = inRecoil ? nullptr : reinterpret_cast<IndexClass<int, int>*>(&pDrawType->VoxelTurretBarrelCache);
+			const auto brlCache = inRecoil ? nullptr : &pDrawType->VoxelTurretBarrelCache;
 
 			auto getBarrelMatrix = [=, &mtxTurret, &mtx]() -> Matrix3D
 			{
