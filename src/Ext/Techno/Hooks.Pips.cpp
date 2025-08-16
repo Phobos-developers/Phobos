@@ -48,28 +48,13 @@ DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 	return 0;
 }
 
-DEFINE_HOOK_AGAIN(0x6F683C, TechnoClass_DrawHealthBar_HidePips, 0x7)	// DrawOther
-DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HidePips, 0x5)			// DrawBuilding
+DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HideBuildingsPips, 0x5)
 {
 	GET(TechnoClass*, pThis, ESI);
 
 	bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
 
-	if (R->Origin() == 0x6F6637)
-	{
-		return hidePips ? 0x6F677D : 0;
-	}
-
-	if (hidePips)
-	{
-		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
-
-		R->EDI(pLocation);
-		return 0x6F6A58;
-	}
-
-	R->EAX(pThis->WhatAmI());
-	return 0x6F6843;
+	return hidePips ? 0x6F677D : 0;
 }
 
 DEFINE_HOOK_AGAIN(0x6F6A58, TechnoClass_DrawHealthBar_PermanentPipScale, 0x6)	// DrawOther
@@ -111,13 +96,13 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 {
 	GET(FootClass*, pThis, ESI);
+	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
 
 	const auto pExt = TechnoExt::ExtMap.Find(pThis);
 
 	if (pThis->IsSelected && Phobos::Config::EnableSelectBox && !pExt->TypeExtData->HideSelectBox)
 	{
-		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 		UNREFERENCED_PARAMETER(pLocation);
 		TechnoExt::DrawSelectBox(pThis, pLocation, pBound);
 	}
@@ -132,6 +117,12 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	}
 
 	TechnoExt::ProcessDigitalDisplays(pThis);
+
+	if (pExt->TypeExtData->HealthBar_HidePips)
+	{
+		R->EDI(pLocation);
+		return 0x6F6A58;
+	}
 
 	return 0;
 }
