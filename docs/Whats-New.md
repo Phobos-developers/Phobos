@@ -430,6 +430,7 @@ New:
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
 - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body (by FlyStar)
 - Reverse engineer warhead (by CrimRecya)
+- Health bar permanently displayed (by FlyStar)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

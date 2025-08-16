@@ -53,14 +53,14 @@ DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HidePips, 0x5)			// DrawBuilding
 {
 	GET(TechnoClass*, pThis, ESI);
 
-	bool HidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
+	bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
 
 	if (R->Origin() == 0x6F6637)
 	{
-		return HidePips ? 0x6F677D : 0;
+		return hidePips ? 0x6F677D : 0;
 	}
 
-	if (HidePips)
+	if (hidePips)
 	{
 		GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 
@@ -70,6 +70,16 @@ DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HidePips, 0x5)			// DrawBuilding
 
 	R->EAX(pThis->WhatAmI());
 	return 0x6F6843;
+}
+
+DEFINE_HOOK_AGAIN(0x6F6A58, TechnoClass_DrawHealthBar_PermanentPipScale, 0x6)	// DrawOther
+DEFINE_HOOK(0x6F67F2, TechnoClass_DrawHealthBar_PermanentPipScale, 0x6)			// DrawBuilding
+{
+	GET(TechnoClass*, pThis, ESI);
+
+	bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
+
+	return !showPipScale && !pThis->IsMouseHovering && !pThis->IsSelected ? 0x6F6AB6 : 0;
 }
 
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)

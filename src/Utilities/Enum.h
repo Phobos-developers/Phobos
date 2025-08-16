@@ -303,12 +303,12 @@ enum class DisplayInfoType : BYTE
 enum class DisplayShowType : unsigned char
 {
 	None = 0x0,
-	MouseHover = 0x1,
+	CursorHover = 0x1,
 	Selected = 0x2,
-	Other = 0x4,
+	Idle = 0x4,
 
-	Select = MouseHover | Selected,
-	All = MouseHover | Selected | Other
+	Select = CursorHover | Selected,
+	All = CursorHover | Selected | Idle
 };
 
 MAKE_ENUM_FLAGS(DisplayShowType);
