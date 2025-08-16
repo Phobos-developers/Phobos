@@ -537,6 +537,7 @@ This page lists all the individual contributions to the project by their author.
   - Restore turret recoil effect
   - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
   - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
+  - Jumpjet Climbing Logic Enhancement
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

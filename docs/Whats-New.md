@@ -432,6 +432,7 @@ New:
 - Reverse engineer warhead (by CrimRecya)
 - AI base construction modification (by CrimRecya)
 - Restore turret recoil effect (by CrimRecya)
+- Jumpjet Climbing Logic Enhancement (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
