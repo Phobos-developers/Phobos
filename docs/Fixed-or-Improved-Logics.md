@@ -254,6 +254,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
+- Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
 
 ## Fixes / interactions with other extensions
 
@@ -1836,6 +1837,33 @@ In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
+```
+
+### Turret recoil
+
+- Now you can use `TurretRecoil` to control units’ turret/barrel recoil effect when firing.
+  - `TurretTravel` and `BarrelTravel` control the maximum recoil distance.
+  - `TurretRecoil.Suppress` can prevent the weapon from producing this effect when firing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]             ; VehicleType
+TurretRecoil=no           ; boolean
+TurretTravel=2            ; integer, pixels
+TurretCompressFrames=1    ; integer, game frames
+TurretHoldFrames=1        ; integer, game frames
+TurretRecoverFrames=1     ; integer, game frames
+BarrelTravel=2            ; integer, pixels
+BarrelCompressFrames=1    ; integer, game frames
+BarrelHoldFrames=1        ; integer, game frames
+BarrelRecoverFrames=1     ; integer, game frames
+
+[SOMEWEAPON]              ; WeaponType
+TurretRecoil.Suppress=no  ; boolean
+```
+
+```{note}
+The logic below was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
 ```
 
 ### Customize harvester dump amount

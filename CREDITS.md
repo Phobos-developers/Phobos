@@ -534,6 +534,9 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
   - Reverse engineer warhead
   - AI base construction modification
+  - Restore turret recoil effect
+  - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
+  - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
