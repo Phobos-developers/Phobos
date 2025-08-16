@@ -425,8 +425,13 @@ New:
 - [Damaged aircraft image changes](New-or-Enhanced-Logics.md#damaged-aircraft-image-changes) (by Fryone)
 - [Additional attached animation position customizations](Fixed-or-Improved-Logics.md#attached-animation-position-customization) (by Starkku)
 - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll` (by TaranDahl)
-- Units can customize the attack voice that plays when using more weapons (by FlyStar)
+- [Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
+- [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
+- When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body (by FlyStar)
+- Reverse engineer warhead (by CrimRecya)
+- AI base construction modification (by CrimRecya)
+- Restore turret recoil effect (by CrimRecya)
 - Jumpjet Climbing Logic Enhancement (by CrimRecya)
 
 Vanilla fixes:
@@ -441,9 +446,12 @@ Vanilla fixes:
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
+- Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
+- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective (by FlyStar)
+- Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -837,6 +845,8 @@ Fixes / interactions with other extensions:
 - Fixed an issue where some units crashed after the deployment transformation (by ststl & FlyStar)
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving (by CrimRecya)
+- Fixed quicksave command and save game trigger action to work with YRpp spawner's multiplayer saves (by Kerbiter)
+- Ported XNA CnCNet Client multiplayer save handling to get rid of occasional multiplayer save file overwriting when saving too fast (by Kerbiter)
 ```
 
 ### 0.3.0.1

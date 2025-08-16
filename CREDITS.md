@@ -49,6 +49,8 @@ This page lists all the individual contributions to the project by their author.
   - Voxel light source position customization
   - `UseFixedVoxelLighting`
   - Warhead activation target health thresholds
+  - MP saves support for quicksave command and savegame trigger action
+  - Ported XNA CnCNet Client MP save handling
 - **Uranusian (Thrifinesma)**:
   - Mind Control enhancement
   - Custom warhead splash list
@@ -384,6 +386,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
   - Units can customize the attack voice that plays when using more weapons
+  - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
+  - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -528,6 +532,11 @@ This page lists all the individual contributions to the project by their author.
   - Burst without delay
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
+  - Reverse engineer warhead
+  - AI base construction modification
+  - Restore turret recoil effect
+  - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
+  - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
   - Jumpjet Climbing Logic Enhancement
 - **Ollerus**:
   - Build limit group enhancement
@@ -589,6 +598,7 @@ This page lists all the individual contributions to the project by their author.
   - Skip target scanning function calling for unarmed technos (code)
   - Force techno targeting in distributed frames to improve performance
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
+  - Auto deploy for GI-like infantry
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

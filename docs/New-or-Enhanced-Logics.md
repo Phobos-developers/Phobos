@@ -1650,7 +1650,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation                      ; AnimationType
+AutoDeath.VanishAnimation=                     ; AnimationType
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
@@ -2075,6 +2075,17 @@ FireUp=                         ; integer
 FireUp.ResetInRetarget=true     ; boolean
 ```
 
+### Turret Response
+
+- When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body.
+  - When `Speed=0` or TechnoTypes cells cannot move due to `MovementRestrictedTo`, the default value is no; in other cases, it is yes.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]       ; VehicleType
+TurretResponse=     ; boolean
+```
+
 ## Warheads
 
 ```{hint}
@@ -2385,6 +2396,20 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 Reveal=0       ; integer - cell radius, negative values mean reveal the entire map
+```
+
+### Reverse engineer warhead
+
+- Warheads can now uses the reverse-engineering logic *(Ares feature)* , the technology of the victim will be reversed.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]          ; WarheadType
+ReverseEngineer=false  ; boolean
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function!
 ```
 
 ### Sell or undeploy building on impact
