@@ -533,6 +533,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
   - Reverse engineer warhead
+  - AI base construction modification
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
