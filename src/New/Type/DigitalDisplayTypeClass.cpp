@@ -3,9 +3,10 @@
 #include <TacticalClass.h>
 #include <SpawnManagerClass.h>
 
-#include <Utilities/ShapeTextPrinter.h>
-
 #include <Ext/Techno/Body.h>
+
+#include <Utilities/ShapeTextPrinter.h>
+#include <Utilities/EnumFunctions.h>
 
 template<>
 const char* Enumerable<DigitalDisplayTypeClass>::GetMainSection()
@@ -43,6 +44,44 @@ void DigitalDisplayTypeClass::LoadFromINI(CCINIClass* pINI)
 	this->ValueScaleDivisor.Read(exINI, section, "ValueScaleDivisor");
 	this->ValueAsTimer.Read(exINI, section, "ValueAsTimer");
 	this->ShowType.Read(exINI, section, "ShowType");
+}
+
+bool DigitalDisplayTypeClass::CanShow(TechnoClass* pThis)
+{
+	if (HouseClass::IsCurrentPlayerObserver())
+	{
+		if (!this->VisibleToHouses_Observer)
+			return false;
+	}
+	else if (!EnumFunctions::CanTargetHouse(this->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
+	{
+		return false;
+	}
+
+	if (!this->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
+		return false;
+
+	DisplayShowType flags = this->ShowType;
+	if (flags == DisplayShowType::All)
+		return true;
+
+	bool mousehover = pThis->IsMouseHovering;
+	bool selected = pThis->IsSelected;
+	bool select = (mousehover || selected);
+
+	if (flags & DisplayShowType::MouseHover)
+	{
+		if (mousehover)
+			return true;
+	}
+
+	if (flags & DisplayShowType::Selected)
+	{
+		if (selected)
+			return true;
+	}
+
+	return (flags & DisplayShowType::Other && !select);
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)

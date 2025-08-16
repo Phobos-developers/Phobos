@@ -468,31 +468,7 @@ void TechnoExt::ProcessDigitalDisplays(TechnoClass* pThis)
 
 	for (DigitalDisplayTypeClass*& pDisplayType : *pDisplayTypes)
 	{
-		if (HouseClass::IsCurrentPlayerObserver() && !pDisplayType->VisibleToHouses_Observer)
-			continue;
-
-		if (!HouseClass::IsCurrentPlayerObserver() && !EnumFunctions::CanTargetHouse(pDisplayType->VisibleToHouses, pThis->Owner, HouseClass::CurrentPlayer))
-			continue;
-
-		if (!pDisplayType->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
-			continue;
-
-		bool isSelected = pThis->IsSelected;
-		bool canShow = true;
-
-		switch (pDisplayType->ShowType)
-		{
-		case DisplayShowType::Select:
-			canShow = (pThis->IsMouseHovering || isSelected);
-			break;
-		case DisplayShowType::Selected:
-			canShow = isSelected;
-			break;
-		default:
-			break;
-		}
-
-		if (!canShow)
+		if (!pDisplayType->CanShow(pThis))
 			continue;
 
 		int value = -1;

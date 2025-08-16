@@ -1339,25 +1339,40 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 	{
 		if (parser.ReadString(pSection, pKey))
 		{
+			static const std::pair<const char*, DisplayShowType> Names[] =
+			{
+				{"mousehover", DisplayShowType::MouseHover},
+				{"selected", DisplayShowType::Selected},
+				{"other", DisplayShowType::Other},
+				{"select", DisplayShowType::Select},
+				{"all", DisplayShowType::All},
+			};
+
+
 			auto parsed = DisplayShowType::None;
-			auto str = parser.value();
-
-			if (_strcmpi(str, "anything") == 0)
+			for (auto&& part : std::string_view { parser.value() } | std::views::split(','))
 			{
-				parsed = DisplayShowType::Anything;
-			}
-			else if (_strcmpi(str, "select") == 0)
-			{
-				parsed = DisplayShowType::Select;
-			}
-			else if (_strcmpi(str, "selected") == 0)
-			{
-				parsed = DisplayShowType::Selected;
+				std::string_view&& cur { part.begin(), part.end() };
+				*const_cast<char*>(cur.data() + cur.find_last_not_of(" \t\r") + 1) = 0;
+				auto pCur = cur.data() + cur.find_first_not_of(" \t\r");
+				bool matched = false;
+				for (auto const& [name, val] : Names)
+				{
+					if (_strcmpi(pCur, name) == 0)
+					{
+						parsed |= val;
+						matched = true;
+						break;
+					}
+				}
+				if (!matched)
+				{
+					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected house");
+					return false;
+				}
 			}
 
-			if (parsed != DisplayShowType::None)
-				value = parsed;
-
+			value = parsed;
 			return true;
 		}
 
