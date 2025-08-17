@@ -6455,11 +6455,11 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1880
 msgid ""
-"The logic below was not reverse-engineered but reimplemented to achieve "
+"The logic above was not reverse-engineered but reimplemented to achieve "
 "the same effect, hence there might be some differences in behavior "
 "compared to Tiberian Sun version."
 msgstr ""
-"下面的逻辑并非来自逆向工程复原而是模拟复刻效果，因此与《泰伯利亚之日》中的行为相比可能存在一些差异。"
+"上面的逻辑并非来自逆向工程复原而是模拟复刻效果，因此与《泰伯利亚之日》中的行为相比可能存在一些差异。"
 
 #: ../../Fixed-or-Improved-Logics.md:1883
 msgid "Customize harvester dump amount"

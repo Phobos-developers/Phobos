@@ -1877,7 +1877,7 @@ TurretRecoil.Suppress=no  ; boolean
 ```
 
 ```{note}
-The logic below was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
+The logic above was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
 ```
 
 ### Customize harvester dump amount
