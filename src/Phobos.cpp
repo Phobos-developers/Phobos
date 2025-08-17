@@ -248,7 +248,7 @@ void Phobos::ApplyOptimizations()
 	if (Phobos::Optimizations::DisableRadDamageOnBuildings)
 		Patch::Apply_RAW(0x43FB23, { 0x53, 0x55, 0x56, 0x8B, 0xF1 });
 
-	else
+	if (!SessionClass::IsMultiplayer())
 	{
 		// Disable Random2Class_Random_SyncLog
 		Patch::Apply_RAW(0x65C7D0, { 0xC3, 0x90, 0x90, 0x90, 0x90, 0x90 });
