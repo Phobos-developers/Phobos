@@ -2233,6 +2233,7 @@ msgid ""
 "Fix for pathfinding crashes on big maps due to too small pathfinding node"
 " buffer"
 msgstr ""
+"修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃问题"
 
 #: ../../../CREDITS.md:543
 msgid "**Ollerus**:"

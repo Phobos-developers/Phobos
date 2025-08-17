@@ -1573,6 +1573,7 @@ msgid ""
 "Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that "
 "happened on bigger maps due to too small pathfinding node buffer."
 msgstr ""
+"修复了在较大的地图中由于寻路节点缓冲区过小而引发的寻路崩溃（EIP 0x42A525、0x42C507、0x42C554）问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:260
 msgid "Fixes / interactions with other extensions"
