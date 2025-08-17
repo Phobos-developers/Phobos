@@ -10,7 +10,7 @@ DEFINE_HOOK(0x740A93, UnitClass_Mission_Move_DisallowMoving, 0x6)
 {
 	GET(UnitClass*, pThis, ESI);
 
-	return TechnoExt::TechnoExt::CannotMove(pThis) ? 0x740AEF : 0;
+	return TechnoExt::CannotMove(pThis) ? 0x740AEF : 0;
 }
 
 DEFINE_HOOK(0x741AA7, UnitClass_Assign_Destination_DisallowMoving, 0x6)
@@ -148,6 +148,43 @@ DEFINE_HOOK(0x7415A9, UnitClass_ApproachTarget_SetWeaponIndex, 0x6)
 		UnitApproachTargetTemp::WeaponIndex = -1;
 
 		return 0x7415BA;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6F7CE2, TechnoClass_CanAutoTargetObject_DisallowMoving, 0x6)
+{
+	GET(TechnoClass* const, pThis, EDI);
+	GET(AbstractClass* const, pTarget, ESI);
+	GET(const int, weaponIndex, EBX);
+
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	{
+		if (TechnoExt::CannotMove(pUnit))
+		{
+			R->EAX(pUnit->GetFireError(pTarget, weaponIndex, true));
+			return 0x6F7CEE;
+		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x7088E3, TechnoClass_ShouldRetaliate_DisallowMoving, 0x6)
+{
+	GET(TechnoClass* const, pThis, EDI);
+	GET(AbstractClass* const, pTarget, EBP);
+	GET(const int, weaponIndex, EBX);
+
+	if (const auto pUnit = abstract_cast<UnitClass*, true>(pThis))
+	{
+		if (TechnoExt::CannotMove(pUnit))
+		{
+			R->Stack(STACK_OFFSET(0x18, 0x4), weaponIndex);
+			R->EAX(pUnit->GetFireError(pTarget, weaponIndex, true));
+			return 0x7088F3;
+		}
 	}
 
 	return 0;
