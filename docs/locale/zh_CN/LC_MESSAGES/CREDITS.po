@@ -2209,19 +2209,20 @@ msgstr "AI 基地建设机制更改"
 
 #: ../../../CREDITS.md:538
 msgid "Restore turret recoil effect"
-msgstr ""
+msgstr "复原炮塔制退"
 
 #: ../../../CREDITS.md:539
 msgid ""
 "Fix an issue that `FireAngle` was not taken into account when drawing "
 "barrel in `TurretShadow`"
-msgstr ""
+msgstr "修复了使用 `TurretShadow` 绘制炮管影子时未考虑 `FireAngle` 的问题"
 
 #: ../../../CREDITS.md:540
 msgid ""
 "Fix an issue that barrel anim data will be incorrectly overwritten by "
 "turret anim data if the techno's section exists in the map file"
 msgstr ""
+"修复了地图文件中内置了某单位时其炮管动画数据会被炮塔动画数据错误覆盖的问题"
 
 #: ../../../CREDITS.md:541
 #, fuzzy

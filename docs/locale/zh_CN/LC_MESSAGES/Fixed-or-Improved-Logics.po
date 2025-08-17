@@ -1566,6 +1566,7 @@ msgid ""
 "Fixed an issue that barrel anim data will be incorrectly overwritten by "
 "turret anim data if the techno's section exists in the map file."
 msgstr ""
+"修复了地图文件中内置了某单位时其炮管动画数据会被炮塔动画数据错误覆盖的问题。"
 
 #: ../../Fixed-or-Improved-Logics.md:258
 msgid ""
@@ -6395,23 +6396,25 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1856
 msgid "Turret recoil"
-msgstr ""
+msgstr "炮塔制退"
 
 #: ../../Fixed-or-Improved-Logics.md:1858
 msgid ""
 "Now you can use `TurretRecoil` to control units’ turret/barrel recoil "
 "effect when firing."
 msgstr ""
+"现在你可以使用 `TurretRecoil` 来控制单位开火时的炮塔／炮管制退效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:1859
 msgid "`TurretTravel` and `BarrelTravel` control the maximum recoil distance."
-msgstr ""
+msgstr "`TurretTravel` 和 `BarrelTravel` 控制最大制退距离。"
 
 #: ../../Fixed-or-Improved-Logics.md:1860
 msgid ""
 "`TurretRecoil.Suppress` can prevent the weapon from producing this effect"
 " when firing."
 msgstr ""
+"`TurretRecoil.Suppress` 可以在特定武器上阻止其产生此效果。"
 
 #: ../../Fixed-or-Improved-Logics.md:1863
 msgid ""
@@ -6449,6 +6452,7 @@ msgid ""
 "the same effect, hence there might be some differences in behavior "
 "compared to Tiberian Sun version."
 msgstr ""
+"下面的逻辑并非来自逆向工程复原而是模拟复刻效果，因此与《泰伯利亚之日》中的行为相比可能存在一些差异。"
 
 #: ../../Fixed-or-Improved-Logics.md:1883
 msgid "Customize harvester dump amount"

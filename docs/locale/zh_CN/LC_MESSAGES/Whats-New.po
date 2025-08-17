@@ -1874,8 +1874,8 @@ msgid "Jumpjet Climbing Logic Enhancement (by CrimRecya)"
 msgstr ""
 
 #: ../../Whats-New.md:435
-msgid "Restore turret recoil effect (by CrimRecya)"
-msgstr ""
+msgid "[Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)"
+msgstr "[复原炮塔制退](Fixed-or-Improved-Logics.md#turret-recoil)（by CrimRecya）"
 
 #: ../../Whats-New.md:437 ../../Whats-New.md:631 ../../Whats-New.md:988
 #: ../../Whats-New.md:1097 ../../Whats-New.md:1122 ../../Whats-New.md:1161
@@ -1971,6 +1971,7 @@ msgid ""
 "turret anim data if the techno's section exists in the map file (by "
 "CrimRecya)"
 msgstr ""
+"修复了地图文件中内置了某单位时其炮管动画数据会被炮塔动画数据错误覆盖的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:452 ../../Whats-New.md:777 ../../Whats-New.md:860
 #: ../../Whats-New.md:1024 ../../Whats-New.md:1065 ../../Whats-New.md:1077
@@ -1990,6 +1991,7 @@ msgid ""
 "Fixed an issue that `FireAngle` was not taken into account when drawing "
 "barrel in `TurretShadow` (by CrimRecya)"
 msgstr ""
+"修复了使用 `TurretShadow` 绘制炮管影子时未考虑 `FireAngle` 的问题（by CrimRecya）"
 
 #: ../../Whats-New.md:456 ../../Whats-New.md:830 ../../Whats-New.md:1053
 msgid "Fixes / interactions with other extensions:"
