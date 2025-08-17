@@ -2493,3 +2493,30 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 }
 
 #pragma endregion
+
+#pragma region AStarBuffer
+
+// AStarClass_CTOR
+// Path queue nodes buffer doubled
+
+// 42A74F: 68 04 00 04 00
+// For `new` to use (sizeof(Node*) == 4)
+DEFINE_PATCH(0x42A752, 0x08);
+// push 40004h ((65536 + 1) * 4) -> push 80004h ((131072 + 1) * 4)
+
+// 42A760: C7 47 04 00 00 01 00
+// Set the total amount of valid nodes
+DEFINE_PATCH(0x42A765, 0x02);
+// mov dword ptr [edi+4], 10000h (65536) -> mov dword ptr [edi+4], 20000h (131072)
+
+// 42A7E0: 68 04 00 10 00
+// For `new` to use (sizeof(Node) == 16)
+DEFINE_PATCH(0x42A7E3, 0x20);
+// push 100004h ((65536 + 1) * 16) -> push 200004h ((131072 + 1) * 16)
+
+// 42A7F7: BA 00 00 01 00
+// Set the loops count of initialization
+DEFINE_PATCH(0x42A7FA, 0x02);
+// mov edx, 10000h (65536) -> mov edx, 20000h (131072)
+
+#pragma endregion
