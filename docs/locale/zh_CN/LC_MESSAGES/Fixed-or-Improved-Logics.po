@@ -4833,7 +4833,7 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:1291
 msgid "Jumpjet climbing logic enhancement"
-msgstr ""
+msgstr "Jumpjet 爬升逻辑增强"
 
 #: ../../Fixed-or-Improved-Logics.md:1293
 msgid ""
@@ -4842,6 +4842,8 @@ msgid ""
 "cells in advance, instead of only raising its height when encountering "
 "cliffs or buildings in front of it."
 msgstr ""
+"现在你可以通过将 `JumpjetClimbPredictHeight` 设为 true 来使 Jumpjet 单位提前增加飞行高度。"
+"Jumpjet 将会提前 5 个单元格开始抬升而非仅在悬崖和建筑马上贴脸了才抬升高度。"
 
 #: ../../Fixed-or-Improved-Logics.md:1294
 msgid ""
@@ -4850,6 +4852,8 @@ msgid ""
 "horizontally when encountering cliffs or buildings in front of it, but "
 "will continue to move forward while raising its altitude."
 msgstr ""
+"你还可以通过将 `JumpjetClimbWithoutCutOut` 设为 true 来跳过停止移动检查。"
+"Jumpjet 在已经抵近悬崖或建筑时将不会停止水平方向上的移动，而是在抬升高度的同时继续前行。"
 
 #: ../../Fixed-or-Improved-Logics.md:1295
 msgid ""
@@ -4858,6 +4862,8 @@ msgid ""
 "will stop and move horizontally as before, unless "
 "`JumpjetClimbWithoutCutOut` is also enabled."
 msgstr ""
+"当启用 `JumpjetClimbPredictHeight` 时，若提前 5 个单元格后的高度仍然不足以越过悬崖或建筑，"
+"Jumpjet 将会像原先那样停止水平方向上的移动，除非还启用了 `JumpjetClimbWithoutCutOut`。"
 
 #: ../../Fixed-or-Improved-Logics.md:1298
 msgid ""

@@ -431,7 +431,7 @@ New:
 - [Vehicles that have lost their target can customize the turret direction to align with the vehicle body](New-or-Enhanced-Logics.md#turret-response) (by FlyStar)
 - [Reverse engineer warhead](New-or-Enhanced-Logics.md#reverse-engineer-warhead) (by CrimRecya)
 - [AI base construction modification](Fixed-or-Improved-Logics.md#ai-base-construction-modification) (by CrimRecya)
-- Jumpjet Climbing Logic Enhancement (by CrimRecya)
+- [Jumpjet Climbing Logic Enhancement](Fixed-or-Improved-Logics.md#jumpjet-climbing-logic-enhancement) (by CrimRecya)
 - [Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)
 
 Vanilla fixes:

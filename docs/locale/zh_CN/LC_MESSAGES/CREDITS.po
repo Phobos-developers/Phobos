@@ -2225,9 +2225,8 @@ msgstr ""
 "修复了地图文件中内置了某单位时其炮管动画数据会被炮塔动画数据错误覆盖的问题"
 
 #: ../../../CREDITS.md:541
-#, fuzzy
 msgid "Jumpjet Climbing Logic Enhancement"
-msgstr "输出对象信息增强"
+msgstr "Jumpjet 爬升逻辑增强"
 
 #: ../../../CREDITS.md:542
 msgid ""

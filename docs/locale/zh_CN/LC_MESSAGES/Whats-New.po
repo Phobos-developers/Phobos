@@ -1870,8 +1870,8 @@ msgid "[AI base construction modification](Fixed-or-Improved-Logics.md#ai-base-c
 msgstr "[AI 基地建设机制更改](Fixed-or-Improved-Logics.md#ai-base-construction-modification)（by CrimRecya）"
 
 #: ../../Whats-New.md:434
-msgid "Jumpjet Climbing Logic Enhancement (by CrimRecya)"
-msgstr ""
+msgid "[Jumpjet Climbing Logic Enhancement](Fixed-or-Improved-Logics.md#jumpjet-climbing-logic-enhancement) (by CrimRecya)"
+msgstr "[Jumpjet 爬升逻辑增强](Fixed-or-Improved-Logics.md#jumpjet-climbing-logic-enhancement)（by CrimRecya）"
 
 #: ../../Whats-New.md:435
 msgid "[Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)"
