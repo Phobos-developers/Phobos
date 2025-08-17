@@ -441,6 +441,7 @@ namespace UnlimboDetonateFireTemp
 {
 	BulletClass* Bullet;
 	bool InSelected;
+	bool InLimbo;
 }
 
 DEFINE_HOOK(0x6FE562, TechnoClass_Fire_SetContext, 0x6)
@@ -450,6 +451,7 @@ DEFINE_HOOK(0x6FE562, TechnoClass_Fire_SetContext, 0x6)
 
 	UnlimboDetonateFireTemp::Bullet = pBullet;
 	UnlimboDetonateFireTemp::InSelected = pThis->IsSelected;
+	UnlimboDetonateFireTemp::InLimbo = pThis->InLimbo;
 
 	return 0;
 }
@@ -462,7 +464,7 @@ DEFINE_HOOK(0x6FF7FF, TechnoClass_Fire_UnlimboDetonate, 0x6)
 	const auto pBullet = UnlimboDetonateFireTemp::Bullet;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	if (pBullet && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	if (!UnlimboDetonateFireTemp::InLimbo && pBullet && !pWH->Parasite && pWHExt->UnlimboDetonate)
 	{
 		if (pWHExt->UnlimboDetonate_KeepSelected)
 			TechnoExt::ExtMap.Find(pThis)->IsSelected = UnlimboDetonateFireTemp::InSelected;
