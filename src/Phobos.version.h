@@ -12,13 +12,13 @@
 #define VERSION_MAJOR 0
 
 // Indicates major changes and significant additions, like new logics
-#define VERSION_MINOR 3
+#define VERSION_MINOR 4
 
 // Indicates minor changes, like vanilla bugfixes, unhardcodings or hacks
 #define VERSION_REVISION 0
 
 // Indicates Phobos-related bugfixes only
-#define VERSION_PATCH 1
+#define VERSION_PATCH 0
 
 #pragma endregion
 
