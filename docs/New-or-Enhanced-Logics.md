@@ -2465,6 +2465,9 @@ NotHuman.DeathSequence=  ; integer (1 to 5)
 
 ### Unlimbo Detonate
 
+![Unlimbo Detonate](_static/images/unlimbodetonate.gif)
+*Unlimbo Detonate used in **The Call of the Panic Spear** by @[Octagonal prism](https://space.bilibili.com/360577336)*
+
 - `UnlimboDetonate` allows units that have fired weapons with `LimboLaunch=yes` to reappear.
   - `UnlimboDetonate.Force` allows units to forcefully appear at the projectile explosion location, otherwise they will search for other available cells.
   - `UnlimboDetonate.KeepTarget` allows units to retain their original attack target when they reappear.
