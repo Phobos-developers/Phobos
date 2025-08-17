@@ -2205,7 +2205,7 @@ msgstr "逆向工程弹头"
 
 #: ../../../CREDITS.md:537
 msgid "AI base construction modification"
-msgstr ""
+msgstr "AI 基地建设机制更改"
 
 #: ../../../CREDITS.md:538
 msgid "Restore turret recoil effect"

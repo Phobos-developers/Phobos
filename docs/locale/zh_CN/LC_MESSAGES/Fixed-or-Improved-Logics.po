@@ -3044,23 +3044,25 @@ msgstr ""
 
 #: ../../Fixed-or-Improved-Logics.md:708
 msgid "AI base construction modification"
-msgstr ""
+msgstr "AI 基地建设机制更改"
 
 #: ../../Fixed-or-Improved-Logics.md:710
 msgid "AI can now have some new behaviors."
-msgstr ""
+msgstr "现在 AI 可以执行一些新的行为。"
 
 #: ../../Fixed-or-Improved-Logics.md:711
 msgid ""
 "`AIAutoDeployMCV` controls whether AI will still automatically deploy the"
 " mcv after owning a construction yard."
 msgstr ""
+"`AIAutoDeployMCV` 控制 AI 在拥有建造厂后是否仍然会自动部署 MCV。"
 
 #: ../../Fixed-or-Improved-Logics.md:712
 msgid ""
 "`AISetBaseCenter` controls whether AI will still set the newly deployed "
 "construction yard as the base center after owning a construction yard."
 msgstr ""
+"`AISetBaseCenter` 控制 AI 在拥有建造厂后是否仍会将新部署的建造厂设为基地中心。"
 
 #: ../../Fixed-or-Improved-Logics.md:713
 msgid ""
@@ -3068,6 +3070,7 @@ msgid ""
 "construction yard close to the birth point as the base center (useless in"
 " campaign)."
 msgstr ""
+"`AIBiasSpawnCell` 控制 AI 是否优先选择靠近出生点的建造厂作为基地中心（战役模式无效）。"
 
 #: ../../Fixed-or-Improved-Logics.md:714
 msgid ""
@@ -3077,12 +3080,16 @@ msgid ""
 "to build other buildings. Building a construction yard will still take "
 "some time. You can try to reduce the build time of it."
 msgstr ""
+"`AIForbidConYard` 控制 AI 是否禁止摆放拥有 `ConstructionYard=true` 的建筑。"
+"当建造厂被摧毁后 AI 会尝试重建但不会实际摆放。随后它会继续建造其他建筑。"
+"建造厂的建造仍会占用时间。你可以尝试缩短它的建造所需时长。"
 
 #: ../../Fixed-or-Improved-Logics.md:715
 msgid ""
 "`AINodeWallsOnly` controls whether AI can only automatically connect "
 "adjacent walls when there are wall base nodes around."
 msgstr ""
+"`AINodeWallsOnly` 控制 AI 是否仅在周围存在围墙节点时才自动连接相邻围墙。"
 
 #: ../../Fixed-or-Improved-Logics.md:716
 msgid ""
@@ -3090,6 +3097,8 @@ msgid ""
 "no `ProtectWithWall` buildings around. If it cannot be placed, this base "
 "node will also be removed."
 msgstr ""
+"`AICleanWallNode` 控制 AI 是否在周边都是无 `ProtectWithWall` 的建筑时禁止摆放围墙。"
+"若无法摆放，该基地节点将被一同移除。"
 
 #: ../../Fixed-or-Improved-Logics.md:719
 msgid ""

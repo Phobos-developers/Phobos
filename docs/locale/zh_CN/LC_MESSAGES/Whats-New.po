@@ -1866,8 +1866,8 @@ msgid ""
 msgstr "[逆向工程弹头](New-or-Enhanced-Logics.md#reverse-engineer-warhead)（by CrimRecya）"
 
 #: ../../Whats-New.md:433
-msgid "AI base construction modification (by CrimRecya)"
-msgstr ""
+msgid "[AI base construction modification](Fixed-or-Improved-Logics.md#ai-base-construction-modification) (by CrimRecya)"
+msgstr "[AI 基地建设机制更改](Fixed-or-Improved-Logics.md#ai-base-construction-modification)（by CrimRecya）"
 
 #: ../../Whats-New.md:434
 msgid "Jumpjet Climbing Logic Enhancement (by CrimRecya)"
