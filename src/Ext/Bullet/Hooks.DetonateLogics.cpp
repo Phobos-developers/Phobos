@@ -425,7 +425,61 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		}
 	}
 
-	WarheadTypeExt::ExtMap.Find(pThis->WH)->InDamageArea = true;
+	// Unlimbo Detonate
+	const auto pWH = pThis->WH;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+	pWHExt->InDamageArea = true;
+
+	if (pTechno && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	{
+		CoordStruct location = *coords;
+		const auto pTarget = pThis->Target;
+		bool isInAir = pTarget ? pTarget->IsInAir() : false;
+
+		if (!pWHExt->UnlimboDetonate_Force)
+		{
+			const auto pType = pTechno->GetTechnoType();
+			const auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location),
+									pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+									false, false, true, CellStruct::Empty, false, false);
+
+			const auto pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+			if (pCell)
+				location = pCell->GetCoordsWithBridge();
+
+			if (isInAir)
+				location.Z = coords->Z;
+		}
+
+		++Unsorted::ScenarioInit;
+		pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
+		--Unsorted::ScenarioInit;
+
+		if (isInAir)
+		{
+			pTechno->IsFallingDown = true;
+			pTechno->FallRate = 0;
+		}
+
+		if (pWHExt->UnlimboDetonate_KeepTarget
+			&& pTarget && pTarget->AbstractFlags & AbstractFlags::Object)
+		{
+			pTechno->SetTarget(pThis->Target);
+		}
+		else
+		{
+			pTechno->SetTarget(nullptr);
+		}
+
+		const auto pTechnoExt = TechnoExt::ExtMap.Find(pTechno);
+
+		if (pTechnoExt->IsSelected)
+		{
+			pTechno->Select();
+			pTechnoExt->IsSelected = false;
+		}
+	}
 
 	return 0;
 }
