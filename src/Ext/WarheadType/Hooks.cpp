@@ -371,3 +371,106 @@ DEFINE_HOOK(0x4D73DE, FootClass_ReceiveDamage_RemoveParasite, 0x5)
 
 	return Continue;
 }
+
+#pragma region UnlimboDetonate
+
+DEFINE_HOOK(0x469211, BulletClass_Detonate_UnlimboDetonate, 0x6)
+{
+	GET(BulletClass* const, pThis, ESI);
+	GET(WarheadTypeClass* const, pWH, EAX);
+	GET_BASE(CoordStruct* const, coord, 0x8);
+
+	const auto pOwner = pThis->Owner;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pOwner && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	{
+		CoordStruct location = *coord;
+		const auto pTarget = pThis->Target;
+		bool isInAir = pTarget ? pTarget->IsInAir() : false;
+
+		if (!pWHExt->UnlimboDetonate_Force)
+		{
+			const auto pType = pOwner->GetTechnoType();
+			const auto nCell = MapClass::Instance.NearByLocation(CellClass::Coord2Cell(location),
+									pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
+									false, false, true, CellStruct::Empty, false, false);
+
+			const auto pCell = MapClass::Instance.TryGetCellAt(nCell);
+
+			if (pCell)
+				location = pCell->GetCoordsWithBridge();
+
+			if (isInAir)
+				location.Z = coord->Z;
+		}
+
+		++Unsorted::ScenarioInit;
+		pOwner->Unlimbo(location, pOwner->PrimaryFacing.Current().GetDir());
+		--Unsorted::ScenarioInit;
+
+		if (isInAir)
+		{
+			pOwner->IsFallingDown = true;
+			pOwner->FallRate = 0;
+		}
+
+		if (pWHExt->UnlimboDetonate_KeepTarget
+			&& pTarget && pTarget->AbstractFlags & AbstractFlags::Object)
+		{
+			pOwner->SetTarget(pThis->Target);
+		}
+		else
+		{
+			pOwner->SetTarget(nullptr);
+		}
+
+		const auto pOwnerExt = TechnoExt::ExtMap.Find(pOwner);
+
+		if (pOwnerExt->IsSelected)
+		{
+			pOwner->Select();
+			pOwnerExt->IsSelected = false;
+		}
+	}
+
+	return 0;
+}
+
+namespace UnlimboDetonateFireTemp
+{
+	BulletClass* Bullet;
+	bool InSelected;
+}
+
+DEFINE_HOOK(0x6FE562, TechnoClass_Fire_SetContext, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(BulletClass* const, pBullet, EAX);
+
+	UnlimboDetonateFireTemp::Bullet = pBullet;
+	UnlimboDetonateFireTemp::InSelected = pThis->IsSelected;
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FF7FF, TechnoClass_Fire_UnlimboDetonate, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WarheadTypeClass* const, pWH, EAX);
+
+	const auto pBullet = UnlimboDetonateFireTemp::Bullet;
+	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
+
+	if (pBullet && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	{
+		if (pWHExt->UnlimboDetonate_KeepSelected)
+			TechnoExt::ExtMap.Find(pThis)->IsSelected = UnlimboDetonateFireTemp::InSelected;
+
+		pBullet->Owner = pThis;
+	}
+
+	return 0;
+}
+
+#pragma endregion

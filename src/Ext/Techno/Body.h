@@ -79,6 +79,8 @@ public:
 
 		CDTimerClass FiringAnimationTimer;
 
+		bool IsSelected;
+
 		// cache tint values
 		int TintColorOwner;
 		int TintColorAllies;
@@ -139,6 +141,7 @@ public:
 			, DelayedFireTimer {}
 			, CurrentDelayedFireAnim { nullptr }
 			, AttachedEffectInvokerCount { 0 }
+			, IsSelected { false }
 			, TintColorOwner { 0 }
 			, TintColorAllies { 0 }
 			, TintColorEnemies { 0 }

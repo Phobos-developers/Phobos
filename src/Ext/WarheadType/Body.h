@@ -191,6 +191,11 @@ public:
 
 		Valueable<bool> CanKill;
 
+		Valueable<bool> UnlimboDetonate;
+		Valueable<bool> UnlimboDetonate_Force;
+		Valueable<bool> UnlimboDetonate_KeepTarget;
+		Valueable<bool> UnlimboDetonate_KeepSelected;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -402,6 +407,11 @@ public:
 			, KillWeapon_OnFirer_Affects { AffectedTarget::All }
 
 			, ReverseEngineer { false }
+
+			, UnlimboDetonate { false }
+			, UnlimboDetonate_Force { false }
+			, UnlimboDetonate_KeepTarget { true }
+			, UnlimboDetonate_KeepSelected { true }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);

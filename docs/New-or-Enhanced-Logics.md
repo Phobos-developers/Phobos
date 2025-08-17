@@ -2463,6 +2463,26 @@ In `rulesmd.ini`:
 NotHuman.DeathSequence=  ; integer (1 to 5)
 ```
 
+### Unlimbo Detonate
+
+- `UnlimboDetonate` allows units that have fired weapons with `LimboLaunch` to reappear.
+  - `UnlimboDetonate.Force` allows units to forcefully appear at the projectile explosion location, otherwise they will search for other available cells.
+  - `UnlimboDetonate.KeepTarget` allows units to retain their original attack targets when they appear.
+  - `UnlimboDetonate.KeepSelected` allows units to retain their original selected state when they appear.
+
+In `rulesmd.ini`:
+```ini
+[SOMEWARHEAD]                       ; WarheadType
+UnlimboDetonate=no                  ; boolean
+UnlimboDetonate.Force=no            ; boolean
+UnlimboDetonate.KeepTarget=no       ; boolean
+UnlimboDetonate.KeepSelected=no     ; boolean
+```
+
+```{warning}
+`UnlimboDetonate` cannot be used in conjunction with `Parasite`.
+```
+
 ## Weapons
 
 ### AreaFire target customization
