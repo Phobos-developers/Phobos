@@ -16,7 +16,7 @@ public:
 	static constexpr int ButtonHeight = ButtonIconWidth + 2;
 
 	MessageToggleClass() = default;
-	MessageToggleClass(int x, int y, int width, int height);
+	MessageToggleClass(int id, int x, int y, int width, int height);
 
 	~MessageToggleClass() = default;
 
@@ -27,6 +27,7 @@ public:
 
 	void DrawShape() const;
 
+	int ID { 0 };
 	bool Hovering { false };
 	bool Clicking { false };
 };
@@ -48,7 +49,6 @@ public:
 
 	void DrawShape() const;
 
-	int ID { 0 };
 	int CheckTime { 0 };
 };
 
@@ -176,6 +176,7 @@ private:
 	int Width { 0 };
 	ColorStruct Color { ColorStruct { 0, 0, 0 } };
 
+	MessageToggleClass* Button_Main { nullptr };
 	MessageToggleClass* Button_Toggle { nullptr };
 	MessageButtonClass* Button_Up { nullptr };
 	MessageButtonClass* Button_Down { nullptr };

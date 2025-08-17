@@ -11,10 +11,11 @@ MessageColumnClass MessageColumnClass::Instance;
 
 // --------------------------------------------------
 
-MessageToggleClass::MessageToggleClass(int x, int y, int width, int height)
+MessageToggleClass::MessageToggleClass(int id, int x, int y, int width, int height)
 	: GadgetClass(x, y, width, height, GadgetFlag::LeftPress | GadgetFlag::LeftRelease, false)
+	, ID(id)
 {
-	this->Disabled = true;
+	this->Disabled = id != 0;
 }
 
 bool MessageToggleClass::Draw(bool forced)
@@ -121,8 +122,7 @@ void MessageToggleClass::DrawShape() const
 // --------------------------------------------------
 
 MessageButtonClass::MessageButtonClass(int id, int x, int y, int width, int height)
-	: MessageToggleClass(x, y, width, height)
-	, ID(id)
+	: MessageToggleClass(id, x, y, width, height)
 {
 	this->Disabled = true;
 	this->Flags |= GadgetFlag::LeftHeld;
@@ -137,7 +137,7 @@ bool MessageButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modif
 			this->CheckTime = MessageColumnClass::GetSystemTime() + MessageButtonClass::HoldInitialDelay;
 			this->Clicking = true;
 
-			if (this->ID)
+			if (this->ID == 3)
 				MessageColumnClass::Instance.ScrollDown();
 			else
 				MessageColumnClass::Instance.ScrollUp();
@@ -155,7 +155,7 @@ bool MessageButtonClass::Action(GadgetFlag flags, DWORD* pKey, KeyModifier modif
 		{
 			this->CheckTime += MessageButtonClass::HoldTriggerDelay;
 
-			if (this->ID)
+			if (this->ID == 3)
 				MessageColumnClass::Instance.ScrollDown();
 			else
 				MessageColumnClass::Instance.ScrollUp();
@@ -176,7 +176,7 @@ void MessageButtonClass::DrawShape() const
 	RectangleStruct drawRect { this->X, this->Y, this->Width, this->Height };
 	ColorStruct color = MessageColumnClass::Instance.GetColor();
 	MessageColumnClass::Instance.IncreaseBrightness(color, 3);
-	const bool can = this->ID ? MessageColumnClass::Instance.CanScrollDown() : MessageColumnClass::Instance.CanScrollUp();
+	const bool can = (this->ID == 3) ? MessageColumnClass::Instance.CanScrollDown() : MessageColumnClass::Instance.CanScrollUp();
 	const bool highLight = can && this->Hovering;
 	const int opacity = highLight ? MessageColumnClass::MediumOpacity : MessageColumnClass::LowOpacity;
 
@@ -404,6 +404,13 @@ void MessageColumnClass::InitClear()
 {
 	this->Initialize();
 
+	if (this->Button_Main)
+	{
+		GScreenClass::Instance.RemoveButton(this->Button_Main);
+		GameDelete(this->Button_Main);
+		this->Button_Main = nullptr;
+	}
+
 	if (this->Button_Toggle)
 	{
 		GScreenClass::Instance.RemoveButton(this->Button_Toggle);
@@ -462,11 +469,21 @@ void MessageColumnClass::InitIO()
 	posX -= 1;
 	width += 2;
 
+	// Button_Main
+	{
+		const int locX = rect.Width - MessageToggleClass::ButtonSide;
+		const int locY = 0;
+		const auto pButton = GameCreate<MessageToggleClass>(0, locX, locY, MessageToggleClass::ButtonSide, MessageToggleClass::ButtonSide);
+		pButton->Zap();
+		GScreenClass::Instance.AddButton(pButton);
+		this->Button_Main = pButton;
+	}
+
 	// Button_Toggle
 	{
 		const int locX = posX + width - MessageToggleClass::ButtonSide;
 		const int locY = posY - MessageToggleClass::ButtonSide;
-		const auto pButton = GameCreate<MessageToggleClass>(locX, locY, MessageToggleClass::ButtonSide, MessageToggleClass::ButtonSide);
+		const auto pButton = GameCreate<MessageToggleClass>(1, locX, locY, MessageToggleClass::ButtonSide, MessageToggleClass::ButtonSide);
 		pButton->Zap();
 		GScreenClass::Instance.AddButton(pButton);
 		this->Button_Toggle = pButton;
@@ -476,7 +493,7 @@ void MessageColumnClass::InitIO()
 	{
 		const int locX = rect.Width * 5 / 12;
 		const int locY = posY - (MessageToggleClass::ButtonSide * this->MaxRecord) - 1 - MessageToggleClass::ButtonHeight;
-		const auto pButton = GameCreate<MessageButtonClass>(0, locX, locY, sideWidth, MessageToggleClass::ButtonHeight);
+		const auto pButton = GameCreate<MessageButtonClass>(2, locX, locY, sideWidth, MessageToggleClass::ButtonHeight);
 		pButton->Zap();
 		GScreenClass::Instance.AddButton(pButton);
 		this->Button_Up = pButton;
@@ -486,7 +503,7 @@ void MessageColumnClass::InitIO()
 	{
 		const int locX = rect.Width * 5 / 12;
 		const int locY = posY;
-		const auto pButton = GameCreate<MessageButtonClass>(1, locX, locY, sideWidth, MessageToggleClass::ButtonHeight);
+		const auto pButton = GameCreate<MessageButtonClass>(3, locX, locY, sideWidth, MessageToggleClass::ButtonHeight);
 		pButton->Zap();
 		GScreenClass::Instance.AddButton(pButton);
 		this->Button_Down = pButton;
@@ -631,10 +648,16 @@ void MessageColumnClass::MouseEnter(bool block)
 	if (block)
 		this->Blocked = true;
 
+	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
+
+	if (const auto pButton = this->Button_Main)
+	{
+		if (pButton->Hovering)
+			return;
+	}
+
 	if (const auto pButton = this->Button_Toggle)
 		pButton->Disabled = false;
-
-	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }
 
 void MessageColumnClass::MouseLeave(bool block)
@@ -644,13 +667,13 @@ void MessageColumnClass::MouseLeave(bool block)
 	if (block)
 		this->Blocked = false;
 
+	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
+
 	if (!this->IsExpanded())
 	{
 		if (const auto pButton = this->Button_Toggle)
 			pButton->Disabled = true;
 	}
-
-	MouseClass::Instance.UpdateCursor(MouseCursorType::Default, false);
 }
 
 bool MessageColumnClass::CanScrollUp()
@@ -843,6 +866,9 @@ void MessageColumnClass::DrawAll()
 	if (const auto pButton = this->Scroll_Bar)
 		pButton->DrawShape();
 
+	if (const auto pButton = this->Button_Main)
+		pButton->DrawShape();
+
 	if (const auto pButton = this->Button_Toggle)
 		pButton->DrawShape();
 
@@ -1030,7 +1056,7 @@ DEFINE_HOOK(0x4F43BE, GScreenClass_GetInputAndUpdate_CheckHoverState, 0x7)
 	return 0;
 }
 
-DEFINE_HOOK(0x4F4583, GScreenClass_NewMessageListDraw, 0x6)
+DEFINE_HOOK(0x4F4589, GScreenClass_NewMessageListDraw, 0x5)
 {
 	MessageColumnClass::Instance.DrawAll();
 
