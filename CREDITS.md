@@ -436,7 +436,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix the bug that vehicle owned by computer will scatter when cloaking
   - Fix the bug that submarine always turn left after changed owner by map event
   - Fix the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants
-  - Fix the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead
+  - Fix the bug that Locomotor warhead won't stop working when the attacker is being affected by `Temporal=yes` warhead
   - Fix the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge
   - Fix the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing
   - Fix the bug that hover vehicle will sink if destroyed on bridge

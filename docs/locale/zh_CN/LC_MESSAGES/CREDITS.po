@@ -1781,7 +1781,7 @@ msgstr "修复了可驻军建筑在按部署键释放全部驻兵后绘图不会
 
 #: ../../../CREDITS.md:440
 msgid ""
-"Fix the bug that Locomotor warhead won’t stop working when the attacker "
+"Fix the bug that Locomotor warhead won't stop working when the attacker "
 "is being affected by `Temporal=yes` warhead"
 msgstr "修复了攻击者被 `Temporal=yes` 弹头作用时运动模式弹头不会停止工作的 Bug"
 
