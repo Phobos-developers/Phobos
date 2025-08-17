@@ -254,6 +254,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
+- Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer. 
 
 ## Fixes / interactions with other extensions
 
