@@ -99,6 +99,7 @@ private:
 	bool NotCurveVelocityChange();
 	bool StandardVelocityChange();
 	bool ChangeBulletVelocity(const CoordStruct& targetLocation);
+	int GetCruiseAltitude();
 
 	template <typename T>
 	void Serialize(T& Stm);

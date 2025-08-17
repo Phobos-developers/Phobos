@@ -523,10 +523,9 @@ bool MissileTrajectory::StandardVelocityChange()
 				const double ratio = this->MovingSpeed / horizontalDistance;
 				targetLocation.X = pBullet->Location.X + static_cast<int>(horizontal.X * ratio);
 				targetLocation.Y = pBullet->Location.Y + static_cast<int>(horizontal.Y * ratio);
-				const int altitude = pType->CruiseAltitude + (pType->CruiseAlongLevel ? MapClass::Instance.GetCellFloorHeight(pBullet->Location) : pBullet->SourceCoords.Z);
 
 				// Smooth curve for low turning speed projectile
-				targetLocation.Z = (altitude + pBullet->Location.Z) / 2;
+				targetLocation.Z = (this->GetCruiseAltitude() + pBullet->Location.Z) / 2;
 			}
 			else
 			{
@@ -601,4 +600,97 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	this->LastDotProduct = dotProduct;
 	this->LastTargetCoord = pBullet->TargetCoords;
 	return this->CalculateBulletVelocity(this->MovingSpeed);
+}
+
+int MissileTrajectory::GetCruiseAltitude()
+{
+	const auto pBullet = this->Bullet;
+	const auto pType = this->Type;
+
+	if (!pType->CruiseAlongLevel || pType->TurningSpeed <= PhobosTrajectory::Epsilon)
+		return pType->CruiseAltitude + pBullet->SourceCoords.Z;
+
+	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell
+	constexpr auto point2Cell = [](const Point2D& point) -> CellStruct
+	{
+		return CellStruct { static_cast<short>(point.X >> shift), static_cast<short>(point.Y >> shift) };
+	};
+	auto getFloorHeight = [](const CellClass* const pCell, const Point2D& point) -> int
+	{
+		return pCell->GetFloorHeight(Point2D { point.X, point.Y }) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
+	};
+
+	// Initialize
+	auto curCoord = Point2D { pBullet->Location.X, pBullet->Location.Y };
+	const auto tgtCoord = Point2D { pBullet->TargetCoords.X, pBullet->TargetCoords.Y };
+	const CellClass* pCurCell = MapClass::Instance.GetCellAt(point2Cell(curCoord));
+	int maxHeight = getFloorHeight(pCurCell, curCoord);
+
+	// Prepare for prediction
+	auto lastCoord = Point2D::Empty;
+	const double checkLength = (pType->Speed / pType->TurningSpeed) * (180 / Math::Pi);
+	const double angle = Math::atan2(this->MovingVelocity.Y, this->MovingVelocity.X);
+	const auto checkCoord = Point2D { static_cast<int>(checkLength * Math::cos(angle)), static_cast<int>(checkLength * Math::sin(angle)) };
+	const int largeStep = Math::max(std::abs(checkCoord.X), std::abs(checkCoord.Y));
+	const int checkSteps = (largeStep > Unsorted::LeptonsPerCell) ? (largeStep / Unsorted::LeptonsPerCell + 1) : 1;
+	const auto stepCoord = Point2D { (checkCoord.X / checkSteps), (checkCoord.Y / checkSteps) };
+
+	auto checkStepHeight = [&]() -> bool
+	{
+		// Check forward
+		lastCoord = curCoord;
+		curCoord += stepCoord;
+		pCurCell = MapClass::Instance.TryGetCellAt(point2Cell(curCoord));
+
+		if (!pCurCell)
+			return false;
+
+		maxHeight = Math::max(maxHeight, getFloorHeight(pCurCell, curCoord));
+
+		auto getSideHeight = [](const CellClass* const pCell) -> int
+		{
+			return (pCell->Level * Unsorted::LevelHeight) + (pCell->ContainsBridge() ? CellClass::BridgeHeight : 0);
+		};
+		auto getAntiAliasingCell = [&]() -> CellClass*
+		{
+			// Check if it is a diagonal relationship
+			if ((curCoord.X >> shift) == (lastCoord.X >> shift) || (curCoord.Y >> shift) == (lastCoord.Y >> shift))
+				return nullptr;
+
+			constexpr int mask = 0xFF; // & mask -> % Unsorted::LeptonsPerCell
+			bool lastX = false;
+
+			// Calculate the bias of the previous cell
+			if (std::abs(stepCoord.X) > std::abs(stepCoord.Y))
+			{
+				const int offsetX = curCoord.X & mask;
+				const int deltaX = (stepCoord.X > 0) ? offsetX : (offsetX - Unsorted::LeptonsPerCell);
+				const int projectedY = curCoord.Y - deltaX * checkCoord.Y / checkCoord.X;
+				lastX = (projectedY ^ curCoord.Y) >> shift == 0;
+			}
+			else
+			{
+				const int offsetY = curCoord.Y & mask;
+				const int deltaY = (stepCoord.Y > 0) ? offsetY : (offsetY - Unsorted::LeptonsPerCell);
+				const int projectedX = curCoord.X - deltaY * checkCoord.X / checkCoord.Y;
+				lastX = (projectedX ^ curCoord.X) >> shift != 0;
+			}
+
+			// Get cell
+			return MapClass::Instance.TryGetCellAt(lastX
+				? CellStruct { static_cast<short>(lastCoord.X >> shift), static_cast<short>(curCoord.Y >> shift) }
+				: CellStruct { static_cast<short>(curCoord.X >> shift), static_cast<short>(lastCoord.Y >> shift) });
+		};
+
+		// "Anti-Aliasing"
+		if (const auto pCheckCell = getAntiAliasingCell())
+			maxHeight = Math::max(maxHeight, getSideHeight(pCheckCell));
+
+		return true;
+	};
+
+	// Predict height
+	for (int i = 0; i < checkSteps && checkStepHeight(); ++i);
+
+	return pType->CruiseAltitude + maxHeight;
 }
