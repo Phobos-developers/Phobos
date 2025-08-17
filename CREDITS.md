@@ -388,6 +388,7 @@ This page lists all the individual contributions to the project by their author.
   - Units can customize the attack voice that plays when using more weapons
   - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
   - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
+  - Unlimbo Detonate warhead
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
