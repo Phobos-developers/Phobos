@@ -49,7 +49,7 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 
 ### Default loading screen and briefing offsets
 
-- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself or in case of loading screens and palette, if the files are missing.
 
 In `missionmd.ini`:
 ```ini
