@@ -2,6 +2,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/BulletType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/Macro.h>
@@ -364,9 +365,12 @@ DEFINE_HOOK(0x467CCA, BulletClass_AI_TargetSnapChecks, 0x6)
 
 DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 {
-	enum { SkipChecks = 0x468E7B };
+	enum { Snap = 0x468E7B, SkipChecks = 0x468FF4 };
 
 	GET(BulletClass*, pThis, ESI);
+
+	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+		return SkipChecks;
 
 	auto const pType = pThis->Type;
 
@@ -374,7 +378,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	if (pType->Inviso)
 	{
 		R->EAX(pType);
-		return SkipChecks;
+		return Snap;
 	}
 	else if (pType->Arcing || pType->ROT > 0)
 	{
@@ -386,7 +390,7 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 	if (pExt->Trajectory && CheckTrajectoryCanNotAlwaysSnap(pExt->Trajectory->Flag()) && !pExt->SnappedToTarget)
 	{
 		R->EAX(pType);
-		return SkipChecks;
+		return Snap;
 	}
 
 	return 0;
@@ -394,9 +398,12 @@ DEFINE_HOOK(0x468E61, BulletClass_Explode_TargetSnapChecks1, 0x6)
 
 DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 {
-	enum { SkipInitialChecks = 0x468EC7, SkipSetCoordinate = 0x468F23 };
+	enum { SkipInitialChecksOnly = 0x468EC7, SkipSetCoordinate = 0x468F23, SkipChecks = 0x468FF4 };
 
 	GET(BulletClass*, pThis, ESI);
+
+	if (pThis == ScenarioExt::Global()->MasterDetonationBullet)
+		return SkipChecks;
 
 	auto const pType = pThis->Type;
 
@@ -404,7 +411,7 @@ DEFINE_HOOK(0x468E9F, BulletClass_Explode_TargetSnapChecks2, 0x6)
 	if (pType->Inviso)
 	{
 		R->EAX(pType);
-		return SkipInitialChecks;
+		return SkipInitialChecksOnly;
 	}
 	else if (pType->Arcing || pType->ROT > 0)
 	{
