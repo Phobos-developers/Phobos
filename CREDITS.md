@@ -276,6 +276,7 @@ This page lists all the individual contributions to the project by their author.
   - Airstrike flare visual customizations & fixes
   - Restored parabombs
   - Delayed fire weapons
+  - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
