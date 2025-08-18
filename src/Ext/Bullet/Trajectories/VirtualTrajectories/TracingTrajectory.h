@@ -2,14 +2,14 @@
 
 #include "../PhobosVirtualTrajectory.h"
 
-enum class TraceTargetMode : int
+enum class TraceTargetMode : unsigned char
 {
 	Connection = 0,
 	Global = 1,
 	Body = 2,
 	Turret = 3,
 	RotateCW = 4,
-	RotateCCW = 5,
+	RotateCCW = 5
 };
 
 class TracingTrajectoryType final : public VirtualTrajectoryType

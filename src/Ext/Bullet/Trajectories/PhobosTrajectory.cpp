@@ -272,10 +272,7 @@ void PhobosTrajectory::OnUnlimbo()
 		const auto flag = this->Flag();
 
 		// Obtain the launch location
-		if (pType->RecordSourceCoord.Get(pType->DisperseWeapons.size() || flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing))
-			this->GetTechnoFLHCoord();
-		else
-			this->NotMainWeapon = true;
+		this->GetTechnoFLHCoord();
 
 		// Check trajectory capacity
 		if (pType->CreateCapacity >= 0)
@@ -329,7 +326,7 @@ bool PhobosTrajectory::OnEarlyUpdate()
 		return true;
 
 	// After the new target is confirmed, check if the tolerance time has ended
-	if (this->CheckTolerantTime())
+	if (this->CheckNoTargetLifetime())
 		return true;
 
 	// Based on the new target location, check how to change bullet velocity
@@ -573,7 +570,7 @@ void PhobosTrajectory::OpenFire()
 	const auto pType = this->GetType();
 
 	// Restricted to rotation only on a horizontal plane
-	if (pType->BulletFacing == TrajectoryFacing::Spin || pType->BulletROT < 0)
+	if (pType->BulletFacing == TrajectoryFacing::Spin || pType->BulletFacingOnPlane)
 		pBullet->Velocity.Z = 0;
 
 	// When the speed is delicate, there is a problem with the vanilla processing at the starting position
@@ -783,7 +780,7 @@ void PhobosTrajectory::OnFacingUpdate()
 		return;
 	}
 
-	if (!pType->BulletROT)
+	if (pType->BulletROT <= 0)
 	{
 		pBullet->Velocity = desiredFacing;
 		pBullet->Velocity *= (1 / pBullet->Velocity.Magnitude());
@@ -791,7 +788,7 @@ void PhobosTrajectory::OnFacingUpdate()
 	else
 	{
 		// Restricted to rotation only on a horizontal plane
-		if (pType->BulletROT < 0)
+		if (pType->BulletFacingOnPlane)
 		{
 			pBullet->Velocity.Z = 0;
 			desiredFacing.Z = 0;
@@ -882,7 +879,7 @@ bool PhobosTrajectory::CheckSynchronize()
 		auto pTarget = pFirer->Target;
 
 		// Check should detonate when changing target
-		if (pBullet->Target != pTarget && !this->GetType()->TolerantTime)
+		if (pBullet->Target != pTarget && !this->GetType()->NoTargetLifetime)
 			return true;
 
 		// Check if the target can be synchronized
@@ -897,26 +894,26 @@ bool PhobosTrajectory::CheckSynchronize()
 }
 
 // Tolerance timer inspection
-bool PhobosTrajectory::CheckTolerantTime()
+bool PhobosTrajectory::CheckNoTargetLifetime()
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->GetType();
 
 	// Check should detonate when no target
-	if (!pBullet->Target && !pType->TolerantTime)
+	if (!pBullet->Target && !pType->NoTargetLifetime)
 		return true;
 
 	// Update timer
 	if (pBullet->Target)
 	{
-		this->TolerantTimer.Stop();
+		this->NoTargetLifetimer.Stop();
 	}
-	else if (pType->TolerantTime > 0)
+	else if (pType->NoTargetLifetime > 0)
 	{
-		if (this->TolerantTimer.Completed())
+		if (this->NoTargetLifetimer.Completed())
 			return true;
-		else if (!this->TolerantTimer.IsTicking())
-			this->TolerantTimer.Start(pType->TolerantTime);
+		else if (!this->NoTargetLifetimer.IsTicking())
+			this->NoTargetLifetimer.Start(pType->NoTargetLifetime);
 	}
 
 	return false;
@@ -965,10 +962,11 @@ void PhobosTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->Speed.Read(exINI, pSection, "Trajectory.Speed");
 	this->Speed = Math::max(0.001, this->Speed);
 	this->Duration.Read(exINI, pSection, "Trajectory.Duration");
-	this->TolerantTime.Read(exINI, pSection, "Trajectory.TolerantTime");
+	this->NoTargetLifetime.Read(exINI, pSection, "Trajectory.NoTargetLifetime");
 	this->CreateCapacity.Read(exINI, pSection, "Trajectory.CreateCapacity");
 	this->BulletROT.Read(exINI, pSection, "Trajectory.BulletROT");
 	this->BulletFacing.Read(exINI, pSection, "Trajectory.BulletFacing");
+	this->BulletFacingOnPlane.Read(exINI, pSection, "Trajectory.BulletFacingOnPlane");
 	this->RetargetInterval.Read(exINI, pSection, "Trajectory.RetargetInterval");
 	this->RetargetInterval = Math::max(1, this->RetargetInterval);
 	this->RetargetRadius.Read(exINI, pSection, "Trajectory.RetargetRadius");
@@ -978,7 +976,6 @@ void PhobosTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->PeacefulVanish.Read(exINI, pSection, "Trajectory.PeacefulVanish");
 	this->ApplyRangeModifiers.Read(exINI, pSection, "Trajectory.ApplyRangeModifiers");
 	this->UseDisperseCoord.Read(exINI, pSection, "Trajectory.UseDisperseCoord");
-	this->RecordSourceCoord.Read(exINI, pSection, "Trajectory.RecordSourceCoord");
 
 	this->PassDetonate.Read(exINI, pSection, "Trajectory.PassDetonate");
 	this->PassDetonateLocal.Read(exINI, pSection, "Trajectory.PassDetonateLocal");
@@ -1042,10 +1039,11 @@ void PhobosTrajectoryType::Serialize(T& Stm)
 	Stm
 		.Process(this->Speed)
 		.Process(this->Duration)
-		.Process(this->TolerantTime)
+		.Process(this->NoTargetLifetime)
 		.Process(this->CreateCapacity)
 		.Process(this->BulletROT)
 		.Process(this->BulletFacing)
+		.Process(this->BulletFacingOnPlane)
 		.Process(this->RetargetInterval)
 		.Process(this->RetargetRadius)
 		.Process(this->RetargetHouses)
@@ -1054,7 +1052,6 @@ void PhobosTrajectoryType::Serialize(T& Stm)
 		.Process(this->PeacefulVanish)
 		.Process(this->ApplyRangeModifiers)
 		.Process(this->UseDisperseCoord)
-		.Process(this->RecordSourceCoord)
 		.Process(this->Ranged)
 
 		.Process(this->PassDetonate)
@@ -1118,7 +1115,7 @@ void PhobosTrajectory::Serialize(T& Stm)
 		.Process(this->MovingVelocity)
 		.Process(this->MovingSpeed)
 		.Process(this->DurationTimer)
-		.Process(this->TolerantTimer)
+		.Process(this->NoTargetLifetimer)
 		.Process(this->RetargetTimer)
 		.Process(this->FirepowerMult)
 		.Process(this->AttenuationRange)

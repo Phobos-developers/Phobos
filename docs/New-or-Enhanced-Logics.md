@@ -814,17 +814,17 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - `Trajectory.Duration` controls the duration the projectile can exist, and at the end of the time, the projectile will detonate. If it is a non positive number, there will be no timing. The following are exceptions.
     - In `Trajectory=Engrave`, if it is a non positive number, automatically use `Trajectory.Engrave.SourceCoord` and `Trajectory.Engrave.TargetCoord` to calculate the process duration. At this point, `Trajectory.Engrave.TargetCoord` can be regarded as the endpoint coordinates of the cutting line segment.
     - In `Trajectory=Tracing`, if set to zero, use weapon's `ROF`-10 as the duration. At least 1 frame. If it is negative, do not time it.
-  - `Trajectory.TolerantTime` controls how long the projectile will detonate after losing the target. If it is 0, it will detonate directly when switching targets.
-  - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value, namely effective.
-  - `Trajectory.BulletROT` controls the rotational speed of the projectile's orientation (facing direction). When it is 0, it will always face the direction defined by `Trajectory.BulletFacing`. Otherwise, it will rotate towards the direction defined by `Trajectory.BulletFacing` according to this speed.
+  - `Trajectory.NoTargetLifetime` controls how long the projectile will live after losing the target. If it is 0, it will detonate instantly when switching targets.
+  - `Trajectory.CreateCapacity` controls the capacity that this type of trajectory projectile can be fired. When it is set to a non negative number, the trajectory projectile can only be fired when number of this trajectory type fired by the firer on the map is less than this value, namely effective. That is, every firer can have this number of projectiles.
+  - `Trajectory.BulletROT` controls the rotational speed of the projectile's orientation (facing direction).
   - `Trajectory.BulletFacing` controls what direction the projectile should face. This has the following 7 modes.
-    - Velocity - Towards the direction of motion of the projectile. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
-    - Spin - Continuously rotating itself on a horizontal plane. The positive and negative of `Trajectory.BulletROT` can control the direction.
-    - Stable - Static after launch and no longer rotates towards the direction. If `Trajectory.BulletROT` is negative, only the direction on the horizontal plane exists.
-    - Target - Towards the direction of the projectile target unit. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
-    - Destination - Towards the direction of the projectile destination. If `Trajectory.BulletROT` is negative, it will only rotate on the horizontal plane.
-    - FirerBody - Follow the orientation of the firer's body, and remain still after the launcher is killed. Only rotates on a horizontal plane.
-    - FirerTurret - Follow the orientation of the firer's turret, and remain still after the launcher is killed. Only rotates on a horizontal plane.
+    - `Velocity` - Towards the direction of motion of the projectile. When `Trajectory.BulletROT` is a non-positive value, it will always face this direction. `Trajectory.BulletFacingOnPlane` controls whether it will only rotates on a horizontal plane.
+    - `Spin` - Continuously rotating itself on a horizontal plane. When `Trajectory.BulletROT` is 0, it will be unable to rotate. The positive and negative of `Trajectory.BulletROT` can control the direction.
+    - `Stable` - Static after launch and no longer rotates towards the direction. `Trajectory.BulletFacingOnPlane` controls whether its direction will only on a horizontal plane.
+    - `Target` - Towards the target unit. When `Trajectory.BulletROT` is a non-positive value, it will always face this direction. `Trajectory.BulletFacingOnPlane` controls whether it will only rotates on a horizontal plane.
+    - `Destination` - Towards the direction of the projectile's destination (Not necessarily to the target. For example, in `Trajectory=Straight`, it will be the initial position of the target, and with `Trajectory.LeadTimeCalculate`, it will be a position in front of the target). When `Trajectory.BulletROT` is a non-positive value, it will always face this direction. `Trajectory.BulletFacingOnPlane` controls whether it will only rotates on a horizontal plane.
+    - `FirerBody` - Follow the orientation of the firer's body, and remain still after the launcher is killed. When `Trajectory.BulletROT` is a non-positive value, it will always face this direction. Only rotates on a horizontal plane.
+    - `FirerTurret` - Follow the orientation of the firer's turret, and remain still after the launcher is killed. When `Trajectory.BulletROT` is a non-positive value, it will always face this direction. Only rotates on a horizontal plane.
   - `Trajectory.RetargetRadius` controls the radius of the projectile to search for a new target after losing its original target. The projectile will search for new target at the original target's location. The following have exceptions.
     - In `Trajectory=Missile`, if the projectile hasn't arrived `Trajectory.Missile.PreAimCoord` yet, the last coordinate of the original target is taken as the center of the searching circle. Otherwise, the coordinate of the distance in front of the projectile is taken as the center of the circle. Set to 0 indicates that this function is not enabled, and it will still attempt to attack the original target's location. If it is set to a negative value, it will self explode in place when it starts searching.
     - In `Trajectory=Tracing`, the projectile will search for new target at the current position of itself.
@@ -833,8 +833,7 @@ Currently interceptor weapons with projectiles that do not have `Inviso=true` wi
   - `Trajectory.Synchronize` controls whether the target of the projectile is synchronized with the target of its firer. If not, the projectile will not update the target.
   - `Trajectory.PeacefulVanish` controls whether the projectile disappears directly when it is about to detonate, without producing animation or causing damage. The default value is `Trajectory=Engrave` or `Trajectory.ProximityImpact` not equal to 0 or `Trajectory.DisperseCycle` not equal to 0.
   - `Trajectory.ApplyRangeModifiers` controls whether any applicable weapon range modifiers from the firer are applied to the projectile. Effective options include `Trajectory.Duration`, `Trajectory.DetonationDistance` and `Trajectory.EdgeAttenuation`.
-  - `Trajectory.UseDisperseCoord` controls whether the fire position need to replaced with the FLH of its superior's trajectory, which set `Trajectory.RecordSourceCoord` to true. Only takes effect when it is fired from one of the `Trajectory.DisperseWeapons`.
-  - `Trajectory.RecordSourceCoord` controls whether the projectile needs to record the launch position, which will be used for the appropriate weapons in `Trajectory.DisperseWeapons`. It can be nested and inherited, which need subordinates to enable `Trajectory.UseDisperseCoord`. The default value is `Trajectory=Engrave` or have set `Trajectory.DisperseWeapons`.
+  - `Trajectory.UseDisperseCoord` controls whether the fire position need to replaced with the FLH of its superior's trajectory. It can be nested and inherited. Only takes effect when it is fired from one of the `Trajectory.DisperseWeapons`.
     - In `Trajectory=Engrave`, it will also be used as a starting point for laser drawing.
   - `Trajectory.OffsetCoord` controls the offsets of the target. Projectile will aim at the relative coordinates of the target to attack. It also supports `Inaccurate` and `Trajectory.LeadTimeCalculate` on this basis.
     - In `Trajectory=Engrave` or `Trajectory=Tracing`, these are invalid.
@@ -857,10 +856,11 @@ In `rulesmd.ini`:
 Trajectory=                           ; Trajectory type enumeration (Straight|Bombard|Missile|Engrave|Parabola|Tracing)
 Trajectory.Speed=100.0                ; floating point value
 Trajectory.Duration=0                 ; integer
-Trajectory.TolerantTime=-1            ; integer
+Trajectory.NoTargetLifetime=-1        ; integer
 Trajectory.CreateCapacity=-1          ; integer
 Trajectory.BulletROT=0                ; integer
 Trajectory.BulletFacing=velocity      ; Bullet facing enumeration (Velocity|Spin|Stable|Target|Destination|FirerBody|FirerTurret)
+Trajectory.BulletFacingOnPlane=false  ; boolean
 Trajectory.RetargetRadius=0           ; floating point value
 Trajectory.RetargetInterval=1         ; integer
 Trajectory.RetargetHouses=enemies     ; List of Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
@@ -868,7 +868,6 @@ Trajectory.Synchronize=false          ; boolean
 Trajectory.PeacefulVanish=            ; boolean
 Trajectory.ApplyRangeModifiers=false  ; boolean
 Trajectory.UseDisperseCoord=false     ; boolean
-Trajectory.RecordSourceCoord=         ; boolean
 Trajectory.OffsetCoord=0,0,0          ; integer - Forward,Lateral,Height
 Trajectory.RotateCoord=0              ; floating point value
 Trajectory.MirrorCoord=true           ; boolean
@@ -903,7 +902,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
 | `ProjectileRange(Weapon's)` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
 | `Trajectory.Speed` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.Duration` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| `Trajectory.TolerantTime` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
+| `Trajectory.NoTargetLifetime` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.CreateCapacity` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.BulletROT` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.BulletFacing` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -912,7 +911,6 @@ Trajectory.AllowFirerTurning=true     ; boolean
 | `Trajectory.PeacefulVanish` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.ApplyRangeModifiers` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.UseDisperseCoord` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
-| `Trajectory.RecordSourceCoord` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
 | `Trajectory.OffsetCoord` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
 | `Trajectory.RotateCoord` | ✔️ | ✔️ | ✔️ | ❌ | ✔️ | ❌ |
 | `Trajectory.MirrorCoord` | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ | ✔️ |
@@ -937,7 +935,7 @@ Trajectory.AllowFirerTurning=true     ; boolean
     - `Trajectory.PassDetonateDelay` controls the delay for detonating the warhead defined by `Trajectory.PassDetonateWarhead`.
     - `Trajectory.PassDetonateInitialDelay` controls the initial delay for detonating the warhead defined by `Trajectory.PassDetonateWarhead`.
     - `Trajectory.PassDetonateLocal` controls whether `Trajectory.PassDetonateWarhead` and weapon's `Warhead` are always detonate at ground level.
-  - `Trajectory.ProximityImpact` controls the initial proximity fuse times. When there are enough remaining times and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.ProximityWarhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low `Versus` only to aim at the target, and use the `Trajectory.ProximityWarhead` to causing actual harm. (You can use this to cause non repeated damage to all units encountered during the flight of the projectile.)
+  - `Trajectory.ProximityImpact` controls the initial proximity fuse times of detonations. When there are enough remaining times of detonations and the projectile approaches another valid target, it will detonate a warhead defined by `Trajectory.ProximityWarhead` on it. If the times is about to run out, it will also detonate itself at its location. This function can be cancelled by setting to 0. A negative integer means unlimited times. By the way, you can use the weapon's `Warhead` with low `Versus` only to aim at the target, and use the `Trajectory.ProximityWarhead` to causing actual harm. (You can use this to cause non repeated damage to all units encountered during the flight of the projectile.)
     - `Trajectory.ProximityWarhead` defines the warhead detonated by `Trajectory.ProximityImpact`. If not set, use the original warhead of the projectile.
     - `Trajectory.ProximityDamage` defines the damage caused by `Trajectory.ProximityWarhead`. If not set, use the original damage of the projectile.
     - `Trajectory.ProximityRadius` controls the range of proximity fuse. It can NOT be set as a negative value.
@@ -1799,12 +1797,13 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ; Unlimited duration
   Trajectory.Duration=-1
   ; But if there is no target, it will disappear after 30 frames
-  Trajectory.TolerantTime=30
+  Trajectory.NoTargetLifetime=30
   ; Up to 3 can be generated
   Trajectory.CreateCapacity=3
-  ; Facing only supports rotation on the horizontal plane
-  Trajectory.BulletROT=-3
+  Trajectory.BulletROT=3
   Trajectory.BulletFacing=Target
+  ; Facing only supports rotation on the horizontal plane
+  Trajectory.BulletFacingOnPlane=yes
   Trajectory.PeacefulVanish=yes
   ; Projectile will synchronize with the target of the launcher
   Trajectory.Synchronize=yes
@@ -1877,7 +1876,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.Tracing.ChasableDistance=10
   Trajectory.Synchronize=yes
   Trajectory.Duration=-1
-  Trajectory.TolerantTime=0
+  Trajectory.NoTargetLifetime=0
   Trajectory.CreateCapacity=5
   Trajectory.BulletFacing=Target
   Trajectory.PeacefulVanish=yes
@@ -1910,8 +1909,6 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToGround=yes
   Image=SOMEIMAGEU1
   Trajectory=Missile
-  ; Record the launch location for disperse weapons
-  Trajectory.RecordSourceCoord=yes
   Trajectory.Missile.LaunchSpeed=0
   Trajectory.Missile.Acceleration=0
   Trajectory.Missile.TurningSpeed=0
@@ -1976,7 +1973,6 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   SubjectToGround=yes
   Image=SOMEIMAGEV1
   Trajectory=Missile
-  Trajectory.RecordSourceCoord=yes
   Trajectory.Missile.LaunchSpeed=0
   Trajectory.Missile.Acceleration=0
   Trajectory.Missile.TurningSpeed=0
@@ -2019,7 +2015,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGEV4
   Trajectory=Tracing
   Trajectory.Duration=80
-  Trajectory.TolerantTime=0
+  Trajectory.NoTargetLifetime=0
   Trajectory.UseDisperseCoord=yes
   Trajectory.PeacefulVanish=yes
   Trajectory.AllowFirerTurning=no
@@ -2057,7 +2053,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Image=SOMEIMAGEW1
   Trajectory=Tracing
   Trajectory.Duration=210
-  Trajectory.TolerantTime=30
+  Trajectory.NoTargetLifetime=30
   Trajectory.Synchronize=yes
   Trajectory.Tracing.CreateCoord=150,0,0
   Trajectory.PassDetonate=yes

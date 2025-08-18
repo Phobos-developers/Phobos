@@ -29,7 +29,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 		return false;
 
 	// Check whether need to detonate directly after the target was lost
-	if (!pType->TolerantTime || pType->RetargetRadius < 0)
+	if (!pType->NoTargetLifetime || pType->RetargetRadius < 0)
 		return true;
 
 	// Check the timer

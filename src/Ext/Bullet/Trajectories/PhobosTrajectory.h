@@ -26,7 +26,7 @@ enum class TrajectoryCheckReturnType : int
 	Detonate = 3
 };
 
-enum class TrajectoryFacing : int
+enum class TrajectoryFacing : unsigned char
 {
 	Velocity = 0,
 	Spin = 1,
@@ -53,10 +53,11 @@ public:
 	PhobosTrajectoryType() :
 		Speed { 100.0 }
 		, Duration { 0 }
-		, TolerantTime { -1 }
+		, NoTargetLifetime { -1 }
 		, CreateCapacity { -1 }
 		, BulletROT { 0 }
 		, BulletFacing { TrajectoryFacing::Velocity }
+		, BulletFacingOnPlane { false }
 		, RetargetInterval { 1 }
 		, RetargetRadius { 0 }
 		, RetargetHouses { AffectedHouse::Enemies }
@@ -65,7 +66,6 @@ public:
 		, PeacefulVanish {}
 		, ApplyRangeModifiers { false }
 		, UseDisperseCoord { false }
-		, RecordSourceCoord {}
 		, Ranged { false }
 
 		, PassDetonate { false }
@@ -110,10 +110,11 @@ public:
 
 	Valueable<double> Speed; // The speed that a projectile should reach
 	Valueable<int> Duration; // The existence time of projectile
-	Valueable<int> TolerantTime; // The tolerance time for the projectile to lose its target, after which it will explode
+	Valueable<int> NoTargetLifetime; // The tolerance time for the projectile to lose its target, after which it will explode
 	Valueable<int> CreateCapacity; // Only take effect when the number of trajectory fired by its firer on the map is less than this value
 	Valueable<int> BulletROT; // The rotational speed of the projectile image that does not affect the direction of movement
 	Valueable<TrajectoryFacing> BulletFacing; // Image facing
+	Valueable<bool> BulletFacingOnPlane; // Image facing only on horizontal plane
 	Valueable<int> RetargetInterval; // Wait before attempting to searching for a new target each time we fail to do so
 	Valueable<double> RetargetRadius; // Searching for a new target after losing it
 	Valueable<AffectedHouse> RetargetHouses; // Can select new target in which houses
@@ -122,7 +123,6 @@ public:
 	Nullable<bool> PeacefulVanish; // Disappear directly when about to detonate
 	Valueable<bool> ApplyRangeModifiers; // Apply range bonus
 	Valueable<bool> UseDisperseCoord; // Use the recorded launch location
-	Nullable<bool> RecordSourceCoord; // Record the launch location
 	bool Ranged; // Auto set
 
 	Valueable<bool> PassDetonate; // Detonate the warhead while moving
@@ -190,7 +190,7 @@ public:
 		, MovingVelocity { BulletVelocity::Empty }
 		, MovingSpeed { 0 }
 		, DurationTimer {}
-		, TolerantTimer {}
+		, NoTargetLifetimer {}
 		, RetargetTimer {}
 		, FirepowerMult { 1.0 }
 		, AttenuationRange { 0 }
@@ -222,7 +222,7 @@ public:
 	BulletVelocity MovingVelocity; // The vector used for calculating speed
 	double MovingSpeed; // The current speed value
 	CDTimerClass DurationTimer; // Bullet existence timer
-	CDTimerClass TolerantTimer; // Target tolerance timer
+	CDTimerClass NoTargetLifetimer; // Target tolerance timer
 	CDTimerClass RetargetTimer; // Target searching timer
 	double FirepowerMult; // Inherited firepower bonus
 	int AttenuationRange; // Maximum range
@@ -407,7 +407,7 @@ public:
 	bool FireAdditionals();
 	void DetonateOnObstacle();
 	bool CheckSynchronize();
-	bool CheckTolerantTime();
+	bool CheckNoTargetLifetime();
 	void UpdateGroupIndex();
 
 	std::vector<CellClass*> GetCellsInProximityRadius();
