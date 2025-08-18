@@ -65,22 +65,15 @@ bool DigitalDisplayTypeClass::CanShow(TechnoClass* pThis)
 	if (flags == DisplayShowType::All)
 		return true;
 
-	bool cursorhover = pThis->IsMouseHovering;
-	bool selected = pThis->IsSelected;
+	DisplayShowType current = pThis->IsMouseHovering ? DisplayShowType::CursorHover : DisplayShowType::None;
 
-	if (flags & DisplayShowType::CursorHover)
-	{
-		if (cursorhover)
-			return true;
-	}
+	if (pThis->IsSelected)
+		current |= DisplayShowType::Selected;
 
-	if (flags & DisplayShowType::Selected)
-	{
-		if (selected)
-			return true;
-	}
+	if (current != DisplayShowType::None) // is hovering | is selected
+		return (current & flags) != DisplayShowType::None;
 
-	return (flags & DisplayShowType::Idle && !cursorhover && !selected);
+	return (flags & DisplayShowType::Idle) != DisplayShowType::None; // not hovering & not selected
 }
 
 void DigitalDisplayTypeClass::Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield)

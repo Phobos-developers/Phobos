@@ -1366,7 +1366,7 @@ if(_strcmpi(parser.value(), #name) == 0){ value = __uuidof(name ## LocomotionCla
 				}
 				if (!matched)
 				{
-					Debug::INIParseFailed(pSection, pKey, pCur, "Expected an affected house");
+					Debug::INIParseFailed(pSection, pKey, pCur, "Display show type is invalid");
 					return false;
 				}
 			}

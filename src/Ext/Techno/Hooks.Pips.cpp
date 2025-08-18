@@ -25,6 +25,8 @@ DEFINE_HOOK(0x6D9076, TacticalClass_RenderLayers_DrawBefore, 0x5)// FootClass
 
 DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 {
+	enum { Permanent = 0x6F5E41 };
+
 	GET(TechnoClass*, pThis, EBP);
 
 	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
@@ -32,7 +34,7 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 	if ((pThis->IsMouseHovering || pTypeExt->HealthBar_Permanent.Get())
 		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
 	{
-		return 0x6F5E41;
+		return Permanent;
 	}
 
 	return 0;
@@ -40,31 +42,39 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 
 DEFINE_HOOK(0x6F64A9, TechnoClass_DrawHealthBar_Hide, 0x5)
 {
+	enum { SkipDraw = 0x6F6AB6 };
+
 	GET(TechnoClass*, pThis, ECX);
+
 	const auto pTypeData = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
 	if (pTypeData->HealthBar_Hide)
-		return 0x6F6AB6;
+		return SkipDraw;
 
 	return 0;
 }
 
 DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HideBuildingsPips, 0x5)
 {
+	enum { SkipDrawPips = 0x6F677D };
+
 	GET(TechnoClass*, pThis, ESI);
 
 	bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
 
-	return hidePips ? 0x6F677D : 0;
+	return hidePips ? SkipDrawPips : 0;
 }
 
 DEFINE_HOOK_AGAIN(0x6F6A58, TechnoClass_DrawHealthBar_PermanentPipScale, 0x6)	// DrawOther
-DEFINE_HOOK(0x6F67F2, TechnoClass_DrawHealthBar_PermanentPipScale, 0x6)			// DrawBuilding
+DEFINE_HOOK(0x6F67E8, TechnoClass_DrawHealthBar_PermanentPipScale, 0xA)			// DrawBuilding
 {
+	enum { Permanent = 0x6F6AB6 };
+
 	GET(TechnoClass*, pThis, ESI);
 
 	bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
 
-	return !showPipScale && !pThis->IsMouseHovering && !pThis->IsSelected ? 0x6F6AB6 : 0;
+	return !showPipScale && !pThis->IsMouseHovering && !pThis->IsSelected ? Permanent : 0;
 }
 
 DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
@@ -95,6 +105,8 @@ DEFINE_HOOK(0x6F65D1, TechnoClass_DrawHealthBar_Buildings, 0x6)
 
 DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 {
+	enum { SkipDrawPips = 0x6F6A58 };
+
 	GET(FootClass*, pThis, ESI);
 	GET_STACK(Point2D*, pLocation, STACK_OFFSET(0x4C, 0x4));
 	GET_STACK(RectangleStruct*, pBound, STACK_OFFSET(0x4C, 0x8));
@@ -121,7 +133,7 @@ DEFINE_HOOK(0x6F683C, TechnoClass_DrawHealthBar_Units, 0x7)
 	if (pExt->TypeExtData->HealthBar_HidePips)
 	{
 		R->EDI(pLocation);
-		return 0x6F6A58;
+		return SkipDrawPips;
 	}
 
 	return 0;
