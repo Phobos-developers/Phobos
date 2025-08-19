@@ -11,11 +11,6 @@
 #include <Ext/TerrainType/Body.h>
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
-#include "Body.h"
-
-#include <HouseClass.h>
-
-#include "Ext/Rules/Body.h"
 
 /*
 	In sub_740810
@@ -268,11 +263,24 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 // Buildable Proximity Helper
 namespace ProximityTemp
 {
-	bool Build = false;
 	bool Exist = false;
 	bool Mouse = false;
 	CellClass* CurrentCell = nullptr;
 	BuildingTypeClass* BuildType = nullptr;
+}
+
+/*
+	In sub_4A8EB0
+
+	- BaseNormal extra checking Hook #1-1 -> Set context and clear up data
+*/
+DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
+{
+	GET(BuildingTypeClass*, pType, ESI);
+
+	ProximityTemp::BuildType = pType;
+
+	return 0;
 }
 
 /*
