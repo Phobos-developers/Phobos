@@ -504,19 +504,6 @@ DEFINE_HOOK(0x44D46E, BuildingClass_Mission_Missile_BeforeMoveTo, 0x8)
 	return 0;
 }
 
-// Vanilla inertia effect only for bullets with ROT=0
-DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
-{
-	enum { SkipCheck = 0x4160BC };
-
-	GET(BulletClass*, pThis, ESI);
-
-	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
-		return SkipCheck;
-
-	return 0;
-}
-
 #pragma region Parabombs
 
 // Patch out Ares parabomb implementation.

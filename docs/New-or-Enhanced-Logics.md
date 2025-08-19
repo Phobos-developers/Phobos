@@ -1127,16 +1127,6 @@ Trajectory.Missile.SuicideShortOfROT=false  ; boolean
 - Visually, like the thermal lance. Calling it 'trajectory' may not be appropriate. It does not read the settings on the weapon.
   - `Trajectory.Engrave.SourceCoord` controls the starting point of engraving line segment. Taking the target as the coordinate center. Specifically, it will start from the firing position when set to 0,0 . The height of the point will always at ground level, unless the target is in the air.
   - `Trajectory.Engrave.TargetCoord` controls the end point of engraving line segment. If `Trajectory.Duration` is set to a positive number, it is only used for direction calculation. Taking the target as the coordinate center. The height of the point will always at ground level, unless the target is in the air.
-  - `Trajectory.Engrave.IsLaser` controls whether laser drawing is required.
-    - `Trajectory.Engrave.IsIntense` controls whether the engrave laser will be brighter and thicker.
-    - `Trajectory.Engrave.IsHouseColor` controls whether set the engrave laser to draw using player's house color.
-    - `Trajectory.Engrave.IsSingleColor` controls whether set the engrave laser to draw using only `Trajectory.Engrave.LaserInnerColor`.
-    - `Trajectory.Engrave.LaserInnerColor` controls the inner color of the engrave laser.
-    - `Trajectory.Engrave.LaserOuterColor` controls the outer color of the engrave laser.
-    - `Trajectory.Engrave.LaserOuterSpread` controls the spread color of the engrave laser.
-    - `Trajectory.Engrave.LaserThickness` controls the thickness of the engrave laser.
-    - `Trajectory.Engrave.LaserDuration` controls the duration of the engrave laser.
-    - `Trajectory.Engrave.LaserDelay` controls how often to draw the engrave laser.
   - `Trajectory.Engrave.AttachToTarget` controls whether the center position of the engrave laser will update with the target position.
   - `Trajectory.Engrave.UpdateDirection` controls whether the engrave laser updates the direction with the firer and target position.
 
@@ -1144,23 +1134,13 @@ In `rulesmd.ini`:
 ```ini
 Trajectory.Engrave.SourceCoord=0,0         ; integer - Forward,Lateral
 Trajectory.Engrave.TargetCoord=0,0         ; integer - Forward,Lateral
-Trajectory.Engrave.IsLaser=true            ; boolean
-Trajectory.Engrave.IsIntense=false         ; boolean
-Trajectory.Engrave.IsHouseColor=false      ; boolean
-Trajectory.Engrave.IsSingleColor=false     ; boolean
-Trajectory.Engrave.LaserInnerColor=0,0,0   ; integer - Red,Green,Blue
-Trajectory.Engrave.LaserOuterColor=0,0,0   ; integer - Red,Green,Blue
-Trajectory.Engrave.LaserOuterSpread=0,0,0  ; integer - Red,Green,Blue
-Trajectory.Engrave.LaserThickness=3        ; integer
-Trajectory.Engrave.LaserDuration=1         ; integer
-Trajectory.Engrave.LaserDelay=1            ; integer, game frames
 Trajectory.Engrave.AttachToTarget=false    ; boolean
 Trajectory.Engrave.UpdateDirection=false   ; boolean
 ```
 
 ```{note}
 - It's best not to let it be intercepted.
-- `Trajectory.Engrave.IsIntense` and `Trajectory.Engrave.LaserThickness` require set `Trajectory.Engrave.IsHouseColor` or `Trajectory.Engrave.IsSingleColor` to true to take effect.
+- In this type, the `IsLaser` of the weapon will continuously connect the firing position of the firer and the position of the bullet.
 ```
 
 ```{hint}
@@ -1618,10 +1598,6 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.PassDetonateDelay=2
   ; The coordinates were set to default and stop after 75 frames
   Trajectory.Duration=75
-  Trajectory.Engrave.IsSingleColor=yes
-  Trajectory.Engrave.LaserInnerColor=255,50,255
-  Trajectory.Engrave.LaserThickness=6
-  Trajectory.Engrave.LaserDuration=6
   Trajectory.Speed=40.0
   ```
 
@@ -1938,9 +1914,6 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   ; When the orientation of the launcher changes significantly,
   ; it will directly destroy the projectile
   Trajectory.AllowFirerTurning=no
-  Trajectory.Engrave.IsIntense=yes
-  Trajectory.Engrave.IsSingleColor=yes
-  Trajectory.Engrave.LaserInnerColor=255,0,0
   ; The calculation of coordinates will be updated with the target position
   Trajectory.Engrave.AttachToTarget=yes
   ; The calculation of direction will be updated with the target position
@@ -1995,9 +1968,6 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
   Trajectory.Engrave.TargetCoord=0,0
   Trajectory.UseDisperseCoord=yes
   Trajectory.AllowFirerTurning=no
-  Trajectory.Engrave.IsSingleColor=yes
-  Trajectory.Engrave.LaserInnerColor=50,50,128
-  Trajectory.Engrave.LaserThickness=1
   Trajectory.Engrave.AttachToTarget=yes
   Trajectory.Engrave.UpdateDirection=yes
   Trajectory.Speed=10.0

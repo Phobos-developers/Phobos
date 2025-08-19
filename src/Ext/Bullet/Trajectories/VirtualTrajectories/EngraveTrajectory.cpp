@@ -1,7 +1,5 @@
 #include "EngraveTrajectory.h"
 
-#include <LaserDrawClass.h>
-
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
@@ -15,16 +13,6 @@ template<typename T>
 void EngraveTrajectoryType::Serialize(T& Stm)
 {
 	Stm
-		.Process(this->IsLaser)
-		.Process(this->IsIntense)
-		.Process(this->IsHouseColor)
-		.Process(this->IsSingleColor)
-		.Process(this->LaserInnerColor)
-		.Process(this->LaserOuterColor)
-		.Process(this->LaserOuterSpread)
-		.Process(this->LaserThickness)
-		.Process(this->LaserDuration)
-		.Process(this->LaserDelay)
 		.Process(this->AttachToTarget)
 		.Process(this->UpdateDirection)
 		;
@@ -58,19 +46,6 @@ void EngraveTrajectoryType::Read(CCINIClass* const pINI, const char* pSection)
 	this->AllowFirerTurning.Read(exINI, pSection, "Trajectory.AllowFirerTurning");
 
 	// Engrave
-	this->IsLaser.Read(exINI, pSection, "Trajectory.Engrave.IsLaser");
-	this->IsIntense.Read(exINI, pSection, "Trajectory.Engrave.IsIntense");
-	this->IsHouseColor.Read(exINI, pSection, "Trajectory.Engrave.IsHouseColor");
-	this->IsSingleColor.Read(exINI, pSection, "Trajectory.Engrave.IsSingleColor");
-	this->LaserInnerColor.Read(exINI, pSection, "Trajectory.Engrave.LaserInnerColor");
-	this->LaserOuterColor.Read(exINI, pSection, "Trajectory.Engrave.LaserOuterColor");
-	this->LaserOuterSpread.Read(exINI, pSection, "Trajectory.Engrave.LaserOuterSpread");
-	this->LaserThickness.Read(exINI, pSection, "Trajectory.Engrave.LaserThickness");
-	this->LaserThickness = Math::max(1, this->LaserThickness);
-	this->LaserDuration.Read(exINI, pSection, "Trajectory.Engrave.LaserDuration");
-	this->LaserDuration = Math::max(1, this->LaserDuration);
-	this->LaserDelay.Read(exINI, pSection, "Trajectory.Engrave.LaserDelay");
-	this->LaserDelay = Math::max(1, this->LaserDelay);
 	this->AttachToTarget.Read(exINI, pSection, "Trajectory.Engrave.AttachToTarget");
 	this->UpdateDirection.Read(exINI, pSection, "Trajectory.Engrave.UpdateDirection");
 }
@@ -80,6 +55,7 @@ void EngraveTrajectory::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->Type)
+//		.Process(this->Laser) // Should not save
 		.Process(this->LaserTimer)
 		.Process(this->RotateRadian)
 		;
@@ -104,8 +80,11 @@ void EngraveTrajectory::OnUnlimbo()
 	this->VirtualTrajectory::OnUnlimbo();
 
 	// Engrave
-	this->LaserTimer.Start(0);
 	const auto pBullet = this->Bullet;
+	const auto pWeapon = pBullet->WeaponType;
+
+	if (pWeapon && pWeapon->IsLaser)
+		this->LaserTimer.Start(pWeapon->LaserDuration);
 
 	// Waiting for launch trigger
 	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
@@ -118,7 +97,9 @@ bool EngraveTrajectory::OnEarlyUpdate()
 		return true;
 
 	// Draw laser
-	if (this->Type->IsLaser && this->LaserTimer.Completed())
+	if (this->Laser)
+		this->UpdateEngraveLaser();
+	else if (this->LaserTimer.HasTimeLeft())
 		this->DrawEngraveLaser();
 
 	return false;
@@ -135,6 +116,18 @@ bool EngraveTrajectory::OnVelocityCheck()
 		return true;
 
 	return this->PhobosTrajectory::OnVelocityCheck();
+}
+
+void EngraveTrajectory::OnPreDetonate()
+{
+	this->PhobosTrajectory::OnPreDetonate();
+
+	if (const auto pLaser = this->Laser)
+	{
+		// Auto free
+		pLaser->Duration = 0;
+		this->Laser = nullptr;
+	}
 }
 
 void EngraveTrajectory::OpenFire()
@@ -322,10 +315,14 @@ bool EngraveTrajectory::PlaceOnCorrectHeight()
 void EngraveTrajectory::DrawEngraveLaser()
 {
 	const auto pBullet = this->Bullet;
+	const auto pWeapon = pBullet->WeaponType;
+
+	if (!pWeapon || !pWeapon->IsLaser)
+		return;
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
 	auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
-	const auto pType = this->Type;
-	this->LaserTimer.Start(pType->LaserDelay);
 	auto fireCoord = pBullet->SourceCoords;
 
 	// Find the outermost transporter
@@ -336,18 +333,49 @@ void EngraveTrajectory::DrawEngraveLaser()
 		fireCoord = TechnoExt::GetFLHAbsoluteCoords(pFirer, this->FLHCoord, pFirer->HasTurret());
 
 	// Draw laser from head to tail
-	if (pType->IsHouseColor || pType->IsSingleColor)
+	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
 	{
-		const auto pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, ((pType->IsHouseColor && pOwner) ? pOwner->LaserColor : pType->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, pType->LaserDuration);
+		const auto pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, ((pWeapon->IsHouseColor && pOwner) ? pOwner->LaserColor : pWeapon->LaserInnerColor), ColorStruct { 0, 0, 0 }, ColorStruct { 0, 0, 0 }, INT_MAX);
+		this->Laser = pLaser;
 		pLaser->IsHouseColor = true;
-		pLaser->Thickness = pType->LaserThickness;
-		pLaser->IsSupported = pType->IsIntense;
+		pLaser->Thickness = pWeaponExt->LaserThickness;
+		pLaser->IsSupported = pLaser->Thickness > 3;
+		pLaser->Fades = false;
+		pLaser->Progress.Value = 0;
 	}
 	else
 	{
-		const auto pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pType->LaserInnerColor, pType->LaserOuterColor, pType->LaserOuterSpread, pType->LaserDuration);
+		const auto pLaser = GameCreate<LaserDrawClass>(fireCoord, pBullet->Location, pWeapon->LaserInnerColor, pWeapon->LaserOuterColor, pWeapon->LaserOuterSpread, INT_MAX);
+		this->Laser = pLaser;
 		pLaser->IsHouseColor = false;
 		pLaser->Thickness = 3;
 		pLaser->IsSupported = false;
+		pLaser->Fades = false;
+		pLaser->Progress.Value = 0;
 	}
+}
+
+void EngraveTrajectory::UpdateEngraveLaser()
+{
+	const auto pLaser = this->Laser;
+
+	// Check whether the timer expired
+	if (!this->LaserTimer.HasTimeLeft())
+	{
+		// Auto free
+		pLaser->Duration = 0;
+		this->Laser = nullptr;
+		return;
+	}
+
+	const auto pBullet = this->Bullet;
+
+	// Find the outermost transporter
+	const auto pFirer = this->GetSurfaceFirer(pBullet->Owner);
+
+	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
+	if (!this->NotMainWeapon && pFirer && !pFirer->InLimbo)
+		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, this->FLHCoord, pFirer->HasTurret());
+
+	pLaser->Target = pBullet->Location;
 }

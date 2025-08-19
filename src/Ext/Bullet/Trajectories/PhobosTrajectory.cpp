@@ -1284,3 +1284,32 @@ DEFINE_HOOK(0x468585, BulletClass_PointerExpired_Trajectories, 0x9)
 
 	return BulletExt::ExtMap.Find(pThis)->Trajectory ? SkipSetCellAsTarget : 0;
 }
+
+// Vanilla inertia effect only for bullets with ROT=0
+DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
+{
+	enum { SkipCheck = 0x4160BC };
+
+	GET(BulletClass*, pThis, ESI);
+
+	if (BulletExt::ExtMap.Find(pThis)->Trajectory)
+		return SkipCheck;
+
+	return 0;
+}
+
+// Engrave laser using the unique logic
+DEFINE_HOOK(0x6FD217, TechnoClass_CreateLaser_EngraveDrawNoLaser, 0x5)
+{
+	enum { SkipCheck = 0x6FD456 };
+
+	GET(WeaponTypeClass*, pWeapon, EAX);
+
+	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
+	{
+		if (pTrajType->Flag() == TrajectoryFlag::Engrave)
+			return SkipCheck;
+	}
+
+	return 0;
+}
