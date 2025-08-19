@@ -92,11 +92,18 @@ void AdvancedDriveLocomotionClass::Stop_Moving()
 	// I think no body want to see slowly~ slowly~ moving, so I change this one
 	if (pLinked->GetTechnoType()->Accelerates)
 	{
-		if (this->MovementSpeed >= 0.5 && pLinked->Location.DistanceFromSquared(this->HeadToCoord) < 16384)
-			this->MovementSpeed = 0.5;
+		if (pLinked->Location.DistanceFromSquared(this->HeadToCoord) < 16384)
+		{
+			if (this->MovementSpeed >= 0.5)
+				this->MovementSpeed = 0.5;
+
+			// Slow down according to normal conditions
+			this->TargetCoord = this->HeadToCoord;
+			return;
+		}
 	}
-	// Slow down according to normal conditions
-	this->TargetCoord = this->HeadToCoord;
+
+	this->TargetCoord = CoordStruct::Empty;
 }
 
 void AdvancedDriveLocomotionClass::Do_Turn(DirStruct dir)
