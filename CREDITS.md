@@ -276,6 +276,7 @@ This page lists all the individual contributions to the project by their author.
   - Airstrike flare visual customizations & fixes
   - Restored parabombs
   - Delayed fire weapons
+  - Changes / fixes to `Vertical` projectile logic and customizing projectile initial facing behavior
 - **Morton (MortonPL)**:
   - `XDrawOffset` for animations
   - Shield passthrough & absorption
@@ -386,6 +387,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix an unusual use of DeployFireWeapon for InfantryType
   - Fix the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target
   - Units can customize the attack voice that plays when using more weapons
+  - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
+  - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
@@ -530,6 +533,13 @@ This page lists all the individual contributions to the project by their author.
   - Burst without delay
   - Fix an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants
   - Fix an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving
+  - Reverse engineer warhead
+  - AI base construction modification
+  - Restore turret recoil effect
+  - Fix an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow`
+  - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
+  - Jumpjet Climbing Logic Enhancement
+  - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
   - Building placing and deploying logic enhancement
 - **Ollerus**:
   - Build limit group enhancement

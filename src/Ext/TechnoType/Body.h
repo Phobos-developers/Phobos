@@ -420,6 +420,8 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		Nullable<bool> TurretResponse;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -789,6 +791,8 @@ public:
 			, VoiceEliteWeaponAttacks {}
 
 			, InfantryAutoDeploy {}
+
+			, TurretResponse {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -800,7 +804,7 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+		void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();

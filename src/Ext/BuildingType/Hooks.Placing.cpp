@@ -6,12 +6,188 @@
 #include <TacticalClass.h>
 #include <IsometricTileTypeClass.h>
 
-#include <Ext/Scenario/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/TerrainType/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <Utilities/EnumFunctions.h>
+#include "Body.h"
 
-// Buildable-upon TerrainTypes Hook #2 -> sub_6D5730 - Draw laser fence placement even if they are on the way.
+#include <HouseClass.h>
+
+#include "Ext/Rules/Body.h"
+
+/*
+	In sub_740810
+
+	- AIConstructionYard Hook #1 -> Check number of construction yard before deploy
+*/
+DEFINE_HOOK(0x740A11, UnitClass_Mission_Guard_AIAutoDeployMCV, 0x6)
+{
+	enum { SkipGameCode = 0x740A50 };
+
+	GET(UnitClass*, pMCV, ESI);
+
+	return (!RulesExt::Global()->AIAutoDeployMCV && pMCV->Owner->NumConYards > 0) ? SkipGameCode : 0;
+}
+
+/*
+	In sub_7393C0
+
+	- AIConstructionYard Hook #2 -> Skip useless base center setting
+*/
+DEFINE_HOOK(0x739889, UnitClass_TryToDeploy_AISetBaseCenter, 0x6)
+{
+	enum { SkipGameCode = 0x73992B };
+
+	GET(UnitClass*, pMCV, EBP);
+
+	return (!RulesExt::Global()->AISetBaseCenter && pMCV->Owner->NumConYards > 1) ? SkipGameCode : 0;
+}
+
+/*
+	In sub_4FD500
+
+	- AIConstructionYard Hook #3 -> Update better base center
+*/
+DEFINE_HOOK(0x4FD538, HouseClass_AIHouseUpdate_CheckAIBaseCenter, 0x7)
+{
+	if (RulesExt::Global()->AIBiasSpawnCell && !SessionClass::IsCampaign())
+	{
+		GET(HouseClass*, pAI, EBX);
+
+		if (const auto count = pAI->ConYards.Count)
+		{
+			const auto wayPoint = pAI->GetSpawnPosition();
+
+			if (wayPoint != -1)
+			{
+				const auto center = ScenarioClass::Instance->GetWaypointCoords(wayPoint);
+				auto newCenter = center;
+				double distanceSquared = 131072.0;
+
+				for (int i = 0; i < count; ++i)
+				{
+					if (const auto pBuilding = pAI->ConYards.GetItem(i))
+					{
+						if (pBuilding->IsAlive && pBuilding->Health > 0 && !pBuilding->InLimbo)
+						{
+							const auto newDistanceSquared = pBuilding->GetMapCoords().DistanceFromSquared(center);
+
+							if (newDistanceSquared < distanceSquared)
+							{
+								distanceSquared = newDistanceSquared;
+								newCenter = pBuilding->GetMapCoords();
+							}
+						}
+					}
+				}
+
+				if (newCenter != center)
+				{
+					pAI->BaseSpawnCell = newCenter;
+					pAI->Base.Center = newCenter;
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
+/*
+	In sub_7393C0
+
+	- AIConstructionYard Hook #4-3 -> Prohibit AI from building construction yard
+*/
+DEFINE_HOOK(0x7397F4, UnitClass_TryToDeploy_SkipSetShouldRebuild, 0x7)
+{
+	enum { SkipRebuildFlag = 0x7397FB };
+
+	GET(BuildingClass* const, pBuilding, EBX);
+
+	return (pBuilding->Type->ConstructionYard && RulesExt::Global()->AIForbidConYard) ? SkipRebuildFlag : 0;
+}
+
+/*
+	In sub_440580
+
+	- AIConstructionYard Hook #4-4 -> Prohibit AI from building construction yard
+*/
+DEFINE_HOOK(0x440B7A, BuildingClass_Unlimbo_SkipSetShouldRebuild, 0x7)
+{
+	enum { SkipRebuildFlag = 0x440B81 };
+
+	GET(BuildingClass* const, pBuilding, ESI);
+
+	return (pBuilding->Type->ConstructionYard && RulesExt::Global()->AIForbidConYard) ? SkipRebuildFlag : 0;
+}
+
+/*
+	In sub_588570
+
+	- AIConstructionYard Hook #5-1 -> Only expand walls on nodes
+*/
+DEFINE_HOOK(0x5885D1, MapClass_BuildingToFirestormWall_SkipExtraWalls, 0x6)
+{
+	enum { NextDirection = 0x588730 };
+
+	GET_STACK(const HouseClass* const, pHouse, STACK_OFFSET(0x38, 0x8));
+	GET_STACK(const int, count, STACK_OFFSET(0x38, -0x24));
+
+	if (pHouse->IsControlledByHuman() || !RulesExt::Global()->AINodeWallsOnly || count)
+		return 0;
+
+	GET(const CellStruct, cell, EBX);
+	GET(const BuildingTypeClass* const, pType, EBP);
+
+	const auto index = pType->ArrayIndex;
+	const auto& nodes = pHouse->Base.BaseNodes;
+
+	for (const auto& pNode : nodes)
+	{
+		if (pNode.MapCoords == cell && pNode.BuildingTypeIndex == index)
+			return 0;
+	}
+
+	return NextDirection;
+}
+
+/*
+	In sub_588750
+
+	- AIConstructionYard Hook #5-2 -> Only expand walls on nodes
+*/
+DEFINE_HOOK(0x5887C1, MapClass_BuildingToWall_SkipExtraWalls, 0x6)
+{
+	enum { NextDirection = 0x588935 };
+
+	GET_STACK(const HouseClass* const, pHouse, STACK_OFFSET(0x3C, 0x8));
+	GET_STACK(const int, count, STACK_OFFSET(0x3C, -0x2C));
+
+	if (pHouse->IsControlledByHuman() || !RulesExt::Global()->AINodeWallsOnly || count)
+		return 0;
+
+	GET(const CellStruct, cell, EDX);
+	GET(const BuildingTypeClass* const, pType, EDI);
+
+	const auto index = pType->ArrayIndex;
+	const auto& nodes = pHouse->Base.BaseNodes;
+
+	for (const auto& pNode : nodes)
+	{
+		if (pNode.MapCoords == cell && pNode.BuildingTypeIndex == index)
+			return 0;
+	}
+
+	return NextDirection;
+}
+
+/*
+	In sub_6D5730
+
+	- Buildable-upon TerrainTypes Hook #2 -> Draw laser fence placement even if they are on the way
+*/
 DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x9)
 {
 	enum { ContinueChecks = 0x6D57D2, DontDraw = 0x6D59A6 };
@@ -24,8 +200,12 @@ DEFINE_HOOK(0x6D57C1, TacticalClass_DrawLaserFencePlacement_BuildableTerrain, 0x
 	return ContinueChecks;
 }
 
-// Buildable-upon TerrainTypes Hook #3 -> sub_5683C0 - Remove them when buildings are placed on them.
-// Buildable-upon TechnoTypes Hook #7 -> sub_5683C0 - Remove some of them when buildings are placed on them.
+/*
+	In sub_5683C0
+
+	- Buildable-upon TerrainTypes Hook #3 -> Remove them when buildings are placed on them
+	- Buildable-upon TechnoTypes Hook #7 -> Remove some of them when buildings are placed on them
+*/
 DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 {
 	GET(ObjectClass*, pPlaceObject, EDI);
@@ -59,7 +239,11 @@ DEFINE_HOOK(0x5684B1, MapClass_PlaceDown_BuildableUponTypes, 0x6)
 	return 0;
 }
 
-// Buildable-upon TerrainTypes Hook #4 -> sub_5FD270 - Allow placing buildings on top of them
+/*
+	In sub_5FD270
+
+	- Buildable-upon TerrainTypes Hook #4 -> Allow placing buildings on top of them
+*/
 DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 {
 	enum { Unlimbo = 0x5FD2CA, NoUnlimbo = 0x5FD2C3 };
@@ -84,23 +268,18 @@ DEFINE_HOOK(0x5FD2B6, OverlayClass_Unlimbo_SkipTerrainCheck, 0x9)
 // Buildable Proximity Helper
 namespace ProximityTemp
 {
+	bool Build = false;
 	bool Exist = false;
 	bool Mouse = false;
 	CellClass* CurrentCell = nullptr;
 	BuildingTypeClass* BuildType = nullptr;
 }
 
-// BaseNormal extra checking Hook #1-1 -> sub_4A8EB0 - Set context and clear up data
-DEFINE_HOOK(0x4A8F20, DisplayClass_BuildingProximityCheck_SetContext, 0x5)
-{
-	GET(BuildingTypeClass*, pType, ESI);
+/*
+	In sub_4A8EB0
 
-	ProximityTemp::BuildType = pType;
-
-	return 0;
-}
-
-// BaseNormal extra checking Hook #1-2 -> sub_4A8EB0 - Check allowed building
+	- BaseNormal extra checking Hook #1-2 -> Check allowed building
+*/
 DEFINE_HOOK(0x4A8FD7, DisplayClass_BuildingProximityCheck_BuildArea, 0x6)
 {
 	enum { SkipBuilding = 0x4A902C };
@@ -176,10 +355,14 @@ static inline bool CheckCanNotExistHere(FootClass* const pTechno, HouseClass* co
 	return false;
 }
 
-// Buildable-upon TerrainTypes Hook #1 -> sub_47C620 - Allow placing buildings on top of them
-// Buildable-upon TechnoTypes Hook #1 -> sub_47C620 - Rewrite and check whether allow placing buildings on top of them
-// Customized Laser Fence Hook #1 -> sub_47C620 - Forbid placing laser fence post on inappropriate laser fence
-// Fix DeploysInto Desync core Hook -> sub_47C620 - Exclude the specific unit who want to deploy
+/*
+	In sub_47C620
+
+	- Buildable-upon TerrainTypes Hook #1 -> Allow placing buildings on top of them
+	- Buildable-upon TechnoTypes Hook #1 -> Rewrite and check whether allow placing buildings on top of them
+	- Customized Laser Fence Hook #1 -> Forbid placing laser fence post on inappropriate laser fence
+	- Fix DeploysInto Desync core Hook -> Exclude the specific unit who want to deploy
+*/
 DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 {
 	enum { CanNotExistHere = 0x47C6D1, CanExistHere = 0x47C6A0 };
@@ -376,7 +559,11 @@ DEFINE_HOOK(0x47C640, CellClass_CanThisExistHere_IgnoreSomething, 0x6)
 	return CanExistHere; // Continue check the overlays .etc
 }
 
-// Buildable-upon TechnoTypes Hook #2-1 -> sub_47EC90 - Record cell before draw it then skip vanilla AltFlags check
+/*
+	In sub_47EC90
+
+	- Buildable-upon TechnoTypes Hook #2-1 -> Record cell before draw it then skip vanilla AltFlags check
+*/
 DEFINE_HOOK(0x47EEBC, CellClass_DrawPlaceGrid_RecordCell, 0x6)
 {
 	enum { DontDrawAlt = 0x47EF1A, DrawVanillaAlt = 0x47EED6 };
@@ -454,7 +641,7 @@ static inline void PlayConstructionYardAnim(BuildingClass* const pFactory)
 
 static inline bool CheckBuildingFoundation(BuildingTypeClass* const pBuildingType, const CellStruct topLeftCell, HouseClass* const pHouse, bool& noOccupy)
 {
-	for (auto pFoundation = pBuildingType->GetFoundationData(false); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
+	for (auto pFoundation = pBuildingType->GetFoundationData(true); *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
 		if (const auto pCell = MapClass::Instance.TryGetCellAt(topLeftCell + *pFoundation))
 		{
@@ -475,8 +662,13 @@ namespace PlaceTypeTemp
 	size_t PlaceType = 0;
 }
 
-// Place Another Type Hook #1 -> sub_4FB0E0 - Replace the factory product
-// Buildable-upon TechnoTypes Hook #3 -> sub_4FB0E0 - Hang up place event if there is only infantries and units on the cell
+/*
+	In sub_4FB0E0
+
+	- Place Another Type Hook #1 -> Replace the factory product
+	- Buildable-upon TechnoTypes Hook #3 -> Hang up place event if there is only infantries and units on the cell
+	- Limbo Build Hook #1 -> Skip check limbo building
+*/
 DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 {
 	enum { CanBuild = 0x4FB23C, TemporarilyCanNotBuild = 0x4FB5BA, CanNotBuild = 0x4FB35F, BuildSucceeded = 0x4FB649 };
@@ -646,7 +838,11 @@ DEFINE_HOOK(0x4FB1EA, HouseClass_UnitFromFactory_HangUpPlaceEvent, 0x5)
 	return CanNotBuild;
 }
 
-// Place Another Type Hook #2 -> sub_4A91B0 - Replace current building type for check
+/*
+	In sub_4A91B0
+
+	- Place Another Type Hook #2 -> Replace current building type for check
+*/
 DEFINE_HOOK(0x4A937D, DisplayClass_CallBuildingPlaceCheck_ReplaceBuildingType, 0x8)
 {
 	enum { SkipGameCode = 0x4A943A };
@@ -656,28 +852,28 @@ DEFINE_HOOK(0x4A937D, DisplayClass_CallBuildingPlaceCheck_ReplaceBuildingType, 0
 	const auto pDisplay = &DisplayClass::Instance;
 
 	auto updateCurrentFoundation = [pDisplay, cell]()
+	{
+		if (pDisplay->CurrentFoundation_CenterCell != cell)
 		{
-			if (pDisplay->CurrentFoundation_CenterCell != cell)
+			auto oldCell = pDisplay->CurrentFoundation_CenterCell;
+
+			if (oldCell != CellStruct::Empty)
 			{
-				auto oldCell = pDisplay->CurrentFoundation_CenterCell;
-
-				if (oldCell != CellStruct::Empty)
-				{
-					oldCell += pDisplay->CurrentFoundation_TopLeftOffset;
-					pDisplay->MarkFoundation(&oldCell, false);
-				}
-
-				auto newCell = cell;
-
-				if (newCell != CellStruct::Empty)
-				{
-					newCell += pDisplay->CurrentFoundation_TopLeftOffset;
-					pDisplay->MarkFoundation(&newCell, true);
-				}
-
-				pDisplay->CurrentFoundation_CenterCell = cell;
+				oldCell += pDisplay->CurrentFoundation_TopLeftOffset;
+				pDisplay->MarkFoundation(&oldCell, false);
 			}
-		};
+
+			auto newCell = cell;
+
+			if (newCell != CellStruct::Empty)
+			{
+				newCell += pDisplay->CurrentFoundation_TopLeftOffset;
+				pDisplay->MarkFoundation(&newCell, true);
+			}
+
+			pDisplay->CurrentFoundation_CenterCell = cell;
+		}
+	};
 
 	const auto pCurrentBuilding = abstract_cast<BuildingClass*>(pDisplay->CurrentBuilding);
 	const auto pTypeExt = pCurrentBuilding ? BuildingTypeExt::ExtMap.Find(pCurrentBuilding->Type) : nullptr;
@@ -695,16 +891,16 @@ DEFINE_HOOK(0x4A937D, DisplayClass_CallBuildingPlaceCheck_ReplaceBuildingType, 0
 			Phobos::Config::CurrentPlacingDirection = DirStruct(Math::atan2(-delta.Y, delta.X)).GetFacing<32>();
 
 		auto getAnotherPlacingType = [pDisplay, pTypeExt]() -> BuildingTypeClass*
+		{
+			if (pTypeExt)
 			{
-				if (pTypeExt)
-				{
-					const auto pCenterCell = MapClass::Instance.GetCellAt(pDisplay->CurrentFoundation_CenterCell);
-					const bool onWater = pCenterCell->LandType == LandType::Water;
-					return pTypeExt->GetAnotherPlacingType(Phobos::Config::CurrentPlacingDirection, onWater);
-				}
+				const auto pCenterCell = MapClass::Instance.GetCellAt(pDisplay->CurrentFoundation_CenterCell);
+				const bool onWater = pCenterCell->LandType == LandType::Water;
+				return pTypeExt->GetAnotherPlacingType(Phobos::Config::CurrentPlacingDirection, onWater);
+			}
 
-				return nullptr;
-			};
+			return nullptr;
+		};
 
 		if (const auto pAnotherType = getAnotherPlacingType())
 		{
@@ -731,7 +927,11 @@ DEFINE_HOOK(0x4A937D, DisplayClass_CallBuildingPlaceCheck_ReplaceBuildingType, 0
 	return SkipGameCode;
 }
 
-// Place Another Type Hook #3 -> sub_4AB9B0 - Keep current foundation center cell
+/*
+	In sub_4AB9B0
+
+	- Place Another Type Hook #3 -> Keep current foundation center cell
+*/
 DEFINE_HOOK(0x4AB9FF, DisplayClass_LeftMouseButtonUp_MaintainCell, 0x6)
 {
 	enum { ContinueCheckUpgrade = 0x4ABA84, SkipCheckUpgrade = 0x4ABAA4 };
@@ -755,7 +955,11 @@ DEFINE_HOOK(0x4AB9FF, DisplayClass_LeftMouseButtonUp_MaintainCell, 0x6)
 	return ContinueCheckUpgrade;
 }
 
-// Place Another Type Hook #4 -> sub_4AB9B0 - Replace event
+/*
+	In sub_4AB9B0
+
+	- Place Another Type Hook #4 -> Replace event
+*/
 DEFINE_HOOK(0x4ABAC0, DisplayClass_LeftMouseButtonUp_ReplaceBuildingType, 0x6)
 {
 	enum { SkipGameCode = 0x4ABBB3 };
@@ -786,13 +990,23 @@ DEFINE_HOOK(0x4ABAC0, DisplayClass_LeftMouseButtonUp_ReplaceBuildingType, 0x6)
 	const int arrayIndex = pType->GetArrayIndex();
 	const auto absType = pPlace->WhatAmI();
 
-	const EventClass event (HouseClass::CurrentPlayer->ArrayIndex, EventType::Place, absType, arrayIndex, placeType, placeCell);
-	EventClass::AddEvent(event);
+	EventClass::OutList.Add(EventClass(
+		HouseClass::CurrentPlayer->ArrayIndex,
+		EventType::Place,
+		absType,
+		arrayIndex,
+		placeType,
+		placeCell
+	));
 
 	return SkipGameCode;
 }
 
-// Place Another Type Hook #5 -> sub_4C6CB0 - Replace placing action
+/*
+	In sub_4C6CB0
+
+	- Place Another Type Hook #5 -> Replace placing action
+*/
 DEFINE_HOOK(0x4C70E1, EventClass_RespondToEvent_SetPlaceType, 0x8)
 {
 	enum { SkipGameCode = 0x4C7110 };
@@ -817,7 +1031,11 @@ DEFINE_HOOK(0x4C70E1, EventClass_RespondToEvent_SetPlaceType, 0x8)
 	return SkipGameCode;
 }
 
-// Buildable-upon TechnoTypes Hook #4-1 -> sub_4FB0E0 - Check whether need to skip the replace command
+/*
+	In sub_4FB0E0
+
+	- Buildable-upon TechnoTypes Hook #4-1 -> Check whether need to skip the replace command
+*/
 DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 {
 	enum { SkipGameCode = 0x4FB489, CheckMouseCoords = 0x4FB3E3 };
@@ -840,7 +1058,11 @@ DEFINE_HOOK(0x4FB395, HouseClass_UnitFromFactory_SkipMouseReturn, 0x6)
 	return CheckMouseCoords;
 }
 
-// Buildable-upon TechnoTypes Hook #4-2 -> sub_4FB0E0 - Check whether need to skip the clear command
+/*
+	In sub_4FB0E0
+
+	- Buildable-upon TechnoTypes Hook #4-2 -> Check whether need to skip the clear command
+*/
 DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 {
 	enum { SkipGameCode = 0x4FB4A0 };
@@ -862,7 +1084,11 @@ DEFINE_HOOK(0x4FB339, HouseClass_UnitFromFactory_SkipMouseClear, 0x6)
 	return 0;
 }
 
-// Buildable-upon TechnoTypes Hook #4-3 -> sub_4FB0E0 - Check whether need to skip the clear command
+/*
+	In sub_4FAA10
+
+	- Buildable-upon TechnoTypes Hook #4-3 -> Check whether need to skip the clear command
+*/
 DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 {
 	enum { SkipGameCode = 0x4FABA4 };
@@ -881,7 +1107,11 @@ DEFINE_HOOK(0x4FAB83, HouseClass_AbandonProductionOf_SkipMouseClear, 0x7)
 	return 0;
 }
 
-// Buildable-upon TechnoTypes Hook #5 -> sub_4C9FF0 - Restart timer and clear buffer when abandon building production
+/*
+	In sub_4C9FF0
+
+	- Buildable-upon TechnoTypes Hook #5 -> Restart timer and clear buffer when abandon building production
+*/
 DEFINE_HOOK(0x4CA05B, FactoryClass_AbandonProduction_AbandonCurrentBuilding, 0x5)
 {
 	GET(FactoryClass*, pFactory, ESI);
@@ -901,7 +1131,13 @@ DEFINE_HOOK(0x4CA05B, FactoryClass_AbandonProduction_AbandonCurrentBuilding, 0x5
 	return 0;
 }
 
-// Buildable-upon TechnoTypes Hook #6 -> sub_443C60 - Try to clean up the building space when AI is building
+/*
+	In sub_443C60
+
+	- Buildable-upon TechnoTypes Hook #6 -> Try to clean up the building space when AI is building
+	- AIConstructionYard Hook #4-1 -> Prohibit AI from building construction yard and clean up invalid walls nodes.
+	- Limbo Build Hook #2 -> Skip check limbo building
+*/
 DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 {
 	enum { CanBuild = 0x4452F0, TemporarilyCanNotBuild = 0x445237, CanNotBuild = 0x4454E6, BuildSucceeded = 0x4454D4, BuildFailed = 0x445696 };
@@ -913,7 +1149,8 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 
 	const auto pBuildingType = pBuilding->Type;
 
-/*	if (RulesExt::Global()->AIForbidConYard && pBuildingType->ConstructionYard) // TODO If merge #1470
+	// Prohibit AI from building construction yard
+	if (RulesExt::Global()->AIForbidConYard && pBuildingType->ConstructionYard)
 	{
 		if (pBaseNode)
 		{
@@ -922,7 +1159,30 @@ DEFINE_HOOK(0x4451F8, BuildingClass_KickOutUnit_CleanUpAIBuildingSpace, 0x6)
 		}
 
 		return BuildFailed;
-	}*/
+	}
+
+	// Clean up invalid walls nodes
+	if (RulesExt::Global()->AICleanWallNode && pBuildingType->Wall)
+	{
+		auto notValidWallNode = [topLeftCell]()
+		{
+			const auto pCell = MapClass::Instance.GetCellAt(topLeftCell);
+
+			for (int i = 0; i < 8; ++i)
+			{
+				if (const auto pAdjBuilding = pCell->GetNeighbourCell(static_cast<FacingType>(i))->GetBuilding())
+				{
+					if (pAdjBuilding->Type->ProtectWithWall)
+						return false;
+				}
+			}
+
+			return true;
+		};
+
+		if (notValidWallNode())
+			return CanNotBuild;
+	}
 
 	const auto pHouse = pFactory->Owner;
 	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pBuildingType);
@@ -1023,7 +1283,12 @@ static inline bool CanDrawGrid(bool draw)
 }
 
 // Laser fence use GetBuilding to check whether can build and draw, so no need to change
-// Buildable-upon TechnoTypes Hook #8-1 -> sub_6D5C50 - Don't draw overlay wall grid when have occupiers
+
+/*
+	In sub_6D5C50
+
+	- Buildable-upon TechnoTypes Hook #8-1 -> Don't draw overlay wall grid when have occupiers
+*/
 DEFINE_HOOK(0x6D5D38, TacticalClass_DrawOverlayWallGrid_DisableWhenHaveTechnos, 0x8)
 {
 	enum { Valid = 0x6D5D40, Invalid = 0x6D5F0F };
@@ -1033,7 +1298,11 @@ DEFINE_HOOK(0x6D5D38, TacticalClass_DrawOverlayWallGrid_DisableWhenHaveTechnos, 
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
-// Buildable-upon TechnoTypes Hook #8-2 -> sub_6D59D0 - Don't draw firestorm wall grid when have occupiers
+/*
+	In sub_6D59D0
+
+	- Buildable-upon TechnoTypes Hook #8-2 -> Don't draw firestorm wall grid when have occupiers
+*/
 DEFINE_HOOK(0x6D5A9D, TacticalClass_DrawFirestormWallGrid_DisableWhenHaveTechnos, 0x8)
 {
 	enum { Valid = 0x6D5AA5, Invalid = 0x6D5C2F };
@@ -1043,7 +1312,11 @@ DEFINE_HOOK(0x6D5A9D, TacticalClass_DrawFirestormWallGrid_DisableWhenHaveTechnos
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
-// Buildable-upon TechnoTypes Hook #8-3 -> sub_588750 - Don't place overlay wall when have occupiers
+/*
+	In sub_588750
+
+	- Buildable-upon TechnoTypes Hook #8-3 -> Don't place overlay wall when have occupiers
+*/
 DEFINE_HOOK(0x588873, MapClass_BuildingToWall_DisableWhenHaveTechnos, 0x8)
 {
 	enum { Valid = 0x58887B, Invalid = 0x588935 };
@@ -1053,7 +1326,11 @@ DEFINE_HOOK(0x588873, MapClass_BuildingToWall_DisableWhenHaveTechnos, 0x8)
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
-// Buildable-upon TechnoTypes Hook #8-4 -> sub_588570 - Don't place firestorm wall when have occupiers
+/*
+	In sub_588570
+
+	- Buildable-upon TechnoTypes Hook #8-4 -> Don't place firestorm wall when have occupiers
+*/
 DEFINE_HOOK(0x588664, MapClass_BuildingToFirestormWall_DisableWhenHaveTechnos, 0x8)
 {
 	enum { Valid = 0x58866C, Invalid = 0x588730 };
@@ -1063,7 +1340,11 @@ DEFINE_HOOK(0x588664, MapClass_BuildingToFirestormWall_DisableWhenHaveTechnos, 0
 	return CanDrawGrid(valid) ? Valid : Invalid;
 }
 
-// Buildable-upon TechnoTypes Hook #9-1 -> sub_7393C0 - Try to clean up the building space when is deploying
+/*
+	In sub_7393C0
+
+	- Buildable-upon TechnoTypes Hook #9-1 -> Try to clean up the building space when is deploying
+*/
 DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 {
 	enum { CanDeploy = 0x73958A, TemporarilyCanNotDeploy = 0x73953B, CanNotDeploy = 0x7394E0 };
@@ -1098,7 +1379,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 
 				do
 				{
-					if (pTechnoExt && !pTechnoExt->UnitAutoDeployTimer.InProgress())
+					if (!pTechnoExt->UnitAutoDeployTimer.InProgress())
 					{
 						if (BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pThis->Owner, pThis))
 							break; // No place for cleaning
@@ -1125,8 +1406,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 			if (vec.size() > 0)
 				vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 
-			if (pTechnoExt)
-				pTechnoExt->UnitAutoDeployTimer.Stop();
+			pTechnoExt->UnitAutoDeployTimer.Stop();
 
 			return CanNotDeploy;
 		}
@@ -1136,13 +1416,16 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	if (vec.size() > 0)
 		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 
-	if (pTechnoExt)
-		pTechnoExt->UnitAutoDeployTimer.Stop();
+	pTechnoExt->UnitAutoDeployTimer.Stop();
 
 	return CanDeploy;
 }
 
-// Buildable-upon TechnoTypes Hook #9-2 -> sub_73FD50 - Push the owner house into deploy check
+/*
+	In sub_73FD50
+
+	- Buildable-upon TechnoTypes Hook #9-2 -> Push the owner house into deploy check
+*/
 DEFINE_HOOK(0x73FF8F, UnitClass_MouseOverObject_ShowDeployCursor, 0x6)
 {
 	if (RulesExt::Global()->ExtendedBuildingPlacing) // This IF check is not so necessary
@@ -1155,7 +1438,11 @@ DEFINE_HOOK(0x73FF8F, UnitClass_MouseOverObject_ShowDeployCursor, 0x6)
 	return 0;
 }
 
-// Buildable-upon TechnoTypes Hook #10 -> sub_4C6CB0 - Stop deploy when get stop command
+/*
+	In sub_4C6CB0
+
+	- Buildable-upon TechnoTypes Hook #10 -> Stop deploy when get stop command
+*/
 DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 {
 	if (RulesExt::Global()->ExtendedBuildingPlacing) // This IF check is not so necessary
@@ -1168,7 +1455,7 @@ DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 
 			if (mission == Mission::Guard || mission == Mission::Unload)
 			{
-				if (const auto pHouseExt = HouseExt::ExtMap.Find(pUnit->Owner))
+				if (const auto pHouseExt = HouseExt::ExtMap.TryFind(pUnit->Owner))
 				{
 					auto& vec = pHouseExt->OwnedDeployingUnits;
 
@@ -1182,7 +1469,11 @@ DEFINE_HOOK(0x4C7665, EventClass_RespondToEvent_StopDeployInIdleEvent, 0x6)
 	return 0;
 }
 
-// Buildable-upon TechnoTypes Hook #11 -> sub_4F8440 - Check whether can place again in each house
+/*
+	In sub_4F8440
+
+	- Buildable-upon TechnoTypes Hook #11 -> Check whether can place again in each house
+*/
 DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 {
 	GET(HouseClass* const, pHouse, ESI);
@@ -1195,48 +1486,47 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 
 	const auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
 	auto buildCurrent = [&pHouse, &pHouseExt](BuildingTypeClass* pType, CellStruct cell, size_t placeType)
+	{
+		if (!pType)
+			return;
+
+		auto currentCanBuild = [&pHouse, &pType]() -> const bool
 		{
-			if (!pType)
-				return;
+			auto const bitsOwners = pType->GetOwners();
 
-			auto currentCanBuild = [&pHouse, &pType]() -> const bool
-				{
-					auto const bitsOwners = pType->GetOwners();
-
-					for(auto const& pConYard : pHouse->ConYards)
-					{
-						if (pConYard->InLimbo || !pConYard->HasPower || pConYard->Deactivated)
-							continue;
-
-						if (pConYard->CurrentMission == Mission::Selling || pConYard->QueuedMission == Mission::Selling)
-							continue;
-
-						const auto pConYardType = pConYard->Type;
-
-						if (pConYardType->Factory != AbstractType::BuildingType || !pConYardType->InOwners(bitsOwners))
-							continue;
-
-						return true;
-					}
-
-					return false;
-				};
-
-			if (!currentCanBuild())
+			for(auto const& pConYard : pHouse->ConYards)
 			{
-				ClearPlacingBuildingData(pType->BuildCat != BuildCat::Combat ? &pHouseExt->Common : &pHouseExt->Combat);
+				if (pConYard->InLimbo || !pConYard->HasPower || pConYard->Deactivated)
+					continue;
 
-				if (pHouse == HouseClass::CurrentPlayer)
-					VoxClass::Play(GameStrings::EVA_CannotDeployHere);
+				if (pConYard->CurrentMission == Mission::Selling || pConYard->QueuedMission == Mission::Selling)
+					continue;
+
+				const auto pConYardType = pConYard->Type;
+
+				if (pConYardType->Factory != AbstractType::BuildingType || !pConYardType->InOwners(bitsOwners))
+					continue;
+
+				return true;
 			}
-			else if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
-			{
-				const int place = static_cast<int>(placeType);
-				const auto arrayIndex = pType->GetArrayIndex();
-				const EventClass event (pHouse->ArrayIndex, EventType::Place, AbstractType::Building, arrayIndex, place, cell);
-				EventClass::AddEvent(event);
-			}
+
+			return false;
 		};
+
+		if (!currentCanBuild())
+		{
+			ClearPlacingBuildingData(pType->BuildCat != BuildCat::Combat ? &pHouseExt->Common : &pHouseExt->Combat);
+
+			if (pHouse == HouseClass::CurrentPlayer)
+				VoxClass::Play(GameStrings::EVA_CannotDeployHere);
+		}
+		else if (pHouse == HouseClass::CurrentPlayer) // Prevent unexpected wrong event
+		{
+			const int place = static_cast<int>(placeType);
+			const auto arrayIndex = pType->GetArrayIndex();
+			EventClass::OutList.Add(EventClass(pHouse->ArrayIndex, EventType::Place, AbstractType::Building, arrayIndex, place, cell));
+		}
+	};
 
 	auto& commonPlace = pHouseExt->Common;
 
@@ -1298,7 +1588,11 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 	return 0;
 }
 
-// Buildable-upon TechnoTypes Hook #12 -> sub_6D5030 - Draw the placing building preview
+/*
+	In sub_6D5030
+
+	- Buildable-upon TechnoTypes Hook #12 -> Draw the placing building preview
+*/
 DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 {
 	if (!RulesExt::Global()->ExtendedBuildingPlacing)
@@ -1375,7 +1669,11 @@ DEFINE_HOOK(0x6D504C, TacticalClass_DrawPlacement_DrawPlacingPreview, 0x6)
 	return 0;
 }
 
-// Auto Build Hook -> sub_6A8B30 - Auto Build Buildings
+/*
+	In sub_6A8B30
+
+	- Limbo Build Hook #3 -> Automatic spawn buildings
+*/
 DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 {
 	enum { SkipGameCode = 0x6A8F49 };
@@ -1388,7 +1686,12 @@ DEFINE_HOOK(0x6A8E34, StripClass_Update_AutoBuildBuildings, 0x7)
 	return 0;
 }
 
-// Limbo Build Hook -> sub_42EB50 - Check Base Node
+/*
+	In sub_42EB50
+
+	- Limbo Build Hook #4 -> Check Base Node
+	- AIConstructionYard Hook #4-2 -> Prohibit AI from building construction yard
+*/
 DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 {
 	enum { Valid = 0x42EBC3, Invalid = 0x42EBAE };
@@ -1404,8 +1707,7 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 		{
 			const auto pType = BuildingTypeClass::Array.Items[index];
 
-//			if ((pType->ConstructionYard && RulesExt::Global()->AIForbidConYard) || BuildingTypeExt::ExtMap.Find(pType)->LimboBuild) // TODO If merge #1470
-			if (BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
+			if ((pType->ConstructionYard && RulesExt::Global()->AIForbidConYard) || BuildingTypeExt::ExtMap.Find(pType)->LimboBuild)
 				return Invalid;
 		}
 	}
@@ -1413,30 +1715,35 @@ DEFINE_HOOK(0x42EB8E, BaseClass_GetBaseNodeIndex_CheckValidBaseNode, 0x6)
 	return reinterpret_cast<bool(__thiscall*)(HouseClass*, BaseNodeClass*)>(0x50CAD0)(pBase->Owner, pBaseNode) ? Valid : Invalid;
 }
 
-// Customized Laser Fence Hook #2 -> sub_453060 - Select the specific laser fence type
+/*
+	In sub_453060
+
+	- Customized Laser Fence Hook #2 -> Select the specific laser fence type
+*/
 DEFINE_HOOK(0x452E2C, BuildingClass_CreateLaserFence_FindSpecificIndex, 0x5)
 {
 	enum { SkipGameCode = 0x452E50 };
 
 	GET(BuildingClass* const, pThis, EDI);
 
-	if (const auto pExt = BuildingTypeExt::ExtMap.Find(pThis->Type))
+	if (const auto pFenceType = BuildingTypeExt::ExtMap.Find(pThis->Type)->LaserFencePost_Fence.Get())
 	{
-		if (const auto pFenceType = pExt->LaserFencePost_Fence.Get())
+		if (pFenceType->LaserFence)
 		{
-			if (pFenceType->LaserFence)
-			{
-				R->EBP(pFenceType->ArrayIndex);
-				R->EAX(BuildingTypeClass::Array.Count);
-				return SkipGameCode;
-			}
+			R->EBP(pFenceType->ArrayIndex);
+			R->EAX(BuildingTypeClass::Array.Count);
+			return SkipGameCode;
 		}
 	}
 
 	return 0;
 }
 
-// Customized Laser Fence Hook #3 -> sub_440580 - Skip uninit inappropriate laser fence
+/*
+	In sub_440580
+
+	- Customized Laser Fence Hook #3 -> Skip uninit inappropriate laser fence
+*/
 DEFINE_HOOK(0x440AE9, BuildingClass_Unlimbo_SkipUninitFence, 0x7)
 {
 	enum { SkipGameCode = 0x440B07 };
@@ -1449,19 +1756,17 @@ DEFINE_HOOK(0x440AE9, BuildingClass_Unlimbo_SkipUninitFence, 0x7)
 
 static inline bool IsMatchedPostType(const BuildingTypeClass* const pThisType, const BuildingTypeClass* const pPostType)
 {
-	if (const auto pThisTypeExt = BuildingTypeExt::ExtMap.Find(pThisType))
-	{
-		if (const auto pPostTypeExt = BuildingTypeExt::ExtMap.Find(pPostType))
-		{
-			if (pThisTypeExt->LaserFencePost_Fence.Get() != pPostTypeExt->LaserFencePost_Fence.Get())
-				return false;
-		}
-	}
+	const auto pThisTypeExt = BuildingTypeExt::ExtMap.Find(pThisType);
+	const auto pPostTypeExt = BuildingTypeExt::ExtMap.Find(pPostType);
 
-	return true;
+	return pThisTypeExt->LaserFencePost_Fence.Get() != pPostTypeExt->LaserFencePost_Fence.Get();
 }
 
-// Customized Laser Fence Hook #4 -> sub_452BB0 - Only accept specific fence post
+/*
+	In sub_452BB0
+
+	- Customized Laser Fence Hook #4 -> Only accept specific fence post
+*/
 DEFINE_HOOK(0x452CB4, BuildingClass_FindLaserFencePost_CheckLaserFencePost, 0x7)
 {
 	enum { SkipGameCode = 0x452D2C };
@@ -1472,7 +1777,11 @@ DEFINE_HOOK(0x452CB4, BuildingClass_FindLaserFencePost_CheckLaserFencePost, 0x7)
 	return IsMatchedPostType(pThis->Type, pPost->Type) ? 0 : SkipGameCode;
 }
 
-// Customized Laser Fence Hook #5 -> sub_6D5730 - Break draw inappropriate laser fence grids
+/*
+	In sub_6D5730
+
+	- Customized Laser Fence Hook #5 -> Break draw inappropriate laser fence grids
+*/
 DEFINE_HOOK(0x6D5815, TacticalClass_DrawLaserFenceGrid_SkipDrawLaserFence, 0x6)
 {
 	enum { SkipGameCode = 0x6D59A6 };
