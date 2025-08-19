@@ -1068,15 +1068,15 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 {
 	enum { CanDeploy = 0x73958A, TemporarilyCanNotDeploy = 0x73953B, CanNotDeploy = 0x7394E0 };
 
-	GET(UnitClass* const, pUnit, EBP);
+	GET(UnitClass* const, pThis, EBP);
 	GET(CellStruct, topLeftCell, ESI);
 
 	if (!RulesExt::Global()->ExtendedBuildingPlacing)
 		return 0;
 
-	const auto pTechnoExt = TechnoExt::ExtMap.Find(pUnit);
-	const auto pBuildingType = pUnit->Type->DeploysInto;
-	const auto pHouseExt = HouseExt::ExtMap.Find(pUnit->Owner);
+	const auto pTechnoExt = TechnoExt::ExtMap.Find(pThis);
+	const auto pBuildingType = pThis->Type->DeploysInto;
+	const auto pHouseExt = HouseExt::ExtMap.Find(pThis->Owner);
 	auto& vec = pHouseExt->OwnedDeployingUnits;
 
 	if (pBuildingType->GetFoundationWidth() > 2 || pBuildingType->GetFoundationHeight(false) > 2)
@@ -1087,7 +1087,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	if (!pBuildingType->PlaceAnywhere)
 	{
 		bool noOccupy = true;
-		bool canBuild = CheckBuildingFoundation(pBuildingType, topLeftCell, pUnit->Owner, noOccupy);
+		bool canBuild = CheckBuildingFoundation(pBuildingType, topLeftCell, pThis->Owner, noOccupy);
 
 		do
 		{
@@ -1100,13 +1100,21 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 				{
 					if (pTechnoExt && !pTechnoExt->UnitAutoDeployTimer.InProgress())
 					{
-						if (BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pUnit->Owner, pUnit))
+						if (BuildingTypeExt::CleanUpBuildingSpace(pBuildingType, topLeftCell, pThis->Owner, pThis))
 							break; // No place for cleaning
 
-						if (vec.size() == 0 || std::find(vec.begin(), vec.end(), pUnit) == vec.end())
-							vec.push_back(pUnit);
+						if (vec.size() == 0 || std::find(vec.begin(), vec.end(), pThis) == vec.end())
+							vec.push_back(pThis);
 
 						pTechnoExt->UnitAutoDeployTimer.Start(40);
+					}
+
+					if (pThis->PrimaryFacing.Current().GetFacing<256>() != static_cast<size_t>(pBuildingType->DeployFacing))
+					{
+						const auto pLoco = pThis->Locomotor;
+
+						if (!pLoco->Is_Moving_Now())
+							pLoco->Do_Turn(DirStruct(static_cast<DirType>(pBuildingType->DeployFacing)));
 					}
 
 					return TemporarilyCanNotDeploy;
@@ -1115,7 +1123,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 			}
 
 			if (vec.size() > 0)
-				vec.erase(std::remove(vec.begin(), vec.end(), pUnit), vec.end());
+				vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 
 			if (pTechnoExt)
 				pTechnoExt->UnitAutoDeployTimer.Stop();
@@ -1126,7 +1134,7 @@ DEFINE_HOOK(0x73946C, UnitClass_TryToDeploy_CleanUpDeploySpace, 0x6)
 	}
 
 	if (vec.size() > 0)
-		vec.erase(std::remove(vec.begin(), vec.end(), pUnit), vec.end());
+		vec.erase(std::remove(vec.begin(), vec.end(), pThis), vec.end());
 
 	if (pTechnoExt)
 		pTechnoExt->UnitAutoDeployTimer.Stop();
@@ -1254,16 +1262,32 @@ DEFINE_HOOK(0x4F8DB1, HouseClass_Update_CheckHangUpBuilding, 0x6)
 		{
 			const auto pUnit = *it;
 
-			if (!pUnit->InLimbo && pUnit->IsOnMap && !pUnit->IsSinking && pUnit->Owner == pHouse && !pUnit->Destination && pUnit->CurrentMission == Mission::Guard
-				&& !pUnit->ParasiteEatingMe && !pUnit->TemporalTargetingMe && pUnit->Type->DeploysInto)
+			if (!pUnit->InLimbo
+				&& pUnit->IsOnMap
+				&& !pUnit->IsSinking
+				&& pUnit->Owner == pHouse
+				&& !pUnit->Destination
+				&& !pUnit->ParasiteEatingMe
+				&& !pUnit->TemporalTargetingMe
+				&& pUnit->Type->DeploysInto)
 			{
-				if (const auto pExt = TechnoExt::ExtMap.Find(pUnit))
-				{
-					if (!(pExt->UnitAutoDeployTimer.GetTimeLeft() % 8))
-						pUnit->QueueMission(Mission::Unload, true);
+				const auto mission = pUnit->CurrentMission;
 
+				if (mission == Mission::Unload)
+				{
 					++it;
 					continue;
+				}
+				else if (mission == Mission::Guard)
+				{
+					if (const auto pExt = TechnoExt::ExtMap.Find(pUnit))
+					{
+						if (!(pExt->UnitAutoDeployTimer.GetTimeLeft() % 8))
+							pUnit->QueueMission(Mission::Unload, true);
+
+						++it;
+						continue;
+					}
 				}
 			}
 
