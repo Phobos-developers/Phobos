@@ -962,7 +962,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
-
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1196,14 +1196,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
 
-	this->LoadFromINIByWhatAmI(exArtINI, pArtSection);
+	this->LoadFromINIByWhatAmI(exINI, pSection, exArtINI, pArtSection);
 
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
-void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection)
+void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
 {
 	AbstractType abs = this->OwnerObject()->WhatAmI();
 
@@ -1213,6 +1213,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* 
 	{
 		this->FireUp.Read(exArtINI, pArtSection, "FireUp");
 		this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
+		this->TurretResponse.Read(exINI, pSection, "TurretResponse");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1603,6 +1604,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoiceEliteWeaponAttacks)
 
 		.Process(this->InfantryAutoDeploy)
+
+		.Process(this->TurretResponse)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

@@ -10,6 +10,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 
 ### From vanilla
 
+- `Vertical=true` projectiles now default to completely downwards initial trajectory/facing regardless of if their projectile image has `Voxel=true` or not. This behavior can be reverted by setting `VerticalInitialFacing=false` on projectile in `rulesmd.ini`.
 - `Vertical=true` projectiles no longer move horizontally if fired by aircraft by default. To re-enable this behaviour set `Vertical.AircraftFix=false` on the projectile.
 - Weapons with `Airstrike=true` on Warhead will now check target eligibility for airstrikes regardless of weapon slot. Use `AirstrikeTargets=all` on `Primary` airstrike weapon Warhead to restore previous behaviour.
 - `PowerUpNAnim` is now used instead of the upgrade building's image file for upgrade animation if set. Note that displaying a damaged version will still require setting `PowerUpNDamagedAnim` explicitly in all cases, as the fallback to upgrade building image does not extend to it, nor would it be safe to add. `PowersUpToLevel=-1` upgrades still do not work correctly `PowerUpNAnim` and such buildings should forgo using explicit upgrade animations.
@@ -428,6 +429,12 @@ New:
 - [Units can customize the attack voice that plays when using more weapons](New-or-Enhanced-Logics.md#multi-voiceattack) (by FlyStar)
 - Customize squid grapple animation (by NetsuNegi)
 - [Auto deploy for GI-like infantry](Fixed-or-Improved-Logics.md#auto-deploy-for-gi-like-infantry) (by TaranDahl)
+- [Vehicles that have lost their target can customize the turret direction to align with the vehicle body](New-or-Enhanced-Logics.md#turret-response) (by FlyStar)
+- [Reverse engineer warhead](New-or-Enhanced-Logics.md#reverse-engineer-warhead) (by CrimRecya)
+- [AI base construction modification](Fixed-or-Improved-Logics.md#ai-base-construction-modification) (by CrimRecya)
+- [Jumpjet Climbing Logic Enhancement](Fixed-or-Improved-Logics.md#jumpjet-climbing-logic-enhancement) (by CrimRecya)
+- [Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)
+- [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - New AdvancedDrive locomotor (by CrimRecya)
 
 Vanilla fixes:
@@ -442,9 +449,12 @@ Vanilla fixes:
 - Fixed an issue where airstrike flare line drawn to target at lower elevation would clip (by Starkku)
 - Fixed the bug that damaged particle dont disappear after building has repaired by engineer (by NetsuNegi)
 - Projectiles with `Vertical=true` now drop straight down if fired off by AircraftTypes instead of behaving erratically (by Starkku)
+- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective (by FlyStar)
+- Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file (by CrimRecya)
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
+- Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
@@ -765,6 +775,7 @@ Vanilla fixes:
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing (by NetsuNegi)
 - Fixed the bug that hover vehicle will sink if destroyed on bridge (by NetsuNegi)
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target (by FlyStar)
+- Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer (by CrimRecya)
 
 Phobos fixes:
 - Fixed a few errors of calling for superweapon launch by `LaunchSW` or building infiltration (by Trsdy)
@@ -838,6 +849,8 @@ Fixes / interactions with other extensions:
 - Fixed an issue where some units crashed after the deployment transformation (by ststl & FlyStar)
 - Fixed the bug that AlphaImage remained after unit entered tunnel (by NetsuNegi)
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving (by CrimRecya)
+- Fixed quicksave command and save game trigger action to work with YRpp spawner's multiplayer saves (by Kerbiter)
+- Ported XNA CnCNet Client multiplayer save handling to get rid of occasional multiplayer save file overwriting when saving too fast (by Kerbiter)
 ```
 
 ### 0.3.0.1

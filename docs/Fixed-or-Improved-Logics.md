@@ -253,6 +253,9 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
+- When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
+- Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
+- Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
 
 ## Fixes / interactions with other extensions
 
@@ -274,6 +277,19 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed an issue where some units crashed after the deployment transformation.
 - Fixed the bug that AlphaImage remained after unit entered tunnel.
 - Fixed an issue where Ares' `Convert.Deploy` triggers repeatedly when the unit is turning or moving.
+- The game now automatically changes save file name from `SAVEGAME.NET` to `SVGM_XXX.NET` (where `XXX` is a number) when saving to prevent occasional overwriting of the save file when using Phobos with XNA CnCNet Client and saving too frequently.
+  - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
+  - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
+  - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
+
+
+```{note}
+The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
+```
+
+```{note}
+At the moment this is only useful if you use a version of [YRpp Spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support (along with [XNA CnCNet Client](https://github.com/CnCNet/xna-cncnet-client)).
+```
 
 ## Aircraft
 
@@ -472,6 +488,27 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
 ## Buildings
+
+### AI base construction modification
+
+- AI can now have some new behaviors.
+  - `AIAutoDeployMCV` controls whether AI will still automatically deploy the mcv after owning a construction yard.
+  - `AISetBaseCenter` controls whether AI will still set the newly deployed construction yard as the base center after owning a construction yard.
+  - `AIBiasSpawnCell` controls whether AI will preferentially select the construction yard close to the birth point as the base center (useless in campaign).
+  - `AIForbidConYard` controls whether AI cannot place buildings with `ConstructionYard=true`. AI will try to build one after a construction yard is destroyed but will not put it down. After that, it will continue to build other buildings. Building a construction yard will still take some time. You can try to reduce the build time of it.
+  - `AINodeWallsOnly` controls whether AI can only automatically connect adjacent walls when there are wall base nodes around.
+  - `AICleanWallNode` controls whether AI cannot place walls when there are no `ProtectWithWall` buildings around. If it cannot be placed, this base node will also be removed.
+
+In `rulesmd.ini`:
+```ini
+[AI]
+AIAutoDeployMCV=true   ; boolean
+AISetBaseCenter=true   ; boolean
+AIBiasSpawnCell=false  ; boolean
+AIForbidConYard=false  ; boolean
+AINodeWallsOnly=false  ; boolean
+AICleanWallNode=false  ; boolean
+```
 
 ### Aircraft docking direction
 
@@ -810,6 +847,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
+```
+
+### Customizing initial facing behavior
+
+- Previously projectiles that had `Voxel=true` images were hardcoded to have downwards initial trajectory. This behavior can now be toggled on for other types of projectiles or disabled for voxel projectiles. In addition to defaulting to `true` for `Voxel=true` projectiles, it also now defaults to true for any `Vertical=true` projectile.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+VerticalInitialFacing=  ; boolean
 ```
 
 ### FlakScatter distance customization
@@ -1251,6 +1298,19 @@ IronCurtain.ExtraTintIntensity=0.0  ; floating point value
 ForceShield.ExtraTintIntensity=0.0  ; floating point value
 ```
 
+### Jumpjet climbing logic enhancement
+
+- You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
+- You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
+  - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+
+In `rulesmd.ini`:
+```ini
+[General]
+JumpjetClimbPredictHeight=false  ; boolean
+JumpjetClimbWithoutCutOut=false  ; boolean
+```
+
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -1621,6 +1681,20 @@ BunkerableAnyway=false     ; boolean
 Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
 
+### Customize harvester dump amount
+
+- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
+- Less than or equal to 0 means no limit, it will always dump out all at one time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterDumpAmount=0.0               ; float point value
+
+[SOMEVEHICLE]                         ; VehicleType
+HarvesterDumpAmount=                  ; float point value
+```
+
 ### Customizing crushing tilt and slowdown
 
 - Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
@@ -1770,6 +1844,33 @@ Sinkable.SquidGrab=true    ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
+### Turret recoil
+
+- Now you can use `TurretRecoil` to control units’ turret/barrel recoil effect when firing.
+  - `TurretTravel` and `BarrelTravel` control the maximum recoil distance.
+  - `TurretRecoil.Suppress` can prevent the weapon from producing this effect when firing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]             ; VehicleType
+TurretRecoil=no           ; boolean
+TurretTravel=2            ; integer, pixels
+TurretCompressFrames=1    ; integer, game frames
+TurretHoldFrames=1        ; integer, game frames
+TurretRecoverFrames=1     ; integer, game frames
+BarrelTravel=2            ; integer, pixels
+BarrelCompressFrames=1    ; integer, game frames
+BarrelHoldFrames=1        ; integer, game frames
+BarrelRecoverFrames=1     ; integer, game frames
+
+[SOMEWEAPON]              ; WeaponType
+TurretRecoil.Suppress=no  ; boolean
+```
+
+```{note}
+The logic above was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
+```
+
 ### Unit Without Turret Always Turn To Target
 
 - Now vehicles without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
@@ -1801,20 +1902,6 @@ In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
-```
-
-### Customize harvester dump amount
-
-- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
-- Less than or equal to 0 means no limit, it will always dump out all at one time.
-
-In `rulesmd.ini`:
-```ini
-[General]
-HarvesterDumpAmount=0.0               ; float point value
-
-[SOMEVEHICLE]                         ; VehicleType
-HarvesterDumpAmount=                  ; float point value
 ```
 
 ## Veinholes & Weeds
