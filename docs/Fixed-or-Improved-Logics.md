@@ -849,6 +849,16 @@ In `rulesmd.ini`:
 Gravity=6.0             ; floating point value
 ```
 
+### Customizing initial facing behavior
+
+- Previously projectiles that had `Voxel=true` images were hardcoded to have downwards initial trajectory. This behavior can now be toggled on for other types of projectiles or disabled for voxel projectiles. In addition to defaulting to `true` for `Voxel=true` projectiles, it also now defaults to true for any `Vertical=true` projectile.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+VerticalInitialFacing=  ; boolean
+```
+
 ### FlakScatter distance customization
 
 - By default `FlakScatter=true` makes `Inviso=true` projectiles scatter within a distance range calculated as `[Minimum * 2, Maximum * 2]` in cells, where the Minimum is 0 and Maximum is `[CombatDamage] -> BallisticScatter`, resulting in a range of `0` to `2 * BallisticScatter` cells. This behavior can now be customized using `BallisticScatter.Min` to set the Minimum value and `BallisticScatter.Max` to set the Maximum value. If not set, the default values are used. When estimating the actual scatter range, remember that the original `*2` multiplier mechanism still applies.
