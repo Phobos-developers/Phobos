@@ -2461,6 +2461,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMEWARHEAD]  ; WarheadType
 CanKill=true   ; boolean
+```
 
 ### Unlimbo Detonate
 
