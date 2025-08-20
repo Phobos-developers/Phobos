@@ -35,6 +35,12 @@ TechnoExt::ExtData::~ExtData()
 		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
 	}
 
+	if (this->IsSelected)
+	{
+		auto& vec = ScenarioExt::Global()->LimboLaunchers;
+		vec.erase(std::remove(vec.begin(), vec.end(), this), vec.end());
+	}
+
 	if (this->AnimRefCount > 0)
 		AnimExt::InvalidateTechnoPointers(pThis);
 

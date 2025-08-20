@@ -6,6 +6,7 @@
 #include <Ext/WarheadType/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/Helpers.Alex.h>
 
 #include <VoxelAnimClass.h>
@@ -430,11 +431,12 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 	pWHExt->InDamageArea = true;
 
-	if (pTechno && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	if (pTechno && pTechno->InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
 	{
 		CoordStruct location = *coords;
 		const auto pTarget = pThis->Target;
-		bool isInAir = pTarget ? pTarget->IsInAir() : false;
+		bool isInAir = pTarget && pTarget->AbstractFlags & AbstractFlags::Foot ? static_cast<FootClass*>(pTarget)->IsInAir() : false;
+		CellClass* pCell = nullptr;
 
 		if (!pWHExt->UnlimboDetonate_Force)
 		{
@@ -443,7 +445,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 									pType->SpeedType, -1, pType->MovementZone, false, 1, 1, true,
 									false, false, true, CellStruct::Empty, false, false);
 
-			const auto pCell = MapClass::Instance.TryGetCellAt(nCell);
+			pCell = MapClass::Instance.TryGetCellAt(nCell);
 
 			if (pCell)
 				location = pCell->GetCoordsWithBridge();
@@ -456,6 +458,12 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		pTechno->Unlimbo(location, pTechno->PrimaryFacing.Current().GetDir());
 		--Unsorted::ScenarioInit;
 
+		if (!pCell)
+			pCell = MapClass::Instance.TryGetCellAt(location);
+
+		if (pCell)
+			pTechno->OnBridge = pCell->ContainsBridge();
+
 		if (isInAir)
 		{
 			pTechno->IsFallingDown = true;
@@ -465,7 +473,7 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 		if (pWHExt->UnlimboDetonate_KeepTarget
 			&& pTarget && pTarget->AbstractFlags & AbstractFlags::Object)
 		{
-			pTechno->SetTarget(pThis->Target);
+			pTechno->SetTarget(pTarget);
 		}
 		else
 		{
@@ -476,6 +484,9 @@ DEFINE_HOOK(0x469AA4, BulletClass_Logics_Extras, 0x5)
 
 		if (pTechnoExt->IsSelected)
 		{
+			auto& vec = ScenarioExt::Global()->LimboLaunchers;
+			vec.erase(std::remove(vec.begin(), vec.end(), pTechnoExt), vec.end());
+
 			pTechno->Select();
 			pTechnoExt->IsSelected = false;
 		}

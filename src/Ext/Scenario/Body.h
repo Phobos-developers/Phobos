@@ -46,6 +46,8 @@ public:
 		PhobosFixedString<64u> DefaultLS800BkgdName;
 		PhobosFixedString<64u> DefaultLS800BkgdPal;
 
+		std::vector<TechnoExt::ExtData*> LimboLaunchers;
+
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
 			, BriefingTheme { -1 }
@@ -59,6 +61,7 @@ public:
 			, DefaultLS640BkgdName {}
 			, DefaultLS800BkgdName {}
 			, DefaultLS800BkgdPal {}
+			, LimboLaunchers {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

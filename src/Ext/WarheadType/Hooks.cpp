@@ -7,6 +7,7 @@
 #include <Ext/Bullet/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/WeaponType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 
 #pragma region Detonation
@@ -401,12 +402,39 @@ DEFINE_HOOK(0x6FF7FF, TechnoClass_Fire_UnlimboDetonate, 0x6)
 	const auto pBullet = UnlimboDetonateFireTemp::Bullet;
 	const auto pWHExt = WarheadTypeExt::ExtMap.Find(pWH);
 
-	if (!UnlimboDetonateFireTemp::InLimbo && pBullet && !pWH->Parasite && pWHExt->UnlimboDetonate)
+	if (pThis->IsAlive && pThis->Health > 0 && pBullet
+		&& !UnlimboDetonateFireTemp::InLimbo && !pWH->Parasite && pWHExt->UnlimboDetonate)
 	{
 		if (pWHExt->UnlimboDetonate_KeepSelected)
-			TechnoExt::ExtMap.Find(pThis)->IsSelected = UnlimboDetonateFireTemp::InSelected;
+		{
+			const auto pExt = TechnoExt::ExtMap.Find(pThis);
+			pExt->IsSelected = UnlimboDetonateFireTemp::InSelected;
+
+			auto& vec = ScenarioExt::Global()->LimboLaunchers;
+			const auto it = std::find(vec.begin(), vec.end(), pExt);
+
+			if (it == vec.end())
+				vec.push_back(pExt);
+		}
 
 		pBullet->Owner = pThis;
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x48DC90, MapClass_UnselectAll_ClearLimboLaunchers, 0x5)
+{
+	auto& vec = ScenarioExt::Global()->LimboLaunchers;
+
+	if (!vec.empty())
+	{
+		for (const auto pExt : vec)
+		{
+			pExt->IsSelected = false;
+		}
+
+		vec.clear();
 	}
 
 	return 0;
