@@ -1220,6 +1220,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
 ```{note}
 - `Trajectory.Tracing.StableRotation` need to cooperate with `Trajectory.CreateCapacity` records to take effect.
+- In this type, the `IsLaser` of the weapon will continuously connect the firing position of the firer and the position of the bullet.
 ```
 
 #### Trajectory demo

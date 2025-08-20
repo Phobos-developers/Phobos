@@ -226,7 +226,9 @@ inline void BulletExt::SimulatedFiringLaser(BulletClass* pBullet, HouseClass* pH
 
 	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
 	{
-		if (pTrajType->Flag() == TrajectoryFlag::Engrave)
+		const auto flag = pTrajType->Flag();
+
+		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
 			return;
 	}
 

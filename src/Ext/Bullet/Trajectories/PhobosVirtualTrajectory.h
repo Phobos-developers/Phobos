@@ -2,6 +2,8 @@
 
 #include "PhobosTrajectory.h"
 
+#include <LaserDrawClass.h>
+
 /*
 	Base class: Virtual Trajectory
 
@@ -42,16 +44,23 @@ public:
 	VirtualTrajectory(VirtualTrajectoryType const* pTrajType, BulletClass* pBullet)
 		: PhobosTrajectory(pTrajType, pBullet)
 		, SurfaceFirerID { 0 }
+		, Laser { nullptr }
+		, LaserTimer {}
 	{ }
 
 	DWORD SurfaceFirerID; // UniqueID of the "launcher"
+	LaserDrawClass* Laser; // Fixed laser
+	CDTimerClass LaserTimer; // Record the remaining time of the laser
 
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual void OnUnlimbo() override;
 	virtual bool OnEarlyUpdate() override;
+	virtual void OnPreDetonate() override;
 
 	bool InvalidFireCondition(TechnoClass* pTechno);
+	void DrawTrackingLaser();
+	void UpdateTrackingLaser();
 
 private:
 	template <typename T>

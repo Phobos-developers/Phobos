@@ -106,15 +106,6 @@ bool TracingTrajectory::Save(PhobosStreamWriter& Stm) const
 	return true;
 }
 
-void TracingTrajectory::OnUnlimbo()
-{
-	this->VirtualTrajectory::OnUnlimbo();
-
-	// Waiting for launch trigger
-	if (!BulletExt::ExtMap.Find(this->Bullet)->DispersedTrajectory)
-		this->OpenFire();
-}
-
 bool TracingTrajectory::OnEarlyUpdate()
 {
 	if (this->VirtualTrajectory::OnEarlyUpdate())

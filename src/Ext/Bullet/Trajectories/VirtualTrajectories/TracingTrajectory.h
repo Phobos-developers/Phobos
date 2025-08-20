@@ -56,7 +56,6 @@ public:
 	virtual bool Load(PhobosStreamReader& Stm, bool RegisterForChange) override;
 	virtual bool Save(PhobosStreamWriter& Stm) const override;
 	virtual TrajectoryFlag Flag() const override { return TrajectoryFlag::Tracing; }
-	virtual void OnUnlimbo() override;
 	virtual bool OnEarlyUpdate() override;
 	virtual bool OnVelocityCheck() override;
 	virtual const PhobosTrajectoryType* GetType() const override { return this->Type; }

@@ -147,6 +147,10 @@ bool MissileTrajectory::OnEarlyUpdate()
 	if (this->PhobosTrajectory::OnEarlyUpdate())
 		return true;
 
+	// In the phase of playing PreImpactAnim
+	if (this->Bullet->SpawnNextAnim)
+		return false;
+
 	// Restore ProjectileRange
 	if (!this->Type->UniqueCurve)
 		this->CheckProjectileRange();

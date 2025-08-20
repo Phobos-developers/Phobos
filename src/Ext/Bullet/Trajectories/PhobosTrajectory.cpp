@@ -1301,14 +1301,16 @@ DEFINE_HOOK(0x415F25, AircraftClass_Fire_TrajectorySkipInertiaEffect, 0x6)
 // Engrave laser using the unique logic
 DEFINE_HOOK(0x6FD217, TechnoClass_CreateLaser_EngraveDrawNoLaser, 0x5)
 {
-	enum { SkipCheck = 0x6FD456 };
+	enum { SkipCreate = 0x6FD456 };
 
 	GET(WeaponTypeClass*, pWeapon, EAX);
 
 	if (const auto pTrajType = BulletTypeExt::ExtMap.Find(pWeapon->Projectile)->TrajectoryType.get())
 	{
-		if (pTrajType->Flag() == TrajectoryFlag::Engrave)
-			return SkipCheck;
+		const auto flag = pTrajType->Flag();
+
+		if (flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing)
+			return SkipCreate;
 	}
 
 	return 0;
