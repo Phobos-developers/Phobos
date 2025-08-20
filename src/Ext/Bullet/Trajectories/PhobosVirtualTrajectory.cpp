@@ -51,6 +51,7 @@ bool VirtualTrajectory::Load(PhobosStreamReader& Stm, bool RegisterForChange)
 {
 	this->PhobosTrajectory::Load(Stm, false);
 	this->Serialize(Stm);
+	this->Laser = nullptr;
 	return true;
 }
 
