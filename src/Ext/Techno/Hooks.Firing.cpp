@@ -438,13 +438,13 @@ DEFINE_HOOK(0x6FDD7D, TechnoClass_FireAt_UpdateWeaponType, 0x5)
 	GET(TechnoClass* const, pThis, ESI);
 	GET(WeaponTypeClass* const, pWeapon, EBX);
 
-	if (pWeapon->LimboLaunch && !pThis->GetTechnoType()->Turret)
+	if (pWeapon->LimboLaunch)
 	{
 		const auto pWH = pWeapon->Warhead;
 
 		if (!pWH->Parasite && WarheadTypeExt::ExtMap.Find(pWH)->UnlimboDetonate)
 		{
-			if (const auto pFoot = abstract_cast<FootClass*>(pThis))
+			if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 			{
 				if (pFoot->Locomotor->Is_Really_Moving_Now())
 					return CanNotFire;
