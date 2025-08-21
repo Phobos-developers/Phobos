@@ -148,6 +148,11 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->ShowBriefing = pINI->ReadBool(GameStrings::Basic, "ShowBriefing", this->ShowBriefing);
 		this->BriefingTheme = pINI->ReadTheme(GameStrings::Basic, "BriefingTheme", this->BriefingTheme);
 	}
+
+	// Dropship loadout stuff
+	this->DropshipLoadoutTheme = pINI->ReadTheme(GameStrings::Basic, "DropshipLoadoutTheme", this->DropshipLoadoutTheme);
+	this->DropshipLoadoutMoney = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadoutMoney", this->DropshipLoadoutMoney);
+	this->DropshipLoadoutStartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadoutStartEVA", this->DropshipLoadoutStartEVA);
 }
 
 template <typename T>
@@ -163,6 +168,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransportReloaders)
 		.Process(this->SWSidebar_Enable)
 		.Process(this->SWSidebar_Indices)
+		.Process(this->DropshipLoadoutTheme)
+		.Process(this->DropshipLoadoutMoney)
+		.Process(this->DropshipLoadoutStartEVA)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }

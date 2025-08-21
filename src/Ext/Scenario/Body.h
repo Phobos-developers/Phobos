@@ -30,6 +30,9 @@ public:
 
 		bool ShowBriefing;
 		int BriefingTheme;
+		int DropshipLoadoutTheme;
+		long DropshipLoadoutMoney;
+		NullableIdx<VoxClass> DropshipLoadoutStartEVA;
 
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
@@ -52,6 +55,9 @@ public:
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
 			, NewMessageList {}
+			, DropshipLoadoutTheme { -1 }
+			, DropshipLoadoutMoney { -1 }
+			, DropshipLoadoutStartEVA {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

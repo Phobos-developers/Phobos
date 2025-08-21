@@ -418,6 +418,8 @@ public:
 
 		Nullable<bool> InfantryAutoDeploy;
 
+		PhobosPCXFile CameoPCX;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
 			, UIDescription {}
@@ -448,6 +450,7 @@ public:
 			, ImmuneToCrit { false }
 			, MultiMindControl_ReleaseVictim { false }
 			, CameoPriority { 0 }
+			, CameoPCX {}
 			, NoManualMove { false }
 			, InitialStrength {}
 			, ReloadInTransport { false }
