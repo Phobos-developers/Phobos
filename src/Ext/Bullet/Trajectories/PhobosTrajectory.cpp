@@ -504,7 +504,10 @@ bool PhobosTrajectory::OnVelocityCheck()
 void PhobosTrajectory::OnVelocityUpdate(BulletVelocity* pSpeed, BulletVelocity* pPosition)
 {
 	// Set true moving velocity
-	*pSpeed = this->MovingVelocity;
+	if (this->MovingSpeed >= 0.5)
+		*pSpeed = this->MovingVelocity;
+	else
+		*pSpeed = BulletVelocity::Empty;
 }
 
 // Something that needs to be done after updating the velocity of the projectile
