@@ -61,7 +61,8 @@ bool DigitalDisplayTypeClass::CanShow(TechnoClass* pThis)
 	if (!this->VisibleInSpecialState && (pThis->TemporalTargetingMe || pThis->IsIronCurtained()))
 		return false;
 
-	DisplayShowType flags = this->ShowType;
+	const DisplayShowType flags = this->ShowType;
+
 	if (flags == DisplayShowType::All)
 		return true;
 

@@ -29,9 +29,7 @@ DEFINE_HOOK(0x6F5E37, TechnoClass_DrawExtras_DrawHealthBar, 0x6)
 
 	GET(TechnoClass*, pThis, EBP);
 
-	const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->GetTechnoType());
-
-	if ((pThis->IsMouseHovering || pTypeExt->HealthBar_Permanent.Get())
+	if ((pThis->IsMouseHovering || TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent)
 		&& !MapClass::Instance.IsLocationShrouded(pThis->GetCoords()))
 	{
 		return Permanent;
@@ -60,7 +58,7 @@ DEFINE_HOOK(0x6F6637, TechnoClass_DrawHealthBar_HideBuildingsPips, 0x5)
 
 	GET(TechnoClass*, pThis, ESI);
 
-	bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
+	const bool hidePips = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_HidePips;
 
 	return hidePips ? SkipDrawPips : 0;
 }
@@ -72,7 +70,7 @@ DEFINE_HOOK(0x6F67E8, TechnoClass_DrawHealthBar_PermanentPipScale, 0xA)			// Dra
 
 	GET(TechnoClass*, pThis, ESI);
 
-	bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
+	const bool showPipScale = TechnoExt::ExtMap.Find(pThis)->TypeExtData->HealthBar_Permanent_PipScale;
 
 	return !showPipScale && !pThis->IsMouseHovering && !pThis->IsSelected ? Permanent : 0;
 }
