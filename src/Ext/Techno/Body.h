@@ -79,6 +79,10 @@ public:
 
 		CDTimerClass FiringAnimationTimer;
 
+		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
+		// the deploy animation timer calcs and eliminate possibility of outside interference.
+		CDTimerClass SimpleDeployerAnimationTimer;
+
 		// cache tint values
 		int TintColorOwner;
 		int TintColorAllies;
@@ -134,6 +138,7 @@ public:
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 			, FiringAnimationTimer {}
+			, SimpleDeployerAnimationTimer {}
 			, DelayedFireSequencePaused { false }
 			, DelayedFireWeaponIndex { -1 }
 			, DelayedFireTimer {}

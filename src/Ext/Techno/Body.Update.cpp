@@ -1033,7 +1033,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
 
 	// Update movement sound if still moving while type changed.
-	if (pThis->Locomotor->Is_Moving_Now() && pThis->IsMoveSoundPlaying)
+	if (pThis->IsMoveSoundPlaying && pThis->Locomotor->Is_Moving())
 	{
 		if (pCurrentType->MoveSound != pOldType->MoveSound)
 		{
