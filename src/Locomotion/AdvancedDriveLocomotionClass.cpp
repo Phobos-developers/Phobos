@@ -13,6 +13,65 @@
 
 // Virtual
 
+Matrix3D AdvancedDriveLocomotionClass::Draw_Matrix(VoxelIndexKey* key)
+{
+	const double rate = this->SlopeTimer.GetRatePassed();
+	const auto pLinked = this->LinkedTo;
+	const float ars = std::abs(pLinked->AngleRotatedSideways);
+	const float arf = std::abs(pLinked->AngleRotatedForwards);
+
+	if (rate == 1.0 && ars < 0.005 && arf < 0.005)
+	{
+		if (key && key->Is_Valid_Key())
+			key->Value = (key->Value << 6) + this->CurrentRamp;
+
+		const auto locoMtx = LocomotionClass::Draw_Matrix(key);
+		const auto rampMtx = this->CurrentRamp ? Matrix3D::VoxelRampMatrix[this->CurrentRamp] : Matrix3D::GetIdentity();
+
+		return rampMtx * locoMtx;
+	}
+
+	const auto pType = pLinked->GetTechnoType();
+	const auto scaleX = pType->VoxelScaleX;
+	const auto scaleY = pType->VoxelScaleY;
+
+	auto baseMtx = Matrix3D::GetIdentity();
+	baseMtx.TranslateZ(static_cast<float>(std::abs(Math::sin(ars)) * scaleX + std::abs(Math::sin(arf)) * scaleY));
+
+	auto extraMtx = Matrix3D::GetIdentity();
+	extraMtx.TranslateX(static_cast<float>(Math::sgn(arf) * ((1 - Math::cos(arf)) * scaleY)));
+	extraMtx.TranslateY(static_cast<float>(Math::sgn(-ars) * ((1 - Math::cos(ars)) * scaleX)));
+	extraMtx.RotateX(ars);
+	extraMtx.RotateY(arf);
+
+	if (key)
+		key->Invalidate();
+
+	auto getLerpVoxelRampMatrix = [&rate](int previous, int current)
+	{
+		Matrix3D mtx;
+		reinterpret_cast<Matrix3D*(__fastcall*)(Matrix3D*, int, int, double)>(0x755A40)(&mtx, previous, current, rate);
+		return mtx;
+	};
+	const auto locoMtx = LocomotionClass::Draw_Matrix(key);
+	const auto rampMtx = rate >= 1.0 ? Matrix3D::VoxelRampMatrix[this->CurrentRamp] : getLerpVoxelRampMatrix(this->PreviousRamp, this->CurrentRamp);
+
+	return ((baseMtx * rampMtx) * locoMtx) * extraMtx;
+}
+
+Matrix3D AdvancedDriveLocomotionClass::Shadow_Matrix(VoxelIndexKey* key)
+{
+	if (this->SlopeTimer.GetRatePassed() != 1.0
+		|| std::abs(this->LinkedTo->AngleRotatedSideways) >= 0.005
+		|| std::abs(this->LinkedTo->AngleRotatedForwards) >= 0.005)
+	{
+		if (key)
+			key->Invalidate();
+	}
+
+	return LocomotionClass::Shadow_Matrix(key);
+}
+
 bool AdvancedDriveLocomotionClass::Process()
 {
 	const auto pLinked = this->LinkedTo;

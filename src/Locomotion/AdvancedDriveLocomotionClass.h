@@ -119,8 +119,8 @@ public:
 			&& (this->HeadToCoord.X != this->LinkedTo->Location.X
 				|| this->HeadToCoord.Y != this->LinkedTo->Location.Y);
 	}
-	virtual CoordStruct __stdcall Destination() override { return this->TargetCoord; } // CoordStruct*
-	virtual CoordStruct __stdcall Head_To_Coord() override // CoordStruct*
+	virtual CoordStruct __stdcall Destination() override { return this->TargetCoord; }
+	virtual CoordStruct __stdcall Head_To_Coord() override
 	{
 		if (this->HeadToCoord == CoordStruct::Empty)
 			return this->LinkedTo->Location;
@@ -129,10 +129,10 @@ public:
 	}
 //	virtual Move __stdcall Can_Enter_Cell(CellStruct cell) override { return Move::OK; }
 //	virtual bool __stdcall Is_To_Have_Shadow() override { return true; }
-	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* key) override { JMP_STD(0x4AFF60); } // TODO but lazy
-	virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* key) override { JMP_STD(0x4B0410); } // TODO but lazy
-//	virtual Point2D __stdcall Draw_Point() override { return this->LocomotionClass::Draw_Point(); } // Point2D*
-//	virtual Point2D __stdcall Shadow_Point() override { return this->LocomotionClass::Shadow_Point(); } // Point2D*
+	virtual Matrix3D __stdcall Draw_Matrix(VoxelIndexKey* key) override;
+	virtual Matrix3D __stdcall Shadow_Matrix(VoxelIndexKey* key) override;
+//	virtual Point2D __stdcall Draw_Point() override { return this->LocomotionClass::Draw_Point(); }
+//	virtual Point2D __stdcall Shadow_Point() override { return this->LocomotionClass::Shadow_Point(); }
 //	virtual VisualType __stdcall Visual_Character(bool raw) override { return VisualType::Normal; }
 	virtual int __stdcall Z_Adjust() override { return 0; }
 	virtual ZGradient __stdcall Z_Gradient() override { return ZGradient::Deg90; }
