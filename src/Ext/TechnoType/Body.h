@@ -273,11 +273,19 @@ public:
 
 		Nullable<bool> RecountBurst;
 
-		Valueable<double> AdvancedDrive_ReverseSpeed;
-		Valueable<Leptons> AdvancedDrive_FaceTargetRange;
-		Valueable<Leptons> AdvancedDrive_MinimumDistance;
-		Valueable<bool> AdvancedDrive_ConfrontEnemies;
-		Valueable<int> AdvancedDrive_RetreatDuration;
+		Valueable<bool> AdvancedDrive_Reverse;
+		Valueable<bool> AdvancedDrive_Reverse_FaceTarget;
+		Valueable<Leptons> AdvancedDrive_Reverse_FaceTargetRange;
+		Valueable<Leptons> AdvancedDrive_Reverse_MinimumDistance;
+		Valueable<int> AdvancedDrive_Reverse_RetreatDuration;
+		Valueable<double> AdvancedDrive_Reverse_Speed;
+		Valueable<bool> AdvancedDrive_Hover;
+		Valueable<bool> AdvancedDrive_Hover_Sink;
+		Valueable<bool> AdvancedDrive_Hover_Spin;
+		Valueable<bool> AdvancedDrive_Hover_Tilt;
+		Nullable<int> AdvancedDrive_Hover_Height;
+		Nullable<double> AdvancedDrive_Hover_Dampen;
+		Nullable<double> AdvancedDrive_Hover_Bob;
 
 		ValueableVector<TechnoTypeClass*> BuildLimitGroup_Types;
 		ValueableVector<int> BuildLimitGroup_Nums;
@@ -668,11 +676,19 @@ public:
 
 			, RecountBurst {}
 
-			, AdvancedDrive_ReverseSpeed { 0.85 }
-			, AdvancedDrive_FaceTargetRange { Leptons(4096) }
-			, AdvancedDrive_MinimumDistance { Leptons(640) }
-			, AdvancedDrive_ConfrontEnemies { true }
-			, AdvancedDrive_RetreatDuration { 150 }
+			, AdvancedDrive_Reverse { true }
+			, AdvancedDrive_Reverse_FaceTarget { true }
+			, AdvancedDrive_Reverse_FaceTargetRange { Leptons(4096) }
+			, AdvancedDrive_Reverse_MinimumDistance { Leptons(640) }
+			, AdvancedDrive_Reverse_RetreatDuration { 150 }
+			, AdvancedDrive_Reverse_Speed { 0.85 }
+			, AdvancedDrive_Hover { false }
+			, AdvancedDrive_Hover_Sink { true }
+			, AdvancedDrive_Hover_Spin { true }
+			, AdvancedDrive_Hover_Tilt { true }
+			, AdvancedDrive_Hover_Height {}
+			, AdvancedDrive_Hover_Dampen {}
+			, AdvancedDrive_Hover_Bob {}
 
 			, BuildLimitGroup_Types {}
 			, BuildLimitGroup_Nums {}
