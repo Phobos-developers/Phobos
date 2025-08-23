@@ -594,6 +594,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
+	this->HealthBar_HidePips.Read(exINI, pSection, "HealthBar.HidePips");
+	this->HealthBar_Permanent.Read(exINI, pSection, "HealthBar.Permanent");
+	this->HealthBar_Permanent_PipScale.Read(exINI, pSection, "HealthBar.Permanent.PipScale");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
@@ -1235,6 +1238,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->HealthBar_Hide)
+		.Process(this->HealthBar_HidePips)
+		.Process(this->HealthBar_Permanent)
+		.Process(this->HealthBar_Permanent_PipScale)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
