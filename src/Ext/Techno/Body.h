@@ -238,6 +238,7 @@ public:
 	static void ObjectKilledBy(TechnoClass* pThis, TechnoClass* pKiller);
 	static void UpdateSharedAmmo(TechnoClass* pThis);
 	static double GetCurrentSpeedMultiplier(FootClass* pThis);
+	static double GetCurrentFirepowerMultiplier(TechnoClass* pThis);
 	static void DrawSelfHealPips(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void DrawInsignia(TechnoClass* pThis, Point2D* pLocation, RectangleStruct* pBounds);
 	static void ApplyGainedSelfHeal(TechnoClass* pThis);
@@ -264,6 +265,7 @@ public:
 	static bool IsHealthInThreshold(TechnoClass* pObject, double min, double max);
 	static UnitTypeClass* GetUnitTypeExtra(UnitClass* pUnit);
 	static AircraftTypeClass* GetAircraftTypeExtra(AircraftClass* pAircraft);
+	static bool CannotMove(UnitClass* pThis);
 
 	// WeaponHelpers.cpp
 	static int PickWeaponIndex(TechnoClass* pThis, TechnoClass* pTargetTechno, AbstractClass* pTarget, int weaponIndexOne, int weaponIndexTwo, bool allowFallback = true, bool allowAAFallback = true);

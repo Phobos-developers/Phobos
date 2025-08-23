@@ -28,6 +28,7 @@ public:
 	Valueable<int> InfoIndex;
 	Nullable<int> ValueScaleDivisor;
 	Valueable<bool> ValueAsTimer;
+	Valueable<DisplayShowType> ShowType;
 
 	DigitalDisplayTypeClass(const char* pTitle = NONE_STR) : Enumerable<DigitalDisplayTypeClass>(pTitle)
 		, Text_Color { { 0, 255, 0 }, { 255, 255, 0 }, { 255, 0, 0 } }
@@ -50,12 +51,14 @@ public:
 		, InfoIndex { 0 }
 		, ValueScaleDivisor {}
 		, ValueAsTimer { false }
+		, ShowType { DisplayShowType::Select }
 	{ }
 
 	void LoadFromINI(CCINIClass* pINI);
 	void LoadFromStream(PhobosStreamReader& Stm);
 	void SaveToStream(PhobosStreamWriter& Stm);
 
+	bool CanShow(TechnoClass* pThis);
 	void Draw(Point2D position, int length, int value, int maxValue, bool isBuilding, bool isInfantry, bool hasShield);
 
 private:

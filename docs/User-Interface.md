@@ -79,6 +79,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1. Default to 1 (or 15 when set `ValueAsTimer` to true).
 
   - `DigitalDisplay.Health.FakeAtDisguise`, if set to true on an InfantryType with Disguise, will use the disguised TechnoType's `Strength` value as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value.
+  - `ShowType` specifies the conditions under which it can be displayed. Note that `idle` is only available when `HealthBar.Permanent=yes`.
 
 In `rulesmd.ini`:
 ```ini
@@ -108,6 +109,7 @@ VisibleToHouses.Observer=true                  ; boolean
 VisibleInSpecialState=true                     ; boolean
 ValueScaleDivisor=                             ; integer
 ValueAsTimer=false                             ; boolean
+ShowType=cursorhover,selected                  ; Displayed ShowType Enumeration (cursorhover|selected|idle|all)
 ; Text
 Text.Color=0,255,0                             ; integers - Red, Green, Blue
 Text.Color.ConditionYellow=255,255,0           ; integers - Red, Green, Blue
@@ -173,11 +175,17 @@ ShowFlashOnSelecting=false  ; boolean
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
+  - `HealthBar.Permanent` will display health points at all times.
+  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]            ; TechnoType
-HealthBar.Hide=false  ; boolean
+[SOMENAME]                          ; TechnoType
+HealthBar.Hide=false                ; boolean
+HealthBar.HidePips=false            ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
 ### Light flash effect toggling
@@ -462,7 +470,12 @@ DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 
 ### `[ ]` Quicksave
 
-- Save the current singleplayer game.
+- Saves the current game.
+
+```{note}
+For this command to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - For localization, add `TXT_QUICKSAVE`, `TXT_QUICKSAVE_DESC`, `TXT_QUICKSAVE_SUFFIX` and `MSG:NotAvailableInMultiplayer` into your `.csf` file.
   - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
   - The save should be looks like `Allied Mission 25: Esther's Money - QuickSaved`.
@@ -665,36 +678,6 @@ In `rulesmd.ini`:
 Sidebar.GDIPositions=  ; boolean
 ```
 
-### Weeds counter
-
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
-  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
-  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-WeedsCounter.Show=false          ; boolean
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                       ; Side
-Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowWeedsCounter=true  ; boolean
-```
-
-```{note}
-Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
-```
-
 ### SuperWeapon Sidebar
 
 ![image](_static/images/sw_sidebar.png)
@@ -767,6 +750,36 @@ SuperWeaponSidebar.RequiredSignificance=0   ; integer
 
 ```{hint}
 While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ## Tooltips

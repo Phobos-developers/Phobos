@@ -30,6 +30,9 @@ public:
 	{
 	public:
 		Valueable<bool> HealthBar_Hide;
+		Valueable<bool> HealthBar_HidePips;
+		Valueable<bool> HealthBar_Permanent;
+		Valueable<bool> HealthBar_Permanent_PipScale;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
@@ -412,8 +415,19 @@ public:
 		Valueable<int> MultiWeapon_SelectCount;
 		bool ReadMultiWeapon;
 
+		ValueableIdx<VocClass> VoiceIFVRepair;
+		ValueableVector<int> VoiceWeaponAttacks;
+		ValueableVector<int> VoiceEliteWeaponAttacks;
+
+		Nullable<bool> InfantryAutoDeploy;
+
+		Nullable<bool> TurretResponse;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
+			, HealthBar_HidePips { false }
+			, HealthBar_Permanent { false }
+			, HealthBar_Permanent_PipScale { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
@@ -773,6 +787,14 @@ public:
 			, MultiWeapon_IsSecondary {}
 			, MultiWeapon_SelectCount { 2 }
 			, ReadMultiWeapon { false }
+
+			, VoiceIFVRepair { -1 }
+			, VoiceWeaponAttacks {}
+			, VoiceEliteWeaponAttacks {}
+
+			, InfantryAutoDeploy {}
+
+			, TurretResponse {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -784,7 +806,7 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+		void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();
@@ -801,7 +823,7 @@ public:
 		void Serialize(T& Stm);
 
 		void ParseBurstFLHs(INI_EX& exArtINI, const char* pArtSection, std::vector<std::vector<CoordStruct>>& nFLH, std::vector<std::vector<CoordStruct>>& nEFlh, const char* pPrefixTag);
-
+		void ParseVoiceWeaponAttacks(INI_EX& exINI, const char* pSection, ValueableVector<int>& n, ValueableVector<int>& nE);
 	};
 
 	class ExtContainer final : public Container<TechnoTypeExt>

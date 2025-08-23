@@ -119,7 +119,7 @@ DEFINE_HOOK(0x42453E, AnimClass_AI_Damage, 0x6)
 				pOwner = pInvoker->Owner;
 
 			if (pTypeExt->Damage_ApplyFirepowerMult)
-				appliedDamage = static_cast<int>(appliedDamage * pInvoker->FirepowerMultiplier * TechnoExt::ExtMap.Find(pInvoker)->AE.FirepowerMultiplier);
+				appliedDamage = static_cast<int>(appliedDamage * TechnoExt::GetCurrentFirepowerMultiplier(pInvoker));
 		}
 	}
 
