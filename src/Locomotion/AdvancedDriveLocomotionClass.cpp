@@ -56,7 +56,7 @@ Matrix3D AdvancedDriveLocomotionClass::Draw_Matrix(VoxelIndexKey* key)
 	const auto locoMtx = LocomotionClass::Draw_Matrix(key);
 	const auto rampMtx = rate >= 1.0 ? Matrix3D::VoxelRampMatrix[this->CurrentRamp] : getLerpVoxelRampMatrix(this->PreviousRamp, this->CurrentRamp);
 
-	return ((baseMtx * rampMtx) * locoMtx) * extraMtx;
+	return baseMtx * rampMtx * locoMtx * extraMtx;
 }
 
 Matrix3D AdvancedDriveLocomotionClass::Shadow_Matrix(VoxelIndexKey* key)
@@ -738,25 +738,18 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 		if (pLinked->WhatAmI() != AbstractType::Unit)
 			break;
 
+		const auto pLink = abstract_cast<BuildingClass*>(pLinked->GetNthLink());
+
+		if (pLink && pLink->Type->Bunker)
+		{
+			this->IsForward = true;
+			break;
+		}
+
 		if (static_cast<UnitTypeClass*>(pType)->Harvester || static_cast<UnitTypeClass*>(pType)->Weeder)
 		{
-			auto IsReturnToRefinery = [pLinked]()
-			{
-				if (pLinked->CurrentMission != Mission::Enter || pLinked->MissionStatus)
-					return false;
-
-				if (pLinked->DistanceFrom(pLinked->Destination) > 363 || pLinked->GetCell()->GetBuilding())
-					return false;
-
-				const auto pLink = pLinked->GetNthLink();
-
-				if (!pLink || pLink->WhatAmI() != AbstractType::Building)
-					return false;
-
-				return static_cast<BuildingClass*>(pLink)->Type->Refinery;
-			};
-
-			if (IsReturnToRefinery())
+			if (pLink && pLink->Type->Refinery && pLinked->CurrentMission == Mission::Enter && !pLinked->MissionStatus
+				&& pLinked->DistanceFrom(pLinked->Destination) <= 363 && !pLinked->GetCell()->GetBuilding())
 			{
 				this->IsForward = false;
 				break;
@@ -773,30 +766,24 @@ bool AdvancedDriveLocomotionClass::PassableCheck(bool* pStop, bool force, bool c
 			const auto tgtDir = pTypeExt->AdvancedDrive_ConfrontEnemies
 				? DirStruct(Math::atan2(pLinked->Location.Y - this->ForwardTo.Y, this->ForwardTo.X - pLinked->Location.X))
 				: pLinked->PrimaryFacing.Current();
-			const auto deltaTgtDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
-				- static_cast<short>(tgtDir.Raw)));
-			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
-				- static_cast<short>(tgtDir.Raw)));
+			const auto deltaTgtDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw) - static_cast<short>(tgtDir.Raw)));
+			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768) - static_cast<short>(tgtDir.Raw)));
 			this->IsForward = deltaTgtDir <= deltaOppDir;
 		}
 		else if ((Unsorted::CurrentFrame - TechnoExt::ExtMap.Find(pLinked)->LastHurtFrame) <= pTypeExt->AdvancedDrive_RetreatDuration
 			|| pLinked->Destination && pLinked->DistanceFrom(pLinked->Destination) <= pTypeExt->AdvancedDrive_MinimumDistance.Get())
 		{
 			const auto curDir = pLinked->PrimaryFacing.Current();
-			const auto deltaCurDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
-				- static_cast<short>(curDir.Raw)));
-			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
-				- static_cast<short>(curDir.Raw)));
+			const auto deltaCurDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw) - static_cast<short>(curDir.Raw)));
+			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768) - static_cast<short>(curDir.Raw)));
 			this->IsForward = deltaCurDir <= deltaOppDir;
 		}
 		else if (pLinked->ArchiveTarget && pLinked->CurrentMission == Mission::Area_Guard
 			&& pLinked->Owner->IsControlledByHuman() && !pType->DefaultToGuardArea)
 		{
 			const auto defDir = pLinked->GetTargetDirection(pLinked->ArchiveTarget);
-			const auto deltaDefDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw)
-				- static_cast<short>(defDir.Raw)));
-			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768)
-				- static_cast<short>(defDir.Raw)));
+			const auto deltaDefDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw) - static_cast<short>(defDir.Raw)));
+			const auto deltaOppDir = std::abs(static_cast<short>(static_cast<short>(desiredRaw + 32768) - static_cast<short>(defDir.Raw)));
 			this->IsForward = deltaDefDir > deltaOppDir;
 		}
 		else
