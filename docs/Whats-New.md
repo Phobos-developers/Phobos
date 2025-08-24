@@ -435,6 +435,7 @@ New:
 - [Jumpjet Climbing Logic Enhancement](Fixed-or-Improved-Logics.md#jumpjet-climbing-logic-enhancement) (by CrimRecya)
 - [Restore turret recoil effect](Fixed-or-Improved-Logics.md#turret-recoil) (by CrimRecya)
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
+- Health bar permanently displayed (by FlyStar)
 - Unlimbo Detonate warhead (by FlyStar)
 
 Vanilla fixes:
