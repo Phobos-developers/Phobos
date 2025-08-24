@@ -576,6 +576,7 @@ bool ShieldClass::ConvertCheck()
 {
 	const auto newID = this->Techno->GetTechnoType();
 
+	// If there has been no actual TechnoType conversion then we bail out early.
 	if (this->TechnoID == newID)
 		return false;
 
@@ -584,24 +585,26 @@ bool ShieldClass::ConvertCheck()
 	const auto pOldType = this->Type;
 	const bool allowTransfer = this->Type->AllowTransfer.Get(Attached);
 
-	// Update shield type.
 	if (!allowTransfer && (!pTechnoTypeExt->ShieldType || pTechnoTypeExt->ShieldType->Strength <= 0))
 	{
+		// Case 1: Old shield is not allowed to transfer or there's no eligible new shield type -> delete shield.
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = nullptr;
 		pTechnoExt->Shield = nullptr;
 		this->UpdateTint();
-
 		return true;
 	}
-	else if (pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0)
+	else if (!allowTransfer && pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0)
 	{
+		// Case 2: Old shield is not allowed to transfer and the new type is eligible for activation -> use the new shield type.
 		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType;
+		this->Type = pTechnoTypeExt->ShieldType;
 	}
 
+	// Our new type is either the old shield or the changed type from the above two scenarios.
 	const auto pNewType = pTechnoExt->CurrentShieldType;
 
-	// Update shield properties.
+	// Update shield properties if we still have a shield.
 	if (pNewType && pNewType->Strength > 0 && this->Available)
 	{
 		const bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
@@ -633,7 +636,7 @@ bool ShieldClass::ConvertCheck()
 	}
 
 	this->TechnoID = newID;
-	this->UpdateTint();
+	this->UpdateTint(true); // Force tint update on shield type conversion.
 
 	return false;
 }
@@ -840,9 +843,9 @@ void ShieldClass::UpdateIdleAnim()
 	}
 }
 
-void ShieldClass::UpdateTint()
+void ShieldClass::UpdateTint(bool forceUpdate)
 {
-	if (this->Type->HasTint())
+	if (this->Type->HasTint() || forceUpdate)
 	{
 		TechnoExt::ExtMap.Find(this->Techno)->UpdateTintValues();
 		this->Techno->MarkForRedraw();
