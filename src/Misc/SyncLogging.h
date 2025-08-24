@@ -14,6 +14,11 @@ static constexpr unsigned int DestinationChanges_Size = 1024;
 static constexpr unsigned int MissionOverrides_Size = 256;
 static constexpr unsigned int AnimCreations_Size = 512;
 
+// Intention: Data structure that stores sync event records.
+// Stores fixed amount of items determined by size template arg. Any further additions
+// start to overwrite items from oldest to newest, cycling endlessly where need be.
+// Likewise read/get returns items in order they were added from oldest to newest.
+// TODO: Clean up / improve
 template <typename T, unsigned int size>
 class SyncLogEventBuffer
 {
@@ -21,7 +26,7 @@ private:
 	std::vector<T> Data;
 	int LastWritePosition;
 	int LastReadPosition;
-	bool HasBeenFilled = true;
+	bool HasBeenFilled;
 public:
 	SyncLogEventBuffer() : Data(size), LastWritePosition(0), LastReadPosition(-1), HasBeenFilled(false) { };
 

@@ -338,7 +338,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
 				&& !pDest->OnBridge && !pDest->Destination)
 			{
 				auto cell = CellStruct::Empty;
-				reinterpret_cast<CellStruct*(__thiscall*)(FootClass*, CellStruct*, AbstractClass*)>(0x703590)(pThis, &cell, pDest);
+				pThis->NearbyLocation(&cell, pDest);
 
 				if (cell != CellStruct::Empty)
 				{
