@@ -406,7 +406,7 @@ msgstr ""
 msgid ""
 "You can specify theater-specific palettes and shapes by putting three `~`"
 " marks to the theater specific part of the filename. `~~~` is replaced "
-"with the theater’s three-letter extension."
+"with the theater's three-letter extension."
 msgstr "你可以通过在文件名的特定部分添加三个 `~` 标记来指定特定气候的色盘和 Shape 文件。`~~~` 将被替换为气候的三字母扩展名。"
 
 #: ../../User-Interface.md:177

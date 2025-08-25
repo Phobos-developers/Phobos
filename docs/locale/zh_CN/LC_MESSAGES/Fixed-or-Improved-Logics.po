@@ -1431,7 +1431,7 @@ msgstr "修复了周围没有空地时释放驻军会导致它们消失的问题
 
 #: ../../Fixed-or-Improved-Logics.md:236
 msgid ""
-"Fixed the bug that Locomotor warhead won’t stop working when the attacker"
+"Fixed the bug that Locomotor warhead won't stop working when the attacker"
 " is being affected by `Temporal=yes` warhead."
 msgstr "修复了攻击者被 `Temporal=yes` 弹头作用时运动模式弹头不会停止工作的 Bug。"
 
