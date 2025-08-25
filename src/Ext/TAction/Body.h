@@ -27,6 +27,8 @@ enum class PhobosTriggerAction : unsigned int
 	CreateBannerLocal = 800, // any banner w/ local variable
 	CreateBannerGlobal = 801, // any banner w/ global variable
 	DeleteBanner = 802,
+
+	CreateDropshipLoadoutTransport = 900,
 };
 
 class TActionExt
@@ -79,6 +81,8 @@ public:
 	ACTION_FUNC(CreateBannerLocal);
 	ACTION_FUNC(CreateBannerGlobal);
 	ACTION_FUNC(DeleteBanner);
+
+	ACTION_FUNC(CreateDropshipLoadoutTransport);
 
 	static bool RunSuperWeaponAt(TActionClass* pThis, int X, int Y);
 

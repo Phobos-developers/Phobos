@@ -66,6 +66,9 @@ public:
 
 		int ForceEnemyIndex;
 
+		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
+		std::vector<std::vector<TechnoTypeClass*>> DropshipLoadout_Cargo;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -94,6 +97,8 @@ public:
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
 			, ForceEnemyIndex(-1)
+			, DropshipLoadout_Carriers {}
+			, DropshipLoadout_Cargo {}
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);

@@ -3,6 +3,8 @@
 #include <MessageListClass.h>
 
 #include <Ext/Scenario/Body.h>
+#include <ScriptClass.h>
+#include <ScriptTypeClass.h>
 #include <Ext/SWType/Body.h>
 
 #include <New/Entity/BannerClass.h>
@@ -85,6 +87,8 @@ bool TActionExt::Execute(TActionClass* pThis, HouseClass* pHouse, ObjectClass* p
 		return TActionExt::CreateBannerGlobal(pThis, pHouse, pObject, pTrigger, location);
 	case PhobosTriggerAction::DeleteBanner:
 		return TActionExt::DeleteBanner(pThis, pHouse, pObject, pTrigger, location);
+	case PhobosTriggerAction::CreateDropshipLoadoutTransport:
+		return TActionExt::CreateDropshipLoadoutTransport(pThis, pHouse, pObject, pTrigger, location);
 
 	default:
 		bHandled = false;
@@ -575,6 +579,210 @@ bool TActionExt::DeleteBanner(TActionClass* pThis, HouseClass* pHouse, ObjectCla
 
 	return true;
 }
+
+bool TActionExt::CreateDropshipLoadoutTransport(TActionClass* pThis, HouseClass* pTriggerHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
+{
+	if (!pThis || !pThis->TeamType || (!SessionClass::IsCampaign() && !SessionClass::IsSkirmish()))
+		return true;
+
+	const int dropshipIndex = pThis->Param3;
+	HouseClass* pHouse = HouseClass::CurrentPlayer;
+
+	// Set the owner of the units
+
+	/*if (pThis->Param4 < 0)
+	{
+		pHouse = pTriggerHouse;
+	}
+	else
+	{
+		pHouse = HouseClass::Index_IsMP(pThis->Param4)
+			? HouseClass::FindByIndex(pThis->Param4)
+			: HouseClass::FindByCountryIndex(pThis->Param4);
+	}*/
+
+	auto const pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+	if (dropshipIndex < 0
+		|| dropshipIndex >= ScenarioClass::Instance->StartingDropships
+		|| dropshipIndex >= pHouseExt->DropshipLoadout_Carriers.size()
+		|| pHouseExt->DropshipLoadout_Cargo.size() == 0
+		|| pHouseExt->DropshipLoadout_Cargo[dropshipIndex].size() == 0)
+	{
+		return true;
+	}
+
+	auto& waypoints = ScenarioExt::Global()->Waypoints;
+	const int nWaypoint = pThis->Param5;
+
+	if (nWaypoint < 0)
+		return true;
+
+	//CellStruct spawnLocation = { selectedWP.X, (short)selectedWP.Y };
+	auto pTransporterType = pHouseExt->DropshipLoadout_Carriers[dropshipIndex];
+	auto pUnits = pHouseExt->DropshipLoadout_Cargo[dropshipIndex];
+
+	CellStruct spawnLocation = CellStruct::Empty;
+
+	// Check if is a valid Waypoint
+	if (nWaypoint >= 0 && waypoints.find(nWaypoint) != waypoints.end() && waypoints[nWaypoint].X && waypoints[nWaypoint].Y)
+	{
+		spawnLocation = waypoints[nWaypoint];
+		//TActionExt::RunSuperWeaponAt(pThis, selectedWP.X, selectedWP.Y);
+	}
+
+	if (spawnLocation == CellStruct::Empty)
+		return true;
+
+	int zCoord = 0;
+
+	if (pTransporterType->ConsideredAircraft)
+		zCoord = RulesClass::Instance->FlightLevel;
+
+	CoordStruct startLocation = CellClass::Cell2Coord(spawnLocation, zCoord);
+	//auto pTeam = pThis->TeamType->CreateTeam(pHouse);
+	//auto pTeam = CreateReinforcementTeam(pThis->TeamType, pHouse, nWaypoint);
+	//auto pTeam = TeamClass::TeamClass(pThis->TeamType, pHouse, 0);
+	auto pTeam = GameCreate<TeamClass>(pThis->TeamType, pHouse, 0);
+
+	//TeamTypeClass::Cr
+	if (!pTeam)
+		return true;
+
+	pTeam->NeedsToDisappear = false;
+
+	//++Unsorted::ScenarioInit;
+	auto const pTransporter = static_cast<FootClass*>(pTransporterType->CreateObject(pHouse));
+	//--Unsorted::ScenarioInit;
+
+	if (!pTransporter)
+		return true;
+
+	if (pTransporterType->Passengers == 0)
+		return true;
+	//pTransporter->Team = pTeam;
+	//pTeam->AddMember(pTransporter, true);
+
+	FootClass* pGunner = nullptr;
+
+	for (auto pObjectType : pUnits)
+	{
+		//++Unsorted::ScenarioInit;
+		auto const pObject = static_cast<FootClass*>(pObjectType->CreateObject(pHouse));
+		//--Unsorted::ScenarioInit;
+
+		if (!pObject)
+			continue;
+
+		auto const pPayload = static_cast<FootClass*>(pObject);
+		pPayload->SetLocation(startLocation);
+		pPayload->Limbo();
+
+		if (pTransporterType->OpenTopped)
+			pTransporter->EnteredOpenTopped(pPayload);
+
+		pPayload->Transporter = pTransporter;
+		pGunner = pPayload;
+		pTransporter->AddPassenger(pPayload);
+	}
+
+	// Handle gunner change - this is the 'last' passenger because of reverse order
+	if (pTransporterType->Gunner && pGunner)
+		pTransporter->ReceiveGunner(pGunner);
+	/*
+	++Unsorted::ScenarioInit;
+	success = pTechno->Unlimbo(location, facing);
+	--Unsorted::ScenarioInit;
+	*/
+
+	//pTeam->AddMember(pTransporter, true);
+	//pTeam->IsForcedActive = true;
+
+	//pTeam->IsMoving = true;
+	//pTeam->IsFullStrength = true;
+	//pTeam->IsUnderStrength = false;
+	pTeam->IsTransient = false;
+	pTeam->IsForcedActive = true;
+	
+
+	//++Unsorted::ScenarioInit;
+	bool success = pTransporter->Unlimbo(startLocation, DirType::North);
+	//pTransporter->Locomotor->
+	//--Unsorted::ScenarioInit;
+
+	if (success)
+	{
+		pTeam->AddMember(pTransporter, true);
+		//pTeam->CurrentScript = GameCreate<ScriptClass>(pThis->TeamType->ScriptType);
+
+		//if (!pTeam->CurrentScript)
+			//GameDelete(pTeam);
+	}
+	else
+	{
+		GameDelete(pTeam);
+	}
+
+	//TeamClass::Array.f
+	/*for (auto const pRunningTeam : TeamClass::Array)
+	{
+
+	}*/
+
+	/*
+
+	if (value >= 0 || value == -2)
+	{
+		if (value != -2)
+		{
+			const HouseClass* pTargetHouse = HouseClass::Index_IsMP(value)
+				? HouseClass::FindByIndex(value)
+				: HouseClass::FindByCountryIndex(value);
+
+			if (pTargetHouse
+				&& pHouse != pTargetHouse
+				&& !pHouse->IsAlliedWith(pTargetHouse))
+			{
+				pHouseExt->SetForceEnemyIndex(pTargetHouse->GetArrayIndex());
+				pHouse->UpdateAngerNodes(0, pHouse);
+			}
+		}
+		else
+		{
+			pHouseExt->SetForceEnemyIndex(-2);
+			pHouse->UpdateAngerNodes(0, pHouse);
+		}
+	}
+	else if (value == -1)
+	{
+		pHouseExt->SetForceEnemyIndex(-1);
+		pHouse->UpdateAngerNodes(0, pHouse);
+	}*/
+
+	return true;
+}
+
+/*TeamClass* CreateReinforcementTeam(TeamTypeClass* pTeamType, HouseClass* pHouse, int waypointIndex)
+{
+	if (!pTeamType)
+		return nullptr;
+
+	if (!pTeamType->ScriptType || pTeamType->ScriptType->ActionsCount == 0)
+		return nullptr;
+
+	// Step 3: Create the TeamClass instance. This is the core of "_Create_Group".
+	// The TeamType defines which House owns the team.
+	TeamClass* pTeam = pTeamType->CreateTeam(pTeamType->Owner);
+	if (!pTeam || pTeam->TotalObjects == 0)
+	{
+		if (pTeam) GameDelete(pTeam);
+		return nullptr;
+	}
+
+
+
+	return nullptr;
+}*/
 
 
 // =============================

@@ -150,9 +150,24 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	// Dropship loadout stuff
-	this->DropshipLoadoutTheme = pINI->ReadTheme(GameStrings::Basic, "DropshipLoadoutTheme", this->DropshipLoadoutTheme);
-	this->DropshipLoadoutMoney = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadoutMoney", this->DropshipLoadoutMoney);
-	this->DropshipLoadoutStartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadoutStartEVA", this->DropshipLoadoutStartEVA);
+	this->DropshipLoadout_Theme = pINI->ReadTheme(GameStrings::Basic, "DropshipLoadout.Theme", this->DropshipLoadout_Theme);
+	this->DropshipLoadout_Money = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.Money", this->DropshipLoadout_Money);
+	this->DropshipLoadout_StartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadout.StartEVA", this->DropshipLoadout_StartEVA);
+	this->DropshipLoadout_AddUnusedMoneyToPlayer = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.AddUnusedMoneyToPlayer", this->DropshipLoadout_AddUnusedMoneyToPlayer);
+
+	// List of transports
+	char* context = nullptr;
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers", "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		TechnoTypeClass* buffer;
+
+		if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
+			DropshipLoadout_Carriers.emplace_back(buffer);
+		else
+			Debug::Log("[Developer warning] DropshipLoadout.Carriers (Elements: %d): Error parsing [%s] -> Skipped\n", this->DropshipLoadout_Carriers.size(), cur);
+	}
 }
 
 template <typename T>
@@ -168,9 +183,11 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->TransportReloaders)
 		.Process(this->SWSidebar_Enable)
 		.Process(this->SWSidebar_Indices)
-		.Process(this->DropshipLoadoutTheme)
-		.Process(this->DropshipLoadoutMoney)
-		.Process(this->DropshipLoadoutStartEVA)
+		.Process(this->DropshipLoadout_Theme)
+		.Process(this->DropshipLoadout_Money)
+		.Process(this->DropshipLoadout_StartEVA)
+		.Process(this->DropshipLoadout_Carriers)
+		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }
