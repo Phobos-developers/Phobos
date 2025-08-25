@@ -1146,7 +1146,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		// Now fill the transport with the selected units
 		for (auto const pTechno : dropshipBayChosenUnitsLists[i])
 		{
-			unitsList.push_back(pTechno);
+			if (pTechno)
+				unitsList.push_back(pTechno);
 		}
 
 		pHouseExt->DropshipLoadout_Cargo.push_back(unitsList);
