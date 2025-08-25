@@ -1906,7 +1906,7 @@ msgstr ""
 
 #: ../../Whats-New.md:438
 msgid "Health bar permanently displayed (by FlyStar)"
-msgstr ""
+msgstr "血条恒显（by FlyStar）"
 
 #: ../../Whats-New.md:440 ../../Whats-New.md:634 ../../Whats-New.md:991
 #: ../../Whats-New.md:1100 ../../Whats-New.md:1125 ../../Whats-New.md:1164

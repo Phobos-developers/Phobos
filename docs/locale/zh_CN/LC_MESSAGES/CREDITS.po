@@ -1564,7 +1564,7 @@ msgstr "你可以自定义当载具丢失目标时炮塔方向是否回正（与
 
 #: ../../../CREDITS.md:393
 msgid "Health bar permanently displayed"
-msgstr ""
+msgstr "血条恒显"
 
 #: ../../../CREDITS.md:394
 msgid "**NetsuNegi**:"
@@ -2562,11 +2562,10 @@ msgid "parts of TechnoType conversion placeholder code"
 msgstr "单位转换占位符代码的一部分"
 
 #: ../../../CREDITS.md:622
-#, fuzzy
 msgid ""
 "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - "
 "Digital Display"
-msgstr "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung** - 数字化显示"
+msgstr "**ststl, FlyStar, NaotoYuuki, Saigyouji, JunJacobYoung, CrimRecya** - 数字化显示"
 
 #: ../../../CREDITS.md:623
 msgid "**SukaHati (Erzoid)** - Minimum interceptor guard range"

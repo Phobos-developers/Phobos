@@ -370,6 +370,7 @@ msgid ""
 "`ShowType` specifies the conditions under which it can be displayed. Note"
 " that `idle` is only available when `HealthBar.Permanent=yes`."
 msgstr ""
+"`ShowType` 指定了显示所需的条件。注意 `idle` 仅在 `HealthBar.Permanent=yes` 时生效。"
 
 #: ../../User-Interface.md:85
 msgid ""
@@ -621,23 +622,25 @@ msgstr ""
 msgid ""
 "Health bar display can now be turned off as needed, hiding both the "
 "health bar box and health pips."
-msgstr "现在可以根据需要关闭血条显示，这会隐藏血条框和生命值点数。"
+msgstr "现在可以根据需要关闭血条显示，这会隐藏血条框和血量 Pip。"
 
 #: ../../User-Interface.md:178
 msgid ""
 "`HealthBar.HidePips` only hides the health bar without affecting anything"
 " else."
 msgstr ""
+"`HealthBar.HidePips` 仅隐藏血条而不影响其他任何元素。"
 
 #: ../../User-Interface.md:179
 msgid "`HealthBar.Permanent` will display health points at all times."
-msgstr ""
+msgstr "`HealthBar.Permanent` 将始终显示血条。"
 
 #: ../../User-Interface.md:180
 msgid ""
 "`HealthBar.Permanent.PipScale` will always display additional pips and "
 "group numbers."
 msgstr ""
+"`HealthBar.Permanent.PipScale` 将始终显示其他 Pip 及编队序号。"
 
 #: ../../User-Interface.md:183
 msgid ""

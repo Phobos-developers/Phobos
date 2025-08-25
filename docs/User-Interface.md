@@ -181,9 +181,9 @@ ShowFlashOnSelecting=false  ; boolean
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]                          ; TechnoType
-HealthBar.Hide=false                ; boolean
-HealthBar.HidePips=false            ; boolean
+[SOMENAME]                           ; TechnoType
+HealthBar.Hide=false                 ; boolean
+HealthBar.HidePips=false             ; boolean
 HealthBar.Permanent=false            ; boolean
 HealthBar.Permanent.PipScale=false   ; boolean
 ```
