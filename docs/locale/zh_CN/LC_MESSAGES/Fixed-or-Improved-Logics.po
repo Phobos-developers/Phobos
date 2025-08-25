@@ -3479,9 +3479,8 @@ msgstr ""
 "Gravity=6.0             ; floating point value\n"
 
 #: ../../Fixed-or-Improved-Logics.md:852
-#, fuzzy
 msgid "Customizing initial facing behavior"
-msgstr "自定义弹头动画行为"
+msgstr "自定义初始朝向行为"
 
 #: ../../Fixed-or-Improved-Logics.md:854
 msgid ""
@@ -3491,6 +3490,8 @@ msgid ""
 "addition to defaulting to `true` for `Voxel=true` projectiles, it also "
 "now defaults to true for any `Vertical=true` projectile."
 msgstr ""
+"先前拥有 `Voxel=true` 的抛射体被硬编码为初始向下的弹道。现在该行为可以为其他类型抛射体开启或为 Voxel 抛射体关闭。"
+"除了对 `Voxel=true` 的抛射体默认为 `true` 外，现对所有 `Vertical=true` 的抛射体也同样设为 `true`。"
 
 #: ../../Fixed-or-Improved-Logics.md:857
 msgid ""

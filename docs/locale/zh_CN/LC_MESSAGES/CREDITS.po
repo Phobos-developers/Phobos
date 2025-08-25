@@ -1089,6 +1089,7 @@ msgid ""
 "Changes / fixes to `Vertical` projectile logic and customizing projectile"
 " initial facing behavior"
 msgstr ""
+"更改／修复了 `Vertical` 抛射体逻辑并使得抛射体初始方向可自定义"
 
 #: ../../../CREDITS.md:281
 msgid "**Morton (MortonPL)**:"

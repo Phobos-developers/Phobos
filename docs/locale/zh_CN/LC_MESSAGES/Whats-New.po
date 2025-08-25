@@ -53,6 +53,7 @@ msgid ""
 "`Voxel=true` or not. This behavior can be reverted by setting "
 "`VerticalInitialFacing=false` on projectile in `rulesmd.ini`."
 msgstr ""
+"`Vertical=true` 的抛射体现在全部默认完全向下的初始弹道／朝向，无论其抛射体图像是否设置了 `Voxel=true`。通过在 `rulesmd.ini` 中为抛射体设置 `VerticalInitialFacing=false` 可恢复原有行为。"
 
 #: ../../Whats-New.md:14
 msgid ""
@@ -1896,13 +1897,12 @@ msgid ""
 msgstr "[复原炮塔制退](Fixed-or-Improved-Logics.md#turret-recoil)（by CrimRecya）"
 
 #: ../../Whats-New.md:437
-#, fuzzy
 msgid ""
 "[Customize hardcoded projectile initial facing behavior](Fixed-or-"
 "Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)"
 msgstr ""
-"[自定义寄生秒杀目标](Fixed-or-Improved-Logics.md#customizing-parasite-culling-"
-"targets)（by NetsuNegi）"
+"[自定义初始朝向行为](Fixed-or-"
+"Improved-Logics.md#customizing-initial-facing-behavior)（by Starkku）"
 
 #: ../../Whats-New.md:438
 msgid "Health bar permanently displayed (by FlyStar)"
