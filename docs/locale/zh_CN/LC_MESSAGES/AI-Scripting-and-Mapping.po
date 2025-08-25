@@ -194,13 +194,12 @@ msgid "Default loading screen and briefing offsets"
 msgstr "默认载入图与简报位置"
 
 #: ../../AI-Scripting-and-Mapping.md:52
-#, fuzzy
 msgid ""
 "It is now possible to set defaults for singleplayer map loading screen "
 "briefing pixel offsets and the loading screen images and palette that are"
 " used if there are no values defined for the map itself or in case of "
 "loading screens and palette, if the files are missing."
-msgstr "现在可以为单人战役地图的载入图像素偏移值和载入图图像以及色盘设置默认值，如果地图自身没有定义这些那么会将其作为默认值使用。"
+msgstr "现在可以为单人战役地图的载入图像素偏移值和载入图图像以及色盘设置默认值，如果地图自身没有定义这些或载入图与色盘丢失那么会将其作为默认值使用。"
 
 #: ../../AI-Scripting-and-Mapping.md:54 ../../AI-Scripting-and-Mapping.md:84
 #: ../../AI-Scripting-and-Mapping.md:102
