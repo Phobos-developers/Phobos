@@ -252,6 +252,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
+	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
@@ -299,6 +300,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	if (this->AffectsAbovePercent > this->AffectsBelowPercent)
 		Debug::Log("[Developer warning][%s] AffectsAbovePercent is bigger than AffectsBelowPercent, the warhead will never activate!\n", pSection);
+
+	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -355,6 +358,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->AttachEffects.RemoveGroups.size() > 0
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
+		|| this->ReverseEngineer
 	);
 
 	char tempBuffer[32];
@@ -537,6 +541,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageTargetHealthMultiplier)
 
 		.Process(this->Parasite_CullingTarget)
+		.Process(this->Parasite_GrappleAnim)
 
 		.Process(this->Nonprovocative)
 
@@ -563,6 +568,10 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AirstrikeTargets)
 
+		.Process(this->CanKill)
+
+		.Process(this->ReverseEngineer)
+
 		// Ares tags
 		.Process(this->AffectsEnemies)
 		.Process(this->AffectsOwner)
@@ -574,8 +583,6 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->PossibleCellSpreadDetonate)
 		.Process(this->Reflected)
 		.Process(this->DamageAreaTarget)
-
-		.Process(this->CanKill)
 		;
 }
 
