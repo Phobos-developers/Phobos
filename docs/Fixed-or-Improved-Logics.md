@@ -191,7 +191,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
-- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
+- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery's `Naval` to false.
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
@@ -248,7 +248,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that submarine always turn left after changed owner by map event.
 - Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
 - Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants.
-- Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead.
+- Fixed the bug that Locomotor warhead won't stop working when the attacker is being affected by `Temporal=yes` warhead.
 - Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge.
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
@@ -730,7 +730,7 @@ BuildingWaypoints=false  ; boolean
 
 ### Auto deploy for GI-like infantry
 
-- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri’s Revenge. Now you can use the following flags to re-enable this feature.
+- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri's Revenge. Now you can use the following flags to re-enable this feature.
 
 In `rulesmd.ini`:
 ```ini
@@ -1846,7 +1846,7 @@ Sinkable.SquidGrab=true    ; boolean
 
 ### Turret recoil
 
-- Now you can use `TurretRecoil` to control units’ turret/barrel recoil effect when firing.
+- Now you can use `TurretRecoil` to control units' turret/barrel recoil effect when firing.
   - `TurretTravel` and `BarrelTravel` control the maximum recoil distance.
   - `TurretRecoil.Suppress` can prevent the weapon from producing this effect when firing.
 
