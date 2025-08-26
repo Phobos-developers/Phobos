@@ -1217,6 +1217,22 @@ Detonate.Damage=            ; integer
 Detonate.AtFirer=false      ; boolean
 ```
 
+### Superweapon music control
+
+- Superweapons can now play a soundtrack theme when fired and optionally stop after a configurable duration.
+
+In `rulesmd.ini`:
+```ini
+[SOMESW]              ; SuperWeaponType
+Music.Theme=          ; Soundtrack theme ID from thememd.ini (such as GodsendOne)
+Music.Duration=0      ; integer, game frames; 0 or below means do not auto-stop
+```
+
+- `Music.Theme` selects the soundtrack theme by its ID defined in `thememd.ini` (such as `GodsendOne`).
+- `Music.Duration` sets how long to keep playing, in game frames. 0 or below means no auto-stop.
+- If a different theme is already playing, it will be replaced when the superweapon fires.
+- When the timer completes, the current theme is stopped.
+
 ## Technos
 
 ### Aggressive attack move mission

@@ -63,6 +63,10 @@ public:
 		Valueable<AffectedHouse> LimboKill_Affected;
 		ValueableVector<int> LimboKill_IDs;
 		Valueable<double> RandomBuffer;
+
+		// SuperWeapon music control
+		Valueable<int> Music_Theme;      // soundtrack theme index (from ThemeClass)
+		Valueable<int> Music_Duration;   // duration in frames for how long to play, then stop
 		ValueableIdxVector<SuperWeaponTypeClass> SW_Next;
 		Valueable<bool> SW_Next_RealLaunch;
 		Valueable<bool> SW_Next_IgnoreInhibitors;

@@ -5,6 +5,7 @@
 #include <HouseClass.h>
 #include <ScenarioClass.h>
 #include <MessageListClass.h>
+#include <ThemeClass.h>
 
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/GeneralUtils.h>
@@ -45,6 +46,20 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 
 	auto& sw_ext = HouseExt::ExtMap.Find(pHouse)->SuperExts[pType->ArrayIndex];
 	sw_ext.ShotCount++;
+
+	// Music: play theme and start timer if configured
+	if (pTypeExt->Music_Theme.Get() >= 0)
+	{
+		// start playing immediately
+		ThemeClass::Instance.Play(pTypeExt->Music_Theme);
+
+		const int duration = pTypeExt->Music_Duration.Get();
+		if (duration > 0)
+		{
+			sw_ext.MusicTimer.Start(duration);
+			sw_ext.MusicActive = true;
+		}
+	}
 
 	const auto pTags = &pHouse->RelatedTags;
 	if (pTags->Count > 0)
