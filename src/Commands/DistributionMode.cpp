@@ -214,16 +214,16 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 				&& action != Action::NoMove
 				&& !PlanningNodeClass::PlanningModeActive
 				&& pTechno
-				&& !pTarget->IsInAir()
+				&& !pTechno->IsInAir()
 				&& (HouseClass::CurrentPlayer->IsAlliedWith(pTechno->Owner)
 					? Phobos::Config::AllowDistributionCommand_AffectsAllies
 					: Phobos::Config::AllowDistributionCommand_AffectsEnemies))
 			{
 				VocClass::PlayGlobal(RulesExt::Global()->AddDistributionModeCommandSound, 0x2000, 1.0);
 				const bool targetIsNeutral = pTechno->Owner->IsNeutral();
-
+				const auto pType = pTechno->GetTechnoType();
 				const int range = (2 << spreadMode);
-				const auto center = pTarget->GetCoords();
+				const auto center = pTechno->GetCoords();
 				const auto pItems = Helpers::Alex::getCellSpreadItems(center, range);
 
 				std::vector<std::pair<TechnoClass*, int>> record;
@@ -283,20 +283,29 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 
 						if (filterMode)
 						{
-							if (filterMode == 1)
+							const auto pItemType = pItem->GetTechnoType();
+
+							if (!pItemType)
+								continue;
+
+							if (TechnoTypeExt::ExtMap.Find(pType)->FakeOf != pItemType
+								&& TechnoTypeExt::ExtMap.Find(pItemType)->FakeOf != pType)
 							{
-								if (pItem->GetType()->Armor != pTarget->GetType()->Armor)
-									continue;
-							}
-							else if (filterMode == 2)
-							{
-								if (pItem->WhatAmI() != pTarget->WhatAmI())
-									continue;
-							}
-							else // filterMode == 3
-							{
-								if (TechnoTypeExt::GetSelectionGroupID(pItem->GetType()) != TechnoTypeExt::GetSelectionGroupID(pTarget->GetType()))
-									continue;
+								if (filterMode == 1)
+								{
+									if (pItemType->Armor != pType->Armor)
+										continue;
+								}
+								else if (filterMode == 2)
+								{
+									if (pItem->WhatAmI() != pTechno->WhatAmI())
+										continue;
+								}
+								else // filterMode == 3
+								{
+									if (TechnoTypeExt::GetSelectionGroupID(pItemType) != TechnoTypeExt::GetSelectionGroupID(pType))
+										continue;
+								}
 							}
 						}
 
@@ -325,12 +334,12 @@ DEFINE_HOOK(0x4AE7B3, DisplayClass_ActiveClickWith_Iterate, 0x0)
 						continue;
 					}
 
-					const auto currentAction = pSelect->MouseOverObject(pTarget);
+					const auto currentAction = pSelect->MouseOverObject(pTechno);
 
 					if (noMove && currentAction == Action::NoMove && (pSelect->AbstractFlags & AbstractFlags::Techno) != AbstractFlags::None)
 						DistributionModeHoldDownCommandClass::AreaGuardAction(static_cast<TechnoClass*>(pSelect));
 					else
-						DistributionModeHoldDownCommandClass::ClickedTargetAction(pSelect, currentAction, pTarget);
+						DistributionModeHoldDownCommandClass::ClickedTargetAction(pSelect, currentAction, pTechno);
 				}
 			}
 			else
