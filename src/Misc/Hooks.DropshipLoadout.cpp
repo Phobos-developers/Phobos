@@ -47,14 +47,14 @@ void DrawImage(
 			return;
 		}
 
-		Point2D sourcePosition = { 0, 0 };
+		Point2D noLocation = { 0, 0 };
 
 		CC_Draw_Shape(
 			pSurface,
 			pPalette,
 			fileSHP,
 			frameIndex,
-			&sourcePosition,
+			&noLocation,
 			&destinationRect,
 			BlitterFlags::None,
 			0, zAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
@@ -249,22 +249,18 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	for (int i = 0; i < nSidebarCameos; ++i)
 	{
-		int cameoX = backgroundX + 2 + 491 + 68 * (i % 2);
+		int cameoX = backgroundX + 493 + 68 * (i % 2);
 		int cameoY = backgroundY + 25 + 50 * (i / 2);
 		RectangleStruct cameoRectangle = { cameoX, cameoY, cameoWidth, cameoHeight };
 		sidebarCameoLocations.push_back(cameoRectangle);
 	}
 
-	// Calculate positions for the scroll arrow buttons.
-	int upArrowWidth = upArrow_Image->Width;
-	int upArrowHeight = upArrow_Image->Height;
-	int downArrowWidth = downArrow_Image->Width;
-	int downArrowHeight = downArrow_Image->Height;
+	// Calculate positions for the scroll arrow buttons
 
 	// Center point between the two cameo columns.
 	int centerOfCameoColumns = sidebarCameoLocations[0].X + sidebarCameoLocations[0].Width + (sidebarCameoLocations[1].X - (sidebarCameoLocations[0].X + sidebarCameoLocations[0].Width)) / 2;
 
-	// Y position below the last row of cameos.
+	// Y position below the last row of cameos
 	int arrowsY = sidebarCameoLocations.back().Y + sidebarCameoLocations.back().Height + 6;
 
 	RectangleStruct upArrowLocation = {
@@ -281,7 +277,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		downArrow_Image->Height
 	};
 
-	std::vector<RectangleStruct> dGreen_Location;
+	std::vector<RectangleStruct> dGreenLocation;
 	int dGreenX = 371;
 	int dGreenY = 10;
 
@@ -289,11 +285,11 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	{
 		if (!dGreen) // Invalid graphics
 		{
-			dGreen_Location.push_back({ 0, 0, 0, 0 });
+			dGreenLocation.push_back({ 0, 0, 0, 0 });
 			continue;
 		}
 
-		RectangleStruct dGreenLocation = {
+		RectangleStruct dGreenRectangle = {
 			backgroundX + dGreenX,
 			backgroundY + dGreenY,
 			dGreen->Width,
@@ -301,7 +297,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		};
 
 		dGreenY += 50;
-		dGreen_Location.push_back(dGreenLocation);
+		dGreenLocation.push_back(dGreenRectangle);
 	}
 
 	RectangleStruct loadoutLocation = {
@@ -326,7 +322,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	// Case 1: Slots coordinates of the Dropship #1
 	if (nStartingDropships == 1 || nStartingDropships == 2)
 	{
-		int cameoX = backgroundX + 2 + 53;
+		int cameoX = backgroundX + 55;
 		int cameoY = backgroundY + 69;
 		std::vector<RectangleStruct> dropshipBayCameoLocationsList;
 
@@ -334,7 +330,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-		dropshipBayCameoLocationsList.push_back({ cameoX + 66 + 66, cameoY + 50, cameoWidth, cameoHeight });
+		dropshipBayCameoLocationsList.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
 
 		dropshipBayCameoLocations.push_back(dropshipBayCameoLocationsList);
 		dropshipBayCameoLocationsList.clear();
@@ -343,15 +339,15 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	// Case 2: Slots coordinates of the Dropship #2
 	if (nStartingDropships == 2)
 	{
-		int cameoX = backgroundX + 2 + 53;
-		int cameoY = backgroundY + 69 + 140;
+		int cameoX = backgroundX + 55;
+		int cameoY = backgroundY + 209;
 		std::vector<RectangleStruct> dropshipBayCameoLocationsList;
 
 		dropshipBayCameoLocationsList.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-		dropshipBayCameoLocationsList.push_back({ cameoX + 66 + 66, cameoY + 50, cameoWidth, cameoHeight });
+		dropshipBayCameoLocationsList.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
 
 		dropshipBayCameoLocations.push_back(dropshipBayCameoLocationsList);
 		dropshipBayCameoLocationsList.clear();
@@ -360,7 +356,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	// Case 3: Slots coordinates of the Dropship #3
 	if (nStartingDropships == 3)
 	{
-		int cameoX = backgroundX + 2 + 53;
+		int cameoX = backgroundX + 55;
 		int cameoY = backgroundY + 39;
 		std::vector<RectangleStruct> dropshipBayCameoLocationsList;
 
@@ -368,7 +364,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-		dropshipBayCameoLocationsList.push_back({ cameoX + 66 + 66, cameoY + 50, cameoWidth, cameoHeight });
+		dropshipBayCameoLocationsList.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
 
 		dropshipBayCameoLocations.push_back(dropshipBayCameoLocationsList);
 		dropshipBayCameoLocationsList.clear();
@@ -378,7 +374,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-		dropshipBayCameoLocationsList.push_back({ cameoX + 66 + 66, cameoY + 50, cameoWidth, cameoHeight });
+		dropshipBayCameoLocationsList.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
 
 		dropshipBayCameoLocations.push_back(dropshipBayCameoLocationsList);
 		dropshipBayCameoLocationsList.clear();
@@ -388,7 +384,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX, cameoY + 50, cameoWidth, cameoHeight });
 		dropshipBayCameoLocationsList.push_back({ cameoX + 66, cameoY + 50, cameoWidth, cameoHeight });
-		dropshipBayCameoLocationsList.push_back({ cameoX + 66 + 66, cameoY + 50, cameoWidth, cameoHeight });
+		dropshipBayCameoLocationsList.push_back({ cameoX + 132, cameoY + 50, cameoWidth, cameoHeight });
 
 		dropshipBayCameoLocations.push_back(dropshipBayCameoLocationsList);
 		dropshipBayCameoLocationsList.clear();
@@ -402,6 +398,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	// Create the UP arrow button first. It will act as the head of the list.
 	int btn_ScrollUp_ID = 100;
+
 	ShapeButtonClass* btn_ScrollUp = GameCreate<ShapeButtonClass>(
 		btn_ScrollUp_ID,
 		0, 0,
@@ -421,6 +418,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	// Create the DOWN arrow button and add it to the manager's list.
 	int btn_ScrollDown_ID = 101;
+
 	ShapeButtonClass* btn_ScrollDown = GameCreate<ShapeButtonClass>(
 		btn_ScrollDown_ID,
 		0, 0,
@@ -509,7 +507,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int loadoutTotalFrames = loadout_Image->Frames;
 	int pilotLitTotalFrames = pilotLit_Image->Frames;
 
-	int animTimer_StartValue = 15;// By default a frame update is completed every 15ms
+	int animTimer_StartValue = 15; // By default a frame update is completed every 15ms
 	int animTimer_DelayedStartValue_Loadout = ScenarioClass::Instance->Random(0, 0); // Disabled by default to resemble the original but it will be customizable for modders
 	int animTimer_DelayedStartValue_PilotLit = ScenarioClass::Instance->Random(100, 300);
 
@@ -519,7 +517,6 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	SysTimerClass animTimer_DelayedStartTimer_PilotLit; // Delay before the frame updater starts
 	SysTimerClass animTimer_UpdateFrameTimer_PilotLit;
 
-	//animTimer_UpdateFrameTimer.Start(animTimer_StartValue);
 	animTimer_DelayedStartTimer_Loadout.Start(animTimer_DelayedStartValue_Loadout);
 	animTimer_DelayedStartTimer_PilotLit.Start(animTimer_DelayedStartValue_PilotLit);
 	animTimer_UpdateFrameTimer_Loadout.Start(loadoutFrameDelay);
@@ -535,34 +532,27 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	{
 		Game::CallBack();
 
-		// Get input
+		// Get any input
 		int command = commandManager->Input();
-		//if (command != 0)// && command != 1 && command != 2 && command != 2048 && command != 2049 && command != 2050 && command != 2086 && command != 2088)
-			//Debug::Log("Command: %d\n", command);
 
 		int buttonID = -1;
 		// Check if a mouse click has happened inside a button.
-		// If so, it overrides any keyboard command from this frame. 
-		//if (command > 0) // Mouse click with the left button
-		{
-			RectangleStruct mouseRect = WWMouseClass::Instance->Rect2;
-			//Point2D mousePos = { 0, 0 };
-			//WWMouseClass::Instance->GetCoords(&mousePos);
+		// If so, it overrides any keyboard command from this frame
+		RectangleStruct mouseRect = WWMouseClass::Instance->Rect2;
 
-			for (auto button : buttonsList)
+		for (auto button : buttonsList)
+		{
+			if (mouseRect.X >= button->X
+				&& mouseRect.X <= (button->X + button->Width)
+				&& mouseRect.Y >= button->Y
+				&& mouseRect.Y <= (button->Y + button->Height))
 			{
-				if (mouseRect.X >= button->X
-					&& mouseRect.X <= (button->X + button->Width)
-					&& mouseRect.Y >= button->Y
-					&& mouseRect.Y <= (button->Y + button->Height))
-				{
-					buttonID = button->ID;
-					break;
-				}
+				buttonID = button->ID;
+				break;
 			}
 		}
 
-		// Key/Mouse click input values
+		// Translating Key/Mouse input values
 		bool pressedLeftClick = command == 1;
 		bool pressedRightClick = command == 2;
 
@@ -579,7 +569,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 		bool isUpArrow = buttonID == btn_ScrollUp_ID;
 		bool isDownArrow = buttonID == btn_ScrollDown_ID;
-		bool pressedUpArrow = command == VK_UP || ((pressedLeftClick || command ==(32768 + btn_ScrollUp_ID)) && isUpArrow);
+		bool pressedUpArrow = command == VK_UP || ((pressedLeftClick || command == (32768 + btn_ScrollUp_ID)) && isUpArrow);
 		bool pressedDownArrow = command == VK_DOWN || (pressedLeftClick && isDownArrow);
 		bool pressedAnyArrow = pressedUpArrow || pressedDownArrow;
 
@@ -608,6 +598,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			}
 		}
 
+		// Checking if the focused cameo is buyable
 		if (isHoveringOverSidebarCameos || pressedAnySidebarCameo)
 		{
 			int sidebarIndex = firstBrowsableCameo + (buttonID - btn_BasicSidebarCameo_ID);
@@ -648,6 +639,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				}
 			}
 		}
+
+		// Execute the right button action with the pressed key:
 
 		// Check if pressed UP or DOWN keys and update the index of the first element to be showed in the sidebar
 		if (pressedUpArrow) // UP key or click in the UP button
@@ -747,7 +740,6 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 					repaintAll = true;
 
 				// Find the row's cameos for starting the respective dGreen animation, if isn't running (only 1 instance allowed in the same row)
-				//int nCameoIndex = command - btn_BasicSidebarCameo_ID;
 				if (sidebarRowAnimationIndex < 0)
 				{
 					sidebarRowAnimationIndex = ((command - btn_BasicSidebarCameo_ID) / 2);
@@ -801,7 +793,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			repaintAll = true;
 		}
 
-		// Ends this logic and starts the game
+		// Ends this window and starts the game
 		if (command == VK_SPACE)
 			pressedSpaceKey = true;
 
@@ -829,9 +821,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			repaintAll = true;
 
 			if (soldAny) // Click sound
-			{
 				VocClass::PlayGlobal(RulesClass::Instance->SellSound, 0x2000, 1.0);
-			}
 		}
 
 		// --- ANIMATION LOGIC ---
@@ -857,7 +847,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			}
 		}
 
-		// Animation 2: PilotLit (PILOTLIT.SHP)
+		// Animation 2: PILOTLIT.SHP
 		if (animTimer_DelayedStartTimer_PilotLit.Completed())
 		{
 			if (animTimer_UpdateFrameTimer_PilotLit.Completed())
@@ -901,18 +891,16 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			animTimer_UpdateFrameTimer.Start(animTimer_StartValue);
 
 		// --- RENDER THE SCREEN ---
+
 		if (repaintAll)
 		{
 			// Screen background
-			CC_Draw_Shape(
-				DSurface::Hidden,
-				screenBG_pal,
-				screenBG_Image,
-				0,
-				&noLocation,
-				&windowRectangle,
-				BlitterFlags::None,
-				0, 0, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+			DrawImage(
+					DSurface::Hidden,
+					windowRectangle,
+					nullptr,
+					screenBG_Image,
+					screenBG_pal
 			);
 
 			// Painting the sidebar cameos
@@ -992,27 +980,25 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			}
 
 			// Painting the UP arrow
-			CC_Draw_Shape(
-				DSurface::Hidden,
-				screenBG_pal,
-				upArrow_Image,
-				0,
-				&noLocation,
-				&upArrowLocation,
-				BlitterFlags::None,
-				0, -2, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+			DrawImage(
+					DSurface::Hidden,
+					upArrowLocation,
+					nullptr,
+					upArrow_Image,
+					screenBG_pal,
+					0,
+					-2
 			);
 
 			// Painting the DOWN arrow
-			CC_Draw_Shape(
-				DSurface::Hidden,
-				screenBG_pal,
-				downArrow_Image,
-				0,
-				&noLocation,
-				&downArrowLocation,
-				BlitterFlags::None,
-				0, -2, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+			DrawImage(
+					DSurface::Hidden,
+					downArrowLocation,
+					nullptr,
+					downArrow_Image,
+					screenBG_pal,
+					0,
+					-2
 			);
 
 			// Painting all the Dropship slot cameos
@@ -1086,7 +1072,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			{
 				DrawImage(
 					DSurface::Hidden,
-					dGreen_Location[sidebarRowAnimationIndex],
+					dGreenLocation[sidebarRowAnimationIndex],
 					nullptr,
 					dGreen_Image[sidebarRowAnimationIndex],
 					screenBG_pal,
@@ -1123,7 +1109,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	}
 	// --- MAIN LOOP END ---
 
-	// --- SAVE TO PLAYER DATA ---
+	// --- SAVE INTO PLAYER DATA ---
 
 	int totalDropshipChosenUnits = 0;
 
@@ -1132,7 +1118,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		totalDropshipChosenUnits += pair.second;
 	}
 
-	// The smaller number of dropships possible
+	// Fill the smaller number of dropships possible
 	auto pHouseExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
 	pHouseExt->DropshipLoadout_Cargo.clear();
 	pHouseExt->DropshipLoadout_Carriers.clear();
@@ -1141,8 +1127,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	for (int i = 0; i < nStartingDropships && i < nCarriers; i++)
 	{
 		pHouseExt->DropshipLoadout_Carriers.push_back(ScenarioExt::Global()->DropshipLoadout_Carriers[i]);
-
 		std::vector<TechnoTypeClass*> unitsList;
+
 		// Now fill the transport with the selected units
 		for (auto const pTechno : dropshipBayChosenUnitsLists[i])
 		{
