@@ -935,18 +935,12 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				{
 					auto foreColor = ColorStruct { 0, 255, 0 }; // Not valid by default is green
 
-					//if (!validSidebarCameoPurchase)
-						//foreColor = ColorStruct { 0, 0, 0 }; // Not valid by default is red
-
 					// Draw the border that represents the "Buy" operation in the sidebar
 					RectangleStruct newRectangle = sidebarCameoLocations[i];
 					newRectangle.X -= 2;
 					newRectangle.Width += 4;
 
 					int opacity = 255; // Full opacity
-
-					//if (!validSidebarCameoPurchase)
-						//opacity = 0; // Invisible
 
 					DSurface::Hidden->FillRectTrans(&newRectangle, &foreColor, opacity);
 				}
