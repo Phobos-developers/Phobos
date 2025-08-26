@@ -336,7 +336,7 @@ private:
 		if (stop || !this->LinkedTo->IsAlive)
 			return false;
 
-		this->MovingProcess(true);
+		this->MovingProcess(fix);
 		const auto pLinked = this->LinkedTo;
 
 		return pLinked && pLinked->IsAlive;
