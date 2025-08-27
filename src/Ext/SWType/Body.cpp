@@ -65,6 +65,7 @@ void SWTypeExt::ExtData::Serialize(T& Stm)
 		// music control
 		.Process(this->Music_Theme)
 		.Process(this->Music_Duration)
+		.Process(this->Music_AffectedHouses)
 		.Process(this->Detonate_Warhead)
 		.Process(this->Detonate_Weapon)
 		.Process(this->Detonate_Damage)
@@ -141,6 +142,7 @@ void SWTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	// music control
 	this->Music_Theme = pINI->ReadTheme(pSection, "Music.Theme", this->Music_Theme);
 	this->Music_Duration.Read(exINI, pSection, "Music.Duration");
+	this->Music_AffectedHouses.Read(exINI, pSection, "Music.AffectedHouses");
 
 	this->Message_CannotFire.Read(exINI, pSection, "Message.CannotFire");
 	this->Message_InsufficientFunds.Read(exINI, pSection, "Message.InsufficientFunds");

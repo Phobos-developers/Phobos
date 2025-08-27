@@ -293,7 +293,13 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 				}
 				if (configuredTheme >= 0 && ThemeClass::Instance.CurrentTheme == configuredTheme)
 				{
-					ThemeClass::Instance.Stop();
+					// respect affected houses: only stop if local client is within allowed houses
+					auto const pTypeExt = pSuper ? SWTypeExt::ExtMap.Find(pSuper->Type) : nullptr;
+					const auto affected = pTypeExt ? pTypeExt->Music_AffectedHouses.Get(AffectedHouse::All) : AffectedHouse::All;
+					if (EnumFunctions::CanTargetHouse(affected, pHouse, HouseClass::CurrentPlayer))
+					{
+						ThemeClass::Instance.Stop();
+					}
 				}
 				swExt.MusicTimer.Stop();
 				swExt.MusicActive = false;
