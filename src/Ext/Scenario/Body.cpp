@@ -279,23 +279,26 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 			auto& swExt = houseExt.SuperExts[i];
 			if (swExt.MusicActive && swExt.MusicTimer.Completed())
 			{
-				// Only stop the music if the current theme is still the one configured for this superweapon.
-				// If the music has been changed by any means in the meantime, don't switch/stop it here.
 				int configuredTheme = -1;
+				SuperClass* pSuper = nullptr;
+				SWTypeExt::ExtData* pTypeExt = nullptr;
 				if (pHouse->Supers.Count > static_cast<int>(i))
 				{
-					auto const pSuper = pHouse->Supers[static_cast<int>(i)];
+					pSuper = pHouse->Supers[static_cast<int>(i)];
 					if (pSuper && pSuper->Type)
 					{
-						auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+						pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
 						configuredTheme = pTypeExt->Music_Theme.Get();
 					}
 				}
 				if (configuredTheme >= 0 && ThemeClass::Instance.CurrentTheme == configuredTheme)
 				{
-					// respect affected houses: only stop if local client is within allowed houses
-					auto const pTypeExt = pSuper ? SWTypeExt::ExtMap.Find(pSuper->Type) : nullptr;
-					const auto affected = pTypeExt ? pTypeExt->Music_AffectedHouses.Get(AffectedHouse::All) : AffectedHouse::All;
+					// stop only if same theme and local house is affected
+					AffectedHouse affected = AffectedHouse::All;
+					if (pTypeExt)
+					{
+						affected = pTypeExt->Music_AffectedHouses.Get();
+					}
 					if (EnumFunctions::CanTargetHouse(affected, pHouse, HouseClass::CurrentPlayer))
 					{
 						ThemeClass::Instance.Stop();

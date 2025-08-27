@@ -50,18 +50,15 @@ void SWTypeExt::FireSuperWeaponExt(SuperClass* pSW, const CellStruct& cell)
 	// Music: play theme and start timer if configured
 	if (pTypeExt->Music_Theme.Get() >= 0)
 	{
-		const auto affected = pTypeExt->Music_AffectedHouses.Get(AffectedHouse::All);
-		// only play on local client if allowed by affected houses
+		const auto affected = pTypeExt->Music_AffectedHouses.Get();
 		if (EnumFunctions::CanTargetHouse(affected, pHouse, HouseClass::CurrentPlayer))
 		{
-			// start playing immediately
 			ThemeClass::Instance.Play(pTypeExt->Music_Theme);
 		}
 
 		const int duration = pTypeExt->Music_Duration.Get();
 		if (duration > 0)
 		{
-			// Only arm the timer on owner side; stopping is gated in Scenario update by affected houses
 			sw_ext.MusicTimer.Start(duration);
 			sw_ext.MusicActive = true;
 		}
