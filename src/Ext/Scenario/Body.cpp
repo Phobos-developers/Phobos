@@ -5,6 +5,7 @@
 #include <HouseClass.h>
 #include <ThemeClass.h>
 #include <Ext/House/Body.h>
+#include <Ext/SWType/Body.h>
 
 std::unique_ptr<ScenarioExt::ExtData> ScenarioExt::Data = nullptr;
 
@@ -278,7 +279,22 @@ DEFINE_HOOK(0x55B4E1, LogicClass_Update_BeforeAll, 0x5)
 			auto& swExt = houseExt.SuperExts[i];
 			if (swExt.MusicActive && swExt.MusicTimer.Completed())
 			{
-				ThemeClass::Instance.Stop();
+				// Only stop the music if the current theme is still the one configured for this superweapon.
+				// If the music has been changed by any means in the meantime, don't switch/stop it here.
+				int configuredTheme = -1;
+				if (pHouse->Supers.Count > static_cast<int>(i))
+				{
+					auto const pSuper = pHouse->Supers[static_cast<int>(i)];
+					if (pSuper && pSuper->Type)
+					{
+						auto const pTypeExt = SWTypeExt::ExtMap.Find(pSuper->Type);
+						configuredTheme = pTypeExt->Music_Theme.Get();
+					}
+				}
+				if (configuredTheme >= 0 && ThemeClass::Instance.CurrentTheme == configuredTheme)
+				{
+					ThemeClass::Instance.Stop();
+				}
 				swExt.MusicTimer.Stop();
 				swExt.MusicActive = false;
 			}
