@@ -85,34 +85,83 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		return EndFunction;
 
 	// Clear the off-screen buffer to black now that we know the screen will be displayed
-	DSurface::Hidden->Fill(0);
+	DSurface* pSurface = DSurface::Hidden;
+	pSurface->Fill(0);
 
 	// --- FILENAME INITIALIZATION ---
 
-	char tempFilenameBuffer[32];
-	_snprintf_s(tempFilenameBuffer, sizeof(tempFilenameBuffer), "DROP%04d.SHP", nStartingDropships);
-	char* file_ScreenBG = _strdup(tempFilenameBuffer);
+	ConvertClass* dropshipLoadout_Palette = nullptr;
+	SHPStruct* dropshipLoadout_Background = nullptr;
+	SHPStruct* dropshipLoadout_UpArrow = nullptr;
+	SHPStruct* dropshipLoadout_DownArrow = nullptr;
+	SHPStruct* dropshipLoadout_Loadout = nullptr;
+	SHPStruct* dropshipLoadout_PilotLit = nullptr;
+	std::vector<SHPStruct*> dropshipLoadout_DGreenList;
 
-	// Declare the filenames for all other graphical assets.
-	char* file_Loadout = _strdup("LOADOUT.SHP");
-	char* file_PilotLit = _strdup("PILOTLIT.SHP");
-	char* file_NotAvailableIcon = _strdup("XXICON.SHP");
-	char* file_UpArrow = _strdup("DROPUP.SHP");
-	char* file_DownArrow = _strdup("DROPDOWN.SHP");
+	if (ScenarioExt::Global()->DropshipLoadout_Palette)
+		dropshipLoadout_Palette = ScenarioExt::Global()->DropshipLoadout_Palette;
+	else
+		dropshipLoadout_Palette = FileSystem::LoadPALFile("DROPSHIP.PAL", DSurface::Hidden);
 
-	char* file_ScreenBG_Pal = _strdup("DROPSHIP.PAL");
-	char* file_Cameo_Pal = _strdup("CAMEO.PAL");
+	if (ScenarioExt::Global()->DropshipLoadout_Background)
+	{
+		dropshipLoadout_Background = ScenarioExt::Global()->DropshipLoadout_Background;
+	}
+	else
+	{
+		char tempFilenameBuffer[32];
+		_snprintf_s(tempFilenameBuffer, sizeof(tempFilenameBuffer), "DROP%04d.SHP", nStartingDropships);
+		dropshipLoadout_Background = FileSystem::LoadSHPFile(_strdup(tempFilenameBuffer));
+	}
 
-	// Sidebar click animations
-	char* file_Dgreen1 = _strdup("DGREEN1.SHP");
-	char* file_Dgreen2 = _strdup("DGREEN2.SHP");
-	char* file_Dgreen3 = _strdup("DGREEN3.SHP");
-	char* file_Dgreen4 = _strdup("DGREEN4.SHP");
+	if (ScenarioExt::Global()->DropshipLoadout_Loadout)
+		dropshipLoadout_Loadout = ScenarioExt::Global()->DropshipLoadout_Loadout;
+	else
+		dropshipLoadout_Loadout = FileSystem::LoadSHPFile("LOADOUT.SHP");
 
-	// Group the sidebar click animation filenames into an array for easy row iteration.
-	char* file_dGreen[] = {
-		file_Dgreen1, file_Dgreen2, file_Dgreen3, file_Dgreen4
-	};
+	if (ScenarioExt::Global()->DropshipLoadout_PilotLit)
+		dropshipLoadout_PilotLit = ScenarioExt::Global()->DropshipLoadout_PilotLit;
+	else
+		dropshipLoadout_PilotLit = FileSystem::LoadSHPFile("PILOTLIT.SHP");
+
+	if (ScenarioExt::Global()->DropshipLoadout_UpArrow)
+		dropshipLoadout_UpArrow = ScenarioExt::Global()->DropshipLoadout_UpArrow;
+	else
+		dropshipLoadout_UpArrow = FileSystem::LoadSHPFile("DROPUP.SHP");
+
+	if (ScenarioExt::Global()->DropshipLoadout_DownArrow)
+		dropshipLoadout_DownArrow = ScenarioExt::Global()->DropshipLoadout_DownArrow;
+	else
+		dropshipLoadout_DownArrow = FileSystem::LoadSHPFile("DROPDOWN.SHP");
+
+	// The original 4 sidebar animations
+	for (int i = 0; i < 4; i++)
+	{
+		if (ScenarioExt::Global()->DropshipLoadout_DGreenList.size() < 4
+			|| ScenarioExt::Global()->DropshipLoadout_DGreenList[i] == nullptr)
+		{
+			if (i == 0)
+				dropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile("DGREEN1.SHP"));
+			else if (i == 1)
+				dropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile("DGREEN2.SHP"));
+			else if (i == 2)
+				dropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile("DGREEN3.SHP"));
+			else if (i == 3)
+				dropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile("DGREEN4.SHP"));
+			else
+				dropshipLoadout_DGreenList.push_back(nullptr);
+		}
+		else
+		{
+			dropshipLoadout_DGreenList.push_back(ScenarioExt::Global()->DropshipLoadout_DGreenList[i]);
+		}
+	}
+
+	// New rows for sidebar animations (>4)
+	for (int i = 4; i < ScenarioExt::Global()->DropshipLoadout_DGreenList.size(); i++)
+	{
+		dropshipLoadout_DGreenList.push_back(ScenarioExt::Global()->DropshipLoadout_DGreenList[i]);
+	}
 	
 	// --- PRE-LOOP SETUP: MUSIC, MOUSE, AND MONEY ---
 
@@ -182,57 +231,13 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	const int cameoWidth = 60, cameoHeight = 48;
 
-	SHPStruct* screenBG_Image = FileSystem::LoadSHPFile(file_ScreenBG);
-	if (!screenBG_Image)
-		Debug::Log("Dropship Loadout - Missing background '%s'.\n", file_ScreenBG);
-
-	ConvertClass* screenBG_pal = FileSystem::LoadPALFile(file_ScreenBG_Pal, DSurface::Hidden);
-
-	SHPStruct* notAvailableIcon_Image = FileSystem::LoadSHPFile(file_NotAvailableIcon);
-
-	if (!notAvailableIcon_Image)
-		Debug::Log("Dropship Loadout - Missing NO CAMEO image '%s'.\n", file_NotAvailableIcon);
-
-	ConvertClass* notAvailableIcon_pal = FileSystem::LoadPALFile(file_Cameo_Pal, DSurface::Hidden);
-
-	SHPStruct* upArrow_Image = FileSystem::LoadSHPFile(file_UpArrow);
-
-	if (!upArrow_Image)
-		Debug::Log("Dropship Loadout - Missing UP ARROW image '%s'.\n", file_UpArrow);
-
-	SHPStruct* downArrow_Image = FileSystem::LoadSHPFile(file_DownArrow);
-
-	if (!downArrow_Image)
-		Debug::Log("Dropship Loadout - Missing DOWN ARROW image '%s'.\n", file_DownArrow);
-
-	SHPStruct* loadout_Image = FileSystem::LoadSHPFile(file_Loadout);
-	if (!loadout_Image)
-		Debug::Log("Dropship Loadout - Missing animation '%s'.\n", file_Loadout);
-
-	SHPStruct* pilotLit_Image = FileSystem::LoadSHPFile(file_PilotLit);
-
-	if (!pilotLit_Image)
-		Debug::Log("Dropship Loadout - Missing animation '%s'.\n", file_PilotLit);
-
-	std::vector<SHPStruct*> dGreen_Image;
-
-	for (auto file_dGreen : file_dGreen)
-	{
-		SHPStruct* dGreen = FileSystem::LoadSHPFile(file_dGreen);
-
-		if (!dGreen)
-			Debug::Log("Dropship Loadout - Missing animation '%s'.\n", file_dGreen);
-
-		dGreen_Image.push_back(dGreen);
-	}
-
 	// Basic background location data
-	int backgroundWidth = screenBG_Image->Width;
-	int backgroundHeight = screenBG_Image->Height;
+	int backgroundWidth = dropshipLoadout_Background->Width;
+	int backgroundHeight = dropshipLoadout_Background->Height;
 
 	// Calculate the top-left corner coordinates to center the background image.
-	int backgroundX = (DSurface::Hidden->GetWidth() - backgroundWidth) / 2;
-	int backgroundY = (DSurface::Hidden->GetHeight() - backgroundHeight) / 2;
+	int backgroundX = (pSurface->GetWidth() - backgroundWidth) / 2;
+	int backgroundY = (pSurface->GetHeight() - backgroundHeight) / 2;
 	int screenWidth = backgroundX + backgroundWidth;
 	int screenHeight = backgroundY + backgroundHeight;
 
@@ -264,24 +269,24 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int arrowsY = sidebarCameoLocations.back().Y + sidebarCameoLocations.back().Height + 6;
 
 	RectangleStruct upArrowLocation = {
-		centerOfCameoColumns - upArrow_Image->Width, // Position left of center
+		centerOfCameoColumns - dropshipLoadout_UpArrow->Width, // Position left of center
 		arrowsY,
-		upArrow_Image->Width,
-		upArrow_Image->Height
+		dropshipLoadout_UpArrow->Width,
+		dropshipLoadout_UpArrow->Height
 	};
 
 	RectangleStruct downArrowLocation = {
 		centerOfCameoColumns, // Position right of center
 		arrowsY,
-		downArrow_Image->Width,
-		downArrow_Image->Height
+		dropshipLoadout_DownArrow->Width,
+		dropshipLoadout_DownArrow->Height
 	};
 
 	std::vector<RectangleStruct> dGreenLocation;
 	int dGreenX = 371;
 	int dGreenY = 10;
 
-	for (auto dGreen : dGreen_Image)
+	for (auto dGreen : dropshipLoadout_DGreenList)
 	{
 		if (!dGreen) // Invalid graphics
 		{
@@ -303,15 +308,15 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	RectangleStruct loadoutLocation = {
 		backgroundX + 45,
 		backgroundY + 2, // Note: "+0" for a perfect alignment with TS values but the right background is "+2"...
-		loadout_Image->Width,
-		loadout_Image->Height
+		dropshipLoadout_Loadout->Width,
+		dropshipLoadout_Loadout->Height
 	};
 
 	RectangleStruct pilotLitLocation = {
 		backgroundX + 284,
 		backgroundY + 151,
-		pilotLit_Image->Width,
-		pilotLit_Image->Height
+		dropshipLoadout_PilotLit->Width,
+		dropshipLoadout_PilotLit->Height
 	};
 
 	// Calculate positions for the dropship slots
@@ -504,8 +509,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int currentPilotLitFrame = -1; // No image
 	int loadoutFrameDelay = 11;
 	int pilotLitFrameDelay = 15;
-	int loadoutTotalFrames = loadout_Image->Frames;
-	int pilotLitTotalFrames = pilotLit_Image->Frames;
+	int loadoutTotalFrames = dropshipLoadout_Loadout->Frames;
+	int pilotLitTotalFrames = dropshipLoadout_PilotLit->Frames;
 
 	int animTimer_StartValue = 15; // By default a frame update is completed every 15ms
 	int animTimer_DelayedStartValue_Loadout = ScenarioClass::Instance->Random(0, 0); // Disabled by default to resemble the original but it will be customizable for modders
@@ -525,7 +530,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int sidebarRowAnimationIndex = -1; // By default is DGREENx.SHP being x=[0-3]
 	int currentSidebarRowAnimationFrame = 0;
 	int sidebarRowAnimationFrameDelay = 5;
-	int sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dGreen_Image[sidebarRowAnimationIndex]->Frames : 0;
+	int sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dropshipLoadout_DGreenList[sidebarRowAnimationIndex]->Frames : 0;
 	SysTimerClass animTimer_UpdateFrameTimer_SidebarRowAnimation;
 
 	while (!pressedSpaceKey)
@@ -744,12 +749,12 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				{
 					sidebarRowAnimationIndex = ((command - btn_BasicSidebarCameo_ID) / 2);
 
-					if (sidebarRowAnimationIndex < dGreen_Image.size())
+					if (sidebarRowAnimationIndex < dropshipLoadout_DGreenList.size())
 						animTimer_UpdateFrameTimer_SidebarRowAnimation.Start(sidebarRowAnimationFrameDelay);
 					else
 						sidebarRowAnimationIndex = -1; // No images => No animation
 
-					sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dGreen_Image[sidebarRowAnimationIndex]->Frames : 0;
+					sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dropshipLoadout_DGreenList[sidebarRowAnimationIndex]->Frames : 0;
 				}
 			}
 		}
@@ -896,11 +901,11 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		{
 			// Screen background
 			DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					windowRectangle,
 					nullptr,
-					screenBG_Image,
-					screenBG_pal
+					dropshipLoadout_Background,
+					dropshipLoadout_Palette
 			);
 
 			// Painting the sidebar cameos
@@ -942,7 +947,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 					int opacity = 255; // Full opacity
 
-					DSurface::Hidden->FillRectTrans(&newRectangle, &foreColor, opacity);
+					pSurface->FillRectTrans(&newRectangle, &foreColor, opacity);
 				}
 				else if (pType == lastSelected)
 				{
@@ -953,7 +958,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 					auto foreColor = ColorStruct { 255, 239, 99 }; // By default is yellow
 					int opacity = 255; // Full opacity
-					DSurface::Hidden->FillRectTrans(&newRectangle, &foreColor, opacity);
+					pSurface->FillRectTrans(&newRectangle, &foreColor, opacity);
 				}
 
 				auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -962,7 +967,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				auto pPalette = FileSystem::CAMEO_PAL;
 
 				DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					sidebarCameoLocations[i],
 					pPCXSurface,
 					pFileSHP,
@@ -975,22 +980,22 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 			// Painting the UP arrow
 			DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					upArrowLocation,
 					nullptr,
-					upArrow_Image,
-					screenBG_pal,
+					dropshipLoadout_UpArrow,
+					dropshipLoadout_Palette,
 					0,
 					-2
 			);
 
 			// Painting the DOWN arrow
 			DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					downArrowLocation,
 					nullptr,
-					downArrow_Image,
-					screenBG_pal,
+					dropshipLoadout_DownArrow,
+					dropshipLoadout_Palette,
 					0,
 					-2
 			);
@@ -1013,7 +1018,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 						auto foreColor = ColorStruct { 255, 0, 0 }; // By default is red
 						int opacity = 255; // Full opacity
-						DSurface::Hidden->FillRectTrans(&newRectangle, &foreColor, opacity);
+						pSurface->FillRectTrans(&newRectangle, &foreColor, opacity);
 					}
 					
 					auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
@@ -1022,7 +1027,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 					auto pPalette = FileSystem::CAMEO_PAL;
 
 					DrawImage(
-						DSurface::Hidden,
+						pSurface,
 						dropshipBayCameoLocations[i][j],
 						pPCXSurface,
 						pFileSHP,
@@ -1037,11 +1042,11 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			if (currentLoadoutFrame >= 0)
 			{
 				DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					loadoutLocation,
 					nullptr,
-					loadout_Image,
-					screenBG_pal,
+					dropshipLoadout_Loadout,
+					dropshipLoadout_Palette,
 					currentLoadoutFrame,
 					-2
 				);
@@ -1051,11 +1056,11 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			if (currentPilotLitFrame >= 0)
 			{
 				DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					pilotLitLocation,
 					nullptr,
-					pilotLit_Image,
-					screenBG_pal,
+					dropshipLoadout_PilotLit,
+					dropshipLoadout_Palette,
 					currentPilotLitFrame,
 					-2
 				);
@@ -1065,11 +1070,11 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			if (sidebarRowAnimationIndex >= 0)
 			{
 				DrawImage(
-					DSurface::Hidden,
+					pSurface,
 					dGreenLocation[sidebarRowAnimationIndex],
 					nullptr,
-					dGreen_Image[sidebarRowAnimationIndex],
-					screenBG_pal,
+					dropshipLoadout_DGreenList[sidebarRowAnimationIndex],
+					dropshipLoadout_Palette,
 					currentSidebarRowAnimationFrame,
 					-2
 				);
@@ -1084,7 +1089,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				windowRectangle.Width - 140,
 				windowRectangle.Height - 15
 			};
-			DSurface::Hidden->DrawTextA(buffer, &windowRectangle, &creditsLabel, foreColor, 0, style);
+			pSurface->DrawTextA(buffer, &windowRectangle, &creditsLabel, foreColor, 0, style);
 
 			// Paint the helper message for starting the mission
 			swprintf_s(buffer, L"Press SPACE to start the mission");
@@ -1094,12 +1099,12 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				(windowRectangle.Width - 175) / 2,
 				windowRectangle.Height - 15
 			};
-			DSurface::Hidden->DrawTextA(buffer, &windowRectangle, &pressSpaceLabel, foreColor, 0, style);
+			pSurface->DrawTextA(buffer, &windowRectangle, &pressSpaceLabel, foreColor, 0, style);
 
 			repaintAll = false;
 		}
 
-		GScreenClass::Instance.DoBlit(true, DSurface::Hidden, nullptr);
+		GScreenClass::Instance.DoBlit(true, pSurface, nullptr);
 	}
 	// --- MAIN LOOP END ---
 
@@ -1147,19 +1152,6 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	// --- CLEANUP ---
 
-	free(file_ScreenBG);
-	free(file_Loadout);
-	free(file_PilotLit);
-	free(file_NotAvailableIcon);
-	free(file_UpArrow);
-	free(file_DownArrow);
-	free(file_ScreenBG_Pal);
-	free(file_Cameo_Pal);
-	free(file_Dgreen1);
-	free(file_Dgreen2);
-	free(file_Dgreen3);
-	free(file_Dgreen4);
-
 	for (auto button : buttonsList)
 	{
 		GameDelete(button);
@@ -1167,24 +1159,21 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	buttonsList.clear();
 
-	for (auto dGreen : dGreen_Image)
+	for (auto dGreen : dropshipLoadout_DGreenList)
 	{
 		GameDelete(dGreen);
 	}
 
-	dGreen_Image.clear();
-	//dropshipBayCameoLocations.clear();
-	//buttonsList.clear();
-	//GameDelete(commandManager);
+	dropshipLoadout_DGreenList.clear();
 
-	GameDelete(notAvailableIcon_pal);
-	GameDelete(screenBG_pal);
-	GameDelete(screenBG_Image);
+	//GameDelete(notAvailableIcon_pal);
+	GameDelete(dropshipLoadout_Palette);
+	GameDelete(dropshipLoadout_Background);
 	//GameDelete(notAvailableIcon_Image);
-	GameDelete(upArrow_Image);
-	GameDelete(downArrow_Image);
-	GameDelete(loadout_Image);
-	GameDelete(pilotLit_Image);
+	GameDelete(dropshipLoadout_UpArrow);
+	GameDelete(dropshipLoadout_DownArrow);
+	GameDelete(dropshipLoadout_Loadout);
+	GameDelete(dropshipLoadout_PilotLit);
 
 	// --- EXIT ---
 	return EndFunction;

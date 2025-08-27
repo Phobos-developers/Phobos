@@ -30,11 +30,6 @@ public:
 
 		bool ShowBriefing;
 		int BriefingTheme;
-		int DropshipLoadout_Theme;
-		long DropshipLoadout_Money;
-		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
-		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
-		bool DropshipLoadout_AddUnusedMoneyToPlayer;
 
 		std::map<int, CellStruct> Waypoints;
 		std::map<int, ExtendedVariable> Variables[2]; // 0 for local, 1 for global
@@ -46,6 +41,19 @@ public:
 		std::vector<int> SWSidebar_Indices;
 
 		std::unique_ptr<MessageListClass> NewMessageList;
+
+		int DropshipLoadout_Theme;
+		long DropshipLoadout_Money;
+		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
+		std::vector<TechnoTypeClass*> DropshipLoadout_Carriers;
+		bool DropshipLoadout_AddUnusedMoneyToPlayer;
+		ConvertClass* DropshipLoadout_Palette;
+		SHPStruct* DropshipLoadout_Background;
+		SHPStruct* DropshipLoadout_UpArrow;
+		SHPStruct* DropshipLoadout_DownArrow;
+		SHPStruct* DropshipLoadout_Loadout;
+		SHPStruct* DropshipLoadout_PilotLit;
+		std::vector<SHPStruct*> DropshipLoadout_DGreenList;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -62,6 +70,13 @@ public:
 			, DropshipLoadout_StartEVA {}
 			, DropshipLoadout_Carriers {}
 			, DropshipLoadout_AddUnusedMoneyToPlayer { false }
+			, DropshipLoadout_Palette { nullptr }
+			, DropshipLoadout_Background { nullptr }
+			, DropshipLoadout_UpArrow { nullptr }
+			, DropshipLoadout_DownArrow { nullptr }
+			, DropshipLoadout_Loadout { nullptr }
+			, DropshipLoadout_PilotLit { nullptr }
+			, DropshipLoadout_DGreenList {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

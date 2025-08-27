@@ -155,8 +155,40 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_StartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadout.StartEVA", this->DropshipLoadout_StartEVA);
 	this->DropshipLoadout_AddUnusedMoneyToPlayer = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.AddUnusedMoneyToPlayer", this->DropshipLoadout_AddUnusedMoneyToPlayer);
 
-	// List of transports
+	// Custom Dropship loadout images
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Background", "", Phobos::readBuffer) != 0)
+	{
+		char filename[260];
+		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, ScenarioClass::Instance->StartingDropships);
+		this->DropshipLoadout_Background = FileSystem::LoadSHPFile(_strdup(filename));
+	}
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.UpArrow", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_UpArrow = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Down", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_DownArrow = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Loadout", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_Loadout = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.PilotLit", "", Phobos::readBuffer) != 0)
+		this->DropshipLoadout_PilotLit = FileSystem::LoadSHPFile(Phobos::readBuffer);
+
 	char* context = nullptr;
+
+	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DGreenList", "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		DropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile(cur));
+	}
+
+	// List of transports
 	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers", "", Phobos::readBuffer);
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
@@ -188,6 +220,13 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_StartEVA)
 		.Process(this->DropshipLoadout_Carriers)
 		.Process(this->DropshipLoadout_AddUnusedMoneyToPlayer)
+		.Process(this->DropshipLoadout_Palette)
+		.Process(this->DropshipLoadout_Background)
+		.Process(this->DropshipLoadout_UpArrow)
+		.Process(this->DropshipLoadout_DownArrow)
+		.Process(this->DropshipLoadout_Loadout)
+		.Process(this->DropshipLoadout_PilotLit)
+		.Process(this->DropshipLoadout_DGreenList)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }
