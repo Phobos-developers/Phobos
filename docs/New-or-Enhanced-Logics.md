@@ -1225,7 +1225,7 @@ In `rulesmd.ini`:
 ```ini
 [SOMESW]              ; SuperWeaponType
 Music.Theme=          ; Soundtrack theme ID from thememd.ini (such as GodsendOne)
-Music.Duration=0      ; integer, game frames; 0 or below means do not auto-stop
+Music.Duration=0      ; integer, game frames; 0 or below means do not auto-stop,with the game speed set to 4, 15 frames equal 1 second.
 Music.AffectedHouses= ; owner|allies|enemies|all (default all)
 ```
 
