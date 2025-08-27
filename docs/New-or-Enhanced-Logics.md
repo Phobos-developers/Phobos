@@ -1233,7 +1233,7 @@ Music.AffectedHouses= ; owner|allies|enemies|all (default all)
 - `Music.Duration` sets how long to keep playing, in game frames. 0 or below means no auto-stop.
 - If a different theme is already playing, it will be replaced when the superweapon fires.
 - When the timer completes, the theme is stopped only if the currently playing theme still equals the configured `Music.Theme`; if music was changed during the countdown, it will not be altered.
-- `Music.AffectedHouses` determines which houses will hear and be affected by the superweapon music on their client: `owner` (firer only), `allies`, `enemies`, or `all` (default). Playback and auto-stop are applied only for those houses.
+- `Music.AffectedHouses` determines which houses will hear and be affected by the superweapon music on their client: `owner`, `allies`, `enemies`, or `all` (default). Playback and auto-stop are applied only for those houses.
 
 ## Technos
 
