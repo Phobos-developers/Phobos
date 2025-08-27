@@ -1545,7 +1545,7 @@ HeightShadowScaling.MinScale=0.0  ; floating point value
 ShadowSizeCharacteristicHeight=   ; integer, height in leptons
 ```
 
-### Custom laser fence
+### Customized laser fence
 
 - Now `LaserFence` can be customized by setting `LaserFencePost.Fence` on `LaserFencePost=true` buildings.
   - `LaserFencePost.Fence` defines which kind of laser fence can connect this kind of laser fence post. If they have different `LaserFencePost.Fence`, they will not be connected.

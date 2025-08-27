@@ -542,6 +542,7 @@ This page lists all the individual contributions to the project by their author.
   - Jumpjet Climbing Logic Enhancement
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
   - Building placing and deploying logic enhancement
+  - Customized laser fence
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
