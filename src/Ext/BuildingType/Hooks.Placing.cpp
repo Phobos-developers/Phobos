@@ -1767,7 +1767,7 @@ static inline bool IsMatchedPostType(const BuildingTypeClass* const pThisType, c
 	const auto pThisTypeExt = BuildingTypeExt::ExtMap.Find(pThisType);
 	const auto pPostTypeExt = BuildingTypeExt::ExtMap.Find(pPostType);
 
-	return pThisTypeExt->LaserFencePost_Fence.Get() != pPostTypeExt->LaserFencePost_Fence.Get();
+	return pThisTypeExt->LaserFencePost_Fence.Get() == pPostTypeExt->LaserFencePost_Fence.Get();
 }
 
 /*
