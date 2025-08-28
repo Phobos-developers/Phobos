@@ -1061,7 +1061,6 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exArtINI(CCINIClass::INI_Art);
 	auto pArtSection = pThis->ImageFile;
 
-	//this->CameoPCX.Read(exArtINI, pArtSection, "CameoPCX");
 	this->CameoPCX.Read(&CCINIClass::INI_Art, pArtSection, "CameoPCX");
 
 	this->TurretOffset.Read(exArtINI, pArtSection, "TurretOffset");

@@ -114,6 +114,78 @@ void ScenarioExt::ExtData::UpdateTransportReloaders()
 	}
 }
 
+std::vector<PhobosPCXFile> GetAnimationPCX(const std::string& baseFilename)
+{
+	std::vector<PhobosPCXFile> animationFrames;
+
+	PhobosPCXFile firstPCX = PhobosPCXFile(_strdup(baseFilename.c_str()));
+
+	if (firstPCX.Exists())
+		animationFrames.emplace_back(firstPCX);
+	else // The sequence is broken, so we stop searching
+		return animationFrames;
+
+	std::string filenameBase = baseFilename;
+	std::string extension;
+
+	// Find the position of the last dot to separate the extension
+	size_t lastDot = baseFilename.find_last_of('.');
+
+	if (lastDot == std::string::npos)
+	{
+		// No extension found, e.g., "LOADOUT"
+		filenameBase = baseFilename;
+		extension = "";
+	}
+	else
+	{
+		// Standard case, e.g., "LOADOUT.PCX" or "LOADOUT 0000.PCX"
+		filenameBase = baseFilename.substr(0, lastDot);
+		extension = baseFilename.substr(lastDot);
+	}
+
+	// Now, check if the part before the extension was a frame number and remove it if so.
+	// This ensures "LOADOUT 0000.PCX" correctly becomes "LOADOUT" for the sequence search
+	if (filenameBase.length() > 5 && filenameBase[filenameBase.length() - 5] == ' ')
+	{
+		std::string frameNumberStr = filenameBase.substr(filenameBase.length() - 4);
+		bool isNumeric = true;
+
+		for (char c : frameNumberStr)
+		{
+			if (!isdigit(c))
+			{
+				isNumeric = false;
+				break;
+			}
+		}
+		if (isNumeric)
+		{
+			// It was a numbered file like "LOADOUT.0000".
+			// The real base is the part before the frame number
+			filenameBase = filenameBase.substr(0, filenameBase.length() - 5);
+		}
+	}
+
+	// Loop to find and load the subsequent frames, ALWAYS starting from frame 1
+	for (int i = 1; i < 10000; ++i)
+	{
+		char currentFilename[256];
+		// Create the filename for the current frame, e.g., "LOADOUT 0001.PCX"
+		_snprintf_s(currentFilename, sizeof(currentFilename), "%s %04d%s", filenameBase.c_str(), i, extension.c_str());
+
+		PhobosPCXFile filePCX = PhobosPCXFile(_strdup(currentFilename));
+
+		// Check if the file for the current frame exists && add it into the vector
+		if (filePCX.Exists())
+			animationFrames.emplace_back(filePCX);
+		else // The sequence is broken, so we stop searching more animation frames
+			break;
+	}
+
+	return animationFrames;
+}
+
 // =============================
 // load / save
 
@@ -155,7 +227,9 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_StartEVA = pINI->ReadVoxName(GameStrings::Basic, "DropshipLoadout.StartEVA", this->DropshipLoadout_StartEVA);
 	this->DropshipLoadout_AddUnusedMoneyToPlayer = pINI->ReadBool(GameStrings::Basic, "DropshipLoadout.AddUnusedMoneyToPlayer", this->DropshipLoadout_AddUnusedMoneyToPlayer);
 
-	// Custom Dropship loadout images
+	// Custom Dropship loadout images, in SHP format
+	char* context = nullptr;
+
 	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Palette", "", Phobos::readBuffer) != 0)
 		this->DropshipLoadout_Palette = FileSystem::LoadPALFile(Phobos::readBuffer, DSurface::Hidden);
 
@@ -178,14 +252,45 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.PilotLit", "", Phobos::readBuffer) != 0)
 		this->DropshipLoadout_PilotLit = FileSystem::LoadSHPFile(Phobos::readBuffer);
 
-	char* context = nullptr;
-
 	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
 	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DGreenList", "", Phobos::readBuffer);
-
+	
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 	{
 		DropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile(cur));
+	}
+
+	// Custom Dropship loadout images, in PCX format
+	context = nullptr;
+
+	if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer) != 0)
+	{
+		char filename[260];
+		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, ScenarioClass::Instance->StartingDropships);
+		this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(_strdup(filename));
+	}
+
+	//pINI->ReadString(GameStrings::Basic, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer);
+	//this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.UpArrowPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_UpArrowPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DownArrowPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_DownArrowPCX = PhobosPCXFile(Phobos::readBuffer);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.LoadoutPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_LoadoutPCX = GetAnimationPCX(Phobos::readBuffer);
+
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.PilotLitPCX", "", Phobos::readBuffer);
+	this->DropshipLoadout_PilotLitPCX = GetAnimationPCX(Phobos::readBuffer);
+
+	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
+	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DGreenListPCX", "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		DropshipLoadout_DGreenListPCX.push_back(PhobosPCXFile(cur));
 	}
 
 	// List of transports
@@ -227,6 +332,12 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_Loadout)
 		.Process(this->DropshipLoadout_PilotLit)
 		.Process(this->DropshipLoadout_DGreenList)
+		.Process(this->DropshipLoadout_BackgroundPCX)
+		.Process(this->DropshipLoadout_UpArrowPCX)
+		.Process(this->DropshipLoadout_DownArrowPCX)
+		.Process(this->DropshipLoadout_LoadoutPCX)
+		.Process(this->DropshipLoadout_PilotLitPCX)
+		.Process(this->DropshipLoadout_DGreenListPCX)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }

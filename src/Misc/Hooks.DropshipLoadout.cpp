@@ -89,7 +89,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	pSurface->Fill(0);
 
 	// --- FILENAME INITIALIZATION ---
-
+	// If exists the PCX file then this image format takes precedence
 	ConvertClass* dropshipLoadout_Palette = nullptr;
 	SHPStruct* dropshipLoadout_Background = nullptr;
 	SHPStruct* dropshipLoadout_UpArrow = nullptr;
@@ -97,11 +97,20 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	SHPStruct* dropshipLoadout_Loadout = nullptr;
 	SHPStruct* dropshipLoadout_PilotLit = nullptr;
 	std::vector<SHPStruct*> dropshipLoadout_DGreenList;
+	BSurface* dropshipLoadout_BackgroundPCX = nullptr;
+	BSurface* dropshipLoadout_UpArrowPCX = nullptr;
+	BSurface* dropshipLoadout_DownArrowPCX = nullptr;
+	std::vector<BSurface*> dropshipLoadout_LoadoutPCX;
+	std::vector<BSurface*> dropshipLoadout_PilotLitPCX;
+	std::vector<BSurface*> dropshipLoadout_DGreenListPCX;
 
 	if (ScenarioExt::Global()->DropshipLoadout_Palette)
 		dropshipLoadout_Palette = ScenarioExt::Global()->DropshipLoadout_Palette;
 	else
 		dropshipLoadout_Palette = FileSystem::LoadPALFile("DROPSHIP.PAL", DSurface::Hidden);
+
+	if (ScenarioExt::Global()->DropshipLoadout_BackgroundPCX.Exists())
+		dropshipLoadout_BackgroundPCX = ScenarioExt::Global()->DropshipLoadout_BackgroundPCX.GetSurface();
 
 	if (ScenarioExt::Global()->DropshipLoadout_Background)
 	{
@@ -114,27 +123,49 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipLoadout_Background = FileSystem::LoadSHPFile(_strdup(tempFilenameBuffer));
 	}
 
+	if (ScenarioExt::Global()->DropshipLoadout_LoadoutPCX.size() > 0)
+	{
+		for (auto &pFilePCX : ScenarioExt::Global()->DropshipLoadout_LoadoutPCX)
+		{
+			dropshipLoadout_LoadoutPCX.push_back(pFilePCX.GetSurface());
+		}
+	}
+
 	if (ScenarioExt::Global()->DropshipLoadout_Loadout)
 		dropshipLoadout_Loadout = ScenarioExt::Global()->DropshipLoadout_Loadout;
 	else
 		dropshipLoadout_Loadout = FileSystem::LoadSHPFile("LOADOUT.SHP");
+
+	if (ScenarioExt::Global()->DropshipLoadout_PilotLitPCX.size() > 0)
+	{
+		for (auto &pFilePCX : ScenarioExt::Global()->DropshipLoadout_PilotLitPCX)
+		{
+			dropshipLoadout_PilotLitPCX.push_back(pFilePCX.GetSurface());
+		}
+	}
 
 	if (ScenarioExt::Global()->DropshipLoadout_PilotLit)
 		dropshipLoadout_PilotLit = ScenarioExt::Global()->DropshipLoadout_PilotLit;
 	else
 		dropshipLoadout_PilotLit = FileSystem::LoadSHPFile("PILOTLIT.SHP");
 
+	if (ScenarioExt::Global()->DropshipLoadout_UpArrowPCX.Exists())
+		dropshipLoadout_UpArrowPCX = ScenarioExt::Global()->DropshipLoadout_UpArrowPCX.GetSurface();
+
 	if (ScenarioExt::Global()->DropshipLoadout_UpArrow)
 		dropshipLoadout_UpArrow = ScenarioExt::Global()->DropshipLoadout_UpArrow;
 	else
 		dropshipLoadout_UpArrow = FileSystem::LoadSHPFile("DROPUP.SHP");
+
+	if (ScenarioExt::Global()->DropshipLoadout_DownArrowPCX.Exists())
+		dropshipLoadout_DownArrowPCX = ScenarioExt::Global()->DropshipLoadout_DownArrowPCX.GetSurface();
 
 	if (ScenarioExt::Global()->DropshipLoadout_DownArrow)
 		dropshipLoadout_DownArrow = ScenarioExt::Global()->DropshipLoadout_DownArrow;
 	else
 		dropshipLoadout_DownArrow = FileSystem::LoadSHPFile("DROPDOWN.SHP");
 
-	// The original 4 sidebar animations
+	// The original 4 sidebar row animations
 	for (int i = 0; i < 4; i++)
 	{
 		if (ScenarioExt::Global()->DropshipLoadout_DGreenList.size() < 4
@@ -232,8 +263,19 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	const int cameoWidth = 60, cameoHeight = 48;
 
 	// Basic background location data
-	int backgroundWidth = dropshipLoadout_Background->Width;
-	int backgroundHeight = dropshipLoadout_Background->Height;
+	int backgroundWidth = 0; // = dropshipLoadout_Background->Width;
+	int backgroundHeight = 0; // = dropshipLoadout_Background->Height;
+
+	if (dropshipLoadout_BackgroundPCX)
+	{
+		backgroundWidth = dropshipLoadout_BackgroundPCX->Width;
+		backgroundHeight = dropshipLoadout_BackgroundPCX->Height;
+	}
+	else
+	{
+		backgroundWidth = dropshipLoadout_Background->Width;
+		backgroundHeight = dropshipLoadout_Background->Height;
+	}
 
 	// Calculate the top-left corner coordinates to center the background image.
 	int backgroundX = (pSurface->GetWidth() - backgroundWidth) / 2;
@@ -268,18 +310,24 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	// Y position below the last row of cameos
 	int arrowsY = sidebarCameoLocations.back().Y + sidebarCameoLocations.back().Height + 6;
 
+	int dropshipLoadout_UpArrowWidth = dropshipLoadout_UpArrowPCX ? dropshipLoadout_UpArrowPCX->Width : dropshipLoadout_UpArrow->Width;
+	int dropshipLoadout_UpArrowHeight = dropshipLoadout_UpArrowPCX ? dropshipLoadout_UpArrowPCX->Height : dropshipLoadout_UpArrow->Height;
+
 	RectangleStruct upArrowLocation = {
-		centerOfCameoColumns - dropshipLoadout_UpArrow->Width, // Position left of center
+		centerOfCameoColumns - dropshipLoadout_UpArrowWidth, // Position left of center
 		arrowsY,
-		dropshipLoadout_UpArrow->Width,
-		dropshipLoadout_UpArrow->Height
+		dropshipLoadout_UpArrowWidth,
+		dropshipLoadout_UpArrowHeight
 	};
+
+	int dropshipLoadout_DownArrowWidth = dropshipLoadout_DownArrowPCX ? dropshipLoadout_DownArrowPCX->Width : dropshipLoadout_DownArrow->Width;
+	int dropshipLoadout_DownArrowHeight = dropshipLoadout_DownArrowPCX ? dropshipLoadout_DownArrowPCX->Height : dropshipLoadout_DownArrow->Height;
 
 	RectangleStruct downArrowLocation = {
 		centerOfCameoColumns, // Position right of center
 		arrowsY,
-		dropshipLoadout_DownArrow->Width,
-		dropshipLoadout_DownArrow->Height
+		dropshipLoadout_DownArrowWidth,
+		dropshipLoadout_DownArrowHeight
 	};
 
 	std::vector<RectangleStruct> dGreenLocation;
@@ -305,18 +353,24 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dGreenLocation.push_back(dGreenRectangle);
 	}
 
+	int dropshipLoadout_LoadoutWidth = dropshipLoadout_LoadoutPCX.size() > 0 ? dropshipLoadout_LoadoutPCX[0]->Width : dropshipLoadout_Loadout->Width;
+	int dropshipLoadout_LoadoutHeight = dropshipLoadout_LoadoutPCX.size() > 0 ? dropshipLoadout_LoadoutPCX[0]->Height : dropshipLoadout_Loadout->Height;
+
 	RectangleStruct loadoutLocation = {
 		backgroundX + 45,
 		backgroundY + 2, // Note: "+0" for a perfect alignment with TS values but the right background is "+2"...
-		dropshipLoadout_Loadout->Width,
-		dropshipLoadout_Loadout->Height
+		dropshipLoadout_LoadoutWidth,
+		dropshipLoadout_LoadoutHeight
 	};
+
+	int dropshipLoadout_PilotLitWidth = dropshipLoadout_PilotLitPCX.size() > 0 ? dropshipLoadout_PilotLitPCX[0]->Width : dropshipLoadout_PilotLit->Width;
+	int dropshipLoadout_PilotLitHeight = dropshipLoadout_PilotLitPCX.size() > 0 ? dropshipLoadout_PilotLitPCX[0]->Height : dropshipLoadout_PilotLit->Height;
 
 	RectangleStruct pilotLitLocation = {
 		backgroundX + 284,
 		backgroundY + 151,
-		dropshipLoadout_PilotLit->Width,
-		dropshipLoadout_PilotLit->Height
+		dropshipLoadout_PilotLitWidth,
+		dropshipLoadout_PilotLitHeight
 	};
 
 	// Calculate positions for the dropship slots
@@ -509,8 +563,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int currentPilotLitFrame = -1; // No image
 	int loadoutFrameDelay = 11;
 	int pilotLitFrameDelay = 15;
-	int loadoutTotalFrames = dropshipLoadout_Loadout->Frames;
-	int pilotLitTotalFrames = dropshipLoadout_PilotLit->Frames;
+	int loadoutTotalFrames = dropshipLoadout_LoadoutPCX.size() > 0 ? dropshipLoadout_LoadoutPCX.size() - 1 : dropshipLoadout_Loadout->Frames;
+	int pilotLitTotalFrames = dropshipLoadout_PilotLitPCX.size() > 0 ? dropshipLoadout_PilotLitPCX.size() - 1 : dropshipLoadout_PilotLit->Frames;
 
 	int animTimer_StartValue = 15; // By default a frame update is completed every 15ms
 	int animTimer_DelayedStartValue_Loadout = ScenarioClass::Instance->Random(0, 0); // Disabled by default to resemble the original but it will be customizable for modders
@@ -903,7 +957,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			DrawImage(
 					pSurface,
 					windowRectangle,
-					nullptr,
+					dropshipLoadout_BackgroundPCX,
 					dropshipLoadout_Background,
 					dropshipLoadout_Palette
 			);
@@ -982,7 +1036,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			DrawImage(
 					pSurface,
 					upArrowLocation,
-					nullptr,
+					dropshipLoadout_UpArrowPCX,
 					dropshipLoadout_UpArrow,
 					dropshipLoadout_Palette,
 					0,
@@ -993,7 +1047,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			DrawImage(
 					pSurface,
 					downArrowLocation,
-					nullptr,
+					dropshipLoadout_DownArrowPCX,
 					dropshipLoadout_DownArrow,
 					dropshipLoadout_Palette,
 					0,
@@ -1041,10 +1095,13 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			// Paint Loadout animation
 			if (currentLoadoutFrame >= 0)
 			{
+				BSurface* framePCX = dropshipLoadout_LoadoutPCX.size() > 0 ?
+					dropshipLoadout_LoadoutPCX[currentLoadoutFrame] : nullptr;
+
 				DrawImage(
 					pSurface,
 					loadoutLocation,
-					nullptr,
+					framePCX,
 					dropshipLoadout_Loadout,
 					dropshipLoadout_Palette,
 					currentLoadoutFrame,
@@ -1055,10 +1112,13 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			// Paint PilotLit animation
 			if (currentPilotLitFrame >= 0)
 			{
+				BSurface* framePCX = dropshipLoadout_PilotLitPCX.size() > 0 ?
+					dropshipLoadout_PilotLitPCX[currentPilotLitFrame] : nullptr;
+
 				DrawImage(
 					pSurface,
 					pilotLitLocation,
-					nullptr,
+					framePCX,
 					dropshipLoadout_PilotLit,
 					dropshipLoadout_Palette,
 					currentPilotLitFrame,
@@ -1168,13 +1228,18 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 	//GameDelete(notAvailableIcon_pal);
 	GameDelete(dropshipLoadout_Palette);
+	GameDelete(dropshipLoadout_BackgroundPCX);
 	GameDelete(dropshipLoadout_Background);
 	//GameDelete(notAvailableIcon_Image);
+	GameDelete(dropshipLoadout_UpArrowPCX);
 	GameDelete(dropshipLoadout_UpArrow);
+	GameDelete(dropshipLoadout_DownArrowPCX);
 	GameDelete(dropshipLoadout_DownArrow);
 	GameDelete(dropshipLoadout_Loadout);
 	GameDelete(dropshipLoadout_PilotLit);
-
+	//TO-DO
+	// DropshipLoadout_LoadoutPCX
+	// DropshipLoadout_PilotLitPCX
 	// --- EXIT ---
 	return EndFunction;
 }

@@ -54,6 +54,12 @@ public:
 		SHPStruct* DropshipLoadout_Loadout;
 		SHPStruct* DropshipLoadout_PilotLit;
 		std::vector<SHPStruct*> DropshipLoadout_DGreenList;
+		PhobosPCXFile DropshipLoadout_BackgroundPCX;
+		PhobosPCXFile DropshipLoadout_UpArrowPCX;
+		PhobosPCXFile DropshipLoadout_DownArrowPCX;
+		std::vector<PhobosPCXFile> DropshipLoadout_LoadoutPCX;
+		std::vector<PhobosPCXFile> DropshipLoadout_PilotLitPCX;
+		std::vector<PhobosPCXFile> DropshipLoadout_DGreenListPCX;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -77,6 +83,12 @@ public:
 			, DropshipLoadout_Loadout { nullptr }
 			, DropshipLoadout_PilotLit { nullptr }
 			, DropshipLoadout_DGreenList {}
+			, DropshipLoadout_BackgroundPCX {}
+			, DropshipLoadout_UpArrowPCX {}
+			, DropshipLoadout_DownArrowPCX {}
+			, DropshipLoadout_LoadoutPCX {}
+			, DropshipLoadout_PilotLitPCX {}
+			, DropshipLoadout_DGreenListPCX {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
