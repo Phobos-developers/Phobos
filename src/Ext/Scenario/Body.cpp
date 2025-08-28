@@ -290,7 +290,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 	{
-		DropshipLoadout_DGreenListPCX.push_back(PhobosPCXFile(cur));
+		DropshipLoadout_DGreenListPCX.push_back(GetAnimationPCX(cur));
 	}
 
 	// List of transports

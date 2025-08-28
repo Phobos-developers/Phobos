@@ -102,7 +102,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	BSurface* dropshipLoadout_DownArrowPCX = nullptr;
 	std::vector<BSurface*> dropshipLoadout_LoadoutPCX;
 	std::vector<BSurface*> dropshipLoadout_PilotLitPCX;
-	std::vector<BSurface*> dropshipLoadout_DGreenListPCX;
+	std::vector<std::vector<BSurface*>> dropshipLoadout_DGreenListPCX;
 
 	if (ScenarioExt::Global()->DropshipLoadout_Palette)
 		dropshipLoadout_Palette = ScenarioExt::Global()->DropshipLoadout_Palette;
@@ -164,6 +164,29 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipLoadout_DownArrow = ScenarioExt::Global()->DropshipLoadout_DownArrow;
 	else
 		dropshipLoadout_DownArrow = FileSystem::LoadSHPFile("DROPDOWN.SHP");
+
+	if (ScenarioExt::Global()->DropshipLoadout_DGreenListPCX.size() > 0)
+	{
+		for (auto& pFileGroupPCX : ScenarioExt::Global()->DropshipLoadout_DGreenListPCX)
+		{
+			std::vector<BSurface*> rowAnimFrames;
+
+			for (auto& pFilePCX : pFileGroupPCX)
+			{
+				rowAnimFrames.push_back(pFilePCX.GetSurface());
+			}
+
+			dropshipLoadout_DGreenListPCX.push_back(rowAnimFrames);
+			rowAnimFrames.clear();
+		}
+
+		// By default fill the first 4 rows
+		for (int i = 0; i < 4 && dropshipLoadout_DGreenListPCX.size() < 4; i++)
+		{
+			std::vector<BSurface*> emptyAnimFrames;
+			dropshipLoadout_DGreenListPCX.push_back(emptyAnimFrames);
+		}
+	}
 
 	// The original 4 sidebar row animations
 	for (int i = 0; i < 4; i++)
@@ -334,23 +357,47 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int dGreenX = 371;
 	int dGreenY = 10;
 
-	for (auto dGreen : dropshipLoadout_DGreenList)
+	if (dropshipLoadout_DGreenListPCX.size() > 0)
 	{
-		if (!dGreen) // Invalid graphics
+		for (auto dGreenPCX : dropshipLoadout_DGreenListPCX)
 		{
-			dGreenLocation.push_back({ 0, 0, 0, 0 });
-			continue;
+			if (dGreenPCX.size() == 0) // Invalid graphics
+			{
+				dGreenLocation.push_back({ 0, 0, 0, 0 });
+				continue;
+			}
+
+			RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				dGreenPCX[0]->Width,
+				dGreenPCX[0]->Height
+			};
+
+			dGreenY += 50;
+			dGreenLocation.push_back(dGreenRectangle);
 		}
+	}
+	else
+	{
+		for (auto dGreen : dropshipLoadout_DGreenList)
+		{
+			if (!dGreen) // Invalid graphics
+			{
+				dGreenLocation.push_back({ 0, 0, 0, 0 });
+				continue;
+			}
 
-		RectangleStruct dGreenRectangle = {
-			backgroundX + dGreenX,
-			backgroundY + dGreenY,
-			dGreen->Width,
-			dGreen->Height
-		};
+			RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				dGreen->Width,
+				dGreen->Height
+			};
 
-		dGreenY += 50;
-		dGreenLocation.push_back(dGreenRectangle);
+			dGreenY += 50;
+			dGreenLocation.push_back(dGreenRectangle);
+		}
 	}
 
 	int dropshipLoadout_LoadoutWidth = dropshipLoadout_LoadoutPCX.size() > 0 ? dropshipLoadout_LoadoutPCX[0]->Width : dropshipLoadout_Loadout->Width;
@@ -584,7 +631,17 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int sidebarRowAnimationIndex = -1; // By default is DGREENx.SHP being x=[0-3]
 	int currentSidebarRowAnimationFrame = 0;
 	int sidebarRowAnimationFrameDelay = 5;
-	int sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dropshipLoadout_DGreenList[sidebarRowAnimationIndex]->Frames : 0;
+
+	int sidebarRowAnimationTotalFrames = 0;
+
+	if (sidebarRowAnimationIndex >= 0)
+	{
+		if (dropshipLoadout_DGreenListPCX.size() > 0)
+			sidebarRowAnimationTotalFrames = dropshipLoadout_DGreenListPCX[sidebarRowAnimationIndex].size() - 1;
+		else
+			sidebarRowAnimationTotalFrames = dropshipLoadout_DGreenList[sidebarRowAnimationIndex]->Frames;
+	}
+
 	SysTimerClass animTimer_UpdateFrameTimer_SidebarRowAnimation;
 
 	while (!pressedSpaceKey)
@@ -803,12 +860,24 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				{
 					sidebarRowAnimationIndex = ((command - btn_BasicSidebarCameo_ID) / 2);
 
-					if (sidebarRowAnimationIndex < dropshipLoadout_DGreenList.size())
-						animTimer_UpdateFrameTimer_SidebarRowAnimation.Start(sidebarRowAnimationFrameDelay);
-					else
-						sidebarRowAnimationIndex = -1; // No images => No animation
+					if (dropshipLoadout_DGreenListPCX.size() > 0)
+					{
+						if (sidebarRowAnimationIndex < dropshipLoadout_DGreenListPCX.size())
+							animTimer_UpdateFrameTimer_SidebarRowAnimation.Start(sidebarRowAnimationFrameDelay);
+						else
+							sidebarRowAnimationIndex = -1; // No images => No animation
 
-					sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dropshipLoadout_DGreenList[sidebarRowAnimationIndex]->Frames : 0;
+						sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dropshipLoadout_DGreenListPCX[sidebarRowAnimationIndex].size() - 1 : 0;
+					}
+					else
+					{
+						if (sidebarRowAnimationIndex < dropshipLoadout_DGreenList.size())
+							animTimer_UpdateFrameTimer_SidebarRowAnimation.Start(sidebarRowAnimationFrameDelay);
+						else
+							sidebarRowAnimationIndex = -1; // No images => No animation
+
+						sidebarRowAnimationTotalFrames = sidebarRowAnimationIndex >= 0 ? dropshipLoadout_DGreenList[sidebarRowAnimationIndex]->Frames : 0;
+					}
 				}
 			}
 		}
@@ -1127,12 +1196,15 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			}
 
 			// Paint dGreen animation
-			if (sidebarRowAnimationIndex >= 0)
+			if (sidebarRowAnimationIndex >= 0 && currentSidebarRowAnimationFrame >= 0)
 			{
+				BSurface* framePCX = dropshipLoadout_DGreenListPCX.size() > 0 && dropshipLoadout_DGreenListPCX[sidebarRowAnimationIndex].size() > 0 ?
+					dropshipLoadout_DGreenListPCX[sidebarRowAnimationIndex][currentSidebarRowAnimationFrame] : nullptr;
+
 				DrawImage(
 					pSurface,
 					dGreenLocation[sidebarRowAnimationIndex],
-					nullptr,
+					framePCX,
 					dropshipLoadout_DGreenList[sidebarRowAnimationIndex],
 					dropshipLoadout_Palette,
 					currentSidebarRowAnimationFrame,

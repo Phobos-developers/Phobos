@@ -59,7 +59,7 @@ public:
 		PhobosPCXFile DropshipLoadout_DownArrowPCX;
 		std::vector<PhobosPCXFile> DropshipLoadout_LoadoutPCX;
 		std::vector<PhobosPCXFile> DropshipLoadout_PilotLitPCX;
-		std::vector<PhobosPCXFile> DropshipLoadout_DGreenListPCX;
+		std::vector<std::vector<PhobosPCXFile>> DropshipLoadout_DGreenListPCX;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
