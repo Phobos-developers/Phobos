@@ -395,3 +395,10 @@ DEFINE_HOOK(0x6DBE74, TacticalClass_DrawAllRadialIndicators_DrawDistributionRang
 
 	return 0;
 }
+
+/*
+TODO
+- More flexible range adjustment
+- Drag mouse to adjust the range
+- Target highlight within the range
+*/
