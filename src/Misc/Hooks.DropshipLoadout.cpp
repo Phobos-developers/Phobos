@@ -14,64 +14,8 @@
 #include <ShapeButtonClass.h>
 #include <Ext/House/Body.h>
 
-// SHP & PCX drawing support
-void DrawImage(
-	DSurface* pSurface,
-	RectangleStruct destinationRect,
-	BSurface* pPCXSurface,
-	SHPStruct* fileSHP,
-	ConvertClass* pPalette,
-	int frameIndex = 0,
-	int zAdjust = 0,
-	BlitterFlags blitterFlags = BlitterFlags::None)
-{
-	if (!pSurface || (!pPCXSurface && !fileSHP))
-		return;
+#include <Utilities/GeneralUtils.h>
 
-	bool painted = false;
-
-	// Prioritize drawing the PCX file if it's provided
-	if (pPCXSurface)
-	{
-		// This function handles stretching the PCX to fit the destinationRect
-		PCX::Instance.BlitToSurface(&destinationRect, pSurface, pPCXSurface);
-		painted = true;
-	}
-	// Otherwise, if an SHP is provided, draw it
-	else if (fileSHP)
-	{
-		// SHP drawing requires a palette converter
-		if (!pPalette)
-		{
-			Debug::Log("DrawImage Error: Attempted to draw SHP without providing a pPalette.\n");
-			return;
-		}
-
-		Point2D noLocation = { 0, 0 };
-
-		CC_Draw_Shape(
-			pSurface,
-			pPalette,
-			fileSHP,
-			frameIndex,
-			&noLocation,
-			&destinationRect,
-			BlitterFlags::None,
-			0, zAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
-		);
-		painted = true;
-	}
-
-	// Use the Phobos PCX instance to blit the image
-	if (painted && blitterFlags == (BlitterFlags::Darken | BlitterFlags::bf_400))
-	{
-		auto black = ColorStruct { 0, 0, 0 };
-		int opacity = 40;
-		pSurface->FillRectTrans(&destinationRect, &black, opacity);
-	}
-
-	// Other new BlitterFlags cases should be placed here so both SHP & PCS will be affected
-}
 
 DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 {
@@ -1023,7 +967,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		if (repaintAll)
 		{
 			// Screen background
-			DrawImage(
+			GeneralUtils::DrawImage(
 					pSurface,
 					windowRectangle,
 					dropshipLoadout_BackgroundPCX,
@@ -1089,7 +1033,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				auto pFileSHP = pType->Cameo;
 				auto pPalette = FileSystem::CAMEO_PAL;
 
-				DrawImage(
+				GeneralUtils::DrawImage(
 					pSurface,
 					sidebarCameoLocations[i],
 					pPCXSurface,
@@ -1102,7 +1046,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			}
 
 			// Painting the UP arrow
-			DrawImage(
+			GeneralUtils::DrawImage(
 					pSurface,
 					upArrowLocation,
 					dropshipLoadout_UpArrowPCX,
@@ -1113,7 +1057,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			);
 
 			// Painting the DOWN arrow
-			DrawImage(
+			GeneralUtils::DrawImage(
 					pSurface,
 					downArrowLocation,
 					dropshipLoadout_DownArrowPCX,
@@ -1149,7 +1093,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 					auto pFileSHP = pType->Cameo;
 					auto pPalette = FileSystem::CAMEO_PAL;
 
-					DrawImage(
+					GeneralUtils::DrawImage(
 						pSurface,
 						dropshipBayCameoLocations[i][j],
 						pPCXSurface,
@@ -1167,7 +1111,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				BSurface* framePCX = dropshipLoadout_LoadoutPCX.size() > 0 ?
 					dropshipLoadout_LoadoutPCX[currentLoadoutFrame] : nullptr;
 
-				DrawImage(
+				GeneralUtils::DrawImage(
 					pSurface,
 					loadoutLocation,
 					framePCX,
@@ -1184,7 +1128,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				BSurface* framePCX = dropshipLoadout_PilotLitPCX.size() > 0 ?
 					dropshipLoadout_PilotLitPCX[currentPilotLitFrame] : nullptr;
 
-				DrawImage(
+				GeneralUtils::DrawImage(
 					pSurface,
 					pilotLitLocation,
 					framePCX,
@@ -1201,7 +1145,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				BSurface* framePCX = dropshipLoadout_DGreenListPCX.size() > 0 && dropshipLoadout_DGreenListPCX[sidebarRowAnimationIndex].size() > 0 ?
 					dropshipLoadout_DGreenListPCX[sidebarRowAnimationIndex][currentSidebarRowAnimationFrame] : nullptr;
 
-				DrawImage(
+				GeneralUtils::DrawImage(
 					pSurface,
 					dGreenLocation[sidebarRowAnimationIndex],
 					framePCX,

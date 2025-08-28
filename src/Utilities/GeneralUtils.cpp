@@ -296,3 +296,63 @@ int GeneralUtils::GetColorFromColorAdd(int colorIndex)
 
 	return colorValue;
 }
+
+// SHP & PCX drawing support in the same function
+bool GeneralUtils::DrawImage(
+	DSurface* pSurface,
+	RectangleStruct destinationRect,
+	BSurface* pPCXSurface,
+	SHPStruct* fileSHP,
+	ConvertClass* pPalette,
+	int frameIndex,
+	int zAdjust,
+	BlitterFlags blitterFlags)
+{
+	if (!pSurface || (!pPCXSurface && !fileSHP))
+		return false;
+
+	bool painted = false;
+
+	// Prioritize drawing the PCX file if it's provided
+	if (pPCXSurface)
+	{
+		// This function handles stretching the PCX to fit the destinationRect
+		PCX::Instance.BlitToSurface(&destinationRect, pSurface, pPCXSurface);
+		painted = true;
+	}
+	// Otherwise, if an SHP is provided, draw it
+	else if (fileSHP)
+	{
+		// SHP drawing requires a palette converter
+		if (!pPalette)
+		{
+			Debug::Log("DrawImage Error: Attempted to draw SHP without providing a pPalette.\n");
+			return false;
+		}
+
+		Point2D noLocation = { 0, 0 };
+
+		CC_Draw_Shape(
+			pSurface,
+			pPalette,
+			fileSHP,
+			frameIndex,
+			&noLocation,
+			&destinationRect,
+			BlitterFlags::None,
+			0, zAdjust, ZGradient::Ground, 1000, 0, nullptr, 0, 0, 0
+		);
+		painted = true;
+	}
+
+	// Use the Phobos PCX instance to blit the image
+	if (painted && blitterFlags == (BlitterFlags::Darken | BlitterFlags::bf_400))
+	{
+		auto black = ColorStruct { 0, 0, 0 };
+		int opacity = 40;
+		pSurface->FillRectTrans(&destinationRect, &black, opacity);
+	}
+
+	// Other new BlitterFlags cases should be placed here so both SHP & PCS will be affected
+	return true;
+}

@@ -39,6 +39,7 @@ public:
 	static void DisplayDamageNumberString(int damage, DamageDisplayType type, CoordStruct coords, int& offset);
 	static int GetColorFromColorAdd(int colorIndex);
 	static DynamicVectorClass<ColorScheme*>* BuildPalette(const char* paletteFileName);
+	static bool DrawImage(DSurface* pSurface, RectangleStruct destinationRect, BSurface* pPCXSurface, SHPStruct* fileSHP, ConvertClass* pPalette, int frameIndex = 0, int zAdjust = 0, BlitterFlags blitterFlags = BlitterFlags::None);
 
 	template<typename T>
 	static constexpr T FastPow(T x, size_t n)

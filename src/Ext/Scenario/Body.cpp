@@ -270,9 +270,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(_strdup(filename));
 	}
 
-	//pINI->ReadString(GameStrings::Basic, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer);
-	//this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(Phobos::readBuffer);
-
 	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.UpArrowPCX", "", Phobos::readBuffer);
 	this->DropshipLoadout_UpArrowPCX = PhobosPCXFile(Phobos::readBuffer);
 
@@ -293,7 +290,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		DropshipLoadout_DGreenListPCX.push_back(GetAnimationPCX(cur));
 	}
 
-	// List of transports
+	// List of transports used in the map action
 	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers", "", Phobos::readBuffer);
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
