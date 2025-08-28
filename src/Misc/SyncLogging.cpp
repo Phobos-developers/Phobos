@@ -276,9 +276,9 @@ DEFINE_HOOK(0x64736D, Queue_AI_WriteDesyncLog, 0x5)
 	SyncLogger::WriteSyncLog(logFilename);
 
 	// Replace overridden instructions.
-	JMP_STD(0x6BEC60);
+	CALL(0x6BEC60);
 
-	return 0x647374;
+	return 0x647372;
 }
 
 DEFINE_HOOK(0x64CD11, ExecuteDoList_WriteDesyncLog, 0x8)
@@ -304,7 +304,7 @@ DEFINE_HOOK(0x64CD11, ExecuteDoList_WriteDesyncLog, 0x8)
 
 // RNG call logging
 
-DEFINE_HOOK(0x65C7D0, Random2Class_Random_SyncLog, 0x6)
+DEFINE_HOOK(0x65C7D0, Random2Class_Random_SyncLog, 0x1)
 {
 	GET(Randomizer*, pThis, ECX);
 	GET_STACK(const unsigned int, callerAddress, 0x0);
@@ -314,7 +314,7 @@ DEFINE_HOOK(0x65C7D0, Random2Class_Random_SyncLog, 0x6)
 	return 0;
 }
 
-DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x6)
+DEFINE_HOOK(0x65C88A, Random2Class_RandomRanged_SyncLog, 0x3)
 {
 	GET(Randomizer*, pThis, EDX);
 	GET_STACK(const unsigned int, callerAddress, 0x0);

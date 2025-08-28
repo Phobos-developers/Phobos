@@ -164,6 +164,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->SWSidebar_Enable)
 		.Process(this->SWSidebar_Indices)
 		.Process(this->RecordMessages)
+		.Process(this->DefaultLS640BkgdName)
+		.Process(this->DefaultLS800BkgdName)
+		.Process(this->DefaultLS800BkgdPal)
 		;
 }
 

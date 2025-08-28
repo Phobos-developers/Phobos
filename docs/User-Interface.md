@@ -79,6 +79,7 @@ IngameScore.LoseTheme= ; Soundtrack theme ID
   - `ValueScaleDivisor` can be used to adjust scale of displayed values. Both the current & maximum value will be divided by the integer number given, if higher than 1. Default to 1 (or 15 when set `ValueAsTimer` to true).
 
   - `DigitalDisplay.Health.FakeAtDisguise`, if set to true on an InfantryType with Disguise, will use the disguised TechnoType's `Strength` value as the maximum value of health display. The current value will be displayed as the percentage of its current health multiplies the new maximum value.
+  - `ShowType` specifies the conditions under which it can be displayed. Note that `idle` is only available when `HealthBar.Permanent=yes`.
 
 In `rulesmd.ini`:
 ```ini
@@ -108,6 +109,7 @@ VisibleToHouses.Observer=true                  ; boolean
 VisibleInSpecialState=true                     ; boolean
 ValueScaleDivisor=                             ; integer
 ValueAsTimer=false                             ; boolean
+ShowType=cursorhover,selected                  ; Displayed ShowType Enumeration (cursorhover|selected|idle|all)
 ; Text
 Text.Color=0,255,0                             ; integers - Red, Green, Blue
 Text.Color.ConditionYellow=255,255,0           ; integers - Red, Green, Blue
@@ -173,11 +175,17 @@ ShowFlashOnSelecting=false  ; boolean
 *Health bars hidden in [CnC: Final War](https://www.moddb.com/mods/cncfinalwar)*
 
 - Health bar display can now be turned off as needed, hiding both the health bar box and health pips.
+  - `HealthBar.HidePips` only hides the health bar without affecting anything else.
+  - `HealthBar.Permanent` will display health points at all times.
+  - `HealthBar.Permanent.PipScale` will always display additional pips and group numbers.
 
 In `rulesmd.ini`:
 ```ini
-[SOMENAME]            ; TechnoType
-HealthBar.Hide=false  ; boolean
+[SOMENAME]                           ; TechnoType
+HealthBar.Hide=false                 ; boolean
+HealthBar.HidePips=false             ; boolean
+HealthBar.Permanent=false            ; boolean
+HealthBar.Permanent.PipScale=false   ; boolean
 ```
 
 ### Light flash effect toggling
@@ -232,7 +240,7 @@ PrioritySelectionFiltering=true  ; boolean
 - Building previews can now be enabled when placing a building for construction. This can be enabled on a global basis with `[AudioVisual] -> PlacementPreview` and then further customized for each building with `[BuildingType] -> PlacementPreview`.
 - The building placement grid (`place.shp`) translucency setting can be adjusted via `PlacementGrid.Translucency` if `PlacementPreview` is disabled and `PlacementGrid.TranslucencyWithPreview` if enabled.
 - If using the building's appropriate `Buildup` is not desired, customizations allow for you to choose the exact SHP and frame you'd prefer to show as preview through `PlacementPreview.Shape`, `PlacementPreview.ShapeFrame` and `PlacementPreview.Palette`.
-  - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater’s three-letter extension.
+  - You can specify theater-specific palettes and shapes by putting three `~` marks to the theater specific part of the filename. `~~~` is replaced with the theater's three-letter extension.
 - `PlacementPreview.ShapeFrame` tag defaults to building's artmd.ini `Buildup` entry's last non-shadow frame. If there is no 'Buildup' specified it will instead attempt to default to the building's normal first frame (animation frames and bibs are not included in this preview).
 
 In `rulesmd.ini`:
@@ -681,36 +689,6 @@ In `rulesmd.ini`:
 Sidebar.GDIPositions=  ; boolean
 ```
 
-### Weeds counter
-
-- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
-  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
-  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
-  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
-
-In `uimd.ini`:
-```ini
-[Sidebar]
-WeedsCounter.Show=false          ; boolean
-```
-
-In `rulesmd.ini`:
-```ini
-[SOMESIDE]                       ; Side
-Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
-Sidebar.WeedsCounter.Color=      ; integer - R,G,B
-```
-
-In `RA2MD.INI`:
-```ini
-[Phobos]
-ShowWeedsCounter=true  ; boolean
-```
-
-```{note}
-Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
-```
-
 ### SuperWeapon Sidebar
 
 ![image](_static/images/sw_sidebar.png)
@@ -783,6 +761,36 @@ SuperWeaponSidebar.RequiredSignificance=0   ; integer
 
 ```{hint}
 While the feature is usable without any extra graphics, you can find example assets to use with vanilla graphics on [Phobos supplementaries repo](https://github.com/Phobos-developers/PhobosSupplementaries).
+```
+
+### Weeds counter
+
+- Counter for amount of [weeds in storage](Fixed-or-Improved-Logics.md#weeds--weed-eaters) can be added near the credits indicator.
+  - You can adjust counter position by `Sidebar.WeedsCounter.Offset` (per-side setting), negative means left/up, positive means right/down.
+  - Counter is by default displayed in side's tooltip color, which can be overridden per side by setting `Sidebar.WeedsCounter.Color`.
+  - The feature can be toggled on/off by user if enabled in mod via `ShowWeedsCounter` setting in `RA2MD.INI`.
+
+In `uimd.ini`:
+```ini
+[Sidebar]
+WeedsCounter.Show=false          ; boolean
+```
+
+In `rulesmd.ini`:
+```ini
+[SOMESIDE]                       ; Side
+Sidebar.WeedsCounter.Offset=0,0  ; X,Y, pixels relative to default
+Sidebar.WeedsCounter.Color=      ; integer - R,G,B
+```
+
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowWeedsCounter=true  ; boolean
+```
+
+```{note}
+Default position for weeds counter overlaps with [harvester counter](#harvester-counter).
 ```
 
 ## Tooltips
