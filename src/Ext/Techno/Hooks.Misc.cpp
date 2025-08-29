@@ -2,8 +2,13 @@
 
 #include <SpawnManagerClass.h>
 #include <TunnelLocomotionClass.h>
+#include <BuildingClass.h>
 
 #include <Ext/Anim/Body.h>
+#include <Ext/TechnoType/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <Ext/WeaponType/Body.h>
+#include <Ext/Bullet/Body.h>
 
 #pragma region SlaveManagerClass
 
@@ -154,6 +159,15 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 
 	auto const pOwner = pThis->Owner;
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
+
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pOwner))
+	{
+		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline())
+			return 0;
+	}
+
+	if (const auto pOwnerType = pOwner->GetTechnoType(); pOwnerType && pOwnerType->SpawnRegenRate <= 0)
+		return 0;
 
 	if (pTypeExt->Spawns_Queue.empty())
 		return 0;
