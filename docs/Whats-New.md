@@ -457,6 +457,7 @@ Phobos fixes:
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 
 Fixes / interactions with other extensions:
+- Pause AI building production and spawner aircraft under EMP (by ahasasjeb)
 - Allowed `AuxBuilding` and Ares' `SW.Aux/NegBuildings` to count building upgrades (by Ollerus)
 - Taking over Ares' AlphaImage respawn logic to reduce lags from it (by NetsuNegi)
 ```
