@@ -10,6 +10,8 @@
 #include <Kamikaze.h>
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
+#include <BuildingClass.h>
+#include <FactoryClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -18,8 +20,6 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
-#include <BuildingClass.h>
-#include <FactoryClass.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -1629,8 +1629,9 @@ void TechnoExt::ExtData::UpdateTemporal()
 void TechnoExt::ExtData::UpdateRearmInEMPState()
 {
 	const auto pThis = this->OwnerObject();
+	const bool underEMP = pThis->IsUnderEMP();
 
-	if (!pThis->IsUnderEMP() && !pThis->Deactivated)
+	if (!underEMP && !pThis->Deactivated)
 		return;
 
 	const auto pTypeExt = this->TypeExtData;
@@ -1642,17 +1643,18 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 		pThis->ReloadTimer.StartTime++;
 
 	// Freeze AI-controlled factory production while building is EMPed
-	if (pThis->IsUnderEMP() && pThis->WhatAmI() == AbstractType::Building)
+	if (underEMP)
 	{
-		auto const pBuilding = static_cast<BuildingClass*>(pThis);
-
-		if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
+		if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 		{
-			if (auto const pFactory = pBuilding->Factory)
+			if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
 			{
-				if (pFactory->Object && pFactory->Production.Rate > 0)
+				if (auto const pFactory = pBuilding->Factory)
 				{
-					pFactory->Production.Timer.StartTime++;
+					if (pFactory->Object && pFactory->Production.Rate > 0)
+					{
+						pFactory->Production.Timer.StartTime++;
+					}
 				}
 			}
 		}
