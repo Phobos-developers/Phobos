@@ -13,6 +13,7 @@
 #include <ToggleClass.h>
 #include <ShapeButtonClass.h>
 #include <Ext/House/Body.h>
+#include <Ext/HouseType/Body.h>
 
 #include <Utilities/GeneralUtils.h>
 
@@ -21,8 +22,10 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 {
 	enum { EndFunction = 0x4B9690 };
 
+	auto const pHouseTypeExt = HouseTypeExt::ExtMap.Find(HouseClass::CurrentPlayer->Type);
+
 	// Get the number of dropship's for this mission at the very beginning
-	int nStartingDropships = ScenarioClass::Instance->StartingDropships;
+	int nStartingDropships = pHouseTypeExt->DropshipLoadout_StartingDropships.isset() ? pHouseTypeExt->DropshipLoadout_StartingDropships : ScenarioClass::Instance->StartingDropships;
 
 	// If there are no dropships, there is no loadout screen. Exit immediately
 	if (nStartingDropships == 0 || nStartingDropships > 3)
@@ -53,7 +56,9 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	else
 		dropshipLoadout_Palette = FileSystem::LoadPALFile("DROPSHIP.PAL", DSurface::Hidden);
 
-	if (ScenarioExt::Global()->DropshipLoadout_BackgroundPCX.Exists())
+	if (pHouseTypeExt->DropshipLoadout_BackgroundPCX.isset() && pHouseTypeExt->DropshipLoadout_BackgroundPCX.Get().Exists())
+		dropshipLoadout_BackgroundPCX = pHouseTypeExt->DropshipLoadout_BackgroundPCX.Get().GetSurface();
+	else if (ScenarioExt::Global()->DropshipLoadout_BackgroundPCX.Exists())
 		dropshipLoadout_BackgroundPCX = ScenarioExt::Global()->DropshipLoadout_BackgroundPCX.GetSurface();
 
 	if (ScenarioExt::Global()->DropshipLoadout_Background)
@@ -67,7 +72,14 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		dropshipLoadout_Background = FileSystem::LoadSHPFile(_strdup(tempFilenameBuffer));
 	}
 
-	if (ScenarioExt::Global()->DropshipLoadout_LoadoutPCX.size() > 0)
+	if (pHouseTypeExt->DropshipLoadout_LoadoutPCX.size() > 0)
+	{
+		for (auto& pFilePCX : pHouseTypeExt->DropshipLoadout_LoadoutPCX)
+		{
+			dropshipLoadout_LoadoutPCX.push_back(pFilePCX.GetSurface());
+		}
+	}
+	else if (ScenarioExt::Global()->DropshipLoadout_LoadoutPCX.size() > 0)
 	{
 		for (auto &pFilePCX : ScenarioExt::Global()->DropshipLoadout_LoadoutPCX)
 		{
@@ -80,7 +92,20 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	else
 		dropshipLoadout_Loadout = FileSystem::LoadSHPFile("LOADOUT.SHP");
 
-	if (ScenarioExt::Global()->DropshipLoadout_PilotLitPCX.size() > 0)
+	if (pHouseTypeExt->DropshipLoadout_PilotLitPCX.size() > 0)
+	{
+		for (const auto& pAnimationVector : pHouseTypeExt->DropshipLoadout_PilotLitPCX)
+		{
+			if (pAnimationVector)
+			{
+				for (const auto& frame : *pAnimationVector)
+				{
+					dropshipLoadout_PilotLitPCX.push_back(frame.GetSurface());
+				}
+			}
+		}
+	}
+	else if (ScenarioExt::Global()->DropshipLoadout_PilotLitPCX.size() > 0)
 	{
 		for (auto &pFilePCX : ScenarioExt::Global()->DropshipLoadout_PilotLitPCX)
 		{
@@ -93,7 +118,9 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	else
 		dropshipLoadout_PilotLit = FileSystem::LoadSHPFile("PILOTLIT.SHP");
 
-	if (ScenarioExt::Global()->DropshipLoadout_UpArrowPCX.Exists())
+	if (pHouseTypeExt->DropshipLoadout_UpArrowPCX.isset() && pHouseTypeExt->DropshipLoadout_UpArrowPCX.Get().Exists())
+		dropshipLoadout_UpArrowPCX = pHouseTypeExt->DropshipLoadout_UpArrowPCX.Get().GetSurface();
+	else if (ScenarioExt::Global()->DropshipLoadout_UpArrowPCX.Exists())
 		dropshipLoadout_UpArrowPCX = ScenarioExt::Global()->DropshipLoadout_UpArrowPCX.GetSurface();
 
 	if (ScenarioExt::Global()->DropshipLoadout_UpArrow)
@@ -101,7 +128,9 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	else
 		dropshipLoadout_UpArrow = FileSystem::LoadSHPFile("DROPUP.SHP");
 
-	if (ScenarioExt::Global()->DropshipLoadout_DownArrowPCX.Exists())
+	if (pHouseTypeExt->DropshipLoadout_DownArrowPCX.isset() && pHouseTypeExt->DropshipLoadout_DownArrowPCX.Get().Exists())
+		dropshipLoadout_DownArrowPCX = pHouseTypeExt->DropshipLoadout_DownArrowPCX.Get().GetSurface();
+	else if (ScenarioExt::Global()->DropshipLoadout_DownArrowPCX.Exists())
 		dropshipLoadout_DownArrowPCX = ScenarioExt::Global()->DropshipLoadout_DownArrowPCX.GetSurface();
 
 	if (ScenarioExt::Global()->DropshipLoadout_DownArrow)
@@ -109,13 +138,30 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	else
 		dropshipLoadout_DownArrow = FileSystem::LoadSHPFile("DROPDOWN.SHP");
 
-	if (ScenarioExt::Global()->DropshipLoadout_DGreenListPCX.size() > 0)
+	if (pHouseTypeExt->DropshipLoadout_DGreenListPCX.size() > 0)
+	{
+		for (const auto& pAnimationVector : pHouseTypeExt->DropshipLoadout_DGreenListPCX)
+		{
+			std::vector<BSurface*> rowAnimFrames;
+
+			if (pAnimationVector)
+			{
+				for (const auto& frame : *pAnimationVector)
+				{
+					rowAnimFrames.push_back(frame.GetSurface());
+				}
+			}
+
+			dropshipLoadout_DGreenListPCX.push_back(rowAnimFrames);
+		}
+	}
+	 else if (ScenarioExt::Global()->DropshipLoadout_DGreenListPCX.size() > 0)
 	{
 		for (auto& pFileGroupPCX : ScenarioExt::Global()->DropshipLoadout_DGreenListPCX)
 		{
 			std::vector<BSurface*> rowAnimFrames;
 
-			for (auto& pFilePCX : pFileGroupPCX)
+			for (auto& pFilePCX : *pFileGroupPCX)
 			{
 				rowAnimFrames.push_back(pFilePCX.GetSurface());
 			}
@@ -163,11 +209,15 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	
 	// --- PRE-LOOP SETUP: MUSIC, MOUSE, AND MONEY ---
 
-	// Initial EVA Voice
-	VoxClass::PlayIndex(ScenarioExt::Global()->DropshipLoadout_StartEVA.Get(-1));
+	// Play an initial EVA Voice
+	const int voiceEva = pHouseTypeExt->DropshipLoadout_StartEVA.isset() ? pHouseTypeExt->DropshipLoadout_StartEVA.Get(-1) : ScenarioExt::Global()->DropshipLoadout_StartEVA.Get(-1);
+
+	if (voiceEva >= 0)
+		VoxClass::PlayIndex(voiceEva);
 
 	// Play the specific theme for the dropship loadout screen
-	const int theme = ScenarioExt::Global()->DropshipLoadout_Theme;
+	const int theme = pHouseTypeExt->DropshipLoadout_Theme.isset() ? pHouseTypeExt->DropshipLoadout_Theme : ScenarioExt::Global()->DropshipLoadout_Theme;
+
 	if (theme == -1)
 		ThemeClass::Instance.Stop(true);
 	else
@@ -180,36 +230,75 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	WWMouseClass::Instance->RefCount = 0;
 
 	// Get initial money for the loadout
-	long dropshipLoadout_Money = ScenarioExt::Global()->DropshipLoadout_Money >= 0 ? ScenarioExt::Global()->DropshipLoadout_Money : HouseClass::CurrentPlayer->Available_Money();
+	long dropshipLoadout_InitialMoney = pHouseTypeExt->DropshipLoadout_Money.isset() ? pHouseTypeExt->DropshipLoadout_Money : ScenarioExt::Global()->DropshipLoadout_Money;
+	dropshipLoadout_InitialMoney = dropshipLoadout_InitialMoney >= 0 ? dropshipLoadout_InitialMoney : HouseClass::CurrentPlayer->Available_Money();
+
+	long dropshipLoadout_Money = dropshipLoadout_InitialMoney;
+	//long dropshipLoadout_Money = ScenarioExt::Global()->DropshipLoadout_Money >= 0 ? ScenarioExt::Global()->DropshipLoadout_Money : HouseClass::CurrentPlayer->Available_Money();
 
 	// --- BUILD AVAILABLE UNIT LIST ---
-	// This logic now directly adds all units from the scenario's [AllowableUnits] list,
+	// This logic now directly adds all units from the scenario's "AllowableUnits" list,
 	// or falls back to all standard units if the list is empty
 
-	std::vector<TechnoTypeClass*> availableUnits;
+	std::vector<TechnoTypeClass*> allowableUnits;
+
+	if (pHouseTypeExt->DropshipLoadout_AllowableUnits.size() > 0)
+	{
+		for (auto pUnit : pHouseTypeExt->DropshipLoadout_AllowableUnits)
+		{
+			allowableUnits.push_back(pUnit);
+		}
+	}
+	else
+	{
+		for (auto pUnit : ScenarioClass::Instance->AllowableUnits)
+		{
+			allowableUnits.push_back(pUnit);
+		}
+	}
+
 	std::vector<int> allowableUnitMaximums;
 
-	if (ScenarioClass::Instance->AllowableUnits.Count > 0)
+	if (pHouseTypeExt->DropshipLoadout_AllowableUnitMaximums.size() > 0)
 	{
-		if (ScenarioClass::Instance->AllowableUnitMaximums.Count > 0
-			&& ScenarioClass::Instance->AllowableUnits.Count != ScenarioClass::Instance->AllowableUnitMaximums.Count)
+		for (int pUnitCount : pHouseTypeExt->DropshipLoadout_AllowableUnitMaximums)
+		{
+			allowableUnitMaximums.push_back(pUnitCount);
+		}
+	}
+	else
+	{
+		for (int pUnitCount : ScenarioClass::Instance->AllowableUnitMaximums)
+		{
+			allowableUnitMaximums.push_back(pUnitCount);
+		}
+	}
+
+	std::vector<TechnoTypeClass*> availableUnits;
+	std::vector<int> availableUnitsMaximums;
+
+	if (allowableUnits.size() > 0)
+	{
+		if (allowableUnitMaximums.size() > 0
+			&& allowableUnits.size() != allowableUnitMaximums.size())
 		{
 			Debug::Log("Dropship Loadout - AllowableUnits and AllowableUnitMaximums must have the same number of elements. Units list disabled.\n");
 		}
 		else
 		{
-			for (int i = 0; i < ScenarioClass::Instance->AllowableUnits.Count; ++i)
+			for (int i = 0; i < allowableUnits.size(); ++i)
 			{
-				if (ScenarioClass::Instance->AllowableUnitMaximums.Items[i] != 0)
+				if (allowableUnitMaximums[i] != 0)
 				{
-					int maximumCount = ScenarioClass::Instance->AllowableUnitMaximums.Items[i];
+					int maximumCount = allowableUnitMaximums[i];
 
 					if (maximumCount == 0)
 						continue;
 
-					allowableUnitMaximums.push_back(maximumCount);
+					availableUnitsMaximums.push_back(maximumCount);
 				}
-				TechnoTypeClass* pType = ScenarioClass::Instance->AllowableUnits.Items[i];
+
+				TechnoTypeClass* pType = allowableUnits[i];
 				availableUnits.push_back(pType);
 			}
 		}
@@ -666,7 +755,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			if (sidebarIndex < availableUnits.size())
 			{
 				auto const pType = availableUnits[sidebarIndex];
-				int maxInstances = allowableUnitMaximums[sidebarIndex] < 0 ? INT_MAX : allowableUnitMaximums[sidebarIndex];
+				int maxInstances = availableUnitsMaximums[sidebarIndex] < 0 ? INT_MAX : availableUnitsMaximums[sidebarIndex];
 				int nInstances = dropshipBayChosenUnitsCount.count(pType) > 0 ? dropshipBayChosenUnitsCount[pType] : 0;
 
 				if (nInstances < maxInstances
@@ -888,7 +977,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			}
 
 			// Restore initial money
-			dropshipLoadout_Money = ScenarioExt::Global()->DropshipLoadout_Money >= 0 ? ScenarioExt::Global()->DropshipLoadout_Money : HouseClass::CurrentPlayer->Available_Money();
+			dropshipLoadout_Money = dropshipLoadout_InitialMoney;
 
 			repaintAll = true;
 
@@ -985,7 +1074,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				int sidebarCameoID = btn_BasicSidebarCameo_ID + i;
 
 				auto const pType = availableUnits[newIndex];
-				int maxInstances = allowableUnitMaximums[newIndex] < 0 ? INT_MAX : allowableUnitMaximums[newIndex];
+				int maxInstances = availableUnitsMaximums[newIndex] < 0 ? INT_MAX : availableUnitsMaximums[newIndex];
 				int nInstances = dropshipBayChosenUnitsCount.count(pType) > 0 ? dropshipBayChosenUnitsCount[pType] : 0;
 
 				int totalDropshipChosenUnits = 0;
@@ -1197,11 +1286,29 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	auto pHouseExt = HouseExt::ExtMap.Find(HouseClass::CurrentPlayer);
 	pHouseExt->DropshipLoadout_Cargo.clear();
 	pHouseExt->DropshipLoadout_Carriers.clear();
-	int nCarriers = ScenarioExt::Global()->DropshipLoadout_Carriers.size();
+
+	std::vector<TechnoTypeClass*> carriers;
+
+	if (pHouseTypeExt->DropshipLoadout_Carriers.size() > 0)
+	{
+		for (auto carrier : pHouseTypeExt->DropshipLoadout_Carriers)
+		{
+			carriers.push_back(carrier);
+		}
+	}
+	else
+	{
+		for (auto carrier : ScenarioExt::Global()->DropshipLoadout_Carriers)
+		{
+			carriers.push_back(carrier);
+		}
+	}
+
+	int nCarriers = carriers.size();
 
 	for (int i = 0; i < nStartingDropships && i < nCarriers; i++)
 	{
-		pHouseExt->DropshipLoadout_Carriers.push_back(ScenarioExt::Global()->DropshipLoadout_Carriers[i]);
+		pHouseExt->DropshipLoadout_Carriers.push_back(carriers[i]);
 		std::vector<TechnoTypeClass*> unitsList;
 
 		// Now fill the transport with the selected units
@@ -1216,14 +1323,21 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	}
 
 	// Update the player's initial money for the mission
-	if (ScenarioExt::Global()->DropshipLoadout_AddUnusedMoneyToPlayer)
+	bool addUnusedMoneyToPlayer = pHouseTypeExt->DropshipLoadout_AddUnusedMoneyToPlayer.isset() ? pHouseTypeExt->DropshipLoadout_AddUnusedMoneyToPlayer : ScenarioExt::Global()->DropshipLoadout_AddUnusedMoneyToPlayer;
+
+	if (addUnusedMoneyToPlayer)
 	{
 		HouseClass::CurrentPlayer->TransactMoney(dropshipLoadout_Money);
 	}
-	else if (ScenarioExt::Global()->DropshipLoadout_Money < 0)
+	else
 	{
-		long spent = HouseClass::CurrentPlayer->Available_Money() - dropshipLoadout_Money;
-		HouseClass::CurrentPlayer->TransactMoney(-spent);
+		dropshipLoadout_InitialMoney = pHouseTypeExt->DropshipLoadout_Money.isset() ? pHouseTypeExt->DropshipLoadout_Money : ScenarioExt::Global()->DropshipLoadout_Money;
+
+		if (dropshipLoadout_InitialMoney < 0)
+		{
+			long spent = HouseClass::CurrentPlayer->Available_Money() - dropshipLoadout_Money;
+			HouseClass::CurrentPlayer->TransactMoney(-spent);
+		}
 	}
 
 	// --- CLEANUP ---
