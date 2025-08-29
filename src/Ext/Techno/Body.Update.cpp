@@ -18,6 +18,8 @@
 #include <Ext/Scenario/Body.h>
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
+#include <BuildingClass.h>
+#include <FactoryClass.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -1638,6 +1640,23 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 
 	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
+
+	// Freeze AI-controlled factory production while building is EMPed
+	if (pThis->IsUnderEMP() && pThis->WhatAmI() == AbstractType::Building)
+	{
+		auto const pBuilding = static_cast<BuildingClass*>(pThis);
+
+		if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
+		{
+			if (auto const pFactory = pBuilding->Factory)
+			{
+				if (pFactory->Object && pFactory->Production.Rate > 0)
+				{
+					pFactory->Production.Timer.StartTime++;
+				}
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateRearmInTemporal()
