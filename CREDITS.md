@@ -643,4 +643,5 @@ This page lists all the individual contributions to the project by their author.
 - **Dmitry Volkov** - extensive and thorough testing
 - **Rise of the East community** - extensive playtesting of in-dev features
 -  **ahasasjeb**
- - fix:Pause AI building production and spawner aircraft under EMP (respect ImmuneToEMP) 
+ - fix: Pause AI building production under EMP (respect ImmuneToEMP)
+ - EMP effect on spawner aircraft generation with toggle control 

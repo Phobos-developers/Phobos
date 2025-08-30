@@ -17,7 +17,8 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed building and defense tab hotkeys not enabling the placement mode after *Cannot build here.* triggered and the placement mode cancelled.
 - Fixed buildings with `UndeployInto` playing `EVA_NewRallypointEstablished` on undeploying.
 - Fixed buildings with `Naval=yes` ignoring `WaterBound=no` to be forced to place onto water.
-- Fixed EMP immunity respect for production/spawner: AI-owned buildings with `ImmuneToEMP=no` no longer continue production (and carrier-like spawner behaviour) while under EMP; production is paused for the EMP duration. Buildings with `ImmuneToEMP=yes` are unaffected and continue producing/spawning as before.
+- Fixed AI buildings with `ImmuneToEMP=no` continuing production (infantry, vehicles, buildings) while under EMP; production is now paused for the EMP duration. Buildings with `ImmuneToEMP=yes` are unaffected and continue producing as before.
+- EMP effect on spawner aircraft generation can now be controlled via `EMP.PausesSpawning`. When enabled (default), buildings with `ImmuneToEMP=no` no longer continue spawner aircraft generation while under EMP; spawning is paused for the EMP duration. Buildings with `ImmuneToEMP=yes` are unaffected and continue spawning as before.
 - Fixed AI Aircraft docks bug when Ares tag `[GlobalControls] -> AllowParallelAIQueues=no` is set.
 - Fixed laser drawing code to allow for thicker lasers in house color draw mode.
 - Fixed `DeathWeapon` not detonating properly.
@@ -509,6 +510,16 @@ AIBiasSpawnCell=false  ; boolean
 AIForbidConYard=false  ; boolean
 AINodeWallsOnly=false  ; boolean
 AICleanWallNode=false  ; boolean
+```
+
+### EMP effect on spawner aircraft generation
+
+- By default buildings with spawner functionality (aircraft carriers) and `ImmuneToEMP=no` pause aircraft spawning while under EMP. This behavior can be disabled to restore vanilla behavior where EMP does not affect spawner aircraft generation.
+
+In `rulesmd.ini`:
+```ini
+[General]
+EMP.PausesSpawning=yes  ; boolean
 ```
 
 ### Aircraft docking direction

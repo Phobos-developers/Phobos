@@ -263,6 +263,7 @@ public:
 		int TintColorBerserk;
 
 		Valueable<bool> InfantryAutoDeploy;
+	Valueable<bool> EMP_PausesSpawning;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
 			, Storage_TiberiumIndex { -1 }
@@ -468,6 +469,7 @@ public:
 
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
+			, EMP_PausesSpawning { true }
 		{ }
 
 		virtual ~ExtData() = default;
