@@ -205,6 +205,7 @@ static int GetDelay(AircraftClass* pThis, bool isLastShot)
 
 	if (isLastShot || pExt->Strafe_BombsDroppedThisRound == pWeaponExt->Strafing_Shots.Get(5) || (pWeaponExt->Strafing_UseAmmoPerShot && !pThis->Ammo))
 	{
+		pExt->Strafe_TargetCell = nullptr;
 		pThis->MissionStatus = (int)AirAttackStatus::FlyToPosition;
 		delay = pWeaponExt->Strafing_EndDelay.Get((pWeapon->Range + (Unsorted::LeptonsPerCell * 4)) / pThis->Type->Speed);
 	}
@@ -215,6 +216,11 @@ static int GetDelay(AircraftClass* pThis, bool isLastShot)
 DEFINE_HOOK(0x4184CC, AircraftClass_Mission_Attack_Delay1A, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
+
+	auto const pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (WeaponTypeExt::ExtMap.Find(pThis->GetWeapon(pExt->CurrentAircraftWeaponIndex)->WeaponType)->Strafing_TargetCell)
+		pExt->Strafe_TargetCell = MapClass::Instance.GetCellAt(pThis->Target->GetCoords());
 
 	pThis->IsLocked = true;
 	pThis->MissionStatus = (int)AirAttackStatus::FireAtTarget2_Strafe;
@@ -275,10 +281,55 @@ DEFINE_HOOK(0x418B8A, AircraftClass_Mission_Attack_Delay5, 0x6)
 
 #pragma endregion
 
-DEFINE_HOOK_AGAIN(0x41882C, AircraftClass_MissionAttack_ScatterCell1, 0x6);
-DEFINE_HOOK_AGAIN(0x41893B, AircraftClass_MissionAttack_ScatterCell1, 0x6);
-DEFINE_HOOK_AGAIN(0x418A4A, AircraftClass_MissionAttack_ScatterCell1, 0x6);
-DEFINE_HOOK_AGAIN(0x418B46, AircraftClass_MissionAttack_ScatterCell1, 0x6);
+#pragma region StrafeCell
+
+DEFINE_HOOK_AGAIN(0x4188AC, AircraftClass_Mission_Attack_StrafeCell, 0x6)
+DEFINE_HOOK_AGAIN(0x4189BB, AircraftClass_Mission_Attack_StrafeCell, 0x6)
+DEFINE_HOOK_AGAIN(0x418ACA, AircraftClass_Mission_Attack_StrafeCell, 0x6)
+DEFINE_HOOK(0x41879D, AircraftClass_Mission_Attack_StrafeCell, 0x6)
+{
+	enum { CannotFireNow = 0x418BC5, SkipGameCode = 0x418BBA };
+
+	GET(AircraftClass*, pThis, ESI);
+
+	const auto pExt = TechnoExt::ExtMap.Find(pThis);
+
+	if (const auto pTargetCell = pExt->Strafe_TargetCell)
+	{
+		switch (pThis->GetFireError(pTargetCell, pExt->CurrentAircraftWeaponIndex, true))
+		{
+		case FireError::OK:
+		case FireError::FACING:
+		case FireError::CLOAKED:
+		case FireError::RANGE:
+			break;
+		default:
+			return CannotFireNow;
+		}
+
+		AircraftExt::FireWeapon(pThis, pTargetCell);
+
+		if (pExt->TypeExtData->FiringForceScatter)
+			pTargetCell->ScatterContent(pThis->Location, true, false, false);
+
+		pThis->SetDestination(pTargetCell, true);
+		pThis->MissionStatus++;
+
+		R->EAX(GetDelay(pThis, pThis->MissionStatus > static_cast<int>(AirAttackStatus::FireAtTarget5_Strafe)));
+		return SkipGameCode;
+	}
+
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region ScatterCell
+
+DEFINE_HOOK_AGAIN(0x41882C, AircraftClass_MissionAttack_ScatterCell1, 0x6)
+DEFINE_HOOK_AGAIN(0x41893B, AircraftClass_MissionAttack_ScatterCell1, 0x6)
+DEFINE_HOOK_AGAIN(0x418A4A, AircraftClass_MissionAttack_ScatterCell1, 0x6)
+DEFINE_HOOK_AGAIN(0x418B46, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 DEFINE_HOOK(0x41847E, AircraftClass_MissionAttack_ScatterCell1, 0x6)
 {
 	GET(AircraftClass*, pThis, ESI);
@@ -314,7 +365,6 @@ DEFINE_HOOK(0x414C0B, AircraftClass_ChronoSparkleDelay, 0x5)
 	R->ECX(RulesExt::Global()->ChronoSparkleDisplayDelay);
 	return 0x414C10;
 }
-
 
 #pragma region LandingDir
 
