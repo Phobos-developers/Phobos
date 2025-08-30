@@ -179,7 +179,7 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 		}
 	}
 
-	if (vec.empty() || !vec[0])
+	if (vec.empty())
 		return 0;
 
 	R->EAX(vec[0]->CreateObject(pOwner->Owner));
