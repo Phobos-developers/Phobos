@@ -194,6 +194,19 @@ DEFINE_FUNCTION_JUMP(CALL6, 0x4188D3, AircraftClass_SelectWeapon_Wrapper);
 DEFINE_FUNCTION_JUMP(CALL6, 0x4189E2, AircraftClass_SelectWeapon_Wrapper);
 DEFINE_FUNCTION_JUMP(CALL6, 0x418AF1, AircraftClass_SelectWeapon_Wrapper);
 
+DEFINE_HOOK_AGAIN(0x41874E, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
+DEFINE_HOOK(0x418544, AircraftClass_Mission_Attack_StrafingDestinationFix, 0x6)
+{
+	GET(FireError, fireError, EAX);
+	GET(AircraftClass*, pThis, ESI);
+
+	// The aircraft managed by the spawn manager will not update destination after changing target
+	if (fireError == FireError::RANGE && pThis->Is_Strafe())
+		pThis->SetDestination(pThis->Target, true);
+
+	return 0;
+}
+
 #pragma region After_Shot_Delays
 
 static int GetDelay(AircraftClass* pThis, bool isLastShot)
@@ -595,7 +608,7 @@ DEFINE_HOOK(0x4CF190, FlyLocomotionClass_FlightUpdate_SetPrimaryFacing, 0x6) // 
 				destination.Y += cellOffset.Y;
 			}
 
-			if (footCoords.Y != destination.Y && footCoords.X != destination.X)
+			if (footCoords.Y != destination.Y || footCoords.X != destination.X)
 				pAircraft->PrimaryFacing.SetDesired(DirStruct(Math::atan2(footCoords.Y - destination.Y, destination.X - footCoords.X)));
 			else
 				pAircraft->PrimaryFacing.SetDesired(landingDir);
