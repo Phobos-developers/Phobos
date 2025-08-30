@@ -1643,18 +1643,15 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 		pThis->ReloadTimer.StartTime++;
 
 	// Freeze AI-controlled factory production while building is EMPed
-	if (underEMP)
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
 	{
-		if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pThis))
+		if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
 		{
-			if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
+			if (auto const pFactory = pBuilding->Factory)
 			{
-				if (auto const pFactory = pBuilding->Factory)
+				if (pFactory->Object && pFactory->Production.Rate > 0)
 				{
-					if (pFactory->Object && pFactory->Production.Rate > 0)
-					{
-						pFactory->Production.Timer.StartTime++;
-					}
+					pFactory->Production.Timer.StartTime++;
 				}
 			}
 		}

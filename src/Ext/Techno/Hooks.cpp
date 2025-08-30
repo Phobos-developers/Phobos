@@ -160,7 +160,7 @@ DEFINE_HOOK(0x6F9FA9, TechnoClass_AI_PromoteAnim, 0x6)
 
 		if (pThis->Veterancy.GetRemainingLevel() == Rank::Veteran && pVeteranAnim)
 			promAnim = GameCreate<AnimClass>(pVeteranAnim, pThis->GetCenterCoords());
-		else if (pEliteAnim)
+		else if (pThis->Veterancy.GetRemainingLevel() == Rank::Elite && pEliteAnim)
 			promAnim = GameCreate<AnimClass>(pEliteAnim, pThis->GetCenterCoords());
 
 		if (promAnim)
