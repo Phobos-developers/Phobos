@@ -4,7 +4,9 @@
 #include <FPSCounter.h>
 #include <GameOptionsClass.h>
 
+#include <Ext/BulletType/Body.h>
 #include <Ext/TechnoType/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <New/Type/RadTypeClass.h>
 #include <New/Type/ShieldTypeClass.h>
 #include <New/Type/LaserTrailTypeClass.h>
@@ -375,6 +377,9 @@ void RulesExt::ExtData::InitializeAfterAllLoaded()
 	this->TintColorIronCurtain = GeneralUtils::GetColorFromColorAdd(pRules->IronCurtainColor);
 	this->TintColorForceShield = GeneralUtils::GetColorFromColorAdd(pRules->ForceShieldColor);
 	this->TintColorBerserk = GeneralUtils::GetColorFromColorAdd(pRules->BerserkColor);
+
+	// Init master bullet
+	ScenarioExt::Global()->MasterDetonationBullet = BulletTypeExt::GetDefaultBulletType()->CreateBullet(nullptr, nullptr, 0, nullptr, 0, false);
 }
 
 // =============================
