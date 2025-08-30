@@ -185,7 +185,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 	{
-		DropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile(cur));
+		this->DropshipLoadout_DGreenList.push_back(FileSystem::LoadSHPFile(cur));
 	}
 
 	// Custom Dropship loadout images, in PCX format
@@ -224,7 +224,7 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
 	}
 
-	// List of transports used in the map action
+	// List of Dropship transports used in the map action
 	pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers", "", Phobos::readBuffer);
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
@@ -232,9 +232,55 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		TechnoTypeClass* buffer;
 
 		if (Parser<TechnoTypeClass*>::TryParse(cur, &buffer))
-			DropshipLoadout_Carriers.emplace_back(buffer);
+			this->DropshipLoadout_Carriers.emplace_back(buffer);
 		else
 			Debug::Log("[Developer warning] DropshipLoadout.Carriers (Elements: %d): Error parsing [%s] -> Skipped\n", this->DropshipLoadout_Carriers.size(), cur);
+	}
+
+	// Custom Dropship Loadout coordinates
+	Point2D defaultEmptyLocation = { Point2D::Empty };
+	pINI->ReadPoint2D(DropshipLoadout_UpArrowLocation, GameStrings::Basic, "DropshipLoadout.UpArrowLocation", defaultEmptyLocation);
+	pINI->ReadPoint2D(DropshipLoadout_DownArrowLocation, GameStrings::Basic, "DropshipLoadout.DownArrowLocation", defaultEmptyLocation);
+	this->DropshipLoadout_SidebarCameosCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.SidebarCameosCount", 0);
+
+	for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
+	{
+		char tempBuffer[256];
+		Point2D location = Point2D::Empty;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.SidebarCameoLocation%d", i);
+		pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
+		this->DropshipLoadout_SidebarCameoLocations.push_back(location);
+	}
+
+	this->DropshipLoadout_DropshipCameosCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.DropshipCameosCount", 0);
+	/*pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DropshipCameosCount", "", Phobos::readBuffer);
+
+	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
+	{
+		int buffer;
+
+		if (Parser<int>::TryParse(cur, &buffer))
+			this->DropshipLoadout_DropshipCameosCount.emplace_back(buffer);
+		else
+			this->DropshipLoadout_DropshipCameosCount.emplace_back(0);
+	}*/
+
+	for (int i = 0; i < ScenarioClass::Instance->StartingDropships; i++)
+	{
+		std::vector<Point2D> locations;
+
+		for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+		{
+			char tempBuffer[256];
+			Point2D location = Point2D::Empty;
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship%d.CameoLocation%d", i, j);
+			pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
+			locations.push_back(location);
+		}
+
+		DropshipLoadout_DropshipCameoLocations.push_back(locations);
 	}
 }
 
@@ -269,6 +315,12 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_LoadoutPCX)
 		.Process(this->DropshipLoadout_PilotLitPCX)
 		.Process(this->DropshipLoadout_DGreenListPCX)
+		.Process(this->DropshipLoadout_UpArrowLocation)
+		.Process(this->DropshipLoadout_DownArrowLocation)
+		.Process(this->DropshipLoadout_SidebarCameosCount)
+		.Process(this->DropshipLoadout_SidebarCameoLocations)
+		.Process(this->DropshipLoadout_DropshipCameosCount)
+		.Process(this->DropshipLoadout_DropshipCameoLocations)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }

@@ -60,6 +60,12 @@ public:
 		std::vector<PhobosPCXFile> DropshipLoadout_LoadoutPCX;
 		std::vector<PhobosPCXFile> DropshipLoadout_PilotLitPCX;
 		std::vector<std::unique_ptr<std::vector<PhobosPCXFile>>> DropshipLoadout_DGreenListPCX;
+		Point2D DropshipLoadout_UpArrowLocation;
+		Point2D DropshipLoadout_DownArrowLocation;
+		int DropshipLoadout_SidebarCameosCount;
+		std::vector<Point2D> DropshipLoadout_SidebarCameoLocations;
+		int DropshipLoadout_DropshipCameosCount;
+		std::vector<std::vector<Point2D>> DropshipLoadout_DropshipCameoLocations;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -89,6 +95,12 @@ public:
 			, DropshipLoadout_LoadoutPCX {}
 			, DropshipLoadout_PilotLitPCX {}
 			, DropshipLoadout_DGreenListPCX {}
+			, DropshipLoadout_UpArrowLocation { Point2D::Empty }
+			, DropshipLoadout_DownArrowLocation { Point2D::Empty }
+			, DropshipLoadout_SidebarCameosCount { 0 }
+			, DropshipLoadout_SidebarCameoLocations {}
+			, DropshipLoadout_DropshipCameosCount { 0 }
+			, DropshipLoadout_DropshipCameoLocations {}
 		{ }
 
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);

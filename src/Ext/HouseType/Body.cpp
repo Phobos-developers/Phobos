@@ -33,10 +33,12 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_StartEVA.Read(exINI, pSection, "DropshipLoadout.StartEVA");
 	this->DropshipLoadout_Carriers.Read(exINI, pSection, "DropshipLoadout.Carriers");
 
+	int nStartingDropships = this->DropshipLoadout_StartingDropships.isset() ? this->DropshipLoadout_StartingDropships : ScenarioClass::Instance->StartingDropships;
+
 	if (pINI->ReadString(pSection, "DropshipLoadout.BackgroundPCX", "", Phobos::readBuffer) != 0)
 	{
 		char filename[260];
-		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, DropshipLoadout_StartingDropships.isset() ? DropshipLoadout_StartingDropships : ScenarioClass::Instance->StartingDropships);
+		_snprintf_s(filename, sizeof(filename), Phobos::readBuffer, nStartingDropships);
 		this->DropshipLoadout_BackgroundPCX = PhobosPCXFile(_strdup(filename));
 	}
 
@@ -66,7 +68,41 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 	{
-		DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+		this->DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+	}
+
+	// Custom Dropship Loadout coordinates
+	this->DropshipLoadout_UpArrowLocation.Read(exINI, pSection, "DropshipLoadout.UpArrowLocation");
+	this->DropshipLoadout_DownArrowLocation.Read(exINI, pSection, "DropshipLoadout.DownArrowLocation");
+	this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
+
+	for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
+	{
+		char tempBuffer[256];
+		Point2D location = Point2D::Empty;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.SidebarCameoLocation%d", i);
+		pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+		this->DropshipLoadout_SidebarCameoLocations.push_back(location);
+	}
+
+	this->DropshipLoadout_DropshipCameosCount.Read(exINI, pSection, "DropshipLoadout.DropshipCameosCount");
+
+	for (int i = 0; i < nStartingDropships; i++)
+	{
+		std::vector<Point2D> locations;
+
+		for (int j = 0; j < this->DropshipLoadout_DropshipCameosCount; j++)
+		{
+			char tempBuffer[256];
+			Point2D location = Point2D::Empty;
+
+			_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.Dropship%d.CameoLocation%d", i, j);
+			pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+			locations.push_back(location);
+		}
+
+		this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
 	}
 }
 
@@ -94,6 +130,12 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_LoadoutPCX)
 		.Process(this->DropshipLoadout_PilotLitPCX)
 		.Process(this->DropshipLoadout_DGreenListPCX)
+		.Process(this->DropshipLoadout_UpArrowLocation)
+		.Process(this->DropshipLoadout_DownArrowLocation)
+		.Process(this->DropshipLoadout_SidebarCameosCount)
+		.Process(this->DropshipLoadout_SidebarCameoLocations)
+		.Process(this->DropshipLoadout_DropshipCameosCount)
+		.Process(this->DropshipLoadout_DropshipCameoLocations)
 		;
 }
 

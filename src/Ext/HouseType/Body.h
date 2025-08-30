@@ -29,6 +29,12 @@ public:
 		ValueableVector<PhobosPCXFile> DropshipLoadout_LoadoutPCX;
 		ValueableVector<std::unique_ptr<std::vector<PhobosPCXFile>>> DropshipLoadout_PilotLitPCX;
 		ValueableVector<std::unique_ptr<std::vector<PhobosPCXFile>>> DropshipLoadout_DGreenListPCX;
+		Nullable<Point2D> DropshipLoadout_UpArrowLocation;
+		Nullable<Point2D> DropshipLoadout_DownArrowLocation;
+		Nullable<int> DropshipLoadout_SidebarCameosCount;
+		ValueableVector<Point2D> DropshipLoadout_SidebarCameoLocations;
+		Nullable<int> DropshipLoadout_DropshipCameosCount;
+		ValueableVector<std::vector<Point2D>> DropshipLoadout_DropshipCameoLocations;
 
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
 			, DropshipLoadout_StartingDropships {}
@@ -45,6 +51,12 @@ public:
 			, DropshipLoadout_LoadoutPCX {}
 			, DropshipLoadout_PilotLitPCX {}
 			, DropshipLoadout_DGreenListPCX {}
+			, DropshipLoadout_UpArrowLocation { Point2D::Empty }
+			, DropshipLoadout_DownArrowLocation { Point2D::Empty }
+			, DropshipLoadout_SidebarCameosCount {}
+			, DropshipLoadout_SidebarCameoLocations {}
+			, DropshipLoadout_DropshipCameosCount {}
+			, DropshipLoadout_DropshipCameoLocations {}
 		{ }
 
 		virtual ~ExtData() = default;
