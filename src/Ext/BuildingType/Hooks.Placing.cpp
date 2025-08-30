@@ -1799,3 +1799,89 @@ DEFINE_HOOK(0x6D5815, TacticalClass_DrawLaserFenceGrid_SkipDrawLaserFence, 0x6)
 	// Have used CurrentBuilding->Type yet, so simply use static_cast
 	return IsMatchedPostType(static_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding)->Type, pPostType) ? 0 : SkipGameCode;
 }
+
+/*
+	In sub_45C300
+
+	- Fix foundation outside Hook -> Fix incorrect building type's FoundationOutside
+*/
+DEFINE_HOOK(0x45DD04, BuildingTypeClass_InitFoundationOutsides, 0x5)
+{
+	auto& foundationOutsides = Make_Global<CellStruct[22][30]>(0x89D368);
+	constexpr auto CellStruct_OutsideEnd = CellStruct { 0x7FFF, 0x7FFF };
+
+	// 4x3 remove incorrect (3,2), (3,1), (3,0) and add missing (4,3), (4,2), (4,1), (4,0), (4,-1)
+	{
+		auto& outside4x3 = foundationOutsides[12];
+		outside4x3[6] = CellStruct { 4, 2 };
+		outside4x3[8] = CellStruct { 4, 1 };
+		outside4x3[10] = CellStruct { 4, 0 };
+		outside4x3[16] = CellStruct { 4, -1 };
+		outside4x3[17] = CellStruct { 4, 3 };
+		outside4x3[18] = CellStruct_OutsideEnd;
+	}
+
+	// 2x6 add missing (-1,4) and (2,4)
+	{
+		auto& outside2x6 = foundationOutsides[15];
+		outside2x6[18] = CellStruct { -1, 4 };
+		outside2x6[19] = CellStruct { 2, 4 };
+		outside2x6[20] = CellStruct_OutsideEnd;
+	}
+
+	// 2x5 add missing (-1,4) and (2,4)
+	{
+		auto& outside2x5 = foundationOutsides[16];
+		outside2x5[16] = CellStruct { -1, 4 };
+		outside2x5[17] = CellStruct { 2, 4 };
+		outside2x5[18] = CellStruct_OutsideEnd;
+	}
+
+	// 4x4 remove duplicate (-1,4) and (4,4)
+	{
+		auto& outside4x4 = foundationOutsides[18];
+		outside4x4[16] = CellStruct { 4, 3 };
+		outside4x4[20] = CellStruct_OutsideEnd;
+		outside4x4[21] = CellStruct::Empty;
+		outside4x4[22] = CellStruct::Empty;
+	}
+
+	// 3x4 add missing (-1,3) and (3,3)
+	{
+		auto& outside3x4 = foundationOutsides[19];
+		outside3x4[16] = CellStruct { -1, 3 };
+		outside3x4[17] = CellStruct { 3, 3 };
+		outside3x4[18] = CellStruct_OutsideEnd;
+	}
+
+	// 6x4 fix the entire error without (2,-1)
+	{
+		auto& outside6x4 = foundationOutsides[20];
+		outside6x4[1] = CellStruct { -1, -1 };
+		outside6x4[2] = CellStruct { 0, -1 };
+		outside6x4[3] = CellStruct { 1, -1 };
+		outside6x4[4] = CellStruct { 3, -1 };
+		outside6x4[5] = CellStruct { 4, -1 };
+		outside6x4[6] = CellStruct { 5, -1 };
+		outside6x4[7] = CellStruct { 6, -1 };
+		outside6x4[8] = CellStruct { -1, 0 };
+		outside6x4[9] = CellStruct { 6, 0 };
+		outside6x4[10] = CellStruct { -1, 1 };
+		outside6x4[11] = CellStruct { 6, 1 };
+		outside6x4[12] = CellStruct { -1, 2 };
+		outside6x4[13] = CellStruct { 6, 2 };
+		outside6x4[14] = CellStruct { -1, 3 };
+		outside6x4[15] = CellStruct { 6, 3 };
+		outside6x4[16] = CellStruct { -1, 4 };
+		outside6x4[17] = CellStruct { 0, 4 };
+		outside6x4[18] = CellStruct { 1, 4 };
+		outside6x4[19] = CellStruct { 2, 4 };
+		outside6x4[20] = CellStruct { 3, 4 };
+		outside6x4[21] = CellStruct { 4, 4 };
+		outside6x4[22] = CellStruct { 5, 4 };
+		outside6x4[23] = CellStruct { 6, 4 };
+		outside6x4[24] = CellStruct_OutsideEnd;
+	}
+
+	return 0;
+}

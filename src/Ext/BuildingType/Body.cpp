@@ -213,31 +213,16 @@ bool BuildingTypeExt::CleanUpBuildingSpace(BuildingTypeClass* pBuildingType, Cel
 	std::vector<CellClass*> optionalCells;
 	optionalCells.reserve(24);
 
-//	for (auto pFoundation = pBuildingType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
-	// Sometimes, FoundationOutside may be wrong (like 2*5 , 4*3 or 4*4)
-	for (const auto& pCheckedCell : checkedCells)
+	for (auto pFoundation = pBuildingType->FoundationOutside; *pFoundation != CellStruct { 0x7FFF, 0x7FFF }; ++pFoundation)
 	{
-		auto searchCell = pCheckedCell->MapCoords - CellStruct { 1, 1 };
+		auto searchCell = topLeftCell + *pFoundation;
 
-		for (int i = 0; i < 4; ++i)
+		if (const auto pSearchCell = MapClass::Instance.TryGetCellAt(searchCell))
 		{
-			for (int j = 0; j < 2; ++j)
+			if (!(pSearchCell->OccupationFlags & 0x80)
+				&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
 			{
-				if (const auto pSearchCell = MapClass::Instance.TryGetCellAt(searchCell))
-				{
-					if (std::find(checkedCells.begin(), checkedCells.end(), pSearchCell) == checkedCells.end()
-						&& std::find(optionalCells.begin(), optionalCells.end(), pSearchCell) == optionalCells.end()
-						&& !(pSearchCell->OccupationFlags & 0x80)
-						&& pSearchCell->IsClearToMove(SpeedType::Amphibious, true, true, -1, MovementZone::Amphibious, -1, false))
-					{
-						optionalCells.push_back(pSearchCell);
-					}
-				}
-
-				if (i % 2)
-					searchCell.Y += static_cast<short>((i / 2) ? -1 : 1);
-				else
-					searchCell.X += static_cast<short>((i / 2) ? -1 : 1);
+				optionalCells.push_back(pSearchCell);
 			}
 		}
 	}
