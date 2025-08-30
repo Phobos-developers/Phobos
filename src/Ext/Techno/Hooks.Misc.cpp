@@ -161,12 +161,6 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 	auto const pOwner = pThis->Owner;
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pOwner)->TypeExtData;
 
-	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pOwner))
-	{
-		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline() && RulesExt::Global()->EMP_PausesSpawning)
-			return 0;
-	}
-
 	if (const auto pOwnerType = pOwner->GetTechnoType(); pOwnerType && pOwnerType->SpawnRegenRate <= 0)
 		return 0;
 
@@ -187,6 +181,13 @@ DEFINE_HOOK(0x6B78D3, SpawnManagerClass_Update_Spawns, 0x6)
 
 	if (vec.empty() || !vec[0])
 		return 0;
+
+	// Check if building is powered and EMP pausing is enabled, but don't skip queue logic
+	if (auto const pBuilding = abstract_cast<BuildingClass*, true>(pOwner))
+	{
+		if (pBuilding->Type->Powered && !pBuilding->IsPowerOnline() && RulesExt::Global()->EMP_PausesSpawning)
+			return 0;
+	}
 
 	R->EAX(vec[0]->CreateObject(pOwner->Owner));
 	return 0x6B78EA;
