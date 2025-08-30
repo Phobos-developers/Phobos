@@ -78,7 +78,7 @@ static void CreateDeployingAnim(UnitClass* pUnit, bool isDeploying)
 			pAnimType = GeneralUtils::GetItemForDirection<AnimTypeClass*>(pTypeExt->DeployingAnims, pUnit->PrimaryFacing.Current());
 
 		auto const pAnim = GameCreate<AnimClass>(pAnimType, pUnit->Location, 0, 1, 0x600, 0,
-			!isDeploying ? pTypeExt->DeployingAnim_ReverseForUndeploy : false);
+			!isDeploying && pTypeExt->DeployingAnim_ReverseForUndeploy);
 
 		pUnit->DeployAnim = pAnim;
 		pAnim->SetOwnerObject(pUnit);
@@ -211,7 +211,6 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 		if (pThis->IsDisguised())
 			pThis->Disguised = false;
 
-
 		if (!pThis->Deployed)
 		{
 			if (pType->UndeploySound != -1)
@@ -240,29 +239,40 @@ DEFINE_HOOK(0x54C76D, JumpjetLocomotionClass_Descending_DeployDir, 0x7)
 
 // Disable DeployToLand=no forcing landing when idle due to what appears to be
 // a code oversight and no need for DeployToLand=no to work in vanilla game.
-DEFINE_HOOK(0x54BE3E, JumpjetLocomotionClass_Hovering_DeployToLand, 0x6)
+DEFINE_HOOK(0x54BED4, JumpjetLocomotionClass_Hovering_DeployToLand, 0x7)
 {
 	enum { SkipGameCode = 0x54BEE0 };
 
+	GET(JumpjetLocomotionClass*, pThis, ESI);
 	GET(FootClass*, pLinkedTo, ECX);
 
-	if (!pLinkedTo->GetTechnoType()->DeployToLand)
-		return SkipGameCode;
+	auto const pType = pLinkedTo->GetTechnoType();
 
-	return 0;
+	if (!pType->BalloonHover || pType->DeployToLand)
+		pThis->State = JumpjetLocomotionClass::State::Descending;
+
+	pLinkedTo->TryNextPlanningTokenNode();
+	return SkipGameCode;
 }
 
-// Same as above but at different state.
+// Same as above but at a different state.
 DEFINE_HOOK(0x54C2DF, JumpjetLocomotionClass_Cruising_DeployToLand, 0xA)
 {
 	enum { SkipGameCode = 0x54C4FD };
 
+	GET(JumpjetLocomotionClass*, pThis, ESI);
 	GET(FootClass*, pLinkedTo, ECX);
 
-	if (!pLinkedTo->GetTechnoType()->DeployToLand)
-		return SkipGameCode;
+	auto const pType = pLinkedTo->GetTechnoType();
 
-	return 0;
+	if (!pType->BalloonHover || pType->DeployToLand)
+	{
+		pThis->CurrentHeight = 0;
+		pThis->State = JumpjetLocomotionClass::State::Descending;
+	}
+
+	pLinkedTo->TryNextPlanningTokenNode();
+	return SkipGameCode;
 }
 
 // Disable Ares hover locomotor bobbing processing DeployToLand hook.
@@ -376,7 +386,7 @@ DEFINE_HOOK(0x4DA9F3, FootClass_AI_DeployToLand, 0x6)
 // Allow keeping unit visible while displaying DeployingAnim.
 DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 {
-	enum { KeepUnitVisible = 0x73CF62 };
+	enum { Continue = 0x73CF62, DoNotDraw = 0x73D43F };
 
 	GET(UnitClass*, pThis, ESI);
 
@@ -385,10 +395,12 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 		const auto pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
 
 		if (pTypeExt->DeployingAnim_KeepUnitVisible || (pThis->Deploying && !pThis->DeployAnim))
-			return KeepUnitVisible;
+			return Continue;
+
+		return DoNotDraw;
 	}
 
-	return 0;
+	return Continue;
 }
 
 // Disable deploy cursor if Ares type conversion on deploy is available and the new type is not allowed to move to the cell.
