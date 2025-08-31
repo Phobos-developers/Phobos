@@ -42,6 +42,7 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
 		int Strafe_BombsDroppedThisRound;
+		CellClass* Strafe_TargetCell;
 		int CurrentAircraftWeaponIndex;
 		bool IsInTunnel;
 		bool IsBurrowed;
@@ -108,6 +109,7 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, Strafe_BombsDroppedThisRound { 0 }
+			, Strafe_TargetCell { nullptr }
 			, CurrentAircraftWeaponIndex {}
 			, IsInTunnel { false }
 			, IsBurrowed { false }
