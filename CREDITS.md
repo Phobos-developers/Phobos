@@ -166,7 +166,7 @@ This page lists all the individual contributions to the project by their author.
   - `AreaFire` targeting customization
   - `CreateUnit` improvements
   - Attached animation & jumpjet unit layer customization
-  - `IsSimpleDeployer` improvements
+  - `IsSimpleDeployer` improvements & additions
   - Shield modification warheads
   - Warhead decloaking toggle
   - `Warp(In/Out)Weapon`
