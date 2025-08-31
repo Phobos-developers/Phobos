@@ -2029,6 +2029,7 @@ msgid ""
 "features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to "
 "unintentionally move from its intended position (by Starkku)"
 msgstr ""
+"修复了一个有时会导致 `ExtraWarheads`、动画伤害或 `Crit.Warhead` 引爆的武器／弹头相对其预期位置无意中移动的 Bug（by Starkku）"
 
 #: ../../Whats-New.md:460 ../../Whats-New.md:834 ../../Whats-New.md:1057
 msgid "Fixes / interactions with other extensions:"
