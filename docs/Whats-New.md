@@ -442,6 +442,8 @@ New:
 - New Engrave trajectory (by CrimRecya)
 - New Tracing trajectory (by CrimRecya)
 - New trajectory system with general functions (by CrimRecya)
+- Projectile life cycle logic and retargeting logic (by CrimRecya)
+- Projectile release warheads and weapons (by CrimRecya)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

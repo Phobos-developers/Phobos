@@ -487,11 +487,8 @@ This page lists all the individual contributions to the project by their author.
   - Fix aircraft `MovementZone` and `SpeedType` inconsistencies
   - Use 2D distance instead of 3D to check whether in air team members have arrived destination
   - No rearm and reload in EMP or temporal
-  - Enhanced Straight trajectory
   - Enable Building Production Queue
   - Fix for sidebar not updating queued unit numbers when on hold
-  - New Parabola trajectory
-  - Enhanced Bombard trajectory
   - No turret unit turn to the target
   - Damage multiplier for different houses
   - Extended gattling rate down logic
@@ -541,10 +538,11 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
   - Jumpjet Climbing Logic Enhancement
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
-  - New Missile trajectory
-  - New Engrave trajectory
-  - New Tracing trajectory
+  - Enhanced Straight/Bombard trajectory
+  - New Parabola/Missile/Engrave/Tracing trajectory
   - New trajectory system with general functions
+  - Projectile life cycle logic and retargeting logic
+  - Projectile release warheads and weapons
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
