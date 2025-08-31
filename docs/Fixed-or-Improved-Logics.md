@@ -328,7 +328,7 @@ FiringForceScatter=true   ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false         ; boolean
+ExtendedAircraftMissions=false          ; boolean
 
 [SOMEAIRCRAFT]                          ; AircraftType
 ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
