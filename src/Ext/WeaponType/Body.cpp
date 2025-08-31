@@ -282,21 +282,7 @@ void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords
 
 void WeaponTypeExt::DetonateAt(WeaponTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget)
 {
-	if (BulletClass* pBullet = pThis->Projectile->CreateBullet(pTarget, pOwner,
-		damage, pThis->Warhead, 0, pThis->Bright))
-	{
-		if (pFiringHouse)
-		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			pBulletExt->FirerHouse = pFiringHouse;
-		}
-
-		pBullet->SetWeaponType(pThis);
-		pBullet->Limbo();
-		pBullet->SetLocation(coords);
-		pBullet->Explode(true);
-		pBullet->UnInit();
-	}
+	BulletExt::Detonate(coords, pOwner, damage, pFiringHouse, pTarget, pThis->Bright, pThis, pThis->Warhead);
 }
 
 int WeaponTypeExt::GetRangeWithModifiers(WeaponTypeClass* pThis, TechnoClass* pFirer)
