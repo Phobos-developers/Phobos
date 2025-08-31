@@ -3,6 +3,7 @@
 #include <Ext/Anim/Body.h>
 #include <Ext/Techno/Body.h>
 #include <Ext/RadSite/Body.h>
+#include <Ext/Scenario/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/WarheadType/Body.h>
 #include <Ext/Cell/Body.h>
@@ -738,6 +739,38 @@ void BulletExt::ApplyArcingFix(BulletClass* pThis, const CoordStruct& sourceCoor
 		velocity.Z = (static_cast<double>(distanceCoords.Z) + velocity.Z) * mult + (gravity * horizontalDistance) / (2 * speed);
 	}
 }
+
+// Detonate weapon/warhead using master bullet instance.
+void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget, bool isBright, WeaponTypeClass* pWeapon, WarheadTypeClass* pWarhead)
+{
+	auto pBullet = ScenarioExt::Global()->MasterDetonationBullet;
+
+	if (pWeapon)
+	{
+		pBullet->Type = pWeapon->Projectile;
+		pBullet->SetWeaponType(pWeapon);
+	}
+	else
+	{
+		pBullet->Type = BulletTypeExt::GetDefaultBulletType();
+	}
+
+	pBullet->Owner = pOwner;
+	pBullet->Health = damage;
+	pBullet->Target = pTarget;
+	pBullet->WH = pWarhead;
+	pBullet->Bright = isBright;
+
+	if (pFiringHouse)
+	{
+		auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
+		pBulletExt->FirerHouse = pFiringHouse;
+	}
+
+	pBullet->SetLocation(coords);
+	pBullet->Explode(true);
+}
+
 
 // =============================
 // load / save
