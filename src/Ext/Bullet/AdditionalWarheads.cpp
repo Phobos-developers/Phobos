@@ -1,18 +1,19 @@
-#include "PhobosTrajectory.h"
+#include "Body.h"
 
 #include <AircraftTrackerClass.h>
 
 #include <Ext/WarheadType/Body.h>
 
 // A rectangular shape with a custom width from the current frame to the next frame in length.
-std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
+std::vector<CellClass*> BulletExt::ExtData::GetCellsInProximityRadius()
 {
-	const auto pBullet = this->Bullet;
+	const auto pBullet = this->OwnerObject();
+	const auto pTraj = this->Trajectory.get();
 
 	// Seems like the y-axis is reversed, but it's okay.
-	const Vector2D<double> walkCoord { this->MovingVelocity.X, this->MovingVelocity.Y };
+	const auto walkCoord = pTraj ? Vector2D<double>{ pTraj->MovingVelocity.X, pTraj->MovingVelocity.Y } : Vector2D<double>{ pBullet->Velocity.X, pBullet->Velocity.Y };
 	const double walkDistance = walkCoord.Magnitude();
-	const auto radius = this->GetType()->ProximityRadius.Get();
+	const auto radius = this->TypeExtData->ProximityRadius.Get();
 	const double sideMult = radius / walkDistance;
 
 	const CoordStruct cor1Coord { static_cast<int>(walkCoord.Y * sideMult), static_cast<int>((-walkCoord.X) * sideMult), 0 };
@@ -51,7 +52,7 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 	cor4Cell = corner[cornerIndex];
 
 	// Obtain cells through vertices
-	std::vector<CellStruct> recCells = PhobosTrajectory::GetCellsInRectangle(cor1Cell, cor4Cell, cor2Cell, cor3Cell);
+	std::vector<CellStruct> recCells = BulletExt::GetCellsInRectangle(cor1Cell, cor4Cell, cor2Cell, cor3Cell);
 	std::vector<CellClass*> recCellClass;
 	recCellClass.reserve(recCells.size());
 
@@ -77,7 +78,7 @@ std::vector<CellClass*> PhobosTrajectory::GetCellsInProximityRadius()
 
 	\author CrimRecya
 */
-std::vector<CellStruct> PhobosTrajectory::GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell)
+std::vector<CellStruct> BulletExt::GetCellsInRectangle(const CellStruct bottomStaCell, const CellStruct leftMidCell, const CellStruct rightMidCell, const CellStruct topEndCell)
 {
 	std::vector<CellStruct> recCells;
 	const int cellNums = (std::abs(topEndCell.Y - bottomStaCell.Y) + 1) * (std::abs(rightMidCell.X - leftMidCell.X) + 1);
@@ -301,17 +302,17 @@ std::vector<CellStruct> PhobosTrajectory::GetCellsInRectangle(const CellStruct b
 	return recCells;
 }
 
-bool PhobosTrajectory::CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner)
+bool BulletExt::ExtData::CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass* pOwner)
 {
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
+	const auto pTarget = this->OwnerObject()->Target;
+	const auto pType = this->TypeExtData;
 
 	for (auto pObject = pCell->GetContent(); pObject; pObject = pObject->NextObject)
 	{
 		const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
 		// Non technos and not target friendly forces will be excluded
-		if (!pTechno || (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pBullet->Target))
+		if (!pTechno || (pOwner && pOwner->IsAlliedWith(pTechno->Owner) && pTechno != pTarget))
 			continue;
 
 		const auto absType = pTechno->WhatAmI();
@@ -342,10 +343,10 @@ bool PhobosTrajectory::CheckThroughAndSubjectInCell(CellClass* pCell, HouseClass
 	return false;
 }
 
-void PhobosTrajectory::CalculateNewDamage()
+void BulletExt::ExtData::CalculateNewDamage()
 {
-	const auto pBullet = this->Bullet;
-	const double ratio = this->GetType()->DamageCountAttenuation.Get();
+	const auto pBullet = this->OwnerObject();
+	const double ratio = this->TypeExtData->DamageCountAttenuation.Get();
 
 	// Calculate the attenuation damage under three different scenarios
 	if (ratio != 1.0)
@@ -353,9 +354,9 @@ void PhobosTrajectory::CalculateNewDamage()
 		// If the ratio is not 0, the lowest damage will be retained
 		if (ratio)
 		{
-			PhobosTrajectory::SetNewDamage(pBullet->Health, ratio);
-			PhobosTrajectory::SetNewDamage(this->ProximityDamage, ratio);
-			PhobosTrajectory::SetNewDamage(this->PassDetonateDamage, ratio);
+			BulletExt::SetNewDamage(pBullet->Health, ratio);
+			BulletExt::SetNewDamage(this->ProximityDamage, ratio);
+			BulletExt::SetNewDamage(this->PassDetonateDamage, ratio);
 		}
 		else
 		{
@@ -366,13 +367,13 @@ void PhobosTrajectory::CalculateNewDamage()
 	}
 }
 
-void PhobosTrajectory::PassWithDetonateAt()
+void BulletExt::ExtData::PassWithDetonateAt()
 {
 	if (!this->PassDetonateTimer.Completed())
 		return;
 
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
 	auto pWH = pType->PassDetonateWarhead.Get();
 
 	if (!pWH)
@@ -393,10 +394,10 @@ void PhobosTrajectory::PassWithDetonateAt()
 }
 
 // Select suitable targets and choose the closer targets then attack each target only once.
-void PhobosTrajectory::PrepareForDetonateAt()
+void BulletExt::ExtData::PrepareForDetonateAt()
 {
-	const auto pType = this->GetType();
-	const auto pBullet = this->Bullet;
+	const auto pType = this->TypeExtData;
+	const auto pBullet = this->OwnerObject();
 	const auto pFirer = pBullet->Owner;
 	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
 	const auto radius = pType->ProximityRadius.Get();
@@ -410,8 +411,9 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	// Step 1: Find valid targets on the ground within range.
 	std::vector<CellClass*> recCellClass = this->GetCellsInProximityRadius();
 
-	const auto velocityCrd = PhobosTrajectory::Vector2Coord(this->MovingVelocity);
-	const double velocity = this->MovingSpeed;
+	const auto pTraj = this->Trajectory.get();
+	const auto velocityCrd = BulletExt::Vector2Coord(pTraj ? pTraj->MovingVelocity : pBullet->Velocity);
+	const double velocity = pTraj ? pTraj->MovingSpeed : pBullet->Velocity.Magnitude();
 	const auto pTarget = pBullet->Target;
 
 	std::vector<TechnoClass*> validTechnos;
@@ -424,7 +426,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 			{
 				const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
-				if (!pTechno || PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
+				if (!pTechno || BulletExt::CheckTechnoIsInvalid(pTechno))
 					continue;
 
 				// Not directly harming friendly forces
@@ -467,7 +469,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 				}
 
 				// Calculate the distance between the point and the line
-				const double distance = (velocity > PhobosTrajectory::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+				const double distance = (velocity > BulletExt::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 
 				// Should be in the center cylinder
 				if (distance > (radius + distanceOffset))
@@ -493,7 +495,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
+			if (BulletExt::CheckTechnoIsInvalid(pTechno))
 				continue;
 
 			// Not directly harming friendly forces
@@ -522,7 +524,7 @@ void PhobosTrajectory::PrepareForDetonateAt()
 			}
 
 			// Calculate the distance between the point and the line
-			const double distance = (velocity > PhobosTrajectory::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
+			const double distance = (velocity > BulletExt::Epsilon) ? (distanceCrd.CrossProduct(nextDistanceCrd).Magnitude() / velocity) : distanceCrd.Magnitude();
 
 			// Should be in the center cylinder
 			if (distance > radius)
@@ -616,10 +618,10 @@ void PhobosTrajectory::PrepareForDetonateAt()
 	}
 }
 
-void PhobosTrajectory::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget)
+void BulletExt::ExtData::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTarget)
 {
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
 	int damage = this->GetTrueDamage(this->ProximityDamage, false);
 	auto pWH = pType->ProximityWarhead.Get();
 
@@ -637,12 +639,12 @@ void PhobosTrajectory::ProximityDetonateAt(HouseClass* pOwner, TechnoClass* pTar
 	this->CalculateNewDamage();
 }
 
-int PhobosTrajectory::GetTrueDamage(int damage, bool self)
+int BulletExt::ExtData::GetTrueDamage(int damage, bool self)
 {
 	if (damage == 0)
 		return 0;
 
-	const auto pType = this->GetType();
+	const auto pType = this->TypeExtData;
 
 	// Calculate damage distance attenuation
 	if (pType->DamageEdgeAttenuation != 1.0)
@@ -670,18 +672,18 @@ int PhobosTrajectory::GetTrueDamage(int damage, bool self)
 	return damage;
 }
 
-double PhobosTrajectory::GetExtraDamageMultiplier()
+double BulletExt::ExtData::GetExtraDamageMultiplier()
 {
-	const auto pBullet = this->Bullet;
+	const auto pBullet = this->OwnerObject();
 	double damageMult = 1.0;
 	const double distance = pBullet->Location.DistanceFrom(pBullet->SourceCoords);
 
 	if (this->AttenuationRange < static_cast<int>(distance))
-		return this->GetType()->DamageEdgeAttenuation;
+		return this->TypeExtData->DamageEdgeAttenuation;
 
 	// Remove the first cell distance for calculation
 	if (distance > 256.0)
-		damageMult += (this->GetType()->DamageEdgeAttenuation - 1.0) * ((distance - 256.0) / (this->AttenuationRange - Unsorted::LeptonsPerCell));
+		damageMult += (this->TypeExtData->DamageEdgeAttenuation - 1.0) * ((distance - 256.0) / (this->AttenuationRange - Unsorted::LeptonsPerCell));
 
 	return damageMult;
 }

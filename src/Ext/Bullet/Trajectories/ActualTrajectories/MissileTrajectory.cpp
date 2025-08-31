@@ -229,7 +229,7 @@ void MissileTrajectory::OpenFire()
 
 		// Calculate speed
 		if (this->CalculateBulletVelocity(pType->LaunchSpeed))
-			this->Status |= TrajectoryStatus::Detonate;
+			BulletExt::ExtMap.Find(this->Bullet)->Status |= TrajectoryStatus::Detonate;
 	}
 
 	this->PhobosTrajectory::OpenFire();
@@ -244,7 +244,7 @@ CoordStruct MissileTrajectory::GetRetargetCenter() const
 		return pBullet->TargetCoords;
 
 	// Calculate the coordinates of the radius distance ahead
-	const auto futureVelocity = this->MovingVelocity * ((this->Type->RetargetRadius * Unsorted::LeptonsPerCell) / this->MovingSpeed);
+	const auto futureVelocity = this->MovingVelocity * ((BulletTypeExt::ExtMap.Find(pBullet->Type)->RetargetRadius * Unsorted::LeptonsPerCell) / this->MovingSpeed);
 	return CoordStruct { pBullet->Location.X + static_cast<int>(futureVelocity.X), pBullet->Location.Y + static_cast<int>(futureVelocity.Y), pBullet->Location.Z };
 }
 
@@ -252,7 +252,7 @@ void MissileTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 {
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
-	pBullet->SetTarget(pTarget);
+	pBullet->Target = pTarget;
 
 	// Skip set target coords if is locked
 	if (!pType->LockDirection || !this->InStraight)
@@ -270,7 +270,7 @@ bool MissileTrajectory::CalculateBulletVelocity(const double speed)
 {
 	const double velocityLength = this->MovingVelocity.Magnitude();
 
-	if (velocityLength < PhobosTrajectory::Epsilon)
+	if (velocityLength < BulletExt::Epsilon)
 		return true;
 
 	this->MovingVelocity *= speed / velocityLength;
@@ -296,7 +296,7 @@ void MissileTrajectory::InitializeBulletNotCurve()
 
 	// Calculate the orientation of the coordinate system
 	if (!pType->FacingCoord && (target.Y != source.Y || target.X != source.X) || !pFirer)
-		rotateRadian = PhobosTrajectory::Get2DOpRadian(source, target);
+		rotateRadian = BulletExt::Get2DOpRadian(source, target);
 	else if (pFirer->HasTurret())
 		rotateRadian = -(pFirer->TurretFacing().GetRadian<32>());
 	else
@@ -314,7 +314,7 @@ void MissileTrajectory::InitializeBulletNotCurve()
 	if (pType->PreAimCoord == CoordStruct::Empty)
 	{
 		this->InStraight = true;
-		this->MovingVelocity = PhobosTrajectory::Coord2Vector(target + this->OffsetCoord - pBullet->SourceCoords);
+		this->MovingVelocity = BulletExt::Coord2Vector(target + this->OffsetCoord - pBullet->SourceCoords);
 	}
 	else
 	{
@@ -327,10 +327,10 @@ void MissileTrajectory::InitializeBulletNotCurve()
 
 		// Determine the firing velocity vector of the bullet
 		if (!this->CalculateReducedVelocity(rotateRadian))
-			this->MovingVelocity = PhobosTrajectory::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
+			this->MovingVelocity = BulletExt::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
 
 		// Rotate the selected angle
-		if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
+		if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
 			this->DisperseBurstSubstitution(rotateRadian);
 	}
 }
@@ -353,7 +353,7 @@ bool MissileTrajectory::CalculateReducedVelocity(const double rotateRadian)
 	const auto pType = this->Type;
 
 	// Check if it can reduce
-	if (!pType->ReduceCoord || pType->TurningSpeed <= PhobosTrajectory::Epsilon)
+	if (!pType->ReduceCoord || pType->TurningSpeed <= BulletExt::Epsilon)
 		return false;
 
 	// Check if its steering ability is sufficient
@@ -364,9 +364,9 @@ bool MissileTrajectory::CalculateReducedVelocity(const double rotateRadian)
 		return false;
 
 	// Calculate the rotated coordinates
-	const auto theAimCoord = PhobosTrajectory::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
+	const auto theAimCoord = BulletExt::HorizontalRotate(this->GetPreAimCoordsWithBurst(), rotateRadian);
 	const auto pBullet = this->Bullet;
-	const auto distance = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - pBullet->SourceCoords);
+	const auto distance = BulletExt::Coord2Vector(pBullet->TargetCoords - pBullet->SourceCoords);
 
 	// Reduce the initial rotation angle
 	this->MovingVelocity = (distance - theAimCoord) * (1 - coordMult) + theAimCoord;
@@ -378,7 +378,7 @@ bool MissileTrajectory::CurveVelocityChange()
 	const auto pBullet = this->Bullet;
 	const auto pTarget = pBullet->Target;
 	const auto pTargetTechno = abstract_cast<TechnoClass*>(pTarget);
-	const bool checkValid = (pTargetTechno && !PhobosTrajectory::CheckTechnoIsInvalid(pTargetTechno)) || (pTarget && pTarget->WhatAmI() == AbstractType::Bullet);
+	const bool checkValid = (pTargetTechno && !BulletExt::CheckTechnoIsInvalid(pTargetTechno)) || (pTarget && pTarget->WhatAmI() == AbstractType::Bullet);
 	auto targetLocation = pBullet->TargetCoords;
 
 	// Follow and track the target like a missile
@@ -393,7 +393,7 @@ bool MissileTrajectory::CurveVelocityChange()
 	// Update projectile velocity based on stage
 	if (!this->InStraight) // In the launch phase
 	{
-		const auto horizonVelocity = PhobosTrajectory::Coord2Point(targetLocation - pBullet->Location);
+		const auto horizonVelocity = BulletExt::Coord2Point(targetLocation - pBullet->Location);
 		const double horizonDistance = horizonVelocity.Magnitude();
 
 		if (horizonDistance > 0)
@@ -484,7 +484,7 @@ bool MissileTrajectory::StandardVelocityChange()
 
 	if (this->PreAimDistance > 0)
 	{
-		targetLocation = pBullet->Location + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
+		targetLocation = pBullet->Location + BulletExt::Vector2Coord(this->MovingVelocity);
 	}
 	else
 	{
@@ -507,7 +507,7 @@ bool MissileTrajectory::StandardVelocityChange()
 			const auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
 
 			// Only movable targets need to be calculated
-			if ((pTargetFoot && !PhobosTrajectory::CheckTechnoIsInvalid(pTargetFoot)) || pTarget->WhatAmI() == AbstractType::Bullet)
+			if ((pTargetFoot && !BulletExt::CheckTechnoIsInvalid(pTargetFoot)) || pTarget->WhatAmI() == AbstractType::Bullet)
 			{
 				const double leadSpeed = (pType->Speed + this->MovingSpeed) / 2;
 				const double timeMult = targetLocation.DistanceFrom(pBullet->Location) / leadSpeed;
@@ -518,7 +518,7 @@ bool MissileTrajectory::StandardVelocityChange()
 		// If in the cruise phase, the steering target will be set at the fixed height
 		if (this->CruiseEnable)
 		{
-			const auto horizontal = PhobosTrajectory::Coord2Point(targetLocation - pBullet->Location);
+			const auto horizontal = BulletExt::Coord2Point(targetLocation - pBullet->Location);
 			const double horizontalDistance = horizontal.Magnitude();
 
 			// The distance is still long, continue cruising
@@ -567,7 +567,7 @@ bool MissileTrajectory::ChangeBulletVelocity(const CoordStruct& targetLocation)
 	}
 
 	bulletVelocity *= this->MovingSpeed / currentSpeed;
-	const auto targetVelocity = PhobosTrajectory::Coord2Vector(targetLocation - pBullet->Location);
+	const auto targetVelocity = BulletExt::Coord2Vector(targetLocation - pBullet->Location);
 
 	// Calculate the new velocity vector based on turning speed
 	const double dotProduct = (targetVelocity * bulletVelocity);
@@ -611,7 +611,7 @@ int MissileTrajectory::GetCruiseAltitude()
 	const auto pBullet = this->Bullet;
 	const auto pType = this->Type;
 
-	if (!pType->CruiseAlongLevel || pType->TurningSpeed <= PhobosTrajectory::Epsilon)
+	if (!pType->CruiseAlongLevel || pType->TurningSpeed <= BulletExt::Epsilon)
 		return pType->CruiseAltitude + pBullet->SourceCoords.Z;
 
 	constexpr int shift = 8; // >> shift -> / Unsorted::LeptonsPerCell

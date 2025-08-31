@@ -139,7 +139,7 @@ void SampleTrajectory::OnPreDetonate()
 void SampleTrajectory::OpenFire()
 {
 	const auto pBullet = this->Bullet;
-	this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - pBullet->SourceCoords);
+	this->MovingVelocity = BulletExt::Coord2Vector(pBullet->TargetCoords - pBullet->SourceCoords);
 	this->CalculateBulletVelocity(this->Type->Speed);
 	this->PhobosTrajectory::OpenFire();
 }

@@ -81,36 +81,42 @@ DEFINE_HOOK(0x4666F7, BulletClass_AI, 0x6)
 		}
 	}
 
-	//Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
-	//This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
-	//Let trajectories draw their own laser trails after the Trajectory's OnEarlyUpdate() to avoid predicting incorrect positions or pass through targets.
+	// Because the laser trails will be drawn before the calculation of changing the velocity direction in each frame.
+	// This will cause the laser trails to be drawn in the wrong position too early, resulting in a visual appearance resembling a "bouncing".
+	// Let trajectories draw their own laser trails after the Trajectory's OnEarlyUpdate() to avoid predicting incorrect positions or pass through targets.
 	if (const auto pTraj = pBulletExt->Trajectory.get())
 	{
 		if (pTraj->OnEarlyUpdate() && !pThis->SpawnNextAnim)
 			return Detonate;
 	}
-	else if (pBulletExt->LaserTrails.size())
+	else
 	{
-		const CoordStruct location = pThis->GetCoords();
-		const BulletVelocity& velocity = pThis->Velocity;
+		if (pBulletExt->CheckOnEarlyUpdate() && !pThis->SpawnNextAnim)
+			return Detonate;
 
-		// We adjust LaserTrails to account for vanilla bug of drawing stuff one frame ahead.
-		// Pretty meh solution but works until we fix the bug - Kerbiter
-		CoordStruct drawnCoords
+		if (pBulletExt->LaserTrails.size())
 		{
-			(int)(location.X + velocity.X),
-			(int)(location.Y + velocity.Y),
-			(int)(location.Z + velocity.Z)
-		};
+			const CoordStruct location = pThis->GetCoords();
+			const BulletVelocity& velocity = pThis->Velocity;
 
-		for (const auto& pTrail : pBulletExt->LaserTrails)
-		{
-			// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
-			// TODO move hack to BulletClass creation
-			if (!pTrail->LastLocation.isset())
-				pTrail->LastLocation = location;
+			// We adjust LaserTrails to account for vanilla bug of drawing stuff one frame ahead.
+			// Pretty meh solution but works until we fix the bug - Kerbiter
+			const CoordStruct drawnCoords
+			{
+				(int)(location.X + velocity.X),
+				(int)(location.Y + velocity.Y),
+				(int)(location.Z + velocity.Z)
+			};
 
-			pTrail->Update(drawnCoords);
+			for (const auto& pTrail : pBulletExt->LaserTrails)
+			{
+				// We insert initial position so the first frame of trail doesn't get skipped - Kerbiter
+				// TODO move hack to BulletClass creation
+				if (!pTrail->LastLocation.isset())
+					pTrail->LastLocation = location;
+
+				pTrail->Update(drawnCoords);
+			}
 		}
 	}
 

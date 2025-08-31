@@ -79,9 +79,10 @@ void StraightTrajectory::OnUnlimbo()
 
 	// Straight
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 	// Calculate range bonus
-	if (this->Type->ApplyRangeModifiers)
+	if (pBulletExt->TypeExtData->ApplyRangeModifiers)
 	{
 		if (const auto pFirer = pBullet->Owner)
 		{
@@ -97,7 +98,7 @@ void StraightTrajectory::OnUnlimbo()
 	}
 
 	// Waiting for launch trigger
-	if (!BulletExt::ExtMap.Find(pBullet)->DispersedTrajectory)
+	if (!pBulletExt->DispersedTrajectory)
 		this->OpenFire();
 }
 
@@ -120,7 +121,7 @@ TrajectoryCheckReturnType StraightTrajectory::OnDetonateUpdate(const CoordStruct
 		return TrajectoryCheckReturnType::Detonate;
 
 	const auto pType = this->Type;
-	const auto distance = pType->Speed < 256.0 && pType->ConfineAtHeight > 0 ? PhobosTrajectory::Get2DVelocity(this->MovingVelocity) : this->MovingSpeed;
+	const auto distance = pType->Speed < 256.0 && pType->ConfineAtHeight > 0 ? BulletExt::Get2DVelocity(this->MovingVelocity) : this->MovingSpeed;
 	this->RemainingDistance -= static_cast<int>(distance);
 
 	// Check the remaining travel distance of the bullet
@@ -142,7 +143,7 @@ void StraightTrajectory::OnPreDetonate()
 	const auto pType = this->Type;
 
 	// Whether to detonate at ground level?
-	if (pType->PassDetonateLocal)
+	if (BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal)
 		pBullet->SetLocation(CoordStruct { pBullet->Location.X, pBullet->Location.Y, MapClass::Instance.GetCellFloorHeight(pBullet->Location) });
 
 	if (!pType->PassThrough)
@@ -171,7 +172,7 @@ void StraightTrajectory::FireTrajectory()
 	target += this->CalculateBulletLeadTime();
 
 	// Calculate the orientation of the coordinate system
-	const auto rotateRadian = this->Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
+	const auto rotateRadian = BulletExt::Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
 
 	// Add the fixed offset value
 	if (pType->OffsetCoord != CoordStruct::Empty)
@@ -195,14 +196,14 @@ void StraightTrajectory::FireTrajectory()
 	pBullet->TargetCoords = target;
 	this->MovingVelocity.X = static_cast<double>(target.X - source.X);
 	this->MovingVelocity.Y = static_cast<double>(target.Y - source.Y);
-	this->MovingVelocity.Z = (pType->Speed < 256.0 && pType->ConfineAtHeight > 0 && pType->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
+	this->MovingVelocity.Z = (pType->Speed < 256.0 && pType->ConfineAtHeight > 0 && BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal) ? 0 : static_cast<double>(this->GetVelocityZ());
 
 	// Substitute the speed to calculate velocity
 	if (this->CalculateBulletVelocity(pType->Speed))
-		this->Status |= TrajectoryStatus::Detonate;
+		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
 
 	// Rotate the selected angle
-	if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
+	if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
 		this->DisperseBurstSubstitution(rotateRadian);
 }
 
@@ -235,7 +236,7 @@ CoordStruct StraightTrajectory::CalculateBulletLeadTime()
 				const double horizonDistance = sqrt(horizonDistanceSquared);
 
 				// Calculate using vertical distance
-				if (horizonDistance < PhobosTrajectory::Epsilon)
+				if (horizonDistance < BulletExt::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(verticalDistanceSquared) / pType->Speed));
 
 				const double targetSpeed = sqrt(targetSpeedSquared);
@@ -246,13 +247,13 @@ CoordStruct StraightTrajectory::CalculateBulletLeadTime()
 				const int extraTime = distanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
 
 				// Linear equation solving
-				if (std::abs(baseFactor) < PhobosTrajectory::Epsilon)
+				if (std::abs(baseFactor) < BulletExt::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(distanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
 
 				const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
 				// Is there a solution?
-				if (squareFactor > PhobosTrajectory::Epsilon)
+				if (squareFactor > BulletExt::Epsilon)
 				{
 					const double minusFactor = -(horizonDistance * targetSpeed);
 					const double factor = sqrt(squareFactor);
@@ -308,11 +309,11 @@ int StraightTrajectory::GetVelocityZ()
 		if (!this->DetonationDistance)
 			return 0;
 
-		const double distanceOfTwo = PhobosTrajectory::Get2DDistance(pBullet->SourceCoords, pBullet->TargetCoords);
+		const double distanceOfTwo = BulletExt::Get2DDistance(pBullet->SourceCoords, pBullet->TargetCoords);
 		const double theDistance = (this->DetonationDistance < 0) ? (distanceOfTwo - this->DetonationDistance) : this->DetonationDistance;
 
 		// Calculate the ratio for subsequent speed calculation
-		if (std::abs(theDistance) < PhobosTrajectory::Epsilon)
+		if (std::abs(theDistance) < BulletExt::Epsilon)
 			return 0;
 
 		bulletVelocityZ = static_cast<int>(bulletVelocityZ * (distanceOfTwo / theDistance));
@@ -327,9 +328,9 @@ bool StraightTrajectory::PassAndConfineAtHeight()
 	const auto pType = this->Type;
 
 	// To prevent twitching and floating up and down, it is necessary to maintain a fixed distance when predicting the position
-	const double horizontalVelocity = PhobosTrajectory::Get2DVelocity(this->MovingVelocity);
+	const double horizontalVelocity = BulletExt::Get2DVelocity(this->MovingVelocity);
 	const double ratio = pType->Speed / horizontalVelocity;
-	auto velocityCoords = PhobosTrajectory::Vector2Coord(this->MovingVelocity);
+	auto velocityCoords = BulletExt::Vector2Coord(this->MovingVelocity);
 	velocityCoords.X = static_cast<int>(velocityCoords.X * ratio);
 	velocityCoords.Y = static_cast<int>(velocityCoords.Y * ratio);
 	const auto futureCoords = pBullet->Location + velocityCoords;
@@ -350,7 +351,7 @@ bool StraightTrajectory::PassAndConfineAtHeight()
 
 	this->MovingVelocity.Z += static_cast<double>(checkDifference + pType->ConfineAtHeight);
 
-	if (pType->PassDetonateLocal)
+	if (BulletTypeExt::ExtMap.Find(pBullet->Type)->PassDetonateLocal)
 	{
 		// In this case, the vertical speed will not be limited, and the horizontal speed will not be affected
 		this->MovingSpeed = this->MovingVelocity.Magnitude();

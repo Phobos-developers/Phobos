@@ -138,14 +138,14 @@ void TracingTrajectory::OpenFire()
 	// Offset during creation
 	if (coords.X != 0 || coords.Y != 0)
 	{
-		const double rotateRadian = this->Get2DOpRadian(pBullet->SourceCoords, pBullet->TargetCoords);
+		const double rotateRadian = BulletExt::Get2DOpRadian(pBullet->SourceCoords, pBullet->TargetCoords);
 
 		// Check if mirroring is required
 		if (pType->MirrorCoord && this->CurrentBurst < 0)
 			offset.Y = -offset.Y;
 
 		// Rotate the angle
-		offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
+		offset = BulletExt::Vector2Coord(BulletExt::HorizontalRotate(offset, rotateRadian));
 	}
 
 	// Add the basic coordinate position and then set it
@@ -158,26 +158,28 @@ void TracingTrajectory::OpenFire()
 
 	this->PhobosTrajectory::OpenFire();
 
-	const int duration = pType->Duration.Get();
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const int duration = pBulletExt->TypeExtData->LifeDuration.Get();
 
 	// Calculate survival time
 	if (duration < 0)
 		return;
 	else if (duration > 0)
-		this->DurationTimer.Start(duration);
+		pBulletExt->LifeDurationTimer.Start(duration);
 	else if (const auto pWeapon = pBullet->WeaponType)
-		this->DurationTimer.Start((pWeapon->ROF > 10) ? pWeapon->ROF - 10 : 1);
+		pBulletExt->LifeDurationTimer.Start((pWeapon->ROF > 10) ? pWeapon->ROF - 10 : 1);
 	else
-		this->DurationTimer.Start(120);
+		pBulletExt->LifeDurationTimer.Start(120);
 }
 
 bool TracingTrajectory::ChangeVelocity()
 {
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	const auto pType = this->Type;
 
 	// Find the outermost transporter
-	const auto pFirer = this->GetSurfaceFirer(pBullet->Owner);
+	const auto pFirer = BulletExt::GetSurfaceFirer(pBullet->Owner);
 
 	// Tracing the target
 	if (const auto pTarget = pBullet->Target)
@@ -192,7 +194,7 @@ bool TracingTrajectory::ChangeVelocity()
 			return true;
 
 		if (chaseRange >= 0)
-			this->Status |= TrajectoryStatus::Vanish;
+			pBulletExt->Status |= TrajectoryStatus::Vanish;
 	}
 
 	// Confirm the center position of the tracing target
@@ -201,12 +203,12 @@ bool TracingTrajectory::ChangeVelocity()
 	// Calculate the maximum separation distance
 	const auto pWeapon = pBullet->WeaponType;
 	const int baseRange = chaseRange ? std::abs(chaseRange) : (pWeapon ? pWeapon->Range : (10 * Unsorted::LeptonsPerCell));
-	const int applyRange = (pType->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32;
+	const int applyRange = (pBulletExt->TypeExtData->ApplyRangeModifiers && pFirer && pWeapon ? WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, baseRange) : baseRange) + 32;
 
 	// Calculate the distance between the projectile and the firer
-	const auto source = (pFirer && !this->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
+	const auto source = (pFirer && !pBulletExt->NotMainWeapon) ? pFirer->GetCoords() : pBullet->SourceCoords;
 	const auto delta = destination - source;
-	const double distance = (this->NotMainWeapon || this->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? PhobosTrajectory::Get2DDistance(delta) : delta.Magnitude();
+	const double distance = (pBulletExt->NotMainWeapon || pBulletExt->TargetIsInAir || (pFirer && pFirer->IsInAir())) ? BulletExt::Get2DDistance(delta) : delta.Magnitude();
 
 	// Check if the limit has been exceeded
 	if (static_cast<int>(distance) >= applyRange)
@@ -232,7 +234,7 @@ bool TracingTrajectory::ChangeVelocity()
 				const double rotateRadian = -(pTechno->PrimaryFacing.Current().GetRadian<32>());
 
 				// Rotate the body angle
-				offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
+				offset = BulletExt::Vector2Coord(BulletExt::HorizontalRotate(offset, rotateRadian));
 			}
 			else
 			{
@@ -249,7 +251,7 @@ bool TracingTrajectory::ChangeVelocity()
 				const double rotateRadian = (pTechno->HasTurret() ? -(pTechno->TurretFacing().GetRadian<32>()) : -(pTechno->PrimaryFacing.Current().GetRadian<32>()));
 
 				// Rotate the turret angle
-				offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
+				offset = BulletExt::Vector2Coord(BulletExt::HorizontalRotate(offset, rotateRadian));
 			}
 			else
 			{
@@ -267,36 +269,36 @@ bool TracingTrajectory::ChangeVelocity()
 		}
 		case TraceTargetMode::RotateCCW:
 		{
-			const double radius = PhobosTrajectory::Get2DDistance(offset);
+			const double radius = BulletExt::Get2DDistance(offset);
 
 			// Individual or entirety
-			if (!pType->StableRotation || !this->TrajectoryGroup)
+			if (!pType->StableRotation || !pBulletExt->TrajectoryGroup)
 			{
 				const auto distanceCoords = pBullet->Location - destination;
 
 				// Rotate around the center only when the distance is less than 1.2 times the radius
-				if ((radius * 1.2) > PhobosTrajectory::Get2DDistance(distanceCoords))
+				if ((radius * 1.2) > BulletExt::Get2DDistance(distanceCoords))
 				{
 					// Recalculate
 					this->RotateRadian = Math::atan2(distanceCoords.Y, distanceCoords.X);
 
 					// The arc of rotation per frame can be determined by the radius and speed
-					if (std::abs(radius) > PhobosTrajectory::Epsilon)
+					if (std::abs(radius) > BulletExt::Epsilon)
 						this->RotateRadian = cw ? (this->RotateRadian + pType->Speed / radius) : (this->RotateRadian - pType->Speed / radius);
 				}
 			}
 			else
 			{
-				auto& groupData = (*this->TrajectoryGroup)[pBullet->Type];
+				auto& groupData = (*pBulletExt->TrajectoryGroup)[pBullet->Type];
 
 				// Valid group
 				if (const int size = static_cast<int>(groupData.Bullets.size()))
 				{
 					// Record radian by main bullet and add stable interval to others
-					if (!this->GroupIndex)
+					if (!pBulletExt->GroupIndex)
 						this->RotateRadian = groupData.Angle = cw ? (this->RotateRadian + pType->Speed / 2 / radius) : (this->RotateRadian - pType->Speed / 2 / radius);
 					else
-						this->RotateRadian = groupData.Angle + (Math::TwoPi * this->GroupIndex / size);
+						this->RotateRadian = groupData.Angle + (Math::TwoPi * pBulletExt->GroupIndex / size);
 				}
 			}
 
@@ -308,14 +310,14 @@ bool TracingTrajectory::ChangeVelocity()
 		}
 		default:
 		{
-			const double rotateRadian = this->Get2DOpRadian(pBullet->SourceCoords, pBullet->TargetCoords);
+			const double rotateRadian = BulletExt::Get2DOpRadian(pBullet->SourceCoords, pBullet->TargetCoords);
 
 			// Check if mirroring is required
 			if (pType->MirrorCoord && this->CurrentBurst < 0)
 				offset.Y = -offset.Y;
 
 			// Rotate the angle
-			offset = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offset, rotateRadian));
+			offset = BulletExt::Vector2Coord(BulletExt::HorizontalRotate(offset, rotateRadian));
 			break;
 		}
 		}

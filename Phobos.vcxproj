@@ -57,8 +57,8 @@
     <ClCompile Include="src\Ext\Anim\Hooks.cpp" />
     <ClCompile Include="src\Ext\Anim\Hooks.AnimCreateUnit.cpp" />
     <ClCompile Include="src\Ext\Bullet\Hooks.DetonateLogics.cpp" />
-    <ClCompile Include="src\Ext\Bullet\Trajectories\AdditionalWeapons.cpp" />
-    <ClCompile Include="src\Ext\Bullet\Trajectories\AdditionalWarheads.cpp" />
+    <ClCompile Include="src\Ext\Bullet\AdditionalWeapons.cpp" />
+    <ClCompile Include="src\Ext\Bullet\AdditionalWarheads.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosActualTrajectory.cpp" />
     <ClCompile Include="src\Ext\Bullet\Trajectories\PhobosVirtualTrajectory.cpp" />

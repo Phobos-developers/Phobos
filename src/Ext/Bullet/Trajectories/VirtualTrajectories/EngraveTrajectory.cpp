@@ -80,7 +80,7 @@ bool EngraveTrajectory::OnVelocityCheck()
 	if (pType->AttachToTarget || pType->UpdateDirection)
 		this->ChangeVelocity();
 
-	if (!this->TargetIsInAir && this->PlaceOnCorrectHeight())
+	if (!BulletExt::ExtMap.Find(this->Bullet)->TargetIsInAir && this->PlaceOnCorrectHeight())
 		return true;
 
 	return this->PhobosTrajectory::OnVelocityCheck();
@@ -89,13 +89,14 @@ bool EngraveTrajectory::OnVelocityCheck()
 void EngraveTrajectory::OpenFire()
 {
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
-	auto virtualSource = PhobosTrajectory::Coord2Point(pType->VirtualSourceCoord.Get());
-	auto virtualTarget = PhobosTrajectory::Coord2Point(pType->VirtualTargetCoord.Get());
+	auto virtualSource = BulletExt::Coord2Point(pType->VirtualSourceCoord.Get());
+	auto virtualTarget = BulletExt::Coord2Point(pType->VirtualTargetCoord.Get());
 
 	// Mirror trajectory
-	if (!this->NotMainWeapon && pType->MirrorCoord && this->CurrentBurst < 0)
+	if (!pBulletExt->NotMainWeapon && pType->MirrorCoord && this->CurrentBurst < 0)
 	{
 		virtualSource.Y = -virtualSource.Y;
 		virtualTarget.Y = -virtualTarget.Y;
@@ -104,26 +105,26 @@ void EngraveTrajectory::OpenFire()
 	// To be used later, no reference
 	auto source = pBullet->SourceCoords;
 	auto target = pBullet->TargetCoords;
-	this->RotateRadian = this->Get2DOpRadian((pFirer ? pFirer->GetCoords() : source), target);
+	this->RotateRadian = BulletExt::Get2DOpRadian((pFirer ? pFirer->GetCoords() : source), target);
 
 	// Special case: Starting from the launch position
 	if (virtualSource.X != 0 || virtualSource.Y != 0)
-		source = target + PhobosTrajectory::Point2Coord(PhobosTrajectory::PointRotate(virtualSource, this->RotateRadian));
+		source = target + BulletExt::Point2Coord(BulletExt::PointRotate(virtualSource, this->RotateRadian));
 
 	// If the target is in the air, there is no need to attach it to the ground
-	if (!this->TargetIsInAir)
+	if (!pBulletExt->TargetIsInAir)
 		source.Z = this->GetFloorCoordHeight(source);
 
 	// set initial status
 	pBullet->SetLocation(source);
-	target += PhobosTrajectory::Point2Coord(PhobosTrajectory::PointRotate(virtualTarget, this->RotateRadian));
+	target += BulletExt::Point2Coord(BulletExt::PointRotate(virtualTarget, this->RotateRadian));
 
 	this->MovingVelocity.X = target.X - source.X;
 	this->MovingVelocity.Y = target.Y - source.Y;
 	this->MovingVelocity.Z = 0;
 
 	if (this->CalculateBulletVelocity(pType->Speed))
-		this->Status |= TrajectoryStatus::Detonate;
+		pBulletExt->Status |= TrajectoryStatus::Detonate;
 
 	this->PhobosTrajectory::OpenFire();
 }
@@ -134,25 +135,27 @@ bool EngraveTrajectory::CalculateBulletVelocity(const double speed)
 	// Substitute the speed to calculate velocity
 	double velocityLength = this->MovingVelocity.Magnitude();
 
-	if (velocityLength < PhobosTrajectory::Epsilon)
+	if (velocityLength < BulletExt::Epsilon)
 		return true;
 
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletTypeExt = pBulletExt->TypeExtData;
 	const auto pType = this->Type;
 	const auto pFirer = pBullet->Owner;
 
 	// Calculate additional range
-	if (pType->ApplyRangeModifiers && pFirer)
+	if (pBulletTypeExt->ApplyRangeModifiers && pFirer)
 	{
 		if (const auto pWeapon = pBullet->WeaponType)
 			velocityLength = static_cast<double>(WeaponTypeExt::GetRangeWithModifiers(pWeapon, pFirer, static_cast<int>(velocityLength)));
 	}
 
 	// Automatically calculate duration
-	if (pType->Duration <= 0)
-		this->DurationTimer.Start(static_cast<int>(velocityLength / pType->Speed) + 1);
+	if (pBulletTypeExt->LifeDuration <= 0)
+		pBulletExt->LifeDurationTimer.Start(static_cast<int>(velocityLength / pType->Speed) + 1);
 	else
-		this->DurationTimer.Start(pType->Duration);
+		pBulletExt->LifeDurationTimer.Start(pBulletTypeExt->LifeDuration);
 
 	this->MovingVelocity *= speed / velocityLength;
 	this->MovingSpeed = speed;
@@ -173,13 +176,14 @@ int EngraveTrajectory::GetFloorCoordHeight(const CoordStruct& coord)
 void EngraveTrajectory::ChangeVelocity()
 {
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	const auto pType = this->Type;
 
 	// The center is located on the target
 	if (pType->AttachToTarget)
 	{
 		// No need to synchronize the target again
-		if (!pType->Synchronize)
+		if (!pBulletExt->TypeExtData->Synchronize)
 		{
 			if (const auto pTarget = pBullet->Target)
 				pBullet->TargetCoords = pTarget->GetCoords();
@@ -190,39 +194,39 @@ void EngraveTrajectory::ChangeVelocity()
 	if (pType->UpdateDirection)
 	{
 		const auto pFirer = pBullet->Owner;
-		this->RotateRadian = this->Get2DOpRadian((pFirer ? pFirer->GetCoords() : pBullet->SourceCoords), pBullet->TargetCoords);
+		this->RotateRadian = BulletExt::Get2DOpRadian((pFirer ? pFirer->GetCoords() : pBullet->SourceCoords), pBullet->TargetCoords);
 	}
 
 	// Recalculate speed and position
-	auto virtualSource = PhobosTrajectory::Coord2Point(pType->VirtualSourceCoord.Get());
-	auto virtualTarget = PhobosTrajectory::Coord2Point(pType->VirtualTargetCoord.Get());
+	auto virtualSource = BulletExt::Coord2Point(pType->VirtualSourceCoord.Get());
+	auto virtualTarget = BulletExt::Coord2Point(pType->VirtualTargetCoord.Get());
 
-	if (!this->NotMainWeapon && pType->MirrorCoord && this->CurrentBurst < 0)
+	if (!pBulletExt->NotMainWeapon && pType->MirrorCoord && this->CurrentBurst < 0)
 	{
 		virtualSource.Y = -virtualSource.Y;
 		virtualTarget.Y = -virtualTarget.Y;
 	}
 
-	const double path = (this->DurationTimer.CurrentTime - this->DurationTimer.StartTime + 1) * pType->Speed;
-	auto source = PhobosTrajectory::Coord2Point(pBullet->SourceCoords);
-	auto target = PhobosTrajectory::Coord2Point(pBullet->TargetCoords);
+	const double path = (pBulletExt->LifeDurationTimer.CurrentTime - pBulletExt->LifeDurationTimer.StartTime + 1) * pType->Speed;
+	auto source = BulletExt::Coord2Point(pBullet->SourceCoords);
+	auto target = BulletExt::Coord2Point(pBullet->TargetCoords);
 
 	// Special case: Starting from the launch position
 	if (virtualSource.X != 0 || virtualSource.Y != 0)
-		source = target + PhobosTrajectory::PointRotate(virtualSource, this->RotateRadian);
+		source = target + BulletExt::PointRotate(virtualSource, this->RotateRadian);
 
-	target += PhobosTrajectory::PointRotate(virtualTarget, this->RotateRadian);
+	target += BulletExt::PointRotate(virtualTarget, this->RotateRadian);
 	const auto delta = target - source;
 	const double distance = delta.Magnitude();
 
-	if (distance < PhobosTrajectory::Epsilon)
+	if (distance < BulletExt::Epsilon)
 	{
-		this->Status |= TrajectoryStatus::Detonate;
+		pBulletExt->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
-	const auto newLocation = PhobosTrajectory::Point2Coord((source + delta * (path / distance)), pBullet->TargetCoords.Z);
-	this->MovingVelocity = PhobosTrajectory::Coord2Vector(newLocation - pBullet->Location);
+	const auto newLocation = BulletExt::Point2Coord((source + delta * (path / distance)), pBullet->TargetCoords.Z);
+	this->MovingVelocity = BulletExt::Coord2Vector(newLocation - pBullet->Location);
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
 }
 
@@ -230,7 +234,7 @@ bool EngraveTrajectory::PlaceOnCorrectHeight()
 {
 	const auto pBullet = this->Bullet;
 	auto bulletCoords = pBullet->Location;
-	const auto futureCoords = bulletCoords + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
+	const auto futureCoords = bulletCoords + BulletExt::Vector2Coord(this->MovingVelocity);
 
 	// Calculate where will be located in the next frame
 	const auto checkDifference = this->GetFloorCoordHeight(futureCoords) - futureCoords.Z;

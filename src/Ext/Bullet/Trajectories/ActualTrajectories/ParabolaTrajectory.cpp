@@ -135,7 +135,7 @@ void ParabolaTrajectory::OnUnlimbo()
 	const auto pBullet = this->Bullet;
 
 	// Special case: Set the target to the ground
-	if (this->Type->DetonationDistance.Get() <= -PhobosTrajectory::Epsilon)
+	if (this->Type->DetonationDistance.Get() <= -BulletExt::Epsilon)
 	{
 		const auto pTarget = pBullet->Target;
 
@@ -174,9 +174,10 @@ bool ParabolaTrajectory::OnVelocityCheck()
 
 	VelocityCheckType velocityCheck = VelocityCheckType::SkipCheck;
 
-	const auto pType = this->Type;
-	const bool checkThrough = (!pType->ThroughBuilding || !pType->ThroughVehicles);
-	const double velocity = PhobosTrajectory::Get2DVelocity(this->MovingVelocity);
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletTypeExt = pBulletExt->TypeExtData;
+	const bool checkThrough = (!pBulletTypeExt->ThroughBuilding || !pBulletTypeExt->ThroughVehicles);
+	const double velocity = BulletExt::Get2DVelocity(this->MovingVelocity);
 
 	// Low speed with checkSubject was already done well
 	if (velocity < Unsorted::LeptonsPerCell)
@@ -185,10 +186,10 @@ bool ParabolaTrajectory::OnVelocityCheck()
 		if (checkThrough)
 		{
 			const auto pFirer = pBullet->Owner;
-			const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+			const auto pOwner = pFirer ? pFirer->Owner : pBulletExt->FirerHouse;
 
 			// Check for additional obstacles on the ground
-			if (this->CheckThroughAndSubjectInCell(MapClass::Instance.GetCellAt(pBullet->Location), pOwner))
+			if (pBulletExt->CheckThroughAndSubjectInCell(MapClass::Instance.GetCellAt(pBullet->Location), pOwner))
 			{
 				if (velocity > PhobosTrajectory::LowSpeedOffset)
 					ratio = (PhobosTrajectory::LowSpeedOffset / velocity);
@@ -200,7 +201,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 		// Check whether about to fall into the ground
 		if (this->BounceTimes > 0 || std::abs(this->MovingVelocity.Z) > Unsorted::CellHeight)
 		{
-			const auto theTargetCoords = pBullet->Location + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
+			const auto theTargetCoords = pBullet->Location + BulletExt::Vector2Coord(this->MovingVelocity);
 			const int cellHeight = MapClass::Instance.GetCellFloorHeight(theTargetCoords);
 
 			// Check whether the height of the ground is about to exceed the height of the projectile
@@ -225,9 +226,9 @@ bool ParabolaTrajectory::OnVelocityCheck()
 
 		// Anyway, at least check the ground
 		const auto& theSourceCoords = pBullet->Location;
-		const auto theTargetCoords = theSourceCoords + PhobosTrajectory::Vector2Coord(this->MovingVelocity);
+		const auto theTargetCoords = theSourceCoords + BulletExt::Vector2Coord(this->MovingVelocity);
 		const auto pFirer = pBullet->Owner;
-		const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+		const auto pOwner = pFirer ? pFirer->Owner : pBulletExt->FirerHouse;
 
 		// No need to use these variables anymore
 		{
@@ -235,7 +236,6 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			const auto pTargetCell = MapClass::Instance.GetCellAt(theTargetCoords);
 			const auto sourceCell = pSourceCell->MapCoords;
 			const auto targetCell = pTargetCell->MapCoords;
-			const auto pBulletTypeExt = BulletTypeExt::ExtMap.Find(pBulletType);
 			const bool subjectToWCS = pBulletType->SubjectToWalls || pBulletType->SubjectToCliffs || pBulletTypeExt->SubjectToSolid;
 			const bool checkLevel = !pBulletTypeExt->SubjectToLand.isset() && !pBulletTypeExt->SubjectToWater.isset();
 			const auto cellDist = sourceCell - targetCell;
@@ -251,20 +251,20 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			// Check one by one towards the direction of the next frame's position
 			for (size_t i = 0; i < largePace; ++i)
 			{
-				if ((checkThrough && this->CheckThroughAndSubjectInCell(pCurCell, pOwner)) // Blocked by obstacles?
+				if ((checkThrough && pBulletExt->CheckThroughAndSubjectInCell(pCurCell, pOwner)) // Blocked by obstacles?
 					|| (subjectToWCS && TrajectoryHelper::GetObstacle(pSourceCell, pTargetCell, pLastCell, curCoord, pBulletType, pOwner)) // Impact on the wall/cliff/solid?
 					|| (checkLevel ? (pBulletType->Level && pCurCell->IsOnFloor()) // Level or above land/water?
 						: ((pCurCell->LandType == LandType::Water || pCurCell->LandType == LandType::Beach)
 							? (pBulletTypeExt->SubjectToWater.Get(false) && pBulletTypeExt->SubjectToWater_Detonate)
 							: (pBulletTypeExt->SubjectToLand.Get(false) && pBulletTypeExt->SubjectToLand_Detonate))))
 				{
-					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
+					locationDistance = BulletExt::Get2DDistance(curCoord, theSourceCoords);
 					velocityCheck = VelocityCheckType::Detonate;
 					break;
 				}
 				else if (curCoord.Z < MapClass::Instance.GetCellFloorHeight(curCoord)) // Below ground level?
 				{
-					locationDistance = PhobosTrajectory::Get2DDistance(curCoord, theSourceCoords);
+					locationDistance = BulletExt::Get2DDistance(curCoord, theSourceCoords);
 					velocityCheck = VelocityCheckType::CanBounce;
 					break;
 				}
@@ -284,7 +284,7 @@ bool ParabolaTrajectory::OnVelocityCheck()
 			// Not empty when firestorm wall exists
 			if (fireStormCoords != CoordStruct::Empty)
 			{
-				const double distance = PhobosTrajectory::Get2DDistance(fireStormCoords, theSourceCoords);
+				const double distance = BulletExt::Get2DDistance(fireStormCoords, theSourceCoords);
 
 				// Only record when the ratio is smaller
 				if (velocityCheck == VelocityCheckType::SkipCheck || distance < locationDistance)
@@ -333,27 +333,27 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	// Height
 	if (pType->DetonationHeight >= 0 && (pType->EarlyDetonation
 		? ((position.Z - pBullet->SourceCoords.Z) > pType->DetonationHeight)
-		: (this->MovingVelocity.Z < PhobosTrajectory::Epsilon && (position.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)))
+		: (this->MovingVelocity.Z < BulletExt::Epsilon && (position.Z - pBullet->SourceCoords.Z) < pType->DetonationHeight)))
 	{
 		return TrajectoryCheckReturnType::Detonate;
 	}
 
 	// Angle
-	if (std::abs(pType->DetonationAngle) < PhobosTrajectory::Epsilon)
+	if (std::abs(pType->DetonationAngle) < BulletExt::Epsilon)
 	{
-		if (this->MovingVelocity.Z < PhobosTrajectory::Epsilon)
+		if (this->MovingVelocity.Z < BulletExt::Epsilon)
 			return TrajectoryCheckReturnType::Detonate;
 	}
 	else if (std::abs(pType->DetonationAngle) < 90.0)
 	{
-		const double velocity = PhobosTrajectory::Get2DVelocity(this->MovingVelocity);
+		const double velocity = BulletExt::Get2DVelocity(this->MovingVelocity);
 
-		if (velocity > PhobosTrajectory::Epsilon)
+		if (velocity > BulletExt::Epsilon)
 		{
 			if ((this->MovingVelocity.Z / velocity) < Math::tan(pType->DetonationAngle * Math::Pi / 180.0))
 				return TrajectoryCheckReturnType::Detonate;
 		}
-		else if (pType->DetonationAngle > PhobosTrajectory::Epsilon || this->MovingVelocity.Z < PhobosTrajectory::Epsilon)
+		else if (pType->DetonationAngle > BulletExt::Epsilon || this->MovingVelocity.Z < BulletExt::Epsilon)
 		{
 			return TrajectoryCheckReturnType::Detonate;
 		}
@@ -362,7 +362,7 @@ TrajectoryCheckReturnType ParabolaTrajectory::OnDetonateUpdate(const CoordStruct
 	const auto pCell = MapClass::Instance.TryGetCellAt(position);
 
 	// Bounce
-	if (!pCell || ((this->Status & TrajectoryStatus::Bounce) && this->CalculateBulletVelocityAfterBounce(pCell, position)))
+	if (!pCell || ((BulletExt::ExtMap.Find(pBullet)->Status & TrajectoryStatus::Bounce) && this->CalculateBulletVelocityAfterBounce(pCell, position)))
 		return TrajectoryCheckReturnType::Detonate;
 
 	return TrajectoryCheckReturnType::SkipGameCheck;
@@ -404,7 +404,7 @@ void ParabolaTrajectory::FireTrajectory()
 		target = pTarget->GetCoords();
 
 	// Calculate the orientation of the coordinate system
-	const double rotateRadian = this->Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
+	const double rotateRadian = BulletExt::Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
 
 	// Add the fixed offset value
 	if (pType->OffsetCoord != CoordStruct::Empty)
@@ -417,9 +417,9 @@ void ParabolaTrajectory::FireTrajectory()
 	// Non positive gravity is not accepted
 	const double gravity = BulletTypeExt::GetAdjustedGravity(pBullet->Type);
 
-	if (gravity <= PhobosTrajectory::Epsilon)
+	if (gravity <= BulletExt::Epsilon)
 	{
-		this->Status |= TrajectoryStatus::Detonate;
+		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
@@ -432,7 +432,7 @@ void ParabolaTrajectory::FireTrajectory()
 	this->MovingSpeed = this->MovingVelocity.Magnitude();
 
 	// Rotate the selected angle
-	if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
+	if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
 		this->DisperseBurstSubstitution(rotateRadian);
 }
 
@@ -445,10 +445,7 @@ void ParabolaTrajectory::MultiplyBulletVelocity(const double ratio, const bool s
 	}
 
 	// Is it detonating or bouncing?
-	if (shouldDetonate || this->BounceTimes <= 0)
-		this->Status |= TrajectoryStatus::Detonate;
-	else
-		this->Status |= TrajectoryStatus::Bounce;
+	BulletExt::ExtMap.Find(this->Bullet)->Status |= (shouldDetonate || this->BounceTimes <= 0) ? TrajectoryStatus::Detonate : TrajectoryStatus::Bounce;
 }
 
 void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& source, const double gravity)
@@ -470,7 +467,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
 			break;
 
 		// Step 4: Determine the maximum height that the projectile should reach
@@ -503,7 +500,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 4: Check if it is an unsolvable solution
-		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
 			break;
 
 		// Step 5: Recalculate the speed when time is limited
@@ -518,7 +515,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		this->MovingVelocity.Y = destinationCoords.Y / meetTime;
 
 		// Step 7: Calculate whole horizontal component of the projectile velocity
-		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
+		const double horizontalDistance = BulletExt::Get2DDistance(destinationCoords);
 		const double horizontalVelocity = horizontalDistance / meetTime;
 
 		// Step 8: Calculate the vertical component of the projectile velocity
@@ -535,12 +532,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
-		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
-		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
+		const double horizontalDistance = BulletExt::Get2DDistance(destinationCoords);
+		const double mult = horizontalDistance > BulletExt::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate the horizontal component of the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X * mult;
@@ -565,7 +562,7 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
 			break;
 
 		// Step 4: Determine the maximum height that the projectile should reach
@@ -578,10 +575,10 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 
 		// Step 6: Read the appropriate fire angle
 		double radian = pType->LaunchAngle * Math::Pi / 180.0;
-		radian = (radian >= Math::HalfPi || radian <= PhobosTrajectory::Epsilon) ? (Math::HalfPi / 3) : radian;
+		radian = (radian >= Math::HalfPi || radian <= BulletExt::Epsilon) ? (Math::HalfPi / 3) : radian;
 
 		// Step 7: Calculate the ratio of horizontal velocity to horizontal distance
-		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
+		const double horizontalDistance = BulletExt::Get2DDistance(destinationCoords);
 		const double mult = (this->MovingVelocity.Z / Math::tan(radian)) / horizontalDistance;
 
 		// Step 8: Calculate the horizontal component of the projectile velocity
@@ -599,12 +596,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
-		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
-		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
+		const double horizontalDistance = BulletExt::Get2DDistance(destinationCoords);
+		const double mult = horizontalDistance > BulletExt::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate each horizontal component of the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X * mult;
@@ -631,12 +628,12 @@ void ParabolaTrajectory::CalculateBulletVelocityLeadTime(const CoordStruct& sour
 		const auto destinationCoords = pBullet->TargetCoords - source;
 
 		// Step 3: Check if it is an unsolvable solution
-		if (meetTime <= PhobosTrajectory::Epsilon || destinationCoords.Magnitude() <= PhobosTrajectory::Epsilon)
+		if (meetTime <= BulletExt::Epsilon || destinationCoords.Magnitude() <= BulletExt::Epsilon)
 			break;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
-		const double horizontalDistance = PhobosTrajectory::Get2DDistance(destinationCoords);
-		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
+		const double horizontalDistance = BulletExt::Get2DDistance(destinationCoords);
+		const double mult = horizontalDistance > BulletExt::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 5: Calculate the projectile velocity
 		this->MovingVelocity.X = destinationCoords.X * mult;
@@ -661,11 +658,11 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	// Calculate horizontal distance
 	const auto distanceCoords = pBullet->TargetCoords - source;
 	const double distance = distanceCoords.Magnitude();
-	const double horizontalDistance = PhobosTrajectory::Get2DDistance(distanceCoords);
+	const double horizontalDistance = BulletExt::Get2DDistance(distanceCoords);
 
-	if (distance <= PhobosTrajectory::Epsilon)
+	if (distance <= BulletExt::Epsilon)
 	{
-		this->Status |= TrajectoryStatus::Detonate;
+		BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
 		return;
 	}
 
@@ -719,7 +716,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 		this->MovingVelocity.Z = sqrt(2 * gravity * (maxHeight - sourceHeight));
 
 		// Step 3: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > BulletExt::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 4: Calculate the horizontal component of the projectile velocity
 		this->MovingVelocity.X = distanceCoords.X * mult;
@@ -738,7 +735,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 
 		// Step 3: Read the appropriate fire angle
 		double radian = pType->LaunchAngle * Math::Pi / 180.0;
-		radian = (radian >= Math::HalfPi || radian <= PhobosTrajectory::Epsilon) ? (Math::HalfPi / 3) : radian;
+		radian = (radian >= Math::HalfPi || radian <= BulletExt::Epsilon) ? (Math::HalfPi / 3) : radian;
 
 		// Step 4: Calculate the ratio of horizontal velocity to horizontal distance
 		const double mult = (this->MovingVelocity.Z / Math::tan(radian)) / horizontalDistance;
@@ -751,7 +748,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	case ParabolaFireMode::SpeedAndAngle: // Fixed horizontal speed and fixed fire angle
 	{
 		// Step 1: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > BulletExt::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 2: Calculate the horizontal component of the projectile velocity
 		this->MovingVelocity.X = distanceCoords.X * mult;
@@ -768,7 +765,7 @@ void ParabolaTrajectory::CalculateBulletVelocityRightNow(const CoordStruct& sour
 	default: // Fixed horizontal speed and aim at the target
 	{
 		// Step 1: Calculate the ratio of horizontal velocity to horizontal distance
-		const double mult = horizontalDistance > PhobosTrajectory::Epsilon ? pType->Speed / horizontalDistance : 1.0;
+		const double mult = horizontalDistance > BulletExt::Epsilon ? pType->Speed / horizontalDistance : 1.0;
 
 		// Step 2: Calculate the projectile velocity
 		this->MovingVelocity.X = distanceCoords.X * mult;
@@ -786,7 +783,7 @@ double ParabolaTrajectory::SearchVelocity(const double horizontalDistance, int d
 {
 	// Estimate initial velocity
 	const double mult = Math::sin(2 * radian);
-	double velocity = std::abs(mult) > PhobosTrajectory::Epsilon ? sqrt(horizontalDistance * gravity / mult) : 0.0;
+	double velocity = std::abs(mult) > BulletExt::Epsilon ? sqrt(horizontalDistance * gravity / mult) : 0.0;
 	velocity += distanceCoordsZ / gravity;
 	velocity = velocity > 8.0 ? velocity : 8.0;
 	const double error = velocity / 16;
@@ -799,7 +796,7 @@ double ParabolaTrajectory::SearchVelocity(const double horizontalDistance, int d
 		const double dDifferential = (this->CheckVelocityEquation(horizontalDistance, distanceCoordsZ, (velocity + ParabolaTrajectory::Delta), radian, gravity) - differential) / ParabolaTrajectory::Delta;
 
 		// Check unacceptable divisor
-		if (std::abs(dDifferential) < PhobosTrajectory::Epsilon)
+		if (std::abs(dDifferential) < BulletExt::Epsilon)
 			return velocity;
 
 		// Calculate the speed of the next iteration
@@ -854,7 +851,7 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	const double speedSq = horizontalSpeed * horizontalSpeed;
 	const double divisor = targetSpeedSq - speedSq;
 	const double factor = targetSpeedCrd * destinationCrd;
-	const double cosTheta = factor / (sqrt(targetSpeedSq * destinationSq) + PhobosTrajectory::Epsilon);
+	const double cosTheta = factor / (sqrt(targetSpeedSq * destinationSq) + BulletExt::Epsilon);
 
 	// The target speed is too fast
 	if (speedSq < (1.0 + 0.2 * Math::max(0.0, -cosTheta)) * targetSpeedSq)
@@ -864,8 +861,8 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	const double delta = factor * factor - divisor * destinationSq;
 
 	// Check if there is no solution
-	if (delta < PhobosTrajectory::Epsilon)
-		return (delta >= -PhobosTrajectory::Epsilon) ? (-factor / divisor) + (factor > 0 ? 1.0 : 0) : -1.0;
+	if (delta < BulletExt::Epsilon)
+		return (delta >= -BulletExt::Epsilon) ? (-factor / divisor) + (factor > 0 ? 1.0 : 0) : -1.0;
 
 	// Quadratic formula
 	const double sqrtDelta = sqrt(delta);
@@ -873,9 +870,9 @@ double ParabolaTrajectory::SolveFixedSpeedMeetTime(const CoordStruct& source, co
 	const double timeM = (-factor - sqrtDelta) / divisor;
 
 	// When the target is moving away, provide an additional frame of correction
-	if (timeM > PhobosTrajectory::Epsilon)
-		return ((timeP > PhobosTrajectory::Epsilon) ? Math::min(timeM, timeP) : timeM) + (factor > 0 ? 1.0 : 0);
-	else if (timeP > PhobosTrajectory::Epsilon)
+	if (timeM > BulletExt::Epsilon)
+		return ((timeP > BulletExt::Epsilon) ? Math::min(timeM, timeP) : timeM) + (factor > 0 ? 1.0 : 0);
+	else if (timeP > BulletExt::Epsilon)
 		return timeP + (factor > 0 ? 1.0 : 0);
 
 	// Unsolvable
@@ -892,7 +889,7 @@ double ParabolaTrajectory::SearchFixedHeightMeetTime(const CoordStruct& source, 
 		const double differential = this->CheckFixedHeightEquation(source, target, offset, meetTime, gravity);
 		const double dDifferential = (this->CheckFixedHeightEquation(source, target, offset, (meetTime + ParabolaTrajectory::Delta), gravity) - differential) / ParabolaTrajectory::Delta;
 
-		if (std::abs(dDifferential) < PhobosTrajectory::Epsilon)
+		if (std::abs(dDifferential) < BulletExt::Epsilon)
 			return meetTime;
 
 		const double difference = differential / dDifferential;
@@ -929,7 +926,7 @@ double ParabolaTrajectory::SearchFixedAngleMeetTime(const CoordStruct& source, c
 		const double differential = this->CheckFixedAngleEquation(source, target, offset, meetTime, radian, gravity);
 		const double dDifferential = (this->CheckFixedAngleEquation(source, target, offset, (meetTime + ParabolaTrajectory::Delta), radian, gravity) - differential) / ParabolaTrajectory::Delta;
 
-		if (std::abs(dDifferential) < PhobosTrajectory::Epsilon)
+		if (std::abs(dDifferential) < BulletExt::Epsilon)
 			return meetTime;
 
 		const double difference = differential / dDifferential;
@@ -950,7 +947,7 @@ double ParabolaTrajectory::CheckFixedAngleEquation(const CoordStruct& source, co
 	const auto distanceCoords = (target - this->LastTargetCoord) * meetTime + target + offset - source;
 
 	// Calculate the horizontal distance between the target and the calculation
-	const double horizontalDistance = PhobosTrajectory::Get2DDistance(distanceCoords);
+	const double horizontalDistance = BulletExt::Get2DDistance(distanceCoords);
 
 	// Calculate the horizontal velocity
 	const double horizontalVelocity = horizontalDistance / meetTime;
@@ -982,8 +979,9 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 
 	// Check can truely bounce on techno
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	const auto pFirer = pBullet->Owner;
-	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	const auto pOwner = pFirer ? pFirer->Owner : pBulletExt->FirerHouse;
 
 	// Require all technos on the cell to meet the conditions
 	if ((pType->BounceOnTarget & AffectedTarget::AllContents) || pType->BounceOnHouses != AffectedHouse::All)
@@ -1004,7 +1002,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 	const auto groundNormalVector = this->GetGroundNormalVector(pCell, position);
 
 	// Bounce only occurs when the velocity is in different directions or the surface is not cliff
-	if (this->LastVelocity * groundNormalVector > 0 && std::abs(groundNormalVector.Z) < PhobosTrajectory::Epsilon)
+	if (this->LastVelocity * groundNormalVector > 0 && std::abs(groundNormalVector.Z) < BulletExt::Epsilon)
 	{
 		// Restore original velocity
 		this->MovingVelocity = this->LastVelocity;
@@ -1014,7 +1012,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 
 	// Record bouncing once
 	--this->BounceTimes;
-	this->Status &= ~TrajectoryStatus::Bounce;
+	pBulletExt->Status &= ~TrajectoryStatus::Bounce;
 
 	// Calculate the velocity vector after bouncing
 	this->MovingVelocity = (this->LastVelocity - groundNormalVector * (this->LastVelocity * groundNormalVector) * 2) * pType->BounceCoefficient;
@@ -1025,7 +1023,7 @@ bool ParabolaTrajectory::CalculateBulletVelocityAfterBounce(CellClass* const pCe
 		WarheadTypeExt::DetonateAt(pBullet->WH, position, pFirer, pBullet->Health, pOwner);
 
 	// Calculate the attenuation damage after bouncing
-	PhobosTrajectory::SetNewDamage(pBullet->Health, pType->BounceAttenuation);
+	BulletExt::SetNewDamage(pBullet->Health, pType->BounceAttenuation);
 	return false;
 }
 
@@ -1086,8 +1084,8 @@ BulletVelocity ParabolaTrajectory::GetGroundNormalVector(CellClass* const pCell,
 	}
 
 	constexpr double diagonalLeptonsPerCell = Unsorted::LeptonsPerCell * ParabolaTrajectory::SqrtConstexpr(2);
-	const double horizontalVelocity = PhobosTrajectory::Get2DVelocity(this->LastVelocity);
-	const auto velocity = PhobosTrajectory::Vector2Coord(horizontalVelocity > diagonalLeptonsPerCell ? this->LastVelocity * (diagonalLeptonsPerCell / horizontalVelocity) : this->LastVelocity);
+	const double horizontalVelocity = BulletExt::Get2DVelocity(this->LastVelocity);
+	const auto velocity = BulletExt::Vector2Coord(horizontalVelocity > diagonalLeptonsPerCell ? this->LastVelocity * (diagonalLeptonsPerCell / horizontalVelocity) : this->LastVelocity);
 	const int cellHeight = pCell->Level * Unsorted::LevelHeight;
 	const int bulletHeight = position.Z;
 	const int lastCellHeight = MapClass::Instance.GetCellFloorHeight(position - velocity);

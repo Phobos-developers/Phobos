@@ -2,6 +2,8 @@
 
 #include "PhobosTrajectory.h"
 
+#include <Ext/Bullet/Body.h>
+
 /*
 	Base class: Actual Trajectory
 
@@ -87,7 +89,7 @@ public:
 			pBullet->Range -= Game::F2I(this->MovingSpeed);
 
 			if (pBullet->Range <= 0)
-				this->Status |= TrajectoryStatus::Detonate;
+				BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
 		}
 	}
 	inline double GetLeadTime(const double defaultTime)

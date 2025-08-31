@@ -77,12 +77,14 @@ void ActualTrajectory::OnUnlimbo()
 	this->PhobosTrajectory::OnUnlimbo();
 
 	// Actual
-	const auto pType = this->GetType();
-	this->LastTargetCoord = this->Bullet->TargetCoords;
+	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+	const auto pBulletTypeExt = pBulletExt->TypeExtData;
+	this->LastTargetCoord = pBullet->TargetCoords;
 
 	// Survival time
-	if (pType->Duration > 0)
-		this->DurationTimer.Start(pType->Duration);
+	if (pBulletTypeExt->LifeDuration > 0)
+		pBulletExt->LifeDurationTimer.Start(pBulletTypeExt->LifeDuration);
 }
 
 bool ActualTrajectory::OnEarlyUpdate()
@@ -160,7 +162,7 @@ CoordStruct ActualTrajectory::GetOnlyStableOffsetCoords(const double rotateRadia
 		offsetCoord.Y = -offsetCoord.Y;
 
 	// Rotate the angle and return
-	return PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(offsetCoord, rotateRadian));
+	return BulletExt::Vector2Coord(BulletExt::HorizontalRotate(offsetCoord, rotateRadian));
 }
 
 CoordStruct ActualTrajectory::GetInaccurateTargetCoords(const CoordStruct& baseCoord, const double distance)
@@ -185,7 +187,7 @@ void ActualTrajectory::DisperseBurstSubstitution(const double baseRadian)
 	const auto axis = pType->AxisOfRotation.Get();
 
 	// Calculate the actual rotation axis
-	auto rotationAxis = PhobosTrajectory::HorizontalRotate(axis, baseRadian);
+	auto rotationAxis = BulletExt::HorizontalRotate(axis, baseRadian);
 	double extraRotate = 0.0;
 	const int burst = (this->CurrentBurst < 0) ? (-this->CurrentBurst - 1) : this->CurrentBurst;
 

@@ -1,4 +1,4 @@
-#include "PhobosTrajectory.h"
+#include "Body.h"
 
 #include <AircraftTrackerClass.h>
 
@@ -7,10 +7,10 @@
 #include <Ext/Techno/Body.h>
 #include <Utilities/EnumFunctions.h>
 
-bool PhobosTrajectory::BulletRetargetTechno()
+bool BulletExt::ExtData::BulletRetargetTechno()
 {
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
 	bool check = false;
 
 	// Will only attempt to search for a new target when the original target is a techno, in order to adapt to thermal decoys
@@ -21,7 +21,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 		if (!pTarget)
 			check = true;
 		else if (const auto pTargetTechno = abstract_cast<TechnoClass*, true>(pTarget))
-			check = PhobosTrajectory::CheckTechnoIsInvalid(pTargetTechno);
+			check = BulletExt::CheckTechnoIsInvalid(pTargetTechno);
 	}
 
 	// It has not lost its target
@@ -29,7 +29,7 @@ bool PhobosTrajectory::BulletRetargetTechno()
 		return false;
 
 	// Check whether need to detonate directly after the target was lost
-	if (!pType->NoTargetLifetime || pType->RetargetRadius < 0)
+	if (!pType->NoTargetLifeTime || pType->RetargetRadius < 0)
 		return true;
 
 	// Check the timer
@@ -49,7 +49,8 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	}
 
 	// The central location and radius for searching for enemies
-	const auto retargetCoords = this->GetRetargetCenter();
+	const auto pTraj = this->Trajectory.get();
+	const auto retargetCoords = pTraj ? pTraj->GetRetargetCenter() : pBullet->TargetCoords;
 	const double retargetRange = pType->RetargetRadius * Unsorted::LeptonsPerCell;
 	const auto pWeapon = pBullet->WeaponType;
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.TryFind(pWeapon);
@@ -69,11 +70,11 @@ bool PhobosTrajectory::BulletRetargetTechno()
 					const auto pTechno = abstract_cast<TechnoClass*, true>(pObject);
 
 					if (pTechno
-						&& !PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
+						&& !BulletExt::CheckTechnoIsInvalid(pTechno)
 						&& (pTechno->WhatAmI() != AbstractType::Building || !static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame)
-						&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
+						&& BulletExt::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
 					{
-						this->SetBulletNewTarget(pTechno);
+						pBullet->SetTarget(pTechno);
 						return false;
 					}
 				}
@@ -88,10 +89,10 @@ bool PhobosTrajectory::BulletRetargetTechno()
 
 		for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 		{
-			if (!PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
-				&& PhobosTrajectory::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
+			if (!BulletExt::CheckTechnoIsInvalid(pTechno)
+				&& BulletExt::CheckCanRetarget(pTechno, pOwner, pType->RetargetHouses, retargetCoords, retargetRange, range, pBullet, pWeapon, pWeaponExt, pFirer))
 			{
-				this->SetBulletNewTarget(pTechno);
+				pBullet->SetTarget(pTechno);
 				return false;
 			}
 		}
@@ -102,9 +103,9 @@ bool PhobosTrajectory::BulletRetargetTechno()
 	return false;
 }
 
-void PhobosTrajectory::GetTechnoFLHCoord()
+void BulletExt::ExtData::GetTechnoFLHCoord()
 {
-	const auto pBullet = this->Bullet;
+	const auto pBullet = this->OwnerObject();
 	const auto pTechno = pBullet->Owner;
 	const auto pExt = TechnoExt::ExtMap.TryFind(pTechno);
 
@@ -115,17 +116,18 @@ void PhobosTrajectory::GetTechnoFLHCoord()
 		this->FLHCoord = pExt->LastWeaponFLH;
 }
 
-CoordStruct PhobosTrajectory::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
+CoordStruct BulletExt::ExtData::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
 {
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
-	const auto flag = this->Flag();
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
+	const auto pTraj = this->Trajectory.get();
+	const auto flag = pTraj ? pTraj->Flag() : TrajectoryFlag::Invalid;
 
 	// Fire from the original firer's position
 	if (pType->DisperseFromFirer.Get(flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing))
 	{
 		// Find the outermost transporter
-		pTechno = this->GetSurfaceFirer(pTechno);
+		pTechno = BulletExt::GetSurfaceFirer(pTechno);
 
 		if (!this->NotMainWeapon && pTechno && !pTechno->InLimbo)
 			return TechnoExt::GetFLHAbsoluteCoords(pTechno, this->FLHCoord, pTechno->HasTurret());
@@ -140,14 +142,14 @@ CoordStruct PhobosTrajectory::GetDisperseWeaponFireCoord(TechnoClass* pTechno)
 		return pBullet->Location;
 
 	const double rotateRadian = Math::atan2(pBullet->TargetCoords.Y - pBullet->Location.Y , pBullet->TargetCoords.X - pBullet->Location.X);
-	const auto fireOffsetCoord = PhobosTrajectory::Vector2Coord(PhobosTrajectory::HorizontalRotate(weaponCoord, rotateRadian));
+	const auto fireOffsetCoord = BulletExt::Vector2Coord(BulletExt::HorizontalRotate(weaponCoord, rotateRadian));
 	return pBullet->Location + fireOffsetCoord;
 }
 
-bool PhobosTrajectory::PrepareDisperseWeapon()
+bool BulletExt::ExtData::PrepareDisperseWeapon()
 {
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
 
 	if (!this->DisperseCycle)
 		return pType->DisperseSuicide;
@@ -207,10 +209,10 @@ bool PhobosTrajectory::PrepareDisperseWeapon()
 	return pType->DisperseSuicide;
 }
 
-bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner)
+bool BulletExt::ExtData::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct& sourceCoord, HouseClass* pOwner)
 {
-	const auto pBullet = this->Bullet;
-	const auto pType = this->GetType();
+	const auto pBullet = this->OwnerObject();
+	const auto pType = this->TypeExtData;
 
 	// Launch quantity check
 	const int validWeapons = pType->DisperseWeapons.size();
@@ -267,7 +269,8 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 			continue;
 
 		// Only attack the bullet itself
-		const auto flag = this->Flag();
+		const auto pTraj = this->Trajectory.get();
+		const auto flag = pTraj ? pTraj->Flag() : TrajectoryFlag::Invalid;
 
 		if (pType->DisperseFromFirer.Get(flag == TrajectoryFlag::Engrave || flag == TrajectoryFlag::Tracing))
 		{
@@ -365,12 +368,12 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 									validObjects.push_back(pObject);
 							}
 						}
-						else if (checkTechnos && !PhobosTrajectory::CheckTechnoIsInvalid(pTechno))
+						else if (checkTechnos && !BulletExt::CheckTechnoIsInvalid(pTechno))
 						{
 							const bool isBuilding = pTechno->WhatAmI() == AbstractType::Building;
 
 							if ((!isBuilding || (!static_cast<BuildingClass*>(pTechno)->Type->InvisibleInGame && !inserted.contains(pTechno)))
-								&& PhobosTrajectory::CheckCanDisperse(pTechno, pOwner, pType, centerCoords, pCell, pWeapon->Range, pTarget, pWeapon, pWeaponExt, pFirer))
+								&& BulletExt::CheckCanDisperse(pTechno, pOwner, pType, centerCoords, pCell, pWeapon->Range, pTarget, pWeapon, pWeaponExt, pFirer))
 							{
 								validTechnos.push_back(pTechno);
 
@@ -394,8 +397,8 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 
 				for (auto pTechno = airTracker->Get(); pTechno; pTechno = airTracker->Get())
 				{
-					if (!PhobosTrajectory::CheckTechnoIsInvalid(pTechno)
-						&& PhobosTrajectory::CheckCanDisperse(pTechno, pOwner, pType, centerCoords, pTechno->GetCell(), range, pTarget, pWeapon, pWeaponExt, pFirer))
+					if (!BulletExt::CheckTechnoIsInvalid(pTechno)
+						&& BulletExt::CheckCanDisperse(pTechno, pOwner, pType, centerCoords, pTechno->GetCell(), range, pTarget, pWeapon, pWeaponExt, pFirer))
 					{
 						validTechnos.push_back(pTechno);
 					}
@@ -507,7 +510,7 @@ bool PhobosTrajectory::FireDisperseWeapon(TechnoClass* pFirer, const CoordStruct
 }
 
 // Simulate the launch of weapons with burst.
-void PhobosTrajectory::CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst)
+void BulletExt::ExtData::CreateDisperseBullets(TechnoClass* pTechno, const CoordStruct& sourceCoord, WeaponTypeClass* pWeapon, AbstractClass* pTarget, HouseClass* pOwner, int curBurst, int maxBurst)
 {
 	const auto finalDamage = static_cast<int>(pWeapon->Damage * this->FirepowerMult);
 
@@ -515,26 +518,23 @@ void PhobosTrajectory::CreateDisperseBullets(TechnoClass* pTechno, const CoordSt
 	{
 		const auto pExt = BulletExt::ExtMap.Find(pBullet);
 
-		if (pExt->TypeExtData->TrajectoryType)
-			pExt->DispersedTrajectory = true;
-
 		// Record basic information
+		pExt->DispersedTrajectory = true;
 		BulletExt::SimulatedFiringUnlimbo(pBullet, pOwner, pWeapon, sourceCoord, false);
+		pExt->DispersedTrajectory = false;
 
 		// Record additional content for trajectory
+		pExt->FirepowerMult = this->FirepowerMult;
+		pExt->NotMainWeapon = !pExt->TypeExtData->UseDisperseCoord || !pTechno || this->NotMainWeapon;
+
+		if (!pExt->NotMainWeapon)
+			pExt->FLHCoord = this->FLHCoord;
+
+		// Calculate TargetCoords before drawing laser, ebolt, etc
 		if (const auto pTraj = pExt->Trajectory.get())
 		{
-			pTraj->CurrentBurst = (this->CurrentBurst < 0) ? (-curBurst - 1) : curBurst;
+			pTraj->CurrentBurst = (this->Trajectory && this->Trajectory->CurrentBurst < 0) ? (-curBurst - 1) : curBurst;
 			pTraj->CountOfBurst = maxBurst;
-			pTraj->FirepowerMult = this->FirepowerMult;
-			pTraj->NotMainWeapon = !pTraj->GetType()->UseDisperseCoord || !pTechno || this->NotMainWeapon;
-
-			if (!pTraj->NotMainWeapon)
-				pTraj->FLHCoord = this->FLHCoord;
-
-			pExt->DispersedTrajectory = false;
-
-			// Calculate TargetCoords before drawing laser, ebolt, etc
 			pTraj->OpenFire();
 		}
 
@@ -543,7 +543,7 @@ void PhobosTrajectory::CreateDisperseBullets(TechnoClass* pTechno, const CoordSt
 
 		if (pTarget->WhatAmI() == AbstractType::Bullet)
 		{
-			if (const auto pTypeExt = BulletExt::ExtMap.Find(this->Bullet)->InterceptorTechnoType)
+			if (const auto pTypeExt = BulletExt::ExtMap.Find(this->OwnerObject())->InterceptorTechnoType)
 			{
 				pExt->InterceptorTechnoType = pTypeExt;
 				pExt->InterceptedStatus |= InterceptedStatus::Targeted;

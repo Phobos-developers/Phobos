@@ -20,11 +20,8 @@ DEFINE_HOOK(0x4690D4, BulletClass_Logics_NewChecks, 0x6)
 	GET(WarheadTypeClass*, pWarhead, EAX);
 	GET_BASE(CoordStruct const* const, pCoords, 0x8);
 
-	if (const auto pTraj = BulletExt::ExtMap.Find(pThis)->Trajectory.get())
-	{
-		if (pTraj->Status & TrajectoryStatus::Vanish)
-			return GoToExtras;
-	}
+	if (BulletExt::ExtMap.Find(pThis)->Status & TrajectoryStatus::Vanish)
+		return GoToExtras;
 
 	auto const pExt = WarheadTypeExt::ExtMap.Find(pWarhead);
 

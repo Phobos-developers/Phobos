@@ -116,7 +116,7 @@ void BombardTrajectory::OnUnlimbo()
 	this->InitialTargetCoord = pBullet->TargetCoords;
 
 	// Special case: Set the target to the ground
-	if (this->Type->DetonationDistance.Get() <= -PhobosTrajectory::Epsilon)
+	if (this->Type->DetonationDistance.Get() <= -BulletExt::Epsilon)
 	{
 		const auto pTarget = pBullet->Target;
 
@@ -193,17 +193,18 @@ void BombardTrajectory::FireTrajectory()
 	{
 		const auto middleLocation = this->CalculateMiddleCoords();
 		this->RemainingDistance += static_cast<int>(middleLocation.DistanceFrom(pBullet->SourceCoords));
-		this->MovingVelocity = PhobosTrajectory::Coord2Vector(middleLocation - pBullet->SourceCoords);
+		this->MovingVelocity = BulletExt::Coord2Vector(middleLocation - pBullet->SourceCoords);
 
 		if (this->CalculateBulletVelocity(pType->Speed))
-			this->Status |= TrajectoryStatus::Detonate;
+			BulletExt::ExtMap.Find(pBullet)->Status |= TrajectoryStatus::Detonate;
 
 		// Rotate the selected angle
-		if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
+		if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
 			this->DisperseBurstSubstitution(this->RotateRadian);
 	}
 	else
 	{
+		const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 		this->ToFalling = true;
 		this->IsFalling = true;
 		auto middleLocation = CoordStruct::Empty;
@@ -213,13 +214,13 @@ void BombardTrajectory::FireTrajectory()
 			middleLocation = this->CalculateMiddleCoords();
 			const double fallSpeed = pType->FallSpeed.Get(pType->Speed);
 			this->RemainingDistance += static_cast<int>(pBullet->TargetCoords.DistanceFrom(middleLocation));
-			this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - middleLocation);
+			this->MovingVelocity = BulletExt::Coord2Vector(pBullet->TargetCoords - middleLocation);
 
 			if (this->CalculateBulletVelocity(fallSpeed))
-				this->Status |= TrajectoryStatus::Detonate;
+				pBulletExt->Status |= TrajectoryStatus::Detonate;
 
 			// Rotate the selected angle
-			if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
+			if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
 				this->DisperseBurstSubstitution(this->RotateRadian);
 		}
 		else
@@ -228,18 +229,16 @@ void BombardTrajectory::FireTrajectory()
 			this->RemainingDistance += (middleLocation.Z - pBullet->TargetCoords.Z);
 		}
 
-		const auto pExt = BulletExt::ExtMap.Find(pBullet);
-
-		if (pExt->LaserTrails.size())
+		if (pBulletExt->LaserTrails.size())
 		{
-			for (const auto& pTrail : pExt->LaserTrails)
+			for (const auto& pTrail : pBulletExt->LaserTrails)
 				pTrail->LastLocation = middleLocation;
 		}
 		this->RefreshBulletLineTrail();
 
 		pBullet->SetLocation(middleLocation);
 		const auto pTechno = pBullet->Owner;
-		const auto pOwner = pTechno ? pTechno->Owner : pExt->FirerHouse;
+		const auto pOwner = pTechno ? pTechno->Owner : pBulletExt->FirerHouse;
 		AnimExt::CreateRandomAnim(pType->TurningPointAnims, middleLocation, pTechno, pOwner, true);
 	}
 }
@@ -247,7 +246,7 @@ void BombardTrajectory::FireTrajectory()
 void BombardTrajectory::SetBulletNewTarget(AbstractClass* const pTarget)
 {
 	const auto pBullet = this->Bullet;
-	pBullet->SetTarget(pTarget);
+	pBullet->Target = pTarget;
 	pBullet->TargetCoords = pTarget->GetCoords();
 
 	if (this->Type->LeadTimeCalculate.Get(false) && !this->IsFalling)
@@ -261,7 +260,7 @@ void BombardTrajectory::MultiplyBulletVelocity(const double ratio, const bool sh
 
 	// Only be truly detonated during the descent phase
 	if (shouldDetonate && this->IsFalling)
-		this->Status |= TrajectoryStatus::Detonate;
+		BulletExt::ExtMap.Find(this->Bullet)->Status |= TrajectoryStatus::Detonate;
 }
 
 CoordStruct BombardTrajectory::CalculateMiddleCoords()
@@ -312,7 +311,7 @@ void BombardTrajectory::CalculateTargetCoords()
 		target += this->CalculateBulletLeadTime();
 
 	// Calculate the orientation of the coordinate system
-	this->RotateRadian = this->Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
+	this->RotateRadian = BulletExt::Get2DOpRadian(((target == source && pBullet->Owner) ? pBullet->Owner->GetCoords() : source), target);
 
 	// Add the fixed offset value
 	if (pType->OffsetCoord != CoordStruct::Empty)
@@ -359,7 +358,7 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const double fallSpeed = pType->FallSpeed.Get(pType->Speed);
 
 				// Calculate using vertical distance
-				if (horizonDistance < PhobosTrajectory::Epsilon)
+				if (horizonDistance < BulletExt::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(std::round(sqrt(verticalDistanceSquared) / fallSpeed));
 
 				const double targetSpeed = sqrt(targetSpeedSquared);
@@ -370,13 +369,13 @@ CoordStruct BombardTrajectory::CalculateBulletLeadTime()
 				const int extraTime = distanceSquared >= lastSourceCoord.MagnitudeSquared() ? 2 : 1;
 
 				// Linear equation solving
-				if (std::abs(baseFactor) < PhobosTrajectory::Epsilon)
+				if (std::abs(baseFactor) < BulletExt::Epsilon)
 					return extraOffsetCoord * this->GetLeadTime(static_cast<int>(distanceSquared / (2 * horizonDistance * targetSpeed)) + extraTime);
 
 				const double squareFactor = baseFactor * verticalDistanceSquared + straightSpeedSquared * horizonDistanceSquared;
 
 				// Is there a solution?
-				if (squareFactor > PhobosTrajectory::Epsilon)
+				if (squareFactor > BulletExt::Epsilon)
 				{
 					const double minusFactor = -(horizonDistance * targetSpeed);
 					const double factor = sqrt(squareFactor);
@@ -415,13 +414,13 @@ bool BombardTrajectory::BulletVelocityChange()
 
 				middleLocation = pBullet->Location;
 				const double fallSpeed = pType->FallSpeed.Get(pType->Speed);
-				this->MovingVelocity = PhobosTrajectory::Coord2Vector(pBullet->TargetCoords - middleLocation);
+				this->MovingVelocity = BulletExt::Coord2Vector(pBullet->TargetCoords - middleLocation);
 
 				if (this->CalculateBulletVelocity(fallSpeed))
 					return true;
 
 				// Rotate the selected angle
-				if (std::abs(pType->RotateCoord) > PhobosTrajectory::Epsilon && this->CountOfBurst > 1)
+				if (std::abs(pType->RotateCoord) > BulletExt::Epsilon && this->CountOfBurst > 1)
 					this->DisperseBurstSubstitution(this->RotateRadian);
 
 				this->RemainingDistance += static_cast<int>(pBullet->TargetCoords.DistanceFrom(middleLocation));
@@ -440,18 +439,18 @@ bool BombardTrajectory::BulletVelocityChange()
 				this->RemainingDistance += pBullet->Location.Z - MapClass::Instance.GetCellFloorHeight(middleLocation);
 			}
 
-			const auto pExt = BulletExt::ExtMap.Find(pBullet);
+			const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
-			if (pExt->LaserTrails.size())
+			if (pBulletExt->LaserTrails.size())
 			{
-				for (const auto& pTrail : pExt->LaserTrails)
+				for (const auto& pTrail : pBulletExt->LaserTrails)
 					pTrail->LastLocation = middleLocation;
 			}
 			this->RefreshBulletLineTrail();
 
 			pBullet->SetLocation(middleLocation);
 			const auto pTechno = pBullet->Owner;
-			const auto pOwner = pTechno ? pTechno->Owner : pExt->FirerHouse;
+			const auto pOwner = pTechno ? pTechno->Owner : pBulletExt->FirerHouse;
 			AnimExt::CreateRandomAnim(pType->TurningPointAnims, middleLocation, pTechno, pOwner, true);
 		}
 		else if (this->RemainingDistance < this->MovingSpeed)

@@ -75,7 +75,7 @@ void VirtualTrajectory::OnUnlimbo()
 		this->LaserTimer.Start(pWeapon->LaserDuration);
 
 	// Find the outermost transporter
-	if (const auto pFirer = this->GetSurfaceFirer(this->Bullet->Owner))
+	if (const auto pFirer = BulletExt::GetSurfaceFirer(this->Bullet->Owner))
 		this->SurfaceFirerID = pFirer->UniqueID;
 
 	// Waiting for launch trigger
@@ -85,7 +85,10 @@ void VirtualTrajectory::OnUnlimbo()
 
 bool VirtualTrajectory::OnEarlyUpdate()
 {
-	if (!this->NotMainWeapon && this->InvalidFireCondition(this->Bullet->Owner))
+	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
+
+	if (!pBulletExt->NotMainWeapon && this->InvalidFireCondition(pBullet->Owner))
 		return true;
 
 	// Check whether need to detonate first
@@ -93,7 +96,7 @@ bool VirtualTrajectory::OnEarlyUpdate()
 		return true;
 
 	// In the phase of playing PreImpactAnim
-	if (this->Bullet->SpawnNextAnim)
+	if (pBullet->SpawnNextAnim)
 		return false;
 
 	// Draw laser
@@ -123,7 +126,7 @@ bool VirtualTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 		return true;
 
 	// Find the outermost transporter
-	pTechno = this->GetSurfaceFirer(pTechno);
+	pTechno = BulletExt::GetSurfaceFirer(pTechno);
 
 	if (!TechnoExt::IsActive(pTechno) || this->SurfaceFirerID != pTechno->UniqueID)
 		return true;
@@ -131,7 +134,7 @@ bool VirtualTrajectory::InvalidFireCondition(TechnoClass* pTechno)
 	if (static_cast<const VirtualTrajectoryType*>(this->GetType())->AllowFirerTurning)
 		return false;
 
-	const auto tgtDir = DirStruct(-PhobosTrajectory::Get2DOpRadian(pTechno->GetCoords(), this->Bullet->TargetCoords));
+	const auto tgtDir = DirStruct(-BulletExt::Get2DOpRadian(pTechno->GetCoords(), this->Bullet->TargetCoords));
 	const auto& face = pTechno->HasTurret() && pTechno->WhatAmI() == AbstractType::Unit ? pTechno->SecondaryFacing : pTechno->PrimaryFacing;
 	const auto curDir = face.Current();
 
@@ -148,16 +151,17 @@ void VirtualTrajectory::DrawTrackingLaser()
 		return;
 
 	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 	auto pFirer = pBullet->Owner;
-	const auto pOwner = pFirer ? pFirer->Owner : BulletExt::ExtMap.Find(pBullet)->FirerHouse;
+	const auto pOwner = pFirer ? pFirer->Owner : pBulletExt->FirerHouse;
 	auto fireCoord = pBullet->SourceCoords;
 
 	// Find the outermost transporter
-	pFirer = this->GetSurfaceFirer(pFirer);
+	pFirer = BulletExt::GetSurfaceFirer(pFirer);
 
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
-	if (!this->NotMainWeapon && pFirer && !pFirer->InLimbo)
-		fireCoord = TechnoExt::GetFLHAbsoluteCoords(pFirer, this->FLHCoord, pFirer->HasTurret());
+	if (!pBulletExt->NotMainWeapon && pFirer && !pFirer->InLimbo)
+		fireCoord = TechnoExt::GetFLHAbsoluteCoords(pFirer, pBulletExt->FLHCoord, pFirer->HasTurret());
 
 	// Draw laser from head to tail
 	if (pWeapon->IsHouseColor || pWeaponExt->Laser_IsSingleColor)
@@ -196,13 +200,14 @@ void VirtualTrajectory::UpdateTrackingLaser()
 	}
 
 	const auto pBullet = this->Bullet;
+	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 	// Find the outermost transporter
-	const auto pFirer = this->GetSurfaceFirer(pBullet->Owner);
+	const auto pFirer = BulletExt::GetSurfaceFirer(pBullet->Owner);
 
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
-	if (!this->NotMainWeapon && pFirer && !pFirer->InLimbo)
-		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, this->FLHCoord, pFirer->HasTurret());
+	if (!pBulletExt->NotMainWeapon && pFirer && !pFirer->InLimbo)
+		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, pBulletExt->FLHCoord, pFirer->HasTurret());
 
 	pLaser->Target = pBullet->Location;
 }
