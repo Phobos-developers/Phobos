@@ -179,20 +179,19 @@ PrioritySelectionFiltering=true  ; boolean
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
+PlacementPreview=no                     ; boolean
+PlacementPreview.Translucency=75        ; translucency level (0/25/50/75)
 PlacementGrid.Translucency=0            ; translucency level (0/25/50/75)
 PlacementGrid.TranslucencyWithPreview=  ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementGrid.Translucency
 
-PlacementPreview=no                  ; boolean
-PlacementPreview.Translucency=75     ; translucency level (0/25/50/75)
-
-[SOMEBUILDING]                       ; BuildingType
-PlacementPreview=yes                 ; boolean
-PlacementPreview.Shape=              ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
-PlacementPreview.ShapeFrame=         ; integer, zero-based frame index used for displaying the preview
-PlacementPreview.Offset=0,-15,1      ; integer, expressed in X,Y,Z used to alter position preview
-PlacementPreview.Remap=yes           ; boolean, does this preview use player remap colors
-PlacementPreview.Palette=            ; filename - including the .pal extension
-PlacementPreview.Translucency=       ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementPreview.Translucency
+[SOMEBUILDING]                          ; BuildingType
+PlacementPreview=yes                    ; boolean
+PlacementPreview.Shape=                 ; filename - including the .shp extension. If not set uses building's artmd.ini Buildup SHP (based on Building's Image)
+PlacementPreview.ShapeFrame=            ; integer, zero-based frame index used for displaying the preview
+PlacementPreview.Offset=0,-15,1         ; integer, expressed in X,Y,Z used to alter position preview
+PlacementPreview.Remap=yes              ; boolean, does this preview use player remap colors
+PlacementPreview.Palette=               ; filename - including the .pal extension
+PlacementPreview.Translucency=          ; translucency level (0/25/50/75), defaults to [AudioVisual] -> PlacementPreview.Translucency
 ```
 
 ```{note}
