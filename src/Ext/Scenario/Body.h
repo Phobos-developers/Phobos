@@ -58,8 +58,12 @@ public:
 		PhobosPCXFile DropshipLoadout_UpArrowPCX;
 		PhobosPCXFile DropshipLoadout_DownArrowPCX;
 		std::vector<PhobosPCXFile> DropshipLoadout_LoadoutPCX;
+		Point2D DropshipLoadout_LoadoutLocation;
 		std::vector<PhobosPCXFile> DropshipLoadout_PilotLitPCX;
+		Point2D DropshipLoadout_PilotLitLocation;
 		std::vector<std::unique_ptr<std::vector<PhobosPCXFile>>> DropshipLoadout_DGreenListPCX;
+		int DropshipLoadout_DGreenAnimationsCount;
+		std::vector<Point2D> DropshipLoadout_DGreenLocations;
 		Point2D DropshipLoadout_UpArrowLocation;
 		Point2D DropshipLoadout_DownArrowLocation;
 		int DropshipLoadout_SidebarCameosCount;
@@ -93,8 +97,12 @@ public:
 			, DropshipLoadout_UpArrowPCX {}
 			, DropshipLoadout_DownArrowPCX {}
 			, DropshipLoadout_LoadoutPCX {}
+			, DropshipLoadout_LoadoutLocation {}
 			, DropshipLoadout_PilotLitPCX {}
+			, DropshipLoadout_PilotLitLocation {}
 			, DropshipLoadout_DGreenListPCX {}
+			, DropshipLoadout_DGreenAnimationsCount { 0 }
+			, DropshipLoadout_DGreenLocations {}
 			, DropshipLoadout_UpArrowLocation { Point2D::Empty }
 			, DropshipLoadout_DownArrowLocation { Point2D::Empty }
 			, DropshipLoadout_SidebarCameosCount { 0 }

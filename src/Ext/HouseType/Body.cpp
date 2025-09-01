@@ -28,7 +28,9 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DropshipLoadout_AllowableUnits.Read(exINI, pSection, "DropshipLoadout.AllowableUnits");
 	this->DropshipLoadout_AllowableUnitMaximums.Read(exINI, pSection, "DropshipLoadout.AllowableUnitMaximums");
 	//this->DropshipLoadout_Theme.Read(exINI, pSection, "DropshipLoadout.Theme");
-	this->DropshipLoadout_Theme = pINI->ReadTheme(pSection, "DropshipLoadout.Theme", this->DropshipLoadout_Theme);
+	if (pINI->ReadTheme(pSection, "DropshipLoadout.Theme", this->DropshipLoadout_Theme))
+		this->DropshipLoadout_Theme = pINI->ReadTheme(pSection, "DropshipLoadout.Theme", this->DropshipLoadout_Theme);
+
 	this->DropshipLoadout_Money.Read(exINI, pSection, "DropshipLoadout.Money");
 	this->DropshipLoadout_StartEVA.Read(exINI, pSection, "DropshipLoadout.StartEVA");
 	this->DropshipLoadout_Carriers.Read(exINI, pSection, "DropshipLoadout.Carriers");
@@ -60,7 +62,15 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	pINI->ReadString(pSection, "DropshipLoadout.PilotLitPCX", "", Phobos::readBuffer);
-	this->DropshipLoadout_PilotLitPCX.emplace_back(GeneralUtils::GetAnimationPCX(Phobos::readBuffer));
+	auto  pilotlitFramesPCX = GeneralUtils::GetAnimationPCX(Phobos::readBuffer);
+
+	if (pilotlitFramesPCX)
+	{
+		for (auto& frame : *pilotlitFramesPCX)
+		{
+			this->DropshipLoadout_PilotLitPCX.emplace_back(std::move(frame));
+		}
+	}
 
 	// Sidebar click animations list (the animation that appears in the sidebar when a cameo is clicked)
 	char* context = nullptr;
@@ -71,9 +81,24 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		this->DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
 	}
 
+	this->DropshipLoadout_DGreenAnimationsCount.Read(exINI, pSection, "DropshipLoadout.DGreenAnimationsCount");
+
+	for (int i = 0; i < this->DropshipLoadout_DGreenAnimationsCount.Get(0); i++)
+	{
+		char tempBuffer[256];
+		Point2D location = Point2D::Empty;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.DGreenLocation%d", i);
+		pINI->ReadPoint2D(location, pSection, tempBuffer, location);
+		this->DropshipLoadout_DGreenLocations.push_back(location);
+	}
+
 	// Custom Dropship Loadout coordinates
+	this->DropshipLoadout_LoadoutLocation.Read(exINI, pSection, "DropshipLoadout.LoadoutLocation");
+	this->DropshipLoadout_PilotLitLocation.Read(exINI, pSection, "DropshipLoadout.PilotLitLocation");
 	this->DropshipLoadout_UpArrowLocation.Read(exINI, pSection, "DropshipLoadout.UpArrowLocation");
 	this->DropshipLoadout_DownArrowLocation.Read(exINI, pSection, "DropshipLoadout.DownArrowLocation");
+
 	this->DropshipLoadout_SidebarCameosCount.Read(exINI, pSection, "DropshipLoadout.SidebarCameosCount");
 
 	for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
@@ -128,8 +153,12 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_UpArrowPCX)
 		.Process(this->DropshipLoadout_DownArrowPCX)
 		.Process(this->DropshipLoadout_LoadoutPCX)
+		.Process(this->DropshipLoadout_LoadoutLocation)
 		.Process(this->DropshipLoadout_PilotLitPCX)
+		.Process(this->DropshipLoadout_PilotLitLocation)
 		.Process(this->DropshipLoadout_DGreenListPCX)
+		.Process(this->DropshipLoadout_DGreenAnimationsCount)
+		.Process(this->DropshipLoadout_DGreenLocations)
 		.Process(this->DropshipLoadout_UpArrowLocation)
 		.Process(this->DropshipLoadout_DownArrowLocation)
 		.Process(this->DropshipLoadout_SidebarCameosCount)

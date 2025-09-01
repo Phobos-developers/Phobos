@@ -221,7 +221,19 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
 	{
-		DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+		this->DropshipLoadout_DGreenListPCX.emplace_back(GeneralUtils::GetAnimationPCX(cur));
+	}
+
+	this->DropshipLoadout_DGreenAnimationsCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.DGreenAnimationsCount", 0);
+
+	for (int i = 0; i < this->DropshipLoadout_DGreenAnimationsCount; i++)
+	{
+		char tempBuffer[256];
+		Point2D location = Point2D::Empty;
+
+		_snprintf_s(tempBuffer, sizeof(tempBuffer), "DropshipLoadout.DGreenLocation%d", i);
+		pINI->ReadPoint2D(location, GameStrings::Basic, tempBuffer, location);
+		this->DropshipLoadout_DGreenLocations.push_back(location);
 	}
 
 	// List of Dropship transports used in the map action
@@ -239,8 +251,11 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 	// Custom Dropship Loadout coordinates
 	Point2D defaultEmptyLocation = { Point2D::Empty };
+	pINI->ReadPoint2D(DropshipLoadout_LoadoutLocation, GameStrings::Basic, "DropshipLoadout.LoadoutLocation", defaultEmptyLocation);
+	pINI->ReadPoint2D(DropshipLoadout_PilotLitLocation, GameStrings::Basic, "DropshipLoadout.PilotLitLocation", defaultEmptyLocation);
 	pINI->ReadPoint2D(DropshipLoadout_UpArrowLocation, GameStrings::Basic, "DropshipLoadout.UpArrowLocation", defaultEmptyLocation);
 	pINI->ReadPoint2D(DropshipLoadout_DownArrowLocation, GameStrings::Basic, "DropshipLoadout.DownArrowLocation", defaultEmptyLocation);
+
 	this->DropshipLoadout_SidebarCameosCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.SidebarCameosCount", 0);
 
 	for (int i = 0; i < this->DropshipLoadout_SidebarCameosCount; i++)
@@ -307,7 +322,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_UpArrow)
 		.Process(this->DropshipLoadout_DownArrow)
 		.Process(this->DropshipLoadout_Loadout)
+		.Process(this->DropshipLoadout_LoadoutLocation)
 		.Process(this->DropshipLoadout_PilotLit)
+		.Process(this->DropshipLoadout_PilotLitLocation)
 		.Process(this->DropshipLoadout_DGreenList)
 		.Process(this->DropshipLoadout_BackgroundPCX)
 		.Process(this->DropshipLoadout_UpArrowPCX)
@@ -315,6 +332,8 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_LoadoutPCX)
 		.Process(this->DropshipLoadout_PilotLitPCX)
 		.Process(this->DropshipLoadout_DGreenListPCX)
+		.Process(this->DropshipLoadout_DGreenAnimationsCount)
+		.Process(this->DropshipLoadout_DGreenLocations)
 		.Process(this->DropshipLoadout_UpArrowLocation)
 		.Process(this->DropshipLoadout_DownArrowLocation)
 		.Process(this->DropshipLoadout_SidebarCameosCount)

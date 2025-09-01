@@ -92,20 +92,14 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	else
 		dropshipLoadout_Loadout = FileSystem::LoadSHPFile("LOADOUT.SHP");
 
-	if (pHouseTypeExt->DropshipLoadout_PilotLitPCX.size() > 0)
+	if (!pHouseTypeExt->DropshipLoadout_PilotLitPCX.empty())
 	{
-		for (const auto& pAnimationVector : pHouseTypeExt->DropshipLoadout_PilotLitPCX)
+		for (const PhobosPCXFile& frame : pHouseTypeExt->DropshipLoadout_PilotLitPCX)
 		{
-			if (pAnimationVector)
-			{
-				for (const auto& frame : *pAnimationVector)
-				{
-					dropshipLoadout_PilotLitPCX.push_back(frame.GetSurface());
-				}
-			}
+			dropshipLoadout_PilotLitPCX.push_back(frame.GetSurface());
 		}
 	}
-	else if (ScenarioExt::Global()->DropshipLoadout_PilotLitPCX.size() > 0)
+	else if (!ScenarioExt::Global()->DropshipLoadout_PilotLitPCX.empty())
 	{
 		for (auto &pFilePCX : ScenarioExt::Global()->DropshipLoadout_PilotLitPCX)
 		{
@@ -372,8 +366,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 		for (int i = 0; i < nSidebarCameos; ++i)
 		{
-			int cameoX = pHouseTypeExt->DropshipLoadout_SidebarCameoLocations[i].X;
-			int cameoY = pHouseTypeExt->DropshipLoadout_SidebarCameoLocations[i].Y;
+			int cameoX = backgroundX + pHouseTypeExt->DropshipLoadout_SidebarCameoLocations[i].X;
+			int cameoY = backgroundY + pHouseTypeExt->DropshipLoadout_SidebarCameoLocations[i].Y;
 
 			RectangleStruct cameoRectangle = { cameoX, cameoY, cameoWidth, cameoHeight };
 			sidebarCameoLocations.push_back(cameoRectangle);
@@ -385,8 +379,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 		for (int i = 0; i < nSidebarCameos; ++i)
 		{
-			int cameoX = ScenarioExt::Global()->DropshipLoadout_SidebarCameoLocations[i].X;
-			int cameoY = ScenarioExt::Global()->DropshipLoadout_SidebarCameoLocations[i].Y;
+			int cameoX = backgroundX + ScenarioExt::Global()->DropshipLoadout_SidebarCameoLocations[i].X;
+			int cameoY = backgroundY + ScenarioExt::Global()->DropshipLoadout_SidebarCameoLocations[i].Y;
 
 			RectangleStruct cameoRectangle = { cameoX, cameoY, cameoWidth, cameoHeight };
 			sidebarCameoLocations.push_back(cameoRectangle);
@@ -418,8 +412,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int dropshipLoadout_UpArrowY = customUpArrowLocation != Point2D::Empty ? customUpArrowLocation.Y : arrowsY;
 
 	RectangleStruct upArrowLocation = {
-		dropshipLoadout_UpArrowX, // If default position: left of center
-		dropshipLoadout_UpArrowY,
+		backgroundX + dropshipLoadout_UpArrowX, // If default position: left of center
+		backgroundY + dropshipLoadout_UpArrowY,
 		dropshipLoadout_UpArrowWidth,
 		dropshipLoadout_UpArrowHeight
 	};
@@ -430,17 +424,120 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int dropshipLoadout_DownArrowY = customDownArrowLocation != Point2D::Empty ? customDownArrowLocation.Y : arrowsY;
 
 	RectangleStruct downArrowLocation = {
-		dropshipLoadout_DownArrowX, // If default position: right of center
-		dropshipLoadout_DownArrowY,
+		backgroundX + dropshipLoadout_DownArrowX, // If default position: right of center
+		backgroundY + dropshipLoadout_DownArrowY,
 		dropshipLoadout_DownArrowWidth,
 		dropshipLoadout_DownArrowHeight
 	};
 
 	std::vector<RectangleStruct> dGreenLocation;
-	int dGreenX = 371;
-	int dGreenY = 10;
+
+	if (pHouseTypeExt->DropshipLoadout_DGreenAnimationsCount.isset())
+	{
+		for (int i = 0; i < pHouseTypeExt->DropshipLoadout_DGreenAnimationsCount; i++)
+		{
+			Point2D location = pHouseTypeExt->DropshipLoadout_DGreenLocations[i];
+
+			int dGreenX = location.X;
+			int dGreenY = location.Y;
+
+			RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				0,
+				0
+			};
+
+			dGreenLocation.push_back(dGreenRectangle);
+		}
+	}
+	else if (ScenarioExt::Global()->DropshipLoadout_DGreenAnimationsCount)
+	{
+		for (int i = 0; i < ScenarioExt::Global()->DropshipLoadout_DGreenAnimationsCount; i++)
+		{
+			Point2D location = ScenarioExt::Global()->DropshipLoadout_DGreenLocations[i];
+
+			int dGreenX = location.X;
+			int dGreenY = location.Y;
+
+			RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				0,
+				0
+			};
+
+			dGreenLocation.push_back(dGreenRectangle);
+		}
+	}
+	else
+	{
+		int dGreenX = 371;
+		int dGreenY = 10;
+
+		for (int i = 0; i < 4; i++)
+		{
+			RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				0,
+				0
+			};
+
+			dGreenY += 50;
+			dGreenLocation.push_back(dGreenRectangle);
+		}
+
+		if (dropshipLoadout_DGreenListPCX.size() > 0)
+		{
+			for (int i = 4; i < dropshipLoadout_DGreenListPCX.size(); i++)
+			{
+				RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				0,
+				0
+				};
+
+				dGreenY += 50;
+				dGreenLocation.push_back(dGreenRectangle);
+			}
+		}
+		else if (dropshipLoadout_DGreenList.size() > 0)
+		{
+			for (int i = 4; i < dropshipLoadout_DGreenList.size(); i++)
+			{
+				RectangleStruct dGreenRectangle = {
+				backgroundX + dGreenX,
+				backgroundY + dGreenY,
+				0,
+				0
+				};
+
+				dGreenY += 50;
+				dGreenLocation.push_back(dGreenRectangle);
+			}
+		}
+	}
 
 	if (dropshipLoadout_DGreenListPCX.size() > 0)
+	{
+		for (int i = 0; i < dropshipLoadout_DGreenListPCX.size(); i++)
+		{
+			dGreenLocation[i].Width = dropshipLoadout_DGreenListPCX[i][0]->Width;
+			dGreenLocation[i].Height = dropshipLoadout_DGreenListPCX[i][0]->Height;
+		}
+	}
+	else if (dropshipLoadout_DGreenList.size() > 0)
+	{
+		for (int i = 0; i < dropshipLoadout_DGreenList.size(); i++)
+		{
+			dGreenLocation[i].Width = dropshipLoadout_DGreenList[i]->Width;
+			dGreenLocation[i].Height = dropshipLoadout_DGreenList[i]->Height;
+		}
+	}
+
+	/*if (dropshipLoadout_DGreenListPCX.size() > 0)
 	{
 		for (auto dGreenPCX : dropshipLoadout_DGreenListPCX)
 		{
@@ -481,24 +578,50 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			dGreenY += 50;
 			dGreenLocation.push_back(dGreenRectangle);
 		}
-	}
+	}*/
 
 	int dropshipLoadout_LoadoutWidth = dropshipLoadout_LoadoutPCX.size() > 0 ? dropshipLoadout_LoadoutPCX[0]->Width : dropshipLoadout_Loadout->Width;
 	int dropshipLoadout_LoadoutHeight = dropshipLoadout_LoadoutPCX.size() > 0 ? dropshipLoadout_LoadoutPCX[0]->Height : dropshipLoadout_Loadout->Height;
+	int dropshipLoadout_LoadoutX = 45;
+	int dropshipLoadout_LoadoutY = 2; // Note: "+0" for a perfect alignment with TS values but the right "Y" background value is "+2"...
+
+	if (pHouseTypeExt->DropshipLoadout_LoadoutLocation.isset())
+	{
+		dropshipLoadout_LoadoutX = pHouseTypeExt->DropshipLoadout_LoadoutLocation.Get(Point2D::Empty).X;
+		dropshipLoadout_LoadoutY = pHouseTypeExt->DropshipLoadout_LoadoutLocation.Get(Point2D::Empty).Y;
+	}
+	else if (ScenarioExt::Global()->DropshipLoadout_LoadoutLocation != Point2D::Empty)
+	{
+		dropshipLoadout_LoadoutX = ScenarioExt::Global()->DropshipLoadout_LoadoutLocation.X;
+		dropshipLoadout_LoadoutY = ScenarioExt::Global()->DropshipLoadout_LoadoutLocation.Y;
+	}
 
 	RectangleStruct loadoutLocation = {
-		backgroundX + 45,
-		backgroundY + 2, // Note: "+0" for a perfect alignment with TS values but the right background is "+2"...
+		backgroundX + dropshipLoadout_LoadoutX,
+		backgroundY + dropshipLoadout_LoadoutY,
 		dropshipLoadout_LoadoutWidth,
 		dropshipLoadout_LoadoutHeight
 	};
 
 	int dropshipLoadout_PilotLitWidth = dropshipLoadout_PilotLitPCX.size() > 0 ? dropshipLoadout_PilotLitPCX[0]->Width : dropshipLoadout_PilotLit->Width;
 	int dropshipLoadout_PilotLitHeight = dropshipLoadout_PilotLitPCX.size() > 0 ? dropshipLoadout_PilotLitPCX[0]->Height : dropshipLoadout_PilotLit->Height;
+	int dropshipLoadout_PilotLitX = 284;
+	int dropshipLoadout_PilotLitY = 151;
+
+	if (pHouseTypeExt->DropshipLoadout_PilotLitLocation.isset())
+	{
+		dropshipLoadout_PilotLitX = pHouseTypeExt->DropshipLoadout_PilotLitLocation.Get(Point2D::Empty).X;
+		dropshipLoadout_PilotLitY = pHouseTypeExt->DropshipLoadout_PilotLitLocation.Get(Point2D::Empty).Y;
+	}
+	else if (ScenarioExt::Global()->DropshipLoadout_PilotLitLocation != Point2D::Empty)
+	{
+		dropshipLoadout_PilotLitX = ScenarioExt::Global()->DropshipLoadout_PilotLitLocation.X;
+		dropshipLoadout_PilotLitY = ScenarioExt::Global()->DropshipLoadout_PilotLitLocation.Y;
+	}
 
 	RectangleStruct pilotLitLocation = {
-		backgroundX + 284,
-		backgroundY + 151,
+		backgroundX + dropshipLoadout_PilotLitX,
+		backgroundY + dropshipLoadout_PilotLitY,
 		dropshipLoadout_PilotLitWidth,
 		dropshipLoadout_PilotLitHeight
 	};
@@ -507,7 +630,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	std::vector<std::vector<RectangleStruct>> dropshipBayCameoLocations;
 	int nDropshipBayCameos = 5;
 
-	if (pHouseTypeExt->DropshipLoadout_DropshipCameosCount > 0)
+	if (pHouseTypeExt->DropshipLoadout_DropshipCameosCount.Get(0) > 0)
 	{
 		nDropshipBayCameos = pHouseTypeExt->DropshipLoadout_DropshipCameosCount;
 
@@ -518,8 +641,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 			for (int j = 0; j < nDropshipBayCameos; j++)
 			{
-				int cameoX = pHouseTypeExt->DropshipLoadout_DropshipCameoLocations[i][j].X;
-				int cameoY = pHouseTypeExt->DropshipLoadout_DropshipCameoLocations[i][j].Y;
+				int cameoX = backgroundX + pHouseTypeExt->DropshipLoadout_DropshipCameoLocations[i][j].X;
+				int cameoY = backgroundY + pHouseTypeExt->DropshipLoadout_DropshipCameoLocations[i][j].Y;
 
 				dropshipBayCameoLocationsList.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
 			}
@@ -538,8 +661,8 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 
 			for (int j = 0; j < nDropshipBayCameos; j++)
 			{
-				int cameoX = ScenarioExt::Global()->DropshipLoadout_DropshipCameoLocations[i][j].X;
-				int cameoY = ScenarioExt::Global()->DropshipLoadout_DropshipCameoLocations[i][j].Y;
+				int cameoX = backgroundX + ScenarioExt::Global()->DropshipLoadout_DropshipCameoLocations[i][j].X;
+				int cameoY = backgroundY + ScenarioExt::Global()->DropshipLoadout_DropshipCameoLocations[i][j].Y;
 
 				dropshipBayCameoLocationsList.push_back({ cameoX, cameoY, cameoWidth, cameoHeight });
 			}
@@ -621,8 +744,6 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	}
 
 	int nDropshipBayTotalSlots = nStartingDropships * nDropshipBayCameos;
-
-	
 
 	// Units loaded into the dropships
 	std::vector<std::vector<TechnoTypeClass*>> chosenUnits;
