@@ -12,6 +12,7 @@
 #include <FlyLocomotionClass.h>
 #include <BuildingClass.h>
 #include <FactoryClass.h>
+
 #include <Utilities/EnumFunctions.h>
 #include <Utilities/AresFunctions.h>
 
@@ -1641,16 +1642,19 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
 
-	// Pause building factory production under EMP / Deactivated
+	// Pause building factory production under EMP / Deactivated (AI only)
 	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
 	{
-		if (auto const pFactory = pBuilding->Factory)
+		if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
 		{
-			if (pFactory->Object && pFactory->Production.Rate > 0)
+			if (auto const pFactory = pBuilding->Factory)
 			{
-				if (pFactory->Production.Timer.HasStarted() && !pFactory->Production.Timer.Expired())
+				if (pFactory->Production.Timer.InProgress())
 				{
-					pFactory->Production.Timer.StartTime++;
+					if (pFactory->Production.Timer.HasStarted() && !pFactory->Production.Timer.Expired())
+					{
+						pFactory->Production.Timer.StartTime++;
+					}
 				}
 			}
 		}

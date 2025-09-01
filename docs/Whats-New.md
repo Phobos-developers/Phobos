@@ -460,7 +460,6 @@ Vanilla fixes:
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true` (by Starkku)
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
 
-
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
