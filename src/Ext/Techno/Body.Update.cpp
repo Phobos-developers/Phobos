@@ -10,6 +10,8 @@
 #include <Kamikaze.h>
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
+#include <BuildingClass.h>
+#include <FactoryClass.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
@@ -1638,6 +1640,21 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 
 	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
+
+	// Pause building factory production under EMP / Deactivated
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	{
+		if (auto const pFactory = pBuilding->Factory)
+		{
+			if (pFactory->Object && pFactory->Production.Rate > 0)
+			{
+				if (pFactory->Production.Timer.HasStarted() && !pFactory->Production.Timer.Expired())
+				{
+					pFactory->Production.Timer.StartTime++;
+				}
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateRearmInTemporal()
