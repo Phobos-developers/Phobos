@@ -439,6 +439,7 @@ New:
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - Health bar permanently displayed (by FlyStar)
 - [`IsSimpleDeployer` facing customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpleDeployer-facing-and-animation-customization) (by Starkku)
+- Fixed AI continuing to produce units and construct buildings from buildings affected by EMP.
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)
@@ -458,6 +459,7 @@ Vanilla fixes:
 - If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground (by Starkku)
 - `DeployingAnim` now supports both `Normalized=true` and `Reverse=true` (by Starkku)
 - `DeployingAnim` using unit drawer now also tint accordingly with the unit (by Starkku)
+
 
 Phobos fixes:
 - Fixed the bug that `AllowAirstrike=no` cannot completely prevent air strikes from being launched against it (by NetsuNegi)
