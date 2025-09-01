@@ -43,6 +43,7 @@ You can use the migration utility (can be found on [Phobos supplementaries repo]
 - `AnimList.ShowOnZeroDamage` has been renamed to `CreateAnimsOnZeroDamage` to make it more clear it applies to both `AnimList` and splash animations.
 - INI inclusion and inheritance are now turned off by default and need to be turned on via command line flags `-Include` and `-Inheritance`.
 - `Level=true` projectiles no longer attempt to do reposition against targets that are behind non-water tiles by default. Use `SubjectToLand=true` to re-enable this behaviour.
+- Units' `LaserTrails` will no longer lags behind by one frame, So it needs to be repositioned (Previously, units with faster speeds may need to be positioned further ahead).
 
 #### From 0.3
 
@@ -464,6 +465,7 @@ Phobos fixes:
 - Fixed an issue that `FireAngle` was not taken into account when drawing barrel in `TurretShadow` (by CrimRecya)
 - Fixed a bug that sometimes caused weapon/warhead detonations from features such as `ExtraWarheads`, animation damage or `Crit.Warhead` to unintentionally move from its intended position (by Starkku)
 - Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads (by NetsuNegi)
+- Fixed an issue that units' `LaserTrails` will always lags behind by one frame (by CrimRecya)
 
 Fixes / interactions with other extensions:
 - `Convert.Deploy` displays 'no deploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc. (by Starkku)

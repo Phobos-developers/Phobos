@@ -542,6 +542,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
   - Jumpjet Climbing Logic Enhancement
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
+  - Fix an issue that units' `LaserTrails` will always lags behind by one frame
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude

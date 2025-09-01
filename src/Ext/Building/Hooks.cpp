@@ -18,12 +18,15 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pExt = BuildingExt::ExtMap.Find(pThis);
-	pExt->DisplayIncomeString();
-	pExt->ApplyPoweredKillSpawns();
+	const auto pBuildingExt = BuildingExt::ExtMap.Find(pThis);
+	pBuildingExt->DisplayIncomeString();
+	pBuildingExt->ApplyPoweredKillSpawns();
+
+	const auto pTechnoExt = pBuildingExt->TechnoExtData;
+	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
 
 	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.
-	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+	if (pTechnoExt->AirstrikeTargetingMe)
 		pThis->Mark(MarkType::Change);
 
 	return 0;
