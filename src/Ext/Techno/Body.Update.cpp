@@ -10,14 +10,17 @@
 #include <Kamikaze.h>
 #include <JumpjetLocomotionClass.h>
 #include <FlyLocomotionClass.h>
+#include <BuildingClass.h>
+#include <FactoryClass.h>
+
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/AresFunctions.h>
 
 
 // TechnoClass_AI_0x6F9E50
@@ -1638,6 +1641,24 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 
 	if (pThis->ReloadTimer.InProgress() && pTypeExt->NoReload_UnderEMP.Get(RulesExt::Global()->NoReload_UnderEMP))
 		pThis->ReloadTimer.StartTime++;
+
+	// Pause building factory production under EMP / Deactivated (AI only)
+	if (auto const pBuilding = abstract_cast<BuildingClass*>(pThis))
+	{
+		if (pBuilding->Owner && !pBuilding->Owner->IsControlledByHuman())
+		{
+			if (auto const pFactory = pBuilding->Factory)
+			{
+				if (pFactory->Production.Timer.InProgress())
+				{
+					if (pFactory->Production.Timer.HasStarted() && !pFactory->Production.Timer.Expired())
+					{
+						pFactory->Production.Timer.StartTime++;
+					}
+				}
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::UpdateRearmInTemporal()
