@@ -12,14 +12,14 @@
 #include <FlyLocomotionClass.h>
 #include <BuildingClass.h>
 #include <FactoryClass.h>
+#include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 
 #include <Ext/Anim/Body.h>
 #include <Ext/Bullet/Body.h>
 #include <Ext/House/Body.h>
 #include <Ext/WeaponType/Body.h>
 #include <Ext/Scenario/Body.h>
-#include <Utilities/EnumFunctions.h>
-#include <Utilities/AresFunctions.h>
 
 
 // TechnoClass_AI_0x6F9E50
