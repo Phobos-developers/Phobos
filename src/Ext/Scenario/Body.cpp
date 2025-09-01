@@ -269,17 +269,6 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	}
 
 	this->DropshipLoadout_DropshipCameosCount = pINI->ReadInteger(GameStrings::Basic, "DropshipLoadout.DropshipCameosCount", 0);
-	/*pINI->ReadString(GameStrings::Basic, "DropshipLoadout.DropshipCameosCount", "", Phobos::readBuffer);
-
-	for (char* cur = strtok_s(Phobos::readBuffer, Phobos::readDelims, &context); cur; cur = strtok_s(nullptr, Phobos::readDelims, &context))
-	{
-		int buffer;
-
-		if (Parser<int>::TryParse(cur, &buffer))
-			this->DropshipLoadout_DropshipCameosCount.emplace_back(buffer);
-		else
-			this->DropshipLoadout_DropshipCameosCount.emplace_back(0);
-	}*/
 
 	for (int i = 0; i < ScenarioClass::Instance->StartingDropships; i++)
 	{
@@ -295,7 +284,23 @@ void ScenarioExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 			locations.push_back(location);
 		}
 
-		DropshipLoadout_DropshipCameoLocations.push_back(locations);
+		this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
+
+		pINI->ReadString(GameStrings::Basic, "DropshipLoadout.Carriers", "", Phobos::readBuffer);
+
+		if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.BuyClickSound", "", Phobos::readBuffer) != 0)
+			this->DropshipLoadout_BuyClickSound = VocClass::FindIndex(Phobos::readBuffer);
+		//else
+			//this->DropshipLoadout_SellClickSound = RulesClass::Instance->GUITabSound;
+
+		//this->DropshipLoadout_SellClickSound.
+		if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.SellClickSound", "", Phobos::readBuffer) != 0)
+			this->DropshipLoadout_SellClickSound = VocClass::FindIndex(Phobos::readBuffer);
+		//else
+			//this->DropshipLoadout_SellClickSound = RulesClass::Instance->GUITabSound;
+
+		if (pINI->ReadString(GameStrings::Basic, "DropshipLoadout.ArrowsClickSound", "", Phobos::readBuffer) != 0)
+			this->DropshipLoadout_ArrowsClickSound = VocClass::FindIndex(Phobos::readBuffer);
 	}
 }
 
@@ -340,6 +345,9 @@ void ScenarioExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_SidebarCameoLocations)
 		.Process(this->DropshipLoadout_DropshipCameosCount)
 		.Process(this->DropshipLoadout_DropshipCameoLocations)
+		.Process(this->DropshipLoadout_BuyClickSound)
+		.Process(this->DropshipLoadout_SellClickSound)
+		.Process(this->DropshipLoadout_ArrowsClickSound)
 //		.Process(this->NewMessageList); // Should not S/L
 		;
 }

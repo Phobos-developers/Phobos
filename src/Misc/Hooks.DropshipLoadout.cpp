@@ -210,12 +210,39 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 		VoxClass::PlayIndex(voiceEva);
 
 	// Play the specific theme for the dropship loadout screen
-	const int theme = pHouseTypeExt->DropshipLoadout_Theme.isset() ? pHouseTypeExt->DropshipLoadout_Theme : ScenarioExt::Global()->DropshipLoadout_Theme;
+	const int themeIdx = pHouseTypeExt->DropshipLoadout_Theme.isset() ? pHouseTypeExt->DropshipLoadout_Theme : ScenarioExt::Global()->DropshipLoadout_Theme;
 
-	if (theme == -1)
+	if (themeIdx == -1)
 		ThemeClass::Instance.Stop(true);
 	else
-		ThemeClass::Instance.Play(theme);
+		ThemeClass::Instance.Play(themeIdx);
+
+	// Setting sounds
+	int buyClickSoundIdx = RulesClass::Instance->GenericClick;
+	int sellClickSoundIdx = RulesClass::Instance->SellSound;
+	int arrowsClickSoundIdx = RulesClass::Instance->GUITabSound;
+
+	if (pHouseTypeExt->DropshipLoadout_BuyClickSound.isset())
+		buyClickSoundIdx = pHouseTypeExt->DropshipLoadout_BuyClickSound;
+	else if (ScenarioExt::Global()->DropshipLoadout_BuyClickSound.isset())
+		buyClickSoundIdx = ScenarioExt::Global()->DropshipLoadout_BuyClickSound;
+
+	if (pHouseTypeExt->DropshipLoadout_SellClickSound.isset())
+		sellClickSoundIdx = pHouseTypeExt->DropshipLoadout_SellClickSound;
+	else if (ScenarioExt::Global()->DropshipLoadout_SellClickSound.isset())
+		sellClickSoundIdx = ScenarioExt::Global()->DropshipLoadout_SellClickSound;
+
+	if (pHouseTypeExt->DropshipLoadout_ArrowsClickSound.isset())
+		arrowsClickSoundIdx = pHouseTypeExt->DropshipLoadout_ArrowsClickSound;
+	else if (ScenarioExt::Global()->DropshipLoadout_ArrowsClickSound.isset())
+		arrowsClickSoundIdx = ScenarioExt::Global()->DropshipLoadout_ArrowsClickSound;
+
+	/*sellClickSoundIdx = pHouseTypeExt->DropshipLoadout_SellClickSound.isset() ? pHouseTypeExt->DropshipLoadout_SellClickSound : ScenarioExt::Global()->DropshipLoadout_SellClickSound;
+	sellClickSoundIdx = pHouseTypeExt->DropshipLoadout_SellClickSound.isset() ? pHouseTypeExt->DropshipLoadout_SellClickSound : ScenarioExt::Global()->DropshipLoadout_SellClickSound;
+
+	buyClickSoundIdx = pHouseTypeExt->DropshipLoadout_BuyClickSound.isset() ? pHouseTypeExt->DropshipLoadout_BuyClickSound : ScenarioExt::Global()->DropshipLoadout_BuyClickSound;
+
+	arrowsClickSoundIdx = pHouseTypeExt->DropshipLoadout_ArrowsClickSound.isset() ? pHouseTypeExt->DropshipLoadout_ArrowsClickSound : ScenarioExt::Global()->DropshipLoadout_SellClickSound;*/
 
 	// Reactivate the mouse cursor for the new UI screen
 	WWMouseClass::Instance->HideCursor();
@@ -1016,7 +1043,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				repaintAll = true;
 
 				// Click sound
-				VocClass::PlayGlobal(RulesClass::Instance->GUITabSound, 0x2000, 1.0);
+				VocClass::PlayGlobal(arrowsClickSoundIdx, 0x2000, 1.0);
 			}
 		}
 		else if (pressedDownArrow) // DOWN key or click in the DOWN button
@@ -1027,7 +1054,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 				repaintAll = true;
 
 				// Click sound
-				VocClass::PlayGlobal(RulesClass::Instance->GUITabSound, 0x2000, 1.0);
+				VocClass::PlayGlobal(arrowsClickSoundIdx, 0x2000, 1.0);
 			}
 		}
 		else if (pressedAnySidebarCameoWithRigthClick)
@@ -1059,7 +1086,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 							dropshipBayChosenUnitsCount[pType] = 0;
 
 						// Click sound
-						VocClass::PlayGlobal(RulesClass::Instance->SellSound, 0x2000, 1.0);
+						VocClass::PlayGlobal(sellClickSoundIdx, 0x2000, 1.0);
 
 						break;
 					}
@@ -1096,7 +1123,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 						++dropshipBayChosenUnitsCount[pType];
 
 						// Click sound
-						VocClass::PlayGlobal(RulesClass::Instance->GenericClick, 0x2000, 1.0);
+						VocClass::PlayGlobal(buyClickSoundIdx, 0x2000, 1.0);
 						break;
 					}
 				}
@@ -1155,7 +1182,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 						dropshipBayChosenUnitsCount[pType] = 0;
 
 					// Click sound
-					VocClass::PlayGlobal(RulesClass::Instance->SellSound, 0x2000, 1.0);
+					VocClass::PlayGlobal(sellClickSoundIdx, 0x2000, 1.0);
 				}
 			}
 		}
@@ -1198,7 +1225,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 			repaintAll = true;
 
 			if (soldAny) // Click sound
-				VocClass::PlayGlobal(RulesClass::Instance->SellSound, 0x2000, 1.0);
+				VocClass::PlayGlobal(sellClickSoundIdx, 0x2000, 1.0);
 		}
 
 		// --- ANIMATION LOGIC ---

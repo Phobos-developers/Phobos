@@ -129,6 +129,10 @@ void HouseTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 
 		this->DropshipLoadout_DropshipCameoLocations.push_back(locations);
 	}
+
+	this->DropshipLoadout_BuyClickSound.Read(exINI, pSection, "DropshipLoadout.BuyClickSound");
+	this->DropshipLoadout_SellClickSound.Read(exINI, pSection, "DropshipLoadout.SellClickSound");
+	this->DropshipLoadout_ArrowsClickSound.Read(exINI, pSection, "DropshipLoadout.ArrowsClickSound");
 }
 
 void HouseTypeExt::ExtData::CompleteInitialization()
@@ -165,6 +169,9 @@ void HouseTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DropshipLoadout_SidebarCameoLocations)
 		.Process(this->DropshipLoadout_DropshipCameosCount)
 		.Process(this->DropshipLoadout_DropshipCameoLocations)
+		.Process(this->DropshipLoadout_BuyClickSound)
+		.Process(this->DropshipLoadout_SellClickSound)
+		.Process(this->DropshipLoadout_ArrowsClickSound)
 		;
 }
 

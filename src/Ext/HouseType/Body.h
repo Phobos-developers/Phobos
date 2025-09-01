@@ -39,6 +39,9 @@ public:
 		ValueableVector<Point2D> DropshipLoadout_SidebarCameoLocations;
 		Nullable<int> DropshipLoadout_DropshipCameosCount;
 		ValueableVector<std::vector<Point2D>> DropshipLoadout_DropshipCameoLocations;
+		NullableIdx<VocClass> DropshipLoadout_BuyClickSound;
+		NullableIdx<VocClass> DropshipLoadout_SellClickSound;
+		NullableIdx<VocClass> DropshipLoadout_ArrowsClickSound;
 
 		ExtData(HouseTypeClass* OwnerObject) : Extension<HouseTypeClass>(OwnerObject)
 			, DropshipLoadout_StartingDropships {}
@@ -65,6 +68,9 @@ public:
 			, DropshipLoadout_SidebarCameoLocations {}
 			, DropshipLoadout_DropshipCameosCount {}
 			, DropshipLoadout_DropshipCameoLocations {}
+			, DropshipLoadout_BuyClickSound {}
+			, DropshipLoadout_SellClickSound {}
+			, DropshipLoadout_ArrowsClickSound {}
 		{ }
 
 		virtual ~ExtData() = default;

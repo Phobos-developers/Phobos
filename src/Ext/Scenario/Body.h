@@ -70,6 +70,10 @@ public:
 		std::vector<Point2D> DropshipLoadout_SidebarCameoLocations;
 		int DropshipLoadout_DropshipCameosCount;
 		std::vector<std::vector<Point2D>> DropshipLoadout_DropshipCameoLocations;
+		//VocClass DropshipLoadout_SellClickSound;
+		NullableIdx<VocClass> DropshipLoadout_BuyClickSound;
+		NullableIdx<VocClass> DropshipLoadout_SellClickSound;
+		NullableIdx<VocClass> DropshipLoadout_ArrowsClickSound;
 
 		ExtData(ScenarioClass* OwnerObject) : Extension<ScenarioClass>(OwnerObject)
 			, ShowBriefing { false }
@@ -109,8 +113,11 @@ public:
 			, DropshipLoadout_SidebarCameoLocations {}
 			, DropshipLoadout_DropshipCameosCount { 0 }
 			, DropshipLoadout_DropshipCameoLocations {}
+			, DropshipLoadout_BuyClickSound {}
+			, DropshipLoadout_SellClickSound {}
+			, DropshipLoadout_ArrowsClickSound {}
 		{ }
-
+		
 		void SetVariableToByID(bool bIsGlobal, int nIndex, char bState);
 		void GetVariableStateByID(bool bIsGlobal, int nIndex, char* pOut);
 		void ReadVariables(bool bIsGlobal, CCINIClass* pINI);
