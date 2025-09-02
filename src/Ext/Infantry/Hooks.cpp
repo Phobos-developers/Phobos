@@ -5,6 +5,8 @@
 #include <InputManagerClass.h>
 #include <WarheadTypeClass.h>
 
+#include <Ext/TechnoType/Body.h>
+
 DEFINE_HOOK(0x51B2BD, InfantryClass_UpdateTarget_IsControlledByHuman, 0x6)
 {
 	GET(InfantryClass*, pThis, ESI);
@@ -127,4 +129,12 @@ DEFINE_HOOK(0x7093F8, TechnoClass_709290_DeployWeapon, 0x5)
 	}
 
 	return ReturnTrue;
+}
+
+// Skip incorrect retn to restore the auto deploy behavior of infantry
+DEFINE_HOOK(0x522373, InfantryClass_ApproachTarget_InfantryAutoDeploy, 0x5)
+{
+	enum { Deploy = 0x522378 };
+	GET(InfantryClass*, pThis, ESI);
+	return TechnoTypeExt::ExtMap.Find(pThis->Type)->InfantryAutoDeploy.Get(RulesExt::Global()->InfantryAutoDeploy) ? Deploy : 0;
 }
