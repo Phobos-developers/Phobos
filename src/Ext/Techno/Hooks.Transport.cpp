@@ -316,11 +316,15 @@ static inline void DoEnterNow(UnitClass* pTransport, FootClass* pPassenger)
 	pPassenger->Undiscover();
 }
 
-// The core part of the fast enter action
-DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
+// Update after unit location update
+DEFINE_HOOK(0x4DA8A0, FootClass_Update_AfterLocomotorProcess, 0x6)
 {
 	GET(FootClass* const, pThis, ESI);
 
+	// Update laser trails after locomotor process, to ensure that the updated position is not the previous frame's position
+	TechnoExt::ExtMap.Find(pThis)->UpdateLaserTrails();
+
+	// The core part of the fast enter action
 	if (const auto pDest = abstract_cast<UnitClass*>(pThis->CurrentMission == Mission::Enter ? pThis->GetNthLink() : pThis->QueueUpToEnter))
 	{
 		const auto pType = pDest->Type;
@@ -338,7 +342,7 @@ DEFINE_HOOK(0x4DA8A0, FootClass_Update_FastEnter, 0x6)
 				&& !pDest->OnBridge && !pDest->Destination)
 			{
 				auto cell = CellStruct::Empty;
-				reinterpret_cast<CellStruct*(__thiscall*)(FootClass*, CellStruct*, AbstractClass*)>(0x703590)(pThis, &cell, pDest);
+				pThis->NearbyLocation(&cell, pDest);
 
 				if (cell != CellStruct::Empty)
 				{

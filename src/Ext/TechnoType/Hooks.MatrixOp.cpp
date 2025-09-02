@@ -45,14 +45,140 @@ DEFINE_HOOK(0x73B780, UnitClass_DrawVXL_TurretMultiOffset, 0x0)
 	return 0x73B790;
 }
 
-DEFINE_HOOK(0x73BA4C, UnitClass_DrawVXL_TurretMultiOffset1, 0x0)
+struct AresTechnoTypeExt
 {
-	LEA_STACK(Matrix3D*, mtx, STACK_OFFSET(0x1D0, -0x13C));
-	GET(TechnoTypeClass*, technoType, EBX);
+	char _[0xA4];
+	std::vector<VoxelStruct> ChargerTurrets;
+	std::vector<VoxelStruct> ChargerBarrels;
+	char __[0x120];
+	UnitTypeClass* WaterImage;
+	VoxelStruct NoSpawnAltVXL;
+};
 
-	TechnoTypeExt::ApplyTurretOffset(technoType, mtx, Pixel_Per_Lepton);
+DEFINE_HOOK(0x73BA12, UnitClass_DrawAsVXL_RewriteTurretDrawing, 0x6)
+{
+	enum { SkipGameCode = 0x73BEA4 };
 
-	return 0x73BA68;
+	GET(UnitClass* const, pThis, EBP);
+	GET(TechnoTypeClass* const, pDrawType, EBX);
+	GET_STACK(const bool, haveTurretCache, STACK_OFFSET(0x1C4, -0x1B3));
+	GET_STACK(const bool, haveBar, STACK_OFFSET(0x1C4, -0x1B2));
+	GET(const bool, haveBarrelCache, EAX);
+	REF_STACK(Matrix3D, drawMatrix, STACK_OFFSET(0x1C4, -0x130));
+	GET_STACK(const int, flags, STACK_OFFSET(0x1C4, -0x198));
+	GET_STACK(const int, brightness, STACK_OFFSET(0x1C4, 0x1C));
+	GET_STACK(const int, hvaFrameIdx, STACK_OFFSET(0x1C4, -0x18C));
+	GET_STACK(const int, currentTurretNumber, STACK_OFFSET(0x1C4, -0x1A8));
+	LEA_STACK(Point2D* const, center, STACK_OFFSET(0x1C4, -0x194));
+	LEA_STACK(RectangleStruct* const, rect, STACK_OFFSET(0x1C4, -0x164));
+
+	// base matrix
+	const auto mtx = Matrix3D::VoxelDefaultMatrix * drawMatrix;
+
+	const auto pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
+	const bool notChargeTurret = pThis->Type->TurretCount <= 0 || pThis->Type->IsGattling;
+
+	auto getTurretVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
+	{
+		if (notChargeTurret)
+			return &pDrawType->TurretVoxel;
+
+		// Not considering the situation where there is no Ares and the limit is exceeded
+		if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
+			return &pDrawType->ChargerTurrets[currentTurretNumber];
+
+		auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+		return &aresTypeExt->ChargerTurrets[currentTurretNumber - 18];
+	};
+	const auto pTurretVoxel = getTurretVoxel();
+
+	// When in recoiling or have no cache, need to recalculate drawing matrix
+	const bool inRecoil = pDrawType->TurretRecoil && (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive || pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive);
+	const bool shouldRedraw = !haveTurretCache || haveBar && !haveBarrelCache || inRecoil;
+
+	// When in recoiling, need to bypass cache and draw without saving
+	const auto turKey = inRecoil ? -1 : flags;
+	const auto turCache = inRecoil ? nullptr : &pDrawType->VoxelTurretWeaponCache;
+
+	auto getTurretMatrix = [=, &mtx]() -> Matrix3D
+	{
+		auto mtxTurret = mtx;
+		pDrawTypeExt->ApplyTurretOffset(&mtxTurret, Pixel_Per_Lepton);
+		mtxTurret.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+
+		if (pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive)
+			mtxTurret.TranslateX(-pThis->TurretRecoil.TravelSoFar);
+
+		return mtxTurret;
+	};
+	auto mtxTurret = shouldRedraw ? getTurretMatrix() : mtx;
+	constexpr BlitterFlags blit = BlitterFlags::Alpha | BlitterFlags::Flat;
+
+	// Only when there is a barrel will its calculation and drawing be considered
+	if (haveBar)
+	{
+		auto drawBarrel = [=, &mtxTurret, &mtx]()
+		{
+			// When in recoiling, need to bypass cache and draw without saving
+			const auto brlKey = inRecoil ? -1 : flags;
+			const auto brlCache = inRecoil ? nullptr : &pDrawType->VoxelTurretBarrelCache;
+
+			auto getBarrelMatrix = [=, &mtxTurret, &mtx]() -> Matrix3D
+			{
+				auto mtxBarrel = mtxTurret;
+				mtxBarrel.Translate(-mtx.Row[0].W, -mtx.Row[1].W, -mtx.Row[2].W);
+				mtxBarrel.RotateY(static_cast<float>(-pThis->BarrelFacing.Current().GetRadian<32>()));
+
+				if (pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive)
+					mtxBarrel.TranslateX(-pThis->BarrelRecoil.TravelSoFar);
+
+				mtxBarrel.Translate(mtx.Row[0].W, mtx.Row[1].W, mtx.Row[2].W);
+				return mtxBarrel;
+			};
+			auto mtxBarrel = shouldRedraw ? getBarrelMatrix() : mtx;
+
+			auto getBarrelVoxel = [pDrawType, notChargeTurret, currentTurretNumber]() -> VoxelStruct*
+			{
+				if (notChargeTurret)
+					return &pDrawType->BarrelVoxel;
+
+				// Not considering the situation where there is no Ares and the limit is exceeded
+				if (currentTurretNumber < 18 || !AresHelper::CanUseAres)
+					return &pDrawType->ChargerBarrels[currentTurretNumber];
+
+				auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+				return &aresTypeExt->ChargerBarrels[currentTurretNumber - 18];
+			};
+			const auto pBarrelVoxel = getBarrelVoxel();
+
+			// draw barrel
+			pThis->Draw_A_VXL(pBarrelVoxel, hvaFrameIdx, brlKey, brlCache, rect, center, &mtxBarrel, brightness, blit, 0);
+		};
+
+		const auto turretDir = pThis->SecondaryFacing.Current().GetFacing<4>();
+
+		// The orientation of the turret can affect the layer order of the barrel and turret
+		if (turretDir != 0 && turretDir != 3)
+		{
+			// draw turret
+			pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtxTurret, brightness, blit, 0);
+
+			drawBarrel();
+		}
+		else
+		{
+			drawBarrel();
+
+			// draw turret
+			pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtxTurret, brightness, blit, 0);
+		}
+	}
+	else
+	{
+		pThis->Draw_A_VXL(pTurretVoxel, hvaFrameIdx, turKey, turCache, rect, center, &mtxTurret, brightness, blit, 0);
+	}
+
+	return SkipGameCode;
 }
 
 DEFINE_HOOK(0x73C890, UnitClass_DrawSHP_BarrelMultiOffset, 0x0)
@@ -414,16 +540,6 @@ Matrix3D* __stdcall TunnelLocomotionClass_ShadowMatrix(ILocomotion* iloco, Matri
 }
 DEFINE_FUNCTION_JUMP(VTABLE, 0x7F5A4C, TunnelLocomotionClass_ShadowMatrix);
 
-struct DummyTypeExtHere
-{
-	char _[0xA4];
-	std::vector<VoxelStruct> ChargerTurrets;
-	std::vector<VoxelStruct> ChargerBarrels;
-	char __[0x120];
-	UnitTypeClass* WaterImage;
-	VoxelStruct NoSpawnAltVXL;
-};
-
 DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 {
 	GET(UnitClass*, pThis, EBP);
@@ -432,17 +548,17 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	if (pThis->CloakState != CloakState::Uncloaked || pThis->Type->NoShadow || !loco->Is_To_Have_Shadow())
 		return SkipDrawing;
 
-	REF_STACK(Matrix3D, shadow_matrix, STACK_OFFSET(0x1C4, -0x130));
-	GET_STACK(VoxelIndexKey, vxl_index_key, STACK_OFFSET(0x1C4, -0x1B0));
+	REF_STACK(Matrix3D, shadowMatrix, STACK_OFFSET(0x1C4, -0x130));
+	GET_STACK(VoxelIndexKey, vxlIndexKey, STACK_OFFSET(0x1C4, -0x1B0));
 	LEA_STACK(RectangleStruct*, bnd, STACK_OFFSET(0x1C4, 0xC));
 	LEA_STACK(Point2D*, pt, STACK_OFFSET(0x1C4, -0x1A4));
 	GET_STACK(Surface* const, surface, STACK_OFFSET(0x1C4, -0x1A8));
 
-	GET(UnitTypeClass*, pType, EBX);
+	GET(UnitTypeClass*, pDrawType, EBX);
 	// This is not necessarily pThis->Type : UnloadingClass or WaterImage
 	// This is the very reason I need to do this here, there's no less hacky way to get this Type from those inner calls
 
-	const auto uTypeExt = TechnoTypeExt::ExtMap.Find(pType);
+	const auto pDrawTypeExt = TechnoTypeExt::ExtMap.Find(pDrawType);
 	const auto jjloco = locomotion_cast<JumpjetLocomotionClass*>(loco);
 	const auto height = pThis->GetHeight();
 	const double baseScale_log = RulesExt::Global()->AirShadowBaseScale_log;
@@ -452,50 +568,50 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		const double minScale = RulesExt::Global()->HeightShadowScaling_MinScale;
 		if (jjloco)
 		{
-			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
+			const float cHeight = (float)pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(jjloco->Height);
 
 			if (cHeight > 0)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
+				shadowMatrix.Scale((float)std::max(Pade2_2(baseScale_log * height / cHeight), minScale));
 
 				if (jjloco->State != JumpjetLocomotionClass::State::Hovering)
-					vxl_index_key.Invalidate();
+					vxlIndexKey.Invalidate();
 			}
 		}
 		else
 		{
-			const float cHeight = (float)uTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
+			const float cHeight = (float)pDrawTypeExt->ShadowSizeCharacteristicHeight.Get(RulesClass::Instance->CruiseHeight);
 
 			if (cHeight > 0 && height > 208)
 			{
-				shadow_matrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
-				vxl_index_key.Invalidate();
+				shadowMatrix.Scale((float)std::max(Pade2_2(baseScale_log * (height - 208) / cHeight), minScale));
+				vxlIndexKey.Invalidate();
 			}
 		}
 	}
 	else if (!RulesExt::Global()->HeightShadowScaling && pThis->Type->ConsideredAircraft)
 	{
-		shadow_matrix.Scale((float)Pade2_2(baseScale_log));
+		shadowMatrix.Scale((float)Pade2_2(baseScale_log));
 	}
 
 	auto GetMainVoxel = [&]()
 		{
-			if (pType->NoSpawnAlt && pThis->SpawnManager && pThis->SpawnManager->CountDockedSpawns() == 0)
+			if (pDrawType->NoSpawnAlt && pThis->SpawnManager && pThis->SpawnManager->CountDockedSpawns() == 0)
 			{
 				if (AresHelper::CanUseAres)
 				{
-					vxl_index_key.Invalidate();// I'd just assume most of the time we have spawn
-					return &reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC)->NoSpawnAltVXL;
+					vxlIndexKey.Invalidate();// I'd just assume most of the time we have spawn
+					return &reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC)->NoSpawnAltVXL;
 				}
-				return &pType->TurretVoxel;
+				return &pDrawType->TurretVoxel;
 			}
-			return &pType->MainVoxel;
+			return &pDrawType->MainVoxel;
 		};
 
 	auto const main_vxl = GetMainVoxel();
 
-	auto shadow_point = loco->Shadow_Point();
-	auto why = *pt + shadow_point;
+	auto shadowPoint = loco->Shadow_Point();
+	auto why = *pt + shadowPoint;
 
 	float arf = pThis->AngleRotatedForwards;
 	float ars = pThis->AngleRotatedSideways;
@@ -503,22 +619,22 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 	if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 	{
 		// index key should have been already invalid, so it won't hurt to invalidate again
-		vxl_index_key.Invalidate();
-		shadow_matrix.TranslateX(float(Math::sgn(arf) * pType->VoxelScaleX * (1 - Math::cos(arf))));
-		shadow_matrix.TranslateY(float(Math::sgn(-ars) * pType->VoxelScaleY * (1 - Math::cos(ars))));
-		shadow_matrix.RotateY(arf);
-		shadow_matrix.RotateX(ars);
+		vxlIndexKey.Invalidate();
+		shadowMatrix.TranslateX(float(Math::sgn(arf) * pDrawType->VoxelScaleX * (1 - Math::cos(arf))));
+		shadowMatrix.TranslateY(float(Math::sgn(-ars) * pDrawType->VoxelScaleY * (1 - Math::cos(ars))));
+		shadowMatrix.RotateY(arf);
+		shadowMatrix.RotateX(ars);
 	}
 	else if (jjloco
-		&& uTypeExt->JumpjetTilt
+		&& pDrawTypeExt->JumpjetTilt
 		&& jjloco->State != JumpjetLocomotionClass::State::Grounded
 		&& jjloco->CurrentSpeed > 0.0
 		&& pThis->IsAlive
 		&& pThis->Health > 0
 		&& !pThis->IsAttackedByLocomotor)
 	{
-		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_ForwardSpeedFactor);
-		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * uTypeExt->JumpjetTilt_ForwardAccelFactor);
+		const float forwardSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_ForwardSpeedFactor);
+		const float forwardAccelFactor = static_cast<float>(jjloco->Accel * pDrawTypeExt->JumpjetTilt_ForwardAccelFactor);
 
 		arf = Math::clamp(static_cast<float>((forwardAccelFactor + forwardSpeedFactor)
 			* JumpjetTiltReference::ForwardBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
@@ -527,9 +643,9 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 		if (locoFace.IsRotating())
 		{
-			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * uTypeExt->JumpjetTilt_SidewaysSpeedFactor);
+			const float sidewaysSpeedFactor = static_cast<float>(jjloco->CurrentSpeed * pDrawTypeExt->JumpjetTilt_SidewaysSpeedFactor);
 			const float sidewaysRotationFactor = static_cast<float>(static_cast<short>(locoFace.Difference().Raw)
-				* uTypeExt->JumpjetTilt_SidewaysRotationFactor);
+				* pDrawTypeExt->JumpjetTilt_SidewaysRotationFactor);
 
 			ars = Math::clamp(static_cast<float>(sidewaysSpeedFactor * sidewaysRotationFactor
 				* JumpjetTiltReference::SidewaysBaseTilt), -JumpjetTiltReference::MaxTilt, JumpjetTiltReference::MaxTilt);
@@ -537,92 +653,100 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 		if (std::abs(ars) >= 0.005 || std::abs(arf) >= 0.005)
 		{
-			vxl_index_key.Invalidate();
-			shadow_matrix.RotateX(ars);
-			shadow_matrix.RotateY(arf);
+			vxlIndexKey.Invalidate();
+			shadowMatrix.RotateX(ars);
+			shadowMatrix.RotateY(arf);
 		}
 	}
 
-	auto mtx = Matrix3D::VoxelDefaultMatrix * shadow_matrix;
+	auto mtx = Matrix3D::VoxelDefaultMatrix * shadowMatrix;
 
 	if (height > 0)
-		shadow_point.Y += 1;
+		shadowPoint.Y += 1;
 
-	if (!pType->UseTurretShadow)
+	if (!pDrawType->UseTurretShadow)
 	{
-		if (uTypeExt->ShadowIndices.empty())
+		if (pDrawTypeExt->ShadowIndices.empty())
 		{
-			if (pType->ShadowIndex >= 0 && pType->ShadowIndex < main_vxl->HVA->LayerCount)
+			if (pDrawType->ShadowIndex >= 0 && pDrawType->ShadowIndex < main_vxl->HVA->LayerCount)
+			{
 				pThis->DrawVoxelShadow(
 					main_vxl,
-					pType->ShadowIndex,
-					vxl_index_key,
-					&pType->VoxelShadowCache,
+					pDrawType->ShadowIndex,
+					vxlIndexKey,
+					&pDrawType->VoxelShadowCache,
 					bnd,
 					&why,
 					&mtx,
 					true,
 					surface,
-					shadow_point
+					shadowPoint
 				);
+			}
 		}
 		else
 		{
-			for (auto& [index, _] : uTypeExt->ShadowIndices)
+			for (auto& [index, _] : pDrawTypeExt->ShadowIndices)
+			{
 				pThis->DrawVoxelShadow(
 					main_vxl,
 					index,
-					index == pType->ShadowIndex ? vxl_index_key : VoxelIndexKey(-1),
-					&pType->VoxelShadowCache,
+					index == pDrawType->ShadowIndex ? vxlIndexKey : VoxelIndexKey(-1),
+					&pDrawType->VoxelShadowCache,
 					bnd,
 					&why,
 					&mtx,
-					index == pType->ShadowIndex,
+					index == pDrawType->ShadowIndex,
 					surface,
-					shadow_point
+					shadowPoint
 				);
+			}
 		}
 	}
 
-	if (main_vxl == &pType->TurretVoxel || (!pType->UseTurretShadow && !uTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
+	if (main_vxl == &pDrawType->TurretVoxel || (!pDrawType->UseTurretShadow && !pDrawTypeExt->TurretShadow.Get(RulesExt::Global()->DrawTurretShadow)))
 		return SkipDrawing;
 
-	auto GetTurretVoxel = [pType](int idx) ->VoxelStruct*
+	auto GetTurretVoxel = [pDrawType](int idx) ->VoxelStruct*
+	{
+		if (pDrawType->TurretCount == 0 || pDrawType->IsGattling || idx < 0)
+			return &pDrawType->TurretVoxel;
+
+		if (idx < 18)
+			return &pDrawType->ChargerTurrets[idx];
+
+		if (AresHelper::CanUseAres)
 		{
-			if (pType->TurretCount == 0 || pType->IsGattling || idx < 0)
-				return &pType->TurretVoxel;
+			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+			return &aresTypeExt->ChargerTurrets[idx - 18];
+		}
 
-			if (idx < 18)
-				return &pType->ChargerTurrets[idx];
+		return nullptr;
+	};
 
-			if (AresHelper::CanUseAres)
-			{
-				auto* aresTypeExt = reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC);
-				return &aresTypeExt->ChargerTurrets[idx - 18];
-			}
+	auto GetBarrelVoxel = [pDrawType](int idx)->VoxelStruct*
+	{
+		if (pDrawType->TurretCount == 0 || pDrawType->IsGattling || idx < 0)
+			return &pDrawType->BarrelVoxel;
 
-			return nullptr;
-		};
+		if (idx < 18)
+			return &pDrawType->ChargerBarrels[idx];
 
-	auto GetBarrelVoxel = [pType](int idx)->VoxelStruct*
+		if (AresHelper::CanUseAres)
 		{
-			if (pType->TurretCount == 0 || pType->IsGattling || idx < 0)
-				return &pType->BarrelVoxel;
+			auto* aresTypeExt = reinterpret_cast<AresTechnoTypeExt*>(pDrawType->align_2FC);
+			return &aresTypeExt->ChargerBarrels[idx - 18];
+		}
 
-			if (idx < 18)
-				return &pType->ChargerBarrels[idx];
+		return nullptr;
+	};
 
-			if (AresHelper::CanUseAres)
-			{
-				auto* aresTypeExt = reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC);
-				return &aresTypeExt->ChargerBarrels[idx - 18];
-			}
-
-			return nullptr;
-		};
-
-	uTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
+	pDrawTypeExt->ApplyTurretOffset(&mtx, Pixel_Per_Lepton);
 	mtx.RotateZ(static_cast<float>(pThis->SecondaryFacing.Current().GetRadian<32>() - pThis->PrimaryFacing.Current().GetRadian<32>()));
+
+	const bool inRecoil = pDrawType->TurretRecoil && pThis->TurretRecoil.State != RecoilData::RecoilState::Inactive;
+	if (inRecoil)
+		mtx.TranslateX(-pThis->TurretRecoil.TravelSoFar);
 
 	const auto tur = GetTurretVoxel(pThis->CurrentTurretNumber);
 	if (!(tur && tur->VXL && tur->HVA))
@@ -630,11 +754,11 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 
 	const auto bar = GetBarrelVoxel(pThis->CurrentTurretNumber);
 	const auto haveBar = bar && bar->VXL && bar->HVA && !bar->VXL->Initialized;
-	if (vxl_index_key.Is_Valid_Key())
-		vxl_index_key.MinorVoxel.TurretFacing = pThis->SecondaryFacing.Current().GetFacing<32>();
+	if (vxlIndexKey.Is_Valid_Key())
+		vxlIndexKey.MinorVoxel.TurretFacing = pThis->SecondaryFacing.Current().GetFacing<32>();
 
-	auto* cache = &pType->VoxelShadowCache;
-	if (!pType->UseTurretShadow)
+	auto* cache = &pDrawType->VoxelShadowCache;
+	if (!pDrawType->UseTurretShadow)
 	{
 		if (haveBar)
 		{
@@ -642,27 +766,32 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 		}
 		else
 		{
-			cache = tur != &pType->TurretVoxel
+			cache = tur != &pDrawType->TurretVoxel
 				? nullptr // man what can I say, you are fucked, for now
-				: reinterpret_cast<decltype(cache)>(&pType->VoxelTurretBarrelCache); // excuse me
+				: reinterpret_cast<decltype(cache)>(&pDrawType->VoxelTurretBarrelCache); // excuse me
 		}
 	}
 
 	pThis->DrawVoxelShadow(
 		tur,
 		0,
-		vxl_index_key,
-		cache,
+		(inRecoil ? VoxelIndexKey(-1) : vxlIndexKey),
+		(inRecoil ? nullptr : cache),
 		bnd,
 		&why,
 		&mtx,
-		cache != nullptr,
+		(!inRecoil && cache != nullptr),
 		surface,
-		shadow_point
+		shadowPoint
 	);
 
-	if (haveBar) // you are utterly fucked, for now
+	if (haveBar)// you are utterly fucked, for now
 	{
+		if (pDrawType->TurretRecoil && pThis->BarrelRecoil.State != RecoilData::RecoilState::Inactive)
+			mtx.TranslateX(-pThis->BarrelRecoil.TravelSoFar);
+
+		mtx.ScaleX(static_cast<float>(Math::cos(-pThis->BarrelFacing.Current().GetRadian<32>())));
+
 		pThis->DrawVoxelShadow(
 			bar,
 			0,
@@ -673,7 +802,7 @@ DEFINE_HOOK(0x73C47A, UnitClass_DrawAsVXL_Shadow, 0x5)
 			&mtx,
 			false,
 			surface,
-			shadow_point
+			shadowPoint
 		);
 	}
 
@@ -815,7 +944,7 @@ DEFINE_HOOK(0x7072A1, cyka707280_WhichMatrix, 0x6)
 				else
 				{
 					// guess what, someone actually has a multisection nospawnalt
-					if (!(AresHelper::CanUseAres && pVXL == &reinterpret_cast<DummyTypeExtHere*>(pType->align_2FC)->NoSpawnAltVXL))
+					if (!(AresHelper::CanUseAres && pVXL == &reinterpret_cast<AresTechnoTypeExt*>(pType->align_2FC)->NoSpawnAltVXL))
 						return pThis->TurretAnimFrame % hva->FrameCount;
 				}
 				// you might also be WaterImage or sth else, but I don't want to care anymore, go fuck yourself

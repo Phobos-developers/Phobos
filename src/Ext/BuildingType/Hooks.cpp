@@ -75,7 +75,7 @@ DEFINE_HOOK(0x6D528A, TacticalClass_DrawPlacement_PlacementPreview, 0x6)
 
 	const auto pBuilding = specific_cast<BuildingClass*>(DisplayClass::Instance.CurrentBuilding);
 	const auto pType = pBuilding ? pBuilding->Type : nullptr;
-	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pType);
+	const auto pTypeExt = BuildingTypeExt::ExtMap.TryFind(pType);
 	const bool isShow = pTypeExt && pTypeExt->PlacementPreview;
 
 	if (isShow)
@@ -404,3 +404,28 @@ DEFINE_HOOK(0x44E85F, BuildingClass_Power_DamageFactor, 0x7)
 
 	return Handled;
 }
+
+#pragma region WeaponFactoryPath
+
+DEFINE_HOOK(0x73F5A7, UnitClass_IsCellOccupied_UnlimboDirection, 0x8)
+{
+	enum { NextObject = 0x73FA87, ContinueCheck = 0x73F5AF };
+
+	GET(const bool, notPassable, EAX);
+
+	if (notPassable)
+		return ContinueCheck;
+
+	GET(BuildingClass* const, pBuilding, ESI);
+
+	const auto pType = pBuilding->Type;
+
+	if (!pType->WeaponsFactory)
+		return NextObject;
+
+	GET(CellClass* const, pCell, EDI);
+
+	return pCell->MapCoords.Y == pBuilding->Location.Y / Unsorted::LeptonsPerCell + pType->FoundationOutside[10].Y ? NextObject : ContinueCheck;
+}
+
+#pragma endregion

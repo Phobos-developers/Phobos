@@ -18,12 +18,15 @@ DEFINE_HOOK(0x43FE69, BuildingClass_AI, 0xA)
 {
 	GET(BuildingClass*, pThis, ESI);
 
-	auto const pExt = BuildingExt::ExtMap.Find(pThis);
-	pExt->DisplayIncomeString();
-	pExt->ApplyPoweredKillSpawns();
+	const auto pBuildingExt = BuildingExt::ExtMap.Find(pThis);
+	pBuildingExt->DisplayIncomeString();
+	pBuildingExt->ApplyPoweredKillSpawns();
+
+	const auto pTechnoExt = pBuildingExt->TechnoExtData;
+	pTechnoExt->UpdateLaserTrails(); // Mainly for on turret trails
 
 	// Force airstrike targets to redraw every frame to account for tint intensity fluctuations.
-	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+	if (pTechnoExt->AirstrikeTargetingMe)
 		pThis->Mark(MarkType::Change);
 
 	return 0;
@@ -204,26 +207,61 @@ DEFINE_HOOK(0x44D455, BuildingClass_Mission_Missile_EMPulseBulletWeapon, 0x8)
 
 #pragma region KickOutStuckUnits
 
-// Kick out stuck units when the factory building is not busy, only factory buildings can enter this hook
-DEFINE_HOOK(0x450248, BuildingClass_UpdateFactory_KickOutStuckUnits, 0x6)
+DEFINE_HOOK(0x44955D, BuildingClass_WeaponFactoryOutsideBusy_WeaponFactoryCell, 0x6)
 {
-	GET(BuildingClass*, pThis, ESI);
+	enum { NotBusy = 0x44969B };
 
-	// This is not a solution to the problem at its root
-	// Currently the root cause of the problem is not located
-	// So the idle weapon factory is asked to search every second for any units that are stuck
-	if (!(Unsorted::CurrentFrame % 15)) // Check every 15 frames for factories
+	GET(BuildingClass* const, pThis, ESI);
+
+	const auto pLink = pThis->GetNthLink();
+
+	if (!pLink)
+		return NotBusy;
+
+	const auto pLinkType = pLink->GetTechnoType();
+
+	if (pLinkType->JumpJet && pLinkType->BalloonHover)
+		return NotBusy;
+
+	return 0;
+}
+
+// Attempt to kick the stuck unit out again by setting the destination
+DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
+{
+	enum { Waiting = 0x44E267, NextStatus = 0x44E20C};
+
+	GET(BuildingClass*, pThis, EBP);
+
+	if (!pThis->IsTether)
+		return NextStatus;
+
+	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
-		const auto pType = pThis->Type;
-
-		if (pType->Factory == AbstractType::UnitType && pType->WeaponsFactory && !pType->Naval && pThis->QueuedMission != Mission::Unload)
+		// Detecting movement status
+		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
 		{
-			const auto mission = pThis->CurrentMission;
+			// Evacuate the congestion at the entrance
+			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x449540)(pThis);
+			const auto pType = pThis->Type;
+			const auto cell = pThis->GetMapCoords() + pType->FoundationOutside[10];
+			const auto door = cell - CellStruct { 1, 0 };
+			const auto pDest = MapClass::Instance.GetCellAt(door);
 
-			if (mission == Mission::Guard && !pThis->InLimbo || mission == Mission::Unload && pThis->MissionStatus == 1) // Unloading but stuck
-				BuildingExt::KickOutStuckUnits(pThis);
+			// Hover units may stop one cell behind their destination, should forcing them to advance one more cell
+			pUnit->SetDestination((pUnit->Destination != pDest ? pDest : MapClass::Instance.GetCellAt(cell)), true);
 		}
 	}
+
+	return Waiting;
+}
+
+// Check for any stuck units inside after successful unload each time. If there is, kick it out
+DEFINE_HOOK(0x44E260, BuildingClass_Mission_Unload_KickOutStuckUnits, 0x7)
+{
+	GET(BuildingClass*, pThis, EBP);
+
+	BuildingExt::KickOutStuckUnits(pThis);
 
 	return 0;
 }

@@ -42,6 +42,12 @@ public:
 
 		std::unique_ptr<MessageListClass> NewMessageList;
 
+		PhobosFixedString<64u> DefaultLS640BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdName;
+		PhobosFixedString<64u> DefaultLS800BkgdPal;
+
+		BulletClass* MasterDetonationBullet; // Used to do warhead/weapon detonations on spot without having to create new BulletClass instance every time.
+
 		int DropshipLoadout_Theme;
 		long DropshipLoadout_Money;
 		NullableIdx<VoxClass> DropshipLoadout_StartEVA;
@@ -85,6 +91,10 @@ public:
 			, SWSidebar_Enable { true }
 			, SWSidebar_Indices {}
 			, NewMessageList {}
+			, DefaultLS640BkgdName {}
+			, DefaultLS800BkgdName {}
+			, DefaultLS800BkgdPal {}
+			, MasterDetonationBullet {}
 			, DropshipLoadout_Theme { -1 }
 			, DropshipLoadout_Money { -1 }
 			, DropshipLoadout_StartEVA {}

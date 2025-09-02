@@ -1426,6 +1426,14 @@ DEFINE_HOOK(0x6FC617, TechnoClass_GetFireError_Spawner, 0x8)
 
 #pragma endregion
 
+#pragma region TurretRecoilReadFix
+
+// Skip incorrect copy, why do copy like this?
+DEFINE_JUMP(LJMP, 0x715326, 0x715333); // TechnoTypeClass::LoadFromINI
+// Then EDI is BarrelAnimData now, not incorrect TurretAnimData
+
+#pragma endregion
+
 #pragma region TeamCloseRangeFix
 
 int __fastcall Check2DDistanceInsteadOf3D(ObjectClass* pSource, void* _, AbstractClass* pTarget)
@@ -1625,8 +1633,15 @@ DEFINE_HOOK(0x446D42, BuildingClass_Place_FreeUnit_NearByLocation2, 0x6)
 
 DEFINE_HOOK(0x449462, BuildingClass_IsCellOccupied_UndeploysInto, 0x6)
 {
-	enum { SkipGameCode = 0x449487 };
+	enum { PlacingCheck = 0x449493, SkipGameCode = 0x449487 };
 
+	GET(BuildingClass*, pThis, ECX);
+
+	// Placing check, only newly generated buildings in this mission
+	if (pThis->CurrentMission == Mission::None)
+		return PlacingCheck;
+
+	// Undeploying check
 	GET(BuildingTypeClass*, pType, EAX);
 	LEA_STACK(CellStruct*, pDest, 0x4);
 	const auto pCell = MapClass::Instance.GetCellAt(*pDest);
@@ -2316,12 +2331,21 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 	GET(BulletClass*, pBullet, ESI);
 
 	if (pBullet->HasParachute || (pBullet->Type->Vertical && BulletTypeExt::ExtMap.Find(pBullet->Type)->Vertical_AircraftFix))
-	{
-		pBullet->Velocity = BulletVelocity{ 0, 0, pBullet->Velocity.Z };
 		return SkipGameCode;
-	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6FED2F, TechnoClass_FireAt_VerticalInitialFacing, 0x6)
+{
+	enum { Continue = 0x6FED39, SkipGameCode = 0x6FED8F };
+
+	GET(BulletTypeClass*, pBulletType, EAX);
+
+	if (BulletTypeExt::ExtMap.Find(pBulletType)->VerticalInitialFacing.Get(pBulletType->Voxel || pBulletType->Vertical))
+		return Continue;
+
+	return SkipGameCode;
 }
 
 #pragma region InfantryDeployFireWeaponFix
@@ -2476,5 +2500,32 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 {
 	return WhatActionObjectTemp::Skip ? 0x6FC981 : 0;
 }
+
+#pragma endregion
+
+#pragma region AStarBuffer
+
+// AStarClass_CTOR
+// Path queue nodes buffer doubled
+
+// 42A74F: 68 04 00 04 00
+// For `new` to use (sizeof(Node*) == 4)
+DEFINE_PATCH(0x42A752, 0x08);
+// push 40004h ((65536 + 1) * 4) -> push 80004h ((131072 + 1) * 4)
+
+// 42A760: C7 47 04 00 00 01 00
+// Set the total amount of valid nodes
+DEFINE_PATCH(0x42A765, 0x02);
+// mov dword ptr [edi+4], 10000h (65536) -> mov dword ptr [edi+4], 20000h (131072)
+
+// 42A7E0: 68 04 00 10 00
+// For `new` to use (sizeof(Node) == 16)
+DEFINE_PATCH(0x42A7E3, 0x20);
+// push 100004h ((65536 + 1) * 16) -> push 200004h ((131072 + 1) * 16)
+
+// 42A7F7: BA 00 00 01 00
+// Set the loops count of initialization
+DEFINE_PATCH(0x42A7FA, 0x02);
+// mov edx, 10000h (65536) -> mov edx, 20000h (131072)
 
 #pragma endregion

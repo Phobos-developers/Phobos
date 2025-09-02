@@ -30,6 +30,9 @@ public:
 	{
 	public:
 		Valueable<bool> HealthBar_Hide;
+		Valueable<bool> HealthBar_HidePips;
+		Valueable<bool> HealthBar_Permanent;
+		Valueable<bool> HealthBar_Permanent_PipScale;
 		Valueable<CSFText> UIDescription;
 		Valueable<bool> LowSelectionPriority;
 		PhobosFixedString<0x20> GroupAs;
@@ -163,7 +166,8 @@ public:
 		Valueable<bool> JumpjetRotateOnCrash;
 		Nullable<int> ShadowSizeCharacteristicHeight;
 
-		Valueable<bool> DeployingAnim_AllowAnyDirection;
+		Nullable<FacingType> DeployDir;
+		ValueableVector<AnimTypeClass*> DeployingAnims;
 		Valueable<bool> DeployingAnim_KeepUnitVisible;
 		Valueable<bool> DeployingAnim_ReverseForUndeploy;
 		Valueable<bool> DeployingAnim_UseUnitDrawer;
@@ -256,6 +260,7 @@ public:
 		Nullable<int> SpawnHeight;
 		Nullable<int> LandingDir;
 
+		Valueable<TechnoTypeClass*> Convert_Deploy; // Ares
 		Valueable<TechnoTypeClass*> Convert_HumanToComputer;
 		Valueable<TechnoTypeClass*> Convert_ComputerToHuman;
 		Valueable<bool> Convert_ResetMindControl;
@@ -420,8 +425,13 @@ public:
 
 		PhobosPCXFile CameoPCX;
 
+		Nullable<bool> TurretResponse;
+
 		ExtData(TechnoTypeClass* OwnerObject) : Extension<TechnoTypeClass>(OwnerObject)
 			, HealthBar_Hide { false }
+			, HealthBar_HidePips { false }
+			, HealthBar_Permanent { false }
+			, HealthBar_Permanent_PipScale { false }
 			, UIDescription {}
 			, LowSelectionPriority { false }
 			, GroupAs { NONE_STR }
@@ -507,7 +517,8 @@ public:
 			, NoAmmoAmount { 0 }
 			, JumpjetRotateOnCrash { true }
 			, ShadowSizeCharacteristicHeight { }
-			, DeployingAnim_AllowAnyDirection { false }
+			, DeployDir {}
+			, DeployingAnims {}
 			, DeployingAnim_KeepUnitVisible { false }
 			, DeployingAnim_ReverseForUndeploy { true }
 			, DeployingAnim_UseUnitDrawer { true }
@@ -646,6 +657,7 @@ public:
 			, DroppodType {}
 			, TiberiumEaterType {}
 
+			, Convert_Deploy { }
 			, Convert_HumanToComputer { }
 			, Convert_ComputerToHuman { }
 			, Convert_ResetMindControl { false }
@@ -788,6 +800,8 @@ public:
 			, VoiceEliteWeaponAttacks {}
 
 			, InfantryAutoDeploy {}
+
+			, TurretResponse {}
 		{ }
 
 		virtual ~ExtData() = default;
@@ -799,7 +813,7 @@ public:
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
-		void LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection);
+		void LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection);
 
 		void ApplyTurretOffset(Matrix3D* mtx, double factor = 1.0);
 		void CalculateSpawnerRange();

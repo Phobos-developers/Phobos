@@ -428,3 +428,37 @@ DEFINE_HOOK(0x69A317, SessionClass_PlayerColorIndexToColorSchemeIndex, 0x0)
 
 	return 0x69A325;
 }
+
+DEFINE_HOOK(0x552F79, LoadProgressManager_Draw_MissingLoadingScreenDefaults, 0x6)
+{
+	GET(LoadProgressManager*, pThis, EBP);
+	GET(ConvertClass*, pDrawer, EBX);
+	GET_STACK(bool, isLowRes, STACK_OFFSET(0x1268, -0x1235));
+
+	auto const pScenarioExt = ScenarioExt::Global();
+
+	if (!pThis->LoadScreenSHP)
+		pThis->LoadScreenSHP = FileSystem::LoadSHPFile(isLowRes ? pScenarioExt->DefaultLS640BkgdName : pScenarioExt->DefaultLS800BkgdName);
+
+	if (!pDrawer)
+	{
+		// Uncertain how necessary this is but is what game does...
+		if (LoadProgressManager::LoadScreenPal)
+		{
+			GameDelete(LoadProgressManager::LoadScreenPal);
+			LoadProgressManager::LoadScreenPal = nullptr;
+		}
+
+		if (LoadProgressManager::LoadScreenBytePal)
+		{
+			GameDelete(LoadProgressManager::LoadScreenBytePal);
+			LoadProgressManager::LoadScreenBytePal = nullptr;
+		}
+
+		ConvertClass::CreateFromFile(pScenarioExt->DefaultLS800BkgdPal, LoadProgressManager::LoadScreenBytePal, LoadProgressManager::LoadScreenPal);
+
+		R->EBX(LoadProgressManager::LoadScreenPal);
+	}
+
+	return 0;
+}
