@@ -28,7 +28,7 @@ DEFINE_HOOK(0x4B6C30, Dropship_Loadout_Remake, 0x0) //0x5)
 	int nStartingDropships = pHouseTypeExt->DropshipLoadout_StartingDropships.isset() ? pHouseTypeExt->DropshipLoadout_StartingDropships : ScenarioClass::Instance->StartingDropships;
 
 	// If there are no dropships, there is no loadout screen. Exit immediately
-	if (nStartingDropships == 0 || nStartingDropships > 3)
+	if (nStartingDropships <= 0)
 		return EndFunction;
 
 	// Clear the off-screen buffer to black now that we know the screen will be displayed
