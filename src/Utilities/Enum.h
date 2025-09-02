@@ -300,6 +300,19 @@ enum class DisplayInfoType : BYTE
 	FactoryProcess = 20
 };
 
+enum class DisplayShowType : unsigned char
+{
+	None = 0x0,
+	CursorHover = 0x1,
+	Selected = 0x2,
+	Idle = 0x4,
+
+	Select = CursorHover | Selected,
+	All = CursorHover | Selected | Idle
+};
+
+MAKE_ENUM_FLAGS(DisplayShowType);
+
 enum class BannerNumberType : int
 {
 	None = 0,
