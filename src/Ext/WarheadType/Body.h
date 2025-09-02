@@ -187,6 +187,10 @@ public:
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
 
+		Valueable<bool> ReverseEngineer;
+
+		Valueable<bool> CanKill;
+
 		// Ares tags
 		// http://ares-developers.github.io/Ares-docs/new/warheads/general.html
 		Valueable<bool> AffectsEnemies;
@@ -205,8 +209,6 @@ public:
 		bool PossibleCellSpreadDetonate;
 		bool HealthCheck;
 		TechnoClass* DamageAreaTarget;
-
-		Valueable<bool> CanKill;
 
 		Valueable<bool> FakeEngineer_CanRepairBridges;
 		Valueable<bool> FakeEngineer_CanDestroyBridges;
@@ -408,6 +410,8 @@ public:
 			, FakeEngineer_CanDestroyBridges { false }
 			, FakeEngineer_CanCaptureBuildings { false }
 			, FakeEngineer_BombDisarm { false }
+
+			, ReverseEngineer { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -443,6 +447,7 @@ public:
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
+		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
 	};
 

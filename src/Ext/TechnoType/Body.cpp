@@ -603,6 +603,9 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	INI_EX exINI(pINI);
 
 	this->HealthBar_Hide.Read(exINI, pSection, "HealthBar.Hide");
+	this->HealthBar_HidePips.Read(exINI, pSection, "HealthBar.HidePips");
+	this->HealthBar_Permanent.Read(exINI, pSection, "HealthBar.Permanent");
+	this->HealthBar_Permanent_PipScale.Read(exINI, pSection, "HealthBar.Permanent.PipScale");
 	this->UIDescription.Read(exINI, pSection, "UIDescription");
 	this->LowSelectionPriority.Read(exINI, pSection, "LowSelectionPriority");
 	this->MindControlRangeLimit.Read(exINI, pSection, "MindControlRangeLimit");
@@ -720,7 +723,8 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->JumpjetRotateOnCrash.Read(exINI, pSection, "JumpjetRotateOnCrash");
 	this->ShadowSizeCharacteristicHeight.Read(exINI, pSection, "ShadowSizeCharacteristicHeight");
 
-	this->DeployingAnim_AllowAnyDirection.Read(exINI, pSection, "DeployingAnim.AllowAnyDirection");
+	this->DeployDir.Read(exINI, pSection, "DeployDir");
+	this->DeployingAnims.Read(exINI, pSection, "DeployingAnims");
 	this->DeployingAnim_KeepUnitVisible.Read(exINI, pSection, "DeployingAnim.KeepUnitVisible");
 	this->DeployingAnim_ReverseForUndeploy.Read(exINI, pSection, "DeployingAnim.ReverseForUndeploy");
 	this->DeployingAnim_UseUnitDrawer.Read(exINI, pSection, "DeployingAnim.UseUnitDrawer");
@@ -840,6 +844,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->SpawnHeight.Read(exINI, pSection, "SpawnHeight");
 	this->LandingDir.Read(exINI, pSection, "LandingDir");
 
+	this->Convert_Deploy.Read(exINI, pSection, "Convert.Deploy");
 	this->Convert_HumanToComputer.Read(exINI, pSection, "Convert.HumanToComputer");
 	this->Convert_ComputerToHuman.Read(exINI, pSection, "Convert.ComputerToHuman");
 	this->Convert_ResetMindControl.Read(exINI, pSection, "Convert.ResetMindControl");
@@ -967,7 +972,7 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->AttackMove_PursuitTarget.Read(exINI, pSection, "AttackMove.PursuitTarget");
 
 	this->InfantryAutoDeploy.Read(exINI, pSection, "InfantryAutoDeploy");
-
+	
 	// Ares 0.2
 	this->RadarJamRadius.Read(exINI, pSection, "RadarJamRadius");
 
@@ -1201,14 +1206,14 @@ void TechnoTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	if (GeneralUtils::IsValidString(pThis->PaletteFile) && !pThis->Palette)
 		Debug::Log("[Developer warning] [%s] has Palette=%s set but no palette file was loaded (missing file or wrong filename). Missing palettes cause issues with lighting recalculations.\n", pArtSection, pThis->PaletteFile);
 
-	this->LoadFromINIByWhatAmI(exArtINI, pArtSection);
+	this->LoadFromINIByWhatAmI(exINI, pSection, exArtINI, pArtSection);
 
 	// VoiceIFVRepair from Ares 0.2
 	this->VoiceIFVRepair.Read(exINI, pSection, "VoiceIFVRepair");
 	this->ParseVoiceWeaponAttacks(exINI, pSection, this->VoiceWeaponAttacks, this->VoiceEliteWeaponAttacks);
 }
 
-void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* pArtSection)
+void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exINI, const char* pSection, INI_EX& exArtINI, const char* pArtSection)
 {
 	AbstractType abs = this->OwnerObject()->WhatAmI();
 
@@ -1218,6 +1223,7 @@ void TechnoTypeExt::ExtData::LoadFromINIByWhatAmI(INI_EX& exArtINI, const char* 
 	{
 		this->FireUp.Read(exArtINI, pArtSection, "FireUp");
 		this->FireUp_ResetInRetarget.Read(exArtINI, pArtSection, "FireUp.ResetInRetarget");
+		this->TurretResponse.Read(exINI, pSection, "TurretResponse");
 		//this->SecondaryFire.Read(exArtINI, pArtSection, "SecondaryFire");
 		break;
 	}
@@ -1231,6 +1237,9 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 {
 	Stm
 		.Process(this->HealthBar_Hide)
+		.Process(this->HealthBar_HidePips)
+		.Process(this->HealthBar_Permanent)
+		.Process(this->HealthBar_Permanent_PipScale)
 		.Process(this->UIDescription)
 		.Process(this->LowSelectionPriority)
 		.Process(this->MindControlRangeLimit)
@@ -1353,7 +1362,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->NoAmmoAmount)
 		.Process(this->JumpjetRotateOnCrash)
 		.Process(this->ShadowSizeCharacteristicHeight)
-		.Process(this->DeployingAnim_AllowAnyDirection)
+		.Process(this->DeployDir)
+		.Process(this->DeployingAnims)
 		.Process(this->DeployingAnim_KeepUnitVisible)
 		.Process(this->DeployingAnim_ReverseForUndeploy)
 		.Process(this->DeployingAnim_UseUnitDrawer)
@@ -1461,6 +1471,7 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->TiberiumEaterType)
 
+		.Process(this->Convert_Deploy)
 		.Process(this->Convert_HumanToComputer)
 		.Process(this->Convert_ComputerToHuman)
 		.Process(this->Convert_ResetMindControl)
@@ -1603,6 +1614,8 @@ void TechnoTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->VoiceEliteWeaponAttacks)
 
 		.Process(this->InfantryAutoDeploy)
+
+		.Process(this->TurretResponse)
 		;
 }
 void TechnoTypeExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)
