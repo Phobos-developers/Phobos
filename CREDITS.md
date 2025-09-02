@@ -542,6 +542,7 @@ This page lists all the individual contributions to the project by their author.
   - Fix an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file
   - Jumpjet Climbing Logic Enhancement
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
+  - Fix an issue that units' `LaserTrails` will always lags behind by one frame
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
@@ -603,6 +604,7 @@ This page lists all the individual contributions to the project by their author.
   - Force techno targeting in distributed frames to improve performance
   - Use `SkipCrushSlowdown=true` to avoid the bug related to `Accelerates=true` and `MovementZone=CrushAll`
   - Auto deploy for GI-like infantry
+  - Fix an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`
 - **solar-III (凤九歌)**
   - Target scanning delay customization (documentation)
   - Skip target scanning function calling for unarmed technos (documentation)

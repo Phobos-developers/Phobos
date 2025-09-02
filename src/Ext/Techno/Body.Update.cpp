@@ -36,7 +36,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	this->UpdateShield();
 	this->UpdateAttachEffects();
-	this->UpdateLaserTrails();
 	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
@@ -640,6 +639,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		for (auto& pTrail : addition)
 			this->LaserTrails.emplace_back(std::move(pTrail));
 	}
+	else if (const size_t trailSize = pNewTypeExt->LaserTrailData.size())
+	{
+		this->LaserTrails.reserve(trailSize);
+
+		for (const auto& entry : pNewTypeExt->LaserTrailData)
+			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
+	}
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
@@ -994,6 +1000,25 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pThis->ReleaseLocomotor(pThis->Target == pThis->LocomotorTarget);
 		pThis->LocomotorTarget->LocomotorSource = nullptr;
 		pThis->LocomotorTarget = nullptr;
+	}
+
+	// FireAngle
+	pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pCurrentType->FireAngle << 8)));
+
+	// Reset recoil data
+	{
+		auto& turretRecoil = pThis->TurretRecoil.Turret;
+		const auto& turretAnimData = pCurrentType->TurretAnimData;
+		turretRecoil.Travel = turretAnimData.Travel;
+		turretRecoil.CompressFrames = turretAnimData.CompressFrames;
+		turretRecoil.RecoverFrames = turretAnimData.RecoverFrames;
+		turretRecoil.HoldFrames = turretAnimData.HoldFrames;
+		auto& barrelRecoil = pThis->BarrelRecoil.Turret;
+		const auto& barrelAnimData = pCurrentType->BarrelAnimData;
+		barrelRecoil.Travel = barrelAnimData.Travel;
+		barrelRecoil.CompressFrames = barrelAnimData.CompressFrames;
+		barrelRecoil.RecoverFrames = barrelAnimData.RecoverFrames;
+		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
 	}
 
 	// Only FootClass* can use this.
