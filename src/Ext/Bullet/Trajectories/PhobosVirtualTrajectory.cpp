@@ -203,11 +203,13 @@ void VirtualTrajectory::UpdateTrackingLaser()
 	const auto pBulletExt = BulletExt::ExtMap.Find(pBullet);
 
 	// Find the outermost transporter
-	const auto pFirer = BulletExt::GetSurfaceFirer(pBullet->Owner);
+	const auto pOwner = pBullet->Owner;
+	const auto pFirer = BulletExt::GetSurfaceFirer(pOwner);
 
 	// Considering that the CurrentBurstIndex may be different, it is not possible to call existing functions
 	if (!pBulletExt->NotMainWeapon && pFirer && !pFirer->InLimbo)
-		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, pBulletExt->FLHCoord, pFirer->HasTurret());
+		pLaser->Source = TechnoExt::GetFLHAbsoluteCoords(pFirer, pBulletExt->FLHCoord, (!pOwner->InOpenToppedTransport || TechnoExt::ExtMap.Find(pFirer)->TypeExtData->AlternateFLH_OnTurret));
 
 	pLaser->Target = pBullet->Location;
+	pLaser->Progress.Value = 0;
 }
