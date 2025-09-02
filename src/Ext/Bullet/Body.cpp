@@ -753,6 +753,7 @@ void BulletExt::Detonate(const CoordStruct& coords, TechnoClass* pOwner, int dam
 	else
 	{
 		pBullet->Type = BulletTypeExt::GetDefaultBulletType();
+		pBullet->SetWeaponType(nullptr);
 	}
 
 	pBullet->Owner = pOwner;
