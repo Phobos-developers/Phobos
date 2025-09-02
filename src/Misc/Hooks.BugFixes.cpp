@@ -2505,7 +2505,7 @@ DEFINE_HOOK(0x6FC8F5, TechnoClass_CanFire_SkipROF, 0x6)
 
 #pragma region AStarBuffer
 
-// AStarClass_CTOR
+// AStarClass::CTOR
 // Path queue nodes buffer doubled
 
 // 42A74F: 68 04 00 04 00
@@ -2527,5 +2527,18 @@ DEFINE_PATCH(0x42A7E3, 0x20);
 // Set the loops count of initialization
 DEFINE_PATCH(0x42A7FA, 0x02);
 // mov edx, 10000h (65536) -> mov edx, 20000h (131072)
+
+// AStarClass::FindHierarchicalPath
+// Replace sign-extend to zero-extend
+
+// 42C34A: 0F BF 1C 70
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x42C34B, 0xB7);
+// movsx ebx, word ptr [eax+esi*2] -> movzx ebx, word ptr [eax+esi*2]
+
+// 42C36A: 0F BF 04 70
+// To avoid incorrect negative int index
+DEFINE_PATCH(0x42C36B, 0xB7);
+// movsx eax, word ptr [eax+esi*2] -> movzx eax, word ptr [eax+esi*2]
 
 #pragma endregion
