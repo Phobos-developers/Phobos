@@ -310,6 +310,11 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 
 	if (pTargetTechno)
 	{
+		const auto pTargetExt = TechnoExt::ExtMap.Find(pTargetTechno);
+
+		if (pWeaponExt->OnlyAttacker.Get() && !pTargetExt->ContainFirer(pWeapon, pThis))
+			return CannotFire;
+
 		if (pThis->Berzerk
 			&& !EnumFunctions::CanTargetHouse(RulesExt::Global()->BerzerkTargeting, pThis->Owner, pTargetTechno->Owner))
 		{
@@ -332,7 +337,7 @@ DEFINE_HOOK(0x6FC339, TechnoClass_CanFire, 0x6)
 			if (!EnumFunctions::IsTechnoEligible(pTargetTechno, pWHExt->AirstrikeTargets))
 				return CannotFire;
 
-			if (!TechnoExt::ExtMap.Find(pTargetTechno)->TypeExtData->AllowAirstrike.Get(pTargetTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))
+			if (!pTargetExt->TypeExtData->AllowAirstrike.Get(pTargetTechno->AbstractFlags & AbstractFlags::Foot ? true : static_cast<BuildingClass*>(pTargetTechno)->Type->CanC4))
 				return CannotFire;
 		}
 	}
@@ -532,6 +537,24 @@ DEFINE_HOOK(0x6FDDC0, TechnoClass_FireAt_BeforeTruelyFire, 0x6)
 			if ((attachEffect->GetType()->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None)
 				attachEffect->ShouldBeDiscarded = true;
 		}
+	}
+
+	return 0;
+}
+
+DEFINE_HOOK(0x6FDE0E, TechnoClass_FireAt_OnlyAttacker, 0x6)
+{
+	GET(TechnoClass* const, pThis, ESI);
+	GET(WeaponTypeClass* const, pWeapon, EBX);
+	GET_BASE(AbstractClass* const, pTarget, 0x8);
+
+	const auto pWeaponExt = WeaponTypeExt::ExtMap.Find(pWeapon);
+
+	if (pWeaponExt->OnlyAttacker.Get() && pTarget == pThis->Target
+		&& pTarget->AbstractFlags & AbstractFlags::Techno)
+	{
+		const auto pTargetExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pTarget));
+		pTargetExt->AddFirer(pWeapon, pThis);
 	}
 
 	return 0;

@@ -761,6 +761,28 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 }
 
 // =============================
+// Other
+
+template <typename T>
+bool TechnoExt::ExtData::OnlyAttackStruct::Serialize(T& Stm)
+{
+	return Stm
+		.Process(this->Weapon)
+		.Process(this->Attacker)
+		.Success();
+}
+
+bool TechnoExt::ExtData::OnlyAttackStruct::Load(PhobosStreamReader& Stm, bool RegisterForChange)
+{
+	return Serialize(Stm);
+}
+
+bool TechnoExt::ExtData::OnlyAttackStruct::Save(PhobosStreamWriter& Stm) const
+{
+	return const_cast<OnlyAttackStruct*>(this)->Serialize(Stm);
+}
+
+// =============================
 // load / save
 
 template <typename T>
@@ -824,12 +846,28 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TintIntensityAllies)
 		.Process(this->TintIntensityEnemies)
 		.Process(this->AttackMoveFollowerTempCount)
+		.Process(this->OnlyAttackData)
 		;
 }
 
 void TechnoExt::ExtData::InvalidatePointer(void* ptr, bool bRemoved)
 {
 	AnnounceInvalidPointer(this->AirstrikeTargetingMe, ptr);
+
+	if (ptr && bRemoved)
+	{
+		auto& AttackerDatas = this->OnlyAttackData;
+		if (!AttackerDatas.empty())
+		{
+			for (int index = int(AttackerDatas.size()) - 1; index >= 0; --index)
+			{
+				if (AttackerDatas[index].Attacker != ptr)
+					continue;
+
+				AttackerDatas.erase(AttackerDatas.begin() + index);
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::LoadFromStream(PhobosStreamReader& Stm)

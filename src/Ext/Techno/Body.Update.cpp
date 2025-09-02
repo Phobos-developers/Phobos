@@ -24,7 +24,8 @@
 // It's not recommended to do anything more here it could have a better place for performance consideration
 void TechnoExt::ExtData::OnEarlyUpdate()
 {
-	auto const pType = this->OwnerObject()->GetTechnoType();
+	auto const pThis = this->OwnerObject();
+	auto const pType = pThis->GetTechnoType();
 
 	// Set only if unset or type is changed
 	// Notice that Ares may handle type conversion in the same hook here, which is executed right before this one thankfully
@@ -45,6 +46,18 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	if (this->AttackMoveFollowerTempCount)
 		this->AttackMoveFollowerTempCount--;
+
+	auto& AttackerDatas = this->OnlyAttackData;
+	if (!AttackerDatas.empty())
+	{
+		for (int index = int(AttackerDatas.size()) - 1; index >= 0; --index)
+		{
+			if (AttackerDatas[index].Attacker->Target != pThis)
+			{
+				AttackerDatas.erase(AttackerDatas.begin() + index);
+			}
+		}
+	}
 }
 
 void TechnoExt::ExtData::ApplyInterceptor()
@@ -2072,4 +2085,49 @@ void TechnoExt::ExtData::UpdateTintValues()
 		auto const pShieldType = this->Shield->GetType();
 		calculateTint(Drawing::RGB_To_Int(pShieldType->Tint_Color), static_cast<int>(pShieldType->Tint_Intensity * 1000), pShieldType->Tint_VisibleToHouses);
 	}
+}
+
+void TechnoExt::ExtData::AddFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker)
+{
+	if (Attacker->InLimbo)
+		return;
+
+	const int index = this->FindFirer(Weapon);
+	const OnlyAttackStruct Data { Weapon ,Attacker };
+
+	if (index < 0)
+	{
+		this->OnlyAttackData.push_back(Data);
+	}
+	else
+	{
+		this->OnlyAttackData[index] = Data;
+	}
+}
+
+bool TechnoExt::ExtData::ContainFirer(WeaponTypeClass* const Weapon, TechnoClass* const Attacker) const
+{
+	const int index = this->FindFirer(Weapon);
+
+	if (index >= 0)
+		return this->OnlyAttackData[index].Attacker == Attacker;
+
+	return true;
+}
+
+int TechnoExt::ExtData::FindFirer(WeaponTypeClass* const Weapon) const
+{
+	const auto& AttackerDatas = this->OnlyAttackData;
+	if (!AttackerDatas.empty())
+	{
+		for (int index = 0; index < int(AttackerDatas.size()); index++)
+		{
+			const auto pWeapon = AttackerDatas[index].Weapon;
+
+			if (pWeapon == Weapon && AttackerDatas[index].Attacker)
+				return index;
+		}
+	}
+
+	return -1;
 }

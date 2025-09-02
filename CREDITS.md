@@ -390,6 +390,7 @@ This page lists all the individual contributions to the project by their author.
   - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective
   - When the vehicle loses its target, you can customize whether to align the turret direction with the vehicle body
   - Health bar permanently displayed
+  - When a weapon has `OnlyAttacker=yes`, it prevents other units using that weapon from attacking the same target
 - **NetsuNegi**:
   - Forbidding parallel AI queues by type
   - Jumpjet crash speed fix when crashing onto building
