@@ -72,22 +72,7 @@ void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, AbstractClass* pTarget,
 
 void WarheadTypeExt::DetonateAt(WarheadTypeClass* pThis, const CoordStruct& coords, TechnoClass* pOwner, int damage, HouseClass* pFiringHouse, AbstractClass* pTarget)
 {
-	BulletTypeClass* pType = BulletTypeExt::GetDefaultBulletType();
-
-	if (BulletClass* pBullet = pType->CreateBullet(pTarget, pOwner,
-		damage, pThis, 0, pThis->Bright))
-	{
-		if (pFiringHouse)
-		{
-			auto const pBulletExt = BulletExt::ExtMap.Find(pBullet);
-			pBulletExt->FirerHouse = pFiringHouse;
-		}
-
-		pBullet->Limbo();
-		pBullet->SetLocation(coords);
-		pBullet->Explode(true);
-		pBullet->UnInit();
-	}
+	BulletExt::Detonate(coords, pOwner, damage, pFiringHouse, pTarget, pThis->Bright, nullptr, pThis);
 }
 
 bool WarheadTypeExt::ExtData::EligibleForFullMapDetonation(TechnoClass* pTechno, HouseClass* pOwner) const
@@ -252,6 +237,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->DetonateOnAllMapObjects_IgnoreTypes.Read(exINI, pSection, "DetonateOnAllMapObjects.IgnoreTypes");
 
 	this->Parasite_CullingTarget.Read(exINI, pSection, "Parasite.CullingTarget");
+	this->Parasite_GrappleAnim.Read(exINI, pSection, "Parasite.GrappleAnim");
 
 	this->Nonprovocative.Read(exINI, pSection, "Nonprovocative");
 
@@ -304,6 +290,8 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->PenetratesGarrison_RandomTarget.Read(exINI, pSection, "PenetratesGarrison.RandomTarget");
 	this->PenetratesGarrison_DamageMultiplier.Read(exINI, pSection, "PenetratesGarrison.DamageMultiplier");
 	this->PenetratesGarrison_CleanSound.Read(exINI, pSection, "PenetratesGarrison.CleanSound");
+
+	this->ReverseEngineer.Read(exINI, pSection, "ReverseEngineer");
 
 	// Convert.From & Convert.To
 	TypeConvertGroup::Parse(this->Convert_Pairs, exINI, pSection, AffectedHouse::All);
@@ -361,6 +349,7 @@ void WarheadTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 		|| this->BuildingSell
 		|| this->BuildingUndeploy
 		|| this->PenetratesGarrison
+		|| this->ReverseEngineer
 	);
 
 	char tempBuffer[32];
@@ -543,6 +532,7 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->DamageTargetHealthMultiplier)
 
 		.Process(this->Parasite_CullingTarget)
+		.Process(this->Parasite_GrappleAnim)
 
 		.Process(this->Nonprovocative)
 
@@ -569,12 +559,14 @@ void WarheadTypeExt::ExtData::Serialize(T& Stm)
 
 		.Process(this->AirstrikeTargets)
 
-		.Process(this->CanKill)
-
 		.Process(this->PenetratesGarrison)
 		.Process(this->PenetratesGarrison_RandomTarget)
 		.Process(this->PenetratesGarrison_DamageMultiplier)
 		.Process(this->PenetratesGarrison_CleanSound)
+
+		.Process(this->CanKill)
+
+		.Process(this->ReverseEngineer)
 
 		// Ares tags
 		.Process(this->AffectsEnemies)

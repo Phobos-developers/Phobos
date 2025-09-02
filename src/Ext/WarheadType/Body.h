@@ -144,6 +144,7 @@ public:
 		Valueable<bool> RemoveInflictedLocomotor;
 
 		Valueable<AffectedTarget> Parasite_CullingTarget;
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
 
 		Valueable<bool> Nonprovocative;
 
@@ -185,6 +186,8 @@ public:
 		Valueable<double> AffectsBelowPercent;
 		Valueable<double> AffectsAbovePercent;
 		Valueable<bool> AffectsNeutral;
+
+		Valueable<bool> ReverseEngineer;
 
 		Valueable<bool> CanKill;
 
@@ -341,6 +344,7 @@ public:
 			, RemoveInflictedLocomotor { false }
 
 			, Parasite_CullingTarget { AffectedTarget::Infantry }
+			, Parasite_GrappleAnim {}
 
 			, Nonprovocative { false }
 
@@ -406,6 +410,8 @@ public:
 			, PenetratesGarrison_RandomTarget { true }
 			, PenetratesGarrison_DamageMultiplier { { 1.0, 1.0 } }
 			, PenetratesGarrison_CleanSound { }
+
+			, ReverseEngineer { false }
 		{ }
 
 		void ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget);
@@ -441,6 +447,7 @@ public:
 		void ApplyShieldModifiers(TechnoClass* pTarget);
 		void ApplyAttachEffects(TechnoClass* pTarget, HouseClass* pInvokerHouse, TechnoClass* pInvoker);
 		void ApplyBuildingUndeploy(TechnoClass* pTarget);
+		void ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget);
 		double GetCritChance(TechnoClass* pFirer) const;
 		void ApplyPenetratesGarrison(HouseClass* pInvokerHouse, TechnoClass* pTarget, TechnoClass* pInvoker, int damage, const CoordStruct& coords);
 	};
