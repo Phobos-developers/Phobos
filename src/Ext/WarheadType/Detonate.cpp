@@ -16,6 +16,7 @@
 #include <Misc/FlyingStrings.h>
 #include <Utilities/Helpers.Alex.h>
 #include <Utilities/EnumFunctions.h>
+#include <Utilities/AresFunctions.h>
 
 #pragma region CreateGap Calls
 
@@ -218,6 +219,9 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 	if (this->BuildingSell || this->BuildingUndeploy)
 		this->ApplyBuildingUndeploy(pTarget);
 
+	if (this->ReverseEngineer)
+		this->ApplyReverseEngineer(pHouse, pTarget);
+
 #ifdef LOCO_TEST_WARHEADS
 	if (this->InflictLocomotor)
 		this->ApplyLocomotorInfliction(pTarget);
@@ -226,6 +230,12 @@ void WarheadTypeExt::ExtData::DetonateOnOneUnit(HouseClass* pHouse, TechnoClass*
 		this->ApplyLocomotorInflictionReset(pTarget);
 #endif
 
+}
+
+void WarheadTypeExt::ExtData::ApplyReverseEngineer(HouseClass* pHouse, TechnoClass* pTarget)
+{
+	if (pHouse && !pHouse->Type->MultiplayPassive && AresFunctions::ReverseEngineer)
+		AresFunctions::ReverseEngineer(reinterpret_cast<void*>(pHouse->unknown_16084), pTarget->GetTechnoType());
 }
 
 void WarheadTypeExt::ExtData::ApplyBuildingUndeploy(TechnoClass* pTarget)
