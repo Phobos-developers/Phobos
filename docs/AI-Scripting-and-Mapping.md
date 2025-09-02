@@ -49,7 +49,7 @@ RepairBaseNodes=                   ; List of 3 booleans indicating whether AI re
 
 ### Default loading screen and briefing offsets
 
-- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself.
+- It is now possible to set defaults for singleplayer map loading screen briefing pixel offsets and the loading screen images and palette that are used if there are no values defined for the map itself or in case of loading screens and palette, if the files are missing.
 
 In `missionmd.ini`:
 ```ini
@@ -517,7 +517,12 @@ This category is empty for now.
 
 ### `500` Save Game
 
-- Save the current game immediately (singleplayer game only).
+- Save the current game immediately.
+
+```{note}
+For this action to work in multiplayer - you need to use a version of [YRpp spawner](https://github.com/CnCNet/yrpp-spawner) with multiplayer saves support.
+```
+
 - These vanilla CSF entries will be used: `TXT_SAVING_GAME`, `TXT_GAME_WAS_SAVED` and `TXT_ERROR_SAVING_GAME`.
 - The save's description will look like `MapDescName - CSFText`.
 - For example: `Allied Mission 25: Esther's Money - Money Stolen`.
