@@ -7,6 +7,68 @@
 
 #include <Ext/Anim/Body.h>
 
+#pragma region Intensity_Helper_Functions
+
+static bool IsOnBridge(FootClass* pUnit)
+{
+	auto const pCell = MapClass::Instance.GetCellAt(pUnit->GetCoords());
+	auto const pCellAdj = pCell->GetNeighbourCell(FacingType::North);
+	const bool containsBridge = pCell->ContainsBridge();
+	const bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
+
+	return (containsBridge || containsBridgeDir || pCellAdj->ContainsBridge())
+		&& (!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge());
+}
+
+static void GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, bool applyBridgeBonus)
+{
+	const int bridgeHeight = applyBridgeBonus ? 4 : 0;
+	const int bridgeBonus = bridgeHeight * level;
+	const double currentLevel = (pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight)) - bridgeHeight;
+	levelIntensity = static_cast<int>(level * currentLevel * levelMult);
+	cellIntensity = MapClass::Instance.GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
+}
+
+static int GetJumpjetIntensity(FootClass* pThis)
+{
+	int level = ScenarioClass::Instance->NormalLighting.Level;
+
+	if (LightningStorm::Active)
+		level = ScenarioClass::Instance->IonLighting.Level;
+	else if (PsyDom::Active())
+		level = ScenarioClass::Instance->DominatorLighting.Level;
+	else if (NukeFlash::IsFadingIn())
+		level = ScenarioClass::Instance->NukeLighting.Level;
+
+	int levelIntensity = 0;
+	int cellIntensity = 1000;
+	GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
+
+	return levelIntensity + cellIntensity;
+}
+
+static int GetDeployingAnimIntensity(FootClass* pThis)
+{
+	int intensity = 0;
+
+	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
+		intensity = GetJumpjetIntensity(pThis);
+	else
+		intensity = pThis->GetCell()->Intensity_Normal;
+
+	intensity = pThis->GetFlashingIntensity(intensity);
+
+	if (pThis->IsIronCurtained())
+		intensity = pThis->GetInvulnerabilityTintIntensity(intensity);
+
+	if (TechnoExt::ExtMap.Find(pThis)->AirstrikeTargetingMe)
+		intensity = pThis->GetAirstrikeTintIntensity(intensity);
+
+	return intensity;
+}
+
+#pragma endregion
+
 DEFINE_HOOK(0x43D386, BuildingClass_Draw_TintColor, 0x6)
 {
 	enum { SkipGameCode = 0x43D4EB };
@@ -96,14 +158,28 @@ DEFINE_HOOK(0x423420, AnimClass_Draw_TintColor, 0x6)
 	REF_STACK(int, color, STACK_OFFSET(0x110, -0xF4));
 	REF_STACK(int, intensity, STACK_OFFSET(0x110, -0xD8));
 
-	if (!pBuilding)
-		pBuilding = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
+	TechnoClass* pTechno = pBuilding;
+	auto const pUnit = abstract_cast<UnitClass*>(pThis->OwnerObject);
+	bool allowBerserkTint = false;
 
-	if (pBuilding)
+	if (pUnit && pUnit->DeployAnim == pThis)
+	{
+		pTechno = pUnit;
+		allowBerserkTint = true;
+
+		if (!pThis->Type->UseNormalLight)
+			intensity = GetDeployingAnimIntensity(pUnit);
+	}
+	else if (!pTechno)
+	{
+		pTechno = AnimExt::ExtMap.Find(pThis)->ParentBuilding;
+	}
+
+	if (pTechno)
 	{
 		int discard = 0;
-		color |= TechnoExt::GetTintColor(pBuilding, true, true, false);
-		TechnoExt::ApplyCustomTintValues(pBuilding, color, pThis->Type->UseNormalLight ? discard : intensity);
+		color |= TechnoExt::GetTintColor(pTechno, true, true, allowBerserkTint);
+		TechnoExt::ApplyCustomTintValues(pTechno, color, pThis->Type->UseNormalLight ? discard : intensity);
 	}
 
 	R->EBP(color);
@@ -232,26 +308,6 @@ DEFINE_HOOK(0x70E475, TechnoClass_InvulnerabilityIntensity_Adjust, 0x5)
 
 #pragma region LevelLighting
 
-static bool __forceinline IsOnBridge(FootClass* pUnit)
-{
-	auto const pCell = MapClass::Instance.GetCellAt(pUnit->GetCoords());
-	auto const pCellAdj = pCell->GetNeighbourCell(FacingType::North);
-	const bool containsBridge = pCell->ContainsBridge();
-	const bool containsBridgeDir = static_cast<bool>(pCell->Flags & CellFlags::BridgeDir);
-
-	return (containsBridge || containsBridgeDir || pCellAdj->ContainsBridge())
-		&& (!containsBridge || pCell->GetNeighbourCell(FacingType::West)->ContainsBridge());
-}
-
-static void __forceinline GetLevelIntensity(TechnoClass* pThis, int level, int& levelIntensity, int& cellIntensity, double levelMult, bool applyBridgeBonus)
-{
-	const int bridgeHeight = applyBridgeBonus ? 4 : 0;
-	const int bridgeBonus = bridgeHeight * level;
-	const double currentLevel = (pThis->GetHeight() / static_cast<double>(Unsorted::LevelHeight)) - bridgeHeight;
-	levelIntensity = static_cast<int>(level * currentLevel * levelMult);
-	cellIntensity = MapClass::Instance.GetCellAt(pThis->GetMapCoords())->Intensity_Normal + bridgeBonus;
-}
-
 DEFINE_HOOK(0x4148F4, AircraftClass_DrawIt_LevelIntensity, 0x5)
 {
 	enum { SkipGameCode = 0x414925 };
@@ -302,20 +358,7 @@ DEFINE_HOOK(0x73CFA7, UnitClass_DrawIt_LevelIntensity, 0x6)
 
 	if (locomotion_cast<JumpjetLocomotionClass*>(pThis->Locomotor))
 	{
-		int level = ScenarioClass::Instance->NormalLighting.Level;
-
-		if (LightningStorm::Active)
-			level = ScenarioClass::Instance->IonLighting.Level;
-		else if (PsyDom::Active())
-			level = ScenarioClass::Instance->DominatorLighting.Level;
-		else if (NukeFlash::IsFadingIn())
-			level = ScenarioClass::Instance->NukeLighting.Level;
-
-		int levelIntensity = 0;
-		int cellIntensity = 1000;
-		GetLevelIntensity(pThis, level, levelIntensity, cellIntensity, RulesExt::Global()->JumpjetLevelLightMultiplier, IsOnBridge(pThis));
-
-		R->EBP(levelIntensity + cellIntensity);
+		R->EBP(GetJumpjetIntensity(pThis));
 		return SkipGameCode;
 	}
 
