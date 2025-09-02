@@ -34,6 +34,7 @@ void BulletTypeExt::ExtData::LoadFromINIFile(CCINIClass* const pINI)
 	this->Interceptable_WeaponOverride.Read<true>(exINI, pSection, "Interceptable.WeaponOverride");
 	this->Gravity.Read(exINI, pSection, "Gravity");
 	this->Vertical_AircraftFix.Read(exINI, pSection, "Vertical.AircraftFix");
+	this->VerticalInitialFacing.Read(exINI, pSection, "VerticalInitialFacing");
 
 	this->TrajectoryType.LoadFromINI(pINI, pSection);
 
@@ -133,6 +134,7 @@ void BulletTypeExt::ExtData::Serialize(T& Stm)
 		.Process(this->LaserTrail_Types)
 		.Process(this->Gravity)
 		.Process(this->Vertical_AircraftFix)
+		.Process(this->VerticalInitialFacing)
 		.Process(this->Shrapnel_AffectsGround)
 		.Process(this->Shrapnel_AffectsBuildings)
 		.Process(this->Shrapnel_UseWeaponTargeting)
