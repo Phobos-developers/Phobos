@@ -1651,10 +1651,7 @@ void TechnoExt::ExtData::UpdateRearmInEMPState()
 			{
 				if (pFactory->Production.Timer.InProgress())
 				{
-					if (pFactory->Production.Timer.HasStarted() && !pFactory->Production.Timer.Expired())
-					{
-						pFactory->Production.Timer.StartTime++;
-					}
+					pFactory->Production.Timer.StartTime++;
 				}
 			}
 		}
