@@ -2331,12 +2331,21 @@ DEFINE_HOOK(0x415F25, AircraftClass_FireAt_Vertical, 0x6)
 	GET(BulletClass*, pBullet, ESI);
 
 	if (pBullet->HasParachute || (pBullet->Type->Vertical && BulletTypeExt::ExtMap.Find(pBullet->Type)->Vertical_AircraftFix))
-	{
-		pBullet->Velocity = BulletVelocity{ 0, 0, pBullet->Velocity.Z };
 		return SkipGameCode;
-	}
 
 	return 0;
+}
+
+DEFINE_HOOK(0x6FED2F, TechnoClass_FireAt_VerticalInitialFacing, 0x6)
+{
+	enum { Continue = 0x6FED39, SkipGameCode = 0x6FED8F };
+
+	GET(BulletTypeClass*, pBulletType, EAX);
+
+	if (BulletTypeExt::ExtMap.Find(pBulletType)->VerticalInitialFacing.Get(pBulletType->Voxel || pBulletType->Vertical))
+		return Continue;
+
+	return SkipGameCode;
 }
 
 #pragma region InfantryDeployFireWeaponFix
