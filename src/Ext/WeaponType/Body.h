@@ -36,6 +36,7 @@ public:
 		Nullable<int> Strafing_Shots;
 		Valueable<bool> Strafing_SimulateBurst;
 		Valueable<bool> Strafing_UseAmmoPerShot;
+		Valueable<bool> Strafing_TargetCell;
 		Nullable<int> Strafing_EndDelay;
 		Valueable<AffectedTarget> CanTarget;
 		Valueable<AffectedHouse> CanTargetHouses;
@@ -53,6 +54,7 @@ public:
 		ValueableVector<int> ChargeTurret_Delays;
 		Valueable<bool> OmniFire_TurnToTarget;
 		Valueable<bool> FireOnce_ResetSequence;
+		Valueable<bool> TurretRecoil_Suppress;
 		ValueableVector<WarheadTypeClass*> ExtraWarheads;
 		ValueableVector<int> ExtraWarheads_DamageOverrides;
 		ValueableVector<double> ExtraWarheads_DetonationChances;
@@ -111,6 +113,7 @@ public:
 			, Strafing_Shots {}
 			, Strafing_SimulateBurst { false }
 			, Strafing_UseAmmoPerShot { false }
+			, Strafing_TargetCell { false }
 			, Strafing_EndDelay {}
 			, CanTarget { AffectedTarget::All }
 			, CanTargetHouses { AffectedHouse::All }
@@ -128,6 +131,7 @@ public:
 			, ChargeTurret_Delays {}
 			, OmniFire_TurnToTarget { false }
 			, FireOnce_ResetSequence { true }
+			, TurretRecoil_Suppress { false }
 			, ExtraWarheads {}
 			, ExtraWarheads_DamageOverrides {}
 			, ExtraWarheads_DetonationChances {}
