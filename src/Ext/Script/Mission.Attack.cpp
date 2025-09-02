@@ -233,6 +233,14 @@ void ScriptExt::Mission_Attack(TeamClass* pTeam, int calcThreatMode, bool repeat
 
 						const auto whatAmI = pFoot->WhatAmI();
 
+						// If the vehicle cannot be moved, perhaps it is better this way.
+						if (whatAmI == AbstractType::Unit
+							&& TechnoExt::CannotMove(static_cast<UnitClass*>(pFoot))
+							&& !pFoot->IsCloseEnough(pSelectedTarget, pFoot->SelectWeapon(pSelectedTarget)))
+						{
+							continue;
+						}
+
 						// Aircraft hack. I hate how this game auto-manages the aircraft missions.
 						if (whatAmI == AbstractType::Aircraft
 							&& pFoot->Ammo > 0

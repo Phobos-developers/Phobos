@@ -10,6 +10,7 @@
 #include <New/Type/BannerTypeClass.h>
 
 #include <Utilities/SavegameDef.h>
+#include <Utilities/SpawnerHelper.h>
 #include <Ext/House/Body.h>
 
 //Static init
@@ -116,18 +117,8 @@ bool TActionExt::PlayAudioAtRandomWP(TActionClass* pThis, HouseClass* pHouse, Ob
 
 bool TActionExt::SaveGame(TActionClass* pThis, HouseClass* pHouse, ObjectClass* pObject, TriggerClass* pTrigger, CellStruct const& location)
 {
-	if (SessionClass::IsSingleplayer())
-	{
-		*reinterpret_cast<bool*>(0xABCE08) = false;
-		Phobos::ShouldQuickSave = true;
-
-		if (SessionClass::IsCampaign())
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->UINameLoaded;
-		else
-			Phobos::CustomGameSaveDescription = ScenarioClass::Instance->Name;
-		Phobos::CustomGameSaveDescription += L" - ";
-		Phobos::CustomGameSaveDescription += StringTable::LoadString(pThis->Text);
-	}
+	if (SessionClass::IsSingleplayer() || SpawnerHelper::IsSaveGameEventHooked())
+		Phobos::ScheduleGameSave(StringTable::LoadString(pThis->Text));
 
 	return true;
 }

@@ -173,6 +173,9 @@ public:
 		Valueable<AnimTypeClass*> Promote_VeteranAnimation;
 		Valueable<AnimTypeClass*> Promote_EliteAnimation;
 
+		Valueable<bool> JumpjetClimbPredictHeight;
+		Valueable<bool> JumpjetClimbWithoutCutOut;
+
 		Valueable<double> DamageOwnerMultiplier;
 		Valueable<double> DamageAlliesMultiplier;
 		Valueable<double> DamageEnemiesMultiplier;
@@ -196,6 +199,13 @@ public:
 		Nullable<Vector3D<float>> VoxelLightSource;
 		// Nullable<Vector3D<float>> VoxelShadowLightSource;
 		Valueable<bool> UseFixedVoxelLighting;
+
+		Valueable<bool> AIAutoDeployMCV;
+		Valueable<bool> AISetBaseCenter;
+		Valueable<bool> AIBiasSpawnCell;
+		Valueable<bool> AIForbidConYard;
+		Valueable<bool> AINodeWallsOnly;
+		Valueable<bool> AICleanWallNode;
 
 		Valueable<bool> AttackMove_Aggressive;
 		Valueable<bool> AttackMove_UpdateTarget;
@@ -245,10 +255,14 @@ public:
 		Valueable<bool> AttackMove_IgnoreWeaponCheck;
 		Nullable<bool> AttackMove_StopWhenTargetAcquired;
 
+		NullableIdx<AnimTypeClass> Parasite_GrappleAnim;
+
 		// cache tint color
 		int TintColorIronCurtain;
 		int TintColorForceShield;
 		int TintColorBerserk;
+
+		Valueable<bool> InfantryAutoDeploy;
 
 		Nullable<bool> BattlePoints;
 		Nullable<int> BattlePoints_DefaultValue;
@@ -382,6 +396,8 @@ public:
 			, DropPodTrailer { }
 			, DropPodDefaultTrailer { }
 			, PodImage { }
+			, JumpjetClimbPredictHeight { false }
+			, JumpjetClimbWithoutCutOut { false }
 			, DamageOwnerMultiplier { 1.0 }
 			, DamageAlliesMultiplier { 1.0 }
 			, DamageEnemiesMultiplier { 1.0 }
@@ -403,6 +419,12 @@ public:
 			, CombatAlert_UseAttackVoice { true }
 			, CombatAlert_UseEVA { true }
 			, UseFixedVoxelLighting { false }
+			, AIAutoDeployMCV { true }
+			, AISetBaseCenter { true }
+			, AIBiasSpawnCell { false }
+			, AIForbidConYard { false }
+			, AINodeWallsOnly { false }
+			, AICleanWallNode { false }
 			, AttackMove_Aggressive { false }
 			, AttackMove_UpdateTarget { false }
 			, MindControl_ThreatDelay { 0 }
@@ -447,6 +469,9 @@ public:
 
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
+
+			, Parasite_GrappleAnim {}
+			, InfantryAutoDeploy { false }
 
 			, BattlePoints {}
 			, BattlePoints_DefaultValue {}
