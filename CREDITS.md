@@ -151,6 +151,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
+  - `EMPulseCannon.InaccurateRadius` for projectiles in `EMPulseCannon=yes` superweapons and `Ammo` support
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:
