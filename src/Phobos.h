@@ -73,6 +73,9 @@ public:
 		static const wchar_t* ShowBriefingResumeButtonLabel;
 		static const wchar_t* SWShotsFormat;
 		static char ShowBriefingResumeButtonStatusLabel[0x20];
+		static const wchar_t* BattlePoints_Label;
+		static const wchar_t* BattlePointsSidebar_Label;
+		static bool BattlePointsSidebar_Label_InvertPosition;
 	};
 
 	class Config

@@ -313,6 +313,10 @@ void RulesExt::ExtData::LoadBeforeTypeData(RulesClass* pThis, CCINIClass* pINI)
 
 	this->InfantryAutoDeploy.Read(exINI, GameStrings::General, "InfantryAutoDeploy");
 
+	this->BattlePoints.Read(exINI, GameStrings::General, "BattlePoints");
+	this->BattlePoints_DefaultValue.Read(exINI, GameStrings::General, "BattlePoints.DefaultValue");
+	this->BattlePoints_DefaultFriendlyValue.Read(exINI, GameStrings::General, "BattlePoints.DefaultFriendlyValue");
+
 	// Section AITargetTypes
 	int itemsCount = pINI->GetKeyCount("AITargetTypes");
 	for (int i = 0; i < itemsCount; ++i)
@@ -577,6 +581,9 @@ void RulesExt::ExtData::Serialize(T& Stm)
 		.Process(this->AttackMove_StopWhenTargetAcquired)
 		.Process(this->Parasite_GrappleAnim)
 		.Process(this->InfantryAutoDeploy)
+		.Process(this->BattlePoints)
+		.Process(this->BattlePoints_DefaultValue)
+		.Process(this->BattlePoints_DefaultFriendlyValue)
 		;
 }
 

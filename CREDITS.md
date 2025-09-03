@@ -151,6 +151,7 @@ This page lists all the individual contributions to the project by their author.
   - Warhead activation target health thresholds enhancements
   - Event 606: AttachEffect is attaching to a Techno
   - Linked superweapons
+  - Battle Points economy for super weapons
 - **Starkku**:
   - Misc. minor bugfixes & improvements
   - AI script actions:

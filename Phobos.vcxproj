@@ -30,6 +30,7 @@
     <ClCompile Include="src\Blowfish\blowfish.cpp" />
     <ClCompile Include="src\Blowfish\Hooks.Blowfish.cpp" />
     <ClCompile Include="src\Ext\Cell\Body.cpp" />
+    <ClCompile Include="src\Ext\HouseType\Body.cpp" />
     <ClCompile Include="src\Ext\House\Hooks.ForceEnemy.cpp" />
     <ClCompile Include="src\Commands\ToggleSWSidebar.cpp" />
     <ClCompile Include="src\Ext\Sidebar\SWSidebar\SWColumnClass.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWSidebarClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\SWButtonClass.h" />
     <ClInclude Include="src\Ext\Sidebar\SWSidebar\ToggleSWButtonClass.h" />
+    <ClInclude Include="src\Ext\HouseType\Body.h" />
     <ClInclude Include="src\New\Entity\AttachEffectClass.h" />
     <ClInclude Include="src\New\Type\Affiliated\TiberiumEaterTypeClass.h" />
     <ClInclude Include="src\New\Type\AttachEffectTypeClass.h" />

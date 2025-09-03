@@ -67,6 +67,8 @@ public:
 
 		int ForceEnemyIndex;
 
+		int BattlePoints;
+
 		ExtData(HouseClass* OwnerObject) : Extension<HouseClass>(OwnerObject)
 			, PowerPlantEnhancers {}
 			, OwnedLimboDeliveredBuildings {}
@@ -95,6 +97,7 @@ public:
 			, SuspendedEMPulseSWs {}
 			, SuperExts(SuperWeaponTypeClass::Array.Count)
 			, ForceEnemyIndex(-1)
+			, BattlePoints(0)
 		{ }
 
 		bool OwnsLimboDeliveredBuilding(BuildingClass* pBuilding);
@@ -115,6 +118,10 @@ public:
 		virtual void InvalidatePointer(void* ptr, bool bRemoved) override;
 
 		void UpdateVehicleProduction();
+
+		void UpdateBattlePoints(int modifier);
+		bool AreBattlePointsEnabled();
+		int CalculateBattlePoints(TechnoClass* pTechno);
 
 		virtual void LoadFromStream(PhobosStreamReader& Stm) override;
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;

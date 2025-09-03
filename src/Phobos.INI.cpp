@@ -28,6 +28,9 @@ const wchar_t* Phobos::UI::TimeLabel = L"";
 const wchar_t* Phobos::UI::HarvesterLabel = L"";
 const wchar_t* Phobos::UI::ShowBriefingResumeButtonLabel = L"";
 const wchar_t* Phobos::UI::SWShotsFormat = L"";
+const wchar_t* Phobos::UI::BattlePoints_Label = L"";
+const wchar_t* Phobos::UI::BattlePointsSidebar_Label = L"";
+bool Phobos::UI::BattlePointsSidebar_Label_InvertPosition = false;
 char Phobos::UI::ShowBriefingResumeButtonStatusLabel[32];
 bool Phobos::UI::PowerDelta_Show = false;
 double Phobos::UI::PowerDelta_ConditionYellow = 0.75;
@@ -149,6 +152,9 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		ini_uimd.ReadString(GameStrings::ToolTips, "SWShotsFormat", NONE_STR, Phobos::readBuffer);
 		Phobos::UI::SWShotsFormat = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"Shots: %d"); // ⌚
+
+		ini_uimd.ReadString(GameStrings::ToolTips, "BattlePoints.Label", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::BattlePoints_Label = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2605: "); // ★: 
 	}
 
 	// Sidebar
@@ -215,6 +221,11 @@ DEFINE_HOOK(0x5FACDF, OptionsClass_LoadSettings_LoadPhobosSettings, 0x5)
 
 		Phobos::UI::SuperWeaponSidebar_MaxColumns =
 			ini_uimd.ReadInteger(SIDEBAR_SECTION, "SuperWeaponSidebar.MaxColumns", Phobos::UI::SuperWeaponSidebar_MaxColumns);
+
+		Phobos::UI::BattlePointsSidebar_Label_InvertPosition = ini_uimd.ReadBool(SIDEBAR_SECTION, "BattlePointsSidebar.Label.InvertPosition", false);
+
+		ini_uimd.ReadString(SIDEBAR_SECTION, "BattlePointsSidebar.Label", NONE_STR, Phobos::readBuffer);
+		Phobos::UI::BattlePointsSidebar_Label = GeneralUtils::LoadStringOrDefault(Phobos::readBuffer, L"\u2605"); // %d ★
 	}
 
 	// UISettings

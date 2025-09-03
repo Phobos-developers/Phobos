@@ -3,6 +3,9 @@
 #include <AirstrikeClass.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <Ext/HouseType/Body.h>
+#include <Ext/House/Body.h>
+#include <Ext/BuildingType/Body.h>
 
 // Unsorted methods
 
@@ -18,18 +21,38 @@ void TechnoExt::ExtData::InitializeLaserTrails()
 		this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), this->OwnerObject()->Owner, entry.FLH, entry.IsOnTurret));
 }
 
-void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller)
+void TechnoExt::ObjectKilledBy(TechnoClass* pVictim, TechnoClass* pKiller, HouseClass* pHouseKiller)
 {
-	auto const pKillerType = pKiller->GetTechnoType();
-	auto const pObjectKiller = ((pKillerType->Spawned || pKillerType->MissileSpawn) && pKiller->SpawnOwner)
-		? pKiller->SpawnOwner : pKiller;
+	TechnoClass* pObjectKiller = nullptr;
+
+	if (pKiller)
+	{
+		pObjectKiller = ((pKiller->GetTechnoType()->Spawned || pKiller->GetTechnoType()->MissileSpawn) && pKiller->SpawnOwner) ?
+			pKiller->SpawnOwner : pKiller;
+
+		if (!pObjectKiller)
+			return;
+	}
 
 	if (pObjectKiller && pObjectKiller->BelongsToATeam())
 	{
 		if (auto const pFootKiller = generic_cast<FootClass*, true>(pObjectKiller))
 		{
-			auto const pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
+			auto pKillerTechnoData = TechnoExt::ExtMap.Find(pObjectKiller);
 			pKillerTechnoData->LastKillWasTeamTarget = pFootKiller->Team->Focus == pVictim;
+		}
+	}
+
+	HouseClass* pHouse = pKiller ? pKiller->Owner : pHouseKiller;
+
+	if (pHouse != pVictim->Owner)
+	{
+		auto pHouseExt = HouseExt::ExtMap.Find(pHouse);
+
+		if (pHouseExt->AreBattlePointsEnabled())
+		{
+			int points = pHouseExt->CalculateBattlePoints(pVictim);
+			pHouseExt->UpdateBattlePoints(points);
 		}
 	}
 }

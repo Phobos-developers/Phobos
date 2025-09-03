@@ -88,6 +88,32 @@ DEFINE_HOOK(0x4A25E0, CreditsClass_GraphicLogic_HarvesterCounter, 0x7)
 		return 0;
 
 	RectangleStruct vRect = DSurface::Sidebar->GetRect();
+	auto pHouseExt = HouseExt::ExtMap.Find(pPlayer);
+
+	if (pHouseExt->AreBattlePointsEnabled())
+	{
+		auto pSideExt = SideExt::ExtMap.Find(SideClass::Array.GetItem(pPlayer->SideIndex));
+		wchar_t counter[0x20];
+
+		ColorStruct clrToolTip = pSideExt->Sidebar_BattlePoints_Color.Get(Drawing::TooltipColor);
+
+		int points = pHouseExt->BattlePoints;
+
+		if (Phobos::UI::BattlePointsSidebar_Label_InvertPosition)
+			swprintf_s(counter, L"%d %ls", points, Phobos::UI::BattlePointsSidebar_Label);
+		else
+			swprintf_s(counter, L"%ls %d", Phobos::UI::BattlePointsSidebar_Label, points);
+
+		Point2D vPos = {
+			DSurface::Sidebar->GetWidth() / 2 - 70 + pSideExt->Sidebar_BattlePoints_Offset.Get().X,
+			2 + pSideExt->Sidebar_BattlePoints_Offset.Get().Y
+		};
+
+		auto const TextFlags = static_cast<TextPrintType>(static_cast<int>(TextPrintType::UseGradPal | TextPrintType::Metal12)
+				| static_cast<int>(pSideExt->Sidebar_BattlePoints_Align.Get()));
+
+		DSurface::Sidebar->DrawText(counter, &vRect, &vPos, Drawing::RGB_To_Int(clrToolTip), 0, TextFlags);
+	}
 
 	if (Phobos::UI::HarvesterCounter_Show && Phobos::Config::ShowHarvesterCounter)
 	{

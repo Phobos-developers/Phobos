@@ -183,6 +183,18 @@ void PhobosToolTip::HelpText_Super(int swidx)
 		showSth = true;
 	}
 
+	if (int nPoints = std::abs(pData->BattlePoints_Amount))
+	{
+		oss << L"\n";
+
+		if (pData->BattlePoints_Amount > 0)
+			oss << Phobos::UI::BattlePoints_Label << L"+" << nPoints;
+		else if (pData->BattlePoints_Amount < 0)
+			oss << Phobos::UI::BattlePoints_Label << L"-" << nPoints;
+
+		showSth = true;
+	}
+
 	const int rechargeTime = TickTimeToSeconds(pSuper->GetRechargeTime());
 	if (rechargeTime > 0)
 	{

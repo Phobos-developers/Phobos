@@ -3,6 +3,7 @@
 #include <Ext/SWType/Body.h>
 #include <Ext/TechnoType/Body.h>
 #include <Ext/Techno/Body.h>
+#include <Ext/HouseType/Body.h>
 
 #include <ScenarioClass.h>
 
@@ -653,6 +654,7 @@ void HouseExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuspendedEMPulseSWs)
 		.Process(this->SuperExts)
 		.Process(this->ForceEnemyIndex)
+		.Process(this->BattlePoints)
 		;
 }
 
@@ -1101,3 +1103,54 @@ bool HouseExt::ReachedBuildLimit(const HouseClass* pHouse, const TechnoTypeClass
 	return false;
 }
 #pragma endregion
+
+void HouseExt::ExtData::UpdateBattlePoints(int modifier)
+{
+	this->BattlePoints += modifier;
+	this->BattlePoints = this->BattlePoints < 0 ? 0 : this->BattlePoints;
+}
+
+bool HouseExt::ExtData::AreBattlePointsEnabled()
+{
+	const auto pThis = this->OwnerObject();
+	const auto pOwnerTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
+
+	// Global setting
+	if (RulesExt::Global()->BattlePoints.isset())
+		return RulesExt::Global()->BattlePoints.Get();
+
+	// House specific setting
+	if (!pOwnerTypeExt->BattlePoints)
+	{
+		// Structures can enable this logic overwriting the house's setting
+		for (const auto pBuilding : pThis->Buildings)
+		{
+			const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+			if (pBuildingTypeExt->BattlePointsCollector.Get(false))
+				return true;
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
+int HouseExt::ExtData::CalculateBattlePoints(TechnoClass* pTechno)
+{
+	if (!pTechno)
+		return 0;
+
+	const auto pThis = this->OwnerObject();
+	const auto pThisTypeExt = HouseTypeExt::ExtMap.Find(pThis->Type);
+	const auto pTechnoTypeExt = TechnoTypeExt::ExtMap.Find(pTechno->GetTechnoType());
+
+	int defaultValue = RulesExt::Global()->BattlePoints_DefaultValue.Get(0);
+	int defaultFriendlyValue = RulesExt::Global()->BattlePoints_DefaultFriendlyValue.Get(0);
+
+	int points = pThis->IsAlliedWith(pTechno)? defaultFriendlyValue : defaultValue;
+	points = pTechnoTypeExt->BattlePoints.Get(points);
+	points = points == 0 && pThisTypeExt->BattlePoints_CanUseStandardPoints ? pTechno->GetTechnoType()->Points : points;
+
+	return points;
+}
