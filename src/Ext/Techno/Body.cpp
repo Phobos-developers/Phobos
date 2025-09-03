@@ -727,8 +727,11 @@ bool TechnoExt::HandleDelayedFireWithPauseSequence(TechnoClass* pThis, int weapo
 
 bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max)
 {
+	if (!pObject->Health)
+		return true;
+
 	const double hp = pObject->GetHealthPercentage();
-	return hp <= max && hp >= min;
+	return hp < max && hp >= min;
 }
 
 bool TechnoExt::CannotMove(UnitClass* pThis)
