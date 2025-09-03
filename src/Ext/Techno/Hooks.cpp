@@ -1109,19 +1109,25 @@ DEFINE_HOOK(0x4DF410, FootClass_UpdateAttackMove_TargetAcquired, 0x6)
 DEFINE_HOOK(0x4DF4DB, TechnoClass_RefreshMegaMission_CheckMissionFix, 0xA)
 {
 	enum { ClearMegaMission = 0x4DF4F9, ContinueMegaMission = 0x4DF4CF };
+
 	GET(FootClass* const, pThis, ESI);
 
 	auto const pType = pThis->GetTechnoType();
 	auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pType);
 	auto const mission = pThis->GetCurrentMission();
-	return (pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire))
-		? (!(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256) && mission != Mission::Guard) : mission != Mission::Guard)
-		? ClearMegaMission : ContinueMegaMission;
+	bool stopWhenTargetAcquired = pTypeExt->AttackMove_StopWhenTargetAcquired.Get(RulesExt::Global()->AttackMove_StopWhenTargetAcquired.Get(!pType->OpportunityFire));
+	bool clearMegaMission = mission != Mission::Guard;
+
+	if (stopWhenTargetAcquired && clearMegaMission)
+		clearMegaMission = !(mission == Mission::Move && pThis->MegaDestination && pThis->DistanceFrom(pThis->MegaDestination) > 256);
+
+	return clearMegaMission ? ClearMegaMission : ContinueMegaMission;
 }
 
 DEFINE_HOOK(0x711E90, TechnoTypeClass_CanAttackMove_IgnoreWeapon, 0x6)
 {
 	enum { SkipGameCode = 0x711E9A };
+
 	return RulesExt::Global()->AttackMove_IgnoreWeaponCheck ? SkipGameCode : 0;
 }
 
@@ -1135,7 +1141,24 @@ DEFINE_HOOK(0x4DF3A6, FootClass_UpdateAttackMove_Follow, 0x6)
 
 	// Refresh mega mission if mission is somehow changed to incorrect missions.
 	if (mission != Mission::Attack && mission != Mission::Move)
-		pThis->ContinueMegaMission();
+	{
+		bool continueMission = true;
+
+		// Aug 30, 2025 - Starkku: SimpleDeployer needs special handling here.
+		// Without this if you interrupt waypoint mode path with deploy command
+		// it will not execute properly as it interrupts it with movement.
+		if (mission == Mission::Unload)
+		{
+			if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+			{
+				if (pUnit->Type->IsSimpleDeployer)
+					continueMission = false;
+			}
+		}
+
+		if (continueMission)
+			pThis->ContinueMegaMission();
+	}
 
 	auto const pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
 
@@ -1234,7 +1257,7 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 	{
 		auto const pUnit = static_cast<UnitClass*>(pThis);
 
-		if (TechnoExt::TechnoExt::CannotMove(pUnit))
+		if (TechnoExt::CannotMove(pUnit))
 			return SkipResponse;
 	}
 

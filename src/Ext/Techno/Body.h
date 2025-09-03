@@ -42,6 +42,7 @@ public:
 		AnimTypeClass* MindControlRingAnimType;
 		int DamageNumberOffset;
 		int Strafe_BombsDroppedThisRound;
+		CellClass* Strafe_TargetCell;
 		int CurrentAircraftWeaponIndex;
 		bool IsInTunnel;
 		bool IsBurrowed;
@@ -79,6 +80,10 @@ public:
 
 		CDTimerClass FiringAnimationTimer;
 
+		// Replaces use of TechnoClass->Animation StageClass timer for IsSimpleDeployer to simplify
+		// the deploy animation timer calcs and eliminate possibility of outside interference.
+		CDTimerClass SimpleDeployerAnimationTimer;
+
 		// cache tint values
 		int TintColorOwner;
 		int TintColorAllies;
@@ -108,6 +113,7 @@ public:
 			, MindControlRingAnimType { nullptr }
 			, DamageNumberOffset { INT32_MIN }
 			, Strafe_BombsDroppedThisRound { 0 }
+			, Strafe_TargetCell { nullptr }
 			, CurrentAircraftWeaponIndex {}
 			, IsInTunnel { false }
 			, IsBurrowed { false }
@@ -134,6 +140,7 @@ public:
 			, TiberiumEater_Timer {}
 			, AirstrikeTargetingMe { nullptr }
 			, FiringAnimationTimer {}
+			, SimpleDeployerAnimationTimer {}
 			, DelayedFireSequencePaused { false }
 			, DelayedFireWeaponIndex { -1 }
 			, DelayedFireTimer {}

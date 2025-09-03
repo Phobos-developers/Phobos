@@ -191,7 +191,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - `FreeUnit` uses the unit's own `SpeedType` to find the spawn location.
 - The bug where naval ships as StartUnit might spawn on land has been fixed.
 - When a building is transformed into a vehicle via `UndeploysInto`, the `SpeedType` and `MovementZone` of the target VehicleType will determine whether it can move into the target cell.
-- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery’s `Naval` to false.
+- Fixed an issue that harvesters with amphibious movement zone can not automatically return to refineries with `WaterBound` on water surface. Units with `Teleporter=true` are not affected, as they can be used as long as set the refinery's `Naval` to false.
 - Units are now unable to kick out from a factory that is in construction process, and will not always stuck in the factory.
 - Fixed issues caused by incorrect reference removal (f.ex. If the unit cloaks/enters transport, it cannot gain experience from previously launched spawners/C4/projectiles).
 - Fixed an issue that caused `IsSonic=true` wave drawing to crash the game if the wave traveled over a certain distance.
@@ -248,12 +248,20 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Fixed the bug that submarine always turn left after changed owner by map event.
 - Fixed the bug that occupyable structure won't redraw when press deploy hotkey to release all occupants.
 - Fixed an issue that if the garrison unload occupants when there is no open space around it would result in the disappearance of the occupants.
-- Fixed the bug that Locomotor warhead won’t stop working when the attacker is being affected by `Temporal=yes` warhead.
+- Fixed the bug that Locomotor warhead won't stop working when the attacker is being affected by `Temporal=yes` warhead.
 - Fixed the bug that `IsLocomotor=yes` warhead rendering hover units unselectable and undamageable on elevated bridge.
 - Fixed the bug that Locomotor warhead won't stop working when firer (except for vehicle) stop firing.
 - Fixed the bug that hover vehicle will sink if destroyed on bridge.
 - Fixed the fact that when the selected unit is in a rearmed state, it can unconditionally use attack mouse on the target.
 - When `Speed=0` or the TechnoTypes cell cannot move due to `MovementRestrictedTo`, vehicles cannot attack targets beyond the weapon's range. `Area Guard` and `Hunt` missions will also become ineffective.
+- Fixed an issue that barrel anim data will be incorrectly overwritten by turret anim data if the techno's section exists in the map file.
+- Fixed pathfinding crashes (EIP 0x42A525, 0x42C507, 0x42C554) that happened on bigger maps due to too small pathfinding node buffer.
+- `IsSimpleDeployer` `BalloonHover=true` units with `DeployToLand=false` are no longer forced to land when hovering.
+- If `DeployingAnim` with `Shadow=true` is played for unit currently in air its shadow will now be drawn on ground.
+- `DeployingAnim` now supports both `Normalized=true` and `Reverse=true`. Keep in mind `Reverse` uses `LoopEnd` for frame amount instead of `End` even without `LoopCount` > 1.
+- `DeployingAnim` using unit drawer now also tint accordingly with the unit.
+- Fixed the bug that armor multiplier of new attacheffect will have extra take effect once if restricted warheads.
+- Fixed an issue that units' `LaserTrails` will always lags behind by one frame
 
 ## Fixes / interactions with other extensions
 
@@ -261,6 +269,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
 - Weapons fired by EMPulse superweapons *(Ares feature)* without `EMPulse.TargetSelf=true` can now create radiation.
 - Weapons fired by EMPulse superweapons *(Ares feature)* now respect `Floater` and Phobos-added `Gravity` setting.
 - `IsSimpleDeployer` units with Hover locomotor and `DeployToLand` no longer get stuck after deploying or play their move sound indefinitely.
+- `Convert.Deploy` displays 'no deploy' cursor if the new type is not allowed to move to the cell due to `SpeedType` etc
 - All forms of type conversion (including Ares') now correctly update the warp-in delay if unit with teleport `Locomotor` was converted while the delay was active.
 - All forms of type conversion (including Ares') now correctly update `MoveSound` if a moving unit has their type changed.
 - All forms of type conversion (including Ares') now correctly update `OpenTopped` state of passengers in transport that is converted.
@@ -279,7 +288,7 @@ This page describes all ingame logics that are fixed or improved in Phobos witho
   - 1000 save files are supported, from `SVGM_000.NET` to `SVGM_999.NET`. When the limit is reached, the game will overwrite the latest save file.
   - The previous `SVGM_XXX.NET` files are cleaned up before first copy if it's a new game, otherwise the highest numbered `SVGM_XXX.NET` file is found and the index is incremented, if possible.
   - The game also automatically copies `spawn.ini` to the save folder as `spawnSG.ini` when saving a game.
-
+- Fixed an issue that Ares' Type Conversion not resetting barrel's direction by `FireAngle`.
 
 ```{note}
 The described behavior is a replica of and is compliant with XNA CnCNet Client's multiplayer save game support.
@@ -326,7 +335,7 @@ FiringForceScatter=true   ; boolean
 In `rulesmd.ini`:
 ```ini
 [General]
-ExtendedAircraftMissions=false         ; boolean
+ExtendedAircraftMissions=false          ; boolean
 
 [SOMEAIRCRAFT]                          ; AircraftType
 ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
@@ -486,6 +495,27 @@ HideIfNoOre.Threshold=0  ; integer, minimal ore growth stage
 ```
 
 ## Buildings
+
+### AI base construction modification
+
+- AI can now have some new behaviors.
+  - `AIAutoDeployMCV` controls whether AI will still automatically deploy the mcv after owning a construction yard.
+  - `AISetBaseCenter` controls whether AI will still set the newly deployed construction yard as the base center after owning a construction yard.
+  - `AIBiasSpawnCell` controls whether AI will preferentially select the construction yard close to the birth point as the base center (useless in campaign).
+  - `AIForbidConYard` controls whether AI cannot place buildings with `ConstructionYard=true`. AI will try to build one after a construction yard is destroyed but will not put it down. After that, it will continue to build other buildings. Building a construction yard will still take some time. You can try to reduce the build time of it.
+  - `AINodeWallsOnly` controls whether AI can only automatically connect adjacent walls when there are wall base nodes around.
+  - `AICleanWallNode` controls whether AI cannot place walls when there are no `ProtectWithWall` buildings around. If it cannot be placed, this base node will also be removed.
+
+In `rulesmd.ini`:
+```ini
+[AI]
+AIAutoDeployMCV=true   ; boolean
+AISetBaseCenter=true   ; boolean
+AIBiasSpawnCell=false  ; boolean
+AIForbidConYard=false  ; boolean
+AINodeWallsOnly=false  ; boolean
+AICleanWallNode=false  ; boolean
+```
 
 ### Aircraft docking direction
 
@@ -707,7 +737,7 @@ BuildingWaypoints=false  ; boolean
 
 ### Auto deploy for GI-like infantry
 
-- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri’s Revenge. Now you can use the following flags to re-enable this feature.
+- In RA2, the GI-like infantry controlled by the AI will automatically deploy to use their more powerful secondary weapons when engaging the enemy. This feature was broken in Yuri's Revenge. Now you can use the following flags to re-enable this feature.
 
 In `rulesmd.ini`:
 ```ini
@@ -824,6 +854,16 @@ In `rulesmd.ini`:
 ```ini
 [SOMEPROJECTILE]        ; Projectile
 Gravity=6.0             ; floating point value
+```
+
+### Customizing initial facing behavior
+
+- Previously projectiles that had `Voxel=true` images were hardcoded to have downwards initial trajectory. This behavior can now be toggled on for other types of projectiles or disabled for voxel projectiles. In addition to defaulting to `true` for `Voxel=true` projectiles, it also now defaults to true for any `Vertical=true` projectile.
+
+In `rulesmd.ini`:
+```ini
+[SOMEPROJECTILE]        ; Projectile
+VerticalInitialFacing=  ; boolean
 ```
 
 ### FlakScatter distance customization
@@ -1265,6 +1305,19 @@ IronCurtain.ExtraTintIntensity=0.0  ; floating point value
 ForceShield.ExtraTintIntensity=0.0  ; floating point value
 ```
 
+### Jumpjet climbing logic enhancement
+
+- You can now let the jumpjets increase their height earlier by set `JumpjetClimbPredictHeight` to true. The jumpjet will raise its height 5 cells in advance, instead of only raising its height when encountering cliffs or buildings in front of it.
+- You can also let them simply skip the stop check by set `JumpjetClimbWithoutCutOut` to true. The jumpjet will not stop moving horizontally when encountering cliffs or buildings in front of it, but will continue to move forward while raising its altitude.
+  - When `JumpjetClimbPredictHeight` is enabled, if the height raised five grids in advance is still not enough to cross cliffs or buildings, it will stop and move horizontally as before, unless `JumpjetClimbWithoutCutOut` is also enabled.
+
+In `rulesmd.ini`:
+```ini
+[General]
+JumpjetClimbPredictHeight=false  ; boolean
+JumpjetClimbWithoutCutOut=false  ; boolean
+```
+
 ### Jumpjet rotating on crashing toggle
 
 - Jumpjet that is going to crash starts to change its facing uncontrollably, this can now be turned off.
@@ -1635,6 +1688,20 @@ BunkerableAnyway=false     ; boolean
 Skipping checks with this feature doesn't mean that vehicles and tank bunkers will interact correctly. Following the simple checks performed by the provider of this feature, bunkerability is mainly determined by Locomotor. The details about locomotors' bunkerability can be found on [ModEnc](https://modenc.renegadeprojects.com/Bunkerable).
 ```
 
+### Customize harvester dump amount
+
+- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
+- Less than or equal to 0 means no limit, it will always dump out all at one time.
+
+In `rulesmd.ini`:
+```ini
+[General]
+HarvesterDumpAmount=0.0               ; float point value
+
+[SOMEVEHICLE]                         ; VehicleType
+HarvesterDumpAmount=                  ; float point value
+```
+
 ### Customizing crushing tilt and slowdown
 
 - Vehicles with `Crusher=true` and `OmniCrusher=true` / `MovementZone=CrusherAll` were hardcoded to tilt when crushing vehicles / walls respectively. This now obeys `TiltsWhenCrushes` but can be customized individually for these two scenarios using `TiltsWhenCrusher.Vehicles` and `TiltsWhenCrusher.Overlays`, which both default to `TiltsWhenCrushes`.
@@ -1700,17 +1767,20 @@ Ammo.DeployUnlockMaximumAmount=-1    ; integer
 Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
 ```
 
-### IsSimpleDeployer vehicle deploy animation / direction customization
+### IsSimpleDeployer facing and animation customization
 
-- `DeployingAnim.AllowAnyDirection` if set, disables any direction constraints for deployers with `DeployingAnim` set. Only works for ground units.
-- `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
-- `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
-- `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
+- In vanilla game only units with `DeployingAnim` were constrained to a specific deploy facing and it was not customizable per unit. `DeployDir` can be set to override this per unit (defaults to `[AudioVisual]` -> `DeployDir`), including using value of -1 to disable the facing restriction.
+- Multiple new options for deploy animations:
+  - `DeployingAnims` can be used instead of `DeployingAnim` (if both are set, `DeployingAnims` takes precedence) to define a list of direction-specific deploy animations to play. Largest power of 2 the number of listed animations falls to is used as number of directions/animations. Less than 8 animations listed results in only first listed one being used.
+  - `DeployingAnim.KeepUnitVisible` determines if the unit is **not** hidden while the animation is playing.
+  - `DeployingAnim.ReverseForUndeploy` controls whether or not the animation is played in reverse for undeploying.
+  - `DeployingAnim.UseUnitDrawer` controls whether or not the animation is displayed in the unit's palette and team colours or regular animation palette, including a potential custom palette.
 
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]                          ; VehicleType
-DeployingAnim.AllowAnyDirection=false  ; boolean
+DeployDir=                             ; Facing type (integers from 0-7 or -1)
+DeployingAnims=                        ; List of AnimationTypes
 DeployingAnim.KeepUnitVisible=false    ; boolean
 DeployingAnim.ReverseForUndeploy=true  ; boolean
 DeployingAnim.UseUnitDrawer=true       ; boolean
@@ -1784,6 +1854,33 @@ Sinkable.SquidGrab=true    ; boolean
 
 - Setting VehicleType `Speed` to 0 now makes game treat them as stationary, behaving in very similar manner to deployed vehicles with `IsSimpleDeployer` set to true. Should not be used on buildable vehicles, as they won't be able to exit factories.
 
+### Turret recoil
+
+- Now you can use `TurretRecoil` to control units' turret/barrel recoil effect when firing.
+  - `TurretTravel` and `BarrelTravel` control the maximum recoil distance.
+  - `TurretRecoil.Suppress` can prevent the weapon from producing this effect when firing.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]             ; VehicleType
+TurretRecoil=no           ; boolean
+TurretTravel=2            ; integer, pixels
+TurretCompressFrames=1    ; integer, game frames
+TurretHoldFrames=1        ; integer, game frames
+TurretRecoverFrames=1     ; integer, game frames
+BarrelTravel=2            ; integer, pixels
+BarrelCompressFrames=1    ; integer, game frames
+BarrelHoldFrames=1        ; integer, game frames
+BarrelRecoverFrames=1     ; integer, game frames
+
+[SOMEWEAPON]              ; WeaponType
+TurretRecoil.Suppress=no  ; boolean
+```
+
+```{note}
+The logic above was not reverse-engineered but reimplemented to achieve the same effect, hence there might be some differences in behavior compared to Tiberian Sun version.
+```
+
 ### Unit Without Turret Always Turn To Target
 
 - Now vehicles without turret will attempt to turn to the target while the weapon is cooling down, rather than after the weapon has cooled down, by setting `NoTurret.TrackTarget` to true.
@@ -1815,20 +1912,6 @@ In `artmd.ini`:
 ```ini
 [SOMEVEHICLE]   ; VehicleType
 TurretShadow=   ; boolean
-```
-
-### Customize harvester dump amount
-
-- Now you can limit how much ore the harvester can dump out per time, like it in Tiberium Sun.
-- Less than or equal to 0 means no limit, it will always dump out all at one time.
-
-In `rulesmd.ini`:
-```ini
-[General]
-HarvesterDumpAmount=0.0               ; float point value
-
-[SOMEVEHICLE]                         ; VehicleType
-HarvesterDumpAmount=                  ; float point value
 ```
 
 ## Veinholes & Weeds
