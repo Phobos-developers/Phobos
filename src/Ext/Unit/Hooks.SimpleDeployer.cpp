@@ -158,6 +158,14 @@ DEFINE_HOOK(0x739AC0, UnitClass_SimpleDeployer_Deploy, 0x6)
 
 	if (pThis->Deployed)
 	{
+		int maxAmmo = -1;
+		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
+
+		if (AresFunctions::ConvertTypeTo && pTypeExt->Convert_Deploy)
+			maxAmmo = pTypeExt->Convert_Deploy->Ammo;
+
+		TechnoExt::HandleOnDeployAmmoChange(pThis, maxAmmo);
+
 		if (pType->DeploySound != -1)
 			VocClass::PlayAt(pType->DeploySound, pThis->Location);
 	}
@@ -213,6 +221,8 @@ DEFINE_HOOK(0x739CD0, UnitClass_SimpleDeployer_Undeploy, 0x6)
 
 		if (!pThis->Deployed)
 		{
+			TechnoExt::HandleOnDeployAmmoChange(pThis);
+
 			if (pType->UndeploySound != -1)
 				VocClass::PlayAt(pType->UndeploySound, pThis->Location);
 		}
@@ -403,25 +413,3 @@ DEFINE_HOOK(0x73CF46, UnitClass_Draw_It_KeepUnitVisible, 0x6)
 	return Continue;
 }
 
-// Disable deploy cursor if Ares type conversion on deploy is available and the new type is not allowed to move to the cell.
-DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_IsSimpleDeployer, 0x5)
-{
-	enum { DoNotAllowDeploy = 0x700DCE };
-
-	GET(UnitClass*, pThis, ESI);
-
-	if (pThis->Type->IsSimpleDeployer && AresFunctions::ConvertTypeTo)
-	{
-		auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pThis->Type);
-
-		if (auto const pTypeConvert = pTypeExt->Convert_Deploy)
-		{
-			auto const pCell = pThis->GetCell();
-
-			if (!pCell->IsClearToMove(pTypeConvert->SpeedType, true, true, -1, pTypeConvert->MovementZone, -1, pCell->ContainsBridge()))
-				return DoNotAllowDeploy;
-		}
-	}
-
-	return 0;
-}

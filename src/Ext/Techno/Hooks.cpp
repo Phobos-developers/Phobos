@@ -1263,3 +1263,35 @@ DEFINE_HOOK(0x708FC0, TechnoClass_ResponseMove_Pickup, 0x5)
 
 	return 0;
 }
+
+// Handle disabling deploy action & cursor for vehicles and aircraft.
+// Possible hook locations for other types in same function: Building: 0x700E3F, Infantry: 0x700E2C
+DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
+{
+	enum { DoNotAllowDeploy = 0x700DCE };
+
+	GET(FootClass*, pThis, ESI);
+
+	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
+	{
+		// Ammo-based deploy blocking.
+		if (!TechnoExt::HasAmmoToDeploy(pUnit))
+			return DoNotAllowDeploy;
+
+		// IsSimpleDeployer + type conversion
+		if (pUnit->Type->IsSimpleDeployer && AresFunctions::ConvertTypeTo)
+		{
+			auto const pTypeExt = TechnoTypeExt::ExtMap.Find(pUnit->Type);
+
+			if (auto const pTypeConvert = pTypeExt->Convert_Deploy)
+			{
+				auto const pCell = pUnit->GetCell();
+
+				if (!pCell->IsClearToMove(pTypeConvert->SpeedType, true, true, -1, pTypeConvert->MovementZone, -1, pCell->ContainsBridge()))
+					return DoNotAllowDeploy;
+			}
+		}
+	}
+
+	return 0;
+}

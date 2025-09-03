@@ -440,6 +440,7 @@ New:
 - [Customize hardcoded projectile initial facing behavior](Fixed-or-Improved-Logics.md#customizing-initial-facing-behavior) (by Starkku)
 - Health bar permanently displayed (by FlyStar)
 - [`IsSimpleDeployer` facing customization & directional deploy animations](Fixed-or-Improved-Logics.md#issimpleDeployer-facing-and-animation-customization) (by Starkku)
+- [Ammo-based deploy customizations for vehicles expanded to non-IsSimpleDeployer deploy functions](New-or-Enhancerd-Logics.md#Automatic-deploy-and-blocking-deploying-based on-ammo) (by Starkku)
 
 Vanilla fixes:
 - Fixed sidebar not updating queued unit numbers when adding or removing units when the production is on hold (by CrimRecya)

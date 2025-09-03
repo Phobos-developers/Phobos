@@ -317,7 +317,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		{
 			// Fixed an issue where morphing could result in -1 health.
 			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
-			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
+			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
 
 			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
 			pTypeExt->UpdateTypeData(pToType);
@@ -758,6 +758,40 @@ bool TechnoExt::CannotMove(UnitClass* pThis)
 	}
 
 	return false;
+}
+
+bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
+{
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
+	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return true;
+
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		return true;
+
+	return false;
+}
+
+void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
+{
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	if (const bool addOnDeploy = pTypeExt->Ammo_AddOnDeploy)
+	{
+		const int ammoCalc = std::max(pThis->Ammo + addOnDeploy, 0);
+		int maxAmmo = pTypeExt->OwnerObject()->Ammo;
+
+		if (maxAmmoOverride >= 0)
+			maxAmmo = maxAmmoOverride;
+
+		pThis->Ammo = std::min(maxAmmo, ammoCalc);
+	}
 }
 
 // =============================

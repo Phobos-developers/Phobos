@@ -2006,6 +2006,21 @@ AmphibiousEnter=         ; boolean, default to [General] -> AmphibiousEnter
 AmphibiousUnload=        ; boolean, default to [General] -> AmphibiousUnload
 ```
 
+### Automatic deploy and blocking deploying based on ammo
+
+- It is now possible for deployable vehicles (`DeploysInto`, `DeployFire`, `IsSimpleDeployer` and those that have passengers) to automatically deploy or prevent deploying based on their current ammo.
+  - `Ammo.AutoDeployMinimumAmount` & `Ammo.AutoDeployMaximumAmount` determine minimum and maximum ammo the vehicle should have for it to automatically deploy. Negative values disable the check.
+  - `Ammo.DeployUnlockMinimumAmount` & `Ammo.AutoDeployMaximumAmount` determine minimum and maximum ammo the vehicle should have for deploying to be available in general. Negative values disable the check.
+
+In `rulesmd.ini`:
+```ini
+[SOMEVEHICLE]                      ; VehicleType
+Ammo.AutoDeployMinimumAmount=-1    ; integer
+Ammo.AutoDeployMaximumAmount=-1    ; integer
+Ammo.DeployUnlockMinimumAmount=-1  ; integer
+Ammo.DeployUnlockMaximumAmount=-1  ; integer
+```
+
 ### Damaged unit image changes
 
 - When a unit is damaged (health points percentage is lower than `[AudioVisual] -> ConditionYellow` percentage), it now may use different image set by `Image.ConditionYellow` VehicleType.

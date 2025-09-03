@@ -177,24 +177,40 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-	auto const pType = pThis->Type;
-
-	if (pType->Ammo <= 0 || !pType->IsSimpleDeployer)
-		return;
-
+	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
-	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
-	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+	auto const pType = pTypeExt->OwnerObject();
 
-	if (skipMinimum && skipMaximum)
+	if (pType->Ammo <= 0)
 		return;
 
-	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+	auto const rtti = pThis->WhatAmI();
 
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
-		pThis->QueueMission(Mission::Unload, true);
+	if (rtti == AbstractType::Unit)
+	{
+		auto const pUnit = static_cast<UnitClass*>(pThis);
+		auto const pUnitType = pUnit->Type;
+
+		if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
+			&& pUnitType->Passengers < 1 && pUnit->Passengers.NumPassengers < 1)
+		{
+			return;
+		}
+	}
+
+	int const min = pTypeExt->Ammo_AutoDeployMinimumAmount;
+	int const max = pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	int const ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+	{
+		if (TechnoExt::HasAmmoToDeploy(pThis))
+			pThis->QueueMission(Mission::Unload, true);
+	}
 }
 
 // TODO : Merge into new AttachEffects
