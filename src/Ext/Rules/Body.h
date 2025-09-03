@@ -262,6 +262,8 @@ public:
 		int TintColorForceShield;
 		int TintColorBerserk;
 
+		std::vector<std::string> EVAIndexList;
+
 		Valueable<bool> InfantryAutoDeploy;
 
 		ExtData(RulesClass* OwnerObject) : Extension<RulesClass>(OwnerObject)
@@ -466,6 +468,8 @@ public:
 			, AttackMove_IgnoreWeaponCheck { false }
 			, AttackMove_StopWhenTargetAcquired { }
 
+			, EVAIndexList {}
+
 			, Parasite_GrappleAnim {}
 			, InfantryAutoDeploy { false }
 		{ }
@@ -485,6 +489,7 @@ public:
 		virtual void SaveToStream(PhobosStreamWriter& Stm) override;
 
 		void ReplaceVoxelLightSources();
+		void LoadEvaVoices();
 
 	private:
 		template <typename T>

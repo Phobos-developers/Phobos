@@ -8,6 +8,7 @@
 #include <Ext/House/Body.h>
 #include <Ext/SWType/Body.h>
 #include <Ext/WarheadType/Body.h>
+#include <Ext/Side/Body.h>
 #include <TacticalClass.h>
 #include <PlanningTokenClass.h>
 
@@ -296,10 +297,13 @@ DEFINE_HOOK(0x440B4F, BuildingClass_Unlimbo_SetShouldRebuild, 0x5)
 {
 	enum { ContinueCheck = 0x440B58, SkipSetShouldRebuild = 0x440B81 };
 
+	GET(BuildingClass* const, pThis, ESI);
+
+	if (BuildingTypeExt::ExtMap.Find(pThis->Type)->NewEvaVoice_Index.isset())
+		SideExt::UpdateMainEvaVoice(pThis);
+
 	if (SessionClass::IsCampaign())
 	{
-		GET(BuildingClass* const, pThis, ESI);
-
 		// Preplaced structures are already managed before
 		if (BuildingExt::ExtMap.Find(pThis)->IsCreatedFromMapFile)
 			return SkipSetShouldRebuild;
@@ -463,6 +467,11 @@ DEFINE_HOOK(0x440D01, BuildingClass_Unlimbo_DestroyableObstacle, 0x6)
 DEFINE_HOOK(0x445D87, BuildingClass_Limbo_DestroyableObstacle, 0x6)
 {
 	GET(BuildingClass*, pThis, ESI);
+
+	auto const pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (pTypeExt->NewEvaVoice_Index.isset() && pTypeExt->NewEvaVoice_RecheckOnDeath)
+		SideExt::UpdateMainEvaVoice(pThis);
 
 	if (BuildingTypeExt::ExtMap.Find(pThis->Type)->IsDestroyableObstacle)
 		RecalculateCells<true>(pThis);

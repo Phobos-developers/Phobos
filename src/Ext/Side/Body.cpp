@@ -2,6 +2,9 @@
 
 #include <ThemeClass.h>
 
+#include <Ext/Building/Body.h>
+#include <Ext/BuildingType/Body.h>
+
 SideExt::ExtContainer SideExt::ExtMap;
 
 void SideExt::ExtData::Initialize()
@@ -45,6 +48,94 @@ void SideExt::ExtData::LoadFromINIFile(CCINIClass* pINI)
 	this->SuperWeaponSidebar_TopPCX.Read(pINI, pSection, "SuperWeaponSidebar.TopPCX");
 	this->SuperWeaponSidebar_CenterPCX.Read(pINI, pSection, "SuperWeaponSidebar.CenterPCX");
 	this->SuperWeaponSidebar_BottomPCX.Read(pINI, pSection, "SuperWeaponSidebar.BottomPCX");
+
+	pINI->ReadString(pSection, "EVA.Tag", "", Phobos::readBuffer);
+
+	if (std::strlen(Phobos::readBuffer) > 0)
+		this->EVA_Tag = _strdup(Phobos::readBuffer);
+}
+
+void SideExt::UpdateMainEvaVoice(BuildingClass* pThis)
+{
+	const auto pTypeExt = BuildingTypeExt::ExtMap.Find(pThis->Type);
+
+	if (!pTypeExt->NewEvaVoice_Index.isset())
+		return;
+
+	const auto pHouse = pThis->Owner;
+
+	if (!pHouse->IsControlledByCurrentPlayer())
+		return;
+
+	int newPriority = -1;
+	int newEvaIndex = VoxClass::EVAIndex;
+
+	for (const auto pBuilding : pHouse->Buildings)
+	{
+		const auto pBuildingTypeExt = BuildingTypeExt::ExtMap.Find(pBuilding->Type);
+
+		// Special case that must be avoided here because can be the current EVA changer
+		if (!pBuildingTypeExt->NewEvaVoice_Index.isset() || pBuilding->CurrentMission == Mission::Selling)
+			continue;
+
+		// The first highest priority takes precedence over lower ones
+		if (pBuildingTypeExt->NewEvaVoice_Priority > newPriority)
+		{
+			newPriority = pBuildingTypeExt->NewEvaVoice_Priority;
+			newEvaIndex = pBuildingTypeExt->NewEvaVoice_Index;
+		}
+	}
+
+	if (pThis->CurrentMission != Mission::Selling && pTypeExt->NewEvaVoice_Priority > newPriority)
+	{
+		newPriority = pTypeExt->NewEvaVoice_Priority;
+		newEvaIndex = pTypeExt->NewEvaVoice_Index;
+	}
+
+	if (newPriority > 0 && VoxClass::EVAIndex != newEvaIndex)
+	{
+		VoxClass::EVAIndex = newEvaIndex;
+
+		// Greeting of the new EVA voice
+		int idxPlay = pTypeExt->NewEvaVoice_InitialMessage.Get(-1);
+
+		if (idxPlay != -1)
+			VoxClass::PlayIndex(idxPlay);
+	}
+	else if (newPriority < 0)
+	{
+		// Restore the original EVA voice of the owner's side
+		const auto pSide = SideClass::Array.GetItem(pHouse->SideIndex);
+		const auto pSideExt = SideExt::ExtMap.Find(pSide);
+		newEvaIndex = 0; // By default is set the "Allies" EVA voice
+
+		if (pSideExt->EVA_Tag.isset())
+		{
+			const auto evaTag = pSideExt->EVA_Tag.Get();
+
+			for (size_t i = 0; i < RulesExt::Global()->EVAIndexList.size(); i++)
+			{
+				const auto item = RulesExt::Global()->EVAIndexList[i].c_str();
+
+				if (_strcmpi(item, evaTag) == 0)
+				{
+					newEvaIndex = i;
+					break;
+				}
+			}
+		}
+		else
+		{
+			if (pHouse->SideIndex == 0)
+				newEvaIndex = 0; // Allied
+			if (pHouse->SideIndex == 1)
+				newEvaIndex = 1; // Russian
+			else if (pHouse->SideIndex == 2)
+				newEvaIndex = 2; // Yuri
+		}
+
+		VoxClass::EVAIndex = newEvaIndex;
+	}
 }
 
 // =============================
@@ -79,6 +170,7 @@ void SideExt::ExtData::Serialize(T& Stm)
 		.Process(this->SuperWeaponSidebar_TopPCX)
 		.Process(this->SuperWeaponSidebar_CenterPCX)
 		.Process(this->SuperWeaponSidebar_BottomPCX)
+		.Process(this->EVA_Tag)
 		;
 }
 

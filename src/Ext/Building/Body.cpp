@@ -3,6 +3,9 @@
 #include <BitFont.h>
 
 #include <Utilities/EnumFunctions.h>
+#include <Ext/Side/Body.h>
+#include <Ext/Scenario/Body.h>
+#include <Ext/House/Body.h>
 
 BuildingExt::ExtContainer BuildingExt::ExtMap;
 

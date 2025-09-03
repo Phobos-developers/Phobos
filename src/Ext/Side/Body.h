@@ -41,6 +41,7 @@ public:
 		PhobosPCXFile SuperWeaponSidebar_TopPCX;
 		PhobosPCXFile SuperWeaponSidebar_CenterPCX;
 		PhobosPCXFile SuperWeaponSidebar_BottomPCX;
+		Nullable<char*> EVA_Tag;
 
 		ExtData(SideClass* OwnerObject) : Extension<SideClass>(OwnerObject)
 			, ArrayIndex { -1 }
@@ -68,6 +69,7 @@ public:
 			, SuperWeaponSidebar_TopPCX {}
 			, SuperWeaponSidebar_CenterPCX {}
 			, SuperWeaponSidebar_BottomPCX {}
+			, EVA_Tag { }
 		{ }
 
 		virtual ~ExtData() = default;
@@ -92,6 +94,9 @@ public:
 	};
 
 	static ExtContainer ExtMap;
+
 	static bool LoadGlobals(PhobosStreamReader& Stm);
 	static bool SaveGlobals(PhobosStreamWriter& Stm);
+
+	static void UpdateMainEvaVoice(BuildingClass* pThis);
 };
