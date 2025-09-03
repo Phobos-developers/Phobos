@@ -216,8 +216,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const int originalShieldDamage = shieldDamage;
 	const int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(pType->ReceivedDamage_Minimum);
 	const int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(pType->ReceivedDamage_Maximum);
-	const int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
-	const int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	const int minDmg = GeneralUtils::SafeMultiply(min, pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	const int maxDmg = GeneralUtils::SafeMultiply(max, pWHExt->Shield_ReceivedDamage_MaxMultiplier);
 	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
