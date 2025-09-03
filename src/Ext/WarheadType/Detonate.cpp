@@ -557,11 +557,21 @@ void WarheadTypeExt::ExtData::InterceptBullets(TechnoClass* pOwner, BulletClass*
 void WarheadTypeExt::ExtData::ApplyConvert(HouseClass* pHouse, TechnoClass* pTarget)
 {
 	auto pTargetFoot = abstract_cast<FootClass*, true>(pTarget);
+	auto pTargetBuilding = abstract_cast<BuildingClass*>(pTarget);
+	bool bUniversalDeploy = this->Convert_UseUniversalDeploy.Get();
 
-	if (!pTargetFoot)
+	if ((bUniversalDeploy && !pTargetFoot && !pTargetBuilding) || (!bUniversalDeploy && !pTargetFoot) || this->Convert_Pairs.size() == 0)
 		return;
 
-	TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+	if (bUniversalDeploy)
+	{
+		TypeConvertGroup::UniversalConvert(pTarget, this->Convert_Pairs, pHouse, this->Convert_Anim);
+		return;
+	}
+	else
+	{
+		TypeConvertGroup::Convert(pTargetFoot, this->Convert_Pairs, pHouse);
+	}
 }
 
 void WarheadTypeExt::ExtData::ApplyLocomotorInfliction(TechnoClass* pTarget)

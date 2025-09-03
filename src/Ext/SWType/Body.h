@@ -93,6 +93,9 @@ public:
 		std::vector<ValueableVector<int>> SW_Link_RandomWeightsData;
 
 		std::vector<TypeConvertGroup> Convert_Pairs;
+		Nullable<AnimTypeClass*> Convert_Anim;
+
+		Valueable<bool> Convert_UseUniversalDeploy;
 
 		Valueable<bool> UseWeeds;
 		Valueable<int> UseWeeds_Amount;
@@ -163,8 +166,10 @@ public:
 			, SW_Next_RandomWeightsData {}
 			, ShowTimer_Priority { 0 }
 			, Convert_Pairs {}
+			, Convert_Anim {}
 			, ShowDesignatorRange { true }
 			, TabIndex { 1 }
+			, Convert_UseUniversalDeploy { false }
 			, SuperWeaponSidebar_Allow {}
 			, SuperWeaponSidebar_PriorityHouses { 0u }
 			, SuperWeaponSidebar_RequiredHouses { 0xFFFFFFFFu }

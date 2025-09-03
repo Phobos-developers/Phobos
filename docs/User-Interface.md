@@ -430,6 +430,12 @@ DisplayIncome.Houses=     ; Affected House Enumeration, defaults to [AudioVisual
 DisplayIncome.Offset=0,0  ; X,Y, pixels relative to default
 ```
 
+In `RA2MD.INI`:
+```ini
+[Phobos]
+ShowFlashOnSelecting=false  ; boolean
+```
+
 ## Hotkey Commands
 
 ### `[ ]` Display Damage Numbers

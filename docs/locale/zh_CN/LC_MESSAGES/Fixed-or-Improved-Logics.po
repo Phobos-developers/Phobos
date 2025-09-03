@@ -13,7 +13,7 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
@@ -5668,7 +5668,7 @@ msgstr "此色盘的行为就像原有的对象色盘那样不受光效影响。
 
 #: ../../Fixed-or-Improved-Logics.md:1578
 msgid "Customizable ore spawners"
-msgstr "自定义矿柱"
+msgstr "自定义矿石生成者"
 
 #: ../../Fixed-or-Improved-Logics.md:1580
 msgid ""
@@ -5796,7 +5796,7 @@ msgstr ""
 #: ../../Fixed-or-Improved-Logics.md:1620
 #: ../../Fixed-or-Improved-Logics.md:1645
 msgid "Minimap color customization"
-msgstr "自定义小地图颜色"
+msgstr "小地图颜色的自定义"
 
 #: ../../Fixed-or-Improved-Logics.md:1622
 msgid ""

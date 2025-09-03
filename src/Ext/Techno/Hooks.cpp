@@ -37,6 +37,7 @@ DEFINE_HOOK(0x6F9E50, TechnoClass_AI, 0x5)
 	GET(TechnoClass*, pThis, ECX);
 
 	TechnoExt::ExtMap.Find(pThis)->OnEarlyUpdate();
+	//TechnoExt::UpdateUniversalDeploy(pThis);
 
 	return 0;
 }

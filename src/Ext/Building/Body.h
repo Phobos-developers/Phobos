@@ -110,4 +110,6 @@ public:
 	static bool CanUndeployOnSell(BuildingClass* pThis);
 	static void KickOutStuckUnits(BuildingClass* pThis);
 	static const std::vector<CellStruct> GetFoundationCells(BuildingClass* pThis, CellStruct baseCoords, bool includeOccupyHeight = false);
+	static void HideBuildingAnimations(BuildingClass* pThis = nullptr);
+	static void UnhideBuildingAnimations(BuildingClass* pThis = nullptr);
 };

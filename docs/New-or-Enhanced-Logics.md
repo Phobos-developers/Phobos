@@ -661,6 +661,17 @@ SpyEffect.VictimSuperWeapon=       ; SuperWeaponType
 SpyEffect.InfiltratorSuperWeapon=  ; SuperWeaponType
 ```
 
+### Skip anim delay for burst fire
+
+- In Red Alert 1, the tesla coil will attack multiple times after charging animation. This is not possible in Red Alert 2, where the building must play the charge animation every time it fires.
+- Now you can implement the above logic using the following flag.
+
+In `artmd.ini`:
+```ini
+[SOMEBUILDING]                     ; BuildingType
+IsAnimDelayedBurst=true            ; boolean
+```
+
 ## Infantry
 
 ### Customizable FLH when infantry is prone or deployed
@@ -1086,6 +1097,14 @@ In `rulesmd.ini`:
 TabIndex=1  ; integer
 ```
 
+```{warning}
+This feature has the same limitations as [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html). This feature does not support BuildingTypes.
+```
+
+```{warning}
+This feature requires Ares 3.0 or higher to function! When Ares 3.0+ is not detected, not all properties of a unit may be updated.
+```
+
 ### EMPulse settings
 
 - It is possible to customize which weapon a building with `EMPulseCannon=true` fires when an associated `Type=EMPulse` superweapon (**only** if `EMPulse.TargetSelf=false` or omitted) is fired by setting `EMPulse.WeaponIndex`.
@@ -1102,6 +1121,20 @@ EMPulse.SuspendOthers=false  ; boolean
 
 ```{note}
 `Type=EMPulse` superweapon and any associated keys are [Ares features](https://ares-developers.github.io/Ares-docs/new/superweapons/types/empulse.html).
+```
+
+### Universal deploy from any techno into any techno
+- Extension of the above logic. Replaces the internal logic (Ares code) by a new implementation capable to convert any techno into any techno. Only valid in warheads and superweapons.
+- `Convert.Anim` plays an animation on the converted techno using `Convert.UseUniversalDeploy`.
+
+```
+[SOMEWARHEAD]                     ; Warhead
+Convert.UseUniversalDeploy=false  ; Boolean
+Convert.Anim=                     ; Animation
+
+[SOMESW]                          ; Superweapon
+Convert.UseUniversalDeploy=false  ; Boolean
+Convert.Anim=                     ; Animation
 ```
 
 ### LimboDelivery

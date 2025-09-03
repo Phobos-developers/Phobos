@@ -274,3 +274,11 @@ This feature should only be used if you use a spawner/outside client (i.e. CNCNe
 ```{warning}
 Due to technical incompatibilities, enabling this feature disables [Ares' Customizable Dropdown Colors](https://ares-developers.github.io/Ares-docs/ui-features/customizabledropdowncolors.html).
 ```
+
+```{warning}
+When this feature is enabled, the Ares equivalent of `$Inherits` (undocumented) is disabled!
+```
+
+```{warning}
+This feature may noticeably increase game loading time, depending on the size of game rules and used hardware.
+```

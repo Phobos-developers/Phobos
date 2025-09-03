@@ -366,6 +366,20 @@ In `rulesmd.ini`:
 LandingDir=     ; Direction type (integers from 0-255). Accepts negative values as a special case.
 ```
 
+### Extended Aircraft Missions
+
+- Aircraft will now be able to use waypoints.
+- When a `guard` command (`[G]` by default) is issued, the aircraft will search for targets around the current location and return immediately when target is not found, target is destroyed or ammos are depleted.
+  - If the target is destroyed but ammos are not depleted yet, it will also return because the aircraft's command is one-time.
+- When an `attack move` command (`[Ctrl]+[Shift]`) is issued, the aircraft will move towards the destination and search for nearby targets on the route for attack. Once ammo is depleted or the destination is reached, it will return.
+  - If the automatically selected target is destroyed but ammo is not depleted yet during the process, the aircraft will continue flying to the destination.
+
+In `rulesmd.ini`:
+```ini
+[General]
+ExtendedAircraftMissions=false  ; boolean
+```
+
 ## Animations
 
 ### Animation weapon and damage settings

@@ -886,7 +886,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				true,
 				nullptr,
 				{ 0, 0 }
-			);
+		);
 	}
 	else
 	{
@@ -902,7 +902,7 @@ DEFINE_HOOK(0x4147F9, AircraftClass_Draw_Shadow, 0x6)
 				index == shadow_index,
 				nullptr,
 				{ 0, 0 }
-			);
+		);
 	}
 
 	return FinishDrawing;

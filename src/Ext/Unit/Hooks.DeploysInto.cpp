@@ -5,7 +5,7 @@
 #include <Ext/CaptureManager/Body.h>
 #include <Ext/WarheadType/Body.h>
 
-static void TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
+void TechnoExt::TransferMindControlOnDeploy(TechnoClass* pTechnoFrom, TechnoClass* pTechnoTo)
 {
 	const auto pAnimType = pTechnoFrom->MindControlRingAnim
 		? pTechnoFrom->MindControlRingAnim->Type
@@ -77,7 +77,7 @@ DEFINE_HOOK(0x739956, UnitClass_Deploy_Transfer, 0x6)
 	GET(UnitClass*, pUnit, EBP);
 	GET(BuildingClass*, pStructure, EBX);
 
-	TransferMindControlOnDeploy(pUnit, pStructure);
+	TechnoExt::TransferMindControlOnDeploy(pUnit, pStructure);
 	ShieldClass::SyncShieldToAnother(pUnit, pStructure);
 	TechnoExt::SyncInvulnerability(pUnit, pStructure);
 	AttachEffectClass::TransferAttachedEffects(pUnit, pStructure);
@@ -90,7 +90,7 @@ DEFINE_HOOK(0x44A03C, BuildingClass_Mi_Selling_Transfer, 0x6)
 	GET(BuildingClass*, pStructure, EBP);
 	GET(UnitClass*, pUnit, EBX);
 
-	TransferMindControlOnDeploy(pStructure, pUnit);
+	TechnoExt::TransferMindControlOnDeploy(pStructure, pUnit);
 	ShieldClass::SyncShieldToAnother(pStructure, pUnit);
 	TechnoExt::SyncInvulnerability(pStructure, pUnit);
 	AttachEffectClass::TransferAttachedEffects(pStructure, pUnit);
