@@ -185,10 +185,11 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 		return;
 
 	auto const rtti = pThis->WhatAmI();
+	UnitClass* pUnit = nullptr;
 
 	if (rtti == AbstractType::Unit)
 	{
-		auto const pUnit = static_cast<UnitClass*>(pThis);
+		pUnit = static_cast<UnitClass*>(pThis);
 		auto const pUnitType = pUnit->Type;
 
 		if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
@@ -205,11 +206,22 @@ void TechnoExt::ExtData::DepletedAmmoActions()
 		return;
 
 	int const ammo = pThis->Ammo;
+	bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
+	bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
 
-	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+	if (canDeploy && !isDeploying)
 	{
-		if (TechnoExt::HasAmmoToDeploy(pThis))
-			pThis->QueueMission(Mission::Unload, true);
+		pThis->QueueMission(Mission::Unload, true);
+	}
+	else if (!canDeploy && isDeploying)
+	{
+		pThis->QueueMission(Mission::Guard, true);
+
+		if (pUnit && pUnit->Type->IsSimpleDeployer && pThis->InAir)
+		{
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
+		}
 	}
 }
 

@@ -781,16 +781,23 @@ bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
 void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
 {
 	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	int add = pTypeExt->Ammo_AddOnDeploy;
 
-	if (const bool addOnDeploy = pTypeExt->Ammo_AddOnDeploy)
+	if (add != 0)
 	{
-		const int ammoCalc = std::max(pThis->Ammo + addOnDeploy, 0);
 		int maxAmmo = pTypeExt->OwnerObject()->Ammo;
 
 		if (maxAmmoOverride >= 0)
 			maxAmmo = maxAmmoOverride;
 
-		pThis->Ammo = std::min(maxAmmo, ammoCalc);
+		int originalAmmo = pThis->Ammo;
+		pThis->Ammo = std::clamp(pThis->Ammo + add, 0, maxAmmo);
+
+		if (originalAmmo != pThis->Ammo)
+		{
+			pThis->StartReloading();
+			pThis->Mark(MarkType::Change);
+		}
 	}
 }
 
