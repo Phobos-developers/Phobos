@@ -1274,6 +1274,10 @@ DEFINE_HOOK(0x7010C1, TechnoClass_CanShowDeployCursor_UnitsAndAircraft, 0x5)
 
 	if (auto const pUnit = abstract_cast<UnitClass*>(pThis))
 	{
+		// If in tank bunker skip rest of the checks.
+		if (pThis->BunkerLinkedItem)
+			return 0;
+
 		// Ammo-based deploy blocking.
 		if (!TechnoExt::HasAmmoToDeploy(pUnit))
 			return DoNotAllowDeploy;
