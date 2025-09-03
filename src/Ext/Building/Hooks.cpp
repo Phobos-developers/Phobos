@@ -217,20 +217,20 @@ DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 	if (const auto pUnit = abstract_cast<UnitClass*>(pThis->GetNthLink()))
 	{
 		// Detecting movement status
-		if (pUnit->Locomotor->Destination() == CoordStruct::Empty)
+		const auto pLocoDest = pUnit->Locomotor->Destination();
+
+		if (pLocoDest == CoordStruct::Empty || pLocoDest == pUnit->Location)
 		{
 			// Evacuate the congestion at the entrance
 			reinterpret_cast<void(__thiscall*)(BuildingClass*)>(0x449540)(pThis);
-			const auto pDest = MapClass::Instance.GetCellAt(BuildingTypeExt::GetWeaponFactoryDoor(pThis));
+			const auto cell = BuildingTypeExt::GetWeaponFactoryDoor(pThis);
+			const auto pDest = MapClass::Instance.GetCellAt(cell);
 
-			auto getAdjCell = [pThis, pDest]()
-			{
-				const int dir = RulesExt::Global()->ExtendedWeaponsFactory ? BuildingTypeExt::ExtMap.Find(pThis->Type)->WeaponsFactory_Dir.Get() : 2;
-				return pDest->GetNeighbourCell(static_cast<FacingType>(dir));
-			};
-
-			// Hover units may stop one cell behind their destination, should forcing them to advance one more cell
-			pUnit->SetDestination((pUnit->Destination != pDest ? pDest : getAdjCell()), true);
+			// Hover units may stop one cell behind their destination
+			if (pUnit->Destination != pDest)
+				pUnit->SetDestination(pDest, true);
+			else
+				pUnit->Locomotor->Move_To(CellClass::Cell2Coord(cell, Unsorted::LevelHeight * pDest->Level));
 		}
 	}
 
@@ -241,6 +241,15 @@ DEFINE_HOOK(0x44E202, BuildingClass_Mission_Unload_CheckStuck, 0x6)
 DEFINE_HOOK(0x44E260, BuildingClass_Mission_Unload_KickOutStuckUnits, 0x7)
 {
 	GET(BuildingClass*, pThis, EBP);
+
+	if (!pThis->IsTether)
+	{
+		if (const auto pLink = pThis->GetNthLink())
+		{
+			pThis->SendCommand(RadioCommand::NotifyUnlink, pLink);
+			pLink->Scatter(pThis->GetCoords(), true, true);
+		}
+	}
 
 	BuildingExt::KickOutStuckUnits(pThis);
 

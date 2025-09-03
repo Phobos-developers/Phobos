@@ -418,7 +418,12 @@ void BuildingExt::KickOutStuckUnits(BuildingClass* pThis)
 		{
 			if (const auto pUnit = abstract_cast<UnitClass*, true>(pObject))
 			{
-				if (pThis->Owner != pUnit->Owner || pUnit->Locomotor->Destination() != CoordStruct::Empty)
+				if (pThis->Owner != pUnit->Owner)
+					continue;
+
+				const auto pLocoDest = pUnit->Locomotor->Destination();
+
+				if (pLocoDest != CoordStruct::Empty && pLocoDest != pUnit->Location)
 					continue;
 
 				const auto height = pUnit->GetHeight();
