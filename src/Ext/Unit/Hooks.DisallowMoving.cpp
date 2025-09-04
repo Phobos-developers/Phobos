@@ -107,7 +107,7 @@ DEFINE_HOOK(0x744103, UnitClass_Mission_AreaGuard_DisallowMoving, 0x6)
 	if (TechnoExt::CannotMove(pThis))
 	{
 		if (pThis->CanPassiveAcquireTargets() && pThis->TargetingTimer.Completed()) 
-			pThis->TargetAndEstimateDamage(pThis->Location, ThreatType::Area);
+			pThis->TargetAndEstimateDamage(pThis->Location, ThreatType::Range);
 
 		int delay = 1;
 
