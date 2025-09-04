@@ -2535,21 +2535,23 @@ Burst.NoDelay=false   ; boolean
     - If `DelayedFire.CenterAnimOnFirer` is set the animation is created at the firer's center rather than at the firing coordinates.
   - If the weapon was fired by InfantryType and `DelayedFire.PauseFiringSequence` is set to true, the infantry's firing sequence animation is paused when it hits the firing frame defined by `FireUp/Prone` or `SecondaryFire/Prone` in its `artmd.ini` entry until the delay timer has expired.
   - If the weapon has `Burst` > 1 and `DelayedFire.OnlyOnInitialBurst` set to true, the delay occurs only before the initial burst shot. Note that if using Ares, `Burst` index does not reset if firing is interrupted or the firer loses target, meaning it will be able to resume firing without waiting for the delay.
+  - If the weapon has `DelayedFire.OnlyOnInitialBurst` set to true and `DelayedFire.InitialBurstSymmetrical` set to true, then there will be created second `DelayedFire.Animation` on opposite by lateral side played at the same time as the first one.
 
 In `rulesmd.ini`:
 ```ini
-[SOMEWEAPON]                           ; WeaponType
-DelayedFire.Duration=                  ; integer - single or comma-sep. range (game frames)
-DelayedFire.SkipInTransport=false      ; boolean
-DelayedFire.Animation=                 ; Animation
-DelayedFire.OpenToppedAnimation=       ; Animation
-DelayedFire.AnimIsAttached=true        ; boolean
-DelayedFire.AnimOffset=                ; integer - Forward,Lateral,Height
-DelayedFire.AnimOnTurret=true          ; boolean
-DelayedFire.CenterAnimOnFirer=false    ; boolean
-DelayedFire.RemoveAnimOnNoDelay=false  ; boolean
-DelayedFire.PauseFiringSequence=false  ; boolean
-DelayedFire.OnlyOnInitialBurst=false   ; boolean
+[SOMEWEAPON]                                ; WeaponType
+DelayedFire.Duration=                       ; integer - single or comma-sep. range (game frames)
+DelayedFire.SkipInTransport=false           ; boolean
+DelayedFire.Animation=                      ; Animation
+DelayedFire.OpenToppedAnimation=            ; Animation
+DelayedFire.AnimIsAttached=true             ; boolean
+DelayedFire.AnimOffset=                     ; integer - Forward,Lateral,Height
+DelayedFire.AnimOnTurret=true               ; boolean
+DelayedFire.CenterAnimOnFirer=false         ; boolean
+DelayedFire.RemoveAnimOnNoDelay=false       ; boolean
+DelayedFire.PauseFiringSequence=false       ; boolean
+DelayedFire.OnlyOnInitialBurst=false        ; boolean
+DelayedFire.InitialBurstSymmetrical=false   ; boolean
 ```
 
 ```{note}

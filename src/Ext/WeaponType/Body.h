@@ -89,6 +89,7 @@ public:
 		Valueable<bool> DelayedFire_RemoveAnimOnNoDelay;
 		Valueable<bool> DelayedFire_PauseFiringSequence;
 		Valueable<bool> DelayedFire_OnlyOnInitialBurst;
+		Valueable<bool> DelayedFire_InitialBurstSymmetrical;
 		Nullable<CoordStruct> DelayedFire_AnimOffset;
 		Valueable<bool> DelayedFire_AnimOnTurret;
 
@@ -162,6 +163,7 @@ public:
 			, DelayedFire_RemoveAnimOnNoDelay { false }
 			, DelayedFire_PauseFiringSequence { false }
 			, DelayedFire_OnlyOnInitialBurst { false }
+			, DelayedFire_InitialBurstSymmetrical { false }
 			, DelayedFire_AnimOffset {}
 			, DelayedFire_AnimOnTurret { true }
 		{ }
