@@ -1287,7 +1287,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-A](_static/images/Trajectory-demo-A.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
@@ -1319,7 +1319,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-B](_static/images/Trajectory-demo-B.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
@@ -1394,7 +1394,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-C](_static/images/Trajectory-demo-C.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
@@ -1431,7 +1431,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-D](_static/images/Trajectory-demo-D.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
@@ -1512,7 +1512,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-F](_static/images/Trajectory-demo-F.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
@@ -1581,7 +1581,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-I](_static/images/Trajectory-demo-I.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
@@ -1631,7 +1631,7 @@ Trajectory.Tracing.ChasableDistance=0    ; floating point value
 
   ![Trajectory-Demo-N](_static/images/Trajectory-demo-N.gif)
 
-  - The assets of the case come from mod *Light Cone*.
+  - The assets of the case come from mod [*Light Cone*](https://www.moddb.com/mods/lightcone).
 
   In `rulesmd.ini`:
   ```ini
