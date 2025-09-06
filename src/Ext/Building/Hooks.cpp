@@ -134,10 +134,10 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	int weaponIndex = 0;
 	auto const pExt = BuildingExt::ExtMap.Find(pThis);
 
-	if (!pExt->EMPulseSW)
+	if (!pExt->CurrentEMPulseSW)
 		return 0;
 
-	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->EMPulseSW->Type);
+	auto const pSWExt = SWTypeExt::ExtMap.Find(pExt->CurrentEMPulseSW->Type);
 	auto const pOwner = pThis->Owner;
 
 	if (pSWExt->EMPulse_WeaponIndex >= 0)
@@ -162,15 +162,16 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 	if (pSWExt->EMPulse_SuspendOthers)
 	{
 		auto const pHouseExt = HouseExt::ExtMap.Find(pOwner);
-		const int index = pExt->EMPulseSW->Type->ArrayIndex;
+		const int index = pExt->CurrentEMPulseSW->Type->ArrayIndex;
 
 		if (pHouseExt->SuspendedEMPulseSWs.count(index))
 		{
-			auto& super = pOwner->Supers;
+			auto& supers = pOwner->Supers;
 
 			for (auto const& swidx : pHouseExt->SuspendedEMPulseSWs[index])
 			{
-				super[swidx]->IsSuspended = false;
+				auto const super = supers[swidx];
+				super->IsSuspended = false;
 			}
 
 			pHouseExt->SuspendedEMPulseSWs[index].clear();
@@ -178,7 +179,7 @@ DEFINE_HOOK(0x44CEEC, BuildingClass_Mission_Missile_EMPulseSelectWeapon, 0x6)
 		}
 	}
 
-	pExt->EMPulseSW = nullptr;
+	pExt->CurrentEMPulseSW = nullptr;
 	EMPulseCannonTemp::weaponIndex = weaponIndex;
 	R->EAX(pThis->GetWeapon(weaponIndex));
 	return SkipGameCode;

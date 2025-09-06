@@ -177,24 +177,52 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-	auto const pType = pThis->Type;
-
-	if (pType->Ammo <= 0 || !pType->IsSimpleDeployer)
-		return;
-
+	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
-	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
-	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+	auto const pType = pTypeExt->OwnerObject();
 
-	if (skipMinimum && skipMaximum)
+	if (pType->Ammo <= 0)
 		return;
 
-	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+	auto const rtti = pThis->WhatAmI();
+	UnitClass* pUnit = nullptr;
 
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+	if (rtti == AbstractType::Unit)
+	{
+		pUnit = static_cast<UnitClass*>(pThis);
+		auto const pUnitType = pUnit->Type;
+
+		if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
+			&& pUnitType->Passengers < 1 && pUnit->Passengers.NumPassengers < 1)
+		{
+			return;
+		}
+	}
+
+	int const min = pTypeExt->Ammo_AutoDeployMinimumAmount;
+	int const max = pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	int const ammo = pThis->Ammo;
+	bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
+	bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
+
+	if (canDeploy && !isDeploying)
+	{
 		pThis->QueueMission(Mission::Unload, true);
+	}
+	else if (!canDeploy && isDeploying)
+	{
+		pThis->QueueMission(Mission::Guard, true);
+
+		if (pUnit && pUnit->Type->IsSimpleDeployer && pThis->InAir)
+		{
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
+		}
+	}
 }
 
 // TODO : Merge into new AttachEffects

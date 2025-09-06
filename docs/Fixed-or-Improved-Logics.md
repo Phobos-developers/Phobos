@@ -1734,37 +1734,13 @@ DestroyAnim.Random=true                ; boolean
 
 ### `IsSimpleDeployer` vehicle ammo change on deploy
 
-- `Ammo.AddOnDeploy` determines the number of ammo added or substracted on unit deploy.
-
+- `Ammo.AddOnDeploy` determines the number of ammo added or subtracted after the vehicle has deployed or undeployed.
+  - Ammo count cannot go below 0 or above the maximum ammo for vehicle's type (in case the deploy results in type conversion, type is the one after the conversion).
+ 
 In `rulesmd.ini`:
 ```ini
-[SOMEVEHICLE]           ; VehicleType
-Ammo.AddOnDeploy=0      ; integer
-```
-
-```{warning}
-Due to technical constraints, units that use `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type with `Ammo.AddOnDeploy` will add or substract ammo despite of convertion success. This will also happen when unit exits tank bunker.
-```
-
-### `IsSimpleDeployer` vehicle auto-deploy / deploy block on ammo change
-
-- Vehicle deployment can now be affected by ammo count.
-  - `Ammo.AutoDeployMinimumAmount` determines the minimal number of ammo at which a vehicle converts/deploys automatically.
-  - `Ammo.DeployUnlockMinimumAmount` determines the minimal number of ammo that unlocks issuing vehicle converting/deploying command.
-    - `Ammo.AutoDeployMaximumAmount` and `Ammo.DeployUnlockMaximumAmount` behave analogically.
-    - Setting a negative number will disable ammo count check.
-
-In `rulesmd.ini`:
-```ini
-[SOMEVEHICLE]                        ; VehicleType
-Ammo.AutoDeployMinimumAmount=-1      ; integer
-Ammo.AutoDeployMaximumAmount=-1      ; integer
-Ammo.DeployUnlockMinimumAmount=-1    ; integer
-Ammo.DeployUnlockMaximumAmount=-1    ; integer
-```
-
-```{warning}
-Auto-deploy feature requires `Convert.Deploy` from [Ares' Type Conversion](https://ares-developers.github.io/Ares-docs/new/typeconversion.html) to change type. Unit without it will constantly use deploy command on self until ammo is changed.
+[SOMEVEHICLE]       ; VehicleType
+Ammo.AddOnDeploy=0  ; integer
 ```
 
 ### IsSimpleDeployer facing and animation customization
