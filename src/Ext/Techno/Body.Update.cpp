@@ -36,7 +36,6 @@ void TechnoExt::ExtData::OnEarlyUpdate()
 
 	this->UpdateShield();
 	this->UpdateAttachEffects();
-	this->UpdateLaserTrails();
 	this->ApplyInterceptor();
 	this->EatPassengers();
 	this->ApplySpawnLimitRange();
@@ -178,24 +177,52 @@ void TechnoExt::ExtData::ApplyInterceptor()
 
 void TechnoExt::ExtData::DepletedAmmoActions()
 {
-	auto const pThis = static_cast<UnitClass*>(this->OwnerObject());
-	auto const pType = pThis->Type;
-
-	if (pType->Ammo <= 0 || !pType->IsSimpleDeployer)
-		return;
-
+	auto const pThis = this->OwnerObject();
 	auto const pTypeExt = this->TypeExtData;
-	const bool skipMinimum = pTypeExt->Ammo_AutoDeployMinimumAmount < 0;
-	const bool skipMaximum = pTypeExt->Ammo_AutoDeployMaximumAmount < 0;
+	auto const pType = pTypeExt->OwnerObject();
 
-	if (skipMinimum && skipMaximum)
+	if (pType->Ammo <= 0)
 		return;
 
-	const bool moreThanMinimum = pThis->Ammo >= pTypeExt->Ammo_AutoDeployMinimumAmount;
-	const bool lessThanMaximum = pThis->Ammo <= pTypeExt->Ammo_AutoDeployMaximumAmount;
+	auto const rtti = pThis->WhatAmI();
+	UnitClass* pUnit = nullptr;
 
-	if ((skipMinimum || moreThanMinimum) && (skipMaximum || lessThanMaximum))
+	if (rtti == AbstractType::Unit)
+	{
+		pUnit = static_cast<UnitClass*>(pThis);
+		auto const pUnitType = pUnit->Type;
+
+		if (!pUnitType->IsSimpleDeployer && !pUnitType->DeploysInto && !pUnitType->DeployFire
+			&& pUnitType->Passengers < 1 && pUnit->Passengers.NumPassengers < 1)
+		{
+			return;
+		}
+	}
+
+	int const min = pTypeExt->Ammo_AutoDeployMinimumAmount;
+	int const max = pTypeExt->Ammo_AutoDeployMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return;
+
+	int const ammo = pThis->Ammo;
+	bool canDeploy = TechnoExt::HasAmmoToDeploy(pThis) && (min < 0 || ammo >= min) && (max < 0 || ammo <= max);
+	bool isDeploying = pThis->CurrentMission == Mission::Unload || pThis->QueuedMission == Mission::Unload;
+
+	if (canDeploy && !isDeploying)
+	{
 		pThis->QueueMission(Mission::Unload, true);
+	}
+	else if (!canDeploy && isDeploying)
+	{
+		pThis->QueueMission(Mission::Guard, true);
+
+		if (pUnit && pUnit->Type->IsSimpleDeployer && pThis->InAir)
+		{
+			if (auto const pJJLoco = locomotion_cast<JumpjetLocomotionClass*>(pUnit->Locomotor))
+				pJJLoco->State = JumpjetLocomotionClass::State::Ascending;
+		}
+	}
 }
 
 // TODO : Merge into new AttachEffects
@@ -633,6 +660,13 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		for (auto& pTrail : addition)
 			this->LaserTrails.emplace_back(std::move(pTrail));
 	}
+	else if (const size_t trailSize = pNewTypeExt->LaserTrailData.size())
+	{
+		this->LaserTrails.reserve(trailSize);
+
+		for (const auto& entry : pNewTypeExt->LaserTrailData)
+			this->LaserTrails.emplace_back(std::make_unique<LaserTrailClass>(entry.GetType(), pOwner, entry.FLH, entry.IsOnTurret));
+	}
 
 	// Reset AutoDeath Timer
 	if (this->AutoDeathTimer.HasStarted())
@@ -989,6 +1023,25 @@ void TechnoExt::ExtData::UpdateTypeData(TechnoTypeClass* pCurrentType)
 		pThis->LocomotorTarget = nullptr;
 	}
 
+	// FireAngle
+	pThis->BarrelFacing.SetCurrent(DirStruct(0x4000 - (pCurrentType->FireAngle << 8)));
+
+	// Reset recoil data
+	{
+		auto& turretRecoil = pThis->TurretRecoil.Turret;
+		const auto& turretAnimData = pCurrentType->TurretAnimData;
+		turretRecoil.Travel = turretAnimData.Travel;
+		turretRecoil.CompressFrames = turretAnimData.CompressFrames;
+		turretRecoil.RecoverFrames = turretAnimData.RecoverFrames;
+		turretRecoil.HoldFrames = turretAnimData.HoldFrames;
+		auto& barrelRecoil = pThis->BarrelRecoil.Turret;
+		const auto& barrelAnimData = pCurrentType->BarrelAnimData;
+		barrelRecoil.Travel = barrelAnimData.Travel;
+		barrelRecoil.CompressFrames = barrelAnimData.CompressFrames;
+		barrelRecoil.RecoverFrames = barrelAnimData.RecoverFrames;
+		barrelRecoil.HoldFrames = barrelAnimData.HoldFrames;
+	}
+
 	// Only FootClass* can use this.
 	if (const auto pFoot = abstract_cast<FootClass*, true>(pThis))
 	{
@@ -1026,7 +1079,7 @@ void TechnoExt::ExtData::UpdateTypeData_Foot()
 	//auto const pOldTypeExt = TechnoTypeExt::ExtMap.Find(pOldType);
 
 	// Update movement sound if still moving while type changed.
-	if (pThis->Locomotor->Is_Moving_Now() && pThis->IsMoveSoundPlaying)
+	if (pThis->IsMoveSoundPlaying && pThis->Locomotor->Is_Moving())
 	{
 		if (pCurrentType->MoveSound != pOldType->MoveSound)
 		{
@@ -1936,7 +1989,12 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		auto const type = attachEffect->GetType();
 		firepower *= type->FirepowerMultiplier;
 		speed *= type->SpeedMultiplier;
-		armor *= type->ArmorMultiplier;
+
+		if (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0))
+			hasRestrictedArmorMultipliers = true;
+		else
+			armor *= type->ArmorMultiplier;
+
 		ROF *= type->ROFMultiplier;
 		cloak |= type->Cloakable;
 		forceDecloak |= type->ForceDecloak;
@@ -1946,7 +2004,6 @@ void TechnoExt::ExtData::RecalculateStatMultipliers()
 		hasTint |= type->HasTint();
 		reflectsDamage |= type->ReflectDamage;
 		hasOnFireDiscardables |= (type->DiscardOn & DiscardCondition::Firing) != DiscardCondition::None;
-		hasRestrictedArmorMultipliers |= (type->ArmorMultiplier != 1.0 && (type->ArmorMultiplier_AllowWarheads.size() > 0 || type->ArmorMultiplier_DisallowWarheads.size() > 0));
 	}
 
 	pAE.FirepowerMultiplier = firepower;
