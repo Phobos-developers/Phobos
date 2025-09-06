@@ -331,6 +331,8 @@ FiringForceScatter=true   ; boolean
   - `ExtendedAircraftMissions.SmoothMoving` controls whether the aircraft will return to the airport when the distance to the destination is less than half of `SlowdownDistance` or its turning radius.
   - `ExtendedAircraftMissions.EarlyDescend` controls whether the aircraft not have to fly directly above the airport before starting to descend when the distance between the aircraft and the landing point is less than `SlowdownDistance` (also work for aircraft spawned by aircraft carriers).
   - `ExtendedAircraftMissions.RearApproach` controls whether the aircraft should start landing at the airport from the opposite direction of `LandingDir`.
+  - `ExtendedAircraftMissions.FastScramble` controls whether the aircraft can scramble when its airport has been destroyed.
+  - `ExtendedAircraftMissions.UnlandDamage` controls the damage suffered by the aircraft every 4 frames when there is no airport for the aircraft to land. If the value is negative, it will crash immediately. Not recommended to use when `ExtendedAircraftMissions` is not enabled.
 
 In `rulesmd.ini`:
 ```ini
@@ -341,6 +343,8 @@ ExtendedAircraftMissions=false          ; boolean
 ExtendedAircraftMissions.SmoothMoving=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.EarlyDescend=  ; boolean, default to [General] -> ExtendedAircraftMissions
 ExtendedAircraftMissions.RearApproach=  ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.FastScramble=  ; boolean, default to [General] -> ExtendedAircraftMissions
+ExtendedAircraftMissions.UnlandDamage=  ; integer, default to 1 if [General] -> ExtendedAircraftMissions = true, otherwise -1
 ```
 
 ### Fixed spawn distance & spawn height for airstrike / SpyPlane aircraft
@@ -1737,7 +1741,7 @@ DestroyAnim.Random=true                ; boolean
 
 - `Ammo.AddOnDeploy` determines the number of ammo added or subtracted after the vehicle has deployed or undeployed.
   - Ammo count cannot go below 0 or above the maximum ammo for vehicle's type (in case the deploy results in type conversion, type is the one after the conversion).
- 
+
 In `rulesmd.ini`:
 ```ini
 [SOMEVEHICLE]       ; VehicleType

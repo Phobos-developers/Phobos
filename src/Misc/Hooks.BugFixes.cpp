@@ -1256,6 +1256,8 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 
 	if (commonAircraft)
 	{
+		pAircraft->SetArchiveTarget(nullptr);
+
 		if (pAircraft->Type->AirportBound)
 		{
 			// To avoid `AirportBound=yes` aircraft with ammo at low altitudes cannot correctly receive stop command and queue Mission::Guard with a `Destination`.
@@ -1282,9 +1284,9 @@ DEFINE_HOOK(0x4C75DA, EventClass_RespondToEvent_Stop, 0x6)
 	{
 		const auto pFoot = abstract_cast<FootClass*, true>(pTechno);
 
-		// Clear archive target for infantries and vehicles like receive a mega mission
-		if (pFoot && !pAircraft)
-			pTechno->SetArchiveTarget(nullptr);
+		// Clear archive target for foots like receive a mega mission
+		if (pFoot)
+			pFoot->SetArchiveTarget(nullptr);
 
 		// Only stop when it is not under the bridge (meeting the original conditions which has been skipped)
 		if (!pTechno->vt_entry_2B0() || pTechno->OnBridge || pTechno->IsInAir() || pTechno->GetCell()->SlopeIndex)

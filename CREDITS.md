@@ -543,6 +543,7 @@ This page lists all the individual contributions to the project by their author.
   - Jumpjet Climbing Logic Enhancement
   - Fix for pathfinding crashes on big maps due to too small pathfinding node buffer
   - Fix an issue that units' `LaserTrails` will always lags behind by one frame
+  - Allow the aircraft to enter area guard mission and not crash immediately without any airport
 - **Ollerus**:
   - Build limit group enhancement
   - Customizable rocker amplitude
