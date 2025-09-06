@@ -493,12 +493,7 @@ TechnoClass* TechnoTypeExt::CreateUnit(CreateUnitTypeClass* pCreateUnit, DirType
 				if (secondaryFacing)
 					pTechno->SecondaryFacing.SetCurrent(DirStruct(*secondaryFacing));
 
-				if (pCreateUnit->SpawnAnim)
-				{
-					auto const pAnim = GameCreate<AnimClass>(pCreateUnit->SpawnAnim, location);
-					AnimExt::SetAnimOwnerHouseKind(pAnim, pInvokerHouse, nullptr, false, true);
-					AnimExt::ExtMap.Find(pAnim)->SetInvoker(pInvoker, pInvokerHouse);
-				}
+				AnimExt::CreateRandomAnim(pCreateUnit->SpawnAnim, location, pInvoker, pInvokerHouse, true);
 
 				if (!pTechno->InLimbo)
 				{

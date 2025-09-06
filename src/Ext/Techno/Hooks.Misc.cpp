@@ -236,15 +236,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 
 	if (shouldRecycleSpawned())
 	{
-		if (pCarrierTypeExt->Spawner_RecycleAnim)
-		{
-			auto const pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
-			auto const pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
-			auto const pSpawnOwner = pSpawner->Owner;
-			pAnimExt->SetInvoker(pSpawner);
-			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawnOwner, pSpawnOwner, false, true);
-		}
-
+		AnimExt::CreateRandomAnim(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd, pSpawner, pSpawner->Owner, true);
 		pSpawner->SetLocation(pCarrier->GetCoords());
 		return Recycle;
 	}

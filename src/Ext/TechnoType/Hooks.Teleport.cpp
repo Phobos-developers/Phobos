@@ -19,7 +19,11 @@ DEFINE_HOOK(0x7193F6, TeleportLocomotionClass_ILocomotion_Process_WarpoutAnim, 0
 {
 	GET_LOCO(ESI);
 
-	if (auto const pWarpOut = pExt->WarpOut.Get(RulesClass::Instance->WarpOut))
+	if (pExt->WarpOut.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpOut, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpOut = RulesClass::Instance->WarpOut)
 	{
 		auto const pAnim = GameCreate<AnimClass>(pWarpOut, pLinked->Location);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
@@ -76,7 +80,11 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 {
 	GET_LOCO(ESI);
 
-	if (auto const pWarpIn = pExt->WarpIn.Get(RulesClass::Instance->WarpIn))
+	if (pExt->WarpIn.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpIn, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpIn = RulesClass::Instance->WarpIn)
 	{
 		auto const pAnim = GameCreate<AnimClass>(pWarpIn, pLinked->Location);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
@@ -94,17 +102,38 @@ DEFINE_HOOK(0x719742, TeleportLocomotionClass_ILocomotion_Process_WarpInAnim, 0x
 	return 0x719796;
 }
 
-DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_WarpAway, 0x5)
+DEFINE_HOOK(0x719827, TeleportLocomotionClass_ILocomotion_Process_WarpOutChronoshiftAnim, 0x5)
 {
 	GET_LOCO(ESI);
 
-	if (auto const pWarpAway = pExt->WarpAway.Get(RulesClass::Instance->WarpOut))
+	if (pExt->WarpOut.size() > 0)
 	{
-		auto const pAnim = GameCreate<AnimClass>(pWarpAway, pLinked->Location);
+		AnimExt::CreateRandomAnim(pExt->WarpOut, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpOut = RulesClass::Instance->WarpOut)
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpOut, pLinked->Location);
 		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
 	}
 
 	return 0x719878;
+}
+
+DEFINE_HOOK(0x719B1E, TeleportLocomotionClass_ILocomotion_Process_WarpInChronoshiftAnim, 0x5)
+{
+	GET_LOCO(ESI);
+
+	if (pExt->WarpIn.size() > 0)
+	{
+		AnimExt::CreateRandomAnim(pExt->WarpIn, pLinked->Location, nullptr, pLinked->Owner);
+	}
+	else if (auto const pWarpIn = RulesClass::Instance->WarpIn)
+	{
+		auto const pAnim = GameCreate<AnimClass>(pWarpIn, pLinked->Location);
+		AnimExt::SetAnimOwnerHouseKind(pAnim, pLinked->Owner, nullptr, false, true);
+	}
+
+	return 0x719B81;
 }
 
 DEFINE_HOOK(0x719973, TeleportLocomotionClass_ILocomotion_Process_ChronoDelay, 0x5)

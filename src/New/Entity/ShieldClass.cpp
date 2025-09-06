@@ -345,20 +345,13 @@ void ShieldClass::ResponseAttack()
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
+void ShieldClass::WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim)
 {
 	if (this->AreAnimsHidden)
 		return;
 
 	const auto pTechno = this->Techno;
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
-
-	if (pAnimType)
-	{
-		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->GetCoords());
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
-	}
+	AnimExt::CreateRandomAnim((pHitAnim.empty() ? this->Type->HitAnim : pHitAnim), pTechno->GetCoords(), pTechno, nullptr, true, true);
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -724,7 +717,8 @@ void ShieldClass::SelfHealing()
 			}
 			else if (health <= 0)
 			{
-				this->BreakShield();
+				std::vector<AnimTypeClass*> nothing;
+				this->BreakShield(nothing);
 			}
 		}
 	}
@@ -741,7 +735,7 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 	return (int)std::trunc(iStatus);
 }
 
-void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
+void ShieldClass::BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
 	auto const pType = this->Type;
@@ -754,17 +748,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
-	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : pType->BreakAnim;
-
-		if (pAnimType)
-		{
-			auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
-			pAnim->SetOwnerObject(pTechno);
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
-		}
-	}
+		AnimExt::CreateRandomAnim(pBreakAnim.empty() ? pType->BreakAnim : pBreakAnim, pTechno->Location, pTechno, nullptr, true, true);
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : pType->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;

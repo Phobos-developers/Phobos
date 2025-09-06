@@ -339,8 +339,8 @@ IdleAnimDamaged.ConditionYellow=            ; AnimationType
 IdleAnimDamaged.ConditionRed=               ; AnimationType
 IdleAnim.OfflineAction=Hides                ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
 IdleAnim.TemporalAction=Hides               ; AttachedAnimFlag (None, Hides, Temporal, Paused or PausedTemporal)
-BreakAnim=                                  ; AnimationType
-HitAnim=                                    ; AnimationType
+BreakAnim=                                  ; list of Animation
+HitAnim=                                    ; list of Animation
 HitFlash=false                              ; boolean
 HitFlash.FixedSize=                         ; integer
 HitFlash.Red=true                           ; boolean
@@ -365,8 +365,8 @@ ShieldType=SOMESHIELDTYPE                   ; ShieldType; none by default
 [SOMEWARHEAD]                               ; WarheadType
 Shield.Penetrate=false                      ; boolean
 Shield.Break=false                          ; boolean
-Shield.BreakAnim=                           ; AnimationType
-Shield.HitAnim=                             ; AnimationType
+Shield.BreakAnim=                           ; list of Animation
+Shield.HitAnim=                             ; list of Animation
 Shield.SkipHitAnim=false                    ; boolean
 Shield.HitFlash=true                        ; boolean
 Shield.BreakWeapon=                         ; WeaponType
@@ -426,8 +426,8 @@ Shield.InheritStateOnReplace=false          ; boolean
   - `Bouncer=true` and `IsMeteor=true` animations can exhibit irregular behaviour when used as `IdleAnim` and should be avoided.
 - `IdleAnim.OfflineAction` indicates what happens to the animation when the shield is in a low power state.
 - `IdleAnim.TemporalAction` indicates what happens to the animation when the shield is attacked by temporal weapons.
-- `BreakAnim`, if set, will be played when the shield has been broken.
-- `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain.
+- `BreakAnim`, if set, will be played when the shield has been broken. If more than one animation is listed, a random one is selected.
+- `HitAnim`, if set, will be played when the shield is attacked, similar to `WeaponNullifyAnim` for Iron Curtain. If more than one animation is listed, a random one is selected.
 - `HitFlash`, if set to true, makes it so that a light flash is generated when the shield is attacked by a Warhead unless it has `Shield.HitFlash=false`. Size of the flash is determined by damage dealt, unless `HitFlash.FixedSize` is set to a number, in which case that value is used instead (range of values that produces visible effect are increments of 4 from 81 to 252, anything higher or below does not have effect). Color can be customized via `HitFlash.Red/Green/Blue`. If `HitFlash.Black` is set to true, the generated flash will be black regardless of other color settings.
 - `BreakWeapon`, if set, will be fired at the TechnoType once the shield breaks.
 - `AbsorbPercent` controls the percentage of damage that will be absorbed by the shield. Defaults to 1.0, meaning full damage absorption.
@@ -449,8 +449,8 @@ Shield.InheritStateOnReplace=false          ; boolean
 - Warheads have new options that interact with shields. Note that all of these that do not by their very nature require ability to target the shield (such as modifiers like `Shield.Break` or removing / attaching) still require Warhead `Verses` to affect the target unless `EffectsRequireVerses` is set to false on the Warhead.
   - `Shield.Penetrate` allows the warhead ignore the shield and always deal full damage to the TechnoType itself. It also allows targeting the TechnoType as if shield doesn't exist.
   - `Shield.Break` allows the warhead to always break shields of TechnoTypes. This is done before damage is dealt.
-  - `Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
-  - `Shield.HitAnim` will be displayed instead of ShieldType `HitAnim` if set when Warhead hits the shield.
+  - `Shield.BreakAnim` will be displayed instead of ShieldType `BreakAnim` if the shield is broken by the Warhead, either through damage or `Shield.Break`. If more than one animation is listed, a random one is selected.
+  - `Shield.HitAnim` will be displayed instead of ShieldType `HitAnim` if set when Warhead hits the shield. If more than one animation is listed, a random one is selected.
   - If `Shield.SkipHitAnim` is set to true, no hit anim is shown when the Warhead damages the shield whatsoever.
   - `Shield.BreakWeapon` will be fired instead of ShieldType `BreakWeapon` if the shield is broken by the Warhead, either through damage or `Shield.Break`.
   - `Shield.AbsorbPercent` overrides the `AbsorbPercent` value set in the ShieldType that is being damaged.
@@ -504,7 +504,7 @@ Note that the AircraftTypes had to be defined under [AircraftTypes].
   - `CreateUnit.AlwaysSpawnOnGround`, if set to true, ensures the unit will be created on the cell at ground level even if animation is in air. If set to false, jumpjet units spawned on ground will take off automatically after being spawned regardless.
   - `CreateUnit.SpawnParachutedInAir`, if set to true, makes it so that the unit is created with a parachute if it is spawned in air. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
   - `CreateUnit.ConsiderPathfinding`, if set to true, will consider whether or not the cell where the animation is located is occupied by other objects or impassable to the unit being created and will attempt to find a nearby cell that is not. Otherwise the unit will be created at the animation's location despite these obstacles if possible.
-  - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation.
+  - `CreateUnit.SpawnAnim` can be used to play another animation at created unit's location after it has appeared. This animation has same owner and invoker as the parent animation. If more than one animation is listed, a random one is selected.
   - `CreateUnit.SpawnHeight` can be set to override the animation's height when determining where to spawn the created unit if set to positive value. Has no effect if `CreateUnit.AlwaysSpawnOnGround` is set to true.
 
 In `artmd.ini`:
@@ -523,7 +523,7 @@ CreateUnit.InheritTurretFacings=false  ; boolean
 CreateUnit.AlwaysSpawnOnGround=false   ; boolean
 CreateUnit.SpawnParachutedInAir=false  ; boolean
 CreateUnit.ConsiderPathfinding=false   ; boolean
-CreateUnit.SpawnAnim=                  ; AnimationType
+CreateUnit.SpawnAnim=                  ; list of Animation
 CreateUnit.SpawnHeight=-1              ; integer, height in leptons
 ```
 
@@ -1296,7 +1296,7 @@ AttackMove.IgnoreWeaponCheck=false    ; boolean
 - If `Spawner.AttackImmediately` is set to true, spawned aircraft will assume attack mission immediately after being spawned instead of waiting for the remaining aircraft to spawn first.
 - `Spawner.UseTurretFacing`, if set, makes spawned aircraft face the same way as turret does upon being created if the spawner has a turret.
 - `Spawner.RecycleRange` defines the range (in cell) that the spawned is considered close enough to the spawner to be recycled.
-- `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled.
+- `Spawner.RecycleAnim` can be used to play an anim on the spawned location when it is recycled. If more than one animation is listed, a random one is selected.
 - `Spawner.RecycleCoord` defines the relative position to the carrier that the spawned aircraft will head to.
   - `Spawner.RecycleOnTurret` defines if the FLH is relative to the turret rather than the body.
 
@@ -1309,7 +1309,7 @@ Spawner.DelayFrames=               ; integer, game frames
 Spawner.AttackImmediately=false    ; boolean
 Spawner.UseTurretFacing=false      ; boolean
 Spawner.RecycleRange=-1            ; float, range in cells
-Spawner.RecycleAnim=               ; Animation
+Spawner.RecycleAnim=               ; list of Animation
 Spawner.RecycleCoord=0,0,0         ; integer - Forward,Lateral,Height
 Spawner.RecycleOnTurret=false      ; boolean
 ```
@@ -1332,7 +1332,7 @@ If you set recycle FLH, it is best to set a recycle range of at least `0.5` at t
     - `PassengerDeletion.SoylentMultiplier` is a direct multiplier applied to the refunded amount of credits.
     - `PassengerDeletion.SoylentAllowedHouses` determines which houses passengers can belong to be eligible for refunding.
     - `PassengerDeletion.DisplaySoylent` can be set to true to display the amount of credits refunded on the transport. `PassengerDeletion.DisplaySoylentToHouses` determines which houses can see this and `PassengerDeletion.DisplaySoylentOffset` can be used to adjust the display offset.
-  - `PassengerDeletion.ReportSound` and `PassengerDeletion.Anim` can be used to specify a sound and animation to play when a passenger is erased, respectively.
+  - `PassengerDeletion.ReportSound` and `PassengerDeletion.Anim` can be used to specify a sound and animation to play when a passenger is erased, respectively. If more than one animation is listed, a random one is selected.
   - If `PassengerDeletion.UnderEMP` is set to true, the deletion will be processed when the transport is under EMP or deactivated.
 
 In `rulesmd.ini`:
@@ -1352,7 +1352,7 @@ PassengerDeletion.DisplaySoylent=false          ; boolean
 PassengerDeletion.DisplaySoylentToHouses=All    ; Affected House Enumeration (none|owner/self|allies/ally|team|enemies/enemy|all)
 PassengerDeletion.DisplaySoylentOffset=0,0      ; X,Y, pixels relative to default
 PassengerDeletion.ReportSound=                  ; Sound entry
-PassengerDeletion.Anim=                         ; AnimationType
+PassengerDeletion.Anim=                         ; list of Animation
 PassengerDeletion.UnderEMP=false                ; boolean
 ```
 
@@ -1643,14 +1643,14 @@ Both `InitialStrength` and `InitialStrength.Cloning` never surpass the type's `S
   - `kill`: The object will be destroyed normally.
   - `vanish`: The object will be directly removed from the game peacefully instead of actually getting killed.
   - `sell`: If the object is a **building** with buildup, it will be sold instead of destroyed.
-- If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen.
+- If this option is not set, the self-destruction logic will not be enabled. `AutoDeath.VanishAnimation` can be set to animation to play at object's location if `vanish` behaviour is chosen. If more than one animation is listed, a random one is selected.
 - This logic also supports buildings delivered by [LimboDelivery](#limbodelivery). However in this case, all `AutoDeath.Behavior` values produce identical result where the building is simply deleted.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]                                   ; TechnoType
 AutoDeath.Behavior=                            ; enumeration (kill | vanish | sell), default not set
-AutoDeath.VanishAnimation=                     ; AnimationType
+AutoDeath.VanishAnimation=                     ; list of Animation
 AutoDeath.OnAmmoDepletion=no                   ; boolean
 AutoDeath.AfterDelay=0                         ; positive integer
 AutoDeath.TechnosDontExist=                    ; List of TechnoTypes
@@ -1785,19 +1785,19 @@ Promote.IncludeSpawns=false  ; boolean
 ### Promotion animation
 
 - You can now specify an animation on the unit or structure promotion.
-  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
-  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`.
+  - `Promote.VeteranAnimation` is used when unit or structure is promoted to veteran. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`. If more than one animation is listed, a random one is selected.
+  - `Promote.EliteAnimation` is used when unit or structure is promoted to elite. If this is set for a TechnoType, it'll override the global setting in `[AudioVisual]`. If more than one animation is listed, a random one is selected.
   - If `Promote.EliteAnimation` is not defined, `Promote.VeteranAnimation` will play instead when unit or structure is promoted to elite.
 
 In `rulesmd.ini`:
 ```ini
 [AudioVisual]
-Promote.VeteranAnimation=         ; AnimationType
-Promote.EliteAnimation=           ; AnimationType
+Promote.VeteranAnimation=         ; list of Animation
+Promote.EliteAnimation=           ; list of Animation
 
-[SOMETECHNO]                      ; TechnoType
-Promote.VeteranAnimation=         ; AnimationType, default to Promote.VeteranAnimation in [AudioVisual]
-Promote.EliteAnimation=           ; AnimationType, default to Promote.EliteAnimation in [AudioVisual]
+[SOMETECHNO]
+Promote.VeteranAnimation=         ; list of Animation, default to Promote.VeteranAnimation in [AudioVisual]
+Promote.EliteAnimation=           ; list of Animation, default to Promote.EliteAnimation in [AudioVisual]
 ```
 
 ### Raise alert when technos are taking damage
@@ -1981,11 +1981,12 @@ WarpOutWeapon=                          ; WeaponType
 ### Destroy animation & sound
 
 - You can now specify a destroy animation and sound for a TerrainType that are played when it is destroyed.
+  - If more than one animation is listed in `DestroyAnim`, a random one is selected.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETERRAINTYPE]  ; TerrainType
-DestroyAnim=       ; AnimationType
+DestroyAnim=       ; list of Animation
 DestroySound=      ; Sound entry
 ```
 

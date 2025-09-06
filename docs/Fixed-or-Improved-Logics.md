@@ -407,7 +407,7 @@ AttachedAnimPosition=default ; Attached animation position enumeration (default|
 
 - `ExplodeOnWater` can be set to true to make the animation explode on impact with water. `ExpireAnim` will be played and `Warhead` is detonated or used to deal damage / generate light flash.
 - `Warhead.Detonate`, if set to true, makes the `Warhead` fully detonate instead of simply being used to deal damage and generate light flash if it has `Bright=true`.
-- `WakeAnim` contains a wake animation to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation.
+- `WakeAnim` contains wake animations to play if `ExplodeOnWater` is not set and the animation impacts with water. Defaults to `[General] -> Wake` if `IsMeteor` is not set to true, otherwise no animation. If more than one animation is listed, a random one is selected.
 - `SplashAnims` contains list of splash animations used if `ExplodeOnWater` is not set and the animation impacts with water.
   - If `SplashAnims.PickRandom` is set to true, picks a random animation from `SplashAnims` to use on each impact with water. Otherwise last listed animation from `SplashAnims` is used.
 - `ExtraShadow` can be set to false to disable the display of shadows on the ground.
@@ -417,8 +417,8 @@ In `artmd.ini`:
 [SOMEANIM]                    ; AnimationType
 ExplodeOnWater=false          ; boolean
 Warhead.Detonate=false        ; boolean
-WakeAnim=                     ; AnimationType
-SplashAnims=                  ; List of AnimationTypes, default to [CombatDamage] -> SplashList
+WakeAnim=                     ; list of Animation
+SplashAnims=                  ; List of Animation, default to [CombatDamage] -> SplashList
 SplashAnims.PickRandom=false  ; boolean
 ExtraShadow=true              ; boolean
 ```
@@ -1034,14 +1034,15 @@ TargetZoneScanType=same  ; target zone scan enumeration (same|any|inrange)
 *Chrono Legionnaire and Ronco using different teleportation settings in [YR: New War](https://www.moddb.com/mods/yuris-revenge-new-war)*
 
 - You can now specify Teleport/Chrono Locomotor settings per TechnoType to override default rules values. Unfilled values default to values in `[General]`.
-- Only applicable to Techno that have Teleport/Chrono Locomotor attached.
+- Applicable to Techno that have Teleport/Chrono Locomotor attached, or being chronowarped by chronosphere.
+- If more than one animation is listed in `WarpOut`, `WarpIn` or `WarpAway`, a random one is selected.
 
 In `rulesmd.ini`:
 ```ini
 [SOMETECHNO]            ; TechnoType
-WarpOut=                ; Anim (played when Techno warping out)
-WarpIn=                 ; Anim (played when Techno warping in)
-WarpAway=               ; Anim (played when Techno chronowarped by chronosphere)
+WarpOut=                ; list of Animation (played when Techno warping out), default to [General] WarpOut
+WarpIn=                 ; list of Animation (played when Techno warping in), default to [General] WarpIn
+WarpAway=               ; list of Animation (played when Techno being erased by `Temporal=yes` warhead), default to [General] WarpAway
 ChronoTrigger=          ; boolean, if yes then delay varies by distance, if no it is a constant
 ChronoDistanceFactor=   ; integer, amount to divide the distance to destination by to get the warped out delay
 ChronoMinimumDelay=     ; integer, the minimum delay for teleporting, no matter how short the distance
