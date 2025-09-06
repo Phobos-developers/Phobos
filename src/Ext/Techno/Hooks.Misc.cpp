@@ -236,15 +236,7 @@ DEFINE_HOOK(0x6B77B4, SpawnManagerClass_Update_RecycleSpawned, 0x7)
 
 	if (shouldRecycleSpawned())
 	{
-		if (pCarrierTypeExt->Spawner_RecycleAnim)
-		{
-			auto const pRecycleAnim = GameCreate<AnimClass>(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd);
-			auto const pAnimExt = AnimExt::ExtMap.Find(pRecycleAnim);
-			auto const pSpawnOwner = pSpawner->Owner;
-			pAnimExt->SetInvoker(pSpawner);
-			AnimExt::SetAnimOwnerHouseKind(pRecycleAnim, pSpawnOwner, pSpawnOwner, false, true);
-		}
-
+		AnimExt::CreateRandomAnim(pCarrierTypeExt->Spawner_RecycleAnim, spawnerCrd, pSpawner, pSpawner->Owner, true);
 		pSpawner->SetLocation(pCarrier->GetCoords());
 		return Recycle;
 	}
@@ -819,3 +811,22 @@ DEFINE_HOOK(0x730D1F, DeployCommandClass_Execute_VoiceDeploy, 0x5)
 }
 
 #pragma endregion
+
+
+// Prevent subterranean units from deploying while underground.
+DEFINE_HOOK(0x73D6E6, UnitClass_Unload_Subterranean, 0x6)
+{
+	enum { ReturnFromFunction = 0x73DFB0 };
+
+	GET(UnitClass*, pThis, ESI);
+
+	if (pThis->Type->Locomotor == LocomotionClass::CLSIDs::Tunnel)
+	{
+		auto const pLoco = static_cast<TunnelLocomotionClass*>(pThis->Locomotor.GetInterfacePtr());
+
+		if (pLoco->State != TunnelLocomotionClass::State::Idle)
+			return ReturnFromFunction;
+	}
+
+	return 0;
+}

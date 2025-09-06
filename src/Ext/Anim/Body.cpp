@@ -203,9 +203,10 @@ void AnimExt::ChangeAnimType(AnimClass* pAnim, AnimTypeClass* pNewType, bool res
 	}
 }
 
-void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
+void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, const std::vector<AnimTypeClass*>& pWakeAnim, Iterator<AnimTypeClass*> splashAnims, HouseClass* pOwner, WarheadTypeClass* pWarhead, int nDamage,
 	CellClass* pCell, CoordStruct nLocation, bool heightFlag, bool isMeteor, bool warheadDetonate, bool explodeOnWater, bool splashAnimsPickRandom)
 {
+	bool customWakeAnim = false;
 	AnimTypeClass* pWakeAnimToUse = nullptr;
 	AnimTypeClass* pSplashAnimToUse = nullptr;
 
@@ -235,8 +236,8 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		if (!isMeteor)
 			pWakeAnimToUse = RulesClass::Instance->Wake;
 
-		if (pWakeAnim)
-			pWakeAnimToUse = pWakeAnim;
+		if (pWakeAnim.size() > 0)
+			customWakeAnim = true;
 
 		if (!splashAnims.empty())
 		{
@@ -249,7 +250,11 @@ void AnimExt::HandleDebrisImpact(AnimTypeClass* pExpireAnim, AnimTypeClass* pWak
 		}
 	}
 
-	if (pWakeAnimToUse)
+	if (customWakeAnim)
+	{
+		AnimExt::CreateRandomAnim(pWakeAnim, nLocation, nullptr, pOwner);
+	}
+	else if (pWakeAnimToUse)
 	{
 		auto const pWakeAnimCreated = GameCreate<AnimClass>(pWakeAnimToUse, nLocation, 0, 1, 0x600u, false);
 		AnimExt::SetAnimOwnerHouseKind(pWakeAnimCreated, pOwner, nullptr, false, true);

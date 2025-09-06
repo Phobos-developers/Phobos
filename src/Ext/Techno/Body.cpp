@@ -186,6 +186,12 @@ double TechnoExt::GetCurrentSpeedMultiplier(FootClass* pThis)
 		(pThis->HasAbility(Ability::Faster) ? RulesClass::Instance->VeteranSpeed : 1.0);
 }
 
+double TechnoExt::GetCurrentFirepowerMultiplier(TechnoClass* pThis)
+{
+	return pThis->FirepowerMultiplier * TechnoExt::ExtMap.Find(pThis)->AE.FirepowerMultiplier *
+		(pThis->HasAbility(Ability::Firepower) ? RulesClass::Instance->VeteranCombat : 1.0);
+}
+
 CoordStruct TechnoExt::PassengerKickOutLocation(TechnoClass* pThis, FootClass* pPassenger, int maxAttempts = 1)
 {
 	if (!pThis || !pPassenger)
@@ -311,7 +317,7 @@ bool TechnoExt::ConvertToType(FootClass* pThis, TechnoTypeClass* pToType)
 		{
 			// Fixed an issue where morphing could result in -1 health.
 			double ratio = static_cast<double>(pToType->Strength) / pType->Strength;
-			pThis->Health = static_cast<int>(oldHealth * ratio  + 0.5);
+			pThis->Health = static_cast<int>(oldHealth * ratio + 0.5);
 
 			auto const pTypeExt = TechnoExt::ExtMap.Find(static_cast<TechnoClass*>(pThis));
 			pTypeExt->UpdateTypeData(pToType);
@@ -725,6 +731,76 @@ bool TechnoExt::IsHealthInThreshold(TechnoClass* pObject, double min, double max
 	return hp <= max && hp >= min;
 }
 
+bool TechnoExt::CannotMove(UnitClass* pThis)
+{
+	const auto pType = pThis->Type;
+
+	if (pType->Speed == 0)
+		return true;
+
+	if (!pThis->IsInAir())
+	{
+		LandType landType = pThis->GetCell()->LandType;
+		const LandType movementRestrictedTo = pType->MovementRestrictedTo;
+
+		if (pThis->OnBridge
+			&& (landType == LandType::Water || landType == LandType::Beach))
+		{
+			landType = LandType::Road;
+		}
+
+		if (movementRestrictedTo != LandType::None
+			&& movementRestrictedTo != landType
+			&& landType != LandType::Tunnel)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool TechnoExt::HasAmmoToDeploy(TechnoClass* pThis)
+{
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+
+	const int min = pTypeExt->Ammo_DeployUnlockMinimumAmount;
+	const int max = pTypeExt->Ammo_DeployUnlockMaximumAmount;
+
+	if (min < 0 && max < 0)
+		return true;
+
+	const int ammo = pThis->Ammo;
+
+	if ((min < 0 || ammo >= min) && (max < 0 || ammo <= max))
+		return true;
+
+	return false;
+}
+
+void TechnoExt::HandleOnDeployAmmoChange(TechnoClass* pThis, int maxAmmoOverride)
+{
+	const auto pTypeExt = TechnoExt::ExtMap.Find(pThis)->TypeExtData;
+	int add = pTypeExt->Ammo_AddOnDeploy;
+
+	if (add != 0)
+	{
+		int maxAmmo = pTypeExt->OwnerObject()->Ammo;
+
+		if (maxAmmoOverride >= 0)
+			maxAmmo = maxAmmoOverride;
+
+		int originalAmmo = pThis->Ammo;
+		pThis->Ammo = std::clamp(pThis->Ammo + add, 0, maxAmmo);
+
+		if (originalAmmo != pThis->Ammo)
+		{
+			pThis->StartReloading();
+			pThis->Mark(MarkType::Change);
+		}
+	}
+}
+
 // =============================
 // load / save
 
@@ -749,6 +825,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->MindControlRingAnimType)
 		.Process(this->DamageNumberOffset)
 		.Process(this->Strafe_BombsDroppedThisRound)
+		.Process(this->Strafe_TargetCell)
 		.Process(this->CurrentAircraftWeaponIndex)
 		.Process(this->IsInTunnel)
 		.Process(this->IsBurrowed)
@@ -775,6 +852,7 @@ void TechnoExt::ExtData::Serialize(T& Stm)
 		.Process(this->TiberiumEater_Timer)
 		.Process(this->AirstrikeTargetingMe)
 		.Process(this->FiringAnimationTimer)
+		.Process(this->SimpleDeployerAnimationTimer)
 		.Process(this->DelayedFireSequencePaused)
 		.Process(this->DelayedFireTimer)
 		.Process(this->DelayedFireWeaponIndex)

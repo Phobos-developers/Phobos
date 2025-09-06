@@ -219,8 +219,8 @@ int ShieldClass::ReceiveDamage(args_ReceiveDamage* args)
 	const int originalShieldDamage = shieldDamage;
 	const int min = pWHExt->Shield_ReceivedDamage_Minimum.Get(pType->ReceivedDamage_Minimum);
 	const int max = pWHExt->Shield_ReceivedDamage_Maximum.Get(pType->ReceivedDamage_Maximum);
-	const int minDmg = static_cast<int>(min * pWHExt->Shield_ReceivedDamage_MinMultiplier);
-	const int maxDmg = static_cast<int>(max * pWHExt->Shield_ReceivedDamage_MaxMultiplier);
+	const int minDmg = GeneralUtils::SafeMultiply(min, pWHExt->Shield_ReceivedDamage_MinMultiplier);
+	const int maxDmg = GeneralUtils::SafeMultiply(max, pWHExt->Shield_ReceivedDamage_MaxMultiplier);
 	shieldDamage = Math::clamp(shieldDamage, minDmg, maxDmg);
 
 	if (Phobos::DisplayDamageNumbers && shieldDamage != 0)
@@ -350,20 +350,13 @@ void ShieldClass::ResponseAttack()
 	}
 }
 
-void ShieldClass::WeaponNullifyAnim(AnimTypeClass* pHitAnim)
+void ShieldClass::WeaponNullifyAnim(const std::vector<AnimTypeClass*>& pHitAnim)
 {
 	if (this->AreAnimsHidden)
 		return;
 
 	const auto pTechno = this->Techno;
-	const auto pAnimType = pHitAnim ? pHitAnim : this->Type->HitAnim;
-
-	if (pAnimType)
-	{
-		auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->GetCoords());
-		AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
-		AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
-	}
+	AnimExt::CreateRandomAnim((pHitAnim.empty() ? this->Type->HitAnim : pHitAnim), pTechno->GetCoords(), pTechno, nullptr, true, true);
 }
 
 bool ShieldClass::CanBeTargeted(WeaponTypeClass* pWeapon) const
@@ -615,6 +608,7 @@ bool ShieldClass::ConvertCheck()
 {
 	const auto newID = this->Techno->GetTechnoType();
 
+	// If there has been no actual TechnoType conversion then we bail out early.
 	if (this->TechnoID == newID)
 		return false;
 
@@ -623,24 +617,26 @@ bool ShieldClass::ConvertCheck()
 	const auto pOldType = this->Type;
 	const bool allowTransfer = pOldType->AllowTransfer.Get(Attached);
 
-	// Update shield type.
 	if (!allowTransfer && (!pTechnoTypeExt->ShieldType || pTechnoTypeExt->ShieldType->Strength <= 0))
 	{
+		// Case 1: Old shield is not allowed to transfer or there's no eligible new shield type -> delete shield.
 		this->KillAnim();
 		pTechnoExt->CurrentShieldType = nullptr;
 		pTechnoExt->Shield = nullptr;
 		this->UpdateTint();
-
 		return true;
 	}
-	else if (pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0)
+	else if (!allowTransfer && pTechnoTypeExt->ShieldType && pTechnoTypeExt->ShieldType->Strength > 0)
 	{
+		// Case 2: Old shield is not allowed to transfer and the new type is eligible for activation -> use the new shield type.
 		pTechnoExt->CurrentShieldType = pTechnoTypeExt->ShieldType;
+		this->Type = pTechnoTypeExt->ShieldType;
 	}
 
+	// Our new type is either the old shield or the changed type from the above two scenarios.
 	const auto pNewType = pTechnoExt->CurrentShieldType;
 
-	// Update shield properties.
+	// Update shield properties if we still have a shield.
 	if (pNewType && pNewType->Strength > 0 && this->Available)
 	{
 		const bool isDamaged = this->Techno->GetHealthPercentage() <= RulesClass::Instance->ConditionYellow;
@@ -672,7 +668,7 @@ bool ShieldClass::ConvertCheck()
 	}
 
 	this->TechnoID = newID;
-	this->UpdateTint();
+	this->UpdateTint(true); // Force tint update on shield type conversion.
 
 	return false;
 }
@@ -733,7 +729,8 @@ void ShieldClass::SelfHealing()
 			}
 			else if (health <= 0)
 			{
-				this->BreakShield();
+				std::vector<AnimTypeClass*> nothing;
+				this->BreakShield(nothing);
 			}
 		}
 	}
@@ -750,7 +747,7 @@ int ShieldClass::GetPercentageAmount(double iStatus)
 	return (int)std::trunc(iStatus);
 }
 
-void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreakWeapon)
+void ShieldClass::BreakShield(const std::vector<AnimTypeClass*>& pBreakAnim, WeaponTypeClass* pBreakWeapon)
 {
 	this->HP = 0;
 	auto const pType = this->Type;
@@ -763,17 +760,7 @@ void ShieldClass::BreakShield(AnimTypeClass* pBreakAnim, WeaponTypeClass* pBreak
 	this->KillAnim();
 
 	if (!this->AreAnimsHidden)
-	{
-		const auto pAnimType = pBreakAnim ? pBreakAnim : pType->BreakAnim;
-
-		if (pAnimType)
-		{
-			auto const pAnim = GameCreate<AnimClass>(pAnimType, pTechno->Location);
-			pAnim->SetOwnerObject(pTechno);
-			AnimExt::SetAnimOwnerHouseKind(pAnim, pTechno->Owner, nullptr, false, true);
-			AnimExt::ExtMap.Find(pAnim)->SetInvoker(pTechno);
-		}
-	}
+		AnimExt::CreateRandomAnim(pBreakAnim.empty() ? pType->BreakAnim : pBreakAnim, pTechno->Location, pTechno, nullptr, true, true);
 
 	const auto pWeaponType = pBreakWeapon ? pBreakWeapon : pType->BreakWeapon;
 	this->LastBreakFrame = Unsorted::CurrentFrame;
@@ -946,9 +933,9 @@ void ShieldClass::UpdateIdleAnim()
 	}
 }
 
-void ShieldClass::UpdateTint()
+void ShieldClass::UpdateTint(bool forceUpdate)
 {
-	if (this->Type->HasTint())
+	if (this->Type->HasTint() || forceUpdate)
 	{
 		auto const pTechno = this->Techno;
 		TechnoExt::ExtMap.Find(pTechno)->UpdateTintValues();
